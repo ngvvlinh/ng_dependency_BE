@@ -3,11 +3,13 @@ package customering
 import (
 	"time"
 
-	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
 	"o.o/api/top/types/etc/status3"
 	dot "o.o/capi/dot"
 )
+
+// +gen:event:topic=event/customering
 
 const CustomerAnonymous dot.ID = 1
 
@@ -49,4 +51,9 @@ type ShopCustomerGroupCustomer struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type ShopCustomerDeletedEvent struct {
+	ShopID     dot.ID
+	CustomerID dot.ID
 }

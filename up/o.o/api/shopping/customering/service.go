@@ -5,7 +5,7 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/shopping"
-	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
 	. "o.o/capi/dot"
 	dot "o.o/capi/dot"

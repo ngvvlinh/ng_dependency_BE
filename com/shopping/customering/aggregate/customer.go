@@ -7,8 +7,8 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/shopping/customering"
-	"o.o/api/shopping/customering/customer_type"
 	"o.o/api/shopping/tradering"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/backend/com/shopping/customering/convert"
 	"o.o/backend/com/shopping/customering/model"
 	"o.o/backend/com/shopping/customering/sqlstore"
@@ -200,7 +200,7 @@ func (a *CustomerAggregate) DeleteCustomer(
 			ShopID:    shopID,
 			TraderID:  id,
 		}
-		if err := a.eventBus.Publish(ctx, event); err != nil {
+		if err = a.eventBus.Publish(ctx, event); err != nil {
 			return err
 		}
 		return errTr

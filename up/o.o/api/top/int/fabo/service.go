@@ -29,3 +29,11 @@ type CustomerConversationService interface {
 
 	SendComment(context.Context, *SendCommentRequest) (*FbExternalComment, error)
 }
+
+// +apix:path=/fabo.Customer
+type CustomerService interface {
+	CreateFbUserCustomer(ctx context.Context, request *CreateFbUserCustomerRequest) (*FbUserWithCustomer, error)
+
+	ListFbUsers(ctx context.Context, request *ListFbUsersRequest) (*ListFbUsersResponse, error)
+	GetFbUser(ctx context.Context, request *GetFbUserRequest) (*FbUserWithCustomer, error)
+}

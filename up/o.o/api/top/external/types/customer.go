@@ -1,9 +1,9 @@
 package types
 
 import (
-	"o.o/api/shopping/customering/customer_type"
 	"o.o/api/top/int/etop"
 	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"

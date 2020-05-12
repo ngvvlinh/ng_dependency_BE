@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"o.o/api/top/types/etc/status3"
+	"o.o/capi/dot"
 )
 
 // +sqlgen
@@ -29,4 +30,15 @@ type FbExternalUserInternal struct {
 	Token      string
 	ExpiresIn  int
 	UpdatedAt  time.Time `sq:"update"`
+}
+
+// +sqlgen
+type FbExternalUserShopCustomer struct {
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+
+	ShopID           dot.ID
+	FbExternalUserID string
+	CustomerID       dot.ID
+	Status           status3.Status
 }

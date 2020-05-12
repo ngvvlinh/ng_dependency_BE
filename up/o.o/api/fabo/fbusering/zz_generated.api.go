@@ -9,6 +9,7 @@ import (
 
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
+	dot "o.o/capi/dot"
 	filter "o.o/capi/filter"
 )
 
@@ -64,6 +65,19 @@ func (h AggregateHandler) HandleCreateFbExternalUserInternal(ctx context.Context
 	return err
 }
 
+type CreateFbExternalUserShopCustomerCommand struct {
+	ShopID     dot.ID
+	ExternalID string
+	CustomerID dot.ID
+
+	Result *FbExternalUserWithCustomer `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateFbExternalUserShopCustomer(ctx context.Context, msg *CreateFbExternalUserShopCustomerCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalUserShopCustomer(msg.GetArgs(ctx))
+	return err
+}
+
 type CreateFbExternalUsersCommand struct {
 	FbExternalUsers []*CreateFbExternalUserArgs
 
@@ -73,6 +87,19 @@ type CreateFbExternalUsersCommand struct {
 func (h AggregateHandler) HandleCreateFbExternalUsers(ctx context.Context, msg *CreateFbExternalUsersCommand) (err error) {
 	msg.Result, err = h.inner.CreateFbExternalUsers(msg.GetArgs(ctx))
 	return err
+}
+
+type DeleteFbExternalUserShopCustomerCommand struct {
+	ShopID     dot.ID
+	ExternalID dot.NullString
+	CustomerID dot.NullID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteFbExternalUserShopCustomer(ctx context.Context, msg *DeleteFbExternalUserShopCustomerCommand) (err error) {
+	return h.inner.DeleteFbExternalUserShopCustomer(msg.GetArgs(ctx))
 }
 
 type GetFbExternalUserByExternalIDQuery struct {
@@ -97,6 +124,53 @@ func (h QueryServiceHandler) HandleGetFbExternalUserInternalByExternalID(ctx con
 	return err
 }
 
+type GetFbExternalUserWithCustomerByExternalIDQuery struct {
+	ShopID     dot.ID
+	ExternalID string
+
+	Result *FbExternalUserWithCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFbExternalUserWithCustomerByExternalID(ctx context.Context, msg *GetFbExternalUserWithCustomerByExternalIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalUserWithCustomerByExternalID(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFbExternalUserWithCustomerQuery struct {
+	Args ListFbExternalUserWithCustomerRequest
+
+	Result []*FbExternalUserWithCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbExternalUserWithCustomer(ctx context.Context, msg *ListFbExternalUserWithCustomerQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalUserWithCustomer(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFbExternalUserWithCustomerByExternalIDsQuery struct {
+	ShopID      dot.ID
+	ExternalIDs []string
+
+	Result []*FbExternalUserWithCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbExternalUserWithCustomerByExternalIDs(ctx context.Context, msg *ListFbExternalUserWithCustomerByExternalIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalUserWithCustomerByExternalIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFbExternalUsersQuery struct {
+	CustomerID dot.NullID
+	ShopID     dot.ID
+
+	Result []*FbExternalUserWithCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbExternalUsers(ctx context.Context, msg *ListFbExternalUsersQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalUsers(msg.GetArgs(ctx))
+	return err
+}
+
 type ListFbExternalUsersByExternalIDsQuery struct {
 	ExternalIDs filter.Strings
 
@@ -110,14 +184,20 @@ func (h QueryServiceHandler) HandleListFbExternalUsersByExternalIDs(ctx context.
 
 // implement interfaces
 
-func (q *CreateFbExternalUserCommand) command()         {}
-func (q *CreateFbExternalUserCombinedCommand) command() {}
-func (q *CreateFbExternalUserInternalCommand) command() {}
-func (q *CreateFbExternalUsersCommand) command()        {}
+func (q *CreateFbExternalUserCommand) command()             {}
+func (q *CreateFbExternalUserCombinedCommand) command()     {}
+func (q *CreateFbExternalUserInternalCommand) command()     {}
+func (q *CreateFbExternalUserShopCustomerCommand) command() {}
+func (q *CreateFbExternalUsersCommand) command()            {}
+func (q *DeleteFbExternalUserShopCustomerCommand) command() {}
 
-func (q *GetFbExternalUserByExternalIDQuery) query()         {}
-func (q *GetFbExternalUserInternalByExternalIDQuery) query() {}
-func (q *ListFbExternalUsersByExternalIDsQuery) query()      {}
+func (q *GetFbExternalUserByExternalIDQuery) query()               {}
+func (q *GetFbExternalUserInternalByExternalIDQuery) query()       {}
+func (q *GetFbExternalUserWithCustomerByExternalIDQuery) query()   {}
+func (q *ListFbExternalUserWithCustomerQuery) query()              {}
+func (q *ListFbExternalUserWithCustomerByExternalIDsQuery) query() {}
+func (q *ListFbExternalUsersQuery) query()                         {}
+func (q *ListFbExternalUsersByExternalIDsQuery) query()            {}
 
 // implement conversion
 
@@ -166,6 +246,13 @@ func (q *CreateFbExternalUserInternalCommand) SetCreateFbExternalUserInternalArg
 	q.ExpiresIn = args.ExpiresIn
 }
 
+func (q *CreateFbExternalUserShopCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, externalID string, customerID dot.ID) {
+	return ctx,
+		q.ShopID,
+		q.ExternalID,
+		q.CustomerID
+}
+
 func (q *CreateFbExternalUsersCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUsersArgs) {
 	return ctx,
 		&CreateFbExternalUsersArgs{
@@ -177,6 +264,21 @@ func (q *CreateFbExternalUsersCommand) SetCreateFbExternalUsersArgs(args *Create
 	q.FbExternalUsers = args.FbExternalUsers
 }
 
+func (q *DeleteFbExternalUserShopCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteFbExternalUserShopCustomerArgs) {
+	return ctx,
+		&DeleteFbExternalUserShopCustomerArgs{
+			ShopID:     q.ShopID,
+			ExternalID: q.ExternalID,
+			CustomerID: q.CustomerID,
+		}
+}
+
+func (q *DeleteFbExternalUserShopCustomerCommand) SetDeleteFbExternalUserShopCustomerArgs(args *DeleteFbExternalUserShopCustomerArgs) {
+	q.ShopID = args.ShopID
+	q.ExternalID = args.ExternalID
+	q.CustomerID = args.CustomerID
+}
+
 func (q *GetFbExternalUserByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
 		q.ExternalID
@@ -185,6 +287,36 @@ func (q *GetFbExternalUserByExternalIDQuery) GetArgs(ctx context.Context) (_ con
 func (q *GetFbExternalUserInternalByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
 		q.ExternalID
+}
+
+func (q *GetFbExternalUserWithCustomerByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, externalID string) {
+	return ctx,
+		q.ShopID,
+		q.ExternalID
+}
+
+func (q *ListFbExternalUserWithCustomerQuery) GetArgs(ctx context.Context) (_ context.Context, args ListFbExternalUserWithCustomerRequest) {
+	return ctx,
+		q.Args
+}
+
+func (q *ListFbExternalUserWithCustomerByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, externalIDs []string) {
+	return ctx,
+		q.ShopID,
+		q.ExternalIDs
+}
+
+func (q *ListFbExternalUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbExternalUsersArgs) {
+	return ctx,
+		&ListFbExternalUsersArgs{
+			CustomerID: q.CustomerID,
+			ShopID:     q.ShopID,
+		}
+}
+
+func (q *ListFbExternalUsersQuery) SetListFbExternalUsersArgs(args *ListFbExternalUsersArgs) {
+	q.CustomerID = args.CustomerID
+	q.ShopID = args.ShopID
 }
 
 func (q *ListFbExternalUsersByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs filter.Strings) {
@@ -207,7 +339,9 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateFbExternalUser)
 	b.AddHandler(h.HandleCreateFbExternalUserCombined)
 	b.AddHandler(h.HandleCreateFbExternalUserInternal)
+	b.AddHandler(h.HandleCreateFbExternalUserShopCustomer)
 	b.AddHandler(h.HandleCreateFbExternalUsers)
+	b.AddHandler(h.HandleDeleteFbExternalUserShopCustomer)
 	return CommandBus{b}
 }
 
@@ -225,6 +359,10 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetFbExternalUserByExternalID)
 	b.AddHandler(h.HandleGetFbExternalUserInternalByExternalID)
+	b.AddHandler(h.HandleGetFbExternalUserWithCustomerByExternalID)
+	b.AddHandler(h.HandleListFbExternalUserWithCustomer)
+	b.AddHandler(h.HandleListFbExternalUserWithCustomerByExternalIDs)
+	b.AddHandler(h.HandleListFbExternalUsers)
 	b.AddHandler(h.HandleListFbExternalUsersByExternalIDs)
 	return QueryBus{b}
 }

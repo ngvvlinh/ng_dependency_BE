@@ -45,6 +45,20 @@ func (s *FbExternalUserStore) ExternalIDs(externalIDs []string) *FbExternalUserS
 	return s
 }
 
+func (s *FbExternalUserStore) WithPaging(paging meta.Paging) *FbExternalUserStore {
+	s.Paging.WithPaging(paging)
+	return s
+}
+
+func (s *FbExternalUserStore) Filters(filters meta.Filters) *FbExternalUserStore {
+	if s.filters == nil {
+		s.filters = filters
+	} else {
+		s.filters = append(s.filters, filters...)
+	}
+	return s
+}
+
 func (s *FbExternalUserStore) ExternalID(externalID string) *FbExternalUserStore {
 	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
 	return s

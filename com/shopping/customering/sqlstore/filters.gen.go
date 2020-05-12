@@ -7,7 +7,7 @@ package sqlstore
 import (
 	time "time"
 
-	customer_type "o.o/api/shopping/customering/customer_type"
+	customer_type "o.o/api/top/types/etc/customer_type"
 	gender "o.o/api/top/types/etc/gender"
 	status3 "o.o/api/top/types/etc/status3"
 	sq "o.o/backend/pkg/common/sql/sq"

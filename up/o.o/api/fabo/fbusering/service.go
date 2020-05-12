@@ -3,7 +3,10 @@ package fbusering
 import (
 	"context"
 
+	"o.o/api/meta"
+	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/status3"
+	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
 
@@ -16,6 +19,10 @@ type Aggregate interface {
 	CreateFbExternalUserInternal(context.Context, *CreateFbExternalUserInternalArgs) (*FbExternalUserInternal, error)
 
 	CreateFbExternalUserCombined(context.Context, *CreateFbExternalUserCombinedArgs) (*FbExternalUserCombined, error)
+
+	CreateFbExternalUserShopCustomer(ctx context.Context, shopID dot.ID, externalID string, customerID dot.ID) (*FbExternalUserWithCustomer, error)
+
+	DeleteFbExternalUserShopCustomer(context.Context, *DeleteFbExternalUserShopCustomerArgs) error
 }
 
 type QueryService interface {
@@ -23,6 +30,24 @@ type QueryService interface {
 	ListFbExternalUsersByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalUser, error)
 
 	GetFbExternalUserInternalByExternalID(_ context.Context, externalID string) (*FbExternalUserInternal, error)
+
+	// -- FbExternalUser with ShopCustomer --
+	GetFbExternalUserWithCustomerByExternalID(_ context.Context, shopID dot.ID, externalID string) (*FbExternalUserWithCustomer, error)
+	ListFbExternalUserWithCustomer(_ context.Context, args ListFbExternalUserWithCustomerRequest) ([]*FbExternalUserWithCustomer, error)
+	ListFbExternalUserWithCustomerByExternalIDs(_ context.Context, shopID dot.ID, externalIDs []string) ([]*FbExternalUserWithCustomer, error)
+	ListFbExternalUsers(context.Context, *ListFbExternalUsersArgs) ([]*FbExternalUserWithCustomer, error)
+}
+
+type DeleteFbExternalUserShopCustomerArgs struct {
+	ShopID     dot.ID
+	ExternalID dot.NullString
+	CustomerID dot.NullID
+}
+
+type ListFbExternalUserWithCustomerRequest struct {
+	ShopID  dot.ID
+	Paging  meta.Paging
+	Filters meta.Filters
 }
 
 // +convert:create=FbExternalUser
@@ -47,4 +72,14 @@ type CreateFbExternalUserInternalArgs struct {
 type CreateFbExternalUserCombinedArgs struct {
 	FbUser         *CreateFbExternalUserArgs
 	FbUserInternal *CreateFbExternalUserInternalArgs
+}
+
+type FbExternalUserWithCustomer struct {
+	*FbExternalUser
+	*customering.ShopCustomer
+}
+
+type ListFbExternalUsersArgs struct {
+	CustomerID dot.NullID
+	ShopID     dot.ID
 }

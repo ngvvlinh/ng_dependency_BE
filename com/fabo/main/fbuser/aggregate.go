@@ -5,11 +5,14 @@ import (
 
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
+	"o.o/api/shopping/customering"
 	"o.o/backend/com/fabo/main/fbuser/convert"
 	"o.o/backend/com/fabo/main/fbuser/sqlstore"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
@@ -17,20 +20,25 @@ var ll = l.New()
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type FbUserAggregate struct {
-	db                  *cmsql.Database
-	fbUserStore         sqlstore.FbExternalUserStoreFactory
-	fbUserInternalStore sqlstore.FbExternalUserInternalFactory
-	fbPageAggr          fbpaging.CommandBus
+	db                              *cmsql.Database
+	fbUserStore                     sqlstore.FbExternalUserStoreFactory
+	fbUserInternalStore             sqlstore.FbExternalUserInternalFactory
+	fbPageAggr                      fbpaging.CommandBus
+	customerQuery                   customering.QueryBus
+	fbExternalUserShopCustomerStore sqlstore.FbExternalUserShopCustomerStoreFactory
 }
 
 func NewFbUserAggregate(
-	db *cmsql.Database, fbPageA fbpaging.CommandBus,
+	db *cmsql.Database, fbPageA fbpaging.CommandBus, customerQ customering.QueryBus,
 ) *FbUserAggregate {
 	return &FbUserAggregate{
-		db:                  db,
-		fbUserStore:         sqlstore.NewFbExternalUserStore(db),
-		fbUserInternalStore: sqlstore.NewFbExternalUserInternalStore(db),
-		fbPageAggr:          fbPageA,
+		db:                              db,
+		fbUserStore:                     sqlstore.NewFbExternalUserStore(db),
+		fbUserInternalStore:             sqlstore.NewFbExternalUserInternalStore(db),
+		fbExternalUserShopCustomerStore: sqlstore.NewFbExternalUserShopCustomerStore(db),
+		fbPageAggr:                      fbPageA,
+
+		customerQuery: customerQ,
 	}
 }
 
@@ -119,4 +127,50 @@ func (a *FbUserAggregate) CreateFbExternalUserCombined(
 		FbExternalUser:         fbUserResult,
 		FbExternalUserInternal: fbUserInternalResult,
 	}, nil
+}
+
+func (a *FbUserAggregate) CreateFbExternalUserShopCustomer(ctx context.Context, shopID dot.ID, externalID string, customerID dot.ID) (*fbusering.FbExternalUserWithCustomer, error) {
+	var result = &fbusering.FbExternalUserWithCustomer{}
+	fbUser, err := a.fbUserStore(ctx).ExternalID(externalID).GetFbExternalUser()
+	if err != nil {
+		return nil, err
+	}
+	query := &customering.GetCustomerByIDQuery{
+		ID:     customerID,
+		ShopID: shopID,
+	}
+	err = a.customerQuery.Dispatch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	fbExternalUserWithCustomer := &fbusering.FbExternalUserShopCustomer{
+		ShopID:           shopID,
+		FbExternalUserID: externalID,
+		CustomerID:       customerID,
+		Status:           fbUser.Status,
+	}
+	err = a.fbExternalUserShopCustomerStore(ctx).CreateFbExternalUserShopCustomer(fbExternalUserWithCustomer)
+	if err != nil {
+		return nil, err
+	}
+	result.ShopCustomer = query.Result
+	result.FbExternalUser = fbUser
+	return result, nil
+}
+
+func (a *FbUserAggregate) DeleteFbExternalUserShopCustomer(ctx context.Context, args *fbusering.DeleteFbExternalUserShopCustomerArgs) error {
+	if args.ShopID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id")
+	}
+	if !args.CustomerID.Valid && !args.ExternalID.Valid {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Must have one in customer_id or external_id")
+	}
+	query := a.fbExternalUserShopCustomerStore(ctx).ShopID(args.ShopID)
+	if args.CustomerID.Valid {
+		query = query.ShopCustomerID(args.CustomerID.ID)
+	}
+	if args.ExternalID.Valid {
+		query = query.FbExternalUserID(args.ExternalID.String)
+	}
+	return query.DeleteFbExternalUserShopCustomer()
 }

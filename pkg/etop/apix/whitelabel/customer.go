@@ -3,8 +3,8 @@ package whitelabel
 import (
 	"context"
 
-	"o.o/api/shopping/customering/customer_type"
 	"o.o/api/top/external/whitelabel"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/backend/com/shopping/customering/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"

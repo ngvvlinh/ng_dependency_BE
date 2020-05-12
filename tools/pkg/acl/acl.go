@@ -992,6 +992,11 @@ var _acl = map[string]*permission.Decl{
 	"fabo.CustomerConversation/UpdateReadStatus":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true},
+
+	// -- Fabo Customer --
+	"fabo.Customer/CreateFbUserCustomer": {Type: Shop},
+	"fabo.Customer/ListFbUsers":          {Type: Shop},
+	"fabo.Customer/GetFbUser":            {Type: Shop},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

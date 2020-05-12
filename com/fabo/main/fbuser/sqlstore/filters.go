@@ -13,3 +13,12 @@ var SortFbExternalUser = map[string]string{
 	"created_at": "",
 	"updated_at": "",
 }
+
+var SortFbExternalUserShopCustomer = map[string]string{
+	"created_at": "",
+	"updated_at": "",
+}
+
+var FilterFbExternalUserShopCustomer = sqlstore.FilterWhitelist{
+	Equals: []string{"status"},
+}

@@ -23,6 +23,7 @@ type ShopTrader struct {
 
 type TraderDeletedEvent struct {
 	meta.EventMeta
-	ShopID   dot.ID
-	TraderID dot.ID
+	ShopID      dot.ID
+	TraderID    dot.ID
+	TradingType string
 }

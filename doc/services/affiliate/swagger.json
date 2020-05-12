@@ -1633,6 +1633,16 @@
         }
       }
     },
+    "ljCustomerType": {
+      "description": "Deprecated values: \"independent\"\\n",
+      "type": "string",
+      "enum": [
+        "unknown",
+        "individual",
+        "organization",
+        "anonymous"
+      ]
+    },
     "ojFeeType": {
       "type": "string",
       "enum": [
@@ -2692,7 +2702,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/spCustomerType"
+          "$ref": "#/definitions/ljCustomerType"
         }
       }
     },
@@ -3390,16 +3400,6 @@
         "delivered",
         "cancelled",
         "undeliverable"
-      ]
-    },
-    "spCustomerType": {
-      "description": "Deprecated values: \"independent\"\\n",
-      "type": "string",
-      "enum": [
-        "unknown",
-        "individual",
-        "organization",
-        "anonymous"
       ]
     },
     "xjSource": {

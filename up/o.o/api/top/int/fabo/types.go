@@ -4,12 +4,65 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/api/top/external/types"
 	"o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
+
+type CreateFbUserCustomerRequest struct {
+	ExternalID string `json:"external_id"`
+	CustomerID dot.ID `json:"customer_id"`
+}
+
+func (m *CreateFbUserCustomerRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type FbUserWithCustomer struct {
+	ExternalID   string              `json:"external_id"`
+	ExternalInfo *ExternalFbUserInfo `json:"external_info"`
+	Status       status3.Status      `json:"status"`
+	CreatedAt    time.Time           `json:"created_at"`
+	UpdatedAt    time.Time           `json:"updated_at"`
+	CustomerID   dot.ID              `json:"customer_id"`
+	Customer     *types.Customer     `json:"customer"`
+}
+
+func (m *FbUserWithCustomer) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type GetFbUserRequest struct {
+	ExternalID string `json:"external_id"`
+}
+
+func (m *GetFbUserRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type GetFbUserResponse struct {
+	FbUser   *FbUser         `json:"fb_users"`
+	Customer *types.Customer `json:"customer"`
+}
+
+func (m *GetFbUserResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type ListFbUsersRequest struct {
+	CustomerID dot.NullID `json:"customer_id"`
+}
+
+func (m *ListFbUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListFbUsersResponse struct {
+	FbUsers []*FbUserWithCustomer `json:"fb_users"`
+}
+
+func (m *ListFbUsersResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConnectPagesRequest struct {
 	AccessToken string `json:"access_token"`

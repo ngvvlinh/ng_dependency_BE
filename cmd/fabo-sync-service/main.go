@@ -14,6 +14,7 @@ import (
 	servicefbusering "o.o/backend/com/fabo/main/fbuser"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/fabo/pkg/sync"
+	customerquery "o.o/backend/com/shopping/customering/query"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/bus"
@@ -87,12 +88,13 @@ func main() {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
 	}
 
+	customerQuery := customerquery.CustomerQueryMessageBus(customerquery.NewCustomerQuery(db))
 	fbPagingQuery := servicefbpaging.FbPageQueryMessageBus(servicefbpaging.NewFbPageQuery(db))
 	fbPagingAggr := servicefbpaging.FbExternalPageAggregateMessageBus(servicefbpaging.NewFbPageAggregate(db))
 	fbMessagingAggr := servicefbmessaging.FbExternalMessagingAggregateMessageBus(servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus))
 	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
-	fbUseringQuery := servicefbusering.FbUserQueryMessageBus(servicefbusering.NewFbUserQuery(db))
-	fbUseringAggr := servicefbusering.FbUserAggregateMessageBus(servicefbusering.NewFbUserAggregate(db, fbPagingAggr))
+	fbUseringQuery := servicefbusering.FbUserQueryMessageBus(servicefbusering.NewFbUserQuery(db, customerQuery))
+	fbUseringAggr := servicefbusering.FbUserAggregateMessageBus(servicefbusering.NewFbUserAggregate(db, fbPagingAggr, customerQuery))
 	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbUseringQuery, fbUseringAggr)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
 	synchronizer := sync.New(db, fbClient, fbMessagingAggr, fbMessagingQuery, bot, cfg.TimeLimit)

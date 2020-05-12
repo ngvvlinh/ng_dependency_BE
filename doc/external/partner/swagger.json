@@ -1914,6 +1914,16 @@
         }
       }
     },
+    "ljCustomerType": {
+      "description": "Deprecated values: \"independent\"\\n",
+      "type": "string",
+      "enum": [
+        "unknown",
+        "individual",
+        "organization",
+        "anonymous"
+      ]
+    },
     "mrAddCustomerRequest": {
       "type": "object",
       "properties": {
@@ -2251,7 +2261,7 @@
               "description": "enum ('independent', 'individual', 'organization')\n\nDeprecated values: \"independent\"\\n"
             },
             {
-              "$ref": "#/definitions/spCustomerType"
+              "$ref": "#/definitions/ljCustomerType"
             }
           ]
         }
@@ -2568,7 +2578,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "type": {
-          "$ref": "#/definitions/spCustomerType"
+          "$ref": "#/definitions/ljCustomerType"
         },
         "updated_at": {
           "type": "string",
@@ -4520,16 +4530,6 @@
         "delivered",
         "cancelled",
         "undeliverable"
-      ]
-    },
-    "spCustomerType": {
-      "description": "Deprecated values: \"independent\"\\n",
-      "type": "string",
-      "enum": [
-        "unknown",
-        "individual",
-        "organization",
-        "anonymous"
       ]
     },
     "yiPaymentMethod": {

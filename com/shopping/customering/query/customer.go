@@ -6,7 +6,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/shopping"
 	"o.o/api/shopping/customering"
-	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/customer_type"
 	customermodel "o.o/backend/com/shopping/customering/model"
 	"o.o/backend/com/shopping/customering/sqlstore"
 	cm "o.o/backend/pkg/common"

@@ -15,6 +15,87 @@
     "version": "v1"
   },
   "paths": {
+    "/api/fabo.Customer/CreateFbUserCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "CreateFbUserCustomer",
+        "operationId": "fabo.Customer-CreateFbUserCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvCreateFbUserCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvFbUserWithCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.Customer/GetFbUser": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "GetFbUser",
+        "operationId": "fabo.Customer-GetFbUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvGetFbUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvFbUserWithCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.Customer/ListFbUsers": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "ListFbUsers",
+        "operationId": "fabo.Customer-ListFbUsers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvListFbUsersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvListFbUsersResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/ListCommentsByExternalPostID": {
       "post": {
         "tags": [
@@ -324,6 +405,18 @@
         },
         "fb_user": {
           "$ref": "#/definitions/cvFbUserCombined"
+        }
+      }
+    },
+    "cvCreateFbUserCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_id": {
+          "type": "string"
         }
       }
     },
@@ -940,6 +1033,43 @@
         }
       }
     },
+    "cvFbUserWithCustomer": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customer": {
+          "$ref": "#/definitions/mrCustomer"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_info": {
+          "$ref": "#/definitions/cvExternalFbUserInfo"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "cvGetFbUserRequest": {
+      "type": "object",
+      "properties": {
+        "external_id": {
+          "type": "string"
+        }
+      }
+    },
     "cvImageMediaDataSubAttachment": {
       "type": "object",
       "properties": {
@@ -981,6 +1111,26 @@
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "cvListFbUsersRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "cvListFbUsersResponse": {
+      "type": "object",
+      "properties": {
+        "fb_users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbUserWithCustomer"
+          }
         }
       }
     },
@@ -1275,6 +1425,16 @@
         }
       }
     },
+    "ljCustomerType": {
+      "description": "Deprecated values: \"independent\"\\n",
+      "type": "string",
+      "enum": [
+        "unknown",
+        "individual",
+        "organization",
+        "anonymous"
+      ]
+    },
     "lxFbCustomerConversationType": {
       "type": "string",
       "enum": [
@@ -1283,9 +1443,78 @@
         "comment",
         "all"
       ]
+    },
+    "mrCustomer": {
+      "type": "object",
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/ljCustomerType"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "pwGender": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "male",
+        "female",
+        "other"
+      ]
     }
   },
   "tags": [
+    {
+      "name": "Customer"
+    },
     {
       "name": "CustomerConversation"
     },

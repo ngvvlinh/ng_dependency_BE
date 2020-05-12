@@ -9,6 +9,7 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
+	"o.o/api/shopping/customering"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/fabo/faboinfo"
@@ -17,10 +18,11 @@ import (
 
 // Injectors from wire.go:
 
-func NewFaboServer(hooks httprpc.HooksBuilder, ss *session.Session, fbExternalUserQuery fbusering.QueryBus, fbExternalUserAggr fbusering.CommandBus, fbPagingQuery fbpaging.QueryBus, fbPagingAggr fbpaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus, fbMessagingAggr fbmessaging.CommandBus, appScopes map[string]string, fbClient *fbclient.FbClient) FaboServers {
+func NewFaboServer(hooks httprpc.HooksBuilder, ss *session.Session, fbExternalUserQuery fbusering.QueryBus, fbExternalUserAggr fbusering.CommandBus, fbPagingQuery fbpaging.QueryBus, fbPagingAggr fbpaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus, fbMessagingAggr fbmessaging.CommandBus, appScopes map[string]string, fbClient *fbclient.FbClient, customerQ customering.QueryBus) FaboServers {
 	faboInfo := faboinfo.New(fbPagingQuery, fbExternalUserQuery)
 	pageService := NewPageService(ss, faboInfo, fbExternalUserQuery, fbExternalUserAggr, fbPagingQuery, fbPagingAggr, appScopes, fbClient)
 	customerConversationService := NewCustomerConversationService(ss, faboInfo, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbClient)
-	faboServers := NewServer(hooks, pageService, customerConversationService)
+	customerService := NewCustomerService(customerQ, fbExternalUserQuery, fbExternalUserAggr, ss)
+	faboServers := NewServer(hooks, pageService, customerConversationService, customerService)
 	return faboServers
 }

@@ -5,7 +5,7 @@ import (
 	"flag"
 
 	"o.o/api/shopping/customering"
-	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/backend/cmd/etop-server/config"
 	identitymodel "o.o/backend/com/main/identity/model"
 	customeraggregate "o.o/backend/com/shopping/customering/aggregate"

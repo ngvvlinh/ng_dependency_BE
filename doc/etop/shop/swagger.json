@@ -6865,6 +6865,40 @@
         "partner"
       ]
     },
+    "cdConnectionMethod": {
+      "description": "Deprecated values: \"topship\"\\n",
+      "type": "string",
+      "enum": [
+        "unknown",
+        "builtin",
+        "direct"
+      ]
+    },
+    "cdConnectionProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ghn",
+        "ghtk",
+        "vtpost",
+        "partner"
+      ]
+    },
+    "cdConnectionSubtype": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipment",
+        "manual"
+      ]
+    },
+    "cdConnectionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipping"
+      ]
+    },
     "csTryOnCode": {
       "type": "string",
       "enum": [
@@ -7111,38 +7145,14 @@
         "bank"
       ]
     },
-    "ljConnectionMethod": {
-      "description": "Deprecated values: \"topship\"\\n",
+    "ljCustomerType": {
+      "description": "Deprecated values: \"independent\"\\n",
       "type": "string",
       "enum": [
         "unknown",
-        "builtin",
-        "direct"
-      ]
-    },
-    "ljConnectionProvider": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "ghn",
-        "ghtk",
-        "vtpost",
-        "partner"
-      ]
-    },
-    "ljConnectionSubtype": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "shipment",
-        "manual"
-      ]
-    },
-    "ljConnectionType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "shipping"
+        "individual",
+        "organization",
+        "anonymous"
       ]
     },
     "ojFeeType": {
@@ -7783,7 +7793,7 @@
               "description": "enum ('individual', 'organization')\n\nDeprecated values: \"independent\"\\n"
             },
             {
-              "$ref": "#/definitions/spCustomerType"
+              "$ref": "#/definitions/ljCustomerType"
             }
           ]
         }
@@ -8401,7 +8411,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "type": {
-          "$ref": "#/definitions/spCustomerType"
+          "$ref": "#/definitions/ljCustomerType"
         },
         "updated_at": {
           "type": "string",
@@ -11689,7 +11699,7 @@
               "description": "enum ('individual', 'organization','independent')\n\nDeprecated values: \"independent\"\\n"
             },
             {
-              "$ref": "#/definitions/spCustomerType"
+              "$ref": "#/definitions/ljCustomerType"
             }
           ]
         }
@@ -12783,16 +12793,16 @@
       "type": "object",
       "properties": {
         "connection_method": {
-          "$ref": "#/definitions/ljConnectionMethod"
+          "$ref": "#/definitions/cdConnectionMethod"
         },
         "connection_provider": {
-          "$ref": "#/definitions/ljConnectionProvider"
+          "$ref": "#/definitions/cdConnectionProvider"
         },
         "connection_subtype": {
-          "$ref": "#/definitions/ljConnectionSubtype"
+          "$ref": "#/definitions/cdConnectionSubtype"
         },
         "connection_type": {
-          "$ref": "#/definitions/ljConnectionType"
+          "$ref": "#/definitions/cdConnectionType"
         },
         "created_at": {
           "type": "string",
@@ -14256,7 +14266,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/spCustomerType"
+          "$ref": "#/definitions/ljCustomerType"
         }
       }
     },
@@ -15563,16 +15573,6 @@
       "enum": [
         "default",
         "ahamove"
-      ]
-    },
-    "spCustomerType": {
-      "description": "Deprecated values: \"independent\"\\n",
-      "type": "string",
-      "enum": [
-        "unknown",
-        "individual",
-        "organization",
-        "anonymous"
       ]
     },
     "ueWsListProductShowStyle": {

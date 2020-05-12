@@ -8,7 +8,7 @@ import (
 
 	"o.o/api/shopping/addressing"
 	"o.o/api/shopping/customering"
-	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/status3"
 	addressconvert "o.o/backend/com/main/address/convert"
 	"o.o/backend/com/shopping/customering/model"

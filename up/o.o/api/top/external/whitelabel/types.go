@@ -2,7 +2,7 @@ package whitelabel
 
 import (
 	catalogtypes "o.o/api/main/catalog/types"
-	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"

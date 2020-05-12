@@ -7,8 +7,8 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/shopping/customering"
-	"o.o/api/shopping/customering/customer_type"
 	"o.o/api/shopping/tradering"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/backend/com/shopping/customering/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"

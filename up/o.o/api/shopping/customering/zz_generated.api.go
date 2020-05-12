@@ -9,7 +9,7 @@ import (
 
 	meta "o.o/api/meta"
 	shopping "o.o/api/shopping"
-	customer_type "o.o/api/shopping/customering/customer_type"
+	customer_type "o.o/api/top/types/etc/customer_type"
 	gender "o.o/api/top/types/etc/gender"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"

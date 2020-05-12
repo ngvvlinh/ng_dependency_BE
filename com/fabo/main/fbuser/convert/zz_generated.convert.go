@@ -85,6 +85,24 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_fbusering_CreateFbExternalUserInternalArgs_fbusering_FbExternalUserInternal(arg.(*fbusering.CreateFbExternalUserInternalArgs), out.(*fbusering.FbExternalUserInternal))
 		return nil
 	})
+	s.Register((*fbusermodel.FbExternalUserShopCustomer)(nil), (*fbusering.FbExternalUserShopCustomer)(nil), func(arg, out interface{}) error {
+		Convert_fbusermodel_FbExternalUserShopCustomer_fbusering_FbExternalUserShopCustomer(arg.(*fbusermodel.FbExternalUserShopCustomer), out.(*fbusering.FbExternalUserShopCustomer))
+		return nil
+	})
+	s.Register(([]*fbusermodel.FbExternalUserShopCustomer)(nil), (*[]*fbusering.FbExternalUserShopCustomer)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusermodel_FbExternalUserShopCustomers_fbusering_FbExternalUserShopCustomers(arg.([]*fbusermodel.FbExternalUserShopCustomer))
+		*out.(*[]*fbusering.FbExternalUserShopCustomer) = out0
+		return nil
+	})
+	s.Register((*fbusering.FbExternalUserShopCustomer)(nil), (*fbusermodel.FbExternalUserShopCustomer)(nil), func(arg, out interface{}) error {
+		Convert_fbusering_FbExternalUserShopCustomer_fbusermodel_FbExternalUserShopCustomer(arg.(*fbusering.FbExternalUserShopCustomer), out.(*fbusermodel.FbExternalUserShopCustomer))
+		return nil
+	})
+	s.Register(([]*fbusering.FbExternalUserShopCustomer)(nil), (*[]*fbusermodel.FbExternalUserShopCustomer)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusering_FbExternalUserShopCustomers_fbusermodel_FbExternalUserShopCustomers(arg.([]*fbusering.FbExternalUserShopCustomer))
+		*out.(*[]*fbusermodel.FbExternalUserShopCustomer) = out0
+		return nil
+	})
 }
 
 //-- convert o.o/api/fabo/fbusering.FbExternalUser --//
@@ -312,4 +330,70 @@ func apply_fbusering_CreateFbExternalUserInternalArgs_fbusering_FbExternalUserIn
 	out.Token = arg.Token           // simple assign
 	out.ExpiresIn = arg.ExpiresIn   // simple assign
 	out.UpdatedAt = time.Time{}     // zero value
+}
+
+//-- convert o.o/api/fabo/fbusering.FbExternalUserShopCustomer --//
+
+func Convert_fbusermodel_FbExternalUserShopCustomer_fbusering_FbExternalUserShopCustomer(arg *fbusermodel.FbExternalUserShopCustomer, out *fbusering.FbExternalUserShopCustomer) *fbusering.FbExternalUserShopCustomer {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbusering.FbExternalUserShopCustomer{}
+	}
+	convert_fbusermodel_FbExternalUserShopCustomer_fbusering_FbExternalUserShopCustomer(arg, out)
+	return out
+}
+
+func convert_fbusermodel_FbExternalUserShopCustomer_fbusering_FbExternalUserShopCustomer(arg *fbusermodel.FbExternalUserShopCustomer, out *fbusering.FbExternalUserShopCustomer) {
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.ShopID = arg.ShopID                     // simple assign
+	out.FbExternalUserID = arg.FbExternalUserID // simple assign
+	out.CustomerID = arg.CustomerID             // simple assign
+	out.Status = arg.Status                     // simple assign
+}
+
+func Convert_fbusermodel_FbExternalUserShopCustomers_fbusering_FbExternalUserShopCustomers(args []*fbusermodel.FbExternalUserShopCustomer) (outs []*fbusering.FbExternalUserShopCustomer) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbusering.FbExternalUserShopCustomer, len(args))
+	outs = make([]*fbusering.FbExternalUserShopCustomer, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbusermodel_FbExternalUserShopCustomer_fbusering_FbExternalUserShopCustomer(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbusering_FbExternalUserShopCustomer_fbusermodel_FbExternalUserShopCustomer(arg *fbusering.FbExternalUserShopCustomer, out *fbusermodel.FbExternalUserShopCustomer) *fbusermodel.FbExternalUserShopCustomer {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbusermodel.FbExternalUserShopCustomer{}
+	}
+	convert_fbusering_FbExternalUserShopCustomer_fbusermodel_FbExternalUserShopCustomer(arg, out)
+	return out
+}
+
+func convert_fbusering_FbExternalUserShopCustomer_fbusermodel_FbExternalUserShopCustomer(arg *fbusering.FbExternalUserShopCustomer, out *fbusermodel.FbExternalUserShopCustomer) {
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.ShopID = arg.ShopID                     // simple assign
+	out.FbExternalUserID = arg.FbExternalUserID // simple assign
+	out.CustomerID = arg.CustomerID             // simple assign
+	out.Status = arg.Status                     // simple assign
+}
+
+func Convert_fbusering_FbExternalUserShopCustomers_fbusermodel_FbExternalUserShopCustomers(args []*fbusering.FbExternalUserShopCustomer) (outs []*fbusermodel.FbExternalUserShopCustomer) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbusermodel.FbExternalUserShopCustomer, len(args))
+	outs = make([]*fbusermodel.FbExternalUserShopCustomer, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbusering_FbExternalUserShopCustomer_fbusermodel_FbExternalUserShopCustomer(args[i], &tmps[i])
+	}
+	return outs
 }

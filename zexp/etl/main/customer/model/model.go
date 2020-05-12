@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"o.o/api/shopping/customering/customer_type"
+	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
 	"o.o/capi/dot"
 )

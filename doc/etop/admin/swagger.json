@@ -2404,6 +2404,12 @@
         "shipfrom"
       ]
     },
+    "aeCreditType": {
+      "type": "string",
+      "enum": [
+        "shop"
+      ]
+    },
     "ajCustomRegionRouteType": {
       "type": "string",
       "enum": [
@@ -3153,10 +3159,38 @@
         "partner"
       ]
     },
-    "cdCreditType": {
+    "cdConnectionMethod": {
+      "description": "Deprecated values: \"topship\"\\n",
       "type": "string",
       "enum": [
-        "shop"
+        "unknown",
+        "builtin",
+        "direct"
+      ]
+    },
+    "cdConnectionProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ghn",
+        "ghtk",
+        "vtpost",
+        "partner"
+      ]
+    },
+    "cdConnectionSubtype": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipment",
+        "manual"
+      ]
+    },
+    "cdConnectionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipping"
       ]
     },
     "csTryOnCode": {
@@ -3352,38 +3386,14 @@
         }
       }
     },
-    "ljConnectionMethod": {
-      "description": "Deprecated values: \"topship\"\\n",
+    "ljCustomerType": {
+      "description": "Deprecated values: \"independent\"\\n",
       "type": "string",
       "enum": [
         "unknown",
-        "builtin",
-        "direct"
-      ]
-    },
-    "ljConnectionProvider": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "ghn",
-        "ghtk",
-        "vtpost",
-        "partner"
-      ]
-    },
-    "ljConnectionSubtype": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "shipment",
-        "manual"
-      ]
-    },
-    "ljConnectionType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "shipping"
+        "individual",
+        "organization",
+        "anonymous"
       ]
     },
     "ojFeeType": {
@@ -3416,16 +3426,16 @@
       "type": "object",
       "properties": {
         "connection_method": {
-          "$ref": "#/definitions/ljConnectionMethod"
+          "$ref": "#/definitions/cdConnectionMethod"
         },
         "connection_provider": {
-          "$ref": "#/definitions/ljConnectionProvider"
+          "$ref": "#/definitions/cdConnectionProvider"
         },
         "connection_subtype": {
-          "$ref": "#/definitions/ljConnectionSubtype"
+          "$ref": "#/definitions/cdConnectionSubtype"
         },
         "connection_type": {
-          "$ref": "#/definitions/ljConnectionType"
+          "$ref": "#/definitions/cdConnectionType"
         },
         "created_at": {
           "type": "string",
@@ -4030,7 +4040,7 @@
       "type": "object",
       "properties": {
         "connection_method": {
-          "$ref": "#/definitions/ljConnectionMethod"
+          "$ref": "#/definitions/cdConnectionMethod"
         }
       }
     },
@@ -4790,7 +4800,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/spCustomerType"
+          "$ref": "#/definitions/ljCustomerType"
         }
       }
     },
@@ -5955,16 +5965,6 @@
         "undeliverable"
       ]
     },
-    "spCustomerType": {
-      "description": "Deprecated values: \"independent\"\\n",
-      "type": "string",
-      "enum": [
-        "unknown",
-        "individual",
-        "organization",
-        "anonymous"
-      ]
-    },
     "ujRegionType": {
       "type": "string",
       "enum": [
@@ -6131,7 +6131,7 @@
           "format": "int64"
         },
         "type": {
-          "$ref": "#/definitions/cdCreditType"
+          "$ref": "#/definitions/aeCreditType"
         }
       }
     },
@@ -6873,7 +6873,7 @@
           "format": "int64"
         },
         "type": {
-          "$ref": "#/definitions/cdCreditType"
+          "$ref": "#/definitions/aeCreditType"
         }
       }
     },

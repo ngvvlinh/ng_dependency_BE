@@ -9,6 +9,7 @@ import (
 
 	status3 "o.o/api/top/types/etc/status3"
 	sq "o.o/backend/pkg/common/sql/sq"
+	dot "o.o/capi/dot"
 )
 
 type FbExternalUserFilters struct{ prefix string }
@@ -188,5 +189,133 @@ func (ft *FbExternalUserInternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *s
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+type FbExternalUserShopCustomerFilters struct{ prefix string }
+
+func NewFbExternalUserShopCustomerFilters(prefix string) FbExternalUserShopCustomerFilters {
+	return FbExternalUserShopCustomerFilters{prefix}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft FbExternalUserShopCustomerFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByFbExternalUserID(FbExternalUserID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "fb_external_user_id",
+		Value:  FbExternalUserID,
+		IsNil:  FbExternalUserID == "",
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByFbExternalUserIDPtr(FbExternalUserID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "fb_external_user_id",
+		Value:  FbExternalUserID,
+		IsNil:  FbExternalUserID == nil,
+		IsZero: FbExternalUserID != nil && (*FbExternalUserID) == "",
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByCustomerID(CustomerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "customer_id",
+		Value:  CustomerID,
+		IsNil:  CustomerID == 0,
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByCustomerIDPtr(CustomerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "customer_id",
+		Value:  CustomerID,
+		IsNil:  CustomerID == nil,
+		IsZero: CustomerID != nil && (*CustomerID) == 0,
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *FbExternalUserShopCustomerFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
 	}
 }

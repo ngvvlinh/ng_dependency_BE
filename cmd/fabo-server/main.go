@@ -12,9 +12,11 @@ import (
 	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
 	servicefbuser "o.o/backend/com/fabo/main/fbuser"
+	fbuserpm "o.o/backend/com/fabo/main/fbuser/pm"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
 	serviceidentity "o.o/backend/com/main/identity"
+	customeringquery "o.o/backend/com/shopping/customering/query"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -113,13 +115,16 @@ func main() {
 	sqlstore.Init(db)
 	sqlstore.AddEventBus(eventBus)
 
+	customerQuery := customeringquery.CustomerQueryMessageBus(customeringquery.NewCustomerQuery(db))
 	_ = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 	fbPageAggr := servicefbpage.FbExternalPageAggregateMessageBus(servicefbpage.NewFbPageAggregate(db))
 	fbPageQuery := servicefbpage.FbPageQueryMessageBus(servicefbpage.NewFbPageQuery(db))
-	fbUserAggr := servicefbuser.FbUserAggregateMessageBus(servicefbuser.NewFbUserAggregate(db, fbPageAggr))
-	fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db))
+	fbUserAggr := servicefbuser.FbUserAggregateMessageBus(servicefbuser.NewFbUserAggregate(db, fbPageAggr, customerQuery))
+	fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db, customerQuery))
 	fbMessagingAggr := servicefbmessaging.FbExternalMessagingAggregateMessageBus(servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus))
 	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
+	fbUserPM := fbuserpm.New(eventBus, fbUserAggr)
+	fbUserPM.RegisterEventHandlers(eventBus)
 	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPageQuery, fbUserQuery, fbUserAggr)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
 
@@ -154,6 +159,7 @@ func main() {
 		fbPageQuery, fbPageAggr,
 		fbMessagingQuery, fbMessagingAggr,
 		appScopes, fbClient,
+		customerQuery,
 	)...)
 
 	mux.Handle("/", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))

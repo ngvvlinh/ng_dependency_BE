@@ -402,7 +402,7 @@
               "description": "enum ('individual', 'organization')\n\nDeprecated values: \"independent\"\\n"
             },
             {
-              "$ref": "#/definitions/spCustomerType"
+              "$ref": "#/definitions/ljCustomerType"
             }
           ]
         },
@@ -603,7 +603,7 @@
               "description": "enum ('individual', 'organization')\n\nDeprecated values: \"independent\"\\n"
             },
             {
-              "$ref": "#/definitions/spCustomerType"
+              "$ref": "#/definitions/ljCustomerType"
             }
           ]
         },
@@ -1029,16 +1029,7 @@
         }
       }
     },
-    "pwGender": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "male",
-        "female",
-        "other"
-      ]
-    },
-    "spCustomerType": {
+    "ljCustomerType": {
       "description": "Deprecated values: \"independent\"\\n",
       "type": "string",
       "enum": [
@@ -1046,6 +1037,15 @@
         "individual",
         "organization",
         "anonymous"
+      ]
+    },
+    "pwGender": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "male",
+        "female",
+        "other"
       ]
     }
   },
