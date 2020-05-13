@@ -133,6 +133,7 @@ import (
 	imcsvproduct "o.o/backend/pkg/etop/logic/products/imcsv"
 	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/logic/summary"
+	"o.o/backend/pkg/etop/middlewares"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/etop/upload"
@@ -663,7 +664,10 @@ func main() {
 		session.OptValidator(tokens.NewTokenStore(redisStore)),
 		session.OptSuperAdmin(cfg.SAdminToken),
 	)
-	hooks = session.NewHook(acl.GetACL())
+	hooks = httprpc.ChainHooks(
+		middlewares.NewLogging(),
+		session.NewHook(acl.GetACL()),
+	)
 
 	svrs := startServers(webServerQuery, catalogQuery, redisStore, locationBus)
 	if bot != nil {

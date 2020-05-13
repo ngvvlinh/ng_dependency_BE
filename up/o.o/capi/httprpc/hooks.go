@@ -20,7 +20,7 @@ type Hooks struct {
 	BeforeServing  func(ctx context.Context, info HookInfo) (context.Context, error)
 	BeforeResponse func(ctx context.Context, info HookInfo, respHeaders http.Header) (context.Context, error)
 	AfterResponse  func(ctx context.Context, info HookInfo)
-	ErrorServing   func(ctx context.Context, info HookInfo, err error) context.Context
+	ErrorServing   func(ctx context.Context, info HookInfo, err error) (context.Context, error)
 }
 
 type HooksBuilder interface {
@@ -79,13 +79,13 @@ func (s chainHooks) BuildHooks() Hooks {
 				}
 			}
 		},
-		ErrorServing: func(ctx context.Context, info HookInfo, err error) context.Context {
+		ErrorServing: func(ctx context.Context, info HookInfo, err error) (context.Context, error) {
 			for _, h := range hooks {
 				if h.ErrorServing != nil {
-					ctx = h.ErrorServing(ctx, info, err)
+					ctx, err = h.ErrorServing(ctx, info, err)
 				}
 			}
-			return ctx
+			return ctx, err
 		},
 	}
 }
@@ -126,7 +126,7 @@ func WrapHooks(hooks Hooks) (res Hooks) {
 		hooks.AfterResponse = func(ctx context.Context, _ HookInfo) {}
 	}
 	if hooks.ErrorServing == nil {
-		hooks.ErrorServing = func(ctx context.Context, _ HookInfo, _ error) context.Context { return ctx }
+		hooks.ErrorServing = func(ctx context.Context, _ HookInfo, err error) (context.Context, error) { return ctx, err }
 	}
 	return hooks
 }

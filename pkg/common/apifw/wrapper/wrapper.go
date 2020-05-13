@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"go.uber.org/zap/zapcore"
-
 	typescommon "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -21,6 +20,7 @@ import (
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/etop/authorize/middleware"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi"
 	"o.o/common/jsonx"
 	"o.o/common/l"
@@ -218,6 +218,21 @@ func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, s
 	}
 
 	bot.SendMessage(buf.String())
+}
+
+func RecoverAndLog2(ctx context.Context, rpcName string, session *session.Session, req, resp capi.Message, recovered interface{}, err error, errs []*typescommon.Error, t0 time.Time) (twError xerrors.TwError) {
+	var ss *middleware.Session
+	if session != nil {
+		ss = &middleware.Session{
+			User:       session.User(),
+			Admin:      nil,
+			Partner:    session.Partner(),
+			CtxPartner: session.CtxPartner(),
+			Shop:       session.Shop(),
+			Affiliate:  session.Affiliate(),
+		}
+	}
+	return RecoverAndLog(ctx, rpcName, ss, req, resp, recovered, err, errs, t0)
 }
 
 func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Session, req, resp capi.Message, recovered interface{}, err error, errs []*typescommon.Error, t0 time.Time) (twError xerrors.TwError) {

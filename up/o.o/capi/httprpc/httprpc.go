@@ -66,7 +66,7 @@ func marshalErrorToJSON(twerr xerrors.ErrorInterface) []byte {
 }
 
 func WriteError(ctx context.Context, resp http.ResponseWriter, hooks Hooks, info HookInfo, err error) {
-	ctx = hooks.ErrorServing(ctx, info, err)
+	ctx, err = hooks.ErrorServing(ctx, info, err)
 
 	twerr := xerrors.TwirpError(err)
 	statusCode := ServerHTTPStatusFromErrorCode(twerr.Code())

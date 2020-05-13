@@ -24,6 +24,7 @@ var _ Sessioner = &Session{}
 
 type Sessioner interface {
 	StartSession(ctx context.Context, perm permission.Decl, tokenStr string) (context.Context, error)
+	GetSession() *Session
 }
 
 type Session struct {
@@ -61,6 +62,10 @@ func (s *Session) clone() *Session {
 func (s *Session) Split() (Sessioner, *Session) {
 	res := *s
 	return &res, &res
+}
+
+func (s *Session) GetSession() *Session {
+	return s
 }
 
 func (s *Session) ensureInit() {

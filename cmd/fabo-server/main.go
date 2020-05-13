@@ -29,6 +29,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
+	"o.o/backend/pkg/etop/middlewares"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
 	"o.o/backend/tools/pkg/acl"
@@ -135,7 +136,10 @@ func main() {
 	ss := session.New(
 		session.OptValidator(tokens.NewTokenStore(redisStore)),
 	)
-	hooks := session.NewHook(acl.GetACL())
+	hooks := httprpc.ChainHooks(
+		middlewares.NewLogging(),
+		session.NewHook(acl.GetACL()),
+	)
 
 	var servers []httprpc.Server
 	servers = append(servers, fabo.NewFaboServer(
