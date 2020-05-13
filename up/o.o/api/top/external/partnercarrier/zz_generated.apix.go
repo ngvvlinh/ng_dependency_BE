@@ -18,7 +18,7 @@ func init() {
 	httprpc.Register(NewServer)
 }
 
-func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Server, bool) {
 	switch builder := builder.(type) {
 	case func() MiscService:
 		return NewMiscServiceServer(builder, hooks...), true
@@ -32,13 +32,13 @@ func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bo
 }
 
 type MiscServiceServer struct {
-	hooks   httprpc.Hooks
+	hooks   httprpc.HooksBuilder
 	builder func() MiscService
 }
 
-func NewMiscServiceServer(builder func() MiscService, hooks ...*httprpc.Hooks) httprpc.Server {
+func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuilder) httprpc.Server {
 	return &MiscServiceServer{
-		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		hooks:   httprpc.ChainHooks(hooks...),
 		builder: builder,
 	}
 }
@@ -50,32 +50,34 @@ func (s *MiscServiceServer) PathPrefix() string {
 }
 
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
 }
 
-func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/carrier.Misc/CurrentAccount":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -86,7 +88,8 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -100,13 +103,13 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 }
 
 type ShipmentConnectionServiceServer struct {
-	hooks   httprpc.Hooks
+	hooks   httprpc.HooksBuilder
 	builder func() ShipmentConnectionService
 }
 
-func NewShipmentConnectionServiceServer(builder func() ShipmentConnectionService, hooks ...*httprpc.Hooks) httprpc.Server {
+func NewShipmentConnectionServiceServer(builder func() ShipmentConnectionService, hooks ...httprpc.HooksBuilder) httprpc.Server {
 	return &ShipmentConnectionServiceServer{
-		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		hooks:   httprpc.ChainHooks(hooks...),
 		builder: builder,
 	}
 }
@@ -118,32 +121,34 @@ func (s *ShipmentConnectionServiceServer) PathPrefix() string {
 }
 
 func (s *ShipmentConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
 }
 
-func (s *ShipmentConnectionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+func (s *ShipmentConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/carrier.ShipmentConnection/CreateConnection":
 		msg := &CreateConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -154,7 +159,8 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string) (reqMsg capi.M
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -165,7 +171,8 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string) (reqMsg capi.M
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -176,7 +183,8 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string) (reqMsg capi.M
 		msg := &UpdateConnectionRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -190,13 +198,13 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string) (reqMsg capi.M
 }
 
 type ShipmentServiceServer struct {
-	hooks   httprpc.Hooks
+	hooks   httprpc.HooksBuilder
 	builder func() ShipmentService
 }
 
-func NewShipmentServiceServer(builder func() ShipmentService, hooks ...*httprpc.Hooks) httprpc.Server {
+func NewShipmentServiceServer(builder func() ShipmentService, hooks ...httprpc.HooksBuilder) httprpc.Server {
 	return &ShipmentServiceServer{
-		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		hooks:   httprpc.ChainHooks(hooks...),
 		builder: builder,
 	}
 }
@@ -208,32 +216,34 @@ func (s *ShipmentServiceServer) PathPrefix() string {
 }
 
 func (s *ShipmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
 }
 
-func (s *ShipmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/carrier.Shipment/UpdateFulfillment":
 		msg := &UpdateFulfillmentRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}

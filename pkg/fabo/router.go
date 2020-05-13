@@ -11,7 +11,7 @@ import (
 )
 
 func NewFaboServer(
-	hooks *httprpc.Hooks,
+	hooks httprpc.HooksBuilder,
 	ss *session.Session,
 	fbExternalUserQuery fbusering.QueryBus,
 	fbExternalUserAggr fbusering.CommandBus,

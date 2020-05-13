@@ -15,28 +15,30 @@ import (
 // +gen:wrapper:package=etop
 
 func NewEtopServer(m httprpc.Muxer) {
-	var cookieHooks = &httprpc.Hooks{
-		BeforeResponse: func(ctx context.Context, info httprpc.HookInfo, respHeaders http.Header) (context.Context, error) {
-			_ctx := bus.GetContext(ctx)
-			if _ctx == nil {
-				return ctx, nil
-			}
-
-			cookieData := _ctx.Value(headers.CookieKey{})
-			if cookieData == nil {
-				return ctx, nil
-			}
-			cookies, ok := cookieData.([]*http.Cookie)
-			if !ok {
-				return ctx, nil
-			}
-			for _, cookie := range cookies {
-				if v := cookie.String(); v != "" {
-					respHeaders.Add("Set-Cookie", v)
+	var cookieHooks httprpc.HooksFunc = func() httprpc.Hooks {
+		return httprpc.Hooks{
+			BeforeResponse: func(ctx context.Context, info httprpc.HookInfo, respHeaders http.Header) (context.Context, error) {
+				_ctx := bus.GetContext(ctx)
+				if _ctx == nil {
+					return ctx, nil
 				}
-			}
-			return ctx, nil
-		},
+
+				cookieData := _ctx.Value(headers.CookieKey{})
+				if cookieData == nil {
+					return ctx, nil
+				}
+				cookies, ok := cookieData.([]*http.Cookie)
+				if !ok {
+					return ctx, nil
+				}
+				for _, cookie := range cookies {
+					if v := cookie.String(); v != "" {
+						respHeaders.Add("Set-Cookie", v)
+					}
+				}
+				return ctx, nil
+			},
+		}
 	}
 
 	servers := []httprpc.Server{

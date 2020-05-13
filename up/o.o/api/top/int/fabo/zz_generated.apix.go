@@ -17,7 +17,7 @@ func init() {
 	httprpc.Register(NewServer)
 }
 
-func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Server, bool) {
 	switch builder := builder.(type) {
 	case func() CustomerConversationService:
 		return NewCustomerConversationServiceServer(builder, hooks...), true
@@ -29,13 +29,13 @@ func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bo
 }
 
 type CustomerConversationServiceServer struct {
-	hooks   httprpc.Hooks
+	hooks   httprpc.HooksBuilder
 	builder func() CustomerConversationService
 }
 
-func NewCustomerConversationServiceServer(builder func() CustomerConversationService, hooks ...*httprpc.Hooks) httprpc.Server {
+func NewCustomerConversationServiceServer(builder func() CustomerConversationService, hooks ...httprpc.HooksBuilder) httprpc.Server {
 	return &CustomerConversationServiceServer{
-		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		hooks:   httprpc.ChainHooks(hooks...),
 		builder: builder,
 	}
 }
@@ -47,32 +47,34 @@ func (s *CustomerConversationServiceServer) PathPrefix() string {
 }
 
 func (s *CustomerConversationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
 }
 
-func (s *CustomerConversationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/fabo.CustomerConversation/ListCustomerConversations":
 		msg := &ListCustomerConversationsRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -83,7 +85,8 @@ func (s *CustomerConversationServiceServer) parseRoute(path string) (reqMsg capi
 		msg := &ListMessagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -97,13 +100,13 @@ func (s *CustomerConversationServiceServer) parseRoute(path string) (reqMsg capi
 }
 
 type PageServiceServer struct {
-	hooks   httprpc.Hooks
+	hooks   httprpc.HooksBuilder
 	builder func() PageService
 }
 
-func NewPageServiceServer(builder func() PageService, hooks ...*httprpc.Hooks) httprpc.Server {
+func NewPageServiceServer(builder func() PageService, hooks ...httprpc.HooksBuilder) httprpc.Server {
 	return &PageServiceServer{
-		hooks:   httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		hooks:   httprpc.ChainHooks(hooks...),
 		builder: builder,
 	}
 }
@@ -115,32 +118,34 @@ func (s *PageServiceServer) PathPrefix() string {
 }
 
 func (s *PageServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
 }
 
-func (s *PageServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/fabo.Page/ConnectPages":
 		msg := &ConnectPagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -151,7 +156,8 @@ func (s *PageServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		msg := &ListPagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}
@@ -162,7 +168,8 @@ func (s *PageServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		msg := &RemovePagesRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			inner := s.builder()
-			ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+			info.Request, info.Inner = msg, inner
+			ctx, err := hooks.BeforeServing(ctx, *info)
 			if err != nil {
 				return nil, err
 			}

@@ -140,7 +140,7 @@ func errFromPanic(p interface{}) error {
 }
 
 type ExecFunc func(context.Context) (respContent capi.Message, err error)
-type ServeFunc func(ctx context.Context, resp http.ResponseWriter, req *http.Request, hooks Hooks, info HookInfo, reqContent capi.Message, fn ExecFunc)
+type ServeFunc func(ctx context.Context, resp http.ResponseWriter, req *http.Request, hooks Hooks, info *HookInfo, reqContent capi.Message, fn ExecFunc)
 
 func ParseRequestHeader(req *http.Request) (ServeFunc, error) {
 	if req.Method != "POST" {
@@ -166,12 +166,12 @@ func ServeJSON(
 	resp http.ResponseWriter,
 	req *http.Request,
 	hooks Hooks,
-	info HookInfo,
+	info *HookInfo,
 	reqContent capi.Message,
 	fn ExecFunc,
 ) {
 	if err := jsonx.UnmarshalFrom(req.Body, reqContent); err != nil {
-		WriteError(ctx, resp, hooks, info, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
+		WriteError(ctx, resp, hooks, *info, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	info.Request = reqContent
@@ -179,34 +179,34 @@ func ServeJSON(
 	var err error
 	var respContent capi.Message
 	func() {
-		defer ensurePanicResponses(ctx, resp, hooks, info)
+		defer ensurePanicResponses(ctx, resp, hooks, *info)
 		respContent, err = fn(ctx)
 	}()
 	if err != nil {
-		WriteError(ctx, resp, hooks, info, err)
+		WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
 	if respContent == nil {
-		WriteError(ctx, resp, hooks, info, internalError("received a nil response"))
+		WriteError(ctx, resp, hooks, *info, internalError("received a nil response"))
 		return
 	}
 	info.Response = respContent
-	ctx, err = hooks.BeforeResponse(ctx, info, resp.Header())
+	ctx, err = hooks.BeforeResponse(ctx, *info, resp.Header())
 	if err != nil {
-		WriteError(ctx, resp, hooks, info, err)
+		WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
 
 	var buf bytes.Buffer
 	if err = jsonx.MarshalTo(&buf, respContent); err != nil {
-		WriteError(ctx, resp, hooks, info, xerrors.Errorf(xerrors.Internal, err, "failed to marshal json response: %v"))
+		WriteError(ctx, resp, hooks, *info, xerrors.Errorf(xerrors.Internal, err, "failed to marshal json response: %v"))
 		return
 	}
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
 	resp.WriteHeader(http.StatusOK)
-	defer hooks.AfterResponse(ctx, info)
+	defer hooks.AfterResponse(ctx, *info)
 	if _, err = resp.Write(respBytes); err != nil {
 		return
 	}

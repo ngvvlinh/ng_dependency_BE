@@ -105,7 +105,7 @@ func startEtopServer() *http.Server {
 		v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))
 		mux.Handle("/v1/", http.StripPrefix("/v1", headers.ForwardHeaders(v1Mux)))
 
-		extHooks := session.NewHook(acl.GetExtACL()).Build()
+		extHooks := session.NewHook(acl.GetExtACL())
 		partner.NewPartnerServer(v1Mux)
 		partnercarrier.NewPartnerCarrierServer(v1Mux, ss, extHooks)
 		xshop.NewShopServer(v1Mux)

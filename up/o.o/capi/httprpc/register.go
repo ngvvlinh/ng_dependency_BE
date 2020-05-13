@@ -8,7 +8,7 @@ import (
 
 var globalRegistry = Registry{}
 
-type RegisterFunc func(builder interface{}, hooks ...*Hooks) (Server, bool)
+type RegisterFunc func(builder interface{}, hooks ...HooksBuilder) (Server, bool)
 
 type Registry struct {
 	funcs []RegisterFunc
@@ -18,7 +18,7 @@ func (r *Registry) Register(fn RegisterFunc) {
 	r.funcs = append(r.funcs, fn)
 }
 
-func (r *Registry) NewServer(builder interface{}, hooks ...*Hooks) (Server, error) {
+func (r *Registry) NewServer(builder interface{}, hooks ...HooksBuilder) (Server, error) {
 	for _, fn := range r.funcs {
 		if server, _ := fn(builder, hooks...); server != nil {
 			return server, nil
@@ -30,7 +30,7 @@ func (r *Registry) NewServer(builder interface{}, hooks ...*Hooks) (Server, erro
 	return nil, xerrors.Errorf(xerrors.Internal, nil, "builder of type %T is not recognized", builder)
 }
 
-func (r *Registry) NewServers(hooks *Hooks, builders ...interface{}) (servers []Server, _ error) {
+func (r *Registry) NewServers(hooks HooksBuilder, builders ...interface{}) (servers []Server, _ error) {
 	for _, builder := range builders {
 		server, err := r.NewServer(builder, hooks)
 		if err != nil {
@@ -45,21 +45,21 @@ func Register(fn RegisterFunc) {
 	globalRegistry.Register(fn)
 }
 
-func NewServer(builder interface{}, hooks ...*Hooks) (Server, error) {
+func NewServer(builder interface{}, hooks ...HooksBuilder) (Server, error) {
 	return globalRegistry.NewServer(builder, hooks...)
 }
 
-func MustNewServer(builder interface{}, hooks ...*Hooks) Server {
+func MustNewServer(builder interface{}, hooks ...HooksBuilder) Server {
 	server, err := globalRegistry.NewServer(builder, hooks...)
 	must(err)
 	return server
 }
 
-func NewServers(hooks *Hooks, builders ...interface{}) (servers []Server, _ error) {
+func NewServers(hooks HooksBuilder, builders ...interface{}) (servers []Server, _ error) {
 	return globalRegistry.NewServers(hooks, builders...)
 }
 
-func MustNewServers(hooks *Hooks, builders ...interface{}) (servers []Server) {
+func MustNewServers(hooks HooksBuilder, builders ...interface{}) (servers []Server) {
 	servers, err := globalRegistry.NewServers(hooks, builders...)
 	must(err)
 	return servers

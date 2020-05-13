@@ -5,7 +5,7 @@ func init() {
 	httprpc.Register(NewServer)
 }
 
-func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bool) {
+func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Server, bool) {
 	switch builder := builder.(type) {
 	{{range $s := .Services -}}
 	case func() {{.Name}}Service:
@@ -21,13 +21,13 @@ func NewServer(builder interface{}, hooks ...*httprpc.Hooks) (httprpc.Server, bo
 
 {{range $s := .Services}}
 type {{.Name}}ServiceServer struct {
-	hooks   httprpc.Hooks
+	hooks   httprpc.HooksBuilder
 	builder func() {{.Name}}Service
 }
 
-func New{{.Name}}ServiceServer(builder func() {{.Name}}Service, hooks ... *httprpc.Hooks) httprpc.Server{
+func New{{.Name}}ServiceServer(builder func() {{.Name}}Service, hooks ... httprpc.HooksBuilder) httprpc.Server{
 	return &{{.Name}}ServiceServer {
-		hooks: httprpc.WrapHooks(httprpc.ChainHooks(hooks...)),
+		hooks: httprpc.ChainHooks(hooks...),
 		builder: builder,
 	}
 }
@@ -39,33 +39,35 @@ func (s *{{$s.Name}}ServiceServer) PathPrefix() string {
 }
 
 func (s *{{$s.Name}}ServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx, info := req.Context(), httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := s.hooks.BeforeRequest(ctx, info)
+	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
 	serve, err := httprpc.ParseRequestHeader(req)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
 	if err != nil {
-		httprpc.WriteError(ctx, resp, s.hooks, info, err)
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
 	}
-	serve(ctx, resp, req, s.hooks, info, reqMsg, exec)
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
 }
 
-func (s *{{$s.Name}}ServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+func (s *{{$s.Name}}ServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 {{range $m := .Methods -}}
 	case "{{$s.APIPath}}/{{.Name}}":
 	msg := {{(index .Request.Items 0).Type|new}}
 	fn := func(ctx context.Context) (capi.Message, error) {
 		inner := s.builder()
-		ctx, err := s.hooks.BeforeServing(ctx, httprpc.HookInfo{Route: path, Request: msg}, inner)
+		info.Request, info.Inner = msg, inner
+		ctx, err := hooks.BeforeServing(ctx, *info)
 		if err != nil {
 			return nil, err
 		}

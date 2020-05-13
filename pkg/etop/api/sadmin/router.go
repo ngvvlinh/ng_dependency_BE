@@ -5,7 +5,7 @@ import (
 	"o.o/capi/httprpc"
 )
 
-func NewSadminServer(m httprpc.Muxer, ss *session.Session, hooks ...*httprpc.Hooks) {
+func NewSadminServer(m httprpc.Muxer, ss *session.Session, hooks ...httprpc.HooksBuilder) {
 	servers := httprpc.MustNewServers(
 		httprpc.ChainHooks(hooks...),
 		NewMiscService(ss).Clone,

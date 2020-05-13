@@ -20,22 +20,22 @@ func NewHook(perms map[string]*permission.Decl) Hook {
 	}
 }
 
-func (h Hook) Build() *httprpc.Hooks {
-	return &httprpc.Hooks{
+func (h Hook) BuildHooks() httprpc.Hooks {
+	return httprpc.Hooks{
 		BeforeServing: h.BeforeServing,
 	}
 }
 
-func (h Hook) BeforeServing(ctx context.Context, info httprpc.HookInfo, inner interface{}) (context.Context, error) {
+func (h Hook) BeforeServing(ctx context.Context, info httprpc.HookInfo) (context.Context, error) {
 	perm, ok := h.Permissions[info.Route]
 	if !ok {
 		return ctx, cm.Errorf(cm.Internal, nil, "no permission declaration for route %v", info.Route)
 	}
-	_auth, ok := inner.(Sessioner)
+	_auth, ok := info.Inner.(Sessioner)
 	if ok {
 		return _auth.StartSession(ctx, *perm, getToken(ctx))
 	}
-	panic(fmt.Sprintf("%T must be an Authenticator", inner))
+	panic(fmt.Sprintf("%T must be an Authenticator", info.Inner))
 }
 
 func getToken(ctx context.Context) string {

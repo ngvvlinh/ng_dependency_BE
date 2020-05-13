@@ -135,7 +135,7 @@ func main() {
 	ss := session.New(
 		session.OptValidator(tokens.NewTokenStore(redisStore)),
 	)
-	hooks := session.NewHook(acl.GetACL()).Build()
+	hooks := session.NewHook(acl.GetACL())
 
 	var servers []httprpc.Server
 	servers = append(servers, fabo.NewFaboServer(

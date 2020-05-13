@@ -192,7 +192,7 @@ var (
 	subscriptionQuery subscriptioncore.QueryBus
 
 	ss    *session.Session
-	hooks *httprpc.Hooks
+	hooks httprpc.HooksBuilder
 )
 
 func main() {
@@ -663,7 +663,7 @@ func main() {
 		session.OptValidator(tokens.NewTokenStore(redisStore)),
 		session.OptSuperAdmin(cfg.SAdminToken),
 	)
-	hooks = session.NewHook(acl.GetACL()).Build()
+	hooks = session.NewHook(acl.GetACL())
 
 	svrs := startServers(webServerQuery, catalogQuery, redisStore, locationBus)
 	if bot != nil {

@@ -12,24 +12,36 @@ type HookInfo struct {
 	HTTPRequest *http.Request
 	Request     capi.Message
 	Response    capi.Message
+	Inner       interface{}
 }
 
 type Hooks struct {
 	BeforeRequest  func(ctx context.Context, info HookInfo) (context.Context, error)
-	BeforeServing  func(ctx context.Context, info HookInfo, inner interface{}) (context.Context, error)
+	BeforeServing  func(ctx context.Context, info HookInfo) (context.Context, error)
 	BeforeResponse func(ctx context.Context, info HookInfo, respHeaders http.Header) (context.Context, error)
 	AfterResponse  func(ctx context.Context, info HookInfo)
 	ErrorServing   func(ctx context.Context, info HookInfo, err error) context.Context
 }
 
-func ChainHooks(hooks ...*Hooks) *Hooks {
-	if len(hooks) == 1 {
-		return hooks[0]
+type HooksBuilder interface {
+	BuildHooks() Hooks
+}
+
+type HooksFunc func() Hooks
+
+func (h HooksFunc) BuildHooks() Hooks { return h() }
+
+type chainHooks []HooksBuilder
+
+func (s chainHooks) BuildHooks() Hooks {
+	hooks := make([]Hooks, len(s))
+	for i, b := range s {
+		hooks[i] = b.BuildHooks()
 	}
-	return &Hooks{
+	return Hooks{
 		BeforeRequest: func(ctx context.Context, info HookInfo) (_ context.Context, err error) {
 			for _, h := range hooks {
-				if h != nil && h.BeforeRequest != nil {
+				if h.BeforeRequest != nil {
 					ctx, err = h.BeforeRequest(ctx, info)
 					if err != nil {
 						return ctx, err
@@ -38,10 +50,10 @@ func ChainHooks(hooks ...*Hooks) *Hooks {
 			}
 			return ctx, nil
 		},
-		BeforeServing: func(ctx context.Context, info HookInfo, inner interface{}) (_ context.Context, err error) {
+		BeforeServing: func(ctx context.Context, info HookInfo) (_ context.Context, err error) {
 			for _, h := range hooks {
-				if h != nil && h.BeforeServing != nil {
-					ctx, err = h.BeforeServing(ctx, info, inner)
+				if h.BeforeServing != nil {
+					ctx, err = h.BeforeServing(ctx, info)
 					if err != nil {
 						return ctx, err
 					}
@@ -51,7 +63,7 @@ func ChainHooks(hooks ...*Hooks) *Hooks {
 		},
 		BeforeResponse: func(ctx context.Context, info HookInfo, respHeaders http.Header) (_ context.Context, err error) {
 			for _, h := range hooks {
-				if h != nil && h.BeforeResponse != nil {
+				if h.BeforeResponse != nil {
 					ctx, err = h.BeforeResponse(ctx, info, respHeaders)
 					if err != nil {
 						return ctx, err
@@ -62,14 +74,14 @@ func ChainHooks(hooks ...*Hooks) *Hooks {
 		},
 		AfterResponse: func(ctx context.Context, info HookInfo) {
 			for _, h := range hooks {
-				if h != nil && h.AfterResponse != nil {
+				if h.AfterResponse != nil {
 					h.AfterResponse(ctx, info)
 				}
 			}
 		},
 		ErrorServing: func(ctx context.Context, info HookInfo, err error) context.Context {
 			for _, h := range hooks {
-				if h != nil && h.ErrorServing != nil {
+				if h.ErrorServing != nil {
 					ctx = h.ErrorServing(ctx, info, err)
 				}
 			}
@@ -78,26 +90,43 @@ func ChainHooks(hooks ...*Hooks) *Hooks {
 	}
 }
 
-func WrapHooks(hooks *Hooks) (res Hooks) {
-	if hooks == nil {
-		res = Hooks{}
-	} else {
-		res = *hooks
+func ChainHooks(hooks ...HooksBuilder) HooksBuilder {
+	res := make(chainHooks, 0, 2*len(hooks))
+	for _, h := range hooks {
+		if h == nil {
+			continue
+		}
+		if hs, ok := h.(chainHooks); ok {
+			res = append(res, hs...)
+		} else {
+			res = append(res, h)
+		}
 	}
-	if res.BeforeRequest == nil {
-		res.BeforeRequest = func(ctx context.Context, _ HookInfo) (context.Context, error) { return ctx, nil }
+	switch len(res) {
+	case 0:
+		return HooksFunc(func() Hooks { return Hooks{} })
+	case 1:
+		return res[0]
+	default:
+		return res
 	}
-	if res.BeforeServing == nil {
-		res.BeforeServing = func(ctx context.Context, _ HookInfo, _ interface{}) (context.Context, error) { return ctx, nil }
+}
+
+func WrapHooks(hooks Hooks) (res Hooks) {
+	if hooks.BeforeRequest == nil {
+		hooks.BeforeRequest = func(ctx context.Context, _ HookInfo) (context.Context, error) { return ctx, nil }
 	}
-	if res.BeforeResponse == nil {
-		res.BeforeResponse = func(ctx context.Context, _ HookInfo, _ http.Header) (context.Context, error) { return ctx, nil }
+	if hooks.BeforeServing == nil {
+		hooks.BeforeServing = func(ctx context.Context, _ HookInfo) (context.Context, error) { return ctx, nil }
 	}
-	if res.AfterResponse == nil {
-		res.AfterResponse = func(ctx context.Context, _ HookInfo) {}
+	if hooks.BeforeResponse == nil {
+		hooks.BeforeResponse = func(ctx context.Context, _ HookInfo, _ http.Header) (context.Context, error) { return ctx, nil }
 	}
-	if res.ErrorServing == nil {
-		res.ErrorServing = func(ctx context.Context, _ HookInfo, _ error) context.Context { return ctx }
+	if hooks.AfterResponse == nil {
+		hooks.AfterResponse = func(ctx context.Context, _ HookInfo) {}
 	}
-	return res
+	if hooks.ErrorServing == nil {
+		hooks.ErrorServing = func(ctx context.Context, _ HookInfo, _ error) context.Context { return ctx }
+	}
+	return hooks
 }
