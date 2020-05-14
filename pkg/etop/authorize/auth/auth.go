@@ -156,9 +156,9 @@ const (
 	# trading
 	p, trading/order:view, admin, owner
 	p, trading/order:create, admin, owner
-    p, shop/trading/product:view, admin, owner
-    p, shop/trading/order:create, admin, owner
-    p, shop/trading/order:view, admin, owner
+    p, shop/trading/product:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+    p, shop/trading/order:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+    p, shop/trading/order:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	# payment
 	p, shop/payment:create, admin, owner
 	p, shop/payment:view, admin, owner
