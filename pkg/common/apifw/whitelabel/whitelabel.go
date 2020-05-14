@@ -86,6 +86,14 @@ func (w *WhiteLabel) WrapContext(ctx context.Context, partnerID dot.ID) context.
 		w.fromContext(ctx, partnerID).Clone())
 }
 
+func (w *WhiteLabel) WrapContextByPartnerID(ctx context.Context, partnerID dot.ID) context.Context {
+	return context.WithValue(ctx, whitelabelKey{}, w.fromPartnerID(partnerID).Clone())
+}
+
+func (w *WhiteLabel) fromPartnerID(partnerID dot.ID) *WL {
+	return w.ByPartnerID(partnerID)
+}
+
 func (w *WhiteLabel) fromContext(ctx context.Context, partnerID dot.ID) *WL {
 	if partnerID != 0 {
 		return w.byPartnerID(partnerID)

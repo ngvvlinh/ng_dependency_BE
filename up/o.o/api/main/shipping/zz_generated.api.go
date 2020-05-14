@@ -6,6 +6,7 @@ package shipping
 
 import (
 	context "context"
+	json "encoding/json"
 	time "time"
 
 	orderingtypes "o.o/api/main/ordering/types"
@@ -14,6 +15,7 @@ import (
 	shipping_provider "o.o/api/top/types/etc/shipping_provider"
 	status3 "o.o/api/top/types/etc/status3"
 	status4 "o.o/api/top/types/etc/status4"
+	status5 "o.o/api/top/types/etc/status5"
 	try_on "o.o/api/top/types/etc/try_on"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -83,11 +85,27 @@ func (h AggregateHandler) HandleRemoveFulfillmentsMoneyTxID(ctx context.Context,
 }
 
 type UpdateFulfillmentExternalShippingInfoCommand struct {
-	FulfillmentID            dot.ID
-	ShippingState            shipping.State
-	ExternalShippingNote     string
-	ProviderShippingFeeLines []*ShippingFeeLine
-	Weight                   int
+	FulfillmentID             dot.ID
+	ShippingState             shipping.State
+	ShippingStatus            status5.Status
+	ExternalShippingData      json.RawMessage
+	ExternalShippingState     string
+	ExternalShippingSubState  dot.NullString
+	ExternalShippingStatus    status5.Status
+	ExternalShippingNote      dot.NullString
+	ExternalShippingUpdatedAt time.Time
+	ExternalShippingLogs      []*ExternalShippingLog
+	ExternalShippingStateCode string
+	Weight                    int
+	ClosedAt                  time.Time
+	LastSyncAt                time.Time
+	ShippingCreatedAt         time.Time
+	ShippingPickingAt         time.Time
+	ShippingDeliveringAt      time.Time
+	ShippingDeliveredAt       time.Time
+	ShippingReturningAt       time.Time
+	ShippingReturnedAt        time.Time
+	ShippingCancelledAt       time.Time
 
 	Result int `json:"-"`
 }
@@ -98,10 +116,12 @@ func (h AggregateHandler) HandleUpdateFulfillmentExternalShippingInfo(ctx contex
 }
 
 type UpdateFulfillmentShippingFeesCommand struct {
-	FulfillmentID            dot.ID
-	ShippingCode             string
-	ProviderShippingFeeLines []*ShippingFeeLine
-	ShippingFeeLines         []*ShippingFeeLine
+	FulfillmentID               dot.ID
+	ShippingCode                string
+	EtopPriceRule               dot.NullBool
+	EtopAdjustedShippingFeeMain dot.NullInt
+	ProviderShippingFeeLines    []*ShippingFeeLine
+	ShippingFeeLines            []*ShippingFeeLine
 
 	Result int `json:"-"`
 }
@@ -109,6 +129,19 @@ type UpdateFulfillmentShippingFeesCommand struct {
 func (h AggregateHandler) HandleUpdateFulfillmentShippingFees(ctx context.Context, msg *UpdateFulfillmentShippingFeesCommand) (err error) {
 	msg.Result, err = h.inner.UpdateFulfillmentShippingFees(msg.GetArgs(ctx))
 	return err
+}
+
+type UpdateFulfillmentShippingFeesFromWebhookCommand struct {
+	FulfillmentID    dot.ID
+	NewWeight        int
+	ProviderFeeLines []*ShippingFeeLine
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentShippingFeesFromWebhook(ctx context.Context, msg *UpdateFulfillmentShippingFeesFromWebhookCommand) (err error) {
+	return h.inner.UpdateFulfillmentShippingFeesFromWebhook(msg.GetArgs(ctx))
 }
 
 type UpdateFulfillmentShippingStateCommand struct {
@@ -264,15 +297,16 @@ func (h QueryServiceHandler) HandleListFulfillmentsForMoneyTx(ctx context.Contex
 
 // implement interfaces
 
-func (q *CancelFulfillmentCommand) command()                     {}
-func (q *CreateFulfillmentsCommand) command()                    {}
-func (q *RemoveFulfillmentsMoneyTxIDCommand) command()           {}
-func (q *UpdateFulfillmentExternalShippingInfoCommand) command() {}
-func (q *UpdateFulfillmentShippingFeesCommand) command()         {}
-func (q *UpdateFulfillmentShippingStateCommand) command()        {}
-func (q *UpdateFulfillmentsCODTransferedAtCommand) command()     {}
-func (q *UpdateFulfillmentsMoneyTxIDCommand) command()           {}
-func (q *UpdateFulfillmentsStatusCommand) command()              {}
+func (q *CancelFulfillmentCommand) command()                        {}
+func (q *CreateFulfillmentsCommand) command()                       {}
+func (q *RemoveFulfillmentsMoneyTxIDCommand) command()              {}
+func (q *UpdateFulfillmentExternalShippingInfoCommand) command()    {}
+func (q *UpdateFulfillmentShippingFeesCommand) command()            {}
+func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) command() {}
+func (q *UpdateFulfillmentShippingStateCommand) command()           {}
+func (q *UpdateFulfillmentsCODTransferedAtCommand) command()        {}
+func (q *UpdateFulfillmentsMoneyTxIDCommand) command()              {}
+func (q *UpdateFulfillmentsStatusCommand) command()                 {}
 
 func (q *GetFulfillmentByIDOrShippingCodeQuery) query()            {}
 func (q *GetFulfillmentExtendedQuery) query()                      {}
@@ -355,37 +389,88 @@ func (q *RemoveFulfillmentsMoneyTxIDCommand) SetRemoveFulfillmentsMoneyTxIDArgs(
 func (q *UpdateFulfillmentExternalShippingInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFfmExternalShippingInfoArgs) {
 	return ctx,
 		&UpdateFfmExternalShippingInfoArgs{
-			FulfillmentID:            q.FulfillmentID,
-			ShippingState:            q.ShippingState,
-			ExternalShippingNote:     q.ExternalShippingNote,
-			ProviderShippingFeeLines: q.ProviderShippingFeeLines,
-			Weight:                   q.Weight,
+			FulfillmentID:             q.FulfillmentID,
+			ShippingState:             q.ShippingState,
+			ShippingStatus:            q.ShippingStatus,
+			ExternalShippingData:      q.ExternalShippingData,
+			ExternalShippingState:     q.ExternalShippingState,
+			ExternalShippingSubState:  q.ExternalShippingSubState,
+			ExternalShippingStatus:    q.ExternalShippingStatus,
+			ExternalShippingNote:      q.ExternalShippingNote,
+			ExternalShippingUpdatedAt: q.ExternalShippingUpdatedAt,
+			ExternalShippingLogs:      q.ExternalShippingLogs,
+			ExternalShippingStateCode: q.ExternalShippingStateCode,
+			Weight:                    q.Weight,
+			ClosedAt:                  q.ClosedAt,
+			LastSyncAt:                q.LastSyncAt,
+			ShippingCreatedAt:         q.ShippingCreatedAt,
+			ShippingPickingAt:         q.ShippingPickingAt,
+			ShippingDeliveringAt:      q.ShippingDeliveringAt,
+			ShippingDeliveredAt:       q.ShippingDeliveredAt,
+			ShippingReturningAt:       q.ShippingReturningAt,
+			ShippingReturnedAt:        q.ShippingReturnedAt,
+			ShippingCancelledAt:       q.ShippingCancelledAt,
 		}
 }
 
 func (q *UpdateFulfillmentExternalShippingInfoCommand) SetUpdateFfmExternalShippingInfoArgs(args *UpdateFfmExternalShippingInfoArgs) {
 	q.FulfillmentID = args.FulfillmentID
 	q.ShippingState = args.ShippingState
+	q.ShippingStatus = args.ShippingStatus
+	q.ExternalShippingData = args.ExternalShippingData
+	q.ExternalShippingState = args.ExternalShippingState
+	q.ExternalShippingSubState = args.ExternalShippingSubState
+	q.ExternalShippingStatus = args.ExternalShippingStatus
 	q.ExternalShippingNote = args.ExternalShippingNote
-	q.ProviderShippingFeeLines = args.ProviderShippingFeeLines
+	q.ExternalShippingUpdatedAt = args.ExternalShippingUpdatedAt
+	q.ExternalShippingLogs = args.ExternalShippingLogs
+	q.ExternalShippingStateCode = args.ExternalShippingStateCode
 	q.Weight = args.Weight
+	q.ClosedAt = args.ClosedAt
+	q.LastSyncAt = args.LastSyncAt
+	q.ShippingCreatedAt = args.ShippingCreatedAt
+	q.ShippingPickingAt = args.ShippingPickingAt
+	q.ShippingDeliveringAt = args.ShippingDeliveringAt
+	q.ShippingDeliveredAt = args.ShippingDeliveredAt
+	q.ShippingReturningAt = args.ShippingReturningAt
+	q.ShippingReturnedAt = args.ShippingReturnedAt
+	q.ShippingCancelledAt = args.ShippingCancelledAt
 }
 
 func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesArgs) {
 	return ctx,
 		&UpdateFulfillmentShippingFeesArgs{
-			FulfillmentID:            q.FulfillmentID,
-			ShippingCode:             q.ShippingCode,
-			ProviderShippingFeeLines: q.ProviderShippingFeeLines,
-			ShippingFeeLines:         q.ShippingFeeLines,
+			FulfillmentID:               q.FulfillmentID,
+			ShippingCode:                q.ShippingCode,
+			EtopPriceRule:               q.EtopPriceRule,
+			EtopAdjustedShippingFeeMain: q.EtopAdjustedShippingFeeMain,
+			ProviderShippingFeeLines:    q.ProviderShippingFeeLines,
+			ShippingFeeLines:            q.ShippingFeeLines,
 		}
 }
 
 func (q *UpdateFulfillmentShippingFeesCommand) SetUpdateFulfillmentShippingFeesArgs(args *UpdateFulfillmentShippingFeesArgs) {
 	q.FulfillmentID = args.FulfillmentID
 	q.ShippingCode = args.ShippingCode
+	q.EtopPriceRule = args.EtopPriceRule
+	q.EtopAdjustedShippingFeeMain = args.EtopAdjustedShippingFeeMain
 	q.ProviderShippingFeeLines = args.ProviderShippingFeeLines
 	q.ShippingFeeLines = args.ShippingFeeLines
+}
+
+func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesFromWebhookArgs) {
+	return ctx,
+		&UpdateFulfillmentShippingFeesFromWebhookArgs{
+			FulfillmentID:    q.FulfillmentID,
+			NewWeight:        q.NewWeight,
+			ProviderFeeLines: q.ProviderFeeLines,
+		}
+}
+
+func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) SetUpdateFulfillmentShippingFeesFromWebhookArgs(args *UpdateFulfillmentShippingFeesFromWebhookArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.NewWeight = args.NewWeight
+	q.ProviderFeeLines = args.ProviderFeeLines
 }
 
 func (q *UpdateFulfillmentShippingStateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingStateArgs) {
@@ -541,6 +626,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleUpdateFulfillmentExternalShippingInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)
+	b.AddHandler(h.HandleUpdateFulfillmentShippingFeesFromWebhook)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingState)
 	b.AddHandler(h.HandleUpdateFulfillmentsCODTransferedAt)
 	b.AddHandler(h.HandleUpdateFulfillmentsMoneyTxID)

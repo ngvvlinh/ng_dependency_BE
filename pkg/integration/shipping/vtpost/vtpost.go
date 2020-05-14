@@ -220,9 +220,9 @@ func (c *Carrier) cancelOrder(ctx context.Context, cmd *CancelOrderCommand) erro
 	return err
 }
 
-func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.CallbackOrderData) *shipmodel.Fulfillment {
+func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.CallbackOrderData) (*shipmodel.Fulfillment, error) {
 	if !shipping.CanUpdateFulfillment(ffm) {
-		return ffm
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update fulfillment (id = %v, shipping_code = %v)", ffm.ID, ffm.ShippingCode)
 	}
 
 	now := time.Now()
@@ -278,7 +278,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 			update.ClosedAt = now
 		}
 	}
-	return update
+	return update, nil
 }
 
 func CalcDeliveryDuration(orderService vtpostclient.VTPostOrderServiceCode, fromProvince, toProvince *location.Province, fromDistrict, toDistrict *location.District) (duration time.Duration) {

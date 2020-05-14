@@ -17,6 +17,7 @@ import (
 	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
 	"o.o/api/main/shipnow"
+	shippingcore "o.o/api/main/shipping"
 	subscriptioncore "o.o/api/subscripting/subscription"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/backend/cmd/etop-server/config"
@@ -179,6 +180,7 @@ var (
 	shipnowAggr  shipnow.CommandBus
 	orderAggr    *serviceordering.Aggregate
 	orderQuery   ordering.QueryBus
+	shippingAggr shippingcore.CommandBus
 
 	identityQuery identity.QueryBus
 
@@ -477,8 +479,10 @@ func main() {
 
 	shipmentManager = shippingcarrier.NewShipmentManager(eventBus, locationBus, connectionQuery, connectionAggregate, redisStore, shipmentServiceQuery, shipmentPriceQuery, cfg.FlagApplyShipmentPrice)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
-	shippingAggr := shippingaggregate.AggregateMessageBus(shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus))
+
+	botCarrier := cfg.TelegramBot.MustConnectChannel(config.ChannelShipmentCarrier)
 	shippingQuery := shippingquery.QueryServiceMessageBus(shippingquery.NewQueryService(db))
+	shippingAggr := shippingaggregate.AggregateMessageBus(shippingaggregate.NewAggregate(db, eventBus, locationBus, botCarrier, orderQuery, shipmentManager, connectionQuery))
 	shippingPM := shippingpm.New(eventBus, shippingQuery, shippingAggr, redisStore)
 	shippingPM.RegisterEventHandlers(eventBus)
 

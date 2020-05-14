@@ -2,11 +2,17 @@ package ghnWebhook
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"time"
 
+	"o.o/api/main/identity"
+	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	logmodel "o.o/backend/com/etc/logging/webhook/model"
+	"o.o/backend/com/main/shipping/carrier"
+	shippingconvert "o.o/backend/com/main/shipping/convert"
+	shipmodel "o.o/backend/com/main/shipping/model"
 	"o.o/backend/com/main/shipping/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -24,14 +30,22 @@ import (
 var ll = l.New()
 
 type Webhook struct {
-	dbLogs  *cmsql.Database
-	carrier *ghn.Carrier
+	db              *cmsql.Database
+	dbLogs          *cmsql.Database
+	carrier         *ghn.Carrier
+	shipmentManager *carrier.ShipmentManager
+	identityQS      identity.QueryBus
+	shippingAggr    shippingcore.CommandBus
 }
 
-func New(dbLogs *cmsql.Database, carrier *ghn.Carrier) *Webhook {
+func New(db *cmsql.Database, dbLogs *cmsql.Database, carrier *ghn.Carrier, shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus, shippingA shippingcore.CommandBus) *Webhook {
 	wh := &Webhook{
-		dbLogs:  dbLogs,
-		carrier: carrier,
+		db:              db,
+		dbLogs:          dbLogs,
+		carrier:         carrier,
+		shipmentManager: shipmentM,
+		identityQS:      identityQ,
+		shippingAggr:    shippingA,
 	}
 	return wh
 }
@@ -46,58 +60,66 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	if err := c.DecodeJson(&msg); err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "GHN: can not decode JSON callback")
 	}
-
+	var ffm *shipmodel.Fulfillment
 	defer func() {
 		// save to database etop_log
-		buf := new(bytes.Buffer)
-		enc := json.NewEncoder(buf)
-		enc.SetEscapeHTML(false)
-		webhookData := &logmodel.ShippingProviderWebhook{
-			ID:                    cm.NewID(),
-			ShippingProvider:      shipping_provider.GHN.String(),
-			ShippingCode:          msg.OrderCode.String(),
-			ExternalShippingState: msg.CurrentStatus.String(),
-			Error:                 model.ToError(_err),
-		}
-		if err := enc.Encode(msg); err == nil {
-			webhookData.Data = buf.Bytes()
-		}
-		if _, err := wh.dbLogs.Insert(webhookData); err != nil {
-			ll.Error("Insert db etop_log error", l.Error(err))
-		}
+		wh.saveLogsWebhook(msg, ffm, _err)
 	}()
 
-	if msg.ExternalCode == "" {
-		return cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is empty")
-	}
-	ffmID, err := dot.ParseID(msg.ExternalCode.String())
-	if err != nil {
-		return cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is invalid: %v", msg.ExternalCode)
-	}
-	if ffmID == 0 {
-		return cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is zero")
-	}
-
 	ctx := c.Req.Context()
-	query := &modelx.GetFulfillmentQuery{
-		ShippingProvider: shipping_provider.GHN,
-		FulfillmentID:    ffmID,
+	ffm, err := wh.validateDataAndGetFfm(ctx, msg)
+	if err != nil {
+		return err
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return cm.MapError(err).
-			Wrapf(cm.NotFound, "ExternalCode not found: %v", ffmID).
-			DefaultInternal()
-	}
-	ffm := query.Result
 
-	updateFfm := update.CalcUpdateFulfillment(ffm, &msg)
-	updateFfm.LastSyncAt = t0
-	// UpdateInfo other time
-	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
-	updateCmd := &modelx.UpdateFulfillmentCommand{
-		Fulfillment: updateFfm,
+	ctx, err = shipping.WebhookWlWrapContext(ctx, ffm.ShopID, wh.identityQS)
+	if err != nil {
+		return err
 	}
-	if err := bus.Dispatch(ctx, updateCmd); err != nil {
+
+	err = wh.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updateFfm, err := update.CalcUpdateFulfillment(ffm, &msg)
+		if err != nil {
+			return cm.Errorf(cm.FailedPrecondition, err, err.Error()).WithMeta("result", "ignore")
+		}
+		updateFfm.LastSyncAt = t0
+		// UpdateInfo other time
+		updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
+
+		// update shipping fee lines
+		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, ffm.ID, msg.Weight.Int(), updateFfm.ProviderShippingFeeLines); err != nil {
+			ll.S.Errorf("Lỗi cập nhật cước phí GHN: %v", err.Error())
+		}
+
+		// update info
+		update := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
+			FulfillmentID:             ffm.ID,
+			ShippingState:             updateFfm.ShippingState,
+			ShippingStatus:            updateFfm.ShippingStatus,
+			ExternalShippingData:      updateFfm.ExternalShippingData,
+			ExternalShippingState:     updateFfm.ExternalShippingState,
+			ExternalShippingStatus:    updateFfm.ExternalShippingStatus,
+			ExternalShippingUpdatedAt: updateFfm.ExternalShippingUpdatedAt,
+			ExternalShippingLogs:      shippingconvert.Convert_shippingmodel_ExternalShippingLogs_shipping_ExternalShippingLogs(updateFfm.ExternalShippingLogs),
+			ExternalShippingStateCode: updateFfm.ExternalShippingStateCode,
+			Weight:                    msg.Weight.Int(),
+			ClosedAt:                  updateFfm.ClosedAt,
+			LastSyncAt:                updateFfm.LastSyncAt,
+			ShippingCreatedAt:         updateFfm.ShippingCreatedAt,
+			ShippingPickingAt:         updateFfm.ShippingPickingAt,
+			ShippingDeliveringAt:      updateFfm.ShippingDeliveringAt,
+			ShippingDeliveredAt:       updateFfm.ShippingDeliveredAt,
+			ShippingReturningAt:       updateFfm.ShippingReturningAt,
+			ShippingReturnedAt:        updateFfm.ShippingReturnedAt,
+			ShippingCancelledAt:       updateFfm.ShippingCancelledAt,
+			ExternalShippingNote:      dot.String(updateFfm.ExternalShippingNote),
+		}
+		if err := wh.shippingAggr.Dispatch(ctx, update); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return err
 	}
 
@@ -105,4 +127,54 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		"code": "ok",
 	})
 	return nil
+}
+
+func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg ghnclient.CallbackOrder) (ffm *shipmodel.Fulfillment, err error) {
+	if msg.ExternalCode == "" {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is empty")
+	}
+	ffmID, err := dot.ParseID(msg.ExternalCode.String())
+	if err != nil {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is invalid: %v", msg.ExternalCode)
+	}
+	if ffmID == 0 {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is zero")
+	}
+
+	query := &modelx.GetFulfillmentQuery{
+		ShippingProvider: shipping_provider.GHN,
+		FulfillmentID:    ffmID,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return nil, cm.MapError(err).
+			Wrapf(cm.NotFound, "ExternalCode not found: %v", ffmID).
+			DefaultInternal()
+	}
+	return query.Result, nil
+}
+
+func (wh *Webhook) saveLogsWebhook(msg ghnclient.CallbackOrder, ffm *shipmodel.Fulfillment, err error) {
+	buf := new(bytes.Buffer)
+	enc := json.NewEncoder(buf)
+	enc.SetEscapeHTML(false)
+	state := ghnclient.State(msg.CurrentStatus)
+	var isReturnOrder bool
+	if msg.ReturnInfo != "" {
+		isReturnOrder = true
+	}
+	shippingState := state.ToModel(ffm.ShippingState, isReturnOrder)
+	webhookData := &logmodel.ShippingProviderWebhook{
+		ID:                    cm.NewID(),
+		ShippingProvider:      shipping_provider.GHN.String(),
+		ShippingCode:          msg.OrderCode.String(),
+		ExternalShippingState: msg.CurrentStatus.String(),
+		ShippingState:         shippingState.String(),
+		Error:                 model.ToError(err),
+	}
+	if err := enc.Encode(msg); err == nil {
+		webhookData.Data = buf.Bytes()
+	}
+	if _, err := wh.dbLogs.Insert(webhookData); err != nil {
+		ll.Error("Insert db etop_log error", l.Error(err))
+	}
 }

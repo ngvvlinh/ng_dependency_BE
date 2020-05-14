@@ -3,6 +3,7 @@ package shipping
 import (
 	"time"
 
+	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	"o.o/api/main/ordering"
 	ordertypes "o.o/api/main/ordering/types"
@@ -20,6 +21,17 @@ import (
 )
 
 // +gen:event:topic=event/shipping
+
+var ShippingFeeShopTypes = []shipping_fee_type.ShippingFeeType{
+	shipping_fee_type.Main,
+	shipping_fee_type.Return,
+	shipping_fee_type.Adjustment,
+	shipping_fee_type.AddressChange,
+	shipping_fee_type.Cods,
+	shipping_fee_type.Insurance,
+	shipping_fee_type.Other,
+	shipping_fee_type.Discount,
+}
 
 type ShippingService struct {
 	Code string
@@ -61,6 +73,7 @@ type Fulfillment struct {
 	TotalCODAmount           int
 	ActualCompensationAmount int
 	EtopDiscount             int
+	EtopFeeAdjustment        int
 
 	types.WeightInfo
 	types.ValueInfo
@@ -212,4 +225,74 @@ type SingleFulfillmentCreatingEvent struct {
 	ShopID      dot.ID
 	FromAddress *ordertypes.Address
 	ShippingFee int
+}
+
+func CalcShopShippingFee(externalFee int, ffm *Fulfillment) int {
+	if ffm == nil {
+		return externalFee
+	}
+	fee := externalFee + ffm.EtopFeeAdjustment - ffm.EtopDiscount
+	if fee < 0 {
+		return 0
+	}
+	return fee
+}
+
+func GetTotalShippingFee(items []*ShippingFeeLine) int {
+	result := 0
+	for _, item := range items {
+		result += item.Cost
+	}
+	return result
+}
+
+func GetShippingFeeShopLines(items []*ShippingFeeLine, etopPriceRule bool, mainFee dot.NullInt) []*ShippingFeeLine {
+	res := make([]*ShippingFeeLine, 0, len(items))
+	for _, item := range items {
+		if item == nil {
+			continue
+		}
+		line := GetShippingFeeShopLine(*item, etopPriceRule, mainFee)
+		if line != nil {
+			res = append(res, line)
+		}
+	}
+	return res
+}
+
+func GetShippingFeeShopLine(item ShippingFeeLine, etopPriceRule bool, mainFee dot.NullInt) *ShippingFeeLine {
+	if item.ShippingFeeType == shipping_fee_type.Main && etopPriceRule {
+		item.Cost = mainFee.Apply(item.Cost)
+	}
+	if contains(ShippingFeeShopTypes, item.ShippingFeeType) {
+		return &item
+	}
+	return nil
+}
+
+func contains(lines []shipping_fee_type.ShippingFeeType, feeType shipping_fee_type.ShippingFeeType) bool {
+	for _, line := range lines {
+		if feeType == line {
+			return true
+		}
+	}
+	return false
+}
+
+func GetConnectionID(connectionID dot.ID, carrier shipping_provider.ShippingProvider) dot.ID {
+	if connectionID != 0 {
+		return connectionID
+	}
+
+	// backward-compatible
+	switch carrier {
+	case shipping_provider.GHN:
+		return connectioning.DefaultTopshipGHNConnectionID
+	case shipping_provider.GHTK:
+		return connectioning.DefaultTopshipGHTKConnectionID
+	case shipping_provider.VTPost:
+		return connectioning.DefaultTopshipVTPostConnectionID
+	default:
+		return 0
+	}
 }

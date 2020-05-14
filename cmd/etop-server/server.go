@@ -289,7 +289,7 @@ func startGHNWebhookServer() *http.Server {
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(botWebhook, true))
 
-	webhook := webhookghn.New(dbLogs, ghnCarrier)
+	webhook := webhookghn.New(db, dbLogs, ghnCarrier, shipmentManager, identityQuery, shippingAggr)
 	webhook.Register(rt)
 	svr := &http.Server{
 		Addr:    cfg.GHNWebhook.Address(),
@@ -314,7 +314,7 @@ func startGHTKWebhookServer() *http.Server {
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(botWebhook, true))
 
-	webhook := webhookghtk.New(dbLogs, ghtkCarrier, shipmentManager)
+	webhook := webhookghtk.New(db, dbLogs, ghtkCarrier, shipmentManager, identityQuery, shippingAggr)
 	webhook.Register(rt)
 	svr := &http.Server{
 		Addr:    cfg.GHTKWebhook.Address(),
@@ -339,7 +339,7 @@ func startVTPostWebhookServer() *http.Server {
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(botWebhook, true))
 
-	webhook := webhookvtpost.New(dbLogs, vtpostCarrier)
+	webhook := webhookvtpost.New(db, dbLogs, vtpostCarrier, shipmentManager, identityQuery, shippingAggr)
 	webhook.Register(rt)
 	svr := &http.Server{
 		Addr:    cfg.VTPostWebhook.Address(),

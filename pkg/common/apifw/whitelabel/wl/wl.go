@@ -30,6 +30,10 @@ func WrapContext(ctx context.Context, partnerID dot.ID) context.Context {
 	return whiteLabel.WrapContext(ctx, partnerID)
 }
 
+func WrapContextByPartnerID(ctx context.Context, partnerID dot.ID) context.Context {
+	return whiteLabel.WrapContextByPartnerID(ctx, partnerID)
+}
+
 func GetWLPartnerID(ctx context.Context) dot.ID {
 	wlPartner := X(ctx)
 	if wlPartner.IsWhiteLabel() {

@@ -31,6 +31,24 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
+	s.Register((*shippingmodel.ExternalShippingLog)(nil), (*shipping.ExternalShippingLog)(nil), func(arg, out interface{}) error {
+		Convert_shippingmodel_ExternalShippingLog_shipping_ExternalShippingLog(arg.(*shippingmodel.ExternalShippingLog), out.(*shipping.ExternalShippingLog))
+		return nil
+	})
+	s.Register(([]*shippingmodel.ExternalShippingLog)(nil), (*[]*shipping.ExternalShippingLog)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shippingmodel_ExternalShippingLogs_shipping_ExternalShippingLogs(arg.([]*shippingmodel.ExternalShippingLog))
+		*out.(*[]*shipping.ExternalShippingLog) = out0
+		return nil
+	})
+	s.Register((*shipping.ExternalShippingLog)(nil), (*shippingmodel.ExternalShippingLog)(nil), func(arg, out interface{}) error {
+		Convert_shipping_ExternalShippingLog_shippingmodel_ExternalShippingLog(arg.(*shipping.ExternalShippingLog), out.(*shippingmodel.ExternalShippingLog))
+		return nil
+	})
+	s.Register(([]*shipping.ExternalShippingLog)(nil), (*[]*shippingmodel.ExternalShippingLog)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipping_ExternalShippingLogs_shippingmodel_ExternalShippingLogs(arg.([]*shipping.ExternalShippingLog))
+		*out.(*[]*shippingmodel.ExternalShippingLog) = out0
+		return nil
+	})
 	s.Register((*shippingmodel.Fulfillment)(nil), (*shipping.Fulfillment)(nil), func(arg, out interface{}) error {
 		Convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg.(*shippingmodel.Fulfillment), out.(*shipping.Fulfillment))
 		return nil
@@ -105,6 +123,66 @@ func registerConversions(s *conversion.Scheme) {
 	})
 }
 
+//-- convert o.o/api/main/shipping.ExternalShippingLog --//
+
+func Convert_shippingmodel_ExternalShippingLog_shipping_ExternalShippingLog(arg *shippingmodel.ExternalShippingLog, out *shipping.ExternalShippingLog) *shipping.ExternalShippingLog {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipping.ExternalShippingLog{}
+	}
+	convert_shippingmodel_ExternalShippingLog_shipping_ExternalShippingLog(arg, out)
+	return out
+}
+
+func convert_shippingmodel_ExternalShippingLog_shipping_ExternalShippingLog(arg *shippingmodel.ExternalShippingLog, out *shipping.ExternalShippingLog) {
+	out.StateText = arg.StateText // simple assign
+	out.Time = arg.Time           // simple assign
+	out.Message = arg.Message     // simple assign
+}
+
+func Convert_shippingmodel_ExternalShippingLogs_shipping_ExternalShippingLogs(args []*shippingmodel.ExternalShippingLog) (outs []*shipping.ExternalShippingLog) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipping.ExternalShippingLog, len(args))
+	outs = make([]*shipping.ExternalShippingLog, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shippingmodel_ExternalShippingLog_shipping_ExternalShippingLog(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shipping_ExternalShippingLog_shippingmodel_ExternalShippingLog(arg *shipping.ExternalShippingLog, out *shippingmodel.ExternalShippingLog) *shippingmodel.ExternalShippingLog {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shippingmodel.ExternalShippingLog{}
+	}
+	convert_shipping_ExternalShippingLog_shippingmodel_ExternalShippingLog(arg, out)
+	return out
+}
+
+func convert_shipping_ExternalShippingLog_shippingmodel_ExternalShippingLog(arg *shipping.ExternalShippingLog, out *shippingmodel.ExternalShippingLog) {
+	out.StateText = arg.StateText // simple assign
+	out.Time = arg.Time           // simple assign
+	out.Message = arg.Message     // simple assign
+}
+
+func Convert_shipping_ExternalShippingLogs_shippingmodel_ExternalShippingLogs(args []*shipping.ExternalShippingLog) (outs []*shippingmodel.ExternalShippingLog) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shippingmodel.ExternalShippingLog, len(args))
+	outs = make([]*shippingmodel.ExternalShippingLog, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipping_ExternalShippingLog_shippingmodel_ExternalShippingLog(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert o.o/api/main/shipping.Fulfillment --//
 
 func Convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.Fulfillment, out *shipping.Fulfillment) *shipping.Fulfillment {
@@ -140,6 +218,7 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.TotalCODAmount = arg.TotalCODAmount                                         // simple assign
 	out.ActualCompensationAmount = arg.ActualCompensationAmount                     // simple assign
 	out.EtopDiscount = arg.EtopDiscount                                             // simple assign
+	out.EtopFeeAdjustment = arg.EtopFeeAdjustment                                   // simple assign
 	out.WeightInfo = shippingtypes.WeightInfo{}                                     // zero value
 	out.ValueInfo = shippingtypes.ValueInfo{}                                       // zero value
 	out.CODEtopTransferedAt = arg.CODEtopTransferedAt                               // simple assign
@@ -175,8 +254,8 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.ExternalShippingStatus = arg.ExternalShippingStatus                         // simple assign
 	out.ExternalShippingNote = arg.ExternalShippingNote                             // simple assign
 	out.ExternalShippingSubState = arg.ExternalShippingSubState                     // simple assign
-	out.ExternalShippingLogs = nil                                                  // types do not match
-	out.SyncStatus = arg.SyncStatus                                                 // simple assign
+	out.ExternalShippingLogs = Convert_shippingmodel_ExternalShippingLogs_shipping_ExternalShippingLogs(arg.ExternalShippingLogs)
+	out.SyncStatus = arg.SyncStatus // simple assign
 	out.SyncStates = Convert_sharemodel_FulfillmentSyncStates_shipping_FulfillmentSyncStates(arg.SyncStates, nil)
 	out.ExpectedDeliveryAt = arg.ExpectedDeliveryAt                   // simple assign
 	out.ExpectedPickAt = arg.ExpectedPickAt                           // simple assign
@@ -232,7 +311,7 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.ExternalShippingFee = arg.ExternalShippingFee // simple assign
 	out.ProviderShippingFeeLines = Convert_shipping_ShippingFeeLines_sharemodel_ShippingFeeLines(arg.ProviderShippingFeeLines)
 	out.EtopDiscount = arg.EtopDiscount                               // simple assign
-	out.EtopFeeAdjustment = 0                                         // zero value
+	out.EtopFeeAdjustment = arg.EtopFeeAdjustment                     // simple assign
 	out.ShippingFeeMain = 0                                           // zero value
 	out.ShippingFeeReturn = 0                                         // zero value
 	out.ShippingFeeInsurance = 0                                      // zero value
@@ -302,19 +381,19 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.Status = arg.Status                                                         // simple assign
 	out.SyncStatus = arg.SyncStatus                                                 // simple assign
 	out.SyncStates = Convert_shipping_FulfillmentSyncStates_sharemodel_FulfillmentSyncStates(arg.SyncStates, nil)
-	out.LastSyncAt = time.Time{}   // zero value
-	out.ExternalShippingLogs = nil // types do not match
-	out.AdminNote = ""             // zero value
-	out.IsPartialDelivery = false  // zero value
-	out.CreatedBy = 0              // zero value
-	out.GrossWeight = 0            // zero value
-	out.ChargeableWeight = 0       // zero value
-	out.Length = 0                 // zero value
-	out.Width = 0                  // zero value
-	out.Height = 0                 // zero value
-	out.DeliveryRoute = ""         // zero value
-	out.ExternalAffiliateID = ""   // zero value
-	out.Rid = 0                    // zero value
+	out.LastSyncAt = time.Time{} // zero value
+	out.ExternalShippingLogs = Convert_shipping_ExternalShippingLogs_shippingmodel_ExternalShippingLogs(arg.ExternalShippingLogs)
+	out.AdminNote = ""            // zero value
+	out.IsPartialDelivery = false // zero value
+	out.CreatedBy = 0             // zero value
+	out.GrossWeight = 0           // zero value
+	out.ChargeableWeight = 0      // zero value
+	out.Length = 0                // zero value
+	out.Width = 0                 // zero value
+	out.Height = 0                // zero value
+	out.DeliveryRoute = ""        // zero value
+	out.ExternalAffiliateID = ""  // zero value
+	out.Rid = 0                   // zero value
 }
 
 func Convert_shipping_Fulfillments_shippingmodel_Fulfillments(args []*shipping.Fulfillment) (outs []*shippingmodel.Fulfillment) {

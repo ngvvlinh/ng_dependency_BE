@@ -2,6 +2,7 @@ package shipping
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	ordertypes "o.o/api/main/ordering/types"
@@ -10,6 +11,7 @@ import (
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
+	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/try_on"
 	"o.o/capi/dot"
 )
@@ -34,6 +36,8 @@ type Aggregate interface {
 	CancelFulfillment(context.Context, *CancelFulfillmentArgs) error
 
 	UpdateFulfillmentExternalShippingInfo(context.Context, *UpdateFfmExternalShippingInfoArgs) (updated int, _ error)
+
+	UpdateFulfillmentShippingFeesFromWebhook(context.Context, *UpdateFulfillmentShippingFeesFromWebhookArgs) error
 }
 
 type QueryService interface {
@@ -115,10 +119,12 @@ type UpdateFulfillmentShippingStateArgs struct {
 }
 
 type UpdateFulfillmentShippingFeesArgs struct {
-	FulfillmentID            dot.ID
-	ShippingCode             string
-	ProviderShippingFeeLines []*ShippingFeeLine
-	ShippingFeeLines         []*ShippingFeeLine
+	FulfillmentID               dot.ID
+	ShippingCode                string
+	EtopPriceRule               dot.NullBool
+	EtopAdjustedShippingFeeMain dot.NullInt
+	ProviderShippingFeeLines    []*ShippingFeeLine
+	ShippingFeeLines            []*ShippingFeeLine
 }
 
 type UpdateFulfillmentsMoneyTxIDArgs struct {
@@ -147,11 +153,33 @@ type UpdateFulfillmentsCODTransferedAtArgs struct {
 }
 
 type UpdateFfmExternalShippingInfoArgs struct {
-	FulfillmentID            dot.ID
-	ShippingState            shippingstate.State
-	ExternalShippingNote     string
-	ProviderShippingFeeLines []*ShippingFeeLine
-	Weight                   int
+	FulfillmentID             dot.ID
+	ShippingState             shippingstate.State
+	ShippingStatus            status5.Status
+	ExternalShippingData      json.RawMessage
+	ExternalShippingState     string
+	ExternalShippingSubState  dot.NullString
+	ExternalShippingStatus    status5.Status
+	ExternalShippingNote      dot.NullString
+	ExternalShippingUpdatedAt time.Time
+	ExternalShippingLogs      []*ExternalShippingLog
+	ExternalShippingStateCode string
+	Weight                    int
+	ClosedAt                  time.Time
+	LastSyncAt                time.Time
+	ShippingCreatedAt         time.Time
+	ShippingPickingAt         time.Time
+	ShippingDeliveringAt      time.Time
+	ShippingDeliveredAt       time.Time
+	ShippingReturningAt       time.Time
+	ShippingReturnedAt        time.Time
+	ShippingCancelledAt       time.Time
+}
+
+type UpdateFulfillmentShippingFeesFromWebhookArgs struct {
+	FulfillmentID    dot.ID
+	NewWeight        int
+	ProviderFeeLines []*ShippingFeeLine
 }
 
 type GetFulfillmentByIDOrShippingCodeArgs struct {

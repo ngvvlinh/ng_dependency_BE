@@ -62,13 +62,21 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 	ffm := ffmQuery.Result
 
 	cmd := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
-		FulfillmentID:            ffm.ID,
-		ShippingState:            r.ShippingState.Enum,
-		ExternalShippingNote:     r.Note,
-		ProviderShippingFeeLines: partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
-		Weight:                   r.Weight.Int(),
+		FulfillmentID:        ffm.ID,
+		ShippingState:        r.ShippingState.Enum,
+		ExternalShippingNote: r.Note,
+		Weight:               r.Weight.Int(),
 	}
 	if err := shippingAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	// update shippingFeeLines
+	cmd2 := &shippingcore.UpdateFulfillmentShippingFeesCommand{
+		FulfillmentID:            ffm.ID,
+		ProviderShippingFeeLines: partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
+	}
+	if err := shippingAggr.Dispatch(ctx, cmd2); err != nil {
 		return nil, err
 	}
 	return &pbcm.UpdatedResponse{Updated: cmd.Result}, nil

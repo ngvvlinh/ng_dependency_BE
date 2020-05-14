@@ -12,7 +12,6 @@ import (
 	"o.o/backend/com/main/shipping/convert"
 	"o.o/backend/com/main/shipping/model"
 	shippingmodely "o.o/backend/com/main/shipping/modely"
-	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -281,30 +280,21 @@ func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateF
 	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
 }
 
-func (s *FulfillmentStore) UpdateFulfillmentShippingFees(args *shipping.UpdateFulfillmentShippingFeesArgs) error {
-	var lines []*shippingsharemodel.ShippingFeeLine
-	var providerShippingFeeLines []*shippingsharemodel.ShippingFeeLine
-	if err := scheme.Convert(args.ProviderShippingFeeLines, &providerShippingFeeLines); err != nil {
-		return err
+func (s *FulfillmentStore) UpdateFulfillmentPriceListInfo(args *shipping.UpdateFulfillmentShippingFeesArgs) error {
+	update := map[string]interface{}{}
+	count := 0
+	if args.EtopPriceRule.Valid {
+		update["etop_price_rule"] = args.EtopPriceRule.Bool
+		count++
 	}
-	if args.ShippingFeeLines != nil {
-		if err := scheme.Convert(args.ShippingFeeLines, &lines); err != nil {
-			return err
-		}
-	} else {
-		ffm, err := s.ID(args.FulfillmentID).GetFulfillment()
-		if err != nil {
-			return err
-		}
-		lines = shippingsharemodel.GetShippingFeeShopLines(providerShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+	if args.EtopAdjustedShippingFeeMain.Valid {
+		update["etop_adjusted_shipping_fee_main"] = args.EtopAdjustedShippingFeeMain.Int
+		count++
 	}
-
-	update := &model.Fulfillment{
-		ProviderShippingFeeLines: providerShippingFeeLines,
-		ShippingFeeShopLines:     lines,
-		ShippingFeeShop:          shippingsharemodel.GetTotalShippingFee(lines),
+	if count > 0 {
+		return s.query().Table("fulfillment").Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
 	}
-	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
+	return nil
 }
 
 func (s *FulfillmentStore) UpdateFulfillmentsMoneyTxID(args *shipping.UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
@@ -408,4 +398,24 @@ func (s *FulfillmentStore) ListFulfillmentExtendeds() (res []*shipping.Fulfillme
 		return nil, err
 	}
 	return
+}
+
+type ForceUpdateExternalShippingInfoArgs struct {
+	FulfillmentID            dot.ID
+	ExternalShippingNote     dot.NullString
+	ExternalShippingSubState dot.NullString
+}
+
+func (s *FulfillmentStore) ForceUpdateExternalShippingInfo(args *ForceUpdateExternalShippingInfoArgs) error {
+	update := map[string]interface{}{}
+	if args.ExternalShippingNote.Valid {
+		update["external_shipping_note"] = args.ExternalShippingNote.String
+	}
+	if args.ExternalShippingSubState.Valid {
+		update["external_shipping_sub_state"] = args.ExternalShippingSubState.String
+	}
+	if len(update) == 0 {
+		return nil
+	}
+	return s.query().Table("fulfillment").Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
 }

@@ -68,7 +68,7 @@ func (m *GetConnectionsResponse) String() string { return jsonx.MustMarshalToStr
 type UpdateFulfillmentRequest struct {
 	ShippingCode     string                  `json:"shipping_code"`
 	ShippingState    shippingstate.NullState `json:"shipping_state"`
-	Note             string                  `json:"note"`
+	Note             dot.NullString          `json:"note"`
 	Weight           types.Int               `json:"weight"`
 	ShippingFeeLines []*ShippingFeeLine      `json:"shipping_fee_lines"`
 }

@@ -676,7 +676,7 @@ func (m *Fulfillment) Migration(db *cmsql.Database) {
 		},
 		"external_shipping_logs": {
 			ColumnName:       "external_shipping_logs",
-			ColumnType:       "[]*etopmodel.ExternalShippingLog",
+			ColumnType:       "[]*shippingmodel.ExternalShippingLog",
 			ColumnDBType:     "[]*struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},

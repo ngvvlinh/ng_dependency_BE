@@ -90,7 +90,13 @@ func (s *AccountStore) AffiliatesByIDs(ids ...dot.ID) *AccountStore {
 func (s *AccountStore) GetShopDB() (*identitymodel.Shop, error) {
 	var shop identitymodel.Shop
 	query := s.query().Where(s.preds)
-	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
+
+	// FIX(Tuan): comment vụ check wlPartnerID
+	//
+	// Webhook NVC cần biết đơn thuộc wlPartnerID nào, hiện tại chưa lưu thông tin này trong order/ffm
+	// Tạm thời gọi api GetShopByID từ ffm.ShopID ra để lấy wlPartnerID
+
+	// query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
 	err := query.ShouldGet(&shop)
 	return &shop, err
 }

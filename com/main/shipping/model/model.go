@@ -151,7 +151,7 @@ type Fulfillment struct {
 	// Updated by webhook or querying GHN API
 	LastSyncAt time.Time
 
-	ExternalShippingLogs []*etopmodel.ExternalShippingLog
+	ExternalShippingLogs []*ExternalShippingLog
 	AdminNote            string
 	IsPartialDelivery    bool
 	CreatedBy            dot.ID
@@ -212,4 +212,11 @@ func (f *Fulfillment) ApplyEtopPrice(price int) error {
 	f.EtopPriceRule = true
 	f.EtopAdjustedShippingFeeMain = price
 	return nil
+}
+
+// +convert:type=shipping.ExternalShippingLog
+type ExternalShippingLog struct {
+	StateText string `json:"StateText"`
+	Time      string `json:"Time"`
+	Message   string `json:"Message"`
 }

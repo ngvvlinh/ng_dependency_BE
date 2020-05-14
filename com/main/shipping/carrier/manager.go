@@ -60,7 +60,7 @@ const (
 	MinShopBalance        = -200000
 	DefaultTTl            = 2 * 60 * 60
 	SecretKey             = "connectionsecretkey"
-	VersionCaching        = "0.1.7"
+	VersionCaching        = "0.1.8"
 	PrefixMakeupPriceCode = "###"
 )
 
@@ -74,7 +74,8 @@ type ShipmentManager struct {
 	cipherx                *cipherx.Cipherx
 	shipmentServiceQS      shipmentservice.QueryBus
 	shipmentPriceQS        shipmentprice.QueryBus
-	flagApplyShipmentPrice bool
+	shippingQS             shipping.QueryBus
+	FlagApplyShipmentPrice bool
 	eventBus               capi.EventBus
 }
 
@@ -99,7 +100,7 @@ func NewShipmentManager(
 		cipherx:                _cipherx,
 		shipmentServiceQS:      shipmentServiceQS,
 		shipmentPriceQS:        shipmentPriceQS,
-		flagApplyShipmentPrice: flagApplyShipmentPrice,
+		FlagApplyShipmentPrice: flagApplyShipmentPrice,
 	}
 }
 
@@ -300,7 +301,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	isMakeupPrice := false
 	makeupPrice := 0
 	var providerService *model.AvailableShippingService
-	if m.flagApplyShipmentPrice {
+	if m.FlagApplyShipmentPrice {
 		// áp dụng bảng giá TopShip/setting giá
 		providerService, err = CheckShippingService(ffm, allServices)
 		if err != nil {
@@ -531,18 +532,10 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 }
 
 func (m *ShipmentManager) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (updateFfm *shipmodel.Fulfillment, err error) {
-	if ffm.ConnectionID == 0 && m.driver == nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil,
-			"Không thể cập nhật fulfillment. Không tìm thấy driver hợp lệ (ffm_id = %v)", ffm.ID)
-	}
-	var driver carriertypes.ShipmentCarrier
-	if ffm.ConnectionID != 0 {
-		driver, err = m.getShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
-		if err != nil {
-			return nil, cm.Errorf(cm.InvalidArgument, err, "invalid connection (ffm_id = %v)", ffm.ID)
-		}
-	} else {
-		driver = m.driver
+	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
+	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "invalid connection (ffm_id = %v)", ffm.ID)
 	}
 
 	updateFfm, err = driver.UpdateFulfillment(ctx, ffm)
@@ -702,7 +695,7 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 	}
 
 	_args := args.ToShipmentServiceArgs(connID, accountID)
-	if !m.flagApplyShipmentPrice {
+	if !m.FlagApplyShipmentPrice {
 		if conn.ConnectionMethod == connection_type.ConnectionMethodBuiltin {
 			_args.IncludeTopshipServices = true
 		}
@@ -722,7 +715,7 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 			Name:     conn.Name,
 			ImageURL: conn.ImageURL,
 		}
-		if !m.flagApplyShipmentPrice {
+		if !m.FlagApplyShipmentPrice {
 			// không áp dụng bảng giá
 			res = append(res, s)
 			continue
@@ -747,32 +740,9 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 }
 
 func (m *ShipmentManager) mapWithShipmentService(ctx context.Context, args *GetShippingServicesArgs, serviceID string, connID dot.ID, service *model.AvailableShippingService) error {
-	query := &shipmentservice.GetShipmentServiceByServiceIDQuery{
-		ServiceID: serviceID,
-		ConnID:    connID,
-	}
-	if err := m.shipmentServiceQS.Dispatch(ctx, query); err != nil {
+	sService, err := m.getShipmentService(ctx, args, serviceID, connID, false)
+	if err != nil {
 		return err
-	}
-	sService := query.Result
-	if sService.Status != status3.P {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Gói dịch vụ đã tắt (shipment_service_id = %v).", sService.ID)
-	}
-
-	// Kiểm tra các khu vực khả dụng của gói
-	if err := m.checkShipmentServiceAvailableLocations(ctx, args, sService.AvailableLocations); err != nil {
-		ll.Error("checkShipmentServiceAvailableLocation failed", l.String("serviceID", serviceID), l.ID("shipment_service_id", sService.ID), l.ID("connectionID", connID), l.Error(err))
-		return err
-	}
-
-	// Kiểm tra khối lượng khả dụng
-	if sService.OtherCondition != nil {
-		weight := args.ChargeableWeight
-		minWeight := sService.OtherCondition.MinWeight
-		maxWeight := sService.OtherCondition.MaxWeight
-		if weight < minWeight || (weight > maxWeight && maxWeight != -1) {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Khối lượng nằm ngoài mức khả dụng của gói")
-		}
 	}
 
 	service.ShipmentServiceInfo = &model.ShipmentServiceInfo{
@@ -794,7 +764,44 @@ func (m *ShipmentManager) mapWithShipmentService(ctx context.Context, args *GetS
 	return nil
 }
 
-func (m ShipmentManager) checkShipmentServiceAvailableLocations(ctx context.Context, args *GetShippingServicesArgs, als []*shipmentservice.AvailableLocation) error {
+func (m *ShipmentManager) getShipmentService(ctx context.Context, args *GetShippingServicesArgs, serviceID string, connID dot.ID, checkBlackListLocation bool) (*shipmentservice.ShipmentService, error) {
+	query := &shipmentservice.GetShipmentServiceByServiceIDQuery{
+		ServiceID: serviceID,
+		ConnID:    connID,
+	}
+	if err := m.shipmentServiceQS.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	sService := query.Result
+	if sService.Status != status3.P {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Gói dịch vụ đã tắt (shipment_service_id = %v).", sService.ID)
+	}
+
+	// Kiểm tra các khu vực khả dụng của gói
+	if err := m.checkShipmentServiceAvailableLocations(ctx, args, sService.AvailableLocations); err != nil {
+		ll.Error("checkShipmentServiceAvailableLocation failed", l.String("serviceID", serviceID), l.ID("shipment_service_id", sService.ID), l.ID("connectionID", connID), l.Error(err))
+		return nil, err
+	}
+
+	// Kiểm tra khối lượng khả dụng
+	if sService.OtherCondition != nil {
+		weight := args.ChargeableWeight
+		minWeight := sService.OtherCondition.MinWeight
+		maxWeight := sService.OtherCondition.MaxWeight
+		if weight < minWeight || (weight > maxWeight && maxWeight != -1) {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Khối lượng nằm ngoài mức khả dụng của gói")
+		}
+	}
+
+	if checkBlackListLocation {
+		if err := checkShipmentServiceBlacklists(args, sService.BlacklistLocations); err != nil {
+			return nil, err
+		}
+	}
+	return sService, nil
+}
+
+func (m *ShipmentManager) checkShipmentServiceAvailableLocations(ctx context.Context, args *GetShippingServicesArgs, als []*shipmentservice.AvailableLocation) error {
 	for _, al := range als {
 		if err := m.checkShipmentServiceAvailableLocation(ctx, args, al); err != nil {
 			return err
@@ -803,7 +810,7 @@ func (m ShipmentManager) checkShipmentServiceAvailableLocations(ctx context.Cont
 	return nil
 }
 
-func (m ShipmentManager) checkShipmentServiceAvailableLocation(ctx context.Context, args *GetShippingServicesArgs, al *shipmentservice.AvailableLocation) error {
+func (m *ShipmentManager) checkShipmentServiceAvailableLocation(ctx context.Context, args *GetShippingServicesArgs, al *shipmentservice.AvailableLocation) error {
 	if al == nil {
 		return nil
 	}
@@ -947,4 +954,45 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 		MakeupMainFee: calcPriceResp.Price,
 	}
 	return nil
+}
+
+func (m *ShipmentManager) CalcMakeupShipmentPrice(ctx context.Context, ffm *shipmodel.Fulfillment, weight int) (int, error) {
+	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
+	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
+	if err != nil {
+		return 0, cm.Errorf(cm.InvalidArgument, err, "invalid connection (ffm_id = %v)", ffm.ID)
+	}
+	serviceID, err := driver.ParseServiceID(ffm.ProviderServiceID)
+	if err != nil {
+		return 0, err
+	}
+
+	args := &GetShippingServicesArgs{
+		FromDistrictCode: ffm.AddressFrom.DistrictCode,
+		FromProvinceCode: ffm.AddressFrom.ProvinceCode,
+		FromWardCode:     ffm.AddressFrom.WardCode,
+		ToDistrictCode:   ffm.AddressTo.DistrictCode,
+		ToProvinceCode:   ffm.AddressTo.ProvinceCode,
+		ToWardCode:       ffm.AddressTo.WardCode,
+		ChargeableWeight: weight,
+		BasketValue:      ffm.BasketValue,
+		CODAmount:        ffm.TotalCODAmount,
+	}
+
+	shipmentService, err := m.getShipmentService(ctx, args, serviceID, connectionID, true)
+	if err != nil {
+		return 0, err
+	}
+
+	query := &shipmentprice.CalculatePriceQuery{
+		ShipmentPriceListID: args.ShipmentPriceListID,
+		FromDistrictCode:    args.FromDistrictCode,
+		ToDistrictCode:      args.ToDistrictCode,
+		ShipmentServiceID:   shipmentService.ID,
+		Weight:              args.ChargeableWeight,
+	}
+	if err := m.shipmentPriceQS.Dispatch(ctx, query); err != nil {
+		return 0, err
+	}
+	return query.Result.Price, nil
 }

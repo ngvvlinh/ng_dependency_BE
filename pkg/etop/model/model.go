@@ -241,12 +241,6 @@ type StatusQuery struct {
 	Status *status3.Status
 }
 
-type ExternalShippingLog struct {
-	StateText string `json:"StateText"`
-	Time      string `json:"Time"`
-	Message   string `json:"Message"`
-}
-
 func (f FfmAction) ToShippingState() shipping.State {
 	switch f {
 	case FfmActionCancel:

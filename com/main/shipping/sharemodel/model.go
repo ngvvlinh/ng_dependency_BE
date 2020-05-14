@@ -3,22 +3,12 @@ package sharemodel
 import (
 	"time"
 
+	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
-
-var ShippingFeeShopTypes = []shipping_fee_type.ShippingFeeType{
-	shipping_fee_type.Main,
-	shipping_fee_type.Return,
-	shipping_fee_type.Adjustment,
-	shipping_fee_type.AddressChange,
-	shipping_fee_type.Cods,
-	shipping_fee_type.Insurance,
-	shipping_fee_type.Other,
-	shipping_fee_type.Discount,
-}
 
 var ShippingStateMap = map[shipping.State]string{
 	shipping.Default:       "Mặc định",
@@ -64,7 +54,7 @@ func GetShippingFeeShopLine(item ShippingFeeLine, etopPriceRule bool, mainFee do
 	if item.ShippingFeeType == shipping_fee_type.Main && etopPriceRule {
 		item.Cost = mainFee.Apply(item.Cost)
 	}
-	if contains(ShippingFeeShopTypes, item.ShippingFeeType) {
+	if contains(shippingcore.ShippingFeeShopTypes, item.ShippingFeeType) {
 		return &item
 	}
 	return nil

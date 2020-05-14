@@ -11,7 +11,6 @@ import (
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
 	"o.o/capi/dot"
@@ -48,9 +47,9 @@ type ResultOrder struct {
 	} `json:"result"`
 }
 
-func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOrder) *shipmodel.Fulfillment {
+func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOrder) (*shipmodel.Fulfillment, error) {
 	if !shipping.CanUpdateFulfillment(ffm) {
-		return ffm
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update fulfillment (id = %v, shipping_code = %v)", ffm.ID, ffm.ShippingCode)
 	}
 
 	now := time.Now()
@@ -76,6 +75,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 		ShippingStatus:            state.ToShippingStatus5(ffm.ShippingState),
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
 		ShippingCode:              ffm.ShippingCode,
+		ExternalShippingNote:      msg.Note.String(),
 	}
 
 	if shipping.CanUpdateFulfillmentFeelines(ffm) {
@@ -100,7 +100,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 			update.ClosedAt = now
 		}
 	}
-	return update
+	return update, nil
 }
 
 // TODO: refactor, make new client for this method
@@ -189,11 +189,11 @@ func SyncTrackingOrder(ffm *shipmodel.Fulfillment) (*shipmodel.Fulfillment, erro
 			if err = jsonx.Unmarshal([]byte(orderStr), &order); err != nil {
 				ll.Error("Lỗi không xác định", l.Error(err), l.String("shipping_code", ffm.ShippingCode))
 			}
-			var logs []*model.ExternalShippingLog
+			var logs []*shipmodel.ExternalShippingLog
 			for _, orderState := range order.Result.OrderTracking {
 				if orderState.GroupID != 5 {
 					// trạng thái khác thanh toán
-					logs = append(logs, &model.ExternalShippingLog{
+					logs = append(logs, &shipmodel.ExternalShippingLog{
 						StateText: orderState.Detail.Title,
 						Time:      orderState.ActionAt,
 						Message:   orderState.Detail.Message,

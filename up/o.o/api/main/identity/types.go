@@ -53,6 +53,7 @@ type Shop struct {
 	BankAccount *identitytypes.BankAccount
 	TryOn       try_on.TryOnCode
 	CompanyInfo *identitytypes.CompanyInfo
+	WLPartnerID dot.ID
 }
 
 type ShippingServiceSelectStrategyItem struct {

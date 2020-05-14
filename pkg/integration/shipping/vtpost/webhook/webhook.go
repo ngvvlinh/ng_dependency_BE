@@ -1,10 +1,15 @@
 package vtpostWebhook
 
 import (
+	"context"
 	"time"
 
+	"o.o/api/main/identity"
+	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	logmodel "o.o/backend/com/etc/logging/webhook/model"
+	"o.o/backend/com/main/shipping/carrier"
+	shippingconvert "o.o/backend/com/main/shipping/convert"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	"o.o/backend/com/main/shipping/modelx"
 	cm "o.o/backend/pkg/common"
@@ -30,14 +35,22 @@ var ll = l.New()
 var EndStatesCode = []string{"501", "503", "504", "201", "107"}
 
 type Webhook struct {
-	dbLogs  *cmsql.Database
-	carrier *vtpost.Carrier
+	db              *cmsql.Database
+	dbLogs          *cmsql.Database
+	carrier         *vtpost.Carrier
+	shipmentManager *carrier.ShipmentManager
+	identityQS      identity.QueryBus
+	shippingAggr    shippingcore.CommandBus
 }
 
-func New(dbLogs *cmsql.Database, carrier *vtpost.Carrier) *Webhook {
+func New(db, dbLogs *cmsql.Database, carrier *vtpost.Carrier, shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus, shippingA shippingcore.CommandBus) *Webhook {
 	wh := &Webhook{
-		dbLogs:  dbLogs,
-		carrier: carrier,
+		db:              db,
+		dbLogs:          dbLogs,
+		carrier:         carrier,
+		shipmentManager: shipmentM,
+		identityQS:      identityQ,
+		shippingAggr:    shippingA,
 	}
 	return wh
 }
@@ -53,73 +66,126 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		return cm.Errorf(cm.InvalidArgument, err, "VTPost: Can not decode JSON callback")
 	}
 	ll.Debug("VPPOST callback", l.Object("msg", msg))
-	ctx := c.Req.Context()
 	orderData := msg.Data
 	statusCode := orderData.OrderStatus
-	vtpostStatus := vtpostclient.ToVTPostShippingState(statusCode)
 	var ffm *shipmodel.Fulfillment
 
 	defer func() {
 		// save to database etop_log
-		data, _ := jsonx.Marshal(orderData)
-		webhookData := &logmodel.ShippingProviderWebhook{
-			ID:                       cm.NewID(),
-			ShippingProvider:         shipping_provider.VTPost.String(),
-			Data:                     data,
-			ShippingCode:             orderData.OrderNumber,
-			ExternalShippingState:    orderData.StatusName,
-			ExternalShippingSubState: vtpostclient.SubStateMap[statusCode],
-			Error:                    model.ToError(_err),
-		}
-		if ffm != nil {
-			webhookData.ShippingState = vtpostStatus.ToModel(ffm.ShippingState).String()
-		}
-		if _, err := wh.dbLogs.Insert(webhookData); err != nil {
-			ll.Error("Insert db etop_log error", l.Error(err))
-		}
+		wh.saveLogsWebhook(msg, ffm, _err)
 	}()
 
+	ctx := c.Req.Context()
+	ffm, err := wh.validateDataAndGetFfm(ctx, msg)
+	if err != nil {
+		return err
+	}
+
+	ctx, err = shipping.WebhookWlWrapContext(ctx, ffm.ShopID, wh.identityQS)
+	if err != nil {
+		return err
+	}
+
+	err = wh.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updateFfm, err := vtpost.CalcUpdateFulfillment(ffm, orderData)
+		if err != nil {
+			return cm.Errorf(cm.FailedPrecondition, err, err.Error()).WithMeta("result", "ignore")
+		}
+		updateFfm.LastSyncAt = t0
+		// UpdateInfo other time
+		updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
+
+		// update shipping fee lines
+		weight := orderData.ProductWeight
+		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, ffm.ID, weight, updateFfm.ProviderShippingFeeLines); err != nil {
+			ll.S.Errorf("Lỗi cập nhật cước phí VTPost: %v", err.Error())
+		}
+
+		note := orderData.Note
+		subState := vtpostclient.SubStateMap[statusCode]
+		update := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
+			FulfillmentID:             ffm.ID,
+			ShippingState:             updateFfm.ShippingState,
+			ShippingStatus:            updateFfm.ShippingStatus,
+			ExternalShippingData:      updateFfm.ExternalShippingData,
+			ExternalShippingState:     updateFfm.ExternalShippingState,
+			ExternalShippingStatus:    updateFfm.ExternalShippingStatus,
+			ExternalShippingUpdatedAt: updateFfm.ExternalShippingUpdatedAt,
+			ExternalShippingLogs:      shippingconvert.Convert_shippingmodel_ExternalShippingLogs_shipping_ExternalShippingLogs(updateFfm.ExternalShippingLogs),
+			ExternalShippingStateCode: updateFfm.ExternalShippingStateCode,
+			Weight:                    weight,
+			ClosedAt:                  updateFfm.ClosedAt,
+			LastSyncAt:                updateFfm.LastSyncAt,
+			ShippingCreatedAt:         updateFfm.ShippingCreatedAt,
+			ShippingPickingAt:         updateFfm.ShippingPickingAt,
+			ShippingDeliveringAt:      updateFfm.ShippingDeliveringAt,
+			ShippingDeliveredAt:       updateFfm.ShippingDeliveredAt,
+			ShippingReturningAt:       updateFfm.ShippingReturningAt,
+			ShippingReturnedAt:        updateFfm.ShippingReturnedAt,
+			ShippingCancelledAt:       updateFfm.ShippingCancelledAt,
+			ExternalShippingNote:      dot.String(note),
+			ExternalShippingSubState:  dot.String(subState),
+		}
+		if err := wh.shippingAggr.Dispatch(ctx, update); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	c.SetResult(map[string]string{"code": "ok"})
+	return nil
+}
+
+func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg vtpostclient.CallbackOrder) (ffm *shipmodel.Fulfillment, err error) {
+	orderData := msg.Data
 	query := &modelx.GetFulfillmentQuery{
 		ShippingProvider:     shipping_provider.VTPost,
 		ExternalShippingCode: orderData.OrderNumber,
 	}
 
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return cm.MapError(err).
+		return nil, cm.MapError(err).
 			Wrapf(cm.NotFound, "VTPost: Fulfillment not found: %v", orderData.OrderNumber).
 			DefaultInternal().WithMeta("result", "ignore")
 	}
-
 	ffm = query.Result
 	// gặp các hành trình này 501 giao thành công. 503, tiêu hủy.
 	// 504 hoàn thành công. 201 hủy phiếu gửi(Viettelpost thực hiện).
 	// 107, hủy đơn(Khách hang thực hiện)
 	// => Không update trạng thái đơn nữa.
 	if cm.StringsContain(EndStatesCode, ffm.ExternalShippingStateCode) {
-		return cm.Errorf(cm.FailedPrecondition, nil, "This ffm was done. Cannot update it.").WithMeta("result", "ignore")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "This ffm was done. Cannot update it.").WithMeta("result", "ignore")
 	}
 
 	providerServiceID := ffm.ProviderServiceID
-	_, _, err := vtpost.ParseServiceID(providerServiceID)
+	_, _, err = vtpost.ParseServiceID(providerServiceID)
 	if err != nil {
-		return cm.Errorf(cm.FailedPrecondition, err, "VTPost: Can not parse ProviderServiceID in fulfillment.").WithMeta("result", "ignore")
+		return nil, cm.Errorf(cm.FailedPrecondition, err, "VTPost: Can not parse ProviderServiceID in fulfillment.").WithMeta("result", "ignore")
 	}
+	return
+}
 
-	updateFfm := vtpost.CalcUpdateFulfillment(ffm, orderData)
-	updateFfm.LastSyncAt = t0
-	// UpdateInfo other time
-	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
-	note := orderData.Note
-	subState := vtpostclient.SubStateMap[statusCode]
-	updateCmd := &modelx.UpdateFulfillmentCommand{
-		Fulfillment:              updateFfm,
-		ExternalShippingNote:     dot.String(note),
-		ExternalShippingSubState: dot.String(subState),
+func (wh *Webhook) saveLogsWebhook(msg vtpostclient.CallbackOrder, ffm *shipmodel.Fulfillment, err error) {
+	orderData := msg.Data
+	data, _ := jsonx.Marshal(orderData)
+	statusCode := orderData.OrderStatus
+	vtpostStatus := vtpostclient.ToVTPostShippingState(statusCode)
+	webhookData := &logmodel.ShippingProviderWebhook{
+		ID:                       cm.NewID(),
+		ShippingProvider:         shipping_provider.VTPost.String(),
+		Data:                     data,
+		ShippingCode:             orderData.OrderNumber,
+		ExternalShippingState:    orderData.StatusName,
+		ExternalShippingSubState: vtpostclient.SubStateMap[statusCode],
+		Error:                    model.ToError(err),
 	}
-	if err := bus.Dispatch(ctx, updateCmd); err != nil {
-		return err
+	if ffm != nil {
+		webhookData.ShippingState = vtpostStatus.ToModel(ffm.ShippingState).String()
 	}
-
-	c.SetResult(map[string]string{"code": "ok"})
-	return nil
+	if _, err := wh.dbLogs.Insert(webhookData); err != nil {
+		ll.Error("Insert db etop_log error", l.Error(err))
+	}
 }

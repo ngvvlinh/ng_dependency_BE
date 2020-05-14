@@ -12,8 +12,8 @@ import (
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/try_on"
 	addressmodel "o.o/backend/com/main/address/model"
+	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
-	etopmodel "o.o/backend/pkg/etop/model"
 	etlordermodel "o.o/backend/zexp/etl/main/order/model"
 	"o.o/capi/dot"
 )
@@ -144,7 +144,7 @@ type Fulfillment struct {
 	// Updated by webhook or querying GHN API
 	LastSyncAt time.Time
 
-	ExternalShippingLogs []*etopmodel.ExternalShippingLog
+	ExternalShippingLogs []*shipmodel.ExternalShippingLog
 	AdminNote            string
 	IsPartialDelivery    bool
 	CreatedBy            dot.ID

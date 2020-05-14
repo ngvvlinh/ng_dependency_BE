@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
@@ -18,10 +19,14 @@ import (
 	addressconvert "o.o/backend/com/main/address/convert"
 	orderconvert "o.o/backend/com/main/ordering/convert"
 	"o.o/backend/com/main/shipping/carrier"
+	shippingconvert "o.o/backend/com/main/shipping/convert"
 	shipmodel "o.o/backend/com/main/shipping/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/com/main/shipping/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	etopmodel "o.o/backend/pkg/etop/model"
@@ -32,6 +37,7 @@ import (
 
 var _ shipping.Aggregate = &Aggregate{}
 var ll = l.New()
+var scheme = conversion.Build(shippingconvert.RegisterConversions)
 
 type Aggregate struct {
 	db             cmsql.Transactioner
@@ -41,12 +47,14 @@ type Aggregate struct {
 	connectionQS   connectioning.QueryBus
 	ffmStore       sqlstore.FulfillmentStoreFactory
 	eventBus       capi.EventBus
+	teleBot        *telebot.Channel
 }
 
-func NewAggregate(db *cmsql.Database, locationQS location.QueryBus, orderQS ordering.QueryBus, shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus, eventB capi.EventBus) *Aggregate {
+func NewAggregate(db *cmsql.Database, eventB capi.EventBus, locationQS location.QueryBus, teleBot *telebot.Channel, orderQS ordering.QueryBus, shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus) *Aggregate {
 	return &Aggregate{
 		db:             db,
 		locationQS:     locationQS,
+		teleBot:        teleBot,
 		orderQS:        orderQS,
 		shimentManager: shipmentManager,
 		connectionQS:   connectionQS,
@@ -362,19 +370,34 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 	if err != nil {
 		return 0, err
 	}
-	event := &shipping.FulfillmentUpdatingEvent{
-		EventMeta:         meta.NewEvent(),
-		FulfillmentID:     ffm.ID,
-		MoneyTxShippingID: ffm.MoneyTransactionID,
-	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
-		return 0, err
-	}
 
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		if err := a.ffmStore(ctx).UpdateFulfillmentShippingFees(args); err != nil {
+		var lines []*shippingsharemodel.ShippingFeeLine
+		var providerShippingFeeLines []*shippingsharemodel.ShippingFeeLine
+		if err := scheme.Convert(args.ProviderShippingFeeLines, &providerShippingFeeLines); err != nil {
 			return err
 		}
+		if args.ShippingFeeLines != nil {
+			if err := scheme.Convert(args.ShippingFeeLines, &lines); err != nil {
+				return err
+			}
+		} else {
+			lines = shippingsharemodel.GetShippingFeeShopLines(providerShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		}
+
+		totalShippingFeeShop := shippingsharemodel.GetTotalShippingFee(lines)
+		update := &shipmodel.Fulfillment{
+			ProviderShippingFeeLines: providerShippingFeeLines,
+			ShippingFeeShopLines:     lines,
+			ShippingFeeShop:          shipping.CalcShopShippingFee(totalShippingFeeShop, ffm),
+		}
+		if err := a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update); err != nil {
+			return err
+		}
+		if err := a.ffmStore(ctx).UpdateFulfillmentPriceListInfo(args); err != nil {
+			return err
+		}
+
 		eventChanged := &shipping.FulfillmentShippingFeeChangedEvent{
 			EventMeta:         meta.NewEvent(),
 			FulfillmentID:     ffm.ID,
@@ -440,7 +463,7 @@ func (a *Aggregate) UpdateFulfillmentsStatus(ctx context.Context, args *shipping
 }
 
 func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.CancelFulfillmentArgs) error {
-	ffm, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFfmDB()
+	ffm, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFulfillment()
 	if err != nil {
 		return err
 	}
@@ -457,22 +480,15 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 		}
 
 		// backward compatible
-		if ffm.ShippingType == 0 {
-			switch ffm.ShippingProvider {
-			case shipping_provider.GHN:
-				ffm.ConnectionID = connectioning.DefaultTopshipGHNConnectionID
-			case shipping_provider.GHTK:
-				ffm.ConnectionID = connectioning.DefaultTopshipGHTKConnectionID
-			case shipping_provider.VTPost:
-				ffm.ConnectionID = connectioning.DefaultTopshipVTPostConnectionID
-			default:
+		ffm.ConnectionID = shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 
-			}
+		var ffmDB shipmodel.Fulfillment
+		if err := scheme.Convert(ffm, &ffmDB); err != nil {
+			return err
 		}
-
 		// case shipment: cancel ffm from carrier
 		if ffm.ConnectionID != 0 {
-			return a.shimentManager.CancelFulfillment(ctx, ffm)
+			return a.shimentManager.CancelFulfillment(ctx, &ffmDB)
 		}
 		return nil
 	})
@@ -486,49 +502,118 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 	}
 
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		// update state
-		if args.ShippingState != 0 {
-			updateState := &shipping.UpdateFulfillmentShippingStateArgs{
-				FulfillmentID: args.FulfillmentID,
-				ShippingState: args.ShippingState,
-			}
-			if _, err := a.UpdateFulfillmentShippingState(ctx, updateState); err != nil {
-				return err
-			}
-			updated = 1
-		}
-
-		// update shipping fee
-		if args.ProviderShippingFeeLines != nil {
-			updateFee := &shipping.UpdateFulfillmentShippingFeesArgs{
-				FulfillmentID:            args.FulfillmentID,
-				ProviderShippingFeeLines: args.ProviderShippingFeeLines,
-			}
-			if err := a.ffmStore(ctx).UpdateFulfillmentShippingFees(updateFee); err != nil {
-				return err
-			}
-			updated = 1
-		}
-
-		// update another info
-		update := &shipmodel.Fulfillment{}
-		count := 0
-		if args.ExternalShippingNote != "" {
-			update.ExternalShippingNote = args.ExternalShippingNote
-			count++
+		update := &shipmodel.Fulfillment{
+			ShippingState:             args.ShippingState,
+			ShippingStatus:            args.ShippingStatus,
+			ExternalShippingData:      args.ExternalShippingData,
+			ExternalShippingState:     args.ExternalShippingState,
+			ExternalShippingStatus:    args.ExternalShippingStatus,
+			ExternalShippingUpdatedAt: args.ExternalShippingUpdatedAt,
+			ExternalShippingStateCode: args.ExternalShippingStateCode,
+			ClosedAt:                  args.ClosedAt,
+			LastSyncAt:                args.LastSyncAt,
+			ShippingCreatedAt:         args.ShippingCreatedAt,
+			ShippingPickingAt:         args.ShippingPickingAt,
+			ShippingDeliveringAt:      args.ShippingDeliveringAt,
+			ShippingDeliveredAt:       args.ShippingDeliveredAt,
+			ShippingReturningAt:       args.ShippingReturningAt,
+			ShippingReturnedAt:        args.ShippingReturnedAt,
+			ShippingCancelledAt:       args.ShippingCancelledAt,
 		}
 		if args.Weight != 0 {
 			update.TotalWeight = args.Weight
 			update.GrossWeight = args.Weight
-			count++
 		}
-		if count > 0 {
-			if err := a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update); err != nil {
-				return err
-			}
-			updated = 1
+		if args.ExternalShippingLogs != nil {
+			logs := shippingconvert.Convert_shipping_ExternalShippingLogs_shippingmodel_ExternalShippingLogs(args.ExternalShippingLogs)
+			update.ExternalShippingLogs = logs
 		}
+
+		if err := a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update); err != nil {
+			return err
+		}
+
+		args2 := &sqlstore.ForceUpdateExternalShippingInfoArgs{
+			FulfillmentID:            args.FulfillmentID,
+			ExternalShippingNote:     args.ExternalShippingNote,
+			ExternalShippingSubState: args.ExternalShippingSubState,
+		}
+		if err := a.ffmStore(ctx).ForceUpdateExternalShippingInfo(args2); err != nil {
+			return err
+		}
+
+		updated = 1
 		return nil
 	})
 	return
+}
+
+// UpdateFulfillmentShippingFeesFromWebhook
+//
+// Cập nhật giá vận chuyển từ webhook
+// Kiểm tra nếu có thay đổi về khối lượng, sẽ tính lại giá theo bảng giá hiện tại của TOPSHIP. Nếu không có giá TOPSHIP sẽ giữ nguyên giá từ NVC => cập nhật lại giá mới hoặc thông báo qua telegram nếu đơn đã nằm trong phiên thanh toán với shop
+func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context, args *shipping.UpdateFulfillmentShippingFeesFromWebhookArgs) error {
+	providerFeeLines := args.ProviderFeeLines
+	if providerFeeLines == nil || len(providerFeeLines) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing providerFeeLines")
+	}
+	ffm, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFulfillment()
+	if err != nil {
+		return err
+	}
+	ffmDB := shippingconvert.Convert_shipping_Fulfillment_shippingmodel_Fulfillment(ffm, nil)
+
+	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
+	if connectionID == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "ConnectionID can not be empty")
+	}
+
+	applyPriceList, makeupMainPrice := ffm.EtopPriceRule, ffm.EtopAdjustedShippingFeeMain
+	if args.NewWeight != 0 && args.NewWeight != ffm.TotalWeight {
+		if a.shimentManager.FlagApplyShipmentPrice {
+			mainPrice, err := a.shimentManager.CalcMakeupShipmentPrice(ctx, ffmDB, args.NewWeight)
+			if err == nil {
+				// apply topship pricelist
+				applyPriceList = true
+				makeupMainPrice = mainPrice
+			} else {
+				applyPriceList = false
+				makeupMainPrice = 0
+			}
+		}
+	}
+
+	shippingFeeShopLines := shipping.GetShippingFeeShopLines(providerFeeLines, applyPriceList, dot.Int(makeupMainPrice))
+	shippingFee := shipping.GetTotalShippingFee(shippingFeeShopLines)
+
+	if shipping.CalcShopShippingFee(shippingFee, ffm) == ffm.ShippingFeeShop {
+		// Giá không thay đổi
+		// Không cần làm gì
+		return nil
+	}
+
+	// check money_transaction_shipping
+	if ffm.MoneyTransactionID != 0 {
+		// Đơn đã nằm trong phiên
+		// Giá cước đơn thay đổi
+		// Không cập nhật + bắn noti telegram để follow
+		connection, _ := a.shimentManager.GetConnectionByID(ctx, connectionID)
+		str := "–––\n👹 %v: đơn %v có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- Giá hiện tại: %v \n- Giá mới: %v\n–––"
+		a.teleBot.SendMessage(fmt.Sprintf(str, connection.Name, ffm.ShippingCode, ffm.ShippingFeeShop, shippingFee))
+
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn (ffmID = %v) có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật")
+	}
+
+	update := &shipping.UpdateFulfillmentShippingFeesArgs{
+		FulfillmentID:               ffm.ID,
+		ShippingCode:                ffm.ShippingCode,
+		EtopPriceRule:               dot.Bool(applyPriceList),
+		EtopAdjustedShippingFeeMain: dot.Int(makeupMainPrice),
+		ProviderShippingFeeLines:    providerFeeLines,
+		ShippingFeeLines:            shippingFeeShopLines,
+	}
+	if _, err := a.UpdateFulfillmentShippingFees(ctx, update); err != nil {
+		return err
+	}
+	return nil
 }

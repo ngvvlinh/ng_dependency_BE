@@ -1078,7 +1078,7 @@ func PbPublicFulfillment(item *shipmodel.Fulfillment) *types.PublicFulfillment {
 	}
 }
 
-func PbExternalShippingLogs(items []*model.ExternalShippingLog) []*types.ExternalShippingLog {
+func PbExternalShippingLogs(items []*shipmodel.ExternalShippingLog) []*types.ExternalShippingLog {
 	result := make([]*types.ExternalShippingLog, len(items))
 	for i, item := range items {
 		result[i] = PbExternalShippingLog(item)
@@ -1086,7 +1086,7 @@ func PbExternalShippingLogs(items []*model.ExternalShippingLog) []*types.Externa
 	return result
 }
 
-func PbExternalShippingLog(l *model.ExternalShippingLog) *types.ExternalShippingLog {
+func PbExternalShippingLog(l *shipmodel.ExternalShippingLog) *types.ExternalShippingLog {
 	return &types.ExternalShippingLog{
 		StateText: l.StateText,
 		Time:      l.Time,

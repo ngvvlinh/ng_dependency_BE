@@ -689,6 +689,7 @@ func convert_identitymodel_Shop_identity_Shop(arg *identitymodel.Shop, out *iden
 	out.BankAccount = Convert_sharemodel_BankAccount_identitytypes_BankAccount(arg.BankAccount, nil)
 	out.TryOn = arg.TryOn // simple assign
 	out.CompanyInfo = Convert_sharemodel_CompanyInfo_identitytypes_CompanyInfo(arg.CompanyInfo, nil)
+	out.WLPartnerID = arg.WLPartnerID // simple assign
 }
 
 func Convert_identitymodel_Shops_identity_Shops(args []*identitymodel.Shop) (outs []*identity.Shop) {
@@ -736,7 +737,7 @@ func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitym
 	out.SurveyInfo = Convert_identity_SurveyInfoes_identitymodel_SurveyInfoes(arg.SurveyInfo)
 	out.ShippingServiceSelectStrategy = Convert_identity_ShippingServiceSelectStrategyItems_identitymodel_ShippingServiceSelectStrategyItems(arg.ShippingServiceSelectStrategy)
 	out.InventoryOverstock = arg.InventoryOverstock // simple assign
-	out.WLPartnerID = 0                             // zero value
+	out.WLPartnerID = arg.WLPartnerID               // simple assign
 	out.Rid = 0                                     // zero value
 }
 

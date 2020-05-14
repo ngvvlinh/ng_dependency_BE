@@ -1,19 +1,26 @@
 package shipping
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	"o.o/api/main/shipnow"
+	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
 	locationutil "o.o/backend/com/main/location/util"
+	shippingconvert "o.o/backend/com/main/shipping/convert"
 	shipmodel "o.o/backend/com/main/shipping/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 func CalcPickTime(shippingProvider shipping_provider.ShippingProvider, t time.Time) time.Time {
@@ -214,4 +221,27 @@ func CalcShipnowTimeBaseOnState(ffm *shipnow.ShipnowFulfillment, state shipnow_s
 
 func ChangeWeightNote(oldWeight, newWeight int) string {
 	return fmt.Sprintf("Khối lượng thay đổi từ %v thành %v", oldWeight, newWeight)
+}
+
+func WebhookWlWrapContext(ctx context.Context, shopID dot.ID, identityQS identity.QueryBus) (context.Context, error) {
+	// Get WLPartnerID to wrap context from shop (GetShopByID)
+	// TODO: ffm contains WLPartnerID
+	queryShop := &identity.GetShopByIDQuery{
+		ID: shopID,
+	}
+	if err := identityQS.Dispatch(ctx, queryShop); err != nil {
+		return nil, err
+	}
+	ctx = wl.WrapContextByPartnerID(ctx, queryShop.Result.WLPartnerID)
+	return ctx, nil
+}
+
+func UpdateShippingFeeLines(ctx context.Context, shippingAggr shippingcore.CommandBus, ffmID dot.ID, weight int, providerFeeLines []*shippingsharemodel.ShippingFeeLine) error {
+	providerFeeLinesCore := shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(providerFeeLines)
+	cmd := &shippingcore.UpdateFulfillmentShippingFeesFromWebhookCommand{
+		FulfillmentID:    ffmID,
+		NewWeight:        weight,
+		ProviderFeeLines: providerFeeLinesCore,
+	}
+	return shippingAggr.Dispatch(ctx, cmd)
 }

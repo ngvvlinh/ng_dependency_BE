@@ -14,12 +14,12 @@ import (
 	"o.o/common/jsonx"
 )
 
-func CalcUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackOrder, ffmToUpdate *shipmodel.Fulfillment) {
+func CalcUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackOrder, ffmToUpdate *shipmodel.Fulfillment) (*shipmodel.Fulfillment, error) {
 	if ffmToUpdate == nil {
 		ffmToUpdate = &shipmodel.Fulfillment{}
 	}
 	if !shipping.CanUpdateFulfillment(ffm) {
-		return
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update Fulfillment (id = %v, shipping_code = %v)", ffm.ID, ffm.ShippingCode)
 	}
 
 	now := time.Now()
@@ -32,9 +32,10 @@ func CalcUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment, msg *ghtkclien
 	ffmToUpdate.ExternalShippingData = data
 	ffmToUpdate.ExternalShippingState = ghtkclient.StateMapping[stateID]
 	ffmToUpdate.ShippingState = stateID.ToModel()
-	ffm.ShippingStatus = stateID.ToStatus5()
+	ffmToUpdate.ShippingStatus = stateID.ToStatus5()
+	ffmToUpdate.ExternalShippingStateCode = strconv.Itoa(statusID)
 
-	return
+	return ffmToUpdate, nil
 }
 
 func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, ghtkOrder *ghtkclient.OrderInfo) (*shipmodel.Fulfillment, error) {
