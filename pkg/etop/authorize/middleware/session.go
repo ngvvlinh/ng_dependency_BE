@@ -152,7 +152,7 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 			return ctx, err
 		}
 		_acc := account.GetAccount()
-		if _acc.Type != account_type.Partner {
+		if _acc.Type != expectType {
 			return ctx, cm.Errorf(cm.PermissionDenied, nil, "")
 		}
 		wlPartnerID = _acc.ID
