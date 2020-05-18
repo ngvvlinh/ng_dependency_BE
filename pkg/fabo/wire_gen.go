@@ -21,6 +21,6 @@ func NewFaboServer(hooks httprpc.HooksBuilder, ss *session.Session, fbExternalUs
 	faboInfo := faboinfo.New(fbPagingQuery, fbExternalUserQuery)
 	pageService := NewPageService(ss, faboInfo, fbExternalUserQuery, fbExternalUserAggr, fbPagingQuery, fbPagingAggr, appScopes, fbClient)
 	customerConversationService := NewCustomerConversationService(ss, faboInfo, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbClient)
-	faboServers := NewServer(hooks, faboInfo, pageService, customerConversationService)
+	faboServers := NewServer(hooks, pageService, customerConversationService)
 	return faboServers
 }

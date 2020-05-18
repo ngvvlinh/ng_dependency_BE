@@ -24,12 +24,12 @@ type Aggregate interface {
 type QueryService interface {
 	GetFbExternalPageByID(_ context.Context, ID dot.ID) (*FbExternalPage, error)
 	GetFbExternalPageByExternalID(_ context.Context, externalID string) (*FbExternalPage, error)
+	ListFbExternalPages(context.Context, *ListFbExternalPagesArgs) (*FbPagesResponse, error)
 	GetFbExternalPageActiveByExternalID(_ context.Context, externalID string) (*FbExternalPage, error)
 
 	GetFbExternalPageInternalByID(_ context.Context, ID dot.ID) (*FbExternalPageInternal, error)
 	GetFbExternalPageInternalByExternalID(_ context.Context, externalID string) (*FbExternalPageInternal, error)
 
-	ListFbExternalPages(context.Context, *ListFbExternalPagesArgs) (*FbPagesResponse, error)
 	ListFbExternalPagesByIDs(_ context.Context, IDs []dot.ID) ([]*FbExternalPage, error)
 	ListFbExternalPagesByExternalIDs(_ context.Context, externalIDs []string) ([]*FbExternalPage, error)
 	ListFbExternalPagesActiveByExternalIDs(_ context.Context, externalIDs []string) ([]*FbExternalPage, error)

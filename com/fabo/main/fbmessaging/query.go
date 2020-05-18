@@ -174,6 +174,12 @@ func (q *FbMessagingQuery) GetLatestFbExternalComment(
 	return q.fbExternalCommentStore(ctx).GetLatestExternalComment(externalPageID, externalPostID, externalUserID)
 }
 
+func (q *FbMessagingQuery) GetLatestCustomerExternalComment(
+	ctx context.Context, externalPostID, externalUserID string,
+) (*fbmessaging.FbExternalComment, error) {
+	return q.fbExternalCommentStore(ctx).GetLatestCustomerExternalComment(externalPostID, externalUserID)
+}
+
 func (q *FbMessagingQuery) ListFbExternalComments(
 	ctx context.Context, args *fbmessaging.ListFbExternalCommentsArgs,
 ) (*fbmessaging.FbExternalCommentsResponse, error) {

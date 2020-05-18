@@ -50,8 +50,18 @@ func (s *FbExternalCommentStore) ExternalUserID(externalUserID string) *FbExtern
 	return s
 }
 
+func (s *FbExternalCommentStore) ExternalID(externalID string) *FbExternalCommentStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
+	return s
+}
+
 func (s *FbExternalCommentStore) ExternalIDs(externalIDs []string) *FbExternalCommentStore {
 	s.preds = append(s.preds, sq.In("external_id", externalIDs))
+	return s
+}
+
+func (s *FbExternalCommentStore) ExternalPageID(externalPageID string) *FbExternalCommentStore {
+	s.preds = append(s.preds, s.ft.ByExternalPageID(externalPageID))
 	return s
 }
 
@@ -144,6 +154,26 @@ func (s *FbExternalCommentStore) GetLatestExternalComment(externalPageID, extern
 			)
 		`, externalPostID, externalUserID, externalPageID, externalUserID)).
 		OrderBy("external_created_time desc", "id asc").
+		Limit(1).
+		ShouldGet(&fbExternalComment); err != nil {
+		return nil, err
+	}
+
+	result := fbmessaging.FbExternalComment{}
+	if err := scheme.Convert(&fbExternalComment, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (s *FbExternalCommentStore) GetLatestCustomerExternalComment(
+	externalPostID, externalUserID string,
+) (*fbmessaging.FbExternalComment, error) {
+	var fbExternalComment model.FbExternalComment
+	if err := s.query().
+		Where(s.ft.ByExternalPostID(externalPostID)).
+		Where(s.ft.ByExternalUserID(externalUserID)).
+		OrderBy("external_created_time desc", "id desc").
 		Limit(1).
 		ShouldGet(&fbExternalComment); err != nil {
 		return nil, err

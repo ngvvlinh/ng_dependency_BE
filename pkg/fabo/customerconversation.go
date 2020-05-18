@@ -152,8 +152,8 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	ctx context.Context, request *fabo.ListCommentsByExternalPostIDRequest,
 ) (*fabo.ListCommentsByExternalPostIDResponse, error) {
 	// TODO: Ngoc add message
-	if request.Filter.ExternalPostID == "" {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "")
+	if request.Filter == nil || request.Filter.ExternalPostID == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing external_post_id")
 	}
 	paging, err := cmapi.CMCursorPaging(request.Paging)
 	if err != nil {
@@ -194,12 +194,25 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		return nil, err
 	}
 
+	var latestCustomerFbExternalComment *fbmessaging.FbExternalComment
+	if request.Filter.ExternalUserID != "" {
+		getLatestCustomerExternalCommentQuery := &fbmessaging.GetLatestCustomerExternalCommentQuery{
+			ExternalPostID: request.Filter.ExternalPostID,
+			ExternalUserID: request.Filter.ExternalUserID,
+		}
+		if err := s.fbMessagingQuery.Dispatch(ctx, getLatestCustomerExternalCommentQuery); err != nil {
+			return nil, err
+		}
+		latestCustomerFbExternalComment = getLatestCustomerExternalCommentQuery.Result
+	}
+
 	return &fabo.ListCommentsByExternalPostIDResponse{
 		FbComments: &fabo.FbCommentsResponse{
 			FbComments: convertpb.PbFbExternalComments(listFbExternalCommentsQuery.Result.FbExternalComments),
 			Paging:     cmapi.PbCursorPageInfo(paging, &listFbExternalCommentsQuery.Result.Paging),
 		},
-		FbPost: convertpb.PbFbExternalPost(fbExternalPost),
+		LatestCustomerFbExternalComment: convertpb.PbFbExternalComment(latestCustomerFbExternalComment),
+		FbPost:                          convertpb.PbFbExternalPost(fbExternalPost),
 	}, nil
 }
 
@@ -216,6 +229,89 @@ func (s *CustomerConversationService) UpdateReadStatus(
 	return &common.UpdatedResponse{
 		Updated: updateIsReadCustomerConversationCmd.Result,
 	}, nil
+}
+
+func (s *CustomerConversationService) SendComment(
+	ctx context.Context, request *fabo.SendCommentRequest,
+) (*fabo.FbExternalComment, error) {
+	if request.ExternalPageID == "" {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "missing external_page_id")
+	}
+	if request.ExternalID == "" {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "missing external_id")
+	}
+	if request.ExternalPostID == "" {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "missing external_post_id")
+	}
+	if request.Message == "" && request.AttachmentURL == "" {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "missing content")
+	}
+
+	getFbExternalPageInternalQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
+		ExternalID: request.ExternalID,
+	}
+	if err := s.fbPagingQuery.Dispatch(ctx, getFbExternalPageInternalQuery); err != nil {
+		return nil, err
+	}
+	accessToken := getFbExternalPageInternalQuery.Result.Token
+
+	getFbExternalPostByExternalIDQuery := &fbmessaging.GetFbExternalPostByExternalIDQuery{
+		ExternalID: request.ExternalPostID,
+	}
+	if err := s.fbMessagingQuery.Dispatch(ctx, getFbExternalPostByExternalIDQuery); err != nil {
+		return nil, err
+	}
+
+	sendCommentRequest := &fbclientmodel.SendCommentRequest{
+		ID:            request.ExternalID,
+		Message:       request.Message,
+		AttachmentURL: request.AttachmentURL,
+	}
+	sendCommentResponse, err := s.fbClient.CallAPISendComment(accessToken, sendCommentRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	newComment, err := s.fbClient.CallAPICommentByID(accessToken, sendCommentResponse.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	var externalUserID, externalParentID, externalParentUserID string
+	if newComment.From != nil {
+		externalUserID = newComment.From.ID
+	}
+	if newComment.Parent != nil {
+		externalParentID = newComment.Parent.ID
+		if newComment.Parent.From != nil {
+			externalParentUserID = newComment.Parent.From.ID
+		}
+	}
+	createOrUpdateFbExternalCommentsCmd := &fbmessaging.CreateOrUpdateFbExternalCommentsCommand{
+		FbExternalComments: []*fbmessaging.CreateFbExternalCommentArgs{
+			{
+				ID:                   cm.NewID(),
+				ExternalPostID:       request.ExternalPostID,
+				ExternalPageID:       request.ExternalPageID,
+				ExternalID:           sendCommentResponse.ID,
+				ExternalUserID:       externalUserID,
+				ExternalParentID:     externalParentID,
+				ExternalParentUserID: externalParentUserID,
+				ExternalMessage:      newComment.Message,
+				ExternalCommentCount: newComment.CommentCount,
+				ExternalParent:       fbclientconvert.ConvertFbObjectParent(newComment.Parent),
+				ExternalFrom:         fbclientconvert.ConvertObjectFrom(newComment.From),
+				ExternalAttachment:   fbclientconvert.ConvertFbCommentAttachment(newComment.Attachment),
+				ExternalCreatedTime:  newComment.CreatedTime.ToTime(),
+			},
+		},
+	}
+
+	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalCommentsCmd); err != nil {
+		return nil, err
+	}
+
+	return convertpb.PbFbExternalComment(createOrUpdateFbExternalCommentsCmd.Result[0]), nil
 }
 
 func (s *CustomerConversationService) SendMessage(

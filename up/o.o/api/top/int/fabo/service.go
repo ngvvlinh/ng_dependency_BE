@@ -19,9 +19,13 @@ type PageService interface {
 // +apix:path=/fabo.CustomerConversation
 type CustomerConversationService interface {
 	ListCustomerConversations(context.Context, *ListCustomerConversationsRequest) (*FbCustomerConversationsResponse, error)
+
 	ListMessages(context.Context, *ListMessagesRequest) (*FbMessagesResponse, error)
+
 	ListCommentsByExternalPostID(context.Context, *ListCommentsByExternalPostIDRequest) (*ListCommentsByExternalPostIDResponse, error)
 	UpdateReadStatus(context.Context, *UpdateReadStatusRequest) (*cm.UpdatedResponse, error)
 
 	SendMessage(context.Context, *SendMessageRequest) (*FbExternalMessage, error)
+
+	SendComment(context.Context, *SendCommentRequest) (*FbExternalComment, error)
 }

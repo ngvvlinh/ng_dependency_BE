@@ -96,6 +96,33 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/SendComment": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "SendComment",
+        "operationId": "fabo.CustomerConversation-SendComment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvSendCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvFbExternalComment"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/SendMessage": {
       "post": {
         "tags": [
@@ -940,6 +967,9 @@
         },
         "fb_post": {
           "$ref": "#/definitions/cvFbExternalPost"
+        },
+        "latest_customer_fb_external_comment": {
+          "$ref": "#/definitions/cvFbExternalComment"
         }
       }
     },
@@ -1061,6 +1091,26 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "cvSendCommentRequest": {
+      "type": "object",
+      "properties": {
+        "attachment_url": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_page_id": {
+          "type": "string"
+        },
+        "external_post_id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
         }
       }
     },

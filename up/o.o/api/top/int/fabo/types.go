@@ -287,8 +287,9 @@ type CommentFilter struct {
 }
 
 type ListCommentsByExternalPostIDResponse struct {
-	FbPost     *FbExternalPost     `json:"fb_post"`
-	FbComments *FbCommentsResponse `json:"fb_comments"`
+	FbPost                          *FbExternalPost     `json:"fb_post"`
+	LatestCustomerFbExternalComment *FbExternalComment  `json:"latest_customer_fb_external_comment"`
+	FbComments                      *FbCommentsResponse `json:"fb_comments"`
 }
 
 func (m *ListCommentsByExternalPostIDResponse) String() string { return jsonx.MustMarshalToString(m) }
@@ -331,6 +332,8 @@ type FbExternalComment struct {
 	UpdatedAt            time.Time          `json:"updated_at"`
 }
 
+func (m *FbExternalComment) String() string { return jsonx.MustMarshalToString(m) }
+
 type FbObjectParent struct {
 	CreatedTime time.Time     `json:"created_time"`
 	From        *FbObjectFrom `json:"from"`
@@ -371,3 +374,13 @@ type MessageSendMessageRequest struct {
 	Text string `json:"text"`
 	URL  string `json:"url"`
 }
+
+type SendCommentRequest struct {
+	ExternalPageID string `json:"external_page_id"`
+	ExternalID     string `json:"external_id"` // post_id, comment_id
+	ExternalPostID string `json:"external_post_id"`
+	Message        string `json:"message"`
+	AttachmentURL  string `json:"attachment_url"`
+}
+
+func (m *SendCommentRequest) String() string { return jsonx.MustMarshalToString(m) }

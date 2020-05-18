@@ -107,6 +107,7 @@ func (s *FbExternalPageInternalStore) ListFbPageInternals() (result []*fbpaging.
 	}
 	return
 }
+
 func (s *FbExternalPageInternalStore) GetFbExternalPageInternalDB() (*model.FbExternalPageInternal, error) {
 	query := s.query().Where(s.preds)
 

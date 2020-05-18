@@ -1,7 +1,6 @@
 package fabo
 
 import (
-	"o.o/backend/pkg/fabo/faboinfo"
 	"o.o/capi/httprpc"
 )
 
@@ -14,7 +13,6 @@ type FaboServers []httprpc.Server
 
 func NewServer(
 	hooks httprpc.HooksBuilder,
-	faboInfo *faboinfo.FaboInfo,
 	pageService *PageService,
 	conversationService *CustomerConversationService,
 ) FaboServers {

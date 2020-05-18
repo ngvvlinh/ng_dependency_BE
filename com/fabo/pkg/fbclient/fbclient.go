@@ -654,6 +654,45 @@ func (f *FbClient) CallAPIGetMessage(accessToken, messageID string) (*model.Mess
 	return &message, nil
 }
 
+func (f *FbClient) CallAPICreateSubscribedApps(accessToken string, fields []string) (*model.SubcribedAppResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/me/subscribed_apps", f.apiInfo.Url()))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(SubscribedFields, strings.Join(fields, ","))
+	URL.RawQuery = query.Encode()
+
+	resp, err := http.Post(URL.String(), "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var subcribedAddResponse model.SubcribedAppResponse
+
+	if err := json.Unmarshal(body, &subcribedAddResponse); err != nil {
+		return nil, err
+	}
+
+	return &subcribedAddResponse, nil
+}
+
 // TODO: handle errors
 func (f *FbClient) CallAPISendMessage(accessToken string, sendMessageRequest *model.SendMessageRequest) (*model.SendMessageResponse, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/me/messages", f.apiInfo.Url()))
@@ -706,8 +745,8 @@ func (f *FbClient) CallAPISendMessage(accessToken string, sendMessageRequest *mo
 	return &sendMessageResponse, nil
 }
 
-func (f *FbClient) CallAPICreateSubscribedApps(accessToken string, fields []string) (*model.SubcribedAppResponse, error) {
-	URL, err := url.Parse(fmt.Sprintf("%s/me/subscribed_apps", f.apiInfo.Url()))
+func (f *FbClient) CallAPISendComment(accessToken string, sendCommentRequest *model.SendCommentRequest) (*model.SendCommentResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s/comments", f.apiInfo.Url(), sendCommentRequest.ID))
 	if err != nil {
 		return nil, err
 	}
@@ -718,7 +757,12 @@ func (f *FbClient) CallAPICreateSubscribedApps(accessToken string, fields []stri
 	}
 
 	query.Add(AccessToken, accessToken)
-	query.Add(SubscribedFields, strings.Join(fields, ","))
+	if sendCommentRequest.Message != "" {
+		query.Add(Message, sendCommentRequest.Message)
+	}
+	if sendCommentRequest.AttachmentURL != "" {
+		query.Add(AttachmentURL, sendCommentRequest.AttachmentURL)
+	}
 	URL.RawQuery = query.Encode()
 
 	resp, err := http.Post(URL.String(), "", nil)
@@ -736,13 +780,53 @@ func (f *FbClient) CallAPICreateSubscribedApps(accessToken string, fields []stri
 		return nil, err
 	}
 
-	var subcribedAddResponse model.SubcribedAppResponse
+	var sendCommentResponse model.SendCommentResponse
 
-	if err := json.Unmarshal(body, &subcribedAddResponse); err != nil {
+	if err := json.Unmarshal(body, &sendCommentResponse); err != nil {
 		return nil, err
 	}
 
-	return &subcribedAddResponse, nil
+	return &sendCommentResponse, nil
+}
+
+func (f *FbClient) CallAPICommentByID(accessToken, commentID string) (*model.Comment, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), commentID))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, "message,attachment,id,created_time,comment_count,parent,from,is_hidden")
+	query.Add(DateFormat, UnixDateFormat)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(URL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var comment model.Comment
+
+	if err := json.Unmarshal(body, &comment); err != nil {
+		return nil, err
+	}
+
+	return &comment, nil
 }
 
 func GetRole(tasks []string) FacebookRole {
