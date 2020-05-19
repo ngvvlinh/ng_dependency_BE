@@ -43,6 +43,20 @@ func (h AggregateHandler) HandleCancelReceipt(ctx context.Context, msg *CancelRe
 	return err
 }
 
+type CancelReceiptByRefIDCommand struct {
+	UpdatedBy dot.ID
+	ShopID    dot.ID
+	RefID     dot.ID
+	RefType   receipt_ref.ReceiptRef
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleCancelReceiptByRefID(ctx context.Context, msg *CancelReceiptByRefIDCommand) (err error) {
+	return h.inner.CancelReceiptByRefID(msg.GetArgs(ctx))
+}
+
 type ConfirmReceiptCommand struct {
 	ID     dot.ID
 	ShopID dot.ID
@@ -208,11 +222,12 @@ func (h QueryServiceHandler) HandleListReceiptsByTraderIDsAndStatuses(ctx contex
 
 // implement interfaces
 
-func (q *CancelReceiptCommand) command()  {}
-func (q *ConfirmReceiptCommand) command() {}
-func (q *CreateReceiptCommand) command()  {}
-func (q *DeleteReceiptCommand) command()  {}
-func (q *UpdateReceiptCommand) command()  {}
+func (q *CancelReceiptCommand) command()        {}
+func (q *CancelReceiptByRefIDCommand) command() {}
+func (q *ConfirmReceiptCommand) command()       {}
+func (q *CreateReceiptCommand) command()        {}
+func (q *DeleteReceiptCommand) command()        {}
+func (q *UpdateReceiptCommand) command()        {}
 
 func (q *GetReceiptByCodeQuery) query()                   {}
 func (q *GetReceiptByIDQuery) query()                     {}
@@ -237,6 +252,23 @@ func (q *CancelReceiptCommand) SetCancelReceiptArgs(args *CancelReceiptArgs) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
 	q.CancelReason = args.CancelReason
+}
+
+func (q *CancelReceiptByRefIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelReceiptByRefIDRequest) {
+	return ctx,
+		&CancelReceiptByRefIDRequest{
+			UpdatedBy: q.UpdatedBy,
+			ShopID:    q.ShopID,
+			RefID:     q.RefID,
+			RefType:   q.RefType,
+		}
+}
+
+func (q *CancelReceiptByRefIDCommand) SetCancelReceiptByRefIDRequest(args *CancelReceiptByRefIDRequest) {
+	q.UpdatedBy = args.UpdatedBy
+	q.ShopID = args.ShopID
+	q.RefID = args.RefID
+	q.RefType = args.RefType
 }
 
 func (q *ConfirmReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmReceiptArgs) {
@@ -435,6 +467,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleCancelReceipt)
+	b.AddHandler(h.HandleCancelReceiptByRefID)
 	b.AddHandler(h.HandleConfirmReceipt)
 	b.AddHandler(h.HandleCreateReceipt)
 	b.AddHandler(h.HandleDeleteReceipt)

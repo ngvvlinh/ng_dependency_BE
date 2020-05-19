@@ -21,6 +21,7 @@ type Aggregate interface {
 	CancelReceipt(ctx context.Context, _ *CancelReceiptArgs) (updated int, _ error)
 	ConfirmReceipt(ctx context.Context, _ *ConfirmReceiptArgs) (updated int, _ error)
 	DeleteReceipt(ctx context.Context, ID, shopID dot.ID) (deleted int, _ error)
+	CancelReceiptByRefID(ctx context.Context, _ *CancelReceiptByRefIDRequest) error
 }
 
 type QueryService interface {
@@ -31,6 +32,13 @@ type QueryService interface {
 	ListReceiptsByRefsAndStatus(context.Context, *ListReceiptsByRefsAndStatusArgs) (*ReceiptsResponse, error)
 	ListReceiptsByTraderIDsAndStatuses(ctx context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []status3.Status) (*ReceiptsResponse, error)
 	ListReceiptsByLedgerIDs(context.Context, *ListReceiptsByLedgerIDsArgs) (*ReceiptsResponse, error)
+}
+
+type CancelReceiptByRefIDRequest struct {
+	UpdatedBy dot.ID
+	ShopID    dot.ID
+	RefID     dot.ID
+	RefType   receipt_ref.ReceiptRef
 }
 
 //-- queries --//

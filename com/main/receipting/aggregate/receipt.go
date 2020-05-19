@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/main/ledgering"
 	"o.o/api/main/ordering"
@@ -11,6 +12,7 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/api/shopping/suppliering"
 	"o.o/api/shopping/tradering"
+	"o.o/api/top/types/etc/receipt_mode"
 	"o.o/api/top/types/etc/receipt_ref"
 	"o.o/api/top/types/etc/receipt_type"
 	"o.o/api/top/types/etc/status3"
@@ -134,7 +136,7 @@ func (a *ReceiptAggregate) CreateReceipt(
 			ShopID:    args.ShopID,
 			ReceiptID: receipt.ID,
 		}
-		if err := a.eventBus.Publish(ctx, receiptConfirmEvent); err != nil {
+		if err = a.eventBus.Publish(ctx, receiptConfirmEvent); err != nil {
 			ll.Error("receiptConfirmedEvent", l.Error(err))
 		}
 	}
@@ -175,7 +177,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		receiptNeedValidate.Lines = args.Lines
 		receiptNeedValidate.PaidAt = args.PaidAt
 	}
-	if err := a.validateReceiptForCreateOrUpdate(ctx, args.ShopID, receiptNeedValidate); err != nil {
+	if err = a.validateReceiptForCreateOrUpdate(ctx, args.ShopID, receiptNeedValidate); err != nil {
 		return nil, err
 	}
 
@@ -194,12 +196,12 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		}
 	}
 
-	if err := scheme.Convert(args, receipt); err != nil {
+	if err = scheme.Convert(args, receipt); err != nil {
 		return nil, err
 	}
 
 	receiptDB := new(model.Receipt)
-	if err := scheme.Convert(receipt, receiptDB); err != nil {
+	if err = scheme.Convert(receipt, receiptDB); err != nil {
 		return nil, err
 	}
 	receiptDB.Lines = convert.Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(receipt.Lines)
@@ -262,6 +264,7 @@ func validateTypeAndRefType(receiptType receipt_type.ReceiptType, receiptRefType
 		tuple{receipt_type.Payment, receipt_ref.PurchaseOrder},
 		tuple{receipt_type.Payment, receipt_ref.Refund},
 		tuple{receipt_type.Receipt, receipt_ref.Order},
+		tuple{receipt_type.Payment, receipt_ref.Order},
 		tuple{receipt_type.Payment, receipt_ref.Fulfillment}:
 		return nil
 	default:
@@ -363,7 +366,7 @@ func (a *ReceiptAggregate) validateReceiptLines(
 		MapRefIDAmount: mapRefIDAmount,
 		Receipt:        receipt,
 	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
+	if err = a.eventBus.Publish(ctx, event); err != nil {
 		return err
 	}
 	return nil
@@ -398,7 +401,7 @@ func (a *ReceiptAggregate) CancelReceipt(
 		ShopID:    args.ShopID,
 		ReceiptID: args.ID,
 	}
-	if err := a.eventBus.Publish(ctx, receiptCancelledEvent); err != nil {
+	if err = a.eventBus.Publish(ctx, receiptCancelledEvent); err != nil {
 		ll.Error("receiptCancelledEvent", l.Error(err))
 	}
 
@@ -425,7 +428,7 @@ func (a *ReceiptAggregate) ConfirmReceipt(
 		return 0, err
 	}
 
-	if err := a.validateReceiptLines(ctx, receipt.RefType, receipt); err != nil {
+	if err = a.validateReceiptLines(ctx, receipt.RefType, receipt); err != nil {
 		return 0, err
 	}
 
@@ -447,9 +450,131 @@ func (a *ReceiptAggregate) ConfirmReceipt(
 		ShopID:    args.ShopID,
 		ReceiptID: args.ID,
 	}
-	if err := a.eventBus.Publish(ctx, receiptConfirmedEvent); err != nil {
+	if err = a.eventBus.Publish(ctx, receiptConfirmedEvent); err != nil {
 		ll.Error("receiptConfirmedEvent", l.Error(err))
 	}
 
 	return updated, err
+}
+
+func (a *ReceiptAggregate) CancelReceiptByRefID(ctx context.Context, args *receipting.CancelReceiptByRefIDRequest) error {
+	switch args.RefType {
+	case receipt_ref.Order:
+		return a.CancelReceiptByOrderID(ctx, args)
+	default:
+		panic("implement me")
+	}
+}
+
+func (a *ReceiptAggregate) CancelReceiptByOrderID(ctx context.Context, args *receipting.CancelReceiptByRefIDRequest) error {
+	// - link notion: https://www.notion.so/Cancel-Task-Receipt-70f76208f27c437b9ae650037e08e283
+	// - Mục đích: phục vụ tổng hợp, thống kê
+	// - Mô tả sơ:
+	// 	+ Trường hợp receipt chưa confirm => bỏ qua, cho khách hàng tự chỉnh sửa
+	// 	+ Trường hợp receipt đã confirm:
+	// 		* Trường hợp receipt chỉ chứa 1 đơn hàng => hủy receipt
+	// 		* Trường hợp receipt gồm nhiều đơn => tạo một phiếu đối lập
+	query := a.store(ctx).ShopID(args.ShopID).RefsID(args.RefID).RefType(args.RefType).Status(status3.P)
+	receipts, err := query.ListReceipts()
+	if err != nil {
+		return err
+	}
+	queryCustomerDefault := &customering.GetCustomerIndependentQuery{}
+	err = a.customerQuery.Dispatch(ctx, queryCustomerDefault)
+	if err != nil {
+		return err
+	}
+	// check order was canceled
+	for _, receipt := range receipts {
+		if receipt.Type == receipt_type.Payment {
+			return cm.Errorf(cm.InvalidArgument, nil, "Phiếu thu của order đã được hủy bỏ")
+		}
+	}
+
+	for _, receipt := range receipts {
+		if receipt.Status != status3.P {
+			continue
+		}
+		count := 0
+		// check receipt have only one order or not
+		for _, refID := range receipt.RefIDs {
+			if refID != 0 {
+				count++
+			}
+			if count > 1 {
+				break
+			}
+		}
+		// receipt only have one line
+		if count == 1 {
+			_, err = a.CancelReceipt(ctx, &receipting.CancelReceiptArgs{
+				ID:           receipt.ID,
+				ShopID:       receipt.ShopID,
+				CancelReason: "Cancel order",
+			})
+			if err != nil {
+				return err
+			}
+			continue
+		}
+
+		var customer *customering.ShopCustomer
+		queryCustomer := &customering.GetCustomerByIDQuery{
+			ID:     receipt.TraderID,
+			ShopID: receipt.ShopID,
+		}
+		err = a.customerQuery.Dispatch(ctx, queryCustomer)
+		if err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+		if err != nil && cm.ErrorCode(err) == cm.NotFound {
+			customer = queryCustomerDefault.Result
+		} else {
+			customer = queryCustomer.Result
+		}
+
+		var newLines = []*receipting.ReceiptLine{}
+		var lineOrderTarget = &receipting.ReceiptLine{}
+		for _, line := range receipt.Lines {
+			if line.RefID == args.RefID {
+				lineOrderTarget = line
+				break
+			}
+		}
+		newLines = append(newLines, lineOrderTarget)
+
+		receipCreate, err := a.CreateReceipt(ctx, &receipting.CreateReceiptArgs{
+			ShopID:      receipt.ShopID,
+			TraderID:    customer.ID,
+			Title:       "Hoàn trả khi hủy đơn hàng",
+			Type:        receipt_type.Payment,
+			Status:      int(status3.Z),
+			Description: "Tự động ",
+			Amount:      lineOrderTarget.Amount,
+			LedgerID:    receipt.LedgerID,
+			RefIDs:      []dot.ID{args.RefID},
+			RefType:     receipt_ref.Order,
+			Lines:       newLines,
+			PaidAt:      time.Now(),
+			Trader: &receipting.Trader{
+				ID:       customer.ID,
+				Type:     "customer",
+				FullName: customer.FullName,
+				Phone:    customer.Phone,
+			},
+			CreatedBy: args.UpdatedBy,
+			Mode:      receipt_mode.Auto,
+		})
+		if err != nil {
+			return err
+		}
+		_, err = a.ConfirmReceipt(ctx, &receipting.ConfirmReceiptArgs{
+			ID:     receipCreate.ID,
+			ShopID: receipCreate.ShopID,
+		})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

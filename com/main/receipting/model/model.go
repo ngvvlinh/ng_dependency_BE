@@ -27,7 +27,7 @@ type Receipt struct {
 	Amount          int
 	Status          status3.Status
 	RefIDs          []dot.ID
-	RefType         receipt_ref.ReceiptRef
+	RefType         receipt_ref.ReceiptRef // order
 	Lines           []*ReceiptLine
 	LedgerID        dot.ID
 	Trader          *Trader
@@ -45,7 +45,7 @@ type Receipt struct {
 }
 
 type ReceiptLine struct {
-	RefID  dot.ID `json:"ref_id"`
+	RefID  dot.ID `json:"ref_id"` // != 0
 	Title  string `json:"title"`
 	Amount int    `json:"amount"`
 }

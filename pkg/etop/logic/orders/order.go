@@ -1001,8 +1001,6 @@ func (s *OrderLogic) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.
 	switch order.Status {
 	case status5.N:
 		return nil, cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil)
-	case status5.P:
-		return nil, cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil)
 	case status5.NS:
 		return nil, cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil)
 	}

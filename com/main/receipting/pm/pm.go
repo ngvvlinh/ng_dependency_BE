@@ -8,6 +8,7 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/ledgering"
 	"o.o/api/main/moneytx"
+	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/ledger_type"
@@ -68,6 +69,21 @@ var (
 func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTransactionConfirmed)
 	eventBus.AddEventListener(m.MoneyTxShippingEtopConfirmed)
+	eventBus.AddEventListener(m.OrderCancelled)
+}
+
+func (m *ProcessManager) OrderCancelled(ctx context.Context, event *ordering.OrderCancelledEvent) error {
+	cmd := &receipting.CancelReceiptByRefIDCommand{
+		UpdatedBy: event.UpdatedBy,
+		ShopID:    event.ShopID,
+		RefID:     event.OrderID,
+		RefType:   receipt_ref.Order,
+	}
+	err := m.receiptAggr.Dispatch(ctx, cmd)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *moneytx.MoneyTxShippingConfirmedEvent) error {
