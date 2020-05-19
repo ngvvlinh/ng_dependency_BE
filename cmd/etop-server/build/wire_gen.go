@@ -428,7 +428,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		PurchaseOrderAggr:  purchaseorderCommandBus,
 		PurchaseOrderQuery: purchaseorderQueryBus,
 	}
-	stocktakeAggregate := aggregate13.NewAggregateStocktake(mainDB, eventBus)
+	stocktakeAggregate := aggregate13.NewAggregateStocktake(mainDB, eventBus, store)
 	stocktakingCommandBus := aggregate13.StocktakeAggregateMessageBus(stocktakeAggregate)
 	stocktakeService := &shop.StocktakeService{
 		CatalogQuery:   catalogQueryBus,

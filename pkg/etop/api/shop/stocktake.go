@@ -26,6 +26,15 @@ type StocktakeService struct {
 func (s *StocktakeService) Clone() *StocktakeService { res := *s; return &res }
 
 func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStocktakeEndpoint) error {
+	result, err := s.createStocktake(ctx, q)
+	if err != nil {
+		return err
+	}
+	q.Result = result.Result
+	return err
+}
+
+func (s *StocktakeService) createStocktake(ctx context.Context, q *CreateStocktakeEndpoint) (*CreateStocktakeEndpoint, error) {
 	shopID := q.Context.Shop.ID
 	UserID := q.Context.User.ID
 	var lines []*stocktaking.StocktakeLine
@@ -38,7 +47,7 @@ func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStockta
 	}
 	err := s.AttachShopVariantsInformation(ctx, shopID, lines)
 	if err != nil {
-		return err
+		return q, err
 	}
 	cmd := &stocktaking.CreateStocktakeCommand{
 		ShopID:        shopID,
@@ -50,10 +59,10 @@ func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStockta
 	}
 	err = s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return q, err
 	}
 	q.Result = PbStocktake(cmd.Result)
-	return nil
+	return q, nil
 }
 
 func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, shopID dot.ID, stocktakeLines []*stocktaking.StocktakeLine) error {

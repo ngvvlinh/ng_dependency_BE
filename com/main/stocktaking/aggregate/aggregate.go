@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	stocktake "o.o/api/main/stocktaking"
@@ -11,14 +12,20 @@ import (
 	"o.o/backend/com/main/stocktaking/convert"
 	"o.o/backend/com/main/stocktaking/sqlstore"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 )
 
 var _ stocktake.Aggregate = &StocktakeAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
+var idempgroup *idemp.RedisGroup
+
+const maxTry = 3
+const PrefixIdempStocktake = "idempStocktake"
 
 type StocktakeAggregate struct {
 	StocktakeStore sqlstore.ShopStocktakeFactory
@@ -26,7 +33,8 @@ type StocktakeAggregate struct {
 	DB             *cmsql.Database
 }
 
-func NewAggregateStocktake(db com.MainDB, eventBus capi.EventBus) *StocktakeAggregate {
+func NewAggregateStocktake(db com.MainDB, eventBus capi.EventBus, redis redis.Store) *StocktakeAggregate {
+	idempgroup = idemp.NewRedisGroup(redis, PrefixIdempStocktake, 0)
 	return &StocktakeAggregate{
 		StocktakeStore: sqlstore.NewStocktakeStore(db),
 		EventBus:       eventBus,
@@ -58,6 +66,21 @@ func (q *StocktakeAggregate) CreateStocktake(ctx context.Context, args *stocktak
 			}
 		}
 	}
+	var keyRedis = fmt.Sprintf("%v-%v", args.ShopID, "stocktake")
+	var countTry = 0
+	for {
+		countTry++
+		if countTry > maxTry {
+			return nil, cm.Errorf(cm.Internal, nil, "Không thể thực hiện yêu cầu. Vui lòng thử lại sau ít phút")
+		}
+		err = idempgroup.Acquire(keyRedis, "")
+		if err != nil {
+			time.Sleep(1 * time.Second)
+			continue
+		}
+		break
+	}
+
 	InventoryMaxCode, err := q.StocktakeStore(ctx).ShopID(args.ShopID).GetStocktakeMaximumCodeNorm()
 	var maxCodeNorm int
 	switch cm.ErrorCode(err) {
@@ -75,6 +98,7 @@ func (q *StocktakeAggregate) CreateStocktake(ctx context.Context, args *stocktak
 	stockTake.Code = convert.GenerateCode(codeNorm)
 	stockTake.CodeNorm = codeNorm
 	err = q.StocktakeStore(ctx).Create(stockTake)
+	idempgroup.ReleaseKey(keyRedis, "")
 	return stockTake, err
 }
 

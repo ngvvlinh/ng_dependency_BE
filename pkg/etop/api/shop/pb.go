@@ -484,6 +484,9 @@ func PbStocktakes(args []*stocktaking.ShopStocktake) []*shop.Stocktake {
 }
 
 func PbStocktake(args *stocktaking.ShopStocktake) *shop.Stocktake {
+	if args == nil {
+		return nil
+	}
 	return &shop.Stocktake{
 		Id:            args.ID,
 		ShopId:        args.ShopID,
