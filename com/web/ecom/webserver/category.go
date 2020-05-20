@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"o.o/api/meta"
 	"o.o/api/webserver"
 	"o.o/capi/dot"

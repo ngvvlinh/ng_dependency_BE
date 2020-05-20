@@ -3,7 +3,7 @@ package middlewares
 import (
 	"strings"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 )
 
 const keySite = "::site"

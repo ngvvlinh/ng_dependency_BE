@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"o.o/api/main/catalog"
 	"o.o/api/subscripting/subscription"
 	"o.o/api/top/types/etc/subscription_product_type"

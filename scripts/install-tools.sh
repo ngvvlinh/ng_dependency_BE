@@ -1,3 +1,3 @@
 #!/bin/bash
-go get github.com/jteeuwen/go-bindata/go-bindata@v3.0.7
-go get golang.org/x/tools/cmd/goimports@release-branch.go1.14
+go get github.com/go-bindata/go-bindata/v3/go-bindata@v3.1.3
+go get golang.org/x/tools/cmd/goimports@57a9e4404bf7

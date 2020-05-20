@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	tg "github.com/go-telegram-bot-api/telegram-bot-api"
+	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
 	"o.o/backend/pkg/common/bus"
 	"o.o/common/l"

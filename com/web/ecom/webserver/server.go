@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
-
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"o.o/api/main/catalog"
 	"o.o/api/main/location"
 	"o.o/api/subscripting/subscription"

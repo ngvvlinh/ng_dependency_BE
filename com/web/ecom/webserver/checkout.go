@@ -3,7 +3,7 @@ package webserver
 import (
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 
 	"o.o/backend/pkg/common/redis"
 )

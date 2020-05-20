@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"o.o/api/main/location"
 	apietop "o.o/api/top/int/etop"
 	"o.o/backend/pkg/etop/api/convertpb"

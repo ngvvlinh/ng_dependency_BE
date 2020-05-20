@@ -5,6 +5,6 @@
 package scripts
 
 import (
-	_ "github.com/jteeuwen/go-bindata/go-bindata"
+	_ "github.com/go-bindata/go-bindata/v3/go-bindata"
 	_ "golang.org/x/tools/cmd/goimports"
 )
