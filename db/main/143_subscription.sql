@@ -14,12 +14,12 @@ CREATE TABLE subscription_product (
 CREATE TABLE subscription_plan (
     id INT8 PRIMARY KEY
     , name TEXT
-    , price INT
+    , price INT8
     , status INT2
     , description TEXT
     , product_id INT8 REFERENCES subscription_product(id)
     , interval TEXT
-    , interval_count INT
+    , interval_count INT8
     , created_at TIMESTAMPTZ
     , updated_at TIMESTAMPTZ
     , deleted_at TIMESTAMPTZ
@@ -46,7 +46,7 @@ CREATE TABLE subscription_line (
     id INT8 PRIMARY KEY
     , plan_id INT8 REFERENCES subscription_plan(id)
     , subscription_id INT8 REFERENCES subscription(id)
-    , quantity INT
+    , quantity INT8
     , created_at TIMESTAMPTZ
     , updated_at TIMESTAMPTZ
 );
@@ -55,7 +55,7 @@ CREATE TABLE subscription_bill (
     id INT8 PRIMARY KEY
     , account_id INT8 REFERENCES account(id)
     , subscription_id INT8 REFERENCES subscription(id)
-    , total_amount INT4
+    , total_amount INT8
     , description TEXT
     , payment_id INT8 REFERENCES payment(id)
     , payment_status INT2
@@ -69,9 +69,9 @@ CREATE TABLE subscription_bill (
 
 CREATE TABLE subscription_bill_line (
     id INT8 PRIMARY KEY
-    , line_amount INT4
-    , price INT4
-    , quantity INT4
+    , line_amount INT8
+    , price INT8
+    , quantity INT8
     , description TEXT
     , period_start_at TIMESTAMPTZ
     , period_end_at TIMESTAMPTZ

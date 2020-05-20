@@ -1464,30 +1464,6 @@ func (m *UpdateXAccountAhamoveVerificationRequest) String() string {
 	return jsonx.MustMarshalToString(m)
 }
 
-type ExternalAccountHaravan struct {
-	Id                                dot.ID   `json:"id"`
-	ShopId                            dot.ID   `json:"shop_id"`
-	Subdomain                         string   `json:"subdomain"`
-	ExternalCarrierServiceId          int      `json:"external_carrier_service_id"`
-	ExternalConnectedCarrierServiceAt dot.Time `json:"external_connected_carrier_service_at"`
-	ExpiresAt                         dot.Time `json:"expires_at"`
-	CreatedAt                         dot.Time `json:"created_at"`
-	UpdatedAt                         dot.Time `json:"updated_at"`
-}
-
-func (m *ExternalAccountHaravan) String() string { return jsonx.MustMarshalToString(m) }
-
-type ExternalAccountHaravanRequest struct {
-	// @required
-	Subdomain string `json:"subdomain"`
-	// @required OAuth code
-	Code string `json:"code"`
-	// @required
-	RedirectUri string `json:"redirect_uri"`
-}
-
-func (m *ExternalAccountHaravanRequest) String() string { return jsonx.MustMarshalToString(m) }
-
 type CustomerLiability struct {
 	TotalOrders    int `json:"total_orders"`
 	TotalAmount    int `json:"total_amount"`

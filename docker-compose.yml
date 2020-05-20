@@ -8,13 +8,13 @@ services:
     volumes:
       - etop_redis_data:/data
 
-  postgres:
-    container_name: etop_postgres
+  postgres_prev:
+    container_name: etop_postgres_prev
     image: postgres:9.6-alpine
     ports:
-      - 5432:5432
+      - 5433:5433
     volumes:
-      - etop_postgres_data:/var/lib/postgresql/data
+      - etop_postgres_data_prev:/var/lib/postgresql/data
       - $PROJECT_DIR/backend/db:/db
     environment:
       - POSTGRES_USER=postgres
@@ -24,6 +24,20 @@ services:
       # - PGUSER=postgres
       # - PGPASSWORD=postgres
       # - PGDATABASE=etop_dev
+
+  postgres:
+    container_name: etop_postgres
+    image: postgres:12-alpine
+    ports:
+    - 5432:5432
+    volumes:
+    - etop_postgres_data:/var/lib/postgresql/data
+    - $PROJECT_DIR/backend/db:/db
+    environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_DB=test
+    - POSTGRES_DATA=/var/lib/postgresql/data/pgdata
 
 #  nginx:
 #    container_name: etop_nginx
@@ -59,6 +73,8 @@ services:
 
 volumes:
   etop_redis_data:
-    external: true
+    external: false
   etop_postgres_data:
-    external: true
+    external: false
+  etop_postgres_data_prev:
+    external: false

@@ -37,11 +37,18 @@ func main() {
 	err := filepath.Walk(sqlPath, func(path string, info os.FileInfo, err error) error {
 		baseName := filepath.Base(path)
 		if strings.HasPrefix(baseName, "_") {
-			log.Println("Skipped file", baseName)
+			if info.IsDir() {
+				log.Println("skipped directory", baseName)
+			} else {
+				log.Println("skipped file", baseName)
+			}
+			return filepath.SkipDir
+		}
+		if info.IsDir() {
 			return nil
 		}
 		if !strings.HasSuffix(baseName, ".sql") {
-			log.Println("Skipped file", baseName)
+			log.Println("skipped non-sql file", baseName)
 			return nil
 		}
 		body, err := ioutil.ReadFile(path)
