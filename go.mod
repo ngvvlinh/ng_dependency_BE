@@ -9,9 +9,8 @@ replace (
 )
 
 require (
-	cloud.google.com/go v0.52.0 // indirect
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
-	github.com/GoogleCloudPlatform/cloudsql-proxy v1.16.0
+	github.com/GoogleCloudPlatform/cloudsql-proxy v1.17.0
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/Shopify/sarama v1.26.3
 	github.com/andybalholm/cascadia v1.2.0 // indirect
@@ -27,7 +26,6 @@ require (
 	github.com/go-openapi/swag v0.19.9 // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.0.0-rc1
 	github.com/go-test/deep v1.0.6
-	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.4.1 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/gorilla/schema v1.1.0
@@ -48,7 +46,6 @@ require (
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/stretchr/testify v1.5.1
 	github.com/valyala/tsvreader v1.0.0
-	go.opencensus.io v0.22.3 // indirect
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37 // indirect
@@ -59,11 +56,8 @@ require (
 	golang.org/x/text v0.3.2
 	golang.org/x/tools v0.0.0-20200519205726-57a9e4404bf7
 	google.golang.org/appengine v1.6.6 // indirect
-	google.golang.org/genproto v0.0.0-20200420144010-e5e8543f8aeb // indirect
-	google.golang.org/grpc v1.28.1 // indirect
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/yaml.v2 v2.3.0
-	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 	o.o/api v0.0.0-00010101000000-000000000000
 	o.o/capi v0.0.0-00010101000000-000000000000
 	o.o/common v0.0.0-00010101000000-000000000000
