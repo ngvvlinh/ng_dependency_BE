@@ -82,14 +82,17 @@ func UploadHandler(c *httpx.Context) error {
 		if !func() bool {
 			dst, err := os.Create(filepath.Join(dirPath, genName))
 			if err != nil {
-				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename)
+				ll.Error("error creating file", l.Error(err))
+				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename).
+					Log("can not upload", l.Error(err))
 				return false
 			}
 			defer func() { _ = dst.Close() }()
 
 			if _, err = io.Copy(dst, bytes.NewReader(uploadedImage.Source)); err != nil {
-				ll.Info("Error writing file", l.Error(err))
-				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename)
+				ll.Error("error writing file", l.Error(err))
+				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename).
+					Log("can not upload", l.Error(err))
 				return false
 			}
 			return true
