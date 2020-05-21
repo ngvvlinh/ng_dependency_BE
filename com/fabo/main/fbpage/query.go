@@ -9,7 +9,6 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
-	"o.o/capi/filter"
 )
 
 var _ fbpaging.QueryService = &FbPageQuery{}
@@ -33,28 +32,22 @@ func (q *FbPageQuery) MessageBus() fbpaging.QueryBus {
 	return fbpaging.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (f FbPageQuery) GetFbExternalPageByID(
-	ctx context.Context, ID dot.ID,
-) (*fbpaging.FbExternalPage, error) {
-	return f.fbPageStore(ctx).ID(ID).GetFbExternalPage()
-}
-
-func (f FbPageQuery) GetFbExternalPageByExternalID(
+func (q *FbPageQuery) GetFbExternalPageByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbpaging.FbExternalPage, error) {
-	panic("implement me")
-}
-
-func (f FbPageQuery) GetFbExternalPageInternalByID(
-	ctx context.Context, ID dot.ID,
-) (*fbpaging.FbExternalPageInternal, error) {
-	panic("implement me")
+	return q.fbPageStore(ctx).ExternalID(externalID).GetFbExternalPage()
 }
 
 func (q *FbPageQuery) ListFbExternalPagesByIDs(
-	ctx context.Context, IDs filter.IDs,
+	ctx context.Context, IDs []dot.ID,
 ) ([]*fbpaging.FbExternalPage, error) {
-	fbPages, err := q.fbPageStore(ctx).IDs(IDs).ListFbPages()
+	return q.fbPageStore(ctx).IDs(IDs).ListFbPages()
+}
+
+func (q *FbPageQuery) ListFbExternalPagesByExternalIDs(
+	ctx context.Context, external_IDs []string,
+) ([]*fbpaging.FbExternalPage, error) {
+	fbPages, err := q.fbPageStore(ctx).ExternalIDs(external_IDs).ListFbPages()
 	if err != nil {
 		return nil, err
 	}
@@ -64,11 +57,8 @@ func (q *FbPageQuery) ListFbExternalPagesByIDs(
 func (q *FbPageQuery) ListFbExternalPages(
 	ctx context.Context, args *fbpaging.ListFbExternalPagesArgs,
 ) (*fbpaging.FbPagesResponse, error) {
-	query := q.fbPageStore(ctx).OptionalShopID(args.ShopID).UserID(args.UserID).
+	query := q.fbPageStore(ctx).OptionalShopID(args.ShopID).
 		WithPaging(args.Paging).Filters(args.Filters)
-	if args.FbUserID.Valid {
-		query = query.FbUserID(args.FbUserID.ID)
-	}
 	fbPages, err := query.ListFbPages()
 	if err != nil {
 		return nil, err

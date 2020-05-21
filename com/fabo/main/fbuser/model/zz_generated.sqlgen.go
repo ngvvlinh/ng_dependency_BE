@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type FbExternalUsers []*FbExternalUser
 
 const __sqlFbExternalUser_Table = "fb_external_user"
-const __sqlFbExternalUser_ListCols = "\"id\",\"user_id\",\"external_id\",\"external_info\",\"status\",\"created_at\",\"updated_at\""
-const __sqlFbExternalUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_info\" = EXCLUDED.\"external_info\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbExternalUser_ListCols = "\"external_id\",\"external_info\",\"status\",\"created_at\",\"updated_at\""
+const __sqlFbExternalUser_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_info\" = EXCLUDED.\"external_info\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlFbExternalUser_Insert = "INSERT INTO \"fb_external_user\" (" + __sqlFbExternalUser_ListCols + ") VALUES"
 const __sqlFbExternalUser_Select = "SELECT " + __sqlFbExternalUser_ListCols + " FROM \"fb_external_user\""
 const __sqlFbExternalUser_Select_history = "SELECT " + __sqlFbExternalUser_ListCols + " FROM history.\"fb_external_user\""
@@ -58,20 +58,6 @@ func (m *FbExternalUser) Migration(db *cmsql.Database) {
 		mDBColumnNameAndType = val
 	}
 	mModelColumnNameAndType := map[string]migration.ColumnDef{
-		"id": {
-			ColumnName:       "id",
-			ColumnType:       "dot.ID",
-			ColumnDBType:     "int64",
-			ColumnTag:        "",
-			ColumnEnumValues: []string{},
-		},
-		"user_id": {
-			ColumnName:       "user_id",
-			ColumnType:       "dot.ID",
-			ColumnDBType:     "int64",
-			ColumnTag:        "",
-			ColumnEnumValues: []string{},
-		},
 		"external_id": {
 			ColumnName:       "external_id",
 			ColumnType:       "string",
@@ -120,8 +106,6 @@ func init() {
 func (m *FbExternalUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		m.ID,
-		m.UserID,
 		core.String(m.ExternalID),
 		core.JSON{m.ExternalInfo},
 		m.Status,
@@ -132,8 +116,6 @@ func (m *FbExternalUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *FbExternalUser) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		&m.ID,
-		&m.UserID,
 		(*core.String)(&m.ExternalID),
 		core.JSON{&m.ExternalInfo},
 		&m.Status,
@@ -176,7 +158,7 @@ func (_ *FbExternalUsers) SQLSelect(w SQLWriter) error {
 func (m *FbExternalUser) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(5)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -186,7 +168,7 @@ func (ms FbExternalUsers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(7)
+		w.WriteMarkers(5)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -217,22 +199,6 @@ func (m *FbExternalUser) SQLUpdate(w SQLWriter) error {
 	w.WriteRawString("UPDATE ")
 	w.WriteName("fb_external_user")
 	w.WriteRawString(" SET ")
-	if m.ID != 0 {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
-	if m.UserID != 0 {
-		flag = true
-		w.WriteName("user_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.UserID)
-	}
 	if m.ExternalID != "" {
 		flag = true
 		w.WriteName("external_id")
@@ -283,7 +249,7 @@ func (m *FbExternalUser) SQLUpdate(w SQLWriter) error {
 func (m *FbExternalUser) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(5)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -305,8 +271,6 @@ func (m FbExternalUserHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m FbExternalUserHistory) ID() core.Interface         { return core.Interface{m["id"]} }
-func (m FbExternalUserHistory) UserID() core.Interface     { return core.Interface{m["user_id"]} }
 func (m FbExternalUserHistory) ExternalID() core.Interface { return core.Interface{m["external_id"]} }
 func (m FbExternalUserHistory) ExternalInfo() core.Interface {
 	return core.Interface{m["external_info"]}
@@ -316,30 +280,28 @@ func (m FbExternalUserHistory) CreatedAt() core.Interface { return core.Interfac
 func (m FbExternalUserHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *FbExternalUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbExternalUserHistory, 7)
-	res["id"] = data[0]
-	res["user_id"] = data[1]
-	res["external_id"] = data[2]
-	res["external_info"] = data[3]
-	res["status"] = data[4]
-	res["created_at"] = data[5]
-	res["updated_at"] = data[6]
+	res := make(FbExternalUserHistory, 5)
+	res["external_id"] = data[0]
+	res["external_info"] = data[1]
+	res["status"] = data[2]
+	res["created_at"] = data[3]
+	res["updated_at"] = data[4]
 	*m = res
 	return nil
 }
 
 func (ms *FbExternalUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FbExternalUserHistories, 0, 128)
@@ -348,13 +310,11 @@ func (ms *FbExternalUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 			return err
 		}
 		m := make(FbExternalUserHistory)
-		m["id"] = data[0]
-		m["user_id"] = data[1]
-		m["external_id"] = data[2]
-		m["external_info"] = data[3]
-		m["status"] = data[4]
-		m["created_at"] = data[5]
-		m["updated_at"] = data[6]
+		m["external_id"] = data[0]
+		m["external_info"] = data[1]
+		m["status"] = data[2]
+		m["created_at"] = data[3]
+		m["updated_at"] = data[4]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -367,8 +327,8 @@ func (ms *FbExternalUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 type FbExternalUserInternals []*FbExternalUserInternal
 
 const __sqlFbExternalUserInternal_Table = "fb_external_user_internal"
-const __sqlFbExternalUserInternal_ListCols = "\"id\",\"token\",\"expires_in\",\"updated_at\""
-const __sqlFbExternalUserInternal_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"token\" = EXCLUDED.\"token\",\"expires_in\" = EXCLUDED.\"expires_in\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbExternalUserInternal_ListCols = "\"external_id\",\"token\",\"expires_in\",\"updated_at\""
+const __sqlFbExternalUserInternal_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"token\" = EXCLUDED.\"token\",\"expires_in\" = EXCLUDED.\"expires_in\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlFbExternalUserInternal_Insert = "INSERT INTO \"fb_external_user_internal\" (" + __sqlFbExternalUserInternal_ListCols + ") VALUES"
 const __sqlFbExternalUserInternal_Select = "SELECT " + __sqlFbExternalUserInternal_ListCols + " FROM \"fb_external_user_internal\""
 const __sqlFbExternalUserInternal_Select_history = "SELECT " + __sqlFbExternalUserInternal_ListCols + " FROM history.\"fb_external_user_internal\""
@@ -395,10 +355,10 @@ func (m *FbExternalUserInternal) Migration(db *cmsql.Database) {
 		mDBColumnNameAndType = val
 	}
 	mModelColumnNameAndType := map[string]migration.ColumnDef{
-		"id": {
-			ColumnName:       "id",
-			ColumnType:       "dot.ID",
-			ColumnDBType:     "int64",
+		"external_id": {
+			ColumnName:       "external_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -436,7 +396,7 @@ func init() {
 func (m *FbExternalUserInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
-		m.ID,
+		core.String(m.ExternalID),
 		core.String(m.Token),
 		core.Int(m.ExpiresIn),
 		core.Now(m.UpdatedAt, now, true),
@@ -445,7 +405,7 @@ func (m *FbExternalUserInternal) SQLArgs(opts core.Opts, create bool) []interfac
 
 func (m *FbExternalUserInternal) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		&m.ID,
+		(*core.String)(&m.ExternalID),
 		(*core.String)(&m.Token),
 		(*core.Int)(&m.ExpiresIn),
 		(*core.Time)(&m.UpdatedAt),
@@ -527,13 +487,13 @@ func (m *FbExternalUserInternal) SQLUpdate(w SQLWriter) error {
 	w.WriteRawString("UPDATE ")
 	w.WriteName("fb_external_user_internal")
 	w.WriteRawString(" SET ")
-	if m.ID != 0 {
+	if m.ExternalID != "" {
 		flag = true
-		w.WriteName("id")
+		w.WriteName("external_id")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(m.ExternalID)
 	}
 	if m.Token != "" {
 		flag = true
@@ -595,7 +555,9 @@ func (m FbExternalUserInternalHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m FbExternalUserInternalHistory) ID() core.Interface    { return core.Interface{m["id"]} }
+func (m FbExternalUserInternalHistory) ExternalID() core.Interface {
+	return core.Interface{m["external_id"]}
+}
 func (m FbExternalUserInternalHistory) Token() core.Interface { return core.Interface{m["token"]} }
 func (m FbExternalUserInternalHistory) ExpiresIn() core.Interface {
 	return core.Interface{m["expires_in"]}
@@ -614,7 +576,7 @@ func (m *FbExternalUserInternalHistory) SQLScan(opts core.Opts, row *sql.Row) er
 		return err
 	}
 	res := make(FbExternalUserInternalHistory, 4)
-	res["id"] = data[0]
+	res["external_id"] = data[0]
 	res["token"] = data[1]
 	res["expires_in"] = data[2]
 	res["updated_at"] = data[3]
@@ -634,7 +596,7 @@ func (ms *FbExternalUserInternalHistories) SQLScan(opts core.Opts, rows *sql.Row
 			return err
 		}
 		m := make(FbExternalUserInternalHistory)
-		m["id"] = data[0]
+		m["external_id"] = data[0]
 		m["token"] = data[1]
 		m["expires_in"] = data[2]
 		m["updated_at"] = data[3]

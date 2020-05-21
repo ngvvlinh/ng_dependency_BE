@@ -9,7 +9,6 @@ import (
 
 	status3 "o.o/api/top/types/etc/status3"
 	sq "o.o/backend/pkg/common/sql/sq"
-	dot "o.o/capi/dot"
 )
 
 type FbExternalUserFilters struct{ prefix string }
@@ -24,44 +23,6 @@ func (ft *FbExternalUserFilters) Filter(pred string, args ...interface{}) sq.Wri
 
 func (ft FbExternalUserFilters) Prefix() string {
 	return ft.prefix
-}
-
-func (ft *FbExternalUserFilters) ByID(ID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == 0,
-	}
-}
-
-func (ft *FbExternalUserFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == nil,
-		IsZero: ID != nil && (*ID) == 0,
-	}
-}
-
-func (ft *FbExternalUserFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "user_id",
-		Value:  UserID,
-		IsNil:  UserID == 0,
-	}
-}
-
-func (ft *FbExternalUserFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "user_id",
-		Value:  UserID,
-		IsNil:  UserID == nil,
-		IsZero: UserID != nil && (*UserID) == 0,
-	}
 }
 
 func (ft *FbExternalUserFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
@@ -154,22 +115,22 @@ func (ft FbExternalUserInternalFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *FbExternalUserInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+func (ft *FbExternalUserInternalFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == 0,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
 	}
 }
 
-func (ft *FbExternalUserInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbExternalUserInternalFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == nil,
-		IsZero: ID != nil && (*ID) == 0,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
 	}
 }
 

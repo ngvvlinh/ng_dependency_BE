@@ -11,9 +11,7 @@ import (
 
 type FbExternalMessage struct {
 	ID                     dot.ID
-	FbConversationID       dot.ID
 	ExternalConversationID string
-	FbPageID               dot.ID
 	ExternalPageID         string
 	ExternalID             string
 	ExternalMessage        string
@@ -71,9 +69,7 @@ type FbMessageDataAttachmentVideoData struct {
 
 type FbExternalComment struct {
 	ID                   dot.ID
-	FbPostID             dot.ID
 	ExternalPostID       string
-	FbPageID             dot.ID
 	ExternalPageID       string
 	ExternalID           string
 	ExternalUserID       string
@@ -109,7 +105,6 @@ type TargetDataSubAttachment struct {
 
 type FbExternalConversation struct {
 	ID                   dot.ID
-	FbPageID             dot.ID
 	ExternalPageID       string
 	ExternalID           string
 	ExternalUserID       string
@@ -125,7 +120,6 @@ type FbExternalPosts []*FbExternalPost
 
 type FbExternalPost struct {
 	ID                  dot.ID
-	FbPageID            dot.ID
 	ExternalPageID      string
 	ExternalID          string
 	ExternalParentID    string
@@ -141,7 +135,6 @@ type FbExternalPost struct {
 
 type FbCustomerConversation struct {
 	ID                         dot.ID
-	FbPageID                   dot.ID
 	ExternalPageID             string
 	ExternalID                 string
 	ExternalUserID             string

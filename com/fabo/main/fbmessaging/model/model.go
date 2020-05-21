@@ -9,9 +9,7 @@ import (
 // +sqlgen
 type FbExternalMessage struct {
 	ID                     dot.ID `paging:"id"`
-	FbConversationID       dot.ID
 	ExternalConversationID string
-	FbPageID               dot.ID
 	ExternalPageID         string
 	ExternalID             string
 	ExternalMessage        string
@@ -71,7 +69,6 @@ type FbMessageDataAttachmentVideoData struct {
 // +sqlgen
 type FbExternalConversation struct {
 	ID                   dot.ID
-	FbPageID             dot.ID
 	ExternalPageID       string
 	ExternalID           string
 	ExternalUserID       string
@@ -87,9 +84,7 @@ type FbExternalConversation struct {
 // +sqlgen
 type FbExternalComment struct {
 	ID                   dot.ID `paging:"id"`
-	FbPostID             dot.ID
 	ExternalPostID       string
-	FbPageID             dot.ID
 	ExternalPageID       string
 	ExternalID           string
 	ExternalUserID       string
@@ -128,7 +123,6 @@ type FbObjectParent struct {
 // +sqlgen
 type FbExternalPost struct {
 	ID                  dot.ID
-	FbPageID            dot.ID
 	ExternalPageID      string
 	ExternalID          string
 	ExternalParentID    string
@@ -171,7 +165,6 @@ type TargetDataSubAttachment struct {
 // +sqlgen
 type FbCustomerConversation struct {
 	ID                         dot.ID `paging:"id"`
-	FbPageID                   dot.ID
 	ExternalPageID             string
 	ExternalID                 string
 	ExternalUserID             string

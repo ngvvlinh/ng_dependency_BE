@@ -74,14 +74,18 @@ func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
 ) ([]*fbpaging.FbExternalPageCombined, error) {
 	// create map arguments with external_id
 	mapExternalIDAndFbPageCombined := make(map[string]*fbpaging.CreateFbExternalPageCombinedArgs)
+	var externalIDs []string
 
 	for _, fbPageCombined := range args.FbPageCombineds {
-		mapExternalIDAndFbPageCombined[fbPageCombined.FbPage.ExternalID] = fbPageCombined
+		if _, ok := mapExternalIDAndFbPageCombined[fbPageCombined.FbPage.ExternalID]; !ok {
+			mapExternalIDAndFbPageCombined[fbPageCombined.FbPage.ExternalID] = fbPageCombined
+			externalIDs = append(externalIDs, fbPageCombined.FbPage.ExternalID)
+		}
 	}
 
-	// get all oldFbPages by (user_id, shop_id) from DB
+	// get all oldFbPages by (shop_id) from DB
 	// create map fbPageDisabled (oldFbPages don't appear into arg)
-	oldFbPages, err := a.fbExternalPageStore(ctx).UserID(args.UserID).ShopID(args.ShopID).ListFbExternalPagesDB()
+	oldFbPages, err := a.fbExternalPageStore(ctx).ExternalIDs(externalIDs).ListFbExternalPagesDB()
 	if err != nil {
 		return nil, err
 	}
@@ -162,14 +166,14 @@ func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
 	return fbPageCombineds, err
 }
 
-func (a *FbExternalPageAggregate) DisableFbExternalPagesByIDs(
+func (a *FbExternalPageAggregate) DisableFbExternalPagesByExternalIDs(
 	ctx context.Context, args *fbpaging.DisableFbExternalPagesByIDsArgs,
 ) (int, error) {
-	return a.fbExternalPageStore(ctx).ShopID(args.ShopID).UserID(args.UserID).IDs(args.IDs).UpdateStatus(int(status3.N))
+	return a.fbExternalPageStore(ctx).ShopID(args.ShopID).ExternalIDs(args.ExternalIDs).UpdateStatus(int(status3.N))
 }
 
 func (a *FbExternalPageAggregate) DisableAllFbExternalPages(
 	ctx context.Context, args *fbpaging.DisableAllFbExternalPagesArgs,
 ) (int, error) {
-	return a.fbExternalPageStore(ctx).ShopID(args.ShopID).UserID(args.UserID).Status(status3.P).UpdateStatus(int(status3.N))
+	return a.fbExternalPageStore(ctx).ShopID(args.ShopID).Status(status3.P).UpdateStatus(int(status3.N))
 }

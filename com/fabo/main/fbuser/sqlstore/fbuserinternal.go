@@ -38,13 +38,13 @@ func (s *FbExternalUserInternalStore) CreateFbExternalUserInternal(fbExternalUse
 	if err := scheme.Convert(fbExternalUserInternal, fbExternalUserInternalDB); err != nil {
 		return err
 	}
-	_, err := s.query().Upsert(fbExternalUserInternalDB)
-	if err != nil {
+
+	if _, err := s.query().Upsert(fbExternalUserInternalDB); err != nil {
 		return err
 	}
 
 	var tempFbUserInternal model.FbExternalUserInternal
-	if err := s.query().Where(s.ft.ByID(fbExternalUserInternal.ID)).ShouldGet(&tempFbUserInternal); err != nil {
+	if err := s.query().Where(s.ft.ByExternalID(fbExternalUserInternal.ExternalID)).ShouldGet(&tempFbUserInternal); err != nil {
 		return err
 	}
 	fbExternalUserInternal.UpdatedAt = tempFbUserInternal.UpdatedAt

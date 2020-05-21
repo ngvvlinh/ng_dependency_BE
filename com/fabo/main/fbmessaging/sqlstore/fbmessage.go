@@ -47,11 +47,6 @@ func (s *FbExternalMessageStore) IDs(IDs []dot.ID) *FbExternalMessageStore {
 	return s
 }
 
-func (s *FbExternalMessageStore) FbPageIDs(pageIDs []dot.ID) *FbExternalMessageStore {
-	s.preds = append(s.preds, sq.In("fb_page_id", pageIDs))
-	return s
-}
-
 func (s *FbExternalMessageStore) ExternalConversationIDs(externalConversationIDs []string) *FbExternalMessageStore {
 	s.preds = append(s.preds, sq.In("external_conversation_id", externalConversationIDs))
 	return s
@@ -59,6 +54,11 @@ func (s *FbExternalMessageStore) ExternalConversationIDs(externalConversationIDs
 
 func (s *FbExternalMessageStore) ExternalIDs(externalIDs []string) *FbExternalMessageStore {
 	s.preds = append(s.preds, sq.In("external_id", externalIDs))
+	return s
+}
+
+func (s *FbExternalMessageStore) ExternalPageIDs(externalPageIDs []string) *FbExternalMessageStore {
+	s.preds = append(s.preds, sq.In("external_page_id", externalPageIDs))
 	return s
 }
 

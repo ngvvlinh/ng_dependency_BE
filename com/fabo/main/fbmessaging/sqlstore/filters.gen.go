@@ -44,25 +44,6 @@ func (ft *FbCustomerConversationFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *FbCustomerConversationFilters) ByFbPageID(FbPageID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == 0,
-	}
-}
-
-func (ft *FbCustomerConversationFilters) ByFbPageIDPtr(FbPageID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == nil,
-		IsZero: FbPageID != nil && (*FbPageID) == 0,
-	}
-}
-
 func (ft *FbCustomerConversationFilters) ByExternalPageID(ExternalPageID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -305,25 +286,6 @@ func (ft *FbExternalCommentFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbExternalCommentFilters) ByFbPostID(FbPostID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "fb_post_id",
-		Value:  FbPostID,
-		IsNil:  FbPostID == 0,
-	}
-}
-
-func (ft *FbExternalCommentFilters) ByFbPostIDPtr(FbPostID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "fb_post_id",
-		Value:  FbPostID,
-		IsNil:  FbPostID == nil,
-		IsZero: FbPostID != nil && (*FbPostID) == 0,
-	}
-}
-
 func (ft *FbExternalCommentFilters) ByExternalPostID(ExternalPostID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -340,25 +302,6 @@ func (ft *FbExternalCommentFilters) ByExternalPostIDPtr(ExternalPostID *string) 
 		Value:  ExternalPostID,
 		IsNil:  ExternalPostID == nil,
 		IsZero: ExternalPostID != nil && (*ExternalPostID) == "",
-	}
-}
-
-func (ft *FbExternalCommentFilters) ByFbPageID(FbPageID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == 0,
-	}
-}
-
-func (ft *FbExternalCommentFilters) ByFbPageIDPtr(FbPageID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == nil,
-		IsZero: FbPageID != nil && (*FbPageID) == 0,
 	}
 }
 
@@ -604,25 +547,6 @@ func (ft *FbExternalConversationFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *FbExternalConversationFilters) ByFbPageID(FbPageID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == 0,
-	}
-}
-
-func (ft *FbExternalConversationFilters) ByFbPageIDPtr(FbPageID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == nil,
-		IsZero: FbPageID != nil && (*FbPageID) == 0,
-	}
-}
-
 func (ft *FbExternalConversationFilters) ByExternalPageID(ExternalPageID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -846,25 +770,6 @@ func (ft *FbExternalMessageFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbExternalMessageFilters) ByFbConversationID(FbConversationID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "fb_conversation_id",
-		Value:  FbConversationID,
-		IsNil:  FbConversationID == 0,
-	}
-}
-
-func (ft *FbExternalMessageFilters) ByFbConversationIDPtr(FbConversationID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "fb_conversation_id",
-		Value:  FbConversationID,
-		IsNil:  FbConversationID == nil,
-		IsZero: FbConversationID != nil && (*FbConversationID) == 0,
-	}
-}
-
 func (ft *FbExternalMessageFilters) ByExternalConversationID(ExternalConversationID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -881,25 +786,6 @@ func (ft *FbExternalMessageFilters) ByExternalConversationIDPtr(ExternalConversa
 		Value:  ExternalConversationID,
 		IsNil:  ExternalConversationID == nil,
 		IsZero: ExternalConversationID != nil && (*ExternalConversationID) == "",
-	}
-}
-
-func (ft *FbExternalMessageFilters) ByFbPageID(FbPageID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == 0,
-	}
-}
-
-func (ft *FbExternalMessageFilters) ByFbPageIDPtr(FbPageID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == nil,
-		IsZero: FbPageID != nil && (*FbPageID) == 0,
 	}
 }
 
@@ -1085,25 +971,6 @@ func (ft *FbExternalPostFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 		Value:  ID,
 		IsNil:  ID == nil,
 		IsZero: ID != nil && (*ID) == 0,
-	}
-}
-
-func (ft *FbExternalPostFilters) ByFbPageID(FbPageID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == 0,
-	}
-}
-
-func (ft *FbExternalPostFilters) ByFbPageIDPtr(FbPageID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "fb_page_id",
-		Value:  FbPageID,
-		IsNil:  FbPageID == nil,
-		IsZero: FbPageID != nil && (*FbPageID) == 0,
 	}
 }
 

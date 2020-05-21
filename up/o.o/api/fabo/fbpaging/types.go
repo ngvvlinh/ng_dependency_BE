@@ -10,9 +10,7 @@ import (
 type FbExternalPage struct {
 	ID                   dot.ID
 	ExternalID           string
-	FbUserID             dot.ID
 	ShopID               dot.ID
-	UserID               dot.ID
 	ExternalName         string
 	ExternalCategory     string
 	ExternalCategoryList []*ExternalCategory
@@ -31,9 +29,10 @@ type ExternalCategory struct {
 }
 
 type FbExternalPageInternal struct {
-	ID        dot.ID
-	Token     string
-	UpdatedAt time.Time
+	ID         dot.ID
+	ExternalID string
+	Token      string
+	UpdatedAt  time.Time
 }
 
 type FbExternalPageCombineds []*FbExternalPageCombined

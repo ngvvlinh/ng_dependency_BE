@@ -1,6 +1,8 @@
 package convert
 
 import (
+	"fmt"
+
 	"o.o/api/fabo/fbmessaging"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 )
@@ -178,4 +180,8 @@ func ConvertFbCommentAttachment(in *model.CommentAttachment) *fbmessaging.Commen
 		Type:   in.Type,
 		URL:    in.URL,
 	}
+}
+
+func GenerateFacebookUserPicture(userID string) string {
+	return fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", userID)
 }

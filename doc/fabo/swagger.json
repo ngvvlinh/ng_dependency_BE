@@ -276,10 +276,18 @@
     "cvCustomerConversationFilter": {
       "type": "object",
       "properties": {
+        "external_page_id": {
+          "description": "New\n",
+          "$ref": "#/definitions/kfStrings"
+        },
+        "external_user_id": {
+          "type": "string"
+        },
         "fb_external_user_id": {
           "type": "string"
         },
         "fb_page_id": {
+          "description": "Old\n",
           "$ref": "#/definitions/kfIDs"
         },
         "is_read": {
@@ -375,10 +383,6 @@
         },
         "external_user_picture_url": {
           "type": "string"
-        },
-        "fb_page_id": {
-          "type": "string",
-          "format": "int64"
         },
         "id": {
           "type": "string",
@@ -478,14 +482,6 @@
         "external_user_id": {
           "type": "string"
         },
-        "fb_page_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "fb_post_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -537,14 +533,6 @@
             "$ref": "#/definitions/cvFbObjectTo"
           }
         },
-        "fb_conversation_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "fb_page_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -592,10 +580,6 @@
         },
         "external_picture": {
           "type": "string"
-        },
-        "fb_page_id": {
-          "type": "string",
-          "format": "int64"
         },
         "id": {
           "type": "string",
@@ -794,10 +778,6 @@
             "type": "string"
           }
         },
-        "fb_user_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -812,10 +792,6 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -859,10 +835,6 @@
             "type": "string"
           }
         },
-        "fb_user_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -877,10 +849,6 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -897,24 +865,12 @@
         "external_info": {
           "$ref": "#/definitions/cvExternalFbUserInfo"
         },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "status": {
           "$ref": "#/definitions/blStatus"
         },
         "updated_at": {
           "type": "string",
           "format": "date-time"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -1015,6 +971,9 @@
     "cvMessageFilter": {
       "type": "object",
       "properties": {
+        "external_conversation_id": {
+          "$ref": "#/definitions/kfStrings"
+        },
         "fb_external_conversation_ids": {
           "$ref": "#/definitions/kfStrings"
         }
@@ -1040,11 +999,13 @@
     "cvRemovePagesRequest": {
       "type": "object",
       "properties": {
+        "external_id": {
+          "$ref": "#/definitions/kfStrings"
+        },
         "ids": {
           "type": "array",
           "items": {
-            "type": "string",
-            "format": "int64"
+            "type": "string"
           }
         }
       }

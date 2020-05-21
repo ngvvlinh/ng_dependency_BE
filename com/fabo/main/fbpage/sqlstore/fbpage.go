@@ -53,13 +53,13 @@ func (s *FbExternalPageStore) Filters(filters meta.Filters) *FbExternalPageStore
 	return s
 }
 
-func (s *FbExternalPageStore) ID(id dot.ID) *FbExternalPageStore {
-	s.preds = append(s.preds, s.ft.ByID(id))
+func (s *FbExternalPageStore) IDs(IDs []dot.ID) *FbExternalPageStore {
+	s.preds = append(s.preds, sq.In("id", IDs))
 	return s
 }
 
-func (s *FbExternalPageStore) IDs(IDs []dot.ID) *FbExternalPageStore {
-	s.preds = append(s.preds, sq.In("id", IDs))
+func (s *FbExternalPageStore) ExternalID(externalID string) *FbExternalPageStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
 	return s
 }
 
@@ -73,18 +73,8 @@ func (s *FbExternalPageStore) ShopID(shopID dot.ID) *FbExternalPageStore {
 	return s
 }
 
-func (s *FbExternalPageStore) FbUserID(fbUserID dot.ID) *FbExternalPageStore {
-	s.preds = append(s.preds, s.ft.ByFbUserID(fbUserID))
-	return s
-}
-
 func (s *FbExternalPageStore) Status(status status3.Status) *FbExternalPageStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
-	return s
-}
-
-func (s *FbExternalPageStore) UserID(userID dot.ID) *FbExternalPageStore {
-	s.preds = append(s.preds, s.ft.ByUserID(userID))
 	return s
 }
 

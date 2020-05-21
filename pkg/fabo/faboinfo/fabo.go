@@ -10,7 +10,8 @@ import (
 )
 
 type Info struct {
-	FbPageIDs []dot.ID
+	FbPageIDs       []dot.ID
+	ExternalPageIDs []string
 }
 
 type FaboInfo struct {
@@ -31,10 +32,9 @@ type GetFaboInfoQuery struct {
 	UserID dot.ID
 }
 
-func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID, userID dot.ID) (*Info, error) {
+func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID dot.ID) (*Info, error) {
 	listFbPagesQuery := &fbpaging.ListFbExternalPagesQuery{
 		ShopID: shopID,
-		UserID: userID,
 		Filters: []meta.Filter{
 			{
 				Name:  "status",
@@ -48,11 +48,14 @@ func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID, userID dot.ID) (*In
 	}
 
 	fbPageIDs := make([]dot.ID, 0, len(listFbPagesQuery.Result.FbPages))
+	externalPageIDs := make([]string, 0, len(listFbPagesQuery.Result.FbPages))
 	for _, fbPage := range listFbPagesQuery.Result.FbPages {
 		fbPageIDs = append(fbPageIDs, fbPage.ID)
+		externalPageIDs = append(externalPageIDs, fbPage.ExternalID)
 	}
 
 	return &Info{
-		FbPageIDs: fbPageIDs,
+		FbPageIDs:       fbPageIDs,
+		ExternalPageIDs: externalPageIDs,
 	}, nil
 }

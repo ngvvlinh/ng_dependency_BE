@@ -41,12 +41,15 @@ func (q *FbMessagingQuery) MessageBus() fbmessaging.QueryBus {
 func (q *FbMessagingQuery) ListFbCustomerConversations(
 	ctx context.Context, args *fbmessaging.ListFbCustomerConversationsArgs,
 ) (*fbmessaging.FbCustomerConversationsResponse, error) {
-	query := q.fbCustomerConversationStore(ctx).FbPageIDs(args.FbPageIDs)
+	query := q.fbCustomerConversationStore(ctx)
+	if len(args.ExternalPageIDs) != 0 {
+		query = query.ExternalPageIDs(args.ExternalPageIDs)
+	}
 	if args.Type.Valid && args.Type.Enum != fb_customer_conversation_type.All {
 		query = query.Type(args.Type.Enum)
 	}
-	if args.FbExternalUserID.Valid {
-		query = query.FbExternalID(args.FbExternalUserID.String)
+	if args.ExternalUserID.Valid {
+		query = query.FbExternalID(args.ExternalUserID.String)
 	}
 	if args.IsRead.Valid {
 		query = query.IsRead(args.IsRead.Bool)
@@ -97,9 +100,9 @@ func (q *FbMessagingQuery) ListFbCustomerConversationsByExternalIDs(
 func (q *FbMessagingQuery) ListFbExternalMessages(
 	ctx context.Context, args *fbmessaging.ListFbExternalMessagesArgs,
 ) (*fbmessaging.FbExternalMessagesResponse, error) {
-	query := q.fbExternalMessagesStore(ctx).FbPageIDs(args.FbPageIDs).WithPaging(args.Paging)
-	if len(args.FbConversationIDs) > 0 {
-		query = query.ExternalConversationIDs(args.FbConversationIDs)
+	query := q.fbExternalMessagesStore(ctx).ExternalPageIDs(args.ExternalPageIDs).WithPaging(args.Paging)
+	if len(args.ExternalConversationIDs) > 0 {
+		query = query.ExternalConversationIDs(args.ExternalConversationIDs)
 	}
 	fbExternalMessages, err := query.ListFbExternalMessages()
 	if err != nil {

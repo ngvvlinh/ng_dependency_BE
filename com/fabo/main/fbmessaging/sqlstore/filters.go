@@ -11,7 +11,7 @@ func (ft *FbCustomerConversationFilters) NotDeleted() sq.WriterTo {
 
 var FilterFbCustomerConversation = sqlstore.FilterWhitelist{
 	Dates:   []string{"created_at", "updated_at", "last_message_at"},
-	Numbers: []string{"id", "fb_page_id"},
+	Numbers: []string{"id"},
 	Equals:  []string{"type", "external_id", "external_user_id"},
 }
 
@@ -28,7 +28,7 @@ func (ft *FbExternalConversationFilters) NotDeleted() sq.WriterTo {
 
 var FilterFbExternalConversation = sqlstore.FilterWhitelist{
 	Dates:   []string{"created_at", "updated_at"},
-	Numbers: []string{"id", "fb_page_id"},
+	Numbers: []string{"id"},
 	Equals:  []string{"type", "external_id"},
 }
 
@@ -44,7 +44,7 @@ func (ft *FbExternalMessageFilters) NotDeleted() sq.WriterTo {
 
 var FilterFbExternalMessage = sqlstore.FilterWhitelist{
 	Dates:   []string{"created_at", "updated_at", "external_created_time"},
-	Numbers: []string{"id", "fb_page_id"},
+	Numbers: []string{"id"},
 	Equals:  []string{"type", "external_id"},
 }
 
@@ -61,7 +61,7 @@ func (ft *FbExternalPostFilters) NotDeleted() sq.WriterTo {
 
 var FilterFbExternalPost = sqlstore.FilterWhitelist{
 	Dates:   []string{"created_at", "updated_at", "external_created_time"},
-	Numbers: []string{"id", "fb_page_id"},
+	Numbers: []string{"id"},
 	Equals:  []string{"type", "external_id"},
 }
 
@@ -78,7 +78,7 @@ func (ft *FbExternalCommentFilters) NotDeleted() sq.WriterTo {
 
 var FilterFbExternalComment = sqlstore.FilterWhitelist{
 	Dates:   []string{"created_at", "updated_at", "external_created_time"},
-	Numbers: []string{"id", "fb_page_id"},
+	Numbers: []string{"id"},
 	Equals:  []string{"type", "external_id"},
 }
 

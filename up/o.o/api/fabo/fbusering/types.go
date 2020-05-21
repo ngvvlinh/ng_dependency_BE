@@ -4,12 +4,9 @@ import (
 	"time"
 
 	"o.o/api/top/types/etc/status3"
-	"o.o/capi/dot"
 )
 
 type FbExternalUser struct {
-	ID           dot.ID
-	UserID       dot.ID
 	ExternalID   string
 	ExternalInfo *FbExternalUserInfo
 	Status       status3.Status
@@ -26,10 +23,10 @@ type FbExternalUserInfo struct {
 }
 
 type FbExternalUserInternal struct {
-	ID        dot.ID
-	Token     string
-	ExpiresIn int
-	UpdatedAt time.Time
+	ExternalID string
+	Token      string
+	ExpiresIn  int
+	UpdatedAt  time.Time
 }
 
 type FbExternalUserCombined struct {

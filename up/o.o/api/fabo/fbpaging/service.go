@@ -6,14 +6,13 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
-	"o.o/capi/filter"
 )
 
 // +gen:api
 
 type Aggregate interface {
 	CreateFbExternalPage(context.Context, *CreateFbExternalPageArgs) (*FbExternalPage, error)
-	DisableFbExternalPagesByIDs(context.Context, *DisableFbExternalPagesByIDsArgs) (int, error)
+	DisableFbExternalPagesByExternalIDs(context.Context, *DisableFbExternalPagesByIDsArgs) (int, error)
 	DisableAllFbExternalPages(context.Context, *DisableAllFbExternalPagesArgs) (int, error)
 
 	CreateFbExternalPageInternal(context.Context, *CreateFbExternalPageInternalArgs) (*FbExternalPageInternal, error)
@@ -23,22 +22,18 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetFbExternalPageByID(_ context.Context, ID dot.ID) (*FbExternalPage, error)
 	GetFbExternalPageByExternalID(_ context.Context, externalID string) (*FbExternalPage, error)
-	ListFbExternalPagesByIDs(_ context.Context, IDs filter.IDs) ([]*FbExternalPage, error)
+	ListFbExternalPagesByExternalIDs(_ context.Context, externalIDs []string) ([]*FbExternalPage, error)
+	ListFbExternalPagesByIDs(_ context.Context, IDs []dot.ID) ([]*FbExternalPage, error)
 	ListFbExternalPages(context.Context, *ListFbExternalPagesArgs) (*FbPagesResponse, error)
 	ListFbExternalPagesActiveByExternalIDs(_ context.Context, externalIDs []string) ([]*FbExternalPage, error)
-
-	GetFbExternalPageInternalByID(_ context.Context, ID dot.ID) (*FbExternalPageInternal, error)
 }
 
 // +convert:create=FbExternalPage
 type CreateFbExternalPageArgs struct {
 	ID                   dot.ID
 	ExternalID           string
-	FbUserID             dot.ID
 	ShopID               dot.ID
-	UserID               dot.ID
 	ExternalName         string
 	ExternalCategory     string
 	ExternalCategoryList []*ExternalCategory
@@ -51,8 +46,9 @@ type CreateFbExternalPageArgs struct {
 
 // +convert:create=FbExternalPageInternal
 type CreateFbExternalPageInternalArgs struct {
-	ID    dot.ID
-	Token string
+	ID         dot.ID
+	ExternalID string
+	Token      string
 }
 
 type CreateFbExternalPageCombinedArgs struct {
@@ -61,27 +57,20 @@ type CreateFbExternalPageCombinedArgs struct {
 }
 
 type CreateFbExternalPageCombinedsArgs struct {
-	ShopID          dot.ID
-	UserID          dot.ID
 	FbPageCombineds []*CreateFbExternalPageCombinedArgs
 }
 
 type DisableFbExternalPagesByIDsArgs struct {
-	IDs    []dot.ID
-	ShopID dot.ID
-	UserID dot.ID
+	ExternalIDs []string
+	ShopID      dot.ID
 }
 
 type DisableAllFbExternalPagesArgs struct {
 	ShopID dot.ID
-	UserID dot.ID
 }
 
 type ListFbExternalPagesArgs struct {
-	ShopID   dot.ID
-	UserID   dot.ID
-	FbUserID dot.NullID
-
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 }

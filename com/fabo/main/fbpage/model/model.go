@@ -10,9 +10,7 @@ import (
 // +sqlgen
 type FbExternalPage struct {
 	ID                   dot.ID
-	FbUserID             dot.ID
 	ShopID               dot.ID
-	UserID               dot.ID
 	ExternalID           string
 	ExternalName         string
 	ExternalTasks        []string
@@ -34,7 +32,8 @@ type ExternalCategory struct {
 
 // +sqlgen
 type FbExternalPageInternal struct {
-	ID        dot.ID
-	Token     string
-	UpdatedAt time.Time `sq:"update"`
+	ID         dot.ID
+	ExternalID string
+	Token      string
+	UpdatedAt  time.Time `sq:"update"`
 }

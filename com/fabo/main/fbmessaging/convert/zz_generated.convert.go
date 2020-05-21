@@ -431,7 +431,6 @@ func Convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConve
 
 func convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConversation(arg *fbmessagingmodel.FbCustomerConversation, out *fbmessaging.FbCustomerConversation) {
 	out.ID = arg.ID                             // simple assign
-	out.FbPageID = arg.FbPageID                 // simple assign
 	out.ExternalPageID = arg.ExternalPageID     // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
 	out.ExternalUserID = arg.ExternalUserID     // simple assign
@@ -474,7 +473,6 @@ func Convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConve
 
 func convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConversation(arg *fbmessaging.FbCustomerConversation, out *fbmessagingmodel.FbCustomerConversation) {
 	out.ID = arg.ID                             // simple assign
-	out.FbPageID = arg.FbPageID                 // simple assign
 	out.ExternalPageID = arg.ExternalPageID     // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
 	out.ExternalUserID = arg.ExternalUserID     // simple assign
@@ -517,7 +515,6 @@ func Apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerCo
 
 func apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerConversation(arg *fbmessaging.CreateFbCustomerConversationArgs, out *fbmessaging.FbCustomerConversation) {
 	out.ID = arg.ID                                                 // simple assign
-	out.FbPageID = arg.FbPageID                                     // simple assign
 	out.ExternalPageID = arg.ExternalPageID                         // simple assign
 	out.ExternalID = arg.ExternalID                                 // simple assign
 	out.ExternalUserID = arg.ExternalUserID                         // simple assign
@@ -550,9 +547,7 @@ func Convert_fbmessagingmodel_FbExternalComment_fbmessaging_FbExternalComment(ar
 
 func convert_fbmessagingmodel_FbExternalComment_fbmessaging_FbExternalComment(arg *fbmessagingmodel.FbExternalComment, out *fbmessaging.FbExternalComment) {
 	out.ID = arg.ID                                     // simple assign
-	out.FbPostID = arg.FbPostID                         // simple assign
 	out.ExternalPostID = arg.ExternalPostID             // simple assign
-	out.FbPageID = arg.FbPageID                         // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
@@ -593,9 +588,7 @@ func Convert_fbmessaging_FbExternalComment_fbmessagingmodel_FbExternalComment(ar
 
 func convert_fbmessaging_FbExternalComment_fbmessagingmodel_FbExternalComment(arg *fbmessaging.FbExternalComment, out *fbmessagingmodel.FbExternalComment) {
 	out.ID = arg.ID                                     // simple assign
-	out.FbPostID = arg.FbPostID                         // simple assign
 	out.ExternalPostID = arg.ExternalPostID             // simple assign
-	out.FbPageID = arg.FbPageID                         // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
@@ -637,9 +630,7 @@ func Apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment
 
 func apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment(arg *fbmessaging.CreateFbExternalCommentArgs, out *fbmessaging.FbExternalComment) {
 	out.ID = arg.ID                                     // simple assign
-	out.FbPostID = arg.FbPostID                         // simple assign
 	out.ExternalPostID = arg.ExternalPostID             // simple assign
-	out.FbPageID = arg.FbPageID                         // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
@@ -670,7 +661,6 @@ func Convert_fbmessagingmodel_FbExternalConversation_fbmessaging_FbExternalConve
 
 func convert_fbmessagingmodel_FbExternalConversation_fbmessaging_FbExternalConversation(arg *fbmessagingmodel.FbExternalConversation, out *fbmessaging.FbExternalConversation) {
 	out.ID = arg.ID                                     // simple assign
-	out.FbPageID = arg.FbPageID                         // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
@@ -707,7 +697,6 @@ func Convert_fbmessaging_FbExternalConversation_fbmessagingmodel_FbExternalConve
 
 func convert_fbmessaging_FbExternalConversation_fbmessagingmodel_FbExternalConversation(arg *fbmessaging.FbExternalConversation, out *fbmessagingmodel.FbExternalConversation) {
 	out.ID = arg.ID                                     // simple assign
-	out.FbPageID = arg.FbPageID                         // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
@@ -745,7 +734,6 @@ func Apply_fbmessaging_CreateFbExternalConversationArgs_fbmessaging_FbExternalCo
 
 func apply_fbmessaging_CreateFbExternalConversationArgs_fbmessaging_FbExternalConversation(arg *fbmessaging.CreateFbExternalConversationArgs, out *fbmessaging.FbExternalConversation) {
 	out.ID = arg.ID                                     // simple assign
-	out.FbPageID = arg.FbPageID                         // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
@@ -772,9 +760,7 @@ func Convert_fbmessagingmodel_FbExternalMessage_fbmessaging_FbExternalMessage(ar
 
 func convert_fbmessagingmodel_FbExternalMessage_fbmessaging_FbExternalMessage(arg *fbmessagingmodel.FbExternalMessage, out *fbmessaging.FbExternalMessage) {
 	out.ID = arg.ID                                         // simple assign
-	out.FbConversationID = arg.FbConversationID             // simple assign
 	out.ExternalConversationID = arg.ExternalConversationID // simple assign
-	out.FbPageID = arg.FbPageID                             // simple assign
 	out.ExternalPageID = arg.ExternalPageID                 // simple assign
 	out.ExternalID = arg.ExternalID                         // simple assign
 	out.ExternalMessage = arg.ExternalMessage               // simple assign
@@ -812,9 +798,7 @@ func Convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(ar
 
 func convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(arg *fbmessaging.FbExternalMessage, out *fbmessagingmodel.FbExternalMessage) {
 	out.ID = arg.ID                                         // simple assign
-	out.FbConversationID = arg.FbConversationID             // simple assign
 	out.ExternalConversationID = arg.ExternalConversationID // simple assign
-	out.FbPageID = arg.FbPageID                             // simple assign
 	out.ExternalPageID = arg.ExternalPageID                 // simple assign
 	out.ExternalID = arg.ExternalID                         // simple assign
 	out.ExternalMessage = arg.ExternalMessage               // simple assign
@@ -853,9 +837,7 @@ func Apply_fbmessaging_CreateFbExternalMessageArgs_fbmessaging_FbExternalMessage
 
 func apply_fbmessaging_CreateFbExternalMessageArgs_fbmessaging_FbExternalMessage(arg *fbmessaging.CreateFbExternalMessageArgs, out *fbmessaging.FbExternalMessage) {
 	out.ID = arg.ID                                         // simple assign
-	out.FbConversationID = arg.FbConversationID             // simple assign
 	out.ExternalConversationID = arg.ExternalConversationID // simple assign
-	out.FbPageID = arg.FbPageID                             // simple assign
 	out.ExternalPageID = arg.ExternalPageID                 // simple assign
 	out.ExternalID = arg.ExternalID                         // simple assign
 	out.ExternalMessage = arg.ExternalMessage               // simple assign
@@ -883,7 +865,6 @@ func Convert_fbmessagingmodel_FbExternalPost_fbmessaging_FbExternalPost(arg *fbm
 
 func convert_fbmessagingmodel_FbExternalPost_fbmessaging_FbExternalPost(arg *fbmessagingmodel.FbExternalPost, out *fbmessaging.FbExternalPost) {
 	out.ID = arg.ID                             // simple assign
-	out.FbPageID = arg.FbPageID                 // simple assign
 	out.ExternalPageID = arg.ExternalPageID     // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
 	out.ExternalParentID = arg.ExternalParentID // simple assign
@@ -922,7 +903,6 @@ func Convert_fbmessaging_FbExternalPost_fbmessagingmodel_FbExternalPost(arg *fbm
 
 func convert_fbmessaging_FbExternalPost_fbmessagingmodel_FbExternalPost(arg *fbmessaging.FbExternalPost, out *fbmessagingmodel.FbExternalPost) {
 	out.ID = arg.ID                             // simple assign
-	out.FbPageID = arg.FbPageID                 // simple assign
 	out.ExternalPageID = arg.ExternalPageID     // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
 	out.ExternalParentID = arg.ExternalParentID // simple assign
@@ -963,7 +943,6 @@ func Apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg *
 
 func apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg *fbmessaging.CreateFbExternalPostArgs, out *fbmessaging.FbExternalPost) {
 	out.ID = arg.ID                                   // simple assign
-	out.FbPageID = arg.FbPageID                       // simple assign
 	out.ExternalPageID = arg.ExternalPageID           // simple assign
 	out.ExternalID = arg.ExternalID                   // simple assign
 	out.ExternalParentID = arg.ExternalParentID       // simple assign

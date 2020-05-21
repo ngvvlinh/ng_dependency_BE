@@ -45,25 +45,6 @@ func (ft *FbExternalPageFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbExternalPageFilters) ByFbUserID(FbUserID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "fb_user_id",
-		Value:  FbUserID,
-		IsNil:  FbUserID == 0,
-	}
-}
-
-func (ft *FbExternalPageFilters) ByFbUserIDPtr(FbUserID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "fb_user_id",
-		Value:  FbUserID,
-		IsNil:  FbUserID == nil,
-		IsZero: FbUserID != nil && (*FbUserID) == 0,
-	}
-}
-
 func (ft *FbExternalPageFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -80,25 +61,6 @@ func (ft *FbExternalPageFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr
 		Value:  ShopID,
 		IsNil:  ShopID == nil,
 		IsZero: ShopID != nil && (*ShopID) == 0,
-	}
-}
-
-func (ft *FbExternalPageFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "user_id",
-		Value:  UserID,
-		IsNil:  UserID == 0,
-	}
-}
-
-func (ft *FbExternalPageFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "user_id",
-		Value:  UserID,
-		IsNil:  UserID == nil,
-		IsZero: UserID != nil && (*UserID) == 0,
 	}
 }
 
@@ -303,6 +265,25 @@ func (ft *FbExternalPageInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr
 		Value:  ID,
 		IsNil:  ID == nil,
 		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *FbExternalPageInternalFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *FbExternalPageInternalFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
 	}
 }
 

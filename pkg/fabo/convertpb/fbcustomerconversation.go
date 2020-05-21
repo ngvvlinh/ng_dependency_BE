@@ -1,10 +1,9 @@
 package convertpb
 
 import (
-	"fmt"
-
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/top/int/fabo"
+	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 )
 
 func PbFbCustomerConversation(m *fbmessaging.FbCustomerConversation) *fabo.FbCustomerConversation {
@@ -13,7 +12,6 @@ func PbFbCustomerConversation(m *fbmessaging.FbCustomerConversation) *fabo.FbCus
 	}
 	return &fabo.FbCustomerConversation{
 		ID:                        m.ID,
-		FbPageID:                  m.FbPageID,
 		ExternalPageID:            m.ExternalPageID,
 		ExternalID:                m.ExternalID,
 		ExternalUserID:            m.ExternalUserID,
@@ -23,7 +21,7 @@ func PbFbCustomerConversation(m *fbmessaging.FbCustomerConversation) *fabo.FbCus
 		ExternalPostAttachments:   PbPostAttachments(m.ExternalPostAttachments),
 		ExternalCommentAttachment: PbCommentAttachment(m.ExternalCommentAttachment),
 		Type:                      m.Type.String(),
-		ExternalUserPictureURL:    GenerateFacebookUserPicture(m.ExternalUserID),
+		ExternalUserPictureURL:    fbclientconvert.GenerateFacebookUserPicture(m.ExternalUserID),
 		LastMessage:               m.LastMessage,
 		LastMessageAt:             m.LastMessageAt,
 		CreatedAt:                 m.CreatedAt,
@@ -39,19 +37,13 @@ func PbFbCustomerConversations(ms []*fbmessaging.FbCustomerConversation) []*fabo
 	return res
 }
 
-func GenerateFacebookUserPicture(userID string) string {
-	return fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", userID)
-}
-
 func PbFbExternalMessage(m *fbmessaging.FbExternalMessage) *fabo.FbExternalMessage {
 	if m == nil {
 		return nil
 	}
 	return &fabo.FbExternalMessage{
 		ID:                     m.ID,
-		FbConversationID:       m.FbConversationID,
 		ExternalConversationID: m.ExternalConversationID,
-		FbPageID:               m.FbPageID,
 		ExternalPageID:         m.ExternalPageID,
 		ExternalID:             m.ExternalID,
 		ExternalMessage:        m.ExternalMessage,
@@ -81,7 +73,7 @@ func PbFbObjectTo(m *fbmessaging.FbObjectTo) *fabo.FbObjectTo {
 		ID:                     m.ID,
 		Name:                   m.Name,
 		Email:                  m.Email,
-		ExternalUserPictureURL: GenerateFacebookUserPicture(m.ID),
+		ExternalUserPictureURL: fbclientconvert.GenerateFacebookUserPicture(m.ID),
 	}
 }
 
@@ -101,7 +93,7 @@ func PbFbObjectFrom(m *fbmessaging.FbObjectFrom) *fabo.FbObjectFrom {
 		ID:                     m.ID,
 		Name:                   m.Name,
 		Email:                  m.Email,
-		ExternalUserPictureURL: GenerateFacebookUserPicture(m.ID),
+		ExternalUserPictureURL: fbclientconvert.GenerateFacebookUserPicture(m.ID),
 	}
 }
 
@@ -161,7 +153,6 @@ func PbFbExternalPost(m *fbmessaging.FbExternalPost) *fabo.FbExternalPost {
 	}
 	return &fabo.FbExternalPost{
 		ID:                  m.ID,
-		FbPageID:            m.FbPageID,
 		ExternalPageID:      m.ExternalPageID,
 		ExternalID:          m.ExternalID,
 		ExternalParentID:    m.ExternalParentID,
@@ -234,9 +225,7 @@ func PbFbExternalComment(m *fbmessaging.FbExternalComment) *fabo.FbExternalComme
 	}
 	return &fabo.FbExternalComment{
 		ID:                   m.ID,
-		FbPostID:             m.FbPostID,
 		ExternalPostID:       m.ExternalPostID,
-		FbPageID:             m.FbPageID,
 		ExternalPageID:       m.ExternalPageID,
 		ExternalID:           m.ExternalID,
 		ExternalUserID:       m.ExternalUserID,

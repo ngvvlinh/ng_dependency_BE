@@ -4,11 +4,9 @@ import (
 	"context"
 
 	"o.o/api/fabo/fbusering"
-	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbuser/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
-	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
 
@@ -32,31 +30,19 @@ func (q *FbUserQuery) MessageBus() fbusering.QueryBus {
 	return fbusering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q *FbUserQuery) GetFbExternalUserInternalByID(
-	ctx context.Context, ID dot.ID,
+func (q *FbUserQuery) GetFbExternalUserInternalByExternalID(
+	ctx context.Context, externalID string,
 ) (*fbusering.FbExternalUserInternal, error) {
-	panic("implement me")
-}
-
-func (f FbUserQuery) GetFbExternalUserByID(
-	ctx context.Context, ID dot.ID,
-) (*fbusering.FbExternalUser, error) {
 	panic("implement me")
 }
 
 func (f FbUserQuery) GetFbExternalUserByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbusering.FbExternalUser, error) {
-	panic("implement me")
+	return f.fbUserStore(ctx).ExternalID(externalID).GetFbExternalUser()
 }
 
-func (q *FbUserQuery) GetFbExternalUserByUserID(
-	ctx context.Context, userID dot.ID,
-) (*fbusering.FbExternalUser, error) {
-	return q.fbUserStore(ctx).UserID(userID).Status(status3.P).GetFbExternalUser()
-}
-
-func (q *FbUserQuery) ListFbExternalUsersByExternalID(
+func (q *FbUserQuery) ListFbExternalUsersByExternalIDs(
 	ctx context.Context, externalIDs filter.Strings,
 ) ([]*fbusering.FbExternalUser, error) {
 	return q.fbUserStore(ctx).ExternalIDs(externalIDs).ListFbExternalUsers()

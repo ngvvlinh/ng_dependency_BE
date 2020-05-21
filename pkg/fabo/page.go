@@ -61,13 +61,16 @@ func (s *PageService) Clone() fabo.PageService {
 }
 
 func (s *PageService) RemovePages(ctx context.Context, r *fabo.RemovePagesRequest) (*common.Empty, error) {
-	if len(r.IDs) == 0 {
+	if len(r.ExternalIDs) == 0 && len(r.NewExternalIDs) == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "ids must not be null")
 	}
-	disablePagesByIDsCmd := &fbpaging.DisableFbExternalPagesByIDsCommand{
-		IDs:    r.IDs,
-		ShopID: s.ss.Shop().ID,
-		UserID: s.ss.Claim().UserID,
+	externalIDs := r.ExternalIDs
+	if len(externalIDs) == 0 {
+		externalIDs = r.NewExternalIDs
+	}
+	disablePagesByIDsCmd := &fbpaging.DisableFbExternalPagesByExternalIDsCommand{
+		ExternalIDs: externalIDs,
+		ShopID:      s.ss.Shop().ID,
 	}
 	if err := s.fbExternalPageAggr.Dispatch(ctx, disablePagesByIDsCmd); err != nil {
 		return nil, err
@@ -77,14 +80,9 @@ func (s *PageService) RemovePages(ctx context.Context, r *fabo.RemovePagesReques
 }
 
 func (s *PageService) ListPages(ctx context.Context, r *fabo.ListPagesRequest) (*fabo.ListPagesResponse, error) {
-	//faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID, s.ss.User().ID)
-	//if err != nil {
-	//	return nil, err
-	//}
-
 	paging := cmapi.CMPaging(r.Paging)
 	listFbExternalPagesQuery := &fbpaging.ListFbExternalPagesQuery{
-		UserID:  s.ss.Claim().UserID,
+		ShopID:  s.ss.Shop().ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
@@ -100,8 +98,8 @@ func (s *PageService) ListPages(ctx context.Context, r *fabo.ListPagesRequest) (
 
 func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequest) (*fabo.ConnectPagesResponse, error) {
 	shopID := s.ss.Shop().ID
-	userID := s.ss.Claim().UserID
 
+	// Check accessToken is alive
 	_, err := s.fbClient.CallAPICheckAccessToken(r.AccessToken)
 	if err != nil {
 		return nil, err
@@ -112,6 +110,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	//	return nil, err
 	//}
 
+	// Get long lived accessToken from accessToken (above)
 	if r.AccessToken == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "access_token must not be null")
 	}
@@ -120,11 +119,13 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		return nil, err
 	}
 
+	// Get information of user from accessToken (above)
 	me, err := s.fbClient.CallAPIGetMe(longLivedAccessToken.AccessToken)
 	if err != nil {
 		return nil, err
 	}
 
+	// Get all accounts of user (above)
 	accounts, err := s.fbClient.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
 	if err != nil {
 		return nil, err
@@ -135,10 +136,10 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		externalIDs = append(externalIDs, account.Id)
 	}
 
+	// Get fbPages active from externalIDs (accounts)
 	listFbPagesActiveQuery := &fbpaging.ListFbExternalPagesActiveByExternalIDsQuery{
 		ExternalIDs: externalIDs,
 	}
-
 	if err := s.fbExternalPageQuery.Dispatch(ctx, listFbPagesActiveQuery); err != nil {
 		return nil, err
 	}
@@ -149,14 +150,9 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		mapFbPageActive[fbPage.ExternalID] = fbPage
 	}
 
-	fbUserID := cm.NewID()
 	createFbUserCombinedCmd := &fbusering.CreateFbExternalUserCombinedCommand{
-		UserID: userID,
-		ShopID: shopID,
 		FbUser: &fbusering.CreateFbExternalUserArgs{
-			ID:         fbUserID,
 			ExternalID: me.ID,
-			UserID:     userID,
 			ExternalInfo: &fbusering.FbExternalUserInfo{
 				Name:      me.Name,
 				FirstName: me.FirstName,
@@ -168,15 +164,14 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			Status: status3.P,
 		},
 		FbUserInternal: &fbusering.CreateFbExternalUserInternalArgs{
-			ID:        fbUserID,
-			Token:     longLivedAccessToken.AccessToken,
-			ExpiresIn: fbclient.ExpiresInUserToken, // 60 days
+			ExternalID: me.ID,
+			Token:      longLivedAccessToken.AccessToken,
+			ExpiresIn:  fbclient.ExpiresInUserToken, // 60 days
 		},
 	}
 	if err := s.fbExternalUserAggr.Dispatch(ctx, createFbUserCombinedCmd); err != nil {
 		return nil, err
 	}
-	fbUserID = createFbUserCombinedCmd.Result.FbExternalUser.ID
 
 	var fbErrorPages []*fabo.FbErrorPage
 
@@ -195,7 +190,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			continue
 		}
 
-		if fbPage, ok := mapFbPageActive[account.Id]; ok && fbPage.FbUserID != fbUserID {
+		if fbPage, ok := mapFbPageActive[account.Id]; ok && fbPage.ShopID != shopID {
 			fbErrorPages = append(fbErrorPages, &fabo.FbErrorPage{
 				ExternalID:       account.Id,
 				ExternalName:     account.Name,
@@ -216,9 +211,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		createFbPageCmd := &fbpaging.CreateFbExternalPageArgs{
 			ID:                   fbPageID,
 			ExternalID:           account.Id,
-			FbUserID:             fbUserID,
 			ShopID:               shopID,
-			UserID:               userID,
 			ExternalName:         account.Name,
 			ExternalCategory:     account.Category,
 			ExternalCategoryList: categories,
@@ -229,8 +222,9 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			ConnectionStatus:     status3.P,
 		}
 		createFbPageInternalCmd := &fbpaging.CreateFbExternalPageInternalArgs{
-			ID:    fbPageID,
-			Token: account.AccessToken,
+			ID:         fbPageID,
+			ExternalID: account.Id,
+			Token:      account.AccessToken,
 		}
 		listCreateFbPageCombinedCmd = append(listCreateFbPageCombinedCmd, &fbpaging.CreateFbExternalPageCombinedArgs{
 			FbPage:         createFbPageCmd,
@@ -241,10 +235,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 
 	if len(listCreateFbPageCombinedCmd) > 0 {
 		createFbExternalPageCombinedsCmd := &fbpaging.CreateFbExternalPageCombinedsCommand{
-			ShopID:          shopID,
-			UserID:          userID,
 			FbPageCombineds: listCreateFbPageCombinedCmd,
-			Result:          nil,
 		}
 		if err := s.fbExternalPageAggr.Dispatch(ctx, createFbExternalPageCombinedsCmd); err != nil {
 			return nil, err

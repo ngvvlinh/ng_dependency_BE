@@ -176,11 +176,11 @@ func (h QueryServiceHandler) HandleGetLatestFbExternalComment(ctx context.Contex
 }
 
 type ListFbCustomerConversationsQuery struct {
-	FbPageIDs        []dot.ID
-	FbExternalUserID dot.NullString
-	IsRead           dot.NullBool
-	Type             fb_customer_conversation_type.NullFbCustomerConversationType
-	Paging           meta.Paging
+	ExternalPageIDs []string
+	ExternalUserID  dot.NullString
+	IsRead          dot.NullBool
+	Type            fb_customer_conversation_type.NullFbCustomerConversationType
+	Paging          meta.Paging
 
 	Result *FbCustomerConversationsResponse `json:"-"`
 }
@@ -227,9 +227,9 @@ func (h QueryServiceHandler) HandleListFbExternalConversationsByExternalIDs(ctx 
 }
 
 type ListFbExternalMessagesQuery struct {
-	FbPageIDs         []dot.ID
-	FbConversationIDs []string
-	Paging            meta.Paging
+	ExternalPageIDs         []string
+	ExternalConversationIDs []string
+	Paging                  meta.Paging
 
 	Result *FbExternalMessagesResponse `json:"-"`
 }
@@ -438,17 +438,17 @@ func (q *GetLatestFbExternalCommentQuery) GetArgs(ctx context.Context) (_ contex
 func (q *ListFbCustomerConversationsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbCustomerConversationsArgs) {
 	return ctx,
 		&ListFbCustomerConversationsArgs{
-			FbPageIDs:        q.FbPageIDs,
-			FbExternalUserID: q.FbExternalUserID,
-			IsRead:           q.IsRead,
-			Type:             q.Type,
-			Paging:           q.Paging,
+			ExternalPageIDs: q.ExternalPageIDs,
+			ExternalUserID:  q.ExternalUserID,
+			IsRead:          q.IsRead,
+			Type:            q.Type,
+			Paging:          q.Paging,
 		}
 }
 
 func (q *ListFbCustomerConversationsQuery) SetListFbCustomerConversationsArgs(args *ListFbCustomerConversationsArgs) {
-	q.FbPageIDs = args.FbPageIDs
-	q.FbExternalUserID = args.FbExternalUserID
+	q.ExternalPageIDs = args.ExternalPageIDs
+	q.ExternalUserID = args.ExternalUserID
 	q.IsRead = args.IsRead
 	q.Type = args.Type
 	q.Paging = args.Paging
@@ -484,15 +484,15 @@ func (q *ListFbExternalConversationsByExternalIDsQuery) GetArgs(ctx context.Cont
 func (q *ListFbExternalMessagesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbExternalMessagesArgs) {
 	return ctx,
 		&ListFbExternalMessagesArgs{
-			FbPageIDs:         q.FbPageIDs,
-			FbConversationIDs: q.FbConversationIDs,
-			Paging:            q.Paging,
+			ExternalPageIDs:         q.ExternalPageIDs,
+			ExternalConversationIDs: q.ExternalConversationIDs,
+			Paging:                  q.Paging,
 		}
 }
 
 func (q *ListFbExternalMessagesQuery) SetListFbExternalMessagesArgs(args *ListFbExternalMessagesArgs) {
-	q.FbPageIDs = args.FbPageIDs
-	q.FbConversationIDs = args.FbConversationIDs
+	q.ExternalPageIDs = args.ExternalPageIDs
+	q.ExternalConversationIDs = args.ExternalConversationIDs
 	q.Paging = args.Paging
 }
 

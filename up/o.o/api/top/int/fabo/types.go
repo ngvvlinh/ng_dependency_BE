@@ -35,10 +35,7 @@ type FbErrorPage struct {
 func (m *FbErrorPage) String() string { return jsonx.MustMarshalToString(m) }
 
 type FbUserCombined struct {
-	ID           dot.ID              `json:"id"`
 	ExternalID   string              `json:"external_id"`
-	UserID       dot.ID              `json:"user_id"`
-	ShopID       dot.ID              `json:"shop_id"`
 	ExternalInfo *ExternalFbUserInfo `json:"external_info"`
 	Status       status3.Status      `json:"status"`
 	CreatedAt    time.Time           `json:"created_at"`
@@ -48,10 +45,7 @@ type FbUserCombined struct {
 func (m *FbUserCombined) String() string { return jsonx.MustMarshalToString(m) }
 
 type FbUser struct {
-	ID           dot.ID              `json:"id"`
 	ExternalID   string              `json:"external_id"`
-	UserID       dot.ID              `json:"user_id"`
-	ShopID       dot.ID              `json:"shop_id"`
 	ExternalInfo *ExternalFbUserInfo `json:"external_info"`
 	Status       status3.Status      `json:"status"`
 	CreatedAt    time.Time           `json:"created_at"`
@@ -71,9 +65,7 @@ type ExternalFbUserInfo struct {
 type FbPageCombined struct {
 	ID                   dot.ID              `json:"id"`
 	ExternalID           string              `json:"external_id"`
-	FbUserID             dot.ID              `json:"fb_user_id"`
 	ShopID               dot.ID              `json:"shop_id"`
-	UserID               dot.ID              `json:"user_id"`
 	ExternalName         string              `json:"external_name"`
 	ExternalCategory     string              `json:"external_category"`
 	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
@@ -91,9 +83,7 @@ func (m *FbPageCombined) String() string { return jsonx.MustMarshalToString(m) }
 type FbPage struct {
 	ID                   dot.ID              `json:"id"`
 	ExternalID           string              `json:"external_id"`
-	FbUserID             dot.ID              `json:"fb_user_id"`
 	ShopID               dot.ID              `json:"shop_id"`
-	UserID               dot.ID              `json:"user_id"`
 	ExternalName         string              `json:"external_name"`
 	ExternalCategory     string              `json:"external_category"`
 	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
@@ -114,7 +104,8 @@ type ExternalCategory struct {
 func (m *FbPage) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemovePagesRequest struct {
-	IDs []dot.ID `json:"ids"`
+	ExternalIDs    []string       `json:"ids"`
+	NewExternalIDs filter.Strings `json:"external_id"`
 }
 
 func (m *RemovePagesRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -141,15 +132,20 @@ type ListCustomerConversationsRequest struct {
 func (m *ListCustomerConversationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerConversationFilter struct {
-	FbPageIDs        filter.IDs                                                   `json:"fb_page_id"`
-	FbExternalUserID dot.NullString                                               `json:"fb_external_user_id"`
-	IsRead           dot.NullBool                                                 `json:"is_read"`
-	Type             fb_customer_conversation_type.NullFbCustomerConversationType `json:"type"`
+	// New
+	ExternalPageID filter.Strings `json:"external_page_id"`
+	ExternalUserID dot.NullString `json:"external_user_id"`
+
+	// Old
+	FbPageIDs        filter.IDs     `json:"fb_page_id"`
+	FbExternalUserID dot.NullString `json:"fb_external_user_id"`
+
+	IsRead dot.NullBool                                                 `json:"is_read"`
+	Type   fb_customer_conversation_type.NullFbCustomerConversationType `json:"type"`
 }
 
 type FbCustomerConversation struct {
 	ID                         dot.ID                 `json:"id"`
-	FbPageID                   dot.ID                 `json:"fb_page_id"`
 	ExternalPageID             string                 `json:"external_page_id"`
 	ExternalID                 string                 `json:"external_id"`
 	ExternalUserID             string                 `json:"external_user_id"`
@@ -207,6 +203,7 @@ func (m *ListMessagesRequest) String() string { return jsonx.MustMarshalToString
 
 type MessageFilter struct {
 	FbExternalConversationIDs filter.Strings `json:"fb_external_conversation_ids"`
+	ExternalConversationID    filter.Strings `json:"external_conversation_id"`
 }
 
 type FbMessagesResponse struct {
@@ -218,9 +215,7 @@ func (m *FbMessagesResponse) String() string { return jsonx.MustMarshalToString(
 
 type FbExternalMessage struct {
 	ID                     dot.ID                 `json:"id"`
-	FbConversationID       dot.ID                 `json:"fb_conversation_id"`
 	ExternalConversationID string                 `json:"external_conversation_id"`
-	FbPageID               dot.ID                 `json:"fb_page_id"`
 	ExternalPageID         string                 `json:"external_page_id"`
 	ExternalID             string                 `json:"external_id"`
 	ExternalMessage        string                 `json:"external_message"`
@@ -303,7 +298,6 @@ type FbCommentsResponse struct {
 
 type FbExternalPost struct {
 	ID                  dot.ID            `json:"id"`
-	FbPageID            dot.ID            `json:"fb_page_id"`
 	ExternalPageID      string            `json:"external_page_id"`
 	ExternalID          string            `json:"external_id"`
 	ExternalParentID    string            `json:"external_parent_id"`
@@ -319,9 +313,7 @@ type FbExternalPost struct {
 
 type FbExternalComment struct {
 	ID                   dot.ID             `json:"id"`
-	FbPostID             dot.ID             `json:"fb_post_id"`
 	ExternalPostID       string             `json:"external_post_id"`
-	FbPageID             dot.ID             `json:"fb_page_id"`
 	ExternalPageID       string             `json:"external_page_id"`
 	ExternalID           string             `json:"external_id"`
 	ExternalUserID       string             `json:"external_user_id"`

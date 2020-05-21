@@ -7,7 +7,6 @@ import (
 	"o.o/api/fabo/fbusering"
 	"o.o/backend/com/fabo/main/fbuser/convert"
 	"o.o/backend/com/fabo/main/fbuser/sqlstore"
-	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -92,19 +91,9 @@ func (a *FbUserAggregate) CreateFbExternalUserInternal(
 func (a *FbUserAggregate) CreateFbExternalUserCombined(
 	ctx context.Context, args *fbusering.CreateFbExternalUserCombinedArgs,
 ) (*fbusering.FbExternalUserCombined, error) {
-	oldFbUser, err := a.fbUserStore(ctx).UserID(args.UserID).ExternalID(args.FbUser.ExternalID).GetFbExternalUser()
-	if err != nil && cm.ErrorCode(err) != cm.NotFound {
-		return nil, err
-	}
-
 	fbUserResult := new(fbusering.FbExternalUser)
 	fbUserInternalResult := new(fbusering.FbExternalUserInternal)
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		if oldFbUser != nil {
-			args.FbUser.ID = oldFbUser.ID
-			args.FbUserInternal.ID = oldFbUser.ID
-		}
-
 		// create FbExternalUser
 		if err := scheme.Convert(args.FbUser, fbUserResult); err != nil {
 			return err

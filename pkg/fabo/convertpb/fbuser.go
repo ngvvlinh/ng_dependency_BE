@@ -10,9 +10,7 @@ func PbFbUserCombined(m *fbusering.FbExternalUserCombined) *fabo.FbUserCombined 
 		return nil
 	}
 	return &fabo.FbUserCombined{
-		ID:         m.FbExternalUser.ID,
 		ExternalID: m.FbExternalUser.ExternalID,
-		UserID:     m.FbExternalUser.UserID,
 		ExternalInfo: &fabo.ExternalFbUserInfo{
 			Name:      m.FbExternalUser.ExternalInfo.Name,
 			FirstName: m.FbExternalUser.ExternalInfo.FirstName,
@@ -39,9 +37,7 @@ func PbFbUser(m *fbusering.FbExternalUser) *fabo.FbUser {
 		return nil
 	}
 	return &fabo.FbUser{
-		ID:         m.ID,
 		ExternalID: m.ExternalID,
-		UserID:     m.UserID,
 		ExternalInfo: &fabo.ExternalFbUserInfo{
 			Name:      m.ExternalInfo.Name,
 			FirstName: m.ExternalInfo.FirstName,

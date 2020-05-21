@@ -291,7 +291,6 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbCustomerConversations(
 			}
 			newCustomerConversations = append(newCustomerConversations, &fbmessaging.FbCustomerConversation{
 				ID:               ID,
-				FbPageID:         customerConversation.FbPageID,
 				ExternalPageID:   customerConversation.ExternalPageID,
 				ExternalID:       customerConversation.ExternalUserID,
 				ExternalUserID:   customerConversation.ExternalUserID,
@@ -350,7 +349,6 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbCustomerConversations(
 			}
 			newCustomerConversations = append(newCustomerConversations, &fbmessaging.FbCustomerConversation{
 				ID:                        ID,
-				FbPageID:                  customerConversation.FbPageID,
 				ExternalPageID:            customerConversation.ExternalUserID,
 				ExternalID:                customerConversation.ExternalID,
 				ExternalUserID:            customerConversation.ExternalUserID,

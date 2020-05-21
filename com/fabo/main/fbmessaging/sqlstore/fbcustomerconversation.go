@@ -52,13 +52,13 @@ func (s *FbCustomerConversationStore) ExternalIDs(externalIDs []string) *FbCusto
 	return s
 }
 
-func (s *FbCustomerConversationStore) ExternalIDAndExternalUserID(externalID, externalUserID string) *FbCustomerConversationStore {
-	s.preds = append(s.preds, sq.NewExpr(fmt.Sprintf("external_id = '%s' AND external_user_id = '%s'", externalID, externalUserID)))
+func (s *FbCustomerConversationStore) ExternalPageIDs(externalPageIDs []string) *FbCustomerConversationStore {
+	s.preds = append(s.preds, sq.In("external_page_id", externalPageIDs))
 	return s
 }
 
-func (s *FbCustomerConversationStore) FbPageID(fbPageID dot.ID) *FbCustomerConversationStore {
-	s.preds = append(s.preds, s.ft.ByFbPageID(fbPageID))
+func (s *FbCustomerConversationStore) ExternalIDAndExternalUserID(externalID, externalUserID string) *FbCustomerConversationStore {
+	s.preds = append(s.preds, sq.NewExpr(fmt.Sprintf("external_id = '%s' AND external_user_id = '%s'", externalID, externalUserID)))
 	return s
 }
 

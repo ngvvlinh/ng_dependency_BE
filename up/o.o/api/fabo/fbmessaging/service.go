@@ -52,9 +52,7 @@ type QueryService interface {
 // +convert:create=FbExternalMessage
 type CreateFbExternalMessageArgs struct {
 	ID                     dot.ID
-	FbConversationID       dot.ID
 	ExternalConversationID string
-	FbPageID               dot.ID
 	ExternalPageID         string
 	ExternalID             string
 	ExternalMessage        string
@@ -76,7 +74,6 @@ type CreateOrUpdateFbExternalMessagesArgs struct {
 // +convert:create=FbExternalPost
 type CreateFbExternalPostArgs struct {
 	ID                  dot.ID
-	FbPageID            dot.ID
 	ExternalPageID      string
 	ExternalID          string
 	ExternalParentID    string
@@ -100,9 +97,7 @@ type CreateOrUpdateFbExternalPostsArgs struct {
 // +convert:create=FbExternalComment
 type CreateFbExternalCommentArgs struct {
 	ID                   dot.ID
-	FbPostID             dot.ID
 	ExternalPostID       string
-	FbPageID             dot.ID
 	ExternalPageID       string
 	ExternalID           string
 	ExternalUserID       string
@@ -123,7 +118,6 @@ type CreateOrUpdateFbExternalCommentsArgs struct {
 // +convert:create=FbExternalConversation
 type CreateFbExternalConversationArgs struct {
 	ID                   dot.ID
-	FbPageID             dot.ID
 	ExternalPageID       string
 	ExternalID           string
 	ExternalUserID       string
@@ -144,7 +138,6 @@ type CreateOrUpdateFbExternalConversationsArgs struct {
 // +convert:create=FbCustomerConversation
 type CreateFbCustomerConversationArgs struct {
 	ID                         dot.ID
-	FbPageID                   dot.ID
 	ExternalPageID             string
 	ExternalID                 string
 	ExternalUserID             string
@@ -168,8 +161,8 @@ type CreateOrUpdateFbCustomerConversationsArgs struct {
 }
 
 type ListFbExternalMessagesArgs struct {
-	FbPageIDs         []dot.ID
-	FbConversationIDs []string
+	ExternalPageIDs         []string
+	ExternalConversationIDs []string
 
 	Paging meta.Paging
 }
@@ -180,10 +173,10 @@ type FbExternalMessagesResponse struct {
 }
 
 type ListFbCustomerConversationsArgs struct {
-	FbPageIDs        []dot.ID
-	FbExternalUserID dot.NullString
-	IsRead           dot.NullBool
-	Type             fb_customer_conversation_type.NullFbCustomerConversationType
+	ExternalPageIDs []string
+	ExternalUserID  dot.NullString
+	IsRead          dot.NullBool
+	Type            fb_customer_conversation_type.NullFbCustomerConversationType
 
 	Paging meta.Paging
 }

@@ -101,8 +101,6 @@ func Convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg *fbusermode
 }
 
 func convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg *fbusermodel.FbExternalUser, out *fbusering.FbExternalUser) {
-	out.ID = arg.ID                 // simple assign
-	out.UserID = arg.UserID         // simple assign
 	out.ExternalID = arg.ExternalID // simple assign
 	out.ExternalInfo = Convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg.ExternalInfo, nil)
 	out.Status = arg.Status       // simple assign
@@ -134,8 +132,6 @@ func Convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg *fbusering.
 }
 
 func convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg *fbusering.FbExternalUser, out *fbusermodel.FbExternalUser) {
-	out.ID = arg.ID                 // simple assign
-	out.UserID = arg.UserID         // simple assign
 	out.ExternalID = arg.ExternalID // simple assign
 	out.ExternalInfo = Convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(arg.ExternalInfo, nil)
 	out.Status = arg.Status       // simple assign
@@ -167,8 +163,6 @@ func Apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbus
 }
 
 func apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbusering.CreateFbExternalUserArgs, out *fbusering.FbExternalUser) {
-	out.ID = arg.ID                     // simple assign
-	out.UserID = arg.UserID             // simple assign
 	out.ExternalID = arg.ExternalID     // simple assign
 	out.ExternalInfo = arg.ExternalInfo // simple assign
 	out.Status = arg.Status             // simple assign
@@ -254,10 +248,10 @@ func Convert_fbusermodel_FbExternalUserInternal_fbusering_FbExternalUserInternal
 }
 
 func convert_fbusermodel_FbExternalUserInternal_fbusering_FbExternalUserInternal(arg *fbusermodel.FbExternalUserInternal, out *fbusering.FbExternalUserInternal) {
-	out.ID = arg.ID               // simple assign
-	out.Token = arg.Token         // simple assign
-	out.ExpiresIn = arg.ExpiresIn // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.ExternalID = arg.ExternalID // simple assign
+	out.Token = arg.Token           // simple assign
+	out.ExpiresIn = arg.ExpiresIn   // simple assign
+	out.UpdatedAt = arg.UpdatedAt   // simple assign
 }
 
 func Convert_fbusermodel_FbExternalUserInternals_fbusering_FbExternalUserInternals(args []*fbusermodel.FbExternalUserInternal) (outs []*fbusering.FbExternalUserInternal) {
@@ -284,10 +278,10 @@ func Convert_fbusering_FbExternalUserInternal_fbusermodel_FbExternalUserInternal
 }
 
 func convert_fbusering_FbExternalUserInternal_fbusermodel_FbExternalUserInternal(arg *fbusering.FbExternalUserInternal, out *fbusermodel.FbExternalUserInternal) {
-	out.ID = arg.ID               // simple assign
-	out.Token = arg.Token         // simple assign
-	out.ExpiresIn = arg.ExpiresIn // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.ExternalID = arg.ExternalID // simple assign
+	out.Token = arg.Token           // simple assign
+	out.ExpiresIn = arg.ExpiresIn   // simple assign
+	out.UpdatedAt = arg.UpdatedAt   // simple assign
 }
 
 func Convert_fbusering_FbExternalUserInternals_fbusermodel_FbExternalUserInternals(args []*fbusering.FbExternalUserInternal) (outs []*fbusermodel.FbExternalUserInternal) {
@@ -314,8 +308,8 @@ func Apply_fbusering_CreateFbExternalUserInternalArgs_fbusering_FbExternalUserIn
 }
 
 func apply_fbusering_CreateFbExternalUserInternalArgs_fbusering_FbExternalUserInternal(arg *fbusering.CreateFbExternalUserInternalArgs, out *fbusering.FbExternalUserInternal) {
-	out.ID = arg.ID               // simple assign
-	out.Token = arg.Token         // simple assign
-	out.ExpiresIn = arg.ExpiresIn // simple assign
-	out.UpdatedAt = time.Time{}   // zero value
+	out.ExternalID = arg.ExternalID // simple assign
+	out.Token = arg.Token           // simple assign
+	out.ExpiresIn = arg.ExpiresIn   // simple assign
+	out.UpdatedAt = time.Time{}     // zero value
 }

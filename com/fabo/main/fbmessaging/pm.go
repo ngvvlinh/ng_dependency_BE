@@ -10,6 +10,7 @@ import (
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/top/types/etc/status3"
+	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/capi"
@@ -93,7 +94,6 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 		}
 		updateFbCustomerConversationsCmd = append(updateFbCustomerConversationsCmd, &fbmessaging.CreateFbCustomerConversationArgs{
 			ID:                         oldFbCustomerConversation.ID,
-			FbPageID:                   oldFbCustomerConversation.FbPageID,
 			ExternalPageID:             oldFbCustomerConversation.ExternalPageID,
 			ExternalID:                 oldFbCustomerConversation.ExternalID,
 			ExternalUserID:             oldFbCustomerConversation.ExternalUserID,
@@ -122,7 +122,7 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 		mapExternalUserID := make(map[string]bool)
 		var fbObjectFroms []*fbmessaging.FbObjectFrom
 		for _, externalMessage := range event.FbExternalMessages {
-			if externalMessage.ExternalFrom == nil {
+			if externalMessage.ExternalFrom == nil || (externalMessage.ExternalFrom.ID == externalMessage.ExternalPageID) {
 				continue
 			}
 			if _, ok := mapExternalUserID[externalMessage.ExternalFrom.ID]; !ok {
@@ -131,10 +131,9 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 			}
 		}
 
-		// TODO: Ngoc
-		//if err := m.handleCreateExternalCustomerUser(ctx, fbObjectFroms); err != nil {
-		//	return err
-		//}
+		if err := m.handleCreateExternalCustomerUser(ctx, fbObjectFroms); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -224,7 +223,6 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 				FbCustomerConversations: []*fbmessaging.CreateFbCustomerConversationArgs{
 					{
 						ID:                        ID,
-						FbPageID:                  lastFbExternalComment.FbPageID,
 						ExternalPageID:            lastFbExternalComment.ExternalPageID,
 						ExternalID:                lastFbExternalComment.ExternalPostID,
 						ExternalUserID:            externalUserIDCustomerConversation,
@@ -249,6 +247,9 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 		mapExternalUserID := make(map[string]bool)
 		var fbObjectFroms []*fbmessaging.FbObjectFrom
 		for _, externalComment := range event.FbExternalComments {
+			if externalComment.ExternalUserID != "" && externalComment.ExternalUserID == externalComment.ExternalParentID {
+				continue
+			}
 			if externalComment.ExternalFrom == nil {
 				continue
 			}
@@ -258,12 +259,10 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 			}
 		}
 
-		// TODO: Ngoc
-		//if err := m.handleCreateExternalCustomerUser(ctx, fbObjectFroms); err != nil {
-		//	return err
-		//}
+		if err := m.handleCreateExternalCustomerUser(ctx, fbObjectFroms); err != nil {
+			return err
+		}
 	}
-
 	return nil
 }
 
@@ -302,7 +301,6 @@ func (m *ProcessManager) HandleFbExternalConversationsCreatedEvent(
 		}
 		createFbCustomerConversationsArgs = append(createFbCustomerConversationsArgs, &fbmessaging.CreateFbCustomerConversationArgs{
 			ID:               cm.NewID(),
-			FbPageID:         externalConversation.FbPageID,
 			ExternalPageID:   externalConversation.ExternalPageID,
 			ExternalID:       externalConversation.ExternalID,
 			ExternalUserID:   externalConversation.ExternalUserID,
@@ -333,39 +331,33 @@ func (m *ProcessManager) handleCreateExternalCustomerUser(
 		externalUserIDs = append(externalUserIDs, fbObjectFrom.ID)
 	}
 
-	listExternalUsersByExternalIDsQuery := &fbusering.ListFbExternalUsersByExternalIDQuery{
+	listFbExternalUsersByExternalIDsQuery := &fbusering.ListFbExternalUsersByExternalIDsQuery{
 		ExternalIDs: externalUserIDs,
 	}
-	if err := m.fbuseringQ.Dispatch(ctx, listExternalUsersByExternalIDsQuery); err != nil {
+	if err := m.fbuseringQ.Dispatch(ctx, listFbExternalUsersByExternalIDsQuery); err != nil {
 		return err
 	}
-
-	mapOldExternalUser := make(map[string]*fbusering.FbExternalUser)
-	for _, oldExternalUser := range listExternalUsersByExternalIDsQuery.Result {
-		mapOldExternalUser[oldExternalUser.ExternalID] = oldExternalUser
-	}
+	mapFbExternalUsers := make(map[string]*fbusering.FbExternalUser)
 
 	var createFbExternalUsersArgs []*fbusering.CreateFbExternalUserArgs
 	for _, fbObjectFrom := range fbObjectFroms {
-		if oldExternalUser, ok := mapOldExternalUser[fbObjectFrom.ID]; ok && oldExternalUser.ExternalInfo == nil {
+		if _, ok := mapFbExternalUsers[fbObjectFrom.ID]; !ok {
 			createFbExternalUsersArgs = append(createFbExternalUsersArgs, &fbusering.CreateFbExternalUserArgs{
-				ID:         oldExternalUser.ID,
-				UserID:     oldExternalUser.UserID,
-				ExternalID: oldExternalUser.ExternalID,
-				ExternalInfo: &fbusering.FbExternalUserInfo{
-					Name: fbObjectFrom.Name,
-				},
-				Status: oldExternalUser.Status,
-			})
-		} else {
-			createFbExternalUsersArgs = append(createFbExternalUsersArgs, &fbusering.CreateFbExternalUserArgs{
-				ID:         cm.NewID(),
 				ExternalID: fbObjectFrom.ID,
 				ExternalInfo: &fbusering.FbExternalUserInfo{
-					Name: fbObjectFrom.Name,
+					Name:     fbObjectFrom.Name,
+					ImageURL: fbclientconvert.GenerateFacebookUserPicture(fbObjectFrom.ID),
 				},
 				Status: status3.P,
 			})
+		}
+	}
+
+	if len(createFbExternalUsersArgs) > 0 {
+		if err := m.fbuseringA.Dispatch(ctx, &fbusering.CreateFbExternalUsersCommand{
+			FbExternalUsers: createFbExternalUsersArgs,
+		}); err != nil {
+			return err
 		}
 	}
 

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"o.o/api/top/types/etc/status3"
-	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
 
@@ -20,18 +19,14 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetFbExternalUserByID(_ context.Context, ID dot.ID) (*FbExternalUser, error)
 	GetFbExternalUserByExternalID(_ context.Context, externalID string) (*FbExternalUser, error)
-	GetFbExternalUserByUserID(_ context.Context, userID dot.ID) (*FbExternalUser, error)
-	ListFbExternalUsersByExternalID(_ context.Context, externalIDs filter.Strings) ([]*FbExternalUser, error)
+	ListFbExternalUsersByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalUser, error)
 
-	GetFbExternalUserInternalByID(_ context.Context, ID dot.ID) (*FbExternalUserInternal, error)
+	GetFbExternalUserInternalByExternalID(_ context.Context, externalID string) (*FbExternalUserInternal, error)
 }
 
 // +convert:create=FbExternalUser
 type CreateFbExternalUserArgs struct {
-	ID           dot.ID
-	UserID       dot.ID
 	ExternalID   string
 	ExternalInfo *FbExternalUserInfo
 	Token        string
@@ -44,14 +39,12 @@ type CreateFbExternalUsersArgs struct {
 
 // +convert:create=FbExternalUserInternal
 type CreateFbExternalUserInternalArgs struct {
-	ID        dot.ID
-	Token     string
-	ExpiresIn int
+	ExternalID string
+	Token      string
+	ExpiresIn  int
 }
 
 type CreateFbExternalUserCombinedArgs struct {
-	UserID         dot.ID
-	ShopID         dot.ID
 	FbUser         *CreateFbExternalUserArgs
 	FbUserInternal *CreateFbExternalUserInternalArgs
 }

@@ -58,25 +58,45 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		Paging: *paging,
 	}
 	if request.Filter != nil {
-		fbPageIDs := request.Filter.FbPageIDs
-		if len(fbPageIDs) == 0 {
-			faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID, s.ss.User().ID)
+		fbPageIDsRequest := request.Filter.FbPageIDs
+		externalPageIDsRequest := request.Filter.ExternalPageID
+		if len(fbPageIDsRequest) != 0 {
+			listFbExternalPagesByIDsQuery := &fbpaging.ListFbExternalPagesByIDsQuery{
+				IDs: fbPageIDsRequest,
+			}
+			if err := s.fbPagingQuery.Dispatch(ctx, listFbExternalPagesByIDsQuery); err != nil {
+				return nil, err
+			}
+			for _, fbExternalPage := range listFbExternalPagesByIDsQuery.Result {
+				externalPageIDsRequest = append(externalPageIDsRequest, fbExternalPage.ExternalID)
+			}
+		}
+
+		if len(fbPageIDsRequest) == 0 && len(externalPageIDsRequest) == 0 {
+			faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID)
 			if err != nil {
 				return nil, err
 			}
-			fbPageIDs = faboInfo.FbPageIDs
+			fbPageIDsRequest = faboInfo.FbPageIDs
+			externalPageIDsRequest = faboInfo.ExternalPageIDs
 		}
-		listCustomerConversationsQuery.FbPageIDs = fbPageIDs
+		listCustomerConversationsQuery.ExternalPageIDs = externalPageIDsRequest
 		listCustomerConversationsQuery.IsRead = request.Filter.IsRead
-		listCustomerConversationsQuery.FbExternalUserID = request.Filter.FbExternalUserID
+
+		if request.Filter.FbExternalUserID.Valid {
+			listCustomerConversationsQuery.ExternalUserID = request.Filter.FbExternalUserID
+		} else {
+			listCustomerConversationsQuery.ExternalUserID = request.Filter.ExternalUserID
+		}
 		listCustomerConversationsQuery.Type = request.Filter.Type
 	}
-	if len(listCustomerConversationsQuery.FbPageIDs) == 0 {
-		faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID, s.ss.User().ID)
+
+	if len(listCustomerConversationsQuery.ExternalPageIDs) == 0 {
+		faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID)
 		if err != nil {
 			return nil, err
 		}
-		listCustomerConversationsQuery.FbPageIDs = faboInfo.FbPageIDs
+		listCustomerConversationsQuery.ExternalPageIDs = faboInfo.ExternalPageIDs
 	}
 	if err := s.fbMessagingQuery.Dispatch(ctx, listCustomerConversationsQuery); err != nil {
 		return nil, err
@@ -95,18 +115,22 @@ func (s *CustomerConversationService) ListMessages(
 	if err != nil {
 		return nil, err
 	}
-	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID, s.ss.User().ID)
+	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID)
 	if err != nil {
 		return nil, err
 	}
-	var fbExternalConversationIDs []string
+	var externalConversationIDs []string
 	if request.Filter != nil {
-		fbExternalConversationIDs = request.Filter.FbExternalConversationIDs
+		if len(request.Filter.FbExternalConversationIDs) != 0 {
+			externalConversationIDs = request.Filter.FbExternalConversationIDs
+		} else {
+			externalConversationIDs = request.Filter.ExternalConversationID
+		}
 	}
 	listFbExternalMessagesQuery := &fbmessaging.ListFbExternalMessagesQuery{
-		FbPageIDs:         faboInfo.FbPageIDs,
-		FbConversationIDs: fbExternalConversationIDs,
-		Paging:            *paging,
+		ExternalPageIDs:         faboInfo.ExternalPageIDs,
+		ExternalConversationIDs: externalConversationIDs,
+		Paging:                  *paging,
 	}
 	if err := s.fbMessagingQuery.Dispatch(ctx, listFbExternalMessagesQuery); err != nil {
 		return nil, err
@@ -129,7 +153,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	if err != nil {
 		return nil, err
 	}
-	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID, s.ss.User().ID)
+	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID)
 	if err != nil {
 		return nil, err
 	}
@@ -142,15 +166,15 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	}
 	fbExternalPost := getFbExternalPostQuery.Result
 
-	havePageID := false
-	for _, fbPageID := range faboInfo.FbPageIDs {
-		if fbPageID == fbExternalPost.FbPageID {
-			havePageID = true
+	haveExternalPageID := false
+	for _, externalPageID := range faboInfo.ExternalPageIDs {
+		if externalPageID == fbExternalPost.ExternalPageID {
+			haveExternalPageID = true
 			break
 		}
 	}
 	//// TODO: Ngoc add message
-	if !havePageID {
+	if !haveExternalPageID {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "")
 	}
 

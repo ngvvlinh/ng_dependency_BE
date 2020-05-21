@@ -305,9 +305,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 		}
 		fbExternalMessagesArgs = append(fbExternalMessagesArgs, &fbmessaging.CreateFbExternalMessageArgs{
 			ID:                     cm.NewID(),
-			FbConversationID:       conversationID,
 			ExternalConversationID: externalConversationID,
-			FbPageID:               pageID,
 			ExternalPageID:         externalPageID,
 			ExternalID:             fbMessage.ID,
 			ExternalMessage:        fbMessage.Message,
@@ -383,7 +381,6 @@ func (s *Synchronizer) handleTaskGetConversations(
 		fbExternalConversationsArgs = append(fbExternalConversationsArgs, &fbmessaging.CreateFbExternalConversationArgs{
 			ID:                   cm.NewID(),
 			ExternalID:           fbConversation.ID,
-			FbPageID:             pageID,
 			ExternalPageID:       externalPageID,
 			ExternalUserID:       externalUserID,
 			ExternalUserName:     externalUserName,
@@ -448,7 +445,7 @@ func (s *Synchronizer) handleTaskGetComments(
 
 	// Get values from arguments
 	externalPostID := taskArgs.getCommentsArgs.externalPostID
-	postID := taskArgs.getCommentsArgs.postID
+	//postID := taskArgs.getCommentsArgs.postID
 
 	// Call api list comments that depends on (externalPostID)
 	fbExternalCommentsResp, err := s.fbClient.CallAPIListComments(accessToken, externalPostID, fbPagingReq)
@@ -480,9 +477,7 @@ func (s *Synchronizer) handleTaskGetComments(
 		}
 		createOrUpdateFbExternalCommentsArgs = append(createOrUpdateFbExternalCommentsArgs, &fbmessaging.CreateFbExternalCommentArgs{
 			ID:                   cm.NewID(),
-			FbPostID:             postID,
 			ExternalPostID:       externalPostID,
-			FbPageID:             pageID,
 			ExternalPageID:       externalPageID,
 			ExternalID:           fbExternalComment.ID,
 			ExternalUserID:       externalUserID,
@@ -530,7 +525,6 @@ func (s *Synchronizer) handleTaskGetChildPost(
 
 	createOrUpdateFbExternalPostsArgs = append(createOrUpdateFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
 		ID:                  cm.NewID(),
-		FbPageID:            pageID,
 		ExternalPageID:      externalPageID,
 		ExternalID:          externalChildPostID,
 		ExternalParentID:    externalPostID,
@@ -612,7 +606,6 @@ func (s *Synchronizer) HandleTaskGetPosts(
 
 		createOrUpdateFbExternalPostsArgs = append(createOrUpdateFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
 			ID:                  cm.NewID(),
-			FbPageID:            pageID,
 			ExternalPageID:      externalPageID,
 			ExternalID:          fbPost.ID,
 			ExternalFrom:        fbclientconvert.ConvertObjectFrom(fbPost.From),

@@ -4,13 +4,10 @@ import (
 	"time"
 
 	"o.o/api/top/types/etc/status3"
-	"o.o/capi/dot"
 )
 
 // +sqlgen
 type FbExternalUser struct {
-	ID           dot.ID
-	UserID       dot.ID
 	ExternalID   string
 	ExternalInfo *FbExternalUserInfo
 	Status       status3.Status
@@ -28,8 +25,8 @@ type FbExternalUserInfo struct {
 
 // +sqlgen
 type FbExternalUserInternal struct {
-	ID        dot.ID
-	Token     string
-	ExpiresIn int
-	UpdatedAt time.Time `sq:"update"`
+	ExternalID string
+	Token      string
+	ExpiresIn  int
+	UpdatedAt  time.Time `sq:"update"`
 }

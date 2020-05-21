@@ -12,7 +12,6 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
-	"o.o/capi/dot"
 )
 
 type FbExternalUserStoreFactory func(ctx context.Context) *FbExternalUserStore
@@ -51,11 +50,6 @@ func (s *FbExternalUserStore) ExternalID(externalID string) *FbExternalUserStore
 	return s
 }
 
-func (s *FbExternalUserStore) UserID(userID dot.ID) *FbExternalUserStore {
-	s.preds = append(s.preds, s.ft.ByUserID(userID))
-	return s
-}
-
 func (s *FbExternalUserStore) Status(status status3.Status) *FbExternalUserStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
@@ -81,7 +75,7 @@ func (s *FbExternalUserStore) CreateFbExternalUser(fbExternalUser *fbusering.FbE
 	}
 
 	var tempFbExternalUser model.FbExternalUser
-	if err := s.query().Where(s.ft.ByID(fbExternalUser.ID)).ShouldGet(&tempFbExternalUser); err != nil {
+	if err := s.query().Where(s.ft.ByExternalID(fbExternalUser.ExternalID)).ShouldGet(&tempFbExternalUser); err != nil {
 		return err
 	}
 	fbExternalUser.CreatedAt = tempFbExternalUser.CreatedAt
@@ -124,7 +118,6 @@ func (s *FbExternalUserStore) GetFbExternalUser() (*fbusering.FbExternalUser, er
 
 func (s *FbExternalUserStore) ListFbExternalUsersDB() ([]*model.FbExternalUser, error) {
 	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}

@@ -20,9 +20,7 @@ func PbFbPageCombined(m *fbpaging.FbExternalPageCombined) *fabo.FbPageCombined {
 	return &fabo.FbPageCombined{
 		ID:                   m.FbExternalPage.ID,
 		ExternalID:           m.FbExternalPage.ExternalID,
-		FbUserID:             m.FbExternalPage.FbUserID,
 		ShopID:               m.FbExternalPage.ShopID,
-		UserID:               m.FbExternalPage.UserID,
 		ExternalName:         m.FbExternalPage.ExternalName,
 		ExternalCategory:     m.FbExternalPage.ExternalCategory,
 		ExternalCategoryList: externalCategoryList,
@@ -55,9 +53,7 @@ func PbFbPage(m *fbpaging.FbExternalPage) *fabo.FbPage {
 	return &fabo.FbPage{
 		ID:                   m.ID,
 		ExternalID:           m.ExternalID,
-		FbUserID:             m.FbUserID,
 		ShopID:               m.ShopID,
-		UserID:               m.UserID,
 		ExternalName:         m.ExternalName,
 		ExternalCategory:     m.ExternalCategory,
 		ExternalCategoryList: categoryList,
