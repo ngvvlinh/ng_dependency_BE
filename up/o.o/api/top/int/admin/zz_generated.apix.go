@@ -93,26 +93,28 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 	switch path {
 	case "/admin.Account/CreatePartner":
 		msg := &CreatePartnerRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreatePartner(ctx, msg)
+			resp, err = inner.CreatePartner(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Account/GenerateAPIKey":
 		msg := &GenerateAPIKeyRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GenerateAPIKey(ctx, msg)
+			resp, err = inner.GenerateAPIKey(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -164,86 +166,93 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 	switch path {
 	case "/admin.Connection/ConfirmConnection":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ConfirmConnection(ctx, msg)
+			resp, err = inner.ConfirmConnection(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Connection/CreateBuiltinConnection":
 		msg := &inttypes.CreateBuiltinConnectionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateBuiltinConnection(ctx, msg)
+			resp, err = inner.CreateBuiltinConnection(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Connection/DisableConnection":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DisableConnection(ctx, msg)
+			resp, err = inner.DisableConnection(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Connection/GetBuiltinShopConnections":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetBuiltinShopConnections(ctx, msg)
+			resp, err = inner.GetBuiltinShopConnections(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Connection/GetConnectionServices":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetConnectionServices(ctx, msg)
+			resp, err = inner.GetConnectionServices(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Connection/GetConnections":
 		msg := &inttypes.GetConnectionsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetConnections(ctx, msg)
+			resp, err = inner.GetConnections(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Connection/UpdateBuiltinShopConnection":
 		msg := &inttypes.UpdateShopConnectionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateBuiltinShopConnection(ctx, msg)
+			resp, err = inner.UpdateBuiltinShopConnection(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -295,74 +304,80 @@ func (s *CreditServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 	switch path {
 	case "/admin.Credit/ConfirmCredit":
 		msg := &ConfirmCreditRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ConfirmCredit(ctx, msg)
+			resp, err = inner.ConfirmCredit(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Credit/CreateCredit":
 		msg := &CreateCreditRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateCredit(ctx, msg)
+			resp, err = inner.CreateCredit(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Credit/DeleteCredit":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteCredit(ctx, msg)
+			resp, err = inner.DeleteCredit(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Credit/GetCredit":
 		msg := &GetCreditRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetCredit(ctx, msg)
+			resp, err = inner.GetCredit(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Credit/GetCredits":
 		msg := &GetCreditsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetCredits(ctx, msg)
+			resp, err = inner.GetCredits(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Credit/UpdateCredit":
 		msg := &UpdateCreditRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateCredit(ctx, msg)
+			resp, err = inner.UpdateCredit(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -414,62 +429,67 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 	switch path {
 	case "/admin.Fulfillment/GetFulfillment":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetFulfillment(ctx, msg)
+			resp, err = inner.GetFulfillment(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/GetFulfillments":
 		msg := &GetFulfillmentsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetFulfillments(ctx, msg)
+			resp, err = inner.GetFulfillments(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillment":
 		msg := &UpdateFulfillmentRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateFulfillment(ctx, msg)
+			resp, err = inner.UpdateFulfillment(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillmentShippingFee":
 		msg := &UpdateFulfillmentShippingFeeRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateFulfillmentShippingFee(ctx, msg)
+			resp, err = inner.UpdateFulfillmentShippingFee(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillmentShippingState":
 		msg := &UpdateFulfillmentShippingStateRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateFulfillmentShippingState(ctx, msg)
+			resp, err = inner.UpdateFulfillmentShippingState(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -521,62 +541,67 @@ func (s *LocationServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 	switch path {
 	case "/admin.Location/CreateCustomRegion":
 		msg := &CreateCustomRegionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateCustomRegion(ctx, msg)
+			resp, err = inner.CreateCustomRegion(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Location/DeleteCustomRegion":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteCustomRegion(ctx, msg)
+			resp, err = inner.DeleteCustomRegion(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Location/GetCustomRegion":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetCustomRegion(ctx, msg)
+			resp, err = inner.GetCustomRegion(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Location/GetCustomRegions":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetCustomRegions(ctx, msg)
+			resp, err = inner.GetCustomRegions(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Location/UpdateCustomRegion":
 		msg := &CustomRegion{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateCustomRegion(ctx, msg)
+			resp, err = inner.UpdateCustomRegion(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -628,26 +653,28 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/admin.Misc/AdminLoginAsAccount":
 		msg := &LoginAsAccountRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.AdminLoginAsAccount(ctx, msg)
+			resp, err = inner.AdminLoginAsAccount(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -699,194 +726,210 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string, hooks httprpc.Ho
 	switch path {
 	case "/admin.MoneyTransaction/ConfirmMoneyTransaction":
 		msg := &ConfirmMoneyTransactionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ConfirmMoneyTransaction(ctx, msg)
+			resp, err = inner.ConfirmMoneyTransaction(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop":
 		msg := &ConfirmMoneyTransactionShippingEtopRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ConfirmMoneyTransactionShippingEtop(ctx, msg)
+			resp, err = inner.ConfirmMoneyTransactionShippingEtop(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":
 		msg := &common.IDsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ConfirmMoneyTransactionShippingExternals(ctx, msg)
+			resp, err = inner.ConfirmMoneyTransactionShippingExternals(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/CreateMoneyTransactionShippingEtop":
 		msg := &common.IDsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateMoneyTransactionShippingEtop(ctx, msg)
+			resp, err = inner.CreateMoneyTransactionShippingEtop(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteMoneyTransactionShippingEtop(ctx, msg)
+			resp, err = inner.DeleteMoneyTransactionShippingEtop(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteMoneyTransactionShippingExternal(ctx, msg)
+			resp, err = inner.DeleteMoneyTransactionShippingExternal(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransaction":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetMoneyTransaction(ctx, msg)
+			resp, err = inner.GetMoneyTransaction(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingEtop":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetMoneyTransactionShippingEtop(ctx, msg)
+			resp, err = inner.GetMoneyTransactionShippingEtop(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingEtops":
 		msg := &GetMoneyTransactionShippingEtopsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetMoneyTransactionShippingEtops(ctx, msg)
+			resp, err = inner.GetMoneyTransactionShippingEtops(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingExternal":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetMoneyTransactionShippingExternal(ctx, msg)
+			resp, err = inner.GetMoneyTransactionShippingExternal(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingExternals":
 		msg := &GetMoneyTransactionShippingExternalsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetMoneyTransactionShippingExternals(ctx, msg)
+			resp, err = inner.GetMoneyTransactionShippingExternals(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactions":
 		msg := &GetMoneyTransactionsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetMoneyTransactions(ctx, msg)
+			resp, err = inner.GetMoneyTransactions(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines":
 		msg := &RemoveMoneyTransactionShippingExternalLinesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.RemoveMoneyTransactionShippingExternalLines(ctx, msg)
+			resp, err = inner.RemoveMoneyTransactionShippingExternalLines(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransaction":
 		msg := &UpdateMoneyTransactionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateMoneyTransaction(ctx, msg)
+			resp, err = inner.UpdateMoneyTransaction(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop":
 		msg := &UpdateMoneyTransactionShippingEtopRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateMoneyTransactionShippingEtop(ctx, msg)
+			resp, err = inner.UpdateMoneyTransactionShippingEtop(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":
 		msg := &UpdateMoneyTransactionShippingExternalRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateMoneyTransactionShippingExternal(ctx, msg)
+			resp, err = inner.UpdateMoneyTransactionShippingExternal(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -938,14 +981,15 @@ func (s *NotificationServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 	switch path {
 	case "/admin.Notification/CreateNotifications":
 		msg := &CreateNotificationsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateNotifications(ctx, msg)
+			resp, err = inner.CreateNotifications(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -997,38 +1041,41 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 	switch path {
 	case "/admin.Order/GetOrder":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetOrder(ctx, msg)
+			resp, err = inner.GetOrder(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Order/GetOrders":
 		msg := &GetOrdersRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetOrders(ctx, msg)
+			resp, err = inner.GetOrders(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Order/GetOrdersByIDs":
 		msg := &common.IDsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetOrdersByIDs(ctx, msg)
+			resp, err = inner.GetOrdersByIDs(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -1080,242 +1127,262 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 	switch path {
 	case "/admin.ShipmentPrice/ActivateShipmentPriceList":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ActivateShipmentPriceList(ctx, msg)
+			resp, err = inner.ActivateShipmentPriceList(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/CreateShipmentPrice":
 		msg := &CreateShipmentPriceRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateShipmentPrice(ctx, msg)
+			resp, err = inner.CreateShipmentPrice(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/CreateShipmentPriceList":
 		msg := &CreateShipmentPriceListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateShipmentPriceList(ctx, msg)
+			resp, err = inner.CreateShipmentPriceList(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/CreateShipmentService":
 		msg := &CreateShipmentServiceRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateShipmentService(ctx, msg)
+			resp, err = inner.CreateShipmentService(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/DeleteShipmentPrice":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteShipmentPrice(ctx, msg)
+			resp, err = inner.DeleteShipmentPrice(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/DeleteShipmentPriceList":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteShipmentPriceList(ctx, msg)
+			resp, err = inner.DeleteShipmentPriceList(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/DeleteShipmentService":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteShipmentService(ctx, msg)
+			resp, err = inner.DeleteShipmentService(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentPrice":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShipmentPrice(ctx, msg)
+			resp, err = inner.GetShipmentPrice(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentPriceList":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShipmentPriceList(ctx, msg)
+			resp, err = inner.GetShipmentPriceList(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentPriceLists":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShipmentPriceLists(ctx, msg)
+			resp, err = inner.GetShipmentPriceLists(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentPrices":
 		msg := &GetShipmentPricesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShipmentPrices(ctx, msg)
+			resp, err = inner.GetShipmentPrices(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentService":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShipmentService(ctx, msg)
+			resp, err = inner.GetShipmentService(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentServices":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShipmentServices(ctx, msg)
+			resp, err = inner.GetShipmentServices(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShippingServices":
 		msg := &GetShippingServicesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShippingServices(ctx, msg)
+			resp, err = inner.GetShippingServices(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentPrice":
 		msg := &UpdateShipmentPriceRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateShipmentPrice(ctx, msg)
+			resp, err = inner.UpdateShipmentPrice(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentPriceList":
 		msg := &UpdateShipmentPriceListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateShipmentPriceList(ctx, msg)
+			resp, err = inner.UpdateShipmentPriceList(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint":
 		msg := &UpdateShipmentPricesPriorityPointRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateShipmentPricesPriorityPoint(ctx, msg)
+			resp, err = inner.UpdateShipmentPricesPriorityPoint(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentService":
 		msg := &UpdateShipmentServiceRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateShipmentService(ctx, msg)
+			resp, err = inner.UpdateShipmentService(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations":
 		msg := &UpdateShipmentServicesAvailableLocationsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateShipmentServicesAvailableLocations(ctx, msg)
+			resp, err = inner.UpdateShipmentServicesAvailableLocations(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations":
 		msg := &UpdateShipmentServicesBlacklistLocationsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateShipmentServicesBlacklistLocations(ctx, msg)
+			resp, err = inner.UpdateShipmentServicesBlacklistLocations(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -1367,38 +1434,41 @@ func (s *ShopServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/admin.Shop/GetShop":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShop(ctx, msg)
+			resp, err = inner.GetShop(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Shop/GetShops":
 		msg := &GetShopsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShops(ctx, msg)
+			resp, err = inner.GetShops(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Shop/GetShopsByIDs":
 		msg := &common.IDsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetShopsByIDs(ctx, msg)
+			resp, err = inner.GetShopsByIDs(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -1450,218 +1520,236 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 	switch path {
 	case "/admin.Subscription/ActivateSubscription":
 		msg := &inttypes.SubscriptionIDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ActivateSubscription(ctx, msg)
+			resp, err = inner.ActivateSubscription(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/CancelSubscription":
 		msg := &inttypes.SubscriptionIDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CancelSubscription(ctx, msg)
+			resp, err = inner.CancelSubscription(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/CreateSubscription":
 		msg := &inttypes.CreateSubscriptionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateSubscription(ctx, msg)
+			resp, err = inner.CreateSubscription(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/CreateSubscriptionBill":
 		msg := &inttypes.CreateSubscriptionBillRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateSubscriptionBill(ctx, msg)
+			resp, err = inner.CreateSubscriptionBill(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/CreateSubscriptionPlan":
 		msg := &inttypes.CreateSubrPlanRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateSubscriptionPlan(ctx, msg)
+			resp, err = inner.CreateSubscriptionPlan(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/CreateSubscriptionProduct":
 		msg := &inttypes.CreateSubrProductRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateSubscriptionProduct(ctx, msg)
+			resp, err = inner.CreateSubscriptionProduct(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/DeleteSubscription":
 		msg := &inttypes.SubscriptionIDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteSubscription(ctx, msg)
+			resp, err = inner.DeleteSubscription(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/DeleteSubscriptionBill":
 		msg := &inttypes.SubscriptionIDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteSubscriptionBill(ctx, msg)
+			resp, err = inner.DeleteSubscriptionBill(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/DeleteSubscriptionPlan":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteSubscriptionPlan(ctx, msg)
+			resp, err = inner.DeleteSubscriptionPlan(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/DeleteSubscriptionProduct":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteSubscriptionProduct(ctx, msg)
+			resp, err = inner.DeleteSubscriptionProduct(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/GetSubscription":
 		msg := &inttypes.SubscriptionIDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetSubscription(ctx, msg)
+			resp, err = inner.GetSubscription(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/GetSubscriptionBills":
 		msg := &inttypes.GetSubscriptionBillsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetSubscriptionBills(ctx, msg)
+			resp, err = inner.GetSubscriptionBills(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/GetSubscriptionPlans":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetSubscriptionPlans(ctx, msg)
+			resp, err = inner.GetSubscriptionPlans(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/GetSubscriptionProducts":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetSubscriptionProducts(ctx, msg)
+			resp, err = inner.GetSubscriptionProducts(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/GetSubscriptions":
 		msg := &inttypes.GetSubscriptionsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetSubscriptions(ctx, msg)
+			resp, err = inner.GetSubscriptions(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/ManualPaymentSubscriptionBill":
 		msg := &inttypes.ManualPaymentSubscriptionBillRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ManualPaymentSubscriptionBill(ctx, msg)
+			resp, err = inner.ManualPaymentSubscriptionBill(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/UpdateSubscriptionInfo":
 		msg := &inttypes.UpdateSubscriptionInfoRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateSubscriptionInfo(ctx, msg)
+			resp, err = inner.UpdateSubscriptionInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/admin.Subscription/UpdateSubscriptionPlan":
 		msg := &inttypes.UpdateSubrPlanRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateSubscriptionPlan(ctx, msg)
+			resp, err = inner.UpdateSubscriptionPlan(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:

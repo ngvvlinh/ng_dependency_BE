@@ -72,14 +72,15 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/sadmin.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -131,38 +132,41 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/sadmin.User/CreateUser":
 		msg := &SAdminCreateUserRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateUser(ctx, msg)
+			resp, err = inner.CreateUser(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/sadmin.User/LoginAsAccount":
 		msg := &LoginAsAccountRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.LoginAsAccount(ctx, msg)
+			resp, err = inner.LoginAsAccount(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/sadmin.User/ResetPassword":
 		msg := &SAdminResetPasswordRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ResetPassword(ctx, msg)
+			resp, err = inner.ResetPassword(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:

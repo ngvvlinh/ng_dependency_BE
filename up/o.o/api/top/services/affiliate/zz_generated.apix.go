@@ -76,110 +76,119 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 	switch path {
 	case "/affiliate.Affiliate/AffiliateGetProducts":
 		msg := &common.CommonListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.AffiliateGetProducts(ctx, msg)
+			resp, err = inner.AffiliateGetProducts(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/CreateOrUpdateAffiliateCommissionSetting":
 		msg := &CreateOrUpdateCommissionSettingRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateOrUpdateAffiliateCommissionSetting(ctx, msg)
+			resp, err = inner.CreateOrUpdateAffiliateCommissionSetting(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/CreateReferralCode":
 		msg := &CreateReferralCodeRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateReferralCode(ctx, msg)
+			resp, err = inner.CreateReferralCode(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetCommissions":
 		msg := &common.CommonListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetCommissions(ctx, msg)
+			resp, err = inner.GetCommissions(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetProductPromotionByProductID":
 		msg := &GetProductPromotionByProductIDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetProductPromotionByProductID(ctx, msg)
+			resp, err = inner.GetProductPromotionByProductID(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetReferralCodes":
 		msg := &common.CommonListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetReferralCodes(ctx, msg)
+			resp, err = inner.GetReferralCodes(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetReferrals":
 		msg := &common.CommonListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetReferrals(ctx, msg)
+			resp, err = inner.GetReferrals(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetTransactions":
 		msg := &common.CommonListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetTransactions(ctx, msg)
+			resp, err = inner.GetTransactions(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/NotifyNewShopPurchase":
 		msg := &NotifyNewShopPurchaseRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.NotifyNewShopPurchase(ctx, msg)
+			resp, err = inner.NotifyNewShopPurchase(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -231,38 +240,41 @@ func (s *ShopServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/affiliate.Shop/CheckReferralCodeValid":
 		msg := &CheckReferralCodeValidRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CheckReferralCodeValid(ctx, msg)
+			resp, err = inner.CheckReferralCodeValid(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Shop/GetProductPromotion":
 		msg := &GetProductPromotionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetProductPromotion(ctx, msg)
+			resp, err = inner.GetProductPromotion(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Shop/ShopGetProducts":
 		msg := &common.CommonListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ShopGetProducts(ctx, msg)
+			resp, err = inner.ShopGetProducts(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -314,74 +326,80 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 	switch path {
 	case "/affiliate.Trading/CreateOrUpdateTradingCommissionSetting":
 		msg := &CreateOrUpdateTradingCommissionSettingRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateOrUpdateTradingCommissionSetting(ctx, msg)
+			resp, err = inner.CreateOrUpdateTradingCommissionSetting(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/CreateTradingProductPromotion":
 		msg := &CreateOrUpdateProductPromotionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateTradingProductPromotion(ctx, msg)
+			resp, err = inner.CreateTradingProductPromotion(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/GetTradingProductPromotionByProductIDs":
 		msg := &GetTradingProductPromotionByIDsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetTradingProductPromotionByProductIDs(ctx, msg)
+			resp, err = inner.GetTradingProductPromotionByProductIDs(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/GetTradingProductPromotions":
 		msg := &common.CommonListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetTradingProductPromotions(ctx, msg)
+			resp, err = inner.GetTradingProductPromotions(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/TradingGetProducts":
 		msg := &common.CommonListRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.TradingGetProducts(ctx, msg)
+			resp, err = inner.TradingGetProducts(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/UpdateTradingProductPromotion":
 		msg := &CreateOrUpdateProductPromotionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateTradingProductPromotion(ctx, msg)
+			resp, err = inner.UpdateTradingProductPromotion(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -433,14 +451,15 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/affiliate.User/UpdateReferral":
 		msg := &UpdateReferralRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateReferral(ctx, msg)
+			resp, err = inner.UpdateReferral(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:

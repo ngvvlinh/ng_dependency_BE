@@ -72,14 +72,15 @@ func (s *EventServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 	switch path {
 	case "/pgevent.Event/GenerateEvents":
 		msg := &GenerateEventsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GenerateEvents(ctx, msg)
+			resp, err = inner.GenerateEvents(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -131,14 +132,15 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/pgevent.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:

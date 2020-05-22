@@ -74,26 +74,28 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/carrier.Misc/CurrentAccount":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CurrentAccount(ctx, msg)
+			resp, err = inner.CurrentAccount(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/carrier.Misc/GetLocationList":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetLocationList(ctx, msg)
+			resp, err = inner.GetLocationList(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -145,50 +147,54 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string, hooks httprpc.
 	switch path {
 	case "/carrier.ShipmentConnection/CreateConnection":
 		msg := &CreateConnectionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateConnection(ctx, msg)
+			resp, err = inner.CreateConnection(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/carrier.ShipmentConnection/DeleteConnection":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteConnection(ctx, msg)
+			resp, err = inner.DeleteConnection(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/carrier.ShipmentConnection/GetConnections":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetConnections(ctx, msg)
+			resp, err = inner.GetConnections(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/carrier.ShipmentConnection/UpdateConnection":
 		msg := &UpdateConnectionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateConnection(ctx, msg)
+			resp, err = inner.UpdateConnection(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -240,14 +246,15 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 	switch path {
 	case "/carrier.Shipment/UpdateFulfillment":
 		msg := &UpdateFulfillmentRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateFulfillment(ctx, msg)
+			resp, err = inner.UpdateFulfillment(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:

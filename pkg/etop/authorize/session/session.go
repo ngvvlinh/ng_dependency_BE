@@ -34,7 +34,7 @@ type Session struct {
 	validator   tokens.Validator
 
 	perm  permission.Decl
-	claim *claims.Claim
+	claim claims.Claim
 
 	admin      *identitymodelx.SignedInUser
 	user       *identitymodelx.SignedInUser
@@ -103,12 +103,19 @@ func (s *Session) MustWith(opts ...Option) *Session {
 	return res
 }
 
-func (s *Session) StartSession(ctx context.Context, perm permission.Decl, tokenStr string) (context.Context, error) {
+func (s *Session) StartSession(ctx context.Context, perm permission.Decl, tokenStr string) (newCtx context.Context, _ error) {
 	if s.init {
 		panic("already init")
 	}
 	s.init = true
-	s.ctx = ctx
+
+	var wlPartnerID dot.ID
+	defer func() {
+		if wlPartnerID == 0 {
+			newCtx = wl.WrapContext(ctx, 0)
+		}
+		s.ctx = newCtx
+	}()
 
 	if tokenStr == "" && perm.Type != permission.Public {
 		return ctx, cm.Errorf(cm.Unauthenticated, nil, "")
@@ -128,7 +135,7 @@ func (s *Session) StartSession(ctx context.Context, perm permission.Decl, tokenS
 		return ctx, err
 	}
 	ctx = wl.WrapContext(ctx, wlPartnerID)
-	s.claim = claim
+	s.claim = *claim
 
 	// handle stoken
 	if claim.STokenExpiresAt != nil && claim.STokenExpiresAt.Before(time.Now()) {
@@ -175,6 +182,13 @@ func (s *Session) verifyToken(
 	account identitymodel.AccountInterface,
 	err error,
 ) {
+	defer func() {
+		switch cm.ErrorCode(err) {
+		case cm.NotFound:
+			err = cm.Errorf(cm.Unauthenticated, err, "")
+		}
+	}()
+
 	switch perm.Auth {
 	case permission.APIKey:
 		switch perm.Type {

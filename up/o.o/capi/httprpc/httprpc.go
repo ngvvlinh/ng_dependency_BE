@@ -139,7 +139,7 @@ func errFromPanic(p interface{}) error {
 	return fmt.Errorf("panic: %v", p)
 }
 
-type ExecFunc func(context.Context) (respContent capi.Message, err error)
+type ExecFunc func(context.Context) (ctx context.Context, respContent capi.Message, err error)
 type ServeFunc func(ctx context.Context, resp http.ResponseWriter, req *http.Request, hooks Hooks, info *HookInfo, reqContent capi.Message, fn ExecFunc)
 
 func ParseRequestHeader(req *http.Request) (ServeFunc, error) {
@@ -180,7 +180,7 @@ func ServeJSON(
 	var respContent capi.Message
 	func() {
 		defer ensurePanicResponses(ctx, resp, hooks, *info)
-		respContent, err = fn(ctx)
+		ctx, respContent, err = fn(ctx)
 	}()
 	if err != nil {
 		WriteError(ctx, resp, hooks, *info, err)

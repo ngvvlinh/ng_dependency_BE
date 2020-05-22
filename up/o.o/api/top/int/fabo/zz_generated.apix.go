@@ -71,50 +71,54 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 	switch path {
 	case "/fabo.CustomerConversation/ListCommentsByExternalPostID":
 		msg := &ListCommentsByExternalPostIDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ListCommentsByExternalPostID(ctx, msg)
+			resp, err = inner.ListCommentsByExternalPostID(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/fabo.CustomerConversation/ListCustomerConversations":
 		msg := &ListCustomerConversationsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ListCustomerConversations(ctx, msg)
+			resp, err = inner.ListCustomerConversations(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/fabo.CustomerConversation/ListMessages":
 		msg := &ListMessagesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ListMessages(ctx, msg)
+			resp, err = inner.ListMessages(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/fabo.CustomerConversation/UpdateReadStatus":
 		msg := &UpdateReadStatusRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateReadStatus(ctx, msg)
+			resp, err = inner.UpdateReadStatus(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -166,38 +170,41 @@ func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/fabo.Page/ConnectPages":
 		msg := &ConnectPagesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ConnectPages(ctx, msg)
+			resp, err = inner.ConnectPages(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/fabo.Page/ListPages":
 		msg := &ListPagesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ListPages(ctx, msg)
+			resp, err = inner.ListPages(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/fabo.Page/RemovePages":
 		msg := &RemovePagesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.RemovePages(ctx, msg)
+			resp, err = inner.RemovePages(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:

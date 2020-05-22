@@ -25,7 +25,7 @@ func OptValidator(validator tokens.Validator) Option {
 	}
 }
 
-func (s *Session) Claim() *claims.Claim {
+func (s *Session) Claim() claims.Claim {
 	s.ensureInit()
 	return s.claim
 }
@@ -40,7 +40,7 @@ func (s *Session) User() *identitymodelx.SignedInUser {
 	if s.user != nil {
 		return s.user
 	}
-	middleware.StartSessionUser(s.ctx, true, s.claim, &s.user)
+	middleware.StartSessionUser(s.ctx, true, &s.claim, &s.user)
 	return s.user
 }
 

@@ -64,14 +64,15 @@ func (s *{{$s.Name}}ServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 {{range $m := .Methods -}}
 	case "{{$s.APIPath}}/{{.Name}}":
 	msg := {{(index .Request.Items 0).Type|new}}
-	fn := func(ctx context.Context) (capi.Message, error) {
+	fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 		inner := s.builder()
 		info.Request, info.Inner = msg, inner
-		ctx, err := hooks.BeforeServing(ctx, *info)
+		newCtx, err = hooks.BeforeServing(ctx, *info)
 		if err != nil {
-			return nil, err
+			return
 		}
-		return inner.{{.Name}}(ctx, msg)
+		resp, err = inner.{{.Name}}(ctx, msg)
+		return
 	}
 	return msg, fn, nil
 {{end -}}

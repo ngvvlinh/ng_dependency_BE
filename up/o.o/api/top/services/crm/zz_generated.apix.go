@@ -76,26 +76,28 @@ func (s *CrmServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *ht
 	switch path {
 	case "/crm.Crm/RefreshFulfillmentFromCarrier":
 		msg := &RefreshFulfillmentFromCarrierRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.RefreshFulfillmentFromCarrier(ctx, msg)
+			resp, err = inner.RefreshFulfillmentFromCarrier(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Crm/SendNotification":
 		msg := &SendNotificationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.SendNotification(ctx, msg)
+			resp, err = inner.SendNotification(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -147,14 +149,15 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/crm.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -206,38 +209,41 @@ func (s *VhtServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *ht
 	switch path {
 	case "/crm.Vht/CreateOrUpdateCallHistoryByCallID":
 		msg := &VHTCallLog{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateOrUpdateCallHistoryByCallID(ctx, msg)
+			resp, err = inner.CreateOrUpdateCallHistoryByCallID(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vht/CreateOrUpdateCallHistoryBySDKCallID":
 		msg := &VHTCallLog{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateOrUpdateCallHistoryBySDKCallID(ctx, msg)
+			resp, err = inner.CreateOrUpdateCallHistoryBySDKCallID(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vht/GetCallHistories":
 		msg := &GetCallHistoriesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetCallHistories(ctx, msg)
+			resp, err = inner.GetCallHistories(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -289,98 +295,106 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 	switch path {
 	case "/crm.Vtiger/CreateOrUpdateContact":
 		msg := &ContactRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateOrUpdateContact(ctx, msg)
+			resp, err = inner.CreateOrUpdateContact(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/CreateOrUpdateLead":
 		msg := &LeadRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateOrUpdateLead(ctx, msg)
+			resp, err = inner.CreateOrUpdateLead(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/CreateTicket":
 		msg := &CreateOrUpdateTicketRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateTicket(ctx, msg)
+			resp, err = inner.CreateTicket(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetCategories":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetCategories(ctx, msg)
+			resp, err = inner.GetCategories(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetContacts":
 		msg := &GetContactsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetContacts(ctx, msg)
+			resp, err = inner.GetContacts(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetTicketStatusCount":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetTicketStatusCount(ctx, msg)
+			resp, err = inner.GetTicketStatusCount(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetTickets":
 		msg := &GetTicketsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetTickets(ctx, msg)
+			resp, err = inner.GetTickets(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/UpdateTicket":
 		msg := &CreateOrUpdateTicketRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateTicket(ctx, msg)
+			resp, err = inner.UpdateTicket(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:

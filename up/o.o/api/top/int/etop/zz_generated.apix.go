@@ -86,86 +86,93 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 	switch path {
 	case "/etop.AccountRelationship/CreateInvitation":
 		msg := &CreateInvitationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateInvitation(ctx, msg)
+			resp, err = inner.CreateInvitation(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/DeleteInvitation":
 		msg := &DeleteInvitationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.DeleteInvitation(ctx, msg)
+			resp, err = inner.DeleteInvitation(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/GetInvitations":
 		msg := &GetInvitationsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetInvitations(ctx, msg)
+			resp, err = inner.GetInvitations(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/GetRelationships":
 		msg := &GetRelationshipsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetRelationships(ctx, msg)
+			resp, err = inner.GetRelationships(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/RemoveUser":
 		msg := &RemoveUserRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.RemoveUser(ctx, msg)
+			resp, err = inner.RemoveUser(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/UpdatePermission":
 		msg := &UpdateAccountUserPermissionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdatePermission(ctx, msg)
+			resp, err = inner.UpdatePermission(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.AccountRelationship/UpdateRelationship":
 		msg := &UpdateRelationshipRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateRelationship(ctx, msg)
+			resp, err = inner.UpdateRelationship(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -217,38 +224,41 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 	switch path {
 	case "/etop.Account/GetPublicPartnerInfo":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetPublicPartnerInfo(ctx, msg)
+			resp, err = inner.GetPublicPartnerInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Account/GetPublicPartners":
 		msg := &common.IDsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetPublicPartners(ctx, msg)
+			resp, err = inner.GetPublicPartners(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Account/UpdateURLSlug":
 		msg := &UpdateURLSlugRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateURLSlug(ctx, msg)
+			resp, err = inner.UpdateURLSlug(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -300,50 +310,54 @@ func (s *AddressServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 	switch path {
 	case "/etop.Address/CreateAddress":
 		msg := &CreateAddressRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CreateAddress(ctx, msg)
+			resp, err = inner.CreateAddress(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Address/GetAddresses":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetAddresses(ctx, msg)
+			resp, err = inner.GetAddresses(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Address/RemoveAddress":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.RemoveAddress(ctx, msg)
+			resp, err = inner.RemoveAddress(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Address/UpdateAddress":
 		msg := &UpdateAddressRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateAddress(ctx, msg)
+			resp, err = inner.UpdateAddress(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -395,38 +409,41 @@ func (s *BankServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/etop.Bank/GetBanks":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetBanks(ctx, msg)
+			resp, err = inner.GetBanks(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Bank/GetBranchesByBankProvince":
 		msg := &GetBranchesByBankProvinceResquest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetBranchesByBankProvince(ctx, msg)
+			resp, err = inner.GetBranchesByBankProvince(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Bank/GetProvincesByBank":
 		msg := &GetProvincesByBankResquest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetProvincesByBank(ctx, msg)
+			resp, err = inner.GetProvincesByBank(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -478,14 +495,15 @@ func (s *EcomServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/etop.Ecom/SessionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.SessionInfo(ctx, msg)
+			resp, err = inner.SessionInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -537,74 +555,80 @@ func (s *LocationServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 	switch path {
 	case "/etop.Location/GetDistricts":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetDistricts(ctx, msg)
+			resp, err = inner.GetDistricts(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetDistrictsByProvince":
 		msg := &GetDistrictsByProvinceRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetDistrictsByProvince(ctx, msg)
+			resp, err = inner.GetDistrictsByProvince(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetProvinces":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetProvinces(ctx, msg)
+			resp, err = inner.GetProvinces(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetWards":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetWards(ctx, msg)
+			resp, err = inner.GetWards(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetWardsByDistrict":
 		msg := &GetWardsByDistrictRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetWardsByDistrict(ctx, msg)
+			resp, err = inner.GetWardsByDistrict(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.Location/ParseLocation":
 		msg := &ParseLocationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ParseLocation(ctx, msg)
+			resp, err = inner.ParseLocation(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -656,14 +680,15 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/etop.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -715,62 +740,67 @@ func (s *UserRelationshipServiceServer) parseRoute(path string, hooks httprpc.Ho
 	switch path {
 	case "/etop.UserRelationship/AcceptInvitation":
 		msg := &AcceptInvitationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.AcceptInvitation(ctx, msg)
+			resp, err = inner.AcceptInvitation(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/GetInvitationByToken":
 		msg := &GetInvitationByTokenRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetInvitationByToken(ctx, msg)
+			resp, err = inner.GetInvitationByToken(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/GetInvitations":
 		msg := &GetInvitationsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.GetInvitations(ctx, msg)
+			resp, err = inner.GetInvitations(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/LeaveAccount":
 		msg := &UserRelationshipLeaveAccountRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.LeaveAccount(ctx, msg)
+			resp, err = inner.LeaveAccount(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.UserRelationship/RejectInvitation":
 		msg := &RejectInvitationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.RejectInvitation(ctx, msg)
+			resp, err = inner.RejectInvitation(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
@@ -822,290 +852,314 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 	switch path {
 	case "/etop.User/ChangePassword":
 		msg := &ChangePasswordRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ChangePassword(ctx, msg)
+			resp, err = inner.ChangePassword(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/ChangePasswordUsingToken":
 		msg := &ChangePasswordUsingTokenRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ChangePasswordUsingToken(ctx, msg)
+			resp, err = inner.ChangePasswordUsingToken(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/CheckUserRegistration":
 		msg := &GetUserByPhoneRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.CheckUserRegistration(ctx, msg)
+			resp, err = inner.CheckUserRegistration(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/InitSession":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.InitSession(ctx, msg)
+			resp, err = inner.InitSession(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/Login":
 		msg := &LoginRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.Login(ctx, msg)
+			resp, err = inner.Login(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/Register":
 		msg := &CreateUserRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.Register(ctx, msg)
+			resp, err = inner.Register(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/RegisterUsingToken":
 		msg := &CreateUserRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.RegisterUsingToken(ctx, msg)
+			resp, err = inner.RegisterUsingToken(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/ResetPassword":
 		msg := &ResetPasswordRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ResetPassword(ctx, msg)
+			resp, err = inner.ResetPassword(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/SendEmailVerification":
 		msg := &SendEmailVerificationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.SendEmailVerification(ctx, msg)
+			resp, err = inner.SendEmailVerification(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/SendEmailVerificationUsingOTP":
 		msg := &SendEmailVerificationUsingOTPRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.SendEmailVerificationUsingOTP(ctx, msg)
+			resp, err = inner.SendEmailVerificationUsingOTP(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/SendPhoneVerification":
 		msg := &SendPhoneVerificationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.SendPhoneVerification(ctx, msg)
+			resp, err = inner.SendPhoneVerification(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/SendSTokenEmail":
 		msg := &SendSTokenEmailRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.SendSTokenEmail(ctx, msg)
+			resp, err = inner.SendSTokenEmail(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/SessionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.SessionInfo(ctx, msg)
+			resp, err = inner.SessionInfo(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/SwitchAccount":
 		msg := &SwitchAccountRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.SwitchAccount(ctx, msg)
+			resp, err = inner.SwitchAccount(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdatePermission":
 		msg := &UpdatePermissionRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdatePermission(ctx, msg)
+			resp, err = inner.UpdatePermission(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateReferenceSale":
 		msg := &UpdateReferenceSaleRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateReferenceSale(ctx, msg)
+			resp, err = inner.UpdateReferenceSale(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateReferenceUser":
 		msg := &UpdateReferenceUserRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateReferenceUser(ctx, msg)
+			resp, err = inner.UpdateReferenceUser(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateUserEmail":
 		msg := &UpdateUserEmailRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateUserEmail(ctx, msg)
+			resp, err = inner.UpdateUserEmail(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateUserPhone":
 		msg := &UpdateUserPhoneRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpdateUserPhone(ctx, msg)
+			resp, err = inner.UpdateUserPhone(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/UpgradeAccessToken":
 		msg := &UpgradeAccessTokenRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.UpgradeAccessToken(ctx, msg)
+			resp, err = inner.UpgradeAccessToken(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyEmailUsingOTP":
 		msg := &VerifyEmailUsingOTPRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VerifyEmailUsingOTP(ctx, msg)
+			resp, err = inner.VerifyEmailUsingOTP(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyEmailUsingToken":
 		msg := &VerifyEmailUsingTokenRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VerifyEmailUsingToken(ctx, msg)
+			resp, err = inner.VerifyEmailUsingToken(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyPhoneResetPasswordUsingToken":
 		msg := &VerifyPhoneResetPasswordUsingTokenRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VerifyPhoneResetPasswordUsingToken(ctx, msg)
+			resp, err = inner.VerifyPhoneResetPasswordUsingToken(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyPhoneUsingToken":
 		msg := &VerifyPhoneUsingTokenRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.VerifyPhoneUsingToken(ctx, msg)
+			resp, err = inner.VerifyPhoneUsingToken(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:

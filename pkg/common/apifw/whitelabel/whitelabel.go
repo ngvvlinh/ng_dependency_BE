@@ -3,7 +3,6 @@ package whitelabel
 import (
 	"context"
 	"strings"
-	"time"
 
 	"o.o/api/main/identity"
 	"o.o/backend/pkg/common/headers"
@@ -21,22 +20,6 @@ type WhiteLabel struct {
 	partners      []*WL
 	partnersByID  map[dot.ID]*WL
 	partnersByKey map[string]*WL
-}
-
-func (w *WhiteLabel) Deadline() (deadline time.Time, ok bool) {
-	panic("implement me")
-}
-
-func (w *WhiteLabel) Done() <-chan struct{} {
-	panic("implement me")
-}
-
-func (w *WhiteLabel) Err() error {
-	panic("implement me")
-}
-
-func (w *WhiteLabel) Value(key interface{}) interface{} {
-	panic("implement me")
 }
 
 func New(drivers []*WL) *WhiteLabel {

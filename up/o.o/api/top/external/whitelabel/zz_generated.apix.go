@@ -69,86 +69,93 @@ func (s *ImportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 	switch path {
 	case "/partner.Import/Brands":
 		msg := &ImportBrandsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.Brands(ctx, msg)
+			resp, err = inner.Brands(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/partner.Import/Categories":
 		msg := &ImportCategoriesRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.Categories(ctx, msg)
+			resp, err = inner.Categories(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/partner.Import/Collections":
 		msg := &ImportCollectionsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.Collections(ctx, msg)
+			resp, err = inner.Collections(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/partner.Import/Customers":
 		msg := &ImportCustomersRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.Customers(ctx, msg)
+			resp, err = inner.Customers(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/partner.Import/ProductCollections":
 		msg := &ImportProductCollectionsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.ProductCollections(ctx, msg)
+			resp, err = inner.ProductCollections(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/partner.Import/Products":
 		msg := &ImportProductsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.Products(ctx, msg)
+			resp, err = inner.Products(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	case "/partner.Import/Variants":
 		msg := &ImportShopVariantsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			ctx, err := hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.BeforeServing(ctx, *info)
 			if err != nil {
-				return nil, err
+				return
 			}
-			return inner.Variants(ctx, msg)
+			resp, err = inner.Variants(ctx, msg)
+			return
 		}
 		return msg, fn, nil
 	default:
