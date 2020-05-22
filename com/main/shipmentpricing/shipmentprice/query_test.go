@@ -258,12 +258,28 @@ func TestGetPriceByPricingDetail(t *testing.T) {
 		},
 	}
 
+	// case not cover max weight (in overweight)
+	// expect does not apply this price rule when it happens
+	ruleDetail4 := &shipmentprice.PricingDetail{
+		Weight: 1000,
+		Price:  35000,
+		Overweight: []*shipmentprice.PricingDetailOverweight{
+			{
+				MinWeight:  1000,
+				MaxWeight:  4000,
+				WeightStep: 500,
+				PriceStep:  5000,
+			},
+		},
+	}
+
 	var cases = []struct {
 		description string
 		weight      int
 		want1       int // ruleDetail1
 		want2       int // ruleDetail2
 		want3       int // ruleDetail3
+		want4       int // ruleDetail4
 	}{
 		{
 			description: "0g",
@@ -271,42 +287,49 @@ func TestGetPriceByPricingDetail(t *testing.T) {
 			want1:       26000,
 			want2:       20000,
 			want3:       35000,
+			want4:       35000,
 		}, {
 			description: "100g",
 			weight:      100,
 			want1:       26000,
 			want2:       20000,
 			want3:       35000,
+			want4:       35000,
 		}, {
 			description: "200g",
 			weight:      200,
 			want1:       26000,
 			want2:       20000,
 			want3:       35000,
+			want4:       35000,
 		}, {
 			description: "600g",
 			weight:      600,
 			want1:       0,
 			want2:       25000,
 			want3:       35000,
+			want4:       35000,
 		}, {
 			description: "1200g",
 			weight:      1200,
 			want1:       0,
 			want2:       30000,
 			want3:       40000,
+			want4:       40000,
 		}, {
 			description: "1800g",
 			weight:      1800,
 			want1:       0,
 			want2:       35000,
 			want3:       45000,
+			want4:       45000,
 		}, {
 			description: "3000g",
 			weight:      3000,
 			want1:       0,
 			want2:       45000,
 			want3:       55000,
+			want4:       55000,
 		},
 		{
 			description: "5400g",
@@ -314,6 +337,7 @@ func TestGetPriceByPricingDetail(t *testing.T) {
 			want1:       0,
 			want2:       76000,
 			want3:       86000,
+			want4:       0,
 		},
 	}
 	for _, tt := range cases {
@@ -334,6 +358,14 @@ func TestGetPriceByPricingDetail(t *testing.T) {
 		t.Run("Get PriceByPricingDetail 3", func(t *testing.T) {
 			price, _ := GetPriceByPricingDetail(tt.weight, ruleDetail3)
 			if !assert.EqualValues(t, tt.want3, price) {
+				t.Fatalf("FAIL %v", tt.description)
+			}
+			t.Log("PASS", tt.description)
+		})
+
+		t.Run("Get PriceByPricingDetail 4", func(t *testing.T) {
+			price, _ := GetPriceByPricingDetail(tt.weight, ruleDetail4)
+			if !assert.EqualValues(t, tt.want4, price) {
 				t.Fatalf("FAIL %v", tt.description)
 			}
 			t.Log("PASS", tt.description)
