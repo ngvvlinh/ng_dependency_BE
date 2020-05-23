@@ -206,3 +206,10 @@ type FulfillmentShippingFeeChangedEvent struct {
 	FulfillmentID     dot.ID
 	MoneyTxShippingID dot.ID
 }
+
+type SingleFulfillmentCreatingEvent struct {
+	meta.EventMeta
+	ShopID      dot.ID
+	FromAddress *ordertypes.Address
+	ShippingFee int
+}

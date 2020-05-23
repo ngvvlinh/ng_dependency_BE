@@ -6,10 +6,13 @@ import (
 	"time"
 
 	"o.o/api/main/location"
+	shippingcore "o.o/api/main/shipping"
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/ghn_note_code"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status4"
+	addressconvert "o.o/backend/com/main/address/convert"
 	addressmodel "o.o/backend/com/main/address/model"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
@@ -20,21 +23,22 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/logic/etop_shipping_price"
 	"o.o/backend/pkg/etop/model"
+	"o.o/capi"
 	"o.o/capi/dot"
 )
-
-const MinShopBalance = -200000
 
 type ProviderManager struct {
 	GHN, GHTK, VTPost ShippingCarrier
 	location          location.QueryBus
+	eventBus          capi.EventBus
 }
 
-func NewCtrl(locationBus location.QueryBus, ghnCarrier, ghtkCarrier, vtpostCarrier ShippingCarrier) *ProviderManager {
+func NewCtrl(eventBus capi.EventBus, locationBus location.QueryBus, ghnCarrier, ghtkCarrier, vtpostCarrier ShippingCarrier) *ProviderManager {
 	return &ProviderManager{
-		GHN:    ghnCarrier,
-		GHTK:   ghtkCarrier,
-		VTPost: vtpostCarrier,
+		eventBus: eventBus,
+		GHN:      ghnCarrier,
+		GHTK:     ghtkCarrier,
+		VTPost:   vtpostCarrier,
 
 		location: locationBus,
 	}
@@ -45,21 +49,6 @@ func (ctrl *ProviderManager) CreateExternalShipping(ctx context.Context, order *
 }
 
 func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *ordermodel.Order, ffms []*shipmodel.Fulfillment) error {
-	// check balance of shop
-	// if balance < MinShopBalance => can not create order
-	{
-		query := &model.GetBalanceShopCommand{
-			ShopID: order.ShopID,
-		}
-		if err := bus.Dispatch(ctx, query); err != nil {
-			return err
-		}
-		balance := query.Result.Amount
-		if balance < MinShopBalance {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Bạn đang nợ cước số tiền: %v. Vui lòng liên hệ ETOP để xử lý.", balance)
-		}
-	}
-
 	var err error
 	g := syncgroup.New(len(ffms))
 	for _, ffm := range ffms {
@@ -97,6 +86,17 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 	shippingProvider := ctrl.GetShippingProviderDriver(provider)
 	if shippingProvider == nil {
 		return cm.Errorf(cm.Internal, nil, "invalid carrier")
+	}
+
+	// raise event to check balance
+	event := &shippingcore.SingleFulfillmentCreatingEvent{
+		EventMeta:   meta.NewEvent(),
+		ShopID:      ffm.ShopID,
+		FromAddress: addressconvert.Convert_addressmodel_Address_orderingtypes_Address(ffm.AddressFrom, nil),
+		ShippingFee: order.ShopShipping.ExternalShippingFee,
+	}
+	if err := ctrl.eventBus.Publish(ctx, event); err != nil {
+		return err
 	}
 
 	{

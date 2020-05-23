@@ -30,6 +30,14 @@ type GetBalanceShopCommand struct {
 	}
 }
 
+type GetBalanceUserCommand struct {
+	UserID dot.ID
+
+	Result struct {
+		Amount int
+	}
+}
+
 type GetShippingSources struct {
 	Type   shipping_provider.ShippingProvider
 	Names  []string

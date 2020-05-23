@@ -62,7 +62,8 @@ func TestShipmentManager(t *testing.T) {
 	connectionAggr := connectioning.NewCommandBus(mockBus)
 	shipmentServiceQS := shipmentservice.NewQueryBus(mockBus)
 	shipmentPriceQS := shipmentprice.NewQueryBus(mockBus)
-	shipmentManager = NewShipmentManager(locationQS, connectionQS, connectionAggr, nil, shipmentServiceQS, shipmentPriceQS, false)
+	eventBus := bus.New()
+	shipmentManager = NewShipmentManager(eventBus, locationQS, connectionQS, connectionAggr, nil, shipmentServiceQS, shipmentPriceQS, false)
 	Convey("Get Shipment driver", t, func() {
 		shipmentType, err := shipmentManager.getShipmentDriver(ctx, connID, 0)
 		So(err, ShouldBeNil)

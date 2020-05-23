@@ -357,7 +357,7 @@ func main() {
 		}
 	}
 
-	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
+	shippingManager := shipping_provider.NewCtrl(eventBus, locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
 
 	authStore := auth.NewGenerator(redisStore)
 	imcsvorder.Init(locationBus, shutdowner, redisStore, uploader, db)
@@ -473,7 +473,7 @@ func main() {
 	shipmentPriceListPM := pricelistpm.New(redisStore)
 	shipmentPriceListPM.RegisterEventHandlers(eventBus)
 
-	shipmentManager = shippingcarrier.NewShipmentManager(locationBus, connectionQuery, connectionAggregate, redisStore, shipmentServiceQuery, shipmentPriceQuery, cfg.FlagApplyShipmentPrice)
+	shipmentManager = shippingcarrier.NewShipmentManager(eventBus, locationBus, connectionQuery, connectionAggregate, redisStore, shipmentServiceQuery, shipmentPriceQuery, cfg.FlagApplyShipmentPrice)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
 	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus).MessageBus()
 	shippingQuery := shippingquery.NewQueryService(db).MessageBus()

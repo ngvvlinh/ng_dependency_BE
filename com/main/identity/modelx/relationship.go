@@ -1,6 +1,7 @@
 package modelx
 
 import (
+	"o.o/api/main/authorization"
 	"o.o/api/top/types/etc/account_type"
 	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
@@ -97,6 +98,7 @@ type GetAllAccountRolesQuery struct {
 type GetAllAccountUsersQuery struct {
 	UserIDs []dot.ID
 	Type    account_type.NullAccountType
+	Role    authorization.Role
 
 	Result []*identitymodel.AccountUser
 }

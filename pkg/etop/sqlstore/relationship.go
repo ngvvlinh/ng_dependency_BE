@@ -6,11 +6,13 @@ import (
 	"sync"
 	"time"
 
+	"o.o/api/main/authorization"
 	"o.o/api/top/types/etc/status3"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -228,6 +230,10 @@ func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccount
 			if query.Type.Valid {
 				s = s.Where("type = ?", query.Type)
 			}
+			if query.Role != "" {
+				s = s.Where("roles @> ?", core.Array{V: []authorization.Role{query.Role}})
+			}
+
 			if err := s.Find((*identitymodel.AccountUsers)(&_res)); err == nil {
 				m.Lock()
 				res = append(res, _res...)

@@ -14,12 +14,15 @@ import (
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
+	"o.o/api/main/shipping"
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/filter_type"
 	"o.o/api/top/types/etc/location_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
+	addressconvert "o.o/backend/com/main/address/convert"
 	addressmodel "o.o/backend/com/main/address/model"
 	locationutil "o.o/backend/com/main/location/util"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
@@ -43,6 +46,7 @@ import (
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 	ghtkdriver "o.o/backend/pkg/integration/shipping/ghtk/driver"
 	vtpostdriver "o.o/backend/pkg/integration/shipping/vtpost/driver"
+	"o.o/capi"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -71,9 +75,11 @@ type ShipmentManager struct {
 	shipmentServiceQS      shipmentservice.QueryBus
 	shipmentPriceQS        shipmentprice.QueryBus
 	flagApplyShipmentPrice bool
+	eventBus               capi.EventBus
 }
 
 func NewShipmentManager(
+	eventBus capi.EventBus,
 	locationQS location.QueryBus,
 	connectionQS connectioning.QueryBus,
 	connectionAggr connectioning.CommandBus,
@@ -84,6 +90,7 @@ func NewShipmentManager(
 ) *ShipmentManager {
 	_cipherx, _ := cipherx.NewCipherx(SecretKey)
 	return &ShipmentManager{
+		eventBus:               eventBus,
 		LocationQS:             locationQS,
 		ConnectionQS:           connectionQS,
 		connectionAggr:         connectionAggr,
@@ -205,22 +212,6 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 }
 
 func (m *ShipmentManager) CreateFulfillments(ctx context.Context, order *ordering.Order, ffms []*shipmodel.Fulfillment) error {
-	// check balance of shop
-	// if balance < MinShopBalance => can not create order
-	// TODO: raise event FulfillmentCreatingEvent after merge wallet (amount-available service)
-	{
-		query := &model.GetBalanceShopCommand{
-			ShopID: order.ShopID,
-		}
-		if err := bus.Dispatch(ctx, query); err != nil {
-			return err
-		}
-		balance := query.Result.Amount
-		if balance < MinShopBalance {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Bạn đang nợ cước số tiền: %v. Vui lòng liên hệ ETOP để xử lý.", balance)
-		}
-	}
-
 	var err error
 	g := syncgroup.New(len(ffms))
 	for _, ffm := range ffms {
@@ -238,6 +229,17 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	driver, err := m.getShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "invalid connection")
+	}
+
+	// raise event to check balance
+	event := &shipping.SingleFulfillmentCreatingEvent{
+		EventMeta:   meta.NewEvent(),
+		ShopID:      ffm.ShopID,
+		FromAddress: addressconvert.Convert_addressmodel_Address_orderingtypes_Address(ffm.AddressFrom, nil),
+		ShippingFee: ffm.ShippingServiceFee,
+	}
+	if err := m.eventBus.Publish(ctx, event); err != nil {
+		return err
 	}
 
 	// UpdateInfo status to error

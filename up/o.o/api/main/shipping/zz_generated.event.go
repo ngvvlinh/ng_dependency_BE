@@ -8,3 +8,4 @@ func (e *FulfillmentShippingFeeChangedEvent) GetTopic() string { return "event/s
 func (e *FulfillmentUpdatingEvent) GetTopic() string           { return "event/shipping" }
 func (e *FulfillmentsCreatedEvent) GetTopic() string           { return "event/shipping" }
 func (e *FulfillmentsCreatingEvent) GetTopic() string          { return "event/shipping" }
+func (e *SingleFulfillmentCreatingEvent) GetTopic() string     { return "event/shipping" }

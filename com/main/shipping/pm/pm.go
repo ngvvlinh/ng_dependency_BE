@@ -9,6 +9,7 @@ import (
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
+	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/com/main/shipping/carrier"
 	shippingconvert "o.o/backend/com/main/shipping/convert"
 	shipmodel "o.o/backend/com/main/shipping/model"
@@ -16,9 +17,12 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
+	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
+
+const MinShopBalance = -200000
 
 type ProcessManager struct {
 	eventBus      capi.EventBus
@@ -48,6 +52,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTxShippingDeleted)
 	eventBus.AddEventListener(m.MoneyTxShippingRemoveFfms)
 	eventBus.AddEventListener(m.MoneyTxShippingEtopConfirmed)
+	eventBus.AddEventListener(m.SingleFulfillmentCreatingEvent)
 }
 
 func (m *ProcessManager) MoneyTxShippingExternalCreated(ctx context.Context, event *moneytx.MoneyTxShippingExternalCreatedEvent) error {
@@ -223,4 +228,54 @@ func (m *ProcessManager) ShopConnectionUpdated(ctx context.Context, event *conne
 	// Delete cache connection in carrier manager
 	key := carrier.GetRedisShopConnectionKey(event.ConnectionID, event.ShopID)
 	return m.redisStore.Del(key)
+}
+
+func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, event *shipping.SingleFulfillmentCreatingEvent) error {
+	fromAddress := event.FromAddress
+	if fromAddress == nil {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing from address").WithMeta("event", "SingleFulfillmentCreatingEvent")
+	}
+	if event.ShopID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing shop ID").WithMeta("event", "SingleFulfillmentCreatingEvent")
+	}
+
+	provinces := []string{
+		"01", // HN
+		"79", // HCM
+	}
+	if cm.StringsContain(provinces, fromAddress.ProvinceCode) {
+		query := &etopmodel.GetBalanceShopCommand{
+			ShopID: event.ShopID,
+		}
+		if err := bus.Dispatch(ctx, query); err != nil {
+			return err
+		}
+		balance := query.Result.Amount
+		if balance-event.ShippingFee < MinShopBalance {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
+		}
+		return nil
+	}
+
+	// Trường hợp địa chỉ lấy hàng nằm ngoài HCM, HN
+	// Tính số dư user: GetBalanceUser
+	// Số dư còn lại (1) = số dư User - shippingFee
+	// Nếu (1) < 0 => không cho tạo đơn giao hàng
+	queryShop := &identitymodelx.GetShopQuery{
+		ShopID: event.ShopID,
+	}
+	if err := bus.Dispatch(ctx, queryShop); err != nil {
+		return err
+	}
+	query := &etopmodel.GetBalanceUserCommand{
+		UserID: queryShop.Result.OwnerID,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	balance := query.Result.Amount
+	if balance-event.ShippingFee < 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
+	}
+	return nil
 }
