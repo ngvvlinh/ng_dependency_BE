@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-openapi/jsonreference"
 	"github.com/go-openapi/spec"
 	"golang.org/x/tools/go/packages"
 
@@ -82,20 +81,20 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, _ g
 	{
 		dir := filepath.Join(gen.ProjectPath(), "doc", docPath)
 		filename := filepath.Join(dir, "swagger.json")
-		f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-		if err != nil {
-			return err
+		f, err2 := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err2 != nil {
+			return err2
 		}
 		defer func() {
-			err := f.Close()
+			err3 := f.Close()
 			if _err == nil {
-				_err = err
+				_err = err3
 			}
 		}()
 		encoder := json.NewEncoder(f)
 		encoder.SetIndent("", "  ")
-		if err := encoder.Encode(swaggerDoc); err != nil {
-			return generator.Errorf(nil, "generate swagger: %v", err)
+		if err4 := encoder.Encode(swaggerDoc); err4 != nil {
+			return generator.Errorf(nil, "generate swagger: %v", err4)
 		}
 	}
 	return nil
@@ -250,7 +249,7 @@ func rotateChar(c byte, i byte) byte {
 	return c
 }
 
-func getReference(ng generator.Engine, definitions map[string]spec.Schema, typ types.Type) *spec.Schema {
+func getReference(ng generator.Engine, definitions Definitions, typ types.Type) *spec.Schema {
 	typs, inner := genutil.ExtractType(typ)
 	if typs[len(typs)-1] != genutil.Named {
 		panic(fmt.Sprintf("must be named type (got %v)", inner))
@@ -264,22 +263,11 @@ func getReference(ng generator.Engine, definitions map[string]spec.Schema, typ t
 		}
 		parseSchema(ng, name, definitions, inner)
 	}
-	return &spec.Schema{
-		SchemaProps: spec.SchemaProps{
-			Ref: spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)},
-		},
-	}
+	ref := referenceByID(id)
+	return &ref
 }
 
-func getReferenceByID(id string) spec.Schema {
-	return spec.Schema{
-		SchemaProps: spec.SchemaProps{
-			Ref: spec.Ref{Ref: jsonreference.MustCreateRef("#/definitions/" + id)},
-		},
-	}
-}
-
-func parseSchema(ng generator.Engine, path string, definitions map[string]spec.Schema, typ types.Type) spec.Schema {
+func parseSchema(ng generator.Engine, path string, definitions Definitions, typ types.Type) spec.Schema {
 	ll.V(3).Debugf("parse schema for %v (type %v)", path, typ)
 	var inner types.Type
 	switch {
@@ -319,27 +307,34 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 			},
 		}
 		if len(deprecatedEnumNames) != 0 {
-			s.Description = fmt.Sprintf(`Deprecated values: "%v"`, strings.Join(deprecatedEnumNames, `", "`))
+			s.Description = fmt.Sprintf(`Deprecated values: "%v"\n`, strings.Join(deprecatedEnumNames, `", "`))
 		}
 
 		id := getDefinitionID(typ)
 		definitions[id] = s
-		return getReferenceByID(id)
+		return referenceByID(id)
 
 	case currentInfo.IsNamed(typ, &inner):
 		id := getDefinitionID(typ)
 		if _, ok := definitions[id]; ok {
-			return getReferenceByID(id)
+			return referenceByID(id)
+		}
+
+		named := inner.(*types.Named)
+		desc, err := parseItemDescription(ng, named.Obj())
+		if err != nil {
+			panic(fmt.Sprintf("parse comment on %v: %v", typ, err))
 		}
 
 		// types with custom +swagger directive
-		schema, err := parseSchemaDirectives(ng, inner.(*types.Named))
+		schema, err := parseSchemaDirectives(ng, named)
 		if err != nil {
 			panic(err)
 		}
 		if schema != nil {
+			fillSchemaDesc(schema, desc)
 			definitions[id] = *schema
-			return getReferenceByID(id)
+			return referenceByID(id)
 		}
 
 		switch {
@@ -367,12 +362,16 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 					continue
 				}
 				fieldSchema := parseSchema(ng, path+"."+field.Name(), definitions, field.Type())
-				desc, err := parseItemDescription(ng, field)
-				if err != nil {
-					panic(fmt.Sprintf("parse comment on field %v of struct %v: %v", field.Name(), typ, err))
+				fieldDesc, err2 := parseItemDescription(ng, field)
+				if err2 != nil {
+					panic(fmt.Sprintf("parse comment on field %v of struct %v: %v", field.Name(), typ, err2))
 				}
-				fieldSchema.Description = desc.FormattedDescription
-				if desc.Required {
+				fillSchemaDesc(&fieldSchema, fieldDesc)
+
+				// convert $ref and description to allOf
+				fieldSchema = convertSchema(fieldSchema, definitions)
+
+				if fieldDesc.Required {
 					requiredFields = append(requiredFields, jsonTag)
 				}
 				props[jsonTag] = fieldSchema
@@ -384,8 +383,9 @@ func parseSchema(ng generator.Engine, path string, definitions map[string]spec.S
 					Required:   requiredFields,
 				},
 			}
+			fillSchemaDesc(&s, desc)
 			definitions[id] = s
-			return getReferenceByID(id)
+			return referenceByID(id)
 
 		case currentInfo.IsNamedInterface(typ, &inner):
 			panic(fmt.Sprintf("oneof is not supported"))
@@ -548,11 +548,6 @@ func parseItemDescriptionText(doc string) (res ItemDescription, _ error) {
 }
 
 func parseSchemaDirectives(ng generator.Engine, typ *types.Named) (*spec.Schema, error) {
-	desc, err := parseItemDescription(ng, typ.Obj())
-	if err != nil {
-		return nil, err
-	}
-
 	directives := ng.GetDirectives(typ.Obj())
 	swaggerType := directives.GetArg("swagger:type")
 	swaggerNullable := directives.GetArg("swagger:nullable")
@@ -562,6 +557,7 @@ func parseSchemaDirectives(ng generator.Engine, typ *types.Named) (*spec.Schema,
 	}
 
 	var nullable bool
+	var err error
 	if swaggerNullable != "" {
 		nullable, err = strconv.ParseBool(swaggerNullable)
 		if err != nil {
@@ -571,10 +567,9 @@ func parseSchemaDirectives(ng generator.Engine, typ *types.Named) (*spec.Schema,
 
 	return &spec.Schema{
 		SchemaProps: spec.SchemaProps{
-			Description: desc.FormattedDescription,
-			Type:        spec.StringOrArray{swaggerType},
-			Nullable:    nullable,
-			Format:      swaggerFormat,
+			Type:     spec.StringOrArray{swaggerType},
+			Nullable: nullable,
+			Format:   swaggerFormat,
 		},
 	}, nil
 }

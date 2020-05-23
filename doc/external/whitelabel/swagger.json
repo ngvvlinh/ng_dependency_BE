@@ -397,8 +397,14 @@
           "format": "int64"
         },
         "type": {
-          "description": "enum ('individual', 'organization')\n",
-          "$ref": "#/definitions/spCustomerType"
+          "allOf": [
+            {
+              "description": "enum ('individual', 'organization')\n\nDeprecated values: \"independent\"\\n"
+            },
+            {
+              "$ref": "#/definitions/spCustomerType"
+            }
+          ]
         },
         "updated_at": {
           "type": "string",
@@ -592,8 +598,14 @@
           "type": "string"
         },
         "type": {
-          "description": "enum ('individual', 'organization')\n",
-          "$ref": "#/definitions/spCustomerType"
+          "allOf": [
+            {
+              "description": "enum ('individual', 'organization')\n\nDeprecated values: \"independent\"\\n"
+            },
+            {
+              "$ref": "#/definitions/spCustomerType"
+            }
+          ]
         },
         "updated_at": {
           "type": "string",
@@ -1027,7 +1039,7 @@
       ]
     },
     "spCustomerType": {
-      "description": "Deprecated values: \"independent\"",
+      "description": "Deprecated values: \"independent\"\\n",
       "type": "string",
       "enum": [
         "unknown",

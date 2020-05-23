@@ -2046,12 +2046,24 @@
       "type": "object",
       "properties": {
         "auto_inventory_voucher": {
-          "description": "enum ('create', 'confirm')\n",
-          "$ref": "#/definitions/rtAutoInventoryVoucher"
+          "allOf": [
+            {
+              "description": "enum ('create', 'confirm')\n"
+            },
+            {
+              "$ref": "#/definitions/rtAutoInventoryVoucher"
+            }
+          ]
         },
         "inventory_policy": {
-          "description": "enum ('obey', 'ignore')\n",
-          "$ref": "#/definitions/rdInventoryPolicy"
+          "allOf": [
+            {
+              "description": "enum ('obey', 'ignore')\n"
+            },
+            {
+              "$ref": "#/definitions/rdInventoryPolicy"
+            }
+          ]
         },
         "order_id": {
           "type": "string",
@@ -2234,8 +2246,14 @@
           "type": "string"
         },
         "type": {
-          "description": "enum ('independent', 'individual', 'organization')\n",
-          "$ref": "#/definitions/spCustomerType"
+          "allOf": [
+            {
+              "description": "enum ('independent', 'individual', 'organization')\n\nDeprecated values: \"independent\"\\n"
+            },
+            {
+              "$ref": "#/definitions/spCustomerType"
+            }
+          ]
         }
       }
     },
@@ -3534,8 +3552,14 @@
       "type": "object",
       "properties": {
         "carrier": {
-          "description": "**Deprecated:** use connection_id instead\n",
-          "$ref": "#/definitions/bwShippingProvider"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use connection_id instead\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
         },
         "chargeable_weight": {
           "type": "integer"
@@ -3880,8 +3904,14 @@
       "type": "object",
       "properties": {
         "carrier": {
-          "description": "**Deprecated:**\n",
-          "$ref": "#/definitions/bwShippingProvider"
+          "allOf": [
+            {
+              "description": "**Deprecated:**\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
         },
         "carrier_info": {
           "$ref": "#/definitions/mrCarrierInfo"
@@ -4493,7 +4523,7 @@
       ]
     },
     "spCustomerType": {
-      "description": "Deprecated values: \"independent\"",
+      "description": "Deprecated values: \"independent\"\\n",
       "type": "string",
       "enum": [
         "unknown",

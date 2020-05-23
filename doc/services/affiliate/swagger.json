@@ -767,8 +767,14 @@
           }
         },
         "ghn_note_code": {
-          "description": "**Deprecated:** use try_on instead\n",
-          "$ref": "#/definitions/pjGHNNoteCode"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use try_on instead\n"
+            },
+            {
+              "$ref": "#/definitions/pjGHNNoteCode"
+            }
+          ]
         },
         "id": {
           "type": "string",
@@ -850,6 +856,7 @@
       }
     },
     "baUser": {
+      "description": "Represents a user in eTop system. The user may or may not have associated accounts.\n",
       "type": "object",
       "required": [
         "id",
@@ -1905,8 +1912,14 @@
           "$ref": "#/definitions/paEtopVariant"
         },
         "inventory_variant": {
-          "description": "**Deprecated:**\n",
-          "$ref": "#/definitions/paInventoryVariantShopVariant"
+          "allOf": [
+            {
+              "description": "**Deprecated:**\n"
+            },
+            {
+              "$ref": "#/definitions/paInventoryVariantShopVariant"
+            }
+          ]
         },
         "is_available": {
           "type": "boolean"
@@ -2041,12 +2054,24 @@
           "type": "integer"
         },
         "address_from": {
-          "description": "**Deprecated:** use pickup_address instead\n",
-          "$ref": "#/definitions/baAddress"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use pickup_address instead\n"
+            },
+            {
+              "$ref": "#/definitions/baAddress"
+            }
+          ]
         },
         "address_to": {
-          "description": "**Deprecated:** use shipping_address instead\n",
-          "$ref": "#/definitions/baAddress"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping_address instead\n"
+            },
+            {
+              "$ref": "#/definitions/baAddress"
+            }
+          ]
         },
         "admin_note": {
           "type": "string"
@@ -2195,8 +2220,14 @@
           "type": "string"
         },
         "shipping_provider": {
-          "description": "**Deprecated:** use carrier instead\n",
-          "$ref": "#/definitions/bwShippingProvider"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use carrier instead\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
         },
         "shipping_service_code": {
           "type": "string"
@@ -2343,8 +2374,14 @@
           "type": "string"
         },
         "confirm": {
-          "description": "**Deprecated:** replaced by confirm_status\n",
-          "$ref": "#/definitions/blStatus"
+          "allOf": [
+            {
+              "description": "**Deprecated:** replaced by confirm_status\n"
+            },
+            {
+              "$ref": "#/definitions/blStatus"
+            }
+          ]
         },
         "confirm_status": {
           "$ref": "#/definitions/blStatus"
@@ -2419,8 +2456,14 @@
           "$ref": "#/definitions/bnStatus"
         },
         "fulfillment_status": {
-          "description": "**Deprecated:** replaced by fulfillment_shipping_status\n",
-          "$ref": "#/definitions/bnStatus"
+          "allOf": [
+            {
+              "description": "**Deprecated:** replaced by fulfillment_shipping_status\n"
+            },
+            {
+              "$ref": "#/definitions/bnStatus"
+            }
+          ]
         },
         "fulfillment_type": {
           "type": "string"
@@ -2432,8 +2475,14 @@
           }
         },
         "ghn_note_code": {
-          "description": "**Deprecated:** use try_on_code instead\n",
-          "$ref": "#/definitions/pjGHNNoteCode"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use try_on_code instead\n"
+            },
+            {
+              "$ref": "#/definitions/pjGHNNoteCode"
+            }
+          ]
         },
         "id": {
           "type": "string",
@@ -2507,8 +2556,14 @@
           "type": "string"
         },
         "shop_shipping": {
-          "description": "**Deprecated:** use shipping instead\n",
-          "$ref": "#/definitions/qdOrderShipping"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping instead\n\nOrderShipping provides shipping information for an order to be shipped.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderShipping"
+            }
+          ]
         },
         "shop_shipping_fee": {
           "description": "@deperecated use fee_lines.shipping instead\n",
@@ -2756,6 +2811,7 @@
       }
     },
     "qdOrderShipping": {
+      "description": "OrderShipping provides shipping information for an order to be shipped.\n",
       "type": "object",
       "properties": {
         "carrier": {
@@ -2792,15 +2848,27 @@
           "$ref": "#/definitions/qdOrderAddress"
         },
         "sh_address": {
-          "description": "**Deprecated:** use pickup_address\n",
-          "$ref": "#/definitions/qdOrderAddress"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use pickup_address\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderAddress"
+            }
+          ]
         },
         "shipping_note": {
           "type": "string"
         },
         "shipping_provider": {
-          "description": "**Deprecated:** use carrier\n",
-          "$ref": "#/definitions/bwShippingProvider"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use carrier\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
         },
         "shipping_service_code": {
           "type": "string"
@@ -3019,12 +3087,24 @@
           "type": "integer"
         },
         "address_from": {
-          "description": "**Deprecated:** use pickup_address instead\n",
-          "$ref": "#/definitions/baAddress"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use pickup_address instead\n"
+            },
+            {
+              "$ref": "#/definitions/baAddress"
+            }
+          ]
         },
         "address_to": {
-          "description": "**Deprecated:** use shipping_address instead\n",
-          "$ref": "#/definitions/baAddress"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping_address instead\n"
+            },
+            {
+              "$ref": "#/definitions/baAddress"
+            }
+          ]
         },
         "basket_value": {
           "type": "integer"
@@ -3167,8 +3247,14 @@
           "type": "string"
         },
         "shipping_provider": {
-          "description": "**Deprecated:** use carrier instead\n",
-          "$ref": "#/definitions/bwShippingProvider"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use carrier instead\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
         },
         "shipping_service_code": {
           "type": "string"
@@ -3307,7 +3393,7 @@
       ]
     },
     "spCustomerType": {
-      "description": "Deprecated values: \"independent\"",
+      "description": "Deprecated values: \"independent\"\\n",
       "type": "string",
       "enum": [
         "unknown",

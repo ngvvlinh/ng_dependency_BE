@@ -1721,6 +1721,7 @@
       }
     },
     "baChangePasswordRequest": {
+      "description": "Exactly one of current_password or reset_password_token must be provided.\n",
       "type": "object",
       "required": [
         "current_password",
@@ -1740,6 +1741,7 @@
       }
     },
     "baChangePasswordUsingTokenRequest": {
+      "description": "Exactly one of email or phone must be provided.\n",
       "type": "object",
       "required": [
         "reset_password_token",
@@ -2259,6 +2261,7 @@
       }
     },
     "baLoginAccount": {
+      "description": "Represents an account associated with the current user. It has extra fields to represents relation with the user.\n",
       "type": "object",
       "required": [
         "id",
@@ -2318,8 +2321,14 @@
           "type": "string"
         },
         "account_type": {
-          "description": "Automatically switch to the only account of this account type if available.\n\nIt's *ignored* if the user *does not* have any account of this account type, or if the user *has more than one* account of this account type.\n",
-          "$ref": "#/definitions/jjAccountType"
+          "allOf": [
+            {
+              "description": "Automatically switch to the only account of this account type if available.\n\nIt's *ignored* if the user *does not* have any account of this account type, or if the user *has more than one* account of this account type.\n"
+            },
+            {
+              "$ref": "#/definitions/jjAccountType"
+            }
+          ]
         },
         "login": {
           "description": " Phone or email\n",
@@ -2407,6 +2416,7 @@
       }
     },
     "baPermission": {
+      "description": "Represents permission of the current user relation with an account.\n",
       "type": "object",
       "properties": {
         "permissions": {
@@ -2555,6 +2565,7 @@
       }
     },
     "baResetPasswordRequest": {
+      "description": "Exactly one of phone or email must be provided.\n",
       "type": "object",
       "properties": {
         "email": {
@@ -2678,8 +2689,14 @@
           }
         },
         "ghn_note_code": {
-          "description": "**Deprecated:** use try_on instead\n",
-          "$ref": "#/definitions/pjGHNNoteCode"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use try_on instead\n"
+            },
+            {
+              "$ref": "#/definitions/pjGHNNoteCode"
+            }
+          ]
         },
         "id": {
           "type": "string",
@@ -3048,6 +3065,7 @@
       }
     },
     "baUser": {
+      "description": "Represents a user in eTop system. The user may or may not have associated accounts.\n",
       "type": "object",
       "required": [
         "id",
@@ -3105,6 +3123,7 @@
       }
     },
     "baUserAccountInfo": {
+      "description": "Presents user information inside an account\n",
       "type": "object",
       "required": [
         "user_id",

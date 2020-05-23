@@ -371,6 +371,7 @@
       }
     },
     "baUser": {
+      "description": "Represents a user in eTop system. The user may or may not have associated accounts.\n",
       "type": "object",
       "required": [
         "id",

@@ -369,6 +369,7 @@
       }
     },
     "baLoginAccount": {
+      "description": "Represents an account associated with the current user. It has extra fields to represents relation with the user.\n",
       "type": "object",
       "required": [
         "id",
@@ -460,6 +461,7 @@
       }
     },
     "baPermission": {
+      "description": "Represents permission of the current user relation with an account.\n",
       "type": "object",
       "properties": {
         "permissions": {
@@ -526,8 +528,14 @@
           }
         },
         "ghn_note_code": {
-          "description": "**Deprecated:** use try_on instead\n",
-          "$ref": "#/definitions/pjGHNNoteCode"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use try_on instead\n"
+            },
+            {
+              "$ref": "#/definitions/pjGHNNoteCode"
+            }
+          ]
         },
         "id": {
           "type": "string",
@@ -609,6 +617,7 @@
       }
     },
     "baUser": {
+      "description": "Represents a user in eTop system. The user may or may not have associated accounts.\n",
       "type": "object",
       "required": [
         "id",
@@ -666,6 +675,7 @@
       }
     },
     "baUserAccountInfo": {
+      "description": "Presents user information inside an account\n",
       "type": "object",
       "required": [
         "user_id",

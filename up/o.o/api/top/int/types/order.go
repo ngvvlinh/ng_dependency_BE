@@ -295,6 +295,7 @@ type UpdateOrderRequest struct {
 
 func (m *UpdateOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+// OrderShipping provides shipping information for an order to be shipped.
 type OrderShipping struct {
 	ExportedFields []string `json:"exported_fields"`
 	// @deprecated use pickup_address
