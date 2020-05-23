@@ -53,6 +53,11 @@ func (s *FbExternalPageStore) Filters(filters meta.Filters) *FbExternalPageStore
 	return s
 }
 
+func (s *FbExternalPageStore) ID(ID dot.ID) *FbExternalPageStore {
+	s.preds = append(s.preds, s.ft.ByID(ID))
+	return s
+}
+
 func (s *FbExternalPageStore) IDs(IDs []dot.ID) *FbExternalPageStore {
 	s.preds = append(s.preds, sq.In("id", IDs))
 	return s

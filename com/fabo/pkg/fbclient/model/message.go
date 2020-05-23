@@ -55,3 +55,46 @@ type MessageDataAttachmentVideoData struct {
 	PreviewURL string `json:"preview_url"`
 	Rotation   int    `json:"rotation"`
 }
+
+type SubcribedAppResponse struct {
+	Success bool `json:"success"`
+}
+
+type SendMessageRequest struct {
+	Recipient *RecipientSendMessageRequest `json:"recipient"`
+	Message   *MessageSendMessageRequest   `json:"message"`
+}
+
+type RecipientSendMessageRequest struct {
+	ID string `json:"id"`
+}
+
+type MessageSendMessageRequest struct {
+	Text       string                        `json:"text"`
+	Attachment *AttachmentSendMessageRequest `json:"attachment"`
+}
+
+type AttachmentSendMessageRequest struct {
+	Type    string                              `json:"type"`
+	Payload PayloadAttachmentSendMessageRequest `json:"payload"`
+}
+
+type PayloadAttachmentSendMessageRequest struct {
+	Url        string `json:"url"`
+	IsReusable bool   `json:"is_reusable"`
+}
+
+type SendMessageResponse struct {
+	RecipientID string `json:"recipient_id"`
+	MessageID   string `json:"message_id"`
+}
+
+type SendCommentRequest struct {
+	ID            string `json:"id"`
+	Message       string `json:"message"`
+	AttachmentURL string `json:"attachment_url"`
+}
+
+type SendCommentResponse struct {
+	ID string `json:"id"`
+}

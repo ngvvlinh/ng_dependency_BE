@@ -9,6 +9,7 @@ import (
 	"o.o/backend/com/fabo/main/fbpage/model"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type FbExternalPageInternalStoreFactory func(ctx context.Context) *FbExternalPageInternalStore
@@ -31,6 +32,16 @@ type FbExternalPageInternalStore struct {
 	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
+}
+
+func (s *FbExternalPageInternalStore) ID(id dot.ID) *FbExternalPageInternalStore {
+	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *FbExternalPageInternalStore) ExternalID(externalID string) *FbExternalPageInternalStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
+	return s
 }
 
 func (s *FbExternalPageInternalStore) CreateFbExternalPageInternal(fbExternalPageInternal *fbpaging.FbExternalPageInternal) error {
@@ -95,4 +106,24 @@ func (s *FbExternalPageInternalStore) ListFbPageInternals() (result []*fbpaging.
 		return nil, err
 	}
 	return
+}
+func (s *FbExternalPageInternalStore) GetFbExternalPageInternalDB() (*model.FbExternalPageInternal, error) {
+	query := s.query().Where(s.preds)
+
+	var fbExternalPageInternal model.FbExternalPageInternal
+	err := query.ShouldGet(&fbExternalPageInternal)
+	return &fbExternalPageInternal, err
+}
+
+func (s *FbExternalPageInternalStore) GetFbExternalPageInternal() (*fbpaging.FbExternalPageInternal, error) {
+	fbExternalPageInternal, err := s.GetFbExternalPageInternalDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &fbpaging.FbExternalPageInternal{}
+	err = scheme.Convert(fbExternalPageInternal, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, err
 }

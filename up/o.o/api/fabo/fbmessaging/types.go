@@ -107,6 +107,7 @@ type FbExternalConversation struct {
 	ID                   dot.ID
 	ExternalPageID       string
 	ExternalID           string
+	PSID                 string
 	ExternalUserID       string
 	ExternalUserName     string
 	ExternalLink         string

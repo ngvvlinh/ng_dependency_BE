@@ -520,7 +520,7 @@ func (f *FbClient) CallAPIListCommentSummaries(accessToken string, postIDs []str
 	return commentsSummariesResponse, nil
 }
 
-func (f *FbClient) CallAPIListConversations(accessToken, pageID string, pagination *model.FacebookPagingRequest) (*model.ConversationsResponse, error) {
+func (f *FbClient) CallAPIListConversations(accessToken, pageID, userID string, pagination *model.FacebookPagingRequest) (*model.ConversationsResponse, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), pageID))
 	if err != nil {
 		return nil, err
@@ -539,6 +539,10 @@ func (f *FbClient) CallAPIListConversations(accessToken, pageID string, paginati
 	query.Add(AccessToken, accessToken)
 	query.Add(Fields, fmt.Sprintf("conversations.limit(%d){id,message_count,updated_time,link,senders}", defaultPaging))
 	query.Add(DateFormat, UnixDateFormat)
+
+	if userID != "" {
+		query.Add(UserID, userID)
+	}
 
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(pagination.AddQueryParams(URL.String(), false, defaultPaging))
@@ -608,6 +612,137 @@ func (f *FbClient) CallAPIListMessages(accessToken, conversationID string, pagin
 	}
 
 	return &messagesResponse, nil
+}
+
+func (f *FbClient) CallAPIGetMessage(accessToken, messageID string) (*model.MessageData, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), messageID))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, fmt.Sprintf("id,from,to,message,sticker,created_time,attachments{id,image_data,mime_type,name,size,video_data,file_url}"))
+	query.Add(DateFormat, UnixDateFormat)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(URL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var message model.MessageData
+
+	if err := json.Unmarshal(body, &message); err != nil {
+		return nil, err
+	}
+
+	return &message, nil
+}
+
+// TODO: handle errors
+func (f *FbClient) CallAPISendMessage(accessToken string, sendMessageRequest *model.SendMessageRequest) (*model.SendMessageResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/me/messages", f.apiInfo.Url()))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	recipient, err := json.Marshal(sendMessageRequest.Recipient)
+	if err != nil {
+		return nil, err
+	}
+	message, err := json.Marshal(sendMessageRequest.Message)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Recipient, string(recipient))
+	query.Add(Message, string(message))
+	URL.RawQuery = query.Encode()
+
+	fmt.Println(URL.String())
+	resp, err := http.Post(URL.String(), "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(query.Encode())
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var sendMessageResponse model.SendMessageResponse
+
+	if err := json.Unmarshal(body, &sendMessageResponse); err != nil {
+		return nil, err
+	}
+
+	return &sendMessageResponse, nil
+}
+
+func (f *FbClient) CallAPICreateSubscribedApps(accessToken string, fields []string) (*model.SubcribedAppResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/me/subscribed_apps", f.apiInfo.Url()))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(SubscribedFields, strings.Join(fields, ","))
+	URL.RawQuery = query.Encode()
+
+	resp, err := http.Post(URL.String(), "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var subcribedAddResponse model.SubcribedAppResponse
+
+	if err := json.Unmarshal(body, &subcribedAddResponse); err != nil {
+		return nil, err
+	}
+
+	return &subcribedAddResponse, nil
 }
 
 func GetRole(tasks []string) FacebookRole {

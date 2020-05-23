@@ -13,9 +13,11 @@ import (
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
 	servicefbuser "o.o/backend/com/fabo/main/fbuser"
 	"o.o/backend/com/fabo/pkg/fbclient"
+	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
 	serviceidentity "o.o/backend/com/main/identity"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
+	"o.o/backend/pkg/common/apifw/httpx"
 	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	cmwrapper "o.o/backend/pkg/common/apifw/wrapper"
@@ -118,6 +120,8 @@ func main() {
 	fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db))
 	fbMessagingAggr := servicefbmessaging.FbExternalMessagingAggregateMessageBus(servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus))
 	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
+	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPageQuery, fbUserQuery, fbUserAggr)
+	fbMessagingPM.RegisterEventHandlers(eventBus)
 
 	fbClient := fbclient.New(cfg.FacebookApp, bot)
 	if err := fbClient.Ping(); err != nil {
@@ -162,6 +166,37 @@ func main() {
 
 	mux.Handle("/api/", http.StripPrefix("/api",
 		middleware.CORS(headers.ForwardHeaders(bus.Middleware(apiMux)))))
+
+	{
+		// TODO: Add botWebhook
+
+		webhookMux := http.NewServeMux()
+		healthservice.RegisterHTTPHandler(webhookMux)
+		webhookSvr := &http.Server{
+			Addr:    cfg.Webhook.HTTP.Address(),
+			Handler: webhookMux,
+		}
+
+		rt := httpx.New()
+		rt.Use(httpx.RecoverAndLog(bot, true))
+		webhook := fbwebhook.New(
+			db, bot, cfg.Webhook.VerifyToken,
+			redisStore, fbClient, &fbMessagingQuery,
+			&fbMessagingAggr, &fbPageQuery,
+		)
+		webhook.Register(rt)
+		webhookMux.Handle("/", rt)
+
+		go func() {
+			defer ctxCancel()
+			ll.S.Infof("HTTP webhook server listening at %v", cfg.Webhook.HTTP.Address())
+			err := webhookSvr.ListenAndServe()
+			if err != http.ErrServerClosed {
+				ll.Error("HTTP Webhook server", l.Error(err))
+			}
+			ll.Sync()
+		}()
+	}
 
 	for _, s := range servers {
 		apiMux.Handle(s.PathPrefix(), s)

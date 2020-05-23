@@ -108,6 +108,19 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			return
 		}
 		return msg, fn, nil
+	case "/fabo.CustomerConversation/SendMessage":
+		msg := &SendMessageRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.SendMessage(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/fabo.CustomerConversation/UpdateReadStatus":
 		msg := &UpdateReadStatusRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

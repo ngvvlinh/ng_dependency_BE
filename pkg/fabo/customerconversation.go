@@ -7,6 +7,9 @@ import (
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/top/int/fabo"
 	"o.o/api/top/types/common"
+	"o.o/backend/com/fabo/pkg/fbclient"
+	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
+	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -22,6 +25,7 @@ type CustomerConversationService struct {
 	fbMessagingQuery fbmessaging.QueryBus
 	fbMessagingAggr  fbmessaging.CommandBus
 	fbPagingQuery    fbpaging.QueryBus
+	fbClient         *fbclient.FbClient
 }
 
 func NewCustomerConversationService(
@@ -30,6 +34,7 @@ func NewCustomerConversationService(
 	fbMessagingQuery fbmessaging.QueryBus,
 	fbMessagingAggr fbmessaging.CommandBus,
 	fbPagingQuery fbpaging.QueryBus,
+	fbClient *fbclient.FbClient,
 ) *CustomerConversationService {
 	s := &CustomerConversationService{
 		ss:               ss,
@@ -37,6 +42,7 @@ func NewCustomerConversationService(
 		fbMessagingQuery: fbMessagingQuery,
 		fbMessagingAggr:  fbMessagingAggr,
 		fbPagingQuery:    fbPagingQuery,
+		fbClient:         fbClient,
 	}
 	return s
 }
@@ -210,4 +216,87 @@ func (s *CustomerConversationService) UpdateReadStatus(
 	return &common.UpdatedResponse{
 		Updated: updateIsReadCustomerConversationCmd.Result,
 	}, nil
+}
+
+func (s *CustomerConversationService) SendMessage(
+	ctx context.Context, request *fabo.SendMessageRequest,
+) (*fabo.FbExternalMessage, error) {
+	if request.Message == nil || request.Message.Type == "" ||
+		(request.Message.URL == "" && request.Message.Text == "") {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "")
+	}
+
+	getFbExternalPageInternalByIDQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
+		ExternalID: request.ExternalPageID,
+	}
+	if err := s.fbPagingQuery.Dispatch(ctx, getFbExternalPageInternalByIDQuery); err != nil {
+		return nil, err
+	}
+	accessToken := getFbExternalPageInternalByIDQuery.Result.Token
+
+	getFbExternalConversationQuery := &fbmessaging.GetFbExternalConversationByExternalIDAndExternalPageIDQuery{
+		ExternalID:     request.ExternalConversationID,
+		ExternalPageID: request.ExternalPageID,
+	}
+	if err := s.fbMessagingQuery.Dispatch(ctx, getFbExternalConversationQuery); err != nil {
+		return nil, err
+	}
+	PSID := getFbExternalConversationQuery.Result.PSID
+
+	sendMessageRequest := &fbclientmodel.SendMessageRequest{
+		Recipient: &fbclientmodel.RecipientSendMessageRequest{
+			ID: PSID,
+		},
+	}
+
+	if request.Message.Type == "text" {
+		sendMessageRequest.Message = &fbclientmodel.MessageSendMessageRequest{
+			Text: request.Message.Text,
+		}
+	} else {
+		sendMessageRequest.Message = &fbclientmodel.MessageSendMessageRequest{
+			Attachment: &fbclientmodel.AttachmentSendMessageRequest{
+				Type: "image",
+				Payload: fbclientmodel.PayloadAttachmentSendMessageRequest{
+					Url: request.Message.URL,
+				},
+			},
+		}
+	}
+
+	sendMessageResp, err := s.fbClient.CallAPISendMessage(accessToken, sendMessageRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	newMessage, err := s.fbClient.CallAPIGetMessage(accessToken, sendMessageResp.MessageID)
+	if err != nil {
+		return nil, err
+	}
+
+	var externalAttachments []*fbmessaging.FbMessageAttachment
+	if newMessage.Attachments != nil {
+		externalAttachments = fbclientconvert.ConvertMessageDataAttachments(newMessage.Attachments.Data)
+	}
+	createFbExternalMessageCmd := &fbmessaging.CreateOrUpdateFbExternalMessagesCommand{
+		FbExternalMessages: []*fbmessaging.CreateFbExternalMessageArgs{
+			{
+				ID:                     cm.NewID(),
+				ExternalConversationID: request.ExternalConversationID,
+				ExternalPageID:         request.ExternalPageID,
+				ExternalID:             newMessage.ID,
+				ExternalMessage:        newMessage.Message,
+				ExternalSticker:        newMessage.Sticker,
+				ExternalTo:             fbclientconvert.ConvertObjectsTo(newMessage.To),
+				ExternalFrom:           fbclientconvert.ConvertObjectFrom(newMessage.From),
+				ExternalAttachments:    externalAttachments,
+				ExternalCreatedTime:    newMessage.CreatedTime.ToTime(),
+			},
+		},
+	}
+	if err := s.fbMessagingAggr.Dispatch(ctx, createFbExternalMessageCmd); err != nil {
+		return nil, err
+	}
+
+	return convertpb.PbFbExternalMessage(createFbExternalMessageCmd.Result[0]), nil
 }

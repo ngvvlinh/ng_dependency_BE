@@ -48,6 +48,5 @@ func (s *FbExternalUserInternalStore) CreateFbExternalUserInternal(fbExternalUse
 		return err
 	}
 	fbExternalUserInternal.UpdatedAt = tempFbUserInternal.UpdatedAt
-
 	return nil
 }

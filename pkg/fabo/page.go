@@ -3,6 +3,7 @@ package fabo
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
@@ -100,7 +101,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	shopID := s.ss.Shop().ID
 
 	// Check accessToken is alive
-	_, err := s.fbClient.CallAPICheckAccessToken(r.AccessToken)
+	userToken, err := s.fbClient.CallAPICheckAccessToken(r.AccessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -131,9 +132,26 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		return nil, err
 	}
 
+	// Get externalIDs
 	var externalIDs []string
 	for _, account := range accounts.Accounts.Data {
 		externalIDs = append(externalIDs, account.Id)
+	}
+
+	// Subcribe app (enable webhook messager)
+	if contains(userToken.Data.Scopes, "pages_messaging") {
+		var wg sync.WaitGroup
+		wg.Add(len(accounts.Accounts.Data))
+		for _, account := range accounts.Accounts.Data {
+			go func(accessToken string) {
+				defer wg.Done()
+				// TODO: Ngoc handle err
+				if _, err := s.fbClient.CallAPICreateSubscribedApps(accessToken, []string{fbclient.MessagesField, fbclient.MessageEchoesField}); err != nil {
+					return
+				}
+			}(account.AccessToken)
+		}
+		wg.Wait()
 	}
 
 	// Get fbPages active from externalIDs (accounts)
@@ -275,4 +293,14 @@ func getPermissionsGranted(permissionsData model.AccountsPermissions) []string {
 		}
 	}
 	return permissions
+}
+
+func contains(arr []string, str string) bool {
+	for _, el := range arr {
+		if el == str {
+			return true
+		}
+	}
+
+	return false
 }

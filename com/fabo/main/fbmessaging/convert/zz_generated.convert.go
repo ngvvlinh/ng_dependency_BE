@@ -663,6 +663,7 @@ func convert_fbmessagingmodel_FbExternalConversation_fbmessaging_FbExternalConve
 	out.ID = arg.ID                                     // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
+	out.PSID = arg.PSID                                 // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ExternalUserName = arg.ExternalUserName         // simple assign
 	out.ExternalLink = arg.ExternalLink                 // simple assign
@@ -699,6 +700,7 @@ func convert_fbmessaging_FbExternalConversation_fbmessagingmodel_FbExternalConve
 	out.ID = arg.ID                                     // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
+	out.PSID = arg.PSID                                 // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ExternalUserName = arg.ExternalUserName         // simple assign
 	out.ExternalLink = arg.ExternalLink                 // simple assign
@@ -736,6 +738,7 @@ func apply_fbmessaging_CreateFbExternalConversationArgs_fbmessaging_FbExternalCo
 	out.ID = arg.ID                                     // simple assign
 	out.ExternalPageID = arg.ExternalPageID             // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
+	out.PSID = arg.PSID                                 // simple assign
 	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ExternalUserName = arg.ExternalUserName         // simple assign
 	out.ExternalLink = arg.ExternalLink                 // simple assign

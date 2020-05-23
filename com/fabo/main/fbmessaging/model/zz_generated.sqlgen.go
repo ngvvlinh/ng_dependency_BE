@@ -1114,8 +1114,8 @@ func (ms *FbExternalCommentHistories) SQLScan(opts core.Opts, rows *sql.Rows) er
 type FbExternalConversations []*FbExternalConversation
 
 const __sqlFbExternalConversation_Table = "fb_external_conversation"
-const __sqlFbExternalConversation_ListCols = "\"id\",\"external_page_id\",\"external_id\",\"external_user_id\",\"external_user_name\",\"external_link\",\"external_updated_time\",\"external_message_count\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlFbExternalConversation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_user_id\" = EXCLUDED.\"external_user_id\",\"external_user_name\" = EXCLUDED.\"external_user_name\",\"external_link\" = EXCLUDED.\"external_link\",\"external_updated_time\" = EXCLUDED.\"external_updated_time\",\"external_message_count\" = EXCLUDED.\"external_message_count\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlFbExternalConversation_ListCols = "\"id\",\"external_page_id\",\"external_id\",\"psid\",\"external_user_id\",\"external_user_name\",\"external_link\",\"external_updated_time\",\"external_message_count\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlFbExternalConversation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_id\" = EXCLUDED.\"external_id\",\"psid\" = EXCLUDED.\"psid\",\"external_user_id\" = EXCLUDED.\"external_user_id\",\"external_user_name\" = EXCLUDED.\"external_user_name\",\"external_link\" = EXCLUDED.\"external_link\",\"external_updated_time\" = EXCLUDED.\"external_updated_time\",\"external_message_count\" = EXCLUDED.\"external_message_count\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlFbExternalConversation_Insert = "INSERT INTO \"fb_external_conversation\" (" + __sqlFbExternalConversation_ListCols + ") VALUES"
 const __sqlFbExternalConversation_Select = "SELECT " + __sqlFbExternalConversation_ListCols + " FROM \"fb_external_conversation\""
 const __sqlFbExternalConversation_Select_history = "SELECT " + __sqlFbExternalConversation_ListCols + " FROM history.\"fb_external_conversation\""
@@ -1158,6 +1158,13 @@ func (m *FbExternalConversation) Migration(db *cmsql.Database) {
 		},
 		"external_id": {
 			ColumnName:       "external_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"psid": {
+			ColumnName:       "psid",
 			ColumnType:       "string",
 			ColumnDBType:     "string",
 			ColumnTag:        "",
@@ -1235,6 +1242,7 @@ func (m *FbExternalConversation) SQLArgs(opts core.Opts, create bool) []interfac
 		m.ID,
 		core.String(m.ExternalPageID),
 		core.String(m.ExternalID),
+		core.String(m.PSID),
 		core.String(m.ExternalUserID),
 		core.String(m.ExternalUserName),
 		core.String(m.ExternalLink),
@@ -1251,6 +1259,7 @@ func (m *FbExternalConversation) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		(*core.String)(&m.ExternalPageID),
 		(*core.String)(&m.ExternalID),
+		(*core.String)(&m.PSID),
 		(*core.String)(&m.ExternalUserID),
 		(*core.String)(&m.ExternalUserName),
 		(*core.String)(&m.ExternalLink),
@@ -1296,7 +1305,7 @@ func (_ *FbExternalConversations) SQLSelect(w SQLWriter) error {
 func (m *FbExternalConversation) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalConversation_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1306,7 +1315,7 @@ func (ms FbExternalConversations) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalConversation_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(11)
+		w.WriteMarkers(12)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1360,6 +1369,14 @@ func (m *FbExternalConversation) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ExternalID)
+	}
+	if m.PSID != "" {
+		flag = true
+		w.WriteName("psid")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PSID)
 	}
 	if m.ExternalUserID != "" {
 		flag = true
@@ -1435,7 +1452,7 @@ func (m *FbExternalConversation) SQLUpdate(w SQLWriter) error {
 func (m *FbExternalConversation) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalConversation_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1468,6 +1485,7 @@ func (m FbExternalConversationHistory) ExternalPageID() core.Interface {
 func (m FbExternalConversationHistory) ExternalID() core.Interface {
 	return core.Interface{m["external_id"]}
 }
+func (m FbExternalConversationHistory) PSID() core.Interface { return core.Interface{m["psid"]} }
 func (m FbExternalConversationHistory) ExternalUserID() core.Interface {
 	return core.Interface{m["external_user_id"]}
 }
@@ -1494,34 +1512,35 @@ func (m FbExternalConversationHistory) DeletedAt() core.Interface {
 }
 
 func (m *FbExternalConversationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbExternalConversationHistory, 11)
+	res := make(FbExternalConversationHistory, 12)
 	res["id"] = data[0]
 	res["external_page_id"] = data[1]
 	res["external_id"] = data[2]
-	res["external_user_id"] = data[3]
-	res["external_user_name"] = data[4]
-	res["external_link"] = data[5]
-	res["external_updated_time"] = data[6]
-	res["external_message_count"] = data[7]
-	res["created_at"] = data[8]
-	res["updated_at"] = data[9]
-	res["deleted_at"] = data[10]
+	res["psid"] = data[3]
+	res["external_user_id"] = data[4]
+	res["external_user_name"] = data[5]
+	res["external_link"] = data[6]
+	res["external_updated_time"] = data[7]
+	res["external_message_count"] = data[8]
+	res["created_at"] = data[9]
+	res["updated_at"] = data[10]
+	res["deleted_at"] = data[11]
 	*m = res
 	return nil
 }
 
 func (ms *FbExternalConversationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FbExternalConversationHistories, 0, 128)
@@ -1533,14 +1552,15 @@ func (ms *FbExternalConversationHistories) SQLScan(opts core.Opts, rows *sql.Row
 		m["id"] = data[0]
 		m["external_page_id"] = data[1]
 		m["external_id"] = data[2]
-		m["external_user_id"] = data[3]
-		m["external_user_name"] = data[4]
-		m["external_link"] = data[5]
-		m["external_updated_time"] = data[6]
-		m["external_message_count"] = data[7]
-		m["created_at"] = data[8]
-		m["updated_at"] = data[9]
-		m["deleted_at"] = data[10]
+		m["psid"] = data[3]
+		m["external_user_id"] = data[4]
+		m["external_user_name"] = data[5]
+		m["external_link"] = data[6]
+		m["external_updated_time"] = data[7]
+		m["external_message_count"] = data[8]
+		m["created_at"] = data[9]
+		m["updated_at"] = data[10]
+		m["deleted_at"] = data[11]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

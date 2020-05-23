@@ -12,6 +12,12 @@ type Config struct {
 	Redis       cc.Redis           `yaml:"redis"`
 	Env         string             `yaml:"env"`
 	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
+	Webhook     WebhookConfig      `yaml:"webhook"`
+}
+
+type WebhookConfig struct {
+	HTTP        cc.HTTP `yaml:"http"`
+	VerifyToken string  `yaml:"verify_token"`
 }
 
 func Default() Config {
@@ -27,6 +33,12 @@ func Default() Config {
 			ID:          "1581362285363031",
 			Secret:      "b3962ddf033b295c2bd0b543fff904f7",
 			AccessToken: "1581362285363031|eLuNU9-1KNA0AMNucV9PQIHCF1A",
+		},
+		Webhook: WebhookConfig{
+			HTTP: cc.HTTP{
+				Host: "",
+				Port: 8081,
+			},
 		},
 		Env: "dev",
 	}

@@ -42,6 +42,8 @@ type QueryService interface {
 	ListFbExternalPostsByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalPost, error)
 	ListFbExternalPostsByIDs(_ context.Context, IDs filter.IDs) ([]*FbExternalPost, error)
 
+	GetFbExternalConversationByExternalIDAndExternalPageID(_ context.Context, externalID, externalPageID string) (*FbExternalConversation, error)
+	GetFbExternalConversationByExternalPageIDAndExternalUserID(_ context.Context, externalPageID, externalUserID string) (*FbExternalConversation, error)
 	ListFbExternalConversationsByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalConversation, error)
 
 	GetFbCustomerConversation(_ context.Context, customerConversationType fb_customer_conversation_type.FbCustomerConversationType, externalID, externalUserID string) (*FbCustomerConversation, error)
@@ -120,6 +122,7 @@ type CreateFbExternalConversationArgs struct {
 	ID                   dot.ID
 	ExternalPageID       string
 	ExternalID           string
+	PSID                 string
 	ExternalUserID       string
 	ExternalUserName     string
 	ExternalLink         string

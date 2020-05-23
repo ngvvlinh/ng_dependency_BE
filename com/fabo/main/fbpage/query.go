@@ -32,10 +32,34 @@ func FbPageQueryMessageBus(q *FbPageQuery) fbpaging.QueryBus {
 	return fbpaging.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
+func (q *FbPageQuery) GetFbExternalPageActiveByExternalID(
+	ctx context.Context, externalID string,
+) (*fbpaging.FbExternalPage, error) {
+	return q.fbPageStore(ctx).ExternalID(externalID).Status(status3.P).GetFbExternalPage()
+}
+
+func (q *FbPageQuery) GetFbExternalPageByID(
+	ctx context.Context, ID dot.ID,
+) (*fbpaging.FbExternalPage, error) {
+	return q.fbPageStore(ctx).ID(ID).GetFbExternalPage()
+}
+
 func (q *FbPageQuery) GetFbExternalPageByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbpaging.FbExternalPage, error) {
 	return q.fbPageStore(ctx).ExternalID(externalID).GetFbExternalPage()
+}
+
+func (q *FbPageQuery) GetFbExternalPageInternalByID(
+	ctx context.Context, ID dot.ID,
+) (*fbpaging.FbExternalPageInternal, error) {
+	return q.fbPageInternalStore(ctx).ID(ID).GetFbExternalPageInternal()
+}
+
+func (q *FbPageQuery) GetFbExternalPageInternalByExternalID(
+	ctx context.Context, externalID string,
+) (*fbpaging.FbExternalPageInternal, error) {
+	return q.fbPageInternalStore(ctx).ExternalID(externalID).GetFbExternalPageInternal()
 }
 
 func (q *FbPageQuery) ListFbExternalPagesByIDs(

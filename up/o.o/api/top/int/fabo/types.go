@@ -228,6 +228,8 @@ type FbExternalMessage struct {
 	UpdatedAt              time.Time              `json:"updated_at"`
 }
 
+func (m *FbExternalMessage) String() string { return jsonx.MustMarshalToString(m) }
+
 type FbObjectTo struct {
 	ID                     string `json:"id"`
 	Name                   string `json:"name"`
@@ -354,3 +356,18 @@ type UpdateReadStatusRequest struct {
 }
 
 func (m *UpdateReadStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type SendMessageRequest struct {
+	ExternalPageID         string                     `json:"external_page_id"`
+	ExternalConversationID string                     `json:"external_conversation_id"`
+	Message                *MessageSendMessageRequest `json:"message"`
+}
+
+func (m *SendMessageRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type MessageSendMessageRequest struct {
+	// Type: text or image
+	Type string `json:"type"`
+	Text string `json:"text"`
+	URL  string `json:"url"`
+}

@@ -585,6 +585,25 @@ func (ft *FbExternalConversationFilters) ByExternalIDPtr(ExternalID *string) *sq
 	}
 }
 
+func (ft *FbExternalConversationFilters) ByPSID(PSID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "psid",
+		Value:  PSID,
+		IsNil:  PSID == "",
+	}
+}
+
+func (ft *FbExternalConversationFilters) ByPSIDPtr(PSID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "psid",
+		Value:  PSID,
+		IsNil:  PSID == nil,
+		IsZero: PSID != nil && (*PSID) == "",
+	}
+}
+
 func (ft *FbExternalConversationFilters) ByExternalUserID(ExternalUserID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

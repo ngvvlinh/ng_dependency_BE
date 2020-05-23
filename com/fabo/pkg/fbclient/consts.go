@@ -27,6 +27,19 @@ const (
 	DefaultLimitGetConversations = 100
 	DefaultLimitGetMessages      = 100
 	MaximumIDs                   = 1
+
+	// ConversationParameters
+	UserID = "user_id"
+
+	// SubcribedApp
+	SubscribedFields   = "subscribed_fields"
+	MessagesField      = "messages"
+	MessageEchoesField = "message_echoes"
+
+	// Send message
+	AttachmentURL = "attachment_url"
+	Recipient     = "recipient"
+	Message       = "message"
 )
 
 type FacebookRole int

@@ -186,21 +186,21 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 		}
 
 		// Task get conversation
-		{
-			s.addTask(&TaskArguments{
-				actionType:     GetConversations,
-				accessToken:    fbPageCombined.FbExternalPageInternal.Token,
-				shopID:         fbPageCombined.FbExternalPage.ShopID,
-				pageID:         fbPageCombined.FbExternalPage.ID,
-				externalPageID: fbPageCombined.FbExternalPage.ExternalID,
-				fbPagingRequest: &model.FacebookPagingRequest{
-					Limit: dot.Int(fbclient.DefaultLimitGetConversations),
-					TimePagination: &model.TimePaginationRequest{
-						Since: time.Now().AddDate(0, 0, -s.timeLimit),
-					},
-				},
-			})
-		}
+		//{
+		//	s.addTask(&TaskArguments{
+		//		actionType:     GetConversations,
+		//		accessToken:    fbPageCombined.FbExternalPageInternal.Token,
+		//		shopID:         fbPageCombined.FbExternalPage.ShopID,
+		//		pageID:         fbPageCombined.FbExternalPage.ID,
+		//		externalPageID: fbPageCombined.FbExternalPage.ExternalID,
+		//		fbPagingRequest: &model.FacebookPagingRequest{
+		//			Limit: dot.Int(fbclient.DefaultLimitGetConversations),
+		//			TimePagination: &model.TimePaginationRequest{
+		//				Since: time.Now().AddDate(0, 0, -s.timeLimit),
+		//			},
+		//		},
+		//	})
+		//}
 	}
 
 	s.scheduler.AddAfter(cm.NewID(), 5*time.Minute, s.addJobs)
@@ -349,7 +349,7 @@ func (s *Synchronizer) handleTaskGetConversations(
 	fmt.Println("GetConversations")
 
 	// Call api list conversations that depends on externalPageID
-	fbConversationsResp, err := s.fbClient.CallAPIListConversations(accessToken, externalPageID, fbPagingReq)
+	fbConversationsResp, err := s.fbClient.CallAPIListConversations(accessToken, externalPageID, "", fbPagingReq)
 	if err != nil {
 		// TODO: Ngoc classify error type
 		return err

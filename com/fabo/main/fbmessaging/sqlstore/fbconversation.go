@@ -39,8 +39,23 @@ func (s *FbExternalConversationStore) WithPaging(paging meta.Paging) *FbExternal
 	return s
 }
 
+func (s *FbExternalConversationStore) ExternalID(externalID string) *FbExternalConversationStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
+	return s
+}
+
 func (s *FbExternalConversationStore) ExternalIDs(externalIDs []string) *FbExternalConversationStore {
 	s.preds = append(s.preds, sq.In("external_id", externalIDs))
+	return s
+}
+
+func (s *FbExternalConversationStore) ExternalPageID(externalPageID string) *FbExternalConversationStore {
+	s.preds = append(s.preds, s.ft.ByExternalPageID(externalPageID))
+	return s
+}
+
+func (s *FbExternalConversationStore) ExternalUserID(externalUserID string) *FbExternalConversationStore {
+	s.preds = append(s.preds, s.ft.ByExternalUserID(externalUserID))
 	return s
 }
 
@@ -75,6 +90,27 @@ func (s *FbExternalConversationStore) CreateFbExternalConversations(fbExternalCo
 		return err
 	}
 	return nil
+}
+
+func (s *FbExternalConversationStore) GetFbExternalConversationDB() (*model.FbExternalConversation, error) {
+	query := s.query().Where(s.preds)
+
+	var fbExternalConversation model.FbExternalConversation
+	err := query.ShouldGet(&fbExternalConversation)
+	return &fbExternalConversation, err
+}
+
+func (s *FbExternalConversationStore) GetFbExternalConversation() (*fbmessaging.FbExternalConversation, error) {
+	fbExternalConversation, err := s.GetFbExternalConversationDB()
+	if err != nil {
+		return nil, err
+	}
+	result := &fbmessaging.FbExternalConversation{}
+	err = scheme.Convert(fbExternalConversation, result)
+	if err != nil {
+		return nil, err
+	}
+	return result, err
 }
 
 func (s *FbExternalConversationStore) ListFbExternalConversationsDB() ([]*model.FbExternalConversation, error) {

@@ -96,6 +96,33 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/SendMessage": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "SendMessage",
+        "operationId": "fabo.CustomerConversation-SendMessage",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvSendMessageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvFbExternalMessage"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/UpdateReadStatus": {
       "post": {
         "tags": [
@@ -991,6 +1018,21 @@
         }
       }
     },
+    "cvMessageSendMessageRequest": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "type": {
+          "description": "Type: text or image\n",
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
     "cvPostAttachment": {
       "type": "object",
       "properties": {
@@ -1019,6 +1061,20 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "cvSendMessageRequest": {
+      "type": "object",
+      "properties": {
+        "external_conversation_id": {
+          "type": "string"
+        },
+        "external_page_id": {
+          "type": "string"
+        },
+        "message": {
+          "$ref": "#/definitions/cvMessageSendMessageRequest"
         }
       }
     },

@@ -9,7 +9,6 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
-	"o.o/api/top/types/etc/status3"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -348,7 +347,6 @@ func (m *ProcessManager) handleCreateExternalCustomerUser(
 					Name:     fbObjectFrom.Name,
 					ImageURL: fbclientconvert.GenerateFacebookUserPicture(fbObjectFrom.ID),
 				},
-				Status: status3.P,
 			})
 		}
 	}

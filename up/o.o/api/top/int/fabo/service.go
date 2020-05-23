@@ -22,4 +22,6 @@ type CustomerConversationService interface {
 	ListMessages(context.Context, *ListMessagesRequest) (*FbMessagesResponse, error)
 	ListCommentsByExternalPostID(context.Context, *ListCommentsByExternalPostIDRequest) (*ListCommentsByExternalPostIDResponse, error)
 	UpdateReadStatus(context.Context, *UpdateReadStatusRequest) (*cm.UpdatedResponse, error)
+
+	SendMessage(context.Context, *SendMessageRequest) (*FbExternalMessage, error)
 }

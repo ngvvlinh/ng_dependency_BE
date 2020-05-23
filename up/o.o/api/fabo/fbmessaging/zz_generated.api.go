@@ -151,6 +151,30 @@ func (h QueryServiceHandler) HandleGetFbCustomerConversation(ctx context.Context
 	return err
 }
 
+type GetFbExternalConversationByExternalIDAndExternalPageIDQuery struct {
+	ExternalID     string
+	ExternalPageID string
+
+	Result *FbExternalConversation `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFbExternalConversationByExternalIDAndExternalPageID(ctx context.Context, msg *GetFbExternalConversationByExternalIDAndExternalPageIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalConversationByExternalIDAndExternalPageID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery struct {
+	ExternalPageID string
+	ExternalUserID string
+
+	Result *FbExternalConversation `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFbExternalConversationByExternalPageIDAndExternalUserID(ctx context.Context, msg *GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalConversationByExternalPageIDAndExternalUserID(msg.GetArgs(ctx))
+	return err
+}
+
 type GetFbExternalPostByExternalIDQuery struct {
 	ExternalID string
 
@@ -296,18 +320,20 @@ func (q *CreateOrUpdateFbExternalMessagesCommand) command()      {}
 func (q *CreateOrUpdateFbExternalPostsCommand) command()         {}
 func (q *UpdateIsReadCustomerConversationCommand) command()      {}
 
-func (q *GetFbCustomerConversationQuery) query()                {}
-func (q *GetFbExternalPostByExternalIDQuery) query()            {}
-func (q *GetLatestFbExternalCommentQuery) query()               {}
-func (q *ListFbCustomerConversationsQuery) query()              {}
-func (q *ListFbCustomerConversationsByExternalIDsQuery) query() {}
-func (q *ListFbExternalCommentsQuery) query()                   {}
-func (q *ListFbExternalConversationsByExternalIDsQuery) query() {}
-func (q *ListFbExternalMessagesQuery) query()                   {}
-func (q *ListFbExternalMessagesByExternalIDsQuery) query()      {}
-func (q *ListFbExternalPostsByExternalIDsQuery) query()         {}
-func (q *ListFbExternalPostsByIDsQuery) query()                 {}
-func (q *ListLatestFbExternalMessagesQuery) query()             {}
+func (q *GetFbCustomerConversationQuery) query()                                  {}
+func (q *GetFbExternalConversationByExternalIDAndExternalPageIDQuery) query()     {}
+func (q *GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery) query() {}
+func (q *GetFbExternalPostByExternalIDQuery) query()                              {}
+func (q *GetLatestFbExternalCommentQuery) query()                                 {}
+func (q *ListFbCustomerConversationsQuery) query()                                {}
+func (q *ListFbCustomerConversationsByExternalIDsQuery) query()                   {}
+func (q *ListFbExternalCommentsQuery) query()                                     {}
+func (q *ListFbExternalConversationsByExternalIDsQuery) query()                   {}
+func (q *ListFbExternalMessagesQuery) query()                                     {}
+func (q *ListFbExternalMessagesByExternalIDsQuery) query()                        {}
+func (q *ListFbExternalPostsByExternalIDsQuery) query()                           {}
+func (q *ListFbExternalPostsByIDsQuery) query()                                   {}
+func (q *ListLatestFbExternalMessagesQuery) query()                               {}
 
 // implement conversion
 
@@ -420,6 +446,18 @@ func (q *GetFbCustomerConversationQuery) GetArgs(ctx context.Context) (_ context
 	return ctx,
 		q.CustomerConversationType,
 		q.ExternalID,
+		q.ExternalUserID
+}
+
+func (q *GetFbExternalConversationByExternalIDAndExternalPageIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string, externalPageID string) {
+	return ctx,
+		q.ExternalID,
+		q.ExternalPageID
+}
+
+func (q *GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalPageID string, externalUserID string) {
+	return ctx,
+		q.ExternalPageID,
 		q.ExternalUserID
 }
 
@@ -554,6 +592,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetFbCustomerConversation)
+	b.AddHandler(h.HandleGetFbExternalConversationByExternalIDAndExternalPageID)
+	b.AddHandler(h.HandleGetFbExternalConversationByExternalPageIDAndExternalUserID)
 	b.AddHandler(h.HandleGetFbExternalPostByExternalID)
 	b.AddHandler(h.HandleGetLatestFbExternalComment)
 	b.AddHandler(h.HandleListFbCustomerConversations)
