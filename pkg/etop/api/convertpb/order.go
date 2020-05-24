@@ -30,7 +30,7 @@ import (
 	"o.o/capi/dot"
 )
 
-var locationBus = servicelocation.New(nil).MessageBus()
+var locationBus = servicelocation.QueryMessageBus(servicelocation.New(nil))
 
 func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType int, shops []*identitymodel.Shop) []*types.Order {
 	res := make([]*types.Order, len(items))

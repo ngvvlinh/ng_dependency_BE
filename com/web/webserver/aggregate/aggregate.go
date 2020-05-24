@@ -36,7 +36,7 @@ type WebserverAggregate struct {
 }
 
 func New(eventBus capi.EventBus, db *cmsql.Database, categoryQ catalog.QueryBus) *WebserverAggregate {
-	locationBus = servicelocation.New(db).MessageBus()
+	locationBus = servicelocation.QueryMessageBus(servicelocation.New(nil))
 	return &WebserverAggregate{
 		db:              db,
 		wsCategoryStore: sqlstore.NewWsCategoryStore(db),
@@ -47,7 +47,7 @@ func New(eventBus capi.EventBus, db *cmsql.Database, categoryQ catalog.QueryBus)
 		categoryQuery:   categoryQ,
 	}
 }
-func (q *WebserverAggregate) MessageBus() webserver.CommandBus {
+func WebserverAggregateMessageBus(q *WebserverAggregate) webserver.CommandBus {
 	b := bus.New()
 	return webserver.NewAggregateHandler(q).RegisterHandlers(b)
 }

@@ -25,7 +25,7 @@ func NewFbUserQuery(database *cmsql.Database) *FbUserQuery {
 	}
 }
 
-func (q *FbUserQuery) MessageBus() fbusering.QueryBus {
+func FbUserQueryMessageBus(q *FbUserQuery) fbusering.QueryBus {
 	b := bus.New()
 	return fbusering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

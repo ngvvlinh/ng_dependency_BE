@@ -25,7 +25,7 @@ func NewLedgerQuery(db *cmsql.Database) *LedgerQuery {
 	}
 }
 
-func (q *LedgerQuery) MessageBus() ledgering.QueryBus {
+func LedgerQueryMessageBus(q *LedgerQuery) ledgering.QueryBus {
 	b := bus.New()
 	return ledgering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

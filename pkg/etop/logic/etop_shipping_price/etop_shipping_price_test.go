@@ -13,7 +13,7 @@ import (
 	"o.o/common/l"
 )
 
-var locationBus = servicelocation.New(nil).MessageBus()
+var locationBus = servicelocation.QueryMessageBus(servicelocation.New(nil))
 
 func TestGetPriceRuleDetail(t *testing.T) {
 	priceRuleDetail := map[int]*ESPricingDetail{

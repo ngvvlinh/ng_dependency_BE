@@ -12,7 +12,7 @@ import (
 	locationlist "o.o/backend/com/main/location/list"
 )
 
-var locationBus = servicelocation.New(nil).MessageBus()
+var locationBus = servicelocation.QueryMessageBus(servicelocation.New(nil))
 
 func TestProvinceCode(t *testing.T) {
 	mapProvinces := make(map[string]bool)

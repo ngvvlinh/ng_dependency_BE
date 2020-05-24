@@ -33,7 +33,7 @@ func NewFbMessagingQuery(database *cmsql.Database) *FbMessagingQuery {
 	}
 }
 
-func (q *FbMessagingQuery) MessageBus() fbmessaging.QueryBus {
+func FbMessagingQueryMessageBus(q *FbMessagingQuery) fbmessaging.QueryBus {
 	b := bus.New()
 	return fbmessaging.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

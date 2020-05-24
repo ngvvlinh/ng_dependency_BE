@@ -29,12 +29,12 @@ func NewQueryService(db *cmsql.Database) *QueryService {
 		userStore:        sqlstore.NewUserStore(db),
 		accountStore:     sqlstore.NewAccountStore(db),
 		partnerStore:     sqlstore.NewPartnerStore(db),
-		accountUserStore: sqlstore.NewAccoutnUserStore(db),
+		accountUserStore: sqlstore.NewAccountUserStore(db),
 		xAccountAhamove:  sqlstore.NewXAccountAhamoveStore(db),
 	}
 }
 
-func (q *QueryService) MessageBus() identity.QueryBus {
+func QueryServiceMessageBus(q *QueryService) identity.QueryBus {
 	b := bus.New()
 	h := identity.NewQueryServiceHandler(q)
 

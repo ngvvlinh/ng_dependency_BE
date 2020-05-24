@@ -34,7 +34,7 @@ func NewSupplierAggregate(eventBus capi.EventBus, db *cmsql.Database) *SupplierA
 	}
 }
 
-func (a *SupplierAggregate) MessageBus() suppliering.CommandBus {
+func SupplierAggregateMessageBus(a *SupplierAggregate) suppliering.CommandBus {
 	b := bus.New()
 	return suppliering.NewAggregateHandler(a).RegisterHandlers(b)
 }

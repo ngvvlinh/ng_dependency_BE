@@ -29,7 +29,7 @@ func NewInvitationQuery(
 	}
 }
 
-func (q *InvitationQuery) MessageBus() invitation.QueryBus {
+func InvitationQueryMessageBus(q *InvitationQuery) invitation.QueryBus {
 	b := bus.New()
 	return invitation.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

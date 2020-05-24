@@ -48,7 +48,7 @@ func NewSubrBillAggregate(db *cmsql.Database, eventB capi.EventBus, paymentA pay
 	}
 }
 
-func (a *SubrBillAggregate) MessageBus() subscriptionbill.CommandBus {
+func SubrBillAggregateMessageBus(a *SubrBillAggregate) subscriptionbill.CommandBus {
 	b := bus.New()
 	return subscriptionbill.NewAggregateHandler(a).RegisterHandlers(b)
 }

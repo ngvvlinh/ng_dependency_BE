@@ -71,7 +71,7 @@ func NewAggregate(db *cmsql.Database, idenQuery identity.QueryBus, catalogQuery 
 	}
 }
 
-func (a *Aggregate) MessageBus() affiliate.CommandBus {
+func AggregateMessageBus(a *Aggregate) affiliate.CommandBus {
 	b := bus.New()
 	return affiliate.NewAggregateHandler(a).RegisterHandlers(b)
 }

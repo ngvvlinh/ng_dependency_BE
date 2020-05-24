@@ -26,7 +26,7 @@ func NewMoneyTxQuery(db *cmsql.Database, shippingQuery shipping.QueryBus) *Money
 	}
 }
 
-func (q *MoneyTxQuery) MessageBus() moneytx.QueryBus {
+func MoneyTxQueryMessageBus(q *MoneyTxQuery) moneytx.QueryBus {
 	b := bus.New()
 	return moneytx.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

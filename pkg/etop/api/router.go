@@ -6,15 +6,53 @@ import (
 	"strings"
 
 	service "o.o/api/top/int/etop"
+	"o.o/backend/pkg/common/apifw/idemp"
+	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/headers"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/integration/sms"
 	"o.o/capi/httprpc"
+	"o.o/common/l"
 )
 
 // +gen:wrapper=o.o/api/top/int/etop
 // +gen:wrapper:package=etop
 
-func NewEtopServer(m httprpc.Muxer) {
+type Servers []httprpc.Server
+
+func NewServers(
+	miscService *MiscService,
+	userService *UserService,
+	accountService *AccountService,
+	locationService *LocationService,
+	bankService *BankService,
+	addressService *AddressService,
+	accountRelationshipService *AccountRelationshipService,
+	userRelationshipService *UserRelationshipService,
+	ecomService *EcomService,
+
+	rd redis.Store,
+	_cfgEmail EmailConfig,
+	_cfgSMS sms.Config,
+	bot *telebot.Channel,
+	sd cmservice.Shutdowner,
+) Servers {
+	UserServiceImpl = userService // MUSTDO: remove this
+	enabledEmail = _cfgEmail.Enabled
+	enabledSMS = _cfgSMS.Enabled
+	cfgEmail = _cfgEmail
+	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempUser, 0)
+	sd.Register(idempgroup.Shutdown)
+	botTelegram = bot
+	if enabledEmail {
+		if _, err := validate.ValidateStruct(cfgEmail); err != nil {
+			ll.Fatal("Can not validate config", l.Error(err))
+		}
+	}
+
 	var cookieHooks httprpc.HooksFunc = func() httprpc.Hooks {
 		return httprpc.Hooks{
 			BeforeResponse: func(ctx context.Context, info httprpc.HookInfo, respHeaders http.Header) (context.Context, error) {
@@ -52,15 +90,28 @@ func NewEtopServer(m httprpc.Muxer) {
 		service.NewUserRelationshipServiceServer(WrapUserRelationshipService(userRelationshipService.Clone)),
 		service.NewEcomServiceServer(WrapEcomService(ecomService.Clone)),
 	}
-	for _, s := range servers {
-		m.Handle(s.PathPrefix(), s)
-	}
+
+	var result []httprpc.Server
+	result = append(result, servers...)
 
 	// proxy /api/root... to /api/etop
 	for _, s := range servers {
 		pathPrefix := strings.Replace(s.PathPrefix(), "/etop.", "/root.", 1)
-		m.Handle(pathPrefix, proxy(s))
+		prx := &Proxy{pathPrefix, proxy(s)}
+		result = append(result, prx)
 	}
+	return result
+}
+
+var _ httprpc.Server = &Proxy{}
+
+type Proxy struct {
+	pathPrefix string
+	http.Handler
+}
+
+func (p *Proxy) PathPrefix() string {
+	return p.pathPrefix
 }
 
 func proxy(next http.Handler) http.HandlerFunc {

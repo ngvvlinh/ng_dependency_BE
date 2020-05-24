@@ -41,7 +41,7 @@ func NewConnectionAggregate(db *cmsql.Database, eventBus capi.EventBus) *Connect
 	}
 }
 
-func (a *ConnectionAggregate) MessageBus() connectioning.CommandBus {
+func ConnectionAggregateMessageBus(a *ConnectionAggregate) connectioning.CommandBus {
 	b := bus.New()
 	return connectioning.NewAggregateHandler(a).RegisterHandlers(b)
 }

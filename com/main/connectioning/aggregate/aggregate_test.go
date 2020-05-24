@@ -88,7 +88,7 @@ func TestConnectionAggregate(t *testing.T) {
 			Status:      0,
 			WLPartnerID: drivers.ITopXID,
 		}
-		Aggr := NewConnectionAggregate(db, bus.New()).MessageBus()
+		Aggr := ConnectionAggregateMessageBus(NewConnectionAggregate(db, bus.New()))
 		_, err := db.Insert(_conn)
 		So(err, ShouldBeNil)
 
@@ -177,7 +177,7 @@ func TestShopConnectionAggregate(t *testing.T) {
 			Status:       0,
 		}
 
-		Aggr := NewConnectionAggregate(db, bus.New()).MessageBus()
+		Aggr := ConnectionAggregateMessageBus(NewConnectionAggregate(db, bus.New()))
 		_, err := db.Insert(_conn, _shopConn)
 		So(err, ShouldBeNil)
 

@@ -27,6 +27,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.0.0-rc1
 	github.com/go-test/deep v1.0.6
 	github.com/golang/protobuf v1.4.1 // indirect
+	github.com/google/wire v0.4.0
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/gorilla/schema v1.1.0
 	github.com/julienschmidt/httprouter v1.3.0

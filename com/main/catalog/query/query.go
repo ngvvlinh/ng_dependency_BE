@@ -41,7 +41,7 @@ func New(db *cmsql.Database) *QueryService {
 	}
 }
 
-func (s *QueryService) MessageBus() catalog.QueryBus {
+func QueryServiceMessageBus(s *QueryService) catalog.QueryBus {
 	b := bus.New()
 	return catalog.NewQueryServiceHandler(s).RegisterHandlers(b)
 }

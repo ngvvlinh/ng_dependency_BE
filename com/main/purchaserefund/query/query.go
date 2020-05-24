@@ -25,7 +25,7 @@ func NewQueryPurchasePurchaseRefund(eventBus capi.EventBus, db *cmsql.Database) 
 	}
 }
 
-func (q *PurchaseRefundQueryService) MessageBus() purchaserefund.QueryBus {
+func PurchaseRefundQueryServiceMessageBus(q *PurchaseRefundQueryService) purchaserefund.QueryBus {
 	b := bus.New()
 	return purchaserefund.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

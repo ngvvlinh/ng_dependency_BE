@@ -26,7 +26,7 @@ func NewSubrProductAggregate(db *cmsql.Database) *SubrProductAggregate {
 	}
 }
 
-func (a *SubrProductAggregate) MessageBus() subscriptionproduct.CommandBus {
+func SubrProductAggregateMessageBus(a *SubrProductAggregate) subscriptionproduct.CommandBus {
 	b := bus.New()
 	return subscriptionproduct.NewAggregateHandler(a).RegisterHandlers(b)
 }

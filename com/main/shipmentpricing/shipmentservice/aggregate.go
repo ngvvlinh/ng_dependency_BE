@@ -33,7 +33,7 @@ func NewAggregate(db *cmsql.Database, redisStore redis.Store) *Aggregate {
 	}
 }
 
-func (a *Aggregate) MessageBus() shipmentservice.CommandBus {
+func AggregateMessageBus(a *Aggregate) shipmentservice.CommandBus {
 	b := bus.New()
 	return shipmentservice.NewAggregateHandler(a).RegisterHandlers(b)
 }

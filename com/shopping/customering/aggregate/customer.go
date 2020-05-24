@@ -42,7 +42,7 @@ func NewCustomerAggregate(eventBus capi.EventBus, db *cmsql.Database) *CustomerA
 	}
 }
 
-func (a *CustomerAggregate) MessageBus() customering.CommandBus {
+func CustomerAggregateMessageBus(a *CustomerAggregate) customering.CommandBus {
 	b := bus.New()
 	return customering.NewAggregateHandler(a).RegisterHandlers(b)
 }

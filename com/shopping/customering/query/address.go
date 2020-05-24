@@ -22,7 +22,7 @@ func NewAddressQuery(db *cmsql.Database) *AddressQuery {
 	}
 }
 
-func (q *AddressQuery) MessageBus() addressing.QueryBus {
+func AddressQueryMessageBus(q *AddressQuery) addressing.QueryBus {
 	b := bus.New()
 	return addressing.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

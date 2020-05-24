@@ -25,7 +25,7 @@ func NewTraderAgg(
 	}
 }
 
-func (q *TraderAgg) MessageBus() tradering.CommandBus {
+func TraderAggMessageBus(q *TraderAgg) tradering.CommandBus {
 	b := bus.New()
 	return tradering.NewAggregateHandler(q).RegisterHandlers(b)
 }

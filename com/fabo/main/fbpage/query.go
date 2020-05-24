@@ -27,7 +27,7 @@ func NewFbPageQuery(database *cmsql.Database) *FbPageQuery {
 	}
 }
 
-func (q *FbPageQuery) MessageBus() fbpaging.QueryBus {
+func FbPageQueryMessageBus(q *FbPageQuery) fbpaging.QueryBus {
 	b := bus.New()
 	return fbpaging.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

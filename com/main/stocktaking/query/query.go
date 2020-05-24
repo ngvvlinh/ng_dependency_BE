@@ -25,7 +25,7 @@ func NewQueryStocktake(db *cmsql.Database) *StocktakeQuery {
 	}
 }
 
-func (q *StocktakeQuery) MessageBus() st.QueryBus {
+func StocktakeQueryMessageBus(q *StocktakeQuery) st.QueryBus {
 	b := bus.New()
 	return st.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

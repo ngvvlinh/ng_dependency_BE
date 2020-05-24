@@ -31,7 +31,7 @@ func NewQuery(db *cmsql.Database) *QueryService {
 	}
 }
 
-func (a *QueryService) MessageBus() affiliate.QueryBus {
+func QueryServiceMessageBus(a *QueryService) affiliate.QueryBus {
 	b := bus.New()
 	return affiliate.NewQueryServiceHandler(a).RegisterHandlers(b)
 }

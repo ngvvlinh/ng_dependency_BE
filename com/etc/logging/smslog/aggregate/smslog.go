@@ -30,7 +30,7 @@ func NewSmsLogAggregate(eventBus capi.EventBus, db *cmsql.Database) *SmsLogAggre
 	}
 }
 
-func (a *SmsLogAggregate) MessageBus() smslog.CommandBus {
+func SmsLogAggregateMessageBus(a *SmsLogAggregate) smslog.CommandBus {
 	b := bus.New()
 	return smslog.NewAggregateHandler(a).RegisterHandlers(b)
 }

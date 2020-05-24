@@ -187,7 +187,7 @@ func New(
 	}
 	etlUtil.mapDBs = initDBs(mapDBCfgs, etlUtil.mapTableNames, resetDB)
 
-	etlUtil.identityQuery = identityquery.NewQueryService(etlUtil.mapDBs[drivers.ETop(cmenv.Env()).Key]).MessageBus()
+	etlUtil.identityQuery = identityquery.QueryServiceMessageBus(identityquery.NewQueryService(etlUtil.mapDBs[drivers.ETop(cmenv.Env()).Key]))
 	return etlUtil
 }
 

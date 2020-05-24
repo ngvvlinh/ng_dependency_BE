@@ -22,7 +22,7 @@ func NewQueryService(db *cmsql.Database) *QueryService {
 	}
 }
 
-func (q *QueryService) MessageBus() payment.QueryBus {
+func QueryServiceMessageBus(q *QueryService) payment.QueryBus {
 	b := bus.New()
 	return payment.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

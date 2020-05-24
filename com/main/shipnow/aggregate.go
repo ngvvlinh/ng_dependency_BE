@@ -55,7 +55,7 @@ func NewAggregate(eventBus capi.EventBus, db *cmsql.Database, location location.
 	}
 }
 
-func (a *Aggregate) MessageBus() shipnow.CommandBus {
+func AggregateMessageBus(a *Aggregate) shipnow.CommandBus {
 	b := bus.New()
 	return shipnow.NewAggregateHandler(a).RegisterHandlers(b)
 }

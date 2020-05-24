@@ -37,7 +37,7 @@ func NewQueryInventory(stocktakeQuery stocktaking.QueryBus, eventBus capi.EventB
 	}
 }
 
-func (q *InventoryQueryService) MessageBus() inventory.QueryBus {
+func InventoryQueryServiceMessageBus(q *InventoryQueryService) inventory.QueryBus {
 	b := bus.New()
 	return inventory.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

@@ -31,7 +31,7 @@ func NewSubscriptionQuery(db *cmsql.Database, subrPlanQuery subscriptionplan.Que
 	}
 }
 
-func (q *SubscriptionQuery) MessageBus() subscription.QueryBus {
+func SubscriptionQueryMessageBus(q *SubscriptionQuery) subscription.QueryBus {
 	b := bus.New()
 	return subscription.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

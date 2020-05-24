@@ -29,7 +29,7 @@ func New(db *cmsql.Database, vhtClient *vhtclient.Client) *AggregateService {
 	}
 }
 
-func (a *AggregateService) MessageBus() crmvht.CommandBus {
+func AggregateServiceMessageBus(a *AggregateService) crmvht.CommandBus {
 	b := bus.New()
 	return crmvht.NewAggregateHandler(a).RegisterHandlers(b)
 }

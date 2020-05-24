@@ -52,7 +52,7 @@ func NewMoneyTxAggregate(
 	}
 }
 
-func (a *MoneyTxAggregate) MessageBus() moneytx.CommandBus {
+func MoneyTxAggregateMessageBus(a *MoneyTxAggregate) moneytx.CommandBus {
 	b := bus.New()
 	return moneytx.NewAggregateHandler(a).RegisterHandlers(b)
 }

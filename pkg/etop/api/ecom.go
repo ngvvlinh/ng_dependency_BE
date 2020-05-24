@@ -11,6 +11,10 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 )
 
+type EcomService struct{}
+
+func (s *EcomService) Clone() *EcomService { res := *s; return &res }
+
 func (s *EcomService) SessionInfo(ctx context.Context, r *EcomSessionInfoEndpoint) error {
 	cookies := headers.GetCookiesFromCtx(ctx)
 	if cookies == nil || len(cookies) == 0 {

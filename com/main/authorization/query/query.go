@@ -19,7 +19,7 @@ func NewAuthorizationQuery() *AuthorizationQuery {
 	return &AuthorizationQuery{}
 }
 
-func (a *AuthorizationQuery) MessageBus() authorization.QueryBus {
+func AuthorizationQueryMessageBus(a *AuthorizationQuery) authorization.QueryBus {
 	b := bus.New()
 	return authorization.NewQueryServiceHandler(a).RegisterHandlers(b)
 }

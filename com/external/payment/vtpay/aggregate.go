@@ -35,7 +35,7 @@ func NewAggregate(db *cmsql.Database, orderQuery ordering.QueryBus, orderA order
 	}
 }
 
-func (a *Aggregate) MessageBus() vtpay.CommandBus {
+func AggregateMessageBus(a *Aggregate) vtpay.CommandBus {
 	b := bus.New()
 	return vtpay.NewAggregateHandler(a).RegisterHandlers(b)
 }

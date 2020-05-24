@@ -26,7 +26,7 @@ func NewQueryService(db *cmsql.Database, redisStore redis.Store) *QueryService {
 	}
 }
 
-func (q *QueryService) MessageBus() pricelist.QueryBus {
+func QueryServiceMessageBus(q *QueryService) pricelist.QueryBus {
 	b := bus.New()
 	return pricelist.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

@@ -87,12 +87,12 @@ func main() {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
 	}
 
-	fbPagingQuery := servicefbpaging.NewFbPageQuery(db).MessageBus()
-	fbPagingAggr := servicefbpaging.NewFbPageAggregate(db).MessageBus()
-	fbMessagingAggr := servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus).MessageBus()
-	fbMessagingQuery := servicefbmessaging.NewFbMessagingQuery(db).MessageBus()
-	fbUseringQuery := servicefbusering.NewFbUserQuery(db).MessageBus()
-	fbUseringAggr := servicefbusering.NewFbUserAggregate(db, fbPagingAggr).MessageBus()
+	fbPagingQuery := servicefbpaging.FbPageQueryMessageBus(servicefbpaging.NewFbPageQuery(db))
+	fbPagingAggr := servicefbpaging.FbExternalPageAggregateMessageBus(servicefbpaging.NewFbPageAggregate(db))
+	fbMessagingAggr := servicefbmessaging.FbExternalMessagingAggregateMessageBus(servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus))
+	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
+	fbUseringQuery := servicefbusering.FbUserQueryMessageBus(servicefbusering.NewFbUserQuery(db))
+	fbUseringAggr := servicefbusering.FbUserAggregateMessageBus(servicefbusering.NewFbUserAggregate(db, fbPagingAggr))
 	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbUseringQuery, fbUseringAggr)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
 	synchronizer := sync.New(db, fbClient, fbMessagingAggr, fbMessagingQuery, bot, cfg.TimeLimit)

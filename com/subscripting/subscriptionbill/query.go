@@ -22,7 +22,7 @@ func NewSubrBillQuery(db *cmsql.Database) *SubrBillQuery {
 	}
 }
 
-func (q *SubrBillQuery) MessageBus() subscriptionbill.QueryBus {
+func SubrBillQueryMessageBus(q *SubrBillQuery) subscriptionbill.QueryBus {
 	b := bus.New()
 	return subscriptionbill.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

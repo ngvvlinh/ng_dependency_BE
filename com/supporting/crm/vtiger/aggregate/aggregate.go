@@ -84,7 +84,7 @@ func New(db *cmsql.Database, fieldMap vtigermapping.ConfigMap, client *vtigercli
 	}
 }
 
-func (q *Aggregate) MessageBus() crmvtiger.CommandBus {
+func AggregateMessageBus(q *Aggregate) crmvtiger.CommandBus {
 	b := bus.New()
 	return crmvtiger.NewAggregateHandler(q).RegisterHandlers(b)
 }

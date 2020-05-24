@@ -59,7 +59,7 @@ func TestTransactionQueryService(t *testing.T) {
 				ReferralIDs:  []dot.ID{555555},
 			},
 		}
-		QS := NewQueryService(db).MessageBus()
+		QS := QueryServiceMessageBus(NewQueryService(db))
 		ctx := context.Background()
 		_, err := db.Insert(_tran)
 		So(err, ShouldBeNil)

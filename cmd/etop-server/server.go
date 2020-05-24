@@ -19,6 +19,7 @@ import (
 	"o.o/backend/com/external/payment/vtpay"
 	vtpaygatewayaggregate "o.o/backend/com/external/payment/vtpay/gateway/aggregate"
 	vtpaygatewayserver "o.o/backend/com/external/payment/vtpay/gateway/server"
+	serviceordering "o.o/backend/com/main/ordering"
 	"o.o/backend/com/web/ecom/webserver"
 	"o.o/backend/pkg/common/apifw/httpx"
 	cmservice "o.o/backend/pkg/common/apifw/service"
@@ -30,7 +31,6 @@ import (
 	"o.o/backend/pkg/common/projectpath"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/sqltrace"
-	api "o.o/backend/pkg/etop/api"
 	admin "o.o/backend/pkg/etop/api/admin"
 	affiliate "o.o/backend/pkg/etop/api/affiliate"
 	crm "o.o/backend/pkg/etop/api/crm"
@@ -92,8 +92,11 @@ func startEtopServer() *http.Server {
 		mux.Handle("/api/", http.StripPrefix("/api",
 			headers.ForwardHeaders(bus.Middleware(apiMux))))
 
-		api.NewEtopServer(apiMux)
-		sadmin.NewSadminServer(apiMux, ss, hooks)
+		servers = append(servers, sadmin.NewSadminServer(ss, hooks)...)
+		for _, s := range servers {
+			apiMux.Handle(s.PathPrefix(), s)
+		}
+
 		admin.NewAdminServer(apiMux)
 		shop.NewShopServer(apiMux)
 		affiliate.NewAffiliateServer(apiMux)
@@ -157,12 +160,12 @@ func startEtopServer() *http.Server {
 		}
 		{
 			// Register vtpayClient gateway
-			paymentAggr := paymentaggregate.NewAggregate(db).MessageBus()
+			paymentAggr := paymentaggregate.AggregateMessageBus(paymentaggregate.NewAggregate(db))
 			paymentLogAggr := paymentlogaggregate.NewAggregate(dbLogs)
-			vtpayAggr := vtpay.NewAggregate(db, orderQuery, orderAggr.MessageBus(), paymentAggr, vtpayClient).MessageBus()
-			vtpayGatewayAggr := vtpaygatewayaggregate.NewAggregate(orderQuery, orderAggr.MessageBus(), vtpayAggr, vtpayClient)
+			vtpayAggr := vtpay.AggregateMessageBus(vtpay.NewAggregate(db, orderQuery, serviceordering.AggregateMessageBus(orderAggr), paymentAggr, vtpayClient))
+			vtpayGatewayAggr := vtpaygatewayaggregate.NewAggregate(orderQuery, serviceordering.AggregateMessageBus(orderAggr), vtpayAggr, vtpayClient)
 
-			vtpayGatewayServer := vtpaygatewayserver.New(vtpayGatewayAggr.MessageBus(), paymentLogAggr)
+			vtpayGatewayServer := vtpaygatewayserver.New(vtpaygatewayaggregate.AggregateMessageBus(vtpayGatewayAggr), paymentLogAggr)
 
 			buildRoute := vtpaygatewayaggregate.BuildGatewayRoute
 			rt := httpx.New()
@@ -362,7 +365,7 @@ func startAhamoveWebhookServer() *http.Server {
 	{
 		rt := httpx.New()
 		rt.Use(httpx.RecoverAndLog(botWebhook, true))
-		webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), orderQuery)
+		webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, serviceordering.AggregateMessageBus(orderAggr), orderQuery)
 		webhook.Register(rt)
 
 		mux.Handle("/webhook/", rt)

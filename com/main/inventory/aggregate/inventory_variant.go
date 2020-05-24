@@ -60,7 +60,7 @@ func NewAggregateInventory(eventBus bus.Bus,
 	}
 }
 
-func (q *InventoryAggregate) MessageBus() inventory.CommandBus {
+func InventoryAggregateMessageBus(q *InventoryAggregate) inventory.CommandBus {
 	b := bus.New()
 	return inventory.NewAggregateHandler(q).RegisterHandlers(b)
 }

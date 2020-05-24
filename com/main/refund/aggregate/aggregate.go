@@ -41,7 +41,7 @@ func NewRefundAggregate(
 	}
 }
 
-func (a *RefundAggregate) MessageBus() refund.CommandBus {
+func RefundAggregateMessageBus(a *RefundAggregate) refund.CommandBus {
 	b := bus.New()
 	return refund.NewAggregateHandler(a).RegisterHandlers(b)
 }

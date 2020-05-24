@@ -18,24 +18,24 @@ import (
 )
 
 var ll = l.New()
-var _ location.QueryService = &Impl{}
+var _ location.QueryService = &Query{}
 
-type Impl struct {
+type Query struct {
 	customRegionStore sqlstore.CustomRegionFactory
 }
 
-func New(db *cmsql.Database) *Impl {
-	return &Impl{
+func New(db *cmsql.Database) *Query {
+	return &Query{
 		customRegionStore: sqlstore.NewCustomRegionStore(db),
 	}
 }
 
-func (im *Impl) MessageBus() location.QueryBus {
+func QueryMessageBus(im *Query) location.QueryBus {
 	b := bus.New()
 	return location.NewQueryServiceHandler(im).RegisterHandlers(b)
 }
 
-func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocationsQueryArgs) (result *location.GetAllLocationsQueryResult, err error) {
+func (im *Query) GetAllLocations(ctx context.Context, query *location.GetAllLocationsQueryArgs) (result *location.GetAllLocationsQueryResult, err error) {
 	result = &location.GetAllLocationsQueryResult{}
 	var execFunc func() error
 
@@ -78,7 +78,7 @@ func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocat
 	return result, execFunc()
 }
 
-func (im *Impl) GetLocation(ctx context.Context, query *location.GetLocationQueryArgs) (result *location.LocationQueryResult, _err error) {
+func (im *Query) GetLocation(ctx context.Context, query *location.GetLocationQueryArgs) (result *location.LocationQueryResult, _err error) {
 	switch query.LocationCodeType {
 	case location.LocCodeTypeVTPost:
 		return nil, cm.Error(cm.Unimplemented, "Address type does not valid", nil)
@@ -142,7 +142,7 @@ func (im *Impl) GetLocation(ctx context.Context, query *location.GetLocationQuer
 	return result, nil
 }
 
-func (im *Impl) FindLocation(ctx context.Context, query *location.FindLocationQueryArgs) (*location.LocationQueryResult, error) {
+func (im *Query) FindLocation(ctx context.Context, query *location.FindLocationQueryArgs) (*location.LocationQueryResult, error) {
 	if query.Province == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin tỉnh")
 	}
@@ -158,7 +158,7 @@ func (im *Impl) FindLocation(ctx context.Context, query *location.FindLocationQu
 	return result, err
 }
 
-func (im *Impl) FindOrGetLocation(ctx context.Context, query *location.FindOrGetLocationQueryArgs) (*location.LocationQueryResult, error) {
+func (im *Query) FindOrGetLocation(ctx context.Context, query *location.FindOrGetLocationQueryArgs) (*location.LocationQueryResult, error) {
 	switch {
 	case query.ProvinceCode != "" || query.DistrictCode != "" || query.WardCode != "":
 		locationQuery := &location.GetLocationQueryArgs{
@@ -181,11 +181,11 @@ func (im *Impl) FindOrGetLocation(ctx context.Context, query *location.FindOrGet
 	}
 }
 
-func (im *Impl) GetCustomRegion(ctx context.Context, id dot.ID) (*location.CustomRegion, error) {
+func (im *Query) GetCustomRegion(ctx context.Context, id dot.ID) (*location.CustomRegion, error) {
 	return im.customRegionStore(ctx).ID(id).GetCustomRegion()
 }
 
-func (im *Impl) GetCustomRegionByCode(ctx context.Context, provinceCode string, districtCode string) (*location.CustomRegion, error) {
+func (im *Query) GetCustomRegionByCode(ctx context.Context, provinceCode string, districtCode string) (*location.CustomRegion, error) {
 	if provinceCode == "" && districtCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing required params")
 	}
@@ -196,6 +196,6 @@ func (im *Impl) GetCustomRegionByCode(ctx context.Context, provinceCode string, 
 	return im.customRegionStore(ctx).ProvinceCode(provinceCode).GetCustomRegion()
 }
 
-func (im *Impl) ListCustomRegions(ctx context.Context, _ *meta.Empty) ([]*location.CustomRegion, error) {
+func (im *Query) ListCustomRegions(ctx context.Context, _ *meta.Empty) ([]*location.CustomRegion, error) {
 	return im.customRegionStore(ctx).ListCustomRegions()
 }

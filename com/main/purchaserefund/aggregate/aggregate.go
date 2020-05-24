@@ -43,7 +43,7 @@ func NewPurchaseRefundAggregate(
 	}
 }
 
-func (a *PurchaseRefundAggregate) MessageBus() purchaserefund.CommandBus {
+func PurchaseRefundAggregateMessageBus(a *PurchaseRefundAggregate) purchaserefund.CommandBus {
 	b := bus.New()
 	return purchaserefund.NewAggregateHandler(a).RegisterHandlers(b)
 }

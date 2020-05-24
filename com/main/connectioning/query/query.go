@@ -29,7 +29,7 @@ func NewConnectionQuery(db *cmsql.Database) *ConnectionQuery {
 	}
 }
 
-func (q *ConnectionQuery) MessageBus() connectioning.QueryBus {
+func ConnectionQueryMessageBus(q *ConnectionQuery) connectioning.QueryBus {
 	b := bus.New()
 	return connectioning.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

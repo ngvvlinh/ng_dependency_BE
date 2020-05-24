@@ -101,12 +101,12 @@ func main() {
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
 
-	catalogQuery := catalogquery.New(db).MessageBus()
-	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
-	stocktakeQuery := stocktakequery.NewQueryStocktake(db).MessageBus()
-	inventoryquery := inventoryquery.NewQueryInventory(stocktakeQuery, bus.New(), db).MessageBus()
-	locationBus := servicelocation.New(db).MessageBus()
-	addressQuery := customerquery.NewAddressQuery(db).MessageBus()
+	catalogQuery := catalogquery.QueryServiceMessageBus(catalogquery.New(db))
+	customerQuery := customerquery.CustomerQueryMessageBus(customerquery.NewCustomerQuery(db))
+	stocktakeQuery := stocktakequery.StocktakeQueryMessageBus(stocktakequery.NewQueryStocktake(db))
+	inventoryQuery := inventoryquery.InventoryQueryServiceMessageBus(inventoryquery.NewQueryInventory(stocktakeQuery, bus.New(), db))
+	locationBus := servicelocation.QueryMessageBus(servicelocation.New(db))
+	addressQuery := customerquery.AddressQueryMessageBus(customerquery.NewAddressQuery(db))
 
 	var intctlHandler *intctl.Handler
 	var webhookSender *webhooksender.WebhookSender
@@ -134,7 +134,7 @@ func main() {
 			ll.Fatal("Error loading webhooks", l.Error(err))
 		}
 
-		h := handler.New(db, webhookSender, bot, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryquery, addressQuery, locationBus)
+		h := handler.New(db, webhookSender, bot, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus)
 		h.RegisterTo(intctlHandler)
 		h.ConsumeAndHandleAllTopics(ctx)
 		waiters = append(waiters, h)

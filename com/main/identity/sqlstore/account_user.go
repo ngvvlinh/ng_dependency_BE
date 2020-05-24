@@ -13,7 +13,7 @@ import (
 
 type AccountUserStoreFactory func(context.Context) *AccountUserStore
 
-func NewAccoutnUserStore(db *cmsql.Database) AccountUserStoreFactory {
+func NewAccountUserStore(db *cmsql.Database) AccountUserStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AccountUserStore {
 		return &AccountUserStore{

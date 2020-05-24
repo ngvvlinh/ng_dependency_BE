@@ -32,7 +32,7 @@ func NewSubscriptionAggregate(db *cmsql.Database) *SubscriptionAggregate {
 	}
 }
 
-func (a *SubscriptionAggregate) MessageBus() subscription.CommandBus {
+func SubscriptionAggregateMessageBus(a *SubscriptionAggregate) subscription.CommandBus {
 	b := bus.New()
 	return subscription.NewAggregateHandler(a).RegisterHandlers(b)
 }

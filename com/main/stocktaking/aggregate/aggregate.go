@@ -33,7 +33,7 @@ func NewAggregateStocktake(db *cmsql.Database, eventBus capi.EventBus) *Stocktak
 	}
 }
 
-func (q *StocktakeAggregate) MessageBus() stocktake.CommandBus {
+func StocktakeAggregateMessageBus(q *StocktakeAggregate) stocktake.CommandBus {
 	b := bus.New()
 	return stocktake.NewAggregateHandler(q).RegisterHandlers(b)
 }

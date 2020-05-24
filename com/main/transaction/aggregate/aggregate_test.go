@@ -57,7 +57,7 @@ func TestTransactionAggregate(t *testing.T) {
 			},
 			Note: "note",
 		}
-		Aggr := NewAggregate(db).MessageBus()
+		Aggr := AggregateMessageBus(NewAggregate(db))
 		ctx := context.Background()
 		_, err := db.Insert(_tran)
 		So(err, ShouldBeNil)

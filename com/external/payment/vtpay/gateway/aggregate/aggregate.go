@@ -46,7 +46,7 @@ func NewAggregate(orderQuery ordering.QueryBus, orderAggregate ordering.CommandB
 	}
 }
 
-func (a *Aggregate) MessageBus() vtpaygateway.CommandBus {
+func AggregateMessageBus(a *Aggregate) vtpaygateway.CommandBus {
 	b := bus.New()
 	return vtpaygateway.NewAggregateHandler(a).RegisterHandlers(b)
 }

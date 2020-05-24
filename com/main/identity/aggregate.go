@@ -34,12 +34,12 @@ func NewAggregate(db *cmsql.Database, carrierManager carrier.Manager) *Aggregate
 		xAccountAhamove:       sqlstore.NewXAccountAhamoveStore(db),
 		userStore:             sqlstore.NewUserStore(db),
 		accountStore:          sqlstore.NewAccountStore(db),
-		accountUserStore:      sqlstore.NewAccoutnUserStore(db),
+		accountUserStore:      sqlstore.NewAccountUserStore(db),
 		shipnowCarrierManager: carrierManager,
 	}
 }
 
-func (a *Aggregate) MessageBus() identity.CommandBus {
+func AggregateMessageBus(a *Aggregate) identity.CommandBus {
 	b := bus.New()
 	return identity.NewAggregateHandler(a).RegisterHandlers(b)
 }

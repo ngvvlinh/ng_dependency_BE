@@ -13,6 +13,7 @@ import (
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type UserService struct {
@@ -36,7 +37,7 @@ func (s *UserService) CreateUser(ctx context.Context, r *sadmin.SAdminCreateUser
 	r2 := &api.RegisterEndpoint{
 		CreateUserRequest: r.Info,
 	}
-	if err := bus.Dispatch(ctx, r2); err != nil {
+	if err := api.UserServiceImpl.Register(ctx, r2); err != nil {
 		return r2.Result, err
 	}
 
@@ -52,7 +53,7 @@ func (s *UserService) CreateUser(ctx context.Context, r *sadmin.SAdminCreateUser
 				Permissions: r.Permission.GetPermissions(),
 			},
 		}
-		if err := bus.Dispatch(ctx, roleCmd); err != nil {
+		if err := sqlstore.UpdateRole(ctx, roleCmd); err != nil {
 			return nil, err
 		}
 	}

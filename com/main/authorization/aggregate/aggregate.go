@@ -21,7 +21,7 @@ func NewAuthorizationAggregate() *AuthorizationAggregate {
 	return &AuthorizationAggregate{}
 }
 
-func (a *AuthorizationAggregate) MessageBus() authorization.CommandBus {
+func AuthorizationAggregateMessageBus(a *AuthorizationAggregate) authorization.CommandBus {
 	b := bus.New()
 	return authorization.NewAggregateHandler(a).RegisterHandlers(b)
 }

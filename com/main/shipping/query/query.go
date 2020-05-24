@@ -1,4 +1,4 @@
-package shipping
+package query
 
 import (
 	"context"
@@ -24,7 +24,7 @@ func NewQueryService(db *cmsql.Database) *QueryService {
 	}
 }
 
-func (q *QueryService) MessageBus() shipping.QueryBus {
+func QueryServiceMessageBus(q *QueryService) shipping.QueryBus {
 	b := bus.New()
 	return shipping.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

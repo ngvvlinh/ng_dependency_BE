@@ -75,7 +75,7 @@ func main() {
 		defer bot.SendMessage("👻 shipping-sync-service stopped 👻\n–––")
 	}
 
-	locationBus := servicelocation.New(nil).MessageBus()
+	locationBus := servicelocation.QueryMessageBus(servicelocation.New(nil))
 	ghnCarrier := ghn.New(cfg.GHN, locationBus)
 	ghnSynchronizer := ghnsync.New(ghnCarrier)
 

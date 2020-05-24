@@ -23,7 +23,7 @@ import (
 
 var (
 	shippingCtrl     *shipping_provider.ProviderManager
-	locationBus      = servicelocation.New(nil).MessageBus()
+	locationBus      = servicelocation.QueryMessageBus(servicelocation.New(nil))
 	locationList     = buildLocationList()
 	orderStore       ordersqlstore.OrderStoreFactory
 	fulfillmentStore shipsqlstore.FulfillmentStoreFactory

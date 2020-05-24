@@ -21,7 +21,7 @@ var (
 	deviceStore       *notisqlstore.DeviceStore
 	notificationStore *notisqlstore.NotificationStore
 	eventBus          capi.EventBus
-	locationBus       = servicelocation.New(nil).MessageBus()
+	locationBus       = servicelocation.QueryMessageBus(servicelocation.New(nil))
 )
 
 type (

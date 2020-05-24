@@ -76,7 +76,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 			stokenCmd.Context.Claim = q.Context.Claim
 			stokenCmd.Context.Admin = q.Context.Admin
 			stokenCmd.Context.User = &identitymodelx.SignedInUser{user} // TODO: remove this hack
-			if err := bus.Dispatch(ctx, stokenCmd); err != nil {
+			if err := etop.UserServiceImpl.SendSTokenEmail(ctx, stokenCmd); err != nil {
 				return err
 			}
 

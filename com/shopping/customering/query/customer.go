@@ -34,7 +34,7 @@ func NewCustomerQuery(db *cmsql.Database) *CustomerQuery {
 	}
 }
 
-func (q *CustomerQuery) MessageBus() customering.QueryBus {
+func CustomerQueryMessageBus(q *CustomerQuery) customering.QueryBus {
 	b := bus.New()
 	return customering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

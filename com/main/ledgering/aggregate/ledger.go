@@ -33,7 +33,7 @@ func NewLedgerAggregate(db *cmsql.Database, receiptQuery *receipting.QueryBus) *
 	}
 }
 
-func (a *LedgerAggregate) MessageBus() ledgering.CommandBus {
+func LedgerAggregateMessageBus(a *LedgerAggregate) ledgering.CommandBus {
 	b := bus.New()
 	return ledgering.NewAggregateHandler(a).RegisterHandlers(b)
 }

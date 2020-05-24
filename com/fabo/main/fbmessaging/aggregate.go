@@ -41,7 +41,7 @@ func NewFbExternalMessagingAggregate(db *cmsql.Database, eventBus capi.EventBus)
 	}
 }
 
-func (a *FbExternalMessagingAggregate) MessageBus() fbmessaging.CommandBus {
+func FbExternalMessagingAggregateMessageBus(a *FbExternalMessagingAggregate) fbmessaging.CommandBus {
 	b := bus.New()
 	return fbmessaging.NewAggregateHandler(a).RegisterHandlers(b)
 }

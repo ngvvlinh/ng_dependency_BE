@@ -31,7 +31,7 @@ func NewCarrierAggregate(eventBus capi.EventBus, db *cmsql.Database) *CarrierAgg
 	}
 }
 
-func (a *CarrierAggregate) MessageBus() carrying.CommandBus {
+func CarrierAggregateMessageBus(a *CarrierAggregate) carrying.CommandBus {
 	b := bus.New()
 	return carrying.NewAggregateHandler(a).RegisterHandlers(b)
 }

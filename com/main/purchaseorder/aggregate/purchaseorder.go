@@ -48,7 +48,7 @@ func NewPurchaseOrderAggregate(
 	}
 }
 
-func (a *PurchaseOrderAggregate) MessageBus() purchaseorder.CommandBus {
+func PurchaseOrderAggregateMessageBus(a *PurchaseOrderAggregate) purchaseorder.CommandBus {
 	b := bus.New()
 	return purchaseorder.NewAggregateHandler(a).RegisterHandlers(b)
 }

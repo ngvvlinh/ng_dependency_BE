@@ -17,7 +17,7 @@ func TestQueryService(t *testing.T) {
 		panic(err)
 	}
 	shipnowQuery := NewQueryService(db)
-	shipnowQueryBus := shipnowQuery.MessageBus()
+	shipnowQueryBus := QueryServiceMessageBus(shipnowQuery)
 	ctx := context.Background()
 
 	query := &shipnow.GetShipnowFulfillmentQuery{Id: 100}

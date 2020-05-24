@@ -111,13 +111,13 @@ func main() {
 	sqlstore.Init(db)
 	sqlstore.AddEventBus(eventBus)
 
-	_ = serviceidentity.NewQueryService(db).MessageBus()
-	fbPageAggr := servicefbpage.NewFbPageAggregate(db).MessageBus()
-	fbPageQuery := servicefbpage.NewFbPageQuery(db).MessageBus()
-	fbUserAggr := servicefbuser.NewFbUserAggregate(db, fbPageAggr).MessageBus()
-	fbUserQuery := servicefbuser.NewFbUserQuery(db).MessageBus()
-	fbMessagingAggr := servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus).MessageBus()
-	fbMessagingQuery := servicefbmessaging.NewFbMessagingQuery(db).MessageBus()
+	_ = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
+	fbPageAggr := servicefbpage.FbExternalPageAggregateMessageBus(servicefbpage.NewFbPageAggregate(db))
+	fbPageQuery := servicefbpage.FbPageQueryMessageBus(servicefbpage.NewFbPageQuery(db))
+	fbUserAggr := servicefbuser.FbUserAggregateMessageBus(servicefbuser.NewFbUserAggregate(db, fbPageAggr))
+	fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db))
+	fbMessagingAggr := servicefbmessaging.FbExternalMessagingAggregateMessageBus(servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus))
+	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
 
 	fbClient := fbclient.New(cfg.FacebookApp, bot)
 	if err := fbClient.Ping(); err != nil {

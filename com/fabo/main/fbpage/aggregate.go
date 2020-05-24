@@ -32,7 +32,7 @@ func NewFbPageAggregate(db *cmsql.Database) *FbExternalPageAggregate {
 	}
 }
 
-func (a *FbExternalPageAggregate) MessageBus() fbpaging.CommandBus {
+func FbExternalPageAggregateMessageBus(a *FbExternalPageAggregate) fbpaging.CommandBus {
 	b := bus.New()
 	return fbpaging.NewAggregateHandler(a).RegisterHandlers(b)
 }

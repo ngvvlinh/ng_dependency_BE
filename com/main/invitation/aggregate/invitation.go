@@ -60,7 +60,7 @@ func NewInvitationAggregate(
 	}
 }
 
-func (a *InvitationAggregate) MessageBus() invitation.CommandBus {
+func InvitationAggregateMessageBus(a *InvitationAggregate) invitation.CommandBus {
 	b := bus.New()
 	return invitation.NewAggregateHandler(a).RegisterHandlers(b)
 }

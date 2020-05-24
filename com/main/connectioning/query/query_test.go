@@ -79,7 +79,7 @@ func init() {
 	wl.Init(cmenv.EnvDev)
 	ctx = wl.WrapContext(bus.Ctx(), drivers.ITopXID)
 	ctx = bus.NewRootContext(ctx)
-	QS = NewConnectionQuery(db).MessageBus()
+	QS = ConnectionQueryMessageBus(NewConnectionQuery(db))
 
 	db.Insert(_conn, _shopConn)
 }

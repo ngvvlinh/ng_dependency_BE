@@ -76,10 +76,10 @@ func main() {
 	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	vhtClient := vhtclient.NewClient(cfg.Vht.Username, cfg.Vht.Password)
 
-	vhtAggregate := vhtaggregate.New(db, vhtClient).MessageBus()
-	vhtQuery := vhtquery.New(db).MessageBus()
-	vtigerAggregate := vtigeraggregate.New(db, configMap, vtigerClient).MessageBus()
-	vtigerQuery := vtigerquery.New(db, configMap, vtigerClient).MessageBus()
+	vhtAggregate := vhtaggregate.AggregateServiceMessageBus(vhtaggregate.New(db, vhtClient))
+	vhtQuery := vhtquery.QueryServiceMessageBus(vhtquery.New(db))
+	vtigerAggregate := vtigeraggregate.AggregateMessageBus(vtigeraggregate.New(db, configMap, vtigerClient))
+	vtigerQuery := vtigerquery.QueryServiceMessageBus(vtigerquery.New(db, configMap, vtigerClient))
 	go func() {
 		SyncCallHistoryVht(vhtAggregate, vhtQuery)
 	}()

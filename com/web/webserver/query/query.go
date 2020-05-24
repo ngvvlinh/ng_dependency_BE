@@ -38,7 +38,7 @@ func New(eventBus capi.EventBus, db *cmsql.Database, cataglogQ catalog.QueryBus)
 	}
 }
 
-func (q *WebserverQueryService) MessageBus() webserver.QueryBus {
+func WebserverQueryServiceMessageBus(q *WebserverQueryService) webserver.QueryBus {
 	b := bus.New()
 	return webserver.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

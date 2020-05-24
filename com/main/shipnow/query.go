@@ -21,7 +21,7 @@ func NewQueryService(db *cmsql.Database) *QueryService {
 	}
 }
 
-func (q *QueryService) MessageBus() shipnow.QueryBus {
+func QueryServiceMessageBus(q *QueryService) shipnow.QueryBus {
 	b := bus.New()
 	return shipnow.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

@@ -20,7 +20,7 @@ const redisTime = 2 * 60
 
 var _ summary.QueryService = &DashboardQuery{}
 
-func (q *DashboardQuery) MessageBus() summary.QueryBus {
+func DashboardQueryMessageBus(q *DashboardQuery) summary.QueryBus {
 	b := bus.New()
 	return summary.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

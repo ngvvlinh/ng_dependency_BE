@@ -80,7 +80,7 @@ func New(db *cmsql.Database, fieldMap mapping.ConfigMap, client *client.VtigerCl
 	}
 }
 
-func (q *QueryService) MessageBus() vtiger.QueryBus {
+func QueryServiceMessageBus(q *QueryService) vtiger.QueryBus {
 	b := bus.New()
 	return vtiger.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

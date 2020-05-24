@@ -277,8 +277,14 @@
       "type": "object",
       "properties": {
         "external_page_id": {
-          "description": "New\n",
-          "$ref": "#/definitions/kfStrings"
+          "allOf": [
+            {
+              "description": "New\n\nFilter by string value\n"
+            },
+            {
+              "$ref": "#/definitions/kfStrings"
+            }
+          ]
         },
         "external_user_id": {
           "type": "string"
@@ -287,8 +293,14 @@
           "type": "string"
         },
         "fb_page_id": {
-          "description": "Old\n",
-          "$ref": "#/definitions/kfIDs"
+          "allOf": [
+            {
+              "description": "Old\n\nFilter by id value\n"
+            },
+            {
+              "$ref": "#/definitions/kfIDs"
+            }
+          ]
         },
         "is_read": {
           "type": "boolean"

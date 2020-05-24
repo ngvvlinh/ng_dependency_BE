@@ -65,7 +65,7 @@ func NewReceiptAggregate(
 	}
 }
 
-func (a *ReceiptAggregate) MessageBus() receipting.CommandBus {
+func ReceiptAggregateMessageBus(a *ReceiptAggregate) receipting.CommandBus {
 	b := bus.New()
 	return receipting.NewAggregateHandler(a).RegisterHandlers(b)
 }

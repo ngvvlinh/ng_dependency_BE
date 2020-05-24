@@ -44,7 +44,7 @@ func NewPurchaseOrderQuery(
 	}
 }
 
-func (q *PurchaseOrderQuery) MessageBus() purchaseorder.QueryBus {
+func PurchaseOrderQueryMessageBus(q *PurchaseOrderQuery) purchaseorder.QueryBus {
 	b := bus.New()
 	return purchaseorder.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

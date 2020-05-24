@@ -194,6 +194,8 @@ var (
 
 	ss    *session.Session
 	hooks httprpc.HooksBuilder
+
+	servers []httprpc.Server
 )
 
 func main() {
@@ -299,9 +301,9 @@ func main() {
 		sqlstore.InitDBNotifier(dbNotifier)
 	}
 
-	locationBus := servicelocation.New(db).MessageBus()
-	locationAggr := servicelocation.NewAggregate(db).MessageBus()
-	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
+	locationBus := servicelocation.QueryMessageBus(servicelocation.New(db))
+	locationAggr := servicelocation.AggregateMessageBus(servicelocation.NewAggregate(db))
+	identityQuery = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 	if cfg.GHN.AccountDefault.Token != "" {
 		ghnCarrier = ghn.New(cfg.GHN, locationBus)
 		if err := ghnCarrier.InitAllClients(ctx); err != nil {
@@ -368,73 +370,73 @@ func main() {
 	})
 
 	// create aggregate, query service
-	summaryQuery := summaryquery.NewDashboardQuery(db, redisStore, locationBus).MessageBus()
+	summaryQuery := summaryquery.DashboardQueryMessageBus(summaryquery.NewDashboardQuery(db, redisStore, locationBus))
 
-	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
+	identityQuery = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 	identityPM := identitypm.New(identityQuery, &invitationQuery)
 	identityPM.RegisterEventHandlers(eventBus)
-	catalogQuery := catalogquery.New(db).MessageBus()
-	catalogAggr := catalogaggregate.New(eventBus, db).MessageBus()
+	catalogQuery := catalogquery.QueryServiceMessageBus(catalogquery.New(db))
+	catalogAggr := catalogaggregate.AggregateMessageBus(catalogaggregate.New(eventBus, db))
 	catalogPm := catalogpm.New(eventBus, catalogQuery, catalogAggr)
 	catalogPm.RegisterEventHandlers(eventBus)
 
-	addressQuery := address.NewQueryService(db).MessageBus()
-	shipnowQuery = serviceshipnow.NewQueryService(db).MessageBus()
-	orderQuery = serviceordering.NewQueryService(db).MessageBus()
+	addressQuery := address.QueryServiceMessageBus(address.NewQueryService(db))
+	shipnowQuery = serviceshipnow.QueryServiceMessageBus(serviceshipnow.NewQueryService(db))
+	orderQuery = serviceordering.QueryServiceMessageBus(serviceordering.NewQueryService(db))
 
 	orderAggr = serviceordering.NewAggregate(eventBus, db)
 	shipnowCarrierManager := shipnowcarrier.NewManager(db, locationBus, &shipnowcarrier.Carrier{
 		ShipnowCarrier:        ahamoveCarrier,
 		ShipnowCarrierAccount: ahamoveCarrierAccount,
 	}, shipnowQuery)
-	identityAggr := serviceidentity.NewAggregate(db, shipnowCarrierManager).MessageBus()
-	shipnowAggr = serviceshipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager).MessageBus()
+	identityAggr := serviceidentity.AggregateMessageBus(serviceidentity.NewAggregate(db, shipnowCarrierManager))
+	shipnowAggr = serviceshipnow.AggregateMessageBus(serviceshipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager))
 
-	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
+	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, serviceordering.AggregateMessageBus(orderAggr), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 
-	stocktakeAggr := stocktakeaggregate.NewAggregateStocktake(db, eventBus).MessageBus()
-	stocktakeQuery := stocktakequery.NewQueryStocktake(db).MessageBus()
-	customerAggr := customeraggregate.NewCustomerAggregate(eventBus, db).MessageBus()
-	supplierAggr := supplieraggregate.NewSupplierAggregate(eventBus, db).MessageBus()
-	carrierAggr := carrieraggregate.NewCarrierAggregate(eventBus, db).MessageBus()
-	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
-	traderAgg := traderAgg.NewTraderAgg(db).MessageBus()
+	stocktakeAggr := stocktakeaggregate.StocktakeAggregateMessageBus(stocktakeaggregate.NewAggregateStocktake(db, eventBus))
+	stocktakeQuery := stocktakequery.StocktakeQueryMessageBus(stocktakequery.NewQueryStocktake(db))
+	customerAggr := customeraggregate.CustomerAggregateMessageBus(customeraggregate.NewCustomerAggregate(eventBus, db))
+	supplierAggr := supplieraggregate.SupplierAggregateMessageBus(supplieraggregate.NewSupplierAggregate(eventBus, db))
+	carrierAggr := carrieraggregate.CarrierAggregateMessageBus(carrieraggregate.NewCarrierAggregate(eventBus, db))
+	traderAddressAggr := customeraggregate.AddressAggregateMessageBus(customeraggregate.NewAddressAggregate(db))
+	traderAgg := traderAgg.TraderAggMessageBus(traderAgg.NewTraderAgg(db))
 	traderPM := traderpm.New(eventBus, traderAgg)
 	traderPM.RegisterEventHandlers(eventBus)
-	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
-	supplierQuery := supplierquery.NewSupplierQuery(db).MessageBus()
-	carrierQuery := carrierquery.NewCarrierQuery(db).MessageBus()
-	traderQuery := traderquery.NewTraderQuery(db, customerQuery, carrierQuery, supplierQuery).MessageBus()
-	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
-	affiliateCmd := serviceaffiliate.NewAggregate(dbaff, identityQuery, catalogQuery, orderQuery).MessageBus()
-	affilateQuery := serviceaffiliate.NewQuery(dbaff).MessageBus()
+	customerQuery := customerquery.CustomerQueryMessageBus(customerquery.NewCustomerQuery(db))
+	supplierQuery := supplierquery.SupplierQueryMessageBus(supplierquery.NewSupplierQuery(db))
+	carrierQuery := carrierquery.CarrierQueryMessageBus(carrierquery.NewCarrierQuery(db))
+	traderQuery := traderquery.TraderQueryMessageBus(traderquery.NewTraderQuery(db, customerQuery, carrierQuery, supplierQuery))
+	traderAddressQuery := customerquery.AddressQueryMessageBus(customerquery.NewAddressQuery(db))
+	affiliateCmd := serviceaffiliate.AggregateMessageBus(serviceaffiliate.NewAggregate(dbaff, identityQuery, catalogQuery, orderQuery))
+	affilateQuery := serviceaffiliate.QueryServiceMessageBus(serviceaffiliate.NewQuery(dbaff))
 	affiliatePM := affiliatepm.New(affiliateCmd)
 	affiliatePM.RegisterEventHandlers(eventBus)
 
-	ledgerAggr := ledgeraggregate.NewLedgerAggregate(db, &receiptQuery).MessageBus()
-	ledgerQuery := ledgerquery.NewLedgerQuery(db).MessageBus()
+	ledgerAggr := ledgeraggregate.LedgerAggregateMessageBus(ledgeraggregate.NewLedgerAggregate(db, &receiptQuery))
+	ledgerQuery := ledgerquery.LedgerQueryMessageBus(ledgerquery.NewLedgerQuery(db))
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
 
-	inventoryQuery := inventoryquery.NewQueryInventory(stocktakeQuery, eventBus, db).MessageBus()
-	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
-	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery).MessageBus()
+	inventoryQuery := inventoryquery.InventoryQueryServiceMessageBus(inventoryquery.NewQueryInventory(stocktakeQuery, eventBus, db))
+	purchaseOrderAggr := purchaseorderaggregate.PurchaseOrderAggregateMessageBus(purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery))
+	purchaseOrderQuery := purchaseorderquery.PurchaseOrderQueryMessageBus(purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery))
 
 	purchaseOrderPM := purchaseorderpm.New(&purchaseOrderQuery, &receiptQuery)
 	purchaseOrderPM.RegisterEventHandlers(eventBus)
-	refundAggr := refundaggregate.NewRefundAggregate(db, eventBus).MessageBus()
-	refundQuery := refundquery.NewQueryRefund(eventBus, db).MessageBus()
+	refundAggr := refundaggregate.RefundAggregateMessageBus(refundaggregate.NewRefundAggregate(db, eventBus))
+	refundQuery := refundquery.RefundQueryServiceMessageBus(refundquery.NewQueryRefund(eventBus, db))
 
-	purchaseRefundAggr := purchaserefundaggregate.NewPurchaseRefundAggregate(db, eventBus, purchaseOrderQuery).MessageBus()
-	purchaseRefundQuery := purchaserefundquery.NewQueryPurchasePurchaseRefund(eventBus, db).MessageBus()
+	purchaseRefundAggr := purchaserefundaggregate.PurchaseRefundAggregateMessageBus(purchaserefundaggregate.NewPurchaseRefundAggregate(db, eventBus, purchaseOrderQuery))
+	purchaseRefundQuery := purchaserefundquery.PurchaseRefundQueryServiceMessageBus(purchaserefundquery.NewQueryPurchasePurchaseRefund(eventBus, db))
 
-	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery, purchaseOrderQuery, stocktakeQuery, refundQuery, purchaseRefundQuery).MessageBus()
+	inventoryAggr := inventoryaggregate.InventoryAggregateMessageBus(inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery, purchaseOrderQuery, stocktakeQuery, refundQuery, purchaseRefundQuery))
 	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryAggr)
 	inventoryPm.RegisterEventHandlers(eventBus)
 
-	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery, carrierQuery, supplierQuery, purchaseOrderQuery).MessageBus()
-	receiptQuery = receiptquery.NewReceiptQuery(db).MessageBus()
+	receiptAggr := receiptaggregate.ReceiptAggregateMessageBus(receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery, carrierQuery, supplierQuery, purchaseOrderQuery))
+	receiptQuery = receiptquery.ReceiptQueryMessageBus(receiptquery.NewReceiptQuery(db))
 	receiptPM := receiptpm.New(eventBus, receiptQuery, receiptAggr, ledgerQuery, ledgerAggr, identityQuery)
 	receiptPM.RegisterEventHandlers(eventBus)
 
@@ -444,51 +446,51 @@ func main() {
 		vtpayClient = vtpayclient.New(cfg.VTPay)
 		vtpayProvider = vtpay.New(cfg.VTPay)
 	}
-	paymentAggr := paymentaggregate.NewAggregate(db).MessageBus()
+	paymentAggr := paymentaggregate.AggregateMessageBus(paymentaggregate.NewAggregate(db))
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
-	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), affiliateCmd, receiptQuery, inventoryAggr, orderQuery, customerQuery)
+	orderPM := serviceorderingpm.New(serviceordering.AggregateMessageBus(orderAggr), affiliateCmd, receiptQuery, inventoryAggr, orderQuery, customerQuery)
 	orderPM.RegisterEventHandlers(eventBus)
 	refundPm := refundpm.New(&refundQuery, &receiptQuery, &refundAggr)
 	refundPm.RegisterEventHandlers(eventBus)
-	invitationAggr := invitationaggregate.NewInvitationAggregate(db, cfg.Invitation.Secret, customerQuery, identityQuery, eventBus, cfg).MessageBus()
-	invitationQuery = invitationquery.NewInvitationQuery(db).MessageBus()
+	invitationAggr := invitationaggregate.InvitationAggregateMessageBus(invitationaggregate.NewInvitationAggregate(db, cfg.Invitation.Secret, customerQuery, identityQuery, eventBus, cfg))
+	invitationQuery = invitationquery.InvitationQueryMessageBus(invitationquery.NewInvitationQuery(db))
 	invitationPM := invitationpm.New(eventBus, invitationQuery, invitationAggr)
 	invitationPM.RegisterEventHandlers(eventBus)
 	purchaseRefundPM := purchaserefundpm.New(&purchaseRefundAggr, &purchaseRefundQuery, &receiptQuery)
 	purchaseRefundPM.RegisterEventHandlers(eventBus)
-	authorizationQuery := authorizationquery.NewAuthorizationQuery().MessageBus()
-	authorizationAggregate := authorizationaggregate.NewAuthorizationAggregate().MessageBus()
+	authorizationQuery := authorizationquery.AuthorizationQueryMessageBus(authorizationquery.NewAuthorizationQuery())
+	authorizationAggregate := authorizationaggregate.AuthorizationAggregateMessageBus(authorizationaggregate.NewAuthorizationAggregate())
 
 	authorizeauth.SetMode(cfg.FlagEnablePermission)
 
-	smsArg := smsAgg.NewSmsLogAggregate(eventBus, dbLogs).MessageBus()
-	connectionQuery := connectionquery.NewConnectionQuery(db).MessageBus()
-	connectionAggregate := connectionaggregate.NewConnectionAggregate(db, eventBus).MessageBus()
-	shipmentServiceAggr := shipmentservice.NewAggregate(db, redisStore).MessageBus()
-	shipmentServiceQuery := shipmentservice.NewQueryService(db, redisStore).MessageBus()
-	shipmentPriceListAggr := pricelist.NewAggregate(db, eventBus).MessageBus()
-	shipmentPriceListQuery := pricelist.NewQueryService(db, redisStore).MessageBus()
-	shipmentPriceAggr := shipmentprice.NewAggregate(db, redisStore).MessageBus()
-	shipmentPriceQuery := shipmentprice.NewQueryService(db, redisStore, locationBus, shipmentPriceListQuery).MessageBus()
+	smsArg := smsAgg.SmsLogAggregateMessageBus(smsAgg.NewSmsLogAggregate(eventBus, dbLogs))
+	connectionQuery := connectionquery.ConnectionQueryMessageBus(connectionquery.NewConnectionQuery(db))
+	connectionAggregate := connectionaggregate.ConnectionAggregateMessageBus(connectionaggregate.NewConnectionAggregate(db, eventBus))
+	shipmentServiceAggr := shipmentservice.AggregateMessageBus(shipmentservice.NewAggregate(db, redisStore))
+	shipmentServiceQuery := shipmentservice.QueryServiceMessageBus(shipmentservice.NewQueryService(db, redisStore))
+	shipmentPriceListAggr := pricelist.AggregateMessageBus(pricelist.NewAggregate(db, eventBus))
+	shipmentPriceListQuery := pricelist.QueryServiceMessageBus(pricelist.NewQueryService(db, redisStore))
+	shipmentPriceAggr := shipmentprice.AggregateMessageBus(shipmentprice.NewAggregate(db, redisStore))
+	shipmentPriceQuery := shipmentprice.QueryServiceMessageBus(shipmentprice.NewQueryService(db, redisStore, locationBus, shipmentPriceListQuery))
 	shipmentPriceListPM := pricelistpm.New(redisStore)
 	shipmentPriceListPM.RegisterEventHandlers(eventBus)
 
 	shipmentManager = shippingcarrier.NewShipmentManager(eventBus, locationBus, connectionQuery, connectionAggregate, redisStore, shipmentServiceQuery, shipmentPriceQuery, cfg.FlagApplyShipmentPrice)
 	shipmentManager.SetWebhookEndpoint(connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint)
-	shippingAggr := shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus).MessageBus()
-	shippingQuery := shippingquery.NewQueryService(db).MessageBus()
+	shippingAggr := shippingaggregate.AggregateMessageBus(shippingaggregate.NewAggregate(db, locationBus, orderQuery, shipmentManager, connectionQuery, eventBus))
+	shippingQuery := shippingquery.QueryServiceMessageBus(shippingquery.NewQueryService(db))
 	shippingPM := shippingpm.New(eventBus, shippingQuery, shippingAggr, redisStore)
 	shippingPM.RegisterEventHandlers(eventBus)
 
-	moneyTxQuery = moneytxquery.NewMoneyTxQuery(db, shippingQuery).MessageBus()
-	moneyTxAggr = moneytxaggregate.NewMoneyTxAggregate(db, shippingQuery, identityQuery, eventBus).MessageBus()
+	moneyTxQuery = moneytxquery.MoneyTxQueryMessageBus(moneytxquery.NewMoneyTxQuery(db, shippingQuery))
+	moneyTxAggr = moneytxaggregate.MoneyTxAggregateMessageBus(moneytxaggregate.NewMoneyTxAggregate(db, shippingQuery, identityQuery, eventBus))
 
 	dbWebServer, err = cmsql.Connect(cfg.PostgresWebServer)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	webServerAggregate := webserveraggregate.New(eventBus, dbWebServer, catalogQuery).MessageBus()
-	webServerQuery := webserverquery.New(eventBus, dbWebServer, catalogQuery).MessageBus()
+	webServerAggregate := webserveraggregate.WebserverAggregateMessageBus(webserveraggregate.New(eventBus, dbWebServer, catalogQuery))
+	webServerQuery := webserverquery.WebserverQueryServiceMessageBus(webserverquery.New(eventBus, dbWebServer, catalogQuery))
 	webserverPm := webserverpm.New(eventBus, webServerAggregate, webServerQuery)
 	webserverPm.RegisterEventHandlers(eventBus)
 
@@ -500,14 +502,14 @@ func main() {
 		ll.Fatal("error loading white label partners", l.Error(err))
 	}
 
-	subrProductAggr := subscriptionproduct.NewSubrProductAggregate(db).MessageBus()
-	subrProductQuery := subscriptionproduct.NewSubrProductQuery(db).MessageBus()
-	subrPlanAggr := subscriptionplan.NewSubrPlanAggregate(db).MessageBus()
-	subrPlanQuery := subscriptionplan.NewSubrPlanQuery(db, subrProductQuery).MessageBus()
-	subscriptionQuery = subscription.NewSubscriptionQuery(db, subrPlanQuery, subrProductQuery).MessageBus()
-	subscriptionAggr := subscription.NewSubscriptionAggregate(db).MessageBus()
-	subrBillAggr := subscriptionbill.NewSubrBillAggregate(db, eventBus, paymentAggr, subscriptionQuery, subrPlanQuery).MessageBus()
-	subrBillQuery := subscriptionbill.NewSubrBillQuery(db).MessageBus()
+	subrProductAggr := subscriptionproduct.SubrProductAggregateMessageBus(subscriptionproduct.NewSubrProductAggregate(db))
+	subrProductQuery := subscriptionproduct.SubrProductQueryMessageBus(subscriptionproduct.NewSubrProductQuery(db))
+	subrPlanAggr := subscriptionplan.SubrPlanAggregateMessageBus(subscriptionplan.NewSubrPlanAggregate(db))
+	subrPlanQuery := subscriptionplan.SubrPlanQueryMessageBus(subscriptionplan.NewSubrPlanQuery(db, subrProductQuery))
+	subscriptionQuery = subscription.SubscriptionQueryMessageBus(subscription.NewSubscriptionQuery(db, subrPlanQuery, subrProductQuery))
+	subscriptionAggr := subscription.SubscriptionAggregateMessageBus(subscription.NewSubscriptionAggregate(db))
+	subrBillAggr := subscriptionbill.SubrBillAggregateMessageBus(subscriptionbill.NewSubrBillAggregate(db, eventBus, paymentAggr, subscriptionQuery, subrPlanQuery))
+	subrBillQuery := subscriptionbill.SubrBillQueryMessageBus(subscriptionbill.NewSubrBillQuery(db))
 	subscriptionPM := subscriptionpm.New(
 		subrBillQuery, subrBillAggr,
 		subscriptionQuery, subscriptionAggr,
@@ -518,8 +520,9 @@ func main() {
 
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	sms.Init(smsArg)
-	api.Init(
+	servers = append(servers, api.BuildServers(
 		eventBus,
+		locationBus,
 		smsArg,
 		identityAggr,
 		identityQuery,
@@ -533,7 +536,7 @@ func main() {
 		cfg.Email,
 		cfg.SMS,
 		bot,
-	)
+	)...)
 	shop.Init(
 		locationBus,
 		catalogQuery,
@@ -548,7 +551,7 @@ func main() {
 		customerQuery,
 		traderAddressAggr,
 		traderAddressQuery,
-		orderAggr.MessageBus(),
+		serviceordering.AggregateMessageBus(orderAggr),
 		orderQuery,
 		paymentManager,
 		supplierAggr,
@@ -632,7 +635,7 @@ func main() {
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db), shipmentManager, shippingAggr, shippingQuery, connectionQuery)
-	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus(),
+	orderS.Init(shippingManager, catalogQuery, serviceordering.AggregateMessageBus(orderAggr),
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)

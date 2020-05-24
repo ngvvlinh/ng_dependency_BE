@@ -36,7 +36,7 @@ func NewTraderQuery(
 	}
 }
 
-func (q *TraderQuery) MessageBus() tradering.QueryBus {
+func TraderQueryMessageBus(q *TraderQuery) tradering.QueryBus {
 	b := bus.New()
 	return tradering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

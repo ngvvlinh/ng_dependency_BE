@@ -25,7 +25,7 @@ func NewQueryRefund(eventBus capi.EventBus, db *cmsql.Database) *RefundQueryServ
 	}
 }
 
-func (q *RefundQueryService) MessageBus() refund.QueryBus {
+func RefundQueryServiceMessageBus(q *RefundQueryService) refund.QueryBus {
 	b := bus.New()
 	return refund.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

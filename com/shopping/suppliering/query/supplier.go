@@ -22,7 +22,7 @@ func NewSupplierQuery(db *cmsql.Database) *SupplierQuery {
 	}
 }
 
-func (q *SupplierQuery) MessageBus() suppliering.QueryBus {
+func SupplierQueryMessageBus(q *SupplierQuery) suppliering.QueryBus {
 	b := bus.New()
 	return suppliering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

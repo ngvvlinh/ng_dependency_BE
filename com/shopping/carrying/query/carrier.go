@@ -22,7 +22,7 @@ func NewCarrierQuery(db *cmsql.Database) *CarrierQuery {
 	}
 }
 
-func (q *CarrierQuery) MessageBus() carrying.QueryBus {
+func CarrierQueryMessageBus(q *CarrierQuery) carrying.QueryBus {
 	b := bus.New()
 	return carrying.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

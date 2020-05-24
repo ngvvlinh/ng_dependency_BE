@@ -23,7 +23,6 @@ func init() {
 		GetAccountUserExtended,
 		GetAccountUserExtendeds,
 		GetAllAccountRoles,
-		UpdateRole,
 		UpdateInfos,
 		CreateAccountUser,
 		UpdateAccountUser,

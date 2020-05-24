@@ -23,7 +23,7 @@ func NewReceiptQuery(db *cmsql.Database) *ReceiptQuery {
 	}
 }
 
-func (q *ReceiptQuery) MessageBus() receipting.QueryBus {
+func ReceiptQueryMessageBus(q *ReceiptQuery) receipting.QueryBus {
 	b := bus.New()
 	return receipting.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

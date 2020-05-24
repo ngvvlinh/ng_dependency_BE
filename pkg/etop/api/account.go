@@ -15,17 +15,7 @@ import (
 	"o.o/capi/dot"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		accountService.UpdateURLSlug,
-		accountService.GetPublicPartnerInfo,
-		accountService.GetPublicPartners,
-	)
-}
-
 type AccountService struct{}
-
-var accountService = &AccountService{}
 
 func (s *AccountService) Clone() *AccountService {
 	res := *s

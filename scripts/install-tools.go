@@ -6,5 +6,6 @@ package scripts
 
 import (
 	_ "github.com/go-bindata/go-bindata/v3/go-bindata"
+	_ "github.com/google/wire/cmd/wire"
 	_ "golang.org/x/tools/cmd/goimports"
 )

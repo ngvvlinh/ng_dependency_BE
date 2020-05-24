@@ -24,7 +24,7 @@ func NewAggregate(db *cmsql.Database) *Aggregate {
 	}
 }
 
-func (a *Aggregate) MessageBus() transaction.CommandBus {
+func AggregateMessageBus(a *Aggregate) transaction.CommandBus {
 	b := bus.New()
 	return transaction.NewAggregateHandler(a).RegisterHandlers(b)
 }

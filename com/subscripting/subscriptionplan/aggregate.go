@@ -26,7 +26,7 @@ func NewSubrPlanAggregate(db *cmsql.Database) *SubrPlanAggregate {
 	}
 }
 
-func (a *SubrPlanAggregate) MessageBus() subscriptionplan.CommandBus {
+func SubrPlanAggregateMessageBus(a *SubrPlanAggregate) subscriptionplan.CommandBus {
 	b := bus.New()
 	return subscriptionplan.NewAggregateHandler(a).RegisterHandlers(b)
 }

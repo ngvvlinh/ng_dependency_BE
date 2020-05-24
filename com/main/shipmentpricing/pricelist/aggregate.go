@@ -32,7 +32,7 @@ func NewAggregate(db *cmsql.Database, eventBus capi.EventBus) *Aggregate {
 	}
 }
 
-func (a *Aggregate) MessageBus() pricelist.CommandBus {
+func AggregateMessageBus(a *Aggregate) pricelist.CommandBus {
 	b := bus.New()
 	return pricelist.NewAggregateHandler(a).RegisterHandlers(b)
 }

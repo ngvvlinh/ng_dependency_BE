@@ -24,7 +24,7 @@ func New(db *cmsql.Database) *QueryService {
 	}
 }
 
-func (q *QueryService) MessageBus() crmvht.QueryBus {
+func QueryServiceMessageBus(q *QueryService) crmvht.QueryBus {
 	b := bus.New()
 	return crmvht.NewQueryServiceHandler(q).RegisterHandlers(b)
 }

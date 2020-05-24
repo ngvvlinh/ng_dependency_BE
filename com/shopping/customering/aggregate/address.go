@@ -28,7 +28,7 @@ func NewAddressAggregate(db *cmsql.Database) *AddressAggregate {
 	}
 }
 
-func (q *AddressAggregate) MessageBus() addressing.CommandBus {
+func AddressAggregateMessageBus(q *AddressAggregate) addressing.CommandBus {
 	b := bus.New()
 	return addressing.NewAggregateHandler(q).RegisterHandlers(b)
 }

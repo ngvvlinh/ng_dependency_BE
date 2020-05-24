@@ -34,7 +34,7 @@ func NewFbUserAggregate(
 	}
 }
 
-func (a *FbUserAggregate) MessageBus() fbusering.CommandBus {
+func FbUserAggregateMessageBus(a *FbUserAggregate) fbusering.CommandBus {
 	b := bus.New()
 	return fbusering.NewAggregateHandler(a).RegisterHandlers(b)
 }

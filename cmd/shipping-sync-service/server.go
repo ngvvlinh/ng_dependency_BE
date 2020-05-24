@@ -32,7 +32,7 @@ func startServiceServer() *http.Server {
 	}
 	sqlstore.Init(db)
 
-	locationBus := servicelocation.New(nil).MessageBus()
+	locationBus := servicelocation.QueryMessageBus(servicelocation.New(nil))
 	var ghnCarrier, ghtkCarrier shipping_provider.ShippingCarrier
 
 	if cfg.GHN.AccountDefault.Token != "" {
