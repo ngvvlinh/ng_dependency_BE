@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -46,6 +47,11 @@ func (s *ShipmentPriceStore) ID(id dot.ID) *ShipmentPriceStore {
 	return s
 }
 
+func (s *ShipmentPriceStore) IDs(ids ...dot.ID) *ShipmentPriceStore {
+	s.preds = append(s.preds, sq.In("id", ids))
+	return s
+}
+
 func (s *ShipmentPriceStore) Status(status status3.Status) *ShipmentPriceStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
@@ -61,13 +67,13 @@ func (s *ShipmentPriceStore) OptionalShipmentServiceID(id dot.ID) *ShipmentPrice
 	return s
 }
 
-func (s *ShipmentPriceStore) ShipmentPriceListID(id dot.ID) *ShipmentPriceStore {
-	s.preds = append(s.preds, s.ft.ByShipmentPriceListID(id))
+func (s *ShipmentPriceStore) ShipmentSubPriceListIDs(ids ...dot.ID) *ShipmentPriceStore {
+	s.preds = append(s.preds, sq.In("shipment_sub_price_list_id", ids))
 	return s
 }
 
-func (s *ShipmentPriceStore) OptionalShipmentPriceListID(id dot.ID) *ShipmentPriceStore {
-	s.preds = append(s.preds, s.ft.ByShipmentPriceListID(id).Optional())
+func (s *ShipmentPriceStore) OptionalShipmentSubPriceListID(id dot.ID) *ShipmentPriceStore {
+	s.preds = append(s.preds, s.ft.ByShipmentSubPriceListID(id).Optional())
 	return s
 }
 

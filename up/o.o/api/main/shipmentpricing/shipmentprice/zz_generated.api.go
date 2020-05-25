@@ -27,16 +27,16 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type CreateShipmentPriceCommand struct {
-	Name                string
-	ShipmentPriceListID dot.ID
-	ShipmentServiceID   dot.ID
-	CustomRegionTypes   []route_type.CustomRegionRouteType
-	CustomRegionIDs     []dot.ID
-	RegionTypes         []route_type.RegionRouteType
-	ProvinceTypes       []route_type.ProvinceRouteType
-	UrbanTypes          []route_type.UrbanType
-	PriorityPoint       int
-	Details             []*PricingDetail
+	Name                   string
+	ShipmentSubPriceListID dot.ID
+	ShipmentServiceID      dot.ID
+	CustomRegionTypes      []route_type.CustomRegionRouteType
+	CustomRegionIDs        []dot.ID
+	RegionTypes            []route_type.RegionRouteType
+	ProvinceTypes          []route_type.ProvinceRouteType
+	UrbanTypes             []route_type.UrbanType
+	PriorityPoint          int
+	Details                []*PricingDetail
 
 	Result *ShipmentPrice `json:"-"`
 }
@@ -58,18 +58,18 @@ func (h AggregateHandler) HandleDeleteShipmentPrice(ctx context.Context, msg *De
 }
 
 type UpdateShipmentPriceCommand struct {
-	ID                  dot.ID
-	Name                string
-	ShipmentPriceListID dot.ID
-	ShipmentServiceID   dot.ID
-	CustomRegionTypes   []route_type.CustomRegionRouteType
-	CustomRegionIDs     []dot.ID
-	RegionTypes         []route_type.RegionRouteType
-	ProvinceTypes       []route_type.ProvinceRouteType
-	UrbanTypes          []route_type.UrbanType
-	PriorityPoint       int
-	Details             []*PricingDetail
-	Status              status3.Status
+	ID                     dot.ID
+	Name                   string
+	ShipmentSubPriceListID dot.ID
+	ShipmentServiceID      dot.ID
+	CustomRegionTypes      []route_type.CustomRegionRouteType
+	CustomRegionIDs        []dot.ID
+	RegionTypes            []route_type.RegionRouteType
+	ProvinceTypes          []route_type.ProvinceRouteType
+	UrbanTypes             []route_type.UrbanType
+	PriorityPoint          int
+	Details                []*PricingDetail
+	Status                 status3.Status
 
 	Result *ShipmentPrice `json:"-"`
 }
@@ -91,6 +91,7 @@ func (h AggregateHandler) HandleUpdateShipmentPricesPriorityPoint(ctx context.Co
 }
 
 type CalculatePriceQuery struct {
+	AccountID           dot.ID
 	ShipmentPriceListID dot.ID
 	FromProvince        string
 	FromProvinceCode    string
@@ -123,8 +124,8 @@ func (h QueryServiceHandler) HandleGetShipmentPrice(ctx context.Context, msg *Ge
 }
 
 type ListShipmentPricesQuery struct {
-	ShipmentPriceListID dot.ID
-	ShipmentServiceID   dot.ID
+	ShipmentSubPriceListID dot.ID
+	ShipmentServiceID      dot.ID
 
 	Result []*ShipmentPrice `json:"-"`
 }
@@ -150,22 +151,22 @@ func (q *ListShipmentPricesQuery) query() {}
 func (q *CreateShipmentPriceCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShipmentPriceArgs) {
 	return ctx,
 		&CreateShipmentPriceArgs{
-			Name:                q.Name,
-			ShipmentPriceListID: q.ShipmentPriceListID,
-			ShipmentServiceID:   q.ShipmentServiceID,
-			CustomRegionTypes:   q.CustomRegionTypes,
-			CustomRegionIDs:     q.CustomRegionIDs,
-			RegionTypes:         q.RegionTypes,
-			ProvinceTypes:       q.ProvinceTypes,
-			UrbanTypes:          q.UrbanTypes,
-			PriorityPoint:       q.PriorityPoint,
-			Details:             q.Details,
+			Name:                   q.Name,
+			ShipmentSubPriceListID: q.ShipmentSubPriceListID,
+			ShipmentServiceID:      q.ShipmentServiceID,
+			CustomRegionTypes:      q.CustomRegionTypes,
+			CustomRegionIDs:        q.CustomRegionIDs,
+			RegionTypes:            q.RegionTypes,
+			ProvinceTypes:          q.ProvinceTypes,
+			UrbanTypes:             q.UrbanTypes,
+			PriorityPoint:          q.PriorityPoint,
+			Details:                q.Details,
 		}
 }
 
 func (q *CreateShipmentPriceCommand) SetCreateShipmentPriceArgs(args *CreateShipmentPriceArgs) {
 	q.Name = args.Name
-	q.ShipmentPriceListID = args.ShipmentPriceListID
+	q.ShipmentSubPriceListID = args.ShipmentSubPriceListID
 	q.ShipmentServiceID = args.ShipmentServiceID
 	q.CustomRegionTypes = args.CustomRegionTypes
 	q.CustomRegionIDs = args.CustomRegionIDs
@@ -184,25 +185,25 @@ func (q *DeleteShipmentPriceCommand) GetArgs(ctx context.Context) (_ context.Con
 func (q *UpdateShipmentPriceCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipmentPriceArgs) {
 	return ctx,
 		&UpdateShipmentPriceArgs{
-			ID:                  q.ID,
-			Name:                q.Name,
-			ShipmentPriceListID: q.ShipmentPriceListID,
-			ShipmentServiceID:   q.ShipmentServiceID,
-			CustomRegionTypes:   q.CustomRegionTypes,
-			CustomRegionIDs:     q.CustomRegionIDs,
-			RegionTypes:         q.RegionTypes,
-			ProvinceTypes:       q.ProvinceTypes,
-			UrbanTypes:          q.UrbanTypes,
-			PriorityPoint:       q.PriorityPoint,
-			Details:             q.Details,
-			Status:              q.Status,
+			ID:                     q.ID,
+			Name:                   q.Name,
+			ShipmentSubPriceListID: q.ShipmentSubPriceListID,
+			ShipmentServiceID:      q.ShipmentServiceID,
+			CustomRegionTypes:      q.CustomRegionTypes,
+			CustomRegionIDs:        q.CustomRegionIDs,
+			RegionTypes:            q.RegionTypes,
+			ProvinceTypes:          q.ProvinceTypes,
+			UrbanTypes:             q.UrbanTypes,
+			PriorityPoint:          q.PriorityPoint,
+			Details:                q.Details,
+			Status:                 q.Status,
 		}
 }
 
 func (q *UpdateShipmentPriceCommand) SetUpdateShipmentPriceArgs(args *UpdateShipmentPriceArgs) {
 	q.ID = args.ID
 	q.Name = args.Name
-	q.ShipmentPriceListID = args.ShipmentPriceListID
+	q.ShipmentSubPriceListID = args.ShipmentSubPriceListID
 	q.ShipmentServiceID = args.ShipmentServiceID
 	q.CustomRegionTypes = args.CustomRegionTypes
 	q.CustomRegionIDs = args.CustomRegionIDs
@@ -228,6 +229,7 @@ func (q *UpdateShipmentPricesPriorityPointCommand) SetUpdateShipmentPricesPriori
 func (q *CalculatePriceQuery) GetArgs(ctx context.Context) (_ context.Context, _ *CalculatePriceArgs) {
 	return ctx,
 		&CalculatePriceArgs{
+			AccountID:           q.AccountID,
 			ShipmentPriceListID: q.ShipmentPriceListID,
 			FromProvince:        q.FromProvince,
 			FromProvinceCode:    q.FromProvinceCode,
@@ -243,6 +245,7 @@ func (q *CalculatePriceQuery) GetArgs(ctx context.Context) (_ context.Context, _
 }
 
 func (q *CalculatePriceQuery) SetCalculatePriceArgs(args *CalculatePriceArgs) {
+	q.AccountID = args.AccountID
 	q.ShipmentPriceListID = args.ShipmentPriceListID
 	q.FromProvince = args.FromProvince
 	q.FromProvinceCode = args.FromProvinceCode
@@ -264,13 +267,13 @@ func (q *GetShipmentPriceQuery) GetArgs(ctx context.Context) (_ context.Context,
 func (q *ListShipmentPricesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShipmentPricesArgs) {
 	return ctx,
 		&ListShipmentPricesArgs{
-			ShipmentPriceListID: q.ShipmentPriceListID,
-			ShipmentServiceID:   q.ShipmentServiceID,
+			ShipmentSubPriceListID: q.ShipmentSubPriceListID,
+			ShipmentServiceID:      q.ShipmentServiceID,
 		}
 }
 
 func (q *ListShipmentPricesQuery) SetListShipmentPricesArgs(args *ListShipmentPricesArgs) {
-	q.ShipmentPriceListID = args.ShipmentPriceListID
+	q.ShipmentSubPriceListID = args.ShipmentSubPriceListID
 	q.ShipmentServiceID = args.ShipmentServiceID
 }
 

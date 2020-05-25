@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShipmentPriceLists []*ShipmentPriceList
 
 const __sqlShipmentPriceList_Table = "shipment_price_list"
-const __sqlShipmentPriceList_ListCols = "\"id\",\"name\",\"description\",\"is_active\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\""
-const __sqlShipmentPriceList_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"is_active\" = EXCLUDED.\"is_active\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
+const __sqlShipmentPriceList_ListCols = "\"id\",\"name\",\"description\",\"is_active\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"shipment_sub_price_list_ids\""
+const __sqlShipmentPriceList_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"is_active\" = EXCLUDED.\"is_active\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"shipment_sub_price_list_ids\" = EXCLUDED.\"shipment_sub_price_list_ids\""
 const __sqlShipmentPriceList_Insert = "INSERT INTO \"shipment_price_list\" (" + __sqlShipmentPriceList_ListCols + ") VALUES"
 const __sqlShipmentPriceList_Select = "SELECT " + __sqlShipmentPriceList_ListCols + " FROM \"shipment_price_list\""
 const __sqlShipmentPriceList_Select_history = "SELECT " + __sqlShipmentPriceList_ListCols + " FROM history.\"shipment_price_list\""
@@ -114,6 +114,13 @@ func (m *ShipmentPriceList) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"shipment_sub_price_list_ids": {
+			ColumnName:       "shipment_sub_price_list_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "shipment_price_list", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -135,6 +142,7 @@ func (m *ShipmentPriceList) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
 		m.WLPartnerID,
+		core.Array{m.ShipmentSubPriceListIDs, opts},
 	}
 }
 
@@ -148,6 +156,7 @@ func (m *ShipmentPriceList) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
 		&m.WLPartnerID,
+		core.Array{&m.ShipmentSubPriceListIDs, opts},
 	}
 }
 
@@ -185,7 +194,7 @@ func (_ *ShipmentPriceLists) SQLSelect(w SQLWriter) error {
 func (m *ShipmentPriceList) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentPriceList_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -195,7 +204,7 @@ func (ms ShipmentPriceLists) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentPriceList_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(9)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -290,6 +299,14 @@ func (m *ShipmentPriceList) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.WLPartnerID)
 	}
+	if m.ShipmentSubPriceListIDs != nil {
+		flag = true
+		w.WriteName("shipment_sub_price_list_ids")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.ShipmentSubPriceListIDs, opts})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -300,7 +317,7 @@ func (m *ShipmentPriceList) SQLUpdate(w SQLWriter) error {
 func (m *ShipmentPriceList) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentPriceList_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -334,17 +351,20 @@ func (m ShipmentPriceListHistory) DeletedAt() core.Interface { return core.Inter
 func (m ShipmentPriceListHistory) WLPartnerID() core.Interface {
 	return core.Interface{m["wl_partner_id"]}
 }
+func (m ShipmentPriceListHistory) ShipmentSubPriceListIDs() core.Interface {
+	return core.Interface{m["shipment_sub_price_list_ids"]}
+}
 
 func (m *ShipmentPriceListHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipmentPriceListHistory, 8)
+	res := make(ShipmentPriceListHistory, 9)
 	res["id"] = data[0]
 	res["name"] = data[1]
 	res["description"] = data[2]
@@ -353,14 +373,15 @@ func (m *ShipmentPriceListHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["updated_at"] = data[5]
 	res["deleted_at"] = data[6]
 	res["wl_partner_id"] = data[7]
+	res["shipment_sub_price_list_ids"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *ShipmentPriceListHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipmentPriceListHistories, 0, 128)
@@ -377,6 +398,7 @@ func (ms *ShipmentPriceListHistories) SQLScan(opts core.Opts, rows *sql.Rows) er
 		m["updated_at"] = data[5]
 		m["deleted_at"] = data[6]
 		m["wl_partner_id"] = data[7]
+		m["shipment_sub_price_list_ids"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

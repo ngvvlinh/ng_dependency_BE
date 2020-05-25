@@ -4,4 +4,4 @@
 
 package pricelist
 
-func (e *ShipmentPriceListActivatedEvent) GetTopic() string { return "event/shipmentpricelist" }
+func (e *DeleteCachePriceListEvent) GetTopic() string { return "event/shipmentpricelist" }

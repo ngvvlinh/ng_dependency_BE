@@ -42,6 +42,7 @@ type ShopConnectionSignUpArgs struct {
 }
 
 type GetShippingServicesArgs struct {
+	AccountID           dot.ID
 	ShipmentPriceListID dot.ID
 	ConnectionIDs       []dot.ID
 	FromDistrictCode    string

@@ -24,19 +24,25 @@ type QueryService interface {
 
 	GetActiveShipmentPriceList(context.Context, *meta.Empty) (*ShipmentPriceList, error)
 
-	ListShipmentPriceList(context.Context, *meta.Empty) ([]*ShipmentPriceList, error)
+	ListShipmentPriceLists(context.Context, *ListShipmentPriceListsArgs) ([]*ShipmentPriceList, error)
 }
 
 // +convert:create=ShipmentPriceList
 type CreateShipmentPriceListArg struct {
-	Name        string
-	Description string
-	IsActive    bool
+	Name                    string
+	Description             string
+	IsActive                bool
+	ShipmentSubPriceListIDs []dot.ID
+}
+
+type ListShipmentPriceListsArgs struct {
+	SubShipmentPriceListIDs []dot.ID
 }
 
 // +convert:update=ShipmentPriceList
 type UpdateShipmentPriceListArgs struct {
-	ID          dot.ID
-	Name        string
-	Description string
+	ID                      dot.ID
+	Name                    string
+	Description             string
+	ShipmentSubPriceListIDs []dot.ID
 }

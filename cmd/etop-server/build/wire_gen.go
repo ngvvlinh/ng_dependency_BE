@@ -43,6 +43,8 @@ import (
 	"o.o/backend/com/main/shipmentpricing/pricelist"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice"
+	"o.o/backend/com/main/shipmentpricing/shopshipmentpricelist"
+	"o.o/backend/com/main/shipmentpricing/subpricelist"
 	"o.o/backend/com/main/shipnow"
 	"o.o/backend/com/main/shipnow-carrier"
 	aggregate14 "o.o/backend/com/main/shipping/aggregate"
@@ -279,7 +281,11 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	shipmentserviceQueryBus := shipmentservice.QueryServiceMessageBus(shipmentserviceQueryService)
 	pricelistQueryService := pricelist.NewQueryService(mainDB, redisStore)
 	pricelistQueryBus := pricelist.QueryServiceMessageBus(pricelistQueryService)
-	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, redisStore, queryBus, pricelistQueryBus)
+	subpricelistQueryService := subpricelist.NewQueryService(mainDB)
+	subpricelistQueryBus := subpricelist.QueryServiceMessageBus(subpricelistQueryService)
+	shopshipmentpricelistQueryService := shopshipmentpricelist.NewQueryService(mainDB, redisStore)
+	shopshipmentpricelistQueryBus := shopshipmentpricelist.QueryServiceMessageBus(shopshipmentpricelistQueryService)
+	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, redisStore, queryBus, pricelistQueryBus, subpricelistQueryBus, shopshipmentpricelistQueryBus)
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	flagApplyShipmentPrice := cfg.FlagApplyShipmentPrice
 	carrierConfig := SupportedShippingCarrierConfig(cfg)
@@ -463,20 +469,28 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		ConnectionAggr:  connectioningCommandBus,
 		ConnectionQuery: connectioningQueryBus,
 	}
-	shipmentpriceAggregate := shipmentprice.NewAggregate(mainDB, redisStore)
+	shipmentpriceAggregate := shipmentprice.NewAggregate(mainDB, redisStore, subpricelistQueryBus, pricelistQueryBus)
 	shipmentpriceCommandBus := shipmentprice.AggregateMessageBus(shipmentpriceAggregate)
 	shipmentserviceAggregate := shipmentservice.NewAggregate(mainDB, redisStore)
 	shipmentserviceCommandBus := shipmentservice.AggregateMessageBus(shipmentserviceAggregate)
-	pricelistAggregate := pricelist.NewAggregate(mainDB, eventBus)
+	pricelistAggregate := pricelist.NewAggregate(mainDB, eventBus, shopshipmentpricelistQueryBus)
 	pricelistCommandBus := pricelist.AggregateMessageBus(pricelistAggregate)
+	subpricelistAggregate := subpricelist.NewAggregate(mainDB, eventBus)
+	subpricelistCommandBus := subpricelist.AggregateMessageBus(subpricelistAggregate)
+	shopshipmentpricelistAggregate := shopshipmentpricelist.NewAggregate(mainDB)
+	shopshipmentpricelistCommandBus := shopshipmentpricelist.AggregateMessageBus(shopshipmentpricelistAggregate)
 	shipmentPriceService := &admin.ShipmentPriceService{
-		ShipmentManager:        shipmentManager,
-		ShipmentPriceAggr:      shipmentpriceCommandBus,
-		ShipmentPriceQuery:     shipmentpriceQueryBus,
-		ShipmentServiceQuery:   shipmentserviceQueryBus,
-		ShipmentServiceAggr:    shipmentserviceCommandBus,
-		ShipmentPriceListAggr:  pricelistCommandBus,
-		ShipmentPriceListQuery: pricelistQueryBus,
+		ShipmentManager:            shipmentManager,
+		ShipmentPriceAggr:          shipmentpriceCommandBus,
+		ShipmentPriceQuery:         shipmentpriceQueryBus,
+		ShipmentServiceQuery:       shipmentserviceQueryBus,
+		ShipmentServiceAggr:        shipmentserviceCommandBus,
+		ShipmentPriceListAggr:      pricelistCommandBus,
+		ShipmentPriceListQuery:     pricelistQueryBus,
+		ShipmentSubPriceListQuery:  subpricelistQueryBus,
+		ShipmentSubPriceListAggr:   subpricelistCommandBus,
+		ShopShipmentPriceListQuery: shopshipmentpricelistQueryBus,
+		ShopShipmentPriceListAggr:  shopshipmentpricelistCommandBus,
 	}
 	locationAggregate := location.NewAggregate(mainDB)
 	locationCommandBus := location.AggregateMessageBus(locationAggregate)

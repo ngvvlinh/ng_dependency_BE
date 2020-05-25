@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/shipmentpricing/pricelist"
+	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
 	"o.o/api/meta"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/pricelist/convert"
@@ -23,13 +24,15 @@ type Aggregate struct {
 	db                     *cmsql.Database
 	eventBus               capi.EventBus
 	shipmentPriceListStore sqlstore.ShipmentPriceListStoreFactory
+	shopPriceListQS        shopshipmentpricelist.QueryBus
 }
 
-func NewAggregate(db com.MainDB, eventBus capi.EventBus) *Aggregate {
+func NewAggregate(db com.MainDB, eventBus capi.EventBus, shopPriceListQS shopshipmentpricelist.QueryBus) *Aggregate {
 	return &Aggregate{
 		db:                     db,
 		eventBus:               eventBus,
 		shipmentPriceListStore: sqlstore.NewShipmentPriceListStore(db),
+		shopPriceListQS:        shopPriceListQS,
 	}
 }
 
@@ -41,6 +44,9 @@ func AggregateMessageBus(a *Aggregate) pricelist.CommandBus {
 func (a *Aggregate) CreateShipmentPriceList(ctx context.Context, args *pricelist.CreateShipmentPriceListArg) (*pricelist.ShipmentPriceList, error) {
 	if args.Name == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing name")
+	}
+	if len(args.ShipmentSubPriceListIDs) == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Please choose at least 1 sub price list")
 	}
 	var plist pricelist.ShipmentPriceList
 	if err := scheme.Convert(args, &plist); err != nil {
@@ -66,11 +72,16 @@ func (a *Aggregate) UpdateShipmentPriceList(ctx context.Context, args *pricelist
 	if args.ID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
-	var pricelist pricelist.ShipmentPriceList
-	if err := scheme.Convert(args, &pricelist); err != nil {
+	var priceList pricelist.ShipmentPriceList
+	if err := scheme.Convert(args, &priceList); err != nil {
 		return err
 	}
-	return a.shipmentPriceListStore(ctx).UpdateShipmentPriceList(&pricelist)
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if err := a.shipmentPriceListStore(ctx).UpdateShipmentPriceList(&priceList); err != nil {
+			return err
+		}
+		return a.deleteCachePriceList(ctx, args.ID)
+	})
 }
 
 func (a *Aggregate) ActivateShipmentPriceList(ctx context.Context, id dot.ID) error {
@@ -87,15 +98,40 @@ func (a *Aggregate) ActivateShipmentPriceList(ctx context.Context, id dot.ID) er
 			return err
 		}
 
-		event := &pricelist.ShipmentPriceListActivatedEvent{
-			EventMeta: meta.NewEvent(),
-			ID:        id,
-		}
-		return a.eventBus.Publish(ctx, event)
+		return a.deleteCachePriceList(ctx, id)
 	})
 }
 
 func (a *Aggregate) DeleteShipmentPriceList(ctx context.Context, id dot.ID) error {
-	_, err := a.shipmentPriceListStore(ctx).ID(id).SoftDelete()
-	return err
+	priceList, err := a.shipmentPriceListStore(ctx).ID(id).GetShipmentPriceList()
+	if err != nil {
+		return err
+	}
+	if priceList.IsActive {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Can not delete an active price list")
+	}
+
+	queryShopPriceList := &shopshipmentpricelist.ListShopShipmentPriceListsQuery{
+		ShipmentPriceListID: id,
+	}
+	if err := a.shopPriceListQS.Dispatch(ctx, queryShopPriceList); err != nil {
+		return err
+	}
+	if len(queryShopPriceList.Result.ShopShipmentPriceLists) != 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "This price list is used for shop. Can not delete it.")
+	}
+
+	_, err = a.shipmentPriceListStore(ctx).ID(id).SoftDelete()
+	if err != nil {
+		return err
+	}
+	return a.deleteCachePriceList(ctx, id)
+}
+
+func (a *Aggregate) deleteCachePriceList(ctx context.Context, priceListID dot.ID) error {
+	event := &pricelist.DeleteCachePriceListEvent{
+		EventMeta:           meta.NewEvent(),
+		ShipmentPriceListID: priceListID,
+	}
+	return a.eventBus.Publish(ctx, event)
 }

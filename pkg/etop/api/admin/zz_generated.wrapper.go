@@ -2441,6 +2441,98 @@ func (s wrapShipmentPriceService) CreateShipmentService(ctx context.Context, req
 	return resp, nil
 }
 
+type CreateShipmentSubPriceListEndpoint struct {
+	*api.CreateShipmentSubPriceListRequest
+	Result  *api.ShipmentSubPriceList
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) CreateShipmentSubPriceList(ctx context.Context, req *api.CreateShipmentSubPriceListRequest) (resp *api.ShipmentSubPriceList, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/CreateShipmentSubPriceList"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateShipmentSubPriceListEndpoint{CreateShipmentSubPriceListRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CreateShipmentSubPriceList(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateShopShipmentPriceListEndpoint struct {
+	*api.CreateShopShipmentPriceList
+	Result  *api.ShopShipmentPriceList
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) CreateShopShipmentPriceList(ctx context.Context, req *api.CreateShopShipmentPriceList) (resp *api.ShopShipmentPriceList, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/CreateShopShipmentPriceList"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateShopShipmentPriceListEndpoint{CreateShopShipmentPriceList: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CreateShopShipmentPriceList(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type DeleteShipmentPriceEndpoint struct {
 	*cm.IDRequest
 	Result  *cm.DeletedResponse
@@ -2568,6 +2660,98 @@ func (s wrapShipmentPriceService) DeleteShipmentService(ctx context.Context, req
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().DeleteShipmentService(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteShipmentSubPriceListEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.DeletedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) DeleteShipmentSubPriceList(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/DeleteShipmentSubPriceList"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteShipmentSubPriceListEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().DeleteShipmentSubPriceList(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type DeleteShopShipmentPriceListEndpoint struct {
+	*api.GetShopShipmentPriceListRequest
+	Result  *cm.DeletedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) DeleteShopShipmentPriceList(ctx context.Context, req *api.GetShopShipmentPriceListRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/DeleteShopShipmentPriceList"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteShopShipmentPriceListEndpoint{GetShopShipmentPriceListRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().DeleteShopShipmentPriceList(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -2855,6 +3039,98 @@ func (s wrapShipmentPriceService) GetShipmentServices(ctx context.Context, req *
 	return resp, nil
 }
 
+type GetShipmentSubPriceListEndpoint struct {
+	*cm.IDRequest
+	Result  *api.ShipmentSubPriceList
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) GetShipmentSubPriceList(ctx context.Context, req *cm.IDRequest) (resp *api.ShipmentSubPriceList, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/GetShipmentSubPriceList"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShipmentSubPriceListEndpoint{IDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetShipmentSubPriceList(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetShipmentSubPriceListsEndpoint struct {
+	*api.GetShipmentSubPriceListsRequest
+	Result  *api.GetShipmentSubPriceListsResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) GetShipmentSubPriceLists(ctx context.Context, req *api.GetShipmentSubPriceListsRequest) (resp *api.GetShipmentSubPriceListsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/GetShipmentSubPriceLists"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShipmentSubPriceListsEndpoint{GetShipmentSubPriceListsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetShipmentSubPriceLists(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type GetShippingServicesEndpoint struct {
 	*api.GetShippingServicesRequest
 	Result  *inttypes.GetShippingServicesResponse
@@ -2890,6 +3166,98 @@ func (s wrapShipmentPriceService) GetShippingServices(ctx context.Context, req *
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().GetShippingServices(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetShopShipmentPriceListEndpoint struct {
+	*api.GetShopShipmentPriceListRequest
+	Result  *api.ShopShipmentPriceList
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) GetShopShipmentPriceList(ctx context.Context, req *api.GetShopShipmentPriceListRequest) (resp *api.ShopShipmentPriceList, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/GetShopShipmentPriceList"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShopShipmentPriceListEndpoint{GetShopShipmentPriceListRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetShopShipmentPriceList(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetShopShipmentPriceListsEndpoint struct {
+	*api.GetShopShipmentPriceListsRequest
+	Result  *api.GetShopShipmentPriceListsResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) GetShopShipmentPriceLists(ctx context.Context, req *api.GetShopShipmentPriceListsRequest) (resp *api.GetShopShipmentPriceListsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/GetShopShipmentPriceLists"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShopShipmentPriceListsEndpoint{GetShopShipmentPriceListsRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetShopShipmentPriceLists(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3166,6 +3534,98 @@ func (s wrapShipmentPriceService) UpdateShipmentServicesBlacklistLocations(ctx c
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().UpdateShipmentServicesBlacklistLocations(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateShipmentSubPriceListEndpoint struct {
+	*api.UpdateShipmentSubPriceListRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) UpdateShipmentSubPriceList(ctx context.Context, req *api.UpdateShipmentSubPriceListRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/UpdateShipmentSubPriceList"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateShipmentSubPriceListEndpoint{UpdateShipmentSubPriceListRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().UpdateShipmentSubPriceList(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateShopShipmentPriceListEndpoint struct {
+	*api.UpdateShopShipmentPriceListRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapShipmentPriceService) UpdateShopShipmentPriceList(ctx context.Context, req *api.UpdateShopShipmentPriceListRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.ShipmentPrice/UpdateShopShipmentPriceList"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateShopShipmentPriceListEndpoint{UpdateShopShipmentPriceListRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().UpdateShopShipmentPriceList(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

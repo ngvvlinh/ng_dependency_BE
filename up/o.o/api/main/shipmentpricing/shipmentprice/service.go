@@ -25,40 +25,41 @@ type QueryService interface {
 
 // +convert:create=ShipmentPrice
 type CreateShipmentPriceArgs struct {
-	Name                string
-	ShipmentPriceListID dot.ID
-	ShipmentServiceID   dot.ID
-	CustomRegionTypes   []route_type.CustomRegionRouteType
-	CustomRegionIDs     []dot.ID
-	RegionTypes         []route_type.RegionRouteType
-	ProvinceTypes       []route_type.ProvinceRouteType
-	UrbanTypes          []route_type.UrbanType
-	PriorityPoint       int
-	Details             []*PricingDetail
+	Name                   string
+	ShipmentSubPriceListID dot.ID
+	ShipmentServiceID      dot.ID
+	CustomRegionTypes      []route_type.CustomRegionRouteType
+	CustomRegionIDs        []dot.ID
+	RegionTypes            []route_type.RegionRouteType
+	ProvinceTypes          []route_type.ProvinceRouteType
+	UrbanTypes             []route_type.UrbanType
+	PriorityPoint          int
+	Details                []*PricingDetail
 }
 
 // +convert:update=ShipmentPrice
 type UpdateShipmentPriceArgs struct {
-	ID                  dot.ID
-	Name                string
-	ShipmentPriceListID dot.ID
-	ShipmentServiceID   dot.ID
-	CustomRegionTypes   []route_type.CustomRegionRouteType
-	CustomRegionIDs     []dot.ID
-	RegionTypes         []route_type.RegionRouteType
-	ProvinceTypes       []route_type.ProvinceRouteType
-	UrbanTypes          []route_type.UrbanType
-	PriorityPoint       int
-	Details             []*PricingDetail
-	Status              status3.Status
+	ID                     dot.ID
+	Name                   string
+	ShipmentSubPriceListID dot.ID
+	ShipmentServiceID      dot.ID
+	CustomRegionTypes      []route_type.CustomRegionRouteType
+	CustomRegionIDs        []dot.ID
+	RegionTypes            []route_type.RegionRouteType
+	ProvinceTypes          []route_type.ProvinceRouteType
+	UrbanTypes             []route_type.UrbanType
+	PriorityPoint          int
+	Details                []*PricingDetail
+	Status                 status3.Status
 }
 
 type ListShipmentPricesArgs struct {
-	ShipmentPriceListID dot.ID
-	ShipmentServiceID   dot.ID
+	ShipmentSubPriceListID dot.ID
+	ShipmentServiceID      dot.ID
 }
 
 type CalculatePriceArgs struct {
+	AccountID           dot.ID
 	ShipmentPriceListID dot.ID
 	FromProvince        string
 	FromProvinceCode    string

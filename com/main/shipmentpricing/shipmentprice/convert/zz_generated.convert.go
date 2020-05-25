@@ -223,15 +223,15 @@ func Convert_shipmentpricemodel_ShipmentPrice_shipmentprice_ShipmentPrice(arg *s
 }
 
 func convert_shipmentpricemodel_ShipmentPrice_shipmentprice_ShipmentPrice(arg *shipmentpricemodel.ShipmentPrice, out *shipmentprice.ShipmentPrice) {
-	out.ID = arg.ID                                   // simple assign
-	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
-	out.ShipmentServiceID = arg.ShipmentServiceID     // simple assign
-	out.Name = arg.Name                               // simple assign
-	out.CustomRegionTypes = arg.CustomRegionTypes     // simple assign
-	out.CustomRegionIDs = arg.CustomRegionIDs         // simple assign
-	out.RegionTypes = arg.RegionTypes                 // simple assign
-	out.ProvinceTypes = arg.ProvinceTypes             // simple assign
-	out.UrbanTypes = arg.UrbanTypes                   // simple assign
+	out.ID = arg.ID                                         // simple assign
+	out.ShipmentSubPriceListID = arg.ShipmentSubPriceListID // simple assign
+	out.ShipmentServiceID = arg.ShipmentServiceID           // simple assign
+	out.Name = arg.Name                                     // simple assign
+	out.CustomRegionTypes = arg.CustomRegionTypes           // simple assign
+	out.CustomRegionIDs = arg.CustomRegionIDs               // simple assign
+	out.RegionTypes = arg.RegionTypes                       // simple assign
+	out.ProvinceTypes = arg.ProvinceTypes                   // simple assign
+	out.UrbanTypes = arg.UrbanTypes                         // simple assign
 	out.Details = Convert_shipmentpricemodel_PricingDetails_shipmentprice_PricingDetails(arg.Details)
 	out.PriorityPoint = arg.PriorityPoint // simple assign
 	out.CreatedAt = arg.CreatedAt         // simple assign
@@ -265,15 +265,15 @@ func Convert_shipmentprice_ShipmentPrice_shipmentpricemodel_ShipmentPrice(arg *s
 }
 
 func convert_shipmentprice_ShipmentPrice_shipmentpricemodel_ShipmentPrice(arg *shipmentprice.ShipmentPrice, out *shipmentpricemodel.ShipmentPrice) {
-	out.ID = arg.ID                                   // simple assign
-	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
-	out.ShipmentServiceID = arg.ShipmentServiceID     // simple assign
-	out.Name = arg.Name                               // simple assign
-	out.CustomRegionTypes = arg.CustomRegionTypes     // simple assign
-	out.CustomRegionIDs = arg.CustomRegionIDs         // simple assign
-	out.RegionTypes = arg.RegionTypes                 // simple assign
-	out.ProvinceTypes = arg.ProvinceTypes             // simple assign
-	out.UrbanTypes = arg.UrbanTypes                   // simple assign
+	out.ID = arg.ID                                         // simple assign
+	out.ShipmentSubPriceListID = arg.ShipmentSubPriceListID // simple assign
+	out.ShipmentServiceID = arg.ShipmentServiceID           // simple assign
+	out.Name = arg.Name                                     // simple assign
+	out.CustomRegionTypes = arg.CustomRegionTypes           // simple assign
+	out.CustomRegionIDs = arg.CustomRegionIDs               // simple assign
+	out.RegionTypes = arg.RegionTypes                       // simple assign
+	out.ProvinceTypes = arg.ProvinceTypes                   // simple assign
+	out.UrbanTypes = arg.UrbanTypes                         // simple assign
 	out.Details = Convert_shipmentprice_PricingDetails_shipmentpricemodel_PricingDetails(arg.Details)
 	out.PriorityPoint = arg.PriorityPoint // simple assign
 	out.CreatedAt = arg.CreatedAt         // simple assign
@@ -307,22 +307,22 @@ func Apply_shipmentprice_CreateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg
 }
 
 func apply_shipmentprice_CreateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg *shipmentprice.CreateShipmentPriceArgs, out *shipmentprice.ShipmentPrice) {
-	out.ID = 0                                        // zero value
-	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
-	out.ShipmentServiceID = arg.ShipmentServiceID     // simple assign
-	out.Name = arg.Name                               // simple assign
-	out.CustomRegionTypes = arg.CustomRegionTypes     // simple assign
-	out.CustomRegionIDs = arg.CustomRegionIDs         // simple assign
-	out.RegionTypes = arg.RegionTypes                 // simple assign
-	out.ProvinceTypes = arg.ProvinceTypes             // simple assign
-	out.UrbanTypes = arg.UrbanTypes                   // simple assign
-	out.Details = arg.Details                         // simple assign
-	out.PriorityPoint = arg.PriorityPoint             // simple assign
-	out.CreatedAt = time.Time{}                       // zero value
-	out.UpdatedAt = time.Time{}                       // zero value
-	out.DeletedAt = time.Time{}                       // zero value
-	out.WLPartnerID = 0                               // zero value
-	out.Status = 0                                    // zero value
+	out.ID = 0                                              // zero value
+	out.ShipmentSubPriceListID = arg.ShipmentSubPriceListID // simple assign
+	out.ShipmentServiceID = arg.ShipmentServiceID           // simple assign
+	out.Name = arg.Name                                     // simple assign
+	out.CustomRegionTypes = arg.CustomRegionTypes           // simple assign
+	out.CustomRegionIDs = arg.CustomRegionIDs               // simple assign
+	out.RegionTypes = arg.RegionTypes                       // simple assign
+	out.ProvinceTypes = arg.ProvinceTypes                   // simple assign
+	out.UrbanTypes = arg.UrbanTypes                         // simple assign
+	out.Details = arg.Details                               // simple assign
+	out.PriorityPoint = arg.PriorityPoint                   // simple assign
+	out.CreatedAt = time.Time{}                             // zero value
+	out.UpdatedAt = time.Time{}                             // zero value
+	out.DeletedAt = time.Time{}                             // zero value
+	out.WLPartnerID = 0                                     // zero value
+	out.Status = 0                                          // zero value
 }
 
 func Apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg *shipmentprice.UpdateShipmentPriceArgs, out *shipmentprice.ShipmentPrice) *shipmentprice.ShipmentPrice {
@@ -337,20 +337,20 @@ func Apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg
 }
 
 func apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg *shipmentprice.UpdateShipmentPriceArgs, out *shipmentprice.ShipmentPrice) {
-	out.ID = arg.ID                                   // simple assign
-	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
-	out.ShipmentServiceID = arg.ShipmentServiceID     // simple assign
-	out.Name = arg.Name                               // simple assign
-	out.CustomRegionTypes = arg.CustomRegionTypes     // simple assign
-	out.CustomRegionIDs = arg.CustomRegionIDs         // simple assign
-	out.RegionTypes = arg.RegionTypes                 // simple assign
-	out.ProvinceTypes = arg.ProvinceTypes             // simple assign
-	out.UrbanTypes = arg.UrbanTypes                   // simple assign
-	out.Details = arg.Details                         // simple assign
-	out.PriorityPoint = arg.PriorityPoint             // simple assign
-	out.CreatedAt = out.CreatedAt                     // no change
-	out.UpdatedAt = out.UpdatedAt                     // no change
-	out.DeletedAt = out.DeletedAt                     // no change
-	out.WLPartnerID = out.WLPartnerID                 // no change
-	out.Status = arg.Status                           // simple assign
+	out.ID = arg.ID                                         // simple assign
+	out.ShipmentSubPriceListID = arg.ShipmentSubPriceListID // simple assign
+	out.ShipmentServiceID = arg.ShipmentServiceID           // simple assign
+	out.Name = arg.Name                                     // simple assign
+	out.CustomRegionTypes = arg.CustomRegionTypes           // simple assign
+	out.CustomRegionIDs = arg.CustomRegionIDs               // simple assign
+	out.RegionTypes = arg.RegionTypes                       // simple assign
+	out.ProvinceTypes = arg.ProvinceTypes                   // simple assign
+	out.UrbanTypes = arg.UrbanTypes                         // simple assign
+	out.Details = arg.Details                               // simple assign
+	out.PriorityPoint = arg.PriorityPoint                   // simple assign
+	out.CreatedAt = out.CreatedAt                           // no change
+	out.UpdatedAt = out.UpdatedAt                           // no change
+	out.DeletedAt = out.DeletedAt                           // no change
+	out.WLPartnerID = out.WLPartnerID                       // no change
+	out.Status = arg.Status                                 // simple assign
 }

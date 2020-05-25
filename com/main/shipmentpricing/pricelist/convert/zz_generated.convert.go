@@ -65,14 +65,15 @@ func Convert_pricelistmodel_ShipmentPriceList_pricelist_ShipmentPriceList(arg *p
 }
 
 func convert_pricelistmodel_ShipmentPriceList_pricelist_ShipmentPriceList(arg *pricelistmodel.ShipmentPriceList, out *pricelist.ShipmentPriceList) {
-	out.ID = arg.ID                   // simple assign
-	out.Name = arg.Name               // simple assign
-	out.Description = arg.Description // simple assign
-	out.WLPartnerID = arg.WLPartnerID // simple assign
-	out.IsActive = arg.IsActive       // simple assign
-	out.CreatedAt = arg.CreatedAt     // simple assign
-	out.UpdatedAt = arg.UpdatedAt     // simple assign
-	out.DeletedAt = arg.DeletedAt     // simple assign
+	out.ID = arg.ID                                           // simple assign
+	out.Name = arg.Name                                       // simple assign
+	out.Description = arg.Description                         // simple assign
+	out.WLPartnerID = arg.WLPartnerID                         // simple assign
+	out.IsActive = arg.IsActive                               // simple assign
+	out.CreatedAt = arg.CreatedAt                             // simple assign
+	out.UpdatedAt = arg.UpdatedAt                             // simple assign
+	out.DeletedAt = arg.DeletedAt                             // simple assign
+	out.ShipmentSubPriceListIDs = arg.ShipmentSubPriceListIDs // simple assign
 }
 
 func Convert_pricelistmodel_ShipmentPriceLists_pricelist_ShipmentPriceLists(args []*pricelistmodel.ShipmentPriceList) (outs []*pricelist.ShipmentPriceList) {
@@ -99,14 +100,15 @@ func Convert_pricelist_ShipmentPriceList_pricelistmodel_ShipmentPriceList(arg *p
 }
 
 func convert_pricelist_ShipmentPriceList_pricelistmodel_ShipmentPriceList(arg *pricelist.ShipmentPriceList, out *pricelistmodel.ShipmentPriceList) {
-	out.ID = arg.ID                   // simple assign
-	out.Name = arg.Name               // simple assign
-	out.Description = arg.Description // simple assign
-	out.IsActive = arg.IsActive       // simple assign
-	out.CreatedAt = arg.CreatedAt     // simple assign
-	out.UpdatedAt = arg.UpdatedAt     // simple assign
-	out.DeletedAt = arg.DeletedAt     // simple assign
-	out.WLPartnerID = arg.WLPartnerID // simple assign
+	out.ID = arg.ID                                           // simple assign
+	out.Name = arg.Name                                       // simple assign
+	out.Description = arg.Description                         // simple assign
+	out.IsActive = arg.IsActive                               // simple assign
+	out.CreatedAt = arg.CreatedAt                             // simple assign
+	out.UpdatedAt = arg.UpdatedAt                             // simple assign
+	out.DeletedAt = arg.DeletedAt                             // simple assign
+	out.WLPartnerID = arg.WLPartnerID                         // simple assign
+	out.ShipmentSubPriceListIDs = arg.ShipmentSubPriceListIDs // simple assign
 }
 
 func Convert_pricelist_ShipmentPriceLists_pricelistmodel_ShipmentPriceLists(args []*pricelist.ShipmentPriceList) (outs []*pricelistmodel.ShipmentPriceList) {
@@ -133,14 +135,15 @@ func Apply_pricelist_CreateShipmentPriceListArg_pricelist_ShipmentPriceList(arg 
 }
 
 func apply_pricelist_CreateShipmentPriceListArg_pricelist_ShipmentPriceList(arg *pricelist.CreateShipmentPriceListArg, out *pricelist.ShipmentPriceList) {
-	out.ID = 0                        // zero value
-	out.Name = arg.Name               // simple assign
-	out.Description = arg.Description // simple assign
-	out.WLPartnerID = 0               // zero value
-	out.IsActive = arg.IsActive       // simple assign
-	out.CreatedAt = time.Time{}       // zero value
-	out.UpdatedAt = time.Time{}       // zero value
-	out.DeletedAt = time.Time{}       // zero value
+	out.ID = 0                                                // zero value
+	out.Name = arg.Name                                       // simple assign
+	out.Description = arg.Description                         // simple assign
+	out.WLPartnerID = 0                                       // zero value
+	out.IsActive = arg.IsActive                               // simple assign
+	out.CreatedAt = time.Time{}                               // zero value
+	out.UpdatedAt = time.Time{}                               // zero value
+	out.DeletedAt = time.Time{}                               // zero value
+	out.ShipmentSubPriceListIDs = arg.ShipmentSubPriceListIDs // simple assign
 }
 
 func Apply_pricelist_UpdateShipmentPriceListArgs_pricelist_ShipmentPriceList(arg *pricelist.UpdateShipmentPriceListArgs, out *pricelist.ShipmentPriceList) *pricelist.ShipmentPriceList {
@@ -155,12 +158,13 @@ func Apply_pricelist_UpdateShipmentPriceListArgs_pricelist_ShipmentPriceList(arg
 }
 
 func apply_pricelist_UpdateShipmentPriceListArgs_pricelist_ShipmentPriceList(arg *pricelist.UpdateShipmentPriceListArgs, out *pricelist.ShipmentPriceList) {
-	out.ID = arg.ID                   // simple assign
-	out.Name = arg.Name               // simple assign
-	out.Description = arg.Description // simple assign
-	out.WLPartnerID = out.WLPartnerID // no change
-	out.IsActive = out.IsActive       // no change
-	out.CreatedAt = out.CreatedAt     // no change
-	out.UpdatedAt = out.UpdatedAt     // no change
-	out.DeletedAt = out.DeletedAt     // no change
+	out.ID = arg.ID                                           // simple assign
+	out.Name = arg.Name                                       // simple assign
+	out.Description = arg.Description                         // simple assign
+	out.WLPartnerID = out.WLPartnerID                         // no change
+	out.IsActive = out.IsActive                               // no change
+	out.CreatedAt = out.CreatedAt                             // no change
+	out.UpdatedAt = out.UpdatedAt                             // no change
+	out.DeletedAt = out.DeletedAt                             // no change
+	out.ShipmentSubPriceListIDs = arg.ShipmentSubPriceListIDs // simple assign
 }

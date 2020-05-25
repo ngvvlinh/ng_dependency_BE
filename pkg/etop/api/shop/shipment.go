@@ -28,10 +28,11 @@ func (s *ShipmentService) Clone() *ShipmentService { res := *s; return &res }
 func (s *ShipmentService) GetShippingServices(ctx context.Context, q *GetShippingServicesEndpoint) error {
 	shopID := q.Context.Shop.ID
 	args, err := s.ShipmentManager.PrepareDataGetShippingServices(ctx, q.GetShippingServicesRequest)
+	args.AccountID = shopID
 	if err != nil {
 		return err
 	}
-	resp, err := s.ShipmentManager.GetShippingServices(ctx, shopID, args)
+	resp, err := s.ShipmentManager.GetShippingServices(ctx, args)
 	if err != nil {
 		return err
 	}

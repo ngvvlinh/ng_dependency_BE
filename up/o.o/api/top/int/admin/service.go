@@ -115,6 +115,12 @@ type ShipmentPriceService interface {
 	UpdateShipmentServicesAvailableLocations(context.Context, *UpdateShipmentServicesAvailableLocationsRequest) (*cm.UpdatedResponse, error)
 	UpdateShipmentServicesBlacklistLocations(context.Context, *UpdateShipmentServicesBlacklistLocationsRequest) (*cm.UpdatedResponse, error)
 
+	GetShipmentSubPriceLists(context.Context, *GetShipmentSubPriceListsRequest) (*GetShipmentSubPriceListsResponse, error)
+	GetShipmentSubPriceList(context.Context, *cm.IDRequest) (*ShipmentSubPriceList, error)
+	CreateShipmentSubPriceList(context.Context, *CreateShipmentSubPriceListRequest) (*ShipmentSubPriceList, error)
+	UpdateShipmentSubPriceList(context.Context, *UpdateShipmentSubPriceListRequest) (*cm.UpdatedResponse, error)
+	DeleteShipmentSubPriceList(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+
 	GetShipmentPriceLists(context.Context, *cm.Empty) (*GetShipmentPriceListsResponse, error)
 	GetShipmentPriceList(context.Context, *cm.IDRequest) (*ShipmentPriceList, error)
 	CreateShipmentPriceList(context.Context, *CreateShipmentPriceListRequest) (*ShipmentPriceList, error)
@@ -128,6 +134,12 @@ type ShipmentPriceService interface {
 	UpdateShipmentPrice(context.Context, *UpdateShipmentPriceRequest) (*ShipmentPrice, error)
 	DeleteShipmentPrice(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 	UpdateShipmentPricesPriorityPoint(context.Context, *UpdateShipmentPricesPriorityPointRequest) (*cm.UpdatedResponse, error)
+
+	GetShopShipmentPriceLists(context.Context, *GetShopShipmentPriceListsRequest) (*GetShopShipmentPriceListsResponse, error)
+	GetShopShipmentPriceList(context.Context, *GetShopShipmentPriceListRequest) (*ShopShipmentPriceList, error)
+	CreateShopShipmentPriceList(context.Context, *CreateShopShipmentPriceList) (*ShopShipmentPriceList, error)
+	UpdateShopShipmentPriceList(context.Context, *UpdateShopShipmentPriceListRequest) (*cm.UpdatedResponse, error)
+	DeleteShopShipmentPriceList(context.Context, *GetShopShipmentPriceListRequest) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/admin.Location

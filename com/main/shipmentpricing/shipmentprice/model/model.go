@@ -10,22 +10,22 @@ import (
 
 // +sqlgen
 type ShipmentPrice struct {
-	ID                  dot.ID
-	ShipmentPriceListID dot.ID
-	ShipmentServiceID   dot.ID
-	Name                string
-	CustomRegionTypes   []route_type.CustomRegionRouteType
-	CustomRegionIDs     []dot.ID
-	RegionTypes         []route_type.RegionRouteType
-	ProvinceTypes       []route_type.ProvinceRouteType
-	UrbanTypes          []route_type.UrbanType
-	Details             []*PricingDetail
-	PriorityPoint       int
-	CreatedAt           time.Time `sq:"create"`
-	UpdatedAt           time.Time `sq:"update"`
-	DeletedAt           time.Time
-	WLPartnerID         dot.ID
-	Status              status3.Status
+	ID                     dot.ID
+	ShipmentSubPriceListID dot.ID
+	ShipmentServiceID      dot.ID
+	Name                   string
+	CustomRegionTypes      []route_type.CustomRegionRouteType
+	CustomRegionIDs        []dot.ID
+	RegionTypes            []route_type.RegionRouteType
+	ProvinceTypes          []route_type.ProvinceRouteType
+	UrbanTypes             []route_type.UrbanType
+	Details                []*PricingDetail
+	PriorityPoint          int
+	CreatedAt              time.Time `sq:"create"`
+	UpdatedAt              time.Time `sq:"update"`
+	DeletedAt              time.Time
+	WLPartnerID            dot.ID
+	Status                 status3.Status
 }
 
 type PricingDetail struct {

@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShipmentPrices []*ShipmentPrice
 
 const __sqlShipmentPrice_Table = "shipment_price"
-const __sqlShipmentPrice_ListCols = "\"id\",\"shipment_price_list_id\",\"shipment_service_id\",\"name\",\"custom_region_types\",\"custom_region_ids\",\"region_types\",\"province_types\",\"urban_types\",\"details\",\"priority_point\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"status\""
-const __sqlShipmentPrice_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shipment_price_list_id\" = EXCLUDED.\"shipment_price_list_id\",\"shipment_service_id\" = EXCLUDED.\"shipment_service_id\",\"name\" = EXCLUDED.\"name\",\"custom_region_types\" = EXCLUDED.\"custom_region_types\",\"custom_region_ids\" = EXCLUDED.\"custom_region_ids\",\"region_types\" = EXCLUDED.\"region_types\",\"province_types\" = EXCLUDED.\"province_types\",\"urban_types\" = EXCLUDED.\"urban_types\",\"details\" = EXCLUDED.\"details\",\"priority_point\" = EXCLUDED.\"priority_point\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"status\" = EXCLUDED.\"status\""
+const __sqlShipmentPrice_ListCols = "\"id\",\"shipment_sub_price_list_id\",\"shipment_service_id\",\"name\",\"custom_region_types\",\"custom_region_ids\",\"region_types\",\"province_types\",\"urban_types\",\"details\",\"priority_point\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"status\""
+const __sqlShipmentPrice_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shipment_sub_price_list_id\" = EXCLUDED.\"shipment_sub_price_list_id\",\"shipment_service_id\" = EXCLUDED.\"shipment_service_id\",\"name\" = EXCLUDED.\"name\",\"custom_region_types\" = EXCLUDED.\"custom_region_types\",\"custom_region_ids\" = EXCLUDED.\"custom_region_ids\",\"region_types\" = EXCLUDED.\"region_types\",\"province_types\" = EXCLUDED.\"province_types\",\"urban_types\" = EXCLUDED.\"urban_types\",\"details\" = EXCLUDED.\"details\",\"priority_point\" = EXCLUDED.\"priority_point\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"status\" = EXCLUDED.\"status\""
 const __sqlShipmentPrice_Insert = "INSERT INTO \"shipment_price\" (" + __sqlShipmentPrice_ListCols + ") VALUES"
 const __sqlShipmentPrice_Select = "SELECT " + __sqlShipmentPrice_ListCols + " FROM \"shipment_price\""
 const __sqlShipmentPrice_Select_history = "SELECT " + __sqlShipmentPrice_ListCols + " FROM history.\"shipment_price\""
@@ -65,8 +65,8 @@ func (m *ShipmentPrice) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
-		"shipment_price_list_id": {
-			ColumnName:       "shipment_price_list_id",
+		"shipment_sub_price_list_id": {
+			ColumnName:       "shipment_sub_price_list_id",
 			ColumnType:       "dot.ID",
 			ColumnDBType:     "int64",
 			ColumnTag:        "",
@@ -184,7 +184,7 @@ func (m *ShipmentPrice) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		m.ID,
-		m.ShipmentPriceListID,
+		m.ShipmentSubPriceListID,
 		m.ShipmentServiceID,
 		core.String(m.Name),
 		core.Array{m.CustomRegionTypes, opts},
@@ -205,7 +205,7 @@ func (m *ShipmentPrice) SQLArgs(opts core.Opts, create bool) []interface{} {
 func (m *ShipmentPrice) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
-		&m.ShipmentPriceListID,
+		&m.ShipmentSubPriceListID,
 		&m.ShipmentServiceID,
 		(*core.String)(&m.Name),
 		core.Array{&m.CustomRegionTypes, opts},
@@ -306,13 +306,13 @@ func (m *ShipmentPrice) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ID)
 	}
-	if m.ShipmentPriceListID != 0 {
+	if m.ShipmentSubPriceListID != 0 {
 		flag = true
-		w.WriteName("shipment_price_list_id")
+		w.WriteName("shipment_sub_price_list_id")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShipmentPriceListID)
+		w.WriteArg(m.ShipmentSubPriceListID)
 	}
 	if m.ShipmentServiceID != 0 {
 		flag = true
@@ -459,8 +459,8 @@ func (m ShipmentPriceHistories) SQLSelect(w SQLWriter) error {
 }
 
 func (m ShipmentPriceHistory) ID() core.Interface { return core.Interface{m["id"]} }
-func (m ShipmentPriceHistory) ShipmentPriceListID() core.Interface {
-	return core.Interface{m["shipment_price_list_id"]}
+func (m ShipmentPriceHistory) ShipmentSubPriceListID() core.Interface {
+	return core.Interface{m["shipment_sub_price_list_id"]}
 }
 func (m ShipmentPriceHistory) ShipmentServiceID() core.Interface {
 	return core.Interface{m["shipment_service_id"]}
@@ -498,7 +498,7 @@ func (m *ShipmentPriceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	}
 	res := make(ShipmentPriceHistory, 16)
 	res["id"] = data[0]
-	res["shipment_price_list_id"] = data[1]
+	res["shipment_sub_price_list_id"] = data[1]
 	res["shipment_service_id"] = data[2]
 	res["name"] = data[3]
 	res["custom_region_types"] = data[4]
@@ -530,7 +530,7 @@ func (ms *ShipmentPriceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		}
 		m := make(ShipmentPriceHistory)
 		m["id"] = data[0]
-		m["shipment_price_list_id"] = data[1]
+		m["shipment_sub_price_list_id"] = data[1]
 		m["shipment_service_id"] = data[2]
 		m["name"] = data[3]
 		m["custom_region_types"] = data[4]

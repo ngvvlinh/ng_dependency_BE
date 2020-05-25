@@ -1237,6 +1237,32 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			return
 		}
 		return msg, fn, nil
+	case "/admin.ShipmentPrice/CreateShipmentSubPriceList":
+		msg := &CreateShipmentSubPriceListRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateShipmentSubPriceList(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/CreateShopShipmentPriceList":
+		msg := &CreateShopShipmentPriceList{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateShopShipmentPriceList(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.ShipmentPrice/DeleteShipmentPrice":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -1273,6 +1299,32 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 				return
 			}
 			resp, err = inner.DeleteShipmentService(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/DeleteShipmentSubPriceList":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteShipmentSubPriceList(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/DeleteShopShipmentPriceList":
+		msg := &GetShopShipmentPriceListRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteShopShipmentPriceList(ctx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1354,6 +1406,32 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			return
 		}
 		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentSubPriceList":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShipmentSubPriceList(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentSubPriceLists":
+		msg := &GetShipmentSubPriceListsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShipmentSubPriceLists(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShippingServices":
 		msg := &GetShippingServicesRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -1364,6 +1442,32 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 				return
 			}
 			resp, err = inner.GetShippingServices(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShopShipmentPriceList":
+		msg := &GetShopShipmentPriceListRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShopShipmentPriceList(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShopShipmentPriceLists":
+		msg := &GetShopShipmentPriceListsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShopShipmentPriceLists(ctx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1442,6 +1546,32 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 				return
 			}
 			resp, err = inner.UpdateShipmentServicesBlacklistLocations(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShipmentSubPriceList":
+		msg := &UpdateShipmentSubPriceListRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateShipmentSubPriceList(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShopShipmentPriceList":
+		msg := &UpdateShopShipmentPriceListRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateShopShipmentPriceList(ctx, msg)
 			return
 		}
 		return msg, fn, nil

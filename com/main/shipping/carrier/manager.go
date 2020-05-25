@@ -289,6 +289,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	}
 
 	args := &GetShippingServicesArgs{
+		AccountID:        ffm.ShopID,
 		FromDistrictCode: fromDistrict.Code,
 		FromProvinceCode: fromProvince.Code,
 		FromWardCode:     ffm.AddressFrom.WardCode,
@@ -303,7 +304,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		BasketValue:      ffm.BasketValue,
 		CODAmount:        ffm.TotalCODAmount,
 	}
-	allServices, err := m.GetShipmentServicesAndMakeupPrice(ctx, ffm.ShopID, args, ffm.ConnectionID)
+	allServices, err := m.GetShipmentServicesAndMakeupPrice(ctx, args, ffm.ConnectionID)
 	if err != nil {
 		return err
 	}
@@ -408,7 +409,8 @@ func (m *ShipmentManager) CancelFulfillment(ctx context.Context, ffm *shipmodel.
 	return driver.CancelFulfillment(ctx, ffm)
 }
 
-func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot.ID, args *GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (m *ShipmentManager) GetShippingServices(ctx context.Context, args *GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+	accountID := args.AccountID
 	shopConnections, err := m.GetAllShopConnections(ctx, accountID, args.ConnectionIDs)
 	if err != nil {
 		return nil, err
@@ -425,7 +427,7 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, accountID dot
 			if shopConn.Status != status3.P || shopConn.Token == "" {
 				return cm.Errorf(cm.FailedPrecondition, nil, "Connection does not valid (check status or token)")
 			}
-			services, err := m.GetShipmentServicesAndMakeupPrice(ctx, accountID, args, connID)
+			services, err := m.GetShipmentServicesAndMakeupPrice(ctx, args, connID)
 			if err != nil {
 				return err
 			}
@@ -688,7 +690,8 @@ func (m *ShipmentManager) validateConnection(ctx context.Context, conn *connecti
 	return false
 }
 
-func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context, accountID dot.ID, args *GetShippingServicesArgs, connID dot.ID) ([]*model.AvailableShippingService, error) {
+func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context, args *GetShippingServicesArgs, connID dot.ID) ([]*model.AvailableShippingService, error) {
+	accountID := args.AccountID
 	conn, err := m.GetConnectionByID(ctx, connID)
 	if err != nil {
 		return nil, err
@@ -938,6 +941,7 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 	originFee := service.ServiceFee
 
 	query := &shipmentprice.CalculatePriceQuery{
+		AccountID:           args.AccountID,
 		ShipmentPriceListID: args.ShipmentPriceListID,
 		FromDistrictCode:    args.FromDistrictCode,
 		ToDistrictCode:      args.ToDistrictCode,

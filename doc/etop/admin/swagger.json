@@ -1393,6 +1393,60 @@
         }
       }
     },
+    "/api/admin.ShipmentPrice/CreateShipmentSubPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "CreateShipmentSubPriceList",
+        "operationId": "admin.ShipmentPrice-CreateShipmentSubPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateShipmentSubPriceListRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentSubPriceList"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/CreateShopShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "CreateShopShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-CreateShopShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateShopShipmentPriceList"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShopShipmentPriceList"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.ShipmentPrice/DeleteShipmentPrice": {
       "post": {
         "tags": [
@@ -1461,6 +1515,60 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/DeleteShipmentSubPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "DeleteShipmentSubPriceList",
+        "operationId": "admin.ShipmentPrice-DeleteShipmentSubPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/DeleteShopShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "DeleteShopShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-DeleteShopShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetShopShipmentPriceListRequest"
             }
           }
         ],
@@ -1636,6 +1744,60 @@
         }
       }
     },
+    "/api/admin.ShipmentPrice/GetShipmentSubPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentSubPriceList",
+        "operationId": "admin.ShipmentPrice-GetShipmentSubPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentSubPriceList"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentSubPriceLists": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentSubPriceLists",
+        "operationId": "admin.ShipmentPrice-GetShipmentSubPriceLists",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetShipmentSubPriceListsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetShipmentSubPriceListsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.ShipmentPrice/GetShippingServices": {
       "post": {
         "tags": [
@@ -1658,6 +1820,60 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/qdGetShippingServicesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShopShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShopShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-GetShopShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetShopShipmentPriceListRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShopShipmentPriceList"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShopShipmentPriceLists": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShopShipmentPriceLists",
+        "operationId": "admin.ShipmentPrice-GetShopShipmentPriceLists",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetShopShipmentPriceListsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetShopShipmentPriceListsResponse"
             }
           }
         }
@@ -1812,6 +2028,60 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/xuUpdateShipmentServicesBlacklistLocationsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShipmentSubPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShipmentSubPriceList",
+        "operationId": "admin.ShipmentPrice-UpdateShipmentSubPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShipmentSubPriceListRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShopShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShopShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-UpdateShopShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShopShipmentPriceListRequest"
             }
           }
         ],
@@ -6211,6 +6481,13 @@
         },
         "name": {
           "type": "string"
+        },
+        "shipment_sub_price_list_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -6254,11 +6531,11 @@
             "$ref": "#/definitions/ajRegionRouteType"
           }
         },
-        "shipment_price_list_id": {
+        "shipment_service_id": {
           "type": "string",
           "format": "int64"
         },
-        "shipment_service_id": {
+        "shipment_sub_price_list_id": {
           "type": "string",
           "format": "int64"
         },
@@ -6309,6 +6586,37 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "xuCreateShipmentSubPriceListRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "xuCreateShopShipmentPriceList": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -6521,11 +6829,11 @@
     "xuGetShipmentPricesRequest": {
       "type": "object",
       "properties": {
-        "shipment_price_list_id": {
+        "shipment_service_id": {
           "type": "string",
           "format": "int64"
         },
-        "shipment_service_id": {
+        "shipment_sub_price_list_id": {
           "type": "string",
           "format": "int64"
         }
@@ -6553,10 +6861,35 @@
         }
       }
     },
+    "xuGetShipmentSubPriceListsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetShipmentSubPriceListsResponse": {
+      "type": "object",
+      "properties": {
+        "shipment_sub_price_lists": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuShipmentSubPriceList"
+          }
+        }
+      }
+    },
     "xuGetShippingServicesRequest": {
       "description": "Use to test shipment prices\n",
       "type": "object",
       "properties": {
+        "account_id": {
+          "description": "AccountID\n\ndùng để tính cước phí cho 1 shop (trường hợp gắn bảng giá cho shop)\n",
+          "type": "string",
+          "format": "int64"
+        },
         "basket_value": {
           "type": "integer"
         },
@@ -6580,6 +6913,7 @@
           "type": "boolean"
         },
         "shipment_price_list_id": {
+          "description": "ShipmentPriceListID\n\ntrường hợp tính cước phí cho 1 bảng giá cụ thể, nếu field này rỗng mới quan tâm tới AccountID để lấy bảng giá\n",
           "type": "string",
           "format": "int64"
         },
@@ -6591,6 +6925,41 @@
         },
         "total_cod_amount": {
           "type": "integer"
+        }
+      }
+    },
+    "xuGetShopShipmentPriceListRequest": {
+      "type": "object",
+      "properties": {
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetShopShipmentPriceListsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetShopShipmentPriceListsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "price_lists": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuShopShipmentPriceList"
+          }
         }
       }
     },
@@ -6748,11 +7117,11 @@
             "$ref": "#/definitions/ajRegionRouteType"
           }
         },
-        "shipment_price_list_id": {
+        "shipment_service_id": {
           "type": "string",
           "format": "int64"
         },
-        "shipment_service_id": {
+        "shipment_sub_price_list_id": {
           "type": "string",
           "format": "int64"
         },
@@ -6851,6 +7220,64 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "xuShipmentSubPriceList": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "xuShopShipmentPriceList": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "note": {
+          "type": "string"
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_by": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -7030,6 +7457,13 @@
         },
         "name": {
           "type": "string"
+        },
+        "shipment_sub_price_list_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -7089,11 +7523,11 @@
             "$ref": "#/definitions/ajRegionRouteType"
           }
         },
-        "shipment_price_list_id": {
+        "shipment_service_id": {
           "type": "string",
           "format": "int64"
         },
-        "shipment_service_id": {
+        "shipment_sub_price_list_id": {
           "type": "string",
           "format": "int64"
         },
@@ -7189,6 +7623,40 @@
             "type": "string",
             "format": "int64"
           }
+        }
+      }
+    },
+    "xuUpdateShipmentSubPriceListRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "xuUpdateShopShipmentPriceListRequest": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

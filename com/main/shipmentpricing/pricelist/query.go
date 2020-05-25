@@ -39,7 +39,11 @@ func (q *QueryService) GetActiveShipmentPriceList(ctx context.Context, _ *meta.E
 	return q.shipmentPriceListStore(ctx).IsActive(true).GetShipmentPriceList()
 }
 
-func (q *QueryService) ListShipmentPriceList(ctx context.Context,
-	_ *meta.Empty) ([]*pricelist.ShipmentPriceList, error) {
-	return q.shipmentPriceListStore(ctx).ListShipmentPriceLists()
+func (q *QueryService) ListShipmentPriceLists(ctx context.Context,
+	args *pricelist.ListShipmentPriceListsArgs) ([]*pricelist.ShipmentPriceList, error) {
+	query := q.shipmentPriceListStore(ctx)
+	if len(args.SubShipmentPriceListIDs) != 0 {
+		query = query.SubPriceListIDs(args.SubShipmentPriceListIDs...)
+	}
+	return query.ListShipmentPriceLists()
 }

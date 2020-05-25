@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -59,6 +60,11 @@ func (s *ShipmentPriceListStore) IsActive(isActive bool) *ShipmentPriceListStore
 	return s
 }
 
+func (s *ShipmentPriceListStore) SubPriceListIDs(subPriceListIDs ...dot.ID) *ShipmentPriceListStore {
+	s.preds = append(s.preds, sq.NewExpr("shipment_sub_price_list_ids && ?", core.Array{V: subPriceListIDs}))
+	return s
+}
+
 func (s *ShipmentPriceListStore) GetShipmentPriceListDB() (*model.ShipmentPriceList, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
@@ -69,12 +75,12 @@ func (s *ShipmentPriceListStore) GetShipmentPriceListDB() (*model.ShipmentPriceL
 }
 
 func (s *ShipmentPriceListStore) GetShipmentPriceList() (*pricelist.ShipmentPriceList, error) {
-	serviceDB, err := s.GetShipmentPriceListDB()
+	priceListDB, err := s.GetShipmentPriceListDB()
 	if err != nil {
 		return nil, err
 	}
 	var res pricelist.ShipmentPriceList
-	if err := scheme.Convert(serviceDB, &res); err != nil {
+	if err := scheme.Convert(priceListDB, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -89,11 +95,11 @@ func (s *ShipmentPriceListStore) ListShipmentPriceListDBs() (res []*model.Shipme
 }
 
 func (s *ShipmentPriceListStore) ListShipmentPriceLists() (res []*pricelist.ShipmentPriceList, _ error) {
-	services, err := s.ListShipmentPriceListDBs()
+	priceLists, err := s.ListShipmentPriceListDBs()
 	if err != nil {
 		return nil, err
 	}
-	if err := scheme.Convert(services, &res); err != nil {
+	if err := scheme.Convert(priceLists, &res); err != nil {
 		return nil, err
 	}
 	return

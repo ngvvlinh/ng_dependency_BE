@@ -86,7 +86,8 @@ func (s *Shipping) GetShippingServices(ctx context.Context, accountID dot.ID, r 
 	if err != nil {
 		return nil, err
 	}
-	resp, err := s.ShipmentManager.GetShippingServices(ctx, accountID, args)
+	args.AccountID = accountID
+	resp, err := s.ShipmentManager.GetShippingServices(ctx, args)
 	if err != nil {
 		return nil, err
 	}
