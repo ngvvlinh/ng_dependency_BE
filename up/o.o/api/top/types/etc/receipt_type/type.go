@@ -14,8 +14,10 @@ const (
 	Unknown ReceiptType = 0
 
 	// +enum=receipt
+	// +enum:RefName:thu
 	Receipt ReceiptType = 1
 
 	// +enum=payment
+	// +enum:RefName:chi
 	Payment ReceiptType = 2
 )

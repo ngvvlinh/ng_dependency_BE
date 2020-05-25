@@ -413,6 +413,16 @@ func (a *ReceiptAggregate) ConfirmReceipt(
 			Wrap(cm.NotFound, "Không tìm thấy phiếu").
 			Throw()
 	}
+	//receipt confirming
+	receiptConfirmingEvent := &receipting.ReceiptConfirmingEvent{
+		ShopID:      args.ShopID,
+		ReceiptID:   args.ID,
+		ReceiptType: receipt.Type,
+		RefType:     receipt.RefType,
+	}
+	if err = a.eventBus.Publish(ctx, receiptConfirmingEvent); err != nil {
+		return 0, err
+	}
 
 	if err := a.validateReceiptLines(ctx, receipt.RefType, receipt); err != nil {
 		return 0, err

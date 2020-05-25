@@ -60,6 +60,40 @@ func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.ReceiptCreating)
 	eventBus.AddEventListener(p.FulfillmentsCreatingEvent)
 	eventBus.AddEventListener(p.FulfillmentsCreatedEvent)
+	eventBus.AddEventListener(p.ReceiptConfirming)
+}
+
+func (p *ProcessManager) ReceiptConfirming(ctx context.Context, event *receipting.ReceiptConfirmingEvent) error {
+	queryReceipt := &receipting.GetReceiptByIDQuery{
+		ID:     event.ReceiptID,
+		ShopID: event.ShopID,
+	}
+	if err := p.receiptQuery.Dispatch(ctx, queryReceipt); err != nil {
+		return err
+	}
+	receipt := queryReceipt.Result
+	if receipt.RefType != receipt_ref.Order {
+		return nil
+	}
+	// Kiểm tra receipt được khởi tạo tự động từ việc hủy order hay không (tạo ra khi hủy order đã có sẳn một receipt đã được xác nhận, receipt_type = payment).
+	// Lúc này không cần kiểm tra trạng thái của đơn hàng nữa.
+	// Các trường hợp khác, không được confirm receipt của đơn hàng đã hủy.
+	if event.ReceiptType == receipt_type.Payment {
+		return nil
+	}
+	queryOrder := &ordering.GetOrdersQuery{
+		ShopID: event.ShopID,
+		IDs:    receipt.RefIDs,
+	}
+	if err := p.orderQuery.Dispatch(ctx, queryOrder); err != nil {
+		return err
+	}
+	for _, order := range queryOrder.Result.Orders {
+		if order.Status == status5.N {
+			return cm.Errorf(cm.InvalidArgument, nil, "Đơn hàng %v đã bị hủy, không thể xác nhận phiếu %v", order.Code, receipt.Type.GetLabelRefName())
+		}
+	}
+	return nil
 }
 
 func (p *ProcessManager) CheckTradingOrderValid(ctx context.Context, event *ordertrading.TradingOrderCreatingEvent) error {

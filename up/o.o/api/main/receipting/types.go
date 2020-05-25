@@ -62,6 +62,14 @@ func (r *Receipt) GetRefIDs() []dot.ID {
 	return ids
 }
 
+type ReceiptConfirmingEvent struct {
+	meta.EventMeta
+	ShopID      dot.ID
+	ReceiptID   dot.ID
+	RefType     receipt_ref.ReceiptRef
+	ReceiptType receipt_type.ReceiptType
+}
+
 type ReceiptConfirmedEvent struct {
 	meta.EventMeta
 	ShopID    dot.ID

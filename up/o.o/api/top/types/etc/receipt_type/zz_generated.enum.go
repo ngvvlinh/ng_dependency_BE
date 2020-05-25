@@ -26,6 +26,23 @@ var enumReceiptTypeValue = map[string]int{
 	"payment": 2,
 }
 
+var enumReceiptTypeMapLabel = map[string]map[string]string{
+	"unknown": {
+		"RefName": "",
+	},
+	"receipt": {
+		"RefName": "thu",
+	},
+	"payment": {
+		"RefName": "chi",
+	},
+}
+
+func (e ReceiptType) GetLabelRefName() string {
+	val := enumReceiptTypeName[int(e)]
+	nameVal := enumReceiptTypeMapLabel[val]
+	return nameVal["RefName"]
+}
 func ParseReceiptType(s string) (ReceiptType, bool) {
 	val, ok := enumReceiptTypeValue[s]
 	return ReceiptType(val), ok
