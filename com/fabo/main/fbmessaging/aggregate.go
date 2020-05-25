@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/backend/com/fabo/main/compare"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/sqlstore"
 	"o.o/backend/pkg/common/bus"
@@ -13,10 +14,8 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 	"o.o/capi/dot"
-	"o.o/common/l"
 )
 
-var ll = l.New()
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type FbExternalMessagingAggregate struct {
@@ -94,6 +93,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalMessages(
 		mapOldFbExternalMessage[oldFbExternalMessage.ExternalID] = oldFbExternalMessage
 	}
 
+	var resultFbExternalMessages []*fbmessaging.FbExternalMessage
 	var newFbExternalMessages []*fbmessaging.FbExternalMessage
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		for _, fbExternalMessageArg := range args.FbExternalMessages {
@@ -104,6 +104,13 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalMessages(
 
 			if oldFbExternalMessage, ok := mapOldFbExternalMessage[fbExternalMessageArg.ExternalID]; ok {
 				newFbExternalMessage.ID = oldFbExternalMessage.ID
+				resultFbExternalMessages = append(resultFbExternalMessages, oldFbExternalMessage)
+
+				if isEqual := compare.Compare(oldFbExternalMessage, newFbExternalMessage); isEqual {
+					continue
+				}
+			} else {
+				resultFbExternalMessages = append(resultFbExternalMessages, newFbExternalMessage)
 			}
 
 			newFbExternalMessages = append(newFbExternalMessages, newFbExternalMessage)
@@ -126,7 +133,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalMessages(
 	}); err != nil {
 		return nil, err
 	}
-	return newFbExternalMessages, nil
+	return resultFbExternalMessages, nil
 }
 
 func (a *FbExternalMessagingAggregate) CreateFbExternalConversations(
@@ -178,19 +185,27 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalConversations(
 		mapOldFbExternalConversation[oldFbExternalConversation.ExternalID] = oldFbExternalConversation
 	}
 
+	var resultFbExternalConversations []*fbmessaging.FbExternalConversation
 	var newFbExternalConversations []*fbmessaging.FbExternalConversation
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		for _, fbExternalConversationArg := range args.FbExternalConversations {
-			upsertingFbExternalConversation := new(fbmessaging.FbExternalConversation)
-			if err := scheme.Convert(fbExternalConversationArg, upsertingFbExternalConversation); err != nil {
+			newFbExternalConversation := new(fbmessaging.FbExternalConversation)
+			if err := scheme.Convert(fbExternalConversationArg, newFbExternalConversation); err != nil {
 				return err
 			}
 
 			if oldFbExternalConversation, ok := mapOldFbExternalConversation[fbExternalConversationArg.ExternalID]; ok {
-				upsertingFbExternalConversation.ID = oldFbExternalConversation.ID
+				newFbExternalConversation.ID = oldFbExternalConversation.ID
+				resultFbExternalConversations = append(resultFbExternalConversations, oldFbExternalConversation)
+
+				if isEqual := compare.Compare(oldFbExternalConversation, newFbExternalConversation); isEqual {
+					continue
+				}
+			} else {
+				resultFbExternalConversations = append(resultFbExternalConversations, newFbExternalConversation)
 			}
 
-			newFbExternalConversations = append(newFbExternalConversations, upsertingFbExternalConversation)
+			newFbExternalConversations = append(newFbExternalConversations, newFbExternalConversation)
 		}
 
 		if len(newFbExternalConversations) > 0 {
@@ -211,7 +226,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalConversations(
 	}); err != nil {
 		return nil, err
 	}
-	return newFbExternalConversations, nil
+	return resultFbExternalConversations, nil
 }
 
 func (a *FbExternalMessagingAggregate) CreateFbCustomerConversations(
@@ -281,13 +296,12 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbCustomerConversations(
 		for _, customerConversation := range customerConversationArgsTypeMessage {
 			ID := customerConversation.ID
 			var isRead bool
-			createdAt, updatedAt, deletedAt := time.Now(), time.Now(), time.Time{}
+			createdAt, updatedAt := time.Now(), time.Now()
 			if oldCustomerConversation, ok := mapOldCustomerConversation[customerConversation.ExternalID]; ok {
 				ID = oldCustomerConversation.ID
 				isRead = oldCustomerConversation.IsRead
 				createdAt = oldCustomerConversation.CreatedAt
 				updatedAt = oldCustomerConversation.UpdatedAt
-				deletedAt = oldCustomerConversation.DeletedAt
 			}
 			newCustomerConversations = append(newCustomerConversations, &fbmessaging.FbCustomerConversation{
 				ID:               ID,
@@ -301,7 +315,6 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbCustomerConversations(
 				LastMessageAt:    customerConversation.LastMessageAt,
 				CreatedAt:        createdAt,
 				UpdatedAt:        updatedAt,
-				DeletedAt:        deletedAt,
 			})
 		}
 	}
@@ -339,13 +352,12 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbCustomerConversations(
 		for _, customerConversation := range customerConversationArgsTypeComment {
 			ID := customerConversation.ID
 			var isRead bool
-			createdAt, updatedAt, deletedAt := time.Now(), time.Now(), time.Time{}
+			createdAt, updatedAt := time.Now(), time.Now()
 			if oldCustomerConversation, ok := mapExternalIDandMapExternalUserIDAndOldCustomerConversation[customerConversation.ExternalID][customerConversation.ExternalUserID]; ok {
 				ID = oldCustomerConversation.ID
 				isRead = oldCustomerConversation.IsRead
 				createdAt = oldCustomerConversation.CreatedAt
 				updatedAt = oldCustomerConversation.UpdatedAt
-				deletedAt = oldCustomerConversation.DeletedAt
 			}
 			newCustomerConversations = append(newCustomerConversations, &fbmessaging.FbCustomerConversation{
 				ID:                        ID,
@@ -361,7 +373,6 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbCustomerConversations(
 				LastMessageAt:             customerConversation.LastMessageAt,
 				CreatedAt:                 createdAt,
 				UpdatedAt:                 updatedAt,
-				DeletedAt:                 deletedAt,
 			})
 		}
 	}
@@ -421,16 +432,25 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalPosts(
 		mapOldFbExternalPost[oldFbExternalPost.ExternalID] = oldFbExternalPost
 	}
 
+	resultFbExternalPosts := make([]*fbmessaging.FbExternalPost, 0, len(args.FbExternalPosts))
 	newFbExternalPosts := make([]*fbmessaging.FbExternalPost, 0, len(args.FbExternalPosts))
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		for _, fbExternalPostArg := range args.FbExternalPosts {
-			if oldFbExternalPost, ok := mapOldFbExternalPost[fbExternalPostArg.ExternalID]; ok {
-				fbExternalPostArg.ID = oldFbExternalPost.ID
-			}
 
 			newFbExternalPost := new(fbmessaging.FbExternalPost)
 			if err := scheme.Convert(fbExternalPostArg, newFbExternalPost); err != nil {
 				return err
+			}
+
+			if oldFbExternalPost, ok := mapOldFbExternalPost[fbExternalPostArg.ExternalID]; ok {
+				newFbExternalPost.ID = oldFbExternalPost.ID
+				resultFbExternalPosts = append(resultFbExternalPosts, oldFbExternalPost)
+
+				if isEqual := compare.Compare(oldFbExternalPost, newFbExternalPost); isEqual {
+					continue
+				}
+			} else {
+				resultFbExternalPosts = append(resultFbExternalPosts, newFbExternalPost)
 			}
 
 			newFbExternalPosts = append(newFbExternalPosts, newFbExternalPost)
@@ -447,7 +467,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalPosts(
 	}); err != nil {
 		return nil, err
 	}
-	return newFbExternalPosts, nil
+	return resultFbExternalPosts, nil
 }
 
 func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
@@ -467,6 +487,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 		mapOldFbExternalComment[oldFbExternalComment.ExternalID] = oldFbExternalComment
 	}
 
+	var resultFbExternalComments []*fbmessaging.FbExternalComment
 	var newFbExternalComments []*fbmessaging.FbExternalComment
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		for _, fbExternalCommentArg := range args.FbExternalComments {
@@ -477,6 +498,13 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 
 			if oldFbExternalComment, ok := mapOldFbExternalComment[fbExternalCommentArg.ExternalID]; ok {
 				newFbExternalComment.ID = oldFbExternalComment.ID
+				resultFbExternalComments = append(resultFbExternalComments, oldFbExternalComment)
+
+				if isEqual := compare.Compare(newFbExternalComment, oldFbExternalComment); isEqual {
+					continue
+				}
+			} else {
+				resultFbExternalComments = append(resultFbExternalComments, newFbExternalComment)
 			}
 
 			newFbExternalComments = append(newFbExternalComments, newFbExternalComment)
@@ -500,7 +528,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 		return nil, err
 	}
 
-	return newFbExternalComments, nil
+	return resultFbExternalComments, nil
 }
 
 func (a *FbExternalMessagingAggregate) UpdateIsReadCustomerConversation(

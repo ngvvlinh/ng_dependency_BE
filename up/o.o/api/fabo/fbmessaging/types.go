@@ -20,8 +20,8 @@ type FbExternalMessage struct {
 	ExternalFrom           *FbObjectFrom
 	ExternalAttachments    []*FbMessageAttachment
 	ExternalCreatedTime    time.Time
-	CreatedAt              time.Time
-	UpdatedAt              time.Time
+	CreatedAt              time.Time `compare:"ignore"`
+	UpdatedAt              time.Time `compare:"ignore"`
 }
 
 type FbObjectTo struct {
@@ -58,13 +58,13 @@ type FbMessageAttachmentImageData struct {
 }
 
 type FbMessageDataAttachmentVideoData struct {
-	Width      int    `json:"width"`
-	Height     int    `json:"height"`
-	Length     int    `json:"length"`
-	VideoType  int    `json:"video_type"`
-	URL        string `json:"url"`
-	PreviewURL string `json:"preview_url"`
-	Rotation   int    `json:"rotation"`
+	Width      int
+	Height     int
+	Length     int
+	VideoType  int
+	URL        string
+	PreviewURL string
+	Rotation   int
 }
 
 type FbExternalComment struct {
@@ -81,8 +81,8 @@ type FbExternalComment struct {
 	ExternalFrom         *FbObjectFrom
 	ExternalAttachment   *CommentAttachment
 	ExternalCreatedTime  time.Time
-	CreatedAt            time.Time
-	UpdatedAt            time.Time
+	CreatedAt            time.Time `compare:"ignore"`
+	UpdatedAt            time.Time `compare:"ignore"`
 }
 
 type FbObjectParent struct {
@@ -113,8 +113,8 @@ type FbExternalConversation struct {
 	ExternalLink         string
 	ExternalUpdatedTime  time.Time
 	ExternalMessageCount int
-	CreatedAt            time.Time
-	UpdatedAt            time.Time
+	CreatedAt            time.Time `compare:"ignore"`
+	UpdatedAt            time.Time `compare:"ignore"`
 }
 
 type FbExternalPosts []*FbExternalPost
@@ -130,8 +130,8 @@ type FbExternalPost struct {
 	ExternalMessage     string
 	ExternalAttachments []*PostAttachment
 	ExternalCreatedTime time.Time
-	CreatedAt           time.Time
-	UpdatedAt           time.Time
+	CreatedAt           time.Time `compare:"ignore"`
+	UpdatedAt           time.Time `compare:"ignore"`
 }
 
 type FbCustomerConversation struct {
@@ -148,34 +148,33 @@ type FbCustomerConversation struct {
 	ExternalMessageAttachments []*FbMessageAttachment
 	LastMessage                string
 	LastMessageAt              time.Time
-	CreatedAt                  time.Time
-	UpdatedAt                  time.Time
-	DeletedAt                  time.Time
+	CreatedAt                  time.Time `compare:"ignore"`
+	UpdatedAt                  time.Time `compare:"ignore"`
 }
 
 type PostAttachment struct {
-	MediaType      string           `json:"media_type"`
-	Type           string           `json:"type"`
-	SubAttachments []*SubAttachment `json:"sub_attachments"`
+	MediaType      string
+	Type           string
+	SubAttachments []*SubAttachment
 }
 
 type SubAttachment struct {
-	Media  *MediaDataSubAttachment  `json:"media"`
-	Target *TargetDataSubAttachment `json:"target"`
-	Type   string                   `json:"type"`
-	URL    string                   `json:"url"`
+	Media  *MediaDataSubAttachment
+	Target *TargetDataSubAttachment
+	Type   string
+	URL    string
 }
 
 type ImageMediaDataSubAttachment struct {
-	Image *MediaDataSubAttachment `json:"image"`
+	Image *MediaDataSubAttachment
 }
 
 type CommentAttachment struct {
-	Media  *ImageMediaDataSubAttachment `json:"media"`
-	Target *TargetDataSubAttachment     `json:"target"`
-	Title  string                       `json:"title"`
-	Type   string                       `json:"type"`
-	URL    string                       `json:"url"`
+	Media  *ImageMediaDataSubAttachment
+	Target *TargetDataSubAttachment
+	Title  string
+	Type   string
+	URL    string
 }
 
 type FbExternalMessagesCreatedEvent struct {

@@ -131,7 +131,10 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		ExternalID: externalPageID,
 	}
 	if err := wh.fbPageQuery.Dispatch(ctx, getFbExternalPageActiveByExternalIDQuery); err != nil {
-		return cm.Errorf(cm.FailedPrecondition, nil, fmt.Sprintf("FbExternalPage not found (external_id = %s)", externalPageID))
+		if cm.ErrorCode(err) == cm.NotFound {
+			return nil
+		}
+		return err
 	}
 	fbPageID := getFbExternalPageActiveByExternalIDQuery.Result.ID
 
@@ -139,7 +142,10 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		ID: fbPageID,
 	}
 	if err := wh.fbPageQuery.Dispatch(ctx, getFbExternalPageInternalByIDQuery); err != nil {
-		return cm.Errorf(cm.FailedPrecondition, nil, fmt.Sprintf("FbExternalPageInternal not found (id = %d", fbPageID))
+		if cm.ErrorCode(err) == cm.NotFound {
+			return nil
+		}
+		return err
 	}
 	accessToken := getFbExternalPageInternalByIDQuery.Result.Token
 

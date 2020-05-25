@@ -445,7 +445,6 @@ func convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConve
 	out.LastMessageAt = arg.LastMessageAt // simple assign
 	out.CreatedAt = arg.CreatedAt         // simple assign
 	out.UpdatedAt = arg.UpdatedAt         // simple assign
-	out.DeletedAt = arg.DeletedAt         // simple assign
 }
 
 func Convert_fbmessagingmodel_FbCustomerConversations_fbmessaging_FbCustomerConversations(args []*fbmessagingmodel.FbCustomerConversation) (outs []*fbmessaging.FbCustomerConversation) {
@@ -487,7 +486,7 @@ func convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConve
 	out.LastMessageAt = arg.LastMessageAt // simple assign
 	out.CreatedAt = arg.CreatedAt         // simple assign
 	out.UpdatedAt = arg.UpdatedAt         // simple assign
-	out.DeletedAt = arg.DeletedAt         // simple assign
+	out.DeletedAt = time.Time{}           // zero value
 }
 
 func Convert_fbmessaging_FbCustomerConversations_fbmessagingmodel_FbCustomerConversations(args []*fbmessaging.FbCustomerConversation) (outs []*fbmessagingmodel.FbCustomerConversation) {
@@ -529,7 +528,6 @@ func apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerCo
 	out.LastMessageAt = arg.LastMessageAt                           // simple assign
 	out.CreatedAt = time.Time{}                                     // zero value
 	out.UpdatedAt = time.Time{}                                     // zero value
-	out.DeletedAt = time.Time{}                                     // zero value
 }
 
 //-- convert o.o/api/fabo/fbmessaging.FbExternalComment --//
