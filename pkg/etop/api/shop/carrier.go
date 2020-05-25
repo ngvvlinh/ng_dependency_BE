@@ -7,26 +7,22 @@ import (
 	"o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		carrierService.GetCarrier,
-		carrierService.GetCarriers,
-		carrierService.GetCarriersByIDs,
-		carrierService.CreateCarrier,
-		carrierService.UpdateCarrier,
-		carrierService.DeleteCarrier)
+type CarrierService struct {
+	CarrierAggr  carrying.CommandBus
+	CarrierQuery carrying.QueryBus
 }
+
+func (s *CarrierService) Clone() *CarrierService { res := *s; return &res }
 
 func (s *CarrierService) GetCarrier(ctx context.Context, r *GetCarrierEndpoint) error {
 	query := &carrying.GetCarrierByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := carrierQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CarrierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbCarrier(query.Result)
@@ -40,7 +36,7 @@ func (s *CarrierService) GetCarriers(ctx context.Context, r *GetCarriersEndpoint
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	if err := carrierQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CarrierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &shop.CarriersResponse{
@@ -55,7 +51,7 @@ func (s *CarrierService) GetCarriersByIDs(ctx context.Context, r *GetCarriersByI
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := carrierQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CarrierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &shop.CarriersResponse{
@@ -70,7 +66,7 @@ func (s *CarrierService) CreateCarrier(ctx context.Context, r *CreateCarrierEndp
 		FullName: r.FullName,
 		Note:     r.Note,
 	}
-	if err := carrierAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.CarrierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbCarrier(cmd.Result)
@@ -84,7 +80,7 @@ func (s *CarrierService) UpdateCarrier(ctx context.Context, r *UpdateCarrierEndp
 		FullName: r.FullName,
 		Note:     r.Note,
 	}
-	if err := carrierAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.CarrierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbCarrier(cmd.Result)
@@ -96,7 +92,7 @@ func (s *CarrierService) DeleteCarrier(ctx context.Context, r *DeleteCarrierEndp
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := carrierAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.CarrierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}

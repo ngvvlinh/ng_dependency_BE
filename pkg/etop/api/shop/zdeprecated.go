@@ -10,16 +10,6 @@ import (
 	"o.o/backend/pkg/common/bus"
 )
 
-func init() {
-	bus.AddHandler("api", accountService.UpdateExternalAccountAhamoveVerificationImages)
-	bus.AddHandler("api", productSourceService.GetShopProductSources)
-	bus.AddHandler("api", productSourceService.CreateProductSource)
-
-	bus.AddHandler("api", collectionService.GetCollection)
-	bus.AddHandler("api", collectionService.GetCollections)
-
-}
-
 // deprecated
 func (s *ProductSourceService) CreateProductSource(ctx context.Context, q *CreateProductSourceEndpoint) error {
 	q.Result = &shop.ProductSource{
@@ -74,7 +64,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx cont
 		CompanyImgs:         r.CompanyImgs,
 		BusinessLicenseImgs: r.BusinessLicenseImgs,
 	}
-	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 

@@ -19,7 +19,7 @@ func (s *WebServerService) CreateWsPage(ctx context.Context, r *CreateWsPageEndp
 		Image:     r.Image,
 		Appear:    r.Appear,
 	}
-	err := webserverAggr.Dispatch(ctx, cmd)
+	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func (s *WebServerService) UpdateWsPage(ctx context.Context, r *UpdateWsPageEndp
 		Image:     r.Image,
 		Appear:    r.Appear,
 	}
-	err := webserverAggr.Dispatch(ctx, cmd)
+	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (s *WebServerService) DeleteWsPage(ctx context.Context, r *DeleteWsPageEndp
 		ID:     r.ID,
 		ShopID: shopID,
 	}
-	err := webserverAggr.Dispatch(ctx, cmd)
+	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (s *WebServerService) GetWsPage(ctx context.Context, r *GetWsPageEndpoint) 
 		ID:     r.ID,
 		ShopID: shopID,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
@@ -85,7 +85,7 @@ func (s *WebServerService) GetWsPages(ctx context.Context, r *GetWsPagesEndpoint
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func (s *WebServerService) GetWsPagesByIDs(ctx context.Context, r *GetWsPagesByI
 		ShopID: shopID,
 		IDs:    r.IDs,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}

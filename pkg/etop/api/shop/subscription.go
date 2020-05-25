@@ -9,6 +9,10 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
+type SubscriptionService struct {
+	SubscriptionQuery subscription.QueryBus
+}
+
 func (s *SubscriptionService) Clone() *SubscriptionService {
 	res := *s
 	return &res
@@ -19,7 +23,7 @@ func (s *SubscriptionService) GetSubscription(ctx context.Context, r *GetSubscri
 		ID:        r.ID,
 		AccountID: r.AccountID,
 	}
-	if err := subscriptionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SubscriptionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbSubscription(query.Result)
@@ -32,7 +36,7 @@ func (s *SubscriptionService) GetSubscriptions(ctx context.Context, r *GetSubscr
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	if err := subscriptionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SubscriptionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &types.GetSubscriptionsResponse{

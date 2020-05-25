@@ -14,6 +14,14 @@ import (
 	"o.o/capi/dot"
 )
 
+type InventoryService struct {
+	TraderQuery    tradering.QueryBus
+	InventoryAggr  inventory.CommandBus
+	InventoryQuery inventory.QueryBus
+}
+
+func (s *InventoryService) Clone() *InventoryService { res := *s; return &res }
+
 func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *CreateInventoryVoucherEndpoint) error {
 	cmd := &inventory.CreateInventoryVoucherByReferenceCommand{
 		RefType:   q.RefType,
@@ -23,7 +31,7 @@ func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *Create
 		Type:      q.Type,
 		OverStock: q.Context.Shop.InventoryOverstock.Apply(true),
 	}
-	err := inventoryAggregate.Dispatch(ctx, cmd)
+	err := s.InventoryAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -42,7 +50,7 @@ func (s *InventoryService) ConfirmInventoryVoucher(ctx context.Context, q *Confi
 		ID:        q.Id,
 		UpdatedBy: userID,
 	}
-	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.InventoryAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &shop.ConfirmInventoryVoucherResponse{
@@ -61,7 +69,7 @@ func (s *InventoryService) CancelInventoryVoucher(ctx context.Context, q *Cancel
 		UpdatedBy:    userID,
 		CancelReason: q.CancelReason,
 	}
-	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.InventoryAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &shop.CancelInventoryVoucherResponse{
@@ -91,7 +99,7 @@ func (s *InventoryService) UpdateInventoryVoucher(ctx context.Context, q *Update
 		Note:        q.Note,
 		Lines:       items,
 	}
-	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.InventoryAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &shop.UpdateInventoryVoucherResponse{
@@ -121,7 +129,7 @@ func (s *InventoryService) AdjustInventoryQuantity(ctx context.Context, q *Adjus
 		UserID:    userID,
 		Note:      q.Note,
 	}
-	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.InventoryAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &shop.AdjustInventoryQuantityResponse{
@@ -140,7 +148,7 @@ func (s *InventoryService) GetInventoryVariants(ctx context.Context, q *GetInven
 			Limit:  q.Paging.Limit,
 		},
 	}
-	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &shop.GetInventoryVariantsResponse{
@@ -156,7 +164,7 @@ func (s *InventoryService) GetInventoryVouchersByReference(ctx context.Context, 
 		RefID:   q.RefId,
 		RefType: q.RefType,
 	}
-	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &shop.GetInventoryVouchersByReferenceResponse{
@@ -171,7 +179,7 @@ func (s *InventoryService) GetInventoryVariant(ctx context.Context, q *GetInvent
 		ShopID:    shopID,
 		VariantID: q.VariantId,
 	}
-	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = PbInventory(query.Result)
@@ -184,7 +192,7 @@ func (s *InventoryService) GetInventoryVariantsByVariantIDs(ctx context.Context,
 		ShopID:     shopID,
 		VariantIDs: q.VariantIds,
 	}
-	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &shop.GetInventoryVariantsResponse{
@@ -199,7 +207,7 @@ func (s *InventoryService) GetInventoryVoucher(ctx context.Context, q *GetInvent
 		ShopID: shopID,
 		ID:     q.Id,
 	}
-	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
@@ -209,7 +217,7 @@ func (s *InventoryService) GetInventoryVoucher(ctx context.Context, q *GetInvent
 			ID:     q.Result.TraderId,
 			ShopID: shopID,
 		}
-		if err := traderQuery.Dispatch(ctx, getTrader); err != nil {
+		if err := s.TraderQuery.Dispatch(ctx, getTrader); err != nil {
 			if cm.ErrorCode(err) != cm.NotFound {
 				return err
 			}
@@ -227,7 +235,7 @@ func (s *InventoryService) GetInventoryVouchers(ctx context.Context, q *GetInven
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
-	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	inventoryVouchers, err := s.checkValidateListTrader(ctx, shopID, query.Result.InventoryVoucher)
@@ -252,7 +260,7 @@ func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID d
 		IDs:    traderIDs,
 		ShopID: shopID,
 	}
-	if err := traderQuery.Dispatch(ctx, queryTraders); err != nil {
+	if err := s.TraderQuery.Dispatch(ctx, queryTraders); err != nil {
 		return result, err
 	}
 	traders := queryTraders.Result.Traders
@@ -280,7 +288,7 @@ func (s *InventoryService) GetInventoryVouchersByIDs(ctx context.Context, q *Get
 		ShopID: shopID,
 		IDs:    q.Ids,
 	}
-	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &shop.GetInventoryVouchersResponse{
@@ -295,7 +303,7 @@ func (s *InventoryService) UpdateInventoryVariantCostPrice(ctx context.Context, 
 		VariantID: q.VariantId,
 		CostPrice: q.CostPrice,
 	}
-	err := inventoryAggregate.Dispatch(ctx, cmd)
+	err := s.InventoryAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}

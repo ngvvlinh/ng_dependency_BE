@@ -15,6 +15,16 @@ import (
 	"o.o/capi/dot"
 )
 
+type PurchaseRefundService struct {
+	PurchaseRefundAggr  purchaserefund.CommandBus
+	PurchaseRefundQuery purchaserefund.QueryBus
+	SupplierQuery       suppliering.QueryBus
+	PurchaseOrderQuery  purchaseorder.QueryBus
+	InventoryQuery      inventory.QueryBus
+}
+
+func (s *PurchaseRefundService) Clone() *PurchaseRefundService { res := *s; return &res }
+
 func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *CreatePurchaseRefundEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
@@ -38,16 +48,16 @@ func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *Cre
 		CreatedBy:       userID,
 		Note:            q.Note,
 	}
-	err := PurchaseRefundAggr.Dispatch(ctx, &cmd)
+	err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd)
 	if err != nil {
 		return err
 	}
 	result := PbPurchaseRefund(cmd.Result)
-	result, err = populatePurchaseRefundWithSupplier(ctx, result)
+	result, err = s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return err
 	}
-	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -76,15 +86,15 @@ func (s *PurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, q *Upd
 		BasketValue:     q.BasketValue,
 		Note:            q.Note,
 	}
-	if err := PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
+	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
 	result := PbPurchaseRefund(cmd.Result)
-	result, err := populatePurchaseRefundWithSupplier(ctx, result)
+	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return err
 	}
-	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -104,15 +114,15 @@ func (s *PurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, q *Co
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 		InventoryOverStock:   inventoryOverStock.Apply(true),
 	}
-	if err := PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
+	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
 	result := PbPurchaseRefund(cmd.Result)
-	result, err := populatePurchaseRefundWithSupplier(ctx, result)
+	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return err
 	}
-	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -132,15 +142,15 @@ func (s *PurchaseRefundService) CancelPurchaseRefund(ctx context.Context, q *Can
 		InventoryOverStock:   q.Context.Shop.InventoryOverstock.Apply(true),
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 	}
-	if err := PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
+	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
 	result := PbPurchaseRefund(cmd.Result)
-	result, err := populatePurchaseRefundWithSupplier(ctx, result)
+	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return err
 	}
-	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -154,22 +164,22 @@ func (s *PurchaseRefundService) GetPurchaseRefund(ctx context.Context, q *GetPur
 		ShopID: shopID,
 		ID:     q.Id,
 	}
-	if err := PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
+	if err := s.PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	queryPurchaseOrder := &purchaseorder.GetPurchaseOrderByIDQuery{
 		ID:     query.Result.PurchaseOrderID,
 		ShopID: q.Context.Shop.ID,
 	}
-	if err := purchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
+	if err := s.PurchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
 		return err
 	}
 	result := PbPurchaseRefund(query.Result)
-	result, err := populatePurchaseRefundWithSupplier(ctx, result)
+	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return err
 	}
-	result, err = populatePurchaseRefundWithInventoryVoucher(ctx, result)
+	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -184,17 +194,17 @@ func (s *PurchaseRefundService) GetPurchaseRefundsByIDs(ctx context.Context, q *
 		ShopID: shopID,
 		IDs:    q.Ids,
 	}
-	if err := PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
+	if err := s.PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	result := PbPurchaseRefunds(query.Result)
 	var err error
 	if len(result) > 0 {
-		result, err = populatePurchaseRefundsWithSupplier(ctx, result)
+		result, err = s.populatePurchaseRefundsWithSupplier(ctx, result)
 		if err != nil {
 			return err
 		}
-		result, err = populatePurchaseRefundsWithInventoryVouchers(ctx, result)
+		result, err = s.populatePurchaseRefundsWithInventoryVouchers(ctx, result)
 		if err != nil {
 			return err
 		}
@@ -213,17 +223,17 @@ func (s *PurchaseRefundService) GetPurchaseRefunds(ctx context.Context, q *GetPu
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
-	if err := PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
+	if err := s.PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	result := PbPurchaseRefunds(query.Result.PurchaseRefunds)
 	var err error
 	if len(result) > 0 {
-		result, err = populatePurchaseRefundsWithSupplier(ctx, result)
+		result, err = s.populatePurchaseRefundsWithSupplier(ctx, result)
 		if err != nil {
 			return err
 		}
-		result, err = populatePurchaseRefundsWithInventoryVouchers(ctx, result)
+		result, err = s.populatePurchaseRefundsWithInventoryVouchers(ctx, result)
 		if err != nil {
 			return err
 		}
@@ -235,7 +245,7 @@ func (s *PurchaseRefundService) GetPurchaseRefunds(ctx context.Context, q *GetPu
 	return nil
 }
 
-func populatePurchaseRefundsWithSupplier(ctx context.Context, purchaseRefunds []*shop.PurchaseRefund) ([]*shop.PurchaseRefund, error) {
+func (s *PurchaseRefundService) populatePurchaseRefundsWithSupplier(ctx context.Context, purchaseRefunds []*shop.PurchaseRefund) ([]*shop.PurchaseRefund, error) {
 	if len(purchaseRefunds) == 0 {
 		return purchaseRefunds, nil
 	}
@@ -249,7 +259,7 @@ func populatePurchaseRefundsWithSupplier(ctx context.Context, purchaseRefunds []
 		ShopID: purchaseRefunds[0].ShopID,
 		Result: nil,
 	}
-	if err := purchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
+	if err := s.PurchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
 		return nil, err
 	}
 	// make a map [ PurchaseOrderID ] PurchaseOrderID
@@ -273,7 +283,7 @@ func populatePurchaseRefundsWithSupplier(ctx context.Context, purchaseRefunds []
 		IDs:    supplierIDs,
 		ShopID: purchaseRefunds[0].ShopID,
 	}
-	err := supplierQuery.Dispatch(ctx, querySupplier)
+	err := s.SupplierQuery.Dispatch(ctx, querySupplier)
 	if err != nil {
 		return nil, err
 	}
@@ -292,13 +302,13 @@ func populatePurchaseRefundsWithSupplier(ctx context.Context, purchaseRefunds []
 	return purchaseRefunds, nil
 }
 
-func populatePurchaseRefundWithSupplier(ctx context.Context, purchaseRefundArg *shop.PurchaseRefund) (*shop.PurchaseRefund, error) {
+func (s *PurchaseRefundService) populatePurchaseRefundWithSupplier(ctx context.Context, purchaseRefundArg *shop.PurchaseRefund) (*shop.PurchaseRefund, error) {
 	// Get information about supplier from pruchase_order
 	queryPurchaseOrder := &purchaseorder.GetPurchaseOrderByIDQuery{
 		ID:     purchaseRefundArg.PurchaseOrderID,
 		ShopID: purchaseRefundArg.ShopID,
 	}
-	if err := purchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
+	if err := s.PurchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
 		return nil, err
 	}
 	// Add supplier's information to purchase_refund
@@ -311,7 +321,7 @@ func populatePurchaseRefundWithSupplier(ctx context.Context, purchaseRefundArg *
 			ShopID: purchaseRefundArg.ShopID,
 		}
 		// Check supplier have been deleted
-		err := supplierQuery.Dispatch(ctx, querySupplier)
+		err := s.SupplierQuery.Dispatch(ctx, querySupplier)
 		if err != nil {
 			switch cm.ErrorCode(err) {
 			case cm.NotFound:
@@ -324,13 +334,13 @@ func populatePurchaseRefundWithSupplier(ctx context.Context, purchaseRefundArg *
 	return purchaseRefundArg, nil
 }
 
-func populatePurchaseRefundWithInventoryVoucher(ctx context.Context, refundArg *shop.PurchaseRefund) (*shop.PurchaseRefund, error) {
+func (s *PurchaseRefundService) populatePurchaseRefundWithInventoryVoucher(ctx context.Context, refundArg *shop.PurchaseRefund) (*shop.PurchaseRefund, error) {
 	// Get inventory voucher
 	queryInventoryVoucher := &inventory.GetInventoryVoucherQuery{
 		ShopID: refundArg.ShopID,
 		ID:     refundArg.ID,
 	}
-	if err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
 		if cm.ErrorCode(err) == cm.NotFound {
 			return refundArg, nil
 		}
@@ -341,7 +351,7 @@ func populatePurchaseRefundWithInventoryVoucher(ctx context.Context, refundArg *
 	return refundArg, nil
 }
 
-func populatePurchaseRefundsWithInventoryVouchers(ctx context.Context, refundsArgs []*shop.PurchaseRefund) ([]*shop.PurchaseRefund, error) {
+func (s *PurchaseRefundService) populatePurchaseRefundsWithInventoryVouchers(ctx context.Context, refundsArgs []*shop.PurchaseRefund) ([]*shop.PurchaseRefund, error) {
 	if len(refundsArgs) == 0 {
 		return refundsArgs, nil
 	}
@@ -354,7 +364,7 @@ func populatePurchaseRefundsWithInventoryVouchers(ctx context.Context, refundsAr
 		RefIDs: refundIDs,
 		ShopID: refundsArgs[0].ShopID,
 	}
-	if err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
 		return nil, err
 	}
 	// make map[ref_id]inventoryVoucher

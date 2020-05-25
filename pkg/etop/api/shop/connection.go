@@ -9,16 +9,25 @@ import (
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/main/shipping/carrier"
+	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/api/convertpb"
 )
+
+type ConnectionService struct {
+	ShipmentManager *shippingcarrier.ShipmentManager
+	ConnectionQuery connectioning.QueryBus
+	ConnectionAggr  connectioning.CommandBus
+}
+
+func (s *ConnectionService) Clone() *ConnectionService { res := *s; return &res }
 
 func (s *ConnectionService) GetConnections(ctx context.Context, q *GetConnectionsEndpoint) error {
 	query := &connectioning.ListConnectionsQuery{
 		ConnectionType: connection_type.Shipping,
 		Status:         status3.WrapStatus(status3.P),
 	}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &types.GetConnectionsResponse{
@@ -33,7 +42,7 @@ func (s *ConnectionService) GetAvailableConnections(ctx context.Context, q *GetA
 		ConnectionMethod: connection_type.ConnectionMethodDirect,
 		Status:           status3.WrapStatus(status3.P),
 	}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &types.GetConnectionsResponse{
@@ -46,7 +55,7 @@ func (s *ConnectionService) GetShopConnections(ctx context.Context, q *GetShopCo
 	query := &connectioning.ListShopConnectionsByShopIDQuery{
 		ShopID: q.Context.Shop.ID,
 	}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &types.GetShopConnectionsResponse{
@@ -67,7 +76,7 @@ func (s *ConnectionService) RegisterShopConnection(ctx context.Context, q *Regis
 		District:     q.District,
 		Address:      q.Address,
 	}
-	shopConnection, err := shipmentManager.ShopConnectionSignUp(ctx, cmd)
+	shopConnection, err := s.ShipmentManager.ShopConnectionSignUp(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -82,7 +91,7 @@ func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *LoginSho
 		Email:        q.Email,
 		Password:     q.Password,
 	}
-	shopConnection, err := shipmentManager.ShopConnectionSignIn(ctx, cmd)
+	shopConnection, err := s.ShipmentManager.ShopConnectionSignIn(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -95,7 +104,7 @@ func (s *ConnectionService) DeleteShopConnection(ctx context.Context, q *DeleteS
 		ConnectionID: q.ConnectionID,
 		ShopID:       q.Context.Shop.ID,
 	}
-	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.DeletedResponse{
@@ -117,7 +126,7 @@ func (s *ConnectionService) UpdateShopConnection(ctx context.Context, r *UpdateS
 			Email:  r.ExternalData.Email,
 		},
 	}
-	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}

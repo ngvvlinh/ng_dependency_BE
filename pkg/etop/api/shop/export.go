@@ -4,18 +4,14 @@ import (
 	"context"
 
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/tools/pkg/acl"
 )
 
-func init() {
-	bus.AddHandlers("export",
-		exportService.RequestExport,
-		exportService.GetExports,
-	)
-}
+type ExportService struct{}
+
+func (s *ExportService) Clone() *ExportService { res := *s; return &res }
 
 //- khi truyền "export_type": "shop/orders" Cần quyền "order:export"
 //- khi truyền "export_type": "shop/fulfillments" và filter theo:

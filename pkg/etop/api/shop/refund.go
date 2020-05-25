@@ -20,6 +20,16 @@ import (
 	"o.o/capi/dot"
 )
 
+type RefundService struct {
+	CustomerQuery  customering.QueryBus
+	InventoryQuery inventory.QueryBus
+	ReceiptQuery   receipting.QueryBus
+	RefundAggr     refund.CommandBus
+	RefundQuery    refund.QueryBus
+}
+
+func (s *RefundService) Clone() *RefundService { res := *s; return &res }
+
 func (s *RefundService) CreateRefund(ctx context.Context, q *CreateRefundEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
@@ -42,12 +52,12 @@ func (s *RefundService) CreateRefund(ctx context.Context, q *CreateRefundEndpoin
 		CreatedBy:       userID,
 		Note:            q.Note,
 	}
-	err := RefundAggr.Dispatch(ctx, &cmd)
+	err := s.RefundAggr.Dispatch(ctx, &cmd)
 	if err != nil {
 		return err
 	}
 	result := PbRefund(cmd.Result)
-	result, err = populateRefund(ctx, result)
+	result, err = s.populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -77,11 +87,11 @@ func (s *RefundService) UpdateRefund(ctx context.Context, q *UpdateRefundEndpoin
 		AdjustmentLines: q.AdjustmentLines,
 		TotalAdjustment: q.TotalAjustment,
 	}
-	if err := RefundAggr.Dispatch(ctx, &cmd); err != nil {
+	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
 	result := PbRefund(cmd.Result)
-	result, err := populateRefund(ctx, result)
+	result, err := s.populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -99,11 +109,11 @@ func (s *RefundService) ConfirmRefund(ctx context.Context, q *ConfirmRefundEndpo
 		UpdatedBy:            userID,
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 	}
-	if err := RefundAggr.Dispatch(ctx, &cmd); err != nil {
+	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
 	result := PbRefund(cmd.Result)
-	result, err := populateRefund(ctx, result)
+	result, err := s.populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -122,11 +132,11 @@ func (s *RefundService) CancelRefund(ctx context.Context, q *CancelRefundEndpoin
 		CancelReason:         q.CancelReason,
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 	}
-	if err := RefundAggr.Dispatch(ctx, &cmd); err != nil {
+	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
 	result := PbRefund(cmd.Result)
-	result, err := populateRefund(ctx, result)
+	result, err := s.populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -140,7 +150,7 @@ func (s *RefundService) GetRefund(ctx context.Context, q *GetRefundEndpoint) err
 		ShopID: shopID,
 		ID:     q.Id,
 	}
-	if err := RefundQuery.Dispatch(ctx, query); err != nil {
+	if err := s.RefundQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	queryOrder := &ordermodelx.GetOrderQuery{
@@ -151,7 +161,7 @@ func (s *RefundService) GetRefund(ctx context.Context, q *GetRefundEndpoint) err
 		return err
 	}
 	result := PbRefund(query.Result)
-	result, err := populateRefund(ctx, result)
+	result, err := s.populateRefund(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -166,12 +176,12 @@ func (s *RefundService) GetRefundsByIDs(ctx context.Context, q *GetRefundsByIDsE
 		ShopID: shopID,
 		IDs:    q.Ids,
 	}
-	if err := RefundQuery.Dispatch(ctx, query); err != nil {
+	if err := s.RefundQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	result := PbRefunds(query.Result)
 	var err error
-	result, err = populateRefunds(ctx, result)
+	result, err = s.populateRefunds(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -189,12 +199,12 @@ func (s *RefundService) GetRefunds(ctx context.Context, q *GetRefundsEndpoint) e
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
-	if err := RefundQuery.Dispatch(ctx, query); err != nil {
+	if err := s.RefundQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	result := PbRefunds(query.Result.Refunds)
 	var err error
-	result, err = populateRefunds(ctx, result)
+	result, err = s.populateRefunds(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -206,14 +216,14 @@ func (s *RefundService) GetRefunds(ctx context.Context, q *GetRefundsEndpoint) e
 }
 
 // Get total paid amount of refund from receipt which have status = P
-func populateRefundWithReceiptPaidAmount(ctx context.Context, arg *shop.Refund) (*shop.Refund, error) {
+func (s *RefundService) populateRefundWithReceiptPaidAmount(ctx context.Context, arg *shop.Refund) (*shop.Refund, error) {
 	query := &receipting.ListReceiptsByRefsAndStatusQuery{
 		ShopID:  arg.ShopID,
 		RefIDs:  []dot.ID{arg.ID},
 		RefType: receipt_ref.Refund,
 		Status:  int(status3.P),
 	}
-	err := receiptQuery.Dispatch(ctx, query)
+	err := s.ReceiptQuery.Dispatch(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +238,7 @@ func populateRefundWithReceiptPaidAmount(ctx context.Context, arg *shop.Refund) 
 }
 
 // Get total paid amount of each refunds  from receipt which have status = P
-func populateRefundsWithReceiptPaidAmount(ctx context.Context, refunds []*shop.Refund) ([]*shop.Refund, error) {
+func (s *RefundService) populateRefundsWithReceiptPaidAmount(ctx context.Context, refunds []*shop.Refund) ([]*shop.Refund, error) {
 	if len(refunds) == 0 {
 		return refunds, nil
 	}
@@ -242,7 +252,7 @@ func populateRefundsWithReceiptPaidAmount(ctx context.Context, refunds []*shop.R
 		RefType: receipt_ref.Refund,
 		Status:  int(status3.P),
 	}
-	err := receiptQuery.Dispatch(ctx, query)
+	err := s.ReceiptQuery.Dispatch(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -258,7 +268,7 @@ func populateRefundsWithReceiptPaidAmount(ctx context.Context, refunds []*shop.R
 	return refunds, nil
 }
 
-func populateRefundsWithCustomer(ctx context.Context, refunds []*shop.Refund) ([]*shop.Refund, error) {
+func (s *RefundService) populateRefundsWithCustomer(ctx context.Context, refunds []*shop.Refund) ([]*shop.Refund, error) {
 	var orderIDs []dot.ID
 	for _, value := range refunds {
 		orderIDs = append(orderIDs, value.OrderID)
@@ -291,7 +301,7 @@ func populateRefundsWithCustomer(ctx context.Context, refunds []*shop.Refund) ([
 		IDs:    cutomerIDs,
 		ShopID: refunds[0].ShopID,
 	}
-	err := customerQuery.Dispatch(ctx, queryCustomer)
+	err := s.CustomerQuery.Dispatch(ctx, queryCustomer)
 	if err != nil {
 		return nil, err
 	}
@@ -310,7 +320,7 @@ func populateRefundsWithCustomer(ctx context.Context, refunds []*shop.Refund) ([
 	return refunds, nil
 }
 
-func populateRefundWithCustomer(ctx context.Context, refundArg *shop.Refund) (*shop.Refund, error) {
+func (s *RefundService) populateRefundWithCustomer(ctx context.Context, refundArg *shop.Refund) (*shop.Refund, error) {
 	// Get information about customer from order
 	queryOrder := &ordermodelx.GetOrderQuery{
 		OrderID:            refundArg.OrderID,
@@ -328,7 +338,7 @@ func populateRefundWithCustomer(ctx context.Context, refundArg *shop.Refund) (*s
 			ShopID: refundArg.ShopID,
 		}
 		// Check customer have been deleted
-		err := customerQuery.Dispatch(ctx, queryCustomer)
+		err := s.CustomerQuery.Dispatch(ctx, queryCustomer)
 		if err != nil {
 			return nil, err
 		}
@@ -340,13 +350,13 @@ func populateRefundWithCustomer(ctx context.Context, refundArg *shop.Refund) (*s
 	return refundArg, nil
 }
 
-func populateRefundWithInventoryVoucher(ctx context.Context, refundArg *shop.Refund) (*shop.Refund, error) {
+func (s *RefundService) populateRefundWithInventoryVoucher(ctx context.Context, refundArg *shop.Refund) (*shop.Refund, error) {
 	// Get inventory voucher
 	queryInventoryVoucher := &inventory.GetInventoryVoucherQuery{
 		ShopID: refundArg.ShopID,
 		ID:     refundArg.ID,
 	}
-	if err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
 		if cm.ErrorCode(err) == cm.NotFound {
 			return refundArg, nil
 		}
@@ -357,7 +367,7 @@ func populateRefundWithInventoryVoucher(ctx context.Context, refundArg *shop.Ref
 	return refundArg, nil
 }
 
-func populateRefundsWithInventoryVouchers(ctx context.Context, refundsArgs []*shop.Refund) ([]*shop.Refund, error) {
+func (s *RefundService) populateRefundsWithInventoryVouchers(ctx context.Context, refundsArgs []*shop.Refund) ([]*shop.Refund, error) {
 	if len(refundsArgs) == 0 {
 		return nil, nil
 	}
@@ -370,7 +380,7 @@ func populateRefundsWithInventoryVouchers(ctx context.Context, refundsArgs []*sh
 		RefIDs: refundIDs,
 		ShopID: refundsArgs[0].ShopID,
 	}
-	if err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
+	if err := s.InventoryQuery.Dispatch(ctx, queryInventoryVoucher); err != nil {
 		return nil, err
 	}
 	// make map[ref_id]inventoryVoucher
@@ -384,35 +394,35 @@ func populateRefundsWithInventoryVouchers(ctx context.Context, refundsArgs []*sh
 	return refundsArgs, nil
 }
 
-func populateRefund(ctx context.Context, refundsArgs *shop.Refund) (*shop.Refund, error) {
+func (s *RefundService) populateRefund(ctx context.Context, refundsArgs *shop.Refund) (*shop.Refund, error) {
 	var err error
-	refundsArgs, err = populateRefundWithCustomer(ctx, refundsArgs)
+	refundsArgs, err = s.populateRefundWithCustomer(ctx, refundsArgs)
 	if err != nil {
 		return nil, err
 	}
-	refundsArgs, err = populateRefundWithReceiptPaidAmount(ctx, refundsArgs)
+	refundsArgs, err = s.populateRefundWithReceiptPaidAmount(ctx, refundsArgs)
 	if err != nil {
 		return nil, err
 	}
-	refundsArgs, err = populateRefundWithInventoryVoucher(ctx, refundsArgs)
+	refundsArgs, err = s.populateRefundWithInventoryVoucher(ctx, refundsArgs)
 	if err != nil {
 		return nil, err
 	}
 	return refundsArgs, nil
 }
 
-func populateRefunds(ctx context.Context, refundsArgs []*shop.Refund) ([]*shop.Refund, error) {
+func (s *RefundService) populateRefunds(ctx context.Context, refundsArgs []*shop.Refund) ([]*shop.Refund, error) {
 	if len(refundsArgs) > 0 {
 		var err error
-		refundsArgs, err = populateRefundsWithCustomer(ctx, refundsArgs)
+		refundsArgs, err = s.populateRefundsWithCustomer(ctx, refundsArgs)
 		if err != nil {
 			return nil, err
 		}
-		refundsArgs, err = populateRefundsWithReceiptPaidAmount(ctx, refundsArgs)
+		refundsArgs, err = s.populateRefundsWithReceiptPaidAmount(ctx, refundsArgs)
 		if err != nil {
 			return nil, err
 		}
-		refundsArgs, err = populateRefundsWithInventoryVouchers(ctx, refundsArgs)
+		refundsArgs, err = s.populateRefundsWithInventoryVouchers(ctx, refundsArgs)
 		if err != nil {
 			return nil, err
 		}

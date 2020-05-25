@@ -30,12 +30,12 @@ func (s *WebServerService) CreateWsWebsite(ctx context.Context, r *CreateWsWebsi
 		FaviconImage:       r.FaviconImage,
 		SiteSubdomain:      r.SiteSubdomain,
 	}
-	err := webserverAggr.Dispatch(ctx, cmd)
+	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
 	result := PbWsWebsite(cmd.Result)
-	result, err = populateWsWebSiteWithProduct(ctx, result)
+	result, err = s.populateWsWebSiteWithProduct(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -63,12 +63,12 @@ func (s *WebServerService) UpdateWsWebsite(ctx context.Context, r *UpdateWsWebsi
 		FaviconImage:       r.FaviconImage,
 		SiteSubdomain:      r.SiteSubdomain,
 	}
-	err := webserverAggr.Dispatch(ctx, cmd)
+	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
 	result := PbWsWebsite(cmd.Result)
-	result, err = populateWsWebSiteWithProduct(ctx, result)
+	result, err = s.populateWsWebSiteWithProduct(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -83,12 +83,12 @@ func (s *WebServerService) GetWsWebsite(ctx context.Context, r *GetWsWebsiteEndp
 		ID:     0,
 		Result: nil,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
 	result := PbWsWebsite(query.Result)
-	result, err = populateWsWebSiteWithProduct(ctx, result)
+	result, err = s.populateWsWebSiteWithProduct(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -105,12 +105,12 @@ func (s *WebServerService) GetWsWebsites(ctx context.Context, r *GetWsWebsitesEn
 		Filters: cmapi.ToFilters(r.Filters),
 		Result:  nil,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
 	result := PbWsWebsites(query.Result.WsWebsites)
-	result, err = populateWsWebSitesWithProduct(ctx, result)
+	result, err = s.populateWsWebSitesWithProduct(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -128,12 +128,12 @@ func (s *WebServerService) GetWsWebsitesByIDs(ctx context.Context, r *GetWsWebsi
 		IDs:    r.IDs,
 		Result: nil,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
 	result := PbWsWebsites(query.Result)
-	result, err = populateWsWebSitesWithProduct(ctx, result)
+	result, err = s.populateWsWebSitesWithProduct(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -143,7 +143,7 @@ func (s *WebServerService) GetWsWebsitesByIDs(ctx context.Context, r *GetWsWebsi
 	return nil
 }
 
-func populateWsWebSiteWithProduct(ctx context.Context, args *shop.WsWebsite) (*shop.WsWebsite, error) {
+func (s *WebServerService) populateWsWebSiteWithProduct(ctx context.Context, args *shop.WsWebsite) (*shop.WsWebsite, error) {
 	var productIDs []dot.ID
 	if args.NewProduct == nil && args.OutstandingProduct == nil {
 		return args, nil
@@ -158,7 +158,7 @@ func populateWsWebSiteWithProduct(ctx context.Context, args *shop.WsWebsite) (*s
 		IDs:    productIDs,
 		ShopID: args.ShopID,
 	}
-	err := catalogQuery.Dispatch(ctx, query)
+	err := s.CatalogQuery.Dispatch(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func populateWsWebSiteWithProduct(ctx context.Context, args *shop.WsWebsite) (*s
 	return args, nil
 }
 
-func populateWsWebSitesWithProduct(ctx context.Context, args []*shop.WsWebsite) ([]*shop.WsWebsite, error) {
+func (s *WebServerService) populateWsWebSitesWithProduct(ctx context.Context, args []*shop.WsWebsite) ([]*shop.WsWebsite, error) {
 	if len(args) == 0 {
 		return args, nil
 	}
@@ -203,7 +203,7 @@ func populateWsWebSitesWithProduct(ctx context.Context, args []*shop.WsWebsite) 
 		IDs:    productIDs,
 		ShopID: args[0].ShopID,
 	}
-	err := catalogQuery.Dispatch(ctx, query)
+	err := s.CatalogQuery.Dispatch(ctx, query)
 	if err != nil {
 		return nil, err
 	}

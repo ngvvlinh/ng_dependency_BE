@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"o.o/api/main/location"
 	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
+	"o.o/api/shopping/addressing"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
@@ -14,30 +16,21 @@ import (
 	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/capi/dot"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		customerService.CreateCustomer,
-		customerService.UpdateCustomer,
-		customerService.DeleteCustomer,
-		customerService.GetCustomer,
-		customerService.GetCustomers,
-		customerService.GetCustomersByIDs,
-		customerService.GetCustomerDetails,
-		customerService.BatchSetCustomersStatus,
-
-		customerGroupService.CreateCustomerGroup,
-		customerGroupService.GetCustomerGroup,
-		customerGroupService.GetCustomerGroups,
-		customerGroupService.UpdateCustomerGroup,
-		customerService.AddCustomersToGroup,
-		customerService.RemoveCustomersFromGroup,
-	)
+type CustomerService struct {
+	LocationQuery location.QueryBus
+	CustomerQuery customering.QueryBus
+	CustomerAggr  customering.CommandBus
+	AddressAggr   addressing.CommandBus
+	AddressQuery  addressing.QueryBus
+	OrderQuery    ordering.QueryBus
+	ReceiptQuery  receipting.QueryBus
 }
+
+func (s *CustomerService) Clone() *CustomerService { res := *s; return &res }
 
 func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerEndpoint) error {
 	key := fmt.Sprintf("CreateCustomer %v-%v-%v-%v-%v",
@@ -55,7 +48,7 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerE
 				Phone:    r.Phone,
 				Email:    r.Email,
 			}
-			if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+			if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 				return nil, err
 			}
 			r.Result = convertpb.PbCustomer(cmd.Result)
@@ -81,7 +74,7 @@ func (s *CustomerService) UpdateCustomer(ctx context.Context, r *UpdateCustomerE
 		Email:    r.Email,
 		Type:     r.Type.Apply(0),
 	}
-	err := customerAggr.Dispatch(ctx, cmd)
+	err := s.CustomerAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -96,7 +89,7 @@ func (s *CustomerService) BatchSetCustomersStatus(ctx context.Context, r *BatchS
 		ShopID: r.Context.Shop.ID,
 		Status: int(r.Status),
 	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result.Updated}
@@ -108,7 +101,7 @@ func (s *CustomerService) DeleteCustomer(ctx context.Context, r *DeleteCustomerE
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
@@ -120,7 +113,7 @@ func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoin
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbCustomer(query.Result)
@@ -137,11 +130,11 @@ func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpo
 	}
 	switch r.GetAll.Bool {
 	case true:
-		if err := getAllCustomers(ctx, paging, r); err != nil {
+		if err := s.getAllCustomers(ctx, paging, r); err != nil {
 			return err
 		}
 	case false:
-		customers, err := getCustomers(ctx, paging, r)
+		customers, err := s.getCustomers(ctx, paging, r)
 		if err != nil {
 			return err
 		}
@@ -153,9 +146,9 @@ func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpo
 	return nil
 }
 
-func getAllCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) error {
+func (s *CustomerService) getAllCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) error {
 	queryCustomerIndenpendent := &customering.GetCustomerIndependentQuery{}
-	if err := customerQuery.Dispatch(ctx, queryCustomerIndenpendent); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, queryCustomerIndenpendent); err != nil {
 		return err
 	}
 	var customers []*shop.Customer
@@ -167,7 +160,7 @@ func getAllCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndp
 	}
 	if paging.Offset == 0 {
 		paging.Limit--
-		cts, err := getCustomers(ctx, paging, r)
+		cts, err := s.getCustomers(ctx, paging, r)
 		if err != nil {
 			return err
 		}
@@ -176,7 +169,7 @@ func getAllCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndp
 		r.Result.Paging.Limit++
 	} else {
 		paging.Offset--
-		_, err := getCustomers(ctx, paging, r)
+		_, err := s.getCustomers(ctx, paging, r)
 		if err != nil {
 			return err
 		}
@@ -184,13 +177,13 @@ func getAllCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndp
 	return nil
 }
 
-func getCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) ([]*shop.Customer, error) {
+func (s *CustomerService) getCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) ([]*shop.Customer, error) {
 	query := &customering.ListCustomersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	r.Result = &shop.CustomersResponse{
@@ -205,7 +198,7 @@ func (s *CustomerService) GetCustomersByIDs(ctx context.Context, r *GetCustomers
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &shop.CustomersResponse{
@@ -221,64 +214,13 @@ func (s *CustomerService) GetCustomerDetails(ctx context.Context, r *GetCustomer
 	return cm.ErrTODO
 }
 
-func (s *CustomerGroupService) CreateCustomerGroup(ctx context.Context, r *CreateCustomerGroupEndpoint) error {
-	cmd := &customering.CreateCustomerGroupCommand{
-		ShopID: r.Context.Shop.ID,
-		Name:   r.Name,
-	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = convertpb.PbCustopmerGroup(cmd.Result)
-	return nil
-}
-
-func (s *CustomerGroupService) GetCustomerGroup(ctx context.Context, q *GetCustomerGroupEndpoint) error {
-	query := &customering.GetCustomerGroupQuery{
-		ID: q.Id,
-	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = convertpb.PbCustopmerGroup(query.Result)
-	return nil
-}
-
-func (s *CustomerGroupService) GetCustomerGroups(ctx context.Context, q *GetCustomerGroupsEndpoint) error {
-	paging := cmapi.CMPaging(q.Paging)
-	query := &customering.ListCustomerGroupsQuery{
-		Paging:  *paging,
-		Filters: cmapi.ToFilters(q.Filters),
-	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &shop.CustomerGroupsResponse{
-		Paging:         cmapi.PbPageInfo(paging),
-		CustomerGroups: convertpb.PbCustomerGroups(query.Result.CustomerGroups),
-	}
-	return nil
-}
-
-func (s *CustomerGroupService) UpdateCustomerGroup(ctx context.Context, r *UpdateCustomerGroupEndpoint) error {
-	cmd := &customering.UpdateCustomerGroupCommand{
-		ID:   r.GroupId,
-		Name: r.Name,
-	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = convertpb.PbCustopmerGroup(cmd.Result)
-	return nil
-}
-
 func (s *CustomerService) AddCustomersToGroup(ctx context.Context, r *AddCustomersToGroupEndpoint) error {
 	cmd := &customering.AddCustomersToGroupCommand{
 		ShopID:      r.Context.Shop.ID,
 		GroupID:     r.GroupId,
 		CustomerIDs: r.CustomerIds,
 	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
@@ -291,7 +233,7 @@ func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *Remov
 		GroupID:     r.GroupId,
 		CustomerIDs: r.CustomerIds,
 	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.RemovedResponse{Removed: cmd.Result}
@@ -312,7 +254,7 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, cu
 		CustomerIDs: customerIDs,
 		ShopID:      shopID,
 	}
-	if err := orderQuery.Dispatch(ctx, getOrdersByCustomerIDs); err != nil {
+	if err := s.OrderQuery.Dispatch(ctx, getOrdersByCustomerIDs); err != nil {
 		return err
 	}
 	for _, order := range getOrdersByCustomerIDs.Result.Orders {
@@ -325,7 +267,7 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, cu
 		TraderIDs: customerIDs,
 		Statuses:  []status3.Status{status3.P},
 	}
-	if err := receiptQuery.Dispatch(ctx, getReceiptsByCustomerIDs); err != nil {
+	if err := s.ReceiptQuery.Dispatch(ctx, getReceiptsByCustomerIDs); err != nil {
 		return err
 	}
 	for _, receipt := range getReceiptsByCustomerIDs.Result.Receipts {

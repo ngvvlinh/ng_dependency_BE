@@ -26,16 +26,17 @@ import (
 	"o.o/capi/util"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		receiptService.CreateReceipt,
-		receiptService.UpdateReceipt,
-		receiptService.ConfirmReceipt,
-		receiptService.CancelReceipt,
-		receiptService.GetReceipt,
-		receiptService.GetReceipts,
-		receiptService.GetReceiptsByLedgerType)
+type ReceiptService struct {
+	CarrierQuery  carrying.QueryBus
+	CustomerQuery customering.QueryBus
+	LedgerQuery   ledgering.QueryBus
+	ReceiptAggr   receipting.CommandBus
+	ReceiptQuery  receipting.QueryBus
+	SupplierQuery suppliering.QueryBus
+	TraderQuery   tradering.QueryBus
 }
+
+func (s *ReceiptService) Clone() *ReceiptService { res := *s; return &res }
 
 func (s *ReceiptService) CreateReceipt(ctx context.Context, q *CreateReceiptEndpoint) (_err error) {
 	key := fmt.Sprintf("Create receipt %v-%v-%v-%v-%v-%v-%v-%v",
@@ -66,7 +67,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		PaidAt:      q.PaidAt.ToTime(),
 	}
-	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ReceiptAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return cmd, nil
@@ -87,7 +88,7 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndp
 		Trader:      nil,
 		PaidAt:      q.PaidAt.ToTime(),
 	}
-	err = receiptAggr.Dispatch(ctx, cmd)
+	err = s.ReceiptAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -101,7 +102,7 @@ func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *ConfirmReceiptEn
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
 	}
-	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ReceiptAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
@@ -115,7 +116,7 @@ func (s *ReceiptService) CancelReceipt(ctx context.Context, q *CancelReceiptEndp
 		ShopID:       q.Context.Shop.ID,
 		CancelReason: util.CoalesceString(q.CancelReason, q.Reason),
 	}
-	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ReceiptAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
@@ -129,7 +130,7 @@ func (s *ReceiptService) GetReceipt(ctx context.Context, q *GetReceiptEndpoint) 
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
 	}
-	if err := receiptQuery.Dispatch(ctx, getReceiptQuery); err != nil {
+	if err := s.ReceiptQuery.Dispatch(ctx, getReceiptQuery); err != nil {
 		return cm.MapError(err).
 			Wrap(cm.NotFound, "Không tìm thấy phiếu").
 			Throw()
@@ -151,7 +152,7 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
-	if err := receiptQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ReceiptQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
@@ -175,7 +176,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 		LedgerType: q.Type,
 		ShopID:     q.Context.Shop.ID,
 	}
-	if err := ledgerQuery.Dispatch(ctx, listLedgersByType); err != nil {
+	if err := s.LedgerQuery.Dispatch(ctx, listLedgersByType); err != nil {
 		return err
 	}
 
@@ -190,7 +191,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 		Paging:    *paging,
 		Filters:   cmapi.ToFilters(q.Filters),
 	}
-	if err := receiptQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ReceiptQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	if receipts, err := s.getInfosForReceipts(ctx, q.Context.Shop.ID, query.Result.Receipts); err != nil {
@@ -251,7 +252,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 	}
 
 	// List traders
-	if err := listTraders(ctx, shopID, traderIDs, receiptsResult); err != nil {
+	if err := s.listTraders(ctx, shopID, traderIDs, receiptsResult); err != nil {
 		return nil, err
 	}
 
@@ -260,7 +261,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 		ShopID: shopID,
 		IDs:    ledgerIDs,
 	}
-	if err := ledgerQuery.Dispatch(ctx, getLedgersByIDs); err != nil {
+	if err := s.LedgerQuery.Dispatch(ctx, getLedgersByIDs); err != nil {
 		return nil, err
 	}
 	for _, ledger := range getLedgersByIDs.Result.Ledgers {
@@ -272,7 +273,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 	return receiptsResult, nil
 }
 
-func listTraders(
+func (s *ReceiptService) listTraders(
 	ctx context.Context, shopID dot.ID,
 	traderIDs []dot.ID, receiptsResult []*shop.Receipt,
 ) error {
@@ -290,7 +291,7 @@ func listTraders(
 		ShopID: shopID,
 		IDs:    traderIDs,
 	}
-	if err := traderQuery.Dispatch(ctx, getTradersByIDsQuery); err != nil {
+	if err := s.TraderQuery.Dispatch(ctx, getTradersByIDsQuery); err != nil {
 		return err
 	}
 	for _, trader := range getTradersByIDsQuery.Result.Traders {
@@ -309,7 +310,7 @@ func listTraders(
 			ShopID: shopID,
 			IDs:    supplierIDs,
 		}
-		if err := supplierQuery.Dispatch(ctx, query); err != nil {
+		if err := s.SupplierQuery.Dispatch(ctx, query); err != nil {
 			return err
 		}
 		for _, supplier := range query.Result.Suppliers {
@@ -322,7 +323,7 @@ func listTraders(
 			ShopID: shopID,
 			IDs:    customerIDs,
 		}
-		if err := customerQuery.Dispatch(ctx, query); err != nil {
+		if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 			return err
 		}
 		for _, customer := range query.Result.Customers {
@@ -331,7 +332,7 @@ func listTraders(
 		}
 
 		getIndependentCustomerQuery := &customering.GetCustomerIndependentQuery{}
-		if err := customerQuery.Dispatch(ctx, getIndependentCustomerQuery); err != nil {
+		if err := s.CustomerQuery.Dispatch(ctx, getIndependentCustomerQuery); err != nil {
 			return err
 		}
 		anonymousCustomer := getIndependentCustomerQuery.Result
@@ -343,7 +344,7 @@ func listTraders(
 			ShopID: shopID,
 			IDs:    carrierIDs,
 		}
-		if err := carrierQuery.Dispatch(ctx, query); err != nil {
+		if err := s.CarrierQuery.Dispatch(ctx, query); err != nil {
 			return err
 		}
 		for _, carrier := range query.Result.Carriers {
@@ -362,7 +363,7 @@ func listTraders(
 			getTopShipCarrierQuery := &carrying.GetCarrierByIDQuery{
 				ID: model.TopShipID,
 			}
-			if err := carrierQuery.Dispatch(ctx, getTopShipCarrierQuery); err != nil {
+			if err := s.CarrierQuery.Dispatch(ctx, getTopShipCarrierQuery); err != nil {
 				return err
 			}
 			mapCarrier[model.TopShipID] = getTopShipCarrierQuery.Result

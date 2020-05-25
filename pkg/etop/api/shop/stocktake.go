@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/catalog"
 	"o.o/api/main/inventory"
 	"o.o/api/main/stocktaking"
+	st "o.o/api/main/stocktaking"
 	"o.o/api/meta"
 	"o.o/api/top/int/shop"
 	cm "o.o/backend/pkg/common"
@@ -14,6 +15,15 @@ import (
 	"o.o/backend/tools/pkg/acl"
 	"o.o/capi/dot"
 )
+
+type StocktakeService struct {
+	CatalogQuery   catalog.QueryBus
+	StocktakeAggr  st.CommandBus
+	StocktakeQuery st.QueryBus
+	InventoryQuery inventory.QueryBus
+}
+
+func (s *StocktakeService) Clone() *StocktakeService { res := *s; return &res }
 
 func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStocktakeEndpoint) error {
 	shopID := q.Context.Shop.ID
@@ -38,7 +48,7 @@ func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStockta
 		Lines:         lines,
 		Note:          q.Note,
 	}
-	err = StocktakeAggregate.Dispatch(ctx, cmd)
+	err = s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -56,7 +66,7 @@ func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, sh
 		ShopID: shopID,
 		Result: nil,
 	}
-	err := catalogQuery.Dispatch(ctx, queryVariants)
+	err := s.CatalogQuery.Dispatch(ctx, queryVariants)
 	if err != nil {
 		return err
 	}
@@ -74,7 +84,7 @@ func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, sh
 		IDs:    productIDs,
 		ShopID: shopID,
 	}
-	err = catalogQuery.Dispatch(ctx, queryProducts)
+	err = s.CatalogQuery.Dispatch(ctx, queryProducts)
 	if err != nil {
 		return err
 	}
@@ -88,7 +98,7 @@ func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, sh
 		ShopID:     shopID,
 		VariantIDs: variantIDs,
 	}
-	err = inventoryQuery.Dispatch(ctx, queryInventoryVariant)
+	err = s.InventoryQuery.Dispatch(ctx, queryInventoryVariant)
 	if err != nil {
 		return err
 	}
@@ -138,7 +148,7 @@ func (s *StocktakeService) UpdateStocktake(
 		Id:     q.Id,
 		ShopID: shopID,
 	}
-	if err := StocktakeQuery.Dispatch(ctx, query); err != nil {
+	if err := s.StocktakeQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
@@ -169,7 +179,7 @@ func (s *StocktakeService) UpdateStocktake(
 		Lines:         lines,
 		Note:          q.Note,
 	}
-	err = StocktakeAggregate.Dispatch(ctx, cmd)
+	err = s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -189,7 +199,7 @@ func (s *StocktakeService) ConfirmStocktake(ctx context.Context, q *ConfirmStock
 		AutoInventoryVoucher: q.AutoInventoryVoucher,
 		Result:               nil,
 	}
-	err := StocktakeAggregate.Dispatch(ctx, cmd)
+	err := s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -204,7 +214,7 @@ func (s *StocktakeService) CancelStocktake(ctx context.Context, q *CancelStockta
 		ID:           q.Id,
 		CancelReason: q.CancelReason,
 	}
-	err := StocktakeAggregate.Dispatch(ctx, cmd)
+	err := s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -218,7 +228,7 @@ func (s *StocktakeService) GetStocktake(ctx context.Context, q *GetStocktakeEndp
 		ShopID: shopID,
 		Id:     q.Id,
 	}
-	err := StocktakeQuery.Dispatch(ctx, query)
+	err := s.StocktakeQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
@@ -232,7 +242,7 @@ func (s *StocktakeService) GetStocktakesByIDs(ctx context.Context, q *GetStockta
 		ShopID: shopID,
 		Ids:    q.Ids,
 	}
-	err := StocktakeQuery.Dispatch(ctx, query)
+	err := s.StocktakeQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
@@ -258,7 +268,7 @@ func (s *StocktakeService) GetStocktakes(ctx context.Context, q *GetStocktakesEn
 		ShopID: shopID,
 		Filter: filters,
 	}
-	err := StocktakeQuery.Dispatch(ctx, query)
+	err := s.StocktakeQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}

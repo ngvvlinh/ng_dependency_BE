@@ -18,7 +18,7 @@ func (s *WebServerService) CreateOrUpdateWsCategory(ctx context.Context, r *Crea
 		Appear:    r.Appear,
 		Image:     r.Image,
 	}
-	err := webserverAggr.Dispatch(ctx, cmd)
+	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func (s *WebServerService) GetWsCategory(ctx context.Context, r *GetWsCategoryEn
 		ID:     r.ID,
 		ShopID: shopID,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (s *WebServerService) GetWsCategories(ctx context.Context, r *GetWsCategori
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (s *WebServerService) GetWsCategoriesByIDs(ctx context.Context, r *GetWsCat
 		ShopID: shopID,
 		IDs:    r.IDs,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}

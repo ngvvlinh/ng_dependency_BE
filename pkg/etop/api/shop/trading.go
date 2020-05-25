@@ -22,29 +22,30 @@ import (
 	"o.o/backend/pkg/etop/authorize/claims"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/model"
+	"o.o/capi"
 	"o.o/capi/dot"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		tradingService.TradingGetProduct,
-		tradingService.TradingGetProducts,
-		tradingService.TradingCreateOrder,
-		tradingService.TradingGetOrder,
-		tradingService.TradingGetOrders,
-	)
+type TradingService struct {
+	EventBus       capi.EventBus
+	IdentityQuery  identity.QueryBus
+	CatalogQuery   catalog.QueryBus
+	OrderQuery     ordering.QueryBus
+	InventoryQuery inventory.QueryBus
 }
+
+func (s *TradingService) Clone() *TradingService { res := *s; return &res }
 
 func (s *TradingService) TradingGetProduct(ctx context.Context, q *TradingGetProductEndpoint) error {
 	query := &catalog.GetShopProductWithVariantsByIDQuery{
 		ProductID: q.Id,
 		ShopID:    model.EtopTradingAccountID,
 	}
-	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	result := PbShopProductWithVariants(query.Result)
-	result, err := PopulateTradingProductWithInventoryCount(ctx, result)
+	result, err := PopulateTradingProductWithInventoryCount(ctx, s.InventoryQuery, result)
 	if err != nil {
 		return err
 	}
@@ -60,11 +61,11 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
-	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	result := PbShopProductsWithVariants(query.Result.Products)
-	result, err := PopulateTradingProductsWithInventoryCount(ctx, result)
+	result, err := s.populateTradingProductsWithInventoryCount(ctx, result)
 	if err != nil {
 		return err
 	}
@@ -115,7 +116,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 	query := &identity.GetShopByIDQuery{
 		ID: model.EtopTradingAccountID,
 	}
-	if err := identityQuery.Dispatch(ctx, query); err != nil {
+	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
 		return 0, err
 	}
 	{
@@ -126,7 +127,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 				ReferralCode: referralCode,
 				UserID:       r.Context.Shop.OwnerID,
 			}
-			if err := eventBus.Publish(ctx, tradingOrderCreating); err != nil {
+			if err := s.EventBus.Publish(ctx, tradingOrderCreating); err != nil {
 				return 0, err
 			}
 		}
@@ -143,7 +144,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 		_query := &ordering.GetOrderByIDQuery{
 			ID: resp.Id,
 		}
-		if err := orderQuery.Dispatch(ctx, _query); err != nil {
+		if err := s.OrderQuery.Dispatch(ctx, _query); err != nil {
 			return resp.Id, err
 		}
 		tradingOrderCreatedEvent := &ordertrading.TradingOrderCreatedEvent{
@@ -151,7 +152,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 			OrderID:      _query.Result.ID,
 			ReferralCode: _query.Result.ReferralMeta.ReferralCode,
 		}
-		if err := eventBus.Publish(ctx, tradingOrderCreatedEvent); err != nil {
+		if err := s.EventBus.Publish(ctx, tradingOrderCreatedEvent); err != nil {
 			return resp.Id, err
 		}
 	}
@@ -193,7 +194,7 @@ func (s *TradingService) TradingGetOrders(ctx context.Context, q *TradingGetOrde
 	return nil
 }
 
-func PopulateTradingProductsWithInventoryCount(ctx context.Context, args []*shop.ShopProduct) ([]*shop.ShopProduct, error) {
+func (s *TradingService) populateTradingProductsWithInventoryCount(ctx context.Context, args []*shop.ShopProduct) ([]*shop.ShopProduct, error) {
 	var variantIDs []dot.ID
 	for _, p := range args {
 		for _, v := range p.Variants {
@@ -204,7 +205,7 @@ func PopulateTradingProductsWithInventoryCount(ctx context.Context, args []*shop
 		ShopID:     model.EtopTradingAccountID,
 		VariantIDs: variantIDs,
 	}
-	err := inventoryQuery.Dispatch(ctx, query)
+	err := s.InventoryQuery.Dispatch(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +225,7 @@ func PopulateTradingProductsWithInventoryCount(ctx context.Context, args []*shop
 	return args, nil
 }
 
-func PopulateTradingProductWithInventoryCount(ctx context.Context, args *shop.ShopProduct) (*shop.ShopProduct, error) {
+func PopulateTradingProductWithInventoryCount(ctx context.Context, inventoryQuery inventory.QueryBus, args *shop.ShopProduct) (*shop.ShopProduct, error) {
 	if args == nil {
 		return nil, nil
 	}

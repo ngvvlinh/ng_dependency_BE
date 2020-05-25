@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/catalog"
+	"o.o/api/main/inventory"
 	"o.o/api/top/int/shop"
 	"o.o/api/webserver"
 	"o.o/backend/pkg/common/apifw/cmapi"
@@ -21,7 +22,7 @@ func (s *WebServerService) CreateOrUpdateWsProduct(ctx context.Context, r *Creat
 		ComparePrice: ConvertComparePrice(r.ComparePrices),
 		DescHTML:     r.DescHTML,
 	}
-	err := webserverAggr.Dispatch(ctx, cmd)
+	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
@@ -35,11 +36,11 @@ func (s *WebServerService) GetWsProduct(ctx context.Context, r *GetWsProductEndp
 		ID:     r.ID,
 		ShopID: shopID,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
-	result, err := getProductQuantity(ctx, shopID, query.Result.Product)
+	result, err := getProductQuantity(ctx, s.InventoryQuery, shopID, query.Result.Product)
 	if err != nil {
 		return err
 	}
@@ -56,11 +57,11 @@ func (s *WebServerService) GetWsProducts(ctx context.Context, r *GetWsProductsEn
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}
-	mapProductWithQuantity, err := mapListProductsWithQuantity(ctx, query.Result.WsProducts)
+	mapProductWithQuantity, err := mapListProductsWithQuantity(ctx, s.InventoryQuery, query.Result.WsProducts)
 	if err != nil {
 		return err
 	}
@@ -75,7 +76,7 @@ func (s *WebServerService) GetWsProducts(ctx context.Context, r *GetWsProductsEn
 	return nil
 }
 
-func mapListProductsWithQuantity(ctx context.Context, args []*webserver.WsProduct) (map[dot.ID]*shop.ShopProduct, error) {
+func mapListProductsWithQuantity(ctx context.Context, inventoryQuery inventory.QueryBus, args []*webserver.WsProduct) (map[dot.ID]*shop.ShopProduct, error) {
 	if len(args) == 0 {
 		return nil, nil
 	}
@@ -84,7 +85,7 @@ func mapListProductsWithQuantity(ctx context.Context, args []*webserver.WsProduc
 		products = append(products, v.Product)
 	}
 	var mapProduct = make(map[dot.ID]*shop.ShopProduct)
-	result, err := getProductsQuantity(ctx, args[0].ShopID, products)
+	result, err := getProductsQuantity(ctx, inventoryQuery, args[0].ShopID, products)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +101,7 @@ func (s *WebServerService) GetWsProductsByIDs(ctx context.Context, r *GetWsProdu
 		ShopID: shopID,
 		IDs:    r.IDs,
 	}
-	err := webserverQuery.Dispatch(ctx, query)
+	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
 		return err
 	}

@@ -8,25 +8,22 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/ledger_type"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		ledgerService.GetLedger,
-		ledgerService.GetLedgers,
-		ledgerService.CreateLedger,
-		ledgerService.UpdateLedger,
-		ledgerService.DeleteLedger)
+type LedgerService struct {
+	LedgerAggr  ledgering.CommandBus
+	LedgerQuery ledgering.QueryBus
 }
 
-func (s LedgerService) GetLedger(ctx context.Context, r *GetLedgerEndpoint) error {
+func (s *LedgerService) Clone() *LedgerService { res := *s; return &res }
+
+func (s *LedgerService) GetLedger(ctx context.Context, r *GetLedgerEndpoint) error {
 	query := &ledgering.GetLedgerByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := ledgerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.LedgerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
@@ -34,14 +31,14 @@ func (s LedgerService) GetLedger(ctx context.Context, r *GetLedgerEndpoint) erro
 	return nil
 }
 
-func (s LedgerService) GetLedgers(ctx context.Context, r *GetLedgersEndpoint) error {
+func (s *LedgerService) GetLedgers(ctx context.Context, r *GetLedgersEndpoint) error {
 	paging := cmapi.CMPaging(r.Paging)
 	query := &ledgering.ListLedgersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	if err := ledgerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.LedgerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
@@ -52,7 +49,7 @@ func (s LedgerService) GetLedgers(ctx context.Context, r *GetLedgersEndpoint) er
 	return nil
 }
 
-func (s LedgerService) CreateLedger(ctx context.Context, r *CreateLedgerEndpoint) error {
+func (s *LedgerService) CreateLedger(ctx context.Context, r *CreateLedgerEndpoint) error {
 	cmd := &ledgering.CreateLedgerCommand{
 		ShopID:      r.Context.Shop.ID,
 		Name:        r.Name,
@@ -61,7 +58,7 @@ func (s LedgerService) CreateLedger(ctx context.Context, r *CreateLedgerEndpoint
 		Type:        ledger_type.LedgerTypeBank,
 		CreatedBy:   r.Context.UserID,
 	}
-	if err := ledgerAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.LedgerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbLedger(cmd.Result)
@@ -69,7 +66,7 @@ func (s LedgerService) CreateLedger(ctx context.Context, r *CreateLedgerEndpoint
 	return nil
 }
 
-func (s LedgerService) UpdateLedger(ctx context.Context, r *UpdateLedgerEndpoint) error {
+func (s *LedgerService) UpdateLedger(ctx context.Context, r *UpdateLedgerEndpoint) error {
 	cmd := &ledgering.UpdateLedgerCommand{
 		ID:          r.Id,
 		ShopID:      r.Context.Shop.ID,
@@ -77,7 +74,7 @@ func (s LedgerService) UpdateLedger(ctx context.Context, r *UpdateLedgerEndpoint
 		BankAccount: convertpb.Convert_api_BankAccount_To_core_BankAccount(r.BankAccount),
 		Note:        r.Note,
 	}
-	if err := ledgerAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.LedgerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 
@@ -85,12 +82,12 @@ func (s LedgerService) UpdateLedger(ctx context.Context, r *UpdateLedgerEndpoint
 	return nil
 }
 
-func (s LedgerService) DeleteLedger(ctx context.Context, r *DeleteLedgerEndpoint) error {
+func (s *LedgerService) DeleteLedger(ctx context.Context, r *DeleteLedgerEndpoint) error {
 	cmd := &ledgering.DeleteLedgerCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := ledgerAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.LedgerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 

@@ -8,26 +8,15 @@ import (
 	"o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 )
-
-func init() {
-	bus.AddHandlers("api",
-		customerService.CreateCustomerAddress,
-		customerService.DeleteCustomerAddress,
-		customerService.GetCustomerAddresses,
-		customerService.UpdateCustomerAddress,
-		customerService.SetDefaultCustomerAddress,
-	)
-}
 
 func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *CreateCustomerAddressEndpoint) error {
 	query := &location.GetLocationQuery{
 		DistrictCode: r.DistrictCode,
 		WardCode:     r.WardCode,
 	}
-	if err := locationQuery.Dispatch(ctx, query); err != nil {
+	if err := s.LocationQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
@@ -46,10 +35,10 @@ func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *CreateCu
 		Coordinates:  convertpb.PbCoordinatesToModel(r.Coordinates),
 		IsDefault:    true,
 	}
-	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.AddressAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	pbAddr, err := convertpb.PbShopAddress(ctx, cmd.Result, locationQuery)
+	pbAddr, err := convertpb.PbShopAddress(ctx, cmd.Result, s.LocationQuery)
 	if err != nil {
 		return err
 	}
@@ -62,7 +51,7 @@ func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *DeleteCu
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.AddressAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
@@ -74,10 +63,10 @@ func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *GetCustom
 		ShopID:   r.Context.Shop.ID,
 		TraderID: r.CustomerId,
 	}
-	if err := traderAddressQuery.Dispatch(ctx, query); err != nil {
+	if err := s.AddressQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	addrs, err := convertpb.PbShopAddresses(ctx, query.Result.ShopTraderAddresses, locationQuery)
+	addrs, err := convertpb.PbShopAddresses(ctx, query.Result.ShopTraderAddresses, s.LocationQuery)
 	if err != nil {
 		return err
 	}
@@ -91,7 +80,7 @@ func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCu
 			DistrictCode: r.DistrictCode.String,
 			WardCode:     r.WardCode.String,
 		}
-		if err := locationQuery.Dispatch(ctx, query); err != nil {
+		if err := s.LocationQuery.Dispatch(ctx, query); err != nil {
 			return err
 		}
 	}
@@ -111,10 +100,10 @@ func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCu
 		Position:     r.Position,
 		Coordinates:  convertpb.PbCoordinatesToModel(r.Coordinates),
 	}
-	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.AddressAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	addr, err := convertpb.PbShopAddress(ctx, cmd.Result, locationQuery)
+	addr, err := convertpb.PbShopAddress(ctx, cmd.Result, s.LocationQuery)
 	if err != nil {
 		return err
 	}
@@ -127,7 +116,7 @@ func (s *CustomerService) SetDefaultCustomerAddress(ctx context.Context, r *SetD
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := traderAddressQuery.Dispatch(ctx, query); err != nil {
+	if err := s.AddressQuery.Dispatch(ctx, query); err != nil {
 		return cm.MapError(err).
 			Wrap(cm.NotFound, "traderAddress not found").
 			Throw()
@@ -138,7 +127,7 @@ func (s *CustomerService) SetDefaultCustomerAddress(ctx context.Context, r *SetD
 		TraderID: query.Result.TraderID,
 		ShopID:   r.Context.Shop.ID,
 	}
-	if err := traderAddressAggr.Dispatch(ctx, setDefaultAddressCmd); err != nil {
+	if err := s.AddressAggr.Dispatch(ctx, setDefaultAddressCmd); err != nil {
 		return nil
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: setDefaultAddressCmd.Result.Updated}

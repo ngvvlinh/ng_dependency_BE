@@ -13,27 +13,26 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/capi/dot"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		supplierService.GetSupplier,
-		supplierService.GetSuppliers,
-		supplierService.GetSuppliersByIDs,
-		supplierService.CreateSupplier,
-		supplierService.UpdateSupplier,
-		supplierService.DeleteSupplier)
+type SupplierService struct {
+	CatalogQuery       catalog.QueryBus
+	PurchaseOrderQuery purchaseorder.QueryBus
+	ReceiptQuery       receipting.QueryBus
+	SupplierAggr       suppliering.CommandBus
+	SupplierQuery      suppliering.QueryBus
 }
+
+func (s *SupplierService) Clone() *SupplierService { res := *s; return &res }
 
 func (s *SupplierService) GetSupplier(ctx context.Context, r *GetSupplierEndpoint) error {
 	query := &suppliering.GetSupplierByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := supplierQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SupplierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbSupplier(query.Result)
@@ -51,7 +50,7 @@ func (s *SupplierService) GetSuppliers(ctx context.Context, r *GetSuppliersEndpo
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	if err := supplierQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SupplierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &shop.SuppliersResponse{
@@ -70,7 +69,7 @@ func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *GetSuppliers
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := supplierQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SupplierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &shop.SuppliersResponse{Suppliers: convertpb.PbSuppliers(query.Result.Suppliers)}
@@ -97,7 +96,7 @@ func (s *SupplierService) CreateSupplier(ctx context.Context, r *CreateSupplierE
 				TaxNumber:         r.TaxNumber,
 				HeadquaterAddress: r.HeadquaterAddress,
 			}
-			if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
+			if err := s.SupplierAggr.Dispatch(ctx, cmd); err != nil {
 				return nil, err
 			}
 			r.Result = convertpb.PbSupplier(cmd.Result)
@@ -123,7 +122,7 @@ func (s *SupplierService) UpdateSupplier(ctx context.Context, r *UpdateSupplierE
 		HeadquaterAddress: r.HeadquaterAddress,
 		Note:              r.Note,
 	}
-	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SupplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbSupplier(cmd.Result)
@@ -135,7 +134,7 @@ func (s *SupplierService) DeleteSupplier(ctx context.Context, r *DeleteSupplierE
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SupplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
@@ -156,7 +155,7 @@ func (s *SupplierService) listLiabilities(ctx context.Context, shopID dot.ID, su
 		ShopID:      shopID,
 		Statuses:    []status3.Status{status3.Z, status3.P},
 	}
-	if err := purchaseOrderQuery.Dispatch(ctx, listPurchaseOrdersBySuppliersQuery); err != nil {
+	if err := s.PurchaseOrderQuery.Dispatch(ctx, listPurchaseOrdersBySuppliersQuery); err != nil {
 		return err
 	}
 	purchaseOrders := listPurchaseOrdersBySuppliersQuery.Result.PurchaseOrders
@@ -170,7 +169,7 @@ func (s *SupplierService) listLiabilities(ctx context.Context, shopID dot.ID, su
 		TraderIDs: supplierIDs,
 		Statuses:  []status3.Status{status3.P},
 	}
-	if err := receiptQuery.Dispatch(ctx, listReceiptsBySupplierIDs); err != nil {
+	if err := s.ReceiptQuery.Dispatch(ctx, listReceiptsBySupplierIDs); err != nil {
 		return err
 	}
 	receipts := listReceiptsBySupplierIDs.Result.Receipts
@@ -194,14 +193,14 @@ func (s *SupplierService) GetSuppliersByVariantID(ctx context.Context, r *GetSup
 		VariantID: r.VariantId,
 		ShopID:    r.Context.Shop.ID,
 	}
-	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	querySuppplies := &suppliering.ListSuppliersByIDsQuery{
 		IDs:    query.Result,
 		ShopID: r.Context.Shop.ID,
 	}
-	if err := supplierQuery.Dispatch(ctx, querySuppplies); err != nil {
+	if err := s.SupplierQuery.Dispatch(ctx, querySuppplies); err != nil {
 		return err
 	}
 	r.Result = &shop.SuppliersResponse{Suppliers: convertpb.PbSuppliers(querySuppplies.Result.Suppliers)}

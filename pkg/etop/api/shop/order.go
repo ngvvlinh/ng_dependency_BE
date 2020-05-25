@@ -8,10 +8,7 @@ import (
 
 	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
-	"o.o/api/main/shipping"
-	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/shopping/customering"
-	"o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/receipt_ref"
@@ -20,7 +17,6 @@ import (
 	"o.o/api/top/types/etc/status5"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
-	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
@@ -31,27 +27,14 @@ import (
 	"o.o/capi/dot"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		orderService.CancelOrder,
-		orderService.ConfirmOrderAndCreateFulfillments,
-		orderService.CreateOrder,
-		fulfillmentService.GetExternalShippingServices,
-		fulfillmentService.GetPublicExternalShippingServices,
-		fulfillmentService.GetFulfillment,
-		orderService.GetOrder,
-		orderService.GetOrders,
-		orderService.GetOrdersByIDs,
-		orderService.UpdateOrder,
-		orderService.UpdateOrdersStatus,
-		fulfillmentService.GetFulfillments,
-		fulfillmentService.GetPublicFulfillment,
-		fulfillmentService.UpdateFulfillmentsShippingState,
-		fulfillmentService.GetFulfillmentsByIDs,
-		orderService.UpdateOrderPaymentStatus,
-		orderService.GetOrdersByReceiptID,
-	)
+type OrderService struct {
+	OrderAggr     ordering.CommandBus
+	CustomerQuery customering.QueryBus
+	OrderQuery    ordering.QueryBus
+	ReceiptQuery  receipting.QueryBus
 }
+
+func (s *OrderService) Clone() *OrderService { res := *s; return &res }
 
 func (s *OrderService) GetOrder(ctx context.Context, q *GetOrderEndpoint) error {
 	query := &ordermodelx.GetOrderQuery{
@@ -67,7 +50,7 @@ func (s *OrderService) GetOrder(ctx context.Context, q *GetOrderEndpoint) error 
 	q.Result = convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
 	q.Result.ShopName = q.Context.Shop.Name
 	q.Result.Fulfillments = convertpb.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
-	if err := checkValidateCustomer(ctx, []*types.Order{q.Result}); err != nil {
+	if err := s.checkValidateCustomer(ctx, []*types.Order{q.Result}); err != nil {
 		return err
 	}
 
@@ -98,7 +81,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) erro
 		Paging: cmapi.PbPageInfo(paging),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
-	if err := checkValidateCustomer(ctx, q.Result.Orders); err != nil {
+	if err := s.checkValidateCustomer(ctx, q.Result.Orders); err != nil {
 		return err
 	}
 	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
@@ -108,7 +91,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) erro
 	return nil
 }
 
-func checkValidateCustomer(ctx context.Context, orders []*types.Order) error {
+func (s *OrderService) checkValidateCustomer(ctx context.Context, orders []*types.Order) error {
 	if orders == nil {
 		return nil
 	}
@@ -122,7 +105,7 @@ func checkValidateCustomer(ctx context.Context, orders []*types.Order) error {
 		IDs:     customerIDs,
 		ShopIDs: shopIDs,
 	}
-	if err := customerQuery.Dispatch(ctx, queryCustomers); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, queryCustomers); err != nil {
 		return err
 	}
 	customers := queryCustomers.Result.Customers
@@ -172,7 +155,7 @@ func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *GetOrdersByR
 		ID:     q.ReceiptId,
 		ShopID: shopID,
 	}
-	if err := receiptQuery.Dispatch(ctx, queryReceipt); err != nil {
+	if err := s.ReceiptQuery.Dispatch(ctx, queryReceipt); err != nil {
 		return err
 	}
 	var arrOrderID []dot.ID
@@ -316,7 +299,7 @@ func (s *OrderService) CompleteOrder(ctx context.Context, q *CompleteOrderEndpoi
 		OrderID: q.OrderId,
 		ShopID:  q.Context.Shop.ID,
 	}
-	if err := orderAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.OrderAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -386,7 +369,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 		RefType: receipt_ref.Order,
 		Status:  int(status3.P),
 	}
-	if err := receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
+	if err := s.ReceiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
 		return err
 	}
 
@@ -421,102 +404,6 @@ func (s *OrderService) confirmOrderAndCreateFulfillments(ctx context.Context, q 
 	q.Result = resp
 
 	return q, nil
-}
-
-func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *GetFulfillmentEndpoint) error {
-	query := &shipmodelx.GetFulfillmentExtendedQuery{
-		ShopID:        q.Context.Shop.ID,
-		PartnerID:     q.CtxPartner.GetID(),
-		FulfillmentID: q.Id,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = convertpb.PbFulfillment(query.Result.Fulfillment, model.TagShop, query.Result.Shop, query.Result.Order)
-	return nil
-}
-
-func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillmentsEndpoint) error {
-	shopIDs, err := api.MixAccount(q.Context.Claim, q.Mixed)
-	if err != nil {
-		return err
-	}
-
-	paging := cmapi.CMPaging(q.Paging)
-	query := &shipmodelx.GetFulfillmentExtendedsQuery{
-		ShopIDs:   shopIDs,
-		PartnerID: q.CtxPartner.GetID(),
-		OrderID:   q.OrderId,
-		Status:    q.Status,
-		Paging:    paging,
-		Filters:   cmapi.ToFilters(q.Filters),
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &types.FulfillmentsResponse{
-		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop),
-		Paging:       cmapi.PbPageInfo(paging),
-	}
-	return nil
-}
-
-func (s *FulfillmentService) GetFulfillmentsByIDs(ctx context.Context, q *GetFulfillmentsByIDsEndpoint) error {
-	shopID := q.Context.Shop.ID
-	query := &shipping.ListFulfillmentsByIDsQuery{
-		IDs:    q.IDs,
-		ShopID: shopID,
-	}
-	if err := shippingQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &types.FulfillmentsResponse{
-		Fulfillments: convertpb.Convert_core_Fulfillments_To_api_Fulfillments(query.Result, model.TagShop),
-	}
-	return nil
-}
-
-func (s *FulfillmentService) GetExternalShippingServices(ctx context.Context, q *GetExternalShippingServicesEndpoint) error {
-	resp, err := shippingCtrl.GetExternalShippingServices(ctx, q.Context.Shop.ID, q.GetExternalShippingServicesRequest)
-	q.Result = &types.GetExternalShippingServicesResponse{
-		Services: convertpb.PbAvailableShippingServices(resp),
-	}
-	return err
-}
-
-func (s *FulfillmentService) GetPublicExternalShippingServices(ctx context.Context, q *GetPublicExternalShippingServicesEndpoint) error {
-	resp, err := shippingCtrl.GetExternalShippingServices(ctx, model.EtopAccountID, q.GetExternalShippingServicesRequest)
-	q.Result = &types.GetExternalShippingServicesResponse{
-		Services: convertpb.PbAvailableShippingServices(resp),
-	}
-	return err
-}
-
-func (s *FulfillmentService) GetPublicFulfillment(ctx context.Context, q *GetPublicFulfillmentEndpoint) error {
-	query := &shipmodelx.GetFulfillmentQuery{
-		ShippingCode: q.Code,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = convertpb.PbPublicFulfillment(query.Result)
-	return nil
-}
-
-func (s *FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context, q *UpdateFulfillmentsShippingStateEndpoint) error {
-	shopID := q.Context.Shop.ID
-	cmd := &shipmodelx.UpdateFulfillmentsShippingStateCommand{
-		ShopID:        shopID,
-		IDs:           q.Ids,
-		ShippingState: q.ShippingState,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbcm.UpdatedResponse{
-		Updated: cmd.Result.Updated,
-	}
-	return nil
 }
 
 func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOrderPaymentStatusEndpoint) error {
@@ -557,106 +444,4 @@ func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrd
 		Updated: cmd.Result.Updated,
 	}
 	return nil
-}
-
-func (s *ShipmentService) GetShippingServices(ctx context.Context, q *GetShippingServicesEndpoint) error {
-	shopID := q.Context.Shop.ID
-	args, err := shipmentManager.PrepareDataGetShippingServices(ctx, q.GetShippingServicesRequest)
-	if err != nil {
-		return err
-	}
-	resp, err := shipmentManager.GetShippingServices(ctx, shopID, args)
-	if err != nil {
-		return err
-	}
-	q.Result = &types.GetShippingServicesResponse{
-		Services: convertpb.PbAvailableShippingServices(resp),
-	}
-	return nil
-}
-
-func (s *ShipmentService) CreateFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) error {
-	key := fmt.Sprintf("CreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderID)
-	res, _, err := idempgroup.DoAndWrap(
-		ctx, key, 10*time.Second, "tạo đơn giao hàng",
-		func() (interface{}, error) { return s.createFulfillments(ctx, q) })
-
-	if err != nil {
-		return err
-	}
-	q.Result = res.(*CreateFulfillmentsEndpoint).Result
-	return nil
-}
-
-func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) (_ *CreateFulfillmentsEndpoint, _err error) {
-	shopID := q.Context.Shop.ID
-	args := &shipping.CreateFulfillmentsCommand{
-		ShopID:              shopID,
-		OrderID:             q.OrderID,
-		PickupAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.PickupAddress),
-		ShippingAddress:     convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ShippingAddress),
-		ReturnAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ReturnAddress),
-		ShippingServiceCode: q.ShippingServiceCode,
-		ShippingServiceFee:  q.ShippingServiceFee,
-		ShippingServiceName: q.ShippingServiceName,
-		WeightInfo: shippingtypes.WeightInfo{
-			GrossWeight:      q.GrossWeight,
-			ChargeableWeight: q.ChargeableWeight,
-			Length:           q.Length,
-			Width:            q.Width,
-			Height:           q.Height,
-		},
-		ValueInfo: shippingtypes.ValueInfo{
-			CODAmount:        q.CODAmount,
-			IncludeInsurance: q.IncludeInsurance,
-		},
-		TryOn:         q.TryOn,
-		ShippingNote:  q.ShippingNote,
-		ShippingType:  q.ShippingType,
-		ConnectionID:  q.ConnectionID,
-		ShopCarrierID: q.ShopCarrierID,
-	}
-	if err := shippingAggregate.Dispatch(ctx, args); err != nil {
-		return nil, err
-	}
-	query := &shipmodelx.GetFulfillmentExtendedsQuery{
-		ShopIDs: []dot.ID{shopID},
-		IDs:     args.Result,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return nil, err
-	}
-	ffms := convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop)
-	res := &CreateFulfillmentsEndpoint{
-		Result: &shop.CreateFulfillmentsResponse{
-			Fulfillments: ffms,
-		},
-	}
-	return res, nil
-}
-
-func (s *ShipmentService) CancelFulfillment(ctx context.Context, q *CancelFulfillmentEndpoint) error {
-	key := fmt.Sprintf("CancelFulfillment %v-%v", q.Context.Shop.ID, q.FulfillmentID)
-	res, _, err := idempgroup.DoAndWrap(
-		ctx, key, 10*time.Second, "huỷ đơn giao hàng",
-		func() (interface{}, error) { return s.cancelFulfillment(ctx, q) })
-
-	if err != nil {
-		return err
-	}
-	q.Result = res.(*CancelFulfillmentEndpoint).Result
-	return nil
-}
-
-func (s *ShipmentService) cancelFulfillment(ctx context.Context, q *CancelFulfillmentEndpoint) (*CancelFulfillmentEndpoint, error) {
-	cmd := &shipping.CancelFulfillmentCommand{
-		FulfillmentID: q.FulfillmentID,
-		CancelReason:  q.CancelReason,
-	}
-	if err := shippingAggregate.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
-	return &CancelFulfillmentEndpoint{
-		Result: &pbcm.UpdatedResponse{Updated: 1},
-	}, nil
 }

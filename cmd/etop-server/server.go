@@ -36,7 +36,6 @@ import (
 	crm "o.o/backend/pkg/etop/api/crm"
 	integration "o.o/backend/pkg/etop/api/integration"
 	sadmin "o.o/backend/pkg/etop/api/sadmin"
-	shop "o.o/backend/pkg/etop/api/shop"
 	partner "o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
 	xshop "o.o/backend/pkg/etop/apix/shop"
@@ -54,7 +53,6 @@ import (
 	webhookghn "o.o/backend/pkg/integration/shipping/ghn/webhook"
 	webhookghtk "o.o/backend/pkg/integration/shipping/ghtk/webhook"
 	webhookvtpost "o.o/backend/pkg/integration/shipping/vtpost/webhook"
-	aff "o.o/backend/pkg/services/affiliate/api"
 	"o.o/backend/tools/pkg/acl"
 	"o.o/common/jsonx"
 	"o.o/common/l"
@@ -98,11 +96,9 @@ func startEtopServer() *http.Server {
 		}
 
 		admin.NewAdminServer(apiMux)
-		shop.NewShopServer(apiMux)
 		affiliate.NewAffiliateServer(apiMux)
 		integration.NewIntegrationServer(apiMux)
 		crm.NewCrmServer(apiMux, cfg.Secret)
-		aff.NewAffiliateServer(apiMux, cfg.Secret)
 		// /v1/
 		v1Mux := http.NewServeMux()
 		v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))

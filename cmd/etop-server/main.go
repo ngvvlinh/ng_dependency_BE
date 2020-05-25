@@ -541,7 +541,7 @@ func main() {
 		cfg.SMS,
 		bot,
 	)...)
-	shop.Init(
+	servers = append(servers, shop.BuildServers(
 		locationBus,
 		catalogQuery,
 		catalogAggr,
@@ -589,7 +589,7 @@ func main() {
 		webServerAggregate,
 		webServerQuery,
 		subscriptionQuery,
-	)
+	)...)
 	partner.Init(
 		shutdowner,
 		redisStore,
@@ -642,7 +642,8 @@ func main() {
 	orderS.Init(shippingManager, catalogQuery, serviceordering.AggregateMessageBus(orderAggr),
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	affiliate.Init(identityAggr)
-	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
+	servers = append(servers, apiaff.BuildServers(
+		apiaff.Secret(cfg.Secret), affiliateCmd, affilateQuery, catalogQuery, identityQuery)...)
 	admin.Init(
 		eventBus,
 		moneyTxQuery, moneyTxAggr,
