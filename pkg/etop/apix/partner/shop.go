@@ -7,192 +7,25 @@ import (
 	"regexp"
 	"strings"
 
-	"o.o/api/main/catalog"
-	"o.o/api/main/connectioning"
-	"o.o/api/main/inventory"
-	"o.o/api/main/location"
-	"o.o/api/main/shipping"
-	"o.o/api/shopping/addressing"
-	"o.o/api/shopping/customering"
 	extpartner "o.o/api/top/external/partner"
-	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/authorize_shop_config"
 	"o.o/api/top/types/etc/status3"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/apifw/idemp"
-	cmService "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/apifw/whitelabel"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
 	apiconvertpb "o.o/backend/pkg/etop/api/convertpb"
-	"o.o/backend/pkg/etop/apix/convertpb"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
-var (
-	idempgroup          *idemp.RedisGroup
-	authStore           auth.Generator
-	authURL             string
-	locationQuery       location.QueryBus
-	customerQuery       *customering.QueryBus
-	customerAggregate   *customering.CommandBus
-	addressQuery        *addressing.QueryBus
-	addressAggregate    *addressing.CommandBus
-	inventoryQuery      *inventory.QueryBus
-	catalogAggregate    *catalog.CommandBus
-	catalogQuery        *catalog.QueryBus
-	connectionQuery     connectioning.QueryBus
-	connectionAggregate connectioning.CommandBus
-	shippingAggregate   shipping.CommandBus
-
-	ll = l.New()
-)
-
-const PrefixIdempPartnerAPI = "IdempPartnerAPI"
-
-const ttlShopRequest = 15 * 60 // 15 minutes
-const msgShopRequest = `Sử dụng mã này để hỏi quyền tạo đơn hàng với tư cách shop (có hiệu lực trong 15 phút)`
-const msgShopKey = `Sử dụng mã này để tạo đơn hàng với tư cách shop (có hiệu lực khi shop vẫn tiếp tục sử dụng dịch vụ của đối tác)`
-const msgUserKey = `Sử dụng mã này để truy cập hệ thống với tư cách user (có hiệu lực khi user vẫn tiếp tục sử dụng dịch vụ của đối tác)`
-
-func init() {
-	bus.AddHandlers("apix",
-		miscService.VersionInfo,
-		miscService.CurrentAccount,
-		shopService.CurrentShop,
-		shopService.AuthorizeShop,
-	)
-}
-
-type MiscService struct{}
 type ShopService struct{}
-type WebhookService struct{}
-type HistoryService struct{}
 
-type ShippingService struct{}
-type CustomerService struct{}
-type CustomerAddressService struct{}
-type CustomerGroupService struct{}
-type CustomerGroupRelationshipService struct{}
-type InventoryService struct{}
-type OrderService struct{}
-type FulfillmentService struct{}
-type ProductService struct{}
-type ProductCollectionService struct{}
-type ProductCollectionRelationshipService struct{}
-type VariantService struct{}
-
-func (s *MiscService) Clone() *MiscService                       { res := *s; return &res }
-func (s *ShopService) Clone() *ShopService                       { res := *s; return &res }
-func (s *WebhookService) Clone() *WebhookService                 { res := *s; return &res }
-func (s *HistoryService) Clone() *HistoryService                 { res := *s; return &res }
-func (s *ShippingService) Clone() *ShippingService               { res := *s; return &res }
-func (s *CustomerService) Clone() *CustomerService               { res := *s; return &res }
-func (s *CustomerAddressService) Clone() *CustomerAddressService { res := *s; return &res }
-func (s *CustomerGroupService) Clone() *CustomerGroupService     { res := *s; return &res }
-func (s *CustomerGroupRelationshipService) Clone() *CustomerGroupRelationshipService {
-	res := *s
-	return &res
-}
-func (s *InventoryService) Clone() *InventoryService                 { res := *s; return &res }
-func (s *OrderService) Clone() *OrderService                         { res := *s; return &res }
-func (s *FulfillmentService) Clone() *FulfillmentService             { res := *s; return &res }
-func (s *ProductService) Clone() *ProductService                     { res := *s; return &res }
-func (s *ProductCollectionService) Clone() *ProductCollectionService { res := *s; return &res }
-func (s *ProductCollectionRelationshipService) Clone() *ProductCollectionRelationshipService {
-	res := *s
-	return &res
-}
-func (s *VariantService) Clone() *VariantService { res := *s; return &res }
-
-var miscService = &MiscService{}
-var shopService = &ShopService{}
-var webhookService = &WebhookService{}
-var historyService = &HistoryService{}
-var shippingService = &ShippingService{}
-var customerService = &CustomerService{}
-var customerAddressService = &CustomerAddressService{}
-var customerGroupService = &CustomerGroupService{}
-var customerGroupRelationshipService = &CustomerGroupRelationshipService{}
-var inventoryService = &InventoryService{}
-var orderService = &OrderService{}
-var fulfillmentService = &FulfillmentService{}
-var productService = &ProductService{}
-var productCollectionService = &ProductCollectionService{}
-var productCollectionRelationshipService = &ProductCollectionRelationshipService{}
-var variantService = &VariantService{}
-
-func Init(
-	sd cmService.Shutdowner,
-	rd redis.Store,
-	s auth.Generator,
-	_authURL string,
-	locationQ location.QueryBus,
-	customerQ *customering.QueryBus,
-	customerA *customering.CommandBus,
-	addressQ *addressing.QueryBus,
-	addressA *addressing.CommandBus,
-	inventoryQ *inventory.QueryBus,
-	catalogQ *catalog.QueryBus,
-	catalogA *catalog.CommandBus,
-	connectionQ connectioning.QueryBus,
-	connectionA connectioning.CommandBus,
-	shippingAggr shipping.CommandBus,
-) {
-	if _authURL == "" {
-		ll.Panic("no auth_url")
-	}
-	if _, err := url.Parse(_authURL); err != nil {
-		ll.Panic("invalid auth_url", l.String("url", _authURL))
-	}
-
-	authStore = s
-	authURL = _authURL
-
-	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempPartnerAPI, 0)
-	sd.Register(idempgroup.Shutdown)
-
-	locationQuery = locationQ
-	customerQuery = customerQ
-	customerAggregate = customerA
-	addressQuery = addressQ
-	addressAggregate = addressA
-	inventoryQuery = inventoryQ
-	catalogAggregate = catalogA
-	catalogQuery = catalogQ
-	connectionQuery = connectionQ
-	connectionAggregate = connectionA
-	shippingAggregate = shippingAggr
-}
-
-func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
-	q.Result = &pbcm.VersionInfoResponse{
-		Service: "partner",
-		Version: "1.0.0",
-	}
-	return nil
-}
-
-func (s *MiscService) CurrentAccount(ctx context.Context, q *CurrentAccountEndpoint) error {
-	if q.Context.Partner == nil {
-		return cm.Errorf(cm.Internal, nil, "")
-	}
-	q.Result = convertpb.PbPartner(q.Context.Partner)
-	if wl.X(ctx).IsWhiteLabel() {
-		q.Result.Meta = map[string]string{
-			"wl_name": wl.X(ctx).Name,
-			"wl_key":  wl.X(ctx).Key,
-			"wl_host": wl.X(ctx).Host,
-		}
-	}
-	return nil
-}
+func (s *ShopService) Clone() *ShopService { res := *s; return &res }
 
 func (s *ShopService) CurrentShop(ctx context.Context, q *CurrentShopEndpoint) error {
 	if q.Context.Shop == nil {

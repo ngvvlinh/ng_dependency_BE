@@ -187,8 +187,8 @@ func main() {
 		rt.Use(httpx.RecoverAndLog(bot, true))
 		webhook := fbwebhook.New(
 			db, bot, cfg.Webhook.VerifyToken,
-			redisStore, fbClient, &fbMessagingQuery,
-			&fbMessagingAggr, &fbPageQuery,
+			redisStore, fbClient, fbMessagingQuery,
+			fbMessagingAggr, fbPageQuery,
 		)
 		webhook.Register(rt)
 		webhookMux.Handle("/", rt)

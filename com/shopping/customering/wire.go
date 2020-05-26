@@ -11,4 +11,7 @@ import (
 var WireSet = wire.NewSet(
 	aggregate.NewCustomerAggregate, aggregate.CustomerAggregateMessageBus,
 	query.NewCustomerQuery, query.CustomerQueryMessageBus,
+
+	aggregate.NewAddressAggregate, aggregate.AddressAggregateMessageBus,
+	query.NewAddressQuery, query.AddressQueryMessageBus,
 )

@@ -79,6 +79,8 @@ type ShipmentManager struct {
 	eventBus               capi.EventBus
 }
 
+type FlagApplyShipmentPrice bool
+
 func NewShipmentManager(
 	eventBus capi.EventBus,
 	locationQS location.QueryBus,
@@ -87,7 +89,7 @@ func NewShipmentManager(
 	redisS redis.Store,
 	shipmentServiceQS shipmentservice.QueryBus,
 	shipmentPriceQS shipmentprice.QueryBus,
-	flagApplyShipmentPrice bool,
+	flagApplyShipmentPrice FlagApplyShipmentPrice,
 ) *ShipmentManager {
 	_cipherx, _ := cipherx.NewCipherx(SecretKey)
 	return &ShipmentManager{
@@ -100,7 +102,7 @@ func NewShipmentManager(
 		cipherx:                _cipherx,
 		shipmentServiceQS:      shipmentServiceQS,
 		shipmentPriceQS:        shipmentPriceQS,
-		FlagApplyShipmentPrice: flagApplyShipmentPrice,
+		FlagApplyShipmentPrice: bool(flagApplyShipmentPrice),
 	}
 }
 

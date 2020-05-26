@@ -2,6 +2,7 @@ package api
 
 import (
 	service "o.o/api/top/services/affiliate"
+	cc "o.o/backend/pkg/common/config"
 	"o.o/capi/httprpc"
 	"o.o/common/l"
 )
@@ -11,11 +12,10 @@ import (
 
 var ll = l.New()
 
-type Secret string
 type Servers []httprpc.Server
 
 func NewServers(
-	secret Secret,
+	secret cc.SecretToken,
 	userService *UserService,
 	tradingService *TradingService,
 	shopService *ShopService,

@@ -26,13 +26,13 @@ type PurchaseOrderQuery struct {
 	eventBus              capi.EventBus
 	supplierQuery         suppliering.QueryBus
 	inventoryVoucherQuery inventory.QueryBus
-	receiptQuery          *receipting.QueryBus
+	receiptQuery          receipting.QueryBus
 }
 
 func NewPurchaseOrderQuery(
 	database *cmsql.Database, eventBus capi.EventBus,
 	supplierQ suppliering.QueryBus, inventoryVoucherQ inventory.QueryBus,
-	receiptQ *receipting.QueryBus,
+	receiptQ receipting.QueryBus,
 ) *PurchaseOrderQuery {
 	return &PurchaseOrderQuery{
 		db:                    database,

@@ -1,5 +1,3 @@
-// +build wireinject
-
 package shipmentservice
 
 import "github.com/google/wire"

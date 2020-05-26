@@ -14,13 +14,13 @@ import (
 )
 
 type ProcessManager struct {
-	purchaseOrderQuery *purchaseorder.QueryBus
-	receiptQuery       *receipting.QueryBus
+	purchaseOrderQuery purchaseorder.QueryBus
+	receiptQuery       receipting.QueryBus
 }
 
 func New(
-	purchaseOrderQ *purchaseorder.QueryBus,
-	receiptQ *receipting.QueryBus,
+	purchaseOrderQ purchaseorder.QueryBus,
+	receiptQ receipting.QueryBus,
 ) *ProcessManager {
 	return &ProcessManager{
 		purchaseOrderQuery: purchaseOrderQ,

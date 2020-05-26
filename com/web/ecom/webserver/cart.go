@@ -21,7 +21,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/authorize/claims"
-	logicorder "o.o/backend/pkg/etop/logic/orders"
 	"o.o/capi/dot"
 )
 
@@ -175,7 +174,7 @@ func (s *Server) CreateOrder(c echo.Context) error {
 		PreOrder:        true,
 	}
 
-	order, err := logicorder.CreateOrder(c.Request().Context(), &claimsShop, nil, cmdCreateOrder, nil, 0)
+	order, err := orderLogic.CreateOrder(c.Request().Context(), &claimsShop, nil, cmdCreateOrder, nil, 0)
 	if err != nil {
 		return err
 	}

@@ -17,7 +17,7 @@ import (
 
 type FulfillmentService struct {
 	ShippingQuery shipping.QueryBus
-	ShippingCtrl  *shipping_provider.ProviderManager
+	ShippingCtrl  *shipping_provider.CarrierManager
 }
 
 func (s *FulfillmentService) Clone() *FulfillmentService { res := *s; return &res }

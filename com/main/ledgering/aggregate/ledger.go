@@ -23,10 +23,10 @@ var scheme = conversion.Build(convert.RegisterConversions)
 
 type LedgerAggregate struct {
 	store        sqlstore.LedgerStoreFactory
-	receiptQuery *receipting.QueryBus
+	receiptQuery receipting.QueryBus
 }
 
-func NewLedgerAggregate(db *cmsql.Database, receiptQuery *receipting.QueryBus) *LedgerAggregate {
+func NewLedgerAggregate(db *cmsql.Database, receiptQuery receipting.QueryBus) *LedgerAggregate {
 	return &LedgerAggregate{
 		store:        sqlstore.NewLedgerStore(db),
 		receiptQuery: receiptQuery,

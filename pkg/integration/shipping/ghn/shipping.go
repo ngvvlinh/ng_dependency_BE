@@ -25,7 +25,7 @@ import (
 	"o.o/capi/dot"
 )
 
-var _ shipping_provider.ShippingCarrier = &Carrier{}
+var _ shipping_provider.CarrierDriver = &Carrier{}
 
 type Carrier struct {
 	clients  map[ClientType]*ghnclient.Client
@@ -46,6 +46,10 @@ func New(cfg Config, location location.QueryBus) *Carrier {
 		clients:  clients,
 		location: location,
 	}
+}
+
+func (c *Carrier) Code() typeshippingprovider.ShippingProvider {
+	return typeshippingprovider.GHN
 }
 
 func (c *Carrier) InitAllClients(ctx context.Context) error {

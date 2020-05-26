@@ -15,15 +15,15 @@ import (
 )
 
 type ProcessManager struct {
-	refundQuery  *refund.QueryBus
-	receiptQuery *receipting.QueryBus
-	refundAggr   *refund.CommandBus
+	refundQuery  refund.QueryBus
+	receiptQuery receipting.QueryBus
+	refundAggr   refund.CommandBus
 }
 
 func New(
-	refundQ *refund.QueryBus,
-	receiptQ *receipting.QueryBus,
-	refundA *refund.CommandBus,
+	refundQ refund.QueryBus,
+	receiptQ receipting.QueryBus,
+	refundA refund.CommandBus,
 ) *ProcessManager {
 	return &ProcessManager{
 		refundQuery:  refundQ,
@@ -31,6 +31,7 @@ func New(
 		refundAggr:   refundA,
 	}
 }
+
 func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.ReceiptCreating)
 	eventBus.AddEventListener(p.OrderCancelledEvent)

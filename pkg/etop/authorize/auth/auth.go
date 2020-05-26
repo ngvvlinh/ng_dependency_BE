@@ -202,24 +202,7 @@ func New() *Authorization {
 	return &Authorization{enforcer}
 }
 
-func SetMode(arg string) {
-	mode = arg
-}
-
 func (a *Authorization) Check(roles []string, actionsArgs string, isTest int) bool {
-	switch mode {
-	case "":
-		return true
-	case "test":
-		if isTest <= 0 {
-			return true
-		}
-	case "all":
-	// no-op
-	default:
-		//no-op
-	}
-
 	actions := strings.Split(actionsArgs, "|")
 	for _, role := range roles {
 		for _, action := range actions {

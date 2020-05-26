@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"o.o/api/main/invitation"
+	"o.o/backend/com/main/shipping/carrier"
 	"o.o/backend/com/supporting/crm/vtiger/mapping"
 	ecomconfig "o.o/backend/com/web/ecom/config"
 	"o.o/backend/pkg/common/apifw/captcha"
@@ -88,8 +89,8 @@ type Config struct {
 		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
 
-	ThirdPartyHost string `yaml:"third_party_host"`
-	Secret         string `yaml:"secret"`
+	ThirdPartyHost string         `yaml:"third_party_host"`
+	Secret         cc.SecretToken `yaml:"secret"`
 
 	Invitation invitation.Config
 
@@ -99,9 +100,8 @@ type Config struct {
 		} `yaml:"imgroup"`
 	} `yaml:"white_label"`
 
-	FlagEnablePermission        string `yaml:"flag_enable_permission"`
-	FlagEnableNewLinkInvitation bool   `yaml:"flag_enable_new_link_invitation"`
-	FlagApplyShipmentPrice      bool   `yaml:"flag_apply_shipment_price"`
+	FlagEnableNewLinkInvitation bool                           `yaml:"flag_enable_new_link_invitation"`
+	FlagApplyShipmentPrice      carrier.FlagApplyShipmentPrice `yaml:"flag_apply_shipment_price"`
 }
 
 // Default ...
@@ -158,7 +158,6 @@ func Default() Config {
 		Invitation: invitation.Config{
 			Secret: "IBVEhECSHtJiBoxQKOVafHW58zt9qRK7",
 		},
-		FlagEnablePermission: "all",
 	}
 	cfg.Postgres.Database = "etop_dev"
 	cfg.PostgresAffiliate.Database = "etop_dev"

@@ -34,16 +34,16 @@ type Webhook struct {
 	verifyToken      string
 	redisStore       redis.Store
 	fbClient         *fbclient.FbClient
-	fbmessagingQuery *fbmessaging.QueryBus
-	fbmessagingAggr  *fbmessaging.CommandBus
-	fbPageQuery      *fbpaging.QueryBus
+	fbmessagingQuery fbmessaging.QueryBus
+	fbmessagingAggr  fbmessaging.CommandBus
+	fbPageQuery      fbpaging.QueryBus
 }
 
 func New(
 	db *cmsql.Database, bot *telebot.Channel, verifyToken string,
 	redisStore redis.Store, fbClient *fbclient.FbClient,
-	fbmessagingQuery *fbmessaging.QueryBus, fbmessagingAggregate *fbmessaging.CommandBus,
-	fbPageQuery *fbpaging.QueryBus,
+	fbmessagingQuery fbmessaging.QueryBus, fbmessagingAggregate fbmessaging.CommandBus,
+	fbPageQuery fbpaging.QueryBus,
 ) *Webhook {
 	wh := &Webhook{
 		db:               db,

@@ -26,14 +26,13 @@ import (
 	convertpbint "o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/apix/convertpb"
 	"o.o/backend/pkg/etop/authorize/claims"
-	logicorder "o.o/backend/pkg/etop/logic/orders"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
 var ll = l.New()
 
-func CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim, r *exttypes.CreateOrderRequest) (_ *exttypes.OrderWithoutShipping, _err error) {
+func (s *Shipping) CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim, r *exttypes.CreateOrderRequest) (_ *exttypes.OrderWithoutShipping, _err error) {
 	lines, err := convertpb.OrderLinesToCreateOrderLines(r.Lines)
 	if err != nil {
 		return nil, err
@@ -80,7 +79,7 @@ func CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim, r *exttypes.C
 		GhnNoteCode:     0, // will be over-written by try_on
 	}
 
-	resp, err := logicorder.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
+	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -97,17 +96,17 @@ func CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim, r *exttypes.C
 	return convertpb.PbOrderWithoutShipping(orderQuery.Result.Order), nil
 }
 
-func ConfirmOrder(ctx context.Context, userID dot.ID, shopClaim *claims.ShopClaim, orderID dot.ID, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (_err error) {
+func (s *Shipping) ConfirmOrder(ctx context.Context, userID dot.ID, shopClaim *claims.ShopClaim, orderID dot.ID, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (_err error) {
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := logicorder.CancelOrder(ctx, userID, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", _err), inventory_auto.Unknown)
+			_, err := s.OrderLogic.CancelOrder(ctx, userID, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", _err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
 		}
 	}()
-	_, err := logicorder.ConfirmOrder(ctx, userID, shopClaim.Shop, &apishop.ConfirmOrderRequest{
+	_, err := s.OrderLogic.ConfirmOrder(ctx, userID, shopClaim.Shop, &apishop.ConfirmOrderRequest{
 		OrderId:              orderID,
 		AutoInventoryVoucher: autoInventoryVoucher,
 	})
@@ -118,7 +117,7 @@ func ConfirmOrder(ctx context.Context, userID dot.ID, shopClaim *claims.ShopClai
 	return nil
 }
 
-func CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID, shopClaim *claims.ShopClaim, r *exttypes.CreateAndConfirmOrderRequest) (_ *exttypes.OrderAndFulfillments, _err error) {
+func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID, shopClaim *claims.ShopClaim, r *exttypes.CreateAndConfirmOrderRequest) (_ *exttypes.OrderAndFulfillments, _err error) {
 	shipping := r.Shipping
 	if shipping == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping")
@@ -153,7 +152,7 @@ func CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID,
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã đơn hàng external_code không hợp lệ")
 	}
 
-	conn, serviceCode, err := parseServiceCode(ctx, shipping.ShippingServiceCode.Apply(""))
+	conn, serviceCode, err := s.parseServiceCode(ctx, shipping.ShippingServiceCode.Apply(""))
 	if err != nil {
 		return nil, err
 	}
@@ -219,7 +218,7 @@ func CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID,
 	if err := validateAddress(req.Shipping.PickupAddress, conn.ConnectionProvider); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
-	resp, err := logicorder.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
+	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -228,14 +227,14 @@ func CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID,
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := logicorder.CancelOrder(ctx, userID, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
+			_, err := s.OrderLogic.CancelOrder(ctx, userID, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
 		}
 	}()
 
-	_, err = logicorder.ConfirmOrder(ctx, userID, shopClaim.Shop, &apishop.ConfirmOrderRequest{
+	_, err = s.OrderLogic.ConfirmOrder(ctx, userID, shopClaim.Shop, &apishop.ConfirmOrderRequest{
 		OrderId: orderID,
 	})
 	if err != nil {
@@ -267,7 +266,7 @@ func CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID,
 		ShippingNote: shipping.ShippingNote.Apply(""),
 		ConnectionID: conn.ID,
 	}
-	if err := shippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
+	if err := s.ShippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
 		return nil, err
 	}
 
@@ -283,7 +282,7 @@ func CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID,
 	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
-func CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, r *exttypes.CancelOrderRequest) (*exttypes.OrderAndFulfillments, error) {
+func (s *Shipping) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, r *exttypes.CancelOrderRequest) (*exttypes.OrderAndFulfillments, error) {
 	var orderID dot.ID
 	var sqlQuery *ordersqlstore.OrderStore
 
@@ -294,11 +293,11 @@ func CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, r *exttypes.
 	}
 	if r.ExternalId != "" {
 		count++
-		sqlQuery = orderStore(ctx).ShopID(shopID).ExternalID(r.ExternalId)
+		sqlQuery = s.OrderStore(ctx).ShopID(shopID).ExternalID(r.ExternalId)
 	}
 	if r.Code != "" {
 		count++
-		sqlQuery = orderStore(ctx).ShopID(shopID).Code(r.Code)
+		sqlQuery = s.OrderStore(ctx).ShopID(shopID).Code(r.Code)
 	}
 	if count != 1 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp id, code hoặc external_code")
@@ -311,7 +310,7 @@ func CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, r *exttypes.
 		orderID = order.ID
 	}
 
-	resp, err := logicorder.CancelOrder(ctx, userID, shopID, 0, orderID, r.CancelReason, inventory_auto.Unknown)
+	resp, err := s.OrderLogic.CancelOrder(ctx, userID, shopID, 0, orderID, r.CancelReason, inventory_auto.Unknown)
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +326,7 @@ func CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, r *exttypes.
 	return resp2, nil
 }
 
-func GetOrder(ctx context.Context, shopID dot.ID, r *exttypes.OrderIDRequest) (*exttypes.OrderAndFulfillments, error) {
+func (s *Shipping) GetOrder(ctx context.Context, shopID dot.ID, r *exttypes.OrderIDRequest) (*exttypes.OrderAndFulfillments, error) {
 	orderQuery := &modelx.GetOrderQuery{
 		ShopID:             shopID,
 		OrderID:            r.Id,
@@ -341,29 +340,29 @@ func GetOrder(ctx context.Context, shopID dot.ID, r *exttypes.OrderIDRequest) (*
 	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
-func ListFulfillments(ctx context.Context, shopID dot.ID, r *exttypes.ListFulfillmentsRequest) (*exttypes.FulfillmentsResponse, error) {
+func (s *Shipping) ListFulfillments(ctx context.Context, shopID dot.ID, r *exttypes.ListFulfillmentsRequest) (*exttypes.FulfillmentsResponse, error) {
 	paging, err := cmapi.CMCursorPaging(r.Paging)
 	if err != nil {
 		return nil, err
 	}
-	s := fulfillmentStore(ctx).ShopID(shopID).WithPaging(*paging)
+	q := s.FulfillmentStore(ctx).ShopID(shopID).WithPaging(*paging)
 	if len(r.Filter.OrderID) != 0 {
-		s = s.OrderIDs(r.Filter.OrderID...)
+		q = q.OrderIDs(r.Filter.OrderID...)
 	}
 
-	ffms, err := s.ListFfmsDB()
+	ffms, err := q.ListFfmsDB()
 	if err != nil {
 		return nil, err
 	}
-	pagingResult := s.GetPaging()
+	pagingResult := q.GetPaging()
 	return &exttypes.FulfillmentsResponse{
 		Fulfillments: convertpb.PbFulfillments(ffms),
 		Paging:       convertpb.PbPageInfo(paging, &pagingResult),
 	}, nil
 }
 
-func CreateFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.CreateFulfillmentRequest) (*exttypes.Fulfillment, error) {
-	conn, serviceCode, err := parseServiceCode(ctx, r.ShippingServiceCode)
+func (s *Shipping) CreateFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.CreateFulfillmentRequest) (*exttypes.Fulfillment, error) {
+	conn, serviceCode, err := s.parseServiceCode(ctx, r.ShippingServiceCode)
 	if err != nil {
 		return nil, err
 	}
@@ -394,17 +393,17 @@ func CreateFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.CreateFul
 		ConnectionID:  conn.ID,
 		ShopCarrierID: r.ShopCarrierID,
 	}
-	if err := shippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
+	if err := s.ShippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
 		return nil, err
 	}
 
 	query := &shippingcore.GetFulfillmentByIDOrShippingCodeQuery{
 		ID: createFfmArgs.Result[0],
 	}
-	if err := shippingQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ShippingQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	ffm, err := fulfillmentStore(ctx).ShopID(shopID).ID(createFfmArgs.Result[0]).GetFfmDB()
+	ffm, err := s.FulfillmentStore(ctx).ShopID(shopID).ID(createFfmArgs.Result[0]).GetFfmDB()
 	if err != nil {
 		return nil, err
 	}
@@ -412,14 +411,14 @@ func CreateFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.CreateFul
 	return convertpb.PbFulfillment(ffm), nil
 }
 
-func GetFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.FulfillmentIDRequest) (*exttypes.Fulfillment, error) {
-	s := fulfillmentStore(ctx).ShopID(shopID)
+func (s *Shipping) GetFulfillment(ctx context.Context, shopID dot.ID, r *exttypes.FulfillmentIDRequest) (*exttypes.Fulfillment, error) {
+	q := s.FulfillmentStore(ctx).ShopID(shopID)
 	if r.Id != 0 {
-		s = s.ID(r.Id)
+		q = q.ID(r.Id)
 	} else if r.ShippingCode != "" {
-		s = s.ShippingCode(r.ShippingCode)
+		q = q.ShippingCode(r.ShippingCode)
 	}
-	ffm, err := s.GetFfmDB()
+	ffm, err := q.GetFfmDB()
 	if err != nil {
 		return nil, err
 	}
@@ -469,12 +468,12 @@ func validateAddress(address *types.OrderAddress, shippingProvider connection_ty
 	return nil
 }
 
-func CancelFulfillment(ctx context.Context, fulfillmentID dot.ID, cancelReason string) error {
+func (s *Shipping) CancelFulfillment(ctx context.Context, fulfillmentID dot.ID, cancelReason string) error {
 	cmd := &shippingcore.CancelFulfillmentCommand{
 		FulfillmentID: fulfillmentID,
 		CancelReason:  cancelReason,
 	}
-	if err := shippingAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	return nil

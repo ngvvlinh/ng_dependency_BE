@@ -1,5 +1,3 @@
-// +build wireinject
-
 package pricelist
 
 import "github.com/google/wire"

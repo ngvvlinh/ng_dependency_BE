@@ -1,6 +1,6 @@
 // Only run full test with `go test -tags fulltest .`
 //
-//+build fulltest
+// +build fulltest
 
 package list
 

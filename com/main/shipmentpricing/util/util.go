@@ -1,4 +1,4 @@
-package shipmentpricing
+package util
 
 const (
 	VersionCaching = "1.0.1"

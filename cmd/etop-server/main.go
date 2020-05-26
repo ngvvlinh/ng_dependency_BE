@@ -26,8 +26,6 @@ import (
 	paymentaggregate "o.o/backend/com/external/payment/payment/aggregate"
 	"o.o/backend/com/handler/etop-handler/intctl"
 	"o.o/backend/com/main/address"
-	authorizationaggregate "o.o/backend/com/main/authorization/aggregate"
-	authorizationquery "o.o/backend/com/main/authorization/query"
 	catalogaggregate "o.o/backend/com/main/catalog/aggregate"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	catalogquery "o.o/backend/com/main/catalog/query"
@@ -50,8 +48,6 @@ import (
 	moneytxquery "o.o/backend/com/main/moneytx/query"
 	serviceordering "o.o/backend/com/main/ordering"
 	serviceorderingpm "o.o/backend/com/main/ordering/pm"
-	ordersqlstore "o.o/backend/com/main/ordering/sqlstore"
-	purchaseorderaggregate "o.o/backend/com/main/purchaseorder/aggregate"
 	purchaseorderpm "o.o/backend/com/main/purchaseorder/pm"
 	purchaseorderquery "o.o/backend/com/main/purchaseorder/query"
 	purchaserefundaggregate "o.o/backend/com/main/purchaserefund/aggregate"
@@ -74,16 +70,12 @@ import (
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shippingpm "o.o/backend/com/main/shipping/pm"
 	shippingquery "o.o/backend/com/main/shipping/query"
-	shipsqlstore "o.o/backend/com/main/shipping/sqlstore"
-	stocktakeaggregate "o.o/backend/com/main/stocktaking/aggregate"
 	stocktakequery "o.o/backend/com/main/stocktaking/query"
 	serviceaffiliate "o.o/backend/com/services/affiliate"
 	affiliatepm "o.o/backend/com/services/affiliate/pm"
-	carrieraggregate "o.o/backend/com/shopping/carrying/aggregate"
 	carrierquery "o.o/backend/com/shopping/carrying/query"
 	customeraggregate "o.o/backend/com/shopping/customering/aggregate"
 	customerquery "o.o/backend/com/shopping/customering/query"
-	supplieraggregate "o.o/backend/com/shopping/suppliering/aggregate"
 	supplierquery "o.o/backend/com/shopping/suppliering/query"
 	traderAgg "o.o/backend/com/shopping/tradering/aggregate"
 	traderpm "o.o/backend/com/shopping/tradering/pm"
@@ -93,7 +85,6 @@ import (
 	"o.o/backend/com/subscripting/subscriptionbill"
 	"o.o/backend/com/subscripting/subscriptionplan"
 	"o.o/backend/com/subscripting/subscriptionproduct"
-	summaryquery "o.o/backend/com/summary/query"
 	webserveraggregate "o.o/backend/com/web/webserver/aggregate"
 	webserverpm "o.o/backend/com/web/webserver/pm"
 	webserverquery "o.o/backend/com/web/webserver/query"
@@ -111,28 +102,20 @@ import (
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sqltrace"
-	"o.o/backend/pkg/etop/api"
-	"o.o/backend/pkg/etop/api/admin"
 	"o.o/backend/pkg/etop/api/affiliate"
 	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/api/integration"
-	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
-	xshipping "o.o/backend/pkg/etop/apix/shipping"
-	xshop "o.o/backend/pkg/etop/apix/shop"
 	xshopping "o.o/backend/pkg/etop/apix/shopping"
 	"o.o/backend/pkg/etop/apix/webhook"
 	whitelabelapix "o.o/backend/pkg/etop/apix/whitelabel"
-	authorizeauth "o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
-	orderS "o.o/backend/pkg/etop/logic/orders"
 	imcsvorder "o.o/backend/pkg/etop/logic/orders/imcsv"
 	imcsvproduct "o.o/backend/pkg/etop/logic/products/imcsv"
-	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/middlewares"
 	"o.o/backend/pkg/etop/model"
@@ -147,7 +130,6 @@ import (
 	"o.o/backend/pkg/integration/shipping/vtpost"
 	"o.o/backend/pkg/integration/sms"
 	imgroupsms "o.o/backend/pkg/integration/sms/imgroup"
-	apiaff "o.o/backend/pkg/services/affiliate/api"
 	"o.o/backend/tools/pkg/acl"
 	"o.o/capi/httprpc"
 	"o.o/common/l"
@@ -197,7 +179,8 @@ var (
 	ss    *session.Session
 	hooks httprpc.HooksBuilder
 
-	servers []httprpc.Server
+	servers    []httprpc.Server
+	serversExt []httprpc.Server
 )
 
 func main() {
@@ -304,7 +287,6 @@ func main() {
 	}
 
 	locationBus := servicelocation.QueryMessageBus(servicelocation.New(db))
-	locationAggr := servicelocation.AggregateMessageBus(servicelocation.NewAggregate(db))
 	identityQuery = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 	if cfg.GHN.AccountDefault.Token != "" {
 		ghnCarrier = ghn.New(cfg.GHN, locationBus)
@@ -361,8 +343,6 @@ func main() {
 		}
 	}
 
-	shippingManager := shipping_provider.NewCtrl(eventBus, locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
-
 	authStore := auth.NewGenerator(redisStore)
 	imcsvorder.Init(locationBus, shutdowner, redisStore, uploader, db)
 	imcsvproduct.Init(shutdowner, redisStore, uploader, db)
@@ -372,10 +352,8 @@ func main() {
 	})
 
 	// create aggregate, query service
-	summaryQuery := summaryquery.DashboardQueryMessageBus(summaryquery.NewDashboardQuery(db, redisStore, locationBus))
-
 	identityQuery = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
-	identityPM := identitypm.New(identityQuery, &invitationQuery)
+	identityPM := identitypm.New(identityQuery, invitationQuery)
 	identityPM.RegisterEventHandlers(eventBus)
 	catalogQuery := catalogquery.QueryServiceMessageBus(catalogquery.New(db))
 	catalogAggr := catalogaggregate.AggregateMessageBus(catalogaggregate.New(eventBus, db))
@@ -397,11 +375,8 @@ func main() {
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, serviceordering.AggregateMessageBus(orderAggr), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 
-	stocktakeAggr := stocktakeaggregate.StocktakeAggregateMessageBus(stocktakeaggregate.NewAggregateStocktake(db, eventBus))
 	stocktakeQuery := stocktakequery.StocktakeQueryMessageBus(stocktakequery.NewQueryStocktake(db))
 	customerAggr := customeraggregate.CustomerAggregateMessageBus(customeraggregate.NewCustomerAggregate(eventBus, db))
-	supplierAggr := supplieraggregate.SupplierAggregateMessageBus(supplieraggregate.NewSupplierAggregate(eventBus, db))
-	carrierAggr := carrieraggregate.CarrierAggregateMessageBus(carrieraggregate.NewCarrierAggregate(eventBus, db))
 	traderAddressAggr := customeraggregate.AddressAggregateMessageBus(customeraggregate.NewAddressAggregate(db))
 	traderAgg := traderAgg.TraderAggMessageBus(traderAgg.NewTraderAgg(db))
 	traderPM := traderpm.New(eventBus, traderAgg)
@@ -412,20 +387,18 @@ func main() {
 	traderQuery := traderquery.TraderQueryMessageBus(traderquery.NewTraderQuery(db, customerQuery, carrierQuery, supplierQuery))
 	traderAddressQuery := customerquery.AddressQueryMessageBus(customerquery.NewAddressQuery(db))
 	affiliateCmd := serviceaffiliate.AggregateMessageBus(serviceaffiliate.NewAggregate(dbaff, identityQuery, catalogQuery, orderQuery))
-	affilateQuery := serviceaffiliate.QueryServiceMessageBus(serviceaffiliate.NewQuery(dbaff))
 	affiliatePM := affiliatepm.New(affiliateCmd)
 	affiliatePM.RegisterEventHandlers(eventBus)
 
-	ledgerAggr := ledgeraggregate.LedgerAggregateMessageBus(ledgeraggregate.NewLedgerAggregate(db, &receiptQuery))
+	ledgerAggr := ledgeraggregate.LedgerAggregateMessageBus(ledgeraggregate.NewLedgerAggregate(db, receiptQuery))
 	ledgerQuery := ledgerquery.LedgerQueryMessageBus(ledgerquery.NewLedgerQuery(db))
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
 
 	inventoryQuery := inventoryquery.InventoryQueryServiceMessageBus(inventoryquery.NewQueryInventory(stocktakeQuery, eventBus, db))
-	purchaseOrderAggr := purchaseorderaggregate.PurchaseOrderAggregateMessageBus(purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery))
-	purchaseOrderQuery := purchaseorderquery.PurchaseOrderQueryMessageBus(purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery))
+	purchaseOrderQuery := purchaseorderquery.PurchaseOrderQueryMessageBus(purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, receiptQuery))
 
-	purchaseOrderPM := purchaseorderpm.New(&purchaseOrderQuery, &receiptQuery)
+	purchaseOrderPM := purchaseorderpm.New(purchaseOrderQuery, receiptQuery)
 	purchaseOrderPM.RegisterEventHandlers(eventBus)
 	refundAggr := refundaggregate.RefundAggregateMessageBus(refundaggregate.NewRefundAggregate(db, eventBus))
 	refundQuery := refundquery.RefundQueryServiceMessageBus(refundquery.NewQueryRefund(eventBus, db))
@@ -452,27 +425,20 @@ func main() {
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
 	orderPM := serviceorderingpm.New(serviceordering.AggregateMessageBus(orderAggr), affiliateCmd, receiptQuery, inventoryAggr, orderQuery, customerQuery)
 	orderPM.RegisterEventHandlers(eventBus)
-	refundPm := refundpm.New(&refundQuery, &receiptQuery, &refundAggr)
+	refundPm := refundpm.New(refundQuery, receiptQuery, refundAggr)
 	refundPm.RegisterEventHandlers(eventBus)
-	invitationAggr := invitationaggregate.InvitationAggregateMessageBus(invitationaggregate.NewInvitationAggregate(db, cfg.Invitation.Secret, customerQuery, identityQuery, eventBus, cfg))
+	invitationAggr := invitationaggregate.InvitationAggregateMessageBus(invitationaggregate.NewInvitationAggregate(db, cfg.Invitation, customerQuery, identityQuery, eventBus, cfg))
 	invitationQuery = invitationquery.InvitationQueryMessageBus(invitationquery.NewInvitationQuery(db))
 	invitationPM := invitationpm.New(eventBus, invitationQuery, invitationAggr)
 	invitationPM.RegisterEventHandlers(eventBus)
-	purchaseRefundPM := purchaserefundpm.New(&purchaseRefundAggr, &purchaseRefundQuery, &receiptQuery)
+	purchaseRefundPM := purchaserefundpm.New(purchaseRefundAggr, purchaseRefundQuery, receiptQuery)
 	purchaseRefundPM.RegisterEventHandlers(eventBus)
-	authorizationQuery := authorizationquery.AuthorizationQueryMessageBus(authorizationquery.NewAuthorizationQuery())
-	authorizationAggregate := authorizationaggregate.AuthorizationAggregateMessageBus(authorizationaggregate.NewAuthorizationAggregate())
-
-	authorizeauth.SetMode(cfg.FlagEnablePermission)
 
 	smsArg := smsAgg.SmsLogAggregateMessageBus(smsAgg.NewSmsLogAggregate(eventBus, dbLogs))
 	connectionQuery := connectionquery.ConnectionQueryMessageBus(connectionquery.NewConnectionQuery(db))
 	connectionAggregate := connectionaggregate.ConnectionAggregateMessageBus(connectionaggregate.NewConnectionAggregate(db, eventBus))
-	shipmentServiceAggr := shipmentservice.AggregateMessageBus(shipmentservice.NewAggregate(db, redisStore))
 	shipmentServiceQuery := shipmentservice.QueryServiceMessageBus(shipmentservice.NewQueryService(db, redisStore))
-	shipmentPriceListAggr := pricelist.AggregateMessageBus(pricelist.NewAggregate(db, eventBus))
 	shipmentPriceListQuery := pricelist.QueryServiceMessageBus(pricelist.NewQueryService(db, redisStore))
-	shipmentPriceAggr := shipmentprice.AggregateMessageBus(shipmentprice.NewAggregate(db, redisStore))
 	shipmentPriceQuery := shipmentprice.QueryServiceMessageBus(shipmentprice.NewQueryService(db, redisStore, locationBus, shipmentPriceListQuery))
 	shipmentPriceListPM := pricelistpm.New(redisStore)
 	shipmentPriceListPM.RegisterEventHandlers(eventBus)
@@ -506,9 +472,7 @@ func main() {
 		ll.Fatal("error loading white label partners", l.Error(err))
 	}
 
-	subrProductAggr := subscriptionproduct.SubrProductAggregateMessageBus(subscriptionproduct.NewSubrProductAggregate(db))
 	subrProductQuery := subscriptionproduct.SubrProductQueryMessageBus(subscriptionproduct.NewSubrProductQuery(db))
-	subrPlanAggr := subscriptionplan.SubrPlanAggregateMessageBus(subscriptionplan.NewSubrPlanAggregate(db))
 	subrPlanQuery := subscriptionplan.SubrPlanQueryMessageBus(subscriptionplan.NewSubrPlanQuery(db, subrProductQuery))
 	subscriptionQuery = subscription.SubscriptionQueryMessageBus(subscription.NewSubscriptionQuery(db, subrPlanQuery, subrProductQuery))
 	subscriptionAggr := subscription.SubscriptionAggregateMessageBus(subscription.NewSubscriptionAggregate(db))
@@ -524,89 +488,18 @@ func main() {
 
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	sms.Init(smsArg)
-	servers = append(servers, api.BuildServers(
-		eventBus,
-		locationBus,
-		smsArg,
-		identityAggr,
-		identityQuery,
-		invitationAggr,
-		invitationQuery,
-		authorizationQuery,
-		authorizationAggregate,
-		shutdowner,
-		redisStore,
-		authStore,
-		cfg.Email,
-		cfg.SMS,
+	servers = append(servers, BuildServers(
+		db,
+		cfg,
 		bot,
-	)...)
-	servers = append(servers, shop.BuildServers(
-		locationBus,
-		catalogQuery,
-		catalogAggr,
-		shipnowAggr,
-		shipnowQuery,
-		identityAggr,
-		identityQuery,
-		addressQuery,
-		shippingManager,
-		customerAggr,
-		customerQuery,
-		traderAddressAggr,
-		traderAddressQuery,
-		serviceordering.AggregateMessageBus(orderAggr),
-		orderQuery,
-		paymentManager,
-		supplierAggr,
-		supplierQuery,
-		carrierAggr,
-		carrierQuery,
-		traderQuery,
+		shutdowner,
 		eventBus,
-		receiptAggr,
-		receiptQuery,
-		shutdowner,
-		redisStore,
-		inventoryAggr,
-		inventoryQuery,
-		ledgerAggr,
-		ledgerQuery,
-		purchaseOrderAggr,
-		purchaseOrderQuery,
-		summaryQuery,
-		stocktakeQuery,
-		stocktakeAggr,
-		shipmentManager,
-		shippingAggr,
-		refundAggr,
-		refundQuery,
-		purchaseRefundAggr,
-		purchaseRefundQuery,
-		connectionQuery,
-		connectionAggregate,
-		shippingQuery,
-		webServerAggregate,
-		webServerQuery,
-		subscriptionQuery,
-	)...)
-	partner.Init(
-		shutdowner,
 		redisStore,
 		authStore,
-		cfg.URL.Auth,
-		locationBus,
-		&customerQuery,
-		&customerAggr,
-		&traderAddressQuery,
-		&traderAddressAggr,
-		&inventoryQuery,
-		&catalogQuery,
-		&catalogAggr,
-		connectionQuery,
-		connectionAggregate,
-		shippingAggr,
-	)
+		shipnowCarrierManager,
+		paymentManager,
+		partner.AuthURL(cfg.URL.Auth),
+	)...)
 	partnercarrier.Init(
 		shutdowner,
 		redisStore,
@@ -615,50 +508,19 @@ func main() {
 		shippingQuery,
 		shippingAggr,
 	)
-	whitelabelapix.Init(db, &catalogAggr)
-	xshop.Init(
-		shutdowner,
-		redisStore,
-		locationBus,
-		&customerQuery,
-		&customerAggr,
-		&traderAddressQuery,
-		&traderAddressAggr,
-		&inventoryQuery,
-		&catalogQuery,
-		&catalogAggr)
+	whitelabelapix.Init(db, catalogAggr)
 	xshopping.Init(
 		locationBus,
-		&customerQuery,
-		&customerAggr,
-		&traderAddressQuery,
-		&traderAddressAggr,
-		&inventoryQuery,
-		&catalogQuery,
-		&catalogAggr)
+		customerQuery,
+		customerAggr,
+		traderAddressQuery,
+		traderAddressAggr,
+		inventoryQuery,
+		catalogQuery,
+		catalogAggr)
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
-	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db), shipmentManager, shippingAggr, shippingQuery, connectionQuery)
-	orderS.Init(shippingManager, catalogQuery, serviceordering.AggregateMessageBus(orderAggr),
-		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	affiliate.Init(identityAggr)
-	servers = append(servers, apiaff.BuildServers(
-		apiaff.Secret(cfg.Secret), affiliateCmd, affilateQuery, catalogQuery, identityQuery, inventoryQuery)...)
-	admin.Init(
-		eventBus,
-		moneyTxQuery, moneyTxAggr,
-		connectionAggregate, connectionQuery,
-		identityQuery,
-		shipmentPriceAggr, shipmentPriceQuery,
-		shipmentServiceAggr, shipmentServiceQuery,
-		shipmentPriceListAggr, shipmentPriceListQuery,
-		locationAggr, locationBus,
-		shipmentManager,
-		subrProductAggr, subrProductQuery,
-		subrPlanAggr, subrPlanQuery,
-		subscriptionAggr, subscriptionQuery,
-		subrBillAggr, subrBillQuery,
-	)
 
 	err = db.GetSchemaErrors()
 	if err != nil && cmenv.IsDev() {

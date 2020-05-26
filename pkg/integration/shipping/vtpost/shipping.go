@@ -23,7 +23,7 @@ import (
 	"o.o/capi/dot"
 )
 
-var _ shippingprovider.ShippingCarrier = &Carrier{}
+var _ shippingprovider.CarrierDriver = &Carrier{}
 
 type Carrier struct {
 	clients  map[byte]vtpostclient.Client
@@ -40,6 +40,10 @@ func New(cfg Config, locationBus location.QueryBus) *Carrier {
 		clients:  clients,
 		location: locationBus,
 	}
+}
+
+func (c *Carrier) Code() typeshippingprovider.ShippingProvider {
+	return typeshippingprovider.VTPost
 }
 
 func (c *Carrier) InitAllClients(ctx context.Context) error {

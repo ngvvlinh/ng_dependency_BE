@@ -3,13 +3,16 @@ package shipping_provider
 import (
 	"context"
 
+	"o.o/api/top/types/etc/shipping_provider"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
-type ShippingCarrier interface {
+type CarrierDriver interface {
+	Code() shipping_provider.ShippingProvider
+
 	CreateFulfillment(context.Context, *ordermodel.Order, *shipmodel.Fulfillment, GetShippingServicesArgs, *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error)
 	CancelFulfillment(context.Context, *shipmodel.Fulfillment, model.FfmAction) error
 	GetShippingServices(ctx context.Context, args GetShippingServicesArgs) ([]*model.AvailableShippingService, error)

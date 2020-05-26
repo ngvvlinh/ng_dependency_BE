@@ -1,10 +1,14 @@
-package xshop
+package partner
 
 import (
 	"context"
 
 	"o.o/backend/pkg/etop/apix/shopping"
 )
+
+type ProductCollectionService struct{}
+
+func (s *ProductCollectionService) Clone() *ProductCollectionService { res := *s; return &res }
 
 func (s *ProductCollectionService) GetCollection(ctx context.Context, r *GetCollectionEndpoint) error {
 	resp, err := shopping.GetCollection(ctx, r.Context.Shop.ID, r.GetCollectionRequest)
@@ -19,7 +23,7 @@ func (s *ProductCollectionService) ListCollections(ctx context.Context, r *ListC
 }
 
 func (s *ProductCollectionService) CreateCollection(ctx context.Context, r *CreateCollectionEndpoint) error {
-	resp, err := shopping.CreateCollection(ctx, r.Context.Shop.ID, 0, r.CreateCollectionRequest)
+	resp, err := shopping.CreateCollection(ctx, r.Context.Shop.ID, r.Context.AuthPartnerID, r.CreateCollectionRequest)
 	r.Result = resp
 	return err
 }

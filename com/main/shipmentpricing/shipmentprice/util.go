@@ -3,7 +3,7 @@ package shipmentprice
 import (
 	"context"
 
-	"o.o/backend/com/main/shipmentpricing"
+	"o.o/backend/com/main/shipmentpricing/util"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/redis"
 )
@@ -15,7 +15,7 @@ const (
 func getActiveShipmentPricesRedisKey(ctx context.Context) string {
 	// cache riêng từng wl_partner_id
 	return ShipmentPricesRedisKey +
-		":" + shipmentpricing.VersionCaching +
+		":" + util.VersionCaching +
 		":wl" + wl.X(ctx).ID.String()
 }
 

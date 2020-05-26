@@ -32,6 +32,7 @@ type TradingService struct {
 	CatalogQuery   catalog.QueryBus
 	OrderQuery     ordering.QueryBus
 	InventoryQuery inventory.QueryBus
+	OrderLogic     *logicorder.OrderLogic
 }
 
 func (s *TradingService) Clone() *TradingService { res := *s; return &res }
@@ -88,7 +89,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 		}
 		if _orderID != 0 {
 			// cancel Order an inform error message
-			if _, err := logicorder.CancelOrder(ctx, r.Context.UserID, model.EtopTradingAccountID, 0, _orderID, fmt.Sprintf("Tạo đơn Trading thất bại (err = %v)", _err.Error()), inventory_auto.Unknown); err != nil {
+			if _, err := s.OrderLogic.CancelOrder(ctx, r.Context.UserID, model.EtopTradingAccountID, 0, _orderID, fmt.Sprintf("Tạo đơn Trading thất bại (err = %v)", _err.Error()), inventory_auto.Unknown); err != nil {
 				return
 			}
 		}
@@ -135,7 +136,7 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreat
 	eTopTrading := identityconvert.ShopDB(query.Result)
 	shopClaim := &claims.ShopClaim{Shop: eTopTrading}
 	shopID := r.Context.Shop.ID
-	resp, err := logicorder.CreateOrder(ctx, shopClaim, nil, req, &shopID, 0)
+	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim, nil, req, &shopID, 0)
 	if err != nil {
 		return 0, err
 	}

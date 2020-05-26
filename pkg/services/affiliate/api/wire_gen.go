@@ -11,11 +11,12 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/inventory"
 	"o.o/api/services/affiliate"
+	"o.o/backend/pkg/common/config"
 )
 
 // Injectors from wire.go:
 
-func BuildServers(secret Secret, affAggr affiliate.CommandBus, affQuery affiliate.QueryBus, catQuery catalog.QueryBus, idenQuery identity.QueryBus, inventoryQuery inventory.QueryBus) Servers {
+func BuildServers(secret cc.SecretToken, affAggr affiliate.CommandBus, affQuery affiliate.QueryBus, catQuery catalog.QueryBus, idenQuery identity.QueryBus, inventoryQuery inventory.QueryBus) Servers {
 	userService := &UserService{
 		AffiliateAggr: affAggr,
 	}

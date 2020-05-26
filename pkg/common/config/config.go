@@ -172,6 +172,8 @@ func PrintExample(cfg interface{}) {
 	fmt.Println(string(data))
 }
 
+type SecretToken string
+
 type Postgres = cmsql.ConfigPostgres
 
 // DefaultPostgres ...

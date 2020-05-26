@@ -9,7 +9,7 @@ import (
 
 var (
 	db                                *cmsql.Database
-	catalogAggregate                  *catalog.CommandBus
+	catalogAggregate                  catalog.CommandBus
 	shopProductStoreFactory           catalogsqlstore.ShopProductStoreFactory
 	shopCollectionStoreFactory        catalogsqlstore.ShopCollectionStoreFactory
 	shopProductCollectionStoreFactory catalogsqlstore.ShopProductCollectionStoreFactory
@@ -25,7 +25,7 @@ const (
 
 func Init(
 	database *cmsql.Database,
-	catalogA *catalog.CommandBus,
+	catalogA catalog.CommandBus,
 ) {
 	db = database
 	catalogAggregate = catalogA

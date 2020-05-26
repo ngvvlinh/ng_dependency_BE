@@ -40,8 +40,11 @@ import (
 	"o.o/common/l"
 )
 
+type OrderLogic struct {
+}
+
 var (
-	ctrl               *shipping_provider.ProviderManager
+	ctrl               *shipping_provider.CarrierManager
 	catalogQuery       catalog.QueryBus
 	orderAggr          ordering.CommandBus
 	customerAggr       customering.CommandBus
@@ -53,7 +56,7 @@ var (
 	shipmentManager    *carrier.ShipmentManager
 )
 
-func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
+func New(shippingProviderCtrl *shipping_provider.CarrierManager,
 	catalogQueryBus catalog.QueryBus,
 	orderAggregate ordering.CommandBus,
 	customerAggregate customering.CommandBus,
@@ -62,7 +65,7 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	traderAddressQueryBus addressing.QueryBus,
 	locationQueryBus location.QueryBus,
 	eventB capi.EventBus,
-	shipmentCarrierCtrl *carrier.ShipmentManager) {
+	shipmentCarrierCtrl *carrier.ShipmentManager) *OrderLogic {
 	ctrl = shippingProviderCtrl
 	catalogQuery = catalogQueryBus
 	orderAggr = orderAggregate
@@ -73,6 +76,7 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	locationQuery = locationQueryBus
 	eventBus = eventB
 	shipmentManager = shipmentCarrierCtrl
+	return &OrderLogic{}
 }
 
 var blockCarrierByDistricts = map[typeshippingprovider.ShippingProvider][]string{
@@ -83,7 +87,7 @@ var blockCarrierByProvinces = map[typeshippingprovider.ShippingProvider][]string
 	typeshippingprovider.GHN: []string{},
 }
 
-func ConfirmOrder(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
+func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, r *apishop.ConfirmOrderRequest) (resp *types.Order, _err error) {
 	autoCreateFfm := r.AutoCreateFulfillment
 
 	query := &ordermodelx.GetOrderQuery{
@@ -107,7 +111,7 @@ func ConfirmOrder(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, 
 		return resp, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hủy")
 	}
 
-	if err := RaiseOrderConfirmingEvent(ctx, shop, r.AutoInventoryVoucher, order); err != nil {
+	if err := s.RaiseOrderConfirmingEvent(ctx, shop, r.AutoInventoryVoucher, order); err != nil {
 		return nil, err
 	}
 
@@ -142,7 +146,7 @@ func ConfirmOrder(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, 
 		req := &apishop.OrderIDRequest{
 			OrderId: r.OrderId,
 		}
-		_res, err := ConfirmOrderAndCreateFulfillments(ctx, userID, shop, 0, req)
+		_res, err := s.ConfirmOrderAndCreateFulfillments(ctx, userID, shop, 0, req)
 		if err != nil {
 			return nil, err
 		}
@@ -151,7 +155,7 @@ func ConfirmOrder(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, 
 	return resp, nil
 }
 
-func ConfirmOrderAndCreateFulfillments(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, partnerID dot.ID, r *apishop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
+func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, partnerID dot.ID, r *apishop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
 	shopID := shop.ID
 	resp = &types.OrderWithErrorsResponse{}
 	query := &ordermodelx.GetOrderQuery{
@@ -192,7 +196,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, userID dot.ID, shop 
 	}()
 
 	// Create fulfillments
-	ffm, err := prepareFulfillmentFromOrder(ctx, order, shop)
+	ffm, err := s.prepareFulfillmentFromOrder(ctx, order, shop)
 	if err != nil {
 		return resp, err
 	}
@@ -235,7 +239,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, userID dot.ID, shop 
 			order.ShopShipping.ShippingProvider != typeshippingprovider.GHTK {
 			go func() {
 				time.Sleep(5 * time.Minute)
-				_, err := CancelOrder(ctx, userID, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ", inventory_auto.Unknown)
+				_, err := s.CancelOrder(ctx, userID, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ", inventory_auto.Unknown)
 				if err != nil {
 					ll.Error("Can not cancel order on sandbox", l.Error(err))
 				}
@@ -284,7 +288,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, userID dot.ID, shop 
 	return resp, nil
 }
 
-func RaiseOrderConfirmingEvent(ctx context.Context, shop *identitymodel.Shop, autoInventoryVoucher inventory_auto.AutoInventoryVoucher, order *ordermodel.Order) error {
+func (s *OrderLogic) RaiseOrderConfirmingEvent(ctx context.Context, shop *identitymodel.Shop, autoInventoryVoucher inventory_auto.AutoInventoryVoucher, order *ordermodel.Order) error {
 	orderLines := []*ordertypes.ItemLine{}
 	for _, line := range order.Lines {
 		if line.VariantID != 0 {
@@ -312,7 +316,7 @@ func RaiseOrderConfirmingEvent(ctx context.Context, shop *identitymodel.Shop, au
 	return nil
 }
 
-func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, shop *identitymodel.Shop) (*shipmodel.Fulfillment, error) {
+func (s *OrderLogic) prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, shop *identitymodel.Shop) (*shipmodel.Fulfillment, error) {
 	if order.ShopShipping != nil && order.ShopShipping.ShippingProvider == typeshippingprovider.GHN {
 		if order.TryOn == 0 && order.GhnNoteCode == 0 {
 			return nil, cm.Error(cm.FailedPrecondition, "Vui lòng chọn ghi chú xem hàng!", nil)
@@ -355,7 +359,7 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 		return nil, cm.Error(cm.FailedPrecondition, "Thông tin địa chỉ cửa hàng trong cấu hình cửa hàng: "+err.Error()+" Vui lòng cập nhật và thử lại.", nil)
 	}
 
-	if err := checkBlockCarrier(shopAddress, order.ShopShipping.ShippingProvider); err != nil {
+	if err := s.checkBlockCarrier(shopAddress, order.ShopShipping.ShippingProvider); err != nil {
 		return nil, err
 	}
 
@@ -378,7 +382,7 @@ func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, s
 	return ffm, nil
 }
 
-func checkBlockCarrier(shopAddress *addressmodel.Address, provider typeshippingprovider.ShippingProvider) error {
+func (s *OrderLogic) checkBlockCarrier(shopAddress *addressmodel.Address, provider typeshippingprovider.ShippingProvider) error {
 	if provider == 0 {
 		return nil
 	}
@@ -577,7 +581,7 @@ func orderAddressToShippingAddress(orderAddr *ordermodel.OrderAddress) (*address
 	}, nil
 }
 
-func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) ([]error, error) {
+func (s *OrderLogic) TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) ([]error, error) {
 	var ffmToCancel []*shipmodel.Fulfillment
 
 	for _, ffm := range fulfillments {
@@ -608,18 +612,11 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 
 			var shippingProviderErr error
 			if ffm.ShippingType == 0 {
-				// backward compatible
-				// remove later
-				switch ffm.ShippingProvider {
-				case typeshippingprovider.GHN:
-					shippingProviderErr = ctrl.GHN.CancelFulfillment(ctx, ffm, model.FfmActionCancel)
-				case typeshippingprovider.GHTK:
-					shippingProviderErr = ctrl.GHTK.CancelFulfillment(ctx, ffm, 0)
-				case typeshippingprovider.VTPost:
-					shippingProviderErr = ctrl.VTPost.CancelFulfillment(ctx, ffm, 0)
-				default:
+				driver := ctrl.GetShippingProviderDriver(ffm.ShippingProvider)
+				if driver == nil {
 					panic("Shipping provider was not supported.")
 				}
+				shippingProviderErr = driver.CancelFulfillment(ctx, ffm, model.FfmActionCancel)
 			} else if ffm.ConnectionID != 0 {
 				shippingProviderErr = shipmentManager.CancelFulfillment(ctx, ffm)
 			}

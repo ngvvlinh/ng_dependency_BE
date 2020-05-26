@@ -6,16 +6,435 @@
 package main
 
 import (
-	"o.o/api/main/identity"
+	"github.com/google/wire"
+	"o.o/api/external/payment/manager"
 	"o.o/api/main/shipnow/carrier"
-	identity2 "o.o/backend/com/main/identity"
+	"o.o/backend/cmd/etop-server/config"
+	"o.o/backend/com/etc/logging/smslog"
+	"o.o/backend/com/main/address"
+	"o.o/backend/com/main/authorization"
+	aggregate2 "o.o/backend/com/main/authorization/aggregate"
+	aggregate3 "o.o/backend/com/main/catalog/aggregate"
+	query3 "o.o/backend/com/main/catalog/query"
+	aggregate6 "o.o/backend/com/main/connectioning/aggregate"
+	query13 "o.o/backend/com/main/connectioning/query"
+	"o.o/backend/com/main/identity"
+	aggregate4 "o.o/backend/com/main/inventory/aggregate"
+	query8 "o.o/backend/com/main/inventory/query"
+	"o.o/backend/com/main/invitation"
+	"o.o/backend/com/main/invitation/aggregate"
+	"o.o/backend/com/main/invitation/query"
+	aggregate10 "o.o/backend/com/main/ledgering/aggregate"
+	query16 "o.o/backend/com/main/ledgering/query"
+	"o.o/backend/com/main/location"
+	"o.o/backend/com/main/ordering"
+	aggregate11 "o.o/backend/com/main/purchaseorder/aggregate"
+	query10 "o.o/backend/com/main/purchaseorder/query"
+	aggregate15 "o.o/backend/com/main/purchaserefund/aggregate"
+	query12 "o.o/backend/com/main/purchaserefund/query"
+	aggregate7 "o.o/backend/com/main/receipting/aggregate"
+	query9 "o.o/backend/com/main/receipting/query"
+	aggregate14 "o.o/backend/com/main/refund/aggregate"
+	query11 "o.o/backend/com/main/refund/query"
+	"o.o/backend/com/main/shipmentpricing/pricelist"
+	"o.o/backend/com/main/shipmentpricing/shipmentprice"
+	"o.o/backend/com/main/shipmentpricing/shipmentservice"
+	"o.o/backend/com/main/shipnow"
+	aggregate13 "o.o/backend/com/main/shipping/aggregate"
+	carrier2 "o.o/backend/com/main/shipping/carrier"
+	query14 "o.o/backend/com/main/shipping/query"
+	aggregate12 "o.o/backend/com/main/stocktaking/aggregate"
+	query7 "o.o/backend/com/main/stocktaking/query"
+	"o.o/backend/com/services/affiliate"
+	aggregate9 "o.o/backend/com/shopping/carrying/aggregate"
+	query4 "o.o/backend/com/shopping/carrying/query"
+	aggregate5 "o.o/backend/com/shopping/customering/aggregate"
+	query2 "o.o/backend/com/shopping/customering/query"
+	aggregate8 "o.o/backend/com/shopping/suppliering/aggregate"
+	query5 "o.o/backend/com/shopping/suppliering/query"
+	query6 "o.o/backend/com/shopping/tradering/query"
+	"o.o/backend/com/subscripting/subscription"
+	"o.o/backend/com/subscripting/subscriptionplan"
+	"o.o/backend/com/subscripting/subscriptionproduct"
+	query15 "o.o/backend/com/summary/query"
+	aggregate16 "o.o/backend/com/web/webserver/aggregate"
+	query17 "o.o/backend/com/web/webserver/query"
+	"o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/authorization/auth"
+	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/api"
+	"o.o/backend/pkg/etop/api/shop"
+	"o.o/backend/pkg/etop/apix/partner"
+	"o.o/backend/pkg/etop/apix/shipping"
+	"o.o/backend/pkg/etop/apix/shop"
+	"o.o/backend/pkg/etop/logic/orders"
+	"o.o/backend/pkg/etop/logic/shipping_provider"
+	api2 "o.o/backend/pkg/services/affiliate/api"
+	"o.o/capi"
+	"o.o/capi/httprpc"
 )
 
 // Injectors from wire.go:
 
-func NewIdentity(db2 *cmsql.Database, shipnowCarrierManager carrier.Manager) identity.CommandBus {
-	aggregate := identity2.NewAggregate(db2, shipnowCarrierManager)
-	commandBus := identity2.AggregateMessageBus(aggregate)
-	return commandBus
+func BuildServers(db2 *cmsql.Database, cfg2 config.Config, bot2 *telebot.Channel, sd cmService.Shutdowner, eventBus capi.EventBus, rd redis.Store, s auth.Generator, shipnowCarrierManager carrier.Manager, paymentManager manager.CommandBus, authURL partner.AuthURL) []httprpc.Server {
+	miscService := &api.MiscService{}
+	identityAggregate := identity.NewAggregate(db2, shipnowCarrierManager)
+	commandBus := identity.AggregateMessageBus(identityAggregate)
+	queryService := identity.NewQueryService(db2)
+	queryBus := identity.QueryServiceMessageBus(queryService)
+	queryInvitationQuery := query.NewInvitationQuery(db2)
+	invitationQueryBus := query.InvitationQueryMessageBus(queryInvitationQuery)
+	userService := &api.UserService{
+		IdentityAggr:    commandBus,
+		IdentityQuery:   queryBus,
+		InvitationQuery: invitationQueryBus,
+		EventBus:        eventBus,
+		AuthStore:       s,
+		RedisStore:      rd,
+	}
+	accountService := &api.AccountService{}
+	locationQuery := location.New(db2)
+	locationQueryBus := location.QueryMessageBus(locationQuery)
+	locationService := &api.LocationService{
+		LocationQuery: locationQueryBus,
+	}
+	bankService := &api.BankService{}
+	addressService := &api.AddressService{}
+	invitationConfig := cfg2.Invitation
+	customerQuery := query2.NewCustomerQuery(db2)
+	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
+	invitationAggregate := aggregate.NewInvitationAggregate(db2, invitationConfig, customeringQueryBus, queryBus, eventBus, cfg2)
+	invitationCommandBus := aggregate.InvitationAggregateMessageBus(invitationAggregate)
+	authorizationAggregate := aggregate2.NewAuthorizationAggregate()
+	authorizationCommandBus := aggregate2.AuthorizationAggregateMessageBus(authorizationAggregate)
+	accountRelationshipService := &api.AccountRelationshipService{
+		InvitationAggr:    invitationCommandBus,
+		InvitationQuery:   invitationQueryBus,
+		AuthorizationAggr: authorizationCommandBus,
+	}
+	userRelationshipService := &api.UserRelationshipService{
+		InvitationAggr:         invitationCommandBus,
+		InvitationQuery:        invitationQueryBus,
+		AuthorizationAggregate: authorizationCommandBus,
+	}
+	ecomService := &api.EcomService{}
+	emailConfig := cfg2.Email
+	smsConfig := cfg2.SMS
+	apiServers := api.NewServers(miscService, userService, accountService, locationService, bankService, addressService, accountRelationshipService, userRelationshipService, ecomService, rd, emailConfig, smsConfig, bot2, sd)
+	shopMiscService := &shop.MiscService{}
+	queryQueryService := query3.New(db2)
+	catalogQueryBus := query3.QueryServiceMessageBus(queryQueryService)
+	aggregateAggregate := aggregate3.New(eventBus, db2)
+	catalogCommandBus := aggregate3.AggregateMessageBus(aggregateAggregate)
+	brandService := &shop.BrandService{
+		CatalogQuery: catalogQueryBus,
+		CatalogAggr:  catalogCommandBus,
+	}
+	carrierQuery := query4.NewCarrierQuery(db2)
+	carryingQueryBus := query4.CarrierQueryMessageBus(carrierQuery)
+	supplierQuery := query5.NewSupplierQuery(db2)
+	supplieringQueryBus := query5.SupplierQueryMessageBus(supplierQuery)
+	traderQuery := query6.NewTraderQuery(db2, customeringQueryBus, carryingQueryBus, supplieringQueryBus)
+	traderingQueryBus := query6.TraderQueryMessageBus(traderQuery)
+	stocktakeQuery := query7.NewQueryStocktake(db2)
+	stocktakingQueryBus := query7.StocktakeQueryMessageBus(stocktakeQuery)
+	inventoryQueryService := query8.NewQueryInventory(stocktakingQueryBus, eventBus, db2)
+	inventoryQueryBus := query8.InventoryQueryServiceMessageBus(inventoryQueryService)
+	queryReceiptQuery := query9.NewReceiptQuery(db2)
+	receiptingQueryBus := query9.ReceiptQueryMessageBus(queryReceiptQuery)
+	purchaseOrderQuery := query10.NewPurchaseOrderQuery(db2, eventBus, supplieringQueryBus, inventoryQueryBus, receiptingQueryBus)
+	purchaseorderQueryBus := query10.PurchaseOrderQueryMessageBus(purchaseOrderQuery)
+	refundQueryService := query11.NewQueryRefund(eventBus, db2)
+	refundQueryBus := query11.RefundQueryServiceMessageBus(refundQueryService)
+	purchaseRefundQueryService := query12.NewQueryPurchasePurchaseRefund(eventBus, db2)
+	purchaserefundQueryBus := query12.PurchaseRefundQueryServiceMessageBus(purchaseRefundQueryService)
+	inventoryAggregate := aggregate4.NewAggregateInventory(eventBus, db2, traderingQueryBus, purchaseorderQueryBus, stocktakingQueryBus, refundQueryBus, purchaserefundQueryBus)
+	inventoryCommandBus := aggregate4.InventoryAggregateMessageBus(inventoryAggregate)
+	inventoryService := &shop.InventoryService{
+		TraderQuery:    traderingQueryBus,
+		InventoryAggr:  inventoryCommandBus,
+		InventoryQuery: inventoryQueryBus,
+	}
+	addressQueryService := address.NewQueryService(db2)
+	addressQueryBus := address.QueryServiceMessageBus(addressQueryService)
+	shopAccountService := &shop.AccountService{
+		IdentityAggr:  commandBus,
+		IdentityQuery: queryBus,
+		AddressQuery:  addressQueryBus,
+	}
+	collectionService := &shop.CollectionService{
+		CatalogQuery: catalogQueryBus,
+		CatalogAggr:  catalogCommandBus,
+	}
+	customerAggregate := aggregate5.NewCustomerAggregate(eventBus, db2)
+	customeringCommandBus := aggregate5.CustomerAggregateMessageBus(customerAggregate)
+	addressAggregate := aggregate5.NewAddressAggregate(db2)
+	addressingCommandBus := aggregate5.AddressAggregateMessageBus(addressAggregate)
+	addressQuery := query2.NewAddressQuery(db2)
+	addressingQueryBus := query2.AddressQueryMessageBus(addressQuery)
+	orderingQueryService := ordering.NewQueryService(db2)
+	orderingQueryBus := ordering.QueryServiceMessageBus(orderingQueryService)
+	customerService := &shop.CustomerService{
+		LocationQuery: locationQueryBus,
+		CustomerQuery: customeringQueryBus,
+		CustomerAggr:  customeringCommandBus,
+		AddressAggr:   addressingCommandBus,
+		AddressQuery:  addressingQueryBus,
+		OrderQuery:    orderingQueryBus,
+		ReceiptQuery:  receiptingQueryBus,
+	}
+	customerGroupService := &shop.CustomerGroupService{
+		CustomerAggr:  customeringCommandBus,
+		CustomerQuery: customeringQueryBus,
+	}
+	productService := &shop.ProductService{
+		CatalogQuery:   catalogQueryBus,
+		CatalogAggr:    catalogCommandBus,
+		InventoryQuery: inventoryQueryBus,
+	}
+	categoryService := &shop.CategoryService{
+		CatalogQuery: catalogQueryBus,
+		CatalogAggr:  catalogCommandBus,
+	}
+	productSourceService := &shop.ProductSourceService{}
+	orderingAggregate := ordering.NewAggregate(eventBus, db2)
+	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
+	v := SupportedCarrierDrivers()
+	carrierManager := shipping_provider.NewCtrl(eventBus, locationQueryBus, v)
+	connectionQuery := query13.NewConnectionQuery(db2)
+	connectioningQueryBus := query13.ConnectionQueryMessageBus(connectionQuery)
+	connectionAggregate := aggregate6.NewConnectionAggregate(db2, eventBus)
+	connectioningCommandBus := aggregate6.ConnectionAggregateMessageBus(connectionAggregate)
+	shipmentserviceQueryService := shipmentservice.NewQueryService(db2, rd)
+	shipmentserviceQueryBus := shipmentservice.QueryServiceMessageBus(shipmentserviceQueryService)
+	pricelistQueryService := pricelist.NewQueryService(db2, rd)
+	pricelistQueryBus := pricelist.QueryServiceMessageBus(pricelistQueryService)
+	shipmentpriceQueryService := shipmentprice.NewQueryService(db2, rd, locationQueryBus, pricelistQueryBus)
+	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
+	flagApplyShipmentPrice := cfg2.FlagApplyShipmentPrice
+	carrierShipmentManager := carrier2.NewShipmentManager(eventBus, locationQueryBus, connectioningQueryBus, connectioningCommandBus, rd, shipmentserviceQueryBus, shipmentpriceQueryBus, flagApplyShipmentPrice)
+	orderLogic := orderS.New(carrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, locationQueryBus, eventBus, carrierShipmentManager)
+	orderService := &shop.OrderService{
+		OrderAggr:     orderingCommandBus,
+		CustomerQuery: customeringQueryBus,
+		OrderQuery:    orderingQueryBus,
+		ReceiptQuery:  receiptingQueryBus,
+		OrderLogic:    orderLogic,
+	}
+	queryService2 := query14.NewQueryService(db2)
+	shippingQueryBus := query14.QueryServiceMessageBus(queryService2)
+	fulfillmentService := &shop.FulfillmentService{
+		ShippingQuery: shippingQueryBus,
+		ShippingCtrl:  carrierManager,
+	}
+	shipnowAggregate := shipnow.NewAggregate(eventBus, db2, locationQueryBus, queryBus, addressQueryBus, orderingQueryBus, shipnowCarrierManager)
+	shipnowCommandBus := shipnow.AggregateMessageBus(shipnowAggregate)
+	shipnowQueryService := shipnow.NewQueryService(db2)
+	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
+	shipnowService := &shop.ShipnowService{
+		ShipnowAggr:  shipnowCommandBus,
+		ShipnowQuery: shipnowQueryBus,
+	}
+	historyService := &shop.HistoryService{}
+	moneyTransactionService := &shop.MoneyTransactionService{}
+	dashboardQuery := query15.NewDashboardQuery(db2, rd, locationQueryBus)
+	summaryQueryBus := query15.DashboardQueryMessageBus(dashboardQuery)
+	summaryService := &shop.SummaryService{
+		SummaryQuery: summaryQueryBus,
+	}
+	exportService := &shop.ExportService{}
+	notificationService := &shop.NotificationService{}
+	authorizeService := &shop.AuthorizeService{}
+	tradingService := &shop.TradingService{
+		EventBus:       eventBus,
+		IdentityQuery:  queryBus,
+		CatalogQuery:   catalogQueryBus,
+		OrderQuery:     orderingQueryBus,
+		InventoryQuery: inventoryQueryBus,
+		OrderLogic:     orderLogic,
+	}
+	paymentService := &shop.PaymentService{
+		PaymentAggr: paymentManager,
+	}
+	ledgerQuery := query16.NewLedgerQuery(db2)
+	ledgeringQueryBus := query16.LedgerQueryMessageBus(ledgerQuery)
+	receiptAggregate := aggregate7.NewReceiptAggregate(db2, eventBus, traderingQueryBus, ledgeringQueryBus, orderingQueryBus, customeringQueryBus, carryingQueryBus, supplieringQueryBus, purchaseorderQueryBus)
+	receiptingCommandBus := aggregate7.ReceiptAggregateMessageBus(receiptAggregate)
+	receiptService := &shop.ReceiptService{
+		CarrierQuery:  carryingQueryBus,
+		CustomerQuery: customeringQueryBus,
+		LedgerQuery:   ledgeringQueryBus,
+		ReceiptAggr:   receiptingCommandBus,
+		ReceiptQuery:  receiptingQueryBus,
+		SupplierQuery: supplieringQueryBus,
+		TraderQuery:   traderingQueryBus,
+	}
+	supplierAggregate := aggregate8.NewSupplierAggregate(eventBus, db2)
+	supplieringCommandBus := aggregate8.SupplierAggregateMessageBus(supplierAggregate)
+	supplierService := &shop.SupplierService{
+		CatalogQuery:       catalogQueryBus,
+		PurchaseOrderQuery: purchaseorderQueryBus,
+		ReceiptQuery:       receiptingQueryBus,
+		SupplierAggr:       supplieringCommandBus,
+		SupplierQuery:      supplieringQueryBus,
+	}
+	carrierAggregate := aggregate9.NewCarrierAggregate(eventBus, db2)
+	carryingCommandBus := aggregate9.CarrierAggregateMessageBus(carrierAggregate)
+	carrierService := &shop.CarrierService{
+		CarrierAggr:  carryingCommandBus,
+		CarrierQuery: carryingQueryBus,
+	}
+	ledgerAggregate := aggregate10.NewLedgerAggregate(db2, receiptingQueryBus)
+	ledgeringCommandBus := aggregate10.LedgerAggregateMessageBus(ledgerAggregate)
+	ledgerService := &shop.LedgerService{
+		LedgerAggr:  ledgeringCommandBus,
+		LedgerQuery: ledgeringQueryBus,
+	}
+	purchaseOrderAggregate := aggregate11.NewPurchaseOrderAggregate(db2, eventBus, catalogQueryBus, supplieringQueryBus, inventoryQueryBus)
+	purchaseorderCommandBus := aggregate11.PurchaseOrderAggregateMessageBus(purchaseOrderAggregate)
+	purchaseOrderService := &shop.PurchaseOrderService{
+		PurchaseOrderAggr:  purchaseorderCommandBus,
+		PurchaseOrderQuery: purchaseorderQueryBus,
+	}
+	stocktakeAggregate := aggregate12.NewAggregateStocktake(db2, eventBus)
+	stocktakingCommandBus := aggregate12.StocktakeAggregateMessageBus(stocktakeAggregate)
+	stocktakeService := &shop.StocktakeService{
+		CatalogQuery:   catalogQueryBus,
+		StocktakeAggr:  stocktakingCommandBus,
+		StocktakeQuery: stocktakingQueryBus,
+		InventoryQuery: inventoryQueryBus,
+	}
+	aggregate17 := aggregate13.NewAggregate(db2, eventBus, locationQueryBus, bot2, orderingQueryBus, carrierShipmentManager, connectioningQueryBus)
+	shippingCommandBus := aggregate13.AggregateMessageBus(aggregate17)
+	shipmentService := &shop.ShipmentService{
+		ShipmentManager:   carrierShipmentManager,
+		ShippingAggregate: shippingCommandBus,
+	}
+	connectionService := &shop.ConnectionService{
+		ShipmentManager: carrierShipmentManager,
+		ConnectionQuery: connectioningQueryBus,
+		ConnectionAggr:  connectioningCommandBus,
+	}
+	refundAggregate := aggregate14.NewRefundAggregate(db2, eventBus)
+	refundCommandBus := aggregate14.RefundAggregateMessageBus(refundAggregate)
+	refundService := &shop.RefundService{
+		CustomerQuery:  customeringQueryBus,
+		InventoryQuery: inventoryQueryBus,
+		ReceiptQuery:   receiptingQueryBus,
+		RefundAggr:     refundCommandBus,
+		RefundQuery:    refundQueryBus,
+	}
+	purchaseRefundAggregate := aggregate15.NewPurchaseRefundAggregate(db2, eventBus, purchaseorderQueryBus)
+	purchaserefundCommandBus := aggregate15.PurchaseRefundAggregateMessageBus(purchaseRefundAggregate)
+	purchaseRefundService := &shop.PurchaseRefundService{
+		PurchaseRefundAggr:  purchaserefundCommandBus,
+		PurchaseRefundQuery: purchaserefundQueryBus,
+		SupplierQuery:       supplieringQueryBus,
+		PurchaseOrderQuery:  purchaseorderQueryBus,
+		InventoryQuery:      inventoryQueryBus,
+	}
+	webserverAggregate := aggregate16.New(eventBus, db2, catalogQueryBus)
+	webserverCommandBus := aggregate16.WebserverAggregateMessageBus(webserverAggregate)
+	webserverQueryService := query17.New(eventBus, db2, catalogQueryBus)
+	webserverQueryBus := query17.WebserverQueryServiceMessageBus(webserverQueryService)
+	webServerService := &shop.WebServerService{
+		CatalogQuery:   catalogQueryBus,
+		WebserverAggr:  webserverCommandBus,
+		WebserverQuery: webserverQueryBus,
+		InventoryQuery: inventoryQueryBus,
+	}
+	subrProductQuery := subscriptionproduct.NewSubrProductQuery(db2)
+	subscriptionproductQueryBus := subscriptionproduct.SubrProductQueryMessageBus(subrProductQuery)
+	subrPlanQuery := subscriptionplan.NewSubrPlanQuery(db2, subscriptionproductQueryBus)
+	subscriptionplanQueryBus := subscriptionplan.SubrPlanQueryMessageBus(subrPlanQuery)
+	subscriptionSubscriptionQuery := subscription.NewSubscriptionQuery(db2, subscriptionplanQueryBus, subscriptionproductQueryBus)
+	subscriptionQueryBus := subscription.SubscriptionQueryMessageBus(subscriptionSubscriptionQuery)
+	subscriptionService := &shop.SubscriptionService{
+		SubscriptionQuery: subscriptionQueryBus,
+	}
+	shopServers := shop.NewServers(rd, shopMiscService, brandService, inventoryService, shopAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService)
+	secretToken := cfg2.Secret
+	affiliateAggregate := affiliate.NewAggregate(db2, queryBus, catalogQueryBus, orderingQueryBus)
+	affiliateCommandBus := affiliate.AggregateMessageBus(affiliateAggregate)
+	apiUserService := &api2.UserService{
+		AffiliateAggr: affiliateCommandBus,
+	}
+	affiliateQueryService := affiliate.NewQuery(db2)
+	affiliateQueryBus := affiliate.QueryServiceMessageBus(affiliateQueryService)
+	apiTradingService := &api2.TradingService{
+		AffiliateAggr:  affiliateCommandBus,
+		AffiliateQuery: affiliateQueryBus,
+		CatalogQuery:   catalogQueryBus,
+		InventoryQuery: inventoryQueryBus,
+	}
+	shopService := &api2.ShopService{
+		CatalogQuery:   catalogQueryBus,
+		InventoryQuery: inventoryQueryBus,
+		AffiliateQuery: affiliateQueryBus,
+	}
+	affiliateService := &api2.AffiliateService{
+		AffiliateAggr:  affiliateCommandBus,
+		CatalogQuery:   catalogQueryBus,
+		AffiliateQuery: affiliateQueryBus,
+		IdentityQuery:  queryBus,
+	}
+	servers2 := api2.NewServers(secretToken, apiUserService, apiTradingService, shopService, affiliateService)
+	shippingShipping := shipping.New(locationQueryBus, db2, carrierShipmentManager, shippingCommandBus, shippingQueryBus, orderLogic)
+	partnerMiscService := &partner.MiscService{
+		Shipping: shippingShipping,
+	}
+	partnerShopService := &partner.ShopService{}
+	webhookService := &partner.WebhookService{}
+	partnerHistoryService := &partner.HistoryService{}
+	shippingService := &partner.ShippingService{
+		Shipping: shippingShipping,
+	}
+	partnerOrderService := &partner.OrderService{
+		Shipping: shippingShipping,
+	}
+	partnerFulfillmentService := &partner.FulfillmentService{
+		Shipping: shippingShipping,
+	}
+	partnerCustomerService := &partner.CustomerService{}
+	customerAddressService := &partner.CustomerAddressService{}
+	partnerCustomerGroupService := &partner.CustomerGroupService{}
+	customerGroupRelationshipService := &partner.CustomerGroupRelationshipService{}
+	partnerInventoryService := &partner.InventoryService{}
+	variantService := &partner.VariantService{}
+	partnerProductService := &partner.ProductService{}
+	productCollectionService := &partner.ProductCollectionService{}
+	productCollectionRelationshipService := &partner.ProductCollectionRelationshipService{}
+	partnerServers := partner.NewServers(sd, rd, s, authURL, partnerMiscService, partnerShopService, webhookService, partnerHistoryService, shippingService, partnerOrderService, partnerFulfillmentService, partnerCustomerService, customerAddressService, partnerCustomerGroupService, customerGroupRelationshipService, partnerInventoryService, variantService, partnerProductService, productCollectionService, productCollectionRelationshipService)
+	xshopMiscService := &xshop.MiscService{
+		Shipping: shippingShipping,
+	}
+	xshopWebhookService := &xshop.WebhookService{}
+	xshopHistoryService := &xshop.HistoryService{}
+	xshopShippingService := &xshop.ShippingService{
+		Shipping: shippingShipping,
+	}
+	xshopOrderService := &xshop.OrderService{
+		Shipping: shippingShipping,
+	}
+	xshopFulfillmentService := &xshop.FulfillmentService{
+		Shipping: shippingShipping,
+	}
+	xshopCustomerService := &xshop.CustomerService{}
+	xshopCustomerAddressService := &xshop.CustomerAddressService{}
+	xshopCustomerGroupService := &xshop.CustomerGroupService{}
+	xshopCustomerGroupRelationshipService := &xshop.CustomerGroupRelationshipService{}
+	xshopInventoryService := &xshop.InventoryService{}
+	xshopVariantService := &xshop.VariantService{}
+	xshopProductService := &xshop.ProductService{}
+	xshopProductCollectionService := &xshop.ProductCollectionService{}
+	xshopProductCollectionRelationshipService := &xshop.ProductCollectionRelationshipService{}
+	xshopServers := xshop.NewServers(sd, rd, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService)
+	v2 := NewServers(apiServers, shopServers, servers2, partnerServers, xshopServers)
+	return v2
 }
+
+// wire.go:
+
+var WireSet = wire.NewSet(smslog.WireSet, authorization.WireSet, invitation.WireSet, affiliate.WireSet, orderS.WireSet)

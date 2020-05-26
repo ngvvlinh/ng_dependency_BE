@@ -15,15 +15,15 @@ import (
 )
 
 type ProcessManager struct {
-	purchaseRefundQuery     *purchaserefund.QueryBus
-	purchaseRefundAggregate *purchaserefund.CommandBus
-	receiptQuery            *receipting.QueryBus
+	purchaseRefundQuery     purchaserefund.QueryBus
+	purchaseRefundAggregate purchaserefund.CommandBus
+	receiptQuery            receipting.QueryBus
 }
 
 func New(
-	purchaseRefundA *purchaserefund.CommandBus,
-	purchaseRefundQ *purchaserefund.QueryBus,
-	receiptQ *receipting.QueryBus,
+	purchaseRefundA purchaserefund.CommandBus,
+	purchaseRefundQ purchaserefund.QueryBus,
+	receiptQ receipting.QueryBus,
 
 ) *ProcessManager {
 	return &ProcessManager{

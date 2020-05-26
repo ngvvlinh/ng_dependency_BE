@@ -38,7 +38,7 @@ import (
 
 var ll = l.New()
 
-func CreateOrder(
+func (s *OrderLogic) CreateOrder(
 	ctx context.Context, claim *claims.ShopClaim,
 	authPartner *identitymodel.Partner, r *types.CreateOrderRequest,
 	tradingShopID *dot.ID, userID dot.ID) (*types.Order, error) {
@@ -225,7 +225,7 @@ func CreateOrder(
 	if err != nil {
 		return nil, err
 	}
-	order, err := PrepareOrder(ctx, shop.ID, r, lines, userID)
+	order, err := s.PrepareOrder(ctx, shop.ID, r, lines, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -477,7 +477,7 @@ func PrepareOrderLines(
 	return res, nil
 }
 
-func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *identitymodel.Partner, q *types.UpdateOrderRequest) (*types.Order, error) {
+func (s *OrderLogic) UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *identitymodel.Partner, q *types.UpdateOrderRequest) (*types.Order, error) {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID: q.Id,
 		ShopID:  claim.Shop.ID,
@@ -789,7 +789,7 @@ func prepareOrderLine(
 	return line, nil
 }
 
-func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderRequest, lines []*ordermodel.OrderLine, userID dot.ID) (*ordermodel.Order, error) {
+func (s *OrderLogic) PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderRequest, lines []*ordermodel.OrderLine, userID dot.ID) (*ordermodel.Order, error) {
 	if m.BasketValue <= 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).
 			WithMeta("reason", "basket_value <= 0")
@@ -986,7 +986,7 @@ func PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderReques
 	return order, nil
 }
 
-func CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (*types.OrderWithErrorsResponse, error) {
+func (s *OrderLogic) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (*types.OrderWithErrorsResponse, error) {
 	getOrderQuery := &ordermodelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          authPartnerID,
@@ -1039,7 +1039,7 @@ func CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID, authPartnerI
 	fulfillments := getOrderQuery.Result.Fulfillments
 	order.CancelReason = cancelReason
 	if len(fulfillments) > 0 {
-		_errs, err := TryCancellingFulfillments(ctx, order, fulfillments)
+		_errs, err := s.TryCancellingFulfillments(ctx, order, fulfillments)
 		if err != nil {
 			return nil, err
 		}

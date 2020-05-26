@@ -1,4 +1,4 @@
-//+build !fulltest
+// +build !fulltest
 
 package location
 

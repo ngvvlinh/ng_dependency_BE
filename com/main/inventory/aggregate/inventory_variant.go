@@ -21,6 +21,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/capi"
 	"o.o/capi/dot"
 )
 
@@ -31,7 +32,7 @@ type InventoryAggregate struct {
 	InventoryStore        sqlstore.InventoryFactory
 	InventoryVoucherStore sqlstore.InventoryVoucherFactory
 	traderQuery           tradering.QueryBus
-	EventBus              bus.Bus
+	EventBus              capi.EventBus
 	db                    *cmsql.Database
 	PurchaseOrderQuery    purchaseorder.QueryBus
 	StocktakeQuery        stocktaking.QueryBus
@@ -39,7 +40,7 @@ type InventoryAggregate struct {
 	PurchaseRefundQuery   purchaserefund.QueryBus
 }
 
-func NewAggregateInventory(eventBus bus.Bus,
+func NewAggregateInventory(eventBus capi.EventBus,
 	db *cmsql.Database,
 	traderQuery tradering.QueryBus,
 	purchaseOrderQuery purchaseorder.QueryBus,

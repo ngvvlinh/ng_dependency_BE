@@ -2,6 +2,10 @@ package xshop
 
 import (
 	service "o.o/api/top/external/shop"
+	"o.o/backend/pkg/common/apifw/idemp"
+	cmservice "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/etop/apix/shipping"
 	"o.o/capi/httprpc"
 )
 
@@ -9,7 +13,35 @@ import (
 // +gen:wrapper:package=shop
 // +gen:wrapper:prefix=ext
 
-func NewShopServer(m httprpc.Muxer) {
+var idempgroup *idemp.RedisGroup
+
+const PrefixIdempShopAPI = "IdempShopAPI"
+
+type Servers []httprpc.Server
+
+func NewServers(
+	sd cmservice.Shutdowner,
+	rd redis.Store,
+	_ *shipping.Shipping,
+	miscService *MiscService,
+	webhookService *WebhookService,
+	historyService *HistoryService,
+	shippingService *ShippingService,
+	orderService *OrderService,
+	fulfillmentService *FulfillmentService,
+	customerService *CustomerService,
+	customerAddressService *CustomerAddressService,
+	customerGroupService *CustomerGroupService,
+	customerGroupRelationshipService *CustomerGroupRelationshipService,
+	inventoryService *InventoryService,
+	variantService *VariantService,
+	productService *ProductService,
+	productCollectionService *ProductCollectionService,
+	productCollectionRelationshipService *ProductCollectionRelationshipService,
+) Servers {
+	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempShopAPI, 0)
+	sd.Register(idempgroup.Shutdown)
+
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
 		service.NewWebhookServiceServer(WrapWebhookService(webhookService.Clone)),
@@ -27,7 +59,5 @@ func NewShopServer(m httprpc.Muxer) {
 		service.NewProductCollectionServiceServer(WrapProductCollectionService(productCollectionService.Clone)),
 		service.NewProductCollectionRelationshipServiceServer(WrapProductCollectionRelationshipService(productCollectionRelationshipService.Clone)),
 	}
-	for _, s := range servers {
-		m.Handle(s.PathPrefix(), s)
-	}
+	return servers
 }

@@ -45,7 +45,7 @@ type InvitationAggregate struct {
 }
 
 func NewInvitationAggregate(
-	database *cmsql.Database, secretKey string,
+	database *cmsql.Database, cfg invitation.Config,
 	customerQ customering.QueryBus, identityQ identity.QueryBus,
 	eventBus capi.EventBus, config config.Config,
 ) *InvitationAggregate {
@@ -54,7 +54,7 @@ func NewInvitationAggregate(
 		eventBus:      eventBus,
 		cfg:           config,
 		store:         sqlstore.NewInvitationStore(database),
-		jwtKey:        secretKey,
+		jwtKey:        cfg.Secret,
 		customerQuery: customerQ,
 		identityQuery: identityQ,
 	}

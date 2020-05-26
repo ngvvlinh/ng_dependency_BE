@@ -1,10 +1,14 @@
-package partner
+package xshop
 
 import (
 	"context"
 
 	"o.o/backend/pkg/etop/apix/shopping"
 )
+
+type ProductService struct{}
+
+func (s *ProductService) Clone() *ProductService { res := *s; return &res }
 
 func (s *ProductService) GetProduct(ctx context.Context, r *GetProductEndpoint) error {
 	resp, err := shopping.GetProduct(ctx, r.Context.Shop.ID, r.GetProductRequest)

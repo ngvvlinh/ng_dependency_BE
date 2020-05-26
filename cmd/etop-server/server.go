@@ -36,9 +36,7 @@ import (
 	crm "o.o/backend/pkg/etop/api/crm"
 	integration "o.o/backend/pkg/etop/api/integration"
 	sadmin "o.o/backend/pkg/etop/api/sadmin"
-	partner "o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
-	xshop "o.o/backend/pkg/etop/apix/shop"
 	whitelabelapix "o.o/backend/pkg/etop/apix/whitelabel"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
@@ -103,11 +101,12 @@ func startEtopServer() *http.Server {
 		v1Mux := http.NewServeMux()
 		v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))
 		mux.Handle("/v1/", http.StripPrefix("/v1", headers.ForwardHeaders(v1Mux)))
+		for _, s := range serversExt {
+			v1Mux.Handle(s.PathPrefix(), s)
+		}
 
 		extHooks := session.NewHook(acl.GetExtACL())
-		partner.NewPartnerServer(v1Mux)
 		partnercarrier.NewPartnerCarrierServer(v1Mux, ss, extHooks)
-		xshop.NewShopServer(v1Mux)
 		whitelabelapix.NewWhiteLabelServer(v1Mux)
 
 		botDefault := cfg.TelegramBot.MustConnectChannel("")
@@ -258,7 +257,7 @@ func startWebServer(webServerQuery webserverinternal.QueryBus, catalogQuery cata
 		CoreSite: cfg.URL.MainSite,
 		RootPath: projectpath.GetPath(),
 	}
-	handler, err := webserver.New(c, webServerQuery, catalogQuery, rd, locationQueryBus, subscriptionQuery)
+	handler, err := webserver.New(c, webServerQuery, catalogQuery, rd, locationQueryBus, subscriptionQuery, nil) // TODO: order logic
 	if err != nil {
 		ll.S.Panicf("error starting web server: %v", err)
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
 	"o.o/api/main/catalog"
 	"o.o/api/main/location"
 	"o.o/api/subscripting/subscription"
@@ -13,11 +14,13 @@ import (
 	"o.o/backend/com/web/ecom/middlewares"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/redis"
+	orderS "o.o/backend/pkg/etop/logic/orders"
 )
 
 var webserverQueryBus webserver.QueryBus
 var catelogQueryBus catalog.QueryBus
 var subscriptionQuery subscription.QueryBus
+var orderLogic *orderS.OrderLogic
 
 type Config struct {
 	MainSite string
@@ -35,12 +38,13 @@ type Server struct {
 
 var locationBus location.QueryBus
 
-func New(cfg Config, query webserver.QueryBus, catalogQuery catalog.QueryBus, rd redis.Store, locationQueryBus location.QueryBus, subrQuery subscription.QueryBus) (*Server, error) {
+func New(cfg Config, query webserver.QueryBus, catalogQuery catalog.QueryBus, rd redis.Store, locationQueryBus location.QueryBus, subrQuery subscription.QueryBus, _orderLogic *orderS.OrderLogic) (*Server, error) {
 	locationBus = locationQueryBus
 	redisStore = rd
 	webserverQueryBus = query
 	catelogQueryBus = catalogQuery
 	subscriptionQuery = subrQuery
+	orderLogic = _orderLogic
 	if cfg.MainSite == "" {
 		return nil, cm.Errorf(cm.Internal, nil, "missing main_site")
 	}

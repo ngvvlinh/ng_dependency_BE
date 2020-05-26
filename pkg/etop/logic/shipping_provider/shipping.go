@@ -28,7 +28,7 @@ var blockCarriers = map[shippingprovider.ShippingProvider]*struct {
 	},
 }
 
-func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *types.GetExternalShippingServicesRequest) ([]*model.AvailableShippingService, error) {
+func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *types.GetExternalShippingServicesRequest) ([]*model.AvailableShippingService, error) {
 	fromQuery := &location.FindOrGetLocationQuery{
 		ProvinceCode: q.FromProvinceCode,
 		DistrictCode: q.FromDistrictCode,
@@ -103,24 +103,6 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 	}
 
 	switch q.Provider {
-	case pbsp.GHN:
-		services, err := ctrl.GHN.GetAllShippingServices(ctx, args)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, services...)
-	case pbsp.GHTK:
-		services, err := ctrl.GHTK.GetAllShippingServices(ctx, args)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, services...)
-	case pbsp.VTPost:
-		services, err := ctrl.VTPost.GetAllShippingServices(ctx, args)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, services...)
 	case pbsp.All, pbsp.Unknown:
 		ch := make(chan []*model.AvailableShippingService, 2)
 		go func() {
@@ -129,7 +111,7 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 			var services []*model.AvailableShippingService
 			var err error
 			defer func() { sendServices(ch, services, err) }()
-			services, err = ctrl.GHN.GetAllShippingServices(ctx, args)
+			services, err = ctrl.GetShippingProviderDriver(shippingprovider.GHN).GetAllShippingServices(ctx, args)
 		}()
 		go func() {
 			defer catchAndRecover()
@@ -137,7 +119,7 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 			var services []*model.AvailableShippingService
 			var err error
 			defer func() { sendServices(ch, services, err) }()
-			services, err = ctrl.GHTK.GetAllShippingServices(ctx, args)
+			services, err = ctrl.GetShippingProviderDriver(shippingprovider.GHTK).GetAllShippingServices(ctx, args)
 		}()
 		// go func() {
 		// 	var services []*model.AvailableShippingService
@@ -154,8 +136,18 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 		for i := 0; i < 2; i++ {
 			res = append(res, <-ch...)
 		}
+
 	default:
-		return nil, cm.Error(cm.InvalidArgument, "Invalid provider", nil)
+		driver := ctrl.GetShippingProviderDriver(q.Provider)
+		if driver == nil {
+			return nil, cm.Error(cm.InvalidArgument, "Invalid carrier", nil)
+		}
+
+		services, err := driver.GetAllShippingServices(ctx, args)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, services...)
 	}
 
 	if len(res) == 0 {

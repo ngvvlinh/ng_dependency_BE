@@ -15,11 +15,11 @@ import (
 
 type ProcessManager struct {
 	identityQuery   identity.QueryBus
-	invitationQuery *invitation.QueryBus
+	invitationQuery invitation.QueryBus
 }
 
 func New(
-	identityQ identity.QueryBus, invitationQ *invitation.QueryBus,
+	identityQ identity.QueryBus, invitationQ invitation.QueryBus,
 ) *ProcessManager {
 	return &ProcessManager{
 		identityQuery:   identityQ,

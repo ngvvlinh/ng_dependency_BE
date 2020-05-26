@@ -11,8 +11,8 @@ import (
 	"o.o/api/top/types/etc/route_type"
 	"o.o/api/top/types/etc/status3"
 	locationutil "o.o/backend/com/main/location/util"
-	"o.o/backend/com/main/shipmentpricing"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice/sqlstore"
+	"o.o/backend/com/main/shipmentpricing/util"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
@@ -79,7 +79,7 @@ func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, shipmentServ
 		}
 		res, err = q.shipmentPriceStore(ctx).ShipmentPriceListID(query.Result.ID).Status(status3.P).ListShipmentPrices()
 		if err == nil {
-			_ = q.redisStore.SetWithTTL(key, res, shipmentpricing.DefaultTTL)
+			_ = q.redisStore.SetWithTTL(key, res, util.DefaultTTL)
 		}
 	}
 

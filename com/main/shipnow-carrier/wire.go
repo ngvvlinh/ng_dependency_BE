@@ -1,9 +1,9 @@
 // +build wireinject
 
-package aggregate
+package shipnow_carrier
 
 import "github.com/google/wire"
 
 var WireSet = wire.NewSet(
-	NewSmsLogAggregate, SmsLogAggregateMessageBus,
+	NewManager,
 )

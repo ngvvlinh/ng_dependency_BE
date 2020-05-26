@@ -3,19 +3,12 @@ package xshop
 import (
 	"context"
 
-	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/apix/webhook"
 )
 
-func init() {
-	bus.AddHandlers("apix",
-		webhookService.CreateWebhook,
-		webhookService.DeleteWebhook,
-		webhookService.GetWebhooks,
-		historyService.GetChanges,
-	)
-}
+type WebhookService struct{}
+
+func (s *WebhookService) Clone() *WebhookService { res := *s; return &res }
 
 func (s *WebhookService) CreateWebhook(ctx context.Context, r *CreateWebhookEndpoint) error {
 	resp, err := webhook.CreateWebhook(ctx, r.Context.Shop.ID, r.CreateWebhookRequest)
@@ -33,8 +26,4 @@ func (s *WebhookService) GetWebhooks(ctx context.Context, r *GetWebhooksEndpoint
 	resp, err := webhook.GetWebhooks(ctx, r.Context.Shop.ID)
 	r.Result = resp
 	return err
-}
-
-func (s *HistoryService) GetChanges(ctx context.Context, r *GetChangesEndpoint) error {
-	return cm.ErrTODO
 }

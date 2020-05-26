@@ -27,32 +27,37 @@ import (
 	"o.o/capi/dot"
 )
 
-type ProviderManager struct {
-	GHN, GHTK, VTPost ShippingCarrier
-	location          location.QueryBus
-	eventBus          capi.EventBus
+type codeCarrier struct {
+	code   shipping_provider.ShippingProvider
+	driver CarrierDriver
 }
 
-func NewCtrl(eventBus capi.EventBus, locationBus location.QueryBus, ghnCarrier, ghtkCarrier, vtpostCarrier ShippingCarrier) *ProviderManager {
-	return &ProviderManager{
-		eventBus: eventBus,
-		GHN:      ghnCarrier,
-		GHTK:     ghtkCarrier,
-		VTPost:   vtpostCarrier,
+type CarrierManager struct {
+	carriers []codeCarrier
+	location location.QueryBus
+	eventBus capi.EventBus
+}
 
+func NewCtrl(eventBus capi.EventBus, locationBus location.QueryBus, carriers []CarrierDriver) *CarrierManager {
+	p := &CarrierManager{
+		eventBus: eventBus,
 		location: locationBus,
 	}
+	for _, c := range carriers {
+		p.carriers = append(p.carriers, codeCarrier{code: c.Code(), driver: c})
+	}
+	return p
 }
 
-func (ctrl *ProviderManager) CreateExternalShipping(ctx context.Context, order *ordermodel.Order, ffms []*shipmodel.Fulfillment) error {
+func (ctrl *CarrierManager) CreateExternalShipping(ctx context.Context, order *ordermodel.Order, ffms []*shipmodel.Fulfillment) error {
 	return ctrl.createFulfillments(ctx, order, ffms)
 }
 
-func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *ordermodel.Order, ffms []*shipmodel.Fulfillment) error {
+func (ctrl *CarrierManager) createFulfillments(ctx context.Context, order *ordermodel.Order, ffms []*shipmodel.Fulfillment) error {
 	var err error
 	g := syncgroup.New(len(ffms))
 	for _, ffm := range ffms {
-		ffm := ffm
+		ffm := ffm // capture closure
 		g.Go(func() error { return ctrl.createSingleFulfillment(ctx, order, ffm) })
 	}
 	errs := g.Wait()
@@ -62,20 +67,16 @@ func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *orde
 	return err
 }
 
-func (ctrl *ProviderManager) GetShippingProviderDriver(provider shipping_provider.ShippingProvider) ShippingCarrier {
-	switch provider {
-	case shipping_provider.GHN:
-		return ctrl.GHN
-	case shipping_provider.GHTK:
-		return ctrl.GHTK
-	case shipping_provider.VTPost:
-		return ctrl.VTPost
-	default:
-		return nil
+func (ctrl *CarrierManager) GetShippingProviderDriver(provider shipping_provider.ShippingProvider) CarrierDriver {
+	for _, c := range ctrl.carriers {
+		if c.code == provider {
+			return c.driver
+		}
 	}
+	return nil
 }
 
-func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment) (_err error) {
+func (ctrl *CarrierManager) createSingleFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment) (_err error) {
 	// TODO: handle case when ffm.shipping_provider is different with order.shipping_provider
 	provider := order.ShopShipping.ShippingProvider
 
@@ -268,7 +269,7 @@ func CheckShippingService(order *ordermodel.Order, services []*model.AvailableSh
 	return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần chọn gói dịch vụ giao hàng")
 }
 
-func (ctrl *ProviderManager) VerifyDistrictCode(addr *addressmodel.Address) (*location.District, *location.Province, error) {
+func (ctrl *CarrierManager) VerifyDistrictCode(addr *addressmodel.Address) (*location.District, *location.Province, error) {
 	if addr == nil {
 		return nil, nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}
@@ -294,7 +295,7 @@ func (ctrl *ProviderManager) VerifyDistrictCode(addr *addressmodel.Address) (*lo
 	return district, query.Result.Province, nil
 }
 
-func (ctrl *ProviderManager) VerifyWardCode(addr *addressmodel.Address) (*location.Ward, error) {
+func (ctrl *CarrierManager) VerifyWardCode(addr *addressmodel.Address) (*location.Ward, error) {
 	if addr == nil {
 		return nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}
@@ -312,7 +313,7 @@ func (ctrl *ProviderManager) VerifyWardCode(addr *addressmodel.Address) (*locati
 	return query.Result.Ward, nil
 }
 
-func (ctrl *ProviderManager) VerifyProvinceCode(addr *addressmodel.Address) (*location.Province, error) {
+func (ctrl *CarrierManager) VerifyProvinceCode(addr *addressmodel.Address) (*location.Province, error) {
 	if addr == nil {
 		return nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}
@@ -330,7 +331,7 @@ func (ctrl *ProviderManager) VerifyProvinceCode(addr *addressmodel.Address) (*lo
 	return query.Result.Province, nil
 }
 
-func (ctrl *ProviderManager) VerifyAddress(addr *addressmodel.Address, requireWard bool) (*location.Province, *location.District, *location.Ward, error) {
+func (ctrl *CarrierManager) VerifyAddress(addr *addressmodel.Address, requireWard bool) (*location.Province, *location.District, *location.Ward, error) {
 	if addr == nil {
 		return nil, nil, nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}
@@ -358,17 +359,12 @@ func (ctrl *ProviderManager) VerifyAddress(addr *addressmodel.Address, requireWa
 	return loc.Province, loc.District, loc.Ward, nil
 }
 
-func (ctrl *ProviderManager) ParseServiceCode(carrier shipping_provider.ShippingProvider, code string) (serviceName string, ok bool) {
-	switch carrier {
-	case shipping_provider.GHN:
-		return ctrl.GHN.ParseServiceCode(code)
-	case shipping_provider.GHTK:
-		return ctrl.GHTK.ParseServiceCode(code)
-	case shipping_provider.VTPost:
-		return ctrl.VTPost.ParseServiceCode(code)
-	default:
+func (ctrl *CarrierManager) ParseServiceCode(carrier shipping_provider.ShippingProvider, code string) (serviceName string, ok bool) {
+	c := ctrl.GetShippingProviderDriver(carrier)
+	if c == nil {
 		return "", false
 	}
+	return c.ParseServiceCode(code)
 }
 
 func abs(a int) int {

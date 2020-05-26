@@ -1,7 +1,7 @@
 package shipping_provider
 
 /*
-func (ctrl *ProviderManager) GetShippingService(ffm *model.Fulfillment, order *model.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
+func (ctrl *CarrierManager) GetShippingService(ffm *model.Fulfillment, order *model.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
 	shopShipping := order.ShopShipping
 	ctx := context.Background()
 

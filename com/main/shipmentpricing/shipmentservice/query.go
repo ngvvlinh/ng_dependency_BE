@@ -6,8 +6,8 @@ import (
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
-	"o.o/backend/com/main/shipmentpricing"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice/sqlstore"
+	"o.o/backend/com/main/shipmentpricing/util"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
@@ -43,7 +43,7 @@ func (q *QueryService) GetShipmentServiceByServiceID(ctx context.Context, servic
 	err = q.redisStore.Get(key, &res)
 	if err != nil {
 		res, err = q.shipmentServiceStore(ctx).ServiceID(serviceID).ConnectionID(connID).Status(status3.P).GetShipmentService()
-		_ = q.redisStore.SetWithTTL(key, res, shipmentpricing.DefaultTTL)
+		_ = q.redisStore.SetWithTTL(key, res, util.DefaultTTL)
 	}
 	if res == nil {
 		return nil, cm.Errorf(cm.NotFound, nil, "")

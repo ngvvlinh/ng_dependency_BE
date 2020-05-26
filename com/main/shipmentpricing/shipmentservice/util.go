@@ -3,7 +3,7 @@ package shipmentservice
 import (
 	"context"
 
-	"o.o/backend/com/main/shipmentpricing"
+	"o.o/backend/com/main/shipmentpricing/util"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi/dot"
@@ -15,7 +15,7 @@ const (
 
 func getShipmentServiceRedisKey(ctx context.Context, serviceID string, connID dot.ID) string {
 	return ShipmentServiceRedisKey +
-		":" + shipmentpricing.VersionCaching +
+		":" + util.VersionCaching +
 		":wl" + wl.X(ctx).ID.String() +
 		":sid" + serviceID +
 		":conn" + connID.String()

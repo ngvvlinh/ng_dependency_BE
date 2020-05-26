@@ -1,5 +1,3 @@
-// +build wireinject
-
 package subscriptionplan
 
 import "github.com/google/wire"

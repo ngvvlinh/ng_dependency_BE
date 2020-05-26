@@ -6,6 +6,10 @@ import (
 	"o.o/backend/pkg/etop/apix/shopping"
 )
 
+type VariantService struct{}
+
+func (s *VariantService) Clone() *VariantService { res := *s; return &res }
+
 func (s *VariantService) GetVariant(ctx context.Context, r *GetVariantEndpoint) error {
 	resp, err := shopping.GetVariant(ctx, r.Context.Shop.ID, r.GetVariantRequest)
 	r.Result = resp
