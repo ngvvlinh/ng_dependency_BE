@@ -643,7 +643,7 @@ func main() {
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus, shipmentManager)
 	affiliate.Init(identityAggr)
 	servers = append(servers, apiaff.BuildServers(
-		apiaff.Secret(cfg.Secret), affiliateCmd, affilateQuery, catalogQuery, identityQuery)...)
+		apiaff.Secret(cfg.Secret), affiliateCmd, affilateQuery, catalogQuery, identityQuery, inventoryQuery)...)
 	admin.Init(
 		eventBus,
 		moneyTxQuery, moneyTxAggr,

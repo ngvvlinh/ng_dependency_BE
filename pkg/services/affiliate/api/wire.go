@@ -6,14 +6,15 @@ import (
 	"github.com/google/wire"
 	"o.o/api/main/catalog"
 	"o.o/api/main/identity"
+	"o.o/api/main/inventory"
 	"o.o/api/services/affiliate"
 )
 
 var WireSet = wire.NewSet(
-	wire.Struct(new(UserService)),
-	wire.Struct(new(TradingService)),
-	wire.Struct(new(ShopService)),
-	wire.Struct(new(AffiliateService)),
+	wire.Struct(new(UserService), "*"),
+	wire.Struct(new(TradingService), "*"),
+	wire.Struct(new(ShopService), "*"),
+	wire.Struct(new(AffiliateService), "*"),
 	NewServers,
 )
 
@@ -23,6 +24,7 @@ func BuildServers(
 	affQuery affiliate.QueryBus,
 	catQuery catalog.QueryBus,
 	idenQuery identity.QueryBus,
+	inventoryQuery inventory.QueryBus,
 ) Servers {
 	panic(wire.Build(WireSet))
 }

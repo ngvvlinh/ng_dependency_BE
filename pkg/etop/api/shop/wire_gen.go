@@ -42,42 +42,149 @@ import (
 
 func BuildServers(locationQ location.QueryBus, catalogQueryBus catalog.QueryBus, catalogCommandBus catalog.CommandBus, shipnow2 shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity2 identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, providerManager *shipping_provider.ProviderManager, customerA customering.CommandBus, customerQS customering.QueryBus, traderAddressA addressing.CommandBus, traderAddressQ addressing.QueryBus, orderA ordering.CommandBus, orderQ ordering.QueryBus, paymentManager manager.CommandBus, supplierA suppliering.CommandBus, supplierQ suppliering.QueryBus, carrierA carrying.CommandBus, carrierQ carrying.QueryBus, traderQ tradering.QueryBus, eventB capi.EventBus, receiptA receipting.CommandBus, receiptQS receipting.QueryBus, sd cmService.Shutdowner, rd redis.Store, inventoryA inventory.CommandBus, inventoryQ inventory.QueryBus, ledgerA ledgering.CommandBus, ledgerQ ledgering.QueryBus, purchaseOrderA purchaseorder.CommandBus, purchaseOrderQ purchaseorder.QueryBus, summary2 summary.QueryBus, StocktakeQ stocktaking.QueryBus, StocktakeA stocktaking.CommandBus, shipmentM *carrier.ShipmentManager, shippingA shipping.CommandBus, refundA refund.CommandBus, refundQ refund.QueryBus, purchaseRefundA purchaserefund.CommandBus, purchaseRefundQ purchaserefund.QueryBus, connectionQ connectioning.QueryBus, connectionA connectioning.CommandBus, shippingQ shipping.QueryBus, webserverA webserver.CommandBus, webserverQ webserver.QueryBus, subscriptionQ subscription.QueryBus) Servers {
 	miscService := &MiscService{}
-	brandService := &BrandService{}
-	inventoryService := &InventoryService{}
-	accountService := &AccountService{}
-	collectionService := &CollectionService{}
-	customerService := &CustomerService{}
-	customerGroupService := &CustomerGroupService{}
-	productService := &ProductService{}
-	categoryService := &CategoryService{}
+	brandService := &BrandService{
+		CatalogQuery: catalogQueryBus,
+		CatalogAggr:  catalogCommandBus,
+	}
+	inventoryService := &InventoryService{
+		TraderQuery:    traderQ,
+		InventoryAggr:  inventoryA,
+		InventoryQuery: inventoryQ,
+	}
+	accountService := &AccountService{
+		IdentityAggr:  identity2,
+		IdentityQuery: identityQS,
+		AddressQuery:  addressQS,
+	}
+	collectionService := &CollectionService{
+		CatalogQuery: catalogQueryBus,
+		CatalogAggr:  catalogCommandBus,
+	}
+	customerService := &CustomerService{
+		LocationQuery: locationQ,
+		CustomerQuery: customerQS,
+		CustomerAggr:  customerA,
+		AddressAggr:   traderAddressA,
+		AddressQuery:  traderAddressQ,
+		OrderQuery:    orderQ,
+		ReceiptQuery:  receiptQS,
+	}
+	customerGroupService := &CustomerGroupService{
+		CustomerAggr:  customerA,
+		CustomerQuery: customerQS,
+	}
+	productService := &ProductService{
+		CatalogQuery:   catalogQueryBus,
+		CatalogAggr:    catalogCommandBus,
+		InventoryQuery: inventoryQ,
+	}
+	categoryService := &CategoryService{
+		CatalogQuery: catalogQueryBus,
+		CatalogAggr:  catalogCommandBus,
+	}
 	productSourceService := &ProductSourceService{}
-	orderService := &OrderService{}
-	fulfillmentService := &FulfillmentService{}
-	shipnowService := &ShipnowService{}
+	orderService := &OrderService{
+		OrderAggr:     orderA,
+		CustomerQuery: customerQS,
+		OrderQuery:    orderQ,
+		ReceiptQuery:  receiptQS,
+	}
+	fulfillmentService := &FulfillmentService{
+		ShippingQuery: shippingQ,
+		ShippingCtrl:  providerManager,
+	}
+	shipnowService := &ShipnowService{
+		ShipnowAggr:  shipnow2,
+		ShipnowQuery: shipnowQS,
+	}
 	historyService := &HistoryService{}
 	moneyTransactionService := &MoneyTransactionService{}
-	summaryService := &SummaryService{}
+	summaryService := &SummaryService{
+		SummaryQuery: summary2,
+	}
 	exportService := &ExportService{}
 	notificationService := &NotificationService{}
 	authorizeService := &AuthorizeService{}
-	tradingService := &TradingService{}
-	paymentService := &PaymentService{}
-	receiptService := &ReceiptService{}
-	supplierService := &SupplierService{}
-	carrierService := &CarrierService{}
-	ledgerService := &LedgerService{}
-	purchaseOrderService := &PurchaseOrderService{}
-	stocktakeService := &StocktakeService{}
-	shipmentService := &ShipmentService{}
-	connectionService := &ConnectionService{}
-	refundService := &RefundService{}
-	purchaseRefundService := &PurchaseRefundService{}
-	webServerService := &WebServerService{}
-	subscriptionService := &SubscriptionService{}
+	tradingService := &TradingService{
+		EventBus:       eventB,
+		IdentityQuery:  identityQS,
+		CatalogQuery:   catalogQueryBus,
+		OrderQuery:     orderQ,
+		InventoryQuery: inventoryQ,
+	}
+	paymentService := &PaymentService{
+		PaymentAggr: paymentManager,
+	}
+	receiptService := &ReceiptService{
+		CarrierQuery:  carrierQ,
+		CustomerQuery: customerQS,
+		LedgerQuery:   ledgerQ,
+		ReceiptAggr:   receiptA,
+		ReceiptQuery:  receiptQS,
+		SupplierQuery: supplierQ,
+		TraderQuery:   traderQ,
+	}
+	supplierService := &SupplierService{
+		CatalogQuery:       catalogQueryBus,
+		PurchaseOrderQuery: purchaseOrderQ,
+		ReceiptQuery:       receiptQS,
+		SupplierAggr:       supplierA,
+		SupplierQuery:      supplierQ,
+	}
+	carrierService := &CarrierService{
+		CarrierAggr:  carrierA,
+		CarrierQuery: carrierQ,
+	}
+	ledgerService := &LedgerService{
+		LedgerAggr:  ledgerA,
+		LedgerQuery: ledgerQ,
+	}
+	purchaseOrderService := &PurchaseOrderService{
+		PurchaseOrderAggr:  purchaseOrderA,
+		PurchaseOrderQuery: purchaseOrderQ,
+	}
+	stocktakeService := &StocktakeService{
+		CatalogQuery:   catalogQueryBus,
+		StocktakeAggr:  StocktakeA,
+		StocktakeQuery: StocktakeQ,
+		InventoryQuery: inventoryQ,
+	}
+	shipmentService := &ShipmentService{
+		ShipmentManager:   shipmentM,
+		ShippingAggregate: shippingA,
+	}
+	connectionService := &ConnectionService{
+		ShipmentManager: shipmentM,
+		ConnectionQuery: connectionQ,
+		ConnectionAggr:  connectionA,
+	}
+	refundService := &RefundService{
+		CustomerQuery:  customerQS,
+		InventoryQuery: inventoryQ,
+		ReceiptQuery:   receiptQS,
+		RefundAggr:     refundA,
+		RefundQuery:    refundQ,
+	}
+	purchaseRefundService := &PurchaseRefundService{
+		PurchaseRefundAggr:  purchaseRefundA,
+		PurchaseRefundQuery: purchaseRefundQ,
+		SupplierQuery:       supplierQ,
+		PurchaseOrderQuery:  purchaseOrderQ,
+		InventoryQuery:      inventoryQ,
+	}
+	webServerService := &WebServerService{
+		CatalogQuery:   catalogQueryBus,
+		WebserverAggr:  webserverA,
+		WebserverQuery: webserverQ,
+		InventoryQuery: inventoryQ,
+	}
+	subscriptionService := &SubscriptionService{
+		SubscriptionQuery: subscriptionQ,
+	}
 	servers := NewServers(rd, miscService, brandService, inventoryService, accountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService)
 	return servers
 }
 
 // wire.go:
 
-var WireSet = wire.NewSet(wire.Struct(new(AccountService)), wire.Struct(new(AuthorizeService)), wire.Struct(new(BrandService)), wire.Struct(new(CarrierService)), wire.Struct(new(CategoryService)), wire.Struct(new(CollectionService)), wire.Struct(new(ConnectionService)), wire.Struct(new(CustomerGroupService)), wire.Struct(new(CustomerService)), wire.Struct(new(ExportService)), wire.Struct(new(FulfillmentService)), wire.Struct(new(HistoryService)), wire.Struct(new(InventoryService)), wire.Struct(new(LedgerService)), wire.Struct(new(MiscService)), wire.Struct(new(MoneyTransactionService)), wire.Struct(new(NotificationService)), wire.Struct(new(OrderService)), wire.Struct(new(PaymentService)), wire.Struct(new(ProductService)), wire.Struct(new(ProductSourceService)), wire.Struct(new(PurchaseOrderService)), wire.Struct(new(PurchaseRefundService)), wire.Struct(new(ReceiptService)), wire.Struct(new(RefundService)), wire.Struct(new(ShipmentService)), wire.Struct(new(ShipnowService)), wire.Struct(new(StocktakeService)), wire.Struct(new(SubscriptionService)), wire.Struct(new(SummaryService)), wire.Struct(new(SupplierService)), wire.Struct(new(TradingService)), wire.Struct(new(WebServerService)), NewServers)
+var WireSet = wire.NewSet(wire.Struct(new(AccountService), "*"), wire.Struct(new(AuthorizeService), "*"), wire.Struct(new(BrandService), "*"), wire.Struct(new(CarrierService), "*"), wire.Struct(new(CategoryService), "*"), wire.Struct(new(CollectionService), "*"), wire.Struct(new(ConnectionService), "*"), wire.Struct(new(CustomerGroupService), "*"), wire.Struct(new(CustomerService), "*"), wire.Struct(new(ExportService), "*"), wire.Struct(new(FulfillmentService), "*"), wire.Struct(new(HistoryService), "*"), wire.Struct(new(InventoryService), "*"), wire.Struct(new(LedgerService), "*"), wire.Struct(new(MiscService), "*"), wire.Struct(new(MoneyTransactionService), "*"), wire.Struct(new(NotificationService), "*"), wire.Struct(new(OrderService), "*"), wire.Struct(new(PaymentService), "*"), wire.Struct(new(ProductService), "*"), wire.Struct(new(ProductSourceService), "*"), wire.Struct(new(PurchaseOrderService), "*"), wire.Struct(new(PurchaseRefundService), "*"), wire.Struct(new(ReceiptService), "*"), wire.Struct(new(RefundService), "*"), wire.Struct(new(ShipmentService), "*"), wire.Struct(new(ShipnowService), "*"), wire.Struct(new(StocktakeService), "*"), wire.Struct(new(SubscriptionService), "*"), wire.Struct(new(SummaryService), "*"), wire.Struct(new(SupplierService), "*"), wire.Struct(new(TradingService), "*"), wire.Struct(new(WebServerService), "*"), NewServers)
