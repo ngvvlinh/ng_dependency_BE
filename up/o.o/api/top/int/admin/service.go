@@ -76,6 +76,13 @@ type ShopService interface {
 	GetShopsByIDs(context.Context, *cm.IDsRequest) (*GetShopsResponse, error)
 }
 
+// +apix:path=/admin.User
+type UserService interface {
+	GetUser(context.Context, *cm.IDRequest) (*etop.User, error)
+	GetUsersByIDs(context.Context, *cm.IDsRequest) (*UserResponse, error)
+	GetUsers(context.Context, *GetUsersRequest) (*UserResponse, error)
+}
+
 // +apix:path=/admin.Credit
 type CreditService interface {
 	GetCredit(context.Context, *GetCreditRequest) (*etop.Credit, error)

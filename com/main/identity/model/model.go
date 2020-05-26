@@ -401,12 +401,12 @@ type User struct {
 
 	EmailVerificationSentAt time.Time
 	PhoneVerificationSentAt time.Time
-
-	IsTest      int
-	Source      user_source.UserSource
-	RefUserID   dot.ID
-	RefSaleID   dot.ID
-	WLPartnerID dot.ID
+	FullNameNorm            string
+	IsTest                  int
+	Source                  user_source.UserSource
+	RefUserID               dot.ID
+	RefSaleID               dot.ID
+	WLPartnerID             dot.ID
 
 	Rid int
 }

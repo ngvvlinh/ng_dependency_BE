@@ -25,6 +25,7 @@ func NewServers(
 	shipmentPriceService admin.ShipmentPriceService,
 	locationService admin.LocationService,
 	subscriptionService admin.SubscriptionService,
+	userService admin.UserService,
 ) admin.Servers {
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(admin.WrapMiscService(miscService.Clone)),
@@ -39,6 +40,7 @@ func NewServers(
 		service.NewShipmentPriceServiceServer(admin.WrapShipmentPriceService(shipmentPriceService.Clone)),
 		service.NewLocationServiceServer(admin.WrapLocationService(locationService.Clone)),
 		service.NewSubscriptionServiceServer(admin.WrapSubscriptionService(subscriptionService.Clone)),
+		service.NewUserServiceServer(admin.WrapUserService(userService.Clone)),
 	}
 	return servers
 }

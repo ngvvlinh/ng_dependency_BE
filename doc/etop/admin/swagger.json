@@ -2526,6 +2526,87 @@
           }
         }
       }
+    },
+    "/api/admin.User/GetUser": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "GetUser",
+        "operationId": "admin.User-GetUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baUser"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.User/GetUsers": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "GetUsers",
+        "operationId": "admin.User-GetUsers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetUsersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuUserResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.User/GetUsersByIDs": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "GetUsersByIDs",
+        "operationId": "admin.User-GetUsersByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuUserResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -3149,6 +3230,9 @@
         "source": {
           "$ref": "#/definitions/djUserSource"
         },
+        "total_shop": {
+          "type": "integer"
+        },
         "updated_at": {
           "type": "string",
           "format": "date-time"
@@ -3381,6 +3465,50 @@
         "carrier",
         "etop"
       ]
+    },
+    "kfDate": {
+      "description": "Filter by date value\n\nObject:\n\n    - {\"from\":\"2020-01-01T00:00:00Z\",\"to\":\"2020-02-01T00:00:00Z\"}\n\nString:\n\n    - \"2020-01-01T00:00:00Z,2010-02-01T00:00:00Z\":\n    - \"2020-01-01T00:00:00Z,\":\n    - \",2020-01-01T00:00:00Z\":\n",
+      "type": "string"
+    },
+    "ktCursorPageInfo": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "next": {
+          "type": "string"
+        },
+        "prev": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktCursorPaging": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
     },
     "ktDeletedResponse": {
       "type": "object",
@@ -6901,6 +7029,17 @@
         }
       }
     },
+    "xuGetUsersRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "$ref": "#/definitions/xuUsersFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
     "xuLoginAsAccountRequest": {
       "type": "object",
       "properties": {
@@ -7539,6 +7678,37 @@
         }
       }
     },
+    "xuUserResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baUser"
+          }
+        }
+      }
+    },
+    "xuUsersFilter": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "$ref": "#/definitions/kfDate"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
     "yiPaymentMethod": {
       "type": "string",
       "enum": [
@@ -7596,6 +7766,9 @@
     },
     {
       "name": "Subscription"
+    },
+    {
+      "name": "User"
     }
   ]
 }

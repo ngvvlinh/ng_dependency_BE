@@ -5090,8 +5090,8 @@ func (m *ShopExtended) SQLScanArgs(opts core.Opts) []interface{} {
 type Users []*User
 
 const __sqlUser_Table = "user"
-const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"is_test\",\"source\",\"ref_user_id\",\"ref_sale_id\",\"wl_partner_id\",\"rid\""
-const __sqlUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"agreed_tos_at\" = EXCLUDED.\"agreed_tos_at\",\"agreed_email_info_at\" = EXCLUDED.\"agreed_email_info_at\",\"email_verified_at\" = EXCLUDED.\"email_verified_at\",\"phone_verified_at\" = EXCLUDED.\"phone_verified_at\",\"email_verification_sent_at\" = EXCLUDED.\"email_verification_sent_at\",\"phone_verification_sent_at\" = EXCLUDED.\"phone_verification_sent_at\",\"is_test\" = EXCLUDED.\"is_test\",\"source\" = EXCLUDED.\"source\",\"ref_user_id\" = EXCLUDED.\"ref_user_id\",\"ref_sale_id\" = EXCLUDED.\"ref_sale_id\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"full_name_norm\",\"is_test\",\"source\",\"ref_user_id\",\"ref_sale_id\",\"wl_partner_id\",\"rid\""
+const __sqlUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"email\" = EXCLUDED.\"email\",\"phone\" = EXCLUDED.\"phone\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"agreed_tos_at\" = EXCLUDED.\"agreed_tos_at\",\"agreed_email_info_at\" = EXCLUDED.\"agreed_email_info_at\",\"email_verified_at\" = EXCLUDED.\"email_verified_at\",\"phone_verified_at\" = EXCLUDED.\"phone_verified_at\",\"email_verification_sent_at\" = EXCLUDED.\"email_verification_sent_at\",\"phone_verification_sent_at\" = EXCLUDED.\"phone_verification_sent_at\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"is_test\" = EXCLUDED.\"is_test\",\"source\" = EXCLUDED.\"source\",\"ref_user_id\" = EXCLUDED.\"ref_user_id\",\"ref_sale_id\" = EXCLUDED.\"ref_sale_id\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlUser_Insert = "INSERT INTO \"user\" (" + __sqlUser_ListCols + ") VALUES"
 const __sqlUser_Select = "SELECT " + __sqlUser_ListCols + " FROM \"user\""
 const __sqlUser_Select_history = "SELECT " + __sqlUser_ListCols + " FROM history.\"user\""
@@ -5216,6 +5216,13 @@ func (m *User) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"full_name_norm": {
+			ColumnName:       "full_name_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"is_test": {
 			ColumnName:       "is_test",
 			ColumnType:       "int",
@@ -5285,6 +5292,7 @@ func (m *User) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.PhoneVerifiedAt),
 		core.Time(m.EmailVerificationSentAt),
 		core.Time(m.PhoneVerificationSentAt),
+		core.String(m.FullNameNorm),
 		core.Int(m.IsTest),
 		m.Source,
 		m.RefUserID,
@@ -5310,6 +5318,7 @@ func (m *User) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.PhoneVerifiedAt),
 		(*core.Time)(&m.EmailVerificationSentAt),
 		(*core.Time)(&m.PhoneVerificationSentAt),
+		(*core.String)(&m.FullNameNorm),
 		(*core.Int)(&m.IsTest),
 		&m.Source,
 		&m.RefUserID,
@@ -5353,7 +5362,7 @@ func (_ *Users) SQLSelect(w SQLWriter) error {
 func (m *User) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -5363,7 +5372,7 @@ func (ms Users) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(20)
+		w.WriteMarkers(21)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -5506,6 +5515,14 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.PhoneVerificationSentAt)
 	}
+	if m.FullNameNorm != "" {
+		flag = true
+		w.WriteName("full_name_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.FullNameNorm)
+	}
 	if m.IsTest != 0 {
 		flag = true
 		w.WriteName("is_test")
@@ -5564,7 +5581,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 func (m *User) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -5606,23 +5623,24 @@ func (m UserHistory) EmailVerificationSentAt() core.Interface {
 func (m UserHistory) PhoneVerificationSentAt() core.Interface {
 	return core.Interface{m["phone_verification_sent_at"]}
 }
-func (m UserHistory) IsTest() core.Interface      { return core.Interface{m["is_test"]} }
-func (m UserHistory) Source() core.Interface      { return core.Interface{m["source"]} }
-func (m UserHistory) RefUserID() core.Interface   { return core.Interface{m["ref_user_id"]} }
-func (m UserHistory) RefSaleID() core.Interface   { return core.Interface{m["ref_sale_id"]} }
-func (m UserHistory) WLPartnerID() core.Interface { return core.Interface{m["wl_partner_id"]} }
-func (m UserHistory) Rid() core.Interface         { return core.Interface{m["rid"]} }
+func (m UserHistory) FullNameNorm() core.Interface { return core.Interface{m["full_name_norm"]} }
+func (m UserHistory) IsTest() core.Interface       { return core.Interface{m["is_test"]} }
+func (m UserHistory) Source() core.Interface       { return core.Interface{m["source"]} }
+func (m UserHistory) RefUserID() core.Interface    { return core.Interface{m["ref_user_id"]} }
+func (m UserHistory) RefSaleID() core.Interface    { return core.Interface{m["ref_sale_id"]} }
+func (m UserHistory) WLPartnerID() core.Interface  { return core.Interface{m["wl_partner_id"]} }
+func (m UserHistory) Rid() core.Interface          { return core.Interface{m["rid"]} }
 
 func (m *UserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(UserHistory, 20)
+	res := make(UserHistory, 21)
 	res["id"] = data[0]
 	res["full_name"] = data[1]
 	res["short_name"] = data[2]
@@ -5637,20 +5655,21 @@ func (m *UserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["phone_verified_at"] = data[11]
 	res["email_verification_sent_at"] = data[12]
 	res["phone_verification_sent_at"] = data[13]
-	res["is_test"] = data[14]
-	res["source"] = data[15]
-	res["ref_user_id"] = data[16]
-	res["ref_sale_id"] = data[17]
-	res["wl_partner_id"] = data[18]
-	res["rid"] = data[19]
+	res["full_name_norm"] = data[14]
+	res["is_test"] = data[15]
+	res["source"] = data[16]
+	res["ref_user_id"] = data[17]
+	res["ref_sale_id"] = data[18]
+	res["wl_partner_id"] = data[19]
+	res["rid"] = data[20]
 	*m = res
 	return nil
 }
 
 func (ms *UserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	res := make(UserHistories, 0, 128)
@@ -5673,12 +5692,13 @@ func (ms *UserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["phone_verified_at"] = data[11]
 		m["email_verification_sent_at"] = data[12]
 		m["phone_verification_sent_at"] = data[13]
-		m["is_test"] = data[14]
-		m["source"] = data[15]
-		m["ref_user_id"] = data[16]
-		m["ref_sale_id"] = data[17]
-		m["wl_partner_id"] = data[18]
-		m["rid"] = data[19]
+		m["full_name_norm"] = data[14]
+		m["is_test"] = data[15]
+		m["source"] = data[16]
+		m["ref_user_id"] = data[17]
+		m["ref_sale_id"] = data[18]
+		m["wl_partner_id"] = data[19]
+		m["rid"] = data[20]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

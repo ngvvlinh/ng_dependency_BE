@@ -907,6 +907,9 @@
         "source": {
           "$ref": "#/definitions/djUserSource"
         },
+        "total_shop": {
+          "type": "integer"
+        },
         "updated_at": {
           "type": "string",
           "format": "date-time"

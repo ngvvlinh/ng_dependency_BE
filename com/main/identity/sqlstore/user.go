@@ -5,11 +5,14 @@ import (
 	"time"
 
 	"o.o/api/main/identity"
+	"o.o/api/meta"
 	"o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -28,11 +31,22 @@ func NewUserStore(db *cmsql.Database) UserStoreFactory {
 type UserStore struct {
 	query cmsql.QueryFactory
 	ft    UserFilters
+	sqlstore.Paging
 	preds []interface{}
 }
 
 func (s *UserStore) ByID(id dot.ID) *UserStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *UserStore) ByIDs(ids []dot.ID) *UserStore {
+	s.preds = append(s.preds, sq.In("id", ids))
+	return s
+}
+
+func (s *UserStore) ByCreatedAt(from time.Time, to time.Time) *UserStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at > ? AND created_at <= ?", from, to))
 	return s
 }
 
@@ -46,8 +60,18 @@ func (s *UserStore) ByEmail(email string) *UserStore {
 	return s
 }
 
+func (s *UserStore) ByNameNorm(nameNorm string) *UserStore {
+	s.preds = append(s.preds, sq.NewExpr(`"full_name_norm" @@ ?::tsquery`, nameNorm))
+	return s
+}
+
 func (s *UserStore) ByWLPartnerID(WLPartnerID dot.ID) *UserStore {
 	s.preds = append(s.preds, s.ft.ByWLPartnerID(WLPartnerID))
+	return s
+}
+
+func (s *UserStore) WithPaging(paging meta.Paging) *UserStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 

@@ -140,6 +140,14 @@ func PbUser(m *identitymodel.User) *etop.User {
 	}
 }
 
+func PbUsers(ms []*identity.User) []*etop.User {
+	res := make([]*etop.User, len(ms))
+	for i, m := range ms {
+		res[i] = Convert_core_User_To_api_User(m)
+	}
+	return res
+}
+
 func PbAccountType(t account_type.AccountType) account_type.AccountType {
 	return t
 }

@@ -16,6 +16,7 @@ import (
 	"o.o/api/top/types/etc/shipping_fee_type"
 	status3 "o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
 
@@ -110,6 +111,22 @@ type GetShopsRequest struct {
 }
 
 func (m *GetShopsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UsersFilter struct {
+	Name      string      `json:"name"`
+	Phone     string      `json:"phone"`
+	Email     string      `json:"email"`
+	CreatedAt filter.Date `json:"created_at"`
+}
+
+func (m *UsersFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetUsersRequest struct {
+	Paging  *common.CursorPaging `json:"paging"`
+	Filters *UsersFilter         `json:"filters"`
+}
+
+func (m *GetUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShopsResponse struct {
 	Paging *common.PageInfo `json:"paging"`
@@ -669,3 +686,10 @@ type UpdateShopShipmentPriceListRequest struct {
 }
 
 func (m *UpdateShopShipmentPriceListRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UserResponse struct {
+	Users  []*etop.User           `json:"users"`
+	Paging *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *UserResponse) String() string { return jsonx.MustMarshalToString(m) }

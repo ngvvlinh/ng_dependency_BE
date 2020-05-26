@@ -34,13 +34,13 @@ func (s *AccountUserStore) ByAccountID(id dot.ID) *AccountUserStore {
 	return s
 }
 
-func (s *AccountUserStore) ByUserID(id dot.ID) *AccountUserStore {
-	s.preds = append(s.preds, s.ft.ByUserID(id))
+func (s *AccountUserStore) ByUserIDs(ids []dot.ID) *AccountUserStore {
+	s.preds = append(s.preds, sq.In("user_id", ids))
 	return s
 }
 
-func (s *AccountUserStore) ByUserIDs(ids []dot.ID) *AccountUserStore {
-	s.preds = append(s.preds, sq.In("user_id", ids))
+func (s *AccountUserStore) ByUserID(id dot.ID) *AccountUserStore {
+	s.preds = append(s.preds, s.ft.ByUserID(id))
 	return s
 }
 
@@ -74,8 +74,7 @@ func (s *AccountUserStore) DeleteAccountUser(args DeleteAccountUserArgs) error {
 	}
 	return nil
 }
-
-func (s *AccountUserStore) ListAccountUserDB() ([]*identitymodel.AccountUser, error) {
+func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, error) {
 	query := s.query().Where(s.preds)
 
 	var accountUser identitymodel.AccountUsers

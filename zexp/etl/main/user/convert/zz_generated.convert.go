@@ -86,6 +86,7 @@ func convert_usermodel_User_identitymodel_User(arg *usermodel.User, out *identit
 	out.PhoneVerifiedAt = arg.PhoneVerifiedAt                 // simple assign
 	out.EmailVerificationSentAt = arg.EmailVerificationSentAt // simple assign
 	out.PhoneVerificationSentAt = arg.PhoneVerificationSentAt // simple assign
+	out.FullNameNorm = ""                                     // zero value
 	out.IsTest = 0                                            // zero value
 	out.Source = 0                                            // zero value
 	out.RefUserID = 0                                         // zero value

@@ -23,6 +23,8 @@ var _ identity.Aggregate = &Aggregate{}
 type Aggregate struct {
 	db                    *cmsql.Database
 	userStore             sqlstore.UserStoreFactory
+	affiliateStore        sqlstore.AffiliateStoreFactory
+	shopStore             sqlstore.ShopStoreFactory
 	accountStore          sqlstore.AccountStoreFactory
 	accountUserStore      sqlstore.AccountUserStoreFactory
 	xAccountAhamove       sqlstore.XAccountAhamoveStoreFactory
@@ -35,6 +37,8 @@ func NewAggregate(db com.MainDB, carrierManager carrier.Manager) *Aggregate {
 		db:                    db,
 		xAccountAhamove:       sqlstore.NewXAccountAhamoveStore(db),
 		userStore:             sqlstore.NewUserStore(db),
+		shopStore:             sqlstore.NewShopStore(db),
+		affiliateStore:        sqlstore.NewAffiliateStore(db),
 		accountStore:          sqlstore.NewAccountStore(db),
 		accountUserStore:      sqlstore.NewAccountUserStore(db),
 		shipnowCarrierManager: carrierManager,
@@ -318,7 +322,7 @@ func (a *Aggregate) CreateAffiliate(ctx context.Context, args *identity.CreateAf
 		IsTest:      args.IsTest,
 		BankAccount: args.BankAccount,
 	}
-	return a.accountStore(ctx).CreateAffiliate(_args)
+	return a.affiliateStore(ctx).CreateAffiliate(_args)
 }
 
 func (a *Aggregate) UpdateAffiliateInfo(ctx context.Context, args *identity.UpdateAffiliateInfoArgs) (*identity.Affiliate, error) {
@@ -348,7 +352,7 @@ func (a *Aggregate) UpdateAffiliateInfo(ctx context.Context, args *identity.Upda
 		Email:   emailNorm.String(),
 		Name:    args.Name,
 	}
-	return a.accountStore(ctx).UpdateAffiliate(_args)
+	return a.affiliateStore(ctx).UpdateAffiliate(_args)
 }
 
 func (a *Aggregate) UpdateAffiliateBankAccount(ctx context.Context, args *identity.UpdateAffiliateBankAccountArgs) (*identity.Affiliate, error) {
@@ -357,7 +361,7 @@ func (a *Aggregate) UpdateAffiliateBankAccount(ctx context.Context, args *identi
 		OwnerID:     args.OwnerID,
 		BankAccount: args.BankAccount,
 	}
-	return a.accountStore(ctx).UpdateAffiliate(_args)
+	return a.affiliateStore(ctx).UpdateAffiliate(_args)
 }
 
 func (a *Aggregate) DeleteAffiliate(ctx context.Context, args *identity.DeleteAffiliateArgs) error {
@@ -366,7 +370,7 @@ func (a *Aggregate) DeleteAffiliate(ctx context.Context, args *identity.DeleteAf
 			ID:      args.ID,
 			OwnerID: args.OwnerID,
 		}
-		if err := a.accountStore(ctx).DeleteAffiliate(args1); err != nil {
+		if err := a.affiliateStore(ctx).DeleteAffiliate(args1); err != nil {
 			return err
 		}
 		args2 := sqlstore.DeleteAccountUserArgs{

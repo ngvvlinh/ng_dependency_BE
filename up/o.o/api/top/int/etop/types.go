@@ -190,6 +190,7 @@ type User struct {
 	EmailVerificationSentAt dot.Time               `json:"email_verification_sent_at"`
 	PhoneVerificationSentAt dot.Time               `json:"phone_verification_sent_at"`
 	Source                  user_source.UserSource `json:"source"`
+	TotalShop               int                    `json:"total_shop"`
 }
 
 func (m *User) String() string { return jsonx.MustMarshalToString(m) }

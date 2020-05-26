@@ -254,6 +254,7 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 		AgreedTOSAt: now,
 		WLPartnerID: wl.GetWLPartnerID(ctx),
 	}
+	user.FullNameNorm = validate.NormalizeSearch(user.FullName)
 	if cmd.AgreeEmailInfo {
 		user.AgreedEmailInfoAt = now
 	}
@@ -361,6 +362,7 @@ func UpdateUserIdentifier(ctx context.Context, cmd *identitymodelx.UpdateUserIde
 
 	var user identitymodel.User
 	user.UserInner = cmd.UserInner
+	user.FullNameNorm = validate.NormalizeSearch(cmd.FullName)
 	user.Status = cmd.Status
 	user.CreatedAt = cmd.CreatedAt
 

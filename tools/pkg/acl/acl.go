@@ -502,6 +502,10 @@ var _acl = map[string]*permission.Decl{
 	"admin.Order/GetOrders":      {Type: EtopAdmin},
 	"admin.Order/GetOrdersByIDs": {Type: EtopAdmin},
 
+	"admin.User/GetUsers":      {Type: EtopAdmin},
+	"admin.User/GetUser":       {Type: EtopAdmin},
+	"admin.User/GetUsersByIDs": {Type: EtopAdmin},
+
 	"admin.Fulfillment/GetFulfillment":                 {Type: EtopAdmin},
 	"admin.Fulfillment/GetFulfillments":                {Type: EtopAdmin},
 	"admin.Fulfillment/UpdateFulfillment":              {Type: EtopAdmin},

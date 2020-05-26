@@ -11,6 +11,7 @@ import (
 	"o.o/backend/com/main/identity/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
 )
 
@@ -20,6 +21,8 @@ type QueryService struct {
 	userStore        sqlstore.UserStoreFactory
 	accountStore     sqlstore.AccountStoreFactory
 	partnerStore     sqlstore.PartnerStoreFactory
+	affiliateStore   sqlstore.AffiliateStoreFactory
+	shopStore        sqlstore.ShopStoreFactory
 	accountUserStore sqlstore.AccountUserStoreFactory
 	xAccountAhamove  sqlstore.XAccountAhamoveStoreFactory
 }
@@ -29,6 +32,8 @@ func NewQueryService(db com.MainDB) *QueryService {
 		userStore:        sqlstore.NewUserStore(db),
 		accountStore:     sqlstore.NewAccountStore(db),
 		partnerStore:     sqlstore.NewPartnerStore(db),
+		shopStore:        sqlstore.NewShopStore(db),
+		affiliateStore:   sqlstore.NewAffiliateStore(db),
 		accountUserStore: sqlstore.NewAccountUserStore(db),
 		xAccountAhamove:  sqlstore.NewXAccountAhamoveStore(db),
 	}
@@ -44,15 +49,15 @@ func QueryServiceMessageBus(q *QueryService) identity.QueryBus {
 }
 
 func (q *QueryService) GetShopByID(ctx context.Context, id dot.ID) (*identity.Shop, error) {
-	return q.accountStore(ctx).ShopByID(id).GetShop()
+	return q.shopStore(ctx).ByID(id).GetShop()
 }
 
 func (q *QueryService) ListShopsByIDs(ctx context.Context, ids []dot.ID) ([]*identity.Shop, error) {
-	return q.accountStore(ctx).ShopByIDs(ids...).ListShops()
+	return q.shopStore(ctx).ByIDs(ids...).ListShops()
 }
 
 func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.ListShopQuery) (*identity.ListShopExtendedsResponse, error) {
-	query := q.accountStore(ctx).Filters(args.Filters).WithPaging(args.Paging)
+	query := q.shopStore(ctx).Filters(args.Filters).WithPaging(args.Paging)
 	shops, err := query.ListShopExtendeds()
 	if err != nil {
 		return nil, err
@@ -65,6 +70,9 @@ func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.Lis
 
 func (q *QueryService) GetUserByID(ctx context.Context, args *identity.GetUserByIDQueryArgs) (*identity.User, error) {
 	return q.userStore(ctx).ByID(args.UserID).GetUser(ctx)
+}
+func (q *QueryService) GetUsersByIDs(ctx context.Context, ids []dot.ID) ([]*identity.User, error) {
+	return q.userStore(ctx).ByIDs(ids).ListUsers()
 }
 
 func (q *QueryService) GetUserByPhoneOrEmail(ctx context.Context, args *identity.GetUserByPhoneOrEmailArgs) (*identity.User, error) {
@@ -107,7 +115,7 @@ func (q *QueryService) GetExternalAccountAhamoveByExternalID(ctx context.Context
 }
 
 func (q *QueryService) GetAffiliateByID(ctx context.Context, id dot.ID) (*identity.Affiliate, error) {
-	return q.accountStore(ctx).AffiliateByID(id).GetAffiliate()
+	return q.affiliateStore(ctx).ByID(id).GetAffiliate()
 }
 
 func (q *QueryService) GetAffiliateWithPermission(ctx context.Context, affID dot.ID, userID dot.ID) (*identity.GetAffiliateWithPermissionResult, error) {
@@ -131,11 +139,11 @@ func (q *QueryService) GetAffiliateWithPermission(ctx context.Context, affID dot
 }
 
 func (q *QueryService) GetAffiliatesByIDs(ctx context.Context, args *identity.GetAffiliatesByIDsArgs) ([]*identity.Affiliate, error) {
-	return q.accountStore(ctx).AffiliatesByIDs(args.AffiliateIDs...).GetAffiliates()
+	return q.affiliateStore(ctx).ByIDs(args.AffiliateIDs...).ListAffiliates()
 }
 
 func (q *QueryService) GetAffiliatesByOwnerID(ctx context.Context, args *identity.GetAffiliatesByOwnerIDArgs) ([]*identity.Affiliate, error) {
-	return q.accountStore(ctx).AffiliatesByOwnerID(args.ID).GetAffiliates()
+	return q.affiliateStore(ctx).ByOwnerID(args.ID).ListAffiliates()
 }
 
 func (q *QueryService) ListPartnersForWhiteLabel(ctx context.Context, _ *meta.Empty) ([]*identity.Partner, error) {
@@ -146,12 +154,39 @@ func (q *QueryService) GetPartnerByID(ctx context.Context, args *identity.GetPar
 	return q.partnerStore(ctx).ByID(args.ID).GetPartner()
 }
 
-func (q *QueryService) GetAllAccountUsers(ctx context.Context, args *identity.GetAllAccountUsersArg) ([]*identity.AccountUser, error) {
+func (q *QueryService) GetUsers(ctx context.Context, args *identity.ListUsersArgs) (*identity.UsersResponse, error) {
+	query := q.userStore(ctx)
+
+	if args.Name != "" {
+		query = query.ByNameNorm(validate.NormalizeSearch(args.Name))
+	}
+	if args.Phone != "" {
+		_, phone, _ := validate.NormalizeEmailOrPhone(args.Phone)
+		query = query.ByPhone(phone)
+	}
+	if args.Email != "" {
+		email, _, _ := validate.NormalizeEmailOrPhone(args.Email)
+		query = query.ByEmail(email)
+	}
+	if !args.CreatedAt.IsZero() {
+		query = query.ByCreatedAt(args.CreatedAt.From.ToTime(), args.CreatedAt.To.ToTime())
+	}
+	users, err := query.WithPaging(args.Paging).ListUsers()
+	if err != nil {
+		return nil, err
+	}
+	return &identity.UsersResponse{
+		ListUsers: users,
+		Paging:    query.GetPaging(),
+	}, nil
+}
+
+func (q *QueryService) GetAllAccountsByUsers(ctx context.Context, args *identity.GetAllAccountUsersArg) ([]*identity.AccountUser, error) {
 	if len(args.UserIDs) == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing UserIDs", nil)
 	}
 
-	accUser, err := q.accountUserStore(ctx).ByUserIDs(args.UserIDs).ListAccountUserDB()
+	accUser, err := q.accountUserStore(ctx).ByUserIDs(args.UserIDs).ListAccountUserDBs()
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +194,7 @@ func (q *QueryService) GetAllAccountUsers(ctx context.Context, args *identity.Ge
 	for _, accountUser := range accUser {
 		accountIDs = append(accountIDs, accountUser.AccountID)
 	}
-	accounts, err := q.accountStore(ctx).ByType(args.Type.Enum).ByAccountIds(accountIDs...).ListAccountDB()
+	accounts, err := q.accountStore(ctx).ByType(args.Type.Enum).ByIDs(accountIDs...).ListAccountDBs()
 
 	mapAccount := make(map[dot.ID]bool)
 	for _, account := range accounts {
@@ -175,6 +210,6 @@ func (q *QueryService) GetAllAccountUsers(ctx context.Context, args *identity.Ge
 }
 
 func (q *QueryService) GetUsersByAccount(ctx context.Context, accountID dot.ID) ([]*identity.AccountUser, error) {
-	accountUsers, err := q.accountUserStore(ctx).ByAccountID(accountID).ListAccountUserDB()
+	accountUsers, err := q.accountUserStore(ctx).ByAccountID(accountID).ListAccountUserDBs()
 	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(accountUsers), err
 }

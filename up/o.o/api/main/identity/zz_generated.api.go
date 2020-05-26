@@ -12,6 +12,7 @@ import (
 	account_type "o.o/api/top/types/etc/account_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -233,15 +234,15 @@ func (h QueryServiceHandler) HandleGetAffiliatesByOwnerID(ctx context.Context, m
 	return err
 }
 
-type GetAllAccountUsersQuery struct {
+type GetAllAccountsByUsersQuery struct {
 	UserIDs []dot.ID
 	Type    account_type.NullAccountType
 
 	Result []*AccountUser `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetAllAccountUsers(ctx context.Context, msg *GetAllAccountUsersQuery) (err error) {
-	msg.Result, err = h.inner.GetAllAccountUsers(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetAllAccountsByUsers(ctx context.Context, msg *GetAllAccountsByUsersQuery) (err error) {
+	msg.Result, err = h.inner.GetAllAccountsByUsers(msg.GetArgs(ctx))
 	return err
 }
 
@@ -335,6 +336,21 @@ func (h QueryServiceHandler) HandleGetUserByPhoneOrEmail(ctx context.Context, ms
 	return err
 }
 
+type GetUsersQuery struct {
+	Name      string
+	Phone     string
+	Email     string
+	CreatedAt filter.Date
+	Paging    meta.Paging
+
+	Result *UsersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetUsers(ctx context.Context, msg *GetUsersQuery) (err error) {
+	msg.Result, err = h.inner.GetUsers(msg.GetArgs(ctx))
+	return err
+}
+
 type GetUsersByAccountQuery struct {
 	AccountID dot.ID
 
@@ -343,6 +359,17 @@ type GetUsersByAccountQuery struct {
 
 func (h QueryServiceHandler) HandleGetUsersByAccount(ctx context.Context, msg *GetUsersByAccountQuery) (err error) {
 	msg.Result, err = h.inner.GetUsersByAccount(msg.GetArgs(ctx))
+	return err
+}
+
+type GetUsersByIDsQuery struct {
+	IDs []dot.ID
+
+	Result []*User `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetUsersByIDs(ctx context.Context, msg *GetUsersByIDsQuery) (err error) {
+	msg.Result, err = h.inner.GetUsersByIDs(msg.GetArgs(ctx))
 	return err
 }
 
@@ -408,7 +435,7 @@ func (q *GetAffiliateByIDQuery) query()                      {}
 func (q *GetAffiliateWithPermissionQuery) query()            {}
 func (q *GetAffiliatesByIDsQuery) query()                    {}
 func (q *GetAffiliatesByOwnerIDQuery) query()                {}
-func (q *GetAllAccountUsersQuery) query()                    {}
+func (q *GetAllAccountsByUsersQuery) query()                 {}
 func (q *GetExternalAccountAhamoveQuery) query()             {}
 func (q *GetExternalAccountAhamoveByExternalIDQuery) query() {}
 func (q *GetPartnerByIDQuery) query()                        {}
@@ -417,7 +444,9 @@ func (q *GetUserByEmailQuery) query()                        {}
 func (q *GetUserByIDQuery) query()                           {}
 func (q *GetUserByPhoneQuery) query()                        {}
 func (q *GetUserByPhoneOrEmailQuery) query()                 {}
+func (q *GetUsersQuery) query()                              {}
 func (q *GetUsersByAccountQuery) query()                     {}
+func (q *GetUsersByIDsQuery) query()                         {}
 func (q *ListPartnersForWhiteLabelQuery) query()             {}
 func (q *ListShopExtendedsQuery) query()                     {}
 func (q *ListShopsByIDsQuery) query()                        {}
@@ -634,7 +663,7 @@ func (q *GetAffiliatesByOwnerIDQuery) SetGetAffiliatesByOwnerIDArgs(args *GetAff
 	q.ID = args.ID
 }
 
-func (q *GetAllAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAllAccountUsersArg) {
+func (q *GetAllAccountsByUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAllAccountUsersArg) {
 	return ctx,
 		&GetAllAccountUsersArg{
 			UserIDs: q.UserIDs,
@@ -642,7 +671,7 @@ func (q *GetAllAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Contex
 		}
 }
 
-func (q *GetAllAccountUsersQuery) SetGetAllAccountUsersArg(args *GetAllAccountUsersArg) {
+func (q *GetAllAccountsByUsersQuery) SetGetAllAccountUsersArg(args *GetAllAccountUsersArg) {
 	q.UserIDs = args.UserIDs
 	q.Type = args.Type
 }
@@ -721,9 +750,33 @@ func (q *GetUserByPhoneOrEmailQuery) SetGetUserByPhoneOrEmailArgs(args *GetUserB
 	q.Email = args.Email
 }
 
+func (q *GetUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUsersArgs) {
+	return ctx,
+		&ListUsersArgs{
+			Name:      q.Name,
+			Phone:     q.Phone,
+			Email:     q.Email,
+			CreatedAt: q.CreatedAt,
+			Paging:    q.Paging,
+		}
+}
+
+func (q *GetUsersQuery) SetListUsersArgs(args *ListUsersArgs) {
+	q.Name = args.Name
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.CreatedAt = args.CreatedAt
+	q.Paging = args.Paging
+}
+
 func (q *GetUsersByAccountQuery) GetArgs(ctx context.Context) (_ context.Context, accountID dot.ID) {
 	return ctx,
 		q.AccountID
+}
+
+func (q *GetUsersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {
+	return ctx,
+		q.IDs
 }
 
 func (q *ListPartnersForWhiteLabelQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
@@ -806,7 +859,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetAffiliateWithPermission)
 	b.AddHandler(h.HandleGetAffiliatesByIDs)
 	b.AddHandler(h.HandleGetAffiliatesByOwnerID)
-	b.AddHandler(h.HandleGetAllAccountUsers)
+	b.AddHandler(h.HandleGetAllAccountsByUsers)
 	b.AddHandler(h.HandleGetExternalAccountAhamove)
 	b.AddHandler(h.HandleGetExternalAccountAhamoveByExternalID)
 	b.AddHandler(h.HandleGetPartnerByID)
@@ -815,7 +868,9 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUserByID)
 	b.AddHandler(h.HandleGetUserByPhone)
 	b.AddHandler(h.HandleGetUserByPhoneOrEmail)
+	b.AddHandler(h.HandleGetUsers)
 	b.AddHandler(h.HandleGetUsersByAccount)
+	b.AddHandler(h.HandleGetUsersByIDs)
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)
 	b.AddHandler(h.HandleListShopExtendeds)
 	b.AddHandler(h.HandleListShopsByIDs)

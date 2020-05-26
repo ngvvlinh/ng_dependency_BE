@@ -7,6 +7,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 // +gen:api
@@ -58,6 +59,8 @@ type QueryService interface {
 
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 
+	GetUsersByIDs(ctx context.Context, IDs []dot.ID) ([]*User, error)
+
 	GetUserByPhoneOrEmail(context.Context, *GetUserByPhoneOrEmailArgs) (*User, error)
 
 	// -- ExternalAccountAhamove -- //
@@ -78,9 +81,11 @@ type QueryService interface {
 
 	GetPartnerByID(context.Context, *GetPartnerByIDArgs) (*Partner, error)
 
-	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
+	GetUsers(context.Context, *ListUsersArgs) (*UsersResponse, error)
 
-	GetAllAccountUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
+	GetAllAccountsByUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
+
+	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
 }
 
 //-- queries --//
@@ -96,6 +101,19 @@ type GetAllAccountUsersArg struct {
 type GetUserByPhoneOrEmailArgs struct {
 	Phone string
 	Email string
+}
+
+type ListUsersArgs struct {
+	Name      string
+	Phone     string
+	Email     string
+	CreatedAt filter.Date
+	Paging    meta.Paging
+}
+
+type UsersResponse struct {
+	ListUsers []*User
+	Paging    meta.PageInfo
 }
 
 type GetExternalAccountAhamoveArgs struct {
