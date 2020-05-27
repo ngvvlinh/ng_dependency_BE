@@ -475,10 +475,6 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 	}
 
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		if err := a.ffmStore(ctx).CancelFulfillment(args); err != nil {
-			return err
-		}
-
 		// backward compatible
 		ffm.ConnectionID = shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 
@@ -488,8 +484,14 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 		}
 		// case shipment: cancel ffm from carrier
 		if ffm.ConnectionID != 0 {
-			return a.shimentManager.CancelFulfillment(ctx, &ffmDB)
+			if err := a.shimentManager.CancelFulfillment(ctx, &ffmDB); err != nil {
+				return err
+			}
 		}
+		if err := a.ffmStore(ctx).CancelFulfillment(args); err != nil {
+			return err
+		}
+
 		return nil
 	})
 
