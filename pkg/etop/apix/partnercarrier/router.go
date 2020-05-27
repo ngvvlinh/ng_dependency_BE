@@ -5,14 +5,14 @@ import (
 	"o.o/capi/httprpc"
 )
 
-func NewPartnerCarrierServer(m httprpc.Muxer, ss *session.Session, hooks ...httprpc.HooksBuilder) {
+type Servers []httprpc.Server
+
+func NewServers(ss *session.Session) Servers {
 	servers := httprpc.MustNewServers(
-		httprpc.ChainHooks(hooks...),
+		nil,
 		NewMiscService(ss).Clone,
 		NewShipmentConnectionService(ss).Clone,
 		NewShipmentService(ss).Clone,
 	)
-	for _, s := range servers {
-		m.Handle(s.PathPrefix(), s)
-	}
+	return servers
 }

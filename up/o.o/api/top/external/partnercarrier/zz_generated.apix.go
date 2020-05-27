@@ -49,6 +49,12 @@ func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
 
+func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -120,6 +126,12 @@ const ShipmentConnectionServicePathPrefix = "/carrier.ShipmentConnection/"
 
 func (s *ShipmentConnectionServiceServer) PathPrefix() string {
 	return ShipmentConnectionServicePathPrefix
+}
+
+func (s *ShipmentConnectionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *ShipmentConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -219,6 +231,12 @@ const ShipmentServicePathPrefix = "/carrier.Shipment/"
 
 func (s *ShipmentServiceServer) PathPrefix() string {
 	return ShipmentServicePathPrefix
+}
+
+func (s *ShipmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *ShipmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

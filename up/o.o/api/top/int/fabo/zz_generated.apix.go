@@ -48,6 +48,12 @@ func (s *CustomerConversationServiceServer) PathPrefix() string {
 	return CustomerConversationServicePathPrefix
 }
 
+func (s *CustomerConversationServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *CustomerConversationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -173,6 +179,12 @@ func (s *CustomerServiceServer) PathPrefix() string {
 	return CustomerServicePathPrefix
 }
 
+func (s *CustomerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *CustomerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -257,6 +269,12 @@ const PageServicePathPrefix = "/fabo.Page/"
 
 func (s *PageServiceServer) PathPrefix() string {
 	return PageServicePathPrefix
+}
+
+func (s *PageServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *PageServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

@@ -47,6 +47,12 @@ func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
 
+func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -105,6 +111,12 @@ const UserServicePathPrefix = "/sadmin.User/"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix
+}
+
+func (s *UserServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

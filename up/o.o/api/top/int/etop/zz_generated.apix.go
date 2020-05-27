@@ -61,6 +61,12 @@ func (s *AccountRelationshipServiceServer) PathPrefix() string {
 	return AccountRelationshipServicePathPrefix
 }
 
+func (s *AccountRelationshipServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *AccountRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -199,6 +205,12 @@ func (s *AccountServiceServer) PathPrefix() string {
 	return AccountServicePathPrefix
 }
 
+func (s *AccountServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -283,6 +295,12 @@ const AddressServicePathPrefix = "/etop.Address/"
 
 func (s *AddressServiceServer) PathPrefix() string {
 	return AddressServicePathPrefix
+}
+
+func (s *AddressServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *AddressServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -384,6 +402,12 @@ func (s *BankServiceServer) PathPrefix() string {
 	return BankServicePathPrefix
 }
 
+func (s *BankServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *BankServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -470,6 +494,12 @@ func (s *EcomServiceServer) PathPrefix() string {
 	return EcomServicePathPrefix
 }
 
+func (s *EcomServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *EcomServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -528,6 +558,12 @@ const LocationServicePathPrefix = "/etop.Location/"
 
 func (s *LocationServiceServer) PathPrefix() string {
 	return LocationServicePathPrefix
+}
+
+func (s *LocationServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *LocationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -655,6 +691,12 @@ func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
 
+func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -713,6 +755,12 @@ const UserRelationshipServicePathPrefix = "/etop.UserRelationship/"
 
 func (s *UserRelationshipServiceServer) PathPrefix() string {
 	return UserRelationshipServicePathPrefix
+}
+
+func (s *UserRelationshipServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *UserRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -825,6 +873,12 @@ const UserServicePathPrefix = "/etop.User/"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix
+}
+
+func (s *UserServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

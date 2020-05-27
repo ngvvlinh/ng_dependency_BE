@@ -67,8 +67,10 @@ import (
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/apix/partner"
+	"o.o/backend/pkg/etop/apix/partnercarrier"
 	"o.o/backend/pkg/etop/apix/shipping"
 	"o.o/backend/pkg/etop/apix/shop"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/logic/shipping_provider"
 	api2 "o.o/backend/pkg/services/affiliate/api"
@@ -78,7 +80,7 @@ import (
 
 // Injectors from wire.go:
 
-func BuildServers(db2 *cmsql.Database, cfg2 config.Config, bot2 *telebot.Channel, sd cmService.Shutdowner, eventBus capi.EventBus, rd redis.Store, s auth.Generator, shipnowCarrierManager carrier.Manager, paymentManager manager.CommandBus, authURL partner.AuthURL) []httprpc.Server {
+func BuildServers(db2 *cmsql.Database, cfg2 config.Config, bot2 *telebot.Channel, sd cmService.Shutdowner, eventBus capi.EventBus, rd redis.Store, s auth.Generator, ss2 *session.Session, shipnowCarrierManager carrier.Manager, paymentManager manager.CommandBus, authURL partner.AuthURL) []httprpc.Server {
 	miscService := &api.MiscService{}
 	identityAggregate := identity.NewAggregate(db2, shipnowCarrierManager)
 	commandBus := identity.AggregateMessageBus(identityAggregate)
@@ -431,7 +433,8 @@ func BuildServers(db2 *cmsql.Database, cfg2 config.Config, bot2 *telebot.Channel
 	xshopProductCollectionService := &xshop.ProductCollectionService{}
 	xshopProductCollectionRelationshipService := &xshop.ProductCollectionRelationshipService{}
 	xshopServers := xshop.NewServers(sd, rd, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService)
-	v2 := NewServers(apiServers, shopServers, servers2, partnerServers, xshopServers)
+	partnercarrierServers := partnercarrier.NewServers(ss2)
+	v2 := NewServers(apiServers, shopServers, servers2, partnerServers, xshopServers, partnercarrierServers)
 	return v2
 }
 

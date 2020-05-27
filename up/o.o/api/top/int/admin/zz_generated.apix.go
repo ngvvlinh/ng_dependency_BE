@@ -68,6 +68,12 @@ func (s *AccountServiceServer) PathPrefix() string {
 	return AccountServicePathPrefix
 }
 
+func (s *AccountServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -139,6 +145,12 @@ const ConnectionServicePathPrefix = "/admin.Connection/"
 
 func (s *ConnectionServiceServer) PathPrefix() string {
 	return ConnectionServicePathPrefix
+}
+
+func (s *ConnectionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -279,6 +291,12 @@ func (s *CreditServiceServer) PathPrefix() string {
 	return CreditServicePathPrefix
 }
 
+func (s *CreditServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *CreditServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -404,6 +422,12 @@ func (s *FulfillmentServiceServer) PathPrefix() string {
 	return FulfillmentServicePathPrefix
 }
 
+func (s *FulfillmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -514,6 +538,12 @@ const LocationServicePathPrefix = "/admin.Location/"
 
 func (s *LocationServiceServer) PathPrefix() string {
 	return LocationServicePathPrefix
+}
+
+func (s *LocationServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *LocationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -628,6 +658,12 @@ func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
 
+func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -699,6 +735,12 @@ const MoneyTransactionServicePathPrefix = "/admin.MoneyTransaction/"
 
 func (s *MoneyTransactionServiceServer) PathPrefix() string {
 	return MoneyTransactionServicePathPrefix
+}
+
+func (s *MoneyTransactionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *MoneyTransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -956,6 +998,12 @@ func (s *NotificationServiceServer) PathPrefix() string {
 	return NotificationServicePathPrefix
 }
 
+func (s *NotificationServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *NotificationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -1014,6 +1062,12 @@ const OrderServicePathPrefix = "/admin.Order/"
 
 func (s *OrderServiceServer) PathPrefix() string {
 	return OrderServicePathPrefix
+}
+
+func (s *OrderServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -1100,6 +1154,12 @@ const ShipmentPriceServicePathPrefix = "/admin.ShipmentPrice/"
 
 func (s *ShipmentPriceServiceServer) PathPrefix() string {
 	return ShipmentPriceServicePathPrefix
+}
+
+func (s *ShipmentPriceServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *ShipmentPriceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -1409,6 +1469,12 @@ func (s *ShopServiceServer) PathPrefix() string {
 	return ShopServicePathPrefix
 }
 
+func (s *ShopServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -1493,6 +1559,12 @@ const SubscriptionServicePathPrefix = "/admin.Subscription/"
 
 func (s *SubscriptionServiceServer) PathPrefix() string {
 	return SubscriptionServicePathPrefix
+}
+
+func (s *SubscriptionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *SubscriptionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

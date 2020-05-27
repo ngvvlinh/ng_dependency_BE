@@ -91,7 +91,11 @@ func (s chainHooks) BuildHooks() Hooks {
 }
 
 func ChainHooks(hooks ...HooksBuilder) HooksBuilder {
-	res := make(chainHooks, 0, 2*len(hooks))
+	length := 2 * len(hooks)
+	if length < 8 {
+		length = 8
+	}
+	res := make(chainHooks, 0, length)
 	for _, h := range hooks {
 		if h == nil {
 			continue
@@ -129,4 +133,12 @@ func WrapHooks(hooks Hooks) (res Hooks) {
 		hooks.ErrorServing = func(ctx context.Context, _ HookInfo, err error) (context.Context, error) { return ctx, err }
 	}
 	return hooks
+}
+
+func WithHooks(servers []Server, hooks HooksBuilder) []Server {
+	result := make([]Server, len(servers))
+	for i, s := range servers {
+		result[i] = s.WithHooks(hooks)
+	}
+	return result
 }

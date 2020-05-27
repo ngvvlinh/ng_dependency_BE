@@ -17,6 +17,7 @@ import (
 type Server interface {
 	http.Handler
 	PathPrefix() string
+	WithHooks(HooksBuilder) Server
 }
 
 type Muxer interface {

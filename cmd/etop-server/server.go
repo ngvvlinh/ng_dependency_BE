@@ -36,11 +36,9 @@ import (
 	crm "o.o/backend/pkg/etop/api/crm"
 	integration "o.o/backend/pkg/etop/api/integration"
 	sadmin "o.o/backend/pkg/etop/api/sadmin"
-	"o.o/backend/pkg/etop/apix/partnercarrier"
 	whitelabelapix "o.o/backend/pkg/etop/apix/whitelabel"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
-	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/logic/hotfix"
 	imcsvghtk "o.o/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
 	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/imcsv"
@@ -51,7 +49,6 @@ import (
 	webhookghn "o.o/backend/pkg/integration/shipping/ghn/webhook"
 	webhookghtk "o.o/backend/pkg/integration/shipping/ghtk/webhook"
 	webhookvtpost "o.o/backend/pkg/integration/shipping/vtpost/webhook"
-	"o.o/backend/tools/pkg/acl"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
@@ -105,8 +102,6 @@ func startEtopServer() *http.Server {
 			v1Mux.Handle(s.PathPrefix(), s)
 		}
 
-		extHooks := session.NewHook(acl.GetExtACL())
-		partnercarrier.NewPartnerCarrierServer(v1Mux, ss, extHooks)
 		whitelabelapix.NewWhiteLabelServer(v1Mux)
 
 		botDefault := cfg.TelegramBot.MustConnectChannel("")

@@ -111,6 +111,12 @@ func (s *AccountServiceServer) PathPrefix() string {
 	return AccountServicePathPrefix
 }
 
+func (s *AccountServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -288,6 +294,12 @@ func (s *AuthorizeServiceServer) PathPrefix() string {
 	return AuthorizeServicePathPrefix
 }
 
+func (s *AuthorizeServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *AuthorizeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -372,6 +384,12 @@ const BrandServicePathPrefix = "/shop.Brand/"
 
 func (s *BrandServiceServer) PathPrefix() string {
 	return BrandServicePathPrefix
+}
+
+func (s *BrandServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *BrandServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -499,6 +517,12 @@ func (s *CarrierServiceServer) PathPrefix() string {
 	return CarrierServicePathPrefix
 }
 
+func (s *CarrierServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *CarrierServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -624,6 +648,12 @@ func (s *CategoryServiceServer) PathPrefix() string {
 	return CategoryServicePathPrefix
 }
 
+func (s *CategoryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *CategoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -736,6 +766,12 @@ func (s *CollectionServiceServer) PathPrefix() string {
 	return CollectionServicePathPrefix
 }
 
+func (s *CollectionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *CollectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -846,6 +882,12 @@ const ConnectionServicePathPrefix = "/shop.Connection/"
 
 func (s *ConnectionServiceServer) PathPrefix() string {
 	return ConnectionServicePathPrefix
+}
+
+func (s *ConnectionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -986,6 +1028,12 @@ func (s *CustomerGroupServiceServer) PathPrefix() string {
 	return CustomerGroupServicePathPrefix
 }
 
+func (s *CustomerGroupServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *CustomerGroupServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -1083,6 +1131,12 @@ const CustomerServicePathPrefix = "/shop.Customer/"
 
 func (s *CustomerServiceServer) PathPrefix() string {
 	return CustomerServicePathPrefix
+}
+
+func (s *CustomerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *CustomerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -1327,6 +1381,12 @@ func (s *ExportServiceServer) PathPrefix() string {
 	return ExportServicePathPrefix
 }
 
+func (s *ExportServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *ExportServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -1398,6 +1458,12 @@ const FulfillmentServicePathPrefix = "/shop.Fulfillment/"
 
 func (s *FulfillmentServiceServer) PathPrefix() string {
 	return FulfillmentServicePathPrefix
+}
+
+func (s *FulfillmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -1538,6 +1604,12 @@ func (s *HistoryServiceServer) PathPrefix() string {
 	return HistoryServicePathPrefix
 }
 
+func (s *HistoryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -1596,6 +1668,12 @@ const InventoryServicePathPrefix = "/shop.Inventory/"
 
 func (s *InventoryServiceServer) PathPrefix() string {
 	return InventoryServicePathPrefix
+}
+
+func (s *InventoryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *InventoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -1814,6 +1892,12 @@ func (s *LedgerServiceServer) PathPrefix() string {
 	return LedgerServicePathPrefix
 }
 
+func (s *LedgerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *LedgerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -1926,6 +2010,12 @@ func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
 
+func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -1984,6 +2074,12 @@ const MoneyTransactionServicePathPrefix = "/shop.MoneyTransaction/"
 
 func (s *MoneyTransactionServiceServer) PathPrefix() string {
 	return MoneyTransactionServicePathPrefix
+}
+
+func (s *MoneyTransactionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *MoneyTransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -2057,6 +2153,12 @@ const NotificationServicePathPrefix = "/shop.Notification/"
 
 func (s *NotificationServiceServer) PathPrefix() string {
 	return NotificationServicePathPrefix
+}
+
+func (s *NotificationServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *NotificationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -2169,6 +2271,12 @@ const OrderServicePathPrefix = "/shop.Order/"
 
 func (s *OrderServiceServer) PathPrefix() string {
 	return OrderServicePathPrefix
+}
+
+func (s *OrderServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -2387,6 +2495,12 @@ func (s *PaymentServiceServer) PathPrefix() string {
 	return PaymentServicePathPrefix
 }
 
+func (s *PaymentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *PaymentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -2458,6 +2572,12 @@ const ProductServicePathPrefix = "/shop.Product/"
 
 func (s *ProductServiceServer) PathPrefix() string {
 	return ProductServicePathPrefix
+}
+
+func (s *ProductServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *ProductServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -2806,6 +2926,12 @@ func (s *ProductSourceServiceServer) PathPrefix() string {
 	return ProductSourceServicePathPrefix
 }
 
+func (s *ProductSourceServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *ProductSourceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -2968,6 +3094,12 @@ const PurchaseOrderServicePathPrefix = "/shop.PurchaseOrder/"
 
 func (s *PurchaseOrderServiceServer) PathPrefix() string {
 	return PurchaseOrderServicePathPrefix
+}
+
+func (s *PurchaseOrderServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *PurchaseOrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -3134,6 +3266,12 @@ func (s *PurchaseRefundServiceServer) PathPrefix() string {
 	return PurchaseRefundServicePathPrefix
 }
 
+func (s *PurchaseRefundServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *PurchaseRefundServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -3270,6 +3408,12 @@ const ReceiptServicePathPrefix = "/shop.Receipt/"
 
 func (s *ReceiptServiceServer) PathPrefix() string {
 	return ReceiptServicePathPrefix
+}
+
+func (s *ReceiptServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *ReceiptServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -3410,6 +3554,12 @@ func (s *RefundServiceServer) PathPrefix() string {
 	return RefundServicePathPrefix
 }
 
+func (s *RefundServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *RefundServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -3548,6 +3698,12 @@ func (s *ShipmentServiceServer) PathPrefix() string {
 	return ShipmentServicePathPrefix
 }
 
+func (s *ShipmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *ShipmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -3632,6 +3788,12 @@ const ShipnowServicePathPrefix = "/shop.Shipnow/"
 
 func (s *ShipnowServiceServer) PathPrefix() string {
 	return ShipnowServicePathPrefix
+}
+
+func (s *ShipnowServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *ShipnowServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -3785,6 +3947,12 @@ func (s *StocktakeServiceServer) PathPrefix() string {
 	return StocktakeServicePathPrefix
 }
 
+func (s *StocktakeServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *StocktakeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -3923,6 +4091,12 @@ func (s *SubscriptionServiceServer) PathPrefix() string {
 	return SubscriptionServicePathPrefix
 }
 
+func (s *SubscriptionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *SubscriptionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -3994,6 +4168,12 @@ const SummaryServicePathPrefix = "/shop.Summary/"
 
 func (s *SummaryServiceServer) PathPrefix() string {
 	return SummaryServicePathPrefix
+}
+
+func (s *SummaryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *SummaryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -4093,6 +4273,12 @@ const SupplierServicePathPrefix = "/shop.Supplier/"
 
 func (s *SupplierServiceServer) PathPrefix() string {
 	return SupplierServicePathPrefix
+}
+
+func (s *SupplierServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *SupplierServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -4233,6 +4419,12 @@ func (s *TradingServiceServer) PathPrefix() string {
 	return TradingServicePathPrefix
 }
 
+func (s *TradingServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *TradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -4343,6 +4535,12 @@ const WebServerServicePathPrefix = "/shop.WebServer/"
 
 func (s *WebServerServiceServer) PathPrefix() string {
 	return WebServerServicePathPrefix
+}
+
+func (s *WebServerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *WebServerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

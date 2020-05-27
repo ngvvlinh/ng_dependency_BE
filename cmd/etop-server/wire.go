@@ -20,8 +20,10 @@ import (
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/apix/partner"
+	"o.o/backend/pkg/etop/apix/partnercarrier"
 	xshipping "o.o/backend/pkg/etop/apix/shipping"
 	xshop "o.o/backend/pkg/etop/apix/shop"
+	"o.o/backend/pkg/etop/authorize/session"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
 	affapi "o.o/backend/pkg/services/affiliate/api"
 	"o.o/capi"
@@ -44,6 +46,7 @@ func BuildServers(
 	eventBus capi.EventBus,
 	rd redis.Store,
 	s auth.Generator,
+	ss *session.Session,
 	shipnowCarrierManager carrier.Manager,
 	paymentManager manager.CommandBus,
 	authURL partner.AuthURL,
@@ -57,6 +60,7 @@ func BuildServers(
 		shop.WireDepsSet,
 		affapi.WireSet,
 		partner.WireSet,
+		partnercarrier.WireSet,
 		xshop.WireSet,
 		xshipping.WireSet,
 		SupportedCarrierDrivers,

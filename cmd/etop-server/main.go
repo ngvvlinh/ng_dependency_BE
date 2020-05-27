@@ -496,6 +496,7 @@ func main() {
 		eventBus,
 		redisStore,
 		authStore,
+		ss,
 		shipnowCarrierManager,
 		paymentManager,
 		partner.AuthURL(cfg.URL.Auth),

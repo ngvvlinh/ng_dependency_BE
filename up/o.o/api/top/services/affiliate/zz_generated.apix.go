@@ -51,6 +51,12 @@ func (s *AffiliateServiceServer) PathPrefix() string {
 	return AffiliateServicePathPrefix
 }
 
+func (s *AffiliateServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *AffiliateServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -215,6 +221,12 @@ func (s *ShopServiceServer) PathPrefix() string {
 	return ShopServicePathPrefix
 }
 
+func (s *ShopServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -299,6 +311,12 @@ const TradingServicePathPrefix = "/affiliate.Trading/"
 
 func (s *TradingServiceServer) PathPrefix() string {
 	return TradingServicePathPrefix
+}
+
+func (s *TradingServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *TradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -424,6 +442,12 @@ const UserServicePathPrefix = "/affiliate.User/"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix
+}
+
+func (s *UserServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {

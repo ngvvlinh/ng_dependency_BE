@@ -51,6 +51,12 @@ func (s *CrmServiceServer) PathPrefix() string {
 	return CrmServicePathPrefix
 }
 
+func (s *CrmServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *CrmServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -124,6 +130,12 @@ func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
 
+func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
@@ -182,6 +194,12 @@ const VhtServicePathPrefix = "/crm.Vht/"
 
 func (s *VhtServiceServer) PathPrefix() string {
 	return VhtServicePathPrefix
+}
+
+func (s *VhtServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *VhtServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
@@ -268,6 +286,12 @@ const VtigerServicePathPrefix = "/crm.Vtiger/"
 
 func (s *VtigerServiceServer) PathPrefix() string {
 	return VtigerServicePathPrefix
+}
+
+func (s *VtigerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
 }
 
 func (s *VtigerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
