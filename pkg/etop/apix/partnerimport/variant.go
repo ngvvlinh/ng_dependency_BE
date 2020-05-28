@@ -1,4 +1,4 @@
-package whitelabel
+package partnerimport
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error
 		if variant.ExternalProductId == "" {
 			return cm.Errorf(cm.InvalidArgument, nil, "external_product_id should not be null")
 		} else {
-			product, err := shopProductStoreFactory(ctx).ExternalID(variant.ExternalProductId).GetShopProductDB()
+			product, err := s.shopProductStoreFactory(ctx).ExternalID(variant.ExternalProductId).GetShopProductDB()
 			if err != nil {
 				return cm.Errorf(cm.InvalidArgument, err, "external_product_id is invalid")
 			}
@@ -56,19 +56,19 @@ func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error
 			DeletedAt:         variant.DeletedAt.ToTime(),
 		}
 
-		oldShopVariant, err := shopVariantStoreFactory(ctx).ExternalID(variant.ExternalId).GetShopVariantDB()
+		oldShopVariant, err := s.shopVariantStoreFactory(ctx).ExternalID(variant.ExternalId).GetShopVariantDB()
 		switch cm.ErrorCode(err) {
 		case cm.NotFound:
 			id := cm.NewID()
 			ids = append(ids, id)
 			shopVariant.VariantID = id
-			if _err := shopVariantStoreFactory(ctx).CreateShopVariantImport(shopVariant); _err != nil {
+			if _err := s.shopVariantStoreFactory(ctx).CreateShopVariantImport(shopVariant); _err != nil {
 				return _err
 			}
 		case cm.NoError:
 			shopVariant.VariantID = oldShopVariant.VariantID
 			ids = append(ids, oldShopVariant.VariantID)
-			if _err := shopVariantStoreFactory(ctx).UpdateShopVariantImport(shopVariant); _err != nil {
+			if _err := s.shopVariantStoreFactory(ctx).UpdateShopVariantImport(shopVariant); _err != nil {
 				return _err
 			}
 		default:
@@ -76,7 +76,7 @@ func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error
 		}
 	}
 
-	modelVariants, err := shopVariantStoreFactory(ctx).IDs(ids...).ListShopVariantsDB()
+	modelVariants, err := s.shopVariantStoreFactory(ctx).IDs(ids...).ListShopVariantsDB()
 	if err != nil {
 		return err
 	}

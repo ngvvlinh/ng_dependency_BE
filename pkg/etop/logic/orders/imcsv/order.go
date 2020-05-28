@@ -17,7 +17,7 @@ import (
 // - Code exists in database
 // - Variant codes
 
-func VerifyOrders(ctx context.Context, shop *identitymodel.Shop, idx imcsv.Indexer, codeMode Mode, rowOrders []*RowOrder) (errs []error, _ error) {
+func (im *Import) verifyOrders(ctx context.Context, shop *identitymodel.Shop, idx imcsv.Indexer, codeMode Mode, rowOrders []*RowOrder) (errs []error, _ error) {
 	mapCodes := make(map[string]*RowOrder)
 	codes := make([]string, len(rowOrders))
 	variantCodesMap := make(map[string]*RowOrderLine)
@@ -84,7 +84,7 @@ func VerifyOrders(ctx context.Context, shop *identitymodel.Shop, idx imcsv.Index
 			variantCodes = append(variantCodes, code)
 		}
 
-		existingVariants, err := shopVariantStore(ctx).
+		existingVariants, err := im.shopVariantStore(ctx).
 			ShopID(shop.ID).
 			FilterForImport(catalogsqlstore.ListVariantsForImportArgs{
 				Codes: variantCodes,

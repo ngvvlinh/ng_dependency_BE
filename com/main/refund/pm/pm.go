@@ -21,18 +21,21 @@ type ProcessManager struct {
 }
 
 func New(
+	eventBus bus.EventRegistry,
 	refundQ refund.QueryBus,
 	receiptQ receipting.QueryBus,
 	refundA refund.CommandBus,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		refundQuery:  refundQ,
 		receiptQuery: receiptQ,
 		refundAggr:   refundA,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (p *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.ReceiptCreating)
 	eventBus.AddEventListener(p.OrderCancelledEvent)
 }

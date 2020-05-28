@@ -18,17 +18,19 @@ type ProcessManager struct {
 	shippingQuery shipping.QueryBus
 }
 
-func New(eventB capi.EventBus, moneyTxQ moneytx.QueryBus,
+func New(eventBus bus.EventRegistry, moneyTxQ moneytx.QueryBus,
 	moneyTxA moneytx.CommandBus, shippingQ shipping.QueryBus) *ProcessManager {
-	return &ProcessManager{
-		eventBus:      eventB,
+	p := &ProcessManager{
+		eventBus:      eventBus,
 		moneyTxQuery:  moneyTxQ,
 		moneyTxAggr:   moneyTxA,
 		shippingQuery: shippingQ,
 	}
+	p.registerEvenHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEvenHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEvenHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.FulfillmentUpdating)
 	eventBus.AddEventListener(m.FulfillmentShippingFeeChanged)
 	eventBus.AddEventListener(m.MoneyTxShippingExternalDeleted)

@@ -28,22 +28,24 @@ type ProcessManager struct {
 }
 
 func New(
-	eventBus capi.EventBus,
+	eventBus bus.EventRegistry,
 	shipnowQuery shipnow.QueryBus,
 	shipnowAggrBus shipnow.CommandBus,
 	orderAggrBus ordering.CommandBus,
 	carrierManager carrier.Manager,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		eventBus:       eventBus,
 		shipnowQuery:   shipnowQuery,
 		shipnow:        shipnowAggrBus,
 		order:          orderAggrBus,
 		carrierManager: carrierManager,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.ShipnowOrderReservation)
 	eventBus.AddEventListener(m.ShipnowOrderChanged)
 	eventBus.AddEventListener(m.ShipnowCancelled)

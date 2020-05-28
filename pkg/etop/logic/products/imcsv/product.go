@@ -29,7 +29,7 @@ var maxPaging = meta.Paging{Limit: 5000}
 //   + if not exist, product information must not be empty
 // - load all categories and collections from database
 // - if any category or collection does not exist, create it and fill the id
-func loadAndCreateProducts(
+func (im *Import) loadAndCreateProducts(
 	ctx context.Context,
 	schema imcsv.Schema,
 	idx indexes,
@@ -70,7 +70,7 @@ func loadAndCreateProducts(
 			for i, p := range rowProducts {
 				productKeys[i] = p.GetProductKey()
 			}
-			products, err = loadProducts(ctx, codeMode, shop.ID, productKeys)
+			products, err = im.loadProducts(ctx, codeMode, shop.ID, productKeys)
 			if err != nil {
 				err = cm.Error(cm.Internal, "", err).
 					WithMeta("step", "product")
@@ -88,7 +88,7 @@ func loadAndCreateProducts(
 					attrNorms = append(attrNorms, product.ProductID, p.GetVariantAttrNorm())
 				}
 			}
-			variantByCode, variantByAttr, err = loadVariants(ctx, codeMode, shop.ID, codes, attrNorms)
+			variantByCode, variantByAttr, err = im.loadVariants(ctx, codeMode, shop.ID, codes, attrNorms)
 			if err != nil {
 				err = cm.Error(cm.Internal, "", err).
 					WithMeta("step", "variant")
@@ -442,8 +442,8 @@ func buildCategoryHierarchy(mapCategory map[dot.ID]*catalogmodel.ShopCategory, c
 // 	return mapCollection, nil
 // }
 
-func loadProducts(ctx context.Context, codeMode CodeMode, shopID dot.ID, keys []string) (map[string]*catalog.ShopProduct, error) {
-	s := shopProductStore(ctx).ShopID(shopID)
+func (im *Import) loadProducts(ctx context.Context, codeMode CodeMode, shopID dot.ID, keys []string) (map[string]*catalog.ShopProduct, error) {
+	s := im.shopProductStore(ctx).ShopID(shopID)
 	useCode := codeMode == CodeModeUseCode
 	if useCode {
 		s.Codes(keys...)
@@ -473,7 +473,7 @@ func loadProducts(ctx context.Context, codeMode CodeMode, shopID dot.ID, keys []
 
 // different to loadProducts, we query variants with both ed_code and
 // attr_norm_kv to make sure that there is no duplicate in variant
-func loadVariants(
+func (im *Import) loadVariants(
 	ctx context.Context,
 	codeMode CodeMode,
 	shopID dot.ID,
@@ -484,7 +484,7 @@ func loadVariants(
 	variantByAttr map[string]*catalogmodel.ShopVariant,
 	_ error,
 ) {
-	s := shopVariantStore(ctx).ShopID(shopID)
+	s := im.shopVariantStore(ctx).ShopID(shopID)
 	args := catalogsqlstore.ListShopVariantsForImportArgs{
 		Codes:     codes,
 		AttrNorms: attrNorms,

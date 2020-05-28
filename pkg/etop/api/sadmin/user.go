@@ -1,4 +1,4 @@
-package admin
+package sadmin
 
 import (
 	"context"
@@ -17,19 +17,11 @@ import (
 )
 
 type UserService struct {
-	session.Sessioner
-	ss *session.Session
-}
-
-func NewUserService(ss *session.Session) *UserService {
-	return &UserService{
-		ss: ss,
-	}
+	session.Session
 }
 
 func (s *UserService) Clone() sadmin.UserService {
 	res := *s
-	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 

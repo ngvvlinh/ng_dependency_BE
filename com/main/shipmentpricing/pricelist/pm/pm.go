@@ -13,13 +13,15 @@ type ProcessManager struct {
 	redisStore redis.Store
 }
 
-func New(redisStore redis.Store) *ProcessManager {
-	return &ProcessManager{
+func New(redisStore redis.Store, eventBus bus.EventRegistry) *ProcessManager {
+	p := &ProcessManager{
 		redisStore: redisStore,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.ShipmentPriceListActivated)
 }
 

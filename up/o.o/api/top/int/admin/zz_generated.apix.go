@@ -75,7 +75,7 @@ func (s *AccountServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 }
 
 func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -154,7 +154,7 @@ func (s *ConnectionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.
 }
 
 func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -298,7 +298,7 @@ func (s *CreditServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serv
 }
 
 func (s *CreditServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -429,7 +429,7 @@ func (s *FulfillmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc
 }
 
 func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -547,7 +547,7 @@ func (s *LocationServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Se
 }
 
 func (s *LocationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -665,7 +665,7 @@ func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server
 }
 
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -744,7 +744,7 @@ func (s *MoneyTransactionServiceServer) WithHooks(hooks httprpc.HooksBuilder) ht
 }
 
 func (s *MoneyTransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1005,7 +1005,7 @@ func (s *NotificationServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprp
 }
 
 func (s *NotificationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1071,7 +1071,7 @@ func (s *OrderServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serve
 }
 
 func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1163,7 +1163,7 @@ func (s *ShipmentPriceServiceServer) WithHooks(hooks httprpc.HooksBuilder) httpr
 }
 
 func (s *ShipmentPriceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1476,7 +1476,7 @@ func (s *ShopServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server
 }
 
 func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1568,7 +1568,7 @@ func (s *SubscriptionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprp
 }
 
 func (s *SubscriptionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {

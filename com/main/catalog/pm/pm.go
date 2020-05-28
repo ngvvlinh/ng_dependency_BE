@@ -20,18 +20,20 @@ type ProcessManager struct {
 }
 
 func New(
-	eventBusArgs capi.EventBus,
+	eventBus bus.EventRegistry,
 	catalogQuery catalog.QueryBus,
 	catalogAgg catalog.CommandBus,
 ) *ProcessManager {
-	return &ProcessManager{
-		eventBus: eventBusArgs,
+	p := &ProcessManager{
+		eventBus: eventBus,
 		catalogQ: catalogQuery,
 		catalogA: catalogAgg,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.InventoryVoucherUpdating)
 	eventBus.AddEventListener(m.InventoryVoucherCreating)
 	eventBus.AddEventListener(m.DeleteVariantSupplier)

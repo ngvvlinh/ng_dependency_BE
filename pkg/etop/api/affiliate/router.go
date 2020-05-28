@@ -8,12 +8,15 @@ import (
 // +gen:wrapper=o.o/api/top/int/affiliate
 // +gen:wrapper:package=affiliate
 
-func NewAffiliateServer(m httprpc.Muxer) {
+type Servers []httprpc.Server
+
+func NewServers(
+	miscService MiscService,
+	accountService AccountService,
+) Servers {
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
 		service.NewAccountServiceServer(WrapAccountService(accountService.Clone)),
 	}
-	for _, s := range servers {
-		m.Handle(s.PathPrefix(), s)
-	}
+	return servers
 }

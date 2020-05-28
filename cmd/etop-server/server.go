@@ -12,59 +12,82 @@ import (
 	"o.o/api/main/catalog"
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
+	"o.o/api/main/ordering"
+	"o.o/api/main/shipnow"
+	shippingcore "o.o/api/main/shipping"
+	subscriptioncore "o.o/api/subscripting/subscription"
 	webserverinternal "o.o/api/webserver"
 	"o.o/backend/cmd/etop-server/config"
-	paymentlogaggregate "o.o/backend/com/etc/logging/payment/aggregate"
-	paymentaggregate "o.o/backend/com/external/payment/payment/aggregate"
-	"o.o/backend/com/external/payment/vtpay"
 	vtpaygatewayaggregate "o.o/backend/com/external/payment/vtpay/gateway/aggregate"
 	vtpaygatewayserver "o.o/backend/com/external/payment/vtpay/gateway/server"
-	serviceordering "o.o/backend/com/main/ordering"
+	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	"o.o/backend/com/web/ecom/webserver"
 	"o.o/backend/pkg/common/apifw/httpx"
 	cmservice "o.o/backend/pkg/common/apifw/service"
 	cmwrapper "o.o/backend/pkg/common/apifw/wrapper"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/projectpath"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/sqltrace"
-	admin "o.o/backend/pkg/etop/api/admin"
-	affiliate "o.o/backend/pkg/etop/api/affiliate"
-	crm "o.o/backend/pkg/etop/api/crm"
-	integration "o.o/backend/pkg/etop/api/integration"
-	sadmin "o.o/backend/pkg/etop/api/sadmin"
-	whitelabelapix "o.o/backend/pkg/etop/apix/whitelabel"
+	"o.o/backend/pkg/etop/api/shop/imports"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
+	"o.o/backend/pkg/etop/eventstream"
 	"o.o/backend/pkg/etop/logic/hotfix"
 	imcsvghtk "o.o/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
 	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/imcsv"
 	vtpostimxlsx "o.o/backend/pkg/etop/logic/money-transaction/vtpost-imxlsx"
 	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
 	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
+	"o.o/backend/pkg/integration/shipnow/ahamove"
 	webhookahamove "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
+	"o.o/backend/pkg/integration/shipping/ghn"
 	webhookghn "o.o/backend/pkg/integration/shipping/ghn/webhook"
+	"o.o/backend/pkg/integration/shipping/ghtk"
 	webhookghtk "o.o/backend/pkg/integration/shipping/ghtk/webhook"
+	"o.o/backend/pkg/integration/shipping/vtpost"
 	webhookvtpost "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
 
-func startServers(webServerQuery webserverinternal.QueryBus, catalogQuery catalog.QueryBus, rd redis.Store, locationQueryBus location.QueryBus) []*http.Server {
-	return []*http.Server{
-		startEtopServer(),
-		startWebServer(webServerQuery, catalogQuery, rd, locationQueryBus),
-		startGHNWebhookServer(),
-		startGHTKWebhookServer(),
-		startVTPostWebhookServer(),
-		startAhamoveWebhookServer(),
-	}
+type Server struct {
+	Name string
+	*http.Server
 }
 
-func startEtopServer() *http.Server {
+func NewServers(
+	etopServer EtopServer,
+	webServer WebServer,
+	ghnServer GHNWebhookServer,
+	ghtkServer GHTKWebhookServer,
+	vtpostServer VTPostWebhookServer,
+	ahamoveServer AhamoveWebhookServer,
+) []Server {
+	svrs := []Server{
+		{"Main   ", etopServer},
+		{"Web    ", webServer},
+		{"GHN    ", ghnServer},
+		{"GHTK   ", ghtkServer},
+		{"VTPOST ", vtpostServer},
+		{"AHAMOVE", ahamoveServer},
+	}
+	return svrs
+}
+
+type EtopServer *http.Server
+
+func NewEtopServer(
+	h EtopHandlers,
+	eventStreamer *eventstream.EventStreamer,
+	vtpayGatewayServer *vtpaygatewayserver.Server,
+	ghnIm imcsvghn.Import,
+	ghtkIm imcsvghtk.Import,
+	vtpostIm vtpostimxlsx.Import,
+	shopIm imports.ShopImport,
+) EtopServer {
 	mux := http.NewServeMux()
 	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
@@ -85,24 +108,17 @@ func startEtopServer() *http.Server {
 		mux.Handle("/api/", http.StripPrefix("/api",
 			headers.ForwardHeaders(bus.Middleware(apiMux))))
 
-		servers = append(servers, sadmin.NewSadminServer(ss, hooks)...)
-		for _, s := range servers {
+		for _, s := range h.IntHandlers {
 			apiMux.Handle(s.PathPrefix(), s)
 		}
 
-		admin.NewAdminServer(apiMux)
-		affiliate.NewAffiliateServer(apiMux)
-		integration.NewIntegrationServer(apiMux)
-		crm.NewCrmServer(apiMux, cfg.Secret)
 		// /v1/
 		v1Mux := http.NewServeMux()
 		v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))
 		mux.Handle("/v1/", http.StripPrefix("/v1", headers.ForwardHeaders(v1Mux)))
-		for _, s := range serversExt {
+		for _, s := range h.ExtHandlers {
 			v1Mux.Handle(s.PathPrefix(), s)
 		}
-
-		whitelabelapix.NewWhiteLabelServer(v1Mux)
 
 		botDefault := cfg.TelegramBot.MustConnectChannel("")
 		botImport := cfg.TelegramBot.MustConnectChannel(config.ChannelImport)
@@ -114,28 +130,19 @@ func startEtopServer() *http.Server {
 			rt.Use(httpx.RecoverAndLog(botImport, false))
 			rt.Use(httpx.Auth(permission.EtopAdmin))
 
-			rt.POST("/api/admin.Import/ghn/MoneyTransactions", imcsvghn.HandleImportMoneyTransactions)
-			rt.POST("/api/admin.Import/ghtk/MoneyTransactions", imcsvghtk.HandleImportMoneyTransactions)
-			rt.POST("/api/admin.Import/vtpost/MoneyTransactions", vtpostimxlsx.HandleImportMoneyTransactions)
+			rt.POST("/api/admin.Import/ghn/MoneyTransactions", ghnIm.HandleImportMoneyTransactions)
+			rt.POST("/api/admin.Import/ghtk/MoneyTransactions", ghtkIm.HandleImportMoneyTransactions)
+			rt.POST("/api/admin.Import/vtpost/MoneyTransactions", vtpostIm.HandleImportMoneyTransactions)
 
 			// Hot-fix: trouble on 09/07/2019 (transfer money duplicate)
 			_ = hotfix.New(db)
 			rt.POST("/api/admin.Import/CreateMoneyTransactionShipping", hotfix.HandleImportMoneyTransactionManual)
-
-			imcsvghtk.Init(moneyTxAggr)
-			vtpostimxlsx.Init(moneyTxAggr)
-			imcsvghn.Init(moneyTxAggr)
 		}
 
 		// Register shop import handlers
 		{
-			rt := httpx.New()
-			mux.Handle("/api/shop.Import/", headers.ForwardHeaders(rt))
-			rt.Use(httpx.RecoverAndLog(botImport, false))
-			rt.Use(httpx.Auth(permission.Shop))
-			rt.POST("/api/shop.Import/Orders", orderimcsv.HandleImportOrders)
-			rt.POST("/api/shop.Import/Products", productimcsv.HandleShopImportProducts)
-			rt.POST("/api/shop.Import/SampleProducts", productimcsv.HandleShopImportSampleProducts)
+			mux.Handle("/api/shop.Import/", headers.ForwardHeaders(shopIm))
+			shopIm.Use(httpx.RecoverAndLog(botImport, false))
 		}
 		// Register SSE handler
 		{
@@ -149,14 +156,6 @@ func startEtopServer() *http.Server {
 			rt.GET("/api/event-stream", eventStreamer.HandleEventStream)
 		}
 		{
-			// Register vtpayClient gateway
-			paymentAggr := paymentaggregate.AggregateMessageBus(paymentaggregate.NewAggregate(db))
-			paymentLogAggr := paymentlogaggregate.NewAggregate(dbLogs)
-			vtpayAggr := vtpay.AggregateMessageBus(vtpay.NewAggregate(db, orderQuery, serviceordering.AggregateMessageBus(orderAggr), paymentAggr, vtpayClient))
-			vtpayGatewayAggr := vtpaygatewayaggregate.NewAggregate(orderQuery, serviceordering.AggregateMessageBus(orderAggr), vtpayAggr, vtpayClient)
-
-			vtpayGatewayServer := vtpaygatewayserver.New(vtpaygatewayaggregate.AggregateMessageBus(vtpayGatewayAggr), paymentLogAggr)
-
 			buildRoute := vtpaygatewayaggregate.BuildGatewayRoute
 			rt := httpx.New()
 			mux.Handle("/api/payment/vtpay/", rt)
@@ -232,20 +231,12 @@ func startEtopServer() *http.Server {
 		Addr:    cfg.HTTP.Address(),
 		Handler: handler,
 	}
-	ll.S.Infof("HTTP server listening at %v", cfg.HTTP.Address())
-
-	go func() {
-		defer ctxCancel()
-		err := svr.ListenAndServe()
-		if err != http.ErrServerClosed {
-			ll.Error("HTTP server", l.Error(err))
-		}
-		ll.Sync()
-	}()
 	return svr
 }
 
-func startWebServer(webServerQuery webserverinternal.QueryBus, catalogQuery catalog.QueryBus, rd redis.Store, locationQueryBus location.QueryBus) *http.Server {
+type WebServer *http.Server
+
+func NewWebServer(webServerQuery webserverinternal.QueryBus, catalogQuery catalog.QueryBus, subscriptionQuery subscriptioncore.QueryBus, rd redis.Store, locationQueryBus location.QueryBus) WebServer {
 	ecom := cfg.Ecom
 	c := webserver.Config{
 		MainSite: ecom.MainSite,
@@ -261,19 +252,17 @@ func startWebServer(webServerQuery webserverinternal.QueryBus, catalogQuery cata
 		Addr:    ecom.HTTP.Address(),
 		Handler: handler,
 	}
-	ll.S.Infof("Web server listening at %v", ecom.HTTP.Address())
-
-	go func() {
-		defer ctxCancel()
-		err := svr.ListenAndServe()
-		if err != http.ErrServerClosed {
-			ll.Error("Web server", l.Error(err))
-		}
-	}()
 	return svr
 }
 
-func startGHNWebhookServer() *http.Server {
+type GHNWebhookServer *http.Server
+
+func NewGHNWebhookServer(
+	shipmentManager *shippingcarrier.ShipmentManager,
+	ghnCarrier *ghn.Carrier,
+	identityQuery identity.QueryBus,
+	shippingAggr shippingcore.CommandBus,
+) GHNWebhookServer {
 	botWebhook := cfg.TelegramBot.MustConnectChannel(config.ChannelWebhook)
 
 	rt := httpx.New()
@@ -285,20 +274,17 @@ func startGHNWebhookServer() *http.Server {
 		Addr:    cfg.GHNWebhook.Address(),
 		Handler: rt,
 	}
-	ll.S.Infof("GHN Webhook server listening at %v", cfg.GHNWebhook.Address())
-
-	go func() {
-		defer ctxCancel()
-		err := svr.ListenAndServe()
-		if err != http.ErrServerClosed {
-			ll.Error("Webhook server", l.Error(err))
-		}
-		ll.Sync()
-	}()
 	return svr
 }
 
-func startGHTKWebhookServer() *http.Server {
+type GHTKWebhookServer *http.Server
+
+func NewGHTKWebhookServer(
+	shipmentManager *shippingcarrier.ShipmentManager,
+	ghtkCarrier *ghtk.Carrier,
+	identityQuery identity.QueryBus,
+	shippingAggr shippingcore.CommandBus,
+) GHTKWebhookServer {
 	botWebhook := cfg.TelegramBot.MustConnectChannel(config.ChannelWebhook)
 
 	rt := httpx.New()
@@ -310,20 +296,17 @@ func startGHTKWebhookServer() *http.Server {
 		Addr:    cfg.GHTKWebhook.Address(),
 		Handler: rt,
 	}
-	ll.S.Infof("GHTK Webhook server listening at %v", cfg.GHTKWebhook.Address())
-
-	go func() {
-		defer ctxCancel()
-		err := svr.ListenAndServe()
-		if err != http.ErrServerClosed {
-			ll.Error("Webhook GHTK server", l.Error(err))
-		}
-		ll.Sync()
-	}()
 	return svr
 }
 
-func startVTPostWebhookServer() *http.Server {
+type VTPostWebhookServer *http.Server
+
+func NewVTPostWebhookServer(
+	shipmentManager *shippingcarrier.ShipmentManager,
+	vtpostCarrier *vtpost.Carrier,
+	identityQuery identity.QueryBus,
+	shippingAggr shippingcore.CommandBus,
+) VTPostWebhookServer {
 	botWebhook := cfg.TelegramBot.MustConnectChannel(config.ChannelWebhook)
 
 	rt := httpx.New()
@@ -335,74 +318,56 @@ func startVTPostWebhookServer() *http.Server {
 		Addr:    cfg.VTPostWebhook.Address(),
 		Handler: rt,
 	}
-	ll.S.Infof("VTPost Webhook server listening at %v", cfg.VTPostWebhook.Address())
-
-	go func() {
-		defer ctxCancel()
-		err := svr.ListenAndServe()
-		if err != http.ErrServerClosed {
-			ll.Error("Webhook VTPost server", l.Error(err))
-		}
-		ll.Sync()
-	}()
 	return svr
 }
 
-func startAhamoveWebhookServer() *http.Server {
+type AhamoveWebhookServer *http.Server
+
+func NewAhamoveWebhookServer(
+	shipmentManager *shippingcarrier.ShipmentManager,
+	ahamoveCarrier *ahamove.Carrier,
+	identityQuery identity.QueryBus,
+	shipnowQuery shipnow.QueryBus,
+	shipnowAggr shipnow.CommandBus,
+	orderAggr ordering.CommandBus,
+	orderQuery ordering.QueryBus,
+	fileServer AhamoveVerificationFileServer,
+) AhamoveWebhookServer {
 	botWebhook := cfg.TelegramBot.MustConnectChannel(config.ChannelWebhook)
 
 	mux := http.NewServeMux()
 	{
 		rt := httpx.New()
 		rt.Use(httpx.RecoverAndLog(botWebhook, true))
-		webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, serviceordering.AggregateMessageBus(orderAggr), orderQuery)
+		webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, orderAggr, orderQuery)
 		webhook.Register(rt)
 
 		mux.Handle("/webhook/", rt)
 	}
-	{
-		// serve ahamove verification files
-		ahamoveRouter := httpx.New()
-		path := config.PathAhamoveUserVerification + "/:originname/:filename"
-		serveAhamoveVerificationFiles(ahamoveRouter.Router, path, http.Dir(config.PathAhamoveUserVerification))
 
-		mux.Handle(config.PathAhamoveUserVerification+"/", ahamoveRouter)
-	}
+	// serve ahamove verification files
+	mux.Handle(config.PathAhamoveUserVerification+"/", (*httpx.Router)(fileServer))
 
 	svr := &http.Server{
 		Addr:    cfg.AhamoveWebhook.Address(),
 		Handler: mux,
 	}
-	ll.S.Infof("Ahamove server listening at %v", cfg.AhamoveWebhook.Address())
-
-	go func() {
-		defer ctxCancel()
-		err := svr.ListenAndServe()
-		if err != http.ErrServerClosed {
-			ll.Error("Webhook Ahamove server", l.Error(err))
-		}
-		ll.Sync()
-	}()
 	return svr
 }
 
-func tryOnDev(err error) {
-	if err != nil {
-		if cmenv.IsDev() {
-			ll.S.Warn("DEVELOPMENT. IGNORED: ", l.Error(err))
-		} else {
-			ll.S.Fatal(err)
-		}
-	}
-}
+type AhamoveVerificationFileServer *httpx.Router
 
-func serveAhamoveVerificationFiles(rt *httprouter.Router, path string, root http.FileSystem) {
+func NewAhamoveVerificationFileServer() AhamoveVerificationFileServer {
 	// path: <UploadDirAhamoveVerification>/<originname>/<filename>.jpg
 	// filepath:
 	// user_id_front_<user.id>_<user.create_time>.jpg
 	// user_portrait_<user.id>_<user.create_time>.jpg
 	regex := regexp.MustCompile(`([0-9]+)_([0-9]+)`)
-	rt.GET(path, func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+
+	rt := httpx.New()
+	path := config.PathAhamoveUserVerification + "/:originname/:filename"
+
+	rt.Router.GET(path, func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 		originname := ps.ByName("originname")
 		fileName := ps.ByName("filename")
 		parts := regex.FindStringSubmatch(fileName)
@@ -441,4 +406,5 @@ func serveAhamoveVerificationFiles(rt *httprouter.Router, path string, root http
 		}
 		http.NotFound(w, req)
 	})
+	return rt
 }

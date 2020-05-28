@@ -600,8 +600,7 @@ func (s *OrderLogic) TryCancellingFulfillments(ctx context.Context, order *order
 
 	errs = make([]error, len(ffmToCancel))
 	for i, ffm := range ffmToCancel {
-		// https://golang.org/doc/faq#closures_and_goroutines
-		i, ffm := i, ffm
+		i, ffm := i, ffm // https://golang.org/doc/faq#closures_and_goroutines
 
 		wg.Add(1)
 		go ignoreError(func() (_err error) {

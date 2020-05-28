@@ -9,15 +9,10 @@ import (
 
 	"o.o/api/top/int/shop"
 	pbsheet "o.o/api/top/int/types/spreadsheet"
-	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/apifw/httpx"
-	"o.o/backend/pkg/common/apifw/idemp"
-	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/imcsv"
-	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/upload"
 	"o.o/capi/dot"
@@ -26,24 +21,6 @@ import (
 )
 
 var ll = l.New()
-var idempgroup *idemp.RedisGroup
-var uploader *upload.Uploader
-var shopProductStore catalogsqlstore.ShopProductStoreFactory
-var shopVariantStore catalogsqlstore.ShopVariantStoreFactory
-
-const PrefixIdemp = "IdempImportProduct"
-
-func Init(sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db *cmsql.Database) {
-	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
-	sd.Register(idempgroup.Shutdown)
-	shopProductStore = catalogsqlstore.NewShopProductStore(db)
-	shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
-
-	if ul != nil {
-		uploader = ul
-		ul.ExpectDir(model.ImportTypeShopProduct.String())
-	}
-}
 
 const (
 	MaxFilesize   = 2 * 1024 * 1024 // 2 MB
@@ -111,7 +88,7 @@ func (imp *Importer) toSpreadsheetData(idx imcsv.Indexer) *pbsheet.SpreadsheetDa
 	return imcsv.ToSpreadsheetData(imp.Schema, idx, imp.Rows, imp.LastRow)
 }
 
-func uploadFile(id dot.ID, data []byte) (*upload.StoreFileCommand, error) {
+func uploadFile(uploader *upload.Uploader, id dot.ID, data []byte) (*upload.StoreFileCommand, error) {
 	fileName := fmt.Sprintf("%v.xlsx", id)
 	uploadCmd := &upload.StoreFileCommand{
 		UploadType: model.ImportTypeShopProduct.String(),

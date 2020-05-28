@@ -1,4 +1,4 @@
-package whitelabel
+package partnerimport
 
 import (
 	"context"
@@ -31,19 +31,19 @@ func (s *ImportService) Brands(ctx context.Context, r *BrandsEndpoint) error {
 			DeletedAt:   brand.DeletedAt.ToTime(),
 		}
 
-		oldShopBrand, err := brandStoreFactory(ctx).ExternalID(brand.ExternalID).GetShopBrandDB()
+		oldShopBrand, err := s.brandStoreFactory(ctx).ExternalID(brand.ExternalID).GetShopBrandDB()
 		switch cm.ErrorCode(err) {
 		case cm.NotFound:
 			id := cm.NewID()
 			shopBrand.ID = id
 			ids = append(ids, id)
-			if _err := brandStoreFactory(ctx).CreateShopBrand(shopBrand); _err != nil {
+			if _err := s.brandStoreFactory(ctx).CreateShopBrand(shopBrand); _err != nil {
 				return err
 			}
 		case cm.NoError:
 			shopBrand.ID = oldShopBrand.ID
 			ids = append(ids, oldShopBrand.ID)
-			if _err := brandStoreFactory(ctx).ExternalID(brand.ExternalID).UpdateShopBrand(shopBrand); _err != nil {
+			if _err := s.brandStoreFactory(ctx).ExternalID(brand.ExternalID).UpdateShopBrand(shopBrand); _err != nil {
 				return err
 			}
 		default:
@@ -52,7 +52,7 @@ func (s *ImportService) Brands(ctx context.Context, r *BrandsEndpoint) error {
 
 	}
 
-	modelBrands, err := brandStoreFactory(ctx).IDs(ids...).ListShopBrandsDB()
+	modelBrands, err := s.brandStoreFactory(ctx).IDs(ids...).ListShopBrandsDB()
 	if err != nil {
 		return err
 	}

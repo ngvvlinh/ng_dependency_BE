@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/connectioning"
+	"o.o/api/main/shipping"
 	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/external/partnercarrier"
 	pbcm "o.o/api/top/types/common"
@@ -14,19 +15,15 @@ import (
 )
 
 type ShipmentService struct {
-	session.Sessioner
-	ss *session.Session
-}
+	session.Session
 
-func NewShipmentService(ss *session.Session) *ShipmentService {
-	return &ShipmentService{
-		ss: ss,
-	}
+	ConnectionQuery connectioning.QueryBus
+	ShippingAggr    shipping.CommandBus
+	ShippingQuery   shipping.QueryBus
 }
 
 func (s *ShipmentService) Clone() partnercarrier.ShipmentService {
 	res := *s
-	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 
@@ -39,9 +36,9 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 	}
 
 	query := &connectioning.ListConnectionsQuery{
-		PartnerID: s.ss.Partner().ID,
+		PartnerID: s.SS.Partner().ID,
 	}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	connIDs := []dot.ID{}
@@ -56,7 +53,7 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 		ShippingCode:  r.ShippingCode,
 		ConnectionIDs: connIDs,
 	}
-	if err := shippingQuery.Dispatch(ctx, ffmQuery); err != nil {
+	if err := s.ShippingQuery.Dispatch(ctx, ffmQuery); err != nil {
 		return nil, err
 	}
 	ffm := ffmQuery.Result
@@ -67,7 +64,7 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 		ExternalShippingNote: r.Note,
 		Weight:               r.Weight.Int(),
 	}
-	if err := shippingAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 
@@ -76,7 +73,7 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 		FulfillmentID:            ffm.ID,
 		ProviderShippingFeeLines: partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
 	}
-	if err := shippingAggr.Dispatch(ctx, cmd2); err != nil {
+	if err := s.ShippingAggr.Dispatch(ctx, cmd2); err != nil {
 		return nil, err
 	}
 	return &pbcm.UpdatedResponse{Updated: cmd.Result}, nil

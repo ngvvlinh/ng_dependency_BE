@@ -1,18 +1,32 @@
 package partnercarrier
 
 import (
-	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/common/apifw/idemp"
+	cmService "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/redis"
 	"o.o/capi/httprpc"
 )
 
+var idempgroup *idemp.RedisGroup
+
+const PrefixIdempPartnerCarrierAPI = "IdempPartnerCarrierAPI"
+
 type Servers []httprpc.Server
 
-func NewServers(ss *session.Session) Servers {
+func NewServers(
+	sd cmService.Shutdowner,
+	rd redis.Store,
+	miscService *MiscService,
+	shipmentConnectionService *ShipmentConnectionService,
+	shipmentService *ShipmentService,
+) Servers {
+	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempPartnerCarrierAPI, 0)
+	sd.Register(idempgroup.Shutdown)
+
 	servers := httprpc.MustNewServers(
-		nil,
-		NewMiscService(ss).Clone,
-		NewShipmentConnectionService(ss).Clone,
-		NewShipmentService(ss).Clone,
+		miscService.Clone,
+		shipmentConnectionService.Clone,
+		shipmentService.Clone,
 	)
 	return servers
 }

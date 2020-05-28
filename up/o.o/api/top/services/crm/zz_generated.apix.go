@@ -58,7 +58,7 @@ func (s *CrmServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server 
 }
 
 func (s *CrmServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -137,7 +137,7 @@ func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server
 }
 
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -203,7 +203,7 @@ func (s *VhtServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server 
 }
 
 func (s *VhtServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -295,7 +295,7 @@ func (s *VtigerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serv
 }
 
 func (s *VtigerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {

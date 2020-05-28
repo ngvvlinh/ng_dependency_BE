@@ -4,27 +4,19 @@ import (
 	"context"
 	"fmt"
 
-	smsing "o.o/api/etc/logging/smslog"
+	smslog "o.o/api/etc/logging/smslog"
 	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/validate"
-	"o.o/backend/pkg/integration/sms/mock"
 	"o.o/backend/pkg/integration/sms/vietguys"
 	"o.o/common/l"
 )
 
 var ll = l.New()
-var smsAggr smsing.CommandBus
-
-func Init(smsCommandBus smsing.CommandBus) {
-	smsAggr = smsCommandBus
-}
 
 type SendSMSCommand struct {
 	Phone   string
@@ -56,35 +48,31 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 }
 
 type Client struct {
-	inner      Driver
-	imgroupSMS Driver
-	bot        *telebot.Channel
+	drivers []DriverConfig
+	smsLog  smslog.CommandBus
+	bot     *telebot.Channel
 }
 
-func New(cfg Config, bot *telebot.Channel, imgroupSMSClient Driver) Client {
+type DriverConfig struct {
+	Code   string // check for whitelabel, etc.
+	Driver Driver
+}
+
+func New(cfg Config, bot *telebot.Channel, drivers []DriverConfig, smsCommandBus smslog.CommandBus) Client {
 	c := Client{
-		bot:        bot,
-		imgroupSMS: imgroupSMSClient,
+		bot:     bot,
+		drivers: drivers,
 	}
-	if cfg.Mock {
-		c.inner = mock.GetMock()
-	} else {
-		c.inner = vietguys.New(cfg.Vietguys)
-	}
-	return c
-
-}
-
-func (c Client) Register(bus bus.Bus) Client {
-	bus.AddHandlers(c.SendSMS)
 	return c
 }
 
 func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
-	client := c.inner
+	client := c.drivers[0].Driver
 	key := wl.X(ctx).Key
-	if key == drivers.ITopXKey {
-		client = c.imgroupSMS
+	for _, d := range c.drivers {
+		if key == d.Code {
+			client = d.Driver
+		}
 	}
 
 	phone, _, ok := validate.TrimTest(cmd.Phone)
@@ -94,7 +82,7 @@ func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
 
 	resp, err := client.SendSMS(ctx, phone, cmd.Content)
 	defer func() {
-		createSms := &smsing.CreateSmsLogCommand{
+		createSms := &smslog.CreateSmsLogCommand{
 			Content:    cmd.Content,
 			Phone:      cmd.Phone,
 			Status:     status3.P,
@@ -105,7 +93,7 @@ func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
 			createSms.Status = status3.Z
 			createSms.Error = err.Error()
 		}
-		if logErr := smsAggr.Dispatch(ctx, createSms); logErr != nil {
+		if logErr := c.smsLog.Dispatch(ctx, createSms); logErr != nil {
 			if _err == nil {
 				_err = logErr
 			}

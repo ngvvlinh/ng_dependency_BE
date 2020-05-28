@@ -1,4 +1,4 @@
-package whitelabel
+package partnerimport
 
 import (
 	"context"
@@ -10,8 +10,6 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/capi/dot"
 )
-
-const shopID = 1057650360222204339
 
 func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error {
 	if len(r.Products) > MaximumItems {
@@ -27,7 +25,7 @@ func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error
 		}
 
 		if product.ExternalBrandID != "" {
-			brand, err := brandStoreFactory(ctx).ExternalID(product.ExternalBrandID).GetShopBrandDB()
+			brand, err := s.brandStoreFactory(ctx).ExternalID(product.ExternalBrandID).GetShopBrandDB()
 			if err != nil {
 				return cm.Errorf(cm.InvalidArgument, err, "brand_id is invalid")
 			}
@@ -35,7 +33,7 @@ func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error
 		}
 
 		if product.ExternalCategoryID != "" {
-			category, err := categoryStoreFactory(ctx).ExternalID(product.ExternalCategoryID).GetShopCategoryDB()
+			category, err := s.categoryStoreFactory(ctx).ExternalID(product.ExternalCategoryID).GetShopCategoryDB()
 			if err != nil {
 				return cm.Errorf(cm.InvalidArgument, err, "category_id is invalid")
 			}
@@ -67,19 +65,19 @@ func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error
 			DeletedAt:          product.DeletedAt.ToTime(),
 		}
 
-		oldShopProduct, err := shopProductStoreFactory(ctx).ExternalID(product.ExternalID).GetShopProductDB()
+		oldShopProduct, err := s.shopProductStoreFactory(ctx).ExternalID(product.ExternalID).GetShopProductDB()
 		switch cm.ErrorCode(err) {
 		case cm.NotFound:
 			id := cm.NewID()
 			ids = append(ids, id)
 			shopProduct.ProductID = id
-			if _err := shopProductStoreFactory(ctx).CreateShopProductImport(shopProduct); _err != nil {
+			if _err := s.shopProductStoreFactory(ctx).CreateShopProductImport(shopProduct); _err != nil {
 				return _err
 			}
 		case cm.NoError:
 			shopProduct.ProductID = oldShopProduct.ProductID
 			ids = append(ids, oldShopProduct.ProductID)
-			if _err := shopProductStoreFactory(ctx).UpdateShopProduct(shopProduct); _err != nil {
+			if _err := s.shopProductStoreFactory(ctx).UpdateShopProduct(shopProduct); _err != nil {
 				return _err
 			}
 		default:
@@ -87,7 +85,7 @@ func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error
 		}
 	}
 
-	modelProducts, err := shopProductStoreFactory(ctx).IDs(ids...).ListShopProductsDB()
+	modelProducts, err := s.shopProductStoreFactory(ctx).IDs(ids...).ListShopProductsDB()
 	if err != nil {
 		return err
 	}

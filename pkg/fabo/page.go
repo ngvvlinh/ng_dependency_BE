@@ -20,8 +20,7 @@ import (
 )
 
 type PageService struct {
-	session.Sessioner
-	ss *session.Session
+	session.Session
 
 	faboInfo            *faboinfo.FaboInfo
 	fbExternalUserQuery fbusering.QueryBus
@@ -33,7 +32,7 @@ type PageService struct {
 }
 
 func NewPageService(
-	ss *session.Session,
+	ss session.Session,
 	faboInfo *faboinfo.FaboInfo,
 	fbUserQuery fbusering.QueryBus,
 	fbUserAggr fbusering.CommandBus,
@@ -43,7 +42,7 @@ func NewPageService(
 	fbClient *fbclient.FbClient,
 ) *PageService {
 	s := &PageService{
-		ss:                  ss,
+		Session:             ss,
 		faboInfo:            faboInfo,
 		fbExternalUserQuery: fbUserQuery,
 		fbExternalUserAggr:  fbUserAggr,
@@ -57,7 +56,6 @@ func NewPageService(
 
 func (s *PageService) Clone() fabo.PageService {
 	res := *s
-	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 
@@ -71,7 +69,7 @@ func (s *PageService) RemovePages(ctx context.Context, r *fabo.RemovePagesReques
 	}
 	disablePagesByIDsCmd := &fbpaging.DisableFbExternalPagesByExternalIDsCommand{
 		ExternalIDs: externalIDs,
-		ShopID:      s.ss.Shop().ID,
+		ShopID:      s.SS.Shop().ID,
 	}
 	if err := s.fbExternalPageAggr.Dispatch(ctx, disablePagesByIDsCmd); err != nil {
 		return nil, err
@@ -83,7 +81,7 @@ func (s *PageService) RemovePages(ctx context.Context, r *fabo.RemovePagesReques
 func (s *PageService) ListPages(ctx context.Context, r *fabo.ListPagesRequest) (*fabo.ListPagesResponse, error) {
 	paging := cmapi.CMPaging(r.Paging)
 	listFbExternalPagesQuery := &fbpaging.ListFbExternalPagesQuery{
-		ShopID:  s.ss.Shop().ID,
+		ShopID:  s.SS.Shop().ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
@@ -98,7 +96,7 @@ func (s *PageService) ListPages(ctx context.Context, r *fabo.ListPagesRequest) (
 }
 
 func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequest) (*fabo.ConnectPagesResponse, error) {
-	shopID := s.ss.Shop().ID
+	shopID := s.SS.Shop().ID
 
 	// Check accessToken is alive
 	userToken, err := s.fbClient.CallAPICheckAccessToken(r.AccessToken)

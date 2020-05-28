@@ -14,7 +14,15 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
-//-- ShipmentService --//
+type ShipmentPriceService struct {
+	ShipmentManager        *carrier.ShipmentManager
+	ShipmentPriceAggr      shipmentprice.CommandBus
+	ShipmentPriceQuery     shipmentprice.QueryBus
+	ShipmentServiceQuery   shipmentservice.QueryBus
+	ShipmentServiceAggr    shipmentservice.CommandBus
+	ShipmentPriceListAggr  pricelist.CommandBus
+	ShipmentPriceListQuery pricelist.QueryBus
+}
 
 func (s *ShipmentPriceService) Clone() *ShipmentPriceService {
 	res := *s
@@ -25,7 +33,7 @@ func (s *ShipmentPriceService) GetShipmentService(ctx context.Context, r *GetShi
 	query := &shipmentservice.GetShipmentServiceQuery{
 		ID: r.Id,
 	}
-	if err := shipmentServiceQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ShipmentServiceQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbShipmentService(query.Result)
@@ -34,7 +42,7 @@ func (s *ShipmentPriceService) GetShipmentService(ctx context.Context, r *GetShi
 
 func (s *ShipmentPriceService) GetShipmentServices(ctx context.Context, r *GetShipmentServicesEndpoint) error {
 	query := &shipmentservice.ListShipmentServicesQuery{}
-	if err := shipmentServiceQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ShipmentServiceQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &admin.GetShipmentServicesResponse{
@@ -55,7 +63,7 @@ func (s *ShipmentPriceService) CreateShipmentService(ctx context.Context, r *Cre
 		BlacklistLocations: convertpb.BlacklistLocations(r.BlacklistLocations),
 		OtherCondition:     convertpb.OtherCondition(r.OtherCondition),
 	}
-	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbShipmentService(cmd.Result)
@@ -74,7 +82,7 @@ func (s *ShipmentPriceService) UpdateShipmentService(ctx context.Context, r *Upd
 		Status:         r.Status,
 		OtherCondition: convertpb.OtherCondition(r.OtherCondition),
 	}
-	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -85,7 +93,7 @@ func (s *ShipmentPriceService) DeleteShipmentService(ctx context.Context, r *Del
 	cmd := &shipmentservice.DeleteShipmentServiceCommand{
 		ID: r.Id,
 	}
-	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}
@@ -97,7 +105,7 @@ func (s *ShipmentPriceService) UpdateShipmentServicesAvailableLocations(ctx cont
 		IDs:                r.IDs,
 		AvailableLocations: convertpb.AvailableLocations(r.AvailableLocations),
 	}
-	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
@@ -109,7 +117,7 @@ func (s *ShipmentPriceService) UpdateShipmentServicesBlacklistLocations(ctx cont
 		IDs:                r.IDs,
 		BlacklistLocations: convertpb.BlacklistLocations(r.BlacklistLocations),
 	}
-	if err := shipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
@@ -124,7 +132,7 @@ func (s *ShipmentPriceService) GetShipmentPriceList(ctx context.Context, r *GetS
 	query := &pricelist.GetShipmentPriceListQuery{
 		ID: r.Id,
 	}
-	if err := shipmentPriceListQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ShipmentPriceListQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbShipmentPriceList(query.Result)
@@ -133,7 +141,7 @@ func (s *ShipmentPriceService) GetShipmentPriceList(ctx context.Context, r *GetS
 
 func (s *ShipmentPriceService) GetShipmentPriceLists(ctx context.Context, r *GetShipmentPriceListsEndpoint) error {
 	query := &pricelist.ListShipmentPriceListQuery{}
-	if err := shipmentPriceListQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ShipmentPriceListQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &admin.GetShipmentPriceListsResponse{
@@ -148,7 +156,7 @@ func (s *ShipmentPriceService) CreateShipmentPriceList(ctx context.Context, r *C
 		Description: r.Description,
 		IsActive:    r.IsActive,
 	}
-	if err := shipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbShipmentPriceList(cmd.Result)
@@ -161,7 +169,7 @@ func (s *ShipmentPriceService) UpdateShipmentPriceList(ctx context.Context, r *U
 		Name:        r.Name,
 		Description: r.Description,
 	}
-	if err := shipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -172,7 +180,7 @@ func (s *ShipmentPriceService) ActivateShipmentPriceList(ctx context.Context, r 
 	cmd := &pricelist.ActivateShipmentPriceListCommand{
 		ID: r.Id,
 	}
-	if err := shipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -183,7 +191,7 @@ func (s *ShipmentPriceService) DeleteShipmentPriceList(ctx context.Context, r *D
 	cmd := &pricelist.DeleteShipmentPriceListCommand{
 		ID: r.Id,
 	}
-	if err := shipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}
@@ -198,7 +206,7 @@ func (s *ShipmentPriceService) GetShipmentPrice(ctx context.Context, r *GetShipm
 	query := &shipmentprice.GetShipmentPriceQuery{
 		ID: r.Id,
 	}
-	if err := shipmentPriceQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ShipmentPriceQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbShipmentPrice(query.Result)
@@ -210,7 +218,7 @@ func (s *ShipmentPriceService) GetShipmentPrices(ctx context.Context, r *GetShip
 		ShipmentPriceListID: r.ShipmentPriceListID,
 		ShipmentServiceID:   r.ShipmentServiceID,
 	}
-	if err := shipmentPriceQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ShipmentPriceQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &admin.GetShipmentPricesResponse{
@@ -232,7 +240,7 @@ func (s *ShipmentPriceService) CreateShipmentPrice(ctx context.Context, r *Creat
 		PriorityPoint:       r.PriorityPoint,
 		Details:             convertpb.PricingDetails(r.Details),
 	}
-	if err := shipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbShipmentPrice(cmd.Result)
@@ -254,7 +262,7 @@ func (s *ShipmentPriceService) UpdateShipmentPrice(ctx context.Context, r *Updat
 		Details:             convertpb.PricingDetails(r.Details),
 		Status:              r.Status,
 	}
-	if err := shipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbShipmentPrice(cmd.Result)
@@ -265,7 +273,7 @@ func (s *ShipmentPriceService) DeleteShipmentPrice(ctx context.Context, r *Delet
 	cmd := &shipmentprice.DeleteShipmentPriceCommand{
 		ID: r.Id,
 	}
-	if err := shipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}
@@ -283,7 +291,7 @@ func (s *ShipmentPriceService) UpdateShipmentPricesPriorityPoint(ctx context.Con
 	cmd := &shipmentprice.UpdateShipmentPricesPriorityPointCommand{
 		ShipmentPrices: updates,
 	}
-	if err := shipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
@@ -308,7 +316,7 @@ func (s *ShipmentPriceService) GetShippingServices(ctx context.Context, r *GetSh
 		BasketValue:         r.BasketValue,
 		CODAmount:           r.TotalCodAmount,
 	}
-	resp, err := shipmentManager.GetShippingServices(ctx, 0, args)
+	resp, err := s.ShipmentManager.GetShippingServices(ctx, 0, args)
 	if err != nil {
 		return err
 	}

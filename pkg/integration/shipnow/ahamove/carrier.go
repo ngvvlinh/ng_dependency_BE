@@ -23,25 +23,23 @@ import (
 )
 
 var _ shipnowcarrier.ShipnowCarrier = &Carrier{}
-var identityQuery identity.QueryBus
 
 type Carrier struct {
-	client   *client.Client
-	location location.QueryBus
+	client        *client.Client
+	location      location.QueryBus
+	IdentityQuery identity.QueryBus
 }
 
-func New(cfg client.Config, locationBus location.QueryBus, identityBus identity.QueryBus, urlConfig URLConfig) (*Carrier, *CarrierAccount) {
-	ahamoveClient := client.New(cfg)
-	identityQuery = identityBus
+func New(ahamoveClient *client.Client, locationBus location.QueryBus, identityBus identity.QueryBus) *Carrier {
 	c := &Carrier{
 		client:   ahamoveClient,
 		location: locationBus,
 	}
-	ca := &CarrierAccount{
-		client:    ahamoveClient,
-		urlConfig: urlConfig,
-	}
-	return c, ca
+	return c
+}
+
+func (c *Carrier) Code() carriertypes.Carrier {
+	return carriertypes.Ahamove
 }
 
 func (c *Carrier) GetServiceName(code string) (serviceName string, ok bool) {
@@ -64,17 +62,17 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 	queryShop := &identity.GetShopByIDQuery{
 		ID: cmd.ShopID,
 	}
-	if err := identityQuery.Dispatch(ctx, queryShop); err != nil {
+	if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
 		return nil, err
 	}
 	userID := queryShop.Result.OwnerID
-	if ok, err := isXAccountAhamoveVerified(ctx, userID); err != nil {
+	if ok, err := isXAccountAhamoveVerified(ctx, c.IdentityQuery, userID); err != nil {
 		return nil, err
 	} else if !ok {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng gửi yêu cầu xác thực tài khoản Ahamove trước khi tạo đơn.")
 	}
 
-	token, err := getToken(ctx, userID)
+	token, err := getToken(ctx, c.IdentityQuery, userID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
@@ -128,12 +126,12 @@ func (c *Carrier) CancelExternalShipnow(ctx context.Context, cmd *carrier.Cancel
 	queryShop := &identity.GetShopByIDQuery{
 		ID: cmd.ShopID,
 	}
-	if err := identityQuery.Dispatch(ctx, queryShop); err != nil {
+	if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
 		return err
 	}
 	userID := queryShop.Result.OwnerID
 
-	token, err := getToken(ctx, userID)
+	token, err := getToken(ctx, c.IdentityQuery, userID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
@@ -150,12 +148,12 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shipnowcarrier.G
 	queryShop := &identity.GetShopByIDQuery{
 		ID: args.ShopID,
 	}
-	if err := identityQuery.Dispatch(ctx, queryShop); err != nil {
+	if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
 		return nil, err
 	}
 	userID := queryShop.Result.OwnerID
 
-	token, err := getToken(ctx, userID)
+	token, err := getToken(ctx, c.IdentityQuery, userID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
@@ -294,7 +292,7 @@ func (c *Carrier) ValidateAndGetAddress(ctx context.Context, in *ordertypes.Addr
 	return query.Result, nil
 }
 
-func getToken(ctx context.Context, userID dot.ID) (token string, _err error) {
+func getToken(ctx context.Context, identityQuery identity.QueryBus, userID dot.ID) (token string, _err error) {
 	queryUser := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}
@@ -313,7 +311,7 @@ func getToken(ctx context.Context, userID dot.ID) (token string, _err error) {
 	return query.Result.ExternalToken, nil
 }
 
-func isXAccountAhamoveVerified(ctx context.Context, userID dot.ID) (bool, error) {
+func isXAccountAhamoveVerified(ctx context.Context, identityQuery identity.QueryBus, userID dot.ID) (bool, error) {
 	queryUser := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}

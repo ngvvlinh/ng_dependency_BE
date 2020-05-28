@@ -17,11 +17,13 @@ var (
 	ll = l.New()
 )
 
-func New(affiliateAggr affiliate.CommandBus) *ProcessManager {
-	return &ProcessManager{affiliate: affiliateAggr}
+func New(eventBus bus.EventRegistry, affiliateAggr affiliate.CommandBus) *ProcessManager {
+	p := &ProcessManager{affiliate: affiliateAggr}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (p *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.OrderPaymentSuccess)
 }
 

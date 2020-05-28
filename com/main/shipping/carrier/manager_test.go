@@ -6,9 +6,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"o.o/api/main/connectioning"
-	"o.o/api/main/location"
-	"o.o/api/main/shipmentpricing/shipmentprice"
-	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
@@ -16,22 +13,16 @@ import (
 )
 
 var (
-	shipmentManager *ShipmentManager
-	locationQS      location.QueryBus
-	connID          = dot.ID(123)
-	shopID          = dot.ID(456)
+	connID = dot.ID(123)
+	shopID = dot.ID(456)
 )
-
-func init() {
-
-}
 
 func TestShipmentManager(t *testing.T) {
 	ctx := bus.Ctx()
 	if cmenv.Env() == 0 {
 		cmenv.SetEnvironment(cmenv.EnvDev.String())
 	}
-	mockBus := bus.New()
+	mockBus, eventBus := bus.New(), bus.New()
 	mockBus.MockHandler(func(query *connectioning.GetConnectionByIDQuery) error {
 		query.Result = &connectioning.Connection{
 			ID:                 connID,
@@ -58,12 +49,19 @@ func TestShipmentManager(t *testing.T) {
 		}
 		return nil
 	})
-	connectionQS := connectioning.NewQueryBus(mockBus)
-	connectionAggr := connectioning.NewCommandBus(mockBus)
-	shipmentServiceQS := shipmentservice.NewQueryBus(mockBus)
-	shipmentPriceQS := shipmentprice.NewQueryBus(mockBus)
-	eventBus := bus.New()
-	shipmentManager = NewShipmentManager(eventBus, locationQS, connectionQS, connectionAggr, nil, shipmentServiceQS, shipmentPriceQS, false)
+	cfg := Config{
+		Endpoints: []ConfigEndpoint{
+			{
+				connection_type.ConnectionProviderGHN,
+				"/callback/ghn",
+			},
+		},
+	}
+	shipmentManager, err := MockManager(mockBus, eventBus, nil, false, cfg)
+	if err != nil {
+		panic(err)
+	}
+
 	Convey("Get Shipment driver", t, func() {
 		shipmentType, err := shipmentManager.getShipmentDriver(ctx, connID, 0)
 		So(err, ShouldBeNil)

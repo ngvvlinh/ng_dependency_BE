@@ -1,15 +1,18 @@
-package admin
+package sadmin
 
 import (
-	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/httprpc"
 )
 
-func NewSadminServer(ss *session.Session, hooks ...httprpc.HooksBuilder) []httprpc.Server {
+type Servers []httprpc.Server
+
+func NewServers(
+	miscService *MiscService,
+	userService *UserService,
+) Servers {
 	servers := httprpc.MustNewServers(
-		httprpc.ChainHooks(hooks...),
-		NewMiscService(ss).Clone,
-		NewUserService(ss).Clone,
+		miscService.Clone,
+		userService.Clone,
 	)
 	return servers
 }

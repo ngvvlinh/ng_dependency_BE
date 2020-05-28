@@ -15,20 +15,20 @@ import (
 	"o.o/capi/dot"
 )
 
-func GetCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.GetCustomerRequest) (*externaltypes.Customer, error) {
+func (s *Shopping) GetCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.GetCustomerRequest) (*externaltypes.Customer, error) {
 	query := &customering.GetCustomerQuery{
 		ID:         request.Id,
 		ShopID:     shopID,
 		Code:       request.Code,
 		ExternalID: request.ExternalId,
 	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return convertpb.PbShopCustomer(query.Result), nil
 }
 
-func ListCustomers(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomersRequest) (*externaltypes.CustomersResponse, error) {
+func (s *Shopping) ListCustomers(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomersRequest) (*externaltypes.CustomersResponse, error) {
 	paging, err := cmapi.CMCursorPaging(request.Paging)
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func ListCustomers(ctx context.Context, shopID dot.ID, request *externaltypes.Li
 		Paging:         *paging,
 		IncludeDeleted: request.IncludeDeleted,
 	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 
@@ -54,7 +54,7 @@ func ListCustomers(ctx context.Context, shopID dot.ID, request *externaltypes.Li
 	}, nil
 }
 
-func CreateCustomer(ctx context.Context, shopID dot.ID, partnerID dot.ID, request *externaltypes.CreateCustomerRequest) (*externaltypes.Customer, error) {
+func (s *Shopping) CreateCustomer(ctx context.Context, shopID dot.ID, partnerID dot.ID, request *externaltypes.CreateCustomerRequest) (*externaltypes.Customer, error) {
 	cmd := &customering.CreateCustomerCommand{
 		ExternalID:   request.ExternalId,
 		ExternalCode: request.ExternalCode,
@@ -68,13 +68,13 @@ func CreateCustomer(ctx context.Context, shopID dot.ID, partnerID dot.ID, reques
 		Phone:        request.Phone,
 		Email:        request.Email,
 	}
-	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return convertpb.PbShopCustomer(cmd.Result), nil
 }
 
-func UpdateCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateCustomerRequest) (*externaltypes.Customer, error) {
+func (s *Shopping) UpdateCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateCustomerRequest) (*externaltypes.Customer, error) {
 	cmd := &customering.UpdateCustomerCommand{
 		ID:       request.Id,
 		ShopID:   shopID,
@@ -93,26 +93,26 @@ func UpdateCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.U
 		cmd.Type = customerType
 	}
 
-	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return convertpb.PbShopCustomer(cmd.Result), nil
 }
 
-func DeleteCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.DeleteCustomerRequest) (*cm.Empty, error) {
+func (s *Shopping) DeleteCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.DeleteCustomerRequest) (*cm.Empty, error) {
 	cmd := &customering.DeleteCustomerCommand{
 		ID:         request.Id,
 		ShopID:     shopID,
 		ExternalID: request.ExternalId,
 		Code:       request.Code,
 	}
-	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return &cm.Empty{}, nil
 }
 
-func ListAddresses(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomerAddressesRequest) (*externaltypes.CustomerAddressesResponse, error) {
+func (s *Shopping) ListAddresses(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomerAddressesRequest) (*externaltypes.CustomerAddressesResponse, error) {
 	paging, err := cmapi.CMCursorPaging(request.Paging)
 	if err != nil {
 		return nil, err
@@ -127,26 +127,26 @@ func ListAddresses(ctx context.Context, shopID dot.ID, request *externaltypes.Li
 		Paging:         *paging,
 		IncludeDeleted: request.IncludeDeleted,
 	}
-	if err := addressQuery.Dispatch(ctx, query); err != nil {
+	if err := s.AddressQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return &externaltypes.CustomerAddressesResponse{
-		CustomerAddresses: convertpb.PbShopTraderAddresses(ctx, query.Result.ShopTraderAddresses, locationQuery),
+		CustomerAddresses: convertpb.PbShopTraderAddresses(ctx, query.Result.ShopTraderAddresses, s.LocationQuery),
 	}, nil
 }
 
-func GetAddress(ctx context.Context, shopID dot.ID, request *externaltypes.OrderIDRequest) (*externaltypes.CustomerAddress, error) {
+func (s *Shopping) GetAddress(ctx context.Context, shopID dot.ID, request *externaltypes.OrderIDRequest) (*externaltypes.CustomerAddress, error) {
 	query := &addressing.GetAddressByIDQuery{
 		ID:     request.Id,
 		ShopID: shopID,
 	}
-	if err := addressQuery.Dispatch(ctx, query); err != nil {
+	if err := s.AddressQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	return convertpb.PbShopTraderAddress(ctx, query.Result, locationQuery), nil
+	return convertpb.PbShopTraderAddress(ctx, query.Result, s.LocationQuery), nil
 }
 
-func CreateAddress(ctx context.Context, shopID, partnerID dot.ID, request *externaltypes.CreateCustomerAddressRequest) (*externaltypes.CustomerAddress, error) {
+func (s *Shopping) CreateAddress(ctx context.Context, shopID, partnerID dot.ID, request *externaltypes.CreateCustomerAddressRequest) (*externaltypes.CustomerAddress, error) {
 	var coordinates *types.Coordinates
 	if request.Coordinates != nil {
 		coordinates = &types.Coordinates{
@@ -170,13 +170,13 @@ func CreateAddress(ctx context.Context, shopID, partnerID dot.ID, request *exter
 		IsDefault:    false,
 		Coordinates:  coordinates,
 	}
-	if err := addressAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.AddressAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return convertpb.PbShopTraderAddress(ctx, cmd.Result, locationQuery), nil
+	return convertpb.PbShopTraderAddress(ctx, cmd.Result, s.LocationQuery), nil
 }
 
-func UpdateAddress(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateCustomerAddressRequest) (*externaltypes.CustomerAddress, error) {
+func (s *Shopping) UpdateAddress(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateCustomerAddressRequest) (*externaltypes.CustomerAddress, error) {
 	var coordinates *types.Coordinates
 	if request.Coordinates != nil {
 		coordinates = &types.Coordinates{
@@ -198,31 +198,31 @@ func UpdateAddress(ctx context.Context, shopID dot.ID, request *externaltypes.Up
 		Position:     request.Position,
 		Coordinates:  coordinates,
 	}
-	if err := addressAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.AddressAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return convertpb.PbShopTraderAddress(ctx, cmd.Result, locationQuery), nil
+	return convertpb.PbShopTraderAddress(ctx, cmd.Result, s.LocationQuery), nil
 }
 
-func DeleteAddress(ctx context.Context, shopID dot.ID, request *cm.IDRequest) (*cm.Empty, error) {
+func (s *Shopping) DeleteAddress(ctx context.Context, shopID dot.ID, request *cm.IDRequest) (*cm.Empty, error) {
 	cmd := &addressing.DeleteAddressCommand{
 		ID:     request.Id,
 		ShopID: shopID,
 	}
-	if err := addressAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.AddressAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return &cm.Empty{}, nil
 }
 
-func ListRelationshipsGroupCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomerGroupRelationshipsRequest) (*externaltypes.CustomerGroupRelationshipsResponse, error) {
+func (s *Shopping) ListRelationshipsGroupCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomerGroupRelationshipsRequest) (*externaltypes.CustomerGroupRelationshipsResponse, error) {
 	// TODO: add cursor paging
 	query := &customering.ListCustomerGroupsCustomersQuery{
 		CustomerIDs:    request.Filter.CustomerID,
 		GroupIDs:       request.Filter.GroupID,
 		IncludeDeleted: request.IncludeDeleted,
 	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return &externaltypes.CustomerGroupRelationshipsResponse{
@@ -230,41 +230,41 @@ func ListRelationshipsGroupCustomer(ctx context.Context, shopID dot.ID, request 
 	}, nil
 }
 
-func CreateRelationshipGroupCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.AddCustomerRequest) (*cm.Empty, error) {
+func (s *Shopping) CreateRelationshipGroupCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.AddCustomerRequest) (*cm.Empty, error) {
 	cmd := &customering.AddCustomersToGroupCommand{
 		ShopID:      shopID,
 		GroupID:     request.GroupID,
 		CustomerIDs: []dot.ID{request.CustomerID},
 	}
-	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return &cm.Empty{}, nil
 }
 
-func DeleteRelationshipGroupCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.RemoveCustomerRequest) (*cm.Empty, error) {
+func (s *Shopping) DeleteRelationshipGroupCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.RemoveCustomerRequest) (*cm.Empty, error) {
 	cmd := &customering.RemoveCustomersFromGroupCommand{
 		ShopID:      shopID,
 		GroupID:     request.GroupID,
 		CustomerIDs: []dot.ID{request.CustomerID},
 	}
-	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return &cm.Empty{}, nil
 }
 
-func GetGroup(ctx context.Context, shopID dot.ID, request *cm.IDRequest) (*externaltypes.CustomerGroup, error) {
+func (s *Shopping) GetGroup(ctx context.Context, shopID dot.ID, request *cm.IDRequest) (*externaltypes.CustomerGroup, error) {
 	query := &customering.GetCustomerGroupQuery{
 		ID: request.Id,
 	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return convertpb.PbCustomerGroup(query.Result), nil
 }
 
-func ListGroups(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomerGroupsRequest) (*externaltypes.CustomerGroupsResponse, error) {
+func (s *Shopping) ListGroups(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomerGroupsRequest) (*externaltypes.CustomerGroupsResponse, error) {
 	paging, err := cmapi.CMCursorPaging(request.Paging)
 	if err != nil {
 		return nil, err
@@ -274,7 +274,7 @@ func ListGroups(ctx context.Context, shopID dot.ID, request *externaltypes.ListC
 		Paging:         *paging,
 		IncludeDeleted: request.IncludeDeleted,
 	}
-	if err := customerQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return &externaltypes.CustomerGroupsResponse{
@@ -283,7 +283,7 @@ func ListGroups(ctx context.Context, shopID dot.ID, request *externaltypes.ListC
 	}, nil
 }
 
-func CreateGroup(ctx context.Context, shopID, partnerID dot.ID, request *externaltypes.CreateCustomerGroupRequest) (*externaltypes.CustomerGroup, error) {
+func (s *Shopping) CreateGroup(ctx context.Context, shopID, partnerID dot.ID, request *externaltypes.CreateCustomerGroupRequest) (*externaltypes.CustomerGroup, error) {
 	if request.Name == "" {
 		return nil, common.Errorf(common.InvalidArgument, nil, "Tên không được rỗng.")
 	}
@@ -292,13 +292,13 @@ func CreateGroup(ctx context.Context, shopID, partnerID dot.ID, request *externa
 		PartnerID: partnerID,
 		Name:      request.Name,
 	}
-	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return convertpb.PbCustomerGroup(cmd.Result), nil
 }
 
-func UpdateGroup(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateCustomerGroupRequest) (*externaltypes.CustomerGroup, error) {
+func (s *Shopping) UpdateGroup(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateCustomerGroupRequest) (*externaltypes.CustomerGroup, error) {
 	if request.Name.String == "" {
 		return nil, common.Errorf(common.InvalidArgument, nil, "Tên không được rỗng.")
 	}
@@ -306,18 +306,18 @@ func UpdateGroup(ctx context.Context, shopID dot.ID, request *externaltypes.Upda
 		ID:   request.GroupId,
 		Name: request.Name.String,
 	}
-	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return convertpb.PbCustomerGroup(cmd.Result), nil
 }
 
-func DeleteGroup(ctx context.Context, shopID dot.ID, request *cm.IDRequest) (*cm.Empty, error) {
+func (s *Shopping) DeleteGroup(ctx context.Context, shopID dot.ID, request *cm.IDRequest) (*cm.Empty, error) {
 	cmd := &customering.DeleteGroupCommand{
 		GroupID: request.Id,
 		ShopID:  shopID,
 	}
-	if err := customerAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return &cm.Empty{}, nil

@@ -20,10 +20,8 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
-var moneyTxAggr moneytx.CommandBus
-
-func Init(moneyTxA moneytx.CommandBus) {
-	moneyTxAggr = moneyTxA
+type Import struct {
+	MoneyTxAggr moneytx.CommandBus
 }
 
 type VTPostMoneyTransactionShippingExternalLine struct {
@@ -56,7 +54,7 @@ func ToMoneyTransactionShippingExternalLines(lines []*VTPostMoneyTransactionShip
 	return res
 }
 
-func HandleImportMoneyTransactions(c *httpx.Context) error {
+func (im *Import) HandleImportMoneyTransactions(c *httpx.Context) error {
 	form, err := c.MultipartForm()
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Invalid request")
@@ -145,7 +143,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 			AccountName:   accountName,
 		},
 	}
-	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
+	if err := im.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
 	c.SetResult(convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result))

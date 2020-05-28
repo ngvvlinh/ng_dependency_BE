@@ -4,11 +4,14 @@ import (
 	"context"
 
 	paymentmanager "o.o/api/external/payment/manager"
+	"o.o/api/top/types/etc/payment_provider"
 	"o.o/api/top/types/etc/payment_state"
 	"o.o/api/top/types/etc/status4"
 )
 
 type PaymentProvider interface {
+	Code() payment_provider.PaymentProvider
+
 	BuildUrlConnectPaymentGateway(context.Context, *paymentmanager.ConnectPaymentGatewayArgs) (string, error)
 
 	GetTransaction(context.Context, *paymentmanager.GetTransactionArgs) (*paymentmanager.GetTransactionResult, error)

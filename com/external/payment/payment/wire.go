@@ -1,9 +1,8 @@
-// +build wireinject
-
 package payment
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/external/payment/payment/aggregate"
 	"o.o/backend/com/external/payment/payment/query"
 )

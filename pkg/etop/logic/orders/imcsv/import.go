@@ -20,28 +20,55 @@ import (
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/try_on"
+	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	identitymodel "o.o/backend/com/main/identity/model"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	"o.o/backend/com/main/ordering/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/apifw/httpx"
+	"o.o/backend/pkg/common/apifw/idemp"
+	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/imcsv"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/tools/pkg/acl" // TODO: remove this
 	"o.o/capi/dot"
 	"o.o/common/strs"
 	"o.o/common/xerrors"
 )
 
-func HandleImportOrders(c *httpx.Context) error {
+type Import struct {
+	uploader         *upload.Uploader
+	locationBus      location.QueryBus
+	shopVariantStore catalogsqlstore.ShopVariantStoreFactory
+}
+
+func New(_locationBus location.QueryBus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db *cmsql.Database) *Import {
+	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
+	sd.Register(idempgroup.Shutdown)
+
+	im := &Import{
+		uploader:    ul,
+		locationBus: _locationBus,
+	}
+	im.shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
+	if ul != nil {
+		ul.ExpectDir(model.ImportTypeShopOrder.String())
+	}
+	return im
+}
+
+func (im *Import) HandleImportOrders(c *httpx.Context) error {
 	claim := c.Claim.(*claims.ShopClaim)
 	authorization := auth.New()
 	isTest := 0
@@ -57,7 +84,7 @@ func HandleImportOrders(c *httpx.Context) error {
 	key := shop.ID.String()
 
 	resp, _, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
-		return handleImportOrder(c.Req.Context(), c, shop, userID)
+		return im.handleImportOrder(c.Req.Context(), c, shop, userID)
 	}, "import đơn hàng")
 	if err != nil {
 		return err
@@ -72,7 +99,7 @@ func HandleImportOrders(c *httpx.Context) error {
 	return nil
 }
 
-func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, userID dot.ID) (_resp *types.ImportOrdersResponse, _err error) {
+func (im *Import) handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, userID dot.ID) (_resp *types.ImportOrdersResponse, _err error) {
 	var debugOpts Debug
 	if cmenv.NotProd() {
 		var err error
@@ -101,7 +128,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 
 	// We only store file if the file is valid.
 	importID := cm.NewIDWithTag(model.TagImport)
-	uploadCmd, err := uploadFile(importID, rawData)
+	uploadCmd, err := uploadFile(im.uploader, importID, rawData)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +245,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 	now := time.Now()
 	orders := make([]*ordermodel.Order, len(rowOrders))
 	for i, rowOrder := range rowOrders {
-		order, errs := parseRowToModel(idx, imp.Mode, shop, rowOrder, now, userID)
+		order, errs := parseRowToModel(im.locationBus, idx, imp.Mode, shop, rowOrder, now, userID)
 		if len(errs) > 0 {
 			_errs = append(_errs, errs...)
 			if len(_errs) >= MaxCellErrors {
@@ -232,7 +259,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *identitymode
 		return imp.generateErrorResponse(idx, _errs)
 	}
 
-	_errs, err = VerifyOrders(ctx, shop, idx, imp.CodeMode, rowOrders)
+	_errs, err = im.verifyOrders(ctx, shop, idx, imp.CodeMode, rowOrders)
 	if err != nil {
 		return nil, err
 	}
@@ -726,9 +753,9 @@ func parseAsGHNNoteCode(v string) (ghn_note_code.GHNNoteCode, error) {
 	}
 }
 
-func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *identitymodel.Shop, rowOrder *RowOrder, now time.Time, userID dot.ID) (_ *ordermodel.Order, _errs []error) {
+func parseRowToModel(locationBus location.QueryBus, idx imcsv.Indexer, mode Mode, shop *identitymodel.Shop, rowOrder *RowOrder, now time.Time, userID dot.ID) (_ *ordermodel.Order, _errs []error) {
 	_errs = rowOrder.Validate(idx, mode)
-	address, err := parseAddress(rowOrder)
+	address, err := parseAddress(locationBus, rowOrder)
 	if err != nil {
 		err = imcsv.CellError(idx, rowOrder.RowIndex+1, -1, err.Error())
 		_errs = append(_errs, err)
@@ -859,11 +886,11 @@ func parseCustomer(rowOrder *RowOrder) *ordermodel.OrderCustomer {
 	}
 }
 
-func parseAddress(rowOrder *RowOrder) (*ordermodel.OrderAddress, error) {
+func parseAddress(locationBus location.QueryBus, rowOrder *RowOrder) (*ordermodel.OrderAddress, error) {
 	var loc *location.LocationQueryResult
 	var err error
 	if rowOrder.ShippingProvince != "" || rowOrder.ShippingDistrict != "" || rowOrder.ShippingWard != "" {
-		loc, err = parseLocation(rowOrder)
+		loc, err = parseLocation(locationBus, rowOrder)
 		if err != nil {
 			return nil, err
 		}
@@ -907,7 +934,7 @@ func parseAddress(rowOrder *RowOrder) (*ordermodel.OrderAddress, error) {
 	return address, nil
 }
 
-func parseLocation(rowOrder *RowOrder) (*location.LocationQueryResult, error) {
+func parseLocation(locationBus location.QueryBus, rowOrder *RowOrder) (*location.LocationQueryResult, error) {
 	query := &location.FindLocationQuery{
 		Province: rowOrder.ShippingProvince,
 		District: rowOrder.ShippingDistrict,

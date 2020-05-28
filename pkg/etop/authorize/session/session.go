@@ -20,14 +20,7 @@ import (
 
 var ll = l.New()
 
-var _ Sessioner = &Session{}
-
-type Sessioner interface {
-	StartSession(ctx context.Context, perm permission.Decl, tokenStr string) (context.Context, error)
-	GetSession() *Session
-}
-
-type Session struct {
+type session struct {
 	init        bool
 	ctx         context.Context
 	sadminToken string
@@ -49,61 +42,19 @@ type Session struct {
 	isOwner      bool
 }
 
-func New(opts ...Option) *Session {
-	s := &Session{}
-	return s.MustWith(opts...)
-}
-
-func (s *Session) clone() *Session {
-	res := *s
-	return &res
-}
-
-func (s *Session) Split() (Sessioner, *Session) {
-	res := *s
-	return &res, &res
-}
-
-func (s *Session) GetSession() *Session {
-	return s
-}
-
-func (s *Session) ensureInit() {
+func (s *session) ensureInit() {
 	if !s.init {
 		panic("not init")
 	}
 }
 
-func (s *Session) ensureNotInit() {
+func (s *session) ensureNotInit() {
 	if s.init {
 		panic("already init")
 	}
 }
 
-func (s *Session) With(opts ...Option) (*Session, error) {
-	s.ensureNotInit()
-	if len(opts) == 0 {
-		return s, nil
-	}
-	res := s.clone()
-	for _, opt := range opts {
-		err := opt(res)
-		if err != nil {
-			return res, err
-		}
-	}
-	return res, nil
-}
-
-func (s *Session) MustWith(opts ...Option) *Session {
-	res, err := s.With(opts...)
-	if err != nil {
-		panic(err)
-	}
-	return res
-}
-
-func (s *Session) StartSession(ctx context.Context, perm permission.Decl, tokenStr string) (newCtx context.Context, _ error) {
+func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenStr string) (newCtx context.Context, _ error) {
 	if s.init {
 		panic("already init")
 	}
@@ -172,7 +123,7 @@ func (s *Session) StartSession(ctx context.Context, perm permission.Decl, tokenS
 	return ctx, nil
 }
 
-func (s *Session) verifyToken(
+func (s *session) verifyToken(
 	ctx context.Context,
 	perm permission.Decl,
 	tokenStr string,

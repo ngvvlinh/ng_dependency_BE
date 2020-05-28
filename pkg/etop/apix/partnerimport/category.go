@@ -1,4 +1,4 @@
-package whitelabel
+package partnerimport
 
 import (
 	"context"
@@ -23,7 +23,7 @@ func (s *ImportService) Categories(ctx context.Context, r *CategoriesEndpoint) e
 			return cm.Errorf(cm.InvalidArgument, nil, "external_id should not be null")
 		}
 		if category.ExternalParentID != "" {
-			parentCategory, err := categoryStoreFactory(ctx).ExternalID(category.ExternalParentID).GetShopCategoryDB()
+			parentCategory, err := s.categoryStoreFactory(ctx).ExternalID(category.ExternalParentID).GetShopCategoryDB()
 			if err != nil {
 				return cm.Errorf(cm.InvalidArgument, err, "external_parent_id is invalid")
 			}
@@ -42,19 +42,19 @@ func (s *ImportService) Categories(ctx context.Context, r *CategoriesEndpoint) e
 			DeletedAt:        category.DeletedAt.ToTime(),
 		}
 
-		oldCategory, err := categoryStoreFactory(ctx).ExternalID(category.ExternalID).GetShopCategoryDB()
+		oldCategory, err := s.categoryStoreFactory(ctx).ExternalID(category.ExternalID).GetShopCategoryDB()
 		switch cm.ErrorCode(err) {
 		case cm.NotFound:
 			id := cm.NewID()
 			ids = append(ids, id)
 			shopCategory.ID = id
-			if _err := categoryStoreFactory(ctx).CreateShopCategory(shopCategory); _err != nil {
+			if _err := s.categoryStoreFactory(ctx).CreateShopCategory(shopCategory); _err != nil {
 				return _err
 			}
 		case cm.NoError:
 			shopCategory.ID = oldCategory.ID
 			ids = append(ids, oldCategory.ID)
-			if _err := categoryStoreFactory(ctx).UpdateShopCategory(shopCategory); _err != nil {
+			if _err := s.categoryStoreFactory(ctx).UpdateShopCategory(shopCategory); _err != nil {
 				return _err
 			}
 		default:
@@ -62,7 +62,7 @@ func (s *ImportService) Categories(ctx context.Context, r *CategoriesEndpoint) e
 		}
 	}
 
-	modelCategories, err := categoryStoreFactory(ctx).IDs(ids...).ListShopCategoriesDB()
+	modelCategories, err := s.categoryStoreFactory(ctx).IDs(ids...).ListShopCategoriesDB()
 	if err != nil {
 		return err
 	}

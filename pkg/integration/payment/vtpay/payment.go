@@ -4,6 +4,7 @@ import (
 	"context"
 
 	paymentmanager "o.o/api/external/payment/manager"
+	"o.o/api/top/types/etc/payment_provider"
 	servicepaymentmanager "o.o/backend/com/external/payment/manager"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
@@ -21,6 +22,10 @@ func New(cfg vtpayclient.Config) *Provider {
 	return &Provider{
 		client: client,
 	}
+}
+
+func (p *Provider) Code() payment_provider.PaymentProvider {
+	return payment_provider.VTPay
 }
 
 func (p *Provider) BuildUrlConnectPaymentGateway(ctx context.Context, args *paymentmanager.ConnectPaymentGatewayArgs) (string, error) {

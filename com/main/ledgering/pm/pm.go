@@ -17,16 +17,18 @@ type ProcessManager struct {
 }
 
 func New(
-	eventBus capi.EventBus,
+	eventBus bus.EventRegistry,
 	ledgerAggregate ledgering.CommandBus,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		eventBus:        eventBus,
 		ledgerAggregate: ledgerAggregate,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.AccountCreated)
 }
 

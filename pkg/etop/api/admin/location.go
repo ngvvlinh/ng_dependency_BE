@@ -9,6 +9,11 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
+type LocationService struct {
+	LocationAggr  location.CommandBus
+	LocationQuery location.QueryBus
+}
+
 func (s *LocationService) Clone() *LocationService {
 	res := *s
 	return &res
@@ -18,7 +23,7 @@ func (s *LocationService) GetCustomRegion(ctx context.Context, r *GetCustomRegio
 	query := &location.GetCustomRegionQuery{
 		ID: r.Id,
 	}
-	if err := locationQuery.Dispatch(ctx, query); err != nil {
+	if err := s.LocationQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbCustomRegion(query.Result)
@@ -27,7 +32,7 @@ func (s *LocationService) GetCustomRegion(ctx context.Context, r *GetCustomRegio
 
 func (s *LocationService) GetCustomRegions(ctx context.Context, r *GetCustomRegionsEndpoint) error {
 	query := &location.ListCustomRegionsQuery{}
-	if err := locationQuery.Dispatch(ctx, query); err != nil {
+	if err := s.LocationQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &admin.GetCustomRegionsResponse{
@@ -42,7 +47,7 @@ func (s *LocationService) CreateCustomRegion(ctx context.Context, r *CreateCusto
 		Description:   r.Description,
 		ProvinceCodes: r.ProvinceCodes,
 	}
-	if err := locationAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.LocationAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbCustomRegion(cmd.Result)
@@ -56,7 +61,7 @@ func (s *LocationService) UpdateCustomRegion(ctx context.Context, r *UpdateCusto
 		ProvinceCodes: r.ProvinceCodes,
 		Description:   r.Description,
 	}
-	if err := locationAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.LocationAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -67,7 +72,7 @@ func (s *LocationService) DeleteCustomRegion(ctx context.Context, r *DeleteCusto
 	cmd := &location.DeleteCustomRegionCommand{
 		ID: r.Id,
 	}
-	if err := locationAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.LocationAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}

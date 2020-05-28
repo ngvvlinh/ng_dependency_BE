@@ -42,12 +42,14 @@ type InvitationAggregate struct {
 	store         sqlstore.InvitationStoreFactory
 	customerQuery customering.QueryBus
 	identityQuery identity.QueryBus
+	smsClient     sms.Client
 }
 
 func NewInvitationAggregate(
 	database *cmsql.Database, cfg invitation.Config,
 	customerQ customering.QueryBus, identityQ identity.QueryBus,
 	eventBus capi.EventBus, config config.Config,
+	smsClient sms.Client,
 ) *InvitationAggregate {
 	return &InvitationAggregate{
 		db:            database,
@@ -57,6 +59,7 @@ func NewInvitationAggregate(
 		jwtKey:        cfg.Secret,
 		customerQuery: customerQ,
 		identityQuery: identityQ,
+		smsClient:     smsClient,
 	}
 }
 
@@ -211,7 +214,7 @@ func (a *InvitationAggregate) CreateInvitation(
 				Phone:   args.Phone,
 				Content: b.String(),
 			}
-			if err := bus.Dispatch(ctx, cmd); err != nil {
+			if err := a.smsClient.SendSMS(ctx, cmd); err != nil {
 				return err
 			}
 		}

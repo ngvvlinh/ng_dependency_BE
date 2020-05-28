@@ -11,8 +11,7 @@ import (
 )
 
 type CustomerService struct {
-	session.Sessioner
-	ss *session.Session
+	session.Session
 
 	customerQuery  customering.QueryBus
 	fbUseringQuery fbusering.QueryBus
@@ -23,25 +22,24 @@ func NewCustomerService(
 	customerQ customering.QueryBus,
 	fbUseringQ fbusering.QueryBus,
 	fbUseringA fbusering.CommandBus,
-	ssParam *session.Session,
+	ssParam session.Session,
 ) *CustomerService {
 	s := &CustomerService{
 		customerQuery:  customerQ,
 		fbUseringQuery: fbUseringQ,
 		fbUseringAggr:  fbUseringA,
-		ss:             ssParam,
+		Session:        ssParam,
 	}
 	return s
 }
 
 func (s *CustomerService) Clone() fabo.CustomerService {
 	res := *s
-	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 
 func (s *CustomerService) CreateFbUserCustomer(ctx context.Context, request *fabo.CreateFbUserCustomerRequest) (*fabo.FbUserWithCustomer, error) {
-	shopID := s.ss.Shop().ID
+	shopID := s.SS.Shop().ID
 	cmd := &fbusering.CreateFbExternalUserShopCustomerCommand{
 		ShopID:     shopID,
 		ExternalID: request.ExternalID,
@@ -56,7 +54,7 @@ func (s *CustomerService) CreateFbUserCustomer(ctx context.Context, request *fab
 }
 
 func (s *CustomerService) GetFbUser(ctx context.Context, request *fabo.GetFbUserRequest) (*fabo.FbUserWithCustomer, error) {
-	shopID := s.ss.Shop().ID
+	shopID := s.SS.Shop().ID
 	query := &fbusering.GetFbExternalUserWithCustomerByExternalIDQuery{
 		ExternalID: request.ExternalID,
 		ShopID:     shopID,
@@ -68,7 +66,7 @@ func (s *CustomerService) GetFbUser(ctx context.Context, request *fabo.GetFbUser
 }
 
 func (s *CustomerService) ListFbUsers(ctx context.Context, request *fabo.ListFbUsersRequest) (*fabo.ListFbUsersResponse, error) {
-	shopID := s.ss.Shop().ID
+	shopID := s.SS.Shop().ID
 	query := &fbusering.ListFbExternalUsersQuery{
 		CustomerID: request.CustomerID,
 		ShopID:     shopID,

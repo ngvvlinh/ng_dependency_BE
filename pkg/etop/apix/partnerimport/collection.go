@@ -1,4 +1,4 @@
-package whitelabel
+package partnerimport
 
 import (
 	"context"
@@ -33,19 +33,19 @@ func (s *ImportService) Collections(ctx context.Context, r *CollectionsEndpoint)
 			UpdatedAt:   collection.UpdatedAt.ToTime(),
 		}
 
-		oldShopCollection, err := shopCollectionStoreFactory(ctx).ExternalID(collection.ExternalID).GetShopCollectionDB()
+		oldShopCollection, err := s.shopCollectionStoreFactory(ctx).ExternalID(collection.ExternalID).GetShopCollectionDB()
 		switch cm.ErrorCode(err) {
 		case cm.NotFound:
 			id := cm.NewID()
 			shopCollection.ID = id
 			ids = append(ids, id)
-			if _err := shopCollectionStoreFactory(ctx).CreateShopCollection(shopCollection); _err != nil {
+			if _err := s.shopCollectionStoreFactory(ctx).CreateShopCollection(shopCollection); _err != nil {
 				return _err
 			}
 		case cm.NoError:
 			shopCollection.ID = oldShopCollection.ID
 			ids = append(ids, oldShopCollection.ID)
-			if _err := shopCollectionStoreFactory(ctx).UpdateShopCollection(shopCollection); _err != nil {
+			if _err := s.shopCollectionStoreFactory(ctx).UpdateShopCollection(shopCollection); _err != nil {
 				return _err
 			}
 		default:
@@ -53,7 +53,7 @@ func (s *ImportService) Collections(ctx context.Context, r *CollectionsEndpoint)
 		}
 	}
 
-	modelCollections, err := shopCollectionStoreFactory(ctx).IDs(ids).ListShopCollectionsDB()
+	modelCollections, err := s.shopCollectionStoreFactory(ctx).IDs(ids).ListShopCollectionsDB()
 	if err != nil {
 		return err
 	}

@@ -31,16 +31,18 @@ type ProcessManager struct {
 	redisStore    redis.Store
 }
 
-func New(eventBus capi.EventBus, shippingQ shipping.QueryBus, shippingA shipping.CommandBus, redisS redis.Store) *ProcessManager {
-	return &ProcessManager{
+func New(eventBus bus.EventRegistry, shippingQ shipping.QueryBus, shippingA shipping.CommandBus, redisS redis.Store) *ProcessManager {
+	p := &ProcessManager{
 		eventBus:      eventBus,
 		shippingQuery: shippingQ,
 		shippingAggr:  shippingA,
 		redisStore:    redisS,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.ConnectionUpdated)
 	eventBus.AddEventListener(m.ShopConnectionUpdated)
 	eventBus.AddEventListener(m.MoneyTxShippingExternalCreated)

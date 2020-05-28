@@ -83,7 +83,7 @@ func (s *CustomerAddressServiceServer) WithHooks(hooks httprpc.HooksBuilder) htt
 }
 
 func (s *CustomerAddressServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -201,7 +201,7 @@ func (s *CustomerGroupRelationshipServiceServer) WithHooks(hooks httprpc.HooksBu
 }
 
 func (s *CustomerGroupRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -293,7 +293,7 @@ func (s *CustomerGroupServiceServer) WithHooks(hooks httprpc.HooksBuilder) httpr
 }
 
 func (s *CustomerGroupServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -411,7 +411,7 @@ func (s *CustomerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Se
 }
 
 func (s *CustomerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -529,7 +529,7 @@ func (s *FulfillmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc
 }
 
 func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -634,7 +634,7 @@ func (s *HistoryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 }
 
 func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -700,7 +700,7 @@ func (s *InventoryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.S
 }
 
 func (s *InventoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -766,7 +766,7 @@ func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server
 }
 
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -858,7 +858,7 @@ func (s *OrderServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serve
 }
 
 func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -976,7 +976,7 @@ func (s *ProductCollectionRelationshipServiceServer) WithHooks(hooks httprpc.Hoo
 }
 
 func (s *ProductCollectionRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1068,7 +1068,7 @@ func (s *ProductCollectionServiceServer) WithHooks(hooks httprpc.HooksBuilder) h
 }
 
 func (s *ProductCollectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1186,7 +1186,7 @@ func (s *ProductServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 }
 
 func (s *ProductServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1304,7 +1304,7 @@ func (s *ShippingServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Se
 }
 
 func (s *ShippingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1422,7 +1422,7 @@ func (s *ShopServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server
 }
 
 func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1501,7 +1501,7 @@ func (s *VariantServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 }
 
 func (s *VariantServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {
@@ -1619,7 +1619,7 @@ func (s *WebhookServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 }
 
 func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {

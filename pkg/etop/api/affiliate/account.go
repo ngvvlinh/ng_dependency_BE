@@ -5,45 +5,11 @@ import (
 
 	"o.o/api/main/identity"
 	pbcm "o.o/api/top/types/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
-func init() {
-	bus.AddHandlers("api",
-		miscService.VersionInfo,
-		accountService.RegisterAffiliate,
-		accountService.UpdateAffiliate,
-		accountService.UpdateAffiliateBankAccount,
-		accountService.DeleteAffiliate,
-	)
-}
-
-var (
-	identityAggr identity.CommandBus
-)
-
-func Init(identityA identity.CommandBus) {
-	identityAggr = identityA
-}
-
-type MiscService struct{}
-type AccountService struct{}
-
-var miscService = &MiscService{}
-var accountService = &AccountService{}
-
-func (s *MiscService) Clone() *MiscService {
-	res := *s
-	return &res
-}
-
-func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
-	q.Result = &pbcm.VersionInfoResponse{
-		Service: "etop.affiliate",
-		Version: "0.1",
-	}
-	return nil
+type AccountService struct {
+	IdentityAggr identity.CommandBus
 }
 
 func (s *AccountService) Clone() *AccountService {
@@ -60,7 +26,7 @@ func (s *AccountService) RegisterAffiliate(ctx context.Context, r *RegisterAffil
 		BankAccount: convertpb.BankAccountToCoreBankAccount(r.BankAccount),
 		IsTest:      r.Context.User.IsTest != 0,
 	}
-	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
@@ -76,7 +42,7 @@ func (s *AccountService) UpdateAffiliate(ctx context.Context, r *UpdateAffiliate
 		Email:   r.Email,
 		Name:    r.Name,
 	}
-	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
@@ -89,7 +55,7 @@ func (s *AccountService) UpdateAffiliateBankAccount(ctx context.Context, r *Upda
 		OwnerID:     r.Context.Affiliate.OwnerID,
 		BankAccount: convertpb.BankAccountToCoreBankAccount(r.BankAccount),
 	}
-	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
@@ -101,7 +67,7 @@ func (s *AccountService) DeleteAffiliate(ctx context.Context, r *DeleteAffiliate
 		ID:      r.Id,
 		OwnerID: r.Context.Affiliate.OwnerID,
 	}
-	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.Empty{}

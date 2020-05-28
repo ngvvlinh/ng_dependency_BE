@@ -13,20 +13,12 @@ import (
 )
 
 type MiscService struct {
-	session.Sessioner
-	ss       *session.Session
+	session.Session
 	Shipping *shipping.Shipping
-}
-
-func NewMiscService(ss *session.Session) *MiscService {
-	return &MiscService{
-		ss: ss,
-	}
 }
 
 func (s *MiscService) Clone() partnercarrier.MiscService {
 	res := *s
-	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 
@@ -35,7 +27,7 @@ func (s *MiscService) GetLocationList(ctx context.Context, q *pbcm.Empty) (*exte
 }
 
 func (s *MiscService) CurrentAccount(ctx context.Context, q *pbcm.Empty) (*externaltypes.Partner, error) {
-	partner := s.ss.Partner()
+	partner := s.SS.Partner()
 	if partner == nil {
 		return nil, cm.Errorf(cm.Internal, nil, "")
 	}

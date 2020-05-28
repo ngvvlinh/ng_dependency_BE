@@ -13,6 +13,17 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
+type SubscriptionService struct {
+	SubrProductAggr   subscriptionproduct.CommandBus
+	SubrProductQuery  subscriptionproduct.QueryBus
+	SubrPlanAggr      subscriptionplan.CommandBus
+	SubrPlanQuery     subscriptionplan.QueryBus
+	SubscriptionQuery subscription.QueryBus
+	SubscriptionAggr  subscription.CommandBus
+	SubrBillAggr      subscriptionbill.CommandBus
+	SubrBillQuery     subscriptionbill.QueryBus
+}
+
 func (s *SubscriptionService) Clone() *SubscriptionService {
 	res := *s
 	return &res
@@ -25,7 +36,7 @@ func (s *SubscriptionService) CreateSubscriptionProduct(ctx context.Context, r *
 		ImageURL:    r.ImageURL,
 		Type:        r.Type,
 	}
-	if err := subrProductAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubrProductAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbSubrProduct(cmd.Result)
@@ -34,7 +45,7 @@ func (s *SubscriptionService) CreateSubscriptionProduct(ctx context.Context, r *
 
 func (s *SubscriptionService) GetSubscriptionProducts(ctx context.Context, r *GetSubscriptionProductsEndpoint) error {
 	query := &subscriptionproduct.ListSubrProductsQuery{}
-	if err := subrProductQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SubrProductQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	res := convertpb.PbSubrProducts(query.Result)
@@ -48,7 +59,7 @@ func (s *SubscriptionService) DeleteSubscriptionProduct(ctx context.Context, r *
 	cmd := &subscriptionproduct.DeleteSubrProductCommand{
 		ID: r.Id,
 	}
-	if err := subrProductAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubrProductAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}
@@ -64,7 +75,7 @@ func (s *SubscriptionService) CreateSubscriptionPlan(ctx context.Context, r *Cre
 		Interval:      r.Interval,
 		IntervalCount: r.IntervalCount,
 	}
-	if err := subrPlanAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubrPlanAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbSubrPlan(cmd.Result)
@@ -81,7 +92,7 @@ func (s *SubscriptionService) UpdateSubscriptionPlan(ctx context.Context, r *Upd
 		Interval:      r.Interval,
 		IntervalCount: r.IntervalCount,
 	}
-	if err := subrPlanAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubrPlanAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -90,7 +101,7 @@ func (s *SubscriptionService) UpdateSubscriptionPlan(ctx context.Context, r *Upd
 
 func (s *SubscriptionService) GetSubscriptionPlans(ctx context.Context, r *GetSubscriptionPlansEndpoint) error {
 	query := &subscriptionplan.ListSubrPlansQuery{}
-	if err := subrPlanQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SubrPlanQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &types.GetSubrPlansResponse{
@@ -103,7 +114,7 @@ func (s *SubscriptionService) DeleteSubscriptionPlan(ctx context.Context, r *Del
 	cmd := &subscriptionplan.DeleteSubrPlanCommand{
 		ID: r.Id,
 	}
-	if err := subrPlanAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubrPlanAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}
@@ -115,7 +126,7 @@ func (s *SubscriptionService) GetSubscription(ctx context.Context, r *GetSubscri
 		ID:        r.ID,
 		AccountID: r.AccountID,
 	}
-	if err := subscriptionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SubscriptionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbSubscription(query.Result)
@@ -129,7 +140,7 @@ func (s *SubscriptionService) GetSubscriptions(ctx context.Context, r *GetSubscr
 		Paging:    *paging,
 		Filters:   cmapi.ToFilters(r.Filters),
 	}
-	if err := subscriptionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SubscriptionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &types.GetSubscriptionsResponse{
@@ -147,7 +158,7 @@ func (s *SubscriptionService) CreateSubscription(ctx context.Context, r *CreateS
 		BillingCycleAnchorAt: r.BillingCycleAnchorAt.ToTime(),
 		Customer:             convertpb.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
 	}
-	if err := subscriptionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubscriptionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbSubscription(cmd.Result)
@@ -163,7 +174,7 @@ func (s *SubscriptionService) UpdateSubscriptionInfo(ctx context.Context, r *Upd
 		Customer:             convertpb.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
 		Lines:                convertpb.Convert_api_SubscriptionLines_To_core_SubscriptionLines(r.Lines),
 	}
-	if err := subscriptionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubscriptionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -175,7 +186,7 @@ func (s *SubscriptionService) CancelSubscription(ctx context.Context, r *CancelS
 		ID:        r.ID,
 		AccountID: r.AccountID,
 	}
-	if err := subscriptionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubscriptionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -187,7 +198,7 @@ func (s *SubscriptionService) ActivateSubscription(ctx context.Context, r *Activ
 		ID:        r.ID,
 		AccountID: r.AccountID,
 	}
-	if err := subscriptionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubscriptionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -199,7 +210,7 @@ func (s *SubscriptionService) DeleteSubscription(ctx context.Context, r *DeleteS
 		ID:        r.ID,
 		AccountID: r.AccountID,
 	}
-	if err := subscriptionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubscriptionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}
@@ -213,7 +224,7 @@ func (s *SubscriptionService) GetSubscriptionBills(ctx context.Context, r *GetSu
 		Paging:    *paging,
 		Filters:   cmapi.ToFilters(r.Filters),
 	}
-	if err := subrBillQuery.Dispatch(ctx, query); err != nil {
+	if err := s.SubrBillQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	res := convertpb.PbSubrBills(query.Result.SubscriptionBills)
@@ -232,7 +243,7 @@ func (s *SubscriptionService) CreateSubscriptionBill(ctx context.Context, r *Cre
 		Customer:       convertpb.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
 		Description:    r.Description,
 	}
-	if err := subrBillAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubrBillAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbSubrBill(cmd.Result)
@@ -245,7 +256,7 @@ func (s *SubscriptionService) ManualPaymentSubscriptionBill(ctx context.Context,
 		AccountID:   r.AccountID,
 		TotalAmount: r.TotalAmount,
 	}
-	if err := subrBillAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubrBillAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -257,7 +268,7 @@ func (s *SubscriptionService) DeleteSubscriptionBill(ctx context.Context, r *Del
 		ID:        r.ID,
 		AccountID: r.AccountID,
 	}
-	if err := subrBillAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.SubrBillAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.DeletedResponse{Deleted: 1}

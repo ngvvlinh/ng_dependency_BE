@@ -3,12 +3,30 @@ package admin
 import (
 	service "o.o/api/top/int/admin"
 	"o.o/capi/httprpc"
+	"o.o/common/l"
 )
 
 // +gen:wrapper=o.o/api/top/int/admin
 // +gen:wrapper:package=admin
 
-func NewAdminServer(m httprpc.Muxer) {
+var ll = l.New()
+
+type Servers []httprpc.Server
+
+func NewServers(
+	miscService *MiscService,
+	accountService *AccountService,
+	orderService *OrderService,
+	fulfillmentService *FulfillmentService,
+	moneyTransactionService *MoneyTransactionService,
+	shopService *ShopService,
+	creditService *CreditService,
+	notificationService *NotificationService,
+	connectionService *ConnectionService,
+	shipmentPriceService *ShipmentPriceService,
+	locationService *LocationService,
+	subscriptionService *SubscriptionService,
+) Servers {
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
 		service.NewAccountServiceServer(WrapAccountService(accountService.Clone)),
@@ -23,7 +41,5 @@ func NewAdminServer(m httprpc.Muxer) {
 		service.NewLocationServiceServer(WrapLocationService(locationService.Clone)),
 		service.NewSubscriptionServiceServer(WrapSubscriptionService(subscriptionService.Clone)),
 	}
-	for _, s := range servers {
-		m.Handle(s.PathPrefix(), s)
-	}
+	return servers
 }

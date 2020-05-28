@@ -4,6 +4,7 @@ package fabo
 
 import (
 	"github.com/google/wire"
+
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
@@ -11,12 +12,10 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/fabo/faboinfo"
-	"o.o/capi/httprpc"
 )
 
 func NewFaboServer(
-	hooks httprpc.HooksBuilder,
-	ss *session.Session,
+	ss session.Session,
 	fbExternalUserQuery fbusering.QueryBus,
 	fbExternalUserAggr fbusering.CommandBus,
 	fbPagingQuery fbpaging.QueryBus,
@@ -26,7 +25,7 @@ func NewFaboServer(
 	appScopes map[string]string,
 	fbClient *fbclient.FbClient,
 	customerQ customering.QueryBus,
-) FaboServers {
+) Servers {
 	wire.Build(
 		faboinfo.New,
 		NewPageService,

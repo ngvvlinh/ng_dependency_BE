@@ -21,20 +21,21 @@ const MinShopBalance = -200000
 var _ carrier.Manager = &ShipnowManager{}
 
 type Carrier struct {
+	Code carriertypes.Carrier
 	ShipnowCarrier
 	ShipnowCarrierAccount
 }
 
 type ShipnowManager struct {
-	ahamove      *Carrier
+	drivers      []*Carrier
 	location     location.QueryBus
 	shipnowQuery shipnow.QueryBus
 	store        sqlstore.ShipnowStoreFactory
 }
 
-func NewManager(db *cmsql.Database, locationBus location.QueryBus, ahamoveCarrier *Carrier, shipnowQuery shipnow.QueryBus) *ShipnowManager {
+func NewManager(db *cmsql.Database, locationBus location.QueryBus, shipnowQuery shipnow.QueryBus, carriers []*Carrier) *ShipnowManager {
 	return &ShipnowManager{
-		ahamove:      ahamoveCarrier,
+		drivers:      carriers,
 		location:     locationBus,
 		shipnowQuery: shipnowQuery,
 		store:        sqlstore.NewShipnowStore(db),
@@ -116,12 +117,12 @@ func (ctrl *ShipnowManager) createSingleFulfillment(ctx context.Context, cmd *ca
 }
 
 func (ctrl *ShipnowManager) GetShipnowCarrierDriver(c carriertypes.Carrier) (*Carrier, error) {
-	switch c {
-	case carriertypes.Ahamove:
-		return ctrl.ahamove, nil
-	default:
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đơn vị vận chuyển không hợp lệ")
+	for _, d := range ctrl.drivers {
+		if d.Code == c {
+			return d, nil
+		}
 	}
+	return nil, cm.Errorf(cm.InvalidArgument, nil, "Đơn vị vận chuyển không hợp lệ")
 }
 
 func (ctrl *ShipnowManager) CheckShippingService(ffm *shipnow.ShipnowFulfillment, services []*shipnowtypes.ShipnowService) (service *shipnowtypes.ShipnowService, err error) {
@@ -195,16 +196,19 @@ func (ctrl *ShipnowManager) GetExternalShippingServices(ctx context.Context, cmd
 	}
 	var res []*shipnowtypes.ShipnowService
 
-	ch := make(chan []*shipnowtypes.ShipnowService, 1)
-	go func() {
-		var services []*shipnowtypes.ShipnowService
-		var err error
-		defer func() {
-			sendServices(ch, services, err)
+	n := len(ctrl.drivers)
+	ch := make(chan []*shipnowtypes.ShipnowService, n)
+	for _, driver := range ctrl.drivers {
+		driver := driver // closure
+		go func() {
+			var services []*shipnowtypes.ShipnowService
+			var err error
+			defer func() { sendServices(ch, services, err) }()
+			services, err = driver.GetShippingServices(ctx, args)
 		}()
-		services, err = ctrl.ahamove.GetShippingServices(ctx, args)
-	}()
-	for i := 0; i < 1; i++ {
+	}
+
+	for i := 0; i < n; i++ {
 		res = append(res, <-ch...)
 	}
 	if len(res) == 0 {

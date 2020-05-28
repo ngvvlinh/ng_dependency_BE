@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"o.o/api/top/int/integration"
-	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/authorize_shop_config"
 	"o.o/api/top/types/etc/status3"
@@ -17,13 +16,11 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/idemp"
-	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/code/gencode"
-	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
@@ -41,43 +38,10 @@ import (
 
 var ll = l.New()
 var idempgroup *idemp.RedisGroup
-var authStore auth.Generator
 
-func init() {
-	bus.AddHandlers("api",
-		miscService.VersionInfo,
-		integrationService.Init,
-		integrationService.RequestLogin,
-		integrationService.LoginUsingToken,
-		integrationService.Register,
-		integrationService.GrantAccess,
-		integrationService.SessionInfo,
-	)
-}
-
-func Init(sd cmservice.Shutdowner, rd redis.Store, s auth.Generator) {
-	authStore = s
-	idempgroup = idemp.NewRedisGroup(rd, api.PrefixIdempUser, 0)
-	sd.Register(idempgroup.Shutdown)
-}
-
-type MiscService struct{}
-type IntegrationService struct{}
-
-var integrationService = &IntegrationService{}
-var miscService = &MiscService{}
-
-func (s *MiscService) Clone() *MiscService {
-	res := *s
-	return &res
-}
-
-func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
-	q.Result = &pbcm.VersionInfoResponse{
-		Service: "etop.Integration",
-		Version: "0.1",
-	}
-	return nil
+type IntegrationService struct {
+	AuthStore auth.Generator
+	SMSClient sms.Client
 }
 
 func (s *IntegrationService) Clone() *IntegrationService {
@@ -125,7 +89,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 		}
 
 	case strings.HasPrefix(q.AuthToken, "request:"):
-		if _, err := authStore.Validate(auth.UsagePartnerIntegration, authToken, &requestInfo); err != nil {
+		if _, err := s.AuthStore.Validate(auth.UsagePartnerIntegration, authToken, &requestInfo); err != nil {
 			return cm.MapError(err).
 				Map(cm.NotFound, cm.Unauthenticated, "Mã xác thực không hợp lệ").
 				Throw()
@@ -355,7 +319,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		"requested_email": emailNorm,
 		"requested_phone": phoneNorm,
 	}
-	_, generatedCode, _, err := generateTokenWithVerificationCode(partner.ID, cm.Coalesce(emailNorm, phoneNorm), extra)
+	_, generatedCode, _, err := generateTokenWithVerificationCode(s.AuthStore, partner.ID, cm.Coalesce(emailNorm, phoneNorm), extra)
 	if err != nil {
 		return r, err
 	}
@@ -422,7 +386,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 			Phone:   phone,
 			Content: b.String(),
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.SMSClient.SendSMS(ctx, cmd); err != nil {
 			return r, err
 		}
 		msg = fmt.Sprintf("Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin vui lòng liên hệ %v.", phoneNorm, wl.X(ctx).CSEmail)
@@ -445,7 +409,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 	return r, nil
 }
 
-func GetRequestLoginToken(partnerID dot.ID, login string) (*auth.Token, string, map[string]string) {
+func GetRequestLoginToken(authStore auth.Generator, partnerID dot.ID, login string) (*auth.Token, string, map[string]string) {
 	tokStr := fmt.Sprintf("%v-%v", partnerID, login)
 	var v map[string]string
 	var code string
@@ -460,9 +424,9 @@ func GetRequestLoginToken(partnerID dot.ID, login string) (*auth.Token, string, 
 	return nil, "", nil
 }
 
-func generateTokenWithVerificationCode(partnerID dot.ID, login string, extra map[string]string) (*auth.Token, string, map[string]string, error) {
+func generateTokenWithVerificationCode(authStore auth.Generator, partnerID dot.ID, login string, extra map[string]string) (*auth.Token, string, map[string]string, error) {
 	tokStr := fmt.Sprintf("%v-%v", partnerID, login)
-	tok, code, v := GetRequestLoginToken(partnerID, login)
+	tok, code, v := GetRequestLoginToken(authStore, partnerID, login)
 	if code != "" {
 		return tok, code, v, nil
 	}
@@ -515,7 +479,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	key := fmt.Sprintf("%v-%v", partner.ID, cm.Coalesce(emailNorm, phoneNorm))
 
 	var v map[string]string
-	tok, err := authStore.Validate(auth.UsageRequestLogin, key, &v)
+	tok, err := s.AuthStore.Validate(auth.UsageRequestLogin, key, &v)
 	if err != nil {
 		return cm.Errorf(cm.Unauthenticated, nil, "Mã xác nhận không hợp lệ")
 	}
@@ -525,7 +489,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	// delete the token after 5 minutes if login successfully
 	defer func() {
 		if _err != nil {
-			_ = authStore.SetTTL(tok, 5*60)
+			_ = s.AuthStore.SetTTL(tok, 5*60)
 		}
 	}()
 
@@ -823,7 +787,7 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 					Phone:   userPhone,
 					Content: b.String(),
 				}
-				if err := bus.Dispatch(ctx, smsCmd); err != nil {
+				if err := s.SMSClient.SendSMS(ctx, smsCmd); err != nil {
 					ll.Error("Can not send sms", l.Error(err))
 				}
 			}

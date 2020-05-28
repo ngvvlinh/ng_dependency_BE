@@ -1,4 +1,4 @@
-package admin
+package sadmin
 
 import (
 	"context"
@@ -9,19 +9,11 @@ import (
 )
 
 type MiscService struct {
-	session.Sessioner
-	ss *session.Session
-}
-
-func NewMiscService(ss *session.Session) *MiscService {
-	return &MiscService{
-		ss: ss,
-	}
+	session.Session
 }
 
 func (s *MiscService) Clone() sadmin.MiscService {
 	res := *s
-	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 

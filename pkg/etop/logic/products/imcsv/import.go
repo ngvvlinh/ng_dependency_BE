@@ -16,21 +16,51 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status4"
 	catalogmodel "o.o/backend/com/main/catalog/model"
+	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/apifw/httpx"
+	"o.o/backend/pkg/common/apifw/idemp"
+	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/imcsv"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/upload"
 )
 
-func HandleShopImportSampleProducts(c *httpx.Context) error {
+var idempgroup *idemp.RedisGroup
+
+const PrefixIdemp = "IdempImportProduct"
+
+type Import struct {
+	uploader         *upload.Uploader
+	shopProductStore catalogsqlstore.ShopProductStoreFactory
+	shopVariantStore catalogsqlstore.ShopVariantStoreFactory
+}
+
+func New(sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db *cmsql.Database) *Import {
+	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
+	sd.Register(idempgroup.Shutdown)
+
+	im := &Import{}
+	im.shopProductStore = catalogsqlstore.NewShopProductStore(db)
+	im.shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
+	if ul != nil {
+		im.uploader = ul
+		ul.ExpectDir(model.ImportTypeShopProduct.String())
+	}
+	return im
+}
+
+func (im *Import) HandleShopImportSampleProducts(c *httpx.Context) error {
 	claim := c.Claim.(*claims.ShopClaim)
 	shop := claim.Shop
 	user := claim.User
@@ -39,7 +69,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 	key := shop.ID.String()
 
 	resp, _, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
-		return handleShopImportSampleProducts(c.Req.Context(), c, shop, user)
+		return im.handleShopImportSampleProducts(c.Req.Context(), c, shop, user)
 	}, "tạo sản phẩm mẫu")
 	if err != nil {
 		return err
@@ -54,9 +84,9 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
+func (im *Import) handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
 	// check if shop already imports sample data
-	s := shopProductStore(ctx).
+	s := im.shopProductStore(ctx).
 		ShopID(shop.ID).
 		Code("TEST-SP-01")
 	products, err := s.ListShopProducts()
@@ -72,10 +102,10 @@ func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop 
 	}
 
 	reader := ioutil.NopCloser(bytes.NewReader(dlShopProductXlsx))
-	return handleShopImportProductsFromFile(ctx, c, shop, user, 0, reader, assetShopProductFilename)
+	return im.handleShopImportProductsFromFile(ctx, c, shop, user, 0, reader, assetShopProductFilename)
 }
 
-func HandleShopImportProducts(c *httpx.Context) error {
+func (im *Import) HandleShopImportProducts(c *httpx.Context) error {
 	claim := c.Claim.(*claims.ShopClaim)
 	shop := claim.Shop
 	user := claim.User
@@ -84,7 +114,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 	key := shop.ID.String()
 
 	resp, _, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
-		return handleShopImportProducts(c.Req.Context(), c, shop, user)
+		return im.handleShopImportProducts(c.Req.Context(), c, shop, user)
 	}, "import đơn hàng")
 	if err != nil {
 		return err
@@ -99,7 +129,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
+func (im *Import) handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser) (_resp *apishop.ImportProductsResponse, _err error) {
 	mode, fileHeader, err := parseRequest(c)
 	if err != nil {
 		return nil, err
@@ -109,10 +139,10 @@ func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *ident
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "can not open file")
 	}
-	return handleShopImportProductsFromFile(ctx, c, shop, user, mode, file, fileHeader.Filename)
+	return im.handleShopImportProductsFromFile(ctx, c, shop, user, mode, file, fileHeader.Filename)
 }
 
-func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser, mode Mode, file io.ReadCloser, filename string) (_resp *apishop.ImportProductsResponse, _err error) {
+func (im *Import) handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *identitymodel.Shop, user *identitymodelx.SignedInUser, mode Mode, file io.ReadCloser, filename string) (_resp *apishop.ImportProductsResponse, _err error) {
 	defer file.Close()
 	var debugOpts Debug
 	if cmenv.NotProd() {
@@ -132,7 +162,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 
 	// We only store file if the file is valid.
 	importID := cm.NewIDWithTag(model.TagImport)
-	uploadCmd, err := uploadFile(importID, rawData)
+	uploadCmd, err := uploadFile(im.uploader, importID, rawData)
 	if err != nil {
 		return nil, err
 	}
@@ -250,7 +280,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		return imp.generateErrorResponse(_errs)
 	}
 
-	stocktakeId, msgs, _errs, _cellErrs, err := loadAndCreateProducts(ctx, schema, idx, imp.Mode, codeMode, shop, rowProducts, debugOpts, user)
+	stocktakeId, msgs, _errs, _cellErrs, err := im.loadAndCreateProducts(ctx, schema, idx, imp.Mode, codeMode, shop, rowProducts, debugOpts, user)
 	if err != nil {
 		return nil, err
 	}

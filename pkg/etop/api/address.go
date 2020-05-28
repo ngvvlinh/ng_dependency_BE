@@ -8,17 +8,13 @@ import (
 	addressmodelx "o.o/backend/com/main/address/modelx"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
-	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type AddressService struct {
-	session.Sessioner `wire:"-"`
-	ss                *session.Session `wire:"-"`
 }
 
 func (s *AddressService) Clone() *AddressService {
 	res := *s
-	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 

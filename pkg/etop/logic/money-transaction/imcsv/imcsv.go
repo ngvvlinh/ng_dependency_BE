@@ -28,13 +28,11 @@ const (
 	csvFileType  = "text/csv"
 )
 
-var moneyTxAggr moneytx.CommandBus
-
-func Init(moneyTxA moneytx.CommandBus) {
-	moneyTxAggr = moneyTxA
+type Import struct {
+	MoneyTxAggr moneytx.CommandBus
 }
 
-func HandleImportMoneyTransactions(c *httpx.Context) error {
+func (im *Import) HandleImportMoneyTransactions(c *httpx.Context) error {
 	form, err := c.MultipartForm()
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Invalid request")
@@ -128,7 +126,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	}
 
 	ctx := bus.Ctx()
-	if err := moneyTxAggr.Dispatch(ctx, cmd); err != nil {
+	if err := im.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
 	c.SetResult(convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result))

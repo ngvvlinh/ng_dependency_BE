@@ -51,7 +51,7 @@ func (s *ImportServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serv
 }
 
 func (s *ImportServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {

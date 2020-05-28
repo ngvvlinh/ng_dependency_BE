@@ -34,6 +34,12 @@ func (h HooksFunc) BuildHooks() Hooks { return h() }
 type chainHooks []HooksBuilder
 
 func (s chainHooks) BuildHooks() Hooks {
+	switch len(s) {
+	case 0:
+		return Hooks{}
+	case 1:
+		return s[0].BuildHooks()
+	}
 	hooks := make([]Hooks, len(s))
 	for i, b := range s {
 		hooks[i] = b.BuildHooks()
@@ -108,7 +114,7 @@ func ChainHooks(hooks ...HooksBuilder) HooksBuilder {
 	}
 	switch len(res) {
 	case 0:
-		return HooksFunc(func() Hooks { return Hooks{} })
+		return chainHooks{}
 	case 1:
 		return res[0]
 	default:
@@ -116,7 +122,11 @@ func ChainHooks(hooks ...HooksBuilder) HooksBuilder {
 	}
 }
 
-func WrapHooks(hooks Hooks) (res Hooks) {
+func WrapHooks(builder HooksBuilder) (res Hooks) {
+	var hooks Hooks
+	if builder != nil {
+		hooks = builder.BuildHooks()
+	}
 	if hooks.BeforeRequest == nil {
 		hooks.BeforeRequest = func(ctx context.Context, _ HookInfo) (context.Context, error) { return ctx, nil }
 	}
@@ -135,10 +145,13 @@ func WrapHooks(hooks Hooks) (res Hooks) {
 	return hooks
 }
 
-func WithHooks(servers []Server, hooks HooksBuilder) []Server {
+func WithHooks(servers []Server, hooks ...HooksBuilder) []Server {
+	if len(hooks) == 0 {
+		return servers
+	}
 	result := make([]Server, len(servers))
 	for i, s := range servers {
-		result[i] = s.WithHooks(hooks)
+		result[i] = s.WithHooks(ChainHooks(hooks...))
 	}
 	return result
 }

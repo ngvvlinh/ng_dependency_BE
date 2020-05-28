@@ -45,7 +45,7 @@ func (s *{{$s.Name}}ServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc
 }
 
 func (s *{{$s.Name}}ServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	hooks := httprpc.WrapHooks(s.hooks.BuildHooks())
+	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
 	ctx, err := hooks.BeforeRequest(ctx, *info)
 	if err != nil {

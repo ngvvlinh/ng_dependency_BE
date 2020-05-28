@@ -18,8 +18,7 @@ import (
 )
 
 type CustomerConversationService struct {
-	session.Sessioner
-	ss *session.Session
+	session.Session
 
 	faboInfo         *faboinfo.FaboInfo
 	fbMessagingQuery fbmessaging.QueryBus
@@ -29,7 +28,7 @@ type CustomerConversationService struct {
 }
 
 func NewCustomerConversationService(
-	ss *session.Session,
+	ss session.Session,
 	faboInfo *faboinfo.FaboInfo,
 	fbMessagingQuery fbmessaging.QueryBus,
 	fbMessagingAggr fbmessaging.CommandBus,
@@ -37,7 +36,7 @@ func NewCustomerConversationService(
 	fbClient *fbclient.FbClient,
 ) *CustomerConversationService {
 	s := &CustomerConversationService{
-		ss:               ss,
+		Session:          ss,
 		faboInfo:         faboInfo,
 		fbMessagingQuery: fbMessagingQuery,
 		fbMessagingAggr:  fbMessagingAggr,
@@ -49,7 +48,6 @@ func NewCustomerConversationService(
 
 func (s *CustomerConversationService) Clone() fabo.CustomerConversationService {
 	res := *s
-	res.Sessioner, res.ss = s.ss.Split()
 	return &res
 }
 
@@ -79,7 +77,7 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		}
 
 		if len(fbPageIDsRequest) == 0 && len(externalPageIDsRequest) == 0 {
-			faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID)
+			faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.SS.Shop().ID)
 			if err != nil {
 				return nil, err
 			}
@@ -98,7 +96,7 @@ func (s *CustomerConversationService) ListCustomerConversations(
 	}
 
 	if len(listCustomerConversationsQuery.ExternalPageIDs) == 0 {
-		faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID)
+		faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.SS.Shop().ID)
 		if err != nil {
 			return nil, err
 		}
@@ -121,7 +119,7 @@ func (s *CustomerConversationService) ListMessages(
 	if err != nil {
 		return nil, err
 	}
-	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID)
+	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.SS.Shop().ID)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +157,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	if err != nil {
 		return nil, err
 	}
-	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.ss.Shop().ID)
+	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.SS.Shop().ID)
 	if err != nil {
 		return nil, err
 	}

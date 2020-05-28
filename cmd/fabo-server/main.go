@@ -154,13 +154,14 @@ func main() {
 
 	var servers []httprpc.Server
 	servers = append(servers, fabo.NewFaboServer(
-		hooks, ss,
+		ss,
 		fbUserQuery, fbUserAggr,
 		fbPageQuery, fbPageAggr,
 		fbMessagingQuery, fbMessagingAggr,
 		appScopes, fbClient,
 		customerQuery,
 	)...)
+	servers = httprpc.WithHooks(servers, hooks)
 
 	mux.Handle("/", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))
 	mux.Handle("/doc", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))

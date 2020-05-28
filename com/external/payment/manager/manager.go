@@ -17,29 +17,40 @@ import (
 var _ paymentmanager.Aggregate = &PaymentManager{}
 
 type PaymentManager struct {
-	vtpay   PaymentProvider
+	drivers []driverConfig
 	orderQS ordering.QueryBus
 }
 
-func NewManager(viettelPay PaymentProvider, orderQuery ordering.QueryBus) *PaymentManager {
-	return &PaymentManager{
-		vtpay:   viettelPay,
-		orderQS: orderQuery,
-	}
+type driverConfig struct {
+	Code   payment_provider.PaymentProvider
+	Driver PaymentProvider
 }
 
-func (ctrl *PaymentManager) MesssageBus() paymentmanager.CommandBus {
+func NewManager(drivers []PaymentProvider, orderQuery ordering.QueryBus) *PaymentManager {
+	m := &PaymentManager{
+		orderQS: orderQuery,
+	}
+	for _, d := range drivers {
+		m.drivers = append(m.drivers, driverConfig{
+			Code:   d.Code(),
+			Driver: d,
+		})
+	}
+	return m
+}
+
+func ManagerMesssageBus(ctrl *PaymentManager) paymentmanager.CommandBus {
 	b := bus.New()
 	return paymentmanager.NewAggregateHandler(ctrl).RegisterHandlers(b)
 }
 
 func (ctrl *PaymentManager) GetPaymentProviderDriver(provider payment_provider.PaymentProvider) (PaymentProvider, error) {
-	switch provider {
-	case payment_provider.VTPay:
-		return ctrl.vtpay, nil
-	default:
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phương thức thanh toán không hợp lệ (%v)", provider)
+	for _, d := range ctrl.drivers {
+		if d.Code == provider {
+			return d.Driver, nil
+		}
 	}
+	return nil, cm.Errorf(cm.InvalidArgument, nil, "Phương thức thanh toán không hợp lệ (%v)", provider)
 }
 
 func (ctrl *PaymentManager) GenerateCode(ctx context.Context, args *paymentmanager.GenerateCodeArgs) (string, error) {

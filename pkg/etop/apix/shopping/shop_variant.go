@@ -14,20 +14,20 @@ import (
 	"o.o/capi/filter"
 )
 
-func GetVariant(ctx context.Context, shopID dot.ID, request *externaltypes.GetVariantRequest) (*externaltypes.ShopVariant, error) {
+func (s *Shopping) GetVariant(ctx context.Context, shopID dot.ID, request *externaltypes.GetVariantRequest) (*externaltypes.ShopVariant, error) {
 	query := &catalog.GetShopVariantQuery{
 		ExternalID: request.ExternalId,
 		VariantID:  request.Id,
 		ShopID:     shopID,
 		Code:       request.Code,
 	}
-	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return convertpb.PbShopVariant(query.Result), nil
 }
 
-func ListVariants(ctx context.Context, shopID dot.ID, request *externaltypes.ListVariantsRequest) (*externaltypes.ShopVariantsResponse, error) {
+func (s *Shopping) ListVariants(ctx context.Context, shopID dot.ID, request *externaltypes.ListVariantsRequest) (*externaltypes.ShopVariantsResponse, error) {
 	paging, err := cmapi.CMCursorPaging(request.Paging)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func ListVariants(ctx context.Context, shopID dot.ID, request *externaltypes.Lis
 		Paging:         *paging,
 		IncludeDeleted: request.IncludeDeleted,
 	}
-	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return &types.ShopVariantsResponse{
@@ -51,7 +51,7 @@ func ListVariants(ctx context.Context, shopID dot.ID, request *externaltypes.Lis
 	}, nil
 }
 
-func CreateVariant(ctx context.Context, shopID dot.ID, partnerID dot.ID, request *externaltypes.CreateVariantRequest) (*externaltypes.ShopVariant, error) {
+func (s *Shopping) CreateVariant(ctx context.Context, shopID dot.ID, partnerID dot.ID, request *externaltypes.CreateVariantRequest) (*externaltypes.ShopVariant, error) {
 	cmd := &catalog.CreateShopVariantCommand{
 		ExternalID:   request.ExternalId,
 		ExternalCode: request.ExternalCode,
@@ -73,13 +73,13 @@ func CreateVariant(ctx context.Context, shopID dot.ID, partnerID dot.ID, request
 			RetailPrice: request.RetailPrice,
 		},
 	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CatalogAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return convertpb.PbShopVariant(cmd.Result), nil
 }
 
-func UpdateVariant(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateVariantRequest) (*externaltypes.ShopVariant, error) {
+func (s *Shopping) UpdateVariant(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateVariantRequest) (*externaltypes.ShopVariant, error) {
 	cmd := &catalog.UpdateShopVariantInfoCommand{
 		ShopID:    shopID,
 		VariantID: request.Id,
@@ -94,20 +94,20 @@ func UpdateVariant(ctx context.Context, shopID dot.ID, request *externaltypes.Up
 		ListPrice:   request.ListPrice,
 		RetailPrice: request.RetailPrice,
 	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CatalogAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return convertpb.PbShopVariant(cmd.Result), nil
 }
 
-func DeleteVariant(ctx context.Context, shopID dot.ID, request *externaltypes.GetVariantRequest) (*cm.Empty, error) {
+func (s *Shopping) DeleteVariant(ctx context.Context, shopID dot.ID, request *externaltypes.GetVariantRequest) (*cm.Empty, error) {
 	var IDs []dot.ID
 	IDs = append(IDs, request.Id)
 	cmd := &catalog.DeleteShopVariantsCommand{
 		IDs:    IDs,
 		ShopID: shopID,
 	}
-	if err := catalogAggregate.Dispatch(ctx, cmd); err != nil {
+	if err := s.CatalogAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return &common.Empty{}, nil

@@ -41,7 +41,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 	key := fmt.Sprintf("%v-%v", partner.ID, cm.Coalesce(verifiedEmail, verifiedPhone))
 
 	var v map[string]string
-	tok, err := authStore.Validate(auth.UsageRequestLogin, key, &v)
+	tok, err := s.AuthStore.Validate(auth.UsageRequestLogin, key, &v)
 	if err != nil {
 		return cm.Errorf(cm.Unauthenticated, nil, "Mã xác nhận không hợp lệ")
 	}
@@ -51,7 +51,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 	// delete the token after 5 minutes if login successfully
 	defer func() {
 		if _err != nil {
-			_ = authStore.SetTTL(tok, 5*60)
+			_ = s.AuthStore.SetTTL(tok, 5*60)
 		}
 	}()
 

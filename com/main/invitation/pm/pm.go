@@ -17,18 +17,20 @@ type ProcessManager struct {
 }
 
 func New(
-	eventBus capi.EventBus,
+	eventBus bus.EventRegistry,
 	invitationQ invitation.QueryBus,
 	invitationA invitation.CommandBus,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		eventBus:        eventBus,
 		invitationQuery: invitationQ,
 		invitationAggr:  invitationA,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.UserCreated)
 }
 

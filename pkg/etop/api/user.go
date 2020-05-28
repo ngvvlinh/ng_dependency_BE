@@ -76,6 +76,7 @@ type UserService struct {
 	EventBus        capi.EventBus
 	AuthStore       auth.Generator
 	RedisStore      redis.Store
+	SMSClient       sms.Client
 }
 
 var UserServiceImpl = &UserService{} // MUSTDO: fix it
@@ -465,7 +466,7 @@ func (s *UserService) sendPhoneUserCode(ctx context.Context, user *identitymodel
 		Phone:   phoneUse,
 		Content: msgUser,
 	}
-	if err = bus.Dispatch(ctx, cmd); err != nil {
+	if err = s.SMSClient.SendSMS(ctx, cmd); err != nil {
 		return "", err
 	}
 	return fmt.Sprintf(
@@ -2064,7 +2065,7 @@ func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *ident
 		Phone:   phoneUse,
 		Content: msgUser,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.SMSClient.SendSMS(ctx, cmd); err != nil {
 		return err
 	}
 	extra := make(map[string]string)

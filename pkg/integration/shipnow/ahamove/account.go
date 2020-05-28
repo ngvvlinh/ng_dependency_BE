@@ -24,8 +24,18 @@ type URLConfig struct {
 }
 
 type CarrierAccount struct {
-	client    *client.Client
-	urlConfig URLConfig
+	client        *client.Client
+	urlConfig     URLConfig
+	IdentityQuery identity.QueryBus
+}
+
+func NewCarrierAccount(ahamoveClient *client.Client, urlConfig URLConfig, identityBus identity.QueryBus) *CarrierAccount {
+	ca := &CarrierAccount{
+		client:        ahamoveClient,
+		urlConfig:     urlConfig,
+		IdentityQuery: identityBus,
+	}
+	return ca
 }
 
 func (c *CarrierAccount) RegisterExternalAccount(ctx context.Context, args *shipnowcarrier.RegisterExternalAccountArgs) (*carrier.RegisterExternalAccountResult, error) {
@@ -46,7 +56,7 @@ func (c *CarrierAccount) RegisterExternalAccount(ctx context.Context, args *ship
 }
 
 func (c *CarrierAccount) GetExternalAccount(ctx context.Context, args *shipnowcarrier.GetExternalAccountArgs) (*carrier.ExternalAccount, error) {
-	token, err := getToken(ctx, args.OwnerID)
+	token, err := getToken(ctx, c.IdentityQuery, args.OwnerID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
@@ -71,12 +81,12 @@ func (c *CarrierAccount) GetExternalAccount(ctx context.Context, args *shipnowca
 }
 
 func (c *CarrierAccount) VerifyExternalAccount(ctx context.Context, args *shipnowcarrier.VerifyExternalAccountArgs) (*carrier.VerifyExternalAccountResult, error) {
-	token, err := getToken(ctx, args.OwnerID)
+	token, err := getToken(ctx, c.IdentityQuery, args.OwnerID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
 
-	description, err := getDescriptionForVerification(ctx, c.urlConfig, args.OwnerID)
+	description, err := getDescriptionForVerification(ctx, c.IdentityQuery, c.urlConfig, args.OwnerID)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +129,7 @@ func prepareAhamovePhotoUrl(
 
 // description format: <user._id>, <user.name>, <photo_urls>
 // photo_url format: <topship_domain>/upload/ahamove/user_verification/user_id_front<user.id>_<user.create_time>.jpg
-func getDescriptionForVerification(ctx context.Context, urlConfig URLConfig, userID dot.ID) (des string, _err error) {
+func getDescriptionForVerification(ctx context.Context, identityQuery identity.QueryBus, urlConfig URLConfig, userID dot.ID) (des string, _err error) {
 	queryUser := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}

@@ -11,6 +11,11 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
+type ConnectionService struct {
+	ConnectionAggr  connectioning.CommandBus
+	ConnectionQuery connectioning.QueryBus
+}
+
 func (s *ConnectionService) Clone() *ConnectionService {
 	res := *s
 	return &res
@@ -21,7 +26,7 @@ func (s *ConnectionService) GetConnections(ctx context.Context, r *GetConnection
 		ConnectionType:   connection_type.Shipping,
 		ConnectionMethod: r.ConnectionMethod,
 	}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &types.GetConnectionsResponse{
@@ -34,7 +39,7 @@ func (s *ConnectionService) ConfirmConnection(ctx context.Context, r *ConfirmCon
 	cmd := &connectioning.ConfirmConnectionCommand{
 		ID: r.Id,
 	}
-	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
@@ -45,7 +50,7 @@ func (s *ConnectionService) DisableConnection(ctx context.Context, r *DisableCon
 	cmd := &connectioning.DisableConnectionCommand{
 		ID: r.Id,
 	}
-	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
@@ -65,7 +70,7 @@ func (s *ConnectionService) CreateBuiltinConnection(ctx context.Context, r *Crea
 			Email:  r.ExternalData.Email,
 		},
 	}
-	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = convertpb.PbConnection(cmd.Result)
@@ -74,7 +79,7 @@ func (s *ConnectionService) CreateBuiltinConnection(ctx context.Context, r *Crea
 
 func (s *ConnectionService) GetBuiltinShopConnections(ctx context.Context, r *GetBuiltinShopConnectionsEndpoint) error {
 	query := &connectioning.ListGlobalShopConnectionsQuery{}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &types.GetShopConnectionsResponse{
@@ -90,7 +95,7 @@ func (s *ConnectionService) UpdateBuiltinShopConnection(ctx context.Context, r *
 	query := &connectioning.GetConnectionByIDQuery{
 		ID: r.ConnectionID,
 	}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	conn := query.Result
@@ -106,7 +111,7 @@ func (s *ConnectionService) UpdateBuiltinShopConnection(ctx context.Context, r *
 			Email:  r.ExternalData.Email,
 		},
 	}
-	if err := connectionAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	r.Result = &pbcm.UpdatedResponse{Updated: 1}
@@ -117,7 +122,7 @@ func (s *ConnectionService) GetConnectionServices(ctx context.Context, r *GetCon
 	query := &connectioning.ListConnectionServicesByIDQuery{
 		ID: r.Id,
 	}
-	if err := connectionQuery.Dispatch(ctx, query); err != nil {
+	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &types.GetConnectionServicesResponse{

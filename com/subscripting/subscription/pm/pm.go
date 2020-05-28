@@ -26,6 +26,7 @@ type ProcessManager struct {
 }
 
 func New(
+	eventBus bus.EventRegistry,
 	subrBillQuery subscriptionbill.QueryBus,
 	subrBillAggr subscriptionbill.CommandBus,
 	subrQuery subscription.QueryBus,
@@ -33,7 +34,7 @@ func New(
 	subrPlanQuery subscriptionplan.QueryBus,
 	identityQuery identity.QueryBus,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		subrBillQuery: subrBillQuery,
 		subrBillAggr:  subrBillAggr,
 		subrQuery:     subrQuery,
@@ -41,9 +42,11 @@ func New(
 		subrPlanQuery: subrPlanQuery,
 		identityQuery: identityQuery,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.SubscriptionBillPaid)
 	eventBus.AddEventListener(m.WsWebsiteCreated)
 }

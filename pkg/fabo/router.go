@@ -9,16 +9,14 @@ type FaboServer struct {
 	customerConversationService *CustomerConversationService
 }
 
-type FaboServers []httprpc.Server
+type Servers []httprpc.Server
 
 func NewServer(
-	hooks httprpc.HooksBuilder,
 	pageService *PageService,
 	conversationService *CustomerConversationService,
 	customerService *CustomerService,
-) FaboServers {
+) Servers {
 	servers := httprpc.MustNewServers(
-		hooks,
 		pageService.Clone,
 		conversationService.Clone,
 		customerService.Clone,

@@ -69,7 +69,6 @@ type ShipmentManager struct {
 	ConnectionQS           connectioning.QueryBus
 	connectionAggr         connectioning.CommandBus
 	Env                    string
-	driver                 carriertypes.ShipmentCarrier
 	redisStore             redis.Store
 	cipherx                *cipherx.Cipherx
 	shipmentServiceQS      shipmentservice.QueryBus
@@ -77,6 +76,15 @@ type ShipmentManager struct {
 	shippingQS             shipping.QueryBus
 	FlagApplyShipmentPrice bool
 	eventBus               capi.EventBus
+}
+
+type Config struct {
+	Endpoints []ConfigEndpoint
+}
+
+type ConfigEndpoint struct {
+	Provider connection_type.ConnectionProvider
+	Endpoint string
 }
 
 type FlagApplyShipmentPrice bool
@@ -90,9 +98,10 @@ func NewShipmentManager(
 	shipmentServiceQS shipmentservice.QueryBus,
 	shipmentPriceQS shipmentprice.QueryBus,
 	flagApplyShipmentPrice FlagApplyShipmentPrice,
-) *ShipmentManager {
+	cfg Config,
+) (*ShipmentManager, error) {
 	_cipherx, _ := cipherx.NewCipherx(SecretKey)
-	return &ShipmentManager{
+	sm := &ShipmentManager{
 		eventBus:               eventBus,
 		LocationQS:             locationQS,
 		ConnectionQS:           connectionQS,
@@ -104,17 +113,16 @@ func NewShipmentManager(
 		shipmentPriceQS:        shipmentPriceQS,
 		FlagApplyShipmentPrice: bool(flagApplyShipmentPrice),
 	}
+	for _, endpoint := range cfg.Endpoints {
+		err := sm.setWebhookEndpoint(endpoint.Provider, endpoint.Endpoint)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return sm, nil
 }
 
-func (m *ShipmentManager) SetDriver(driver carriertypes.ShipmentCarrier) {
-	m.driver = driver
-}
-
-func (m *ShipmentManager) ResetDriver() {
-	m.driver = nil
-}
-
-func (m *ShipmentManager) SetWebhookEndpoint(connectionProvider connection_type.ConnectionProvider, endpoint string) error {
+func (m *ShipmentManager) setWebhookEndpoint(connectionProvider connection_type.ConnectionProvider, endpoint string) error {
 	if connectionProvider == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "SetWebhookEndpoint: Missing connection provider")
 	}

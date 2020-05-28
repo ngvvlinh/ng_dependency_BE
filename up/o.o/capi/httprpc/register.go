@@ -30,9 +30,9 @@ func (r *Registry) NewServer(builder interface{}, hooks ...HooksBuilder) (Server
 	return nil, xerrors.Errorf(xerrors.Internal, nil, "builder of type %T is not recognized", builder)
 }
 
-func (r *Registry) NewServers(hooks HooksBuilder, builders ...interface{}) (servers []Server, _ error) {
+func (r *Registry) NewServers(builders ...interface{}) (servers []Server, _ error) {
 	for _, builder := range builders {
-		server, err := r.NewServer(builder, hooks)
+		server, err := r.NewServer(builder)
 		if err != nil {
 			return nil, err
 		}
@@ -55,12 +55,12 @@ func MustNewServer(builder interface{}, hooks ...HooksBuilder) Server {
 	return server
 }
 
-func NewServers(hooks HooksBuilder, builders ...interface{}) (servers []Server, _ error) {
-	return globalRegistry.NewServers(hooks, builders...)
+func NewServers(builders ...interface{}) (servers []Server, _ error) {
+	return globalRegistry.NewServers(builders...)
 }
 
-func MustNewServers(hooks HooksBuilder, builders ...interface{}) (servers []Server) {
-	servers, err := globalRegistry.NewServers(hooks, builders...)
+func MustNewServers(builders ...interface{}) (servers []Server) {
+	servers, err := globalRegistry.NewServers(builders...)
 	must(err)
 	return servers
 }

@@ -35,6 +35,7 @@ var (
 )
 
 func New(
+	eventBus bus.EventRegistry,
 	orderAggr ordering.CommandBus,
 	affiliateAggr affiliate.CommandBus,
 	receiptQs receipting.QueryBus,
@@ -42,7 +43,7 @@ func New(
 	orderQ ordering.QueryBus,
 	customerQ customering.QueryBus,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		order:         orderAggr,
 		affiliate:     affiliateAggr,
 		receiptQuery:  receiptQs,
@@ -50,9 +51,11 @@ func New(
 		orderQuery:    orderQ,
 		customerQuery: customerQ,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (p *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.CheckTradingOrderValid)
 	eventBus.AddEventListener(p.TradingOrderCreated)
 	eventBus.AddEventListener(p.ReceiptConfirmed)

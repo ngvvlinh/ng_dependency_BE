@@ -42,14 +42,14 @@ type ProcessManager struct {
 }
 
 func New(
-	eventBus capi.EventBus,
+	eventBus bus.EventRegistry,
 	receiptQuery receipting.QueryBus,
 	receiptAggregate receipting.CommandBus,
 	ledgerQuery ledgering.QueryBus,
 	ledgerAggregate ledgering.CommandBus,
 	identityQuery identity.QueryBus,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		eventBus:      eventBus,
 		receiptQuery:  receiptQuery,
 		receiptAggr:   receiptAggregate,
@@ -57,13 +57,15 @@ func New(
 		ledgerAggr:    ledgerAggregate,
 		identityQuery: identityQuery,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
 var (
 	ll = l.New()
 )
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTransactionConfirmed)
 	eventBus.AddEventListener(m.MoneyTxShippingEtopConfirmed)
 }

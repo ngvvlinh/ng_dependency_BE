@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"go.uber.org/zap/zapcore"
+
 	typescommon "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -224,12 +225,12 @@ func RecoverAndLog2(ctx context.Context, rpcName string, session *session.Sessio
 	var ss *middleware.Session
 	if session != nil {
 		ss = &middleware.Session{
-			User:       session.User(),
+			User:       session.SS.User(),
 			Admin:      nil,
-			Partner:    session.Partner(),
-			CtxPartner: session.CtxPartner(),
-			Shop:       session.Shop(),
-			Affiliate:  session.Affiliate(),
+			Partner:    session.SS.Partner(),
+			CtxPartner: session.SS.CtxPartner(),
+			Shop:       session.SS.Shop(),
+			Affiliate:  session.SS.Affiliate(),
 		}
 	}
 	return RecoverAndLog(ctx, rpcName, ss, req, resp, recovered, err, errs, t0)

@@ -19,15 +19,19 @@ type ProcessManager struct {
 }
 
 func New(
-	identityQ identity.QueryBus, invitationQ invitation.QueryBus,
+	eventBus bus.EventRegistry,
+	identityQ identity.QueryBus,
+	invitationQ invitation.QueryBus,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		identityQuery:   identityQ,
 		invitationQuery: invitationQ,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.InvitationAccepted)
 }
 

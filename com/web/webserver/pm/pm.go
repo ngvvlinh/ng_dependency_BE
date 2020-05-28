@@ -17,18 +17,20 @@ type ProcessManager struct {
 }
 
 func New(
-	eventBusArgs capi.EventBus,
+	eventBus bus.EventRegistry,
 	webserverCommanBusArg webserver.CommandBus,
 	webserverQueryBusArg webserver.QueryBus,
 ) *ProcessManager {
-	return &ProcessManager{
-		eventBus:           eventBusArgs,
+	p := &ProcessManager{
+		eventBus:           eventBus,
 		webserverCommanBus: webserverCommanBusArg,
 		webserverQueryBus:  webserverQueryBusArg,
 	}
+	p.registerEventHandlers(eventBus)
+	return p
 }
 
-func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.ShopProductDeletedEvent)
 }
 
