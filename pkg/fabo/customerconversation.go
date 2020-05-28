@@ -248,7 +248,7 @@ func (s *CustomerConversationService) SendComment(
 	}
 
 	getFbExternalPageInternalQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
-		ExternalID: request.ExternalID,
+		ExternalID: request.ExternalPageID,
 	}
 	if err := s.fbPagingQuery.Dispatch(ctx, getFbExternalPageInternalQuery); err != nil {
 		return nil, err
