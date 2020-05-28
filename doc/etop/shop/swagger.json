@@ -12536,6 +12536,9 @@
         "image": {
           "type": "string"
         },
+        "product_count": {
+          "type": "integer"
+        },
         "seo_config": {
           "$ref": "#/definitions/paWsSEOConfig"
         },

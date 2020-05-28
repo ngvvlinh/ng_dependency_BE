@@ -77,15 +77,16 @@ type CreateOrUpdateWsCategoryRequest struct {
 func (m *CreateOrUpdateWsCategoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type WsCategory struct {
-	ID        dot.ID        `json:"id"`
-	ShopID    dot.ID        `json:"shop_id"`
-	Slug      string        `json:"slug"`
-	SEOConfig *WsSEOConfig  `json:"seo_config"`
-	Image     string        `json:"image"`
-	Appear    bool          `json:"appear"`
-	CreatedAt time.Time     `json:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at"`
-	Category  *ShopCategory `json:"category"`
+	ID           dot.ID        `json:"id"`
+	ShopID       dot.ID        `json:"shop_id"`
+	Slug         string        `json:"slug"`
+	SEOConfig    *WsSEOConfig  `json:"seo_config"`
+	Image        string        `json:"image"`
+	Appear       bool          `json:"appear"`
+	CreatedAt    time.Time     `json:"created_at"`
+	UpdatedAt    time.Time     `json:"updated_at"`
+	Category     *ShopCategory `json:"category"`
+	ProductCount int           `json:"product_count"`
 }
 
 func (m *WsCategory) String() string { return jsonx.MustMarshalToString(m) }
