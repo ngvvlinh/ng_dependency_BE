@@ -2,6 +2,7 @@ package fbuser
 
 import (
 	"context"
+	"strings"
 
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
@@ -152,6 +153,9 @@ func (a *FbUserAggregate) CreateFbExternalUserShopCustomer(ctx context.Context, 
 	}
 	err = a.fbExternalUserShopCustomerStore(ctx).CreateFbExternalUserShopCustomer(fbExternalUserWithCustomer)
 	if err != nil {
+		if strings.Contains(err.Error(), "fb_external_user_shop_customer_shop_id_fb_external_user_id_idx") {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Khách hàng đã tồn tại!")
+		}
 		return nil, err
 	}
 	result.ShopCustomer = query.Result
