@@ -4,6 +4,7 @@ package customering
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/shopping/customering/aggregate"
 	"o.o/backend/com/shopping/customering/query"
 )

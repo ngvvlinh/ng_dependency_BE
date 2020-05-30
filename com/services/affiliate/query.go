@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"o.o/api/services/affiliate"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/services/affiliate/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ affiliate.QueryService = &QueryService{}
@@ -20,7 +20,7 @@ type QueryService struct {
 	sellerCommission        sqlstore.SellerCommissionStoreFactory
 }
 
-func NewQuery(db *cmsql.Database) *QueryService {
+func NewQuery(db com.MainDB) *QueryService {
 	return &QueryService{
 		commissionSetting:       sqlstore.NewCommissionSettingStore(db),
 		supplyCommissionSetting: sqlstore.NewSupplyCommissionSettingStore(db),

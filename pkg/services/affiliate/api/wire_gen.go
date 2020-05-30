@@ -7,11 +7,12 @@ package api
 
 import (
 	"github.com/google/wire"
+
 	"o.o/api/main/catalog"
 	"o.o/api/main/identity"
 	"o.o/api/main/inventory"
 	"o.o/api/services/affiliate"
-	"o.o/backend/pkg/common/config"
+	cc "o.o/backend/pkg/common/config"
 )
 
 // Injectors from wire.go:

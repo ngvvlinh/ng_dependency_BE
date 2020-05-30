@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"o.o/backend/cmd/etop-server/config"
+	servicelocation "o.o/backend/com/main/location"
 	"o.o/backend/pkg/common/bus"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -68,7 +69,7 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	sqlstore.Init(db)
+	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 
 	if *flDrop {
 		ll.Warn("Drop database: " + cfg.Database)

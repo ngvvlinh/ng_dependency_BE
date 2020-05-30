@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/ledgering"
 	"o.o/api/main/receipting"
 	"o.o/api/top/types/etc/ledger_type"
+	com "o.o/backend/com/main"
 	identityconvert "o.o/backend/com/main/identity/convert"
 	"o.o/backend/com/main/ledgering/convert"
 	"o.o/backend/com/main/ledgering/model"
@@ -14,7 +15,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -26,7 +26,7 @@ type LedgerAggregate struct {
 	receiptQuery receipting.QueryBus
 }
 
-func NewLedgerAggregate(db *cmsql.Database, receiptQuery receipting.QueryBus) *LedgerAggregate {
+func NewLedgerAggregate(db com.MainDB, receiptQuery receipting.QueryBus) *LedgerAggregate {
 	return &LedgerAggregate{
 		store:        sqlstore.NewLedgerStore(db),
 		receiptQuery: receiptQuery,

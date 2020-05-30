@@ -4,6 +4,7 @@ package connectioning
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/connectioning/aggregate"
 	"o.o/backend/com/main/connectioning/query"
 )

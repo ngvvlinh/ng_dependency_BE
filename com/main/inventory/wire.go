@@ -4,6 +4,7 @@ package inventory
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/inventory/aggregate"
 	"o.o/backend/com/main/inventory/query"
 )

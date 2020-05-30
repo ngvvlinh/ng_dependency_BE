@@ -5,9 +5,9 @@ import (
 
 	"o.o/api/main/receipting"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/receipting/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -17,7 +17,7 @@ type ReceiptQuery struct {
 	store sqlstore.ReceiptStoreFactory
 }
 
-func NewReceiptQuery(db *cmsql.Database) *ReceiptQuery {
+func NewReceiptQuery(db com.MainDB) *ReceiptQuery {
 	return &ReceiptQuery{
 		store: sqlstore.NewReceiptStore(db),
 	}

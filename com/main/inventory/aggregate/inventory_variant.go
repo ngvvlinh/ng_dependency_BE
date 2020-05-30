@@ -13,6 +13,7 @@ import (
 	"o.o/api/top/types/etc/inventory_type"
 	"o.o/api/top/types/etc/inventory_voucher_ref"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	catalogconvert "o.o/backend/com/main/catalog/convert"
 	"o.o/backend/com/main/inventory/convert"
 	"o.o/backend/com/main/inventory/model"
@@ -40,8 +41,9 @@ type InventoryAggregate struct {
 	PurchaseRefundQuery   purchaserefund.QueryBus
 }
 
-func NewAggregateInventory(eventBus capi.EventBus,
-	db *cmsql.Database,
+func NewAggregateInventory(
+	eventBus capi.EventBus,
+	db com.MainDB,
 	traderQuery tradering.QueryBus,
 	purchaseOrderQuery purchaseorder.QueryBus,
 	StocktakeQuery stocktaking.QueryBus,

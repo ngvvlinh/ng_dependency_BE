@@ -16,7 +16,6 @@ import (
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnsync "o.o/backend/pkg/integration/shipping/ghn/sync"
 	"o.o/common/l"
@@ -26,7 +25,6 @@ var (
 	ll  = l.New()
 	ctx context.Context
 	cfg config.Config
-	bot *telebot.Channel
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
@@ -58,22 +56,16 @@ func main() {
 		// Wait for maximum 15s
 		timer := time.NewTimer(15 * time.Second)
 		<-timer.C
-		if bot != nil {
-			bot.SendMessage("👻 shipping-sync-service stopped (forced) 👻\n–––")
-		}
+
+		ll.SendMessage("👻 shipping-sync-service stopped (forced) 👻\n–––")
+
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 
-	bot, err = cfg.TelegramBot.ConnectDefault()
-	if err != nil {
-		ll.Fatal("Unable to connect to Telegram", l.Error(err))
-	}
-
+	cfg.TelegramBot.MustRegister()
 	svrs := startServers()
-	if bot != nil {
-		bot.SendMessage(fmt.Sprintf("–––\n✨ shipping-sync-service started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
-		defer bot.SendMessage("👻 shipping-sync-service stopped 👻\n–––")
-	}
+	ll.SendMessage(fmt.Sprintf("–––\n✨ shipping-sync-service started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
+	defer ll.SendMessage("👻 shipping-sync-service stopped 👻\n–––")
 
 	locationBus := servicelocation.QueryMessageBus(servicelocation.New(nil))
 	ghnCarrier := ghn.New(cfg.GHN, locationBus)

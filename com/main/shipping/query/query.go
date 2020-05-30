@@ -5,10 +5,10 @@ import (
 
 	"o.o/api/main/shipping"
 	"o.o/api/meta"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipping/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -18,7 +18,7 @@ type QueryService struct {
 	store sqlstore.FulfillmentStoreFactory
 }
 
-func NewQueryService(db *cmsql.Database) *QueryService {
+func NewQueryService(db com.MainDB) *QueryService {
 	return &QueryService{
 		store: sqlstore.NewFulfillmentStore(db),
 	}

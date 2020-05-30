@@ -17,7 +17,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/etop/authorize/middleware"
@@ -30,18 +29,8 @@ import (
 )
 
 var (
-	ll  = l.New()
-	bot *telebot.Channel
+	ll = l.New()
 )
-
-//go:generate ffjson -nodecoder $GOFILE
-
-func InitBot(b *telebot.Channel) {
-	if b != nil {
-		ll.Info("Enabled sending request errors to telegram")
-	}
-	bot = b
-}
 
 type CensorInterface interface {
 	Censor()
@@ -87,11 +76,7 @@ func EncodeTwirpError(w io.Writer, err xerrors.ErrorInterface) {
 	_ = json.NewEncoder(w).Encode(twerr)
 }
 
-func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, session *middleware.Session, req interface{}, err xerrors.TwError, errs []*typescommon.Error, d time.Duration, lvl xerrors.TraceLevel, stacktrace []byte) {
-	if bot == nil {
-		return
-	}
-
+func SendErrorToBot(ctx context.Context, rpcName string, session *middleware.Session, req interface{}, err xerrors.TwError, errs []*typescommon.Error, d time.Duration, lvl xerrors.TraceLevel, stacktrace []byte) {
 	buf := &strings.Builder{}
 	if lvl >= xerrors.LevelTrace {
 		buf.WriteString("🔥 @thangtran268 ")
@@ -218,7 +203,7 @@ func SendErrorToBot(ctx context.Context, bot *telebot.Channel, rpcName string, s
 		buf.Write(stacktrace)
 	}
 
-	bot.SendMessage(buf.String())
+	ll.SendMessage(buf.String())
 }
 
 func RecoverAndLog2(ctx context.Context, rpcName string, session *session.Session, req, resp capi.Message, recovered interface{}, err error, errs []*typescommon.Error, t0 time.Time) (twError xerrors.TwError) {
@@ -257,7 +242,7 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 				l.Duration("d", d),
 				l.Stringer("req", req),
 				l.Stringer("resp", resp))
-			go SendErrorToBot(ctx, bot, rpcName, session, req, nil, errs, d, xerrors.LevelPartialError, stacktrace)
+			go SendErrorToBot(ctx, rpcName, session, req, nil, errs, d, xerrors.LevelPartialError, stacktrace)
 			return nil
 		}
 		ll.Debug("->"+rpcName,
@@ -284,7 +269,7 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 	if cmenv.NotProd() || cm.ErrorCode(err) == cm.RuntimePanic || headers.CtxDebug(ctx) != "" {
 		PrintErrorWithStack(ctx, err, stacktrace)
 	}
-	go SendErrorToBot(ctx, bot, rpcName, session, req, twError, nil, d, lvl, stacktrace)
+	go SendErrorToBot(ctx, rpcName, session, req, twError, nil, d, lvl, stacktrace)
 	return twError
 }
 

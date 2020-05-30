@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"o.o/api/shopping/addressing"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/customering/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -16,7 +16,7 @@ type AddressQuery struct {
 	store sqlstore.AddressStoreFactory
 }
 
-func NewAddressQuery(db *cmsql.Database) *AddressQuery {
+func NewAddressQuery(db com.MainDB) *AddressQuery {
 	return &AddressQuery{
 		store: sqlstore.NewAddressStore(db),
 	}

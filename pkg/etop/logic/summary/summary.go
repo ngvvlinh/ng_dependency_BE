@@ -6,10 +6,10 @@ import (
 	"math"
 	"time"
 
+	com "o.o/backend/com/main"
 	txmodel "o.o/backend/com/main/moneytx/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/idemp"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq/core"
@@ -19,24 +19,20 @@ import (
 )
 
 var (
-	x  *cmsql.Database
 	ll = l.New()
 
 	idempgroup = idemp.NewGroup()
 )
 
-func init() {
-	bus.AddHandlers("sql", SummarizeFulfillments)
+type Summary struct {
+	db *cmsql.Database
 }
 
-func Init(db *cmsql.Database) {
-	if x != nil && (*x).DB() != nil {
-		ll.Panic("Already initialized")
-	}
-	x = db
+func New(db com.MainDB) *Summary {
+	return &Summary{db: db}
 }
 
-func SummarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmentsRequest) error {
+func (s *Summary) SummarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmentsRequest) error {
 	var timeout time.Duration
 	if cmenv.IsProd() {
 		timeout = 5 * time.Second
@@ -44,13 +40,13 @@ func SummarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmen
 
 	key := fmt.Sprintf("SummarizeFulfillments %v", query.ShopID)
 	resp, err, _ := idempgroup.Do(key, timeout, func() (interface{}, error) {
-		return summarizeFulfillments(ctx, query)
+		return s.summarizeFulfillments(ctx, query)
 	})
 	query.Result = resp.(*model.SummarizeFulfillmentsRequest).Result
 	return err
 }
 
-func summarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmentsRequest) (*model.SummarizeFulfillmentsRequest, error) {
+func (s *Summary) summarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmentsRequest) (*model.SummarizeFulfillmentsRequest, error) {
 	if query.ShopID == 0 {
 		return query, cm.Error(cm.InvalidArgument, "missing shop_id", nil)
 	}
@@ -60,7 +56,7 @@ func summarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmen
 	}
 
 	var moneyTransactions txmodel.MoneyTransactionShippings
-	if err := x.Table("money_transaction_shipping").
+	if err := s.db.Table("money_transaction_shipping").
 		Where("shop_id = ?", query.ShopID).
 		Where("status = 0").
 		Where("total_orders > 0").
@@ -78,7 +74,7 @@ func summarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmen
 	if includeNewTables {
 		tables = append(tables, buildTables2(from, to)...)
 	}
-	if err := execQuery(ctx, tables, query.ShopID); err != nil {
+	if err := execQuery(ctx, s.db, tables, query.ShopID); err != nil {
 		return query, cm.Error(cm.Internal, "can not execute query", err)
 	}
 	if includeNewTables {
@@ -88,7 +84,7 @@ func summarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmen
 	return query, nil
 }
 
-func execQuery(ctx context.Context, tables []*Table, shopID dot.ID) error {
+func execQuery(ctx context.Context, db *cmsql.Database, tables []*Table, shopID dot.ID) error {
 	builder := NewSummaryQueryBuilder("fulfillment")
 	for _, table := range tables {
 		for i := range table.Data {
@@ -96,7 +92,7 @@ func execQuery(ctx context.Context, tables []*Table, shopID dot.ID) error {
 			builder.AddCell(&table.Data[i].Subject, (*core.Int)(&table.Data[i].Value))
 		}
 	}
-	return x.SQL(builder).WithContext(ctx).
+	return db.SQL(builder).WithContext(ctx).
 		Where("shop_id = ?", shopID).Scan(builder.ScanArgs...)
 }
 

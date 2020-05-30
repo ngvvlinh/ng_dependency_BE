@@ -1,6 +1,8 @@
-package main
+package build
 
 import (
+	"context"
+
 	"github.com/google/wire"
 
 	"o.o/api/main/location"
@@ -11,14 +13,20 @@ import (
 	"o.o/backend/com/external/payment/manager"
 	"o.o/backend/com/external/payment/payment"
 	paymentvtpay "o.o/backend/com/external/payment/vtpay"
+	"o.o/backend/com/handler/etop-handler/intctl"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/authorization"
 	"o.o/backend/com/main/invitation"
 	"o.o/backend/com/main/moneytx"
 	shipnowcarrier "o.o/backend/com/main/shipnow-carrier"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	"o.o/backend/com/services/affiliate"
+	"o.o/backend/com/web/webserver"
 	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
 	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
 	affapi "o.o/backend/pkg/etop/api/affiliate"
@@ -31,7 +39,10 @@ import (
 	"o.o/backend/pkg/etop/apix/partnerimport"
 	xshop "o.o/backend/pkg/etop/apix/shop"
 	"o.o/backend/pkg/etop/apix/shopping"
+	"o.o/backend/pkg/etop/apix/webhook"
+	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
 	imcsvghtk "o.o/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
 	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/imcsv"
@@ -45,9 +56,13 @@ import (
 	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/pkg/integration/payment/vtpay"
 	"o.o/backend/pkg/integration/shipnow/ahamove"
+	ahamovewebhook "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
 	"o.o/backend/pkg/integration/shipping/ghn"
+	ghnwebhook "o.o/backend/pkg/integration/shipping/ghn/webhook"
 	"o.o/backend/pkg/integration/shipping/ghtk"
+	ghtkwebhook "o.o/backend/pkg/integration/shipping/ghtk/webhook"
 	"o.o/backend/pkg/integration/shipping/vtpost"
+	vtpostwebhook "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	"o.o/backend/pkg/integration/sms"
 	imgroupsms "o.o/backend/pkg/integration/sms/imgroup"
 	"o.o/backend/pkg/integration/sms/mock"
@@ -57,6 +72,8 @@ import (
 	"o.o/capi/httprpc"
 	"o.o/common/l"
 )
+
+var ll = l.New()
 
 var WireSet = wire.NewSet(
 	smslog.WireSet,
@@ -76,7 +93,45 @@ var WireSet = wire.NewSet(
 	shipnowcarrier.WireSet,
 	loggingpayment.WireSet,
 	shopping.WireSet,
+	ghnwebhook.WireSet,
+	ghtkwebhook.WireSet,
+	vtpostwebhook.WireSet,
+	ahamovewebhook.WireSet,
+	wire.FieldsOf(new(Databases), "main", "log", "notifier", "affiliate"),
+	BindDatabases,
 )
+
+type Databases struct {
+	Main      com.MainDB
+	Log       com.LogDB
+	Notifier  com.NotifierDB
+	Affiliate com.AffiliateDB
+	WebServer webserver.WebServerDB
+}
+
+func BindDatabases(cfg config.Config) (dbs Databases, err error) {
+	dbs.Main, err = cmsql.Connect(cfg.Postgres)
+	if err != nil {
+		return dbs, err
+	}
+	dbs.Log, err = cmsql.Connect(cfg.PostgresLogs)
+	if err != nil {
+		return dbs, err
+	}
+	dbs.Notifier, err = cmsql.Connect(cfg.PostgresNotifier)
+	if err != nil {
+		return dbs, err
+	}
+	dbs.Affiliate, err = cmsql.Connect(cfg.PostgresAffiliate)
+	if err != nil {
+		return dbs, err
+	}
+	dbs.WebServer, err = cmsql.Connect(cfg.PostgresWebServer)
+	if err != nil {
+		return dbs, err
+	}
+	return dbs, nil
+}
 
 var SupportedCarriers = wire.NewSet(
 	ghn.New,
@@ -91,6 +146,30 @@ var SupportedCarriers = wire.NewSet(
 type EtopHandlers struct {
 	IntHandlers []httprpc.Server
 	ExtHandlers []httprpc.Server
+}
+
+func BindProducer(ctx context.Context, cfg config.Config) (_ webhook.Producer, _ error) {
+	var producer *mq.KafkaProducer
+	if !cfg.Kafka.Enabled {
+		return nil, nil
+	}
+	producer, err := mq.NewKafkaProducer(ctx, cfg.Kafka.Brokers)
+	if err != nil {
+		return nil, err
+	}
+	ctlProducer := producer.WithTopic(intctl.Topic(cfg.Kafka.TopicPrefix))
+	return ctlProducer, err
+}
+
+func NewSession(cfg config.Config, redisStore redis.Store) session.Session {
+	return session.New(
+		session.OptValidator(tokens.NewTokenStore(redisStore)),
+		session.OptSuperAdmin(cfg.SAdminToken),
+	)
+}
+
+func WireSAdminToken(cfg config.Config) middleware.SAdminToken {
+	return middleware.SAdminToken(cfg.SAdminToken)
 }
 
 func NewEtopHandlers(
@@ -184,7 +263,7 @@ func SupportedSMSDrivers(mainCfg config.Config, cfg sms.Config) []sms.DriverConf
 	}
 }
 
-func SupportedCarrierDrivers(cfg config.Config, locationBus location.QueryBus) []shipping_provider.CarrierDriver {
+func SupportedCarrierDrivers(ctx context.Context, cfg config.Config, locationBus location.QueryBus) []shipping_provider.CarrierDriver {
 	var ghnCarrier *ghn.Carrier
 	var ghtkCarrier *ghtk.Carrier
 	var vtpostCarrier *vtpost.Carrier
@@ -201,6 +280,7 @@ func SupportedCarrierDrivers(cfg config.Config, locationBus location.QueryBus) [
 			ll.Fatal("GHN: No token")
 		}
 	}
+
 	if cfg.GHTK.AccountDefault.Token != "" {
 		ghtkCarrier = ghtk.New(cfg.GHTK, locationBus)
 		if err := ghtkCarrier.InitAllClients(ctx); err != nil {

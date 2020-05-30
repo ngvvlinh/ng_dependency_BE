@@ -9,6 +9,7 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/backend/com/main/connectioning/model"
+	servicelocation "o.o/backend/com/main/location"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
@@ -33,7 +34,7 @@ var (
 func init() {
 	postgres := cc.DefaultPostgres()
 	db = cmsql.MustConnect(postgres)
-	sqlstore.Init(db)
+	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 	db.MustExec(`
 		DROP TABLE IF EXISTS shop_connection, connection CASCADE;
 		CREATE TABLE connection (

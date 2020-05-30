@@ -14,7 +14,6 @@ import (
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 	etlutil "o.o/backend/zexp/etl/util"
 	"o.o/common/l"
 )
@@ -23,7 +22,6 @@ var (
 	ll  = l.New()
 	cfg config.Config
 	ctx context.Context
-	bot *telebot.Channel
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
@@ -65,18 +63,13 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
-	bot, err = cfg.TelegramBot.ConnectDefault()
-	if err != nil {
-		ll.Fatal("Unable to connect to Telegram", l.Error(err))
-	}
+	cfg.TelegramBot.MustRegister()
 
-	util := etlutil.New(cfg.MapDB, bot, resetDB)
+	util := etlutil.New(cfg.MapDB, resetDB)
 	util.HandleETL(ctx)
 
-	if bot != nil {
-		bot.SendMessage("–––\n✨ etop-etl started ✨\n" + cm.CommitMessage())
-		defer bot.SendMessage("👹 etop-etl stopped 👹\n–––")
-	}
+	ll.SendMessage("–––\n✨ etop-etl started ✨\n" + cm.CommitMessage())
+	defer ll.SendMessage("👹 etop-etl stopped 👹\n–––")
 	healthservice.MarkReady()
 
 	mux := http.NewServeMux()

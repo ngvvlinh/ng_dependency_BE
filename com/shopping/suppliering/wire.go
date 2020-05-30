@@ -4,6 +4,7 @@ package suppliering
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/shopping/suppliering/aggregate"
 	"o.o/backend/com/shopping/suppliering/query"
 )

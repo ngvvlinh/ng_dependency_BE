@@ -8,6 +8,7 @@ import (
 	"o.o/api/main/location"
 	"o.o/api/meta"
 	"o.o/api/webserver"
+	com "o.o/backend/com/main"
 	servicelocation "o.o/backend/com/main/location"
 	"o.o/backend/com/web/webserver/convert"
 	"o.o/backend/com/web/webserver/sqlstore"
@@ -35,7 +36,7 @@ type WebserverAggregate struct {
 	categoryQuery   catalog.QueryBus
 }
 
-func New(eventBus capi.EventBus, db *cmsql.Database, categoryQ catalog.QueryBus) *WebserverAggregate {
+func New(eventBus capi.EventBus, db com.MainDB, categoryQ catalog.QueryBus) *WebserverAggregate {
 	locationBus = servicelocation.QueryMessageBus(servicelocation.New(nil))
 	return &WebserverAggregate{
 		db:              db,

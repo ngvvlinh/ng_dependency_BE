@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"o.o/api/main/transaction"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/transaction/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -17,7 +17,7 @@ type QueryService struct {
 	store sqlstore.TransactionStoreFactory
 }
 
-func NewQueryService(db *cmsql.Database) *QueryService {
+func NewQueryService(db com.MainDB) *QueryService {
 	return &QueryService{
 		store: sqlstore.NewTransactionStore(db),
 	}

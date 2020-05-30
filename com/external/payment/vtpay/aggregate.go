@@ -9,6 +9,7 @@ import (
 	"o.o/api/top/types/etc/payment_provider"
 	"o.o/api/top/types/etc/payment_source"
 	paymentutil "o.o/backend/com/external/payment"
+	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -18,14 +19,14 @@ import (
 )
 
 type Aggregate struct {
-	db          cmsql.Transactioner
+	db          *cmsql.Database
 	orderQS     ordering.QueryBus
 	orderAggr   ordering.CommandBus
 	vtpayClient *vtpayclient.Client
 	paymentAggr payment.CommandBus
 }
 
-func NewAggregate(db *cmsql.Database, orderQuery ordering.QueryBus, orderA ordering.CommandBus, paymentA payment.CommandBus, vtpayClient *vtpayclient.Client) *Aggregate {
+func NewAggregate(db com.MainDB, orderQuery ordering.QueryBus, orderA ordering.CommandBus, paymentA payment.CommandBus, vtpayClient *vtpayclient.Client) *Aggregate {
 	return &Aggregate{
 		db:          db,
 		orderQS:     orderQuery,

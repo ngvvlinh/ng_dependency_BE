@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/main/refund"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	catalogconvert "o.o/backend/com/main/catalog/convert"
 	"o.o/backend/com/main/ordering/model"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
@@ -32,7 +33,7 @@ type RefundAggregate struct {
 }
 
 func NewRefundAggregate(
-	database *cmsql.Database, eventBus capi.EventBus,
+	database com.MainDB, eventBus capi.EventBus,
 ) *RefundAggregate {
 	return &RefundAggregate{
 		db:       database,

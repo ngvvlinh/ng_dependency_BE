@@ -25,7 +25,6 @@ import (
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/code/gencode"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
@@ -50,7 +49,6 @@ var (
 	enabledEmail bool
 	enabledSMS   bool
 	cfgEmail     EmailConfig
-	botTelegram  *telebot.Channel
 )
 
 const PrefixIdempUser = "IdempUser"
@@ -211,7 +209,7 @@ func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *Update
 			r.Result = &etop.UpdateUserPhoneResponse{
 				Msg: "Cập nhật số điện thoại thành công",
 			}
-			botTelegram.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi số điện thoại từ %v thành %v", user.FullName, user.ID, user.Phone, r.Phone))
+			ll.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi số điện thoại từ %v thành %v", user.FullName, user.ID, user.Phone, r.Phone))
 		default:
 			return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
 		}
@@ -412,7 +410,7 @@ func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *Update
 			r.Result = &etop.UpdateUserEmailResponse{
 				Msg: "Cập nhật email thành công",
 			}
-			botTelegram.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi email từ %v thành %v", user.FullName, user.ID, user.Email, r.Email))
+			ll.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi email từ %v thành %v", user.FullName, user.ID, user.Email, r.Email))
 		default:
 			return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
 		}

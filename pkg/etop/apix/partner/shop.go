@@ -421,7 +421,7 @@ func validateWhiteLabel(ctx context.Context, q *AuthorizeShopEndpoint) (wlPartne
 			Name:  "Mã người dùng (external_user_id)",
 			Value: q.ExternalUserID,
 		},
-		// NOTE(qv): external_shop_id may be empty
+		// NOTE(vu): external_shop_id may be empty
 	}
 
 	if q.ExternalShopID != "" {

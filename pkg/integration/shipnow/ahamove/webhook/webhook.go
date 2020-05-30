@@ -13,6 +13,7 @@ import (
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
 	"o.o/backend/com/etc/logging/webhook/model"
+	com "o.o/backend/com/main"
 	shipnowmodel "o.o/backend/com/main/shipnow/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -28,7 +29,7 @@ var ll = l.New()
 var PaymentStates = []shipnow_state.State{shipnow_state.StateDelivering, shipnow_state.StateDelivered, shipnow_state.StateReturning, shipnow_state.StateReturned}
 
 type Webhook struct {
-	db           cmsql.Transactioner
+	db           *cmsql.Database
 	dbLogs       *cmsql.Database
 	carrier      *ahamove.Carrier
 	shipnowQuery shipnow.QueryBus
@@ -37,7 +38,7 @@ type Webhook struct {
 	orderQuery   ordering.QueryBus
 }
 
-func New(db *cmsql.Database, dbLogs *cmsql.Database, carrier *ahamove.Carrier, shipnowQS shipnow.QueryBus, shipnowAggr shipnow.CommandBus, orderAggr ordering.CommandBus, orderQS ordering.QueryBus) *Webhook {
+func New(db com.MainDB, dbLogs com.LogDB, carrier *ahamove.Carrier, shipnowQS shipnow.QueryBus, shipnowAggr shipnow.CommandBus, orderAggr ordering.CommandBus, orderQS ordering.QueryBus) *Webhook {
 	wh := &Webhook{
 		db:           db,
 		dbLogs:       dbLogs,

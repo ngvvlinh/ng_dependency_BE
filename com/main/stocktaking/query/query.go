@@ -5,10 +5,10 @@ import (
 
 	st "o.o/api/main/stocktaking"
 	"o.o/api/meta"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/stocktaking/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -19,7 +19,7 @@ type StocktakeQuery struct {
 	EventBus       bus.Bus
 }
 
-func NewQueryStocktake(db *cmsql.Database) *StocktakeQuery {
+func NewQueryStocktake(db com.MainDB) *StocktakeQuery {
 	return &StocktakeQuery{
 		StocktakeStore: sqlstore.NewStocktakeStore(db),
 	}

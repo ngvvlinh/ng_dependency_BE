@@ -11,6 +11,7 @@ import (
 	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	identityconvert "o.o/backend/com/main/identity/convert"
 	moneytxmodel "o.o/backend/com/main/moneytx/model"
 	moneytxsqlstore "o.o/backend/com/main/moneytx/sqlstore"
@@ -26,7 +27,7 @@ import (
 var _ moneytx.Aggregate = &MoneyTxAggregate{}
 
 type MoneyTxAggregate struct {
-	db                           cmsql.Transactioner
+	db                           *cmsql.Database
 	moneyTxShippingStore         moneytxsqlstore.MoneyTxShippingStoreFactory
 	moneyTxShippingExternalStore moneytxsqlstore.MoneyTxShippingExternalStoreFactory
 	moneyTxShippingEtopStore     moneytxsqlstore.MoneyTxShippingEtopStoreFactory
@@ -36,7 +37,7 @@ type MoneyTxAggregate struct {
 }
 
 func NewMoneyTxAggregate(
-	db *cmsql.Database,
+	db com.MainDB,
 	shippingQS shipping.QueryBus,
 	identityQS identity.QueryBus,
 	eventB capi.EventBus,

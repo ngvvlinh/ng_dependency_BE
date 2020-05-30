@@ -8,6 +8,7 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	com "o.o/backend/com/main"
 	identitymodel "o.o/backend/com/main/identity/model"
 	txmodel "o.o/backend/com/main/moneytx/model"
 	cm "o.o/backend/pkg/common"
@@ -18,9 +19,9 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 )
 
-var db cmsql.Transactioner
+var db *cmsql.Database
 
-func New(database *cmsql.Database) error {
+func New(database com.MainDB) error {
 	db = database
 	return nil
 }

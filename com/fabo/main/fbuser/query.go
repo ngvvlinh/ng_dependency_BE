@@ -7,6 +7,7 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbuser/sqlstore"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -23,7 +24,7 @@ type FbUserQuery struct {
 	customerQuery                   customering.QueryBus
 }
 
-func NewFbUserQuery(database *cmsql.Database, customerQ customering.QueryBus) *FbUserQuery {
+func NewFbUserQuery(database com.MainDB, customerQ customering.QueryBus) *FbUserQuery {
 	return &FbUserQuery{
 		db:                              database,
 		fbUserStore:                     sqlstore.NewFbExternalUserStore(database),

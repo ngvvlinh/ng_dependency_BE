@@ -16,11 +16,11 @@ import (
 	"o.o/backend/cmd/etop-etl/register/table_name"
 	identityquery "o.o/backend/com/main/identity"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
+	servicelocation "o.o/backend/com/main/location"
 	_ "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/projectpath"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -67,7 +67,6 @@ var (
 )
 
 type ETLUtil struct {
-	bot           *telebot.Channel
 	mapDBCfgs     map[string]config.Database
 	mapDBs        map[string]*cmsql.Database
 	mapTableNames map[string][]table_name.TableName
@@ -133,7 +132,7 @@ func initDBs(mapDBCfgs map[string]config.Database, mapTableNames map[string][]ta
 		}
 
 		if wlName == drivers.ETop(cmenv.Env()).Key {
-			sqlstore.Init(db)
+			sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil) // TODO(vu): refactor this
 		} else {
 			if cmenv.IsDev() && resetDB {
 				_, _ = db.Exec(`
@@ -177,10 +176,9 @@ func convertTableNames(mapDBCfgs map[string]config.Database) map[string][]table_
 
 func New(
 	mapDBCfgs map[string]config.Database,
-	bot *telebot.Channel, resetDB bool,
+	resetDB bool,
 ) *ETLUtil {
 	etlUtil := &ETLUtil{
-		bot:           bot,
 		mapDBCfgs:     mapDBCfgs,
 		mapTableNames: convertTableNames(mapDBCfgs),
 		resetDB:       resetDB,
@@ -233,7 +231,7 @@ func (s *ETLUtil) reloadETLEngine(ctx context.Context) *etl.ETLEngine {
 		var userIDs, accountIDs []dot.ID
 		newUserIDs, latestUserRID, err := scanUser(srcDB, mAccountUser[driver.Key].latestUserRID, driver.ID)
 		if err != nil {
-			s.bot.SendMessage(fmt.Sprintf("[Error][ETLUtil]: %s", err.Error()))
+			ll.SendMessage(fmt.Sprintf("[Error][ETLUtil]: %s", err.Error()))
 			continue
 		}
 		mAccountUser[driver.Key].latestUserRID = latestUserRID
@@ -247,7 +245,7 @@ func (s *ETLUtil) reloadETLEngine(ctx context.Context) *etl.ETLEngine {
 		newAccountIDs, deletedAccountIDs, latestAccountRID, err := scanShop(srcDB, mAccountUser[driver.Key].latestAccountRID, driver.ID)
 		if err != nil {
 			fmt.Println(err)
-			s.bot.SendMessage(fmt.Sprintf("[Error][ETLUtil]: %s", err.Error()))
+			ll.SendMessage(fmt.Sprintf("[Error][ETLUtil]: %s", err.Error()))
 			continue
 		}
 		mAccountUser[driver.Key].latestAccountRID = latestAccountRID

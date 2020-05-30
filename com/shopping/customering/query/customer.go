@@ -7,11 +7,11 @@ import (
 	"o.o/api/shopping"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/customer_type"
+	com "o.o/backend/com/main"
 	customermodel "o.o/backend/com/shopping/customering/model"
 	"o.o/backend/com/shopping/customering/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
 	"o.o/capi/dot"
 )
@@ -25,7 +25,7 @@ type CustomerQuery struct {
 	historyStore               historysqlstore.HistoryStoreFactory
 }
 
-func NewCustomerQuery(db *cmsql.Database) *CustomerQuery {
+func NewCustomerQuery(db com.MainDB) *CustomerQuery {
 	return &CustomerQuery{
 		store:                      sqlstore.NewCustomerStore(db),
 		customerGroupStore:         sqlstore.NewCustomerGroupStore(db),

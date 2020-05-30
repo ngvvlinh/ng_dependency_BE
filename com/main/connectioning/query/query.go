@@ -7,10 +7,10 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping_provider"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/connectioning/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	shippingservices "o.o/backend/pkg/integration/shipping/services"
 	"o.o/capi/dot"
 )
@@ -22,7 +22,7 @@ type ConnectionQuery struct {
 	shopConnectionStore sqlstore.ShopConnectionStoreFactory
 }
 
-func NewConnectionQuery(db *cmsql.Database) *ConnectionQuery {
+func NewConnectionQuery(db com.MainDB) *ConnectionQuery {
 	return &ConnectionQuery{
 		connectionStore:     sqlstore.NewConnectionStore(db),
 		shopConnectionStore: sqlstore.NewShopConnectionStore(db),

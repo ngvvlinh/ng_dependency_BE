@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/subscripting/subscription"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/subscripting/subscription/convert"
 	"o.o/backend/com/subscripting/subscription/model"
 	"o.o/backend/com/subscripting/subscription/sqlstore"
@@ -19,12 +20,12 @@ var _ subscription.Aggregate = &SubscriptionAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type SubscriptionAggregate struct {
-	db                    cmsql.Transactioner
+	db                    *cmsql.Database
 	subscriptionStore     sqlstore.SubscriptionStoreFactory
 	subscriptionLineStore sqlstore.SubscriptionLineStoreFactory
 }
 
-func NewSubscriptionAggregate(db *cmsql.Database) *SubscriptionAggregate {
+func NewSubscriptionAggregate(db com.MainDB) *SubscriptionAggregate {
 	return &SubscriptionAggregate{
 		db:                    db,
 		subscriptionStore:     sqlstore.NewSubscriptionStore(db),

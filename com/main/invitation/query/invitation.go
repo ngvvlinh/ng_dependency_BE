@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/main/invitation"
 	"o.o/api/shopping"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/invitation/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -21,11 +22,11 @@ type InvitationQuery struct {
 }
 
 func NewInvitationQuery(
-	database *cmsql.Database,
+	db com.MainDB,
 ) *InvitationQuery {
 	return &InvitationQuery{
-		db:    database,
-		store: sqlstore.NewInvitationStore(database),
+		db:    db,
+		store: sqlstore.NewInvitationStore(db),
 	}
 }
 

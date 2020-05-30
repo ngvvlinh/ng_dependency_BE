@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
 )
@@ -11,7 +12,7 @@ type ChangesStore struct {
 	db *cmsql.Database
 }
 
-func NewChangesStore(db *cmsql.Database) *ChangesStore {
+func NewChangesStore(db com.WebhookDB) *ChangesStore {
 	return &ChangesStore{
 		db: db,
 	}

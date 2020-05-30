@@ -8,6 +8,7 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/backend/com/fabo/main/fbuser/convert"
 	"o.o/backend/com/fabo/main/fbuser/sqlstore"
+	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
@@ -29,7 +30,7 @@ type FbUserAggregate struct {
 }
 
 func NewFbUserAggregate(
-	db *cmsql.Database, fbPageA fbpaging.CommandBus, customerQ customering.QueryBus,
+	db com.MainDB, fbPageA fbpaging.CommandBus, customerQ customering.QueryBus,
 ) *FbUserAggregate {
 	return &FbUserAggregate{
 		db:                              db,

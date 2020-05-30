@@ -3,7 +3,6 @@ package integration
 import (
 	service "o.o/api/top/int/integration"
 	"o.o/backend/pkg/common/apifw/idemp"
-	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api"
 	"o.o/capi/httprpc"
@@ -15,17 +14,14 @@ import (
 type Servers []httprpc.Server
 
 func NewIntegrationServer(
-	sd cmservice.Shutdowner,
 	rd redis.Store,
 	miscService *MiscService,
 	integrationService *IntegrationService,
-) Servers {
-	sd.Register(idempgroup.Shutdown)
+) (Servers, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, api.PrefixIdempUser, 0)
-
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
 		service.NewIntegrationServiceServer(WrapIntegrationService(integrationService.Clone)),
 	}
-	return servers
+	return servers, idempgroup.Shutdown
 }

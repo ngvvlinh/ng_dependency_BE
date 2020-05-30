@@ -27,7 +27,6 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/mq"
@@ -41,7 +40,6 @@ var (
 	ll  = l.New()
 	cfg config.Config
 	ctx context.Context
-	bot *telebot.Channel
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
@@ -80,17 +78,14 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
-	bot, err = cfg.TelegramBot.ConnectDefault()
-	if err != nil {
-		ll.Fatal("Unable to connect to Telegram", l.Error(err))
-	}
+	cfg.TelegramBot.MustRegister()
 
-	redisStore := redis.Connect(cfg.Redis.ConnectionString())
+	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	sqlstore.Init(db)
+	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 
 	dbWebhook, err := cmsql.Connect(cfg.PostgresWebhook)
 	if err != nil {
@@ -118,7 +113,7 @@ func main() {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
 
-		intctlHandler = intctl.New(bot, consumer, cfg.Kafka.TopicPrefix)
+		intctlHandler = intctl.New(consumer, cfg.Kafka.TopicPrefix)
 		waiters = append(waiters, intctlHandler)
 	}
 	{
@@ -134,7 +129,7 @@ func main() {
 			ll.Fatal("Error loading webhooks", l.Error(err))
 		}
 
-		h := handler.New(db, webhookSender, bot, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus)
+		h := handler.New(db, webhookSender, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus)
 		h.RegisterTo(intctlHandler)
 		h.ConsumeAndHandleAllTopics(ctx)
 		waiters = append(waiters, h)
@@ -169,10 +164,8 @@ func main() {
 		ll.Sync()
 	}()
 
-	if bot != nil {
-		bot.SendMessage(fmt.Sprintf("–––\n✨ etop-handler started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
-		defer bot.SendMessage("👹 etop-handler stopped 👹\n–––")
-	}
+	ll.SendMessage(fmt.Sprintf("–––\n✨ etop-handler started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
+	defer ll.SendMessage("👹 etop-handler stopped 👹\n–––")
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()

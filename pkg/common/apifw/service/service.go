@@ -1,7 +1,6 @@
 package cmService
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -127,35 +126,4 @@ func RedocHandler() http.HandlerFunc {
 		path := filepath.Join(r.URL.Path, "swagger.json")
 		_, _ = fmt.Fprintf(w, tpl, path)
 	}
-}
-
-type Shutdowner interface {
-	Register(fn func())
-	Done() <-chan struct{}
-}
-
-type ShutdownImpl struct {
-	funcs  []func()
-	ctx    context.Context
-	cancel func()
-}
-
-func NewShutdowner() *ShutdownImpl {
-	newCtx, cancel := context.WithCancel(context.Background())
-	return &ShutdownImpl{ctx: newCtx, cancel: cancel}
-}
-
-func (s *ShutdownImpl) Register(fn func()) {
-	s.funcs = append(s.funcs, fn)
-}
-
-func (s *ShutdownImpl) ShutdownAll() {
-	s.cancel()
-	for _, fn := range s.funcs {
-		fn()
-	}
-}
-
-func (s *ShutdownImpl) Done() <-chan struct{} {
-	return s.ctx.Done()
 }

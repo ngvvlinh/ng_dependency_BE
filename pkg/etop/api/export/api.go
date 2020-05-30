@@ -15,17 +15,41 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/claims"
+	"o.o/backend/pkg/etop/eventstream"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
+	"o.o/common/l"
 )
 
-var ServiceImpl = &Service{}
+type Service struct {
+	idempgroup *idemp.RedisGroup
+	config     Config
+	publisher  eventstream.Publisher
+}
 
-type Service struct{}
+func New(rd redis.Store, p eventstream.Publisher, cfg Config) (*Service, func()) {
+	idempgroup := idemp.NewRedisGroup(rd, "export", 60)
+
+	if cfg.DirExport == "" || cfg.URLPrefix == "" {
+		panic("must provide export dir and url prefix ")
+	}
+
+	var err error
+	cfg.DirExport, err = verifyDir(cfg.DirExport)
+	if err != nil {
+		ll.Panic("invalid export config", l.Error(err))
+	}
+	return &Service{
+		idempgroup: idempgroup,
+		config:     cfg,
+		publisher:  p,
+	}, idempgroup.Shutdown
+}
 
 func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *identitymodel.Shop, userID dot.ID, r *apishop.RequestExportRequest) (_ *apishop.RequestExportResponse, _err error) {
 	if userID == 0 {
@@ -34,7 +58,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 
 	// idempotency
 	key := shop.ID.String()
-	if err := idempgroup.Acquire(key, claim.Token); err != nil {
+	if err := s.idempgroup.Acquire(key, claim.Token); err != nil {
 		return nil, idemp.WrapError(ctx, err, "xuất dữ liệu")
 	}
 	defer func() {
@@ -45,7 +69,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		}
 		// release key when error, keep key if export
 		if _err != nil {
-			idempgroup.ReleaseKey(key, claim.Token)
+			s.idempgroup.ReleaseKey(key, claim.Token)
 		}
 	}()
 
@@ -152,8 +176,8 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 			return nil, cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
 		}
 
-		go ignoreError(exportAndReportProgress(
-			func() { idempgroup.ReleaseKey(key, claim.Token) },
+		go ignoreError(s.exportAndReportProgress(
+			func() { s.idempgroup.ReleaseKey(key, claim.Token) },
 			exportItem, fileName, exportOpts,
 			query.Result.Total, query.Result.Rows, query.Result.Opts,
 			ExportFulfillments,
@@ -181,8 +205,8 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 			return nil, cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
 		}
 
-		go ignoreError(exportAndReportProgress(
-			func() { idempgroup.ReleaseKey(key, claim.Token) },
+		go ignoreError(s.exportAndReportProgress(
+			func() { s.idempgroup.ReleaseKey(key, claim.Token) },
 			exportItem, fileName, exportOpts,
 			query.Result.Total, query.Result.Rows, query.Result.Opts,
 			ExportOrders,

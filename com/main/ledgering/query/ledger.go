@@ -6,10 +6,10 @@ import (
 	"o.o/api/main/ledgering"
 	"o.o/api/shopping"
 	"o.o/api/top/types/etc/ledger_type"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/ledgering/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -19,7 +19,7 @@ type LedgerQuery struct {
 	store sqlstore.LedgerStoreFactory
 }
 
-func NewLedgerQuery(db *cmsql.Database) *LedgerQuery {
+func NewLedgerQuery(db com.MainDB) *LedgerQuery {
 	return &LedgerQuery{
 		store: sqlstore.NewLedgerStore(db),
 	}

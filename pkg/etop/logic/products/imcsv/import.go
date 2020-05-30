@@ -15,6 +15,7 @@ import (
 	apishop "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status4"
+	com "o.o/backend/com/main"
 	catalogmodel "o.o/backend/com/main/catalog/model"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	identitymodel "o.o/backend/com/main/identity/model"
@@ -23,13 +24,11 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/apifw/idemp"
-	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/model"
@@ -46,10 +45,8 @@ type Import struct {
 	shopVariantStore catalogsqlstore.ShopVariantStoreFactory
 }
 
-func New(sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db *cmsql.Database) *Import {
+func New(rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
-	sd.Register(idempgroup.Shutdown)
-
 	im := &Import{}
 	im.shopProductStore = catalogsqlstore.NewShopProductStore(db)
 	im.shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
@@ -57,7 +54,7 @@ func New(sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db *cmsql
 		im.uploader = ul
 		ul.ExpectDir(model.ImportTypeShopProduct.String())
 	}
-	return im
+	return im, idempgroup.Shutdown
 }
 
 func (im *Import) HandleShopImportSampleProducts(c *httpx.Context) error {

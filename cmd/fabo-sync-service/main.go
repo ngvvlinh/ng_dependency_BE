@@ -20,7 +20,6 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/common/l"
@@ -30,7 +29,6 @@ var (
 	ll  = l.New()
 	ctx context.Context
 	cfg config.Config
-	bot *telebot.Channel
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
@@ -62,20 +60,14 @@ func main() {
 		// Wait for maximum 15s
 		timer := time.NewTimer(15 * time.Second)
 		<-timer.C
-		if bot != nil {
-			bot.SendMessage("👻 shipping-sync-service stopped (forced) 👻\n–––")
-		}
+		ll.SendMessage("👻 shipping-sync-service stopped (forced) 👻\n–––")
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 
-	bot, err = cfg.TelegramBot.ConnectDefault()
-	if err != nil {
-		ll.Fatal("Unable to connect to Telegram", l.Error(err))
-	}
-	if bot != nil {
-		bot.SendMessage("–––\n✨ fabo-sync-service started ✨\n" + cm.CommitMessage())
-		defer bot.SendMessage("👹 fabo-sync-service stopped 👹\n–––")
-	}
+	cfg.TelegramBot.MustRegister()
+
+	ll.SendMessage("–––\n✨ fabo-sync-service started ✨\n" + cm.CommitMessage())
+	defer ll.SendMessage("👹 fabo-sync-service stopped 👹\n–––")
 
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {
@@ -83,7 +75,7 @@ func main() {
 	}
 	eventBus := bus.New()
 
-	fbClient := fbclient.New(cfg.FacebookApp, bot)
+	fbClient := fbclient.New(cfg.FacebookApp)
 	if err := fbClient.Ping(); err != nil {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
 	}
@@ -97,7 +89,7 @@ func main() {
 	fbUseringAggr := servicefbusering.FbUserAggregateMessageBus(servicefbusering.NewFbUserAggregate(db, fbPagingAggr, customerQuery))
 	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbUseringQuery, fbUseringAggr)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
-	synchronizer := sync.New(db, fbClient, fbMessagingAggr, fbMessagingQuery, bot, cfg.TimeLimit)
+	synchronizer := sync.New(db, fbClient, fbMessagingAggr, fbMessagingQuery, cfg.TimeLimit)
 	if err := synchronizer.Init(); err != nil {
 		panic(err)
 	}

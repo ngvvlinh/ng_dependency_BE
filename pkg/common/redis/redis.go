@@ -2,6 +2,7 @@
 package redis
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
@@ -13,17 +14,43 @@ import (
 var ll = l.New()
 var ErrNil = redis.ErrNil
 
+type Redis struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
+
+// ConnectionString ...
+func (c Redis) ConnectionString() string {
+	s := ""
+	if c.Username == "" || c.Password == "" {
+		s = fmt.Sprintf("redis://%s:%s", c.Host, c.Port)
+	} else {
+		s = fmt.Sprintf("redis://%s:%s@%s:%s", c.Username, c.Password, c.Host, c.Port)
+	}
+	return s
+}
+
 // Connect ...
-func Connect(connStr string) Store {
-	redisStore := NewWithPool(connStr)
-	_, err := redisStore.GetString("_test_")
+func ConnectWithStr(connStr string) Store {
+	store := NewWithPool(connStr)
+	_, err := store.GetString("_test_")
 	if err != nil && err != ErrNil {
 		ll.Fatal("Unable to connect to Redis", l.Error(err), l.String("ConnectionString", connStr))
 	}
-	return redisStore
+	return store
 }
 
-// Store TODO: add comment
+func Connect(cfg Redis) Store {
+	store := NewWithPool(cfg.ConnectionString())
+	_, err := store.GetString("_test_")
+	if err != nil && err != ErrNil {
+		ll.Fatal("Unable to connect to Redis", l.Error(err), l.String("ConnectionString", cfg.ConnectionString()))
+	}
+	return store
+}
+
 type Store interface {
 	Set(k string, v interface{}) error
 	SetWithTTL(k string, v interface{}, ttl int) error

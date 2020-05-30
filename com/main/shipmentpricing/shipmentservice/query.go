@@ -6,12 +6,12 @@ import (
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice/sqlstore"
 	"o.o/backend/com/main/shipmentpricing/util"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -22,7 +22,7 @@ type QueryService struct {
 	shipmentServiceStore sqlstore.ShipmentServiceStoreFactory
 }
 
-func NewQueryService(db *cmsql.Database, redisStore redis.Store) *QueryService {
+func NewQueryService(db com.MainDB, redisStore redis.Store) *QueryService {
 	return &QueryService{
 		redisStore:           redisStore,
 		shipmentServiceStore: sqlstore.NewShipmentServiceStore(db),

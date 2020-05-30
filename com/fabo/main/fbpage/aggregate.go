@@ -8,6 +8,7 @@ import (
 	"o.o/backend/com/fabo/main/fbpage/convert"
 	"o.o/backend/com/fabo/main/fbpage/model"
 	"o.o/backend/com/fabo/main/fbpage/sqlstore"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -24,7 +25,7 @@ type FbExternalPageAggregate struct {
 	fbExternalPageInternalStore sqlstore.FbExternalPageInternalStoreFactory
 }
 
-func NewFbPageAggregate(db *cmsql.Database) *FbExternalPageAggregate {
+func NewFbPageAggregate(db com.MainDB) *FbExternalPageAggregate {
 	return &FbExternalPageAggregate{
 		db:                          db,
 		fbExternalPageStore:         sqlstore.NewFbExternalPageStore(db),

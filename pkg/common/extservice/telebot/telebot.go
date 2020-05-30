@@ -2,18 +2,15 @@ package telebot
 
 import (
 	"bytes"
-	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"sync"
 	"time"
 
 	tg "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
-	"o.o/backend/pkg/common/bus"
 	"o.o/common/l"
 )
 
@@ -28,7 +25,7 @@ var (
 	}
 )
 
-// MaxMessageLength defines maximum length for telegram messages
+// MaxMessageLength defines maximum length for a telegram message
 //
 // https://core.telegram.org/method/messages.sendMessage
 const MaxMessageLength = 4096
@@ -99,8 +96,8 @@ func (c *Channel) SendMessage(msg string) {
 	err := c.sendMessage("", msg)
 	if err != nil {
 		ll.Error("Telegram Bot: Unable to send message", l.Error(err))
-		msg := "Telegram Bot: Unable to send message: " + err.Error()
-		c.sendMessage("", msg)
+		errMsg := "Telegram Bot: Unable to send message: " + err.Error()
+		_ = c.sendMessage("", errMsg)
 	}
 }
 
@@ -108,8 +105,8 @@ func (c *Channel) SendMarkdownMessage(msg string) {
 	err := c.sendMessage("markdown", msg)
 	if err != nil {
 		ll.Error("Telegram Bot: Unable to send message", l.Error(err))
-		msg := "Telegram Bot: Unable to send message: " + err.Error()
-		c.sendMessage("", msg)
+		errMsg := "Telegram Bot: Unable to send message: " + err.Error()
+		_ = c.sendMessage("", errMsg)
 	}
 }
 
@@ -123,7 +120,7 @@ func (c *Channel) sendMessage(mode string, msg string) error {
 		ParseMode: mode,
 	}
 	var buf bytes.Buffer
-	json.NewEncoder(&buf).Encode(m)
+	_ = json.NewEncoder(&buf).Encode(m)
 	resp, err := client.Post(c.urlSendMsg, "application/json", &buf)
 	if err != nil {
 		return err
@@ -144,48 +141,4 @@ type ChatMessage struct {
 	ChatID    int64  `json:"chat_id"`
 	Text      string `json:"text"`
 	ParseMode string `json:"parse_mode,omitempty"`
-}
-
-var (
-	chans   = make(map[string]*Channel)
-	defChan *Channel
-	m       sync.RWMutex
-)
-
-func init() {
-	bus.AddHandler("telebot", SendMessage)
-}
-
-type SendMessageCommand struct {
-	Channel string
-	Message string
-}
-
-func RegisterChannel(name string, ch *Channel) {
-	if name == "" {
-		defChan = ch
-	} else {
-		m.Lock()
-		chans[name] = ch
-		m.Unlock()
-	}
-}
-
-func SendMessage(ctx context.Context, cmd *SendMessageCommand) error {
-	var ch *Channel
-	if cmd.Channel == "" {
-		ch = defChan
-	} else {
-		m.RLock()
-		channel, ok := chans[cmd.Channel]
-		m.RUnlock()
-		if !ok {
-			panic("No channel available")
-		}
-		ch = channel
-	}
-	if ch != nil {
-		go ch.SendMessage(cmd.Message)
-	}
-	return nil
 }

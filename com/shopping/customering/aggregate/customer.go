@@ -9,6 +9,7 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/api/shopping/tradering"
 	"o.o/api/top/types/etc/customer_type"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/customering/convert"
 	"o.o/backend/com/shopping/customering/model"
 	"o.o/backend/com/shopping/customering/sqlstore"
@@ -31,7 +32,7 @@ type CustomerAggregate struct {
 	eventBus                   capi.EventBus
 }
 
-func NewCustomerAggregate(eventBus capi.EventBus, db *cmsql.Database) *CustomerAggregate {
+func NewCustomerAggregate(eventBus capi.EventBus, db com.MainDB) *CustomerAggregate {
 	return &CustomerAggregate{
 		db:                         db,
 		store:                      sqlstore.NewCustomerStore(db),

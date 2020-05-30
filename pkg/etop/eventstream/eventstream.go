@@ -1,6 +1,7 @@
 package eventstream
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"sync"
@@ -8,7 +9,6 @@ import (
 
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
-	cmService "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -44,33 +44,35 @@ type Subscriber struct {
 	ch chan *Event
 }
 
-type EventStreamer struct {
+type EventStream struct {
 	subscribers  map[int64]*Subscriber
 	eventChannel chan *Event
-	shutdowner   cmService.Shutdowner
+	ctx          context.Context
 
 	m sync.RWMutex
 }
 
-func NewEventStreamer(sd cmService.Shutdowner) *EventStreamer {
-	return &EventStreamer{
+func New(ctx context.Context) *EventStream {
+	es := &EventStream{
 		subscribers:  make(map[int64]*Subscriber),
 		eventChannel: make(chan *Event, 256),
-		shutdowner:   sd,
+		ctx:          ctx,
 	}
+	go es.RunForwarder()
+	return es
 }
 
-func (s *EventStreamer) Publish(event Event) {
+func (s *EventStream) Publish(event Event) {
 	s.eventChannel <- &event
 }
 
-func (s *EventStreamer) RunForwarder() {
+func (s *EventStream) RunForwarder() {
 	for event := range s.eventChannel {
 		s.forward(event)
 	}
 }
 
-func (s *EventStreamer) forward(event *Event) {
+func (s *EventStream) forward(event *Event) {
 	s.m.RLock()
 	defer s.m.RUnlock()
 
@@ -94,7 +96,7 @@ func ShouldSendEvent(event *Event, subscriber *Subscriber) bool {
 		(event.UserID != 0 && event.UserID == subscriber.UserID)
 }
 
-func (s *EventStreamer) Subscribe(accountID dot.ID, userID dot.ID) (id int64, ch <-chan *Event) {
+func (s *EventStream) Subscribe(accountID dot.ID, userID dot.ID) (id int64, ch <-chan *Event) {
 	subscriber := &Subscriber{
 		ID:        cm.RandomInt64(),
 		AllEvents: true,
@@ -110,18 +112,18 @@ func (s *EventStreamer) Subscribe(accountID dot.ID, userID dot.ID) (id int64, ch
 	return subscriber.ID, subscriber.ch
 }
 
-func (s *EventStreamer) Unsubscribe(id int64) {
+func (s *EventStream) Unsubscribe(id int64) {
 	s.m.Lock()
 	defer s.m.Unlock()
 	delete(s.subscribers, id)
 }
 
-func (s *EventStreamer) HandleEventStream(c *httpx.Context) error {
+func (s *EventStream) HandleEventStream(c *httpx.Context) error {
 	claim := c.Claim.(*claims.ShopClaim)
 	userID := c.Session.GetUserID()
 	shop := claim.Shop
 	ctx := c.Context()
-	// TODO(qv): Limit connections per user
+	// TODO(vu): Limit connections per user
 
 	subscriberID, eventChannel := s.Subscribe(shop.ID, userID)
 	defer s.Unsubscribe(subscriberID)
@@ -145,7 +147,7 @@ func (s *EventStreamer) HandleEventStream(c *httpx.Context) error {
 		case <-ctx.Done():
 			return nil
 
-		case <-s.shutdowner.Done():
+		case <-s.ctx.Done():
 			return nil
 
 		case <-flushTimer:

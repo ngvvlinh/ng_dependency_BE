@@ -3,7 +3,6 @@ package xshop
 import (
 	service "o.o/api/top/external/shop"
 	"o.o/backend/pkg/common/apifw/idemp"
-	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/apix/shipping"
 	"o.o/capi/httprpc"
@@ -20,7 +19,6 @@ const PrefixIdempShopAPI = "IdempShopAPI"
 type Servers []httprpc.Server
 
 func NewServers(
-	sd cmservice.Shutdowner,
 	rd redis.Store,
 	_ *shipping.Shipping,
 	miscService *MiscService,
@@ -38,10 +36,8 @@ func NewServers(
 	productService *ProductService,
 	productCollectionService *ProductCollectionService,
 	productCollectionRelationshipService *ProductCollectionRelationshipService,
-) Servers {
+) (Servers, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempShopAPI, 0)
-	sd.Register(idempgroup.Shutdown)
-
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
 		service.NewWebhookServiceServer(WrapWebhookService(webhookService.Clone)),
@@ -59,5 +55,5 @@ func NewServers(
 		service.NewProductCollectionServiceServer(WrapProductCollectionService(productCollectionService.Clone)),
 		service.NewProductCollectionRelationshipServiceServer(WrapProductCollectionRelationshipService(productCollectionRelationshipService.Clone)),
 	}
-	return servers
+	return servers, idempgroup.Shutdown
 }

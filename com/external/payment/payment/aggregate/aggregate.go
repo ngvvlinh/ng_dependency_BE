@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/external/payment"
 	"o.o/backend/com/external/payment/payment/sqlstore"
+	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -13,11 +14,11 @@ import (
 var _ payment.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	db    cmsql.Transactioner
+	db    *cmsql.Database
 	store sqlstore.PaymentStoreFactory
 }
 
-func NewAggregate(db *cmsql.Database) *Aggregate {
+func NewAggregate(db com.MainDB) *Aggregate {
 	return &Aggregate{
 		db:    db,
 		store: sqlstore.NewPaymentStore(db),

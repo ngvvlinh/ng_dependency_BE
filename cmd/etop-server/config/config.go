@@ -12,6 +12,8 @@ import (
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/etop/api/export"
+	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/integration/email"
 	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
 	ahamoveclient "o.o/backend/pkg/integration/shipnow/ahamove/client"
@@ -38,11 +40,6 @@ type Upload struct {
 	DirImportShopProduct string `yaml:"dir_import_shop_product"`
 }
 
-type Export struct {
-	URLPrefix string `yaml:"url_prefix"`
-	DirExport string `yaml:"dir_export"`
-}
-
 type EmailConfig struct {
 	Enabled bool `yaml:"enabled"`
 
@@ -61,7 +58,7 @@ type Config struct {
 	HTTP              cc.HTTP          `yaml:"http"`
 	Kafka             cc.Kafka         `yaml:"kafka"`
 	Upload            Upload           `yaml:"upload"`
-	Export            Export           `yaml:"export"`
+	Export            export.Config    `yaml:"export"`
 	TelegramBot       cc.TelegramBot   `yaml:"telegram_bot"`
 	SMTP              email.SMTPConfig `yaml:"smtp"`
 	Email             EmailConfig      `yaml:"email"`
@@ -85,8 +82,8 @@ type Config struct {
 	Env         string `yaml:"env"`
 
 	URL struct {
-		Auth     string `yaml:"auth"`
-		MainSite string `yaml:"main_site"`
+		Auth     partner.AuthURL `yaml:"auth"`
+		MainSite string          `yaml:"main_site"`
 	} `yaml:"url"`
 
 	ThirdPartyHost string         `yaml:"third_party_host"`
@@ -123,7 +120,7 @@ func Default() Config {
 			DirImportShopOrder:   "/tmp",
 			DirImportShopProduct: "/tmp",
 		},
-		Export: Export{
+		Export: export.Config{
 			DirExport: "/tmp",
 			URLPrefix: "http://localhost:8080",
 		},
@@ -197,7 +194,7 @@ func Load(isTest bool) (Config, error) {
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
 	cc.PostgresMustLoadEnv(&cfg.PostgresAffiliate, "ET_POSTGRES_AFFILIATE")
 	cc.PostgresMustLoadEnv(&cfg.PostgresWebServer, "ET_POSTGRES_WEB_SERVER")
-	cfg.Redis.MustLoadEnv()
+	cc.RedisMustLoadEnv(&cfg.Redis)
 	cfg.TelegramBot.MustLoadEnv()
 	cfg.SMS.MustLoadEnv()
 	cfg.SMTP.MustLoadEnv()

@@ -5,13 +5,13 @@ import (
 
 	"o.o/api/main/location"
 	"o.o/api/meta"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/location/convert"
 	"o.o/backend/com/main/location/list"
 	"o.o/backend/com/main/location/sqlstore"
 	"o.o/backend/com/main/location/types"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 	"o.o/common/l"
 	"o.o/common/xerrors"
@@ -24,7 +24,7 @@ type Query struct {
 	customRegionStore sqlstore.CustomRegionFactory
 }
 
-func New(db *cmsql.Database) *Query {
+func New(db com.MainDB) *Query {
 	return &Query{
 		customRegionStore: sqlstore.NewCustomRegionStore(db),
 	}

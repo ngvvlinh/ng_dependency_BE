@@ -6,11 +6,11 @@ import (
 	"o.o/api/main/catalog"
 	"o.o/api/meta"
 	"o.o/api/shopping"
+	com "o.o/backend/com/main"
 	catalogmodel "o.o/backend/com/main/catalog/model"
 	"o.o/backend/com/main/catalog/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
 	"o.o/capi/dot"
 )
@@ -28,7 +28,7 @@ type QueryService struct {
 	historyStore          historysqlstore.HistoryStoreFactory
 }
 
-func New(db *cmsql.Database) *QueryService {
+func New(db com.MainDB) *QueryService {
 	return &QueryService{
 		shopProduct:           sqlstore.NewShopProductStore(db),
 		shopVariant:           sqlstore.NewShopVariantStore(db),

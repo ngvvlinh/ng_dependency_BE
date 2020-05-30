@@ -14,6 +14,7 @@ import (
 	"o.o/api/top/types/etc/receipt_ref"
 	"o.o/api/top/types/etc/receipt_type"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/receipting/convert"
 	"o.o/backend/com/main/receipting/model"
 	"o.o/backend/com/main/receipting/sqlstore"
@@ -45,7 +46,7 @@ type ReceiptAggregate struct {
 }
 
 func NewReceiptAggregate(
-	database *cmsql.Database, eventBus capi.EventBus,
+	database com.MainDB, eventBus capi.EventBus,
 	traderQuery tradering.QueryBus, ledgerQuery ledgering.QueryBus,
 	orderQuery ordering.QueryBus, customerQuery customering.QueryBus,
 	carrierQuery carrying.QueryBus, supplierQuery suppliering.QueryBus,

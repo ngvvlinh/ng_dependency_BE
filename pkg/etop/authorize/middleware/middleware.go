@@ -45,5 +45,5 @@ func CORS(next http.Handler) http.HandlerFunc {
 }
 
 func VerifyCaptcha(ctx context.Context, token string) error {
-	return captcha.Verify(token)
+	return captcha.Global.Verify(token)
 }

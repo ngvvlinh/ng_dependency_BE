@@ -44,7 +44,7 @@ func Load() (cfg Config, err error) {
 		return cfg, err
 	}
 
-	cfg.Redis.MustLoadEnv()
+	cc.RedisMustLoadEnv(&cfg.Redis)
 	cfg.TelegramBot.MustLoadEnv()
 
 	if cfg.UploadDirImg == "" {

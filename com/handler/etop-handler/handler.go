@@ -22,7 +22,6 @@ import (
 	ordermodel "o.o/backend/com/main/ordering/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
@@ -39,7 +38,6 @@ var ll = l.New()
 type Handler struct {
 	db           *cmsql.Database
 	historyStore historysqlstore.HistoryStoreFactory
-	bot          *telebot.Channel
 
 	consumer mq.KafkaConsumer
 	handlers map[string]pgrid.HandlerFunc
@@ -57,7 +55,7 @@ type Handler struct {
 
 func New(
 	db *cmsql.Database, sender *sender.WebhookSender,
-	bot *telebot.Channel, consumer mq.KafkaConsumer,
+	consumer mq.KafkaConsumer,
 	prefix string, catalogQ catalog.QueryBus,
 	customerQ customering.QueryBus, inventoryQ inventory.QueryBus,
 	addressQ addressing.QueryBus, locationQ location.QueryBus,
@@ -65,7 +63,6 @@ func New(
 	h := &Handler{
 		db:             db,
 		historyStore:   historysqlstore.NewHistoryStore(db),
-		bot:            bot,
 		consumer:       consumer,
 		prefix:         prefix + "_pgrid_",
 		sender:         sender,
@@ -90,13 +87,12 @@ func New(
 	return h
 }
 
-func NewWithHandlers(db *cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string, handlers map[string]pgrid.HandlerFunc) *Handler {
+func NewWithHandlers(db *cmsql.Database, sender *sender.WebhookSender, consumer mq.KafkaConsumer, prefix string, handlers map[string]pgrid.HandlerFunc) *Handler {
 	if len(handlers) == 0 {
 		ll.Panic("Missing handler!")
 	}
 	h := &Handler{
 		db:       db,
-		bot:      bot,
 		consumer: consumer,
 		prefix:   prefix + "_pgrid_",
 		sender:   sender,
@@ -165,14 +161,13 @@ func (h *Handler) ConsumeAndHandleAllTopics(ctx context.Context) {
 				err = pc.ConsumeAndHandle(ctx, wrappedHandler)
 				if err != nil {
 					ll.S.Errorf("Handler for topic %v:%v stopped: %+v", kafkaTopic, partition, err)
-					if h.bot != nil {
-						buf := make([]byte, 2048)
-						runtime.Stack(buf, false)
-						msg := fmt.Sprintf(
-							"🔥 Handler for topic %v:%v stoppped: %+v\n\n%s",
-							kafkaTopic, partition, err, buf)
-						h.bot.SendMessage(msg)
-					}
+
+					buf := make([]byte, 2048)
+					runtime.Stack(buf, false)
+					msg := fmt.Sprintf(
+						"🔥 Handler for topic %v:%v stoppped: %+v\n\n%s",
+						kafkaTopic, partition, err, buf)
+					ll.SendMessage(msg)
 				}
 			}()
 		}

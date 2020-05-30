@@ -16,6 +16,7 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/try_on"
+	com "o.o/backend/com/main"
 	addressconvert "o.o/backend/com/main/address/convert"
 	orderconvert "o.o/backend/com/main/ordering/convert"
 	"o.o/backend/com/main/shipping/carrier"
@@ -26,7 +27,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	etopmodel "o.o/backend/pkg/etop/model"
@@ -40,21 +40,19 @@ var ll = l.New()
 var scheme = conversion.Build(shippingconvert.RegisterConversions)
 
 type Aggregate struct {
-	db             cmsql.Transactioner
+	db             *cmsql.Database
 	locationQS     location.QueryBus
 	orderQS        ordering.QueryBus
 	shimentManager *carrier.ShipmentManager
 	connectionQS   connectioning.QueryBus
 	ffmStore       sqlstore.FulfillmentStoreFactory
 	eventBus       capi.EventBus
-	teleBot        *telebot.Channel
 }
 
-func NewAggregate(db *cmsql.Database, eventB capi.EventBus, locationQS location.QueryBus, teleBot *telebot.Channel, orderQS ordering.QueryBus, shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus) *Aggregate {
+func NewAggregate(db com.MainDB, eventB capi.EventBus, locationQS location.QueryBus, orderQS ordering.QueryBus, shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus) *Aggregate {
 	return &Aggregate{
 		db:             db,
 		locationQS:     locationQS,
-		teleBot:        teleBot,
 		orderQS:        orderQS,
 		shimentManager: shipmentManager,
 		connectionQS:   connectionQS,
@@ -601,7 +599,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 		// Không cập nhật + bắn noti telegram để follow
 		connection, _ := a.shimentManager.GetConnectionByID(ctx, connectionID)
 		str := "–––\n👹 %v: đơn %v có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- Giá hiện tại: %v \n- Giá mới: %v\n–––"
-		a.teleBot.SendMessage(fmt.Sprintf(str, connection.Name, ffm.ShippingCode, ffm.ShippingFeeShop, shippingFee))
+		ll.SendMessage(fmt.Sprintf(str, connection.Name, ffm.ShippingCode, ffm.ShippingFeeShop, shippingFee))
 
 		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn (ffmID = %v) có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật")
 	}

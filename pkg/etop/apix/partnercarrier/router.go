@@ -2,7 +2,6 @@ package partnercarrier
 
 import (
 	"o.o/backend/pkg/common/apifw/idemp"
-	cmService "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi/httprpc"
 )
@@ -14,19 +13,16 @@ const PrefixIdempPartnerCarrierAPI = "IdempPartnerCarrierAPI"
 type Servers []httprpc.Server
 
 func NewServers(
-	sd cmService.Shutdowner,
 	rd redis.Store,
 	miscService *MiscService,
 	shipmentConnectionService *ShipmentConnectionService,
 	shipmentService *ShipmentService,
-) Servers {
+) (Servers, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempPartnerCarrierAPI, 0)
-	sd.Register(idempgroup.Shutdown)
-
 	servers := httprpc.MustNewServers(
 		miscService.Clone,
 		shipmentConnectionService.Clone,
 		shipmentService.Clone,
 	)
-	return servers
+	return servers, idempgroup.Shutdown
 }

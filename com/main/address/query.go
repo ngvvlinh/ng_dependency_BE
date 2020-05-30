@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"o.o/api/main/address"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/address/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ address.QueryService = &QueryService{}
@@ -15,7 +15,7 @@ type QueryService struct {
 	s *sqlstore.AddressStore
 }
 
-func NewQueryService(db *cmsql.Database) *QueryService {
+func NewQueryService(db com.MainDB) *QueryService {
 	return &QueryService{
 		s: sqlstore.NewAddressStore(db),
 	}

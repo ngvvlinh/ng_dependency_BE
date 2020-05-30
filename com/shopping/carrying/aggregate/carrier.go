@@ -6,12 +6,12 @@ import (
 	"o.o/api/meta"
 	"o.o/api/shopping/carrying"
 	"o.o/api/shopping/tradering"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/carrying/convert"
 	"o.o/backend/com/shopping/carrying/model"
 	"o.o/backend/com/shopping/carrying/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -24,7 +24,7 @@ type CarrierAggregate struct {
 	eventBus capi.EventBus
 }
 
-func NewCarrierAggregate(eventBus capi.EventBus, db *cmsql.Database) *CarrierAggregate {
+func NewCarrierAggregate(eventBus capi.EventBus, db com.MainDB) *CarrierAggregate {
 	return &CarrierAggregate{
 		store:    sqlstore.NewCarrierStore(db),
 		eventBus: eventBus,

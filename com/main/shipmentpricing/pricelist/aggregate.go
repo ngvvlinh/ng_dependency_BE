@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/main/shipmentpricing/pricelist"
 	"o.o/api/meta"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/pricelist/convert"
 	"o.o/backend/com/main/shipmentpricing/pricelist/sqlstore"
 	cm "o.o/backend/pkg/common"
@@ -19,12 +20,12 @@ var _ pricelist.Aggregate = &Aggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type Aggregate struct {
-	db                     cmsql.Transactioner
+	db                     *cmsql.Database
 	eventBus               capi.EventBus
 	shipmentPriceListStore sqlstore.ShipmentPriceListStoreFactory
 }
 
-func NewAggregate(db *cmsql.Database, eventBus capi.EventBus) *Aggregate {
+func NewAggregate(db com.MainDB, eventBus capi.EventBus) *Aggregate {
 	return &Aggregate{
 		db:                     db,
 		eventBus:               eventBus,

@@ -27,10 +27,16 @@ import (
 var ll = l.New()
 var sadminToken string
 var identityQS identity.QueryBus
+var tokenStore tokens.TokenStore
 
-func Init(token string, identityQuery identity.QueryBus) {
-	sadminToken = token
+type Middleware struct{}
+type SAdminToken string
+
+func New(token SAdminToken, _tokenStore tokens.TokenStore, identityQuery identity.QueryBus) Middleware {
+	sadminToken = string(token)
 	identityQS = identityQuery
+	tokenStore = _tokenStore
+	return Middleware{}
 }
 
 // StartSessionQuery ...
@@ -108,7 +114,7 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 	// responses token without any credential.
 	if !q.RequireAuth {
 		if token != "" {
-			claim, err := tokens.Store.Validate(token)
+			claim, err := tokenStore.Validate(token)
 			if err != nil {
 				return ctx, cm.ErrUnauthenticated
 			}
@@ -165,7 +171,7 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 		wlPartnerID = claim.AuthPartnerID
 
 	} else {
-		claim, err = tokens.Store.Validate(token)
+		claim, err = tokenStore.Validate(token)
 		if err != nil {
 			return ctx, cm.ErrUnauthenticated
 		}

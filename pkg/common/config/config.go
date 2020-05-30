@@ -13,6 +13,7 @@ import (
 
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/common/l"
 )
@@ -229,12 +230,7 @@ func (c *HTTP) Address() string {
 	return fmt.Sprintf("%s:%d", c.Host, c.Port)
 }
 
-type Redis struct {
-	Host     string `yaml:"host"`
-	Port     string `yaml:"port"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-}
+type Redis = redis.Redis
 
 // DefaultRedis ...
 func DefaultRedis() Redis {
@@ -246,7 +242,7 @@ func DefaultRedis() Redis {
 	}
 }
 
-func (c *Redis) MustLoadEnv(prefix ...string) {
+func RedisMustLoadEnv(c *Redis, prefix ...string) {
 	p := "ET_REDIS"
 	if len(prefix) > 0 {
 		p = prefix[0]
@@ -257,17 +253,6 @@ func (c *Redis) MustLoadEnv(prefix ...string) {
 		p + "_USERNAME": &c.Username,
 		p + "_PASSWORD": &c.Password,
 	}.MustLoad()
-}
-
-// ConnectionString ...
-func (c Redis) ConnectionString() string {
-	s := ""
-	if c.Username == "" || c.Password == "" {
-		s = fmt.Sprintf("redis://%s:%s", c.Host, c.Port)
-	} else {
-		s = fmt.Sprintf("redis://%s:%s@%s:%s", c.Username, c.Password, c.Host, c.Port)
-	}
-	return s
 }
 
 type TelegramBot struct {
@@ -305,8 +290,28 @@ func (c *TelegramBot) ConnectChannel(channel string) (*telebot.Channel, error) {
 	}
 
 	ll.Info("Enabled sending messages to telegram")
-	telebot.RegisterChannel(channel, ch)
 	return ch, err
+}
+
+func (c *TelegramBot) MustRegister() {
+	chans := make(map[string]l.Messenger, len(c.Chats))
+	for name, chatID := range c.Chats {
+		var ch l.Messenger
+		if c.Token != "" && chatID == 0 {
+			var err error
+			ch, err = telebot.NewChannel(c.Token, chatID)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			ch = l.MockMessenger{Name: name}
+		}
+		if name == "default" {
+			name = ""
+		}
+		chans[name] = ch
+	}
+	l.RegisterChannels(chans)
 }
 
 func (c *TelegramBot) MustConnectChannel(channel string) *telebot.Channel {

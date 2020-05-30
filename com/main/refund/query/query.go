@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"o.o/api/main/refund"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/refund/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 )
 
@@ -18,7 +18,7 @@ type RefundQueryService struct {
 	EventBus    capi.EventBus
 }
 
-func NewQueryRefund(eventBus capi.EventBus, db *cmsql.Database) *RefundQueryService {
+func NewQueryRefund(eventBus capi.EventBus, db com.MainDB) *RefundQueryService {
 	return &RefundQueryService{
 		RefundStore: sqlstore.NewRefundStore(db),
 		EventBus:    eventBus,

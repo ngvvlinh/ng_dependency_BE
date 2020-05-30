@@ -5,13 +5,13 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/shopping/addressing"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/customering/convert"
 	"o.o/backend/com/shopping/customering/model"
 	"o.o/backend/com/shopping/customering/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -22,7 +22,7 @@ type AddressAggregate struct {
 	store sqlstore.AddressStoreFactory
 }
 
-func NewAddressAggregate(db *cmsql.Database) *AddressAggregate {
+func NewAddressAggregate(db com.MainDB) *AddressAggregate {
 	return &AddressAggregate{
 		store: sqlstore.NewAddressStore(db),
 	}

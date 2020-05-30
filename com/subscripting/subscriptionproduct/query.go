@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"o.o/api/subscripting/subscriptionproduct"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/subscripting/subscriptionproduct/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -16,7 +16,7 @@ type SubrProductQuery struct {
 	subrProductStore sqlstore.SubrProductStoreFactory
 }
 
-func NewSubrProductQuery(db *cmsql.Database) *SubrProductQuery {
+func NewSubrProductQuery(db com.MainDB) *SubrProductQuery {
 	return &SubrProductQuery{
 		subrProductStore: sqlstore.NewSubscriptionProductStore(db),
 	}

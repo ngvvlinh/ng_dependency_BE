@@ -10,7 +10,6 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/integration/sms/vietguys"
 	"o.o/common/l"
@@ -50,7 +49,6 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 type Client struct {
 	drivers []DriverConfig
 	smsLog  smslog.CommandBus
-	bot     *telebot.Channel
 }
 
 type DriverConfig struct {
@@ -58,9 +56,9 @@ type DriverConfig struct {
 	Driver Driver
 }
 
-func New(cfg Config, bot *telebot.Channel, drivers []DriverConfig, smsCommandBus smslog.CommandBus) Client {
+func New(cfg Config, drivers []DriverConfig, smsCommandBus smslog.CommandBus) Client {
 	c := Client{
-		bot:     bot,
+
 		drivers: drivers,
 	}
 	return c
@@ -101,7 +99,7 @@ func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
 	}()
 
 	if err != nil {
-		c.bot.SendMessage(fmt.Sprintf("sms: %v", err))
+		ll.SendMessage(fmt.Sprintf("sms: %v", err))
 		return cm.Errorf(cm.ExternalServiceError, nil, "Không thể gửi tin nhắn")
 	}
 	cmd.Result.SMSID = resp

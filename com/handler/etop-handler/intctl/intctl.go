@@ -8,7 +8,6 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/mq"
 	"o.o/common/l"
 )
@@ -20,7 +19,6 @@ const ConsumerGroup = "handler/intctl"
 type Handler struct {
 	prefix   string
 	consumer mq.KafkaConsumer
-	bot      *telebot.Channel
 	init     bool
 	wg       sync.WaitGroup
 
@@ -28,11 +26,10 @@ type Handler struct {
 	listeners map[string]mq.EventHandler
 }
 
-func New(bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) *Handler {
+func New(consumer mq.KafkaConsumer, prefix string) *Handler {
 	h := &Handler{
 		prefix:    prefix + "_",
 		consumer:  consumer,
-		bot:       bot,
 		listeners: make(map[string]mq.EventHandler),
 	}
 	handlers := h.TopicsAndHandlers()
@@ -84,12 +81,10 @@ func (h *Handler) ConsumeAndHandle(ctx context.Context) {
 			err = pc.ConsumeAndHandle(ctx, handler)
 			if err != nil {
 				ll.S.Errorf("Handler for topic %v:%v stopped: %+v", kafkaTopic, partition, err)
-				if h.bot != nil {
-					msg := fmt.Sprintf(
-						"🔥 Handler for topic %v:%v stoppped: %+v",
-						kafkaTopic, partition, err)
-					h.bot.SendMessage(msg)
-				}
+				msg := fmt.Sprintf(
+					"🔥 Handler for topic %v:%v stoppped: %+v",
+					kafkaTopic, partition, err)
+				ll.SendMessage(msg)
 			}
 		}()
 	}

@@ -9,7 +9,9 @@ import (
 	"o.o/backend/tools/pkg/acl"
 )
 
-type ExportService struct{}
+type ExportService struct {
+	ExportInner *export.Service
+}
 
 func (s *ExportService) Clone() *ExportService { res := *s; return &res }
 
@@ -45,13 +47,13 @@ func (s *ExportService) RequestExport(ctx context.Context, r *RequestExportEndpo
 		}
 	}
 
-	resp, err := export.ServiceImpl.RequestExport(ctx, r.Context, r.Context.Shop, r.Context.UserID, r.RequestExportRequest)
+	resp, err := s.ExportInner.RequestExport(ctx, r.Context, r.Context.Shop, r.Context.UserID, r.RequestExportRequest)
 	r.Result = resp
 	return err
 }
 
 func (s *ExportService) GetExports(ctx context.Context, r *GetExportsEndpoint) error {
-	resp, err := export.ServiceImpl.GetExports(ctx, r.Context.Shop.ID, r.GetExportsRequest)
+	resp, err := s.ExportInner.GetExports(ctx, r.Context.Shop.ID, r.GetExportsRequest)
 	r.Result = resp
 	return err
 }

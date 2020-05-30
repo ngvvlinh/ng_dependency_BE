@@ -5,9 +5,9 @@ import (
 
 	"o.o/api/shopping"
 	"o.o/api/shopping/carrying"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/carrying/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ carrying.QueryService = &CarrierQuery{}
@@ -16,7 +16,7 @@ type CarrierQuery struct {
 	store sqlstore.CarrierStoreFactory
 }
 
-func NewCarrierQuery(db *cmsql.Database) *CarrierQuery {
+func NewCarrierQuery(db com.MainDB) *CarrierQuery {
 	return &CarrierQuery{
 		store: sqlstore.NewCarrierStore(db),
 	}

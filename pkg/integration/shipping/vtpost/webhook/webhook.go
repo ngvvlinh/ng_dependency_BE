@@ -1,4 +1,4 @@
-package vtpostWebhook
+package webhook
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	logmodel "o.o/backend/com/etc/logging/webhook/model"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipping/carrier"
 	shippingconvert "o.o/backend/com/main/shipping/convert"
 	shipmodel "o.o/backend/com/main/shipping/model"
@@ -43,7 +44,7 @@ type Webhook struct {
 	shippingAggr    shippingcore.CommandBus
 }
 
-func New(db, dbLogs *cmsql.Database, carrier *vtpost.Carrier, shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus, shippingA shippingcore.CommandBus) *Webhook {
+func New(db com.MainDB, dbLogs com.LogDB, carrier *vtpost.Carrier, shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus, shippingA shippingcore.CommandBus) *Webhook {
 	wh := &Webhook{
 		db:              db,
 		dbLogs:          dbLogs,

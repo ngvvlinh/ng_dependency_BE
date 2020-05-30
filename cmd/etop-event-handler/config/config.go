@@ -37,7 +37,7 @@ func Load() (cfg Config, err error) {
 	err = cc.LoadWithDefault(&cfg, Default())
 	cc.PostgresMustLoadEnv(&cfg.Postgres)
 	cc.PostgresMustLoadEnv(&cfg.PostgresWebhook, "ET_POSTGRES_WEBHOOK")
-	cfg.Redis.MustLoadEnv()
+	cc.RedisMustLoadEnv(&cfg.Redis)
 	cfg.TelegramBot.MustLoadEnv()
 	cc.EnvMap{
 		"ET_SECRET": &cfg.Secret,

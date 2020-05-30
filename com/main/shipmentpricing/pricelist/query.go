@@ -5,10 +5,10 @@ import (
 
 	"o.o/api/main/shipmentpricing/pricelist"
 	"o.o/api/meta"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/pricelist/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -19,7 +19,7 @@ type QueryService struct {
 	redisStore             redis.Store
 }
 
-func NewQueryService(db *cmsql.Database, redisStore redis.Store) *QueryService {
+func NewQueryService(db com.MainDB, redisStore redis.Store) *QueryService {
 	return &QueryService{
 		shipmentPriceListStore: sqlstore.NewShipmentPriceListStore(db),
 		redisStore:             redisStore,

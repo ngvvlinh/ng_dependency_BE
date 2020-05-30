@@ -9,12 +9,12 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/stocktake_type"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/inventory/convert"
 	"o.o/backend/com/main/inventory/sqlstore"
 	"o.o/backend/com/main/inventory/util"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -28,7 +28,7 @@ type InventoryQueryService struct {
 	StocktakeQuery        stocktaking.QueryBus
 }
 
-func NewQueryInventory(stocktakeQuery stocktaking.QueryBus, eventBus capi.EventBus, db *cmsql.Database) *InventoryQueryService {
+func NewQueryInventory(stocktakeQuery stocktaking.QueryBus, eventBus capi.EventBus, db com.MainDB) *InventoryQueryService {
 	return &InventoryQueryService{
 		InventoryStore:        sqlstore.NewInventoryStore(db),
 		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),

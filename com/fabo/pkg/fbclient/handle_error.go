@@ -9,7 +9,6 @@ import (
 
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/capi/dot"
 )
 
@@ -19,13 +18,10 @@ const (
 )
 
 type FacebookErrorService struct {
-	bot *telebot.Channel
 }
 
-func NewFacebookErrorService(_bot *telebot.Channel) *FacebookErrorService {
-	return &FacebookErrorService{
-		bot: _bot,
-	}
+func NewFacebookErrorService() *FacebookErrorService {
+	return &FacebookErrorService{}
 }
 
 func (s *FacebookErrorService) HandleErrorFacebookAPI(body []byte, currentURL string) error {

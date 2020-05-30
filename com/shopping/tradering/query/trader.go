@@ -8,10 +8,10 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/api/shopping/suppliering"
 	"o.o/api/shopping/tradering"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/tradering/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -25,7 +25,7 @@ type TraderQuery struct {
 }
 
 func NewTraderQuery(
-	db *cmsql.Database, customerQ customering.QueryBus,
+	db com.MainDB, customerQ customering.QueryBus,
 	carrierQ carrying.QueryBus, supplierQ suppliering.QueryBus,
 ) *TraderQuery {
 	return &TraderQuery{

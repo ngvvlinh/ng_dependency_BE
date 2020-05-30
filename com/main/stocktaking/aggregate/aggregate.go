@@ -7,6 +7,7 @@ import (
 	stocktake "o.o/api/main/stocktaking"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/stocktake_type"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/stocktaking/convert"
 	"o.o/backend/com/main/stocktaking/sqlstore"
 	cm "o.o/backend/pkg/common"
@@ -25,7 +26,7 @@ type StocktakeAggregate struct {
 	DB             *cmsql.Database
 }
 
-func NewAggregateStocktake(db *cmsql.Database, eventBus capi.EventBus) *StocktakeAggregate {
+func NewAggregateStocktake(db com.MainDB, eventBus capi.EventBus) *StocktakeAggregate {
 	return &StocktakeAggregate{
 		StocktakeStore: sqlstore.NewStocktakeStore(db),
 		EventBus:       eventBus,

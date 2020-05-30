@@ -10,13 +10,13 @@ import (
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/top/types/etc/route_type"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	locationutil "o.o/backend/com/main/location/util"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice/sqlstore"
 	"o.o/backend/com/main/shipmentpricing/util"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -29,7 +29,7 @@ type QueryService struct {
 	priceListQS        pricelist.QueryBus
 }
 
-func NewQueryService(db *cmsql.Database, redisStore redis.Store, locationQS location.QueryBus, priceListQS pricelist.QueryBus) *QueryService {
+func NewQueryService(db com.MainDB, redisStore redis.Store, locationQS location.QueryBus, priceListQS pricelist.QueryBus) *QueryService {
 	return &QueryService{
 		redisStore:         redisStore,
 		shipmentPriceStore: sqlstore.NewShipmentPriceStore(db),

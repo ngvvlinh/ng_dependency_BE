@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"o.o/api/shopping/tradering"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/tradering/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -18,7 +18,7 @@ type TraderAgg struct {
 }
 
 func NewTraderAgg(
-	db *cmsql.Database,
+	db com.MainDB,
 ) *TraderAgg {
 	return &TraderAgg{
 		store: sqlstore.NewTraderStore(db),

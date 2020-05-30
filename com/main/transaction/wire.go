@@ -4,6 +4,7 @@ package transaction
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/transaction/aggregate"
 	"o.o/backend/com/main/transaction/query"
 )

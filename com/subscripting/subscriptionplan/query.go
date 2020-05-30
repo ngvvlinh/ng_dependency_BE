@@ -6,9 +6,9 @@ import (
 	"o.o/api/subscripting/subscriptionplan"
 	"o.o/api/subscripting/subscriptionproduct"
 	"o.o/api/top/types/etc/subscription_product_type"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/subscripting/subscriptionplan/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -19,7 +19,7 @@ type SubrPlanQuery struct {
 	subrProductQuery subscriptionproduct.QueryBus
 }
 
-func NewSubrPlanQuery(db *cmsql.Database, subrProductQuery subscriptionproduct.QueryBus) *SubrPlanQuery {
+func NewSubrPlanQuery(db com.MainDB, subrProductQuery subscriptionproduct.QueryBus) *SubrPlanQuery {
 	return &SubrPlanQuery{
 		subrPlanStore:    sqlstore.NewSubrPlanStore(db),
 		subrProductQuery: subrProductQuery,

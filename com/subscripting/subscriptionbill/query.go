@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"o.o/api/subscripting/subscriptionbill"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/subscripting/subscriptionbill/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -16,7 +16,7 @@ type SubrBillQuery struct {
 	subrBillStore sqlstore.SubrBillStoreFactory
 }
 
-func NewSubrBillQuery(db *cmsql.Database) *SubrBillQuery {
+func NewSubrBillQuery(db com.MainDB) *SubrBillQuery {
 	return &SubrBillQuery{
 		subrBillStore: sqlstore.NewSubrBillStore(db),
 	}

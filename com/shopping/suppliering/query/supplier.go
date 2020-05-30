@@ -5,9 +5,9 @@ import (
 
 	"o.o/api/shopping"
 	"o.o/api/shopping/suppliering"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/suppliering/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ suppliering.QueryService = &SupplierQuery{}
@@ -16,7 +16,7 @@ type SupplierQuery struct {
 	store sqlstore.SupplierStoreFactory
 }
 
-func NewSupplierQuery(db *cmsql.Database) *SupplierQuery {
+func NewSupplierQuery(db com.MainDB) *SupplierQuery {
 	return &SupplierQuery{
 		store: sqlstore.NewSupplierStore(db),
 	}

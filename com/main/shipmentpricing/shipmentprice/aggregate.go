@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice/convert"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice/model"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice/sqlstore"
@@ -20,12 +21,12 @@ var _ shipmentprice.Aggregate = &Aggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type Aggregate struct {
-	db                 cmsql.Transactioner
+	db                 *cmsql.Database
 	redisStore         redis.Store
 	shipmentPriceStore sqlstore.ShipmentPriceStoreFactory
 }
 
-func NewAggregate(db *cmsql.Database, redisStore redis.Store) *Aggregate {
+func NewAggregate(db com.MainDB, redisStore redis.Store) *Aggregate {
 	return &Aggregate{
 		db:                 db,
 		redisStore:         redisStore,

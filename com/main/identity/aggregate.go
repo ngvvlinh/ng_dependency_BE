@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/shipnow/carrier"
 	carriertypes "o.o/api/main/shipnow/carrier/types"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/identity/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -20,7 +21,7 @@ import (
 var _ identity.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	db                    cmsql.Transactioner
+	db                    *cmsql.Database
 	userStore             sqlstore.UserStoreFactory
 	accountStore          sqlstore.AccountStoreFactory
 	accountUserStore      sqlstore.AccountUserStoreFactory
@@ -28,7 +29,7 @@ type Aggregate struct {
 	shipnowCarrierManager carrier.Manager
 }
 
-func NewAggregate(db *cmsql.Database, carrierManager carrier.Manager) *Aggregate {
+func NewAggregate(db com.MainDB, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:                    db,
 		xAccountAhamove:       sqlstore.NewXAccountAhamoveStore(db),

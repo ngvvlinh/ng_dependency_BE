@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
+	servicelocation "o.o/backend/com/main/location"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/sql/cmsql"
 )
@@ -17,7 +18,7 @@ func InitTest() {
 	if err != nil {
 		panic(err)
 	}
-	Init(engine)
+	New(engine, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 	x = engine
 
 	MustExec("SELECT 1")

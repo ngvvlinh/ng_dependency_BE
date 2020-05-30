@@ -13,7 +13,6 @@ import (
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/common/l"
@@ -30,7 +29,6 @@ var (
 
 type Webhook struct {
 	db               *cmsql.Database
-	bot              *telebot.Channel
 	verifyToken      string
 	redisStore       redis.Store
 	fbClient         *fbclient.FbClient
@@ -40,14 +38,13 @@ type Webhook struct {
 }
 
 func New(
-	db *cmsql.Database, bot *telebot.Channel, verifyToken string,
+	db *cmsql.Database, verifyToken string,
 	redisStore redis.Store, fbClient *fbclient.FbClient,
 	fbmessagingQuery fbmessaging.QueryBus, fbmessagingAggregate fbmessaging.CommandBus,
 	fbPageQuery fbpaging.QueryBus,
 ) *Webhook {
 	wh := &Webhook{
 		db:               db,
-		bot:              bot,
 		verifyToken:      verifyToken,
 		redisStore:       redisStore,
 		fbClient:         fbClient,

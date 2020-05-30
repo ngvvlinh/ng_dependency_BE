@@ -131,7 +131,7 @@ func GetPartnerRelationQuery(ctx context.Context, query *identitymodelx.GetPartn
 	s := x.NewQuery()
 	count := 0
 	if query.PartnerID != 0 && query.ExternalUserID != "" {
-		count++ // TODO(qv): correctly handle this
+		count++ // TODO(vu): correctly handle this
 		s = s.Where("pr.partner_id = ?", query.PartnerID).
 			Where("pr.external_subject_id = ? AND pr.subject_type = 'user'", query.ExternalUserID)
 		var item identitymodel.PartnerRelationFtUser

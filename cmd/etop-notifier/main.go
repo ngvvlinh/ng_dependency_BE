@@ -14,12 +14,12 @@ import (
 	"o.o/backend/cmd/etop-notifier/config"
 	"o.o/backend/com/handler/notifier"
 	notihandler "o.o/backend/com/handler/notifier/handler"
+	servicelocation "o.o/backend/com/main/location"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/mq"
@@ -32,7 +32,6 @@ var (
 	ll  = l.New()
 	cfg config.Config
 	ctx context.Context
-	bot *telebot.Channel
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
@@ -73,15 +72,15 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
-	bot, err = cfg.TelegramBot.ConnectDefault()
-	if err != nil {
-		ll.Fatal("Unable to connect to Telegram", l.Error(err))
-	}
+	cfg.TelegramBot.MustRegister()
+
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	sqlstore.Init(db)
+
+	locationBus := servicelocation.QueryMessageBus(servicelocation.New(nil))
+	sqlstore.New(db, locationBus, nil)
 
 	dbNotifier, err := cmsql.Connect(cfg.PostgresNotifier)
 	if err != nil {
@@ -94,7 +93,7 @@ func main() {
 		if err != nil {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
-		hMain, hNotifier := notihandler.New(db, dbNotifier, bot, consumer, cfg.Kafka.TopicPrefix)
+		hMain, hNotifier := notihandler.New(db, dbNotifier, consumer, cfg.Kafka.TopicPrefix)
 		hMain.ConsumeAndHandleAllTopics(ctx)
 		hNotifier.ConsumeAndHandleAllTopics(ctx)
 	}
@@ -136,10 +135,8 @@ func main() {
 		ll.Sync()
 	}()
 
-	if bot != nil {
-		bot.SendMessage(fmt.Sprintf("–––\n✨ etop-notification started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
-		defer bot.SendMessage("👹 etop-notification stopped 👹\n–––")
-	}
+	ll.SendMessage(fmt.Sprintf("–––\n✨ etop-notification started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
+	defer ll.SendMessage("👹 etop-notification stopped 👹\n–––")
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()

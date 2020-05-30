@@ -6,6 +6,7 @@ import (
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbpage/sqlstore"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -19,7 +20,7 @@ type FbPageQuery struct {
 	fbPageInternalStore sqlstore.FbExternalPageInternalStoreFactory
 }
 
-func NewFbPageQuery(database *cmsql.Database) *FbPageQuery {
+func NewFbPageQuery(database com.MainDB) *FbPageQuery {
 	return &FbPageQuery{
 		db:                  database,
 		fbPageStore:         sqlstore.NewFbExternalPageStore(database),

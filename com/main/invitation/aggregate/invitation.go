@@ -12,6 +12,7 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/cmd/etop-server/config"
+	com "o.o/backend/com/main"
 	authorizationconvert "o.o/backend/com/main/authorization/convert"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/com/main/invitation/convert"
@@ -46,7 +47,7 @@ type InvitationAggregate struct {
 }
 
 func NewInvitationAggregate(
-	database *cmsql.Database, cfg invitation.Config,
+	database com.MainDB, cfg invitation.Config,
 	customerQ customering.QueryBus, identityQ identity.QueryBus,
 	eventBus capi.EventBus, config config.Config,
 	smsClient sms.Client,

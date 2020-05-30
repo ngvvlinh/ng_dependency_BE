@@ -5,8 +5,8 @@ import (
 
 	"o.o/api/external/payment"
 	"o.o/backend/com/external/payment/payment/sqlstore"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -16,7 +16,7 @@ type QueryService struct {
 	store sqlstore.PaymentStoreFactory
 }
 
-func NewQueryService(db *cmsql.Database) *QueryService {
+func NewQueryService(db com.MainDB) *QueryService {
 	return &QueryService{
 		store: sqlstore.NewPaymentStore(db),
 	}

@@ -10,6 +10,7 @@ import (
 	"o.o/api/main/catalog"
 	"o.o/api/meta"
 	"o.o/api/shopping"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/catalog/convert"
 	"o.o/backend/com/main/catalog/model"
 	"o.o/backend/com/main/catalog/sqlstore"
@@ -36,7 +37,7 @@ type Aggregate struct {
 	eventBus              capi.EventBus
 }
 
-func New(eventBus capi.EventBus, db *cmsql.Database) *Aggregate {
+func New(eventBus capi.EventBus, db com.MainDB) *Aggregate {
 	return &Aggregate{
 		db:                    db,
 		shopProduct:           sqlstore.NewShopProductStore(db),

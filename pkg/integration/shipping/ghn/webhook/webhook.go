@@ -1,4 +1,4 @@
-package ghnWebhook
+package webhook
 
 import (
 	"bytes"
@@ -10,6 +10,7 @@ import (
 	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	logmodel "o.o/backend/com/etc/logging/webhook/model"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipping/carrier"
 	shippingconvert "o.o/backend/com/main/shipping/convert"
 	shipmodel "o.o/backend/com/main/shipping/model"
@@ -29,6 +30,9 @@ import (
 
 var ll = l.New()
 
+type MainDB *cmsql.Database // TODO(vu): call the right service
+type LogDB *cmsql.Database  // TODO(vu): move to new service
+
 type Webhook struct {
 	db              *cmsql.Database
 	dbLogs          *cmsql.Database
@@ -38,7 +42,7 @@ type Webhook struct {
 	shippingAggr    shippingcore.CommandBus
 }
 
-func New(db *cmsql.Database, dbLogs *cmsql.Database, carrier *ghn.Carrier, shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus, shippingA shippingcore.CommandBus) *Webhook {
+func New(db com.MainDB, dbLogs com.LogDB, carrier *ghn.Carrier, shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus, shippingA shippingcore.CommandBus) *Webhook {
 	wh := &Webhook{
 		db:              db,
 		dbLogs:          dbLogs,

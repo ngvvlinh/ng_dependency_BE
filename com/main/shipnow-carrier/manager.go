@@ -9,10 +9,10 @@ import (
 	"o.o/api/main/shipnow/carrier"
 	carriertypes "o.o/api/main/shipnow/carrier/types"
 	shipnowtypes "o.o/api/main/shipnow/types"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipnow/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
 )
 
@@ -33,7 +33,7 @@ type ShipnowManager struct {
 	store        sqlstore.ShipnowStoreFactory
 }
 
-func NewManager(db *cmsql.Database, locationBus location.QueryBus, shipnowQuery shipnow.QueryBus, carriers []*Carrier) *ShipnowManager {
+func NewManager(db com.MainDB, locationBus location.QueryBus, shipnowQuery shipnow.QueryBus, carriers []*Carrier) *ShipnowManager {
 	return &ShipnowManager{
 		drivers:      carriers,
 		location:     locationBus,

@@ -21,7 +21,7 @@ func init() {
 	}
 
 	ll = New()
-	xl = New(zap.AddCallerSkip(1))
+	xl = New(WrapOption(zap.AddCallerSkip(1)))
 
 	var envLog string
 	for _, envKey := range envKeys {
@@ -44,15 +44,17 @@ func init() {
 
 // Logger wraps zap.Logger
 type Logger struct {
+	opts    []zap.Option
 	enabler AtomicLevel
 	*zap.Logger
 
-	S *zap.SugaredLogger
-	v VerboseLogger
+	S  *zap.SugaredLogger
+	v  VerbosedLogger
+	ch *Messenger
 }
 
 // New returns new zap.Logger
-func New(opts ...zap.Option) Logger {
+func New(opts ...Option) Logger {
 	_, filename, _, _ := runtime.Caller(1)
 	name := filepath.Dir(truncFilename(filename))
 
@@ -74,24 +76,27 @@ func New(opts ...zap.Option) Logger {
 		ErrorOutputPaths: []string{"stderr"},
 	}
 	stacktraceLevel := zap.NewAtomicLevelAt(zapcore.PanicLevel)
+	l := Logger{
+		enabler: enabler,
+		v: VerbosedLogger{
+			enabler: enabler.AtomicLevel,
+		},
+	}
+	for _, opt := range opts {
+		opt(&l)
+	}
 
-	opts = append(opts, zap.AddStacktrace(stacktraceLevel))
-	logger, err := loggerConfig.Build(opts...)
+	l.opts = append(l.opts, zap.AddStacktrace(stacktraceLevel))
+	logger, err := loggerConfig.Build(l.opts...)
 	if err != nil {
 		panic(err)
 	}
 
 	verbose := logger.WithOptions(zap.AddCallerSkip(1))
-	l := Logger{
-		enabler: enabler,
-		Logger:  logger,
-		S:       logger.Sugar(),
-		v: VerboseLogger{
-			enabler: enabler.AtomicLevel,
-			logger:  verbose,
-			sugar:   verbose.Sugar(),
-		},
-	}
+	l.Logger = logger
+	l.S = logger.Sugar()
+	l.v.logger = verbose
+	l.v.sugar = verbose.Sugar()
 	return l
 }
 
@@ -109,4 +114,30 @@ func (l Logger) Watch(fn LevelWatcher) (unwatch func()) {
 
 func (l Logger) Sync() {
 	_ = l.Logger.Sync()
+}
+
+func (l Logger) Must(err error, msg string, fields ...zap.Field) {
+	if err == nil {
+		return
+	}
+	fs := make([]zap.Field, 0, len(fields)+1)
+	fs = append(fs, Error(err))
+	fs = append(fs, fields...)
+	ll.Panic(msg, fields...)
+}
+
+func (l Logger) WithChannel(channel string) Logger {
+	l.ch = getChannel(channel)
+	return l
+}
+
+// SendMessage sends a message to Telegram
+//
+// TODO(vu): implement a watcher system instead
+func (l *Logger) SendMessage(msg string) {
+	if l.ch == nil {
+		// retrieve the default channel
+		l.ch = getChannel("")
+	}
+	(*l.ch).SendMessage(msg)
 }

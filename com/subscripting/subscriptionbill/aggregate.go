@@ -11,6 +11,7 @@ import (
 	"o.o/api/top/types/etc/payment_provider"
 	"o.o/api/top/types/etc/payment_state"
 	"o.o/api/top/types/etc/status4"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/subscripting/subscriptionbill/convert"
 	"o.o/backend/com/subscripting/subscriptionbill/model"
 	"o.o/backend/com/subscripting/subscriptionbill/sqlstore"
@@ -27,7 +28,7 @@ var _ subscriptionbill.Aggregate = &SubrBillAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type SubrBillAggregate struct {
-	db                cmsql.Transactioner
+	db                *cmsql.Database
 	eventBus          capi.EventBus
 	subrBillStore     sqlstore.SubrBillStoreFactory
 	subrBillLineStore sqlstore.SubrBillLineStoreFactory
@@ -36,7 +37,7 @@ type SubrBillAggregate struct {
 	subrPlanQuery     subscriptionplan.QueryBus
 }
 
-func NewSubrBillAggregate(db *cmsql.Database, eventB capi.EventBus, paymentA payment.CommandBus, subrQuery subscription.QueryBus, subrPlanQuery subscriptionplan.QueryBus) *SubrBillAggregate {
+func NewSubrBillAggregate(db com.MainDB, eventB capi.EventBus, paymentA payment.CommandBus, subrQuery subscription.QueryBus, subrPlanQuery subscriptionplan.QueryBus) *SubrBillAggregate {
 	return &SubrBillAggregate{
 		db:                db,
 		eventBus:          eventB,

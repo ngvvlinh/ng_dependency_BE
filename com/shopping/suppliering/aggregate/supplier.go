@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/shopping/suppliering"
 	"o.o/api/shopping/tradering"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/suppliering/convert"
 	"o.o/backend/com/shopping/suppliering/model"
 	"o.o/backend/com/shopping/suppliering/sqlstore"
@@ -26,7 +27,7 @@ type SupplierAggregate struct {
 	eventBus capi.EventBus
 }
 
-func NewSupplierAggregate(eventBus capi.EventBus, db *cmsql.Database) *SupplierAggregate {
+func NewSupplierAggregate(eventBus capi.EventBus, db com.MainDB) *SupplierAggregate {
 	return &SupplierAggregate{
 		store:    sqlstore.NewSupplierStore(db),
 		db:       db,

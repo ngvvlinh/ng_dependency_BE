@@ -20,6 +20,7 @@ import (
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/try_on"
+	com "o.o/backend/com/main"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	identitymodel "o.o/backend/com/main/identity/model"
 	ordermodel "o.o/backend/com/main/ordering/model"
@@ -28,13 +29,11 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/apifw/idemp"
-	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
@@ -53,10 +52,8 @@ type Import struct {
 	shopVariantStore catalogsqlstore.ShopVariantStoreFactory
 }
 
-func New(_locationBus location.QueryBus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db *cmsql.Database) *Import {
+func New(_locationBus location.QueryBus, rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
-	sd.Register(idempgroup.Shutdown)
-
 	im := &Import{
 		uploader:    ul,
 		locationBus: _locationBus,
@@ -65,7 +62,7 @@ func New(_locationBus location.QueryBus, sd cmservice.Shutdowner, rd redis.Store
 	if ul != nil {
 		ul.ExpectDir(model.ImportTypeShopOrder.String())
 	}
-	return im
+	return im, idempgroup.Shutdown
 }
 
 func (im *Import) HandleImportOrders(c *httpx.Context) error {

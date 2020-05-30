@@ -6,7 +6,6 @@ import (
 
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/authorization/auth"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/common/l"
@@ -21,24 +20,8 @@ const (
 	DefaultAccessTokenTTL = 60 * 60 * 24 * 7 // 3 days
 )
 
-var Store TokenStore
-
-func init() {
-	bus.AddHandlers("session",
-		GenerateToken,
-		UpdateSession,
-	)
-}
-
 type Validator interface {
 	Validate(tokenStr string) (*claims.Claim, error)
-}
-
-// InitTokenStore ...
-func Init(r redis.Store) {
-	Store = TokenStore{
-		auth: auth.NewGenerator(r),
-	}
 }
 
 // TokenStore ...
@@ -62,20 +45,16 @@ type UpdateSessionCommand struct {
 	Values map[string]string
 }
 
-func GenerateToken(ctx context.Context, cmd *GenerateTokenCommand) error {
+func (s TokenStore) GenerateToken(ctx context.Context, cmd *GenerateTokenCommand) error {
 	claim := &claims.Claim{
 		ClaimInfo: cmd.ClaimInfo,
 	}
-	tok, err := Store.generateWithClaim(claim, cmd.TTL)
+	tok, err := s.generateWithClaim(claim, cmd.TTL)
 	if err != nil {
 		return err
 	}
 	cmd.Result = tok
 	return nil
-}
-
-func UpdateSession(ctx context.Context, cmd *UpdateSessionCommand) error {
-	return Store.UpdateSession(cmd.Token, cmd.Values)
 }
 
 // GenerateWithClaim ...

@@ -7,9 +7,7 @@ import (
 
 	service "o.o/api/top/int/etop"
 	"o.o/backend/pkg/common/apifw/idemp"
-	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
@@ -37,16 +35,13 @@ func NewServers(
 	rd redis.Store,
 	_cfgEmail EmailConfig,
 	_cfgSMS sms.Config,
-	bot *telebot.Channel,
-	sd cmservice.Shutdowner,
-) Servers {
+
+) (Servers, func()) {
 	UserServiceImpl = userService // MUSTDO: remove this
 	enabledEmail = _cfgEmail.Enabled
 	enabledSMS = _cfgSMS.Enabled
 	cfgEmail = _cfgEmail
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempUser, 0)
-	sd.Register(idempgroup.Shutdown)
-	botTelegram = bot
 	if enabledEmail {
 		if _, err := validate.ValidateStruct(cfgEmail); err != nil {
 			ll.Fatal("Can not validate config", l.Error(err))
@@ -100,7 +95,7 @@ func NewServers(
 		prx := &Proxy{pathPrefix, s}
 		result = append(result, prx)
 	}
-	return result
+	return result, idempgroup.Shutdown
 }
 
 var _ httprpc.Server = &Proxy{}

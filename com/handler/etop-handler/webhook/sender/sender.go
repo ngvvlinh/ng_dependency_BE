@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"o.o/backend/com/handler/etop-handler/webhook/storage"
+	com "o.o/backend/com/main"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -51,7 +52,7 @@ type WebhookSender struct {
 	m  sync.RWMutex
 }
 
-func New(db *cmsql.Database, redis redis.Store, cs *storage.ChangesStore) *WebhookSender {
+func New(db com.MainDB, redis redis.Store, cs *storage.ChangesStore) *WebhookSender {
 	redisStore = redis
 	changesStore = cs
 	return &WebhookSender{db: db}

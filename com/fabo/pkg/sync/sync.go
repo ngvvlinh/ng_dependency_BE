@@ -19,7 +19,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 	"o.o/common/l"
@@ -96,16 +95,17 @@ type Synchronizer struct {
 	fbMessagingAggr  fbmessaging.CommandBus
 	fbMessagingQuery fbmessaging.QueryBus
 
-	bot *telebot.Channel
-	mu  sync.Mutex
+	mu sync.Mutex
 
 	timeLimit int
 }
 
 func New(
-	db *cmsql.Database, fbClient *fbclient.FbClient,
-	fbMessagingAggr fbmessaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus,
-	bot *telebot.Channel, timeLimit int,
+	db *cmsql.Database,
+	fbClient *fbclient.FbClient,
+	fbMessagingAggr fbmessaging.CommandBus,
+	fbMessagingQuery fbmessaging.QueryBus,
+	timeLimit int,
 ) *Synchronizer {
 	sched := scheduler.New(defaultNumWorkers)
 	s := &Synchronizer{
@@ -115,7 +115,6 @@ func New(
 		mapTaskArguments: make(map[dot.ID]*TaskArguments),
 		fbMessagingAggr:  fbMessagingAggr,
 		fbMessagingQuery: fbMessagingQuery,
-		bot:              bot,
 		timeLimit:        timeLimit,
 	}
 	return s
@@ -235,7 +234,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 				}
 			}
 		}
-		go s.bot.SendMessage(_err.Error())
+		go ll.SendMessage(_err.Error())
 		s.scheduler.AddAfter(taskID, defaultRecurrentFacebook, s.syncCallbackLogs)
 	}()
 

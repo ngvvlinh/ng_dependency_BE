@@ -8,10 +8,10 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/ordering/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -23,7 +23,7 @@ type Aggregate struct {
 	eventBus capi.EventBus
 }
 
-func NewAggregate(eventBus capi.EventBus, db *cmsql.Database) *Aggregate {
+func NewAggregate(eventBus capi.EventBus, db com.MainDB) *Aggregate {
 	return &Aggregate{
 		store:    sqlstore.NewOrderStore(db),
 		eventBus: eventBus,

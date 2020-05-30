@@ -17,6 +17,7 @@ import (
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipnow/convert"
 	"o.o/backend/com/main/shipnow/sqlstore"
 	cm "o.o/backend/pkg/common"
@@ -34,13 +35,13 @@ type Aggregate struct {
 	addressQuery  address.QueryBus
 	order         ordering.QueryBus
 
-	db             cmsql.Transactioner
+	db             *cmsql.Database
 	store          sqlstore.ShipnowStoreFactory
 	eventBus       capi.EventBus
 	carrierManager carrier.Manager
 }
 
-func NewAggregate(eventBus capi.EventBus, db *cmsql.Database, location location.QueryBus, identityQuery identity.QueryBus, addressQuery address.QueryBus, order ordering.QueryBus, carrierManager carrier.Manager) *Aggregate {
+func NewAggregate(eventBus capi.EventBus, db com.MainDB, location location.QueryBus, identityQuery identity.QueryBus, addressQuery address.QueryBus, order ordering.QueryBus, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:       db,
 		store:    sqlstore.NewShipnowStore(db),

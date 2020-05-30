@@ -8,6 +8,7 @@ import (
 	"o.o/api/main/purchaseorder"
 	"o.o/api/shopping/suppliering"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/purchaseorder/convert"
 	"o.o/backend/com/main/purchaseorder/model"
 	"o.o/backend/com/main/purchaseorder/sqlstore"
@@ -34,7 +35,7 @@ type PurchaseOrderAggregate struct {
 }
 
 func NewPurchaseOrderAggregate(
-	database *cmsql.Database, eventBus capi.EventBus,
+	database com.MainDB, eventBus capi.EventBus,
 	catalogQ catalog.QueryBus, supplierQ suppliering.QueryBus,
 	inventoryQ inventory.QueryBus,
 ) *PurchaseOrderAggregate {

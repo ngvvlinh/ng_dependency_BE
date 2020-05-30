@@ -9,6 +9,7 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/ordering"
 	"o.o/api/services/affiliate"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/services/affiliate/model"
 	"o.o/backend/com/services/affiliate/sqlstore"
 	cm "o.o/backend/pkg/common"
@@ -47,10 +48,10 @@ type Aggregate struct {
 	catalogQuery            catalog.QueryBus
 	orderingQuery           ordering.QueryBus
 
-	db cmsql.Transactioner
+	db *cmsql.Database
 }
 
-func NewAggregate(db *cmsql.Database, idenQuery identity.QueryBus, catalogQuery catalog.QueryBus, orderQuery ordering.QueryBus) *Aggregate {
+func NewAggregate(db com.MainDB, idenQuery identity.QueryBus, catalogQuery catalog.QueryBus, orderQuery ordering.QueryBus) *Aggregate {
 	return &Aggregate{
 		commissionSetting:       sqlstore.NewCommissionSettingStore(db),
 		supplyCommissionSetting: sqlstore.NewSupplyCommissionSettingStore(db),

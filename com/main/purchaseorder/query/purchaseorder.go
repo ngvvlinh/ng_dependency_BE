@@ -10,6 +10,7 @@ import (
 	"o.o/api/shopping/suppliering"
 	"o.o/api/top/types/etc/receipt_ref"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/purchaseorder/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -30,7 +31,7 @@ type PurchaseOrderQuery struct {
 }
 
 func NewPurchaseOrderQuery(
-	database *cmsql.Database, eventBus capi.EventBus,
+	database com.MainDB, eventBus capi.EventBus,
 	supplierQ suppliering.QueryBus, inventoryVoucherQ inventory.QueryBus,
 	receiptQ receipting.QueryBus,
 ) *PurchaseOrderQuery {

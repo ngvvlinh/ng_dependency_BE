@@ -4,6 +4,7 @@ package tradering
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/shopping/tradering/aggregate"
 	"o.o/backend/com/shopping/tradering/query"
 )

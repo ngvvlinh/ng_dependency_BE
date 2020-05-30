@@ -4,6 +4,7 @@ package shipping
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/shipping/aggregate"
 	"o.o/backend/com/main/shipping/query"
 )

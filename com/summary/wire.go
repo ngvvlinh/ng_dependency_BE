@@ -4,6 +4,7 @@ package summary
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/summary/query"
 )
 

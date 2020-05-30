@@ -3,9 +3,9 @@ package partnerimport
 import (
 	"o.o/api/main/catalog"
 	"o.o/api/top/external/whitelabel"
+	com "o.o/backend/com/main"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	customersqlstore "o.o/backend/com/shopping/customering/sqlstore"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/httprpc"
 )
 
@@ -37,7 +37,7 @@ type ImportService struct {
 }
 
 func New(
-	db *cmsql.Database,
+	db com.MainDB,
 	catalogAggr catalog.CommandBus,
 ) ImportService {
 	s := ImportService{}

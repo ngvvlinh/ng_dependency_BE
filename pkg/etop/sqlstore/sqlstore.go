@@ -3,7 +3,9 @@ package sqlstore
 import (
 	"time"
 
+	"o.o/api/main/location"
 	notisqlstore "o.o/backend/com/handler/notifier/sqlstore"
+	com "o.o/backend/com/main"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	servicelocation "o.o/backend/com/main/location"
 	cm "o.o/backend/pkg/common"
@@ -32,7 +34,9 @@ type (
 	Qx    = cmsql.QueryInterface
 )
 
-func Init(db *cmsql.Database) {
+type Store struct{}
+
+func New(db com.MainDB, _locationBus location.QueryBus, _eventBus capi.EventBus) *Store {
 	if x != nil {
 		if (*x).DB() != nil {
 			ll.Panic("Already initialized")
@@ -40,10 +44,9 @@ func Init(db *cmsql.Database) {
 	}
 	x = db
 	shopProductStore = catalogsqlstore.NewShopProductStore(db)
-}
-
-func AddEventBus(_eventBus capi.EventBus) {
+	locationBus = _locationBus
 	eventBus = _eventBus
+	return nil
 }
 
 func InitDBNotifier(db *cmsql.Database) {

@@ -7,10 +7,10 @@ import (
 
 	"o.o/api/main/location"
 	"o.o/api/summary"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/summary/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -80,7 +80,7 @@ type DashboardQuery struct {
 	locationBus location.QueryBus
 }
 
-func NewDashboardQuery(db *cmsql.Database, resdis redis.Store, locationBus location.QueryBus) *DashboardQuery {
+func NewDashboardQuery(db com.MainDB, resdis redis.Store, locationBus location.QueryBus) *DashboardQuery {
 	return &DashboardQuery{
 		store:       sqlstore.NewSummaryStore(db),
 		factory:     sqlstore.NewSummaryStoreFactory(db),

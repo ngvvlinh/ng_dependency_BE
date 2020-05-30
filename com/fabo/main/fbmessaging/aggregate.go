@@ -9,6 +9,7 @@ import (
 	"o.o/backend/com/fabo/main/compare"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/sqlstore"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -28,7 +29,7 @@ type FbExternalMessagingAggregate struct {
 	fbCustomerConversationStore sqlstore.FbCustomerConversationStoreFactory
 }
 
-func NewFbExternalMessagingAggregate(db *cmsql.Database, eventBus capi.EventBus) *FbExternalMessagingAggregate {
+func NewFbExternalMessagingAggregate(db com.MainDB, eventBus capi.EventBus) *FbExternalMessagingAggregate {
 	return &FbExternalMessagingAggregate{
 		db:                          db,
 		eventBus:                    eventBus,

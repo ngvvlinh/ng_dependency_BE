@@ -10,15 +10,8 @@ check_branch() {
   echo "$CI_COMMIT_REF_NAME" | grep "\b$1\b"
 }
 
-repos="
-o.o/api/...
-o.o/backend/...
-o.o/capi/...
-o.o/common/...
-"
-
-go install ${repos}
-packages="$(go list ${repos} | grep -v '/tests/')"
+go install o.o/...
+packages="$(go list o.o/... | grep -v '/tests/')"
 
 # execute tests in coverage mode in one of those conditions
 #   1. environment variable COVER is set

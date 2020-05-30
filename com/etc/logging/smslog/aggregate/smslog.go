@@ -7,6 +7,7 @@ import (
 	"o.o/backend/com/etc/logging/smslog/convert"
 	"o.o/backend/com/etc/logging/smslog/model"
 	"o.o/backend/com/etc/logging/smslog/sqlstore"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -22,7 +23,7 @@ type SmsLogAggregate struct {
 	eventBus capi.EventBus
 }
 
-func NewSmsLogAggregate(eventBus capi.EventBus, db *cmsql.Database) *SmsLogAggregate {
+func NewSmsLogAggregate(eventBus capi.EventBus, db com.LogDB) *SmsLogAggregate {
 	return &SmsLogAggregate{
 		db:       db,
 		store:    sqlstore.NewSmsLogStore(db),

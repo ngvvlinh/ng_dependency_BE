@@ -2,6 +2,7 @@ package subscripting
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/subscripting/subscription"
 	"o.o/backend/com/subscripting/subscriptionbill"
 	"o.o/backend/com/subscripting/subscriptionplan"

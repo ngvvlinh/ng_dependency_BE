@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"o.o/api/main/location"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/location/convert"
 	"o.o/backend/com/main/location/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -20,7 +20,7 @@ type Aggregate struct {
 	customRegionStore sqlstore.CustomRegionFactory
 }
 
-func NewAggregate(db *cmsql.Database) *Aggregate {
+func NewAggregate(db com.MainDB) *Aggregate {
 	return &Aggregate{
 		customRegionStore: sqlstore.NewCustomRegionStore(db),
 	}

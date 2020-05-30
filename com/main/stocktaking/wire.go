@@ -4,6 +4,7 @@ package stocktaking
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/stocktaking/aggregate"
 	"o.o/backend/com/main/stocktaking/query"
 )

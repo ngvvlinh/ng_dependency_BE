@@ -17,9 +17,6 @@ import (
 	"o.o/api/top/types/etc/status4"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/apifw/idemp"
-	cmService "o.o/backend/pkg/common/apifw/service"
-	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/eventstream"
@@ -30,18 +27,15 @@ import (
 )
 
 var ll = l.New()
-var idempgroup *idemp.RedisGroup
 var ErrAborted = cm.Error(cm.Aborted, "abort", nil)
-var config Config
-var publisher eventstream.Publisher
 
 const PathShopFulfillments = "shop/fulfillments"
 const PathShopOrders = "shop/orders"
 const BaseRowsErrors = 10
 
 type Config struct {
-	UrlPrefix string
-	DirExport string
+	URLPrefix string `yaml:"url_prefix"`
+	DirExport string `yaml:"dir_export"`
 }
 
 type ExportOption struct {
@@ -59,23 +53,6 @@ type rowsInterface interface {
 type ExportFunction func(ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
 	result chan<- *shop.ExportStatusItem,
 	total int, rows rowsInterface, opts core.Opts) (_err error)
-
-func Init(sd cmService.Shutdowner, rd redis.Store, p eventstream.Publisher, cfg Config) {
-	idempgroup = idemp.NewRedisGroup(rd, "export", 60)
-	sd.Register(idempgroup.Shutdown)
-	publisher = p
-
-	if cfg.DirExport == "" || cfg.UrlPrefix == "" {
-		panic("must provide export dir and url prefix ")
-	}
-
-	var err error
-	config = cfg
-	config.DirExport, err = verifyDir(config.DirExport)
-	if err != nil {
-		ll.Panic("invalid export config", l.Error(err))
-	}
-}
 
 func verifyDir(dir string) (absPath string, err error) {
 	if absPath, err = filepath.Abs(dir); err != nil {
@@ -96,7 +73,7 @@ func ensureDir(dir string) error {
 	return os.MkdirAll(dir, 0755)
 }
 
-func exportAndReportProgress(
+func (s *Service) exportAndReportProgress(
 	cleanup func(),
 	exportResult *model.ExportAttempt, bareFilename string, exportOpts ExportOption,
 	total int, rows rowsInterface, opts core.Opts,
@@ -133,7 +110,7 @@ func exportAndReportProgress(
 				UserID:    exportResult.UserID,
 				Payload:   cmapi.PbError(_err),
 			}
-			publisher.Publish(event)
+			s.publisher.Publish(event)
 			return
 		}
 
@@ -145,7 +122,7 @@ func exportAndReportProgress(
 			UserID:    exportResult.UserID,
 			Payload:   convertpb.PbExportAttempt(exportResult),
 		}
-		publisher.Publish(event)
+		s.publisher.Publish(event)
 	}()
 	defer rows.Close()
 
@@ -154,11 +131,11 @@ func exportAndReportProgress(
 	midPath, zipFilename := filepath.Split(exportResult.StoredFile)
 
 	// create .zip file on disk
-	dirPath := filepath.Join(config.DirExport, midPath)
+	dirPath := filepath.Join(s.config.DirExport, midPath)
 	if err := ensureDir(dirPath); err != nil {
 		return err
 	}
-	zipFilePath := filepath.Join(config.DirExport, midPath, zipFilename)
+	zipFilePath := filepath.Join(s.config.DirExport, midPath, zipFilename)
 	zipFile, err := os.OpenFile(zipFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
@@ -178,7 +155,7 @@ func exportAndReportProgress(
 		// update response
 		exportResult.ID = exportID
 		if _err == nil {
-			exportResult.DownloadURL = config.UrlPrefix + "/" + exportResult.StoredFile
+			exportResult.DownloadURL = s.config.URLPrefix + "/" + exportResult.StoredFile
 
 		} else {
 			exportResult.FileName = ""
@@ -220,7 +197,7 @@ func exportAndReportProgress(
 			UserID:    exportResult.UserID,
 			Payload:   buf.Bytes(),
 		}
-		publisher.Publish(event)
+		s.publisher.Publish(event)
 	}
 
 	// store the last status item as export result

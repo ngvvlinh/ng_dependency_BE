@@ -40,7 +40,7 @@ func Load() (cfg Config, err error) {
 	err = cc.LoadWithDefault(&cfg, Default())
 	cc.PostgresMustLoadEnv(&cfg.Postgres)
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
-	cfg.Redis.MustLoadEnv()
+	cc.RedisMustLoadEnv(&cfg.Redis)
 	cfg.TelegramBot.MustLoadEnv()
 	cfg.Onesignal.MustLoadEnv()
 	return cfg, err

@@ -10,7 +10,6 @@ import (
 
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 )
 
 type AppConfig struct {
@@ -44,18 +43,16 @@ type FbClient struct {
 	appInfo              AppConfig
 	apiInfo              ApiInfo
 	facebookErrorService *FacebookErrorService
-	bot                  *telebot.Channel
 }
 
-func New(_appInfo AppConfig, _bot *telebot.Channel) *FbClient {
+func New(_appInfo AppConfig) *FbClient {
 	return &FbClient{
 		appInfo: _appInfo,
 		apiInfo: ApiInfo{
 			Host:    "https://graph.facebook.com",
 			Version: "v6.0",
 		},
-		bot:                  _bot,
-		facebookErrorService: NewFacebookErrorService(_bot),
+		facebookErrorService: NewFacebookErrorService(),
 	}
 }
 

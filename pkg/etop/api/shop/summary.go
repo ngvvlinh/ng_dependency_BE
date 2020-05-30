@@ -8,11 +8,13 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
+	logicsummary "o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/model"
 )
 
 type SummaryService struct {
 	SummaryQuery summary.QueryBus
+	SummaryOld   *logicsummary.Summary
 }
 
 func (s *SummaryService) Clone() *SummaryService { res := *s; return &res }
@@ -23,7 +25,7 @@ func (s *SummaryService) SummarizeFulfillments(ctx context.Context, q *Summarize
 		DateFrom: q.DateFrom,
 		DateTo:   q.DateTo,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.SummaryOld.SummarizeFulfillments(ctx, query); err != nil {
 		return err
 	}
 

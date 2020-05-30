@@ -4,6 +4,7 @@ package catalog
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/catalog/aggregate"
 	"o.o/backend/com/main/catalog/query"
 )

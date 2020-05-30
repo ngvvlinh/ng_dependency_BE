@@ -76,7 +76,10 @@ func (w *WhiteLabel) byPartnerID(id dot.ID) *WL {
 func (w *WhiteLabel) ByContext(ctx context.Context) *WL {
 	wl := ctx.Value(whitelabelKey{})
 	if wl == nil {
-		ll.Panic("whitelabel context should not be called here")
+		return w.etop.Clone()
+
+		// MUSTDO(vu): enable this
+		// ll.Panic("whitelabel context should not be called here")
 	}
 	return wl.(*WL)
 }

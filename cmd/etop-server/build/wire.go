@@ -1,19 +1,21 @@
 // +build wireinject
 
-package main
+package build
 
 import (
+	"context"
+
 	"github.com/google/wire"
 
 	"o.o/backend/cmd/etop-server/config"
-	cmservice "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/authorization/auth"
-	"o.o/backend/pkg/common/extservice/telebot"
+	"o.o/backend/pkg/common/lifecycle"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
 	affapi "o.o/backend/pkg/etop/api/affiliate"
+	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/api/integration"
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
@@ -22,24 +24,37 @@ import (
 	"o.o/backend/pkg/etop/apix/partnerimport"
 	xshipping "o.o/backend/pkg/etop/apix/shipping"
 	xshop "o.o/backend/pkg/etop/apix/shop"
-	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/apix/webhook"
+	"o.o/backend/pkg/etop/authorize/middleware"
+	"o.o/backend/pkg/etop/authorize/tokens"
+	"o.o/backend/pkg/etop/eventstream"
+	logicsummary "o.o/backend/pkg/etop/logic/summary"
+	"o.o/backend/pkg/etop/sqlstore"
 	saffapi "o.o/backend/pkg/services/affiliate/api"
 	"o.o/capi"
 )
 
-func BuildServers(
-	db *cmsql.Database,
+func Servers(
+	ctx context.Context,
 	cfg config.Config,
-	bot *telebot.Channel,
-	sd cmservice.Shutdowner,
 	eventBus capi.EventBus,
-	rd redis.Store,
-	s auth.Generator,
-	ss session.Session,
-	authURL partner.AuthURL,
-) ([]Server, error) {
+	healthServer *health.Service,
+	partnerAuthURL partner.AuthURL,
+) ([]lifecycle.HTTPServer, func(), error) {
 	panic(wire.Build(
-		wire.FieldsOf(&cfg, "email", "sms", "invitation", "secret", "ghn", "ghtk", "vtpost", "ahamove", "vtpay"),
+		wire.FieldsOf(&cfg,
+			"email",
+			"sms",
+			"invitation",
+			"secret",
+			"ghn",
+			"ghtk",
+			"vtpost",
+			"ahamove",
+			"vtpay",
+			"redis",
+			"export",
+		),
 		wire.FieldsOf(&cfg, "FlagApplyShipmentPrice"),
 		WireSet,
 		api.WireSet,
@@ -55,6 +70,18 @@ func BuildServers(
 		admin.WireSet,
 		sadmin.WireSet,
 		integration.WireSet,
+		export.WireSet,
+		webhook.WireSet,
+		middleware.WireSet,
+		tokens.NewTokenStore,
+		redis.Connect,
+		auth.NewGenerator,
+		logicsummary.WireSet,
+		wire.InterfaceValue(new(eventstream.Publisher), new(eventstream.EventStream)),
+		sqlstore.WireSet,
+		WireSAdminToken,
+		NewSession,
+		BindProducer,
 		AhamoveConfig,
 		NewAhamoveVerificationFileServer,
 		NewUploader,

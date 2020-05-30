@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/purchaseorder"
 	"o.o/api/main/purchaserefund"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	catalogconvert "o.o/backend/com/main/catalog/convert"
 	"o.o/backend/com/main/purchaserefund/convert"
 	"o.o/backend/com/main/purchaserefund/sqlstore"
@@ -31,7 +32,7 @@ type PurchaseRefundAggregate struct {
 }
 
 func NewPurchaseRefundAggregate(
-	database *cmsql.Database,
+	database com.MainDB,
 	eventBus capi.EventBus,
 	purchaseOrderQuery purchaseorder.QueryBus,
 ) *PurchaseRefundAggregate {

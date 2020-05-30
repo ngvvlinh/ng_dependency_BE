@@ -5,12 +5,12 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/meta"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
 	"o.o/backend/com/main/identity/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -24,7 +24,7 @@ type QueryService struct {
 	xAccountAhamove  sqlstore.XAccountAhamoveStoreFactory
 }
 
-func NewQueryService(db *cmsql.Database) *QueryService {
+func NewQueryService(db com.MainDB) *QueryService {
 	return &QueryService{
 		userStore:        sqlstore.NewUserStore(db),
 		accountStore:     sqlstore.NewAccountStore(db),

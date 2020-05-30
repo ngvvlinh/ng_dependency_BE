@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"o.o/api/subscripting/subscriptionproduct"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/subscripting/subscriptionproduct/convert"
 	"o.o/backend/com/subscripting/subscriptionproduct/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -20,7 +20,7 @@ type SubrProductAggregate struct {
 	subrProductStore sqlstore.SubrProductStoreFactory
 }
 
-func NewSubrProductAggregate(db *cmsql.Database) *SubrProductAggregate {
+func NewSubrProductAggregate(db com.MainDB) *SubrProductAggregate {
 	return &SubrProductAggregate{
 		subrProductStore: sqlstore.NewSubscriptionProductStore(db),
 	}

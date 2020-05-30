@@ -15,15 +15,21 @@ import (
 	"o.o/capi/dot"
 )
 
-var producer mq.Producer
-var redisStore redis.Store
+type Producer mq.Producer
 
-func Init(p mq.Producer, r redis.Store) {
-	producer = p
-	redisStore = r
+type Service struct {
+	producer   mq.Producer
+	redisStore redis.Store
 }
 
-func CreateWebhook(ctx context.Context, accountID dot.ID, r *types.CreateWebhookRequest) (*types.Webhook, error) {
+func New(p Producer, r redis.Store) *Service {
+	return &Service{
+		producer:   p,
+		redisStore: r,
+	}
+}
+
+func (s *Service) CreateWebhook(ctx context.Context, accountID dot.ID, r *types.CreateWebhookRequest) (*types.Webhook, error) {
 	n, err := sqlstore.Webhook(ctx).AccountID(accountID).Count()
 	if err != nil {
 		return nil, err
@@ -43,21 +49,21 @@ func CreateWebhook(ctx context.Context, accountID dot.ID, r *types.CreateWebhook
 		return nil, err
 	}
 
-	resp := convertpb.PbWebhook(item, sender.LoadWebhookStates(redisStore, item.ID))
+	resp := convertpb.PbWebhook(item, sender.LoadWebhookStates(s.redisStore, item.ID))
 
 	event := &intctl.ReloadWebhook{
 		AccountID: accountID,
 	}
-	producer.SendJSON(0, intctl.NewKey(intctl.ChannelReloadWebhook), event)
+	s.producer.SendJSON(0, intctl.NewKey(intctl.ChannelReloadWebhook), event)
 	return resp, err
 }
 
-func DeleteWebhook(ctx context.Context, accountID dot.ID, r *types.DeleteWebhookRequest) (*types.WebhooksResponse, error) {
+func (s *Service) DeleteWebhook(ctx context.Context, accountID dot.ID, r *types.DeleteWebhookRequest) (*types.WebhooksResponse, error) {
 	event := &intctl.ReloadWebhook{
 		AccountID: accountID,
 	}
 	// always send events after deleting webhooks
-	defer producer.SendJSON(0, intctl.NewKey(intctl.ChannelReloadWebhook), event)
+	defer s.producer.SendJSON(0, intctl.NewKey(intctl.ChannelReloadWebhook), event)
 
 	err := sqlstore.Webhook(ctx).ID(r.Id).SoftDelete()
 	if err != nil {
@@ -69,23 +75,23 @@ func DeleteWebhook(ctx context.Context, accountID dot.ID, r *types.DeleteWebhook
 		return nil, err
 	}
 	resp := &types.WebhooksResponse{
-		Webhooks: convertpb.PbWebhooks(items, loadWebhookStates(items)),
+		Webhooks: convertpb.PbWebhooks(items, s.loadWebhookStates(items)),
 	}
 	return resp, nil
 }
 
-func GetWebhooks(ctx context.Context, accountID dot.ID) (*types.WebhooksResponse, error) {
+func (s *Service) GetWebhooks(ctx context.Context, accountID dot.ID) (*types.WebhooksResponse, error) {
 	items, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
 	resp := &types.WebhooksResponse{
-		Webhooks: convertpb.PbWebhooks(items, loadWebhookStates(items)),
+		Webhooks: convertpb.PbWebhooks(items, s.loadWebhookStates(items)),
 	}
 	return resp, err
 }
 
-func loadWebhookStates(webhooks []*model.Webhook) []sender.WebhookStates {
+func (s *Service) loadWebhookStates(webhooks []*model.Webhook) []sender.WebhookStates {
 	res := make([]sender.WebhookStates, len(webhooks))
 	for i, item := range webhooks {
-		res[i] = sender.LoadWebhookStates(redisStore, item.ID)
+		res[i] = sender.LoadWebhookStates(s.redisStore, item.ID)
 	}
 	return res
 }

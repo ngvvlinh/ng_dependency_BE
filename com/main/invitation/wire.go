@@ -2,6 +2,7 @@ package invitation
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/invitation/aggregate"
 	"o.o/backend/com/main/invitation/pm"
 	"o.o/backend/com/main/invitation/query"

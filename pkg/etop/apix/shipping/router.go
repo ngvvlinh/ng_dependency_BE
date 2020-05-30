@@ -4,10 +4,10 @@ import (
 	"o.o/api/main/location"
 	"o.o/api/main/shipping"
 	"o.o/api/top/external/types"
+	com "o.o/backend/com/main"
 	ordersqlstore "o.o/backend/com/main/ordering/sqlstore"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipsqlstore "o.o/backend/com/main/shipping/sqlstore"
-	"o.o/backend/pkg/common/sql/cmsql"
 	orderS "o.o/backend/pkg/etop/logic/orders"
 )
 
@@ -26,7 +26,7 @@ type Shipping struct {
 
 func New(
 	locationBus location.QueryBus,
-	db *cmsql.Database,
+	db com.MainDB,
 	shipmentM *shippingcarrier.ShipmentManager,
 	shippingA shipping.CommandBus,
 	shippingQ shipping.QueryBus,

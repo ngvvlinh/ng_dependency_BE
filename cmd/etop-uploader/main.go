@@ -17,7 +17,6 @@ import (
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/authorize/middleware"
@@ -43,7 +42,6 @@ var (
 	ll  = l.New()
 	cfg config.Config
 	ctx context.Context
-	bot *telebot.Channel
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
@@ -92,6 +90,7 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
+	cfg.TelegramBot.MustRegister()
 	ctx, ctxCancel = context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)
@@ -102,18 +101,12 @@ func main() {
 		// Wait for maximum 15s
 		timer := time.NewTimer(15 * time.Second)
 		<-timer.C
-		if bot != nil {
-			bot.SendMessage("👻 etop-uploader stopped (forced) 👻\n–––")
-		}
+		ll.SendMessage("👻 etop-uploader stopped (forced) 👻\n–––")
+
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 
-	bot, err = cfg.ConnectDefault()
-	if err != nil {
-		ll.Fatal("Connect Telegram", l.Error(err))
-	}
-
-	redisStore := redis.Connect(cfg.Redis.ConnectionString())
+	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
 	tokenStore = auth.NewGenerator(redisStore)
 
 	mux := http.NewServeMux()
@@ -125,7 +118,7 @@ func main() {
 	healthservice.RegisterHTTPHandler(mux)
 	healthservice.MarkReady()
 
-	rt.Use(httpx.RecoverAndLog(bot, false))
+	rt.Use(httpx.RecoverAndLog(false))
 	rt.ServeFiles("/img/*filepath", http.Dir(cfg.UploadDirImg))
 	rt.ServeFiles("/ahamove/user_verification/*filepath", http.Dir(cfg.UploadDirAhamoveVerification))
 
@@ -145,10 +138,8 @@ func main() {
 		ll.Sync()
 	}()
 
-	if bot != nil {
-		bot.SendMessage(fmt.Sprintf("–––\n✨ etop-uploader started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
-		defer bot.SendMessage("👻 etop-uploader stopped 👻\n–––")
-	}
+	ll.SendMessage(fmt.Sprintf("–––\n✨ etop-uploader started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
+	defer ll.SendMessage("👻 etop-uploader stopped 👻\n–––")
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()

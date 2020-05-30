@@ -8,6 +8,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/connectioning/convert"
 	"o.o/backend/com/main/connectioning/model"
 	"o.o/backend/com/main/connectioning/sqlstore"
@@ -32,9 +33,9 @@ type ConnectionAggregate struct {
 	eventBus            capi.EventBus
 }
 
-func NewConnectionAggregate(db *cmsql.Database, eventBus capi.EventBus) *ConnectionAggregate {
+func NewConnectionAggregate(db com.MainDB, eventBus capi.EventBus) *ConnectionAggregate {
 	return &ConnectionAggregate{
-		db:                  db,
+		db:                  (*cmsql.Database)(db),
 		eventBus:            eventBus,
 		connectionStore:     sqlstore.NewConnectionStore(db),
 		shopConnectionStore: sqlstore.NewShopConnectionStore(db),

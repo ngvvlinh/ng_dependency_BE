@@ -4,6 +4,7 @@ package purchaseorder
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/purchaseorder/aggregate"
 	"o.o/backend/com/main/purchaseorder/query"
 )

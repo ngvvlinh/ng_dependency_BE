@@ -16,17 +16,16 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
 	serviceidentity "o.o/backend/com/main/identity"
+	servicelocation "o.o/backend/com/main/location"
 	customeringquery "o.o/backend/com/shopping/customering/query"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
 	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	cmwrapper "o.o/backend/pkg/common/apifw/wrapper"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -45,7 +44,6 @@ var (
 	ll  = l.New()
 	cfg config.Config
 	ctx context.Context
-	bot *telebot.Channel
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
@@ -94,26 +92,19 @@ func main() {
 
 	wl.Init(cmenv.Env())
 
-	bot, err = cfg.TelegramBot.ConnectDefault()
-	if err != nil {
-		ll.Fatal("Unable to connect to Telegram", l.Error(err))
-	}
+	cfg.TelegramBot.MustRegister()
 
-	if bot != nil {
-		bot.SendMessage("–––\n✨ fabo-app started ✨\n" + cm.CommitMessage())
-		defer bot.SendMessage("👹 fabo-app stopped 👹\n–––")
-	}
+	ll.SendMessage("–––\n✨ fabo-app started ✨\n" + cm.CommitMessage())
+	defer ll.SendMessage("👹 fabo-app stopped 👹\n–––")
 
-	redisStore := redis.Connect(cfg.Redis.ConnectionString())
-	tokens.Init(redisStore)
+	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
 
 	eventBus := bus.New()
-	sqlstore.Init(db)
-	sqlstore.AddEventBus(eventBus)
+	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), eventBus)
 
 	customerQuery := customeringquery.CustomerQueryMessageBus(customeringquery.NewCustomerQuery(db))
 	_ = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
@@ -128,14 +119,12 @@ func main() {
 	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPageQuery, fbUserQuery, fbUserAggr)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
 
-	fbClient := fbclient.New(cfg.FacebookApp, bot)
+	fbClient := fbclient.New(cfg.FacebookApp)
 	if err := fbClient.Ping(); err != nil {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
 	}
 
 	healthservice.MarkReady()
-
-	cmwrapper.InitBot(bot)
 
 	mux := http.NewServeMux()
 	healthservice.RegisterHTTPHandler(mux)
@@ -185,9 +174,9 @@ func main() {
 		}
 
 		rt := httpx.New()
-		rt.Use(httpx.RecoverAndLog(bot, true))
+		rt.Use(httpx.RecoverAndLog(true))
 		webhook := fbwebhook.New(
-			db, bot, cfg.Webhook.VerifyToken,
+			db, cfg.Webhook.VerifyToken,
 			redisStore, fbClient, fbMessagingQuery,
 			fbMessagingAggr, fbPageQuery,
 		)

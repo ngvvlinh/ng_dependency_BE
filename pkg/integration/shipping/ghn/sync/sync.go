@@ -12,7 +12,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
@@ -134,7 +133,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		ERROR: shipping-sync-service (%vms)
 		%v
 		`, time.Since(t0)/time.Millisecond, _err)
-			bus.Dispatch(ctx, &telebot.SendMessageCommand{Message: msg})
+			ll.SendMessage(msg)
 		}
 	}()
 

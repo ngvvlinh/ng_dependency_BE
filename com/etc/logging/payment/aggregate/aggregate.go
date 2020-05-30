@@ -5,14 +5,14 @@ import (
 
 	"o.o/backend/com/etc/logging/payment/model"
 	"o.o/backend/com/etc/logging/payment/sqlstore"
-	"o.o/backend/pkg/common/sql/cmsql"
+	com "o.o/backend/com/main"
 )
 
 type Aggregate struct {
 	store sqlstore.PaymentLogStoreFactory
 }
 
-func New(db *cmsql.Database) *Aggregate {
+func New(db com.LogDB) *Aggregate {
 	return &Aggregate{store: sqlstore.NewPaymentLogStore(db)}
 }
 

@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"o.o/api/subscripting/subscriptionplan"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/subscripting/subscriptionplan/convert"
 	"o.o/backend/com/subscripting/subscriptionplan/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -20,7 +20,7 @@ type SubrPlanAggregate struct {
 	subrPlanStore sqlstore.SubrPlanStoreFactory
 }
 
-func NewSubrPlanAggregate(db *cmsql.Database) *SubrPlanAggregate {
+func NewSubrPlanAggregate(db com.MainDB) *SubrPlanAggregate {
 	return &SubrPlanAggregate{
 		subrPlanStore: sqlstore.NewSubrPlanStore(db),
 	}

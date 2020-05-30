@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"o.o/api/main/purchaserefund"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/purchaserefund/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 )
 
@@ -18,7 +18,7 @@ type PurchaseRefundQueryService struct {
 	EventBus            capi.EventBus
 }
 
-func NewQueryPurchasePurchaseRefund(eventBus capi.EventBus, db *cmsql.Database) *PurchaseRefundQueryService {
+func NewQueryPurchasePurchaseRefund(eventBus capi.EventBus, db com.MainDB) *PurchaseRefundQueryService {
 	return &PurchaseRefundQueryService{
 		PurchaseRefundStore: sqlstore.NewPurchaseRefundStore(db),
 		EventBus:            eventBus,

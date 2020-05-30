@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"o.o/api/main/shipnow"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipnow/sqlstore"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/sql/cmsql"
 )
 
 var _ shipnow.QueryService = &QueryService{}
@@ -15,7 +15,7 @@ type QueryService struct {
 	store sqlstore.ShipnowStoreFactory
 }
 
-func NewQueryService(db *cmsql.Database) *QueryService {
+func NewQueryService(db com.MainDB) *QueryService {
 	return &QueryService{
 		store: sqlstore.NewShipnowStore(db),
 	}

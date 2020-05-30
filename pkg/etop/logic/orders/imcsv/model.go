@@ -403,7 +403,7 @@ func (m *RowOrderLine) Validate(idx imcsv.Indexer, mode Mode) (errs []error) {
 
 	// Now update the payment price,
 	// and update back (because of the division)
-	// TODO(qv): this may cause incorrect result if the division has remaining
+	// TODO(vu): this may cause incorrect result if the division has remaining
 	m.PaymentPrice = totalAmount / m.Quantity
 	m.LineTotalAmount = m.PaymentPrice * m.Quantity
 	m.LineTotalDiscount = m.LineAmount - m.LineTotalAmount

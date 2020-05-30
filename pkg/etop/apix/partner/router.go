@@ -5,7 +5,6 @@ import (
 
 	service "o.o/api/top/external/partner"
 	"o.o/backend/pkg/common/apifw/idemp"
-	cmService "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi/httprpc"
@@ -36,7 +35,6 @@ type Servers []httprpc.Server
 type AuthURL string
 
 func NewServers(
-	sd cmService.Shutdowner,
 	rd redis.Store,
 	s auth.Generator,
 	_authURL AuthURL,
@@ -56,8 +54,7 @@ func NewServers(
 	productService *ProductService,
 	productCollectionService *ProductCollectionService,
 	productCollectionRelationshipService *ProductCollectionRelationshipService,
-) Servers {
-
+) (Servers, func()) {
 	authURL = string(_authURL)
 	if authURL == "" {
 		ll.Panic("no auth_url")
@@ -67,8 +64,6 @@ func NewServers(
 	}
 
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempPartnerAPI, 0)
-	sd.Register(idempgroup.Shutdown)
-
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
 		service.NewShopServiceServer(WrapShopService(shopService.Clone)),
@@ -87,5 +82,5 @@ func NewServers(
 		service.NewProductCollectionServiceServer(WrapProductCollectionService(productCollectionService.Clone)),
 		service.NewProductCollectionRelationshipServiceServer(WrapProductCollectionRelationshipService(productCollectionRelationshipService.Clone)),
 	}
-	return servers
+	return servers, idempgroup.Shutdown
 }

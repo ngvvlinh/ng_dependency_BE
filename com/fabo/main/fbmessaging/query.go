@@ -6,6 +6,7 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/backend/com/fabo/main/fbmessaging/sqlstore"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/filter"
@@ -22,7 +23,7 @@ type FbMessagingQuery struct {
 	fbCustomerConversationStore sqlstore.FbCustomerConversationStoreFactory
 }
 
-func NewFbMessagingQuery(database *cmsql.Database) *FbMessagingQuery {
+func NewFbMessagingQuery(database com.MainDB) *FbMessagingQuery {
 	return &FbMessagingQuery{
 		db:                          database,
 		fbExternalPostStore:         sqlstore.NewFbExternalPostStore(database),
