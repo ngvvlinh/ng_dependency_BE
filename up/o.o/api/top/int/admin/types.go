@@ -312,13 +312,14 @@ type UpdateFulfillmentShippingStateRequest struct {
 
 func (m *UpdateFulfillmentShippingStateRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type UpdateFulfillmentShippingFeeRequest struct {
-	ID           dot.ID                        `json:"id"`
-	ShippingCode string                        `json:"shipping_code"`
-	ShippingFees []*types.ShippingFeeShortLine `json:"shipping_fees"`
+type UpdateFulfillmentShippingFeesRequest struct {
+	ID               dot.ID                   `json:"id"`
+	ShippingCode     string                   `json:"shipping_code"`
+	ShippingFeeLines []*types.ShippingFeeLine `json:"shipping_fee_lines"`
+	TotalCODAmount   dot.NullInt              `json:"total_cod_amount"`
 }
 
-func (m *UpdateFulfillmentShippingFeeRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *UpdateFulfillmentShippingFeesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShipmentPrice struct {
 	ID                  dot.ID                             `json:"id"`

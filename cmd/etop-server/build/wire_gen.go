@@ -490,8 +490,11 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	adminAccountService := admin.AccountService{}
 	adminOrderService := admin.OrderService{}
 	adminFulfillmentService := admin.FulfillmentService{
-		ShippingAgg: shippingCommandBus,
-		RedisStore:  store,
+		EventBus:      eventBus,
+		IdentityQuery: identityQueryBus,
+		RedisStore:    store,
+		ShippingAggr:  shippingCommandBus,
+		ShippingQuery: shippingQueryBus,
 	}
 	moneyTxAggregate := aggregate18.NewMoneyTxAggregate(mainDB, shippingQueryBus, identityQueryBus, eventBus)
 	moneytxCommandBus := aggregate18.MoneyTxAggregateMessageBus(moneyTxAggregate)

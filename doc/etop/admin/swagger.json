@@ -529,20 +529,20 @@
         }
       }
     },
-    "/api/admin.Fulfillment/UpdateFulfillmentShippingFee": {
+    "/api/admin.Fulfillment/UpdateFulfillmentShippingFees": {
       "post": {
         "tags": [
           "Fulfillment"
         ],
-        "summary": "UpdateFulfillmentShippingFee",
-        "operationId": "admin.Fulfillment-UpdateFulfillmentShippingFee",
+        "summary": "UpdateFulfillmentShippingFees",
+        "operationId": "admin.Fulfillment-UpdateFulfillmentShippingFees",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xuUpdateFulfillmentShippingFeeRequest"
+              "$ref": "#/definitions/xuUpdateFulfillmentShippingFeesRequest"
             }
           }
         ],
@@ -4232,6 +4232,10 @@
           "type": "string",
           "format": "date-time"
         },
+        "updated_by": {
+          "type": "string",
+          "format": "int64"
+        },
         "x_shipping_cancelled_at": {
           "type": "string",
           "format": "date-time"
@@ -5470,32 +5474,6 @@
       }
     },
     "qdShippingFeeLine": {
-      "type": "object",
-      "properties": {
-        "cost": {
-          "type": "integer"
-        },
-        "external_payment_channel_id": {
-          "type": "string"
-        },
-        "external_service_id": {
-          "type": "string"
-        },
-        "external_service_name": {
-          "type": "string"
-        },
-        "external_service_type": {
-          "type": "string"
-        },
-        "external_shipping_order_id": {
-          "type": "string"
-        },
-        "shipping_fee_type": {
-          "$ref": "#/definitions/bjShippingFeeType"
-        }
-      }
-    },
-    "qdShippingFeeShortLine": {
       "type": "object",
       "properties": {
         "cost": {
@@ -7421,7 +7399,7 @@
         }
       }
     },
-    "xuUpdateFulfillmentShippingFeeRequest": {
+    "xuUpdateFulfillmentShippingFeesRequest": {
       "type": "object",
       "properties": {
         "id": {
@@ -7431,11 +7409,14 @@
         "shipping_code": {
           "type": "string"
         },
-        "shipping_fees": {
+        "shipping_fee_lines": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/qdShippingFeeShortLine"
+            "$ref": "#/definitions/qdShippingFeeLine"
           }
+        },
+        "total_cod_amount": {
+          "type": "integer"
         }
       }
     },

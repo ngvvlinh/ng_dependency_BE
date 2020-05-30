@@ -374,33 +374,54 @@ func (a *MoneyTxAggregate) RemoveFulfillmentsMoneyTxShipping(ctx context.Context
 	})
 }
 
-func (a *MoneyTxAggregate) ReCalcMoneyTxShipping(ctx context.Context, moneyTxShippingID dot.ID) error {
-	if moneyTxShippingID == 0 {
+func (a *MoneyTxAggregate) ReCalcMoneyTxShipping(ctx context.Context, args *moneytx.ReCalcMoneyTxShippingArgs) error {
+	if args.MoneyTxShippingID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing Money Transaction ID")
 	}
-	// moneyTx, err := m.moneyTxShippingStore(ctx).ID(moneyTxShippingID).GetMoneyTxShipping()
-	// if err != nil {
-	// 	return err
-	// }
 
-	panic("implement me")
+	moneyTxShipping, err := a.moneyTxShippingStore(ctx).ID(args.MoneyTxShippingID).GetMoneyTxShipping()
+	if err != nil {
+		return err
+	}
+	if moneyTxShipping.Status == status3.P || !moneyTxShipping.ConfirmedAt.IsZero() {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Phiên đối soát đã xác nhận.").WithMetap("money_transaction_id", moneyTxShipping.ID)
+	}
+	query := &shipping.ListFulfillmentsByMoneyTxQuery{
+		MoneyTxShippingIDs: []dot.ID{args.MoneyTxShippingID},
+	}
+	if err := a.shippingQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	ffms := query.Result
+	statistics, err := calcFulfillmentStatistics(ffms)
+	if err != nil {
+		return err
+	}
+
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		update := &moneytxsqlstore.UpdateMoneyTxShippingStatisticsArgs{
+			ID:          args.MoneyTxShippingID,
+			TotalOrders: dot.Int(statistics.TotalOrders),
+			TotalCOD:    dot.Int(statistics.TotalCOD),
+			TotalAmount: dot.Int(statistics.TotalAmount),
+		}
+		if err := a.moneyTxShippingStore(ctx).UpdateMoneyTxShippingStatistics(update); err != nil {
+			return err
+		}
+		if moneyTxShipping.MoneyTransactionShippingEtopID != 0 {
+			return a.ReCalcMoneyTxShippingEtop(ctx, moneyTxShipping.MoneyTransactionShippingEtopID)
+		}
+		return nil
+	})
 }
 
-type FulfilmentStatistics struct {
-	TotalCOD         int
-	TotalAmount      int
-	TotalOrders      int
-	TotalShippingFee int
-	FulfillmentIDs   []dot.ID
-}
-
-func calcFulfillmentStatistics(fulfillments []*shipping.Fulfillment) (*FulfilmentStatistics, error) {
+func calcFulfillmentStatistics(fulfillments []*shipping.Fulfillment) (*moneytx.FulfilmentStatistics, error) {
 	var totalCOD, totalAmount, totalOrders, totalShippingFee int
 	var ffmIDs []dot.ID
 	var ffmIDMap = make(map[dot.ID]bool)
 	for _, ffm := range fulfillments {
 		if !cm.StringsContain(moneytx.ShippingAcceptStates, ffm.ShippingState.String()) {
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Fulfillment #%v's status does not valid.")
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Fulfillment #%v's status does not valid.", ffm.ShippingCode)
 		}
 
 		if _, ok := ffmIDMap[ffm.ID]; ok {
@@ -420,7 +441,7 @@ func calcFulfillmentStatistics(fulfillments []*shipping.Fulfillment) (*Fulfilmen
 		totalOrders++
 		totalShippingFee += ffm.ShippingFeeShop
 	}
-	return &FulfilmentStatistics{
+	return &moneytx.FulfilmentStatistics{
 		TotalCOD:         totalCOD,
 		TotalAmount:      totalAmount,
 		TotalOrders:      totalOrders,

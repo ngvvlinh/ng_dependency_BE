@@ -725,6 +725,7 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 		XShippingSubState:                  m.ExternalShippingSubState,
 		ActualCompensationAmount:           m.ActualCompensationAmount,
 		ConnectionID:                       m.ConnectionID,
+		UpdatedBy:                          m.UpdatedBy,
 		ShopCarrierID:                      m.ShopCarrierID,
 	}
 	if shop != nil {
@@ -912,13 +913,8 @@ func PbShippingFeeLines(items []*shippingsharemodel.ShippingFeeLine) []*types.Sh
 
 func PbShippingFeeLine(line *shippingsharemodel.ShippingFeeLine) *types.ShippingFeeLine {
 	return &types.ShippingFeeLine{
-		ShippingFeeType:          line.ShippingFeeType,
-		Cost:                     line.Cost,
-		ExternalServiceId:        line.ExternalServiceID,
-		ExternalServiceName:      line.ExternalServiceName,
-		ExternalServiceType:      line.ExternalServiceType,
-		ExternalShippingOrderId:  line.ExternalShippingOrderID,
-		ExternalPaymentChannelId: line.ExternalPaymentChannelID,
+		ShippingFeeType: line.ShippingFeeType,
+		Cost:            line.Cost,
 	}
 }
 
@@ -1265,11 +1261,8 @@ func Convert_core_ShippingFeeLine_To_api_ShippingFeeLine(line *shipping.Shipping
 		return nil
 	}
 	return &types.ShippingFeeLine{
-		ShippingFeeType:     line.ShippingFeeType,
-		Cost:                line.Cost,
-		ExternalServiceId:   line.ExternalServiceID,
-		ExternalServiceName: line.ExternalServiceName,
-		ExternalServiceType: line.ExternalServiceType,
+		ShippingFeeType: line.ShippingFeeType,
+		Cost:            line.Cost,
 	}
 }
 
@@ -1277,6 +1270,27 @@ func Convert_core_ShippingFeeLines_To_api_ShippingFeeLines(items []*shipping.Shi
 	result := make([]*types.ShippingFeeLine, len(items))
 	for i, item := range items {
 		result[i] = Convert_core_ShippingFeeLine_To_api_ShippingFeeLine(item)
+	}
+	return result
+}
+
+func Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(in *types.ShippingFeeLine) *shipping.ShippingFeeLine {
+	if in == nil {
+		return nil
+	}
+	return &shipping.ShippingFeeLine{
+		ShippingFeeType: in.ShippingFeeType,
+		Cost:            in.Cost,
+	}
+}
+
+func Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(items []*types.ShippingFeeLine) []*shipping.ShippingFeeLine {
+	if items == nil {
+		return nil
+	}
+	result := make([]*shipping.ShippingFeeLine, len(items))
+	for i, item := range items {
+		result[i] = Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(item)
 	}
 	return result
 }

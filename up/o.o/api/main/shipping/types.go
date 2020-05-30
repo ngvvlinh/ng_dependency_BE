@@ -208,17 +208,17 @@ type FulfillmentsCreatedEvent struct {
 	OrderID        dot.ID
 }
 
+type FulfillmentUpdatedEvent struct {
+	meta.EventMeta
+	FulfillmentID     dot.ID
+	MoneyTxShippingID dot.ID
+}
+
 type FulfillmentUpdatedInfoEvent struct {
 	meta.EventMeta
 	OrderID  dot.ID
 	FullName dot.NullString
 	Phone    dot.NullString
-}
-
-type FulfillmentUpdatingEvent struct {
-	meta.EventMeta
-	FulfillmentID     dot.ID
-	MoneyTxShippingID dot.ID
 }
 
 type FulfillmentShippingFeeChangedEvent struct {
@@ -299,6 +299,34 @@ func GetShippingFeeLine(lines []*ShippingFeeLine, _type shipping_fee_type.Shippi
 		}
 	}
 	return nil
+}
+
+func GetShippingFee(lines []*ShippingFeeLine, _type shipping_fee_type.ShippingFeeType) int {
+	line := GetShippingFeeLine(lines, _type)
+	if line == nil {
+		return 0
+	}
+	return line.Cost
+}
+
+func UpdateShippingFees(items []*ShippingFeeLine, fee int, shippingFeeType shipping_fee_type.ShippingFeeType) []*ShippingFeeLine {
+	if fee == 0 {
+		return items
+	}
+	found := false
+	for _, item := range items {
+		if item.ShippingFeeType == shippingFeeType {
+			item.Cost = fee
+			found = true
+		}
+	}
+	if !found {
+		items = append(items, &ShippingFeeLine{
+			ShippingFeeType: shippingFeeType,
+			Cost:            fee,
+		})
+	}
+	return items
 }
 
 func contains(lines []shipping_fee_type.ShippingFeeType, feeType shipping_fee_type.ShippingFeeType) bool {

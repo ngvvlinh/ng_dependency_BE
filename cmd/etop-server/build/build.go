@@ -139,8 +139,8 @@ func BuildMainServer(
 		mux.Handle(h.PathPrefix(), mwares(h))
 	}
 
-	mux.Handle(adminImport.PathPrefix(), adminImport)
-	mux.Handle(shopImport.PathPrefix(), shopImport)
+	mux.Handle(adminImport.PathPrefix(), mwares(adminImport))
+	mux.Handle(shopImport.PathPrefix(), mwares(shopImport))
 	mux.Handle(eventStream.PathPrefix(), eventStream)
 	mux.Handle(downloadHandler.PathPrefix(), downloadHandler)
 	mux.Handle(vtpayServer.PathPrefix(), vtpayServer)

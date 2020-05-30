@@ -24,7 +24,7 @@ type Aggregate interface {
 	DeleteMoneyTxShipping(context.Context, *DeleteMoneyTxShippingArgs) error
 	AddFulfillmentsMoneyTxShipping(context.Context, *FfmsMoneyTxShippingArgs) error
 	RemoveFulfillmentsMoneyTxShipping(context.Context, *FfmsMoneyTxShippingArgs) error
-	ReCalcMoneyTxShipping(ctx context.Context, MoneyTxShippingID dot.ID) error
+	ReCalcMoneyTxShipping(context.Context, *ReCalcMoneyTxShippingArgs) error
 
 	// -- Money transaction shipping external -- //
 	CreateMoneyTxShippingExternal(context.Context, *CreateMoneyTxShippingExternalArgs) (*MoneyTransactionShippingExternalFtLine, error)
@@ -41,6 +41,7 @@ type Aggregate interface {
 	UpdateMoneyTxShippingEtop(context.Context, UpdateMoneyTxShippingEtopArgs) (*MoneyTransactionShippingEtop, error)
 	ConfirmMoneyTxShippingEtop(context.Context, *ConfirmMoneyTxShippingEtopArgs) error
 	DeleteMoneyTxShippingEtop(ctx context.Context, ID dot.ID) error
+	ReCalcMoneyTxShippingEtop(ctx context.Context, MoneyTxShippingEtopID dot.ID) error
 }
 
 type QueryService interface {
@@ -62,6 +63,10 @@ type FfmsMoneyTxShippingArgs struct {
 	FulfillmentIDs    []dot.ID
 	MoneyTxShippingID dot.ID
 	ShopID            dot.ID
+}
+
+type ReCalcMoneyTxShippingArgs struct {
+	MoneyTxShippingID dot.ID
 }
 
 type GetMoneyTxByIDQueryArgs struct {

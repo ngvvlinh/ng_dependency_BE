@@ -22,7 +22,6 @@ import (
 	orderconvert "o.o/backend/com/main/ordering/convert"
 	"o.o/backend/com/main/shipping/carrier"
 	shippingconvert "o.o/backend/com/main/shipping/convert"
-	"o.o/backend/com/main/shipping/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/com/main/shipping/sqlstore"
@@ -347,23 +346,42 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 	if args.ShippingState == 0 {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "shipping_state không được để trống.")
 	}
+
 	query := a.ffmStore(ctx).OptionalPartnerID(args.PartnerID).ID(args.FulfillmentID)
 
 	ffm, err := query.GetFulfillment()
 	if err != nil {
 		return 0, err
 	}
-	if ffm.MoneyTransactionID != 0 {
-		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật trạng thái giao hàng. Đơn đã nằm trong phiên đối soát.")
+
+	if err := canUpdateFulfillment(ffm); err != nil {
+		return 0, err
 	}
 	if args.ActualCompensationAmount.Valid {
 		if ffm.ShippingState != shipstate.Undeliverable && args.ShippingState != shipstate.Undeliverable {
-			return 0, cm.Errorf(cm.FailedPrecondition, nil, "Chỉ cập nhật phí hoàn hàng khi đơn vận chuyển không giao được hàng")
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "Chỉ cập nhật giá trị hoàn hàng khi đơn vận chuyển không giao được hàng")
+		}
+	} else {
+		if args.ShippingState == shipstate.Undeliverable {
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập giá trị hoàn hàng.")
 		}
 	}
 
-	if err := a.ffmStore(ctx).UpdateFulfillmentShippingState(args, ffm.TotalCODAmount); err != nil {
-		return 0, nil
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if err := a.ffmStore(ctx).UpdateFulfillmentShippingState(args, ffm.CODAmount); err != nil {
+			return err
+		}
+		event := &shipping.FulfillmentUpdatedEvent{
+			FulfillmentID:     ffm.ID,
+			MoneyTxShippingID: ffm.MoneyTransactionID,
+		}
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, err
 	}
 	return 1, nil
 }
@@ -377,18 +395,21 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 		return 0, err
 	}
 
+	if err := canUpdateFulfillment(ffm); err != nil {
+		return 0, err
+	}
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		var lines []*shippingsharemodel.ShippingFeeLine
 		var providerShippingFeeLines []*shippingsharemodel.ShippingFeeLine
 		if err := scheme.Convert(args.ProviderShippingFeeLines, &providerShippingFeeLines); err != nil {
 			return err
 		}
-		if args.ShippingFeeLines != nil {
+		if !ffm.EtopPriceRule && providerShippingFeeLines != nil {
+			lines = shippingsharemodel.GetShippingFeeShopLines(providerShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		} else {
 			if err := scheme.Convert(args.ShippingFeeLines, &lines); err != nil {
 				return err
 			}
-		} else {
-			lines = shippingsharemodel.GetShippingFeeShopLines(providerShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		}
 
 		totalShippingFeeShop := shippingsharemodel.GetTotalShippingFee(lines)
@@ -396,16 +417,14 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 			ProviderShippingFeeLines: providerShippingFeeLines,
 			ShippingFeeShopLines:     lines,
 			ShippingFeeShop:          shipping.CalcShopShippingFee(totalShippingFeeShop, ffm),
+			TotalCODAmount:           args.TotalCODAmount.Apply(ffm.TotalCODAmount),
+			UpdatedBy:                args.UpdatedBy,
 		}
 		if err := a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update); err != nil {
 			return err
 		}
-		if err := a.ffmStore(ctx).UpdateFulfillmentPriceListInfo(args); err != nil {
-			return err
-		}
 
-		eventChanged := &shipping.FulfillmentShippingFeeChangedEvent{
-			EventMeta:         meta.NewEvent(),
+		eventChanged := &shipping.FulfillmentUpdatedEvent{
 			FulfillmentID:     ffm.ID,
 			MoneyTxShippingID: ffm.MoneyTransactionID,
 		}
@@ -655,11 +674,11 @@ func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.Up
 	if args.AdminNote == "" {
 		return 0, cm.Error(cm.InvalidArgument, "Ghi chú chỉnh sửa không được để trống", nil)
 	}
-	ffm, err := a.ffmStore(ctx).ID(args.ID).GetFfmDB()
+	ffm, err := a.ffmStore(ctx).ID(args.ID).GetFulfillment()
 	if err != nil {
 		return 0, err
 	}
-	if ok, err := canUpdateFulfillment(ffm); err != nil || !ok {
+	if err := canUpdateFulfillment(ffm); err != nil {
 		return 0, err
 	}
 
@@ -681,18 +700,9 @@ func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.Up
 	return 1, err
 }
 
-func canUpdateFulfillment(ffm *model.Fulfillment) (bool, error) {
-	if ffm.Status == status5.P {
-		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã hoàn thành")
-	}
+func canUpdateFulfillment(ffm *shipping.Fulfillment) error {
 	if !ffm.CODEtopTransferedAt.IsZero() {
-		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã đối soát").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã đối soát").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
 	}
-	if ffm.MoneyTransactionID != 0 {
-		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã thuộc phiên chuyển tiền").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
-	}
-	if ffm.MoneyTransactionShippingExternalID != 0 {
-		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã thuộc phiên chuyển tiền nhà vận chuyển").WithMetap("money_transaction_shipping_external_id", ffm.MoneyTransactionShippingExternalID)
-	}
-	return true, nil
+	return nil
 }

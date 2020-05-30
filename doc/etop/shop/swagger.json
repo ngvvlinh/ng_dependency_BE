@@ -13569,6 +13569,10 @@
           "type": "string",
           "format": "date-time"
         },
+        "updated_by": {
+          "type": "string",
+          "format": "int64"
+        },
         "x_shipping_cancelled_at": {
           "type": "string",
           "format": "date-time"
@@ -14874,21 +14878,6 @@
       "properties": {
         "cost": {
           "type": "integer"
-        },
-        "external_payment_channel_id": {
-          "type": "string"
-        },
-        "external_service_id": {
-          "type": "string"
-        },
-        "external_service_name": {
-          "type": "string"
-        },
-        "external_service_type": {
-          "type": "string"
-        },
-        "external_shipping_order_id": {
-          "type": "string"
         },
         "shipping_fee_type": {
           "$ref": "#/definitions/bjShippingFeeType"

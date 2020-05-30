@@ -319,6 +319,7 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.ShippingFeeCODS = 0                                           // zero value
 	out.ShippingFeeInfoChange = 0                                     // zero value
 	out.ShippingFeeOther = 0                                          // zero value
+	out.UpdatedBy = 0                                                 // zero value
 	out.EtopAdjustedShippingFeeMain = arg.EtopAdjustedShippingFeeMain // simple assign
 	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
 	out.VariantIDs = nil                                              // zero value

@@ -12,9 +12,6 @@ import (
 	"o.o/api/top/types/etc/shipping_provider"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/com/main/shipping/carrier"
-	shippingconvert "o.o/backend/com/main/shipping/convert"
-	shipmodel "o.o/backend/com/main/shipping/model"
-	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
@@ -158,26 +155,21 @@ func (m *ProcessManager) MoneyTxShippingExternalsConfirming(ctx context.Context,
 		return err
 	}
 
-	var ffms []*shipmodel.Fulfillment
-
-	ffms = shippingconvert.Convert_shipping_Fulfillments_shippingmodel_Fulfillments(query.Result)
-
-	for _, ffm := range ffms {
+	for _, ffm := range query.Result {
 		if ffm.ShippingState != shippingstate.Returned && ffm.ShippingState != shippingstate.Returning {
 			continue
 		}
-		returnedFee := shippingsharemodel.GetReturnedFee(ffm.ShippingFeeShopLines)
+		returnedFee := shipping.GetShippingFee(ffm.ShippingFeeShopLines, shipping_fee_type.Return)
 		newReturnedFee := CalcVtpostShippingFeeReturned(ffm)
 		if newReturnedFee == 0 || newReturnedFee == returnedFee {
 			continue
 		}
-		lines := ffm.ProviderShippingFeeLines
-		providerShippingFeeLines := shippingsharemodel.UpdateShippingFees(lines, newReturnedFee, shipping_fee_type.Return)
-		shippingFeeShopLines := shippingsharemodel.GetShippingFeeShopLines(providerShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+		providerShippingFeeLines := shipping.UpdateShippingFees(ffm.ProviderShippingFeeLines, newReturnedFee, shipping_fee_type.Return)
+		shippingFeeShopLines := shipping.UpdateShippingFees(ffm.ShippingFeeShopLines, newReturnedFee, shipping_fee_type.Return)
 		update := &shipping.UpdateFulfillmentShippingFeesCommand{
 			FulfillmentID:            ffm.ID,
-			ProviderShippingFeeLines: shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(providerShippingFeeLines),
-			ShippingFeeLines:         shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(shippingFeeShopLines),
+			ProviderShippingFeeLines: providerShippingFeeLines,
+			ShippingFeeLines:         shippingFeeShopLines,
 		}
 		if err := m.shippingAggr.Dispatch(ctx, update); err != nil {
 			return err
@@ -187,7 +179,7 @@ func (m *ProcessManager) MoneyTxShippingExternalsConfirming(ctx context.Context,
 }
 
 // CalcVtpostShippingFeeReturned: Tính cước phí trả hàng vtpost
-func CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
+func CalcVtpostShippingFeeReturned(ffm *shipping.Fulfillment) int {
 	// Nội tỉnh miễn phí trả hàng
 	// Liên tỉnh 50% cước phí chiều đi
 	from := ffm.AddressFrom
@@ -196,8 +188,8 @@ func CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
 		return 0
 	}
 
-	returnedFee := shippingsharemodel.GetReturnedFee(ffm.ShippingFeeShopLines)
-	totalFee := shippingsharemodel.GetTotalShippingFee(ffm.ShippingFeeShopLines)
+	returnedFee := shipping.GetShippingFee(ffm.ShippingFeeShopLines, shipping_fee_type.Return)
+	totalFee := shipping.GetTotalShippingFee(ffm.ShippingFeeShopLines)
 	newReturnedFee := (totalFee - returnedFee) / 2
 	return newReturnedFee
 }

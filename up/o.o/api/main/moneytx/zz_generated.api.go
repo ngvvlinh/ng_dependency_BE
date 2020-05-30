@@ -226,6 +226,17 @@ func (h AggregateHandler) HandleReCalcMoneyTxShipping(ctx context.Context, msg *
 	return h.inner.ReCalcMoneyTxShipping(msg.GetArgs(ctx))
 }
 
+type ReCalcMoneyTxShippingEtopCommand struct {
+	MoneyTxShippingEtopID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleReCalcMoneyTxShippingEtop(ctx context.Context, msg *ReCalcMoneyTxShippingEtopCommand) (err error) {
+	return h.inner.ReCalcMoneyTxShippingEtop(msg.GetArgs(ctx))
+}
+
 type RemoveFulfillmentsMoneyTxShippingCommand struct {
 	FulfillmentIDs    []dot.ID
 	MoneyTxShippingID dot.ID
@@ -401,6 +412,7 @@ func (q *DeleteMoneyTxShippingEtopCommand) command()          {}
 func (q *DeleteMoneyTxShippingExternalCommand) command()      {}
 func (q *DeleteMoneyTxShippingExternalLinesCommand) command() {}
 func (q *ReCalcMoneyTxShippingCommand) command()              {}
+func (q *ReCalcMoneyTxShippingEtopCommand) command()          {}
 func (q *RemoveFulfillmentsMoneyTxShippingCommand) command()  {}
 func (q *RemoveMoneyTxShippingExternalLinesCommand) command() {}
 func (q *UpdateMoneyTxShippingEtopCommand) command()          {}
@@ -601,9 +613,20 @@ func (q *DeleteMoneyTxShippingExternalLinesCommand) GetArgs(ctx context.Context)
 		q.MoneyTxShippingExternalID
 }
 
-func (q *ReCalcMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, MoneyTxShippingID dot.ID) {
+func (q *ReCalcMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ReCalcMoneyTxShippingArgs) {
 	return ctx,
-		q.MoneyTxShippingID
+		&ReCalcMoneyTxShippingArgs{
+			MoneyTxShippingID: q.MoneyTxShippingID,
+		}
+}
+
+func (q *ReCalcMoneyTxShippingCommand) SetReCalcMoneyTxShippingArgs(args *ReCalcMoneyTxShippingArgs) {
+	q.MoneyTxShippingID = args.MoneyTxShippingID
+}
+
+func (q *ReCalcMoneyTxShippingEtopCommand) GetArgs(ctx context.Context) (_ context.Context, MoneyTxShippingEtopID dot.ID) {
+	return ctx,
+		q.MoneyTxShippingEtopID
 }
 
 func (q *RemoveFulfillmentsMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FfmsMoneyTxShippingArgs) {
@@ -799,6 +822,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDeleteMoneyTxShippingExternal)
 	b.AddHandler(h.HandleDeleteMoneyTxShippingExternalLines)
 	b.AddHandler(h.HandleReCalcMoneyTxShipping)
+	b.AddHandler(h.HandleReCalcMoneyTxShippingEtop)
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxShipping)
 	b.AddHandler(h.HandleRemoveMoneyTxShippingExternalLines)
 	b.AddHandler(h.HandleUpdateMoneyTxShippingEtop)

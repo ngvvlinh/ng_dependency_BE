@@ -130,12 +130,12 @@ func (h AggregateHandler) HandleUpdateFulfillmentInfo(ctx context.Context, msg *
 }
 
 type UpdateFulfillmentShippingFeesCommand struct {
-	FulfillmentID               dot.ID
-	ShippingCode                string
-	EtopPriceRule               dot.NullBool
-	EtopAdjustedShippingFeeMain dot.NullInt
-	ProviderShippingFeeLines    []*ShippingFeeLine
-	ShippingFeeLines            []*ShippingFeeLine
+	FulfillmentID            dot.ID
+	ShippingCode             string
+	ProviderShippingFeeLines []*ShippingFeeLine
+	ShippingFeeLines         []*ShippingFeeLine
+	TotalCODAmount           dot.NullInt
+	UpdatedBy                dot.ID
 
 	Result int `json:"-"`
 }
@@ -164,6 +164,7 @@ type UpdateFulfillmentShippingStateCommand struct {
 	FulfillmentID            dot.ID
 	ShippingState            shipping.State
 	ActualCompensationAmount dot.NullInt
+	UpdatedBy                dot.ID
 
 	Result int `json:"-"`
 }
@@ -473,22 +474,22 @@ func (q *UpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoArgs(args *Update
 func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesArgs) {
 	return ctx,
 		&UpdateFulfillmentShippingFeesArgs{
-			FulfillmentID:               q.FulfillmentID,
-			ShippingCode:                q.ShippingCode,
-			EtopPriceRule:               q.EtopPriceRule,
-			EtopAdjustedShippingFeeMain: q.EtopAdjustedShippingFeeMain,
-			ProviderShippingFeeLines:    q.ProviderShippingFeeLines,
-			ShippingFeeLines:            q.ShippingFeeLines,
+			FulfillmentID:            q.FulfillmentID,
+			ShippingCode:             q.ShippingCode,
+			ProviderShippingFeeLines: q.ProviderShippingFeeLines,
+			ShippingFeeLines:         q.ShippingFeeLines,
+			TotalCODAmount:           q.TotalCODAmount,
+			UpdatedBy:                q.UpdatedBy,
 		}
 }
 
 func (q *UpdateFulfillmentShippingFeesCommand) SetUpdateFulfillmentShippingFeesArgs(args *UpdateFulfillmentShippingFeesArgs) {
 	q.FulfillmentID = args.FulfillmentID
 	q.ShippingCode = args.ShippingCode
-	q.EtopPriceRule = args.EtopPriceRule
-	q.EtopAdjustedShippingFeeMain = args.EtopAdjustedShippingFeeMain
 	q.ProviderShippingFeeLines = args.ProviderShippingFeeLines
 	q.ShippingFeeLines = args.ShippingFeeLines
+	q.TotalCODAmount = args.TotalCODAmount
+	q.UpdatedBy = args.UpdatedBy
 }
 
 func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesFromWebhookArgs) {
@@ -515,6 +516,7 @@ func (q *UpdateFulfillmentShippingStateCommand) GetArgs(ctx context.Context) (_ 
 			FulfillmentID:            q.FulfillmentID,
 			ShippingState:            q.ShippingState,
 			ActualCompensationAmount: q.ActualCompensationAmount,
+			UpdatedBy:                q.UpdatedBy,
 		}
 }
 
@@ -523,6 +525,7 @@ func (q *UpdateFulfillmentShippingStateCommand) SetUpdateFulfillmentShippingStat
 	q.FulfillmentID = args.FulfillmentID
 	q.ShippingState = args.ShippingState
 	q.ActualCompensationAmount = args.ActualCompensationAmount
+	q.UpdatedBy = args.UpdatedBy
 }
 
 func (q *UpdateFulfillmentsCODTransferedAtCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsCODTransferedAtArgs) {

@@ -5,7 +5,6 @@ import (
 
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
-	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/capi"
@@ -31,12 +30,12 @@ func New(eventBus bus.EventRegistry, moneyTxQ moneytx.QueryBus,
 }
 
 func (m *ProcessManager) registerEvenHandlers(eventBus bus.EventRegistry) {
-	eventBus.AddEventListener(m.FulfillmentUpdating)
+	eventBus.AddEventListener(m.FulfillmentUpdated)
 	eventBus.AddEventListener(m.FulfillmentShippingFeeChanged)
 	eventBus.AddEventListener(m.MoneyTxShippingExternalDeleted)
 }
 
-func (m *ProcessManager) FulfillmentUpdating(ctx context.Context, event *shipping.FulfillmentUpdatingEvent) error {
+func (m *ProcessManager) FulfillmentUpdated(ctx context.Context, event *shipping.FulfillmentUpdatedEvent) error {
 	if event.MoneyTxShippingID == 0 {
 		return nil
 	}
@@ -47,31 +46,20 @@ func (m *ProcessManager) FulfillmentUpdating(ctx context.Context, event *shippin
 		return err
 	}
 	ffm := query.Result
-	if err := canUpdateFulfillment(ffm); err != nil {
-		return err
-	}
 
 	if ffm.MoneyTransactionID == 0 {
 		return nil
 	}
 
-	queryMoneyTx := &moneytx.GetMoneyTxShippingByIDQuery{
-		MoneyTxShippingID: ffm.MoneyTransactionID,
-		ShopID:            ffm.ShopID,
-	}
-	if err := m.moneyTxQuery.Dispatch(ctx, queryMoneyTx); err != nil {
-		return err
-	}
-	moneyTx := queryMoneyTx.Result
-	if moneyTx.Status == status3.P {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã đối soát.").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
-	}
-	return nil
-}
-
-func canUpdateFulfillment(ffm *shipping.Fulfillment) error {
-	if !ffm.CODEtopTransferedAt.IsZero() {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã đối soát").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
+	// Chỉ tính lại phiên khi trạng thái ffm nằm trong các trạng thái cho phép
+	// Các trường hợp khác, giữ nguyên phiên. Khi admin xác nhận phiên gặp lỗi sẽ xử lý sau
+	if cm.StringsContain(moneytx.ShippingAcceptStates, ffm.ShippingState.String()) {
+		updateMoneyTx := &moneytx.ReCalcMoneyTxShippingCommand{
+			MoneyTxShippingID: ffm.MoneyTransactionID,
+		}
+		if err := m.moneyTxAggr.Dispatch(ctx, updateMoneyTx); err != nil {
+			return err
+		}
 	}
 	return nil
 }

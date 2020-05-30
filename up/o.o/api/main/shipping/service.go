@@ -21,7 +21,7 @@ import (
 type Aggregate interface {
 	CreateFulfillments(context.Context, *CreateFulfillmentsArgs) (fulfillmentID []dot.ID, _ error)
 
-	UpdateFulfillmentShippingState(context.Context, *UpdateFulfillmentShippingStateArgs) (updated int, err error)
+	UpdateFulfillmentShippingState(context.Context, *UpdateFulfillmentShippingStateArgs) (updated int, _ error)
 
 	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesArgs) (updated int, err error)
 
@@ -125,15 +125,16 @@ type UpdateFulfillmentShippingStateArgs struct {
 	FulfillmentID            dot.ID
 	ShippingState            shippingstate.State
 	ActualCompensationAmount dot.NullInt
+	UpdatedBy                dot.ID
 }
 
 type UpdateFulfillmentShippingFeesArgs struct {
-	FulfillmentID               dot.ID
-	ShippingCode                string
-	EtopPriceRule               dot.NullBool
-	EtopAdjustedShippingFeeMain dot.NullInt
-	ProviderShippingFeeLines    []*ShippingFeeLine
-	ShippingFeeLines            []*ShippingFeeLine
+	FulfillmentID            dot.ID
+	ShippingCode             string
+	ProviderShippingFeeLines []*ShippingFeeLine
+	ShippingFeeLines         []*ShippingFeeLine
+	TotalCODAmount           dot.NullInt
+	UpdatedBy                dot.ID
 }
 
 type UpdateFulfillmentsMoneyTxIDArgs struct {

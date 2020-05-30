@@ -368,3 +368,37 @@ func (a *MoneyTxAggregate) prepareMoneyTxShippingEtop(ctx context.Context, money
 		TotalMoneyTransaction: len(moneyTxShippingIDs),
 	}, nil
 }
+
+func (a *MoneyTxAggregate) ReCalcMoneyTxShippingEtop(ctx context.Context, MoneyTxShippingEtopID dot.ID) error {
+	moneyTxShippingEtop, err := a.moneyTxShippingEtopStore(ctx).ID(MoneyTxShippingEtopID).GetMoneyTxShippingEtop()
+	if err != nil {
+		return err
+	}
+	if moneyTxShippingEtop.Status == status3.P || !moneyTxShippingEtop.ConfirmedAt.IsZero() {
+		return cm.Errorf(cm.FailedPrecondition, nil, "phiên etop đã hoàn thành").WithMetap("money_transaction_etop_id", moneyTxShippingEtop.ID)
+	}
+	moneyTxShippings, err := a.moneyTxShippingStore(ctx).MoneyTxShippingEtopID(MoneyTxShippingEtopID).ListMoneyTxShippings()
+	if err != nil {
+		return err
+	}
+	var moneyTxShippingIDs []dot.ID
+	for _, item := range moneyTxShippings {
+		moneyTxShippingIDs = append(moneyTxShippingIDs, item.ID)
+	}
+	statistics, err := a.prepareMoneyTxShippingEtop(ctx, MoneyTxShippingEtopID, moneyTxShippingIDs)
+	if err != nil {
+		return err
+	}
+	updateStatistics := &moneytxsqlstore.UpdateMoneyTxShippingEtopStatisticsArgs{
+		ID:                    MoneyTxShippingEtopID,
+		TotalCOD:              dot.Int(statistics.TotalCOD),
+		TotalAmount:           dot.Int(statistics.TotalAmount),
+		TotalOrders:           dot.Int(statistics.TotalOrders),
+		TotalFee:              dot.Int(statistics.TotalShippingFee),
+		TotalMoneyTransaction: dot.Int(statistics.TotalOrders),
+	}
+	if err := a.moneyTxShippingEtopStore(ctx).UpdateMoneyTxShippingEtopStatistics(updateStatistics); err != nil {
+		return err
+	}
+	return nil
+}

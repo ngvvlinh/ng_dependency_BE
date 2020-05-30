@@ -547,6 +547,25 @@ func (ft *FulfillmentFilters) ByShippingFeeOtherPtr(ShippingFeeOther *int) *sq.C
 	}
 }
 
+func (ft *FulfillmentFilters) ByUpdatedBy(UpdatedBy dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_by",
+		Value:  UpdatedBy,
+		IsNil:  UpdatedBy == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByUpdatedByPtr(UpdatedBy *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_by",
+		Value:  UpdatedBy,
+		IsNil:  UpdatedBy == nil,
+		IsZero: UpdatedBy != nil && (*UpdatedBy) == 0,
+	}
+}
+
 func (ft *FulfillmentFilters) ByEtopAdjustedShippingFeeMain(EtopAdjustedShippingFeeMain int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

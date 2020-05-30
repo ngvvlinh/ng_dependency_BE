@@ -59,6 +59,7 @@ type Fulfillment struct {
 	ShippingFeeCODS       int
 	ShippingFeeInfoChange int
 	ShippingFeeOther      int
+	UpdatedBy             dot.ID
 
 	// EtopAdjustedShippingFeeMain: eTop điều chỉnh cước phí chính
 	EtopAdjustedShippingFeeMain int

@@ -3,22 +3,27 @@ package admin
 import (
 	"context"
 
+	"o.o/api/main/identity"
 	"o.o/api/main/shipping"
 	"o.o/api/top/int/types"
+	"o.o/api/top/types/common"
 	pbcm "o.o/api/top/types/common"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
-	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/model"
+	"o.o/capi"
 	"o.o/capi/dot"
 )
 
 type FulfillmentService struct {
-	ShippingAgg shipping.CommandBus
-	RedisStore  redis.Store
+	EventBus      capi.EventBus
+	IdentityQuery identity.QueryBus
+	RedisStore    redis.Store
+	ShippingAggr  shipping.CommandBus
+	ShippingQuery shipping.QueryBus
 }
 
 func (s *FulfillmentService) Clone() *FulfillmentService {
@@ -53,7 +58,7 @@ func (s *FulfillmentService) UpdateFulfillmentInfo(ctx context.Context, q *Updat
 		Phone:     q.Phone,
 		AdminNote: q.AdminNote,
 	}
-	if err := s.ShippingAgg.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.UpdatedResponse{
@@ -93,11 +98,35 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 	}
 	return nil
 }
-
 func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context, r *UpdateFulfillmentShippingStateEndpoint) error {
-	return cm.ErrTODO
+	cmd := &shipping.UpdateFulfillmentShippingStateCommand{
+		FulfillmentID:            r.ID,
+		ShippingState:            r.ShippingState,
+		ActualCompensationAmount: r.ActualCompensationAmount,
+		UpdatedBy:                r.Context.UserID,
+	}
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &common.UpdatedResponse{
+		Updated: cmd.Result,
+	}
+	return nil
 }
 
-func (s *FulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context, r *UpdateFulfillmentShippingFeeEndpoint) error {
-	return cm.ErrTODO
+func (s *FulfillmentService) UpdateFulfillmentShippingFees(ctx context.Context, r *UpdateFulfillmentShippingFeesEndpoint) error {
+	cmd := &shipping.UpdateFulfillmentShippingFeesCommand{
+		FulfillmentID:    r.ID,
+		ShippingCode:     r.ShippingCode,
+		ShippingFeeLines: convertpb.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
+		TotalCODAmount:   r.TotalCODAmount,
+		UpdatedBy:        r.Context.UserID,
+	}
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &common.UpdatedResponse{
+		Updated: cmd.Result,
+	}
+	return nil
 }

@@ -175,3 +175,10 @@ type MoneyTxShippingEtopConfirmedEvent struct {
 	MoneyTxShippingIDs    []dot.ID
 	ConfirmedAt           time.Time
 }
+type FulfilmentStatistics struct {
+	TotalCOD         int
+	TotalAmount      int
+	TotalOrders      int
+	TotalShippingFee int
+	FulfillmentIDs   []dot.ID
+}

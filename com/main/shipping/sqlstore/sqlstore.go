@@ -3,13 +3,14 @@ package sqlstore
 import (
 	"context"
 
+	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipping"
 	"o.o/api/meta"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
-	addressmodel "o.o/backend/com/main/address/model"
+	addressconvert "o.o/backend/com/main/address/convert"
 	"o.o/backend/com/main/shipping/convert"
 	"o.o/backend/com/main/shipping/model"
 	shippingmodely "o.o/backend/com/main/shipping/modely"
@@ -278,32 +279,17 @@ func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateF
 	if args.ActualCompensationAmount.Valid {
 		update := map[string]interface{}{
 			"shipping_state":             args.ShippingState.String(),
+			"updated_by":                 args.UpdatedBy,
 			"actual_compensation_amount": args.ActualCompensationAmount.Apply(codAmount),
 		}
-		return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
+		return s.query().Table("fulfillment").Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
 	}
 
 	update := &model.Fulfillment{
 		ShippingState: args.ShippingState,
+		UpdatedBy:     args.UpdatedBy,
 	}
 	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
-}
-
-func (s *FulfillmentStore) UpdateFulfillmentPriceListInfo(args *shipping.UpdateFulfillmentShippingFeesArgs) error {
-	update := map[string]interface{}{}
-	count := 0
-	if args.EtopPriceRule.Valid {
-		update["etop_price_rule"] = args.EtopPriceRule.Bool
-		count++
-	}
-	if args.EtopAdjustedShippingFeeMain.Valid {
-		update["etop_adjusted_shipping_fee_main"] = args.EtopAdjustedShippingFeeMain.Int
-		count++
-	}
-	if count > 0 {
-		return s.query().Table("fulfillment").Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
-	}
-	return nil
 }
 
 func (s *FulfillmentStore) UpdateFulfillmentsMoneyTxID(args *shipping.UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
@@ -341,14 +327,15 @@ func (s *FulfillmentStore) RemoveFulfillmentsMoneyTxID(args *shipping.RemoveFulf
 //
 // Fullname, Phone là của người nhận
 // Sẽ tách thành update thông tin người gửi, người nhận riêng. Cập nhật sau.
-func (s *FulfillmentStore) UpdateFulfillmentInfo(args *shipping.UpdateFulfillmentInfoArgs, oldAddress *addressmodel.Address) error {
+func (s *FulfillmentStore) UpdateFulfillmentInfo(args *shipping.UpdateFulfillmentInfoArgs, oldAddress *ordertypes.Address) error {
 	if len(s.preds) == 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
 	}
 	update := &model.Fulfillment{
 		AdminNote: args.AdminNote,
 	}
-	update.AddressTo = oldAddress.UpdateAddress(args.Phone.String, args.FullName.String)
+	address := addressconvert.OrderAddressToModel(oldAddress)
+	update.AddressTo = address.UpdateAddress(args.Phone.String, args.FullName.String)
 	return s.query().Table("fulfillment").Where(s.preds).ShouldUpdate(update)
 }
 

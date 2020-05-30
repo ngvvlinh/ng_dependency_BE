@@ -85,6 +85,7 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.ShippingFeeCODS = arg.ShippingFeeCODS                         // simple assign
 	out.ShippingFeeInfoChange = arg.ShippingFeeInfoChange             // simple assign
 	out.ShippingFeeOther = arg.ShippingFeeOther                       // simple assign
+	out.UpdatedBy = 0                                                 // zero value
 	out.EtopAdjustedShippingFeeMain = arg.EtopAdjustedShippingFeeMain // simple assign
 	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
 	out.VariantIDs = arg.VariantIDs                                   // simple assign

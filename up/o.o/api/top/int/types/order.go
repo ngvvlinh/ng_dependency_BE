@@ -409,6 +409,7 @@ type Fulfillment struct {
 	Code                               string                 `json:"code"`
 	ActualCompensationAmount           int                    `json:"actual_compensation_amount"`
 	AdminNote                          string                 `json:"admin_note"`
+	UpdatedBy                          dot.ID                 `json:"updated_by"`
 
 	ConnectionID  dot.ID `json:"connection_id"`
 	ShopCarrierID dot.ID `json:"shop_carrier_id"`
@@ -417,13 +418,8 @@ type Fulfillment struct {
 func (m *Fulfillment) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShippingFeeLine struct {
-	ShippingFeeType          shipping_fee_type.ShippingFeeType `json:"shipping_fee_type"`
-	Cost                     int                               `json:"cost"`
-	ExternalServiceId        string                            `json:"external_service_id"`
-	ExternalServiceName      string                            `json:"external_service_name"`
-	ExternalServiceType      string                            `json:"external_service_type"`
-	ExternalShippingOrderId  string                            `json:"external_shipping_order_id"`
-	ExternalPaymentChannelId string                            `json:"external_payment_channel_id"`
+	ShippingFeeType shipping_fee_type.ShippingFeeType `json:"shipping_fee_type"`
+	Cost            int                               `json:"cost"`
 }
 
 func (m *ShippingFeeLine) String() string { return jsonx.MustMarshalToString(m) }

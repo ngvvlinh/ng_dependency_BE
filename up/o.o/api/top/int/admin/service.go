@@ -45,7 +45,7 @@ type FulfillmentService interface {
 	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoRequest) (*cm.UpdatedResponse, error)
 
 	UpdateFulfillmentShippingState(context.Context, *UpdateFulfillmentShippingStateRequest) (*cm.UpdatedResponse, error)
-	UpdateFulfillmentShippingFee(context.Context, *UpdateFulfillmentShippingFeeRequest) (*cm.UpdatedResponse, error)
+	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/admin.MoneyTransaction

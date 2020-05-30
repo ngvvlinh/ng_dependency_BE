@@ -925,17 +925,17 @@ func (s wrapFulfillmentService) UpdateFulfillmentInfo(ctx context.Context, req *
 	return resp, nil
 }
 
-type UpdateFulfillmentShippingFeeEndpoint struct {
-	*api.UpdateFulfillmentShippingFeeRequest
+type UpdateFulfillmentShippingFeesEndpoint struct {
+	*api.UpdateFulfillmentShippingFeesRequest
 	Result  *cm.UpdatedResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapFulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context, req *api.UpdateFulfillmentShippingFeeRequest) (resp *cm.UpdatedResponse, err error) {
+func (s wrapFulfillmentService) UpdateFulfillmentShippingFees(ctx context.Context, req *api.UpdateFulfillmentShippingFeesRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "admin.Fulfillment/UpdateFulfillmentShippingFee"
+	const rpcName = "admin.Fulfillment/UpdateFulfillmentShippingFees"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -950,7 +950,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &UpdateFulfillmentShippingFeeEndpoint{UpdateFulfillmentShippingFeeRequest: req}
+	query := &UpdateFulfillmentShippingFeesEndpoint{UpdateFulfillmentShippingFeesRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}
@@ -959,7 +959,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentShippingFee(ctx context.Context
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s().UpdateFulfillmentShippingFee(ctx, query)
+	err = s.s().UpdateFulfillmentShippingFees(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
