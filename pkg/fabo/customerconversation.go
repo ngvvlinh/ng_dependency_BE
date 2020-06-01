@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
 	"o.o/api/top/int/fabo"
 	"o.o/api/top/types/common"
 	"o.o/backend/com/fabo/pkg/fbclient"
@@ -12,6 +13,7 @@ import (
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	convertpb2 "o.o/backend/pkg/etop/apix/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/fabo/convertpb"
 	"o.o/backend/pkg/fabo/faboinfo"
@@ -25,6 +27,7 @@ type CustomerConversationService struct {
 	fbMessagingAggr  fbmessaging.CommandBus
 	fbPagingQuery    fbpaging.QueryBus
 	fbClient         *fbclient.FbClient
+	fbUserQuery      fbusering.QueryBus
 }
 
 func NewCustomerConversationService(
@@ -34,6 +37,7 @@ func NewCustomerConversationService(
 	fbMessagingAggr fbmessaging.CommandBus,
 	fbPagingQuery fbpaging.QueryBus,
 	fbClient *fbclient.FbClient,
+	fbUserQuery fbusering.QueryBus,
 ) *CustomerConversationService {
 	s := &CustomerConversationService{
 		Session:          ss,
@@ -42,6 +46,7 @@ func NewCustomerConversationService(
 		fbMessagingAggr:  fbMessagingAggr,
 		fbPagingQuery:    fbPagingQuery,
 		fbClient:         fbClient,
+		fbUserQuery:      fbUserQuery,
 	}
 	return s
 }
@@ -105,11 +110,32 @@ func (s *CustomerConversationService) ListCustomerConversations(
 	if err := s.fbMessagingQuery.Dispatch(ctx, listCustomerConversationsQuery); err != nil {
 		return nil, err
 	}
-
-	return &fabo.FbCustomerConversationsResponse{
+	var fbUserExternalID []string
+	for _, v := range listCustomerConversationsQuery.Result.FbCustomerConversations {
+		fbUserExternalID = append(fbUserExternalID, v.ExternalUserID)
+	}
+	listFbUserQuery := &fbusering.ListFbExternalUserWithCustomerByExternalIDsQuery{
+		ShopID:      s.SS.Shop().ID,
+		ExternalIDs: fbUserExternalID,
+	}
+	err = s.fbUserQuery.Dispatch(ctx, listFbUserQuery)
+	if err != nil {
+		return nil, err
+	}
+	var mapExternalIDFbUser = make(map[string]*fbusering.FbExternalUserWithCustomer)
+	for _, v := range listFbUserQuery.Result {
+		mapExternalIDFbUser[v.FbExternalUser.ExternalID] = v
+	}
+	result := &fabo.FbCustomerConversationsResponse{
 		CustomerConversations: convertpb.PbFbCustomerConversations(listCustomerConversationsQuery.Result.FbCustomerConversations),
 		Paging:                cmapi.PbCursorPageInfo(paging, &listCustomerConversationsQuery.Result.Paging),
-	}, nil
+	}
+	for k, v := range result.CustomerConversations {
+		if mapExternalIDFbUser[v.ExternalUserID] != nil {
+			result.CustomerConversations[k].Customer = convertpb2.PbShopCustomer(mapExternalIDFbUser[v.ExternalUserID].ShopCustomer)
+		}
+	}
+	return result, nil
 }
 
 func (s *CustomerConversationService) ListMessages(

@@ -20,7 +20,7 @@ import (
 func NewFaboServer(ss session.Session, fbExternalUserQuery fbusering.QueryBus, fbExternalUserAggr fbusering.CommandBus, fbPagingQuery fbpaging.QueryBus, fbPagingAggr fbpaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus, fbMessagingAggr fbmessaging.CommandBus, appScopes map[string]string, fbClient *fbclient.FbClient, customerQ customering.QueryBus) Servers {
 	faboInfo := faboinfo.New(fbPagingQuery, fbExternalUserQuery)
 	pageService := NewPageService(ss, faboInfo, fbExternalUserQuery, fbExternalUserAggr, fbPagingQuery, fbPagingAggr, appScopes, fbClient)
-	customerConversationService := NewCustomerConversationService(ss, faboInfo, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbClient)
+	customerConversationService := NewCustomerConversationService(ss, faboInfo, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbClient, fbExternalUserQuery)
 	customerService := NewCustomerService(customerQ, fbExternalUserQuery, fbExternalUserAggr, ss)
 	servers := NewServer(pageService, customerConversationService, customerService)
 	return servers

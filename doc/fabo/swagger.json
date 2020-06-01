@@ -600,6 +600,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "customer": {
+          "$ref": "#/definitions/mrCustomer"
+        },
         "external_comment_attachment": {
           "$ref": "#/definitions/cvCommentAttachment"
         },

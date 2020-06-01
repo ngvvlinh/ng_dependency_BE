@@ -254,6 +254,7 @@ type FbCustomerConversation struct {
 	LastMessageAt              time.Time              `json:"last_message_at"`
 	CreatedAt                  time.Time              `json:"created_at"`
 	UpdatedAt                  time.Time              `json:"updated_at"`
+	Customer                   *types.Customer        `json:"customer"`
 }
 
 type PostAttachment struct {
