@@ -36,4 +36,5 @@ type CustomerService interface {
 
 	ListFbUsers(ctx context.Context, request *ListFbUsersRequest) (*ListFbUsersResponse, error)
 	GetFbUser(ctx context.Context, request *GetFbUserRequest) (*FbUserWithCustomer, error)
+	ListCustomersWithFbUsers(ctx context.Context, request *ListCustomersWithFbUsersRequest) (*ListCustomersWithFbUsersResponse, error)
 }

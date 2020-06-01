@@ -36,6 +36,13 @@ type QueryService interface {
 	ListFbExternalUserWithCustomer(_ context.Context, args ListFbExternalUserWithCustomerRequest) ([]*FbExternalUserWithCustomer, error)
 	ListFbExternalUserWithCustomerByExternalIDs(_ context.Context, shopID dot.ID, externalIDs []string) ([]*FbExternalUserWithCustomer, error)
 	ListFbExternalUsers(context.Context, *ListFbExternalUsersArgs) ([]*FbExternalUserWithCustomer, error)
+	ListShopCustomerWithFbExternalUser(context.Context, *ListCustomerWithFbAvatarsArgs) ([]*ShopCustomerWithFbExternalUser, error)
+}
+
+type ListCustomerWithFbAvatarsArgs struct {
+	ShopID  dot.ID
+	Paging  meta.Paging
+	Filters meta.Filters
 }
 
 type DeleteFbExternalUserShopCustomerArgs struct {

@@ -189,3 +189,49 @@ func (q *FbUserQuery) populateFbExternalUsersWithCustomerInfo(ctx context.Contex
 	}
 	return result, nil
 }
+
+func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, args *fbusering.ListCustomerWithFbAvatarsArgs) ([]*fbusering.ShopCustomerWithFbExternalUser, error) {
+	query := &customering.ListCustomersQuery{
+		ShopID:  args.ShopID,
+		Paging:  args.Paging,
+		Filters: args.Filters,
+	}
+	err := q.customerQuery.Dispatch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	var customerIDs []dot.ID
+	var listCustomerFbUser []*fbusering.ShopCustomerWithFbExternalUser
+	for _, v := range query.Result.Customers {
+		customerIDs = append(customerIDs, v.ID)
+		listCustomerFbUser = append(listCustomerFbUser, &fbusering.ShopCustomerWithFbExternalUser{
+			ShopCustomer: v,
+		})
+	}
+	FbUserCustomers, err := q.fbExternalUserShopCustomerStore(ctx).ShopCustomerIDs(customerIDs).ShopID(args.ShopID).ListFbExternalUser()
+	if err != nil {
+		return nil, err
+	}
+	var fbUserIDs []string
+	var mapFbUserExternalIDCustomerID = make(map[string]dot.ID)
+	for _, v := range FbUserCustomers {
+		fbUserIDs = append(fbUserIDs, v.FbExternalUserID)
+		mapFbUserExternalIDCustomerID[v.FbExternalUserID] = v.CustomerID
+	}
+	fbUsers, err := q.fbUserStore(ctx).ExternalIDs(fbUserIDs).ListFbExternalUsers()
+	if err != nil {
+		return nil, err
+	}
+	var mapFbUsers = make(map[string]*fbusering.FbExternalUser)
+	for _, v := range fbUsers {
+		mapFbUsers[v.ExternalID] = v
+	}
+	var customerfbUsers = make(map[dot.ID][]*fbusering.FbExternalUser)
+	for _, v := range fbUsers {
+		customerfbUsers[mapFbUserExternalIDCustomerID[v.ExternalID]] = append(customerfbUsers[mapFbUserExternalIDCustomerID[v.ExternalID]], mapFbUsers[v.ExternalID])
+	}
+	for k, v := range listCustomerFbUser {
+		listCustomerFbUser[k].FbUsers = customerfbUsers[v.ID]
+	}
+	return listCustomerFbUser, nil
+}

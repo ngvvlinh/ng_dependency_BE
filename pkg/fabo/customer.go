@@ -6,6 +6,7 @@ import (
 	"o.o/api/fabo/fbusering"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/int/fabo"
+	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/authorize/session"
 	convertpbfabo "o.o/backend/pkg/fabo/convertpb"
 )
@@ -75,6 +76,25 @@ func (s *CustomerService) ListFbUsers(ctx context.Context, request *fabo.ListFbU
 		return nil, err
 	}
 	var result = &fabo.ListFbUsersResponse{}
-	result.FbUsers = convertpbfabo.PbFbUsers(query.Result)
+	result.FbUsers = convertpbfabo.PbExternalUsersWithCustomer(query.Result)
+	return result, nil
+}
+
+func (s *CustomerService) ListCustomersWithFbUsers(ctx context.Context, request *fabo.ListCustomersWithFbUsersRequest) (*fabo.ListCustomersWithFbUsersResponse, error) {
+	paging, err := cmapi.CMCursorPaging(request.Paging)
+	if err != nil {
+		return nil, err
+	}
+	shopID := s.SS.Shop().ID
+	query := &fbusering.ListShopCustomerWithFbExternalUserQuery{
+		ShopID:  shopID,
+		Paging:  *paging,
+		Filters: cmapi.ToFilters(request.Filters),
+	}
+	if err := s.fbUseringQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	var result = &fabo.ListCustomersWithFbUsersResponse{}
+	result.Customers = convertpbfabo.PbCustomersWithFbUsers(query.Result)
 	return result, nil
 }

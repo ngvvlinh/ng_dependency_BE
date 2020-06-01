@@ -7,6 +7,7 @@ package fbusering
 import (
 	context "context"
 
+	meta "o.o/api/meta"
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -182,6 +183,19 @@ func (h QueryServiceHandler) HandleListFbExternalUsersByExternalIDs(ctx context.
 	return err
 }
 
+type ListShopCustomerWithFbExternalUserQuery struct {
+	ShopID  dot.ID
+	Paging  meta.Paging
+	Filters meta.Filters
+
+	Result []*ShopCustomerWithFbExternalUser `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopCustomerWithFbExternalUser(ctx context.Context, msg *ListShopCustomerWithFbExternalUserQuery) (err error) {
+	msg.Result, err = h.inner.ListShopCustomerWithFbExternalUser(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateFbExternalUserCommand) command()             {}
@@ -198,6 +212,7 @@ func (q *ListFbExternalUserWithCustomerQuery) query()              {}
 func (q *ListFbExternalUserWithCustomerByExternalIDsQuery) query() {}
 func (q *ListFbExternalUsersQuery) query()                         {}
 func (q *ListFbExternalUsersByExternalIDsQuery) query()            {}
+func (q *ListShopCustomerWithFbExternalUserQuery) query()          {}
 
 // implement conversion
 
@@ -324,6 +339,21 @@ func (q *ListFbExternalUsersByExternalIDsQuery) GetArgs(ctx context.Context) (_ 
 		q.ExternalIDs
 }
 
+func (q *ListShopCustomerWithFbExternalUserQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerWithFbAvatarsArgs) {
+	return ctx,
+		&ListCustomerWithFbAvatarsArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
+}
+
+func (q *ListShopCustomerWithFbExternalUserQuery) SetListCustomerWithFbAvatarsArgs(args *ListCustomerWithFbAvatarsArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -364,5 +394,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListFbExternalUserWithCustomerByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalUsers)
 	b.AddHandler(h.HandleListFbExternalUsersByExternalIDs)
+	b.AddHandler(h.HandleListShopCustomerWithFbExternalUser)
 	return QueryBus{b}
 }

@@ -234,6 +234,19 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			return
 		}
 		return msg, fn, nil
+	case "/fabo.Customer/ListCustomersWithFbUsers":
+		msg := &ListCustomersWithFbUsersRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ListCustomersWithFbUsers(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/fabo.Customer/ListFbUsers":
 		msg := &ListFbUsersRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

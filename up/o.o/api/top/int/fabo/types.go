@@ -6,11 +6,51 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/top/external/types"
 	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/customer_type"
+	"o.o/api/top/types/etc/gender"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
+
+type CustomerWithFbUserAvatars struct {
+	ExternalId   dot.NullString `json:"external_id"`
+	ExternalCode dot.NullString `json:"external_code"`
+
+	Id        dot.ID                         `json:"id"`
+	ShopId    dot.ID                         `json:"shop_id"`
+	FullName  dot.NullString                 `json:"full_name"`
+	Code      dot.NullString                 `json:"code"`
+	Note      dot.NullString                 `json:"note"`
+	Phone     dot.NullString                 `json:"phone"`
+	Email     dot.NullString                 `json:"email"`
+	Gender    gender.NullGender              `json:"gender"`
+	Type      customer_type.NullCustomerType `json:"type"`
+	Birthday  dot.NullString                 `json:"birthday"`
+	CreatedAt dot.Time                       `json:"created_at"`
+	UpdatedAt dot.Time                       `json:"updated_at"`
+	Status    status3.NullStatus             `json:"status"`
+	Deleted   bool                           `json:"deleted"`
+	FbUsers   []*FbUser                      `json:"fb_users"`
+}
+
+type ListCustomersWithFbUsersResponse struct {
+	Customers []*CustomerWithFbUserAvatars `json:"customers"`
+}
+
+func (m *ListCustomersWithFbUsersResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type ListCustomersWithFbUsersRequest struct {
+	Filters []*common.Filter     `json:"filters"`
+	Paging  *common.CursorPaging `json:"paging"`
+}
+
+func (m *ListCustomersWithFbUsersRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type CreateFbUserCustomerRequest struct {
 	ExternalID string `json:"external_id"`

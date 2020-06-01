@@ -3,6 +3,7 @@ package fbusering
 import (
 	"time"
 
+	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 )
@@ -44,4 +45,9 @@ type FbExternalUserShopCustomer struct {
 	FbExternalUserID string
 	CustomerID       dot.ID
 	Status           status3.Status
+}
+
+type ShopCustomerWithFbExternalUser struct {
+	*customering.ShopCustomer
+	FbUsers []*FbExternalUser
 }

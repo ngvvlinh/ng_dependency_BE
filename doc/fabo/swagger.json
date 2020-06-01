@@ -69,6 +69,33 @@
         }
       }
     },
+    "/api/fabo.Customer/ListCustomersWithFbUsers": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "ListCustomersWithFbUsers",
+        "operationId": "fabo.Customer-ListCustomersWithFbUsers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvListCustomersWithFbUsersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvListCustomersWithFbUsersResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.Customer/ListFbUsers": {
       "post": {
         "tags": [
@@ -454,6 +481,69 @@
         },
         "type": {
           "$ref": "#/definitions/lxFbCustomerConversationType"
+        }
+      }
+    },
+    "cvCustomerWithFbUserAvatars": {
+      "type": "object",
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "fb_users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbUser"
+          }
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/ljCustomerType"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -1014,6 +1104,28 @@
         }
       }
     },
+    "cvFbUser": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_info": {
+          "$ref": "#/definitions/cvExternalFbUserInfo"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "cvFbUserCombined": {
       "type": "object",
       "properties": {
@@ -1114,6 +1226,31 @@
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "cvListCustomersWithFbUsersRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "cvListCustomersWithFbUsersResponse": {
+      "type": "object",
+      "properties": {
+        "customers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvCustomerWithFbUserAvatars"
+          }
         }
       }
     },
