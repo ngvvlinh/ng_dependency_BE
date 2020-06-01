@@ -18,7 +18,7 @@ func InitTest() {
 	if err != nil {
 		panic(err)
 	}
-	New(engine, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
+	New(engine, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 	x = engine
 
 	MustExec("SELECT 1")

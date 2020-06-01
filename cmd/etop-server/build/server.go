@@ -23,6 +23,7 @@ import (
 	vtpaygatewayserver "o.o/backend/com/external/payment/vtpay/gateway/server"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	"o.o/backend/com/web/ecom/webserver"
+	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
 	cmservice "o.o/backend/pkg/common/apifw/service"
@@ -59,6 +60,7 @@ import (
 func NewServers(
 	_ *sqlstore.Store, // inject
 	_ middleware.Middleware, // inject
+	_ *captcha.Captcha, // inject
 
 	etopServer EtopServer,
 	webServer WebServer,

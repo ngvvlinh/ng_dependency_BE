@@ -104,7 +104,7 @@ func main() {
 	}
 
 	eventBus := bus.New()
-	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), eventBus)
+	sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), eventBus)
 
 	customerQuery := customeringquery.CustomerQueryMessageBus(customeringquery.NewCustomerQuery(db))
 	_ = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))

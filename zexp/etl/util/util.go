@@ -132,7 +132,7 @@ func initDBs(mapDBCfgs map[string]config.Database, mapTableNames map[string][]ta
 		}
 
 		if wlName == drivers.ETop(cmenv.Env()).Key {
-			sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil) // TODO(vu): refactor this
+			sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil) // TODO(vu): refactor this
 		} else {
 			if cmenv.IsDev() && resetDB {
 				_, _ = db.Exec(`

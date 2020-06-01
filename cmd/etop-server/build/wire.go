@@ -8,6 +8,7 @@ import (
 	"github.com/google/wire"
 
 	"o.o/backend/cmd/etop-server/config"
+	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/lifecycle"
@@ -54,6 +55,7 @@ func Servers(
 			"vtpay",
 			"redis",
 			"export",
+			"captcha",
 		),
 		wire.FieldsOf(&cfg, "FlagApplyShipmentPrice"),
 		WireSet,
@@ -79,6 +81,7 @@ func Servers(
 		logicsummary.WireSet,
 		wire.InterfaceValue(new(eventstream.Publisher), new(eventstream.EventStream)),
 		sqlstore.WireSet,
+		captcha.WireSet,
 		WireSAdminToken,
 		NewSession,
 		BindProducer,

@@ -36,7 +36,7 @@ type (
 
 type Store struct{}
 
-func New(db com.MainDB, _locationBus location.QueryBus, _eventBus capi.EventBus) *Store {
+func New(db com.MainDB, notiDB com.NotifierDB, _locationBus location.QueryBus, _eventBus capi.EventBus) *Store {
 	if x != nil {
 		if (*x).DB() != nil {
 			ll.Panic("Already initialized")
@@ -46,10 +46,13 @@ func New(db com.MainDB, _locationBus location.QueryBus, _eventBus capi.EventBus)
 	shopProductStore = catalogsqlstore.NewShopProductStore(db)
 	locationBus = _locationBus
 	eventBus = _eventBus
+	if notiDB != nil {
+		initDBNotifier(notiDB) // TODO(qv): remove this
+	}
 	return nil
 }
 
-func InitDBNotifier(db *cmsql.Database) {
+func initDBNotifier(db *cmsql.Database) {
 	if xNotifier != nil && (*xNotifier).DB() != nil {
 		ll.Panic("Database Notifier already initialized")
 	}

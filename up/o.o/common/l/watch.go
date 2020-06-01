@@ -49,6 +49,9 @@ func RegisterChannels(chans map[string]Messenger) {
 
 // getChannel allocates a new slot for registering messenger later
 func getChannel(channel string) *Messenger {
+	if channel == "" {
+		channel = "default"
+	}
 	item, _ := channels.Load(channel)
 	ch, _ := item.(*Messenger)
 	if ch == nil {

@@ -34,7 +34,7 @@ var (
 func init() {
 	postgres := cc.DefaultPostgres()
 	db = cmsql.MustConnect(postgres)
-	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
+	sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 	db.MustExec(`
 		DROP TABLE IF EXISTS shop_connection, connection CASCADE;
 		CREATE TABLE connection (

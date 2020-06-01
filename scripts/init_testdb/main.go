@@ -69,7 +69,7 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
+	sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 
 	if *flDrop {
 		ll.Warn("Drop database: " + cfg.Database)

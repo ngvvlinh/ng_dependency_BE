@@ -65,6 +65,7 @@ import (
 	query15 "o.o/backend/com/summary/query"
 	aggregate17 "o.o/backend/com/web/webserver/aggregate"
 	query17 "o.o/backend/com/web/webserver/query"
+	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/lifecycle"
@@ -120,9 +121,10 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		return nil, nil, err
 	}
 	mainDB := databases.Main
+	notifierDB := databases.Notifier
 	locationQuery := location.New(mainDB)
 	queryBus := location.QueryMessageBus(locationQuery)
-	store := sqlstore.New(mainDB, queryBus, eventBus)
+	store := sqlstore.New(mainDB, notifierDB, queryBus, eventBus)
 	sAdminToken := WireSAdminToken(cfg)
 	redisRedis := cfg.Redis
 	redisStore := redis.Connect(redisRedis)
@@ -130,6 +132,8 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	queryService := identity.NewQueryService(mainDB)
 	identityQueryBus := identity.QueryServiceMessageBus(queryService)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, identityQueryBus)
+	captchaConfig := cfg.Captcha
+	captchaCaptcha := captcha.New(captchaConfig)
 	miscService := &api.MiscService{}
 	shipnowQueryService := shipnow.NewQueryService(mainDB)
 	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
@@ -721,7 +725,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	ahamoveVerificationFileServer := NewAhamoveVerificationFileServer(ctx, identityQueryBus)
 	ahamovewebhookWebhook := ahamovewebhook.New(mainDB, logDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus)
 	ahamoveWebhookServer := NewAhamoveWebhookServer(cfg, shipmentManager, ahamoveCarrier, identityQueryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, ahamovewebhookWebhook)
-	v5 := NewServers(store, middlewareMiddleware, etopServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
+	v5 := NewServers(store, middlewareMiddleware, captchaCaptcha, etopServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
 	return v5, func() {
 		cleanup8()
 		cleanup7()

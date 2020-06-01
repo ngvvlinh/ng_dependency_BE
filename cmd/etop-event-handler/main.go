@@ -85,7 +85,7 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
+	sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 
 	dbWebhook, err := cmsql.Connect(cfg.PostgresWebhook)
 	if err != nil {

@@ -80,12 +80,12 @@ func main() {
 	}
 
 	locationBus := servicelocation.QueryMessageBus(servicelocation.New(nil))
-	sqlstore.New(db, locationBus, nil)
 
 	dbNotifier, err := cmsql.Connect(cfg.PostgresNotifier)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres Notifier", l.Error(err))
 	}
+	sqlstore.New(db, dbNotifier, locationBus, nil)
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
 	{
