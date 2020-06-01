@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"o.o/api/fabo/fbmessaging"
 )
 
 var timeType = reflect.TypeOf(time.Time{})
@@ -125,5 +127,63 @@ func Compare(item, otherItem interface{}) bool {
 	default:
 		panic(fmt.Sprintf("does not support type %v", itemValue.Kind().String()))
 	}
+	return true
+}
+
+func CompareFbExternalComments(old *fbmessaging.FbExternalComment, new *fbmessaging.FbExternalComment) bool {
+	if !Compare(old, new) {
+		return false
+	}
+
+	oldCommentAttachment := old.ExternalAttachment
+	newCommentAttachment := new.ExternalAttachment
+
+	if (oldCommentAttachment != nil && newCommentAttachment == nil) ||
+		(oldCommentAttachment == nil && newCommentAttachment != nil) {
+		return false
+	}
+
+	if oldCommentAttachment == nil && newCommentAttachment == nil {
+		return true
+	}
+
+	if oldCommentAttachment.Target != nil && newCommentAttachment.Target != nil &&
+		oldCommentAttachment.Target.ID != newCommentAttachment.Target.ID {
+		return false
+	}
+
+	return true
+}
+
+func CompareFbExternalMessages(old *fbmessaging.FbExternalMessage, new *fbmessaging.FbExternalMessage) bool {
+	if !Compare(old, new) {
+		return false
+	}
+
+	oldMessageAttachments := old.ExternalAttachments
+	newMessageAttachments := new.ExternalAttachments
+
+	if len(oldMessageAttachments) != len(newMessageAttachments) {
+		return false
+	}
+
+	// key: attachment.ID
+	mapOldMessageAttachment := make(map[string]bool)
+	mapNewMessageAttachment := make(map[string]bool)
+
+	for _, messageAttachment := range oldMessageAttachments {
+		mapOldMessageAttachment[messageAttachment.ID] = true
+	}
+
+	for _, messageAttachment := range newMessageAttachments {
+		mapNewMessageAttachment[messageAttachment.ID] = true
+	}
+
+	for id := range mapOldMessageAttachment {
+		if _, ok := mapNewMessageAttachment[id]; !ok {
+			return false
+		}
+	}
+
 	return true
 }

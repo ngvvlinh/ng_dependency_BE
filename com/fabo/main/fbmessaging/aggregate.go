@@ -109,7 +109,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalMessages(
 				newFbExternalMessage.ID = oldFbExternalMessage.ID
 				resultFbExternalMessages = append(resultFbExternalMessages, oldFbExternalMessage)
 
-				if isEqual := compare.Compare(oldFbExternalMessage, newFbExternalMessage); isEqual {
+				if isEqual := compare.CompareFbExternalMessages(oldFbExternalMessage, newFbExternalMessage); isEqual {
 					continue
 				}
 			} else {
@@ -515,7 +515,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 				newFbExternalComment.ID = oldFbExternalComment.ID
 				resultFbExternalComments = append(resultFbExternalComments, oldFbExternalComment)
 
-				if isEqual := compare.Compare(newFbExternalComment, oldFbExternalComment); isEqual {
+				if isEqual := compare.CompareFbExternalComments(oldFbExternalComment, newFbExternalComment); isEqual {
 					continue
 				}
 			} else {

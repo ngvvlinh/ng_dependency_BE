@@ -39,7 +39,7 @@ type FbObjectFrom struct {
 	Email     string
 	FirstName string
 	LastName  string
-	ImageURL  string
+	ImageURL  string `compare:"ignore"`
 }
 
 type FbMessageAttachment struct {
@@ -82,10 +82,10 @@ type FbExternalComment struct {
 	ExternalParentID     string
 	ExternalParentUserID string
 	ExternalMessage      string
-	ExternalCommentCount int
+	ExternalCommentCount int `compare:"ignore"`
 	ExternalParent       *FbObjectParent
 	ExternalFrom         *FbObjectFrom
-	ExternalAttachment   *CommentAttachment
+	ExternalAttachment   *CommentAttachment `compare:"ignore"`
 	ExternalCreatedTime  time.Time
 	CreatedAt            time.Time `compare:"ignore"`
 	UpdatedAt            time.Time `compare:"ignore"`
@@ -134,7 +134,7 @@ type FbExternalPost struct {
 	ExternalPicture     string
 	ExternalIcon        string
 	ExternalMessage     string
-	ExternalAttachments []*PostAttachment
+	ExternalAttachments []*PostAttachment `compare:"ignore"`
 	ExternalCreatedTime time.Time
 	CreatedAt           time.Time `compare:"ignore"`
 	UpdatedAt           time.Time `compare:"ignore"`
@@ -156,6 +156,7 @@ type FbCustomerConversation struct {
 	ExternalMessageAttachments []*FbMessageAttachment
 	LastMessage                string
 	LastMessageAt              time.Time
+	LastMessageExternalID      string
 	CreatedAt                  time.Time `compare:"ignore"`
 	UpdatedAt                  time.Time `compare:"ignore"`
 }

@@ -162,6 +162,7 @@ type CreateFbCustomerConversationArgs struct {
 	ExternalMessageAttachments []*FbMessageAttachment
 	LastMessage                string
 	LastMessageAt              time.Time
+	LastMessageExternalID      string
 }
 
 type CreateFbCustomerConversationsArgs struct {

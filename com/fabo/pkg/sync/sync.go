@@ -155,7 +155,7 @@ func (s *Synchronizer) addTask(taskArguments *TaskArguments) (taskID dot.ID) {
 	s.mu.Lock()
 	taskID = cm.NewID()
 	s.mapTaskArguments[taskID] = taskArguments
-	t := rand.Intn(int(time.Second))
+	t := rand.Intn(int(time.Second) / 1000)
 	s.scheduler.AddAfter(taskID, time.Duration(t), s.syncCallbackLogs)
 	s.mu.Unlock()
 	return

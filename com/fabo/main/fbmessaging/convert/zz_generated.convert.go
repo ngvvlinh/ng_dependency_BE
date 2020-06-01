@@ -496,10 +496,11 @@ func convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConve
 	out.ExternalPostAttachments = Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(arg.ExternalPostAttachments)
 	out.ExternalCommentAttachment = Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg.ExternalCommentAttachment, nil)
 	out.ExternalMessageAttachments = Convert_fbmessagingmodel_FbMessageAttachments_fbmessaging_FbMessageAttachments(arg.ExternalMessageAttachments)
-	out.LastMessage = arg.LastMessage     // simple assign
-	out.LastMessageAt = arg.LastMessageAt // simple assign
-	out.CreatedAt = arg.CreatedAt         // simple assign
-	out.UpdatedAt = arg.UpdatedAt         // simple assign
+	out.LastMessage = arg.LastMessage                     // simple assign
+	out.LastMessageAt = arg.LastMessageAt                 // simple assign
+	out.LastMessageExternalID = arg.LastMessageExternalID // simple assign
+	out.CreatedAt = arg.CreatedAt                         // simple assign
+	out.UpdatedAt = arg.UpdatedAt                         // simple assign
 }
 
 func Convert_fbmessagingmodel_FbCustomerConversations_fbmessaging_FbCustomerConversations(args []*fbmessagingmodel.FbCustomerConversation) (outs []*fbmessaging.FbCustomerConversation) {
@@ -535,12 +536,13 @@ func convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConve
 	out.ExternalPostAttachments = Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(arg.ExternalPostAttachments)
 	out.ExternalCommentAttachment = Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg.ExternalCommentAttachment, nil)
 	out.ExternalMessageAttachments = Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(arg.ExternalMessageAttachments)
-	out.Type = int(arg.Type)              // simple conversion
-	out.LastMessage = arg.LastMessage     // simple assign
-	out.LastMessageAt = arg.LastMessageAt // simple assign
-	out.CreatedAt = arg.CreatedAt         // simple assign
-	out.UpdatedAt = arg.UpdatedAt         // simple assign
-	out.DeletedAt = time.Time{}           // zero value
+	out.Type = int(arg.Type)                              // simple conversion
+	out.LastMessage = arg.LastMessage                     // simple assign
+	out.LastMessageAt = arg.LastMessageAt                 // simple assign
+	out.LastMessageExternalID = arg.LastMessageExternalID // simple assign
+	out.CreatedAt = arg.CreatedAt                         // simple assign
+	out.UpdatedAt = arg.UpdatedAt                         // simple assign
+	out.DeletedAt = time.Time{}                           // zero value
 }
 
 func Convert_fbmessaging_FbCustomerConversations_fbmessagingmodel_FbCustomerConversations(args []*fbmessaging.FbCustomerConversation) (outs []*fbmessagingmodel.FbCustomerConversation) {
@@ -581,6 +583,7 @@ func apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerCo
 	out.ExternalMessageAttachments = arg.ExternalMessageAttachments // simple assign
 	out.LastMessage = arg.LastMessage                               // simple assign
 	out.LastMessageAt = arg.LastMessageAt                           // simple assign
+	out.LastMessageExternalID = arg.LastMessageExternalID           // simple assign
 	out.CreatedAt = time.Time{}                                     // zero value
 	out.UpdatedAt = time.Time{}                                     // zero value
 }
