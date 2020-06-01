@@ -284,7 +284,7 @@ func (c *TelegramBot) ConnectChannel(channel string) (*telebot.Channel, error) {
 	if cfgName == "" {
 		cfgName = "default"
 	}
-	ch, err := telebot.NewChannel(c.Token, c.Chats[cfgName])
+	ch, err := telebot.NewChannel(channel, c.Token, c.Chats[cfgName])
 	if err != nil {
 		return nil, err
 	}
@@ -297,9 +297,9 @@ func (c *TelegramBot) MustRegister() {
 	chans := make(map[string]l.Messenger, len(c.Chats))
 	for name, chatID := range c.Chats {
 		var ch l.Messenger
-		if c.Token != "" && chatID == 0 {
+		if c.Token != "" && chatID != 0 {
 			var err error
-			ch, err = telebot.NewChannel(c.Token, chatID)
+			ch, err = telebot.NewChannel(name, c.Token, chatID)
 			if err != nil {
 				panic(err)
 			}

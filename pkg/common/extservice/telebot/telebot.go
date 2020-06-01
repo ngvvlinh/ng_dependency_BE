@@ -63,9 +63,10 @@ type Channel struct {
 	bot        Bot
 	chatID     int64
 	urlSendMsg string
+	console    l.MockMessenger
 }
 
-func NewChannel(token string, chatID int64) (*Channel, error) {
+func NewChannel(name, token string, chatID int64) (*Channel, error) {
 	bot, err := NewBot(token)
 	if err != nil {
 		return nil, err
@@ -74,6 +75,7 @@ func NewChannel(token string, chatID int64) (*Channel, error) {
 		bot:        *bot,
 		chatID:     chatID,
 		urlSendMsg: bot.baseURL + "sendMessage",
+		console:    l.MockMessenger{Name: name},
 	}, nil
 }
 
@@ -111,6 +113,7 @@ func (c *Channel) SendMarkdownMessage(msg string) {
 }
 
 func (c *Channel) sendMessage(mode string, msg string) error {
+	c.console.SendMessage(msg)
 	if len(msg) >= MaxMessageLength {
 		msg = msg[:MaxMessageLength]
 	}

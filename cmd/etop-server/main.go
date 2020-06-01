@@ -32,13 +32,14 @@ func main() {
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite) // TODO(vu): refactor
 	sqltrace.Init()
 	wl.Init(cmenv.Env())
+	cfg.TelegramBot.MustRegister()
 	eventBus := bus.New()
 	healthService := health.New()
 
 	// TODO(vu): refactor
 	model.GetShippingServiceRegistry().Initialize()
 
-	// lifecyle
+	// lifecycle
 	sd, ctxCancel := lifecycle.WithCancel(context.Background())
 	defer sd.Wait()
 	lifecycle.ListenForSignal(ctxCancel, 30*time.Second)
@@ -52,4 +53,5 @@ func main() {
 	sd.Register(cancelHTTP)
 	sd.Register(cancelServer)
 	healthService.MarkReady()
+	ll.SendMessage("etop-server started")
 }
