@@ -127,6 +127,9 @@ func (l Logger) Must(err error, msg string, fields ...zap.Field) {
 }
 
 func (l Logger) WithChannel(channel string) Logger {
+	if channel == "" {
+		channel = "default"
+	}
 	l.ch = getChannel(channel)
 	return l
 }

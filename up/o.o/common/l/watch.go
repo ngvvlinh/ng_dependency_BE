@@ -66,16 +66,16 @@ type emptyMessenger struct {
 
 func (m *emptyMessenger) SendMessage(msg string) {
 	if initialized.Load() {
-		errMsg := fmt.Sprintf("message sent on channel %v without registering a messenger", m.name)
+		errMsg := fmt.Sprintf("%v (message sent on channel %v without registering a messenger)", msg, m.name)
 		sendMessageOnDefaultChannel(errMsg)
-		panic(errMsg)
+		return
 	}
-	if len(m.msgs) >= 16 {
-		errMsg := fmt.Sprintf("too many messages were sent on channel %v without registering a messenger", m.name)
-		sendMessageOnDefaultChannel(errMsg)
-		panic(errMsg)
+	if len(m.msgs) < 16 {
+		m.msgs = append(m.msgs, msg)
+		return
 	}
-	m.msgs = append(m.msgs, msg)
+	errMsg := fmt.Sprintf("%v (too many messages sent on channel %v without registering a messenger)", msg, m.name)
+	sendMessageOnDefaultChannel(errMsg)
 }
 
 func sendMessageOnDefaultChannel(msg string) {

@@ -280,11 +280,7 @@ func (c *TelegramBot) ConnectChannel(channel string) (*telebot.Channel, error) {
 		return nil, nil
 	}
 
-	cfgName := channel
-	if cfgName == "" {
-		cfgName = "default"
-	}
-	ch, err := telebot.NewChannel(channel, c.Token, c.Chats[cfgName])
+	ch, err := telebot.NewChannel(channel, c.Token, c.Chats[channel])
 	if err != nil {
 		return nil, err
 	}
@@ -305,9 +301,6 @@ func (c *TelegramBot) MustRegister() {
 			}
 		} else {
 			ch = l.MockMessenger{Name: name}
-		}
-		if name == "default" {
-			name = ""
 		}
 		chans[name] = ch
 	}

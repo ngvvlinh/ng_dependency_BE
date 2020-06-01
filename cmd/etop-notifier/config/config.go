@@ -27,6 +27,11 @@ func Default() Config {
 			Host: "",
 			Port: 8083,
 		},
+		TelegramBot: cc.TelegramBot{
+			Chats: map[string]int64{
+				"default": 0,
+			},
+		},
 		Kafka:     cc.DefaultKafka(),
 		Env:       "dev",
 		Onesignal: cc.DefaultOnesignal(),

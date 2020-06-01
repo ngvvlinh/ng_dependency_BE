@@ -26,9 +26,14 @@ type Config struct {
 
 func Default() Config {
 	cfg := Config{
-		HTTP:                         cc.HTTP{Port: 8180},
-		Redis:                        cc.DefaultRedis(),
-		UploadDirImg:                 "/tmp/upload",
+		HTTP:         cc.HTTP{Port: 8180},
+		Redis:        cc.DefaultRedis(),
+		UploadDirImg: "/tmp/upload",
+		TelegramBot: cc.TelegramBot{
+			Chats: map[string]int64{
+				"default": 0,
+			},
+		},
 		URLPrefix:                    "http://localhost:8180/img",
 		UploadDirAhamoveVerification: "/tmp/upload",
 		URLPrefixAhamoveVerification: "http://localhost:8180",

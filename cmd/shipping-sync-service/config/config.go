@@ -29,6 +29,11 @@ func Default() Config {
 			Host: "",
 			Port: 9021,
 		},
+		TelegramBot: cc.TelegramBot{
+			Chats: map[string]int64{
+				"default": 0,
+			},
+		},
 		GHN:  ghn.DefaultConfig(),
 		GHTK: ghtk.DefaultConfig(),
 		Env:  cmenv.EnvDev.String(),

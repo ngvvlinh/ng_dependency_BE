@@ -27,8 +27,15 @@ func Default() Config {
 			Host: "",
 			Port: 8080,
 		},
-		TelegramBot: cc.TelegramBot{},
-		Redis:       cc.DefaultRedis(),
+		TelegramBot: cc.TelegramBot{
+			Chats: map[string]int64{
+				"default": 0,
+				"webhook": 0,
+				"import":  0,
+				"sms":     0,
+			},
+		},
+		Redis: cc.DefaultRedis(),
 		FacebookApp: fbclient.AppConfig{
 			ID:          "1581362285363031",
 			Secret:      "b3962ddf033b295c2bd0b543fff904f7",

@@ -124,7 +124,14 @@ func Default() Config {
 			DirExport: "/tmp",
 			URLPrefix: "http://localhost:8080",
 		},
-
+		TelegramBot: cc.TelegramBot{
+			Chats: map[string]int64{
+				"default": 0,
+				"webhook": 0,
+				"import":  0,
+				"sms":     0,
+			},
+		},
 		GHN:            ghn.DefaultConfig(),
 		GHNWebhook:     ghn.DefaultWebhookConfig(),
 		GHTK:           ghtk.DefaultConfig(),

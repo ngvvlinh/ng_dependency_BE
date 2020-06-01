@@ -26,6 +26,11 @@ func Default() Config {
 			Host: "",
 			Port: 8081,
 		},
+		TelegramBot: cc.TelegramBot{
+			Chats: map[string]int64{
+				"default": 0,
+			},
+		},
 		Env:       cmenv.EnvDev.String(),
 		TimeLimit: 3,
 	}
