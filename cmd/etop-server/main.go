@@ -53,5 +53,5 @@ func main() {
 	sd.Register(cancelHTTP)
 	sd.Register(cancelServer)
 	healthService.MarkReady()
-	ll.SendMessage("etop-server started")
+	ll.SendMessagef("✨ etop-server started on %v ✨", cmenv.Env())
 }

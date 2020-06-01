@@ -157,6 +157,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		InvitationQuery: invitationQueryBus,
 		EventBus:        eventBus,
 		AuthStore:       generator,
+		TokenStore:      tokenStore,
 		RedisStore:      redisStore,
 		SMSClient:       smsClient,
 	}
@@ -510,8 +511,9 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	sadminServers := sadmin.NewServers(sadminMiscService, sadminUserService)
 	integrationMiscService := &integration.MiscService{}
 	integrationService := &integration.IntegrationService{
-		AuthStore: generator,
-		SMSClient: smsClient,
+		AuthStore:  generator,
+		TokenStore: tokenStore,
+		SMSClient:  smsClient,
 	}
 	integrationServers, cleanup3 := integration.NewIntegrationServer(redisStore, integrationMiscService, integrationService)
 	affiliateMiscService := affiliate.MiscService{}

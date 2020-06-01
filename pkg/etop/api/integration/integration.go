@@ -40,8 +40,9 @@ var ll = l.New()
 var idempgroup *idemp.RedisGroup
 
 type IntegrationService struct {
-	AuthStore auth.Generator
-	SMSClient sms.Client
+	AuthStore  auth.Generator
+	TokenStore tokens.TokenStore
+	SMSClient  sms.Client
 }
 
 func (s *IntegrationService) Clone() *IntegrationService {
@@ -196,7 +197,7 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *id
 		},
 		TTL: 2 * 60 * 60,
 	}
-	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+	if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "")
 	}
 
@@ -248,7 +249,7 @@ func (s *IntegrationService) generateNewSession(ctx context.Context, user *ident
 	if user != nil {
 		tokenCmd.ClaimInfo.UserID = user.ID
 	}
-	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+	if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "")
 	}
 	actions := getActionsFromConfig(info.Config)
@@ -513,7 +514,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 				},
 			},
 		}
-		if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+		if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 			return err
 		}
 		meta := map[string]string{}
@@ -564,12 +565,12 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 			},
 		},
 	}
-	if err := bus.Dispatch(ctx, userTokenCmd); err != nil {
+	if err := s.TokenStore.GenerateToken(ctx, userTokenCmd); err != nil {
 		return err
 	}
 
 	// we map from all accounts to partner relations and generate tokens for each one
-	availableAccounts, err := getAvailableAccounts(ctx, user.ID, requestInfo)
+	availableAccounts, err := s.getAvailableAccounts(ctx, user.ID, requestInfo)
 	if err != nil {
 		return err
 	}
@@ -696,7 +697,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 			},
 		},
 	}
-	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+	if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 		return err
 	}
 
@@ -869,7 +870,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *GrantAccessEndp
 			AuthPartnerID: partner.ID,
 		},
 	}
-	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+	if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 		return err
 	}
 
@@ -941,7 +942,7 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *identity
 	return resp
 }
 
-func getAvailableAccounts(ctx context.Context, userID dot.ID, requestInfo apipartner.PartnerShopToken) ([]*integration.PartnerShopLoginAccount, error) {
+func (s *IntegrationService) getAvailableAccounts(ctx context.Context, userID dot.ID, requestInfo apipartner.PartnerShopToken) ([]*integration.PartnerShopLoginAccount, error) {
 	relationQuery := &identitymodelx.GetPartnerRelationsQuery{
 		PartnerID: requestInfo.PartnerID,
 		OwnerID:   userID,
@@ -981,7 +982,7 @@ func getAvailableAccounts(ctx context.Context, userID dot.ID, requestInfo apipar
 						AuthPartnerID: requestInfo.PartnerID,
 					},
 				}
-				if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+				if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 					return nil, err
 				}
 				availAcc.ExternalId = rel.ExternalSubjectID

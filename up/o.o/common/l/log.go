@@ -134,10 +134,23 @@ func (l Logger) WithChannel(channel string) Logger {
 // SendMessage sends a message to Telegram
 //
 // TODO(vu): implement a watcher system instead
-func (l *Logger) SendMessage(msg string) {
+func (l *Logger) SendMessage(msg string, args ...interface{}) {
+	if len(args) > 0 {
+		_args := make([]interface{}, 0, len(args)+1)
+		_args = append(_args, msg)
+		_args = append(_args, args...)
+		msg = fmt.Sprintln(_args...)
+	}
 	if l.ch == nil {
 		// retrieve the default channel
 		l.ch = getChannel("")
 	}
 	(*l.ch).SendMessage(msg)
+}
+
+func (l *Logger) SendMessagef(msg string, args ...interface{}) {
+	if len(args) > 0 {
+		msg = fmt.Sprintf(msg, args...)
+	}
+	l.SendMessage(msg)
 }

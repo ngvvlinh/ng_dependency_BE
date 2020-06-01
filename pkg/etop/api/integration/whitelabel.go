@@ -90,7 +90,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 
 	switch actionUser {
 	case "ok":
-	// continue
+		// continue
 	case "create":
 		// --- register user ---
 		// trust thông tin từ đối tác gửi qua
@@ -112,6 +112,9 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 			}
 		}
 	}
+	if user == nil {
+		panic("unexpected")
+	}
 
 	userTokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
@@ -126,10 +129,10 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 			},
 		},
 	}
-	if err := bus.Dispatch(ctx, userTokenCmd); err != nil {
+	if err := s.TokenStore.GenerateToken(ctx, userTokenCmd); err != nil {
 		return err
 	}
-	availableAccounts, err := getAvailableAccounts(ctx, user.ID, requestInfo)
+	availableAccounts, err := s.getAvailableAccounts(ctx, user.ID, requestInfo)
 	if err != nil {
 		return err
 	}

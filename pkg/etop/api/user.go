@@ -73,6 +73,7 @@ type UserService struct {
 	InvitationQuery invitation.QueryBus
 	EventBus        capi.EventBus
 	AuthStore       auth.Generator
+	TokenStore      tokens.TokenStore
 	RedisStore      redis.Store
 	SMSClient       sms.Client
 }
@@ -801,6 +802,9 @@ func (s *UserService) Login(ctx context.Context, r *LoginEndpoint) error {
 		true, // Generate tokens for all accounts
 		0,
 	)
+	if err != nil {
+		return err
+	}
 	r.Result = resp
 
 	setCookieForEcomify(ctx, resp.Account)
@@ -847,7 +851,7 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 		tokenCmd := &tokens.GenerateTokenCommand{
 			ClaimInfo: claims.ClaimInfo{},
 		}
-		if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+		if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 			return r, cm.Errorf(cm.Internal, err, "")
 		}
 		r.Context.Claim = &claims.Claim{
@@ -1232,7 +1236,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 			tokenCmd.ClaimInfo.SToken = claim.SToken
 			tokenCmd.STokenExpiresAt = claim.STokenExpiresAt
 		}
-		if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+		if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 			return nil, nil, err
 		}
 		token = tokenCmd.Result.TokenStr
@@ -1253,7 +1257,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 					AccountIDs: accountIDs,
 				},
 			}
-			if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+			if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 				return nil, nil, err
 			}
 			acc.AccessToken = tokenCmd.Result.TokenStr
@@ -1994,7 +1998,7 @@ func (s *UserService) InitSession(ctx context.Context, r *InitSessionEndpoint) e
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{},
 	}
-	if err := bus.Dispatch(ctx, tokenCmd); err != nil {
+	if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 		return cm.Errorf(cm.Internal, err, "")
 	}
 
