@@ -35,7 +35,7 @@ func (s Session) With(opts ...Option) (Session, error) {
 		return s, nil
 	}
 	for _, opt := range opts {
-		err := opt(s)
+		err := opt(&s)
 		if err != nil {
 			return s, err
 		}
