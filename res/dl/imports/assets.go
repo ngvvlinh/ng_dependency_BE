@@ -1,3 +1,3 @@
 package imports
 
-//go:generate go-bindata -pkg dl -o assets.gen.go -ignore ~ ./imports/...
+//go:generate go-bindata -pkg imports -o assets.gen.go .
