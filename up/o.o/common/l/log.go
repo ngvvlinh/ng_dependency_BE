@@ -123,7 +123,7 @@ func (l Logger) Must(err error, msg string, fields ...zap.Field) {
 	fs := make([]zap.Field, 0, len(fields)+1)
 	fs = append(fs, Error(err))
 	fs = append(fs, fields...)
-	ll.Panic(msg, fields...)
+	ll.Panic(msg, fs...)
 }
 
 func (l Logger) WithChannel(channel string) Logger {

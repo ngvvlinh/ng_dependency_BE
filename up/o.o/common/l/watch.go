@@ -39,14 +39,12 @@ func RegisterChannels(chans map[string]Messenger) {
 	})
 
 	// now send the old messages
-	go func() {
-		for _, m := range prevChans {
-			ch := getChannel(m.name)
-			for _, msg := range m.msgs {
-				(*ch).SendMessage(msg)
-			}
+	for _, m := range prevChans {
+		ch := getChannel(m.name)
+		for _, msg := range m.msgs {
+			(*ch).SendMessage(msg)
 		}
-	}()
+	}
 }
 
 // getChannel allocates a new slot for registering messenger later
@@ -77,7 +75,7 @@ func (m *emptyMessenger) SendMessage(msg string) {
 		sendMessageOnDefaultChannel(errMsg)
 		panic(errMsg)
 	}
-	m.msgs = append(m.msgs)
+	m.msgs = append(m.msgs, msg)
 }
 
 func sendMessageOnDefaultChannel(msg string) {
