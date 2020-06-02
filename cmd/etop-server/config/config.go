@@ -2,27 +2,28 @@ package config
 
 import (
 	"errors"
-	"io/ioutil"
 	"strings"
 
 	"o.o/api/main/invitation"
+	_telebot "o.o/backend/cogs/base/telebot"
+	config_server "o.o/backend/cogs/config/_server"
+	database_all "o.o/backend/cogs/database/_all"
+	shipment_all "o.o/backend/cogs/shipment/_all"
+	_uploader "o.o/backend/cogs/uploader"
+	"o.o/backend/com/main/invitation/aggregate"
 	"o.o/backend/com/main/shipping/carrier"
-	"o.o/backend/com/supporting/crm/vtiger/mapping"
 	ecomconfig "o.o/backend/com/web/ecom/config"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/apix/partner"
+	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/pkg/integration/email"
 	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
 	ahamoveclient "o.o/backend/pkg/integration/shipnow/ahamove/client"
-	"o.o/backend/pkg/integration/shipping/ghn"
-	"o.o/backend/pkg/integration/shipping/ghtk"
-	"o.o/backend/pkg/integration/shipping/vtpost"
+	ahamoveserver "o.o/backend/pkg/integration/shipnow/ahamove/server"
 	"o.o/backend/pkg/integration/sms"
-	imgroupsms "o.o/backend/pkg/integration/sms/imgroup"
-	"o.o/common/jsonx"
 )
 
 const (
@@ -31,55 +32,30 @@ const (
 	ChannelSMS             = "sms"
 	ChannelDataWarehouse   = "etl"
 	ChannelShipmentCarrier = "shipment_carrier"
-
-	PathAhamoveUserVerification = "/ahamove/user_verification"
 )
-
-type Upload struct {
-	DirImportShopOrder   string `yaml:"dir_import_shop_order"`
-	DirImportShopProduct string `yaml:"dir_import_shop_product"`
-}
-
-type EmailConfig struct {
-	Enabled bool `yaml:"enabled"`
-
-	ResetPasswordURL     string `valid:"url,required" yaml:"reset_password_url"`
-	EmailVerificationURL string `valid:"url,required" yaml:"email_verification_url"`
-}
 
 // Config ...
 type Config struct {
-	Postgres          cc.Postgres      `yaml:"postgres"`
-	PostgresWebServer cc.Postgres      `yaml:"postgres_web_server"`
-	PostgresLogs      cc.Postgres      `yaml:"postgres_logs"`
-	PostgresNotifier  cc.Postgres      `yaml:"postgres_notifier"`
-	PostgresAffiliate cc.Postgres      `yaml:"postgres_affiliate"`
-	Redis             cc.Redis         `yaml:"redis"`
-	HTTP              cc.HTTP          `yaml:"http"`
-	Kafka             cc.Kafka         `yaml:"kafka"`
-	Upload            Upload           `yaml:"upload"`
-	Export            export.Config    `yaml:"export"`
-	TelegramBot       cc.TelegramBot   `yaml:"telegram_bot"`
-	SMTP              email.SMTPConfig `yaml:"smtp"`
-	Email             EmailConfig      `yaml:"email"`
-	SMS               sms.Config       `yaml:"sms"`
-	Captcha           captcha.Config   `yaml:"captcha"`
+	SharedConfig config_server.SharedConfig `yaml:",inline"`
+	Databases    database_all.Config        `yaml:",inline"`
+	Shipment     shipment_all.Config        `yaml:",inline"`
 
-	GHN            ghn.Config           `yaml:"ghn"`
-	GHNWebhook     ghn.WebhookConfig    `yaml:"ghn_webhook"`
-	GHTK           ghtk.Config          `yaml:"ghtk"`
-	GHTKWebhook    cc.HTTP              `yaml:"ghtk_webhook"`
-	VTPost         vtpost.Config        `yaml:"vtpost"`
-	VTPostWebhook  cc.HTTP              `yaml:"vtpost_webhook"`
-	Ahamove        ahamoveclient.Config `yaml:"ahamove"`
-	AhamoveWebhook cc.HTTP              `yaml:"ahamove_webhook"`
-	Ecom           ecomconfig.Config    `yaml:"ecom"`
+	Redis cc.Redis `yaml:"redis"`
+
+	Kafka       cc.Kafka         `yaml:"kafka"`
+	Upload      upload.Config    `yaml:"upload"`
+	Export      export.Config    `yaml:"export"`
+	TelegramBot cc.TelegramBot   `yaml:"telegram_bot"`
+	SMTP        email.SMTPConfig `yaml:"smtp"`
+	Email       cc.EmailConfig   `yaml:"email"`
+	SMS         sms.Config       `yaml:"sms"`
+	Captcha     captcha.Config   `yaml:"captcha"`
+
+	Ahamove        ahamoveclient.Config        `yaml:"ahamove"`
+	AhamoveWebhook ahamoveserver.WebhookConfig `yaml:"ahamove_webhook"`
+	Ecom           ecomconfig.Config           `yaml:"ecom"`
 
 	VTPay vtpayclient.Config `yaml:"vtpay"`
-
-	SAdminToken string `yaml:"sadmin_token"`
-	ServeDoc    bool   `yaml:"serve_doc"`
-	Env         string `yaml:"env"`
 
 	URL struct {
 		Auth     partner.AuthURL `yaml:"auth"`
@@ -91,55 +67,32 @@ type Config struct {
 
 	Invitation invitation.Config
 
-	WhiteLabel struct {
-		IMGroup struct {
-			SMS imgroupsms.Config `yaml:"sms"`
-		} `yaml:"imgroup"`
-	} `yaml:"white_label"`
+	WhiteLabel cc.WhiteLabel `yaml:"white_label"`
 
-	FlagEnableNewLinkInvitation bool                           `yaml:"flag_enable_new_link_invitation"`
-	FlagApplyShipmentPrice      carrier.FlagApplyShipmentPrice `yaml:"flag_apply_shipment_price"`
+	FlagEnableNewLinkInvitation aggregate.FlagEnableNewLinkInvitation `yaml:"flag_enable_new_link_invitation"`
+	FlagApplyShipmentPrice      carrier.FlagApplyShipmentPrice        `yaml:"flag_apply_shipment_price"`
 }
 
 // Default ...
 func Default() Config {
 	cfg := Config{
-		Postgres:          cc.DefaultPostgres(),
-		PostgresNotifier:  cc.DefaultPostgres(),
-		PostgresWebServer: cc.DefaultPostgres(),
-		PostgresLogs:      cc.DefaultPostgres(),
-		PostgresAffiliate: cc.DefaultPostgres(),
-		Redis:             cc.DefaultRedis(),
-		HTTP:              cc.HTTP{Port: 8080},
+		SharedConfig: config_server.DefaultConfig(),
+		Databases:    database_all.DefaultConfig(),
+		Redis:        cc.DefaultRedis(),
 		Kafka: cc.Kafka{
 			Enabled:     false,
 			Brokers:     nil,
 			TopicPrefix: "etop",
 		},
-		Upload: Upload{
-			DirImportShopOrder:   "/tmp",
-			DirImportShopProduct: "/tmp",
-		},
+		Upload: _uploader.DefaultConfig(),
 		Export: export.Config{
 			DirExport: "/tmp",
 			URLPrefix: "http://localhost:8080",
 		},
-		TelegramBot: cc.TelegramBot{
-			Chats: map[string]int64{
-				"default": 0,
-				"webhook": 0,
-				"import":  0,
-				"sms":     0,
-			},
-		},
-		GHN:            ghn.DefaultConfig(),
-		GHNWebhook:     ghn.DefaultWebhookConfig(),
-		GHTK:           ghtk.DefaultConfig(),
-		GHTKWebhook:    cc.HTTP{Port: 9032},
-		VTPost:         vtpost.DefaultConfig(),
-		VTPostWebhook:  cc.HTTP{Port: 9042},
+		TelegramBot:    _telebot.DefaultConfig(),
+		Shipment:       shipment_all.DefaultConfig(),
 		Ahamove:        ahamoveclient.DefaultConfig(),
-		AhamoveWebhook: cc.HTTP{Port: 9052},
+		AhamoveWebhook: ahamoveserver.WebhookConfig{Port: 9052},
 		Ecom: ecomconfig.Config{
 			HTTP:     cc.HTTP{Port: 8100},
 			MainSite: "http://localhost:8100",
@@ -149,13 +102,10 @@ func Default() Config {
 			Mock:    true,
 			Enabled: true,
 		},
-		SAdminToken: "PZJvDAY2.sadmin.HXnnEkdV",
-		ServeDoc:    true,
 		Captcha: captcha.Config{
 			Secret:        "6LcVOnkUAAAAALKlDJY_IYfQUmBfD_36azKtCv9P",
 			LocalPasscode: "recaptcha_token",
 		},
-		Env:            cmenv.EnvDev.String(),
 		Secret:         "secret",
 		ThirdPartyHost: "https://etop.d.etop.vn",
 
@@ -163,9 +113,7 @@ func Default() Config {
 			Secret: "IBVEhECSHtJiBoxQKOVafHW58zt9qRK7",
 		},
 	}
-	cfg.Postgres.Database = "etop_dev"
-	cfg.PostgresAffiliate.Database = "etop_dev"
-	cfg.Email = EmailConfig{
+	cfg.Email = cc.EmailConfig{
 		Enabled:              false,
 		ResetPasswordURL:     "https://etop.d.etop.vn/reset-password",
 		EmailVerificationURL: "https://etop.d.etop.vn/verify-email",
@@ -179,8 +127,6 @@ func Default() Config {
 // DefaultTest returns default config for testing
 func DefaultTest() Config {
 	cfg := Default()
-	cfg.Postgres.Database = "test"
-	cfg.Postgres.Port = 5432
 	return cfg
 }
 
@@ -196,42 +142,24 @@ func Load(isTest bool) (Config, error) {
 	if err != nil {
 		return cfg, err
 	}
-	cc.PostgresMustLoadEnv(&cfg.Postgres)
-	cc.PostgresMustLoadEnv(&cfg.PostgresLogs, "ET_POSTGRES_LOGS")
-	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
-	cc.PostgresMustLoadEnv(&cfg.PostgresAffiliate, "ET_POSTGRES_AFFILIATE")
-	cc.PostgresMustLoadEnv(&cfg.PostgresWebServer, "ET_POSTGRES_WEB_SERVER")
+
 	cc.RedisMustLoadEnv(&cfg.Redis)
+	cfg.Databases.MustLoadEnv()
 	cfg.TelegramBot.MustLoadEnv()
 	cfg.SMS.MustLoadEnv()
 	cfg.SMTP.MustLoadEnv()
 	cfg.Captcha.MustLoadEnv()
-	cfg.GHN.MustLoadEnv()
-	cfg.GHTK.MustLoadEnv()
-	cfg.VTPost.MustLoadEnv()
+
 	cfg.Ahamove.MustLoadEnv()
 	cfg.VTPay.MustLoadEnv()
-	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SAdminToken)
+	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
 
 	if cfg.ThirdPartyHost == "" && !cmenv.IsDev() {
 		return cfg, errors.New("Empty third_party_host")
-	}
-	if cfg.GHNWebhook.Endpoint == "" {
-		return cfg, errors.New("Empty GHN webhook endpoint")
 	}
 	cfg.ThirdPartyHost = strings.TrimSuffix(cfg.ThirdPartyHost, "/")
 	cc.EnvMap{
 		"ET_SECRET": &cfg.Secret,
 	}.MustLoad()
 	return cfg, err
-}
-
-// ReadMappingFile read mapping json file for mapping fields between vtiger and etop
-func ReadMappingFile(filename string) (configMap mapping.ConfigMap, _ error) {
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	err = jsonx.Unmarshal(body, &configMap)
-	return
 }

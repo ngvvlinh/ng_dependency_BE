@@ -10,7 +10,7 @@ import (
 	"o.o/api/top/services/crm"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping_provider"
-	notimodel "o.o/backend/com/handler/notifier/model"
+	notimodel "o.o/backend/com/eventhandler/notifier/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	"o.o/backend/com/main/shipping/modelx"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"

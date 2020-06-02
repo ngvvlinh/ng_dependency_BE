@@ -9,6 +9,7 @@
   - o.o/backend/pkg/etop/authorize/middleware
   - o.o/backend/pkg/etop/model
   - o.o/api/top/services/pgevent
+  - o.o/backend/com/eventhandler
 
 - baseImportPath: "./cmd/etop-uploader"
   allowedImports:
@@ -41,6 +42,7 @@
   - "./pkg/common/apifw/whitelabel"
   allowedImports:
   - o.o/backend/pkg/common
+  - o.o/backend/pkg/integration/sms
 
 ## TODO: resolve this later
 #
@@ -53,6 +55,11 @@
 #  - o.o/backend/pkg/etop/model
 #  - o.o/backend/pkg/etop/model_log
 #  - o.o/backend/cmd/etop-server/config
+
+- baseImportPath: "./cogs"
+  allowedImports:
+  - o.o/backend/com
+  - o.o/backend/pkg
 
 - baseImportPath: "./pkg"
   ignoredSubTrees:

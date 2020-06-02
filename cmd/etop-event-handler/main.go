@@ -13,15 +13,18 @@ import (
 
 	"o.o/backend/cmd/etop-event-handler/config"
 	pgeventapi "o.o/backend/cmd/pgevent-forwarder/api"
+	"o.o/backend/com/eventhandler"
+	etophandler "o.o/backend/com/eventhandler/etop/handler"
+	fabohandler "o.o/backend/com/eventhandler/fabo/handler"
+	handler "o.o/backend/com/eventhandler/handler"
+	handlerapi "o.o/backend/com/eventhandler/handler/api"
+	"o.o/backend/com/eventhandler/handler/intctl"
+	"o.o/backend/com/eventhandler/pgevent"
+	webhooksender "o.o/backend/com/eventhandler/webhook/sender"
+	"o.o/backend/com/eventhandler/webhook/storage"
 	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
 	servicefbuser "o.o/backend/com/fabo/main/fbuser"
-	handler "o.o/backend/com/handler/etop-handler"
-	handlerapi "o.o/backend/com/handler/etop-handler/api"
-	"o.o/backend/com/handler/etop-handler/intctl"
-	webhooksender "o.o/backend/com/handler/etop-handler/webhook/sender"
-	"o.o/backend/com/handler/etop-handler/webhook/storage"
-	"o.o/backend/com/handler/pgevent"
 	catalogquery "o.o/backend/com/main/catalog/query"
 	serviceidentity "o.o/backend/com/main/identity"
 	inventoryquery "o.o/backend/com/main/inventory/query"
@@ -125,7 +128,7 @@ func main() {
 	}
 	{
 		// webhook handlers
-		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, handler.ConsumerGroup, kafkaCfg)
+		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, etophandler.ConsumerGroup, kafkaCfg)
 		if err != nil {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
@@ -139,19 +142,29 @@ func main() {
 		if err != nil {
 			ll.Fatal("Error while connecting to Kafka", l.Error(err))
 		}
-		sMain, err := pgevent.NewService(ctx, model.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix)
+
+		// TODO(vu): remove dependence on pgevent
+		topics := []eventhandler.TopicDef{}
+		topics = append(topics, etophandler.Topics()...)
+		topics = append(topics, fabohandler.Topics()...)
+		sMain, err := pgevent.NewService(ctx, model.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
 		if err != nil {
-			ll.Fatal("Error while lDistening to Postgres")
+			ll.Fatal("Error while listening to Postgres")
 		}
+
 		fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
 		fbPageQuery := servicefbpage.FbPageQueryMessageBus(servicefbpage.NewFbPageQuery(db))
 		fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db, customerQuery))
 		identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 
 		pgeventapi.Init(&sMain)
-		h := handler.New(db, webhookSender, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus, fbUserQuery, producer, fbMessagingQuery, fbPageQuery, identityQuery)
-		h.RegisterTo(intctlHandler)
-		h.ConsumeAndHandleAllTopics(ctx)
+		faboHandler := fabohandler.New(db, consumer, producer, cfg.Kafka.TopicPrefix, fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery)
+		etopHandler := etophandler.New(db, webhookSender, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus)
+		etopHandler.RegisterTo(intctlHandler)
+
+		h := handler.New(consumer, cfg.Kafka.TopicPrefix)
+		h.StartConsuming(ctx, etophandler.Topics(), etopHandler.TopicsAndHandlers())
+		h.StartConsuming(ctx, fabohandler.Topics(), faboHandler.TopicsAndHandlers())
 		waiters = append(waiters, h)
 	}
 

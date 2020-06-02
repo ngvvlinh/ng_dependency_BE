@@ -29,6 +29,7 @@ type Aggregate struct {
 	shipnowCarrierManager carrier.Manager
 }
 
+// TODO(vu): remove dependence on shipnow
 func NewAggregate(db com.MainDB, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:                    db,

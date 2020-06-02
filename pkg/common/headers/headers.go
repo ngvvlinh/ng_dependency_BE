@@ -15,6 +15,12 @@ type debugKey struct{}
 type headerKey struct{}
 type CookieKey struct{}
 
+func ForwardHeadersX(configs ...Config) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return ForwardHeaders(next, configs...)
+	}
+}
+
 func ForwardHeaders(next http.Handler, configs ...Config) http.HandlerFunc {
 	var cfg Config
 	if len(configs) > 0 {

@@ -15,6 +15,7 @@ import (
 	"o.o/backend/pkg/common/extservice/telebot"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
+	imgroupsms "o.o/backend/pkg/integration/sms/imgroup"
 	"o.o/common/l"
 )
 
@@ -175,6 +176,27 @@ func PrintExample(cfg interface{}) {
 
 type SecretToken string
 
+type Databases map[string]*Postgres
+
+func (c Databases) Get(name string) (Postgres, error) {
+	pg := c[name]
+	if pg == nil {
+		return Postgres{}, cm.Errorf(cm.Internal, nil, "database config %v does not exist", name)
+	}
+	return *pg, nil
+}
+
+func (c *Databases) MustLoadEnv(name, prefix string) {
+	if c == nil {
+		*c = make(map[string]*Postgres)
+	}
+	pg := (*c)[name]
+	if pg == nil {
+		panic(fmt.Sprintf("database config %v does not exist", name))
+	}
+	PostgresMustLoadEnv(pg, prefix)
+}
+
 type Postgres = cmsql.ConfigPostgres
 
 // DefaultPostgres ...
@@ -223,7 +245,7 @@ func (c *HTTP) MustLoadEnv(prefix string) {
 }
 
 // Address ...
-func (c *HTTP) Address() string {
+func (c HTTP) Address() string {
 	if c.Port == 0 {
 		ll.Panic("Missing HTTP port")
 	}
@@ -352,4 +374,17 @@ func (c *OnesignalConfig) MustLoadEnv(prefix ...string) {
 		p + "_API_KEY": &c.ApiKey,
 		p + "_APP_ID":  &c.AppID,
 	}.MustLoad()
+}
+
+type EmailConfig struct {
+	Enabled bool `yaml:"enabled"`
+
+	ResetPasswordURL     string `valid:"url,required" yaml:"reset_password_url"`
+	EmailVerificationURL string `valid:"url,required" yaml:"email_verification_url"`
+}
+
+type WhiteLabel struct {
+	IMGroup struct {
+		SMS imgroupsms.Config `yaml:"sms"`
+	} `yaml:"imgroup"`
 }

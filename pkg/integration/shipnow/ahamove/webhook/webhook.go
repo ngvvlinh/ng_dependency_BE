@@ -1,4 +1,4 @@
-package ahamovewebhook
+package webhook
 
 import (
 	"bytes"

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"o.o/api/top/int/admin"
-	notimodel "o.o/backend/com/handler/notifier/model"
+	notimodel "o.o/backend/com/eventhandler/notifier/model"
 	"o.o/backend/pkg/etop/sqlstore"
 )
 

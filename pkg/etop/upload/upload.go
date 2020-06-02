@@ -12,6 +12,11 @@ import (
 
 var ll = l.New()
 
+type Config struct {
+	DirImportShopOrder   string `yaml:"dir_import_shop_order"`
+	DirImportShopProduct string `yaml:"dir_import_shop_product"`
+}
+
 type StoreFileCommand struct {
 	UploadType string
 	FileName   string

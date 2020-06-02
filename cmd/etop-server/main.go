@@ -28,7 +28,7 @@ func main() {
 	cfg, err := config.Load(false)
 	ll.Must(err, "can not load config")
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.SharedConfig.Env)
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite) // TODO(vu): refactor
 	sqltrace.Init()
 	wl.Init(cmenv.Env())

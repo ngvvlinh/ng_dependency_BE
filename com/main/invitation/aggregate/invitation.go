@@ -11,7 +11,6 @@ import (
 	"o.o/api/main/invitation"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/status3"
-	"o.o/backend/cmd/etop-server/config"
 	com "o.o/backend/com/main"
 	authorizationconvert "o.o/backend/com/main/authorization/convert"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
@@ -22,6 +21,7 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
+	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
@@ -32,30 +32,35 @@ import (
 	"o.o/capi/dot"
 )
 
+type FlagEnableNewLinkInvitation bool
+
 var _ invitation.Aggregate = &InvitationAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type InvitationAggregate struct {
 	db            *cmsql.Database
 	eventBus      capi.EventBus
-	cfg           config.Config
 	jwtKey        string
 	store         sqlstore.InvitationStoreFactory
 	customerQuery customering.QueryBus
 	identityQuery identity.QueryBus
 	smsClient     sms.Client
+	flagNewLink   FlagEnableNewLinkInvitation
 }
 
 func NewInvitationAggregate(
-	database com.MainDB, cfg invitation.Config,
-	customerQ customering.QueryBus, identityQ identity.QueryBus,
-	eventBus capi.EventBus, config config.Config,
+	database com.MainDB,
+	cfg invitation.Config,
+	customerQ customering.QueryBus,
+	identityQ identity.QueryBus,
+	eventBus capi.EventBus,
 	smsClient sms.Client,
+	secret cc.SecretToken,
+	flagNewLink FlagEnableNewLinkInvitation,
 ) *InvitationAggregate {
 	return &InvitationAggregate{
 		db:            database,
 		eventBus:      eventBus,
-		cfg:           config,
 		store:         sqlstore.NewInvitationStore(database),
 		jwtKey:        cfg.Secret,
 		customerQuery: customerQ,
@@ -151,7 +156,7 @@ func (a *InvitationAggregate) CreateInvitation(
 	}
 
 	var invitationUrl string
-	if args.Email != "" || (args.Phone != "" && !a.cfg.FlagEnableNewLinkInvitation) {
+	if args.Email != "" || (args.Phone != "" && !a.flagNewLink) {
 		invitationUrl = wl.X(ctx).InviteUserURLByEmail
 	} else {
 		// format url: https://example.com/i/p000000
@@ -163,7 +168,7 @@ func (a *InvitationAggregate) CreateInvitation(
 		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
 	}
 	urlQuery := URL.Query()
-	if args.Email != "" || (args.Phone != "" && !a.cfg.FlagEnableNewLinkInvitation) {
+	if args.Email != "" || (args.Phone != "" && !a.flagNewLink) {
 		urlQuery.Set("t", token)
 	}
 	URL.RawQuery = urlQuery.Encode()

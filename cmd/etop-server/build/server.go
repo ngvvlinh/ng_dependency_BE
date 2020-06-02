@@ -1,27 +1,22 @@
 package build
 
 import (
-	"context"
 	"net/http"
-	"regexp"
-	"strconv"
 	"strings"
-	"time"
-
-	"github.com/julienschmidt/httprouter"
 
 	"o.o/api/main/catalog"
-	"o.o/api/main/identity"
 	"o.o/api/main/location"
-	"o.o/api/main/ordering"
-	"o.o/api/main/shipnow"
-	shippingcore "o.o/api/main/shipping"
 	subscriptioncore "o.o/api/subscripting/subscription"
 	webserverinternal "o.o/api/webserver"
 	"o.o/backend/cmd/etop-server/config"
-	vtpaygatewayaggregate "o.o/backend/com/external/payment/vtpay/gateway/aggregate"
-	vtpaygatewayserver "o.o/backend/com/external/payment/vtpay/gateway/server"
-	shippingcarrier "o.o/backend/com/main/shipping/carrier"
+	config_server "o.o/backend/cogs/config/_server"
+	server_admin "o.o/backend/cogs/server/admin"
+	_main "o.o/backend/cogs/server/main"
+	server_shop "o.o/backend/cogs/server/shop"
+	server_vtpay "o.o/backend/cogs/server/vtpay"
+	_ghn "o.o/backend/cogs/shipment/ghn"
+	_ghtk "o.o/backend/cogs/shipment/ghtk"
+	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	"o.o/backend/com/web/ecom/webserver"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
@@ -34,40 +29,27 @@ import (
 	"o.o/backend/pkg/common/projectpath"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/sqltrace"
-	"o.o/backend/pkg/etop/api/shop/imports"
 	"o.o/backend/pkg/etop/authorize/middleware"
-	"o.o/backend/pkg/etop/authorize/permission"
-	"o.o/backend/pkg/etop/eventstream"
-	"o.o/backend/pkg/etop/logic/hotfix"
-	imcsvghtk "o.o/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
-	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/imcsv"
-	vtpostimxlsx "o.o/backend/pkg/etop/logic/money-transaction/vtpost-imxlsx"
-	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
-	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
 	"o.o/backend/pkg/etop/sqlstore"
-	"o.o/backend/pkg/integration/shipnow/ahamove"
-	webhookahamove "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
-	"o.o/backend/pkg/integration/shipping/ghn"
-	webhookghn "o.o/backend/pkg/integration/shipping/ghn/webhook"
-	"o.o/backend/pkg/integration/shipping/ghtk"
-	webhookghtk "o.o/backend/pkg/integration/shipping/ghtk/webhook"
-	"o.o/backend/pkg/integration/shipping/vtpost"
-	webhookvtpost "o.o/backend/pkg/integration/shipping/vtpost/webhook"
+	ahamoveserver "o.o/backend/pkg/integration/shipnow/ahamove/server"
+	"o.o/capi/httprpc"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
 
-func NewServers(
+var ll = l.New()
+
+func BuildServers(
 	_ *sqlstore.Store, // inject
 	_ middleware.Middleware, // inject
 	_ *captcha.Captcha, // inject
 
-	etopServer EtopServer,
+	etopServer MainServer,
 	webServer WebServer,
-	ghnServer GHNWebhookServer,
-	ghtkServer GHTKWebhookServer,
-	vtpostServer VTPostWebhookServer,
-	ahamoveServer AhamoveWebhookServer,
+	ghnServer _ghn.GHNWebhookServer,
+	ghtkServer _ghtk.GHTKWebhookServer,
+	vtpostServer _vtpost.VTPostWebhookServer,
+	ahamoveServer ahamoveserver.AhamoveWebhookServer,
 ) []lifecycle.HTTPServer {
 	svrs := []lifecycle.HTTPServer{
 		{"Main   ", etopServer},
@@ -80,19 +62,19 @@ func NewServers(
 	return svrs
 }
 
-type EtopServer *http.Server
+type MainServer *http.Server
 
-func NewEtopServer(
-	h EtopHandlers,
-	cfg config.Config,
-	eventStreamer *eventstream.EventStream,
-	vtpayGatewayServer *vtpaygatewayserver.Server,
-	ghnIm imcsvghn.Import,
-	ghtkIm imcsvghtk.Import,
-	vtpostIm vtpostimxlsx.Import,
-	shopIm imports.ShopImport,
+func BuildMainServer(
 	healthService *health.Service,
-) EtopServer {
+	intHandlers _main.IntHandlers,
+	extHandlers _main.ExtHandlers,
+	cfg config_server.SharedConfig,
+	adminImport server_admin.ImportServer,
+	shopImport server_shop.ImportHandler,
+	eventStream server_shop.EventStreamHandler,
+	downloadHandler server_shop.DownloadHandler,
+	vtpayServer server_vtpay.VTPayHandler,
+) MainServer {
 	mux := http.NewServeMux()
 	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
@@ -100,98 +82,25 @@ func NewEtopServer(
 	jsonx.RegisterHTTPHandler(mux)
 	sqltrace.RegisterHTTPHandler(mux)
 
-	// /api/
-	apiMux := http.NewServeMux()
-	apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
-	mux.Handle("/api/", http.StripPrefix("/api",
-		headers.ForwardHeaders(bus.Middleware(apiMux))))
+	middlewares := httpx.Compose(
+		headers.ForwardHeadersX(),
+		bus.Middleware,
+	)
+	intHandlers = httprpc.WithPrefix("/api/", intHandlers)
+	extHandlers = httprpc.WithPrefix("/v1/", extHandlers)
 
-	for _, s := range h.IntHandlers {
-		apiMux.Handle(s.PathPrefix(), s)
-	}
-
-	// /v1/
-	v1Mux := http.NewServeMux()
-	v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))
-	mux.Handle("/v1/", http.StripPrefix("/v1", headers.ForwardHeaders(v1Mux)))
-	for _, s := range h.ExtHandlers {
-		v1Mux.Handle(s.PathPrefix(), s)
+	var handlers []httprpc.Server
+	handlers = append(handlers, intHandlers...)
+	handlers = append(handlers, extHandlers...)
+	for _, h := range handlers {
+		mux.Handle(h.PathPrefix(), middlewares(h))
 	}
 
-	// Register import handlers
-	{
-		rt := httpx.New()
-		mux.Handle("/api/admin.Import/", headers.ForwardHeaders(rt))
-		rt.Use(httpx.RecoverAndLog(false))
-		rt.Use(httpx.Auth(permission.EtopAdmin))
-
-		rt.POST("/api/admin.Import/ghn/MoneyTransactions", ghnIm.HandleImportMoneyTransactions)
-		rt.POST("/api/admin.Import/ghtk/MoneyTransactions", ghtkIm.HandleImportMoneyTransactions)
-		rt.POST("/api/admin.Import/vtpost/MoneyTransactions", vtpostIm.HandleImportMoneyTransactions)
-
-		// Hot-fix: trouble on 09/07/2019 (transfer money duplicate)
-		rt.POST("/api/admin.Import/CreateMoneyTransactionShipping", hotfix.HandleImportMoneyTransactionManual)
-	}
-
-	// Register shop import handlers
-	{
-		mux.Handle("/api/shop.Import/", headers.ForwardHeaders(shopIm))
-		shopIm.Use(httpx.RecoverAndLog(false))
-	}
-	// Register SSE handler
-	{
-		rt := httpx.New()
-		mux.Handle("/api/event-stream",
-			headers.ForwardHeaders(rt, headers.Config{
-				AllowQueryAuthorization: true,
-			}))
-		rt.Use(httpx.RecoverAndLog(false))
-		rt.Use(httpx.Auth(permission.Shop))
-		rt.GET("/api/event-stream", eventStreamer.HandleEventStream)
-	}
-	{
-		buildRoute := vtpaygatewayaggregate.BuildGatewayRoute
-		rt := httpx.New()
-		mux.Handle("/api/payment/vtpay/", rt)
-		rt.Use(httpx.RecoverAndLog(false))
-		rt.POST("/api"+buildRoute(vtpaygatewayaggregate.PathValidateTransaction), vtpayGatewayServer.ValidateTransaction)
-		rt.POST("/api"+buildRoute(vtpaygatewayaggregate.PathGetResult), vtpayGatewayServer.GetResult)
-	}
-	{
-		// change path for clearing browser cache and still keep the old/dl
-		// path for backward compatible
-		mux.Handle("/dl/imports/shop_orders.v1.xlsx",
-			cmservice.ServeAssetsByContentGenerator(
-				cmservice.MIMEExcel,
-				orderimcsv.AssetShopOrderPath,
-				5*time.Minute,
-				orderimcsv.GenerateImportFile,
-			),
-		)
-		mux.Handle("/dl/imports/shop_orders.v1b.xlsx",
-			cmservice.ServeAssetsByContentGenerator(
-				cmservice.MIMEExcel,
-				orderimcsv.AssetShopOrderPath,
-				5*time.Minute,
-				orderimcsv.GenerateImportFile,
-			),
-		)
-		mux.Handle("/dl/imports/shop_products.v1.xlsx",
-			cmservice.ServeAssetsByContentGenerator(
-				cmservice.MIMEExcel,
-				productimcsv.AssetShopProductPath,
-				5*time.Minute,
-				productimcsv.GenerateImportFile,
-			),
-		)
-		mux.Handle("/dl/imports/shop_products.v1.simplified.xlsx",
-			cmservice.ServeAssets(
-				productimcsv.AssetShopProductSimplifiedPath,
-				cmservice.MIMEExcel,
-			),
-		)
-	}
-	// }
+	mux.Handle(adminImport.PathPrefix(), adminImport)
+	mux.Handle(shopImport.PathPrefix(), shopImport)
+	mux.Handle(eventStream.PathPrefix(), eventStream)
+	mux.Handle(downloadHandler.PathPrefix(), downloadHandler)
+	mux.Handle(vtpayServer.PathPrefix(), vtpayServer)
 
 	if cfg.ServeDoc {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
@@ -230,7 +139,7 @@ func NewEtopServer(
 
 type WebServer *http.Server
 
-func NewWebServer(cfg config.Config, webServerQuery webserverinternal.QueryBus, catalogQuery catalog.QueryBus, subscriptionQuery subscriptioncore.QueryBus, rd redis.Store, locationQueryBus location.QueryBus) WebServer {
+func BuildWebServer(cfg config.Config, webServerQuery webserverinternal.QueryBus, catalogQuery catalog.QueryBus, subscriptionQuery subscriptioncore.QueryBus, rd redis.Store, locationQueryBus location.QueryBus) WebServer {
 	ecom := cfg.Ecom
 	c := webserver.Config{
 		MainSite: ecom.MainSite,
@@ -247,155 +156,4 @@ func NewWebServer(cfg config.Config, webServerQuery webserverinternal.QueryBus, 
 		Handler: handler,
 	}
 	return svr
-}
-
-type GHNWebhookServer *http.Server
-
-func NewGHNWebhookServer(
-	cfg config.Config,
-	shipmentManager *shippingcarrier.ShipmentManager,
-	ghnCarrier *ghn.Carrier,
-	identityQuery identity.QueryBus,
-	shippingAggr shippingcore.CommandBus,
-	webhook *webhookghn.Webhook,
-) GHNWebhookServer {
-	rt := httpx.New()
-	rt.Use(httpx.RecoverAndLog(true))
-
-	webhook.Register(rt)
-	svr := &http.Server{
-		Addr:    cfg.GHNWebhook.Address(),
-		Handler: rt,
-	}
-	return svr
-}
-
-type GHTKWebhookServer *http.Server
-
-func NewGHTKWebhookServer(
-	cfg config.Config,
-	shipmentManager *shippingcarrier.ShipmentManager,
-	ghtkCarrier *ghtk.Carrier,
-	identityQuery identity.QueryBus,
-	shippingAggr shippingcore.CommandBus,
-	webhook *webhookghtk.Webhook,
-) GHTKWebhookServer {
-	rt := httpx.New()
-	rt.Use(httpx.RecoverAndLog(true))
-
-	webhook.Register(rt)
-	svr := &http.Server{
-		Addr:    cfg.GHTKWebhook.Address(),
-		Handler: rt,
-	}
-	return svr
-}
-
-type VTPostWebhookServer *http.Server
-
-func NewVTPostWebhookServer(
-	cfg config.Config,
-	shipmentManager *shippingcarrier.ShipmentManager,
-	vtpostCarrier *vtpost.Carrier,
-	identityQuery identity.QueryBus,
-	shippingAggr shippingcore.CommandBus,
-	webhook *webhookvtpost.Webhook,
-) VTPostWebhookServer {
-	rt := httpx.New()
-	rt.Use(httpx.RecoverAndLog(true))
-
-	webhook.Register(rt)
-	svr := &http.Server{
-		Addr:    cfg.VTPostWebhook.Address(),
-		Handler: rt,
-	}
-	return svr
-}
-
-type AhamoveWebhookServer *http.Server
-
-func NewAhamoveWebhookServer(
-	cfg config.Config,
-	shipmentManager *shippingcarrier.ShipmentManager,
-	ahamoveCarrier *ahamove.Carrier,
-	identityQuery identity.QueryBus,
-	shipnowQuery shipnow.QueryBus,
-	shipnowAggr shipnow.CommandBus,
-	orderAggr ordering.CommandBus,
-	orderQuery ordering.QueryBus,
-	fileServer AhamoveVerificationFileServer,
-	webhook *webhookahamove.Webhook,
-) AhamoveWebhookServer {
-
-	mux := http.NewServeMux()
-	{
-		rt := httpx.New()
-		rt.Use(httpx.RecoverAndLog(true))
-		webhook.Register(rt)
-
-		mux.Handle("/webhook/", rt)
-	}
-
-	// serve ahamove verification files
-	mux.Handle(config.PathAhamoveUserVerification+"/", (*httpx.Router)(fileServer))
-
-	svr := &http.Server{
-		Addr:    cfg.AhamoveWebhook.Address(),
-		Handler: mux,
-	}
-	return svr
-}
-
-type AhamoveVerificationFileServer *httpx.Router
-
-func NewAhamoveVerificationFileServer(ctx context.Context, identityQuery identity.QueryBus) AhamoveVerificationFileServer {
-	// path: <UploadDirAhamoveVerification>/<originname>/<filename>.jpg
-	// filepath:
-	// user_id_front_<user.id>_<user.create_time>.jpg
-	// user_portrait_<user.id>_<user.create_time>.jpg
-	regex := regexp.MustCompile(`([0-9]+)_([0-9]+)`)
-
-	rt := httpx.New()
-	path := config.PathAhamoveUserVerification + "/:originname/:filename"
-
-	rt.Router.GET(path, func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-		originname := ps.ByName("originname")
-		fileName := ps.ByName("filename")
-		parts := regex.FindStringSubmatch(fileName)
-		if len(parts) == 0 {
-			http.NotFound(w, req)
-			return
-		}
-		userID := parts[1]
-		createTime := parts[2]
-
-		query := &identity.GetExternalAccountAhamoveByExternalIDQuery{
-			ExternalID: userID,
-		}
-		if err := identityQuery.Dispatch(ctx, query); err != nil {
-			http.NotFound(w, req)
-			return
-		}
-		accountAhamove := query.Result
-		xCreatedAt := accountAhamove.ExternalCreatedAt
-		if strconv.FormatInt(xCreatedAt.Unix(), 10) != createTime {
-			http.NotFound(w, req)
-			return
-		}
-
-		url := ""
-		if strings.Contains(fileName, "user_id_front") {
-			url = accountAhamove.IDCardFrontImg
-		} else if strings.Contains(fileName, "user_id_back") {
-			url = accountAhamove.IDCardBackImg
-		} else if strings.Contains(fileName, "user_portrait") {
-			url = accountAhamove.PortraitImg
-		}
-		if strings.Contains(url, originname) {
-			http.Redirect(w, req, url, http.StatusSeeOther)
-			return
-		}
-		http.NotFound(w, req)
-	})
-	return rt
 }

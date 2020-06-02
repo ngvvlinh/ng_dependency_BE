@@ -10,7 +10,7 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/main/shipnow/carrier"
-	shipnowcarrier "o.o/backend/com/main/shipnow-carrier"
+	shipnowcarrier "o.o/backend/com/main/shipnowcarrier"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/integration/shipnow/ahamove/client"
 	"o.o/capi/dot"

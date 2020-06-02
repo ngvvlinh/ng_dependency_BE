@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"o.o/api/top/external/types"
-	"o.o/backend/com/handler/etop-handler/intctl"
-	"o.o/backend/com/handler/etop-handler/webhook/sender"
+	"o.o/backend/com/eventhandler/handler/intctl"
+	"o.o/backend/com/eventhandler/webhook/sender"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"

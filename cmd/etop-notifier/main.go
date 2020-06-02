@@ -12,8 +12,9 @@ import (
 	"github.com/Shopify/sarama"
 
 	"o.o/backend/cmd/etop-notifier/config"
-	"o.o/backend/com/handler/notifier"
-	notihandler "o.o/backend/com/handler/notifier/handler"
+	"o.o/backend/com/eventhandler/etop/handler"
+	"o.o/backend/com/eventhandler/notifier"
+	notihandler "o.o/backend/com/eventhandler/notifier/handler"
 	servicelocation "o.o/backend/com/main/location"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
@@ -94,12 +95,12 @@ func main() {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
 		hMain, hNotifier := notihandler.New(db, dbNotifier, consumer, cfg.Kafka.TopicPrefix)
-		hMain.ConsumeAndHandleAllTopics(ctx)
-		hNotifier.ConsumeAndHandleAllTopics(ctx)
+		hMain.StartConsuming(ctx, handler.GetTopics(notihandler.TopicsAndHandlersEtop()), notihandler.TopicsAndHandlersEtop())
+		hNotifier.StartConsuming(ctx, handler.GetTopics(notihandler.TopicsAndHandlerNotifier()), notihandler.TopicsAndHandlerNotifier())
 	}
 	{
 		if cfg.Onesignal.ApiKey != "" {
-			if err := notifier.Init(db, cfg.Onesignal); err != nil {
+			if err := notifier.Init(cfg.Onesignal); err != nil {
 				ll.Fatal("Unable to connect to Onesignal", l.Error(err))
 			}
 		} else {

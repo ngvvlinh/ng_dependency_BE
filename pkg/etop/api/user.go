@@ -15,7 +15,6 @@ import (
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/authentication_method"
 	"o.o/api/top/types/etc/status3"
-	"o.o/backend/cmd/etop-server/config"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
@@ -25,6 +24,7 @@ import (
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/code/gencode"
+	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
@@ -48,7 +48,7 @@ var (
 	idempgroup   *idemp.RedisGroup
 	enabledEmail bool
 	enabledSMS   bool
-	cfgEmail     EmailConfig
+	cfgEmail     cc.EmailConfig
 )
 
 const PrefixIdempUser = "IdempUser"
@@ -79,8 +79,6 @@ type UserService struct {
 }
 
 var UserServiceImpl = &UserService{} // MUSTDO: fix it
-
-type EmailConfig = config.EmailConfig
 
 func (s *UserService) Clone() *UserService {
 	res := *s

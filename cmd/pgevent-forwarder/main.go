@@ -12,7 +12,10 @@ import (
 
 	pgeventapi "o.o/backend/cmd/pgevent-forwarder/api"
 	"o.o/backend/cmd/pgevent-forwarder/config"
-	"o.o/backend/com/handler/pgevent"
+	"o.o/backend/com/eventhandler"
+	etophandler "o.o/backend/com/eventhandler/etop/handler"
+	fabohandler "o.o/backend/com/eventhandler/fabo/handler"
+	"o.o/backend/com/eventhandler/pgevent"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/cmenv"
@@ -37,11 +40,6 @@ var (
 func main() {
 	cc.InitFlags()
 	cc.ParseFlags()
-
-	if *flPrintTopics {
-		printAllTopics()
-		os.Exit(0)
-	}
 
 	var err error
 	cfg, err = config.Load()
@@ -77,14 +75,21 @@ func main() {
 		ll.Fatal("Error while connecting to Kafka", l.Error(err))
 	}
 
-	sMain, err := pgevent.NewService(ctx, model.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix)
+	topics := []eventhandler.TopicDef{}
+	topics = append(topics, etophandler.Topics()...)
+	topics = append(topics, fabohandler.Topics()...)
+	if *flPrintTopics {
+		printAllTopics(topics)
+		os.Exit(0)
+	}
+
+	sMain, err := pgevent.NewService(ctx, model.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
 	if err != nil {
 		ll.Fatal("Error while listening to Postgres")
 	}
-
 	pgeventapi.Init(&sMain)
 
-	sNotifier, err := pgevent.NewService(ctx, model.DBNotifier, cfg.PostgresNotifier, producer, cfg.Kafka.TopicPrefix)
+	sNotifier, err := pgevent.NewService(ctx, model.DBNotifier, cfg.PostgresNotifier, producer, cfg.Kafka.TopicPrefix, topics)
 	if err != nil {
 		ll.Fatal("Error while listening to Postgres")
 	}
@@ -121,8 +126,8 @@ func main() {
 	ll.Info("Gracefully stopped!")
 }
 
-func printAllTopics() {
-	for _, d := range pgevent.Topics {
+func printAllTopics(topics []eventhandler.TopicDef) {
+	for _, d := range topics {
 		fmt.Printf("\t%3v %v\n", d.Partitions, d.Name)
 	}
 }

@@ -16,7 +16,7 @@ import (
 	shipnowtypes "o.o/api/main/shipnow/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/types/etc/shipping_fee_type"
-	shipnowcarrier "o.o/backend/com/main/shipnow-carrier"
+	shipnowcarrier "o.o/backend/com/main/shipnowcarrier"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/integration/shipnow/ahamove/client"
 	"o.o/capi/dot"

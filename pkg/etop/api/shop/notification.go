@@ -5,7 +5,7 @@ import (
 
 	"o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
-	notimodel "o.o/backend/com/handler/notifier/model"
+	notimodel "o.o/backend/com/eventhandler/notifier/model"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/sqlstore"

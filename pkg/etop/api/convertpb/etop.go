@@ -12,7 +12,7 @@ import (
 	etop "o.o/api/top/int/etop"
 	"o.o/api/top/types/etc/account_type"
 	addresstype "o.o/api/top/types/etc/address_type"
-	notimodel "o.o/backend/com/handler/notifier/model"
+	notimodel "o.o/backend/com/eventhandler/notifier/model"
 	addressmodel "o.o/backend/com/main/address/model"
 	creditmodel "o.o/backend/com/main/credit/model"
 	identitymodel "o.o/backend/com/main/identity/model"

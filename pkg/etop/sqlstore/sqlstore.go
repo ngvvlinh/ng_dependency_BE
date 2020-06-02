@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"o.o/api/main/location"
-	notisqlstore "o.o/backend/com/handler/notifier/sqlstore"
+	notisqlstore "o.o/backend/com/eventhandler/notifier/sqlstore"
 	com "o.o/backend/com/main"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	servicelocation "o.o/backend/com/main/location"

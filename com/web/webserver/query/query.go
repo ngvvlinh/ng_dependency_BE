@@ -5,7 +5,7 @@ import (
 
 	"o.o/api/main/catalog"
 	"o.o/api/webserver"
-	com "o.o/backend/com/main"
+	"o.o/backend/com/web"
 	"o.o/backend/com/web/webserver/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -27,7 +27,7 @@ type WebserverQueryService struct {
 	bus             bus.Bus
 }
 
-func New(eventBus capi.EventBus, db com.MainDB, cataglogQ catalog.QueryBus) *WebserverQueryService {
+func New(eventBus capi.EventBus, db web.WebServerDB, cataglogQ catalog.QueryBus) *WebserverQueryService {
 	return &WebserverQueryService{
 		db:              db,
 		wsCategoryStore: sqlstore.NewWsCategoryStore(db),

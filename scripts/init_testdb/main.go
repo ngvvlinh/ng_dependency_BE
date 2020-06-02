@@ -63,7 +63,7 @@ func main() {
 		ll.Fatal(err.Error())
 	}
 
-	cfg := config.DefaultTest().Postgres
+	cfg := config.DefaultTest().Databases.Postgres
 	cfg.Database = *flDBName
 	db, err := cmsql.Connect(cfg)
 	if err != nil {

@@ -10,6 +10,9 @@ import (
 
 	"github.com/Shopify/sarama"
 	"o.o/backend/cmd/fabo-server/config"
+	etophandler "o.o/backend/com/eventhandler/etop/handler"
+	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
+	"o.o/backend/com/eventhandler/handler"
 	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
 	servicefbuser "o.o/backend/com/fabo/main/fbuser"
@@ -17,8 +20,6 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	faboRedis "o.o/backend/com/fabo/pkg/redis"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
-	handlerkafka "o.o/backend/com/handler/etop-handler"
-	"o.o/backend/com/handler/notifier/handler"
 	"o.o/backend/com/main/identity"
 	serviceidentity "o.o/backend/com/main/identity"
 	servicelocation "o.o/backend/com/main/location"
@@ -75,7 +76,7 @@ func main() {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment(cfg.SharedConfig.Env)
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
@@ -106,7 +107,7 @@ func main() {
 	defer ll.SendMessage("👹 fabo-app stopped 👹\n–––")
 
 	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
-	db, err := cmsql.Connect(cfg.Postgres)
+	db, err := cmsql.Connect(cfg.Databases.Postgres)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
@@ -136,7 +137,6 @@ func main() {
 	)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
 
-	identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 	fbClient := fbclient.New(cfg.FacebookApp)
 	if err := fbClient.Ping(); err != nil {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
@@ -149,13 +149,15 @@ func main() {
 	{
 		kafkaCfg := sarama.NewConfig()
 		kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
-		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, handler.ConsumerGroup, kafkaCfg)
+		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, "handler/fabo-server", kafkaCfg)
 		if err != nil {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
 
-		h := handlerkafka.NewHandlerFabo(db, cfg.Kafka.TopicPrefix, fbUserQuery, consumer, eventStream, fbMessagingQuery, fbPageQuery, identityQuery, fbPageQuery)
-		h.ConsumerAndHandlerFaboTopic(ctx)
+		fp := fabopublisher.New(consumer, eventStream)
+		h := handler.New(consumer, cfg.Kafka.TopicPrefix)
+		h.StartConsuming(ctx, etophandler.GetTopics(fp.TopicsAndHandlers()), fp.TopicsAndHandlers())
+
 		waiters = append(waiters, h)
 	}
 
@@ -167,7 +169,7 @@ func main() {
 	mux := http.NewServeMux()
 	healthservice.RegisterHTTPHandler(mux)
 	svr := &http.Server{
-		Addr:    cfg.HTTP.Address(),
+		Addr:    cfg.SharedConfig.HTTP.Address(),
 		Handler: mux,
 	}
 
@@ -246,7 +248,7 @@ func main() {
 
 	go func() {
 		defer ctxCancel()
-		ll.S.Infof("HTTP server listening at %v", cfg.HTTP.Address())
+		ll.S.Infof("HTTP server listening at %v", cfg.SharedConfig.HTTP.Address())
 		err := svr.ListenAndServe()
 		if err != http.ErrServerClosed {
 			ll.Error("HTTP server", l.Error(err))

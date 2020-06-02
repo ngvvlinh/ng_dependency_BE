@@ -5,7 +5,7 @@ import (
 	"flag"
 
 	"o.o/backend/cmd/etop-server/config"
-	notimodel "o.o/backend/com/handler/notifier/model"
+	notimodel "o.o/backend/com/eventhandler/notifier/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"

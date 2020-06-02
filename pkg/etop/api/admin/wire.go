@@ -15,5 +15,4 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(ShipmentPriceService), "*"),
 	wire.Struct(new(LocationService), "*"),
 	wire.Struct(new(SubscriptionService), "*"),
-	NewServers,
 )

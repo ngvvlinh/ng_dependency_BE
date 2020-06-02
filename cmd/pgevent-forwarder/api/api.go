@@ -10,7 +10,7 @@ import (
 	"github.com/lib/pq"
 
 	pbcm "o.o/api/top/types/common"
-	"o.o/backend/com/handler/pgevent"
+	"o.o/backend/com/eventhandler/pgevent"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/common/l"

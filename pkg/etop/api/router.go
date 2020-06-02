@@ -8,6 +8,7 @@ import (
 	service "o.o/api/top/int/etop"
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/bus"
+	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
@@ -33,7 +34,7 @@ func NewServers(
 	ecomService *EcomService,
 
 	rd redis.Store,
-	_cfgEmail EmailConfig,
+	_cfgEmail cc.EmailConfig,
 	_cfgSMS sms.Config,
 
 ) (Servers, func()) {

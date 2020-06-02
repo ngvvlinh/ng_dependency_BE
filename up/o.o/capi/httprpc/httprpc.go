@@ -16,7 +16,12 @@ import (
 
 type Server interface {
 	http.Handler
+
 	PathPrefix() string
+
+	// WithHooks returns a new server which calls given hooks on processing http
+	// requests. It must always clone the server and leave the original one
+	// unaffected.
 	WithHooks(HooksBuilder) Server
 }
 
