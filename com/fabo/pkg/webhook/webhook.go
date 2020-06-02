@@ -11,16 +11,12 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
+	faboRedis "o.o/backend/com/fabo/pkg/redis"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/common/l"
-)
-
-const (
-	PREFIX_PSID                  = "psid"
-	PREFIX_EXTERNAL_CONVERSATION = "external_conversation"
 )
 
 var (
@@ -30,7 +26,7 @@ var (
 type Webhook struct {
 	db               *cmsql.Database
 	verifyToken      string
-	redisStore       redis.Store
+	faboRedis        *faboRedis.FaboRedis
 	fbClient         *fbclient.FbClient
 	fbmessagingQuery fbmessaging.QueryBus
 	fbmessagingAggr  fbmessaging.CommandBus
@@ -39,14 +35,14 @@ type Webhook struct {
 
 func New(
 	db *cmsql.Database, verifyToken string,
-	redisStore redis.Store, fbClient *fbclient.FbClient,
+	faboRedis *faboRedis.FaboRedis, fbClient *fbclient.FbClient,
 	fbmessagingQuery fbmessaging.QueryBus, fbmessagingAggregate fbmessaging.CommandBus,
 	fbPageQuery fbpaging.QueryBus,
 ) *Webhook {
 	wh := &Webhook{
 		db:               db,
 		verifyToken:      verifyToken,
-		redisStore:       redisStore,
+		faboRedis:        faboRedis,
 		fbClient:         fbClient,
 		fbmessagingQuery: fbmessagingQuery,
 		fbmessagingAggr:  fbmessagingAggregate,
@@ -124,6 +120,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 
 // TODO: Ngoc
 func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PSID, mid string) error {
+	// Get page (active) by externalPageID
 	getFbExternalPageActiveByExternalIDQuery := &fbpaging.GetFbExternalPageActiveByExternalIDQuery{
 		ExternalID: externalPageID,
 	}
@@ -135,6 +132,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	}
 	fbPageID := getFbExternalPageActiveByExternalIDQuery.Result.ID
 
+	// Get token page to get message
 	getFbExternalPageInternalByIDQuery := &fbpaging.GetFbExternalPageInternalByIDQuery{
 		ID: fbPageID,
 	}
@@ -146,40 +144,46 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	}
 	accessToken := getFbExternalPageInternalByIDQuery.Result.Token
 
+	// Get message
 	messageResp, err := wh.fbClient.CallAPIGetMessage(accessToken, mid)
 	if err != nil {
 		return err
 	}
 
-	externalUserID, err := wh.loadPSID(externalPageID, PSID)
+	externalUserID, err := wh.faboRedis.LoadPSID(externalPageID, PSID)
 	switch err {
+	// PSID not in redis then save
 	case redis.ErrNil:
 		{
 			externalUserID = messageResp.From.ID
 
-			if err := wh.savePSID(externalPageID, PSID, externalUserID); err != nil {
+			if err := wh.faboRedis.SavePSID(externalPageID, PSID, externalUserID); err != nil {
 				return err
 			}
 		}
+	// PSID not in redis then do nothing
 	case nil:
 		// no-op
 	default:
 		return err
 	}
 
-	externalConversationID, err := wh.loadExternalConversationID(externalPageID, externalUserID)
+	// Get externalConversationID (externalPageID, externalUserID) from redis
+	externalConversationID, err := wh.faboRedis.LoadExternalConversationID(externalPageID, externalUserID)
 	switch err {
+	// If externalConversationID not in redis then query database and save it into redis
 	case redis.ErrNil:
 		getExternalConversationQuery := &fbmessaging.GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery{
 			ExternalPageID: externalPageID,
 			ExternalUserID: externalUserID,
 		}
 		_err := wh.fbmessagingQuery.Dispatch(ctx, getExternalConversationQuery)
-
 		switch cm.ErrorCode(_err) {
 		case cm.NoError:
 			externalConversationID = getExternalConversationQuery.Result.ExternalID
 		case cm.NotFound:
+			// if conversation not found then get externalConversation through call api
+			// and create new externalConversation
 			conversations, err := wh.fbClient.CallAPIListConversations(accessToken, externalPageID, PSID, nil)
 			if err != nil {
 				return err
@@ -219,7 +223,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			return _err
 		}
 
-		if _err := wh.saveExternalConversationID(externalPageID, externalUserID, externalConversationID); _err != nil {
+		if _err := wh.faboRedis.SaveExternalConversationID(externalPageID, externalUserID, externalConversationID); _err != nil {
 			return _err
 		}
 	case nil:
@@ -228,6 +232,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		return err
 	}
 
+	// Create new message
 	var externalAttachments []*fbmessaging.FbMessageAttachment
 	if messageResp.Attachments != nil {
 		externalAttachments = fbclientconvert.ConvertMessageDataAttachments(messageResp.Attachments.Data)
@@ -250,31 +255,31 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	}); err != nil {
 		return err
 	}
+
+	if _, err := wh.getProfileByPSID(accessToken, externalPageID, PSID); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (wh *Webhook) loadPSID(pageID, PSID string) (string, error) {
-	return wh.redisStore.GetString(wh.generatePSIDKey(pageID, PSID))
-}
-
-func (wh *Webhook) savePSID(pageID, PSID, externalUserID string) error {
-	return wh.redisStore.SetString(wh.generatePSIDKey(pageID, PSID), externalUserID)
-}
-
-func (wh *Webhook) generatePSIDKey(externalPageID, psid string) string {
-	return fmt.Sprintf("%s:%s_%s", PREFIX_PSID, externalPageID, psid)
-}
-
-func (wh *Webhook) loadExternalConversationID(externalPageID, externalUserID string) (string, error) {
-	return wh.redisStore.GetString(wh.generateExternalConversationKey(externalPageID, externalUserID))
-}
-
-func (wh *Webhook) saveExternalConversationID(externalPageID, externalUserID, externalConversationID string) error {
-	return wh.redisStore.SetString(wh.generateExternalConversationKey(externalPageID, externalUserID), externalConversationID)
-}
-
-func (wh *Webhook) generateExternalConversationKey(externalPageID, externalUserID string) string {
-	return fmt.Sprintf("%s:%s_%s", PREFIX_EXTERNAL_CONVERSATION, externalPageID, externalUserID)
+func (wh *Webhook) getProfileByPSID(accessToken, pageID, PSID string) (profile *fbclientmodel.Profile, err error) {
+	profile, err = wh.faboRedis.LoadProfilePSID(pageID, PSID)
+	switch err {
+	case redis.ErrNil:
+		profile, err = wh.fbClient.CallAPIGetProfileByPSID(accessToken, PSID)
+		if err != nil {
+			return nil, err
+		}
+		if err := wh.faboRedis.SaveProfilePSID(pageID, PSID, profile); err != nil {
+			return nil, err
+		}
+	case nil:
+	// no-op
+	default:
+		return nil, err
+	}
+	return profile, nil
 }
 
 type WebhookMessages struct {

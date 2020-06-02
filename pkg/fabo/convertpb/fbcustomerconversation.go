@@ -10,7 +10,7 @@ func PbFbCustomerConversation(m *fbmessaging.FbCustomerConversation) *fabo.FbCus
 	if m == nil {
 		return nil
 	}
-	return &fabo.FbCustomerConversation{
+	result := &fabo.FbCustomerConversation{
 		ID:                        m.ID,
 		ExternalPageID:            m.ExternalPageID,
 		ExternalID:                m.ExternalID,
@@ -27,6 +27,12 @@ func PbFbCustomerConversation(m *fbmessaging.FbCustomerConversation) *fabo.FbCus
 		CreatedAt:                 m.CreatedAt,
 		UpdatedAt:                 m.UpdatedAt,
 	}
+	if m.ExternalUserPictureURL == "" {
+		result.ExternalUserPictureURL = fbclientconvert.GenerateFacebookUserPicture(m.ExternalUserID)
+	} else {
+		result.ExternalUserPictureURL = m.ExternalUserPictureURL
+	}
+	return result
 }
 
 func PbFbCustomerConversations(ms []*fbmessaging.FbCustomerConversation) []*fabo.FbCustomerConversation {
@@ -69,12 +75,17 @@ func PbFbObjectTo(m *fbmessaging.FbObjectTo) *fabo.FbObjectTo {
 	if m == nil {
 		return nil
 	}
-	return &fabo.FbObjectTo{
-		ID:                     m.ID,
-		Name:                   m.Name,
-		Email:                  m.Email,
-		ExternalUserPictureURL: fbclientconvert.GenerateFacebookUserPicture(m.ID),
+	result := &fabo.FbObjectTo{
+		ID:    m.ID,
+		Name:  m.Name,
+		Email: m.Email,
 	}
+	if m.ImageURL == "" {
+		result.ExternalUserPictureURL = fbclientconvert.GenerateFacebookUserPicture(m.ID)
+	} else {
+		result.ExternalUserPictureURL = m.ImageURL
+	}
+	return result
 }
 
 func PbFbObjectsTo(ms []*fbmessaging.FbObjectTo) []*fabo.FbObjectTo {
@@ -89,12 +100,17 @@ func PbFbObjectFrom(m *fbmessaging.FbObjectFrom) *fabo.FbObjectFrom {
 	if m == nil {
 		return nil
 	}
-	return &fabo.FbObjectFrom{
-		ID:                     m.ID,
-		Name:                   m.Name,
-		Email:                  m.Email,
-		ExternalUserPictureURL: fbclientconvert.GenerateFacebookUserPicture(m.ID),
+	result := &fabo.FbObjectFrom{
+		ID:    m.ID,
+		Name:  m.Name,
+		Email: m.Email,
 	}
+	if m.ImageURL == "" {
+		result.ExternalUserPictureURL = fbclientconvert.GenerateFacebookUserPicture(m.ID)
+	} else {
+		result.ExternalUserPictureURL = m.ImageURL
+	}
+	return result
 }
 
 func PbFbMessageAttachment(m *fbmessaging.FbMessageAttachment) *fabo.FbMessageAttachment {

@@ -474,6 +474,7 @@ func convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConve
 	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
 	out.IsRead = arg.IsRead                                                       // simple assign
 	out.Type = fb_customer_conversation_type.FbCustomerConversationType(arg.Type) // simple conversion
+	out.ExternalUserPictureURL = ""                                               // zero value
 	out.ExternalPostAttachments = Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(arg.ExternalPostAttachments)
 	out.ExternalCommentAttachment = Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg.ExternalCommentAttachment, nil)
 	out.ExternalMessageAttachments = Convert_fbmessagingmodel_FbMessageAttachments_fbmessaging_FbMessageAttachments(arg.ExternalMessageAttachments)
@@ -557,6 +558,7 @@ func apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerCo
 	out.ExternalFrom = arg.ExternalFrom                             // simple assign
 	out.IsRead = arg.IsRead                                         // simple assign
 	out.Type = arg.Type                                             // simple assign
+	out.ExternalUserPictureURL = ""                                 // zero value
 	out.ExternalPostAttachments = arg.ExternalPostAttachments       // simple assign
 	out.ExternalCommentAttachment = arg.ExternalCommentAttachment   // simple assign
 	out.ExternalMessageAttachments = arg.ExternalMessageAttachments // simple assign
@@ -1216,6 +1218,7 @@ func convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg *fbmessa
 	out.ID = arg.ID       // simple assign
 	out.Name = arg.Name   // simple assign
 	out.Email = arg.Email // simple assign
+	out.ImageURL = ""     // zero value
 }
 
 func Convert_fbmessagingmodel_FbObjectFroms_fbmessaging_FbObjectFroms(args []*fbmessagingmodel.FbObjectFrom) (outs []*fbmessaging.FbObjectFrom) {
@@ -1338,6 +1341,7 @@ func convert_fbmessagingmodel_FbObjectTo_fbmessaging_FbObjectTo(arg *fbmessaging
 	out.ID = arg.ID       // simple assign
 	out.Name = arg.Name   // simple assign
 	out.Email = arg.Email // simple assign
+	out.ImageURL = ""     // zero value
 }
 
 func Convert_fbmessagingmodel_FbObjectToes_fbmessaging_FbObjectToes(args []*fbmessagingmodel.FbObjectTo) (outs []*fbmessaging.FbObjectTo) {

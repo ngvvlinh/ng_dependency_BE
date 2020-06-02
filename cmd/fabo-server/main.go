@@ -9,13 +9,13 @@ import (
 	"time"
 
 	"github.com/Shopify/sarama"
-
 	"o.o/backend/cmd/fabo-server/config"
 	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
 	servicefbuser "o.o/backend/com/fabo/main/fbuser"
 	fbuserpm "o.o/backend/com/fabo/main/fbuser/pm"
 	"o.o/backend/com/fabo/pkg/fbclient"
+	faboRedis "o.o/backend/com/fabo/pkg/redis"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
 	handlerkafka "o.o/backend/com/handler/etop-handler"
 	"o.o/backend/com/handler/notifier/handler"
@@ -114,6 +114,8 @@ func main() {
 	eventBus := bus.New()
 	sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), eventBus)
 
+	fbRedis := faboRedis.NewFaboRedis(redisStore)
+
 	customerQuery := customeringquery.CustomerQueryMessageBus(customeringquery.NewCustomerQuery(db))
 	_ = serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 	fbPageAggr := servicefbpage.FbExternalPageAggregateMessageBus(servicefbpage.NewFbPageAggregate(db))
@@ -124,7 +126,14 @@ func main() {
 	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
 	fbUserPM := fbuserpm.New(eventBus, fbUserAggr)
 	fbUserPM.RegisterEventHandlers(eventBus)
-	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPageQuery, fbUserQuery, fbUserAggr)
+
+	fbMessagingPM := servicefbmessaging.NewProcessManager(
+		eventBus,
+		fbMessagingQuery, fbMessagingAggr,
+		fbPageQuery,
+		fbUserQuery, fbUserAggr,
+		fbRedis,
+	)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
 
 	identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
@@ -214,7 +223,7 @@ func main() {
 		rt.Use(httpx.RecoverAndLog(true))
 		webhook := fbwebhook.New(
 			db, cfg.Webhook.VerifyToken,
-			redisStore, fbClient, fbMessagingQuery,
+			fbRedis, fbClient, fbMessagingQuery,
 			fbMessagingAggr, fbPageQuery,
 		)
 		webhook.Register(rt)

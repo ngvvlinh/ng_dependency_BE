@@ -13,6 +13,7 @@ type Config struct {
 	Postgres    cc.Postgres        `yaml:"postgres"`
 	HTTP        cc.HTTP            `yaml:"http"`
 	TelegramBot cc.TelegramBot     `yaml:"telegram_bot"`
+	Redis       cc.Redis           `yaml:"redis"`
 	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
 	TimeLimit   int                `yaml:"time_limit"` // days
 
@@ -26,6 +27,7 @@ func Default() Config {
 			Host: "",
 			Port: 8081,
 		},
+		Redis: cc.DefaultRedis(),
 		TelegramBot: cc.TelegramBot{
 			Chats: map[string]int64{
 				"default": 0,

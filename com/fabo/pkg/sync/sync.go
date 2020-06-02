@@ -16,9 +16,11 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
+	faboRedis "o.o/backend/com/fabo/pkg/redis"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 	"o.o/common/l"
@@ -96,6 +98,7 @@ type Synchronizer struct {
 	fbMessagingQuery fbmessaging.QueryBus
 
 	mu sync.Mutex
+	rd *faboRedis.FaboRedis
 
 	timeLimit int
 }
@@ -105,7 +108,7 @@ func New(
 	fbClient *fbclient.FbClient,
 	fbMessagingAggr fbmessaging.CommandBus,
 	fbMessagingQuery fbmessaging.QueryBus,
-	timeLimit int,
+	fbRedis *faboRedis.FaboRedis, timeLimit int,
 ) *Synchronizer {
 	sched := scheduler.New(defaultNumWorkers)
 	s := &Synchronizer{
@@ -115,6 +118,7 @@ func New(
 		mapTaskArguments: make(map[dot.ID]*TaskArguments),
 		fbMessagingAggr:  fbMessagingAggr,
 		fbMessagingQuery: fbMessagingQuery,
+		rd:               fbRedis,
 		timeLimit:        timeLimit,
 	}
 	return s
@@ -459,14 +463,31 @@ func (s *Synchronizer) handleTaskGetComments(
 		return nil
 	}
 
+	// Get PSIDs to get avatars
+	var PSIDs []string
+
 	var createOrUpdateFbExternalCommentsArgs []*fbmessaging.CreateFbExternalCommentArgs
 	for _, fbExternalComment := range fbExternalCommentsResp.Comments.CommentData {
+		if fbExternalComment.ID == "122501556114814_122958706069099" {
+			fmt.Println("accccc")
+		}
+
+		// Ignore comment is hidden
 		if fbExternalComment.IsHidden {
 			continue
 		}
+
+		// Map externalUserID (From)
+		// Map externalParentID (Parent)
+
 		var externalUserID, externalParentID, externalParentUserID string
 		if fbExternalComment.From != nil {
 			externalUserID = fbExternalComment.From.ID
+
+			// get PSID
+			if externalUserID != externalPageID {
+				PSIDs = append(PSIDs, externalUserID)
+			}
 		}
 		if fbExternalComment.Parent != nil {
 			externalParentID = fbExternalComment.Parent.ID
@@ -501,6 +522,46 @@ func (s *Synchronizer) handleTaskGetComments(
 	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalCommentsCmd); err != nil {
 		return err
 	}
+
+	// Get avatars from PSIDs
+	{
+		for _, psid := range PSIDs {
+			// check profile is loaded before
+			_, _err := s.rd.LoadProfilePSID(externalPageID, psid)
+			switch _err {
+			// If profile exist then ignore
+			case nil:
+			// no-op
+			// If profile isn't found then call api get Profile
+			case redis.ErrNil:
+				{
+					profile, err := s.fbClient.CallAPIGetProfileByPSID(accessToken, psid)
+					switch cm.ErrorCode(err) {
+					case cm.NoError:
+						if _err := s.rd.SaveProfilePSID(externalPageID, psid, profile); _err != nil {
+							return _err
+						}
+					default:
+						facebookError := err.(*xerrors.APIError)
+						// If psid is pageID then don't need to call api to get profile
+						// Just use the link picture "https://graph.facebook.com/{id}/picture?height=200&width=200&type=normal"
+						if facebookError.Meta["code"] == fbclient.InvalidParameter.String() {
+							if _err := s.rd.SaveProfilePSID(externalPageID, psid, &model.Profile{
+								ProfilePic: fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", psid),
+							}); _err != nil {
+								return _err
+							}
+						} else {
+							return err
+						}
+					}
+				}
+			default:
+				return _err
+			}
+		}
+	}
+
 	return nil
 }
 

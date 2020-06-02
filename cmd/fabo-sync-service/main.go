@@ -13,6 +13,7 @@ import (
 	servicefbpaging "o.o/backend/com/fabo/main/fbpage"
 	servicefbusering "o.o/backend/com/fabo/main/fbuser"
 	"o.o/backend/com/fabo/pkg/fbclient"
+	faboRedis "o.o/backend/com/fabo/pkg/redis"
 	"o.o/backend/com/fabo/pkg/sync"
 	customerquery "o.o/backend/com/shopping/customering/query"
 	cm "o.o/backend/pkg/common"
@@ -21,6 +22,7 @@ import (
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/metrics"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/common/l"
 )
@@ -69,6 +71,8 @@ func main() {
 	ll.SendMessage("–––\n✨ fabo-sync-service started ✨\n" + cm.CommitMessage())
 	defer ll.SendMessage("👹 fabo-sync-service stopped 👹\n–––")
 
+	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
+
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
@@ -80,6 +84,8 @@ func main() {
 		ll.Fatal("Error while connection Facebook", l.Error(err))
 	}
 
+	fbRedis := faboRedis.NewFaboRedis(redisStore)
+
 	customerQuery := customerquery.CustomerQueryMessageBus(customerquery.NewCustomerQuery(db))
 	fbPagingQuery := servicefbpaging.FbPageQueryMessageBus(servicefbpaging.NewFbPageQuery(db))
 	fbPagingAggr := servicefbpaging.FbExternalPageAggregateMessageBus(servicefbpaging.NewFbPageAggregate(db))
@@ -87,9 +93,20 @@ func main() {
 	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
 	fbUseringQuery := servicefbusering.FbUserQueryMessageBus(servicefbusering.NewFbUserQuery(db, customerQuery))
 	fbUseringAggr := servicefbusering.FbUserAggregateMessageBus(servicefbusering.NewFbUserAggregate(db, fbPagingAggr, customerQuery))
-	fbMessagingPM := servicefbmessaging.NewProcessManager(eventBus, fbMessagingQuery, fbMessagingAggr, fbPagingQuery, fbUseringQuery, fbUseringAggr)
+	fbMessagingPM := servicefbmessaging.NewProcessManager(
+		eventBus,
+		fbMessagingQuery, fbMessagingAggr,
+		fbPagingQuery,
+		fbUseringQuery, fbUseringAggr,
+		fbRedis)
 	fbMessagingPM.RegisterEventHandlers(eventBus)
-	synchronizer := sync.New(db, fbClient, fbMessagingAggr, fbMessagingQuery, cfg.TimeLimit)
+	synchronizer := sync.New(
+		db,
+		fbClient,
+		fbMessagingAggr, fbMessagingQuery,
+		fbRedis,
+		cfg.TimeLimit,
+	)
 	if err := synchronizer.Init(); err != nil {
 		panic(err)
 	}

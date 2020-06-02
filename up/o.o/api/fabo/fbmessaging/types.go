@@ -25,15 +25,17 @@ type FbExternalMessage struct {
 }
 
 type FbObjectTo struct {
-	ID    string
-	Name  string
-	Email string
+	ID       string
+	Name     string
+	Email    string
+	ImageURL string
 }
 
 type FbObjectFrom struct {
-	ID    string
-	Name  string
-	Email string
+	ID       string
+	Name     string
+	Email    string
+	ImageURL string
 }
 
 type FbMessageAttachment struct {
@@ -143,6 +145,7 @@ type FbCustomerConversation struct {
 	ExternalFrom               *FbObjectFrom
 	IsRead                     bool
 	Type                       fb_customer_conversation_type.FbCustomerConversationType
+	ExternalUserPictureURL     string
 	ExternalPostAttachments    []*PostAttachment
 	ExternalCommentAttachment  *CommentAttachment
 	ExternalMessageAttachments []*FbMessageAttachment

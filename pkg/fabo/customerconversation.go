@@ -110,8 +110,37 @@ func (s *CustomerConversationService) ListCustomerConversations(
 	if err := s.fbMessagingQuery.Dispatch(ctx, listCustomerConversationsQuery); err != nil {
 		return nil, err
 	}
+
+	listCustomerConversations := listCustomerConversationsQuery.Result.FbCustomerConversations
+	// get avatars
+	{
+		var externalUserIDs []string
+		for _, customerConversation := range listCustomerConversations {
+			if customerConversation.ExternalFrom != nil {
+				externalUserIDs = append(externalUserIDs, customerConversation.ExternalFrom.ID)
+			}
+			if customerConversation.ExternalUserID != "" {
+				externalUserIDs = append(externalUserIDs, customerConversation.ExternalUserID)
+			}
+		}
+
+		mapExternalUserIDAndImageURl, err := s.getImageURLs(ctx, externalUserIDs)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, customerConversation := range listCustomerConversations {
+			if customerConversation.ExternalFrom != nil {
+				customerConversation.ExternalFrom.ImageURL = mapExternalUserIDAndImageURl[customerConversation.ExternalFrom.ID]
+			}
+			if customerConversation.ExternalUserID != "" {
+				customerConversation.ExternalUserPictureURL = mapExternalUserIDAndImageURl[customerConversation.ExternalUserID]
+			}
+		}
+	}
+
 	var fbUserExternalID []string
-	for _, v := range listCustomerConversationsQuery.Result.FbCustomerConversations {
+	for _, v := range listCustomerConversations {
 		fbUserExternalID = append(fbUserExternalID, v.ExternalUserID)
 	}
 	listFbUserQuery := &fbusering.ListFbExternalUserWithCustomerByExternalIDsQuery{
@@ -127,7 +156,7 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		mapExternalIDFbUser[v.FbExternalUser.ExternalID] = v
 	}
 	result := &fabo.FbCustomerConversationsResponse{
-		CustomerConversations: convertpb.PbFbCustomerConversations(listCustomerConversationsQuery.Result.FbCustomerConversations),
+		CustomerConversations: convertpb.PbFbCustomerConversations(listCustomerConversations),
 		Paging:                cmapi.PbCursorPageInfo(paging, &listCustomerConversationsQuery.Result.Paging),
 	}
 	for k, v := range result.CustomerConversations {
@@ -166,8 +195,36 @@ func (s *CustomerConversationService) ListMessages(
 		return nil, err
 	}
 
+	listMessages := listFbExternalMessagesQuery.Result.FbExternalMessages
+	// get avatars
+	{
+		var externalUserIDs []string
+		for _, message := range listMessages {
+			if message.ExternalFrom != nil {
+				externalUserIDs = append(externalUserIDs, message.ExternalFrom.ID)
+			}
+			for _, externalTo := range message.ExternalTo {
+				externalUserIDs = append(externalUserIDs, externalTo.ID)
+			}
+		}
+
+		mapExternalUserIDAndImageURl, err := s.getImageURLs(ctx, externalUserIDs)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, message := range listMessages {
+			if message.ExternalFrom != nil {
+				message.ExternalFrom.ImageURL = mapExternalUserIDAndImageURl[message.ExternalFrom.ID]
+			}
+			for _, externalTo := range message.ExternalTo {
+				externalTo.ImageURL = mapExternalUserIDAndImageURl[externalTo.ID]
+			}
+		}
+	}
+
 	return &fabo.FbMessagesResponse{
-		FbMessages: convertpb.PbFbExternalMessages(listFbExternalMessagesQuery.Result.FbExternalMessages),
+		FbMessages: convertpb.PbFbExternalMessages(listMessages),
 		Paging:     cmapi.PbCursorPageInfo(paging, &listFbExternalMessagesQuery.Result.Paging),
 	}, nil
 }
@@ -217,6 +274,28 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		return nil, err
 	}
 
+	listComments := listFbExternalCommentsQuery.Result.FbExternalComments
+	// get avatars
+	{
+		var externalUserIDs []string
+		for _, comment := range listComments {
+			if comment.ExternalFrom != nil {
+				externalUserIDs = append(externalUserIDs, comment.ExternalFrom.ID)
+			}
+		}
+
+		mapExternalUserIDAndImageURL, err := s.getImageURLs(ctx, externalUserIDs)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, comment := range listComments {
+			if comment.ExternalFrom != nil {
+				comment.ExternalFrom.ImageURL = mapExternalUserIDAndImageURL[comment.ExternalFrom.ID]
+			}
+		}
+	}
+
 	var latestCustomerFbExternalComment *fbmessaging.FbExternalComment
 	if request.Filter.ExternalUserID != "" {
 		getLatestCustomerExternalCommentQuery := &fbmessaging.GetLatestCustomerExternalCommentQuery{
@@ -242,10 +321,11 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		fbPost.ExternalParent = convertpb.PbFbExternalPost(fbExternalParentPost)
 
 	}
+
 	var commentParentExternalIDs []string
-	for _, childrentComment := range listFbExternalCommentsQuery.Result.FbExternalComments {
-		if childrentComment.ExternalParentID != "" {
-			commentParentExternalIDs = append(commentParentExternalIDs, childrentComment.ExternalParentID)
+	for _, childrenComment := range listComments {
+		if childrenComment.ExternalParentID != "" {
+			commentParentExternalIDs = append(commentParentExternalIDs, childrenComment.ExternalParentID)
 		}
 	}
 	listFbExternalCommentsParentQuery := &fbmessaging.ListFbExternalCommentsByExternalIDsQuery{
@@ -260,9 +340,30 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	for _, v := range listFbExternalCommentsParentQuery.Result.FbExternalComments {
 		mapParentComment[v.ExternalID] = v
 	}
+	// TODO(ngoc): refactor
+	// get avatars
+	{
+		var externalUserIDs []string
+		for _, comment := range mapParentComment {
+			if comment.ExternalFrom != nil {
+				externalUserIDs = append(externalUserIDs, comment.ExternalFrom.ID)
+			}
+		}
+
+		mapExternalUserIDAndImageURL, err := s.getImageURLs(ctx, externalUserIDs)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, comment := range mapParentComment {
+			if comment.ExternalFrom != nil {
+				comment.ExternalFrom.ImageURL = mapExternalUserIDAndImageURL[comment.ExternalFrom.ID]
+			}
+		}
+	}
 
 	fbComments := &fabo.FbCommentsResponse{
-		FbComments: convertpb.PbFbExternalComments(listFbExternalCommentsQuery.Result.FbExternalComments),
+		FbComments: convertpb.PbFbExternalComments(listComments),
 		Paging:     cmapi.PbCursorPageInfo(paging, &listFbExternalCommentsQuery.Result.Paging),
 	}
 	for k, v := range fbComments.FbComments {
@@ -456,4 +557,25 @@ func (s *CustomerConversationService) SendMessage(
 	}
 
 	return convertpb.PbFbExternalMessage(createFbExternalMessageCmd.Result[0]), nil
+}
+
+func (s *CustomerConversationService) getImageURLs(ctx context.Context, externalUserIDs []string) (map[string]string, error) {
+	getFbUserQuery := &fbusering.ListFbExternalUsersByExternalIDsQuery{
+		ExternalIDs: externalUserIDs,
+	}
+	if err := s.fbUserQuery.Dispatch(ctx, getFbUserQuery); err != nil {
+		return nil, err
+	}
+
+	mapExternalUserIDAndImageURL := make(map[string]string)
+	for _, externalUserID := range externalUserIDs {
+		mapExternalUserIDAndImageURL[externalUserID] = ""
+	}
+	for _, fbExternalUser := range getFbUserQuery.Result {
+		if fbExternalUser.ExternalInfo != nil && fbExternalUser.ExternalInfo.ImageURL != "" {
+			mapExternalUserIDAndImageURL[fbExternalUser.ExternalID] = fbExternalUser.ExternalInfo.ImageURL
+		}
+	}
+
+	return mapExternalUserIDAndImageURL, nil
 }

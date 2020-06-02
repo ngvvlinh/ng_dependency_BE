@@ -172,6 +172,7 @@ const (
 	ApiTooManyCalls                         = Code(4)
 	ApiPermissionDenied                     = Code(10)
 	ApiUserTooManyCalls                     = Code(17)
+	InvalidParameter                        = Code(100)
 	AccessTokenHasExpired                   = Code(190)
 	MissingPermission                       = Code(200) // 200 - 299
 	ApplicationLimitReached                 = Code(341)
@@ -198,6 +199,10 @@ var mapErrorCodeMessage = map[Code]map[string]string{
 	ApiUserTooManyCalls: {
 		VI: "Có một vấn đề tạm thời dẫn đến hiện tượng thắt cổ chai. Hãy đợi và thử lại, hoặc kiểm tra số lượng lần gọi của API này.",
 		EN: "Temporary issue due to throttling. Wait and retry the operation, or examine your API request volume.",
+	},
+	InvalidParameter: {
+		VI: "Thông số không hợp lệ.",
+		EN: "Invalid parameter.",
 	},
 	ApiPermissionDenied: {
 		VI: "Quyền có thể không được cấp phát hoặc đã xoá bỏ.",
