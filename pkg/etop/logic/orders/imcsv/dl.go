@@ -16,7 +16,7 @@ import (
 var dlShopOrderXlsx []byte
 
 const (
-	AssetShopOrderPath     = "imports/shop_orders.v1.xlsx"
+	AssetShopOrderPath     = "shop_orders.v1.xlsx"
 	assetShopOrderFilename = "shop_orders.v1"
 )
 

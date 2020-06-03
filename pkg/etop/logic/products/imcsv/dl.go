@@ -17,10 +17,10 @@ import (
 var dlShopProductXlsx []byte
 
 const (
-	AssetShopProductPath     = "imports/shop_products.v1.xlsx"
+	AssetShopProductPath     = "shop_products.v1.xlsx"
 	assetShopProductFilename = "shop_products.v1"
 
-	AssetShopProductSimplifiedPath = "imports/shop_products.v1.simplified.xlsx"
+	AssetShopProductSimplifiedPath = "shop_products.v1.simplified.xlsx"
 )
 
 func init() {
