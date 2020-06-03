@@ -18,6 +18,7 @@ import (
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/apix/partner"
+	orderS "o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/pkg/integration/email"
 	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
@@ -69,8 +70,9 @@ type Config struct {
 
 	WhiteLabel cc.WhiteLabel `yaml:"white_label"`
 
-	FlagEnableNewLinkInvitation aggregate.FlagEnableNewLinkInvitation `yaml:"flag_enable_new_link_invitation"`
-	FlagApplyShipmentPrice      carrier.FlagApplyShipmentPrice        `yaml:"flag_apply_shipment_price"`
+	FlagEnableNewLinkInvitation           aggregate.FlagEnableNewLinkInvitation        `yaml:"flag_enable_new_link_invitation"`
+	FlagApplyShipmentPrice                carrier.FlagApplyShipmentPrice               `yaml:"flag_apply_shipment_price"`
+	FlagFaboOrderAutoConfirmPaymentStatus orderS.FlagFaboOrderAutoConfirmPaymentStatus `yaml:"flag_fabo_auto_confirm_payment_status"`
 }
 
 // Default ...

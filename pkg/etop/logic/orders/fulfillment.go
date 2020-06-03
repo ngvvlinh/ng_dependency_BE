@@ -42,18 +42,20 @@ import (
 
 type OrderLogic struct {
 }
+type FlagFaboOrderAutoConfirmPaymentStatus bool
 
 var (
-	ctrl               *shipping_provider.CarrierManager
-	catalogQuery       catalog.QueryBus
-	orderAggr          ordering.CommandBus
-	customerAggr       customering.CommandBus
-	customerQuery      customering.QueryBus
-	traderAddressAggr  addressing.CommandBus
-	traderAddressQuery addressing.QueryBus
-	locationQuery      location.QueryBus
-	eventBus           capi.EventBus
-	shipmentManager    *carrier.ShipmentManager
+	ctrl                                  *shipping_provider.CarrierManager
+	catalogQuery                          catalog.QueryBus
+	orderAggr                             ordering.CommandBus
+	customerAggr                          customering.CommandBus
+	customerQuery                         customering.QueryBus
+	traderAddressAggr                     addressing.CommandBus
+	traderAddressQuery                    addressing.QueryBus
+	locationQuery                         location.QueryBus
+	eventBus                              capi.EventBus
+	shipmentManager                       *carrier.ShipmentManager
+	flagFaboOrderUpdatePaymentSatusConfig FlagFaboOrderAutoConfirmPaymentStatus
 )
 
 func New(shippingProviderCtrl *shipping_provider.CarrierManager,
@@ -65,6 +67,7 @@ func New(shippingProviderCtrl *shipping_provider.CarrierManager,
 	traderAddressQueryBus addressing.QueryBus,
 	locationQueryBus location.QueryBus,
 	eventB capi.EventBus,
+	flagFaboOrderUpdatePaymentSatus FlagFaboOrderAutoConfirmPaymentStatus,
 	shipmentCarrierCtrl *carrier.ShipmentManager) *OrderLogic {
 	ctrl = shippingProviderCtrl
 	catalogQuery = catalogQueryBus
@@ -75,6 +78,7 @@ func New(shippingProviderCtrl *shipping_provider.CarrierManager,
 	traderAddressQuery = traderAddressQueryBus
 	locationQuery = locationQueryBus
 	eventBus = eventB
+	flagFaboOrderUpdatePaymentSatusConfig = flagFaboOrderUpdatePaymentSatus
 	shipmentManager = shipmentCarrierCtrl
 	return &OrderLogic{}
 }
@@ -119,17 +123,22 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 	// This disallow updating order.
 	if order.ConfirmStatus != status3.P ||
 		order.ShopConfirm != status3.P {
+		paymentStatus := status4.Z
+		if flagFaboOrderUpdatePaymentSatusConfig {
+			paymentStatus = status4.P
+		}
 		cmd := &ordermodelx.UpdateOrdersStatusCommand{
 			OrderIDs:      []dot.ID{r.OrderId},
 			ConfirmStatus: status3.P.Wrap(),
 			ShopConfirm:   status3.P.Wrap(),
+			PaymentStatus: paymentStatus.Wrap(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return resp, err
 		}
 		order.ConfirmStatus = status3.P
 		order.ShopConfirm = status3.P
-
+		order.PaymentStatus = paymentStatus
 		event := &ordering.OrderConfirmedEvent{
 			OrderID:              order.ID,
 			AutoInventoryVoucher: r.AutoInventoryVoucher,

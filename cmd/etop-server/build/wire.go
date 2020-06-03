@@ -105,6 +105,7 @@ func Build(
 			"AhamoveWebhook",
 			"FlagApplyShipmentPrice",
 			"FlagEnableNewLinkInvitation",
+			"FlagFaboOrderAutoConfirmPaymentStatus",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,

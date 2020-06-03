@@ -459,6 +459,9 @@ func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatus
 			m["cancelled_at"] = time.Now()
 		}
 	}
+	if cmd.PaymentStatus.Valid {
+		m["payment_status"] = cmd.PaymentStatus
+	}
 	if len(m) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing status", nil)
 	}

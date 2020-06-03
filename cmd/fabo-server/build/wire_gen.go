@@ -272,6 +272,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	shipment_allConfig := cfg.Shipment
 	v2 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, locationQueryBus)
 	carrierManager := shipping_provider.NewCtrl(eventBus, locationQueryBus, v2)
+	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	connectionQuery := query13.NewConnectionQuery(mainDB)
 	connectioningQueryBus := query13.ConnectionQueryMessageBus(connectionQuery)
 	connectionAggregate := aggregate7.NewConnectionAggregate(mainDB, eventBus)
@@ -293,7 +294,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		cleanup()
 		return Output{}, nil, err
 	}
-	orderLogic := orderS.New(carrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, locationQueryBus, eventBus, shipmentManager)
+	orderLogic := orderS.New(carrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, locationQueryBus, eventBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
 	orderService := &shop.OrderService{
 		OrderAggr:     orderingCommandBus,
 		CustomerQuery: customeringQueryBus,

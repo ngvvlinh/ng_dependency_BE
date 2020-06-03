@@ -141,8 +141,8 @@ type UpdateOrdersStatusCommand struct {
 	ShopConfirm   status3.NullStatus
 	ConfirmStatus status3.NullStatus
 	CancelReason  string
-
-	Result struct {
+	PaymentStatus status4.NullStatus
+	Result        struct {
 		Updated int
 	}
 }

@@ -13,6 +13,7 @@ import (
 	"o.o/backend/pkg/common/apifw/captcha"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/etop/api/export"
+	orderS "o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/sms"
@@ -44,8 +45,9 @@ type Config struct {
 
 	WhiteLabel cc.WhiteLabel `yaml:"white_label"`
 
-	FlagEnableNewLinkInvitation aggregate.FlagEnableNewLinkInvitation `yaml:"flag_enable_new_link_invitation"`
-	FlagApplyShipmentPrice      carrier.FlagApplyShipmentPrice        `yaml:"flag_apply_shipment_price"`
+	FlagEnableNewLinkInvitation           aggregate.FlagEnableNewLinkInvitation        `yaml:"flag_enable_new_link_invitation"`
+	FlagApplyShipmentPrice                carrier.FlagApplyShipmentPrice               `yaml:"flag_apply_shipment_price"`
+	FlagFaboOrderAutoConfirmPaymentStatus orderS.FlagFaboOrderAutoConfirmPaymentStatus `yaml:"flag_fabo_auto_confirm_payment_status"`
 
 	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
 	Webhook     WebhookConfig      `yaml:"webhook"`
