@@ -62,6 +62,7 @@ func (p *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.FulfillmentsCreatingEvent)
 	eventBus.AddEventListener(p.FulfillmentsCreatedEvent)
 	eventBus.AddEventListener(p.ReceiptConfirming)
+	eventBus.AddEventListener(p.FulfillmentUpdatedInfoEvent)
 }
 
 func (p *ProcessManager) ReceiptConfirming(ctx context.Context, event *receipting.ReceiptConfirmingEvent) error {
@@ -359,6 +360,15 @@ func (p *ProcessManager) FulfillmentsCreatedEvent(ctx context.Context, event *sh
 		OrderIDs:   []dot.ID{event.OrderID},
 		Fulfill:    event.ShippingType,
 		FulfillIDs: event.FulfillmentIDs,
+	}
+	return p.order.Dispatch(ctx, cmd)
+}
+
+func (p *ProcessManager) FulfillmentUpdatedInfoEvent(ctx context.Context, event *shipping.FulfillmentUpdatedInfoEvent) error {
+	cmd := &ordering.UpdateOrderCustomerInfoCommand{
+		ID:       event.OrderID,
+		FullName: event.FullName,
+		Phone:    event.Phone,
 	}
 	return p.order.Dispatch(ctx, cmd)
 }

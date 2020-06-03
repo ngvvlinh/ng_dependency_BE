@@ -879,6 +879,52 @@ func (s wrapFulfillmentService) UpdateFulfillment(ctx context.Context, req *api.
 	return resp, nil
 }
 
+type UpdateFulfillmentInfoEndpoint struct {
+	*api.UpdateFulfillmentInfoRequest
+	Result  *cm.UpdatedResponse
+	Context claims.AdminClaim
+}
+
+func (s wrapFulfillmentService) UpdateFulfillmentInfo(ctx context.Context, req *api.UpdateFulfillmentInfoRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "admin.Fulfillment/UpdateFulfillmentInfo"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateFulfillmentInfoEndpoint{UpdateFulfillmentInfoRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().UpdateFulfillmentInfo(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type UpdateFulfillmentShippingFeeEndpoint struct {
 	*api.UpdateFulfillmentShippingFeeRequest
 	Result  *cm.UpdatedResponse

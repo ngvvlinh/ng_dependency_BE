@@ -29,6 +29,7 @@ type Aggregate interface {
 	ReleaseOrdersForFfm(context.Context, *ReleaseOrdersForFfmArgs) (*ReleaseOrdersForFfmResponse, error)
 	UpdateOrderShippingStatus(context.Context, *UpdateOrderShippingStatusArgs) (*UpdateOrderShippingStatusResponse, error)
 	UpdateOrdersConfirmStatus(context.Context, *UpdateOrdersConfirmStatusArgs) (*UpdateOrdersConfirmStatusResponse, error)
+	UpdateOrderCustomerInfo(context.Context, *UpdateOrderCustomerInfoArgs) error
 
 	UpdateOrderPaymentInfo(context.Context, *UpdateOrderPaymentInfoArgs) error
 	CompleteOrder(_ context.Context, OrderID dot.ID, ShopID dot.ID) error
@@ -210,6 +211,12 @@ type UpdateOrdersConfirmStatusArgs struct {
 	IDs           []dot.ID
 	ShopConfirm   status3.Status
 	ConfirmStatus status3.Status
+}
+
+type UpdateOrderCustomerInfoArgs struct {
+	ID       dot.ID
+	FullName dot.NullString
+	Phone    dot.NullString
 }
 
 type UpdateOrderPaymentInfoArgs struct {

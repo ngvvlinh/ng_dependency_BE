@@ -33,6 +33,8 @@ type Aggregate interface {
 
 	UpdateFulfillmentsStatus(context.Context, *UpdateFulfillmentsStatusArgs) error
 
+	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoArgs) (updated int, _ error)
+
 	CancelFulfillment(context.Context, *CancelFulfillmentArgs) error
 
 	UpdateFulfillmentExternalShippingInfo(context.Context, *UpdateFfmExternalShippingInfoArgs) (updated int, _ error)
@@ -103,6 +105,13 @@ type CancelFulfillmentArgs struct {
 	FulfillmentID dot.ID
 
 	CancelReason string
+}
+
+type UpdateFulfillmentInfoArgs struct {
+	ID        dot.ID
+	FullName  dot.NullString
+	Phone     dot.NullString
+	AdminNote string
 }
 
 //-- Queries --//

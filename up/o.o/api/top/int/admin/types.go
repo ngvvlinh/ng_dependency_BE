@@ -194,6 +194,15 @@ type UpdateFulfillmentRequest struct {
 
 func (m *UpdateFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type UpdateFulfillmentInfoRequest struct {
+	Id        dot.ID         `json:"id"`
+	FullName  dot.NullString `json:"full_name"`
+	Phone     dot.NullString `json:"phone"`
+	AdminNote string         `json:"admin_note"`
+}
+
+func (m *UpdateFulfillmentInfoRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type GenerateAPIKeyRequest struct {
 	AccountId dot.ID `json:"account_id"`
 }

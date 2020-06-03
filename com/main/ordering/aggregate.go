@@ -9,6 +9,7 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
 	com "o.o/backend/com/main"
+	"o.o/backend/com/main/ordering/model"
 	"o.o/backend/com/main/ordering/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -198,4 +199,36 @@ func (a *Aggregate) UpdateOrderPaymentStatus(ctx context.Context, args *ordering
 	}
 
 	return a.store(ctx).UpdateOrderPaymentStatus(args)
+}
+
+func (a *Aggregate) UpdateOrderCustomerInfo(ctx context.Context, args *ordering.UpdateOrderCustomerInfoArgs) error {
+	if args.ID == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "order_id không được để trống")
+	}
+	order, err := a.store(ctx).ID(args.ID).GetOrderDB()
+	if ok, err := canUpdateOrder(order); err != nil || !ok {
+		return err
+	}
+
+	if err != nil {
+		return err
+	}
+	return a.store(ctx).ID(args.ID).UpdateOrderCustomerInfo(args, order.Customer)
+}
+
+func canUpdateOrder(order *model.Order) (bool, error) {
+	if order == nil {
+		return false, cm.Error(cm.FailedPrecondition, "Đơn hàng không tồn tại", nil)
+	}
+	switch order.Status {
+	case status5.N:
+		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã huỷ").WithMetap("id", order.ID)
+	case status5.NS:
+		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã trả hàng").WithMetap("id", order.ID)
+	}
+	if order.ConfirmStatus == status3.N ||
+		order.ShopConfirm == status3.N {
+		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã huỷ").WithMetap("id", order.ID)
+	}
+	return true, nil
 }

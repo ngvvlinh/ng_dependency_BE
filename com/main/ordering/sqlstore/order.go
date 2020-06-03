@@ -281,3 +281,25 @@ func (s *OrderStore) UpdateOrderPaymentStatus(args *ordering.UpdateOrderPaymentS
 		"payment_status": args.PaymentStatus.Apply(status4.Z),
 	})
 }
+
+func (s *OrderStore) UpdateOrderCustomerInfo(args *ordering.UpdateOrderCustomerInfoArgs, oldCustomer *model.OrderCustomer) error {
+	if len(s.preds) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
+	}
+	update := &model.Order{
+		Customer: oldCustomer,
+	}
+	count := 0
+	if args.FullName.Valid {
+		update.Customer.FullName = args.FullName.Apply(oldCustomer.FullName)
+		count++
+	}
+	if args.Phone.Valid {
+		update.Customer.Phone = args.Phone.Apply(oldCustomer.Phone)
+		count++
+	}
+	if count > 0 {
+		return s.query().Table("order").Where(s.preds).ShouldUpdate(update)
+	}
+	return nil
+}

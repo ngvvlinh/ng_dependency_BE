@@ -208,6 +208,13 @@ type FulfillmentsCreatedEvent struct {
 	OrderID        dot.ID
 }
 
+type FulfillmentUpdatedInfoEvent struct {
+	meta.EventMeta
+	OrderID  dot.ID
+	FullName dot.NullString
+	Phone    dot.NullString
+}
+
 type FulfillmentUpdatingEvent struct {
 	meta.EventMeta
 	FulfillmentID     dot.ID

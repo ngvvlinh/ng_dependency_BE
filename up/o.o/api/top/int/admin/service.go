@@ -42,6 +42,7 @@ type FulfillmentService interface {
 	// Only update from any state to `undeliverable`
 	// Or update from `undeliverable`to any state
 	UpdateFulfillment(context.Context, *UpdateFulfillmentRequest) (*cm.UpdatedResponse, error)
+	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoRequest) (*cm.UpdatedResponse, error)
 
 	UpdateFulfillmentShippingState(context.Context, *UpdateFulfillmentShippingStateRequest) (*cm.UpdatedResponse, error)
 	UpdateFulfillmentShippingFee(context.Context, *UpdateFulfillmentShippingFeeRequest) (*cm.UpdatedResponse, error)

@@ -509,6 +509,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.Fulfillment/GetFulfillment":                 {Type: EtopAdmin},
 	"admin.Fulfillment/GetFulfillments":                {Type: EtopAdmin},
 	"admin.Fulfillment/UpdateFulfillment":              {Type: EtopAdmin},
+	"admin.Fulfillment/UpdateFulfillmentInfo":          {Type: EtopAdmin},
 	"admin.Fulfillment/UpdateFulfillmentShippingState": {Type: EtopAdmin},
 	"admin.Fulfillment/UpdateFulfillmentShippingFee":   {Type: EtopAdmin},
 

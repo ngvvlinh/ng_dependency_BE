@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	"o.o/api/main/shipping"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
@@ -16,7 +17,8 @@ import (
 )
 
 type FulfillmentService struct {
-	RedisStore redis.Store
+	ShippingAgg shipping.CommandBus
+	RedisStore  redis.Store
 }
 
 func (s *FulfillmentService) Clone() *FulfillmentService {
@@ -40,6 +42,22 @@ func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *UpdateFul
 	}
 	q.Result = &pbcm.UpdatedResponse{
 		Updated: cmd.Result.Updated,
+	}
+	return nil
+}
+
+func (s *FulfillmentService) UpdateFulfillmentInfo(ctx context.Context, q *UpdateFulfillmentInfoEndpoint) error {
+	cmd := &shipping.UpdateFulfillmentInfoCommand{
+		ID:        q.Id,
+		FullName:  q.FullName,
+		Phone:     q.Phone,
+		AdminNote: q.AdminNote,
+	}
+	if err := s.ShippingAgg.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbcm.UpdatedResponse{
+		Updated: cmd.Result,
 	}
 	return nil
 }

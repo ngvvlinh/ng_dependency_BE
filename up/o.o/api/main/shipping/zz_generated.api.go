@@ -115,6 +115,20 @@ func (h AggregateHandler) HandleUpdateFulfillmentExternalShippingInfo(ctx contex
 	return err
 }
 
+type UpdateFulfillmentInfoCommand struct {
+	ID        dot.ID
+	FullName  dot.NullString
+	Phone     dot.NullString
+	AdminNote string
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentInfo(ctx context.Context, msg *UpdateFulfillmentInfoCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFulfillmentInfo(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateFulfillmentShippingFeesCommand struct {
 	FulfillmentID               dot.ID
 	ShippingCode                string
@@ -302,6 +316,7 @@ func (q *CancelFulfillmentCommand) command()                        {}
 func (q *CreateFulfillmentsCommand) command()                       {}
 func (q *RemoveFulfillmentsMoneyTxIDCommand) command()              {}
 func (q *UpdateFulfillmentExternalShippingInfoCommand) command()    {}
+func (q *UpdateFulfillmentInfoCommand) command()                    {}
 func (q *UpdateFulfillmentShippingFeesCommand) command()            {}
 func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) command() {}
 func (q *UpdateFulfillmentShippingStateCommand) command()           {}
@@ -436,6 +451,23 @@ func (q *UpdateFulfillmentExternalShippingInfoCommand) SetUpdateFfmExternalShipp
 	q.ShippingReturningAt = args.ShippingReturningAt
 	q.ShippingReturnedAt = args.ShippingReturnedAt
 	q.ShippingCancelledAt = args.ShippingCancelledAt
+}
+
+func (q *UpdateFulfillmentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentInfoArgs) {
+	return ctx,
+		&UpdateFulfillmentInfoArgs{
+			ID:        q.ID,
+			FullName:  q.FullName,
+			Phone:     q.Phone,
+			AdminNote: q.AdminNote,
+		}
+}
+
+func (q *UpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoArgs(args *UpdateFulfillmentInfoArgs) {
+	q.ID = args.ID
+	q.FullName = args.FullName
+	q.Phone = args.Phone
+	q.AdminNote = args.AdminNote
 }
 
 func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesArgs) {
@@ -628,6 +660,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateFulfillments)
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleUpdateFulfillmentExternalShippingInfo)
+	b.AddHandler(h.HandleUpdateFulfillmentInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFeesFromWebhook)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingState)

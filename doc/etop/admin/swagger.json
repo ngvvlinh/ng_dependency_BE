@@ -502,6 +502,33 @@
         }
       }
     },
+    "/api/admin.Fulfillment/UpdateFulfillmentInfo": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "UpdateFulfillmentInfo",
+        "operationId": "admin.Fulfillment-UpdateFulfillmentInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateFulfillmentInfoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Fulfillment/UpdateFulfillmentShippingFee": {
       "post": {
         "tags": [
@@ -7343,6 +7370,24 @@
         },
         "type": {
           "$ref": "#/definitions/aeCreditType"
+        }
+      }
+    },
+    "xuUpdateFulfillmentInfoRequest": {
+      "type": "object",
+      "properties": {
+        "admin_note": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
         }
       }
     },

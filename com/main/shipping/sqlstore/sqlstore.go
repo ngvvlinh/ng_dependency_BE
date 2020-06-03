@@ -9,6 +9,7 @@ import (
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
+	addressmodel "o.o/backend/com/main/address/model"
 	"o.o/backend/com/main/shipping/convert"
 	"o.o/backend/com/main/shipping/model"
 	shippingmodely "o.o/backend/com/main/shipping/modely"
@@ -334,6 +335,21 @@ func (s *FulfillmentStore) RemoveFulfillmentsMoneyTxID(args *shipping.RemoveFulf
 		"money_transaction_id":                   nil,
 		"money_transaction_shipping_external_id": nil,
 	})
+}
+
+// UpdateFulfillmentInfo
+//
+// Fullname, Phone là của người nhận
+// Sẽ tách thành update thông tin người gửi, người nhận riêng. Cập nhật sau.
+func (s *FulfillmentStore) UpdateFulfillmentInfo(args *shipping.UpdateFulfillmentInfoArgs, oldAddress *addressmodel.Address) error {
+	if len(s.preds) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
+	}
+	update := &model.Fulfillment{
+		AdminNote: args.AdminNote,
+	}
+	update.AddressTo = oldAddress.UpdateAddress(args.Phone.String, args.FullName.String)
+	return s.query().Table("fulfillment").Where(s.preds).ShouldUpdate(update)
 }
 
 func (s *FulfillmentStore) UpdateFulfillmentsStatus(args *shipping.UpdateFulfillmentsStatusArgs) error {

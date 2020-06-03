@@ -65,6 +65,19 @@ func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, msg *Re
 	return err
 }
 
+type UpdateOrderCustomerInfoCommand struct {
+	ID       dot.ID
+	FullName dot.NullString
+	Phone    dot.NullString
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateOrderCustomerInfo(ctx context.Context, msg *UpdateOrderCustomerInfoCommand) (err error) {
+	return h.inner.UpdateOrderCustomerInfo(msg.GetArgs(ctx))
+}
+
 type UpdateOrderPaymentInfoCommand struct {
 	ID            dot.ID
 	PaymentStatus status4.Status
@@ -221,6 +234,7 @@ func (h QueryServiceHandler) HandleListOrdersByCustomerIDs(ctx context.Context, 
 func (q *CompleteOrderCommand) command()             {}
 func (q *ReleaseOrdersForFfmCommand) command()       {}
 func (q *ReserveOrdersForFfmCommand) command()       {}
+func (q *UpdateOrderCustomerInfoCommand) command()   {}
 func (q *UpdateOrderPaymentInfoCommand) command()    {}
 func (q *UpdateOrderPaymentStatusCommand) command()  {}
 func (q *UpdateOrderShippingStatusCommand) command() {}
@@ -267,6 +281,21 @@ func (q *ReserveOrdersForFfmCommand) SetReserveOrdersForFfmArgs(args *ReserveOrd
 	q.OrderIDs = args.OrderIDs
 	q.Fulfill = args.Fulfill
 	q.FulfillIDs = args.FulfillIDs
+}
+
+func (q *UpdateOrderCustomerInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderCustomerInfoArgs) {
+	return ctx,
+		&UpdateOrderCustomerInfoArgs{
+			ID:       q.ID,
+			FullName: q.FullName,
+			Phone:    q.Phone,
+		}
+}
+
+func (q *UpdateOrderCustomerInfoCommand) SetUpdateOrderCustomerInfoArgs(args *UpdateOrderCustomerInfoArgs) {
+	q.ID = args.ID
+	q.FullName = args.FullName
+	q.Phone = args.Phone
 }
 
 func (q *UpdateOrderPaymentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderPaymentInfoArgs) {
@@ -432,6 +461,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCompleteOrder)
 	b.AddHandler(h.HandleReleaseOrdersForFfm)
 	b.AddHandler(h.HandleReserveOrdersForFfm)
+	b.AddHandler(h.HandleUpdateOrderCustomerInfo)
 	b.AddHandler(h.HandleUpdateOrderPaymentInfo)
 	b.AddHandler(h.HandleUpdateOrderPaymentStatus)
 	b.AddHandler(h.HandleUpdateOrderShippingStatus)

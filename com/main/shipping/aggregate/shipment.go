@@ -22,6 +22,7 @@ import (
 	orderconvert "o.o/backend/com/main/ordering/convert"
 	"o.o/backend/com/main/shipping/carrier"
 	shippingconvert "o.o/backend/com/main/shipping/convert"
+	"o.o/backend/com/main/shipping/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/com/main/shipping/sqlstore"
@@ -639,4 +640,53 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	}
 
 	return nil
+}
+
+func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.UpdateFulfillmentInfoArgs) (updated int, err error) {
+	if args.ID == 0 {
+		return 0, cm.Error(cm.InvalidArgument, "Thiếu ID đơn vận chuyển", nil)
+	}
+	if args.AdminNote == "" {
+		return 0, cm.Error(cm.InvalidArgument, "Ghi chú chỉnh sửa không được để trống", nil)
+	}
+	ffm, err := a.ffmStore(ctx).ID(args.ID).GetFfmDB()
+	if err != nil {
+		return 0, err
+	}
+	if ok, err := canUpdateFulfillment(ffm); err != nil || !ok {
+		return 0, err
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		err := a.ffmStore(ctx).ID(args.ID).UpdateFulfillmentInfo(args, ffm.AddressTo)
+		if err != nil {
+			return err
+		}
+		event := &shipping.FulfillmentUpdatedInfoEvent{
+			OrderID:  ffm.OrderID,
+			Phone:    args.Phone,
+			FullName: args.FullName,
+		}
+		if err = a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
+		return nil
+	})
+	return 1, err
+}
+
+func canUpdateFulfillment(ffm *model.Fulfillment) (bool, error) {
+	if ffm.Status == status5.P {
+		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã hoàn thành")
+	}
+	if !ffm.CODEtopTransferedAt.IsZero() {
+		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã đối soát").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
+	}
+	if ffm.MoneyTransactionID != 0 {
+		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã thuộc phiên chuyển tiền").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
+	}
+	if ffm.MoneyTransactionShippingExternalID != 0 {
+		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã thuộc phiên chuyển tiền nhà vận chuyển").WithMetap("money_transaction_shipping_external_id", ffm.MoneyTransactionShippingExternalID)
+	}
+	return true, nil
 }

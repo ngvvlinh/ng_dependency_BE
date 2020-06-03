@@ -492,6 +492,19 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			return
 		}
 		return msg, fn, nil
+	case "/admin.Fulfillment/UpdateFulfillmentInfo":
+		msg := &UpdateFulfillmentInfoRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateFulfillmentInfo(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillmentShippingFee":
 		msg := &UpdateFulfillmentShippingFeeRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
