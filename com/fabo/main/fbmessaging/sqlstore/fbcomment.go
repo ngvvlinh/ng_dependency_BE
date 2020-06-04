@@ -71,6 +71,11 @@ func (s *FbExternalCommentStore) ID(ID dot.ID) *FbExternalCommentStore {
 	return s
 }
 
+func (s *FbExternalCommentStore) IDs(externalIDs []dot.ID) *FbExternalCommentStore {
+	s.preds = append(s.preds, sq.In("id", externalIDs))
+	return s
+}
+
 func (s *FbExternalCommentStore) CreateFbExternalComment(fbExternalComment *fbmessaging.FbExternalComment) error {
 	sqlstore.MustNoPreds(s.preds)
 	fbExternalCommentDB := new(model.FbExternalComment)

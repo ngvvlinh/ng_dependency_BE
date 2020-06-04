@@ -284,6 +284,21 @@ func (h QueryServiceHandler) HandleListFbExternalComments(ctx context.Context, m
 	return err
 }
 
+type ListFbExternalCommentsByExternalIDsQuery struct {
+	FbExternalPostID string
+	FbExternalUserID string
+	FbExternalPageID string
+	ExternalIDs      []string
+	Paging           meta.Paging
+
+	Result *FbExternalCommentsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbExternalCommentsByExternalIDs(ctx context.Context, msg *ListFbExternalCommentsByExternalIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalCommentsByExternalIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListFbExternalConversationsByExternalIDsQuery struct {
 	ExternalIDs filter.Strings
 
@@ -377,6 +392,7 @@ func (q *GetLatestFbExternalCommentQuery) query()                               
 func (q *ListFbCustomerConversationsQuery) query()                                {}
 func (q *ListFbCustomerConversationsByExternalIDsQuery) query()                   {}
 func (q *ListFbExternalCommentsQuery) query()                                     {}
+func (q *ListFbExternalCommentsByExternalIDsQuery) query()                        {}
 func (q *ListFbExternalConversationsByExternalIDsQuery) query()                   {}
 func (q *ListFbExternalMessagesQuery) query()                                     {}
 func (q *ListFbExternalMessagesByExternalIDsQuery) query()                        {}
@@ -584,6 +600,25 @@ func (q *ListFbExternalCommentsQuery) SetListFbExternalCommentsArgs(args *ListFb
 	q.Paging = args.Paging
 }
 
+func (q *ListFbExternalCommentsByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbExternalCommentsByIDsArgs) {
+	return ctx,
+		&ListFbExternalCommentsByIDsArgs{
+			FbExternalPostID: q.FbExternalPostID,
+			FbExternalUserID: q.FbExternalUserID,
+			FbExternalPageID: q.FbExternalPageID,
+			ExternalIDs:      q.ExternalIDs,
+			Paging:           q.Paging,
+		}
+}
+
+func (q *ListFbExternalCommentsByExternalIDsQuery) SetListFbExternalCommentsByIDsArgs(args *ListFbExternalCommentsByIDsArgs) {
+	q.FbExternalPostID = args.FbExternalPostID
+	q.FbExternalUserID = args.FbExternalUserID
+	q.FbExternalPageID = args.FbExternalPageID
+	q.ExternalIDs = args.ExternalIDs
+	q.Paging = args.Paging
+}
+
 func (q *ListFbExternalConversationsByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs filter.Strings) {
 	return ctx,
 		q.ExternalIDs
@@ -673,6 +708,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListFbCustomerConversations)
 	b.AddHandler(h.HandleListFbCustomerConversationsByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalComments)
+	b.AddHandler(h.HandleListFbExternalCommentsByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalConversationsByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalMessages)
 	b.AddHandler(h.HandleListFbExternalMessagesByExternalIDs)

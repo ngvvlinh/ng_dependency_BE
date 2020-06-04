@@ -240,11 +240,37 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	fbPost := convertpb.PbFbExternalPost(fbExternalPost)
 	fbPost.ExternalParent = convertpb.PbFbExternalPost(fbExternalParentPost)
 
+	var commentParentExternalIDs []string
+	for _, childrentComment := range listFbExternalCommentsQuery.Result.FbExternalComments {
+		if childrentComment.ExternalParentID != "" {
+			commentParentExternalIDs = append(commentParentExternalIDs, childrentComment.ExternalParentID)
+		}
+
+	}
+	listFbExternalCommentsParentQuery := &fbmessaging.ListFbExternalCommentsByExternalIDsQuery{
+		ExternalIDs:      commentParentExternalIDs,
+		FbExternalUserID: request.Filter.ExternalUserID,
+		FbExternalPageID: getFbExternalPostQuery.Result.ExternalPageID,
+	}
+	if err = s.fbMessagingQuery.Dispatch(ctx, listFbExternalCommentsParentQuery); err != nil {
+		return nil, err
+	}
+	var mapParentComment = make(map[string]*fbmessaging.FbExternalComment)
+	for _, v := range listFbExternalCommentsParentQuery.Result.FbExternalComments {
+		mapParentComment[v.ExternalID] = v
+	}
+
+	fbComments := &fabo.FbCommentsResponse{
+		FbComments: convertpb.PbFbExternalComments(listFbExternalCommentsQuery.Result.FbExternalComments),
+		Paging:     cmapi.PbCursorPageInfo(paging, &listFbExternalCommentsQuery.Result.Paging),
+	}
+	for k, v := range fbComments.FbComments {
+		if v.ExternalParentID != "" {
+			fbComments.FbComments[k].ExternalParent = convertpb.PbFbExternalComment(mapParentComment[v.ExternalParentID])
+		}
+	}
 	return &fabo.ListCommentsByExternalPostIDResponse{
-		FbComments: &fabo.FbCommentsResponse{
-			FbComments: convertpb.PbFbExternalComments(listFbExternalCommentsQuery.Result.FbExternalComments),
-			Paging:     cmapi.PbCursorPageInfo(paging, &listFbExternalCommentsQuery.Result.Paging),
-		},
+		FbComments:                      fbComments,
 		LatestCustomerFbExternalComment: convertpb.PbFbExternalComment(latestCustomerFbExternalComment),
 		FbPost:                          fbPost,
 	}, nil

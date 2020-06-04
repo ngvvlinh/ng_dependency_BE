@@ -197,6 +197,20 @@ func (q *FbMessagingQuery) ListFbExternalComments(
 	}, nil
 }
 
+func (q *FbMessagingQuery) ListFbExternalCommentsByExternalIDs(
+	ctx context.Context, args *fbmessaging.ListFbExternalCommentsByIDsArgs,
+) (*fbmessaging.FbExternalCommentsResponse, error) {
+	query := q.fbExternalCommentStore(ctx).WithPaging(args.Paging).ExternalPageIDAndExternalUserID(args.FbExternalPageID, args.FbExternalUserID).ExternalIDs(args.ExternalIDs)
+	fbExternalComments, err := query.ListFbExternalComments()
+	if err != nil {
+		return nil, err
+	}
+	return &fbmessaging.FbExternalCommentsResponse{
+		FbExternalComments: fbExternalComments,
+		Paging:             query.GetPaging(),
+	}, nil
+}
+
 func (q *FbMessagingQuery) GetFbExternalPostByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbmessaging.FbExternalPost, error) {

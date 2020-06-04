@@ -38,6 +38,7 @@ type QueryService interface {
 	GetLatestFbExternalComment(_ context.Context, externalPageID, externalPostID, externalUserID string) (*FbExternalComment, error)
 	GetLatestCustomerExternalComment(_ context.Context, externalPostID, externalUserID string) (*FbExternalComment, error)
 	ListFbExternalComments(context.Context, *ListFbExternalCommentsArgs) (*FbExternalCommentsResponse, error)
+	ListFbExternalCommentsByExternalIDs(context.Context, *ListFbExternalCommentsByIDsArgs) (*FbExternalCommentsResponse, error)
 
 	GetFbExternalPostByExternalID(_ context.Context, externalID string) (*FbExternalPost, error)
 	GetFbExternalMessageByID(_ context.Context, ID dot.ID) (*FbExternalMessage, error)
@@ -199,6 +200,14 @@ type ListFbExternalCommentsArgs struct {
 	FbExternalPageID string
 
 	Paging meta.Paging
+}
+
+type ListFbExternalCommentsByIDsArgs struct {
+	FbExternalPostID string
+	FbExternalUserID string
+	FbExternalPageID string
+	ExternalIDs      []string
+	Paging           meta.Paging
 }
 
 type FbExternalCommentsResponse struct {

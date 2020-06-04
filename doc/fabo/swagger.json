@@ -720,7 +720,7 @@
           "type": "string"
         },
         "external_parent": {
-          "$ref": "#/definitions/cvFbObjectParent"
+          "$ref": "#/definitions/cvFbExternalComment"
         },
         "external_parent_id": {
           "type": "string"
@@ -954,24 +954,6 @@
           "type": "string"
         },
         "name": {
-          "type": "string"
-        }
-      }
-    },
-    "cvFbObjectParent": {
-      "type": "object",
-      "properties": {
-        "created_time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "from": {
-          "$ref": "#/definitions/cvFbObjectFrom"
-        },
-        "id": {
-          "type": "string"
-        },
-        "message": {
           "type": "string"
         }
       }

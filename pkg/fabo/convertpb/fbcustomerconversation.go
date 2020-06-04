@@ -233,7 +233,6 @@ func PbFbExternalComment(m *fbmessaging.FbExternalComment) *fabo.FbExternalComme
 		ExternalParentUserID: m.ExternalParentUserID,
 		ExternalMessage:      m.ExternalMessage,
 		ExternalCommentCount: m.ExternalCommentCount,
-		ExternalParent:       PbFbObjectParent(m.ExternalParent),
 		ExternalFrom:         PbFbObjectFrom(m.ExternalFrom),
 		ExternalAttachment:   PbCommentAttachment(m.ExternalAttachment),
 		ExternalCreatedTime:  m.ExternalCreatedTime,

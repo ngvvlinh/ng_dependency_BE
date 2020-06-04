@@ -420,7 +420,7 @@ type FbExternalComment struct {
 	ExternalParentUserID string             `json:"external_parent_user_id"`
 	ExternalMessage      string             `json:"external_message"`
 	ExternalCommentCount int                `json:"external_comment_count"`
-	ExternalParent       *FbObjectParent    `json:"external_parent"`
+	ExternalParent       *FbExternalComment `json:"external_parent"`
 	ExternalFrom         *FbObjectFrom      `json:"external_from"`
 	ExternalAttachment   *CommentAttachment `json:"external_attachment"`
 	ExternalCreatedTime  time.Time          `json:"external_created_time"`
