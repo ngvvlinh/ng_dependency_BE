@@ -84,6 +84,14 @@ var Topics = []TopicDef{{
 	Name:       "fb_external_comment_fabo",
 	Partitions: 64,
 	DBName:     model.DBMain,
+}, {
+	Name:       "fb_customer_conversation",
+	Partitions: 64,
+	DBName:     model.DBMain,
+}, {
+	Name:       "fb_customer_conversation_fabo",
+	Partitions: 64,
+	DBName:     model.DBMain,
 }}
 
 var TopicMap map[string]TopicDef

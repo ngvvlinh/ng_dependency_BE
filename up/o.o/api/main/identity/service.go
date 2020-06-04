@@ -52,6 +52,8 @@ type QueryService interface {
 	// -- User -- //
 	GetUserByID(context.Context, *GetUserByIDQueryArgs) (*User, error)
 
+	GetUsersByAccount(ctx context.Context, accountID dot.ID) ([]*AccountUser, error)
+
 	GetUserByPhone(ctx context.Context, phone string) (*User, error)
 
 	GetUserByEmail(ctx context.Context, email string) (*User, error)

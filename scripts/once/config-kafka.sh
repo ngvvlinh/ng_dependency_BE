@@ -42,11 +42,14 @@ create_topic 64 pgrid_shop_customer_group_customer
 create_topic 64 pgrid_fb_external_user
 create_topic 64 pgrid_fb_external_comment
 create_topic 64 pgrid_fb_external_conversation
+create_topic 64 pgrid_fb_customer_conversation
 create_topic 64 pgrid_fb_external_message
 create_topic 64 pgrid_fb_external_user_fabo
 create_topic 64 pgrid_fb_external_comment_fabo
 create_topic 64 pgrid_fb_external_conversation_fabo
 create_topic 64 pgrid_fb_external_message_fabo
+create_topic 64 pgrid_fb_customer_conversation_fabo
+
 
 # UpdateInfo 2018-06-12
 

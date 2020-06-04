@@ -3,6 +3,7 @@ package types
 import (
 	"time"
 
+	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
@@ -10,6 +11,7 @@ import (
 type FbExternalPost struct {
 	Id                  dot.ID            `json:"id"`
 	ExternalID          dot.NullString    `json:"external_id"`
+	ExternalPageID      dot.NullString    `json:"external_page_id"`
 	ExternalParentID    dot.NullString    `json:"external_parent_id"`
 	ExternalFrom        *FbObjectFrom     `json:"external_from"`
 	ExternalPicture     dot.NullString    `json:"external_picture"`
@@ -38,6 +40,26 @@ type FbExternalConversation struct {
 }
 
 func (m *FbExternalConversation) String() string { return jsonx.MustMarshalToString(m) }
+
+type FbCustomerConversation struct {
+	ID                         dot.ID                                                   `json:"id"`
+	ExternalPageID             dot.NullString                                           `json:"external_page_id"`
+	ExternalID                 dot.NullString                                           `json:"external_id"`
+	ExternalUserID             dot.NullString                                           `json:"external_user_id"`
+	ExternalUserName           dot.NullString                                           `json:"external_user_name"`
+	ExternalFrom               *FbObjectFrom                                            `json:"external_from"`
+	IsRead                     dot.NullBool                                             `json:"is_read"`
+	Type                       fb_customer_conversation_type.FbCustomerConversationType `json:"type"`
+	ExternalPostAttachments    []*PostAttachment                                        `json:"external_post_attachments"`
+	ExternalCommentAttachment  *CommentAttachment                                       `json:"external_comment_attachments"`
+	ExternalMessageAttachments []*FbMessageAttachment                                   `json:"external_message_attachments"`
+	LastMessage                dot.NullString                                           `json:"last_message"`
+	LastMessageAt              time.Time                                                `json:"lastmessage_at"`
+	CreatedAt                  time.Time                                                `json:"created_at"`
+	UpdatedAt                  time.Time                                                `json:"updated_at"`
+}
+
+func (m *FbCustomerConversation) String() string { return jsonx.MustMarshalToString(m) }
 
 type FbExternalComment struct {
 	ID                   dot.ID             `json:"id"`
@@ -117,6 +139,8 @@ type FbExternalMessage struct {
 	ExternalConversationID dot.NullString         `json:"external_conversation_id"`
 	ExternalID             dot.NullString         `json:"external_id"`
 	ExternalMessage        dot.NullString         `json:"external_message"`
+	ExternalPageID         dot.NullString         `json:"external_page_id"`
+	ExternalSticker        dot.NullString         `json:"external_sticker"`
 	ExternalTo             []*FbObjectTo          `json:"external_to"`
 	ExternalFrom           *FbObjectFrom          `json:"external_from"`
 	ExternalAttachments    []*FbMessageAttachment `json:"external_attachments"`

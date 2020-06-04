@@ -815,6 +815,7 @@ func PbFbExternalPost(fbpost *fbmessaging.FbExternalPost) *exttypes.FbExternalPo
 		ExternalParentID:    dot.String(fbpost.ExternalParentID),
 		ExternalFrom:        PbFbExternalFrom(fbpost.ExternalFrom),
 		ExternalPicture:     dot.String(fbpost.ExternalPicture),
+		ExternalPageID:      dot.String(fbpost.ExternalPageID),
 		ExternalIcon:        dot.String(fbpost.ExternalIcon),
 		ExternalMessage:     dot.String(fbpost.ExternalMessage),
 		ExternalAttachments: PbFbPostAttachments(fbpost.ExternalAttachments),
@@ -853,6 +854,39 @@ func PbFbExternalConversation(fbConversation *fbmessaging.FbExternalConversation
 	}
 }
 
+func PbFbCustomerConversation(fbCustomerConversation *fbmessaging.FbCustomerConversation) *exttypes.FbCustomerConversation {
+	if fbCustomerConversation == nil {
+		return nil
+	}
+	return &exttypes.FbCustomerConversation{
+		ID:                         fbCustomerConversation.ID,
+		ExternalPageID:             dot.String(fbCustomerConversation.ExternalPageID),
+		ExternalID:                 dot.String(fbCustomerConversation.ExternalID),
+		ExternalUserID:             dot.String(fbCustomerConversation.ExternalUserID),
+		ExternalUserName:           dot.String(fbCustomerConversation.ExternalUserName),
+		ExternalFrom:               PbFbExternalFrom(fbCustomerConversation.ExternalFrom),
+		IsRead:                     dot.Bool(fbCustomerConversation.IsRead),
+		Type:                       fbCustomerConversation.Type,
+		ExternalPostAttachments:    PbFbPostAttachments(fbCustomerConversation.ExternalPostAttachments),
+		ExternalCommentAttachment:  PbFbCommentAttachment(fbCustomerConversation.ExternalCommentAttachment),
+		ExternalMessageAttachments: PbFbMessageAttachments(fbCustomerConversation.ExternalMessageAttachments),
+		LastMessage:                dot.String(fbCustomerConversation.LastMessage),
+		LastMessageAt:              fbCustomerConversation.LastMessageAt,
+		CreatedAt:                  fbCustomerConversation.CreatedAt,
+		UpdatedAt:                  fbCustomerConversation.UpdatedAt,
+	}
+}
+
+func PbFbCustomerConversationEvent(fbConversation *fbmessaging.FbCustomerConversation, op string) *pgevent.PgEventCustomerConversation {
+	if fbConversation == nil {
+		return nil
+	}
+	return &pgevent.PgEventCustomerConversation{
+		FbEventCustomerConversation: PbFbCustomerConversation(fbConversation),
+		Op:                          op,
+	}
+}
+
 func PbFbExternalMessage(fbmessage *fbmessaging.FbExternalMessage) *exttypes.FbExternalMessage {
 	if fbmessage == nil {
 		return nil
@@ -862,6 +896,8 @@ func PbFbExternalMessage(fbmessage *fbmessaging.FbExternalMessage) *exttypes.FbE
 		ExternalConversationID: dot.String(fbmessage.ExternalConversationID),
 		ExternalID:             dot.String(fbmessage.ExternalID),
 		ExternalMessage:        dot.String(fbmessage.ExternalMessage),
+		ExternalPageID:         dot.String(fbmessage.ExternalPageID),
+		ExternalSticker:        dot.String(fbmessage.ExternalSticker),
 		ExternalTo:             PbFbExternalTos(fbmessage.ExternalTo),
 		ExternalFrom:           PbFbExternalFrom(fbmessage.ExternalFrom),
 		ExternalAttachments:    PbFbMessageAttachments(fbmessage.ExternalAttachments),

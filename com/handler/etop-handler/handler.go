@@ -14,6 +14,7 @@ import (
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/main/catalog"
+	"o.o/api/main/identity"
 	"o.o/api/main/inventory"
 	"o.o/api/main/location"
 	"o.o/api/shopping/addressing"
@@ -64,6 +65,8 @@ type Handler struct {
 	fbuserQuery      fbusering.QueryBus
 	fbMessagingQuery fbmessaging.QueryBus
 	fbPagingQuery    fbpaging.QueryBus
+	fbQuery          fbpaging.QueryBus
+	indentityQuery   identity.QueryBus
 }
 
 func New(
@@ -74,6 +77,8 @@ func New(
 	addressQ addressing.QueryBus, locationQ location.QueryBus,
 	fbuserQ fbusering.QueryBus, producer *mq.KafkaProducer,
 	fbMessagingQ fbmessaging.QueryBus, fbPageQ fbpaging.QueryBus,
+	indentityQuerybus identity.QueryBus,
+
 ) *Handler {
 	h := &Handler{
 		db:               db,
@@ -90,6 +95,7 @@ func New(
 		fbuserQuery:      fbuserQ,
 		fbMessagingQuery: fbMessagingQ,
 		fbPagingQuery:    fbPageQ,
+		indentityQuery:   indentityQuerybus,
 	}
 	handlers := h.TopicsAndHandlers()
 	h.handlers = handlers
@@ -109,6 +115,7 @@ func NewHandlerFabo(
 	db *cmsql.Database, prefix string, fbuserQ fbusering.QueryBus,
 	consumer mq.KafkaConsumer, publisherEvent eventstream.Publisher,
 	fbMessagingQ fbmessaging.QueryBus, fbPageQ fbpaging.QueryBus,
+	indentityQuerybus identity.QueryBus, fbQuery fbpaging.QueryBus,
 ) *Handler {
 	h := &Handler{
 		db:               db,
@@ -118,6 +125,8 @@ func NewHandlerFabo(
 		fbuserQuery:      fbuserQ,
 		fbMessagingQuery: fbMessagingQ,
 		fbPagingQuery:    fbPageQ,
+		fbQuery:          fbQuery,
+		indentityQuery:   indentityQuerybus,
 	}
 	publisher = publisherEvent
 	handlers := h.TopicsFaboAndHandlers()
@@ -157,9 +166,11 @@ func (h *Handler) TopicsAndHandlers() map[string]pgrid.HandlerFunc {
 		"fb_external_conversation":      h.HandleFbConversationEvent,
 		"fb_external_comment":           h.HandleFbCommentEvent,
 		"fb_external_message":           h.HandleFbMessageEvent,
+		"fb_customer_conversation":      h.HandleFbCustomerConversationEvent,
 		"fb_external_conversation_fabo": nil,
 		"fb_external_comment_fabo":      nil,
 		"fb_external_message_fabo":      nil,
+		"fb_customer_conversation_fabo": nil,
 	}
 }
 
@@ -168,6 +179,7 @@ func (h *Handler) TopicsFaboAndHandlers() map[string]pgrid.HandlerFuncFabo {
 		"fb_external_conversation_fabo": h.HandleFbConversationFaboEvent,
 		"fb_external_comment_fabo":      h.HandleFbCommentFaboEvent,
 		"fb_external_message_fabo":      h.HandleFbMessageFaboEvent,
+		"fb_customer_conversation_fabo": h.HandleFbCustomerConversationFaboEvent,
 	}
 }
 

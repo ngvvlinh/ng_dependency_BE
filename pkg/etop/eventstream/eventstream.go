@@ -7,12 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"o.o/api/fabo/fbpaging"
-	"o.o/api/main/identity"
-	"o.o/api/top/types/etc/account_type"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
-	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/l"
@@ -22,16 +18,6 @@ var ll = l.New()
 
 type Publisher interface {
 	Publish(event Event)
-}
-
-var (
-	fbQuery           *fbpaging.QueryBus
-	indentityQuerybus *identity.QueryBus
-)
-
-func Init(queryBus *identity.QueryBus, fbQ *fbpaging.QueryBus) {
-	indentityQuerybus = queryBus
-	fbQuery = fbQ
 }
 
 type Event struct {
@@ -110,11 +96,10 @@ func ShouldSendEvent(event *Event, subscriber *Subscriber) bool {
 		(event.UserID != 0 && event.UserID == subscriber.UserID)
 }
 
-func (s *EventStream) SubscribeShop(userID dot.ID, accountID dot.ID) (id int64, ch chan *Event) {
+func (s *EventStream) SubscribeShop(userID dot.ID) (id int64, ch chan *Event) {
 	subscriber := &Subscriber{
 		ID:        cm.RandomInt64(),
 		AllEvents: true,
-		AccountID: accountID,
 		UserID:    userID,
 
 		ch: make(chan *Event, 16),
@@ -126,26 +111,6 @@ func (s *EventStream) SubscribeShop(userID dot.ID, accountID dot.ID) (id int64, 
 	return id, subscriber.ch
 }
 
-func (s *EventStream) Subscribe(pageIds []dot.ID, chEventShop chan *Event) (ids []dot.ID, ch <-chan *Event) {
-	var IDs []dot.ID
-	var id int64
-	id = 0
-	s.m.Lock()
-	for i := 0; i < len(pageIds); i++ {
-		subscriber := &Subscriber{
-			ID:        cm.RandomInt64(),
-			AllEvents: true,
-			UserID:    pageIds[i],
-			ch:        chEventShop,
-		}
-		s.subscribers[id] = subscriber
-		IDs = append(IDs, dot.ID(subscriber.ID))
-		id++
-	}
-	defer s.m.Unlock()
-	return IDs, chEventShop
-}
-
 func (s *EventStream) Unsubscribe(id int64) {
 	s.m.Lock()
 	defer s.m.Unlock()
@@ -153,41 +118,12 @@ func (s *EventStream) Unsubscribe(id int64) {
 }
 
 func (s *EventStream) HandleEventStream(c *httpx.Context) error {
-	claim := c.Claim.(*claims.ShopClaim)
 	userID := c.Session.GetUserID()
-	shop := claim.Shop
 	ctx := c.Context()
-	// TODO(vu): Limit connections per user
-	query := &identity.GetAllAccountUsersQuery{
-		UserIDs: []dot.ID{userID},
-		Type:    account_type.Shop.Wrap(),
-	}
-	if err := indentityQuerybus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	var accountIDs []dot.ID
-	for _, account := range query.Result {
-		accountIDs = append(accountIDs, account.AccountID)
-	}
 
-	queryFbPage := &fbpaging.ListFbPagesByShopQuery{
-		ShopIDs: accountIDs,
-	}
-	if err := fbQuery.Dispatch(ctx, queryFbPage); err != nil {
-		return err
-	}
-	var pageIDs []dot.ID
-	for _, page := range queryFbPage.Result {
-		pageIDs = append(pageIDs, page.ID)
-	}
-	// TODO(qv): Limit connections per user
-	subscriberID, eventChannel := s.SubscribeShop(userID, shop.ID)
+	subscriberID, eventChannel := s.SubscribeShop(userID)
 	defer s.Unsubscribe(subscriberID)
 
-	subscriberIDs, eventChannelPages := s.Subscribe(pageIDs, eventChannel)
-	for _, subscriberID := range subscriberIDs {
-		defer s.Unsubscribe(subscriberID.Int64())
-	}
 	w := c.SetResultRaw()
 	header := w.Header()
 	header.Set("Content-Type", "text/event-stream")
@@ -199,8 +135,7 @@ func (s *EventStream) HandleEventStream(c *httpx.Context) error {
 
 	// flushTimer is not init, as nil channel will be blocked
 	var flushTimer <-chan time.Time
-	//pingTimer := time.NewTicker(10 * time.Second)
-	pingTimer := time.NewTicker(3 * time.Second)
+	pingTimer := time.NewTicker(10 * time.Second)
 	defer pingTimer.Stop()
 
 	for {
@@ -215,7 +150,7 @@ func (s *EventStream) HandleEventStream(c *httpx.Context) error {
 			w.(http.Flusher).Flush()
 			flushTimer = nil
 
-		case event := <-eventChannelPages:
+		case event := <-eventChannel:
 			writeEvent(w, event)
 			if flushTimer == nil {
 				t := time.NewTimer(100 * time.Millisecond)
@@ -223,6 +158,7 @@ func (s *EventStream) HandleEventStream(c *httpx.Context) error {
 			}
 
 		case <-pingTimer.C:
+			writeEvent(w, &Event{Type: "ping", Payload: "{}"})
 			if flushTimer == nil {
 				t := time.NewTimer(100 * time.Millisecond)
 				flushTimer = t.C

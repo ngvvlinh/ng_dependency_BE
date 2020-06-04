@@ -151,7 +151,7 @@ func (q *QueryService) GetAllAccountUsers(ctx context.Context, args *identity.Ge
 		return nil, cm.Error(cm.InvalidArgument, "Missing UserIDs", nil)
 	}
 
-	accUser, err := q.accountUserStore(ctx).ByUserIDs(args.UserIDs).ListACcountUserDB()
+	accUser, err := q.accountUserStore(ctx).ByUserIDs(args.UserIDs).ListAccountUserDB()
 	if err != nil {
 		return nil, err
 	}
@@ -172,4 +172,9 @@ func (q *QueryService) GetAllAccountUsers(ctx context.Context, args *identity.Ge
 		}
 	}
 	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(result), err
+}
+
+func (q *QueryService) GetUsersByAccount(ctx context.Context, accountID dot.ID) ([]*identity.AccountUser, error) {
+	accountUsers, err := q.accountUserStore(ctx).ByAccountID(accountID).ListAccountUserDB()
+	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(accountUsers), err
 }

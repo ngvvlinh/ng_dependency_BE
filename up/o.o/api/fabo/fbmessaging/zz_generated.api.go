@@ -151,6 +151,17 @@ func (h QueryServiceHandler) HandleGetFbCustomerConversation(ctx context.Context
 	return err
 }
 
+type GetFbCustomerConversationByIDQuery struct {
+	ID dot.ID
+
+	Result *FbCustomerConversation `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFbCustomerConversationByID(ctx context.Context, msg *GetFbCustomerConversationByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbCustomerConversationByID(msg.GetArgs(ctx))
+	return err
+}
+
 type GetFbExternalCommentByIDQuery struct {
 	ID dot.ID
 
@@ -381,6 +392,7 @@ func (q *CreateOrUpdateFbExternalPostsCommand) command()         {}
 func (q *UpdateIsReadCustomerConversationCommand) command()      {}
 
 func (q *GetFbCustomerConversationQuery) query()                                  {}
+func (q *GetFbCustomerConversationByIDQuery) query()                              {}
 func (q *GetFbExternalCommentByIDQuery) query()                                   {}
 func (q *GetFbExternalConversationByExternalIDAndExternalPageIDQuery) query()     {}
 func (q *GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery) query() {}
@@ -512,6 +524,11 @@ func (q *GetFbCustomerConversationQuery) GetArgs(ctx context.Context) (_ context
 		q.CustomerConversationType,
 		q.ExternalID,
 		q.ExternalUserID
+}
+
+func (q *GetFbCustomerConversationByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
 }
 
 func (q *GetFbExternalCommentByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -697,6 +714,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetFbCustomerConversation)
+	b.AddHandler(h.HandleGetFbCustomerConversationByID)
 	b.AddHandler(h.HandleGetFbExternalCommentByID)
 	b.AddHandler(h.HandleGetFbExternalConversationByExternalIDAndExternalPageID)
 	b.AddHandler(h.HandleGetFbExternalConversationByExternalPageIDAndExternalUserID)

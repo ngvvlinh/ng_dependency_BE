@@ -56,12 +56,14 @@ func WrapHandlerFuncFabo(fn HandlerFuncFabo) mq.EventHandler {
 		var event pgevent.PgEventFabo
 		var err error
 		switch {
-		case strings.Contains(msg.Topic, "conversation") == true:
-			err = jsonx.Unmarshal(msg.Value, &event.PgEventConversation)
 		case strings.Contains(msg.Topic, "comment") == true:
 			err = jsonx.Unmarshal(msg.Value, &event.PgEventComment)
 		case strings.Contains(msg.Topic, "message") == true:
 			err = jsonx.Unmarshal(msg.Value, &event.PgEventMessage)
+		case strings.Contains(msg.Topic, "customer") == true:
+			err = jsonx.Unmarshal(msg.Value, &event.PgEventCustomerConversation)
+		case strings.Contains(msg.Topic, "conversation") == true:
+			err = jsonx.Unmarshal(msg.Value, &event.PgEventConversation)
 		default:
 			return mq.CodeStop, wrapError(nil, msg, nil)
 		}

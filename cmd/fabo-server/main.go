@@ -144,7 +144,8 @@ func main() {
 		if err != nil {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
-		h := handlerkafka.NewHandlerFabo(db, cfg.Kafka.TopicPrefix, fbUserQuery, consumer, eventStream, fbMessagingQuery, fbPageQuery)
+
+		h := handlerkafka.NewHandlerFabo(db, cfg.Kafka.TopicPrefix, fbUserQuery, consumer, eventStream, fbMessagingQuery, fbPageQuery, identityQuery, fbPageQuery)
 		h.ConsumerAndHandlerFaboTopic(ctx)
 		waiters = append(waiters, h)
 	}
@@ -190,7 +191,6 @@ func main() {
 
 	mux.Handle("/api/", http.StripPrefix("/api",
 		middleware.CORS(headers.ForwardHeaders(bus.Middleware(apiMux)))))
-	eventstream.Init(&identityQuery, &fbPageQuery)
 
 	rt := httpx.New()
 	mux.Handle("/api/event-stream",

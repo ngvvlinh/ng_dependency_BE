@@ -7,11 +7,13 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
+	"o.o/api/main/identity"
 	fbmessagingmodel "o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/com/handler/pgevent"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/etop/apix/convertpb"
 	"o.o/backend/pkg/etop/eventstream"
+	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
@@ -39,11 +41,22 @@ func (h *Handler) HandleFbCommentEvent(ctx context.Context, event *pgevent.PgEve
 		ExternalID: query.Result.ExternalPageID,
 	}
 	if err := h.fbPagingQuery.Dispatch(ctx, queryPage); err != nil {
-		ll.Warn("fb_comment not found", l.Int64("rid", event.RID), l.ID("id", id))
+		ll.Warn("fb_page not found", l.Int64("rid", event.RID), l.ID("id", id))
 		return mq.CodeIgnore, nil
 	}
 	result.FbPageID = queryPage.Result.ID
-
+	queryUser := &identity.GetUsersByAccountQuery{
+		AccountID: queryPage.Result.ShopID,
+	}
+	if err := h.indentityQuery.Dispatch(ctx, queryUser); err != nil {
+		ll.Warn("user not found", l.Int64("rid", event.RID), l.ID("id", id))
+		return mq.CodeIgnore, nil
+	}
+	var userIDs []dot.ID
+	for _, user := range queryUser.Result {
+		userIDs = append(userIDs, user.UserID)
+	}
+	result.UserIDs = userIDs
 	topic := h.prefix + event.Table + "_fabo"
 	d, ok := pgevent.TopicMap[event.Table]
 	if !ok {
@@ -57,11 +70,14 @@ func (h *Handler) HandleFbCommentEvent(ctx context.Context, event *pgevent.PgEve
 
 func (h *Handler) HandleFbCommentFaboEvent(ctx context.Context, event *pgevent.PgEventFabo) (mq.Code, error) {
 	title := "fabo/comment/" + strings.ToLower(event.PgEventComment.Op)
-	eventComment := eventstream.Event{
-		Type:    title,
-		UserID:  event.PgEventComment.FbPageID,
-		Payload: event.PgEventComment.FbEventComment,
+	for _, userID := range event.PgEventComment.UserIDs {
+		eventComment := eventstream.Event{
+			Type:    title,
+			UserID:  userID,
+			Payload: event.PgEventComment.FbEventComment,
+		}
+		publisher.Publish(eventComment)
 	}
-	publisher.Publish(eventComment)
+
 	return mq.CodeOK, nil
 }

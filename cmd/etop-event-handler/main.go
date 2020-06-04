@@ -23,6 +23,7 @@ import (
 	"o.o/backend/com/handler/etop-handler/webhook/storage"
 	"o.o/backend/com/handler/pgevent"
 	catalogquery "o.o/backend/com/main/catalog/query"
+	serviceidentity "o.o/backend/com/main/identity"
 	inventoryquery "o.o/backend/com/main/inventory/query"
 	servicelocation "o.o/backend/com/main/location"
 	stocktakequery "o.o/backend/com/main/stocktaking/query"
@@ -145,9 +146,10 @@ func main() {
 		fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
 		fbPageQuery := servicefbpage.FbPageQueryMessageBus(servicefbpage.NewFbPageQuery(db))
 		fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db, customerQuery))
+		identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 
 		pgeventapi.Init(&sMain)
-		h := handler.New(db, webhookSender, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus, fbUserQuery, producer, fbMessagingQuery, fbPageQuery)
+		h := handler.New(db, webhookSender, consumer, cfg.Kafka.TopicPrefix, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus, fbUserQuery, producer, fbMessagingQuery, fbPageQuery, identityQuery)
 		h.RegisterTo(intctlHandler)
 		h.ConsumeAndHandleAllTopics(ctx)
 		waiters = append(waiters, h)

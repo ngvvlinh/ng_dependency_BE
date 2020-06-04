@@ -17,26 +17,26 @@ import (
 	"o.o/common/l"
 )
 
-func (h *Handler) HandleFbConversationEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
-	ll.Info("HandleFbConversationEvent", l.Object("pgevent", event))
-	var history fbmessagingmodel.FbExternalConversationHistory
+func (h *Handler) HandleFbCustomerConversationEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
+	ll.Info("HandleFbCustomerConversationEvent", l.Object("pgevent", event))
+	var history fbmessagingmodel.FbCustomerConversationHistory
 	if ok, err := h.historyStore(ctx).GetHistory(&history, event.RID); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
-		ll.Warn("FbConversation not found", l.Int64("rid", event.RID))
+		ll.Warn("FbCustomerConversation not found", l.Int64("rid", event.RID))
 		return mq.CodeIgnore, nil
 	}
 
 	id := history.ID().ID().Apply(0)
 
-	query := &fbmessaging.GetFbExternalConversationByIDQuery{
+	query := &fbmessaging.GetFbCustomerConversationByIDQuery{
 		ID: id,
 	}
 	if err := h.fbMessagingQuery.Dispatch(ctx, query); err != nil {
-		ll.Warn("FbConversation not found", l.Int64("rid", event.RID), l.ID("id", id))
+		ll.Warn("FbCustomerConversation not found", l.Int64("rid", event.RID), l.ID("id", id))
 		return mq.CodeIgnore, nil
 	}
-	result := convertpb.PbFbExternalConversationEvent(query.Result, event.Op.String())
+	result := convertpb.PbFbCustomerConversationEvent(query.Result, event.Op.String())
 	queryPage := &fbpaging.GetFbExternalPageByExternalIDQuery{
 		ExternalID: query.Result.ExternalPageID,
 	}
@@ -68,15 +68,15 @@ func (h *Handler) HandleFbConversationEvent(ctx context.Context, event *pgevent.
 	return mq.CodeOK, nil
 }
 
-func (h *Handler) HandleFbConversationFaboEvent(ctx context.Context, event *pgevent.PgEventFabo) (mq.Code, error) {
-	title := "fabo/conversation/" + strings.ToLower(event.PgEventConversation.Op)
-	for _, userID := range event.PgEventConversation.UserIDs {
-		eventConversation := eventstream.Event{
+func (h *Handler) HandleFbCustomerConversationFaboEvent(ctx context.Context, event *pgevent.PgEventFabo) (mq.Code, error) {
+	title := "fabo/customer_conversation/" + strings.ToLower(event.PgEventCustomerConversation.Op)
+	for _, userID := range event.PgEventCustomerConversation.UserIDs {
+		eventCustomerConversation := eventstream.Event{
 			Type:    title,
 			UserID:  userID,
-			Payload: event.PgEventConversation.FbEventConversation,
+			Payload: event.PgEventCustomerConversation.FbEventCustomerConversation,
 		}
-		publisher.Publish(eventConversation)
+		publisher.Publish(eventCustomerConversation)
 	}
 	return mq.CodeOK, nil
 }
