@@ -38,7 +38,6 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *G
 		ShopID:             q.ShopId,
 		Paging:             *paging,
 		Filters:            cmapi.ToFilters(q.Filters),
-		Result:             nil,
 	}
 	if err := s.MoneyTxQuery.Dispatch(ctx, query); err != nil {
 		return err

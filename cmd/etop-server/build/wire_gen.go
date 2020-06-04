@@ -27,10 +27,10 @@ import (
 	aggregate2 "o.o/backend/com/main/invitation/aggregate"
 	"o.o/backend/com/main/invitation/query"
 	aggregate11 "o.o/backend/com/main/ledgering/aggregate"
-	query16 "o.o/backend/com/main/ledgering/query"
+	query17 "o.o/backend/com/main/ledgering/query"
 	"o.o/backend/com/main/location"
 	aggregate18 "o.o/backend/com/main/moneytx/aggregate"
-	query18 "o.o/backend/com/main/moneytx/query"
+	query15 "o.o/backend/com/main/moneytx/query"
 	"o.o/backend/com/main/ordering"
 	aggregate12 "o.o/backend/com/main/purchaseorder/aggregate"
 	query10 "o.o/backend/com/main/purchaseorder/query"
@@ -62,9 +62,9 @@ import (
 	"o.o/backend/com/subscripting/subscriptionbill"
 	"o.o/backend/com/subscripting/subscriptionplan"
 	"o.o/backend/com/subscripting/subscriptionproduct"
-	query15 "o.o/backend/com/summary/query"
+	query16 "o.o/backend/com/summary/query"
 	aggregate17 "o.o/backend/com/web/webserver/aggregate"
-	query17 "o.o/backend/com/web/webserver/query"
+	query18 "o.o/backend/com/web/webserver/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/authorization/auth"
@@ -309,9 +309,13 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		ShipnowQuery: shipnowQueryBus,
 	}
 	historyService := &shop.HistoryService{}
-	moneyTransactionService := &shop.MoneyTransactionService{}
-	dashboardQuery := query15.NewDashboardQuery(mainDB, redisStore, queryBus)
-	summaryQueryBus := query15.DashboardQueryMessageBus(dashboardQuery)
+	moneyTxQuery := query15.NewMoneyTxQuery(mainDB, shippingQueryBus)
+	moneytxQueryBus := query15.MoneyTxQueryMessageBus(moneyTxQuery)
+	moneyTransactionService := &shop.MoneyTransactionService{
+		MoneyTxQuery: moneytxQueryBus,
+	}
+	dashboardQuery := query16.NewDashboardQuery(mainDB, redisStore, queryBus)
+	summaryQueryBus := query16.DashboardQueryMessageBus(dashboardQuery)
 	summarySummary := summary.New(mainDB)
 	summaryService := &shop.SummaryService{
 		SummaryQuery: summaryQueryBus,
@@ -341,8 +345,8 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	paymentService := &shop.PaymentService{
 		PaymentAggr: managerCommandBus,
 	}
-	ledgerQuery := query16.NewLedgerQuery(mainDB)
-	ledgeringQueryBus := query16.LedgerQueryMessageBus(ledgerQuery)
+	ledgerQuery := query17.NewLedgerQuery(mainDB)
+	ledgeringQueryBus := query17.LedgerQueryMessageBus(ledgerQuery)
 	receiptAggregate := aggregate8.NewReceiptAggregate(mainDB, eventBus, traderingQueryBus, ledgeringQueryBus, orderingQueryBus, customeringQueryBus, carryingQueryBus, supplieringQueryBus, purchaseorderQueryBus)
 	receiptingCommandBus := aggregate8.ReceiptAggregateMessageBus(receiptAggregate)
 	receiptService := &shop.ReceiptService{
@@ -420,8 +424,8 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	}
 	webserverAggregate := aggregate17.New(eventBus, mainDB, catalogQueryBus)
 	webserverCommandBus := aggregate17.WebserverAggregateMessageBus(webserverAggregate)
-	webserverQueryService := query17.New(eventBus, mainDB, catalogQueryBus)
-	webserverQueryBus := query17.WebserverQueryServiceMessageBus(webserverQueryService)
+	webserverQueryService := query18.New(eventBus, mainDB, catalogQueryBus)
+	webserverQueryBus := query18.WebserverQueryServiceMessageBus(webserverQueryService)
 	webServerService := &shop.WebServerService{
 		CatalogQuery:   catalogQueryBus,
 		WebserverAggr:  webserverCommandBus,
@@ -444,8 +448,6 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	adminFulfillmentService := &admin.FulfillmentService{
 		RedisStore: redisStore,
 	}
-	moneyTxQuery := query18.NewMoneyTxQuery(mainDB, shippingQueryBus)
-	moneytxQueryBus := query18.MoneyTxQueryMessageBus(moneyTxQuery)
 	moneyTxAggregate := aggregate18.NewMoneyTxAggregate(mainDB, shippingQueryBus, identityQueryBus, eventBus)
 	moneytxCommandBus := aggregate18.MoneyTxAggregateMessageBus(moneyTxAggregate)
 	adminMoneyTransactionService := &admin.MoneyTransactionService{
