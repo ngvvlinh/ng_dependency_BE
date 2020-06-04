@@ -365,6 +365,8 @@ type FbExternalPost struct {
 	ExternalCreatedTime time.Time         `json:"external_created_time"`
 	CreatedAt           time.Time         `json:"created_at"`
 	UpdatedAt           time.Time         `json:"updated_at"`
+
+	ExternalParent *FbExternalPost `json:"external_parent"`
 }
 
 type FbExternalComment struct {

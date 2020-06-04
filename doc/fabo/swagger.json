@@ -734,6 +734,9 @@
         "external_page_id": {
           "type": "string"
         },
+        "external_parent": {
+          "$ref": "#/definitions/cvFbExternalPost"
+        },
         "external_parent_id": {
           "type": "string"
         },

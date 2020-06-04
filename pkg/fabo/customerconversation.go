@@ -161,7 +161,6 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	if err != nil {
 		return nil, err
 	}
-
 	getFbExternalPostQuery := &fbmessaging.GetFbExternalPostByExternalIDQuery{
 		ExternalID: request.Filter.ExternalPostID,
 	}
@@ -204,13 +203,24 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		latestCustomerFbExternalComment = getLatestCustomerExternalCommentQuery.Result
 	}
 
+	parentID := getFbExternalPostQuery.Result.ExternalParentID
+	queryParent := &fbmessaging.GetFbExternalPostByExternalIDQuery{
+		ExternalID: parentID,
+	}
+	if err = s.fbMessagingQuery.Dispatch(ctx, queryParent); err != nil {
+		return nil, err
+	}
+	fbExternalParentPost := getFbExternalPostQuery.Result
+	fbPost := convertpb.PbFbExternalPost(fbExternalPost)
+	fbPost.ExternalParent = convertpb.PbFbExternalPost(fbExternalParentPost)
+
 	return &fabo.ListCommentsByExternalPostIDResponse{
 		FbComments: &fabo.FbCommentsResponse{
 			FbComments: convertpb.PbFbExternalComments(listFbExternalCommentsQuery.Result.FbExternalComments),
 			Paging:     cmapi.PbCursorPageInfo(paging, &listFbExternalCommentsQuery.Result.Paging),
 		},
 		LatestCustomerFbExternalComment: convertpb.PbFbExternalComment(latestCustomerFbExternalComment),
-		FbPost:                          convertpb.PbFbExternalPost(fbExternalPost),
+		FbPost:                          fbPost,
 	}, nil
 }
 
