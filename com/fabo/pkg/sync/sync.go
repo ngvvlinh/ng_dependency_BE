@@ -587,9 +587,6 @@ func (s *Synchronizer) HandleTaskGetPosts(
 	mapExternalChildPostIDAndExternalPostID := make(map[string]string)
 	var createOrUpdateFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
 	for _, fbPost := range fbExternalPostsResp.Data {
-		if fbPost.ID == "472044163146832_1113902165627692" {
-			fmt.Println("a")
-		}
 		if fbPost.Attachments != nil {
 			for _, attachment := range fbPost.Attachments.Data {
 				// TODO: Ngoc add enum

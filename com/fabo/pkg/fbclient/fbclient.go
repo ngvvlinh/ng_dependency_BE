@@ -263,7 +263,7 @@ func (f *FbClient) CallAPIListPublishedPosts(accessToken, pageID string, paginat
 	}
 
 	query.Add(AccessToken, accessToken)
-	query.Add(Fields, "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,type,subattachments}")
+	query.Add(Fields, "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments}")
 	query.Add(DateFormat, UnixDateFormat)
 
 	URL.RawQuery = query.Encode()

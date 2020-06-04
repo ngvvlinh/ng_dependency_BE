@@ -154,8 +154,19 @@ type FbCustomerConversation struct {
 
 type PostAttachment struct {
 	MediaType      string
+	Media          *MediaPostAttachment
 	Type           string
 	SubAttachments []*SubAttachment
+}
+
+type MediaPostAttachment struct {
+	Image *ImageMediaPostAttachment
+}
+
+type ImageMediaPostAttachment struct {
+	Height int
+	Width  int
+	Src    string
 }
 
 type SubAttachment struct {

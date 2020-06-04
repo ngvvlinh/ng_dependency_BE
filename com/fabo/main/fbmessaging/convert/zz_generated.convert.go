@@ -278,6 +278,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*fbmessagingmodel.ImageMediaDataSubAttachment) = out0
 		return nil
 	})
+	s.Register((*fbmessagingmodel.ImageMediaPostAttachment)(nil), (*fbmessaging.ImageMediaPostAttachment)(nil), func(arg, out interface{}) error {
+		Convert_fbmessagingmodel_ImageMediaPostAttachment_fbmessaging_ImageMediaPostAttachment(arg.(*fbmessagingmodel.ImageMediaPostAttachment), out.(*fbmessaging.ImageMediaPostAttachment))
+		return nil
+	})
+	s.Register(([]*fbmessagingmodel.ImageMediaPostAttachment)(nil), (*[]*fbmessaging.ImageMediaPostAttachment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessagingmodel_ImageMediaPostAttachments_fbmessaging_ImageMediaPostAttachments(arg.([]*fbmessagingmodel.ImageMediaPostAttachment))
+		*out.(*[]*fbmessaging.ImageMediaPostAttachment) = out0
+		return nil
+	})
+	s.Register((*fbmessaging.ImageMediaPostAttachment)(nil), (*fbmessagingmodel.ImageMediaPostAttachment)(nil), func(arg, out interface{}) error {
+		Convert_fbmessaging_ImageMediaPostAttachment_fbmessagingmodel_ImageMediaPostAttachment(arg.(*fbmessaging.ImageMediaPostAttachment), out.(*fbmessagingmodel.ImageMediaPostAttachment))
+		return nil
+	})
+	s.Register(([]*fbmessaging.ImageMediaPostAttachment)(nil), (*[]*fbmessagingmodel.ImageMediaPostAttachment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessaging_ImageMediaPostAttachments_fbmessagingmodel_ImageMediaPostAttachments(arg.([]*fbmessaging.ImageMediaPostAttachment))
+		*out.(*[]*fbmessagingmodel.ImageMediaPostAttachment) = out0
+		return nil
+	})
 	s.Register((*fbmessagingmodel.MediaDataSubAttachment)(nil), (*fbmessaging.MediaDataSubAttachment)(nil), func(arg, out interface{}) error {
 		Convert_fbmessagingmodel_MediaDataSubAttachment_fbmessaging_MediaDataSubAttachment(arg.(*fbmessagingmodel.MediaDataSubAttachment), out.(*fbmessaging.MediaDataSubAttachment))
 		return nil
@@ -294,6 +312,24 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*fbmessaging.MediaDataSubAttachment)(nil), (*[]*fbmessagingmodel.MediaDataSubAttachment)(nil), func(arg, out interface{}) error {
 		out0 := Convert_fbmessaging_MediaDataSubAttachments_fbmessagingmodel_MediaDataSubAttachments(arg.([]*fbmessaging.MediaDataSubAttachment))
 		*out.(*[]*fbmessagingmodel.MediaDataSubAttachment) = out0
+		return nil
+	})
+	s.Register((*fbmessagingmodel.MediaPostAttachment)(nil), (*fbmessaging.MediaPostAttachment)(nil), func(arg, out interface{}) error {
+		Convert_fbmessagingmodel_MediaPostAttachment_fbmessaging_MediaPostAttachment(arg.(*fbmessagingmodel.MediaPostAttachment), out.(*fbmessaging.MediaPostAttachment))
+		return nil
+	})
+	s.Register(([]*fbmessagingmodel.MediaPostAttachment)(nil), (*[]*fbmessaging.MediaPostAttachment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessagingmodel_MediaPostAttachments_fbmessaging_MediaPostAttachments(arg.([]*fbmessagingmodel.MediaPostAttachment))
+		*out.(*[]*fbmessaging.MediaPostAttachment) = out0
+		return nil
+	})
+	s.Register((*fbmessaging.MediaPostAttachment)(nil), (*fbmessagingmodel.MediaPostAttachment)(nil), func(arg, out interface{}) error {
+		Convert_fbmessaging_MediaPostAttachment_fbmessagingmodel_MediaPostAttachment(arg.(*fbmessaging.MediaPostAttachment), out.(*fbmessagingmodel.MediaPostAttachment))
+		return nil
+	})
+	s.Register(([]*fbmessaging.MediaPostAttachment)(nil), (*[]*fbmessagingmodel.MediaPostAttachment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessaging_MediaPostAttachments_fbmessagingmodel_MediaPostAttachments(arg.([]*fbmessaging.MediaPostAttachment))
+		*out.(*[]*fbmessagingmodel.MediaPostAttachment) = out0
 		return nil
 	})
 	s.Register((*fbmessagingmodel.PostAttachment)(nil), (*fbmessaging.PostAttachment)(nil), func(arg, out interface{}) error {
@@ -1401,6 +1437,66 @@ func Convert_fbmessaging_ImageMediaDataSubAttachments_fbmessagingmodel_ImageMedi
 	return outs
 }
 
+//-- convert o.o/api/fabo/fbmessaging.ImageMediaPostAttachment --//
+
+func Convert_fbmessagingmodel_ImageMediaPostAttachment_fbmessaging_ImageMediaPostAttachment(arg *fbmessagingmodel.ImageMediaPostAttachment, out *fbmessaging.ImageMediaPostAttachment) *fbmessaging.ImageMediaPostAttachment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.ImageMediaPostAttachment{}
+	}
+	convert_fbmessagingmodel_ImageMediaPostAttachment_fbmessaging_ImageMediaPostAttachment(arg, out)
+	return out
+}
+
+func convert_fbmessagingmodel_ImageMediaPostAttachment_fbmessaging_ImageMediaPostAttachment(arg *fbmessagingmodel.ImageMediaPostAttachment, out *fbmessaging.ImageMediaPostAttachment) {
+	out.Height = arg.Height // simple assign
+	out.Width = arg.Width   // simple assign
+	out.Src = arg.Src       // simple assign
+}
+
+func Convert_fbmessagingmodel_ImageMediaPostAttachments_fbmessaging_ImageMediaPostAttachments(args []*fbmessagingmodel.ImageMediaPostAttachment) (outs []*fbmessaging.ImageMediaPostAttachment) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessaging.ImageMediaPostAttachment, len(args))
+	outs = make([]*fbmessaging.ImageMediaPostAttachment, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessagingmodel_ImageMediaPostAttachment_fbmessaging_ImageMediaPostAttachment(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbmessaging_ImageMediaPostAttachment_fbmessagingmodel_ImageMediaPostAttachment(arg *fbmessaging.ImageMediaPostAttachment, out *fbmessagingmodel.ImageMediaPostAttachment) *fbmessagingmodel.ImageMediaPostAttachment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessagingmodel.ImageMediaPostAttachment{}
+	}
+	convert_fbmessaging_ImageMediaPostAttachment_fbmessagingmodel_ImageMediaPostAttachment(arg, out)
+	return out
+}
+
+func convert_fbmessaging_ImageMediaPostAttachment_fbmessagingmodel_ImageMediaPostAttachment(arg *fbmessaging.ImageMediaPostAttachment, out *fbmessagingmodel.ImageMediaPostAttachment) {
+	out.Height = arg.Height // simple assign
+	out.Width = arg.Width   // simple assign
+	out.Src = arg.Src       // simple assign
+}
+
+func Convert_fbmessaging_ImageMediaPostAttachments_fbmessagingmodel_ImageMediaPostAttachments(args []*fbmessaging.ImageMediaPostAttachment) (outs []*fbmessagingmodel.ImageMediaPostAttachment) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessagingmodel.ImageMediaPostAttachment, len(args))
+	outs = make([]*fbmessagingmodel.ImageMediaPostAttachment, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessaging_ImageMediaPostAttachment_fbmessagingmodel_ImageMediaPostAttachment(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert o.o/api/fabo/fbmessaging.MediaDataSubAttachment --//
 
 func Convert_fbmessagingmodel_MediaDataSubAttachment_fbmessaging_MediaDataSubAttachment(arg *fbmessagingmodel.MediaDataSubAttachment, out *fbmessaging.MediaDataSubAttachment) *fbmessaging.MediaDataSubAttachment {
@@ -1461,6 +1557,62 @@ func Convert_fbmessaging_MediaDataSubAttachments_fbmessagingmodel_MediaDataSubAt
 	return outs
 }
 
+//-- convert o.o/api/fabo/fbmessaging.MediaPostAttachment --//
+
+func Convert_fbmessagingmodel_MediaPostAttachment_fbmessaging_MediaPostAttachment(arg *fbmessagingmodel.MediaPostAttachment, out *fbmessaging.MediaPostAttachment) *fbmessaging.MediaPostAttachment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.MediaPostAttachment{}
+	}
+	convert_fbmessagingmodel_MediaPostAttachment_fbmessaging_MediaPostAttachment(arg, out)
+	return out
+}
+
+func convert_fbmessagingmodel_MediaPostAttachment_fbmessaging_MediaPostAttachment(arg *fbmessagingmodel.MediaPostAttachment, out *fbmessaging.MediaPostAttachment) {
+	out.Image = Convert_fbmessagingmodel_ImageMediaPostAttachment_fbmessaging_ImageMediaPostAttachment(arg.Image, nil)
+}
+
+func Convert_fbmessagingmodel_MediaPostAttachments_fbmessaging_MediaPostAttachments(args []*fbmessagingmodel.MediaPostAttachment) (outs []*fbmessaging.MediaPostAttachment) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessaging.MediaPostAttachment, len(args))
+	outs = make([]*fbmessaging.MediaPostAttachment, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessagingmodel_MediaPostAttachment_fbmessaging_MediaPostAttachment(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbmessaging_MediaPostAttachment_fbmessagingmodel_MediaPostAttachment(arg *fbmessaging.MediaPostAttachment, out *fbmessagingmodel.MediaPostAttachment) *fbmessagingmodel.MediaPostAttachment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessagingmodel.MediaPostAttachment{}
+	}
+	convert_fbmessaging_MediaPostAttachment_fbmessagingmodel_MediaPostAttachment(arg, out)
+	return out
+}
+
+func convert_fbmessaging_MediaPostAttachment_fbmessagingmodel_MediaPostAttachment(arg *fbmessaging.MediaPostAttachment, out *fbmessagingmodel.MediaPostAttachment) {
+	out.Image = Convert_fbmessaging_ImageMediaPostAttachment_fbmessagingmodel_ImageMediaPostAttachment(arg.Image, nil)
+}
+
+func Convert_fbmessaging_MediaPostAttachments_fbmessagingmodel_MediaPostAttachments(args []*fbmessaging.MediaPostAttachment) (outs []*fbmessagingmodel.MediaPostAttachment) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessagingmodel.MediaPostAttachment, len(args))
+	outs = make([]*fbmessagingmodel.MediaPostAttachment, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessaging_MediaPostAttachment_fbmessagingmodel_MediaPostAttachment(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert o.o/api/fabo/fbmessaging.PostAttachment --//
 
 func Convert_fbmessagingmodel_PostAttachment_fbmessaging_PostAttachment(arg *fbmessagingmodel.PostAttachment, out *fbmessaging.PostAttachment) *fbmessaging.PostAttachment {
@@ -1476,7 +1628,8 @@ func Convert_fbmessagingmodel_PostAttachment_fbmessaging_PostAttachment(arg *fbm
 
 func convert_fbmessagingmodel_PostAttachment_fbmessaging_PostAttachment(arg *fbmessagingmodel.PostAttachment, out *fbmessaging.PostAttachment) {
 	out.MediaType = arg.MediaType // simple assign
-	out.Type = arg.Type           // simple assign
+	out.Media = Convert_fbmessagingmodel_MediaPostAttachment_fbmessaging_MediaPostAttachment(arg.Media, nil)
+	out.Type = arg.Type // simple assign
 	out.SubAttachments = Convert_fbmessagingmodel_SubAttachments_fbmessaging_SubAttachments(arg.SubAttachments)
 }
 
@@ -1504,6 +1657,7 @@ func Convert_fbmessaging_PostAttachment_fbmessagingmodel_PostAttachment(arg *fbm
 }
 
 func convert_fbmessaging_PostAttachment_fbmessagingmodel_PostAttachment(arg *fbmessaging.PostAttachment, out *fbmessagingmodel.PostAttachment) {
+	out.Media = Convert_fbmessaging_MediaPostAttachment_fbmessagingmodel_MediaPostAttachment(arg.Media, nil)
 	out.MediaType = arg.MediaType // simple assign
 	out.Type = arg.Type           // simple assign
 	out.SubAttachments = Convert_fbmessaging_SubAttachments_fbmessagingmodel_SubAttachments(arg.SubAttachments)

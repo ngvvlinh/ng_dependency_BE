@@ -105,6 +105,7 @@ func ConvertDataAttachments(ins []*model.DataAttachment) []*fbmessaging.PostAtta
 	for _, in := range ins {
 		// TODO: Ngoc check type before convert subAttachments
 		var subAttachments []*fbmessaging.SubAttachment
+		var media *fbmessaging.MediaPostAttachment
 		if in.SubAttachments != nil {
 			for _, subAttachment := range in.SubAttachments.Data {
 				var media *fbmessaging.MediaDataSubAttachment
@@ -130,7 +131,19 @@ func ConvertDataAttachments(ins []*model.DataAttachment) []*fbmessaging.PostAtta
 				})
 			}
 		}
+		if in.Media != nil {
+			if in.Media.Image != nil {
+				media = &fbmessaging.MediaPostAttachment{
+					Image: &fbmessaging.ImageMediaPostAttachment{
+						Height: in.Media.Image.Height,
+						Width:  in.Media.Image.Width,
+						Src:    in.Media.Image.Src,
+					},
+				}
+			}
+		}
 		outs = append(outs, &fbmessaging.PostAttachment{
+			Media:          media,
 			MediaType:      in.MediaType,
 			Type:           in.Type,
 			SubAttachments: subAttachments,

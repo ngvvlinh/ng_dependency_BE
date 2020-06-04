@@ -184,12 +184,17 @@ type FbCustomerConversation struct {
 }
 
 type PostAttachment struct {
-	MediaType      string           `json:"media_type"`
-	Type           string           `json:"type"`
-	SubAttachments []*SubAttachment `json:"sub_attachments"`
+	Media          *MediaPostAttachment `json:"media"`
+	MediaType      string               `json:"media_type"`
+	Type           string               `json:"type"`
+	SubAttachments []*SubAttachment     `json:"sub_attachments"`
 }
 
-type PostAttachmentMedia struct {
+type MediaPostAttachment struct {
+	Image *ImageMediaPostAttachment `json:"image"`
+}
+
+type ImageMediaPostAttachment struct {
 	Height int    `json:"height"`
 	Width  int    `json:"width"`
 	Src    string `json:"src"`

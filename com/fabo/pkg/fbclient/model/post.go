@@ -38,9 +38,20 @@ type Attachments struct {
 }
 
 type DataAttachment struct {
-	MediaType      string          `json:"media_type"`
-	Type           string          `json:"type"`
-	SubAttachments *SubAttachments `json:"subattachments"`
+	Media          *MediaPostAttachment `json:"media"`
+	MediaType      string               `json:"media_type"`
+	Type           string               `json:"type"`
+	SubAttachments *SubAttachments      `json:"subattachments"`
+}
+
+type MediaPostAttachment struct {
+	Image *ImageMediaPostAttachment
+}
+
+type ImageMediaPostAttachment struct {
+	Height int
+	Width  int
+	Src    string
 }
 
 type SubAttachments struct {
