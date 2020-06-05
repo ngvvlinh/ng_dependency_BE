@@ -342,38 +342,52 @@ func generatePackageStep(ng generator.Engine, gpkg *generator.GeneratingPackage,
 			if s := validateStruct(obj); s == nil {
 				continue
 			}
-			raw, mode, name, opts, err := parseWithMode(apiPkgs, directives)
-			if err != nil {
-				return nil, err
-			}
-			ll.V(3).Debugf("parsed type %v with mode %v", name, mode)
-			if mode == "" {
-				// automatically convert type with the same name
-				if flagAuto {
-					name = objName{apiPkgs[0].PkgPath, obj.Name()}
-					if apiObjMap[name] == nil {
-						continue
-					}
-					mode = ModeType
+
+			flagConvert := false
+			for _, directive := range directives {
+				raw, mode, name, opts, err := parseWithMode(apiPkgs, directive)
+				if err != nil {
+					return nil, err
 				}
 
-			} else if apiObjMap[name] == nil {
-				return nil, generator.Errorf(nil, "type %v not found (directive %v)", name, raw)
-			}
-			if (name == objName{}) {
-				continue
+				ll.V(3).Debugf("parsed type %v with mode %v", name, mode)
+				if mode != "" && apiObjMap[name] == nil {
+					return nil, generator.Errorf(nil, "type %v not found (directive %v)", name, raw)
+				}
+				if (name == objName{}) {
+					continue
+				}
+
+				flagConvert = true
+				m := apiObjMap[name]
+				if s := validateStruct(m.src); s == nil {
+					return nil, generator.Errorf(nil, "%v is not a struct", m.src.Name())
+				}
+				m.gens = append(m.gens, objGen{
+					mode:    mode,
+					obj:     obj,
+					opts:    opts,
+					convPkg: gpkg.Package,
+				})
 			}
 
-			m := apiObjMap[name]
-			if s := validateStruct(m.src); s == nil {
-				return nil, generator.Errorf(nil, "%v is not a struct", m.src.Name())
+			if !flagConvert && flagAuto {
+				name := objName{apiPkgs[0].PkgPath, obj.Name()}
+				if apiObjMap[name] == nil {
+					continue
+				}
+				mode := ModeType
+				m := apiObjMap[name]
+				if s := validateStruct(m.src); s == nil {
+					return nil, generator.Errorf(nil, "%v is not a struct", m.src.Name())
+				}
+				m.gens = append(m.gens, objGen{
+					mode:    mode,
+					obj:     obj,
+					opts:    options{},
+					convPkg: gpkg.Package,
+				})
 			}
-			m.gens = append(m.gens, objGen{
-				mode:    mode,
-				obj:     obj,
-				opts:    opts,
-				convPkg: gpkg.Package,
-			})
 		}
 	}
 	return &result, nil
@@ -482,18 +496,16 @@ func parseConvertDirective(directive generator.Directive) (apiPkgs, toPkgs []str
 
 var reName = regexp.MustCompile(`[A-Z][A-z0-9_]*`)
 
-func parseWithMode(apiPkgs []*packages.Package, directives []generator.Directive) (raw, mode string, _ objName, _ options, _ error) {
-	for _, d := range directives {
-		switch d.Cmd {
-		case ModeType, ModeCreate, ModeUpdate:
-			objName, opts, err := parseTypeName(apiPkgs, d.Arg)
-			if err == nil && d.Cmd != ModeUpdate {
-				if len(opts.identifiers) != 0 {
-					err = generator.Errorf(nil, "invalid extra option (%v)", d.Arg)
-				}
+func parseWithMode(apiPkgs []*packages.Package, d generator.Directive) (raw, mode string, _ objName, _ options, _ error) {
+	switch d.Cmd {
+	case ModeType, ModeCreate, ModeUpdate:
+		objName, opts, err := parseTypeName(apiPkgs, d.Arg)
+		if err == nil && d.Cmd != ModeUpdate {
+			if len(opts.identifiers) != 0 {
+				err = generator.Errorf(nil, "invalid extra option (%v)", d.Arg)
 			}
-			return d.Raw, d.Cmd, objName, opts, err
 		}
+		return d.Raw, d.Cmd, objName, opts, err
 	}
 	return
 }
