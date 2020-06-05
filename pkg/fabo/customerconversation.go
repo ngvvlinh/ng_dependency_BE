@@ -210,7 +210,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	listFbExternalCommentsQuery := &fbmessaging.ListFbExternalCommentsQuery{
 		FbExternalPostID: request.Filter.ExternalPostID,
 		FbExternalUserID: request.Filter.ExternalUserID,
-		FbExternalPageID: getFbExternalPostQuery.Result.ExternalPageID,
+		FbExternalPageID: fbExternalPost.ExternalPageID,
 		Paging:           *paging,
 	}
 	if err := s.fbMessagingQuery.Dispatch(ctx, listFbExternalCommentsQuery); err != nil {
@@ -229,23 +229,24 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		latestCustomerFbExternalComment = getLatestCustomerExternalCommentQuery.Result
 	}
 
-	parentID := getFbExternalPostQuery.Result.ExternalParentID
-	queryParent := &fbmessaging.GetFbExternalPostByExternalIDQuery{
-		ExternalID: parentID,
-	}
-	if err = s.fbMessagingQuery.Dispatch(ctx, queryParent); err != nil {
-		return nil, err
-	}
-	fbExternalParentPost := getFbExternalPostQuery.Result
 	fbPost := convertpb.PbFbExternalPost(fbExternalPost)
-	fbPost.ExternalParent = convertpb.PbFbExternalPost(fbExternalParentPost)
+	parentID := fbExternalPost.ExternalParentID
+	if parentID != "" {
+		queryParent := &fbmessaging.GetFbExternalPostByExternalIDQuery{
+			ExternalID: parentID,
+		}
+		if err = s.fbMessagingQuery.Dispatch(ctx, queryParent); err != nil {
+			return nil, err
+		}
+		fbExternalParentPost := queryParent.Result
+		fbPost.ExternalParent = convertpb.PbFbExternalPost(fbExternalParentPost)
 
+	}
 	var commentParentExternalIDs []string
 	for _, childrentComment := range listFbExternalCommentsQuery.Result.FbExternalComments {
 		if childrentComment.ExternalParentID != "" {
 			commentParentExternalIDs = append(commentParentExternalIDs, childrentComment.ExternalParentID)
 		}
-
 	}
 	listFbExternalCommentsParentQuery := &fbmessaging.ListFbExternalCommentsByExternalIDsQuery{
 		ExternalIDs:      commentParentExternalIDs,

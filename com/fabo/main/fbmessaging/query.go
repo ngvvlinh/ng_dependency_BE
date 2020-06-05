@@ -200,7 +200,7 @@ func (q *FbMessagingQuery) ListFbExternalComments(
 func (q *FbMessagingQuery) ListFbExternalCommentsByExternalIDs(
 	ctx context.Context, args *fbmessaging.ListFbExternalCommentsByIDsArgs,
 ) (*fbmessaging.FbExternalCommentsResponse, error) {
-	query := q.fbExternalCommentStore(ctx).WithPaging(args.Paging).ExternalPageIDAndExternalUserID(args.FbExternalPageID, args.FbExternalUserID).ExternalIDs(args.ExternalIDs)
+	query := q.fbExternalCommentStore(ctx).WithPaging(args.Paging).ExternalIDs(args.ExternalIDs)
 	fbExternalComments, err := query.ListFbExternalComments()
 	if err != nil {
 		return nil, err
