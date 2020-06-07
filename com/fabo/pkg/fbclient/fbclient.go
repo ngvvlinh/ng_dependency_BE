@@ -50,7 +50,7 @@ func New(_appInfo AppConfig) *FbClient {
 		appInfo: _appInfo,
 		apiInfo: ApiInfo{
 			Host:    "https://graph.facebook.com",
-			Version: "v6.0",
+			Version: "v7.0",
 		},
 		facebookErrorService: NewFacebookErrorService(),
 	}
