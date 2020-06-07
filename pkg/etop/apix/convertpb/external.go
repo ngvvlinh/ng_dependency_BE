@@ -19,6 +19,7 @@ import (
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
+	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	"o.o/backend/com/handler/etop-handler/webhook/sender"
 	"o.o/backend/com/handler/pgevent"
 	addressmodel "o.o/backend/com/main/address/model"
@@ -682,22 +683,34 @@ func PbFbExternalFrom(fbfrom *fbmessaging.FbObjectFrom) *exttypes.FbObjectFrom {
 	if fbfrom == nil {
 		return nil
 	}
-	return &exttypes.FbObjectFrom{
+	result := &exttypes.FbObjectFrom{
 		ID:    dot.String(fbfrom.ID),
 		Name:  dot.String(fbfrom.Name),
 		Email: dot.String(fbfrom.Email),
 	}
+	if fbfrom.ImageURL == "" {
+		result.ExternalUserPictureURL = dot.String(fbclientconvert.GenerateFacebookUserPicture(fbfrom.ID))
+	} else {
+		result.ExternalUserPictureURL = dot.String(fbfrom.ImageURL)
+	}
+	return result
 }
 
 func PbFbExternalTo(fbto *fbmessaging.FbObjectTo) *exttypes.FbObjectTo {
 	if fbto == nil {
 		return nil
 	}
-	return &exttypes.FbObjectTo{
+	result := &exttypes.FbObjectTo{
 		ID:    dot.String(fbto.ID),
 		Name:  dot.String(fbto.Name),
 		Email: dot.String(fbto.Email),
 	}
+	if fbto.ImageURL == "" {
+		result.ExternalUserPictureURL = dot.String(fbclientconvert.GenerateFacebookUserPicture(fbto.ID))
+	} else {
+		result.ExternalUserPictureURL = dot.String(fbto.ImageURL)
+	}
+	return result
 }
 
 func PbFbExternalTos(fbtos []*fbmessaging.FbObjectTo) []*exttypes.FbObjectTo {

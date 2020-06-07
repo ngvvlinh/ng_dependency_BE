@@ -54,7 +54,7 @@ type FbCustomerConversation struct {
 	ExternalCommentAttachment  *CommentAttachment                                       `json:"external_comment_attachments"`
 	ExternalMessageAttachments []*FbMessageAttachment                                   `json:"external_message_attachments"`
 	LastMessage                dot.NullString                                           `json:"last_message"`
-	LastMessageAt              time.Time                                                `json:"lastmessage_at"`
+	LastMessageAt              time.Time                                                `json:"last_message_at"`
 	CreatedAt                  time.Time                                                `json:"created_at"`
 	UpdatedAt                  time.Time                                                `json:"updated_at"`
 }
@@ -79,9 +79,10 @@ type FbExternalComment struct {
 func (m *FbExternalComment) String() string { return jsonx.MustMarshalToString(m) }
 
 type FbObjectFrom struct {
-	ID    dot.NullString `json:"id"`
-	Name  dot.NullString `json:"name"`
-	Email dot.NullString `json:"email"`
+	ID                     dot.NullString `json:"id"`
+	Name                   dot.NullString `json:"name"`
+	Email                  dot.NullString `json:"email"`
+	ExternalUserPictureURL dot.NullString `json:"external_user_picture_url"`
 }
 
 func (m *FbObjectFrom) String() string { return jsonx.MustMarshalToString(m) }
@@ -189,9 +190,10 @@ type FbMessageAttachmentImageData struct {
 func (m *FbMessageAttachmentImageData) String() string { return jsonx.MustMarshalToString(m) }
 
 type FbObjectTo struct {
-	ID    dot.NullString `json:"id"`
-	Name  dot.NullString `json:"name"`
-	Email dot.NullString `json:"email"`
+	ID                     dot.NullString `json:"id"`
+	Name                   dot.NullString `json:"name"`
+	Email                  dot.NullString `json:"email"`
+	ExternalUserPictureURL dot.NullString `json:"external_user_picture_url"`
 }
 
 func (m *FbObjectTo) String() string { return jsonx.MustMarshalToString(m) }

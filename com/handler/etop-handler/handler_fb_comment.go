@@ -7,9 +7,11 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
 	"o.o/api/main/identity"
 	fbmessagingmodel "o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/com/handler/pgevent"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/etop/apix/convertpb"
 	"o.o/backend/pkg/etop/eventstream"
@@ -36,7 +38,24 @@ func (h *Handler) HandleFbCommentEvent(ctx context.Context, event *pgevent.PgEve
 		ll.Warn("fb_comment not found", l.Int64("rid", event.RID), l.ID("id", id))
 		return mq.CodeIgnore, nil
 	}
-	result := convertpb.PbFbExternalCommentEvent(query.Result, event.Op.String())
+	fbExternalComment := query.Result
+
+	if fbExternalComment.ExternalFrom != nil {
+		getFbExternalUserQuery := &fbusering.GetFbExternalUserByExternalIDQuery{
+			ExternalID: fbExternalComment.ExternalFrom.ID,
+		}
+		_err := h.fbuserQuery.Dispatch(ctx, getFbExternalUserQuery)
+		if _err != nil && cm.ErrorCode(_err) != cm.NotFound {
+			return mq.CodeStop, _err
+		}
+
+		fbExternalUser := getFbExternalUserQuery.Result
+		if fbExternalUser != nil && fbExternalUser.ExternalInfo != nil {
+			fbExternalComment.ExternalFrom.ImageURL = fbExternalUser.ExternalInfo.ImageURL
+		}
+	}
+
+	result := convertpb.PbFbExternalCommentEvent(fbExternalComment, event.Op.String())
 	queryPage := &fbpaging.GetFbExternalPageByExternalIDQuery{
 		ExternalID: query.Result.ExternalPageID,
 	}

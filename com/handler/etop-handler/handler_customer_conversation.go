@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
 	"o.o/api/main/identity"
 	fbmessagingmodel "o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/com/handler/pgevent"
@@ -36,7 +37,41 @@ func (h *Handler) HandleFbCustomerConversationEvent(ctx context.Context, event *
 		ll.Warn("FbCustomerConversation not found", l.Int64("rid", event.RID), l.ID("id", id))
 		return mq.CodeIgnore, nil
 	}
-	result := convertpb.PbFbCustomerConversationEvent(query.Result, event.Op.String())
+	fbCustomerConversation := query.Result
+	// get avatars
+	{
+		var externalUserIDs []string
+		if fbCustomerConversation.ExternalUserID != "" {
+			externalUserIDs = append(externalUserIDs, fbCustomerConversation.ExternalUserID)
+		}
+		if fbCustomerConversation.ExternalFrom != nil {
+			externalUserIDs = append(externalUserIDs, fbCustomerConversation.ExternalFrom.ID)
+		}
+
+		listFbExternalUserQuery := &fbusering.ListFbExternalUsersByExternalIDsQuery{
+			ExternalIDs: externalUserIDs,
+		}
+		if err := h.fbuserQuery.Dispatch(ctx, listFbExternalUserQuery); err != nil {
+			return mq.CodeStop, err
+		}
+		fbExternalUsers := listFbExternalUserQuery.Result
+
+		mapExternalUserIDAndImageURl := make(map[string]string)
+		for _, fbExternalUser := range fbExternalUsers {
+			if fbExternalUser.ExternalInfo != nil {
+				mapExternalUserIDAndImageURl[fbExternalUser.ExternalID] = fbExternalUser.ExternalInfo.ImageURL
+			}
+		}
+
+		if fbCustomerConversation.ExternalUserID != "" {
+			fbCustomerConversation.ExternalUserPictureURL = mapExternalUserIDAndImageURl[fbCustomerConversation.ExternalUserID]
+		}
+		if fbCustomerConversation.ExternalFrom != nil {
+			fbCustomerConversation.ExternalFrom.ImageURL = mapExternalUserIDAndImageURl[fbCustomerConversation.ExternalFrom.ID]
+		}
+	}
+
+	result := convertpb.PbFbCustomerConversationEvent(fbCustomerConversation, event.Op.String())
 	queryPage := &fbpaging.GetFbExternalPageByExternalIDQuery{
 		ExternalID: query.Result.ExternalPageID,
 	}
