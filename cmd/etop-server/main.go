@@ -41,6 +41,7 @@ func main() {
 
 	// lifecycle
 	sd, ctxCancel := lifecycle.WithCancel(context.Background())
+	defer ll.SendMessagef("🎃 etop-server on %v stopped 🎃", cmenv.Env())
 	defer sd.Wait()
 	lifecycle.ListenForSignal(ctxCancel, 30*time.Second)
 
@@ -53,5 +54,9 @@ func main() {
 	sd.Register(cancelHTTP)
 	sd.Register(cancelServer)
 	healthService.MarkReady()
-	ll.SendMessagef("✨ etop-server started on %v ✨", cmenv.Env())
+
+	if cmenv.IsDev() {
+		ll.Info("config", l.Object("cfg", cfg))
+	}
+	ll.SendMessagef("✨ etop-server on %v started ✨\n%v", cmenv.Env(), cm.CommitMessage())
 }

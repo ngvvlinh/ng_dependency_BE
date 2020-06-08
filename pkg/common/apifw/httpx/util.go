@@ -10,7 +10,7 @@ func Compose(middlewares ...Middleware) Middleware {
 	return func(next http.Handler) http.Handler {
 		handler := next
 		for _, m := range middlewares {
-			handler = m(next)
+			handler = m(handler)
 		}
 		return handler
 	}

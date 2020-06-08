@@ -1,5 +1,3 @@
-// +build wireinject
-
 package fbmessaging
 
 import "github.com/google/wire"

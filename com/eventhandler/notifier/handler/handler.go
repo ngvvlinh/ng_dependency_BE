@@ -8,6 +8,7 @@ import (
 	"o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/com/eventhandler/pgevent"
 	com "o.o/backend/com/main"
+	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
@@ -25,15 +26,15 @@ var (
 
 const ConsumerGroup = "handler/notifier"
 
-func New(dbMain com.MainDB, dbNotifier com.NotifierDB, consumer mq.KafkaConsumer, prefix string) (handlerMain *handler.Handler, handlerNotifier *handler.Handler) {
+func New(dbMain com.MainDB, dbNotifier com.NotifierDB, consumer mq.KafkaConsumer, cfg cc.Kafka) (handlerMain *handler.Handler, handlerNotifier *handler.Handler) {
 	x = dbMain
 	xNotifier = dbNotifier
 	notiStore = sqlstore.NewNotificationStore(dbNotifier)
 	deviceStore = sqlstore.NewDeviceStore(dbNotifier)
 	historyStore = historysqlstore.NewHistoryStore(dbMain)
 
-	handlerMain = handler.New(consumer, prefix)
-	handlerNotifier = handler.New(consumer, prefix)
+	handlerMain = handler.New(consumer, cfg)
+	handlerNotifier = handler.New(consumer, cfg)
 	return handlerMain, handlerNotifier
 }
 

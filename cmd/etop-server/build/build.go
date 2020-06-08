@@ -82,7 +82,7 @@ func BuildMainServer(
 	jsonx.RegisterHTTPHandler(mux)
 	sqltrace.RegisterHTTPHandler(mux)
 
-	middlewares := httpx.Compose(
+	mwares := httpx.Compose(
 		headers.ForwardHeadersX(),
 		bus.Middleware,
 	)
@@ -93,7 +93,7 @@ func BuildMainServer(
 	handlers = append(handlers, intHandlers...)
 	handlers = append(handlers, extHandlers...)
 	for _, h := range handlers {
-		mux.Handle(h.PathPrefix(), middlewares(h))
+		mux.Handle(h.PathPrefix(), mwares(h))
 	}
 
 	mux.Handle(adminImport.PathPrefix(), adminImport)
@@ -129,10 +129,10 @@ func BuildMainServer(
 		mux.Handle("/doc/ext/"+s+"/swagger.json", cmservice.SwaggerHandler("external/"+s+"/swagger.json"))
 	}
 
-	handler := middleware.CORS(mux)
+	h := middleware.CORS(mux)
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
-		Handler: handler,
+		Handler: h,
 	}
 	return svr
 }

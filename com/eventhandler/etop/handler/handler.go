@@ -11,6 +11,7 @@ import (
 	"o.o/api/top/external/types"
 	"o.o/backend/com/eventhandler/pgevent"
 	"o.o/backend/com/eventhandler/webhook/sender"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -35,7 +36,7 @@ type Handler struct {
 }
 
 func New(
-	db *cmsql.Database,
+	db com.MainDB,
 	sender *sender.WebhookSender,
 	catalogQuery catalog.QueryBus,
 	customerQuery customering.QueryBus,

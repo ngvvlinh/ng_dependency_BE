@@ -162,7 +162,7 @@ func main() {
 		etopHandler := etophandler.New(db, webhookSender, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus)
 		etopHandler.RegisterTo(intctlHandler)
 
-		h := handler.New(consumer, cfg.Kafka.TopicPrefix)
+		h := handler.New(consumer, cfg.Kafka)
 		h.StartConsuming(ctx, etophandler.Topics(), etopHandler.TopicsAndHandlers())
 		h.StartConsuming(ctx, fabohandler.Topics(), faboHandler.TopicsAndHandlers())
 		waiters = append(waiters, h)

@@ -8,10 +8,12 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
+	"o.o/backend/cmd/fabo-server/config"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
-	faboRedis "o.o/backend/com/fabo/pkg/redis"
+	faboredis "o.o/backend/com/fabo/pkg/redis"
+	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/redis"
@@ -19,14 +21,12 @@ import (
 	"o.o/common/l"
 )
 
-var (
-	ll = l.New()
-)
+var ll = l.New()
 
 type Webhook struct {
 	db               *cmsql.Database
 	verifyToken      string
-	faboRedis        *faboRedis.FaboRedis
+	faboRedis        *faboredis.FaboRedis
 	fbClient         *fbclient.FbClient
 	fbmessagingQuery fbmessaging.QueryBus
 	fbmessagingAggr  fbmessaging.CommandBus
@@ -34,14 +34,17 @@ type Webhook struct {
 }
 
 func New(
-	db *cmsql.Database, verifyToken string,
-	faboRedis *faboRedis.FaboRedis, fbClient *fbclient.FbClient,
-	fbmessagingQuery fbmessaging.QueryBus, fbmessagingAggregate fbmessaging.CommandBus,
+	db com.MainDB,
+	cfg config.WebhookConfig,
+	faboRedis *faboredis.FaboRedis,
+	fbClient *fbclient.FbClient,
+	fbmessagingQuery fbmessaging.QueryBus,
+	fbmessagingAggregate fbmessaging.CommandBus,
 	fbPageQuery fbpaging.QueryBus,
 ) *Webhook {
 	wh := &Webhook{
 		db:               db,
-		verifyToken:      verifyToken,
+		verifyToken:      cfg.VerifyToken,
 		faboRedis:        faboRedis,
 		fbClient:         fbClient,
 		fbmessagingQuery: fbmessagingQuery,

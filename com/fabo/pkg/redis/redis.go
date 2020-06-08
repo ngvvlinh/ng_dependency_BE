@@ -23,7 +23,6 @@ type FaboRedis struct {
 func NewFaboRedis(redisStore redis.Store) *FaboRedis {
 	return &FaboRedis{
 		redisStore: redisStore,
-		mu:         sync.Mutex{},
 	}
 }
 

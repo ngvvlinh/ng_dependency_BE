@@ -9,30 +9,17 @@ import (
 	"o.o/capi/dot"
 )
 
-type Info struct {
+type FaboPages struct {
 	FbPageIDs       []dot.ID
 	ExternalPageIDs []string
 }
 
-type FaboInfo struct {
-	fbPageQuery fbpaging.QueryBus
-	fbUserQuery fbusering.QueryBus
+type FaboPagesKit struct {
+	FBPageQuery fbpaging.QueryBus
+	FBUserQuery fbusering.QueryBus
 }
 
-func New(fbPageQuery fbpaging.QueryBus, fbUserQuery fbusering.QueryBus) *FaboInfo {
-	fi := &FaboInfo{
-		fbPageQuery: fbPageQuery,
-		fbUserQuery: fbUserQuery,
-	}
-	return fi
-}
-
-type GetFaboInfoQuery struct {
-	ShopID dot.ID
-	UserID dot.ID
-}
-
-func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID dot.ID) (*Info, error) {
+func (fi *FaboPagesKit) GetPages(ctx context.Context, shopID dot.ID) (*FaboPages, error) {
 	listFbPagesQuery := &fbpaging.ListFbExternalPagesQuery{
 		ShopID: shopID,
 		Filters: []meta.Filter{
@@ -43,7 +30,7 @@ func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID dot.ID) (*Info, erro
 			},
 		},
 	}
-	if err := fi.fbPageQuery.Dispatch(ctx, listFbPagesQuery); err != nil {
+	if err := fi.FBPageQuery.Dispatch(ctx, listFbPagesQuery); err != nil {
 		return nil, err
 	}
 
@@ -54,7 +41,7 @@ func (fi *FaboInfo) GetFaboInfo(ctx context.Context, shopID dot.ID) (*Info, erro
 		externalPageIDs = append(externalPageIDs, fbPage.ExternalID)
 	}
 
-	return &Info{
+	return &FaboPages{
 		FbPageIDs:       fbPageIDs,
 		ExternalPageIDs: externalPageIDs,
 	}, nil

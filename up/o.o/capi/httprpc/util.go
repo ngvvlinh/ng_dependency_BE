@@ -3,6 +3,7 @@ package httprpc
 import (
 	"net/http"
 	"path"
+	"strings"
 )
 
 var _ Server = &stripPrefix{}
@@ -49,9 +50,13 @@ type withPrefix struct {
 func WithPrefix(prefix string, servers []Server) []Server {
 	result := make([]Server, len(servers))
 	for i, s := range servers {
+		urlPrefix := path.Join(prefix, s.PathPrefix())
+		if !strings.HasSuffix(urlPrefix, "/") {
+			urlPrefix = urlPrefix + "/"
+		}
 		result[i] = &withPrefix{
-			Handler: http.StripPrefix(prefix, s),
-			prefix:  path.Join(prefix, s.PathPrefix()),
+			Handler: http.StripPrefix(strings.TrimSuffix(prefix, "/"), s),
+			prefix:  urlPrefix,
 			server:  s,
 		}
 	}

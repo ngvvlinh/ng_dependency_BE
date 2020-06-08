@@ -94,7 +94,7 @@ func main() {
 		if err != nil {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
-		hMain, hNotifier := notihandler.New(db, dbNotifier, consumer, cfg.Kafka.TopicPrefix)
+		hMain, hNotifier := notihandler.New(db, dbNotifier, consumer, cfg.Kafka)
 		hMain.StartConsuming(ctx, handler.GetTopics(notihandler.TopicsAndHandlersEtop()), notihandler.TopicsAndHandlersEtop())
 		hNotifier.StartConsuming(ctx, handler.GetTopics(notihandler.TopicsAndHandlerNotifier()), notihandler.TopicsAndHandlerNotifier())
 	}

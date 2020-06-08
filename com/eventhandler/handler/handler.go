@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"o.o/backend/com/eventhandler"
+	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/mq"
 	"o.o/common/l"
 )
@@ -21,11 +22,11 @@ type Handler struct {
 
 func New(
 	consumer mq.KafkaConsumer,
-	prefix string,
+	cfg cc.Kafka,
 ) *Handler {
 	h := &Handler{
 		consumer: consumer,
-		prefix:   prefix + "_pgrid_",
+		prefix:   cfg.TopicPrefix + "_pgrid_",
 	}
 	return h
 }

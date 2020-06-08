@@ -11,7 +11,7 @@ type FaboServer struct {
 
 type Servers []httprpc.Server
 
-func NewServer(
+func NewServers(
 	pageService *PageService,
 	conversationService *CustomerConversationService,
 	customerService *CustomerService,

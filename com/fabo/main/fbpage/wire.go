@@ -1,5 +1,3 @@
-// +build wireinject
-
 package fbpage
 
 import "github.com/google/wire"

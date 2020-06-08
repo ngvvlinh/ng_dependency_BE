@@ -2,6 +2,7 @@ package handler
 
 import (
 	"o.o/backend/com/eventhandler"
+	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/etop/model"
 )
 
@@ -31,3 +32,11 @@ func Topics() []eventhandler.TopicDef {
 }
 
 var mapTopics = eventhandler.MapTopics(Topics())
+
+func GetTopics(topics map[string]mq.EventHandler) []eventhandler.TopicDef {
+	var result []eventhandler.TopicDef
+	for name := range topics {
+		result = append(result, mapTopics[name])
+	}
+	return result
+}

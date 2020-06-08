@@ -14,24 +14,9 @@ import (
 type CustomerService struct {
 	session.Session
 
-	customerQuery  customering.QueryBus
-	fbUseringQuery fbusering.QueryBus
-	fbUseringAggr  fbusering.CommandBus
-}
-
-func NewCustomerService(
-	customerQ customering.QueryBus,
-	fbUseringQ fbusering.QueryBus,
-	fbUseringA fbusering.CommandBus,
-	ssParam session.Session,
-) *CustomerService {
-	s := &CustomerService{
-		customerQuery:  customerQ,
-		fbUseringQuery: fbUseringQ,
-		fbUseringAggr:  fbUseringA,
-		Session:        ssParam,
-	}
-	return s
+	CustomerQuery  customering.QueryBus
+	FBUseringQuery fbusering.QueryBus
+	FBUseringAggr  fbusering.CommandBus
 }
 
 func (s *CustomerService) Clone() fabo.CustomerService {
@@ -46,7 +31,7 @@ func (s *CustomerService) CreateFbUserCustomer(ctx context.Context, request *fab
 		ExternalID: request.ExternalID,
 		CustomerID: request.CustomerID,
 	}
-	err := s.fbUseringAggr.Dispatch(ctx, cmd)
+	err := s.FBUseringAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +45,7 @@ func (s *CustomerService) GetFbUser(ctx context.Context, request *fabo.GetFbUser
 		ExternalID: request.ExternalID,
 		ShopID:     shopID,
 	}
-	if err := s.fbUseringQuery.Dispatch(ctx, query); err != nil {
+	if err := s.FBUseringQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return convertpbfabo.PbFbUserWithCustomer(query.Result.FbExternalUser, query.Result.ShopCustomer), nil
@@ -72,7 +57,7 @@ func (s *CustomerService) ListFbUsers(ctx context.Context, request *fabo.ListFbU
 		CustomerID: request.CustomerID,
 		ShopID:     shopID,
 	}
-	if err := s.fbUseringQuery.Dispatch(ctx, query); err != nil {
+	if err := s.FBUseringQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	var result = &fabo.ListFbUsersResponse{}
@@ -91,7 +76,7 @@ func (s *CustomerService) ListCustomersWithFbUsers(ctx context.Context, request 
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(request.Filters),
 	}
-	if err := s.fbUseringQuery.Dispatch(ctx, query); err != nil {
+	if err := s.FBUseringQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	var result = &fabo.ListCustomersWithFbUsersResponse{}

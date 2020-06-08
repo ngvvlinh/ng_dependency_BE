@@ -22,33 +22,12 @@ import (
 type CustomerConversationService struct {
 	session.Session
 
-	faboInfo         *faboinfo.FaboInfo
-	fbMessagingQuery fbmessaging.QueryBus
-	fbMessagingAggr  fbmessaging.CommandBus
-	fbPagingQuery    fbpaging.QueryBus
-	fbClient         *fbclient.FbClient
-	fbUserQuery      fbusering.QueryBus
-}
-
-func NewCustomerConversationService(
-	ss session.Session,
-	faboInfo *faboinfo.FaboInfo,
-	fbMessagingQuery fbmessaging.QueryBus,
-	fbMessagingAggr fbmessaging.CommandBus,
-	fbPagingQuery fbpaging.QueryBus,
-	fbClient *fbclient.FbClient,
-	fbUserQuery fbusering.QueryBus,
-) *CustomerConversationService {
-	s := &CustomerConversationService{
-		Session:          ss,
-		faboInfo:         faboInfo,
-		fbMessagingQuery: fbMessagingQuery,
-		fbMessagingAggr:  fbMessagingAggr,
-		fbPagingQuery:    fbPagingQuery,
-		fbClient:         fbClient,
-		fbUserQuery:      fbUserQuery,
-	}
-	return s
+	FaboPagesKit     *faboinfo.FaboPagesKit
+	FBMessagingQuery fbmessaging.QueryBus
+	FBMessagingAggr  fbmessaging.CommandBus
+	FBPagingQuery    fbpaging.QueryBus
+	FBClient         *fbclient.FbClient
+	FBUserQuery      fbusering.QueryBus
 }
 
 func (s *CustomerConversationService) Clone() fabo.CustomerConversationService {
@@ -73,7 +52,7 @@ func (s *CustomerConversationService) ListCustomerConversations(
 			listFbExternalPagesByIDsQuery := &fbpaging.ListFbExternalPagesByIDsQuery{
 				IDs: fbPageIDsRequest,
 			}
-			if err := s.fbPagingQuery.Dispatch(ctx, listFbExternalPagesByIDsQuery); err != nil {
+			if err := s.FBPagingQuery.Dispatch(ctx, listFbExternalPagesByIDsQuery); err != nil {
 				return nil, err
 			}
 			for _, fbExternalPage := range listFbExternalPagesByIDsQuery.Result {
@@ -82,7 +61,7 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		}
 
 		if len(fbPageIDsRequest) == 0 && len(externalPageIDsRequest) == 0 {
-			faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.SS.Shop().ID)
+			faboInfo, err := s.FaboPagesKit.GetPages(ctx, s.SS.Shop().ID)
 			if err != nil {
 				return nil, err
 			}
@@ -101,13 +80,13 @@ func (s *CustomerConversationService) ListCustomerConversations(
 	}
 
 	if len(listCustomerConversationsQuery.ExternalPageIDs) == 0 {
-		faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.SS.Shop().ID)
+		faboInfo, err := s.FaboPagesKit.GetPages(ctx, s.SS.Shop().ID)
 		if err != nil {
 			return nil, err
 		}
 		listCustomerConversationsQuery.ExternalPageIDs = faboInfo.ExternalPageIDs
 	}
-	if err := s.fbMessagingQuery.Dispatch(ctx, listCustomerConversationsQuery); err != nil {
+	if err := s.FBMessagingQuery.Dispatch(ctx, listCustomerConversationsQuery); err != nil {
 		return nil, err
 	}
 
@@ -147,7 +126,7 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		ShopID:      s.SS.Shop().ID,
 		ExternalIDs: fbUserExternalID,
 	}
-	err = s.fbUserQuery.Dispatch(ctx, listFbUserQuery)
+	err = s.FBUserQuery.Dispatch(ctx, listFbUserQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -174,7 +153,7 @@ func (s *CustomerConversationService) ListMessages(
 	if err != nil {
 		return nil, err
 	}
-	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.SS.Shop().ID)
+	faboInfo, err := s.FaboPagesKit.GetPages(ctx, s.SS.Shop().ID)
 	if err != nil {
 		return nil, err
 	}
@@ -191,7 +170,7 @@ func (s *CustomerConversationService) ListMessages(
 		ExternalConversationIDs: externalConversationIDs,
 		Paging:                  *paging,
 	}
-	if err := s.fbMessagingQuery.Dispatch(ctx, listFbExternalMessagesQuery); err != nil {
+	if err := s.FBMessagingQuery.Dispatch(ctx, listFbExternalMessagesQuery); err != nil {
 		return nil, err
 	}
 
@@ -240,14 +219,14 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	if err != nil {
 		return nil, err
 	}
-	faboInfo, err := s.faboInfo.GetFaboInfo(ctx, s.SS.Shop().ID)
+	faboInfo, err := s.FaboPagesKit.GetPages(ctx, s.SS.Shop().ID)
 	if err != nil {
 		return nil, err
 	}
 	getFbExternalPostQuery := &fbmessaging.GetFbExternalPostByExternalIDQuery{
 		ExternalID: request.Filter.ExternalPostID,
 	}
-	if err := s.fbMessagingQuery.Dispatch(ctx, getFbExternalPostQuery); err != nil {
+	if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalPostQuery); err != nil {
 		return nil, err
 	}
 	fbExternalPost := getFbExternalPostQuery.Result
@@ -270,7 +249,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		FbExternalPageID: fbExternalPost.ExternalPageID,
 		Paging:           *paging,
 	}
-	if err := s.fbMessagingQuery.Dispatch(ctx, listFbExternalCommentsQuery); err != nil {
+	if err := s.FBMessagingQuery.Dispatch(ctx, listFbExternalCommentsQuery); err != nil {
 		return nil, err
 	}
 
@@ -302,7 +281,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 			ExternalPostID: request.Filter.ExternalPostID,
 			ExternalUserID: request.Filter.ExternalUserID,
 		}
-		if err := s.fbMessagingQuery.Dispatch(ctx, getLatestCustomerExternalCommentQuery); err != nil {
+		if err := s.FBMessagingQuery.Dispatch(ctx, getLatestCustomerExternalCommentQuery); err != nil {
 			return nil, err
 		}
 		latestCustomerFbExternalComment = getLatestCustomerExternalCommentQuery.Result
@@ -314,7 +293,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		queryParent := &fbmessaging.GetFbExternalPostByExternalIDQuery{
 			ExternalID: parentID,
 		}
-		if err = s.fbMessagingQuery.Dispatch(ctx, queryParent); err != nil {
+		if err = s.FBMessagingQuery.Dispatch(ctx, queryParent); err != nil {
 			return nil, err
 		}
 		fbExternalParentPost := queryParent.Result
@@ -333,7 +312,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		FbExternalUserID: request.Filter.ExternalUserID,
 		FbExternalPageID: getFbExternalPostQuery.Result.ExternalPageID,
 	}
-	if err = s.fbMessagingQuery.Dispatch(ctx, listFbExternalCommentsParentQuery); err != nil {
+	if err = s.FBMessagingQuery.Dispatch(ctx, listFbExternalCommentsParentQuery); err != nil {
 		return nil, err
 	}
 	var mapParentComment = make(map[string]*fbmessaging.FbExternalComment)
@@ -385,7 +364,7 @@ func (s *CustomerConversationService) UpdateReadStatus(
 		ConversationCustomerID: request.CustomerConversationID,
 		IsRead:                 request.Read,
 	}
-	if err := s.fbMessagingAggr.Dispatch(ctx, updateIsReadCustomerConversationCmd); err != nil {
+	if err := s.FBMessagingAggr.Dispatch(ctx, updateIsReadCustomerConversationCmd); err != nil {
 		return nil, err
 	}
 	return &common.UpdatedResponse{
@@ -412,7 +391,7 @@ func (s *CustomerConversationService) SendComment(
 	getFbExternalPageInternalQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
 		ExternalID: request.ExternalPageID,
 	}
-	if err := s.fbPagingQuery.Dispatch(ctx, getFbExternalPageInternalQuery); err != nil {
+	if err := s.FBPagingQuery.Dispatch(ctx, getFbExternalPageInternalQuery); err != nil {
 		return nil, err
 	}
 	accessToken := getFbExternalPageInternalQuery.Result.Token
@@ -420,7 +399,7 @@ func (s *CustomerConversationService) SendComment(
 	getFbExternalPostByExternalIDQuery := &fbmessaging.GetFbExternalPostByExternalIDQuery{
 		ExternalID: request.ExternalPostID,
 	}
-	if err := s.fbMessagingQuery.Dispatch(ctx, getFbExternalPostByExternalIDQuery); err != nil {
+	if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalPostByExternalIDQuery); err != nil {
 		return nil, err
 	}
 
@@ -429,12 +408,12 @@ func (s *CustomerConversationService) SendComment(
 		Message:       request.Message,
 		AttachmentURL: request.AttachmentURL,
 	}
-	sendCommentResponse, err := s.fbClient.CallAPISendComment(accessToken, sendCommentRequest)
+	sendCommentResponse, err := s.FBClient.CallAPISendComment(accessToken, sendCommentRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	newComment, err := s.fbClient.CallAPICommentByID(accessToken, sendCommentResponse.ID)
+	newComment, err := s.FBClient.CallAPICommentByID(accessToken, sendCommentResponse.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -469,13 +448,13 @@ func (s *CustomerConversationService) SendComment(
 		},
 	}
 
-	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalCommentsCmd); err != nil {
+	if err := s.FBMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalCommentsCmd); err != nil {
 		return nil, err
 	}
 	getFbExternalCommentParentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
 		ExternalID: newComment.Parent.ID,
 	}
-	if err := s.fbMessagingQuery.Dispatch(ctx, getFbExternalCommentParentQuery); err != nil {
+	if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalCommentParentQuery); err != nil {
 		return nil, err
 	}
 	commentParent := convertpb.PbFbExternalComment(getFbExternalCommentParentQuery.Result)
@@ -495,7 +474,7 @@ func (s *CustomerConversationService) SendMessage(
 	getFbExternalPageInternalByIDQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
 		ExternalID: request.ExternalPageID,
 	}
-	if err := s.fbPagingQuery.Dispatch(ctx, getFbExternalPageInternalByIDQuery); err != nil {
+	if err := s.FBPagingQuery.Dispatch(ctx, getFbExternalPageInternalByIDQuery); err != nil {
 		return nil, err
 	}
 	accessToken := getFbExternalPageInternalByIDQuery.Result.Token
@@ -504,7 +483,7 @@ func (s *CustomerConversationService) SendMessage(
 		ExternalID:     request.ExternalConversationID,
 		ExternalPageID: request.ExternalPageID,
 	}
-	if err := s.fbMessagingQuery.Dispatch(ctx, getFbExternalConversationQuery); err != nil {
+	if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalConversationQuery); err != nil {
 		return nil, err
 	}
 	PSID := getFbExternalConversationQuery.Result.PSID
@@ -530,12 +509,12 @@ func (s *CustomerConversationService) SendMessage(
 		}
 	}
 
-	sendMessageResp, err := s.fbClient.CallAPISendMessage(accessToken, sendMessageRequest)
+	sendMessageResp, err := s.FBClient.CallAPISendMessage(accessToken, sendMessageRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	newMessage, err := s.fbClient.CallAPIGetMessage(accessToken, sendMessageResp.MessageID)
+	newMessage, err := s.FBClient.CallAPIGetMessage(accessToken, sendMessageResp.MessageID)
 	if err != nil {
 		return nil, err
 	}
@@ -560,7 +539,7 @@ func (s *CustomerConversationService) SendMessage(
 			},
 		},
 	}
-	if err := s.fbMessagingAggr.Dispatch(ctx, createFbExternalMessageCmd); err != nil {
+	if err := s.FBMessagingAggr.Dispatch(ctx, createFbExternalMessageCmd); err != nil {
 		return nil, err
 	}
 
@@ -571,7 +550,7 @@ func (s *CustomerConversationService) getImageURLs(ctx context.Context, external
 	getFbUserQuery := &fbusering.ListFbExternalUsersByExternalIDsQuery{
 		ExternalIDs: externalUserIDs,
 	}
-	if err := s.fbUserQuery.Dispatch(ctx, getFbUserQuery); err != nil {
+	if err := s.FBUserQuery.Dispatch(ctx, getFbUserQuery); err != nil {
 		return nil, err
 	}
 

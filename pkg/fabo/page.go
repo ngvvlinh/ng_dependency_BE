@@ -19,39 +19,23 @@ import (
 	"o.o/backend/pkg/fabo/faboinfo"
 )
 
+var _appScopes = map[string]string{
+	"manage_pages":    "Quản lý các trang của bạn",
+	"pages_show_list": "Hiển thị các trang do tài khoản quản lý",
+	"publish_pages":   "Đăng nội dung lên trang do bạn quản lý",
+	"pages_messaging": "Quản lý và truy cập các cuộc trò chuyện của trang",
+	"public_profile":  "Hiển thị thông tin cơ bản của tài khoản",
+}
+
 type PageService struct {
 	session.Session
 
-	faboInfo            *faboinfo.FaboInfo
-	fbExternalUserQuery fbusering.QueryBus
-	fbExternalUserAggr  fbusering.CommandBus
-	fbExternalPageQuery fbpaging.QueryBus
-	fbExternalPageAggr  fbpaging.CommandBus
-	appScopes           map[string]string
-	fbClient            *fbclient.FbClient
-}
-
-func NewPageService(
-	ss session.Session,
-	faboInfo *faboinfo.FaboInfo,
-	fbUserQuery fbusering.QueryBus,
-	fbUserAggr fbusering.CommandBus,
-	fbPageQuery fbpaging.QueryBus,
-	fbPageAggr fbpaging.CommandBus,
-	appScopes map[string]string,
-	fbClient *fbclient.FbClient,
-) *PageService {
-	s := &PageService{
-		Session:             ss,
-		faboInfo:            faboInfo,
-		fbExternalUserQuery: fbUserQuery,
-		fbExternalUserAggr:  fbUserAggr,
-		fbExternalPageQuery: fbPageQuery,
-		fbExternalPageAggr:  fbPageAggr,
-		appScopes:           appScopes,
-		fbClient:            fbClient,
-	}
-	return s
+	FaboInfo            *faboinfo.FaboPagesKit
+	FBExternalUserQuery fbusering.QueryBus
+	FBExternalUserAggr  fbusering.CommandBus
+	FBExternalPageQuery fbpaging.QueryBus
+	FBExternalPageAggr  fbpaging.CommandBus
+	FBClient            *fbclient.FbClient
 }
 
 func (s *PageService) Clone() fabo.PageService {
@@ -71,7 +55,7 @@ func (s *PageService) RemovePages(ctx context.Context, r *fabo.RemovePagesReques
 		ExternalIDs: externalIDs,
 		ShopID:      s.SS.Shop().ID,
 	}
-	if err := s.fbExternalPageAggr.Dispatch(ctx, disablePagesByIDsCmd); err != nil {
+	if err := s.FBExternalPageAggr.Dispatch(ctx, disablePagesByIDsCmd); err != nil {
 		return nil, err
 	}
 
@@ -85,7 +69,7 @@ func (s *PageService) ListPages(ctx context.Context, r *fabo.ListPagesRequest) (
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
-	if err := s.fbExternalPageQuery.Dispatch(ctx, listFbExternalPagesQuery); err != nil {
+	if err := s.FBExternalPageQuery.Dispatch(ctx, listFbExternalPagesQuery); err != nil {
 		return nil, err
 	}
 	resp := &fabo.ListPagesResponse{
@@ -99,7 +83,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	shopID := s.SS.Shop().ID
 
 	// Check accessToken is alive
-	userToken, err := s.fbClient.CallAPICheckAccessToken(r.AccessToken)
+	userToken, err := s.FBClient.CallAPICheckAccessToken(r.AccessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -113,19 +97,19 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	if r.AccessToken == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "access_token must not be null")
 	}
-	longLivedAccessToken, err := s.fbClient.CallAPIGetLongLivedAccessToken(r.AccessToken)
+	longLivedAccessToken, err := s.FBClient.CallAPIGetLongLivedAccessToken(r.AccessToken)
 	if err != nil {
 		return nil, err
 	}
 
 	// Get information of user from accessToken (above)
-	me, err := s.fbClient.CallAPIGetMe(longLivedAccessToken.AccessToken)
+	me, err := s.FBClient.CallAPIGetMe(longLivedAccessToken.AccessToken)
 	if err != nil {
 		return nil, err
 	}
 
 	// Get all accounts of user (above)
-	accounts, err := s.fbClient.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
+	accounts, err := s.FBClient.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +128,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			go func(accessToken string) {
 				defer wg.Done()
 				// TODO: Ngoc handle err
-				if _, err := s.fbClient.CallAPICreateSubscribedApps(accessToken, []string{fbclient.MessagesField, fbclient.MessageEchoesField}); err != nil {
+				if _, err := s.FBClient.CallAPICreateSubscribedApps(accessToken, []string{fbclient.MessagesField, fbclient.MessageEchoesField}); err != nil {
 					return
 				}
 			}(account.AccessToken)
@@ -156,7 +140,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	listFbPagesActiveQuery := &fbpaging.ListFbExternalPagesActiveByExternalIDsQuery{
 		ExternalIDs: externalIDs,
 	}
-	if err := s.fbExternalPageQuery.Dispatch(ctx, listFbPagesActiveQuery); err != nil {
+	if err := s.FBExternalPageQuery.Dispatch(ctx, listFbPagesActiveQuery); err != nil {
 		return nil, err
 	}
 
@@ -185,7 +169,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			ExpiresIn:  fbclient.ExpiresInUserToken, // 60 days
 		},
 	}
-	if err := s.fbExternalUserAggr.Dispatch(ctx, createFbUserCombinedCmd); err != nil {
+	if err := s.FBExternalUserAggr.Dispatch(ctx, createFbUserCombinedCmd); err != nil {
 		return nil, err
 	}
 
@@ -253,7 +237,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		createFbExternalPageCombinedsCmd := &fbpaging.CreateFbExternalPageCombinedsCommand{
 			FbPageCombineds: listCreateFbPageCombinedCmd,
 		}
-		if err := s.fbExternalPageAggr.Dispatch(ctx, createFbExternalPageCombinedsCmd); err != nil {
+		if err := s.FBExternalPageAggr.Dispatch(ctx, createFbExternalPageCombinedsCmd); err != nil {
 			return nil, err
 		}
 

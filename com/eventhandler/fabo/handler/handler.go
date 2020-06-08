@@ -6,6 +6,7 @@ import (
 	"o.o/api/fabo/fbusering"
 	"o.o/api/main/identity"
 	"o.o/backend/com/eventhandler/pgevent"
+	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
@@ -28,7 +29,7 @@ type Handler struct {
 }
 
 func New(
-	db *cmsql.Database,
+	db com.MainDB,
 	consumer mq.KafkaConsumer,
 	producer *mq.KafkaProducer,
 	prefix string,
