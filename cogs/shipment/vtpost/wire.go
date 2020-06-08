@@ -34,7 +34,7 @@ func NewVTPostWebhookServer(
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(true))
 
-	cfg := cc.HTTP(WebhookConfig{})
+	cfg := cc.HTTP(_cfg)
 	webhook.Register(rt)
 	svr := &http.Server{
 		Addr:    cfg.Address(),
