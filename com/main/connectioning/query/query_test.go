@@ -49,6 +49,7 @@ func init() {
 			, image_url TEXT
 			, services JSON
 			, wl_partner_id INT8
+			, origin_connection_id INT8
 		);
 		CREATE TABLE shop_connection (
 			shop_id INT8

@@ -36,6 +36,7 @@ import (
 	pm4 "o.o/backend/com/main/catalog/pm"
 	query3 "o.o/backend/com/main/catalog/query"
 	aggregate7 "o.o/backend/com/main/connectioning/aggregate"
+	pm16 "o.o/backend/com/main/connectioning/pm"
 	query13 "o.o/backend/com/main/connectioning/query"
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/identity/pm"
@@ -808,6 +809,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	traderAgg := aggregate22.NewTraderAgg(mainDB)
 	traderingCommandBus := aggregate22.TraderAggMessageBus(traderAgg)
 	processManager14 := pm15.New(eventBus, traderingCommandBus)
+	processManager15 := pm16.New(eventBus, connectioningCommandBus, connectioningQueryBus)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, identityQueryBus)
 	captchaConfig := cfg.Captcha
@@ -829,6 +831,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		_shippingPM:       processManager12,
 		_affiliatePM:      processManager13,
 		_traderPM:         processManager14,
+		_connectionPM:     processManager15,
 		_s:                sqlstoreStore,
 		_m:                middlewareMiddleware,
 		_c:                captchaCaptcha,

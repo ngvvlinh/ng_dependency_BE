@@ -30,6 +30,7 @@ type Connection struct {
 	ImageURL             string
 	Services             []*ConnectionService
 	WLPartnerID          dot.ID
+	OriginConnectionID   dot.ID
 }
 
 // +sqlgen

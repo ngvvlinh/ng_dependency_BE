@@ -312,6 +312,25 @@ func (ft *ConnectionFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFil
 	}
 }
 
+func (ft *ConnectionFilters) ByOriginConnectionID(OriginConnectionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "origin_connection_id",
+		Value:  OriginConnectionID,
+		IsNil:  OriginConnectionID == 0,
+	}
+}
+
+func (ft *ConnectionFilters) ByOriginConnectionIDPtr(OriginConnectionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "origin_connection_id",
+		Value:  OriginConnectionID,
+		IsNil:  OriginConnectionID == nil,
+		IsZero: OriginConnectionID != nil && (*OriginConnectionID) == 0,
+	}
+}
+
 type ShopConnectionFilters struct{ prefix string }
 
 func NewShopConnectionFilters(prefix string) ShopConnectionFilters {

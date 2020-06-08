@@ -18,6 +18,7 @@ import (
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	catalogpm "o.o/backend/com/main/catalog/pm"
+	connectioningpm "o.o/backend/com/main/connectioning/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
 	inventorypm "o.o/backend/com/main/inventory/pm"
 	invitationpm "o.o/backend/com/main/invitation/pm"
@@ -73,6 +74,7 @@ type Output struct {
 	_shippingPM       *shippingpm.ProcessManager
 	_affiliatePM      *affiliatepm.ProcessManager
 	_traderPM         *traderpm.ProcessManager
+	_connectionPM     *connectioningpm.ProcessManager
 
 	// inject
 	_s *sqlstore.Store

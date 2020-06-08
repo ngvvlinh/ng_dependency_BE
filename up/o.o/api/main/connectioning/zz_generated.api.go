@@ -74,6 +74,9 @@ type CreateConnectionCommand struct {
 	ConnectionSubtype  connection_type.ConnectionSubtype
 	ConnectionMethod   connection_type.ConnectionMethod
 	ConnectionProvider connection_type.ConnectionProvider
+	ImageURL           string
+	Services           []*ConnectionService
+	OriginConnectionID dot.ID
 
 	Result *Connection `json:"-"`
 }
@@ -153,6 +156,7 @@ type UpdateConnectionCommand struct {
 	PartnerID    dot.ID
 	Name         string
 	ImageURL     string
+	Services     []*ConnectionService
 	DriverConfig *ConnectionDriverConfig
 
 	Result *Connection `json:"-"`
@@ -250,6 +254,17 @@ func (h QueryServiceHandler) HandleListConnections(ctx context.Context, msg *Lis
 	return err
 }
 
+type ListConnectionsByOriginConnectionIDQuery struct {
+	OriginConnectionID dot.ID
+
+	Result []*Connection `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListConnectionsByOriginConnectionID(ctx context.Context, msg *ListConnectionsByOriginConnectionIDQuery) (err error) {
+	msg.Result, err = h.inner.ListConnectionsByOriginConnectionID(msg.GetArgs(ctx))
+	return err
+}
+
 type ListGlobalShopConnectionsQuery struct {
 	Result []*ShopConnection `json:"-"`
 }
@@ -309,15 +324,16 @@ func (q *UpdateConnectionCommand) command()                 {}
 func (q *UpdateConnectionAffiliateAccountCommand) command() {}
 func (q *UpdateShopConnectionTokenCommand) command()        {}
 
-func (q *GetConnectionByCodeQuery) query()               {}
-func (q *GetConnectionByIDQuery) query()                 {}
-func (q *GetShopConnectionByIDQuery) query()             {}
-func (q *ListConnectionServicesByIDQuery) query()        {}
-func (q *ListConnectionsQuery) query()                   {}
-func (q *ListGlobalShopConnectionsQuery) query()         {}
-func (q *ListShopConnectionsQuery) query()               {}
-func (q *ListShopConnectionsByConnectionIDQuery) query() {}
-func (q *ListShopConnectionsByShopIDQuery) query()       {}
+func (q *GetConnectionByCodeQuery) query()                 {}
+func (q *GetConnectionByIDQuery) query()                   {}
+func (q *GetShopConnectionByIDQuery) query()               {}
+func (q *ListConnectionServicesByIDQuery) query()          {}
+func (q *ListConnectionsQuery) query()                     {}
+func (q *ListConnectionsByOriginConnectionIDQuery) query() {}
+func (q *ListGlobalShopConnectionsQuery) query()           {}
+func (q *ListShopConnectionsQuery) query()                 {}
+func (q *ListShopConnectionsByConnectionIDQuery) query()   {}
+func (q *ListShopConnectionsByShopIDQuery) query()         {}
 
 // implement conversion
 
@@ -360,6 +376,9 @@ func (q *CreateConnectionCommand) GetArgs(ctx context.Context) (_ context.Contex
 			ConnectionSubtype:  q.ConnectionSubtype,
 			ConnectionMethod:   q.ConnectionMethod,
 			ConnectionProvider: q.ConnectionProvider,
+			ImageURL:           q.ImageURL,
+			Services:           q.Services,
+			OriginConnectionID: q.OriginConnectionID,
 		}
 }
 
@@ -372,6 +391,9 @@ func (q *CreateConnectionCommand) SetCreateConnectionArgs(args *CreateConnection
 	q.ConnectionSubtype = args.ConnectionSubtype
 	q.ConnectionMethod = args.ConnectionMethod
 	q.ConnectionProvider = args.ConnectionProvider
+	q.ImageURL = args.ImageURL
+	q.Services = args.Services
+	q.OriginConnectionID = args.OriginConnectionID
 }
 
 func (q *CreateOrUpdateShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopConnectionArgs) {
@@ -443,6 +465,7 @@ func (q *UpdateConnectionCommand) GetArgs(ctx context.Context) (_ context.Contex
 			PartnerID:    q.PartnerID,
 			Name:         q.Name,
 			ImageURL:     q.ImageURL,
+			Services:     q.Services,
 			DriverConfig: q.DriverConfig,
 		}
 }
@@ -452,6 +475,7 @@ func (q *UpdateConnectionCommand) SetUpdateConnectionArgs(args *UpdateConnection
 	q.PartnerID = args.PartnerID
 	q.Name = args.Name
 	q.ImageURL = args.ImageURL
+	q.Services = args.Services
 	q.DriverConfig = args.DriverConfig
 }
 
@@ -525,6 +549,11 @@ func (q *ListConnectionsQuery) SetListConnectionsArgs(args *ListConnectionsArgs)
 	q.ConnectionType = args.ConnectionType
 	q.ConnectionMethod = args.ConnectionMethod
 	q.ConnectionProvider = args.ConnectionProvider
+}
+
+func (q *ListConnectionsByOriginConnectionIDQuery) GetArgs(ctx context.Context) (_ context.Context, OriginConnectionID dot.ID) {
+	return ctx,
+		q.OriginConnectionID
 }
 
 func (q *ListGlobalShopConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
@@ -604,6 +633,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetShopConnectionByID)
 	b.AddHandler(h.HandleListConnectionServicesByID)
 	b.AddHandler(h.HandleListConnections)
+	b.AddHandler(h.HandleListConnectionsByOriginConnectionID)
 	b.AddHandler(h.HandleListGlobalShopConnections)
 	b.AddHandler(h.HandleListShopConnections)
 	b.AddHandler(h.HandleListShopConnectionsByConnectionID)

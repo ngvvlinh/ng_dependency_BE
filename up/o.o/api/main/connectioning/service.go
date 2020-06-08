@@ -50,6 +50,8 @@ type QueryService interface {
 
 	ListConnectionServicesByID(ctx context.Context, ID dot.ID) ([]*ConnectionService, error)
 
+	ListConnectionsByOriginConnectionID(ctx context.Context, OriginConnectionID dot.ID) ([]*Connection, error)
+
 	// -- Shop Connection -- //
 	GetShopConnectionByID(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (*ShopConnection, error)
 
@@ -72,6 +74,9 @@ type CreateConnectionArgs struct {
 	ConnectionSubtype  connection_type.ConnectionSubtype
 	ConnectionMethod   connection_type.ConnectionMethod
 	ConnectionProvider connection_type.ConnectionProvider
+	ImageURL           string
+	Services           []*ConnectionService
+	OriginConnectionID dot.ID
 }
 
 // +convert:update=Connection(PartnerID)
@@ -80,6 +85,7 @@ type UpdateConnectionArgs struct {
 	PartnerID    dot.ID
 	Name         string
 	ImageURL     string
+	Services     []*ConnectionService
 	DriverConfig *ConnectionDriverConfig
 }
 

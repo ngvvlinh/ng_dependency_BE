@@ -7,6 +7,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping_provider"
+	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/connectioning/sqlstore"
 	cm "o.o/backend/pkg/common"
@@ -72,6 +73,10 @@ func (q *ConnectionQuery) ListConnectionServicesByID(ctx context.Context, id dot
 		}
 	}
 	return res, nil
+}
+
+func (q *ConnectionQuery) ListConnectionsByOriginConnectionID(ctx context.Context, originConnectionID dot.ID) ([]*connectioning.Connection, error) {
+	return q.connectionStore(ctx).OriginConnectionID(originConnectionID).OptionalConnectionMethod(connection_type.ConnectionMethodBuiltin).ListConnections(status3.NullStatus{Valid: false})
 }
 
 func (q *ConnectionQuery) GetShopConnectionByID(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (*connectioning.ShopConnection, error) {

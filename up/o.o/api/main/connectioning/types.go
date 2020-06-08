@@ -36,6 +36,12 @@ type Connection struct {
 	ImageURL             string
 	Services             []*ConnectionService
 	WLPartnerID          dot.ID
+	// OriginConnectionID
+	//
+	// Dùng để xác định connection được tạo ra từ connection nào
+	// Trường hợp tích hợp vận chuyển, để trở thành NVC nằm trong TopShip, NVC cần tạo một connection với method = direct
+	// Sau đó admin sẽ tạo một connection với method = builtin (nằm trong TopShip) với originConnectionID là connection ở trên.
+	OriginConnectionID dot.ID
 }
 
 type ConnectionDriverConfig struct {

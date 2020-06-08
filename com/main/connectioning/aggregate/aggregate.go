@@ -244,6 +244,9 @@ func (a *ConnectionAggregate) CreateBuiltinConnection(ctx context.Context, args 
 			ConnectionProvider: connection_type.ConnectionProviderPartner,
 			DriverConfig:       conn.DriverConfig,
 			PartnerID:          conn.PartnerID,
+			ImageURL:           conn.ImageURL,
+			Services:           conn.Services,
+			OriginConnectionID: args.ID,
 		}
 		res, err := a.CreateConnection(ctx, cmd)
 		if err != nil {

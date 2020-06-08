@@ -75,6 +75,11 @@ func (s *ConnectionStore) OptionalConnectionProvider(provider connection_type.Co
 	return s
 }
 
+func (s *ConnectionStore) OriginConnectionID(originConnectionID dot.ID) *ConnectionStore {
+	s.preds = append(s.preds, s.ft.ByOriginConnectionID(originConnectionID))
+	return s
+}
+
 func (s *ConnectionStore) Status(status status3.Status) *ConnectionStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s

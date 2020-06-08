@@ -70,6 +70,7 @@ func (s *ShipmentConnectionService) CreateConnection(ctx context.Context, r *par
 		ConnectionSubtype:  connection_type.ConnectionSubtypeShipment,
 		ConnectionMethod:   connection_type.ConnectionMethodDirect,
 		ConnectionProvider: connection_type.ConnectionProviderPartner,
+		ImageURL:           r.ImageURL,
 	}
 	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

@@ -166,7 +166,8 @@ func convert_connectioningmodel_Connection_connectioning_Connection(arg *connect
 	out.Code = arg.Code         // simple assign
 	out.ImageURL = arg.ImageURL // simple assign
 	out.Services = Convert_connectioningmodel_ConnectionServices_connectioning_ConnectionServices(arg.Services)
-	out.WLPartnerID = arg.WLPartnerID // simple assign
+	out.WLPartnerID = arg.WLPartnerID               // simple assign
+	out.OriginConnectionID = arg.OriginConnectionID // simple assign
 }
 
 func Convert_connectioningmodel_Connections_connectioning_Connections(args []*connectioningmodel.Connection) (outs []*connectioning.Connection) {
@@ -210,7 +211,8 @@ func convert_connectioning_Connection_connectioningmodel_Connection(arg *connect
 	out.Code = arg.Code         // simple assign
 	out.ImageURL = arg.ImageURL // simple assign
 	out.Services = Convert_connectioning_ConnectionServices_connectioningmodel_ConnectionServices(arg.Services)
-	out.WLPartnerID = arg.WLPartnerID // simple assign
+	out.WLPartnerID = arg.WLPartnerID               // simple assign
+	out.OriginConnectionID = arg.OriginConnectionID // simple assign
 }
 
 func Convert_connectioning_Connections_connectioningmodel_Connections(args []*connectioning.Connection) (outs []*connectioningmodel.Connection) {
@@ -252,9 +254,10 @@ func apply_connectioning_CreateConnectionArgs_connectioning_Connection(arg *conn
 	out.ConnectionProvider = arg.ConnectionProvider // simple assign
 	out.EtopAffiliateAccount = nil                  // zero value
 	out.Code = ""                                   // zero value
-	out.ImageURL = ""                               // zero value
-	out.Services = nil                              // zero value
+	out.ImageURL = arg.ImageURL                     // simple assign
+	out.Services = arg.Services                     // simple assign
 	out.WLPartnerID = 0                             // zero value
+	out.OriginConnectionID = arg.OriginConnectionID // simple assign
 }
 
 func Apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Connection(arg *connectioning.UpdateConnectionAffiliateAccountArgs, out *connectioning.Connection) *connectioning.Connection {
@@ -287,6 +290,7 @@ func apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Conn
 	out.ImageURL = out.ImageURL                         // no change
 	out.Services = out.Services                         // no change
 	out.WLPartnerID = out.WLPartnerID                   // no change
+	out.OriginConnectionID = out.OriginConnectionID     // no change
 }
 
 func Apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *connectioning.UpdateConnectionArgs, out *connectioning.Connection) *connectioning.Connection {
@@ -317,8 +321,9 @@ func apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *conn
 	out.EtopAffiliateAccount = out.EtopAffiliateAccount // no change
 	out.Code = out.Code                                 // no change
 	out.ImageURL = arg.ImageURL                         // simple assign
-	out.Services = out.Services                         // no change
+	out.Services = arg.Services                         // simple assign
 	out.WLPartnerID = out.WLPartnerID                   // no change
+	out.OriginConnectionID = out.OriginConnectionID     // no change
 }
 
 //-- convert o.o/api/main/connectioning.ConnectionService --//
