@@ -472,8 +472,16 @@ func (s *CustomerConversationService) SendComment(
 	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalCommentsCmd); err != nil {
 		return nil, err
 	}
-
-	return convertpb.PbFbExternalComment(createOrUpdateFbExternalCommentsCmd.Result[0]), nil
+	getFbExternalCommentParentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+		ExternalID: newComment.Parent.ID,
+	}
+	if err := s.fbMessagingQuery.Dispatch(ctx, getFbExternalCommentParentQuery); err != nil {
+		return nil, err
+	}
+	commentParent := convertpb.PbFbExternalComment(getFbExternalCommentParentQuery.Result)
+	result := convertpb.PbFbExternalComment(createOrUpdateFbExternalCommentsCmd.Result[0])
+	result.ExternalParent = commentParent
+	return result, nil
 }
 
 func (s *CustomerConversationService) SendMessage(

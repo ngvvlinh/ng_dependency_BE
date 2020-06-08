@@ -235,6 +235,10 @@ func (q *FbMessagingQuery) GetFbExternalConversationByID(
 	return q.fbExternalConversationStore(ctx).ID(ID).GetFbExternalConversation()
 }
 
-func (q FbMessagingQuery) GetFbCustomerConversationByID(ctx context.Context, ID dot.ID) (*fbmessaging.FbCustomerConversation, error) {
+func (q *FbMessagingQuery) GetFbCustomerConversationByID(ctx context.Context, ID dot.ID) (*fbmessaging.FbCustomerConversation, error) {
 	return q.fbCustomerConversationStore(ctx).ID(ID).GetFbCustomerConversation()
+}
+
+func (q *FbMessagingQuery) GetFbExternalCommentByExternalID(ctx context.Context, externalID string) (*fbmessaging.FbExternalComment, error) {
+	return q.fbExternalCommentStore(ctx).ExternalID(externalID).GetFbExternalComment()
 }

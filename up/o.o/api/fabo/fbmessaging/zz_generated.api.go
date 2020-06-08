@@ -162,6 +162,17 @@ func (h QueryServiceHandler) HandleGetFbCustomerConversationByID(ctx context.Con
 	return err
 }
 
+type GetFbExternalCommentByExternalIDQuery struct {
+	ExternalID string
+
+	Result *FbExternalComment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFbExternalCommentByExternalID(ctx context.Context, msg *GetFbExternalCommentByExternalIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalCommentByExternalID(msg.GetArgs(ctx))
+	return err
+}
+
 type GetFbExternalCommentByIDQuery struct {
 	ID dot.ID
 
@@ -393,6 +404,7 @@ func (q *UpdateIsReadCustomerConversationCommand) command()      {}
 
 func (q *GetFbCustomerConversationQuery) query()                                  {}
 func (q *GetFbCustomerConversationByIDQuery) query()                              {}
+func (q *GetFbExternalCommentByExternalIDQuery) query()                           {}
 func (q *GetFbExternalCommentByIDQuery) query()                                   {}
 func (q *GetFbExternalConversationByExternalIDAndExternalPageIDQuery) query()     {}
 func (q *GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery) query() {}
@@ -529,6 +541,11 @@ func (q *GetFbCustomerConversationQuery) GetArgs(ctx context.Context) (_ context
 func (q *GetFbCustomerConversationByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
+}
+
+func (q *GetFbExternalCommentByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
+	return ctx,
+		q.ExternalID
 }
 
 func (q *GetFbExternalCommentByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -715,6 +732,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetFbCustomerConversation)
 	b.AddHandler(h.HandleGetFbCustomerConversationByID)
+	b.AddHandler(h.HandleGetFbExternalCommentByExternalID)
 	b.AddHandler(h.HandleGetFbExternalCommentByID)
 	b.AddHandler(h.HandleGetFbExternalConversationByExternalIDAndExternalPageID)
 	b.AddHandler(h.HandleGetFbExternalConversationByExternalPageIDAndExternalUserID)
