@@ -122,6 +122,11 @@ func Load() (cfg Config, err error) {
 	cfg.SMTP.MustLoadEnv()
 	cfg.Captcha.MustLoadEnv()
 
+	// TODO(vu): remove this
+	cfg.Shipment.GHN.MustLoadEnv()
+	cfg.Shipment.GHTK.MustLoadEnv()
+	cfg.Shipment.VTPost.MustLoadEnv()
+
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
 
 	if cfg.ThirdPartyHost == "" && !cmenv.IsDev() {

@@ -30,14 +30,15 @@ build_docker() {
     if ! docker ps | grep 'project_golang$' ; then
         docker run -d --name project_golang \
             -e 'PROJECT_DIR=/o.o' \
-            -v "$PWD":/o.o/backend \
-            -w /o.o/backend olvrng/golang-toolbox \
+            -v "$PWD":/_/o.o/backend \
+            -w /_/o.o/backend olvrng/golang-toolbox \
             sleep 3600
     fi
 
     if [[ -n $ENV_FILE ]]; then _env_file="-e=ENV_FILE=$ENV_FILE" ; fi
     docker exec -it -e COMMIT="$COMMIT" $_env_file \
-        project_golang scripts/build-inner.sh
+        project_golang scripts/build-inner.sh \
+            /_/o.o/backend /o.o/backend
 }
 
 case "$1" in

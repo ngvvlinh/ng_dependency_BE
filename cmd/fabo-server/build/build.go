@@ -112,7 +112,7 @@ func BuildIntHandlers(
 	hs = append(hs, rootServers...)
 	hs = append(hs, shopServers...)
 	hs = append(hs, adminServers...)
-	hs = append(hs, faboServers...)
+	hs = append(hs, httprpc.WithHooks(faboServers, ssHooks, logging)...)
 	hs = append(hs, httprpc.WithHooks(sadminServers, ssHooks, logging)...)
 	hs = httprpc.WithHooks(hs)
 	return hs

@@ -149,7 +149,9 @@ func Load(isTest bool) (Config, error) {
 	cfg.SMS.MustLoadEnv()
 	cfg.SMTP.MustLoadEnv()
 	cfg.Captcha.MustLoadEnv()
-
+	cfg.Shipment.GHN.MustLoadEnv()
+	cfg.Shipment.GHTK.MustLoadEnv()
+	cfg.Shipment.VTPost.MustLoadEnv()
 	cfg.Ahamove.MustLoadEnv()
 	cfg.VTPay.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)

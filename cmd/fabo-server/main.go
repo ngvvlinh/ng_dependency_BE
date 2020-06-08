@@ -72,12 +72,12 @@ func main() {
 	cancelHTTP := lifecycle.StartHTTP(ctxCancel, output.Servers...)
 	sdCtx.Register(cancelHTTP)
 	sdCtx.Register(cancel)
-	sdCtx.Register(func() { ll.SendMessagef("🎃 fabo-server on %v stopped 🎃\n---") })
+	sdCtx.Register(func() { ll.SendMessagef("🎃 fabo-server on %v stopped 🎃", cmenv.Env()) })
 	healthService.MarkReady()
 
 	ll.Info("Server started", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
-	ll.SendMessagef("---\n✨ fabo-server on %v started ✨\n", cmenv.Env(), cm.CommitMessage())
+	ll.SendMessagef("✨ fabo-server on %v started ✨\n%v", cmenv.Env(), cm.CommitMessage())
 }

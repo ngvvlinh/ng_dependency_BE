@@ -19,6 +19,9 @@ type HandlerFunc func(context.Context, *PgEvent) (mq.Code, error)
 const tenYears = 365 * 10 * 24 * time.Hour
 
 func WrapHandlerFunc(fn HandlerFunc) mq.EventHandler {
+	if fn == nil {
+		return nil
+	}
 	return func(ctx context.Context, msg *sarama.ConsumerMessage) (mq.Code, error) {
 		var event PgEvent
 		if err := jsonx.Unmarshal(msg.Value, &event); err != nil {
