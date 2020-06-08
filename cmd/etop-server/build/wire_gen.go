@@ -33,27 +33,38 @@ import (
 	"o.o/backend/com/main/address"
 	aggregate3 "o.o/backend/com/main/authorization/aggregate"
 	aggregate4 "o.o/backend/com/main/catalog/aggregate"
+	pm4 "o.o/backend/com/main/catalog/pm"
 	query3 "o.o/backend/com/main/catalog/query"
 	aggregate7 "o.o/backend/com/main/connectioning/aggregate"
 	query13 "o.o/backend/com/main/connectioning/query"
 	"o.o/backend/com/main/identity"
+	"o.o/backend/com/main/identity/pm"
 	aggregate5 "o.o/backend/com/main/inventory/aggregate"
+	pm2 "o.o/backend/com/main/inventory/pm"
 	query8 "o.o/backend/com/main/inventory/query"
 	aggregate2 "o.o/backend/com/main/invitation/aggregate"
+	pm3 "o.o/backend/com/main/invitation/pm"
 	"o.o/backend/com/main/invitation/query"
 	aggregate11 "o.o/backend/com/main/ledgering/aggregate"
+	pm5 "o.o/backend/com/main/ledgering/pm"
 	query17 "o.o/backend/com/main/ledgering/query"
 	"o.o/backend/com/main/location"
 	aggregate18 "o.o/backend/com/main/moneytx/aggregate"
+	pm6 "o.o/backend/com/main/moneytx/pm"
 	query15 "o.o/backend/com/main/moneytx/query"
 	"o.o/backend/com/main/ordering"
+	pm7 "o.o/backend/com/main/ordering/pm"
 	aggregate12 "o.o/backend/com/main/purchaseorder/aggregate"
+	pm8 "o.o/backend/com/main/purchaseorder/pm"
 	query10 "o.o/backend/com/main/purchaseorder/query"
 	aggregate16 "o.o/backend/com/main/purchaserefund/aggregate"
+	pm9 "o.o/backend/com/main/purchaserefund/pm"
 	query12 "o.o/backend/com/main/purchaserefund/query"
 	aggregate8 "o.o/backend/com/main/receipting/aggregate"
+	pm10 "o.o/backend/com/main/receipting/pm"
 	query9 "o.o/backend/com/main/receipting/query"
 	aggregate15 "o.o/backend/com/main/refund/aggregate"
+	pm11 "o.o/backend/com/main/refund/pm"
 	query11 "o.o/backend/com/main/refund/query"
 	"o.o/backend/com/main/shipmentpricing/pricelist"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"
@@ -61,19 +72,24 @@ import (
 	"o.o/backend/com/main/shipmentpricing/shopshipmentpricelist"
 	"o.o/backend/com/main/shipmentpricing/subpricelist"
 	"o.o/backend/com/main/shipnow"
+	pm12 "o.o/backend/com/main/shipnow/pm"
 	"o.o/backend/com/main/shipnowcarrier"
 	aggregate14 "o.o/backend/com/main/shipping/aggregate"
 	"o.o/backend/com/main/shipping/carrier"
+	pm13 "o.o/backend/com/main/shipping/pm"
 	query14 "o.o/backend/com/main/shipping/query"
 	aggregate13 "o.o/backend/com/main/stocktaking/aggregate"
 	query7 "o.o/backend/com/main/stocktaking/query"
 	affiliate2 "o.o/backend/com/services/affiliate"
+	pm14 "o.o/backend/com/services/affiliate/pm"
 	aggregate10 "o.o/backend/com/shopping/carrying/aggregate"
 	query4 "o.o/backend/com/shopping/carrying/query"
 	aggregate6 "o.o/backend/com/shopping/customering/aggregate"
 	query2 "o.o/backend/com/shopping/customering/query"
 	aggregate9 "o.o/backend/com/shopping/suppliering/aggregate"
 	query5 "o.o/backend/com/shopping/suppliering/query"
+	aggregate22 "o.o/backend/com/shopping/tradering/aggregate"
+	pm15 "o.o/backend/com/shopping/tradering/pm"
 	query6 "o.o/backend/com/shopping/tradering/query"
 	"o.o/backend/com/subscripting/subscription"
 	"o.o/backend/com/subscripting/subscriptionbill"
@@ -85,7 +101,7 @@ import (
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/authorization/auth"
-	"o.o/backend/pkg/common/lifecycle"
+	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
@@ -115,6 +131,7 @@ import (
 	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/payment/vtpay"
 	client2 "o.o/backend/pkg/integration/payment/vtpay/client"
 	"o.o/backend/pkg/integration/shipnow/ahamove"
@@ -129,37 +146,26 @@ import (
 	webhook4 "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	"o.o/backend/pkg/integration/sms"
 	api2 "o.o/backend/pkg/services/affiliate/api"
-	"o.o/capi"
 )
 
 // Injectors from wire.go:
 
-func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, healthServer *health.Service, partnerAuthURL partner.AuthURL) ([]lifecycle.HTTPServer, func(), error) {
+func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServer *health.Service, partnerAuthURL partner.AuthURL) (Output, func(), error) {
+	miscService := &api.MiscService{}
 	database_allConfig := cfg.Databases
 	databases, err := database_all.BuildDatabases(database_allConfig)
 	if err != nil {
-		return nil, nil, err
+		return Output{}, nil, err
 	}
 	mainDB := databases.Main
-	notifierDB := databases.Notifier
 	locationQuery := location.New(mainDB)
 	queryBus := location.QueryMessageBus(locationQuery)
-	store := sqlstore.New(mainDB, notifierDB, queryBus, eventBus)
-	sharedConfig := cfg.SharedConfig
-	sAdminToken := config_server.WireSAdminToken(sharedConfig)
-	redisRedis := cfg.Redis
-	redisStore := redis.Connect(redisRedis)
-	tokenStore := tokens.NewTokenStore(redisStore)
-	queryService := identity.NewQueryService(mainDB)
-	identityQueryBus := identity.QueryServiceMessageBus(queryService)
-	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, identityQueryBus)
-	captchaConfig := cfg.Captcha
-	captchaCaptcha := captcha.New(captchaConfig)
-	miscService := &api.MiscService{}
-	shipnowQueryService := shipnow.NewQueryService(mainDB)
-	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
+	queryService := shipnow.NewQueryService(mainDB)
+	shipnowQueryBus := shipnow.QueryServiceMessageBus(queryService)
 	clientConfig := cfg.Ahamove
 	clientClient := client.New(clientConfig)
+	identityQueryService := identity.NewQueryService(mainDB)
+	identityQueryBus := identity.QueryServiceMessageBus(identityQueryService)
 	ahamoveCarrier := ahamove.New(clientClient, queryBus, identityQueryBus)
 	urlConfig := shipnow_all.AhamoveConfig(cfg)
 	carrierAccount := ahamove.NewCarrierAccount(clientClient, urlConfig, identityQueryBus)
@@ -169,7 +175,10 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	commandBus := identity.AggregateMessageBus(identityAggregate)
 	invitationQuery := query.NewInvitationQuery(mainDB)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
-	generator := auth.NewGenerator(redisStore)
+	redisRedis := cfg.Redis
+	store := redis.Connect(redisRedis)
+	generator := auth.NewGenerator(store)
+	tokenStore := tokens.NewTokenStore(store)
 	smsConfig := cfg.SMS
 	whiteLabel := cfg.WhiteLabel
 	v2 := sms_all.SupportedSMSDrivers(whiteLabel, smsConfig)
@@ -177,6 +186,8 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	smsLogAggregate := aggregate.NewSmsLogAggregate(eventBus, logDB)
 	smslogCommandBus := aggregate.SmsLogAggregateMessageBus(smsLogAggregate)
 	smsClient := sms.New(smsConfig, v2, smslogCommandBus)
+	smtpConfig := cfg.SMTP
+	emailClient := email.New(smtpConfig)
 	userService := &api.UserService{
 		IdentityAggr:    commandBus,
 		IdentityQuery:   identityQueryBus,
@@ -184,8 +195,9 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		EventBus:        eventBus,
 		AuthStore:       generator,
 		TokenStore:      tokenStore,
-		RedisStore:      redisStore,
+		RedisStore:      store,
 		SMSClient:       smsClient,
+		EmailClient:     emailClient,
 	}
 	accountService := &api.AccountService{}
 	locationService := &api.LocationService{
@@ -198,7 +210,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
 	secretToken := cfg.Secret
 	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
-	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, identityQueryBus, eventBus, smsClient, secretToken, flagEnableNewLinkInvitation)
+	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, identityQueryBus, eventBus, smsClient, emailClient, secretToken, flagEnableNewLinkInvitation)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := aggregate3.NewAuthorizationAggregate()
 	authorizationCommandBus := aggregate3.AuthorizationAggregateMessageBus(authorizationAggregate)
@@ -214,7 +226,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	}
 	ecomService := &api.EcomService{}
 	emailConfig := cfg.Email
-	servers, cleanup := api.NewServers(miscService, userService, accountService, locationService, bankService, addressService, accountRelationshipService, userRelationshipService, ecomService, redisStore, emailConfig, smsConfig)
+	servers, cleanup := api.NewServers(miscService, userService, accountService, locationService, bankService, addressService, accountRelationshipService, userRelationshipService, ecomService, store, emailConfig, smsConfig)
 	shopMiscService := &shop.MiscService{}
 	queryQueryService := query3.New(mainDB)
 	catalogQueryBus := query3.QueryServiceMessageBus(queryQueryService)
@@ -293,29 +305,31 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	productSourceService := &shop.ProductSourceService{}
 	orderingAggregate := ordering.NewAggregate(eventBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
+	notifierDB := databases.Notifier
+	sqlstoreStore := sqlstore.New(mainDB, notifierDB, queryBus, eventBus)
 	shipment_allConfig := cfg.Shipment
-	v3 := shipment_all.SupportedCarrierDrivers(ctx, shipment_allConfig, queryBus)
+	v3 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, queryBus)
 	carrierManager := shipping_provider.NewCtrl(eventBus, queryBus, v3)
 	connectionQuery := query13.NewConnectionQuery(mainDB)
 	connectioningQueryBus := query13.ConnectionQueryMessageBus(connectionQuery)
 	connectionAggregate := aggregate7.NewConnectionAggregate(mainDB, eventBus)
 	connectioningCommandBus := aggregate7.ConnectionAggregateMessageBus(connectionAggregate)
-	shipmentserviceQueryService := shipmentservice.NewQueryService(mainDB, redisStore)
+	shipmentserviceQueryService := shipmentservice.NewQueryService(mainDB, store)
 	shipmentserviceQueryBus := shipmentservice.QueryServiceMessageBus(shipmentserviceQueryService)
-	pricelistQueryService := pricelist.NewQueryService(mainDB, redisStore)
+	pricelistQueryService := pricelist.NewQueryService(mainDB, store)
 	pricelistQueryBus := pricelist.QueryServiceMessageBus(pricelistQueryService)
 	subpricelistQueryService := subpricelist.NewQueryService(mainDB)
 	subpricelistQueryBus := subpricelist.QueryServiceMessageBus(subpricelistQueryService)
-	shopshipmentpricelistQueryService := shopshipmentpricelist.NewQueryService(mainDB, redisStore)
+	shopshipmentpricelistQueryService := shopshipmentpricelist.NewQueryService(mainDB, store)
 	shopshipmentpricelistQueryBus := shopshipmentpricelist.QueryServiceMessageBus(shopshipmentpricelistQueryService)
-	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, redisStore, queryBus, pricelistQueryBus, subpricelistQueryBus, shopshipmentpricelistQueryBus)
+	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, store, queryBus, pricelistQueryBus, subpricelistQueryBus, shopshipmentpricelistQueryBus)
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	flagApplyShipmentPrice := cfg.FlagApplyShipmentPrice
 	carrierConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
-	shipmentManager, err := carrier.NewShipmentManager(eventBus, queryBus, connectioningQueryBus, connectioningCommandBus, redisStore, shipmentserviceQueryBus, shipmentpriceQueryBus, flagApplyShipmentPrice, carrierConfig)
+	shipmentManager, err := carrier.NewShipmentManager(eventBus, queryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, flagApplyShipmentPrice, carrierConfig)
 	if err != nil {
 		cleanup()
-		return nil, nil, err
+		return Output{}, nil, err
 	}
 	orderLogic := orderS.New(carrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, queryBus, eventBus, shipmentManager)
 	orderService := &shop.OrderService{
@@ -343,16 +357,16 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	moneyTransactionService := &shop.MoneyTransactionService{
 		MoneyTxQuery: moneytxQueryBus,
 	}
-	dashboardQuery := query16.NewDashboardQuery(mainDB, redisStore, queryBus)
+	dashboardQuery := query16.NewDashboardQuery(mainDB, store, queryBus)
 	summaryQueryBus := query16.DashboardQueryMessageBus(dashboardQuery)
 	summarySummary := summary.New(mainDB)
 	summaryService := &shop.SummaryService{
 		SummaryQuery: summaryQueryBus,
 		SummaryOld:   summarySummary,
 	}
-	publisher := _wireEventStreamValue
+	eventStream := eventstream.New(ctx)
 	exportConfig := cfg.Export
-	service, cleanup2 := export.New(redisStore, publisher, exportConfig)
+	service, cleanup2 := export.New(store, eventStream, exportConfig)
 	exportService := &shop.ExportService{
 		ExportInner: service,
 	}
@@ -422,8 +436,8 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		StocktakeQuery: stocktakingQueryBus,
 		InventoryQuery: inventoryQueryBus,
 	}
-	aggregate22 := aggregate14.NewAggregate(mainDB, eventBus, queryBus, orderingQueryBus, shipmentManager, connectioningQueryBus)
-	shippingCommandBus := aggregate14.AggregateMessageBus(aggregate22)
+	aggregate23 := aggregate14.NewAggregate(mainDB, eventBus, queryBus, orderingQueryBus, shipmentManager, connectioningQueryBus)
+	shippingCommandBus := aggregate14.AggregateMessageBus(aggregate23)
 	shipmentService := &shop.ShipmentService{
 		ShipmentManager:   shipmentManager,
 		ShippingAggregate: shippingCommandBus,
@@ -471,12 +485,12 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	subscriptionService := &shop.SubscriptionService{
 		SubscriptionQuery: subscriptionQueryBus,
 	}
-	shopServers := shop_all.NewServers(redisStore, shopMiscService, brandService, inventoryService, shopAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService)
+	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, shopAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService)
 	adminMiscService := admin.MiscService{}
 	adminAccountService := admin.AccountService{}
 	adminOrderService := admin.OrderService{}
 	adminFulfillmentService := admin.FulfillmentService{
-		RedisStore: redisStore,
+		RedisStore: store,
 	}
 	moneyTxAggregate := aggregate18.NewMoneyTxAggregate(mainDB, shippingQueryBus, identityQueryBus, eventBus)
 	moneytxCommandBus := aggregate18.MoneyTxAggregateMessageBus(moneyTxAggregate)
@@ -493,9 +507,9 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		ConnectionAggr:  connectioningCommandBus,
 		ConnectionQuery: connectioningQueryBus,
 	}
-	shipmentpriceAggregate := shipmentprice.NewAggregate(mainDB, redisStore, subpricelistQueryBus, pricelistQueryBus)
+	shipmentpriceAggregate := shipmentprice.NewAggregate(mainDB, store, subpricelistQueryBus, pricelistQueryBus)
 	shipmentpriceCommandBus := shipmentprice.AggregateMessageBus(shipmentpriceAggregate)
-	shipmentserviceAggregate := shipmentservice.NewAggregate(mainDB, redisStore)
+	shipmentserviceAggregate := shipmentservice.NewAggregate(mainDB, store)
 	shipmentserviceCommandBus := shipmentservice.AggregateMessageBus(shipmentserviceAggregate)
 	pricelistAggregate := pricelist.NewAggregate(mainDB, eventBus, shopshipmentpricelistQueryBus)
 	pricelistCommandBus := pricelist.AggregateMessageBus(pricelistAggregate)
@@ -528,8 +542,8 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	subscriptionplanCommandBus := subscriptionplan.SubrPlanAggregateMessageBus(subrPlanAggregate)
 	subscriptionAggregate := subscription.NewSubscriptionAggregate(mainDB)
 	subscriptionCommandBus := subscription.SubscriptionAggregateMessageBus(subscriptionAggregate)
-	aggregate23 := aggregate19.NewAggregate(mainDB)
-	paymentCommandBus := aggregate19.AggregateMessageBus(aggregate23)
+	aggregate24 := aggregate19.NewAggregate(mainDB)
+	paymentCommandBus := aggregate19.AggregateMessageBus(aggregate24)
 	subrBillAggregate := subscriptionbill.NewSubrBillAggregate(mainDB, eventBus, paymentCommandBus, subscriptionQueryBus, subscriptionplanQueryBus)
 	subscriptionbillCommandBus := subscriptionbill.SubrBillAggregateMessageBus(subrBillAggregate)
 	subrBillQuery := subscriptionbill.NewSubrBillQuery(mainDB)
@@ -545,7 +559,8 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		SubrBillQuery:     subscriptionbillQueryBus,
 	}
 	adminServers := admin_all.NewServers(adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService)
-	session := config_server.NewSession(sharedConfig, redisStore)
+	sharedConfig := cfg.SharedConfig
+	session := config_server.NewSession(sharedConfig, store)
 	sadminMiscService := &sadmin.MiscService{
 		Session: session,
 	}
@@ -555,11 +570,12 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	sadminServers := sadmin.NewServers(sadminMiscService, sadminUserService)
 	integrationMiscService := &integration.MiscService{}
 	integrationService := &integration.IntegrationService{
-		AuthStore:  generator,
-		TokenStore: tokenStore,
-		SMSClient:  smsClient,
+		AuthStore:   generator,
+		TokenStore:  tokenStore,
+		SMSClient:   smsClient,
+		EmailClient: emailClient,
 	}
-	integrationServers, cleanup3 := integration.NewIntegrationServer(redisStore, integrationMiscService, integrationService)
+	integrationServers, cleanup3 := integration.NewIntegrationServer(store, integrationMiscService, integrationService)
 	affiliateMiscService := affiliate.MiscService{}
 	affiliateAccountService := affiliate.AccountService{
 		IdentityAggr: commandBus,
@@ -602,9 +618,9 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		cleanup3()
 		cleanup2()
 		cleanup()
-		return nil, nil, err
+		return Output{}, nil, err
 	}
-	webhookService := webhook.New(producer, redisStore)
+	webhookService := webhook.New(producer, store)
 	partnerWebhookService := &partner.WebhookService{
 		WebhookInner: webhookService,
 	}
@@ -655,7 +671,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	productCollectionRelationshipService := &partner.ProductCollectionRelationshipService{
 		Shopping: shoppingShopping,
 	}
-	partnerServers, cleanup4 := partner.NewServers(redisStore, generator, partnerAuthURL, partnerMiscService, partnerShopService, partnerWebhookService, partnerHistoryService, shippingService, partnerOrderService, partnerFulfillmentService, partnerCustomerService, customerAddressService, partnerCustomerGroupService, customerGroupRelationshipService, partnerInventoryService, variantService, partnerProductService, productCollectionService, productCollectionRelationshipService)
+	partnerServers, cleanup4 := partner.NewServers(store, generator, partnerAuthURL, partnerMiscService, partnerShopService, partnerWebhookService, partnerHistoryService, shippingService, partnerOrderService, partnerFulfillmentService, partnerCustomerService, customerAddressService, partnerCustomerGroupService, customerGroupRelationshipService, partnerInventoryService, variantService, partnerProductService, productCollectionService, productCollectionRelationshipService)
 	xshopMiscService := &xshop.MiscService{
 		Shipping: shippingShipping,
 	}
@@ -699,7 +715,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	xshopProductCollectionRelationshipService := &xshop.ProductCollectionRelationshipService{
 		Shopping: shoppingShopping,
 	}
-	xshopServers, cleanup5 := xshop.NewServers(redisStore, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService)
+	xshopServers, cleanup5 := xshop.NewServers(store, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService)
 	partnercarrierMiscService := &partnercarrier.MiscService{
 		Session:  session,
 		Shipping: shippingShipping,
@@ -715,7 +731,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		ShippingAggr:    shippingCommandBus,
 		ShippingQuery:   shippingQueryBus,
 	}
-	partnercarrierServers, cleanup6 := partnercarrier.NewServers(redisStore, partnercarrierMiscService, shipmentConnectionService, partnercarrierShipmentService)
+	partnercarrierServers, cleanup6 := partnercarrier.NewServers(store, partnercarrierMiscService, shipmentConnectionService, partnercarrierShipmentService)
 	importService := partnerimport.New(mainDB, catalogCommandBus)
 	partnerimportServers := partnerimport.NewServers(importService)
 	extHandlers := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers)
@@ -738,24 +754,23 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		cleanup3()
 		cleanup2()
 		cleanup()
-		return nil, nil, err
+		return Output{}, nil, err
 	}
-	import2, cleanup7 := imcsv2.New(queryBus, redisStore, uploader, mainDB)
-	import3, cleanup8 := imcsv3.New(redisStore, uploader, mainDB)
+	import2, cleanup7 := imcsv2.New(queryBus, store, uploader, mainDB)
+	import3, cleanup8 := imcsv3.New(store, uploader, mainDB)
 	importHandler := server_shop.BuildImportHandler(import2, import3)
-	eventStream := eventstream.New(ctx)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream)
 	downloadHandler := server_shop.BuildDownloadHandler()
 	client3 := client2.New(config2)
 	vtpayAggregate := vtpay2.NewAggregate(mainDB, orderingQueryBus, orderingCommandBus, paymentCommandBus, client3)
 	vtpayCommandBus := vtpay2.AggregateMessageBus(vtpayAggregate)
-	aggregate24 := aggregate20.NewAggregate(orderingQueryBus, orderingCommandBus, vtpayCommandBus, client3)
-	gatewayCommandBus := aggregate20.AggregateMessageBus(aggregate24)
-	aggregate25 := aggregate21.New(logDB)
-	serverServer := server.New(gatewayCommandBus, aggregate25)
+	aggregate25 := aggregate20.NewAggregate(orderingQueryBus, orderingCommandBus, vtpayCommandBus, client3)
+	gatewayCommandBus := aggregate20.AggregateMessageBus(aggregate25)
+	aggregate26 := aggregate21.New(logDB)
+	serverServer := server.New(gatewayCommandBus, aggregate26)
 	vtPayHandler := server_vtpay.BuildVTPayHandler(serverServer)
 	mainServer := BuildMainServer(healthServer, intHandlers, extHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler)
-	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, redisStore, queryBus)
+	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, queryBus)
 	webhookConfig := shipment_allConfig.GHNWebhook
 	ghnConfig := shipment_allConfig.GHN
 	ghnCarrier := ghn.New(ghnConfig, queryBus)
@@ -775,8 +790,50 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	ahamoveVerificationFileServer := server2.NewAhamoveVerificationFileServer(ctx, identityQueryBus)
 	webhook8 := webhook5.New(mainDB, logDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus)
 	ahamoveWebhookServer := server2.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, identityQueryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook8)
-	v5 := BuildServers(store, middlewareMiddleware, captchaCaptcha, mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
-	return v5, func() {
+	v5 := BuildServers(mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
+	processManager := pm.New(eventBus, identityQueryBus, invitationQueryBus)
+	pmProcessManager := pm2.New(eventBus, catalogQueryBus, orderingQueryBus, inventoryCommandBus)
+	processManager2 := pm3.New(eventBus, invitationQueryBus, invitationCommandBus)
+	processManager3 := pm4.New(eventBus, catalogQueryBus, catalogCommandBus)
+	processManager4 := pm5.New(eventBus, ledgeringCommandBus)
+	processManager5 := pm6.New(eventBus, moneytxQueryBus, moneytxCommandBus, shippingQueryBus)
+	processManager6 := pm7.New(eventBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus)
+	processManager7 := pm8.New(eventBus, purchaseorderQueryBus, receiptingQueryBus)
+	processManager8 := pm9.New(eventBus, purchaserefundCommandBus, purchaserefundQueryBus, receiptingQueryBus)
+	processManager9 := pm10.New(eventBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, identityQueryBus)
+	processManager10 := pm11.New(eventBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
+	processManager11 := pm12.New(eventBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, shipnowManager)
+	processManager12 := pm13.New(eventBus, shippingQueryBus, shippingCommandBus, store)
+	processManager13 := pm14.New(eventBus, affiliateCommandBus)
+	traderAgg := aggregate22.NewTraderAgg(mainDB)
+	traderingCommandBus := aggregate22.TraderAggMessageBus(traderAgg)
+	processManager14 := pm15.New(eventBus, traderingCommandBus)
+	sAdminToken := config_server.WireSAdminToken(sharedConfig)
+	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, identityQueryBus)
+	captchaConfig := cfg.Captcha
+	captchaCaptcha := captcha.New(captchaConfig)
+	output := Output{
+		Servers:           v5,
+		_identityPM:       processManager,
+		_inventoryPM:      pmProcessManager,
+		_invitationPM:     processManager2,
+		_catalogPM:        processManager3,
+		_ledgerPM:         processManager4,
+		_moneytxPM:        processManager5,
+		_orderPM:          processManager6,
+		_purchaseOrderPM:  processManager7,
+		_purchaseRefundPM: processManager8,
+		_receiptPM:        processManager9,
+		_refundPM:         processManager10,
+		_shipnowPM:        processManager11,
+		_shippingPM:       processManager12,
+		_affiliatePM:      processManager13,
+		_traderPM:         processManager14,
+		_s:                sqlstoreStore,
+		_m:                middlewareMiddleware,
+		_c:                captchaCaptcha,
+	}
+	return output, func() {
 		cleanup8()
 		cleanup7()
 		cleanup6()
@@ -787,7 +844,3 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		cleanup()
 	}, nil
 }
-
-var (
-	_wireEventStreamValue = new(eventstream.EventStream)
-)

@@ -8,7 +8,7 @@ import (
 
 	"o.o/backend/cmd/fabo-server/build"
 	"o.o/backend/cmd/fabo-server/config"
-	fabohandler "o.o/backend/com/eventhandler/fabo/handler"
+	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
@@ -31,8 +31,11 @@ func main() {
 	// load config
 	cfg, err := config.Load()
 	ll.Must(err, "can not load config")
-
 	cmenv.SetEnvironment(cfg.SharedConfig.Env)
+	if cmenv.IsDev() {
+		ll.Info("config", l.Object("cfg", cfg))
+	}
+
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite) // TODO(vu): refactor
 	sqltrace.Init()
 	wl.Init(cmenv.Env())
@@ -57,13 +60,13 @@ func main() {
 	}
 
 	// build servers
-	output, cancel, err := build.Servers(sdCtx, cfg, eventBus, healthService, cfg.URL.Auth, consumer)
+	output, cancel, err := build.Build(sdCtx, cfg, eventBus, healthService, consumer)
 	ll.Must(err, "can not build server")
 
 	// start forwarder
 	go output.EventStream.RunForwarder()
 	h, fp := output.Handler, output.Publisher
-	h.StartConsuming(sdCtx, fabohandler.GetTopics(fp.TopicsAndHandlers()), fp.TopicsAndHandlers())
+	h.StartConsuming(sdCtx, fabopublisher.GetTopics(fp.TopicsAndHandlers()), fp.TopicsAndHandlers())
 
 	// start servers
 	cancelHTTP := lifecycle.StartHTTP(ctxCancel, output.Servers...)

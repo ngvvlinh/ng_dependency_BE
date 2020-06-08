@@ -14,6 +14,16 @@ import (
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
+	catalogpm "o.o/backend/com/main/catalog/pm"
+	identitypm "o.o/backend/com/main/identity/pm"
+	inventorypm "o.o/backend/com/main/inventory/pm"
+	invitationpm "o.o/backend/com/main/invitation/pm"
+	ledgerpm "o.o/backend/com/main/ledgering/pm"
+	moneytxpm "o.o/backend/com/main/moneytx/pm"
+	orderingpm "o.o/backend/com/main/ordering/pm"
+	receiptpm "o.o/backend/com/main/receipting/pm"
+	refundpm "o.o/backend/com/main/refund/pm"
+	shippingpm "o.o/backend/com/main/shipping/pm"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -46,8 +56,25 @@ type Output struct {
 	Handler   *handler.Handler
 	Publisher *fabopublisher.Publisher
 
-	// inject
+	// pm
+	_catalogPM    *catalogpm.ProcessManager
+	_identityPM   *identitypm.ProcessManager
+	_inventoryPM  *inventorypm.ProcessManager
+	_invitationPM *invitationpm.ProcessManager
+	_ledgerPM     *ledgerpm.ProcessManager
+	_moneytxPM    *moneytxpm.ProcessManager
+	_orderPM      *orderingpm.ProcessManager
+	_receiptPM    *receiptpm.ProcessManager
+	_refundPM     *refundpm.ProcessManager
+	_shippingPM   *shippingpm.ProcessManager
 
+	// _affiliatePM      *affiliatepm.ProcessManager
+	// _purchaseOrderPM  *purchaseorderpm.ProcessManager
+	// _purchaseRefundPM *purchaserefundpm.ProcessManager
+	// _shipnowPM  *shipnowpm.ProcessManager
+	// _traderPM         *traderpm.ProcessManager
+
+	// inject
 	_s *sqlstore.Store
 	_m middleware.Middleware
 	_c *captcha.Captcha

@@ -30,7 +30,7 @@ func StartHTTP(notifyStop func(), servers ...HTTPServer) func() {
 			case nil, http.ErrServerClosed:
 				err = nil
 			default:
-				ll.S.Errorf("HTTP server %v error", s.Name, l.Error(err))
+				ll.S.Errorf("HTTP server %v error: %v", s.Name, l.Error(err))
 			}
 		}()
 	}

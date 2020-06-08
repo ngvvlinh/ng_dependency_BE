@@ -10,7 +10,6 @@ import (
 
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/validate"
@@ -55,13 +54,9 @@ type Client struct {
 // New ...
 func New(cfg SMTPConfig) *Client {
 	cfg.Encrypt = strings.ToLower(cfg.Encrypt)
-	return &Client{
+	c := &Client{
 		cfg: cfg,
 	}
-}
-
-func (c *Client) Register(bus bus.Bus) *Client {
-	bus.AddHandlers(c.SendMail)
 	return c
 }
 

@@ -30,9 +30,7 @@ type ProcessManager struct {
 	customerQuery customering.QueryBus
 }
 
-var (
-	ll = l.New()
-)
+var ll = l.New()
 
 func New(
 	eventBus bus.EventRegistry,

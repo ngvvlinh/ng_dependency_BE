@@ -75,7 +75,8 @@ type UserService struct {
 	AuthStore       auth.Generator
 	TokenStore      tokens.TokenStore
 	RedisStore      redis.Store
-	SMSClient       sms.Client
+	SMSClient       *sms.Client
+	EmailClient     *email.Client
 }
 
 var UserServiceImpl = &UserService{} // MUSTDO: fix it
@@ -520,7 +521,7 @@ func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel
 		Subject:     "Xác nhận thay đổi thông tin tài khoản",
 		Content:     b.String(),
 	}
-	if err = bus.Dispatch(ctx, cmd); err != nil {
+	if err = s.EmailClient.SendMail(ctx, cmd); err != nil {
 		return "", err
 	}
 	return fmt.Sprintf(
@@ -949,7 +950,7 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 		Subject:     "Khôi phục mật khẩu eTop",
 		Content:     b.String(),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
 		return r, err
 	}
 	r.Result = &etop.ResetPasswordResponse{
@@ -1351,7 +1352,7 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 		Subject:     "Xác nhận địa chỉ email",
 		Content:     b.String(),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
@@ -1372,11 +1373,7 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 
 	extra[keyRequestEmailVerifyCode] = code
 	extra[keyRequestAuthUsage] = auth.UsageEmailVerification
-	updateSessionCmd := &tokens.UpdateSessionCommand{
-		Token:  r.Context.Token,
-		Values: extra,
-	}
-	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+	if err := s.TokenStore.UpdateSession(ctx, r.Context.Token, extra); err != nil {
 		return nil, err
 	}
 	return r, nil
@@ -1452,7 +1449,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 		Subject:     "Xác nhận địa chỉ email",
 		Content:     b.String(),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
@@ -1593,11 +1590,7 @@ func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *VerifyEmailUsi
 	delete(extra, keyRequestAuthUsage)
 	delete(extra, keyRequestEmailVerifyCode)
 
-	updateSessionCmd := &tokens.UpdateSessionCommand{
-		Token:  r.Context.Token,
-		Values: extra,
-	}
-	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+	if err := s.TokenStore.UpdateSession(ctx, r.Context.Token, extra); err != nil {
 		return err
 	}
 
@@ -1643,11 +1636,8 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 	if r.Context.UserID == 0 && r.Context.Extra != nil {
 		extra := r.Context.Extra
 		extra[keyRequestPhoneVerificationVerified] = "1"
-		updateSessionCmd := &tokens.UpdateSessionCommand{
-			Token:  r.Context.Claim.Token,
-			Values: extra,
-		}
-		if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+
+		if err := s.TokenStore.UpdateSession(ctx, r.Context.Claim.Token, extra); err != nil {
 			return r, err
 		}
 		r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
@@ -1908,7 +1898,7 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 		Subject:     "Xác nhận thay đổi thông tin tài khoản",
 		Content:     b.String(),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
 		return r, err
 	}
 	r.Result = cmapi.Message("ok", fmt.Sprintf(
@@ -2077,11 +2067,8 @@ func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *ident
 		extra[keyRequestVerifyCode] = code
 	}
 	extra[keyRequestAuthUsage] = usage
-	updateSessionCmd := &tokens.UpdateSessionCommand{
-		Token:  r.Token,
-		Values: extra,
-	}
-	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+
+	if err := s.TokenStore.UpdateSession(ctx, r.Token, extra); err != nil {
 		return err
 	}
 	return nil

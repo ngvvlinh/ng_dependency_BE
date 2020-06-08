@@ -17,6 +17,7 @@ import (
 	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/imcsv"
 	vtpostimxlsx "o.o/backend/pkg/etop/logic/money-transaction/vtpost-imxlsx"
 	"o.o/backend/pkg/etop/logic/shipping_provider"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	"o.o/backend/pkg/integration/shipping/ghtk"
 	"o.o/backend/pkg/integration/shipping/vtpost"
@@ -67,7 +68,8 @@ func DefaultConfig() Config {
 	}
 }
 
-func SupportedCarrierDrivers(ctx context.Context, cfg Config, locationBus location.QueryBus) []shipping_provider.CarrierDriver {
+// TODO(vu): remove dependence on *sqlstore.Store
+func SupportedCarrierDrivers(ctx context.Context, _ *sqlstore.Store, cfg Config, locationBus location.QueryBus) []shipping_provider.CarrierDriver {
 	var ghnCarrier *ghn.Carrier
 	var ghtkCarrier *ghtk.Carrier
 	var vtpostCarrier *vtpost.Carrier

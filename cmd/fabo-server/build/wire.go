@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/wire"
 
+	"o.o/api/services/affiliate"
 	"o.o/backend/cmd/fabo-server/config"
 	_base "o.o/backend/cogs/base"
 	config_server "o.o/backend/cogs/config/_server"
@@ -42,6 +43,7 @@ import (
 	"o.o/backend/com/summary"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
+	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
@@ -50,7 +52,6 @@ import (
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
 	shop_min "o.o/backend/pkg/etop/api/shop/_min"
-	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/eventstream"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
@@ -59,20 +60,21 @@ import (
 	logicsummary "o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
+	"o.o/backend/pkg/integration/email"
 	"o.o/capi"
 )
 
-func Servers(
+func Build(
 	ctx context.Context,
 	cfg config.Config,
-	eventBus capi.EventBus,
+	eventBus bus.Bus,
 	healthServer *health.Service,
-	partnerAuthURL partner.AuthURL,
 	consumer mq.KafkaConsumer,
 ) (Output, func(), error) {
 	panic(wire.Build(
 		wire.FieldsOf(&cfg,
 			"email",
+			"smtp",
 			"sms",
 			"databases",
 			"invitation",
@@ -104,6 +106,7 @@ func Servers(
 		shop.WireSet,
 		admin_min.WireSet,
 
+		email.WireSet,
 		logicorder.WireSet,
 		moneytx.WireSet,
 		orderimcsv.WireSet,
@@ -134,7 +137,9 @@ func Servers(
 		export.WireSet,
 		middleware.WireSet,
 		logicsummary.WireSet,
-		wire.InterfaceValue(new(eventstream.Publisher), new(eventstream.EventStream)),
+		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),
+		wire.Bind(new(capi.EventBus), new(bus.Bus)),
+		wire.Bind(new(eventstream.Publisher), new(*eventstream.EventStream)),
 		sqlstore.WireSet,
 		captcha.WireSet,
 
@@ -143,6 +148,9 @@ func Servers(
 		fabopublisher.WireSet,
 		fabo.WireSet,
 		comfabo.WireSet,
+
+		// TODO(vu): remove
+		wire.Value(affiliate.CommandBus{}),
 
 		BuildIntHandlers,
 		BuildMainServer,

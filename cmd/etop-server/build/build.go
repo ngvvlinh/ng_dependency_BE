@@ -17,6 +17,21 @@ import (
 	_ghn "o.o/backend/cogs/shipment/ghn"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
+	catalogpm "o.o/backend/com/main/catalog/pm"
+	identitypm "o.o/backend/com/main/identity/pm"
+	inventorypm "o.o/backend/com/main/inventory/pm"
+	invitationpm "o.o/backend/com/main/invitation/pm"
+	ledgerpm "o.o/backend/com/main/ledgering/pm"
+	moneytxpm "o.o/backend/com/main/moneytx/pm"
+	orderingpm "o.o/backend/com/main/ordering/pm"
+	purchaseorderpm "o.o/backend/com/main/purchaseorder/pm"
+	purchaserefundpm "o.o/backend/com/main/purchaserefund/pm"
+	receiptpm "o.o/backend/com/main/receipting/pm"
+	refundpm "o.o/backend/com/main/refund/pm"
+	shipnowpm "o.o/backend/com/main/shipnow/pm"
+	shippingpm "o.o/backend/com/main/shipping/pm"
+	affiliatepm "o.o/backend/com/services/affiliate/pm"
+	traderpm "o.o/backend/com/shopping/tradering/pm"
 	"o.o/backend/com/web/ecom/webserver"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
@@ -39,11 +54,33 @@ import (
 
 var ll = l.New()
 
-func BuildServers(
-	_ *sqlstore.Store, // inject
-	_ middleware.Middleware, // inject
-	_ *captcha.Captcha, // inject
+type Output struct {
+	Servers []lifecycle.HTTPServer
 
+	// pm
+	_identityPM       *identitypm.ProcessManager
+	_inventoryPM      *inventorypm.ProcessManager
+	_invitationPM     *invitationpm.ProcessManager
+	_catalogPM        *catalogpm.ProcessManager
+	_ledgerPM         *ledgerpm.ProcessManager
+	_moneytxPM        *moneytxpm.ProcessManager
+	_orderPM          *orderingpm.ProcessManager
+	_purchaseOrderPM  *purchaseorderpm.ProcessManager
+	_purchaseRefundPM *purchaserefundpm.ProcessManager
+	_receiptPM        *receiptpm.ProcessManager
+	_refundPM         *refundpm.ProcessManager
+	_shipnowPM        *shipnowpm.ProcessManager
+	_shippingPM       *shippingpm.ProcessManager
+	_affiliatePM      *affiliatepm.ProcessManager
+	_traderPM         *traderpm.ProcessManager
+
+	// inject
+	_s *sqlstore.Store
+	_m middleware.Middleware
+	_c *captcha.Captcha
+}
+
+func BuildServers(
 	etopServer MainServer,
 	webServer WebServer,
 	ghnServer _ghn.GHNWebhookServer,

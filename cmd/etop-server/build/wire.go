@@ -48,7 +48,7 @@ import (
 	"o.o/backend/com/web/webserver"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
-	"o.o/backend/pkg/common/lifecycle"
+	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
 	admin_all "o.o/backend/pkg/etop/api/admin/_all"
@@ -72,20 +72,22 @@ import (
 	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
 	logicsummary "o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/backend/pkg/integration/email"
 	saffapi "o.o/backend/pkg/services/affiliate/api"
 	"o.o/capi"
 )
 
-func Servers(
+func Build(
 	ctx context.Context,
 	cfg config.Config,
-	eventBus capi.EventBus,
+	eventBus bus.Bus,
 	healthServer *health.Service,
 	partnerAuthURL partner.AuthURL,
-) ([]lifecycle.HTTPServer, func(), error) {
+) (Output, func(), error) {
 	panic(wire.Build(
 		wire.FieldsOf(&cfg,
 			"email",
+			"smtp",
 			"sms",
 			"databases",
 			"invitation",
@@ -104,6 +106,7 @@ func Servers(
 			"FlagApplyShipmentPrice",
 			"FlagEnableNewLinkInvitation",
 		),
+		wire.Struct(new(Output), "*"),
 		_base.WireSet,
 		shipnow_all.WireSet,
 		payment_all.WireSet,
@@ -122,6 +125,7 @@ func Servers(
 		shop_all.WireSet,
 		shop.WireSet,
 
+		email.WireSet,
 		affiliate.WireSet,
 		logicorder.WireSet,
 		moneytx.WireSet,
@@ -166,7 +170,9 @@ func Servers(
 		webhook.WireSet,
 		middleware.WireSet,
 		logicsummary.WireSet,
-		wire.InterfaceValue(new(eventstream.Publisher), new(eventstream.EventStream)),
+		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),
+		wire.Bind(new(capi.EventBus), new(bus.Bus)),
+		wire.Bind(new(eventstream.Publisher), new(*eventstream.EventStream)),
 		sqlstore.WireSet,
 		captcha.WireSet,
 

@@ -27,8 +27,11 @@ func main() {
 	// load config
 	cfg, err := config.Load(false)
 	ll.Must(err, "can not load config")
-
 	cmenv.SetEnvironment(cfg.SharedConfig.Env)
+	if cmenv.IsDev() {
+		ll.Info("config", l.Object("cfg", cfg))
+	}
+
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite) // TODO(vu): refactor
 	sqltrace.Init()
 	wl.Init(cmenv.Env())
@@ -46,17 +49,14 @@ func main() {
 	lifecycle.ListenForSignal(ctxCancel, 30*time.Second)
 
 	// build servers
-	servers, cancelServer, err := build.Servers(sd, cfg, eventBus, healthService, cfg.URL.Auth)
+	output, cancelServer, err := build.Build(sd, cfg, eventBus, healthService, cfg.URL.Auth)
 	ll.Must(err, "can not build server")
 
 	// start servers
-	cancelHTTP := lifecycle.StartHTTP(ctxCancel, servers...)
+	cancelHTTP := lifecycle.StartHTTP(ctxCancel, output.Servers...)
 	sd.Register(cancelHTTP)
 	sd.Register(cancelServer)
 	healthService.MarkReady()
 
-	if cmenv.IsDev() {
-		ll.Info("config", l.Object("cfg", cfg))
-	}
 	ll.SendMessagef("✨ etop-server on %v started ✨\n%v", cmenv.Env(), cm.CommitMessage())
 }

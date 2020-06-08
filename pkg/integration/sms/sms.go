@@ -56,12 +56,12 @@ type DriverConfig struct {
 	Driver Driver
 }
 
-func New(cfg Config, drivers []DriverConfig, smsLog smslog.CommandBus) Client {
+func New(cfg Config, drivers []DriverConfig, smsLog smslog.CommandBus) *Client {
 	c := Client{
 		drivers: drivers,
 		smsLog:  smsLog,
 	}
-	return c
+	return &c
 }
 
 func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {

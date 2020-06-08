@@ -7,6 +7,7 @@ package build
 
 import (
 	"context"
+	"o.o/api/services/affiliate"
 	"o.o/backend/cmd/fabo-server/config"
 	"o.o/backend/cogs/config/_server"
 	"o.o/backend/cogs/database/_min"
@@ -30,27 +31,36 @@ import (
 	"o.o/backend/com/main/address"
 	aggregate3 "o.o/backend/com/main/authorization/aggregate"
 	aggregate4 "o.o/backend/com/main/catalog/aggregate"
+	"o.o/backend/com/main/catalog/pm"
 	query3 "o.o/backend/com/main/catalog/query"
 	aggregate7 "o.o/backend/com/main/connectioning/aggregate"
 	query13 "o.o/backend/com/main/connectioning/query"
 	"o.o/backend/com/main/identity"
+	pm2 "o.o/backend/com/main/identity/pm"
 	aggregate5 "o.o/backend/com/main/inventory/aggregate"
+	pm3 "o.o/backend/com/main/inventory/pm"
 	query8 "o.o/backend/com/main/inventory/query"
 	aggregate2 "o.o/backend/com/main/invitation/aggregate"
+	pm4 "o.o/backend/com/main/invitation/pm"
 	"o.o/backend/com/main/invitation/query"
 	aggregate10 "o.o/backend/com/main/ledgering/aggregate"
+	pm5 "o.o/backend/com/main/ledgering/pm"
 	query17 "o.o/backend/com/main/ledgering/query"
 	"o.o/backend/com/main/location"
 	aggregate16 "o.o/backend/com/main/moneytx/aggregate"
+	pm6 "o.o/backend/com/main/moneytx/pm"
 	query15 "o.o/backend/com/main/moneytx/query"
 	"o.o/backend/com/main/ordering"
+	pm7 "o.o/backend/com/main/ordering/pm"
 	aggregate11 "o.o/backend/com/main/purchaseorder/aggregate"
 	query10 "o.o/backend/com/main/purchaseorder/query"
 	aggregate15 "o.o/backend/com/main/purchaserefund/aggregate"
 	query12 "o.o/backend/com/main/purchaserefund/query"
 	aggregate8 "o.o/backend/com/main/receipting/aggregate"
+	pm8 "o.o/backend/com/main/receipting/pm"
 	query9 "o.o/backend/com/main/receipting/query"
 	aggregate14 "o.o/backend/com/main/refund/aggregate"
+	pm9 "o.o/backend/com/main/refund/pm"
 	query11 "o.o/backend/com/main/refund/query"
 	"o.o/backend/com/main/shipmentpricing/pricelist"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"
@@ -60,6 +70,7 @@ import (
 	"o.o/backend/com/main/shipnow"
 	aggregate13 "o.o/backend/com/main/shipping/aggregate"
 	"o.o/backend/com/main/shipping/carrier"
+	pm10 "o.o/backend/com/main/shipping/pm"
 	query14 "o.o/backend/com/main/shipping/query"
 	aggregate12 "o.o/backend/com/main/stocktaking/aggregate"
 	query7 "o.o/backend/com/main/stocktaking/query"
@@ -73,6 +84,7 @@ import (
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/authorization/auth"
+	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api"
@@ -82,7 +94,6 @@ import (
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/api/shop/_min"
-	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
@@ -97,6 +108,7 @@ import (
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
 	"o.o/backend/pkg/fabo/faboinfo"
+	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook"
 	"o.o/backend/pkg/integration/shipping/ghtk"
@@ -104,12 +116,11 @@ import (
 	"o.o/backend/pkg/integration/shipping/vtpost"
 	webhook3 "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	"o.o/backend/pkg/integration/sms"
-	"o.o/capi"
 )
 
 // Injectors from wire.go:
 
-func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, healthServer *health.Service, partnerAuthURL partner.AuthURL, consumer mq.KafkaConsumer) (Output, func(), error) {
+func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServer *health.Service, consumer mq.KafkaConsumer) (Output, func(), error) {
 	miscService := &api.MiscService{}
 	database_minConfig := cfg.Databases
 	databases, err := database_min.BuildDatabases(database_minConfig)
@@ -135,6 +146,8 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	smsLogAggregate := aggregate.NewSmsLogAggregate(eventBus, logDB)
 	smslogCommandBus := aggregate.SmsLogAggregateMessageBus(smsLogAggregate)
 	client := sms.New(smsConfig, v, smslogCommandBus)
+	smtpConfig := cfg.SMTP
+	emailClient := email.New(smtpConfig)
 	userService := &api.UserService{
 		IdentityAggr:    commandBus,
 		IdentityQuery:   queryBus,
@@ -144,6 +157,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		TokenStore:      tokenStore,
 		RedisStore:      store,
 		SMSClient:       client,
+		EmailClient:     emailClient,
 	}
 	accountService := &api.AccountService{}
 	locationQuery := location.New(mainDB)
@@ -158,7 +172,7 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
 	secretToken := cfg.Secret
 	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
-	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, eventBus, client, secretToken, flagEnableNewLinkInvitation)
+	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, eventBus, client, emailClient, secretToken, flagEnableNewLinkInvitation)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := aggregate3.NewAuthorizationAggregate()
 	authorizationCommandBus := aggregate3.AuthorizationAggregateMessageBus(authorizationAggregate)
@@ -253,8 +267,10 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	productSourceService := &shop.ProductSourceService{}
 	orderingAggregate := ordering.NewAggregate(eventBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
+	notifierDB := databases.Notifier
+	sqlstoreStore := sqlstore.New(mainDB, notifierDB, locationQueryBus, eventBus)
 	shipment_allConfig := cfg.Shipment
-	v2 := shipment_all.SupportedCarrierDrivers(ctx, shipment_allConfig, locationQueryBus)
+	v2 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, locationQueryBus)
 	carrierManager := shipping_provider.NewCtrl(eventBus, locationQueryBus, v2)
 	connectionQuery := query13.NewConnectionQuery(mainDB)
 	connectioningQueryBus := query13.ConnectionQueryMessageBus(connectionQuery)
@@ -312,9 +328,9 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 		SummaryQuery: summaryQueryBus,
 		SummaryOld:   summarySummary,
 	}
-	eventstreamPublisher := _wireEventStreamValue
+	eventStream := eventstream.New(ctx)
 	exportConfig := cfg.Export
-	service, cleanup2 := export.New(store, eventstreamPublisher, exportConfig)
+	service, cleanup2 := export.New(store, eventStream, exportConfig)
 	exportService := &shop.ExportService{
 		ExportInner: service,
 	}
@@ -513,7 +529,6 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	import2, cleanup3 := imcsv2.New(locationQueryBus, store, uploader, mainDB)
 	import3, cleanup4 := imcsv3.New(store, uploader, mainDB)
 	importHandler := server_shop.BuildImportHandler(import2, import3)
-	eventStream := eventstream.New(ctx)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream)
 	downloadHandler := server_shop.BuildDownloadHandler()
 	mainServer := BuildMainServer(healthServer, intHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler)
@@ -539,21 +554,40 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 	v3 := BuildServers(mainServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, fbWebhookServer)
 	kafka := cfg.Kafka
 	handlerHandler := handler.New(consumer, kafka)
-	publisherPublisher := publisher.New(consumer, eventstreamPublisher)
-	notifierDB := databases.Notifier
-	sqlstoreStore := sqlstore.New(mainDB, notifierDB, locationQueryBus, eventBus)
+	publisherPublisher := publisher.New(consumer, eventStream)
+	processManager := pm.New(eventBus, catalogQueryBus, catalogCommandBus)
+	pmProcessManager := pm2.New(eventBus, queryBus, invitationQueryBus)
+	processManager2 := pm3.New(eventBus, catalogQueryBus, orderingQueryBus, inventoryCommandBus)
+	processManager3 := pm4.New(eventBus, invitationQueryBus, invitationCommandBus)
+	processManager4 := pm5.New(eventBus, ledgeringCommandBus)
+	processManager5 := pm6.New(eventBus, moneytxQueryBus, moneytxCommandBus, shippingQueryBus)
+	affiliateCommandBus := _wireCommandBusValue
+	processManager6 := pm7.New(eventBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus)
+	processManager7 := pm8.New(eventBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, queryBus)
+	processManager8 := pm9.New(eventBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
+	processManager9 := pm10.New(eventBus, shippingQueryBus, shippingCommandBus, store)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, queryBus)
 	captchaConfig := cfg.Captcha
 	captchaCaptcha := captcha.New(captchaConfig)
 	output := Output{
-		Servers:     v3,
-		EventStream: eventStream,
-		Handler:     handlerHandler,
-		Publisher:   publisherPublisher,
-		_s:          sqlstoreStore,
-		_m:          middlewareMiddleware,
-		_c:          captchaCaptcha,
+		Servers:       v3,
+		EventStream:   eventStream,
+		Handler:       handlerHandler,
+		Publisher:     publisherPublisher,
+		_catalogPM:    processManager,
+		_identityPM:   pmProcessManager,
+		_inventoryPM:  processManager2,
+		_invitationPM: processManager3,
+		_ledgerPM:     processManager4,
+		_moneytxPM:    processManager5,
+		_orderPM:      processManager6,
+		_receiptPM:    processManager7,
+		_refundPM:     processManager8,
+		_shippingPM:   processManager9,
+		_s:            sqlstoreStore,
+		_m:            middlewareMiddleware,
+		_c:            captchaCaptcha,
 	}
 	return output, func() {
 		cleanup4()
@@ -564,5 +598,5 @@ func Servers(ctx context.Context, cfg config.Config, eventBus capi.EventBus, hea
 }
 
 var (
-	_wireEventStreamValue = new(eventstream.EventStream)
+	_wireCommandBusValue = affiliate.CommandBus{}
 )

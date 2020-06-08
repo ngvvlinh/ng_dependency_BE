@@ -40,9 +40,10 @@ var ll = l.New()
 var idempgroup *idemp.RedisGroup
 
 type IntegrationService struct {
-	AuthStore  auth.Generator
-	TokenStore tokens.TokenStore
-	SMSClient  sms.Client
+	AuthStore   auth.Generator
+	TokenStore  tokens.TokenStore
+	SMSClient   *sms.Client
+	EmailClient *email.Client
 }
 
 func (s *IntegrationService) Clone() *IntegrationService {
@@ -325,11 +326,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		return r, err
 	}
 
-	updateSessionCmd := &tokens.UpdateSessionCommand{
-		Token:  r.Context.Claim.Token,
-		Values: extra,
-	}
-	if err := bus.Dispatch(ctx, updateSessionCmd); err != nil {
+	if err := s.TokenStore.UpdateSession(ctx, r.Context.Claim.Token, extra); err != nil {
 		return r, err
 	}
 
@@ -367,7 +364,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 			Subject:     fmt.Sprintf("Đăng nhập vào eTop.vn thông qua hệ thống %v", partner.PublicName),
 			Content:     b.String(),
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
 			return r, err
 		}
 		msg = fmt.Sprintf("Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", emailNorm, wl.X(ctx).CSEmail)
@@ -762,7 +759,7 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 					Subject:     "Mật khẩu đăng nhập vào tài khoản ở eTop.vn",
 					Content:     b.String(),
 				}
-				if err := bus.Dispatch(ctx, emailCmd); err != nil {
+				if err := s.EmailClient.SendMail(ctx, emailCmd); err != nil {
 					ll.Error("Can not send email", l.Error(err))
 				}
 			}

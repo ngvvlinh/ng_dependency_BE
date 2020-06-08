@@ -44,7 +44,8 @@ type InvitationAggregate struct {
 	store         sqlstore.InvitationStoreFactory
 	customerQuery customering.QueryBus
 	identityQuery identity.QueryBus
-	smsClient     sms.Client
+	smsClient     *sms.Client
+	emailClient   *email.Client
 	flagNewLink   FlagEnableNewLinkInvitation
 }
 
@@ -54,7 +55,8 @@ func NewInvitationAggregate(
 	customerQ customering.QueryBus,
 	identityQ identity.QueryBus,
 	eventBus capi.EventBus,
-	smsClient sms.Client,
+	smsClient *sms.Client,
+	emailClient *email.Client,
 	secret cc.SecretToken,
 	flagNewLink FlagEnableNewLinkInvitation,
 ) *InvitationAggregate {
@@ -66,6 +68,7 @@ func NewInvitationAggregate(
 		customerQuery: customerQ,
 		identityQuery: identityQ,
 		smsClient:     smsClient,
+		emailClient:   emailClient,
 	}
 }
 
@@ -204,7 +207,7 @@ func (a *InvitationAggregate) CreateInvitation(
 				Subject:     "Invitation",
 				Content:     b.String(),
 			}
-			if err := bus.Dispatch(ctx, cmd); err != nil {
+			if err := a.emailClient.SendMail(ctx, cmd); err != nil {
 				return err
 			}
 		} else {

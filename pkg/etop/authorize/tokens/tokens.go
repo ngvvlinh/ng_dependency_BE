@@ -40,11 +40,6 @@ type GenerateTokenCommand struct {
 	Result *auth.Token
 }
 
-type UpdateSessionCommand struct {
-	Token  string
-	Values map[string]string
-}
-
 func (s TokenStore) GenerateToken(ctx context.Context, cmd *GenerateTokenCommand) error {
 	claim := &claims.Claim{
 		ClaimInfo: cmd.ClaimInfo,
@@ -96,7 +91,7 @@ func (s TokenStore) Validate(tokenStr string) (*claims.Claim, error) {
 	return &v, nil
 }
 
-func (s TokenStore) UpdateSession(tokStr string, values map[string]string) error {
+func (s TokenStore) UpdateSession(_ context.Context, tokStr string, values map[string]string) error {
 	if tokStr == "" {
 		return cm.Errorf(cm.Internal, nil, "no token")
 	}

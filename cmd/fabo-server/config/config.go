@@ -13,16 +13,12 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/main/invitation/aggregate"
 	"o.o/backend/com/main/shipping/carrier"
-	ecomconfig "o.o/backend/com/web/ecom/config"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/etop/api/export"
-	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/pkg/integration/email"
-	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
-	ahamoveclient "o.o/backend/pkg/integration/shipnow/ahamove/client"
 	"o.o/backend/pkg/integration/sms"
 )
 
@@ -42,15 +38,8 @@ type Config struct {
 	SMS         sms.Config       `yaml:"sms"`
 	Captcha     captcha.Config   `yaml:"captcha"`
 
-	Ahamove        ahamoveclient.Config `yaml:"ahamove"`
-	AhamoveWebhook cc.HTTP              `yaml:"ahamove_webhook"`
-	Ecom           ecomconfig.Config    `yaml:"ecom"`
-
-	VTPay vtpayclient.Config `yaml:"vtpay"`
-
 	URL struct {
-		Auth     partner.AuthURL `yaml:"auth"`
-		MainSite string          `yaml:"main_site"`
+		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
 
 	ThirdPartyHost string         `yaml:"third_party_host"`
@@ -83,15 +72,8 @@ func Default() Config {
 			DirExport: "/tmp",
 			URLPrefix: "http://localhost:8080",
 		},
-		TelegramBot:    _telebot.DefaultConfig(),
-		Shipment:       shipment_all.DefaultConfig(),
-		Ahamove:        ahamoveclient.DefaultConfig(),
-		AhamoveWebhook: cc.HTTP{Port: 9052},
-		Ecom: ecomconfig.Config{
-			HTTP:     cc.HTTP{Port: 8100},
-			MainSite: "http://localhost:8100",
-		},
-		VTPay: vtpayclient.DefaultConfig(),
+		TelegramBot: _telebot.DefaultConfig(),
+		Shipment:    shipment_all.DefaultConfig(),
 		SMS: sms.Config{
 			Mock:    true,
 			Enabled: true,
@@ -107,12 +89,12 @@ func Default() Config {
 			Secret: "IBVEhECSHtJiBoxQKOVafHW58zt9qRK7",
 		},
 	}
+	cfg.URL.MainSite = "http://localhost:8080"
 	cfg.Email = cc.EmailConfig{
 		Enabled:              false,
 		ResetPasswordURL:     "https://etop.d.etop.vn/reset-password",
 		EmailVerificationURL: "https://etop.d.etop.vn/verify-email",
 	}
-
 	cfg.FacebookApp = fbclient.AppConfig{
 		ID:          "1581362285363031",
 		Secret:      "b3962ddf033b295c2bd0b543fff904f7",
@@ -140,8 +122,6 @@ func Load() (cfg Config, err error) {
 	cfg.SMTP.MustLoadEnv()
 	cfg.Captcha.MustLoadEnv()
 
-	cfg.Ahamove.MustLoadEnv()
-	cfg.VTPay.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
 
 	if cfg.ThirdPartyHost == "" && !cmenv.IsDev() {
