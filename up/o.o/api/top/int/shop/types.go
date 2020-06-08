@@ -1282,6 +1282,13 @@ type ImportProductsResponse struct {
 
 func (m *ImportProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
+type CalcBalanceUserResponse struct {
+	AvailableBalance int `json:"available_balance"`
+	ActualBalance    int `json:"actual_balance"`
+}
+
+func (m *CalcBalanceUserResponse) String() string { return jsonx.MustMarshalToString(m) }
+
 type CalcBalanceShopResponse struct {
 	Balance int `json:"balance"`
 }

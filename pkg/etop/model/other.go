@@ -30,7 +30,15 @@ type GetBalanceShopCommand struct {
 	}
 }
 
-type GetBalanceUserCommand struct {
+type GetAvailableUserBalanceCommand struct {
+	UserID dot.ID
+
+	Result struct {
+		Amount int
+	}
+}
+
+type GetActualUserBalanceCommand struct {
 	UserID dot.ID
 
 	Result struct {

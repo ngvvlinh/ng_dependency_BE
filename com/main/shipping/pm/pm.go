@@ -269,7 +269,7 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 	if err := bus.Dispatch(ctx, queryShop); err != nil {
 		return err
 	}
-	query := &etopmodel.GetBalanceUserCommand{
+	query := &etopmodel.GetActualUserBalanceCommand{
 		UserID: queryShop.Result.OwnerID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {

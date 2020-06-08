@@ -60,7 +60,8 @@ func init() {
 		ConfirmCredit,
 		DeleteCredit,
 		CalcBalanceShop,
-		CalcBalanceUser,
+		CalcActualUserBalance,
+		CalcAvailableUserBalance,
 
 		CreateMoneyTransactionShippingEtop,
 		GetMoneyTransactionShippingEtop,
@@ -1445,13 +1446,55 @@ func CalcBalanceShop(ctx context.Context, cmd *model.GetBalanceShopCommand) erro
 }
 
 /*
-	CalcBalanceUser: tính số dư user (không tính những ffm đã thanh toán)
+	CalcAvailableUserBalance: tính số dư dự kiến user (không tính những ffm đã thanh toán)
+
+	(1) COD của tất cả Shop (ffm) khác trạng thái hủy và không phải là đơn trả hàng (status != -1 AND status != 0 AND shipping_status != -2 AND etop_payment_status != 1)
+	(2) Phí giao hàng (ffm) khác trạng thái hủy (đã bao gồm đơn trả hàng)
+	(3) Credit
+
+	số dư = (1) + (3) - (2)
+*/
+func CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBalanceCommand) error {
+	if cmd.UserID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing user ID")
+	}
+	query := &identitymodelx.GetAllAccountUsersQuery{
+		UserIDs: []dot.ID{cmd.UserID},
+		Role:    authorization.RoleShopOwner,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	accounts := query.Result
+	var shopIDs = make([]dot.ID, len(accounts))
+	for i, a := range accounts {
+		shopIDs[i] = a.AccountID
+	}
+
+	var totalCODAmount, totalShippingFee, totalCredit sql.NullInt64
+	if err := x.SQL("SELECT SUM(total_cod_amount) from fulfillment").In("shop_id", shopIDs).Where("status != -1 AND status != 0 AND shipping_status != -2 AND etop_payment_status != 1").Scan(&totalCODAmount); err != nil {
+		return err
+	}
+	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").In("shop_id", shopIDs).Where("status != -1 AND status != 0 AND etop_payment_status != 1").
+		Scan(&totalShippingFee); err != nil {
+		return err
+	}
+	if err := x.SQL("SELECT SUM(amount) from credit").In("shop_id", shopIDs).Where("status = 1 AND paid_at is not NULL").
+		Scan(&totalCredit); err != nil {
+		return err
+	}
+	cmd.Result.Amount = int(totalCODAmount.Int64 - totalShippingFee.Int64 + totalCredit.Int64)
+	return nil
+}
+
+/*
+	CalcActualUserBalance: tính số dư thực tế user (không tính những ffm đã thanh toán)
 
 	- Tính theo user
 	- COD: Chỉ tính đơn giao thành công và chưa đối soát
 	- Cước phí: đơn có trạng thái khác hủy (chưa đối soát)
 */
-func CalcBalanceUser(ctx context.Context, cmd *model.GetBalanceUserCommand) error {
+func CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing user ID")
 	}

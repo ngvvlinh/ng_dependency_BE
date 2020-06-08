@@ -4212,6 +4212,19 @@ func (s *SummaryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			return
 		}
 		return msg, fn, nil
+	case "/shop.Summary/CalcBalanceUser":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CalcBalanceUser(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Summary/SummarizeFulfillments":
 		msg := &SummarizeFulfillmentsRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

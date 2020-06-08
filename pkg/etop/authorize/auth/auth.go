@@ -123,6 +123,7 @@ const (
 	# shop
 	p, shop/balance:view, admin, owner, accountant
 	p, shop/account:delete, owner
+	p, shop/user/balance:view, owner, accountant
 	# staff
 	p, relationship/invitation:create, admin, owner, staff_management
 	p, relationship/invitation:view, admin, owner, staff_management

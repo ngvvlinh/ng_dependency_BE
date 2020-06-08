@@ -165,6 +165,8 @@ const (
 	ShopBalanceView   permission.ActionType = "shop/balance:view"
 	ShopAccountDelete permission.ActionType = "shop/account:delete"
 
+	UserBalanceView permission.ActionType = "shop/user/balance:view"
+
 	RelationshipInvitationCreate   permission.ActionType = "relationship/invitation:create"
 	RelationshipInvitationView     permission.ActionType = "relationship/invitation:view"
 	RelationshipInvitationDelete   permission.ActionType = "relationship/invitation:delete"
@@ -762,6 +764,7 @@ var _acl = map[string]*permission.Decl{
 	"shop.Summary/SummarizePOS":          {Type: Shop, Actions: actions(ShopDashboardView)},
 	"shop.Summary/SummarizeTopShip":      {Type: Shop},
 	"shop.Summary/CalcBalanceShop":       {Type: Shop, AuthPartner: Opt, Actions: actions(ShopDashboardView)},
+	"shop.Summary/CalcBalanceUser":       {Type: Shop, AuthPartner: Opt, Actions: actions(UserBalanceView)},
 
 	"shop.Export/GetExports":    {Type: Shop},
 	"shop.Export/RequestExport": {Type: Shop},

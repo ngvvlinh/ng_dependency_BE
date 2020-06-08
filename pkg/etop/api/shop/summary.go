@@ -86,3 +86,25 @@ func (s *SummaryService) CalcBalanceShop(ctx context.Context, q *CalcBalanceShop
 	}
 	return nil
 }
+
+func (s *SummaryService) CalcBalanceUser(ctx context.Context, q *CalcBalanceUserEndpoint) error {
+	queryActual := &model.GetActualUserBalanceCommand{
+		UserID: q.Context.Shop.OwnerID,
+	}
+	if err := bus.Dispatch(ctx, queryActual); err != nil {
+		return err
+	}
+
+	queryAvailable := &model.GetAvailableUserBalanceCommand{
+		UserID: q.Context.Shop.OwnerID,
+	}
+	if err := bus.Dispatch(ctx, queryAvailable); err != nil {
+		return err
+	}
+
+	q.Result = &shop.CalcBalanceUserResponse{
+		AvailableBalance: queryAvailable.Result.Amount,
+		ActualBalance:    queryActual.Result.Amount,
+	}
+	return nil
+}

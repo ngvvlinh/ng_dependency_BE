@@ -5290,6 +5290,33 @@
         }
       }
     },
+    "/api/shop.Summary/CalcBalanceUser": {
+      "post": {
+        "tags": [
+          "Summary"
+        ],
+        "summary": "CalcBalanceUser",
+        "operationId": "shop.Summary-CalcBalanceUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCalcBalanceUserResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Summary/SummarizeFulfillments": {
       "post": {
         "tags": [
@@ -7331,6 +7358,17 @@
       "type": "object",
       "properties": {
         "balance": {
+          "type": "integer"
+        }
+      }
+    },
+    "paCalcBalanceUserResponse": {
+      "type": "object",
+      "properties": {
+        "actual_balance": {
+          "type": "integer"
+        },
+        "available_balance": {
           "type": "integer"
         }
       }
