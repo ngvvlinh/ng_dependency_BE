@@ -20,24 +20,26 @@ import (
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type FbExternalMessagingAggregate struct {
-	db                          *cmsql.Database
-	eventBus                    capi.EventBus
-	fbExternalPostStore         sqlstore.FbExternalPostStoreFactory
-	fbExternalCommentStore      sqlstore.FbExternalCommentStoreFactory
-	fbExternalConversationStore sqlstore.FbExternalConversationStoreFactory
-	fbExternalMessageStore      sqlstore.FbExternalMessageStoreFactory
-	fbCustomerConversationStore sqlstore.FbCustomerConversationStoreFactory
+	db                               *cmsql.Database
+	eventBus                         capi.EventBus
+	fbExternalPostStore              sqlstore.FbExternalPostStoreFactory
+	fbExternalCommentStore           sqlstore.FbExternalCommentStoreFactory
+	fbExternalConversationStore      sqlstore.FbExternalConversationStoreFactory
+	fbExternalMessageStore           sqlstore.FbExternalMessageStoreFactory
+	fbCustomerConversationStore      sqlstore.FbCustomerConversationStoreFactory
+	fbCustomerConversationStateStore sqlstore.FbCustomerConversationStateStoreFactory
 }
 
 func NewFbExternalMessagingAggregate(db com.MainDB, eventBus capi.EventBus) *FbExternalMessagingAggregate {
 	return &FbExternalMessagingAggregate{
-		db:                          db,
-		eventBus:                    eventBus,
-		fbExternalPostStore:         sqlstore.NewFbExternalPostStore(db),
-		fbExternalCommentStore:      sqlstore.NewFbExternalCommentStore(db),
-		fbExternalConversationStore: sqlstore.NewFbExternalConversationStore(db),
-		fbExternalMessageStore:      sqlstore.NewFbExternalMessageStore(db),
-		fbCustomerConversationStore: sqlstore.NewFbCustomerConversationStore(db),
+		db:                               db,
+		eventBus:                         eventBus,
+		fbExternalPostStore:              sqlstore.NewFbExternalPostStore(db),
+		fbExternalCommentStore:           sqlstore.NewFbExternalCommentStore(db),
+		fbExternalConversationStore:      sqlstore.NewFbExternalConversationStore(db),
+		fbExternalMessageStore:           sqlstore.NewFbExternalMessageStore(db),
+		fbCustomerConversationStore:      sqlstore.NewFbCustomerConversationStore(db),
+		fbCustomerConversationStateStore: sqlstore.NewFbCustomerConversationStateStore(db),
 	}
 }
 
@@ -234,17 +236,29 @@ func (a *FbExternalMessagingAggregate) CreateFbCustomerConversations(
 	ctx context.Context, args *fbmessaging.CreateFbCustomerConversationsArgs,
 ) ([]*fbmessaging.FbCustomerConversation, error) {
 	newFbCustomerConversations := make([]*fbmessaging.FbCustomerConversation, 0, len(args.FbCustomerConversations))
-	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		for _, fbCustomerConversation := range args.FbCustomerConversations {
-			newFbCustomerConversation := new(fbmessaging.FbCustomerConversation)
-			if err := scheme.Convert(fbCustomerConversation, newFbCustomerConversation); err != nil {
-				return err
-			}
-			newFbCustomerConversations = append(newFbCustomerConversations, newFbCustomerConversation)
-		}
+	newFbCustomerConversationStates := make([]*fbmessaging.FbCustomerConversationState, 0, len(args.FbCustomerConversations))
 
+	for _, fbCustomerConversation := range args.FbCustomerConversations {
+		newFbCustomerConversation := new(fbmessaging.FbCustomerConversation)
+		if err := scheme.Convert(fbCustomerConversation, newFbCustomerConversation); err != nil {
+			return nil, err
+		}
+		newFbCustomerConversations = append(newFbCustomerConversations, newFbCustomerConversation)
+		newFbCustomerConversationStates = append(newFbCustomerConversationStates, &fbmessaging.FbCustomerConversationState{
+			ID:             newFbCustomerConversation.ID,
+			IsRead:         newFbCustomerConversation.IsRead,
+			ExternalPageID: newFbCustomerConversation.ExternalPageID,
+			UpdatedAt:      time.Now(),
+		})
+	}
+
+	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		if len(newFbCustomerConversations) > 0 {
 			if err := a.fbCustomerConversationStore(ctx).CreateFbCustomerConversations(newFbCustomerConversations); err != nil {
+				return err
+			}
+
+			if err := a.fbCustomerConversationStateStore(ctx).CreateFbCustomerConversationStates(newFbCustomerConversationStates); err != nil {
 				return err
 			}
 		}
@@ -535,5 +549,5 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 func (a *FbExternalMessagingAggregate) UpdateIsReadCustomerConversation(
 	ctx context.Context, conversationCustomerID dot.ID, isRead bool,
 ) (int, error) {
-	return a.fbCustomerConversationStore(ctx).ID(conversationCustomerID).UpdateStatus(isRead)
+	return a.fbCustomerConversationStateStore(ctx).ID(conversationCustomerID).UpdateIsRead(isRead)
 }

@@ -82,20 +82,6 @@ func (s *FbCustomerConversationStore) Type(typ fb_customer_conversation_type.FbC
 	return s
 }
 
-func (s *FbCustomerConversationStore) IsRead(isRead bool) *FbCustomerConversationStore {
-	s.preds = append(s.preds, s.ft.ByIsReadPtr(&isRead))
-	return s
-}
-
-func (s *FbCustomerConversationStore) UpdateStatus(isRead bool) (int, error) {
-	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	updateStatus, err := query.Table("fb_customer_conversation").UpdateMap(map[string]interface{}{
-		"is_read": isRead,
-	})
-	return updateStatus, err
-}
-
 func (s *FbCustomerConversationStore) CreateFbCustomerConversation(fbCustomerConversation *fbmessaging.FbCustomerConversation) error {
 	sqlstore.MustNoPreds(s.preds)
 	fbCustomerConversationDB := new(model.FbCustomerConversation)

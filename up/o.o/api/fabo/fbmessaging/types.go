@@ -196,6 +196,13 @@ type CommentAttachment struct {
 	URL    string
 }
 
+type FbCustomerConversationState struct {
+	ID             dot.ID
+	IsRead         bool
+	ExternalPageID string
+	UpdatedAt      time.Time
+}
+
 type FbExternalMessagesCreatedEvent struct {
 	FbExternalMessages []*FbExternalMessage
 }

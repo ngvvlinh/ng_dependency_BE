@@ -129,11 +129,26 @@ func (s *FbExternalCommentStore) ListFbExternalCommentsDB() ([]*model.FbExternal
 }
 
 func (s *FbExternalCommentStore) ListFbExternalComments() (result []*fbmessaging.FbExternalComment, err error) {
-	fbExternalPosts, err := s.ListFbExternalCommentsDB()
+	fbExternalComments, err := s.ListFbExternalCommentsDB()
 	if err != nil {
 		return nil, err
 	}
-	if err = scheme.Convert(fbExternalPosts, &result); err != nil {
+	if err = scheme.Convert(fbExternalComments, &result); err != nil {
+		return nil, err
+	}
+	return
+}
+
+func (s *FbExternalCommentStore) ListFbExternalCommentsOfPage(externalPageID string) (result []*fbmessaging.FbExternalComment, err error) {
+	s.preds = append(s.preds, sq.NewExpr(fmt.Sprintf(`
+	((external_user_id = '%s' AND  external_parent_user_id IS NULL) OR 
+	(external_user_id = '%s' AND external_parent_user_id = '%s'))`, externalPageID, externalPageID, externalPageID)))
+
+	fbExternalComments, err := s.ListFbExternalCommentsDB()
+	if err != nil {
+		return nil, err
+	}
+	if err = scheme.Convert(fbExternalComments, &result); err != nil {
 		return nil, err
 	}
 	return

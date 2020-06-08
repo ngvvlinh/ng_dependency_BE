@@ -56,6 +56,8 @@ type QueryService interface {
 	GetFbCustomerConversationByID(_ context.Context, ID dot.ID) (*FbCustomerConversation, error)
 	ListFbCustomerConversationsByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbCustomerConversation, error)
 	ListFbCustomerConversations(context.Context, *ListFbCustomerConversationsArgs) (*FbCustomerConversationsResponse, error)
+
+	ListFbCustomerConversationStates(_ context.Context, IDs []dot.ID) ([]*FbCustomerConversationState, error)
 }
 
 // +convert:create=FbExternalMessage

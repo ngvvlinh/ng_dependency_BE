@@ -183,6 +183,7 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 
 	externalPostIDsSet := NewSet()
 	mapExternalPostIDAndMapExternalUserIDAndExternalPageID := make(map[string]map[string]string)
+
 	for _, fbExternalComment := range event.FbExternalComments {
 		// Ignore ExternalUserID = "" and ExternalFrom = nil
 		if fbExternalComment.ExternalUserID == "" || fbExternalComment.ExternalFrom == nil {
@@ -201,9 +202,9 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 		}
 
 		tempExternalUserID := fbExternalComment.ExternalUserID
-		if fbExternalComment.ExternalUserID == fbExternalComment.ExternalPageID {
-			tempExternalUserID = fbExternalComment.ExternalParentUserID
-		}
+		//if fbExternalComment.ExternalUserID == fbExternalComment.ExternalPageID {
+		//	tempExternalUserID = fbExternalComment.ExternalParentUserID
+		//}
 
 		mapExternalPostIDAndMapExternalUserIDAndExternalPageID[fbExternalComment.ExternalPostID][tempExternalUserID] = fbExternalComment.ExternalPageID
 	}
@@ -234,7 +235,7 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 			externalUserIDCustomerConversation := lastFbExternalComment.ExternalUserID
 			externalUserNameCustomerConversation := lastFbExternalComment.ExternalFrom.Name
 			externalFromCustomerConversation := lastFbExternalComment.ExternalFrom
-			if lastFbExternalComment.ExternalUserID == lastFbExternalComment.ExternalPageID {
+			if lastFbExternalComment.ExternalUserID == lastFbExternalComment.ExternalPageID && lastFbExternalComment.ExternalParent != nil {
 				externalUserIDCustomerConversation = lastFbExternalComment.ExternalParent.From.ID
 				externalUserNameCustomerConversation = lastFbExternalComment.ExternalParent.From.Name
 			}

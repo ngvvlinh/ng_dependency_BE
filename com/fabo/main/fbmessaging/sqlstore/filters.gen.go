@@ -120,25 +120,6 @@ func (ft *FbCustomerConversationFilters) ByExternalUserNamePtr(ExternalUserName 
 	}
 }
 
-func (ft *FbCustomerConversationFilters) ByIsRead(IsRead bool) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "is_read",
-		Value:  IsRead,
-		IsNil:  bool(!IsRead),
-	}
-}
-
-func (ft *FbCustomerConversationFilters) ByIsReadPtr(IsRead *bool) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "is_read",
-		Value:  IsRead,
-		IsNil:  IsRead == nil,
-		IsZero: IsRead != nil && bool(!(*IsRead)),
-	}
-}
-
 func (ft *FbCustomerConversationFilters) ByType(Type int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -250,6 +231,96 @@ func (ft *FbCustomerConversationFilters) ByDeletedAtPtr(DeletedAt *time.Time) *s
 		Value:  DeletedAt,
 		IsNil:  DeletedAt == nil,
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+type FbCustomerConversationStateFilters struct{ prefix string }
+
+func NewFbCustomerConversationStateFilters(prefix string) FbCustomerConversationStateFilters {
+	return FbCustomerConversationStateFilters{prefix}
+}
+
+func (ft *FbCustomerConversationStateFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft FbCustomerConversationStateFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *FbCustomerConversationStateFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *FbCustomerConversationStateFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *FbCustomerConversationStateFilters) ByIsRead(IsRead bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "is_read",
+		Value:  IsRead,
+		IsNil:  bool(!IsRead),
+	}
+}
+
+func (ft *FbCustomerConversationStateFilters) ByIsReadPtr(IsRead *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "is_read",
+		Value:  IsRead,
+		IsNil:  IsRead == nil,
+		IsZero: IsRead != nil && bool(!(*IsRead)),
+	}
+}
+
+func (ft *FbCustomerConversationStateFilters) ByExternalPageID(ExternalPageID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_page_id",
+		Value:  ExternalPageID,
+		IsNil:  ExternalPageID == "",
+	}
+}
+
+func (ft *FbCustomerConversationStateFilters) ByExternalPageIDPtr(ExternalPageID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_page_id",
+		Value:  ExternalPageID,
+		IsNil:  ExternalPageID == nil,
+		IsZero: ExternalPageID != nil && (*ExternalPageID) == "",
+	}
+}
+
+func (ft *FbCustomerConversationStateFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *FbCustomerConversationStateFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
 	}
 }
 

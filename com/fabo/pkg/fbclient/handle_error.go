@@ -45,32 +45,59 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL strin
 	}
 	if facebookError.Code.Valid {
 		if 200 <= facebookError.Code.Int && facebookError.Code.Int <= 299 {
-			return cm.Errorf(cm.FacebookPermissionDenied, nil, "Facebook API error").
+			_err := cm.Errorf(cm.FacebookPermissionDenied, nil, "Facebook API error").
 				WithMeta("code", fmt.Sprintf("%v", facebookError.Code.Int)).
-				WithMeta("msg", mapErrorCodeMessage[MissingPermission][VI]).
-				WithMeta("orig_msg", mapErrorCodeMessage[MissingPermission][EN]).
+				WithMeta("sub_code", fmt.Sprintf("%d", facebookError.ErrorSubcode.Int)).
 				WithMeta("url", currentURL)
+			if facebookError.Message.Valid {
+				_err.WithMeta("msg", facebookError.Message.String)
+			} else {
+				_err.
+					WithMeta("msg", mapErrorCodeMessage[MissingPermission][VI]).
+					WithMeta("orig_msg", mapErrorCodeMessage[MissingPermission][EN])
+			}
+			return _err
 		}
-		return cm.Errorf(cm.FacebookError, nil, "Facebook API error").
+		_err := cm.Errorf(cm.FacebookError, nil, "Facebook API error").
 			WithMeta("code", fmt.Sprintf("%v", facebookError.Code.Int)).
-			WithMeta("msg", mapErrorCodeMessage[Code(facebookError.Code.Int)][VI]).
-			WithMeta("orig_msg", mapErrorCodeMessage[Code(facebookError.Code.Int)][EN]).
+			WithMeta("sub_code", fmt.Sprintf("%d", facebookError.ErrorSubcode.Int)).
 			WithMeta("url", currentURL)
+		if facebookError.Message.Valid {
+			_err.WithMeta("msg", facebookError.Message.String)
+		} else {
+			_err.
+				WithMeta("msg", mapErrorCodeMessage[Code(facebookError.Code.Int)][VI]).
+				WithMeta("orig_msg", mapErrorCodeMessage[Code(facebookError.Code.Int)][EN])
+		}
 	}
 	if facebookError.ErrorSubcode.Valid {
-		return cm.Errorf(cm.FacebookError, nil, "Facebook API error").
+		_err := cm.Errorf(cm.FacebookError, nil, "Facebook API error").
+			WithMeta("code", fmt.Sprintf("%d", facebookError.Code.Int)).
 			WithMeta("sub_code", fmt.Sprintf("%v", facebookError.ErrorSubcode.Int)).
-			WithMeta("msg", mapErrorSubCodeMessage[SubCode(facebookError.ErrorSubcode.Int)][VI]).
-			WithMeta("orig_msg", mapErrorSubCodeMessage[SubCode(facebookError.ErrorSubcode.Int)][EN]).
 			WithMeta("url", currentURL)
+		if facebookError.Message.Valid {
+			_err.WithMeta("msg", facebookError.Message.String)
+		} else {
+			_err.
+				WithMeta("msg", mapErrorSubCodeMessage[SubCode(facebookError.ErrorSubcode.Int)][VI]).
+				WithMeta("orig_msg", mapErrorSubCodeMessage[SubCode(facebookError.ErrorSubcode.Int)][EN])
+		}
+		return _err
 	}
 	if facebookError.Type.Valid {
 		if facebookError.Type.String == "OAuthException" {
-			return cm.Errorf(cm.FacebookError, nil, "Facebook API error").
+			_err := cm.Errorf(cm.FacebookError, nil, "Facebook API error").
 				WithMeta("code", "OAuthException").
-				WithMeta("msg", "Trạng thái đăng nhập hoặc Access token đã hết hạn, xoá bỏ, mặt khác có thể không hợp lệ.").
-				WithMeta("orig_msg", "The login status or access token has expired, been revoked, or is otherwise invalid.").
+				WithMeta("sub_code", fmt.Sprintf("%d", facebookError.ErrorSubcode.Int)).
 				WithMeta("url", currentURL)
+			if facebookError.Message.Valid {
+				_err.WithMeta("msg", facebookError.Message.String)
+			} else {
+				_err.
+					WithMeta("msg", "Trạng thái đăng nhập hoặc Access token đã hết hạn, xoá bỏ, mặt khác có thể không hợp lệ.").
+					WithMeta("orig_msg", "The login status or access token has expired, been revoked, or is otherwise invalid.")
+			}
+			return _err
 		}
 	}
 	return nil
@@ -107,13 +134,16 @@ func convertFacebookError(arg map[string]interface{}) *model.FacebookError {
 		message = arg["message"].(string)
 	}
 	if arg["type"] != nil {
-		message = arg["type"].(string)
+		typ = arg["type"].(string)
 	}
 	if arg["error_user_title"] != nil {
 		errorUserTitle = arg["error_user_title"].(string)
 	}
 	if arg["subcode"] != nil {
 		errorSubCode = int(arg["subcode"].(float64))
+	}
+	if arg["error_subcode"] != nil {
+		errorSubCode = int(arg["error_subcode"].(float64))
 	}
 	if arg["fbtrace_id"] != nil {
 		fbTraceID = arg["fbtrace_id"].(string)

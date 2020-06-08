@@ -230,12 +230,18 @@ func PbPostAttachment(m *fbmessaging.PostAttachment) *fabo.PostAttachment {
 }
 
 func PbMediaForCustomerConversation(m *fbmessaging.MediaPostAttachment) *fabo.MediaPostAttachment {
+	if m == nil {
+		return nil
+	}
 	return &fabo.MediaPostAttachment{
 		Image: PbImageForCustomerConversation(m.Image),
 	}
 }
 
 func PbImageForCustomerConversation(m *fbmessaging.ImageMediaPostAttachment) *fabo.ImageMediaPostAttachment {
+	if m == nil {
+		return nil
+	}
 	return &fabo.ImageMediaPostAttachment{
 		Height: m.Height,
 		Width:  m.Width,

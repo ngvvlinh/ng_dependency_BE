@@ -177,7 +177,6 @@ type FbCustomerConversation struct {
 	ExternalUserID             string
 	ExternalUserName           string
 	ExternalFrom               *FbObjectFrom
-	IsRead                     bool
 	ExternalPostAttachments    []*PostAttachment
 	ExternalCommentAttachment  *CommentAttachment
 	ExternalMessageAttachments []*FbMessageAttachment
@@ -204,4 +203,12 @@ type ImageMediaPostAttachment struct {
 	Height int    `json:"height"`
 	Width  int    `json:"width"`
 	Src    string `json:"src"`
+}
+
+// +sqlgen
+type FbCustomerConversationState struct {
+	ID             dot.ID
+	IsRead         bool
+	ExternalPageID string
+	UpdatedAt      time.Time `sq:"update"`
 }

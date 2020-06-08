@@ -64,6 +64,24 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerConversation(arg.(*fbmessaging.CreateFbCustomerConversationArgs), out.(*fbmessaging.FbCustomerConversation))
 		return nil
 	})
+	s.Register((*fbmessagingmodel.FbCustomerConversationState)(nil), (*fbmessaging.FbCustomerConversationState)(nil), func(arg, out interface{}) error {
+		Convert_fbmessagingmodel_FbCustomerConversationState_fbmessaging_FbCustomerConversationState(arg.(*fbmessagingmodel.FbCustomerConversationState), out.(*fbmessaging.FbCustomerConversationState))
+		return nil
+	})
+	s.Register(([]*fbmessagingmodel.FbCustomerConversationState)(nil), (*[]*fbmessaging.FbCustomerConversationState)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessagingmodel_FbCustomerConversationStates_fbmessaging_FbCustomerConversationStates(arg.([]*fbmessagingmodel.FbCustomerConversationState))
+		*out.(*[]*fbmessaging.FbCustomerConversationState) = out0
+		return nil
+	})
+	s.Register((*fbmessaging.FbCustomerConversationState)(nil), (*fbmessagingmodel.FbCustomerConversationState)(nil), func(arg, out interface{}) error {
+		Convert_fbmessaging_FbCustomerConversationState_fbmessagingmodel_FbCustomerConversationState(arg.(*fbmessaging.FbCustomerConversationState), out.(*fbmessagingmodel.FbCustomerConversationState))
+		return nil
+	})
+	s.Register(([]*fbmessaging.FbCustomerConversationState)(nil), (*[]*fbmessagingmodel.FbCustomerConversationState)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessaging_FbCustomerConversationStates_fbmessagingmodel_FbCustomerConversationStates(arg.([]*fbmessaging.FbCustomerConversationState))
+		*out.(*[]*fbmessagingmodel.FbCustomerConversationState) = out0
+		return nil
+	})
 	s.Register((*fbmessagingmodel.FbExternalComment)(nil), (*fbmessaging.FbExternalComment)(nil), func(arg, out interface{}) error {
 		Convert_fbmessagingmodel_FbExternalComment_fbmessaging_FbExternalComment(arg.(*fbmessagingmodel.FbExternalComment), out.(*fbmessaging.FbExternalComment))
 		return nil
@@ -472,7 +490,7 @@ func convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConve
 	out.ExternalUserID = arg.ExternalUserID     // simple assign
 	out.ExternalUserName = arg.ExternalUserName // simple assign
 	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
-	out.IsRead = arg.IsRead                                                       // simple assign
+	out.IsRead = false                                                            // zero value
 	out.Type = fb_customer_conversation_type.FbCustomerConversationType(arg.Type) // simple conversion
 	out.ExternalUserPictureURL = ""                                               // zero value
 	out.ExternalPostAttachments = Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(arg.ExternalPostAttachments)
@@ -514,7 +532,6 @@ func convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConve
 	out.ExternalUserID = arg.ExternalUserID     // simple assign
 	out.ExternalUserName = arg.ExternalUserName // simple assign
 	out.ExternalFrom = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.ExternalFrom, nil)
-	out.IsRead = arg.IsRead // simple assign
 	out.ExternalPostAttachments = Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(arg.ExternalPostAttachments)
 	out.ExternalCommentAttachment = Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg.ExternalCommentAttachment, nil)
 	out.ExternalMessageAttachments = Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(arg.ExternalMessageAttachments)
@@ -566,6 +583,68 @@ func apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerCo
 	out.LastMessageAt = arg.LastMessageAt                           // simple assign
 	out.CreatedAt = time.Time{}                                     // zero value
 	out.UpdatedAt = time.Time{}                                     // zero value
+}
+
+//-- convert o.o/api/fabo/fbmessaging.FbCustomerConversationState --//
+
+func Convert_fbmessagingmodel_FbCustomerConversationState_fbmessaging_FbCustomerConversationState(arg *fbmessagingmodel.FbCustomerConversationState, out *fbmessaging.FbCustomerConversationState) *fbmessaging.FbCustomerConversationState {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.FbCustomerConversationState{}
+	}
+	convert_fbmessagingmodel_FbCustomerConversationState_fbmessaging_FbCustomerConversationState(arg, out)
+	return out
+}
+
+func convert_fbmessagingmodel_FbCustomerConversationState_fbmessaging_FbCustomerConversationState(arg *fbmessagingmodel.FbCustomerConversationState, out *fbmessaging.FbCustomerConversationState) {
+	out.ID = arg.ID                         // simple assign
+	out.IsRead = arg.IsRead                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
+}
+
+func Convert_fbmessagingmodel_FbCustomerConversationStates_fbmessaging_FbCustomerConversationStates(args []*fbmessagingmodel.FbCustomerConversationState) (outs []*fbmessaging.FbCustomerConversationState) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessaging.FbCustomerConversationState, len(args))
+	outs = make([]*fbmessaging.FbCustomerConversationState, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessagingmodel_FbCustomerConversationState_fbmessaging_FbCustomerConversationState(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbmessaging_FbCustomerConversationState_fbmessagingmodel_FbCustomerConversationState(arg *fbmessaging.FbCustomerConversationState, out *fbmessagingmodel.FbCustomerConversationState) *fbmessagingmodel.FbCustomerConversationState {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessagingmodel.FbCustomerConversationState{}
+	}
+	convert_fbmessaging_FbCustomerConversationState_fbmessagingmodel_FbCustomerConversationState(arg, out)
+	return out
+}
+
+func convert_fbmessaging_FbCustomerConversationState_fbmessagingmodel_FbCustomerConversationState(arg *fbmessaging.FbCustomerConversationState, out *fbmessagingmodel.FbCustomerConversationState) {
+	out.ID = arg.ID                         // simple assign
+	out.IsRead = arg.IsRead                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
+}
+
+func Convert_fbmessaging_FbCustomerConversationStates_fbmessagingmodel_FbCustomerConversationStates(args []*fbmessaging.FbCustomerConversationState) (outs []*fbmessagingmodel.FbCustomerConversationState) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessagingmodel.FbCustomerConversationState, len(args))
+	outs = make([]*fbmessagingmodel.FbCustomerConversationState, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessaging_FbCustomerConversationState_fbmessagingmodel_FbCustomerConversationState(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert o.o/api/fabo/fbmessaging.FbExternalComment --//

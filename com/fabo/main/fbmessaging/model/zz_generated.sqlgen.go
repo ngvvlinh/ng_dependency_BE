@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type FbCustomerConversations []*FbCustomerConversation
 
 const __sqlFbCustomerConversation_Table = "fb_customer_conversation"
-const __sqlFbCustomerConversation_ListCols = "\"id\",\"external_page_id\",\"external_id\",\"external_user_id\",\"external_user_name\",\"external_from\",\"is_read\",\"external_post_attachments\",\"external_comment_attachment\",\"external_message_attachments\",\"type\",\"last_message\",\"last_message_at\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlFbCustomerConversation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_user_id\" = EXCLUDED.\"external_user_id\",\"external_user_name\" = EXCLUDED.\"external_user_name\",\"external_from\" = EXCLUDED.\"external_from\",\"is_read\" = EXCLUDED.\"is_read\",\"external_post_attachments\" = EXCLUDED.\"external_post_attachments\",\"external_comment_attachment\" = EXCLUDED.\"external_comment_attachment\",\"external_message_attachments\" = EXCLUDED.\"external_message_attachments\",\"type\" = EXCLUDED.\"type\",\"last_message\" = EXCLUDED.\"last_message\",\"last_message_at\" = EXCLUDED.\"last_message_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlFbCustomerConversation_ListCols = "\"id\",\"external_page_id\",\"external_id\",\"external_user_id\",\"external_user_name\",\"external_from\",\"external_post_attachments\",\"external_comment_attachment\",\"external_message_attachments\",\"type\",\"last_message\",\"last_message_at\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlFbCustomerConversation_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_user_id\" = EXCLUDED.\"external_user_id\",\"external_user_name\" = EXCLUDED.\"external_user_name\",\"external_from\" = EXCLUDED.\"external_from\",\"external_post_attachments\" = EXCLUDED.\"external_post_attachments\",\"external_comment_attachment\" = EXCLUDED.\"external_comment_attachment\",\"external_message_attachments\" = EXCLUDED.\"external_message_attachments\",\"type\" = EXCLUDED.\"type\",\"last_message\" = EXCLUDED.\"last_message\",\"last_message_at\" = EXCLUDED.\"last_message_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlFbCustomerConversation_Insert = "INSERT INTO \"fb_customer_conversation\" (" + __sqlFbCustomerConversation_ListCols + ") VALUES"
 const __sqlFbCustomerConversation_Select = "SELECT " + __sqlFbCustomerConversation_ListCols + " FROM \"fb_customer_conversation\""
 const __sqlFbCustomerConversation_Select_history = "SELECT " + __sqlFbCustomerConversation_ListCols + " FROM history.\"fb_customer_conversation\""
@@ -97,13 +97,6 @@ func (m *FbCustomerConversation) Migration(db *cmsql.Database) {
 			ColumnName:       "external_from",
 			ColumnType:       "*FbObjectFrom",
 			ColumnDBType:     "*struct",
-			ColumnTag:        "",
-			ColumnEnumValues: []string{},
-		},
-		"is_read": {
-			ColumnName:       "is_read",
-			ColumnType:       "bool",
-			ColumnDBType:     "bool",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -189,7 +182,6 @@ func (m *FbCustomerConversation) SQLArgs(opts core.Opts, create bool) []interfac
 		core.String(m.ExternalUserID),
 		core.String(m.ExternalUserName),
 		core.JSON{m.ExternalFrom},
-		core.Bool(m.IsRead),
 		core.JSON{m.ExternalPostAttachments},
 		core.JSON{m.ExternalCommentAttachment},
 		core.JSON{m.ExternalMessageAttachments},
@@ -210,7 +202,6 @@ func (m *FbCustomerConversation) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ExternalUserID),
 		(*core.String)(&m.ExternalUserName),
 		core.JSON{&m.ExternalFrom},
-		(*core.Bool)(&m.IsRead),
 		core.JSON{&m.ExternalPostAttachments},
 		core.JSON{&m.ExternalCommentAttachment},
 		core.JSON{&m.ExternalMessageAttachments},
@@ -257,7 +248,7 @@ func (_ *FbCustomerConversations) SQLSelect(w SQLWriter) error {
 func (m *FbCustomerConversation) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbCustomerConversation_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -267,7 +258,7 @@ func (ms FbCustomerConversations) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbCustomerConversation_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(15)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -345,14 +336,6 @@ func (m *FbCustomerConversation) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.ExternalFrom})
-	}
-	if m.IsRead {
-		flag = true
-		w.WriteName("is_read")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.IsRead)
 	}
 	if m.ExternalPostAttachments != nil {
 		flag = true
@@ -436,7 +419,7 @@ func (m *FbCustomerConversation) SQLUpdate(w SQLWriter) error {
 func (m *FbCustomerConversation) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbCustomerConversation_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -478,7 +461,6 @@ func (m FbCustomerConversationHistory) ExternalUserName() core.Interface {
 func (m FbCustomerConversationHistory) ExternalFrom() core.Interface {
 	return core.Interface{m["external_from"]}
 }
-func (m FbCustomerConversationHistory) IsRead() core.Interface { return core.Interface{m["is_read"]} }
 func (m FbCustomerConversationHistory) ExternalPostAttachments() core.Interface {
 	return core.Interface{m["external_post_attachments"]}
 }
@@ -506,39 +488,38 @@ func (m FbCustomerConversationHistory) DeletedAt() core.Interface {
 }
 
 func (m *FbCustomerConversationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbCustomerConversationHistory, 16)
+	res := make(FbCustomerConversationHistory, 15)
 	res["id"] = data[0]
 	res["external_page_id"] = data[1]
 	res["external_id"] = data[2]
 	res["external_user_id"] = data[3]
 	res["external_user_name"] = data[4]
 	res["external_from"] = data[5]
-	res["is_read"] = data[6]
-	res["external_post_attachments"] = data[7]
-	res["external_comment_attachment"] = data[8]
-	res["external_message_attachments"] = data[9]
-	res["type"] = data[10]
-	res["last_message"] = data[11]
-	res["last_message_at"] = data[12]
-	res["created_at"] = data[13]
-	res["updated_at"] = data[14]
-	res["deleted_at"] = data[15]
+	res["external_post_attachments"] = data[6]
+	res["external_comment_attachment"] = data[7]
+	res["external_message_attachments"] = data[8]
+	res["type"] = data[9]
+	res["last_message"] = data[10]
+	res["last_message_at"] = data[11]
+	res["created_at"] = data[12]
+	res["updated_at"] = data[13]
+	res["deleted_at"] = data[14]
 	*m = res
 	return nil
 }
 
 func (ms *FbCustomerConversationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FbCustomerConversationHistories, 0, 128)
@@ -553,16 +534,302 @@ func (ms *FbCustomerConversationHistories) SQLScan(opts core.Opts, rows *sql.Row
 		m["external_user_id"] = data[3]
 		m["external_user_name"] = data[4]
 		m["external_from"] = data[5]
-		m["is_read"] = data[6]
-		m["external_post_attachments"] = data[7]
-		m["external_comment_attachment"] = data[8]
-		m["external_message_attachments"] = data[9]
-		m["type"] = data[10]
-		m["last_message"] = data[11]
-		m["last_message_at"] = data[12]
-		m["created_at"] = data[13]
-		m["updated_at"] = data[14]
-		m["deleted_at"] = data[15]
+		m["external_post_attachments"] = data[6]
+		m["external_comment_attachment"] = data[7]
+		m["external_message_attachments"] = data[8]
+		m["type"] = data[9]
+		m["last_message"] = data[10]
+		m["last_message_at"] = data[11]
+		m["created_at"] = data[12]
+		m["updated_at"] = data[13]
+		m["deleted_at"] = data[14]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+type FbCustomerConversationStates []*FbCustomerConversationState
+
+const __sqlFbCustomerConversationState_Table = "fb_customer_conversation_state"
+const __sqlFbCustomerConversationState_ListCols = "\"id\",\"is_read\",\"external_page_id\",\"updated_at\""
+const __sqlFbCustomerConversationState_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"is_read\" = EXCLUDED.\"is_read\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbCustomerConversationState_Insert = "INSERT INTO \"fb_customer_conversation_state\" (" + __sqlFbCustomerConversationState_ListCols + ") VALUES"
+const __sqlFbCustomerConversationState_Select = "SELECT " + __sqlFbCustomerConversationState_ListCols + " FROM \"fb_customer_conversation_state\""
+const __sqlFbCustomerConversationState_Select_history = "SELECT " + __sqlFbCustomerConversationState_ListCols + " FROM history.\"fb_customer_conversation_state\""
+const __sqlFbCustomerConversationState_UpdateAll = "UPDATE \"fb_customer_conversation_state\" SET (" + __sqlFbCustomerConversationState_ListCols + ")"
+const __sqlFbCustomerConversationState_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT fb_customer_conversation_state_pkey DO UPDATE SET"
+
+func (m *FbCustomerConversationState) SQLTableName() string  { return "fb_customer_conversation_state" }
+func (m *FbCustomerConversationStates) SQLTableName() string { return "fb_customer_conversation_state" }
+func (m *FbCustomerConversationState) SQLListCols() string {
+	return __sqlFbCustomerConversationState_ListCols
+}
+
+func (m *FbCustomerConversationState) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlFbCustomerConversationState_ListCols + " FROM \"fb_customer_conversation_state\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *FbCustomerConversationState) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "fb_customer_conversation_state"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"is_read": {
+			ColumnName:       "is_read",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_page_id": {
+			ColumnName:       "external_page_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "fb_customer_conversation_state", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*FbCustomerConversationState)(nil))
+}
+
+func (m *FbCustomerConversationState) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		m.ID,
+		core.Bool(m.IsRead),
+		core.String(m.ExternalPageID),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *FbCustomerConversationState) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		&m.ID,
+		(*core.Bool)(&m.IsRead),
+		(*core.String)(&m.ExternalPageID),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *FbCustomerConversationState) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *FbCustomerConversationStates) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(FbCustomerConversationStates, 0, 128)
+	for rows.Next() {
+		m := new(FbCustomerConversationState)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *FbCustomerConversationState) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbCustomerConversationState_Select)
+	return nil
+}
+
+func (_ *FbCustomerConversationStates) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbCustomerConversationState_Select)
+	return nil
+}
+
+func (m *FbCustomerConversationState) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbCustomerConversationState_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(4)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms FbCustomerConversationStates) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbCustomerConversationState_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(4)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *FbCustomerConversationState) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlFbCustomerConversationState_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlFbCustomerConversationState_ListColsOnConflict)
+	return nil
+}
+
+func (ms FbCustomerConversationStates) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlFbCustomerConversationState_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlFbCustomerConversationState_ListColsOnConflict)
+	return nil
+}
+
+func (m *FbCustomerConversationState) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("fb_customer_conversation_state")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.IsRead {
+		flag = true
+		w.WriteName("is_read")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.IsRead)
+	}
+	if m.ExternalPageID != "" {
+		flag = true
+		w.WriteName("external_page_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExternalPageID)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *FbCustomerConversationState) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbCustomerConversationState_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(4)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type FbCustomerConversationStateHistory map[string]interface{}
+type FbCustomerConversationStateHistories []map[string]interface{}
+
+func (m *FbCustomerConversationStateHistory) SQLTableName() string {
+	return "history.\"fb_customer_conversation_state\""
+}
+func (m FbCustomerConversationStateHistories) SQLTableName() string {
+	return "history.\"fb_customer_conversation_state\""
+}
+
+func (m *FbCustomerConversationStateHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbCustomerConversationState_Select_history)
+	return nil
+}
+
+func (m FbCustomerConversationStateHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbCustomerConversationState_Select_history)
+	return nil
+}
+
+func (m FbCustomerConversationStateHistory) ID() core.Interface { return core.Interface{m["id"]} }
+func (m FbCustomerConversationStateHistory) IsRead() core.Interface {
+	return core.Interface{m["is_read"]}
+}
+func (m FbCustomerConversationStateHistory) ExternalPageID() core.Interface {
+	return core.Interface{m["external_page_id"]}
+}
+func (m FbCustomerConversationStateHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
+
+func (m *FbCustomerConversationStateHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 4)
+	args := make([]interface{}, 4)
+	for i := 0; i < 4; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(FbCustomerConversationStateHistory, 4)
+	res["id"] = data[0]
+	res["is_read"] = data[1]
+	res["external_page_id"] = data[2]
+	res["updated_at"] = data[3]
+	*m = res
+	return nil
+}
+
+func (ms *FbCustomerConversationStateHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 4)
+	args := make([]interface{}, 4)
+	for i := 0; i < 4; i++ {
+		args[i] = &data[i]
+	}
+	res := make(FbCustomerConversationStateHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(FbCustomerConversationStateHistory)
+		m["id"] = data[0]
+		m["is_read"] = data[1]
+		m["external_page_id"] = data[2]
+		m["updated_at"] = data[3]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
