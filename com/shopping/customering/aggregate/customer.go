@@ -197,9 +197,10 @@ func (a *CustomerAggregate) DeleteCustomer(
 		}
 		_, errTr = a.addressStore(ctx).ShopTraderID(shopID, id).SoftDelete()
 		event := &tradering.TraderDeletedEvent{
-			EventMeta: meta.NewEvent(),
-			ShopID:    shopID,
-			TraderID:  id,
+			EventMeta:   meta.NewEvent(),
+			ShopID:      shopID,
+			TraderID:    id,
+			TradingType: tradering.CustomerType,
 		}
 		if err = a.eventBus.Publish(ctx, event); err != nil {
 			return err

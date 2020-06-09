@@ -25,6 +25,7 @@ import (
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
+	pm11 "o.o/backend/com/fabo/main/fbuser/pm"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	redis2 "o.o/backend/com/fabo/pkg/redis"
 	webhook4 "o.o/backend/com/fabo/pkg/webhook"
@@ -566,6 +567,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	processManager7 := pm8.New(eventBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, queryBus)
 	processManager8 := pm9.New(eventBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
 	processManager9 := pm10.New(eventBus, shippingQueryBus, shippingCommandBus, store)
+	processManager10 := pm11.New(eventBus, fbuseringCommandBus)
 	fbmessagingProcessManager := fbmessaging.NewProcessManager(eventBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, queryBus)
@@ -586,6 +588,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		_receiptPM:     processManager7,
 		_refundPM:      processManager8,
 		_shippingPM:    processManager9,
+		_fbuserPM:      processManager10,
 		_fbMessagingPM: fbmessagingProcessManager,
 		_s:             sqlstoreStore,
 		_m:             middlewareMiddleware,

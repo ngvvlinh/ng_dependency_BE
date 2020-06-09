@@ -121,6 +121,6 @@ func (s *FbExternalUserShopCustomerStore) CreateFbExternalUserShopCustomer(FbExt
 
 func (s *FbExternalUserShopCustomerStore) DeleteFbExternalUserShopCustomer() error {
 	query := s.query().Where(s.preds)
-	err := query.ShouldDelete(&model.FbExternalUserShopCustomer{})
+	_, err := query.Delete(&model.FbExternalUserShopCustomer{})
 	return err
 }

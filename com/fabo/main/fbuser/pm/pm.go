@@ -15,13 +15,15 @@ type ProcessManager struct {
 }
 
 func New(
-	eventBusArgs capi.EventBus,
+	eventBusArgs bus.EventRegistry,
 	fbUserA fbusering.CommandBus,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		eventBus:   eventBusArgs,
 		fbUserAggr: fbUserA,
 	}
+	p.RegisterEventHandlers(eventBusArgs)
+	return p
 }
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {

@@ -1223,8 +1223,11 @@
             "$ref": "#/definitions/ktFilter"
           }
         },
+        "get_all": {
+          "type": "boolean"
+        },
         "paging": {
-          "$ref": "#/definitions/ktCursorPaging"
+          "$ref": "#/definitions/ktPaging"
         }
       }
     },

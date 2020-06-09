@@ -66,20 +66,32 @@ func (s *CustomerService) ListFbUsers(ctx context.Context, request *fabo.ListFbU
 }
 
 func (s *CustomerService) ListCustomersWithFbUsers(ctx context.Context, request *fabo.ListCustomersWithFbUsersRequest) (*fabo.ListCustomersWithFbUsersResponse, error) {
-	paging, err := cmapi.CMCursorPaging(request.Paging)
-	if err != nil {
-		return nil, err
-	}
-	shopID := s.SS.Shop().ID
-	query := &fbusering.ListShopCustomerWithFbExternalUserQuery{
-		ShopID:  shopID,
-		Paging:  *paging,
-		Filters: cmapi.ToFilters(request.Filters),
-	}
-	if err := s.FBUseringQuery.Dispatch(ctx, query); err != nil {
-		return nil, err
-	}
 	var result = &fabo.ListCustomersWithFbUsersResponse{}
-	result.Customers = convertpbfabo.PbCustomersWithFbUsers(query.Result)
+	paging := cmapi.CMPaging(request.Paging)
+	shopID := s.SS.Shop().ID
+	if paging.Offset == 0 && request.GetAll && len(request.Filters) == 0 {
+		paging.Limit = paging.Limit - 1
+		queryCustomerIndenpendent := &customering.GetCustomerIndependentQuery{}
+		if err := s.CustomerQuery.Dispatch(ctx, queryCustomerIndenpendent); err != nil {
+			return nil, err
+		}
+		result.Customers = append(result.Customers,
+			convertpbfabo.PbCustomerWithFbUser(
+				&fbusering.ShopCustomerWithFbExternalUser{
+					ShopCustomer: queryCustomerIndenpendent.Result,
+				},
+			))
+	}
+	if paging.Limit > 0 {
+		query := &fbusering.ListShopCustomerWithFbExternalUserQuery{
+			ShopID:  shopID,
+			Paging:  *paging,
+			Filters: cmapi.ToFilters(request.Filters),
+		}
+		if err := s.FBUseringQuery.Dispatch(ctx, query); err != nil {
+			return nil, err
+		}
+		result.Customers = append(result.Customers, convertpbfabo.PbCustomersWithFbUsers(query.Result)...)
+	}
 	return result, nil
 }

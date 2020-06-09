@@ -14,6 +14,7 @@ import (
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
 	"o.o/backend/com/fabo/main/fbmessaging"
+	fbuserpm "o.o/backend/com/fabo/main/fbuser/pm"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
@@ -68,6 +69,7 @@ type Output struct {
 	_receiptPM     *receiptpm.ProcessManager
 	_refundPM      *refundpm.ProcessManager
 	_shippingPM    *shippingpm.ProcessManager
+	_fbuserPM      *fbuserpm.ProcessManager
 	_fbMessagingPM *fbmessaging.ProcessManager
 
 	// _affiliatePM      *affiliatepm.ProcessManager
