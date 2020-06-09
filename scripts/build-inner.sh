@@ -2,16 +2,26 @@
 set -e
 
 : "${COMMIT?Must set COMMIT}"
+: "${1?Usage: build-inner.sh TARGET [MOUNT_DIR]>}"
 
-# this will copy the source to $2 and start building in the new location
-bindir=bin
-if [[ -n "$1$2" ]]; then
-    bindir="$1/bin"
-    cd "$1"
-    mkdir -p "$1/bin"
-    mkdir -p "$2" && rm -rf "$2" && cp -r "$1" "$2"
-    cd "$2"
-    echo "source copied to $2"
+binDir=bin
+target="$1"
+mountDir="$2"
+if [[ -n $mountDir ]]; then
+    buildDir=/project
+    if [[ "$mountDir" == "$buildDir" ]]; then
+        echo "invalid MOUNT_DIR"
+        exit 1
+    fi
+
+    # this will copy the source to buildDir and start building in the new location
+    binDir="$mountDir/bin"
+    mkdir -p "$binDir"
+    cd "$mountDir"
+    rm -rf "$buildDir" || true
+    cp -r "$mountDir" "$buildDir"
+    cd "$buildDir"
+    echo "source copied, start building..."
 fi
 
 build() {
@@ -23,7 +33,7 @@ build() {
     CGO_ENABLED=1 go build "$@" \
         -tags release \
         -ldflags "-X \"o.o/backend/pkg/common.commit=${COMMIT}\"" \
-        -o "$bindir/$NAME" $FILE
+        -o "$binDir/$NAME" $FILE
 }
 
 if [[ -n $ENV_FILE ]]; then source "$ENV_FILE" ; fi
@@ -32,19 +42,34 @@ if [[ -n $ENV_FILE ]]; then source "$ENV_FILE" ; fi
 go version
 time go install ./...
 
-build ./cmd/etop-server           $BUILD_SERVER
-build ./cmd/fabo-server           $BUILD_FABO_SERVER
-build ./cmd/etop-event-handler    $BUILD_EVENT_HANDLER
-build ./cmd/etop-uploader         $BUILD_UPLOADER
-build ./cmd/pgevent-forwarder     $BUILD_PGEVENT_FORWARDER
-build ./cmd/shipping-sync-service $BUILD_SYNC_SERVICE
-build ./cmd/etop-notifier         $BUILD_NOTIFIER
-build ./cmd/etop-etl              $BUILD_ETL
-build ./cmd/fabo-sync-service     $BUILD_FABO_SYNC_SERVICE
+case "$target" in
+etop)
+    build ./cmd/etop-server           $BUILD_SERVER
+    build ./cmd/fabo-server           $BUILD_FABO_SERVER
+    build ./cmd/etop-event-handler    $BUILD_EVENT_HANDLER
+    build ./cmd/etop-uploader         $BUILD_UPLOADER
+    build ./cmd/pgevent-forwarder     $BUILD_PGEVENT_FORWARDER
+    build ./cmd/shipping-sync-service $BUILD_SYNC_SERVICE
+    build ./cmd/etop-notifier         $BUILD_NOTIFIER
+    build ./cmd/etop-etl              $BUILD_ETL
+    build ./cmd/fabo-sync-service     $BUILD_FABO_SYNC_SERVICE
 
-mkdir -p "$bindir"/com/web/ecom
-   cp -R     com/web/ecom/assets    "$bindir"/com/web/ecom/
-   cp -R     com/web/ecom/templates "$bindir"/com/web/ecom/
+    mkdir -p "$binDir"/com/web/ecom
+       cp -R     com/web/ecom/assets    "$binDir"/com/web/ecom/
+       cp -R     com/web/ecom/templates "$binDir"/com/web/ecom/
 
-mkdir -p "$bindir"/zexp/etl
-   cp -R     zexp/etl/db   "$bindir"/zexp/etl/
+    mkdir -p "$binDir"/zexp/etl
+       cp -R     zexp/etl/db   "$binDir"/zexp/etl/
+
+    ;;
+fabo)
+    build ./cmd/fabo-server           $BUILD_FABO_SERVER
+    build ./cmd/etop-event-handler    $BUILD_EVENT_HANDLER
+    build ./cmd/etop-uploader         $BUILD_UPLOADER
+    build ./cmd/pgevent-forwarder     $BUILD_PGEVENT_FORWARDER
+    build ./cmd/fabo-sync-service     $BUILD_FABO_SYNC_SERVICE
+    ;;
+*)
+    echo unexpected
+    exit 1
+esac

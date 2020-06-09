@@ -3,7 +3,7 @@ set -e
 
 : ${PROJECT_DIR?Must set PROJECT_DIR}
 BACKEND="${PROJECT_DIR}/backend"
-USAGE="Usage: build.sh [docker]"
+USAGE="Usage: build.sh [TARGET] [docker]"
 
 replace() { echo "$1" | sed "s/$2/$3/g"; }
 
@@ -37,14 +37,21 @@ build_docker() {
 
     if [[ -n $ENV_FILE ]]; then _env_file="-e=ENV_FILE=$ENV_FILE" ; fi
     docker exec -it -e COMMIT="$COMMIT" $_env_file \
-        project_golang scripts/build-inner.sh \
-            /_/o.o/backend /o.o/backend
+        project_golang scripts/build-inner.sh $target /_/o.o/backend
 }
 
-case "$1" in
+target="$1"
+case "$target" in
+""|etop|fabo)
+    ;;
+*)
+    echo "$USAGE"
+esac
+
+case "$2" in
 "")
     preprocess
-    COMMIT="$COMMIT" scripts/build-inner.sh
+    COMMIT="$COMMIT" scripts/build-inner.sh $target
     ;;
 docker)
     preprocess
