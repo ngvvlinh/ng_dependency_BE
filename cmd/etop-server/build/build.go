@@ -142,14 +142,10 @@ func BuildMainServer(
 	if cfg.ServeDoc {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
-		for _, s := range strings.Split("sadmin,admin,shop,integration,affiliate,services/crm,services/affiliate", ",") {
+		for _, s := range strings.Split("etop/sadmin,etop/admin,etop/shop,etop/integration,etop/affiliate,services/crm,services/affiliate,fabo", ",") {
 			swaggerPath := "/doc/" + s + "/swagger.json"
 			mux.Handle("/doc/"+s, cmservice.RedocHandler())
-			if strings.Contains(s, "/") {
-				mux.Handle(swaggerPath, cmservice.SwaggerHandler(s+"/swagger.json"))
-			} else {
-				mux.Handle(swaggerPath, cmservice.SwaggerHandler("etop/"+s+"/swagger.json"))
-			}
+			mux.Handle(swaggerPath, cmservice.SwaggerHandler(s+"/swagger.json"))
 		}
 		mux.Handle("/doc/etop", cmservice.RedocHandler())
 		mux.Handle("/doc/etop/swagger.json", cmservice.SwaggerHandler("etop/swagger.json"))
