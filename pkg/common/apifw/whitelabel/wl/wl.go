@@ -4,18 +4,34 @@ import (
 	"context"
 
 	"o.o/backend/pkg/common/apifw/whitelabel"
-	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
+	etopdrivers "o.o/backend/pkg/common/apifw/whitelabel/drivers"
+	fabodrivers "o.o/backend/pkg/common/apifw/whitelabel/fabo"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/capi/dot"
 )
 
+type ServerName string
+
+const (
+	EtopServer ServerName = "etop"
+	FaboServer ServerName = "fabo"
+)
+
 var whiteLabel *whitelabel.WhiteLabel
 
-func Init(env cmenv.EnvType) *whitelabel.WhiteLabel {
+func Init(env cmenv.EnvType, serverName ServerName) *whitelabel.WhiteLabel {
 	if whiteLabel != nil {
 		panic("already init")
 	}
-	whiteLabel = whitelabel.New(drivers.Drivers(env))
+	switch serverName {
+	case EtopServer:
+		whiteLabel = whitelabel.New(etopdrivers.Drivers(env))
+	case FaboServer:
+		whiteLabel = whitelabel.New(fabodrivers.Drivers(env))
+	default:
+		// TODO define later
+	}
+
 	return whiteLabel
 }
 

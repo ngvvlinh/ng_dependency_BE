@@ -34,7 +34,7 @@ func main() {
 
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite) // TODO(vu): refactor
 	sqltrace.Init()
-	wl.Init(cmenv.Env())
+	wl.Init(cmenv.Env(), wl.EtopServer)
 	cfg.TelegramBot.MustRegister()
 	eventBus := bus.New()
 	healthService := health.New()

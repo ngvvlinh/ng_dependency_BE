@@ -179,7 +179,7 @@ func TestNormalize(t *testing.T) {
 				"mothaibabon1234@yahoo.com", true,
 			},
 		}
-		wlx := wl.Init(1)
+		wlx := wl.Init(1, wl.EtopServer)
 		var ctx = context.Background()
 		ctx = wlx.WrapContext(ctx, drivers.ITopXID)
 		for _, tt := range tests {

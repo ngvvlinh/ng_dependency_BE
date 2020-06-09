@@ -54,7 +54,7 @@ func main() {
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
-	wl.Init(cmenv.Env())
+	wl.Init(cmenv.Env(), wl.EtopServer)
 
 	ctx, ctxCancel = context.WithCancel(context.Background())
 	go func() {

@@ -77,7 +77,7 @@ func init() {
 		Token:        "token",
 		Status:       1,
 	}
-	wl.Init(cmenv.EnvDev)
+	wl.Init(cmenv.EnvDev, wl.EtopServer)
 	ctx = wl.WrapContext(bus.Ctx(), drivers.ITopXID)
 	ctx = bus.NewRootContext(ctx)
 	QS = ConnectionQueryMessageBus(NewConnectionQuery(db))

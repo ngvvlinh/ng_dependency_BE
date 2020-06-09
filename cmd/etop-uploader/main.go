@@ -69,7 +69,7 @@ func main() {
 	}
 
 	cmenv.SetEnvironment(cfg.Env)
-	wl.Init(cmenv.Env())
+	wl.Init(cmenv.Env(), wl.EtopServer)
 
 	_, err = os.Stat(cfg.UploadDirImg)
 	if err != nil {
