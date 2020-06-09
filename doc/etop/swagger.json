@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "description": "API Documentation:\n\n### eTop\n\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/ext/carrier](/doc/ext/partnercarrier) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins\n\n### Fabo\n\n- [/doc/fabo](/doc/fabo) Fabo",
+    "description": "API Documentation:\n\n### eTop\n\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/etop/shop](/doc/etop/shop) API for shops\n- [/doc/etop/affiliate](/doc/etop/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/etop/integration](/doc/etop/integration) API for shop to integrate with external partners\n- [/doc/etop/admin](/doc/etop/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/ext/carrier](/doc/ext/partnercarrier) External API for partners\n- [/doc/etop/sadmin](/doc/etop/sadmin) Special API for super admins\n\n### Fabo\n\n- [/doc/fabo](/doc/fabo) Fabo",
     "title": "etop API",
     "version": "v1"
   },
