@@ -375,6 +375,7 @@ func (m *ProcessManager) handleCreateExternalCustomerUser(
 				ExternalInfo: &fbusering.FbExternalUserInfo{
 					Name: fbObjectFromAndPageID.objectFrom.Name,
 				},
+				ExternalPageID: fbObjectFromAndPageID.externalPageID,
 			}
 			psid := fbObjectFromAndPageID.psid
 			if psid == "" {

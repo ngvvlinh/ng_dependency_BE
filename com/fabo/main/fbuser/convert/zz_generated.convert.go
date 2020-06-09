@@ -122,9 +122,10 @@ func convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg *fbusermode
 	out.ExternalID = arg.ExternalID // simple assign
 	out.ShopID = 0                  // zero value
 	out.ExternalInfo = Convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg.ExternalInfo, nil)
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.Status = arg.Status                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID // simple assign
+	out.CreatedAt = arg.CreatedAt           // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
 }
 
 func Convert_fbusermodel_FbExternalUsers_fbusering_FbExternalUsers(args []*fbusermodel.FbExternalUser) (outs []*fbusering.FbExternalUser) {
@@ -153,9 +154,10 @@ func Convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg *fbusering.
 func convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg *fbusering.FbExternalUser, out *fbusermodel.FbExternalUser) {
 	out.ExternalID = arg.ExternalID // simple assign
 	out.ExternalInfo = Convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(arg.ExternalInfo, nil)
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.Status = arg.Status                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID // simple assign
+	out.CreatedAt = arg.CreatedAt           // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
 }
 
 func Convert_fbusering_FbExternalUsers_fbusermodel_FbExternalUsers(args []*fbusering.FbExternalUser) (outs []*fbusermodel.FbExternalUser) {
@@ -182,12 +184,13 @@ func Apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbus
 }
 
 func apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbusering.CreateFbExternalUserArgs, out *fbusering.FbExternalUser) {
-	out.ExternalID = arg.ExternalID     // simple assign
-	out.ShopID = 0                      // zero value
-	out.ExternalInfo = arg.ExternalInfo // simple assign
-	out.Status = arg.Status             // simple assign
-	out.CreatedAt = time.Time{}         // zero value
-	out.UpdatedAt = time.Time{}         // zero value
+	out.ExternalID = arg.ExternalID         // simple assign
+	out.ShopID = 0                          // zero value
+	out.ExternalInfo = arg.ExternalInfo     // simple assign
+	out.Status = arg.Status                 // simple assign
+	out.ExternalPageID = arg.ExternalPageID // simple assign
+	out.CreatedAt = time.Time{}             // zero value
+	out.UpdatedAt = time.Time{}             // zero value
 }
 
 //-- convert o.o/api/fabo/fbusering.FbExternalUserInfo --//

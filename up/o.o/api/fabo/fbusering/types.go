@@ -9,12 +9,13 @@ import (
 )
 
 type FbExternalUser struct {
-	ExternalID   string
-	ShopID       dot.ID
-	ExternalInfo *FbExternalUserInfo
-	Status       status3.Status
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ExternalID     string
+	ShopID         dot.ID
+	ExternalInfo   *FbExternalUserInfo
+	Status         status3.Status
+	ExternalPageID string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 type FbExternalUserInfo struct {

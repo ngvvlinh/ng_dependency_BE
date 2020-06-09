@@ -160,7 +160,6 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 				ShortName: me.ShortName,
 				ImageURL:  me.Picture.Data.Url,
 			},
-			Token:  longLivedAccessToken.AccessToken,
 			Status: status3.P,
 		},
 		FbUserInternal: &fbusering.CreateFbExternalUserInternalArgs{

@@ -28,10 +28,10 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type CreateFbExternalUserCommand struct {
-	ExternalID   string
-	ExternalInfo *FbExternalUserInfo
-	Token        string
-	Status       status3.Status
+	ExternalID     string
+	ExternalInfo   *FbExternalUserInfo
+	ExternalPageID string
+	Status         status3.Status
 
 	Result *FbExternalUser `json:"-"`
 }
@@ -219,17 +219,17 @@ func (q *ListShopCustomerWithFbExternalUserQuery) query()          {}
 func (q *CreateFbExternalUserCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUserArgs) {
 	return ctx,
 		&CreateFbExternalUserArgs{
-			ExternalID:   q.ExternalID,
-			ExternalInfo: q.ExternalInfo,
-			Token:        q.Token,
-			Status:       q.Status,
+			ExternalID:     q.ExternalID,
+			ExternalInfo:   q.ExternalInfo,
+			ExternalPageID: q.ExternalPageID,
+			Status:         q.Status,
 		}
 }
 
 func (q *CreateFbExternalUserCommand) SetCreateFbExternalUserArgs(args *CreateFbExternalUserArgs) {
 	q.ExternalID = args.ExternalID
 	q.ExternalInfo = args.ExternalInfo
-	q.Token = args.Token
+	q.ExternalPageID = args.ExternalPageID
 	q.Status = args.Status
 }
 

@@ -9,11 +9,12 @@ import (
 
 // +sqlgen
 type FbExternalUser struct {
-	ExternalID   string
-	ExternalInfo *FbExternalUserInfo
-	Status       status3.Status
-	CreatedAt    time.Time `sq:"create"`
-	UpdatedAt    time.Time `sq:"update"`
+	ExternalID     string
+	ExternalInfo   *FbExternalUserInfo
+	Status         status3.Status
+	ExternalPageID string
+	CreatedAt      time.Time `sq:"create"`
+	UpdatedAt      time.Time `sq:"update"`
 }
 
 type FbExternalUserInfo struct {

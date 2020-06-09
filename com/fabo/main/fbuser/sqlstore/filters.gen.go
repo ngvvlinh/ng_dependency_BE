@@ -64,6 +64,25 @@ func (ft *FbExternalUserFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnF
 	}
 }
 
+func (ft *FbExternalUserFilters) ByExternalPageID(ExternalPageID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_page_id",
+		Value:  ExternalPageID,
+		IsNil:  ExternalPageID == "",
+	}
+}
+
+func (ft *FbExternalUserFilters) ByExternalPageIDPtr(ExternalPageID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_page_id",
+		Value:  ExternalPageID,
+		IsNil:  ExternalPageID == nil,
+		IsZero: ExternalPageID != nil && (*ExternalPageID) == "",
+	}
+}
+
 func (ft *FbExternalUserFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

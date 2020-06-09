@@ -2,6 +2,7 @@ package sync
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbpage/convert"
 	fbpagemodel "o.o/backend/com/fabo/main/fbpage/model"
@@ -46,6 +48,7 @@ const (
 	GetComments      TaskActionType = 655
 	GetConversations TaskActionType = 363
 	GetMessages      TaskActionType = 160
+	GetAvatar        TaskActionType = 529
 )
 
 type getCommentsArguments struct {
@@ -63,6 +66,11 @@ type getMessagesArguments struct {
 	externalConversationID string
 }
 
+type getAvatarArguments struct {
+	externalUserID       string
+	externalPageInternal *fbpaging.FbExternalPageInternal
+}
+
 type TaskArguments struct {
 	actionType  TaskActionType
 	accessToken string
@@ -74,6 +82,7 @@ type TaskArguments struct {
 	getCommentsArgs  *getCommentsArguments
 	getChildPostArgs *getChildPostArguments
 	getMessagesArgs  *getMessagesArguments
+	getAvatarArgs    *getAvatarArguments
 
 	fbPagingRequest *model.FacebookPagingRequest
 }
@@ -96,6 +105,7 @@ type Synchronizer struct {
 
 	fbMessagingAggr  fbmessaging.CommandBus
 	fbMessagingQuery fbmessaging.QueryBus
+	fbUseringAggr    fbusering.CommandBus
 
 	mu sync.Mutex
 	rd *faboRedis.FaboRedis
@@ -106,8 +116,8 @@ type Synchronizer struct {
 func New(
 	db *cmsql.Database,
 	fbClient *fbclient.FbClient,
-	fbMessagingAggr fbmessaging.CommandBus,
-	fbMessagingQuery fbmessaging.QueryBus,
+	fbMessagingAggr fbmessaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus,
+	fbUseringAggr fbusering.CommandBus,
 	fbRedis *faboRedis.FaboRedis, timeLimit int,
 ) *Synchronizer {
 	sched := scheduler.New(defaultNumWorkers)
@@ -118,6 +128,7 @@ func New(
 		mapTaskArguments: make(map[dot.ID]*TaskArguments),
 		fbMessagingAggr:  fbMessagingAggr,
 		fbMessagingQuery: fbMessagingQuery,
+		fbUseringAggr:    fbUseringAggr,
 		rd:               fbRedis,
 		timeLimit:        timeLimit,
 	}
@@ -206,6 +217,20 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 		//}
 	}
 
+	mapExternalUserIDAndPageInternal, err := getMapExternalUserIDAndPageInternal(s.db)
+	if err != nil {
+		return err
+	}
+	for externalUserID, externalPageInternal := range mapExternalUserIDAndPageInternal {
+		s.addTask(&TaskArguments{
+			actionType: GetAvatar,
+			getAvatarArgs: &getAvatarArguments{
+				externalUserID:       externalUserID,
+				externalPageInternal: externalPageInternal,
+			},
+		})
+	}
+
 	s.scheduler.AddAfter(cm.NewID(), 5*time.Minute, s.addJobs)
 
 	return
@@ -214,6 +239,7 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_err error) {
 	taskID := id.(dot.ID)
 	ctx := bus.Ctx()
+	taskArgs := s.getTaskArguments(taskID)
 
 	defer func() {
 		if _err == nil {
@@ -227,6 +253,11 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		case fbclient.AccessTokenHasExpired.String():
 			// no-op
 			return
+		case fbclient.InvalidParameter.String():
+			if taskArgs.actionType == GetAvatar {
+				// Ignore error because different between get pageInfo and PSID info
+				return
+			}
 		case fbclient.ApiTooManyCalls.String(), fbclient.ApplicationLimitReached.String():
 			s.scheduler.AddAfter(taskID, defaultRecurrentFacebookThrottling, s.syncCallbackLogs)
 			return
@@ -241,8 +272,6 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		go ll.SendMessage(_err.Error())
 		s.scheduler.AddAfter(taskID, defaultRecurrentFacebook, s.syncCallbackLogs)
 	}()
-
-	taskArgs := s.getTaskArguments(taskID)
 
 	accessToken := taskArgs.accessToken
 	shopID := taskArgs.shopID
@@ -269,6 +298,10 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		}
 	case GetMessages:
 		if err := s.handleTaskGetMessages(ctx, shopID, pageID, accessToken, externalPageID, taskArgs, fbPagingReq); err != nil {
+			return err
+		}
+	case GetAvatar:
+		if err := s.handleTaskGetAvatar(ctx, taskArgs); err != nil {
 			return err
 		}
 	}
@@ -342,6 +375,44 @@ func (s *Synchronizer) handleTaskGetMessages(
 			fbPagingRequest: fbMessagesResp.Messages.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetMessages),
 		})
 	}
+	return nil
+}
+
+func (s *Synchronizer) handleTaskGetAvatar(
+	ctx context.Context, taskArgs *TaskArguments,
+) error {
+	fmt.Println("GetAvatar")
+
+	avatarArgs := taskArgs.getAvatarArgs
+	externalUserID := avatarArgs.externalUserID
+	externalPageInternal := avatarArgs.externalPageInternal
+
+	profile, err := s.fbClient.CallAPIGetProfileByPSID(externalPageInternal.Token, externalUserID)
+	if err != nil {
+		return err
+	}
+
+	profilePic := fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", externalUserID)
+	if profile.ProfilePic != "" {
+		profilePic = profile.ProfilePic
+	}
+
+	createFbExternalUserCmd := &fbusering.CreateFbExternalUserCommand{
+		ExternalID: externalUserID,
+		ExternalInfo: &fbusering.FbExternalUserInfo{
+			Name:      profile.Name,
+			FirstName: profile.FirstName,
+			LastName:  profile.LastName,
+			ImageURL:  profilePic,
+		},
+		ExternalPageID: externalPageInternal.ExternalID,
+		Status:         0,
+	}
+
+	if err := s.fbUseringAggr.Dispatch(ctx, createFbExternalUserCmd); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -468,10 +539,6 @@ func (s *Synchronizer) handleTaskGetComments(
 
 	var createOrUpdateFbExternalCommentsArgs []*fbmessaging.CreateFbExternalCommentArgs
 	for _, fbExternalComment := range fbExternalCommentsResp.Comments.CommentData {
-		if fbExternalComment.ID == "122501556114814_122958706069099" {
-			fmt.Println("accccc")
-		}
-
 		// Ignore comment is hidden
 		if fbExternalComment.IsHidden {
 			continue
@@ -775,6 +842,55 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 	}
 
 	return fbExternalPageCombineds, nil
+}
+
+func getMapExternalUserIDAndPageInternal(db *cmsql.Database) (map[string]*fbpaging.FbExternalPageInternal, error) {
+	fromExternalID := ""
+
+	// key is id
+	mapExternalUserIDAndPageToken := make(map[string]*fbpaging.FbExternalPageInternal)
+
+	for {
+		rows, err := db.
+			Query(fmt.Sprintf(`
+				select 
+					u.external_id external_id ,
+					p.id page_id,
+					p.external_id external_page_id,
+					p.token token
+				from fb_external_user u
+				inner join fb_external_page_internal p
+				on u.external_page_id = p.external_id
+				where u.external_id > '%s' and u.external_page_id != ''
+				order by u.external_id
+				limit %d`, fromExternalID, 1000))
+
+		if err != nil {
+			return nil, err
+		}
+
+		var pageID sql.NullInt64
+		var externalID, externalPageID, token string
+		for rows.Next() {
+			err := rows.Scan(&externalID, &pageID, &externalPageID, &token)
+			if err != nil {
+				return nil, err
+			}
+			mapExternalUserIDAndPageToken[externalID] = &fbpaging.FbExternalPageInternal{
+				ID:         dot.ID(pageID.Int64),
+				ExternalID: externalPageID,
+				Token:      token,
+			}
+		}
+
+		if externalID == "" {
+			break
+		} else {
+			fromExternalID = externalID
+		}
+	}
+
+	return mapExternalUserIDAndPageToken, nil
 }
 
 func ternaryString(statement bool, a, b string) string {

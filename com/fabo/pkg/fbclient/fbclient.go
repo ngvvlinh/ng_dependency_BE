@@ -826,6 +826,11 @@ func (f *FbClient) CallAPICommentByID(accessToken, commentID string) (*model.Com
 	return &comment, nil
 }
 
+// API steps:
+//		(issue: some PSIDs are pageIDs or specialIDs that can't get profile or get profile with full fields)
+// 		get profile by psid with full fields
+//		if error don't occur then return
+//		else get profile by psid with fields "id,name"
 func (f *FbClient) CallAPIGetProfileByPSID(accessToken, PSID string) (*model.Profile, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), PSID))
 	if err != nil {
@@ -846,9 +851,30 @@ func (f *FbClient) CallAPIGetProfileByPSID(accessToken, PSID string) (*model.Pro
 		return nil, err
 	}
 
-	fmt.Println(URL.String())
-
 	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err == nil {
+		var profile model.Profile
+
+		if err := json.Unmarshal(body, &profile); err != nil {
+			return nil, err
+		}
+
+		return &profile, nil
+	}
+
+	query.Set(Fields, "id,name")
+	URL.RawQuery = query.Encode()
+	resp, err = http.Get(URL.String())
+	if err != nil {
+		return nil, err
+	}
+
+	body, err = ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
 		return nil, err

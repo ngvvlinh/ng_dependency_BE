@@ -59,10 +59,10 @@ type ListFbExternalUserWithCustomerRequest struct {
 
 // +convert:create=FbExternalUser
 type CreateFbExternalUserArgs struct {
-	ExternalID   string
-	ExternalInfo *FbExternalUserInfo
-	Token        string
-	Status       status3.Status
+	ExternalID     string
+	ExternalInfo   *FbExternalUserInfo
+	ExternalPageID string
+	Status         status3.Status
 }
 
 type CreateFbExternalUsersArgs struct {
