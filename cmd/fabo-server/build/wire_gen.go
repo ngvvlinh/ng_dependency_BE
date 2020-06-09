@@ -566,28 +566,30 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	processManager7 := pm8.New(eventBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, queryBus)
 	processManager8 := pm9.New(eventBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
 	processManager9 := pm10.New(eventBus, shippingQueryBus, shippingCommandBus, store)
+	fbmessagingProcessManager := fbmessaging.NewProcessManager(eventBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, queryBus)
 	captchaConfig := cfg.Captcha
 	captchaCaptcha := captcha.New(captchaConfig)
 	output := Output{
-		Servers:       v3,
-		EventStream:   eventStream,
-		Handler:       handlerHandler,
-		Publisher:     publisherPublisher,
-		_catalogPM:    processManager,
-		_identityPM:   pmProcessManager,
-		_inventoryPM:  processManager2,
-		_invitationPM: processManager3,
-		_ledgerPM:     processManager4,
-		_moneytxPM:    processManager5,
-		_orderPM:      processManager6,
-		_receiptPM:    processManager7,
-		_refundPM:     processManager8,
-		_shippingPM:   processManager9,
-		_s:            sqlstoreStore,
-		_m:            middlewareMiddleware,
-		_c:            captchaCaptcha,
+		Servers:        v3,
+		EventStream:    eventStream,
+		Handler:        handlerHandler,
+		Publisher:      publisherPublisher,
+		_catalogPM:     processManager,
+		_identityPM:    pmProcessManager,
+		_inventoryPM:   processManager2,
+		_invitationPM:  processManager3,
+		_ledgerPM:      processManager4,
+		_moneytxPM:     processManager5,
+		_orderPM:       processManager6,
+		_receiptPM:     processManager7,
+		_refundPM:      processManager8,
+		_shippingPM:    processManager9,
+		_fbMessagingPM: fbmessagingProcessManager,
+		_s:             sqlstoreStore,
+		_m:             middlewareMiddleware,
+		_c:             captchaCaptcha,
 	}
 	return output, func() {
 		cleanup4()

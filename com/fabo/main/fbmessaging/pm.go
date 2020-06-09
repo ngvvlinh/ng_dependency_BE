@@ -14,12 +14,11 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
-	"o.o/capi"
 	"o.o/capi/dot"
 )
 
 type ProcessManager struct {
-	eventBus     capi.EventBus
+	eventBus     bus.EventRegistry
 	fbmessagingQ fbmessaging.QueryBus
 	fbmessagingA fbmessaging.CommandBus
 	fbpagingQ    fbpaging.QueryBus
@@ -29,14 +28,14 @@ type ProcessManager struct {
 }
 
 func NewProcessManager(
-	eventBus capi.EventBus,
+	eventBus bus.EventRegistry,
 	fbmessagingQuery fbmessaging.QueryBus,
 	fbmessagingAggregate fbmessaging.CommandBus,
 	fbpagingQuery fbpaging.QueryBus, fbuseringQ fbusering.QueryBus,
 	fbuseringA fbusering.CommandBus,
 	faboRedis *faboRedis.FaboRedis,
 ) *ProcessManager {
-	return &ProcessManager{
+	p := &ProcessManager{
 		eventBus:     eventBus,
 		fbmessagingQ: fbmessagingQuery,
 		fbmessagingA: fbmessagingAggregate,
@@ -45,6 +44,8 @@ func NewProcessManager(
 		fbuseringA:   fbuseringA,
 		rd:           faboRedis,
 	}
+	p.RegisterEventHandlers(eventBus)
+	return p
 }
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
