@@ -138,6 +138,7 @@ type FbExternalPost struct {
 	ExternalCreatedTime time.Time
 	CreatedAt           time.Time `compare:"ignore"`
 	UpdatedAt           time.Time `compare:"ignore"`
+	ExternalParent      *FbExternalPost
 }
 
 type FbCustomerConversation struct {

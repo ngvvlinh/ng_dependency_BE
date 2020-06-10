@@ -288,18 +288,6 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	}
 
 	fbPost := convertpb.PbFbExternalPost(fbExternalPost)
-	parentID := fbExternalPost.ExternalParentID
-	if parentID != "" {
-		queryParent := &fbmessaging.GetFbExternalPostByExternalIDQuery{
-			ExternalID: parentID,
-		}
-		if err = s.FBMessagingQuery.Dispatch(ctx, queryParent); err != nil {
-			return nil, err
-		}
-		fbExternalParentPost := queryParent.Result
-		fbPost.ExternalParent = convertpb.PbFbExternalPost(fbExternalParentPost)
-
-	}
 
 	var commentParentExternalIDs []string
 	for _, childrenComment := range listComments {

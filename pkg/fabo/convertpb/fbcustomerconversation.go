@@ -176,6 +176,7 @@ func PbFbExternalPost(m *fbmessaging.FbExternalPost) *fabo.FbExternalPost {
 		ExternalPicture:     m.ExternalPicture,
 		ExternalIcon:        m.ExternalIcon,
 		ExternalMessage:     m.ExternalMessage,
+		ExternalParent:      PbFbExternalPost(m.ExternalParent),
 		ExternalAttachments: PbPostAttachments(m.ExternalAttachments),
 		ExternalCreatedTime: m.ExternalCreatedTime,
 		CreatedAt:           m.CreatedAt,

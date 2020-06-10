@@ -145,6 +145,10 @@ func (q *FbMessagingQuery) ListFbExternalPostsByExternalIDs(
 	if err != nil {
 		return nil, err
 	}
+	err = q.mapPostParent(ctx, fbExternalPosts)
+	if err != nil {
+		return nil, err
+	}
 	return fbExternalPosts, nil
 }
 
@@ -155,7 +159,32 @@ func (q *FbMessagingQuery) ListFbExternalPostsByIDs(
 	if err != nil {
 		return nil, err
 	}
+	err = q.mapPostParent(ctx, fbExternalPosts)
+	if err != nil {
+		return nil, err
+	}
 	return fbExternalPosts, nil
+}
+
+func (q *FbMessagingQuery) mapPostParent(ctx context.Context, posts []*fbmessaging.FbExternalPost) error {
+	var postParentIDs []string
+	mapPost := make(map[string]*fbmessaging.FbExternalPost)
+	for _, post := range posts {
+		postParentIDs = append(postParentIDs, post.ExternalParentID)
+	}
+	postParents, err := q.fbExternalPostStore(ctx).ExternalIDs(postParentIDs).ListFbExternalPosts()
+	if err != nil {
+		return err
+	}
+	for _, postParent := range postParents {
+		mapPost[postParent.ExternalID] = postParent
+	}
+	for _, post := range posts {
+		if mapPost[post.ExternalParentID] != nil {
+			post.ExternalParent = mapPost[post.ExternalParentID]
+		}
+	}
+	return nil
 }
 
 func (q *FbMessagingQuery) GetFbCustomerConversation(
@@ -214,7 +243,13 @@ func (q *FbMessagingQuery) ListFbExternalCommentsByExternalIDs(
 func (q *FbMessagingQuery) GetFbExternalPostByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbmessaging.FbExternalPost, error) {
-	return q.fbExternalPostStore(ctx).ExternalID(externalID).GetFbExternalPost()
+
+	fbExternalPost, err := q.fbExternalPostStore(ctx).ExternalID(externalID).GetFbExternalPost()
+	err = q.mapPostParent(ctx, []*fbmessaging.FbExternalPost{fbExternalPost})
+	if err != nil {
+		return nil, err
+	}
+	return fbExternalPost, nil
 }
 
 func (q *FbMessagingQuery) GetFbExternalMessageByID(
