@@ -61,6 +61,7 @@ func (c config) siteUrl(env cmenv.EnvType, path string) string {
 }
 
 func Fabo(env cmenv.EnvType) *whitelabel.WL {
+	InitTemplateMsg()
 	cfg := config{
 		prodHost: "faboshop.vn",
 		key:      "fabo",

@@ -20,6 +20,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/apifw/idemp"
+	"o.o/backend/pkg/common/apifw/whitelabel/templatemessages"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
@@ -437,22 +438,22 @@ func (s *UserService) sendPhoneUserCode(ctx context.Context, user *identitymodel
 	if redisCode == keyRedisFirstCodeUpdateUser {
 		if signal == signalUpdateUserEmail {
 			if sendCount > 1 {
-				msgUser = fmt.Sprintf(smsChangeEmailTplRepeat, code, wl.X(ctx).Name, sendCount)
+				msgUser = fmt.Sprintf(templatemessages.SmsChangeEmailTplRepeat, code, wl.X(ctx).Name, sendCount)
 			} else {
-				msgUser = fmt.Sprintf(smsChangeEmailTpl, code, wl.X(ctx).Name)
+				msgUser = fmt.Sprintf(templatemessages.SmsChangeEmailTpl, code, wl.X(ctx).Name)
 			}
 		} else {
 			if sendCount > 1 {
-				msgUser = fmt.Sprintf(smsChangePhoneTplRepeat, code, wl.X(ctx).Name, sendCount)
+				msgUser = fmt.Sprintf(templatemessages.SmsChangePhoneTplRepeat, code, wl.X(ctx).Name, sendCount)
 			} else {
-				msgUser = fmt.Sprintf(smsChangePhoneTpl, code, wl.X(ctx).Name)
+				msgUser = fmt.Sprintf(templatemessages.SmsChangePhoneTpl, code, wl.X(ctx).Name)
 			}
 		}
 	} else {
 		if sendCount > 1 {
-			msgUser = fmt.Sprintf(smsChangePhoneTplConfirmRepeat, code, wl.X(ctx).Name, sendCount)
+			msgUser = fmt.Sprintf(templatemessages.SmsChangePhoneTplConfirmRepeat, code, wl.X(ctx).Name, sendCount)
 		} else {
-			msgUser = fmt.Sprintf(smsChangePhoneTplConfirm, code, wl.X(ctx).Name)
+			msgUser = fmt.Sprintf(templatemessages.SmsChangePhoneTplConfirm, code, wl.X(ctx).Name)
 		}
 	}
 
@@ -497,16 +498,16 @@ func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel
 
 	if redisKeyCode == keyRedisFirstCodeUpdateUser {
 		if signal == signalUpdateUserEmail {
-			if err = updateEmailTpl.Execute(&b, emailData); err != nil {
+			if err = templatemessages.UpdateEmailTpl.Execute(&b, emailData); err != nil {
 				return "", cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", user.FullName).WithMeta("reason", "can not generate email content")
 			}
 		} else {
-			if err = updatePhoneTpl.Execute(&b, emailData); err != nil {
+			if err = templatemessages.UpdatePhoneTpl.Execute(&b, emailData); err != nil {
 				return "", cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", user.FullName).WithMeta("reason", "can not generate email content")
 			}
 		}
 	} else {
-		if err = updateEmailTplConfirm.Execute(&b, emailData); err != nil {
+		if err = templatemessages.UpdateEmailTplConfirm.Execute(&b, emailData); err != nil {
 			return "", cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", user.FullName).WithMeta("reason", "can not generate email content")
 		}
 	}
@@ -872,14 +873,14 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 		if err != nil {
 			return nil, err
 		}
-		msg = smsResetPasswordTpl
+		msg = templatemessages.SmsResetPasswordTpl
 	} else {
 		sendTime++
 		err = s.RedisStore.SetWithTTL(redisCodeCount, sendTime, 1*60*60)
 		if err != nil {
 			return nil, err
 		}
-		msg = fmt.Sprintf(smsResetPasswordTplRepeat, "%v", sendTime)
+		msg = fmt.Sprintf(templatemessages.SmsResetPasswordTplRepeat, "%v", sendTime)
 	}
 
 	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, msg, r.Context, false); err != nil {
@@ -935,7 +936,7 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 	resetUrl.RawQuery = urlQuery.Encode()
 
 	var b strings.Builder
-	if err := resetPasswordTpl.Execute(&b, map[string]interface{}{
+	if err := templatemessages.ResetPasswordTpl.Execute(&b, map[string]interface{}{
 		"FullName": user.FullName,
 		"URL":      resetUrl.String(),
 		"Email":    user.Email,
@@ -1338,7 +1339,7 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 	}
 
 	var b strings.Builder
-	if err := emailVerificationByOTPTpl.Execute(&b, map[string]interface{}{
+	if err := templatemessages.EmailVerificationByOTPTpl.Execute(&b, map[string]interface{}{
 		"Email": user.Email,
 		"Code":  code,
 	}); err != nil {
@@ -1434,7 +1435,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 	verificationUrl.RawQuery = urlQuery.Encode()
 
 	var b strings.Builder
-	if err := emailVerificationTpl.Execute(&b, map[string]interface{}{
+	if err := templatemessages.EmailVerificationTpl.Execute(&b, map[string]interface{}{
 		"FullName": user.FullName,
 		"URL":      verificationUrl.String(),
 		"Email":    user.Email,
@@ -1512,14 +1513,14 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 		if err != nil {
 			return nil, err
 		}
-		msg = smsVerificationTpl
+		msg = templatemessages.SmsVerificationTpl
 	} else {
 		sendTime++
 		err := s.RedisStore.SetWithTTL(redisCodeCount, sendTime, 2*60*60)
 		if err != nil {
 			return nil, err
 		}
-		msg = fmt.Sprintf(smsVerificationTplRepeat, "%v", sendTime)
+		msg = fmt.Sprintf(templatemessages.SmsVerificationTplRepeat, "%v", sendTime)
 	}
 	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, msg, r.Context, true); err != nil {
 		return r, err
@@ -1887,7 +1888,7 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 	}
 
 	var b strings.Builder
-	if err := emailSTokenTpl.Execute(&b, emailData); err != nil {
+	if err := templatemessages.EmailSTokenTpl.Execute(&b, emailData); err != nil {
 		return r, cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", account.Name).WithMeta("reason", "can not generate email content")
 	}
 
@@ -2021,14 +2022,14 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *S
 		if err != nil {
 			return nil, err
 		}
-		msg = smsVerificationTpl
+		msg = templatemessages.SmsVerificationTpl
 	} else {
 		sendTime++
 		err = s.RedisStore.SetWithTTL(redisCodeCount, sendTime, 2*60*60)
 		if err != nil {
 			return nil, err
 		}
-		msg = fmt.Sprintf(smsVerificationTplRepeat, "%v", sendTime)
+		msg = fmt.Sprintf(templatemessages.SmsVerificationTplRepeat, "%v", sendTime)
 	}
 	if err = s.sendPhoneVerificationImpl(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, r.Context, msg, false); err != nil {
 		return r, err

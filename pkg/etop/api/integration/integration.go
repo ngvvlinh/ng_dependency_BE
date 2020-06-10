@@ -16,13 +16,13 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/idemp"
+	"o.o/backend/pkg/common/apifw/whitelabel/templatemessages"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/backend/pkg/common/validate"
-	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
 	apipartner "o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/authorize/authkey"
@@ -346,7 +346,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 		}
 
 		var b strings.Builder
-		if err := api.RequestLoginEmailTpl.Execute(&b, map[string]interface{}{
+		if err := templatemessages.RequestLoginEmailTpl.Execute(&b, map[string]interface{}{
 			"Code":              generatedCode,
 			"Hello":             hello,
 			"Email":             emailNorm,
@@ -744,7 +744,7 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 
 		if sendConfirmInfo {
 			var b strings.Builder
-			err := api.NewAccountViaPartnerEmailTpl.Execute(&b, map[string]interface{}{
+			err := templatemessages.NewAccountViaPartnerEmailTpl.Execute(&b, map[string]interface{}{
 				"FullName":          user.FullName,
 				"PartnerPublicName": partner.PublicName,
 				"PartnerWebsite":    validate.DomainFromURL(partner.WebsiteURL),

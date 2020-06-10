@@ -1,10 +1,10 @@
-package api
+package templatemessages
 
 import (
 	"html/template"
 )
 
-var resetPasswordTpl = template.Must(template.New("reset-password").Parse(`
+var ResetPasswordTpl = template.Must(template.New("reset-password").Parse(`
 Gửi {{.FullName}},<br><br>
 
 Bạn (hoặc một ai đó) đang muốn khôi phục mật khẩu của tài khoản <b>{{.Email}}</b>.<br>
@@ -17,7 +17,7 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ eTop
 `))
 
-var updateEmailTpl = template.Must(template.New("update-email").Parse(`
+var UpdateEmailTpl = template.Must(template.New("update-email").Parse(`
 Gửi {{.FullName}},<br><br>
 
 Bạn (hoặc một ai đó) đang muốn thay đổi email của tài khoản <b>{{.Email}}</b>.<br>
@@ -30,7 +30,7 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ {{.WlName}}
 `))
 
-var updateEmailTplConfirm = template.Must(template.New("update-email").Parse(`
+var UpdateEmailTplConfirm = template.Must(template.New("update-email").Parse(`
 Gửi {{.FullName}},<br><br>
 
 Bạn (hoặc một ai đó) đang muốn xác nhận địa chỉ email của tài khoản <b>{{.Email}}</b>.<br>
@@ -43,7 +43,7 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ {{.WlName}}
 `))
 
-var updatePhoneTpl = template.Must(template.New("update-phone").Parse(`
+var UpdatePhoneTpl = template.Must(template.New("update-phone").Parse(`
 Gửi {{.FullName}},<br><br>
 
 Bạn (hoặc một ai đó) đang muốn thay đổi thông tin số điện thoại của tài khoản <b>{{.Email}}</b>.<br>
@@ -56,7 +56,7 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ {{.WlName}}
 `))
 
-var emailVerificationTpl = template.Must(template.New("email-verification").Parse(`
+var EmailVerificationTpl = template.Must(template.New("email-verification").Parse(`
 Gửi {{.FullName}},<br><br>
 
 Bạn (hoặc một ai đó) đang muốn xác nhận địa chỉ email của tài khoản <b>{{.Email}}</b>.<br>
@@ -83,7 +83,7 @@ Nếu bạn không nhận ra cửa hàng trên, hãy bỏ qua email này.<br><br
 
 var PhoneInvitationTpl = template.Must(template.New("phone-verification").Parse(`Bạn được {{.InvitedUsername}} mời tham gia cửa hàng {{.ShopName}} với vai trò {{.ShopRoles}}. Hãy bấm vào liên kết bên dưới để xác nhận lời mời: (có hiệu lực trong 24 giờ) {{.URL}}`))
 
-var emailSTokenTpl = template.Must(template.New("email-verification").Parse(`
+var EmailSTokenTpl = template.Must(template.New("email-verification").Parse(`
 Gửi {{.FullName}},<br><br>
 
 Bạn (hoặc một ai đó) đang muốn thay đổi thông tin {{.AccountType}} <b>{{.AccountName}}</b> được quản lý bởi tài khoản <b>{{.Email}}</b>.<br>
@@ -96,25 +96,25 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ eTop
 `))
 
-var smsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsChangeEmailTpl = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsChangeEmailTpl = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsChangeEmailTplRepeat = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsChangeEmailTplRepeat = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var smsChangePhoneTpl = `Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsChangePhoneTpl = `Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsChangePhoneTplRepeat = `Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsChangePhoneTplRepeat = `Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var smsChangePhoneTplConfirm = `Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsChangePhoneTplConfirm = `Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var smsChangePhoneTplConfirmRepeat = `Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsChangePhoneTplConfirmRepeat = `Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var smsVerificationTplRepeat = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsVerificationTplRepeat = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var smsResetPasswordTplRepeat = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsResetPasswordTplRepeat = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
 var RequestLoginEmailTpl = template.Must(template.New("request-login-email").Parse(`
 {{.Hello}},<br><br>
@@ -130,7 +130,7 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ eTop
 `))
 
-var emailVerificationByOTPTpl = template.Must(template.New("verify-email-by-otp").Parse(`
+var EmailVerificationByOTPTpl = template.Must(template.New("verify-email-by-otp").Parse(`
 Bạn (hoặc một ai đó) đang muốn xác nhận địa chỉ email <b>{{.Email}}</b>. Nếu là bạn, hãy sử dụng mã bên dưới để tiếp tục xác thực: (có hiệu lực trong 2 giờ)<br><br>
 
 <div style="font-size:30px;margin-left:60px;padding:5px 20px;border:solid 2px #aaa;background-color:#eee;display:inline-block">{{.Code}}</div><br><br><br>

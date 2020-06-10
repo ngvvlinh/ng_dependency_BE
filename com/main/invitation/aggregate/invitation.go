@@ -18,6 +18,7 @@ import (
 	"o.o/backend/com/main/invitation/model"
 	"o.o/backend/com/main/invitation/sqlstore"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/templatemessages"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
@@ -25,7 +26,6 @@ import (
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
-	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/sms"
 	"o.o/capi"
@@ -192,7 +192,7 @@ func (a *InvitationAggregate) CreateInvitation(
 
 		var b strings.Builder
 		if args.Email != "" {
-			if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
+			if err := templatemessages.EmailInvitationTpl.Execute(&b, map[string]interface{}{
 				"FullName":        fullName,
 				"URL":             URL.String(),
 				"ShopRoles":       shopRoles,
@@ -211,7 +211,7 @@ func (a *InvitationAggregate) CreateInvitation(
 				return err
 			}
 		} else {
-			if err := api.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
+			if err := templatemessages.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
 				"InvitedUsername": invitedUsername,
 				"URL":             URL.String(),
 				"ShopRoles":       shopRoles,
