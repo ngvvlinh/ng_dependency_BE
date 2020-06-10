@@ -17,7 +17,7 @@ import (
 	"o.o/backend/cogs/shipment/ghn"
 	"o.o/backend/cogs/shipment/ghtk"
 	"o.o/backend/cogs/shipment/vtpost"
-	"o.o/backend/cogs/sms/_all"
+	"o.o/backend/cogs/sms/_min"
 	"o.o/backend/cogs/uploader"
 	"o.o/backend/com/etc/logging/smslog/aggregate"
 	"o.o/backend/com/eventhandler/fabo/publisher"
@@ -141,8 +141,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	generator := auth.NewGenerator(store)
 	tokenStore := tokens.NewTokenStore(store)
 	smsConfig := cfg.SMS
-	whiteLabel := cfg.WhiteLabel
-	v := sms_all.SupportedSMSDrivers(whiteLabel, smsConfig)
+	v := sms_min.SupportedSMSDrivers(smsConfig)
 	logDB := databases.Log
 	smsLogAggregate := aggregate.NewSmsLogAggregate(eventBus, logDB)
 	smslogCommandBus := aggregate.SmsLogAggregateMessageBus(smsLogAggregate)

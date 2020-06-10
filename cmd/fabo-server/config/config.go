@@ -1,9 +1,6 @@
 package config
 
 import (
-	"errors"
-	"strings"
-
 	"o.o/api/main/invitation"
 	_telebot "o.o/backend/cogs/base/telebot"
 	config_server "o.o/backend/cogs/config/_server"
@@ -14,7 +11,6 @@ import (
 	"o.o/backend/com/main/invitation/aggregate"
 	"o.o/backend/com/main/shipping/carrier"
 	"o.o/backend/pkg/common/apifw/captcha"
-	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/upload"
@@ -42,8 +38,7 @@ type Config struct {
 		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
 
-	ThirdPartyHost string         `yaml:"third_party_host"`
-	Secret         cc.SecretToken `yaml:"secret"`
+	Secret cc.SecretToken `yaml:"secret"`
 
 	Invitation invitation.Config
 
@@ -82,8 +77,7 @@ func Default() Config {
 			Secret:        "6LcVOnkUAAAAALKlDJY_IYfQUmBfD_36azKtCv9P",
 			LocalPasscode: "recaptcha_token",
 		},
-		Secret:         "secret",
-		ThirdPartyHost: "https://etop.d.etop.vn",
+		Secret: "secret",
 
 		Invitation: invitation.Config{
 			Secret: "IBVEhECSHtJiBoxQKOVafHW58zt9qRK7",
@@ -128,11 +122,6 @@ func Load() (cfg Config, err error) {
 	cfg.Shipment.VTPost.MustLoadEnv()
 
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
-
-	if cfg.ThirdPartyHost == "" && !cmenv.IsDev() {
-		return cfg, errors.New("Empty third_party_host")
-	}
-	cfg.ThirdPartyHost = strings.TrimSuffix(cfg.ThirdPartyHost, "/")
 	cc.EnvMap{
 		"ET_SECRET": &cfg.Secret,
 	}.MustLoad()

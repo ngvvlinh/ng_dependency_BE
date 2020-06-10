@@ -55,6 +55,10 @@ func New(
 }
 
 func (wh *Webhook) Register(rt *httpx.Router) {
+	rt.GET("/webhook/fbmessenger/:id", wh.HandleWebhookVerification)
+	rt.POST("/webhook/fbmessenger/:id", wh.Callback)
+
+	// backward-compatible
 	rt.GET("/webhook/fbmessager/:id", wh.HandleWebhookVerification)
 	rt.POST("/webhook/fbmessager/:id", wh.Callback)
 }

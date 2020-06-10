@@ -21,7 +21,8 @@ func CORS(next http.Handler) http.HandlerFunc {
 			origin == "http://localhost:8100",
 			strings.HasSuffix(origin, ".localhost:8100"),
 			strings.HasSuffix(origin, ".ecomify.vn"),
-			strings.HasSuffix(origin, ".ecom.d.etop.vn"):
+			strings.HasSuffix(origin, ".ecom.d.etop.vn"),
+			strings.HasSuffix(origin, ".d.etop.vn"):
 			w.Header().Add("Access-Control-Allow-Origin", origin)
 
 		case cmenv.IsDev():

@@ -16,7 +16,7 @@ import (
 	server_admin "o.o/backend/cogs/server/admin"
 	server_shop "o.o/backend/cogs/server/shop"
 	shipment_all "o.o/backend/cogs/shipment/_all"
-	sms_all "o.o/backend/cogs/sms/_all"
+	sms_min "o.o/backend/cogs/sms/_min"
 	_uploader "o.o/backend/cogs/uploader"
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
@@ -86,7 +86,6 @@ func Build(
 			"captcha",
 			"upload",
 			"FacebookApp",
-			"WhiteLabel",
 			"SharedConfig",
 			"Webhook",
 			"FlagApplyShipmentPrice",
@@ -96,7 +95,7 @@ func Build(
 		_base.WireSet,
 		shipment_all.WireSet,
 		database_min.WireSet,
-		sms_all.WireSet,
+		sms_min.WireSet,
 		config_server.WireSet,
 		_uploader.WireSet,
 		_core.WireSet,
