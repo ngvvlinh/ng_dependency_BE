@@ -19,6 +19,7 @@ import (
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 var ll = l.New()
@@ -109,7 +110,15 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 					}
 					// message ID
 					mid := messge.Message.Mid
-					if err := wh.handleMessageReturned(ctx, externalPageID, PSID, mid); err != nil {
+					err := wh.handleMessageReturned(ctx, externalPageID, PSID, mid)
+					if err == nil {
+						continue
+					}
+					facebookError := err.(*xerrors.APIError)
+					code := facebookError.Meta["code"]
+					if code == fbclient.AccessTokenHasExpired.String() {
+						continue
+					} else {
 						return err
 					}
 				}
@@ -163,6 +172,9 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	case redis.ErrNil:
 		{
 			externalUserID = messageResp.From.ID
+			if externalUserID == externalPageID {
+				externalUserID = messageResp.To.Data[0].ID
+			}
 
 			if err := wh.faboRedis.SavePSID(externalPageID, PSID, externalUserID); err != nil {
 				return err
@@ -239,6 +251,40 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		return err
 	}
 
+	profile, err := wh.fbClient.CallAPIGetProfileByPSID(accessToken, PSID)
+	if err != nil {
+		return err
+	}
+	if profile.ProfilePic == "" {
+		profile.ProfilePic = fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", PSID)
+	}
+
+	if messageResp.From.ID == PSID {
+		messageResp.From.Picture = &fbclientmodel.Picture{
+			Data: fbclientmodel.PictureData{
+				Url: profile.ProfilePic,
+			},
+		}
+
+		messageResp.To.Data[0].Picture = &fbclientmodel.Picture{
+			Data: fbclientmodel.PictureData{
+				Url: fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", messageResp.To.Data[0].ID),
+			},
+		}
+	} else {
+		messageResp.From.Picture = &fbclientmodel.Picture{
+			Data: fbclientmodel.PictureData{
+				Url: fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", messageResp.From.ID),
+			},
+		}
+
+		messageResp.To.Data[0].Picture = &fbclientmodel.Picture{
+			Data: fbclientmodel.PictureData{
+				Url: profile.ProfilePic,
+			},
+		}
+	}
+
 	// Create new message
 	var externalAttachments []*fbmessaging.FbMessageAttachment
 	if messageResp.Attachments != nil {
@@ -260,10 +306,6 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			},
 		},
 	}); err != nil {
-		return err
-	}
-
-	if _, err := wh.getProfileByPSID(accessToken, externalPageID, PSID); err != nil {
 		return err
 	}
 

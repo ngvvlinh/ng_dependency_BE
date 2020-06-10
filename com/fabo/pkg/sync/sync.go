@@ -216,19 +216,19 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 		//}
 	}
 
-	mapExternalUserIDAndPageInternal, err := getMapExternalUserIDAndPageInternal(s.db)
-	if err != nil {
-		return err
-	}
-	for externalUserID, externalPageInternal := range mapExternalUserIDAndPageInternal {
-		s.addTask(&TaskArguments{
-			actionType: GetAvatar,
-			getAvatarArgs: &getAvatarArguments{
-				externalUserID:       externalUserID,
-				externalPageInternal: externalPageInternal,
-			},
-		})
-	}
+	//mapExternalUserIDAndPageInternal, err := getMapExternalUserIDAndPageInternal(s.db)
+	//if err != nil {
+	//	return err
+	//}
+	//for externalUserID, externalPageInternal := range mapExternalUserIDAndPageInternal {
+	//	s.addTask(&TaskArguments{
+	//		actionType: GetAvatar,
+	//		getAvatarArgs: &getAvatarArguments{
+	//			externalUserID:       externalUserID,
+	//			externalPageInternal: externalPageInternal,
+	//		},
+	//	})
+	//}
 
 	s.scheduler.AddAfter(cm.NewID(), 5*time.Minute, s.addJobs)
 
