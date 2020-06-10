@@ -22,7 +22,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 	"o.o/common/l"
@@ -588,45 +587,6 @@ func (s *Synchronizer) handleTaskGetComments(
 	}
 	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalCommentsCmd); err != nil {
 		return err
-	}
-
-	// Get avatars from PSIDs
-	{
-		for _, psid := range PSIDs {
-			// check profile is loaded before
-			_, _err := s.rd.LoadProfilePSID(externalPageID, psid)
-			switch _err {
-			// If profile exist then ignore
-			case nil:
-			// no-op
-			// If profile isn't found then call api get Profile
-			case redis.ErrNil:
-				{
-					profile, err := s.fbClient.CallAPIGetProfileByPSID(accessToken, psid)
-					switch cm.ErrorCode(err) {
-					case cm.NoError:
-						if _err := s.rd.SaveProfilePSID(externalPageID, psid, profile); _err != nil {
-							return _err
-						}
-					default:
-						facebookError := err.(*xerrors.APIError)
-						// If psid is pageID then don't need to call api to get profile
-						// Just use the link picture "https://graph.facebook.com/{id}/picture?height=200&width=200&type=normal"
-						if facebookError.Meta["code"] == fbclient.InvalidParameter.String() {
-							if _err := s.rd.SaveProfilePSID(externalPageID, psid, &model.Profile{
-								ProfilePic: fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", psid),
-							}); _err != nil {
-								return _err
-							}
-						} else {
-							return err
-						}
-					}
-				}
-			default:
-				return _err
-			}
-		}
 	}
 
 	return nil

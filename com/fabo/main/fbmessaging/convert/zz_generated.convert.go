@@ -1215,10 +1215,12 @@ func Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg *fbmessa
 }
 
 func convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg *fbmessagingmodel.FbObjectFrom, out *fbmessaging.FbObjectFrom) {
-	out.ID = arg.ID       // simple assign
-	out.Name = arg.Name   // simple assign
-	out.Email = arg.Email // simple assign
-	out.ImageURL = ""     // zero value
+	out.ID = arg.ID               // simple assign
+	out.Name = arg.Name           // simple assign
+	out.Email = arg.Email         // simple assign
+	out.FirstName = arg.FirstName // simple assign
+	out.LastName = arg.LastName   // simple assign
+	out.ImageURL = arg.ImageURL   // simple assign
 }
 
 func Convert_fbmessagingmodel_FbObjectFroms_fbmessaging_FbObjectFroms(args []*fbmessagingmodel.FbObjectFrom) (outs []*fbmessaging.FbObjectFrom) {
@@ -1245,9 +1247,12 @@ func Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg *fbmessa
 }
 
 func convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg *fbmessaging.FbObjectFrom, out *fbmessagingmodel.FbObjectFrom) {
-	out.ID = arg.ID       // simple assign
-	out.Name = arg.Name   // simple assign
-	out.Email = arg.Email // simple assign
+	out.ID = arg.ID               // simple assign
+	out.Name = arg.Name           // simple assign
+	out.Email = arg.Email         // simple assign
+	out.FirstName = arg.FirstName // simple assign
+	out.LastName = arg.LastName   // simple assign
+	out.ImageURL = arg.ImageURL   // simple assign
 }
 
 func Convert_fbmessaging_FbObjectFroms_fbmessagingmodel_FbObjectFroms(args []*fbmessaging.FbObjectFrom) (outs []*fbmessagingmodel.FbObjectFrom) {
@@ -1338,10 +1343,12 @@ func Convert_fbmessagingmodel_FbObjectTo_fbmessaging_FbObjectTo(arg *fbmessaging
 }
 
 func convert_fbmessagingmodel_FbObjectTo_fbmessaging_FbObjectTo(arg *fbmessagingmodel.FbObjectTo, out *fbmessaging.FbObjectTo) {
-	out.ID = arg.ID       // simple assign
-	out.Name = arg.Name   // simple assign
-	out.Email = arg.Email // simple assign
-	out.ImageURL = ""     // zero value
+	out.ID = arg.ID               // simple assign
+	out.Name = arg.Name           // simple assign
+	out.Email = arg.Email         // simple assign
+	out.FirstName = arg.FirstName // simple assign
+	out.LastName = arg.LastName   // simple assign
+	out.ImageURL = arg.ImageURL   // simple assign
 }
 
 func Convert_fbmessagingmodel_FbObjectToes_fbmessaging_FbObjectToes(args []*fbmessagingmodel.FbObjectTo) (outs []*fbmessaging.FbObjectTo) {
@@ -1368,9 +1375,12 @@ func Convert_fbmessaging_FbObjectTo_fbmessagingmodel_FbObjectTo(arg *fbmessaging
 }
 
 func convert_fbmessaging_FbObjectTo_fbmessagingmodel_FbObjectTo(arg *fbmessaging.FbObjectTo, out *fbmessagingmodel.FbObjectTo) {
-	out.ID = arg.ID       // simple assign
-	out.Name = arg.Name   // simple assign
-	out.Email = arg.Email // simple assign
+	out.ID = arg.ID               // simple assign
+	out.Name = arg.Name           // simple assign
+	out.Email = arg.Email         // simple assign
+	out.FirstName = arg.FirstName // simple assign
+	out.LastName = arg.LastName   // simple assign
+	out.ImageURL = arg.ImageURL   // simple assign
 }
 
 func Convert_fbmessaging_FbObjectToes_fbmessagingmodel_FbObjectToes(args []*fbmessaging.FbObjectTo) (outs []*fbmessagingmodel.FbObjectTo) {

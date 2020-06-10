@@ -6,9 +6,12 @@ type Token struct {
 }
 
 type ObjectTo struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	ID    string `json:"id"`
+	ID        string   `json:"id"`
+	Name      string   `json:"name"`
+	Email     string   `json:"email"`
+	FirstName string   `json:"first_name"`
+	LastName  string   `json:"last_name"`
+	Picture   *Picture `json:"picture"`
 }
 
 type ObjectsTo struct {
@@ -16,9 +19,12 @@ type ObjectsTo struct {
 }
 
 type ObjectFrom struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID        string   `json:"id"`
+	Name      string   `json:"name"`
+	Email     string   `json:"email"`
+	FirstName string   `json:"first_name"`
+	LastName  string   `json:"last_name"`
+	Picture   *Picture `json:"picture"`
 }
 
 type ObjectsFrom struct {

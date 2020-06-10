@@ -24,15 +24,21 @@ type FbExternalMessage struct {
 }
 
 type FbObjectTo struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	ImageURL  string `json:"image_url"`
 }
 
 type FbObjectFrom struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	ImageURL  string `json:"image_url"`
 }
 
 type FbMessageAttachment struct {

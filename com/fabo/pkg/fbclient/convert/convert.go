@@ -14,11 +14,18 @@ func ConvertObjectsTo(ins *model.ObjectsTo) []*fbmessaging.FbObjectTo {
 	var outs []*fbmessaging.FbObjectTo
 
 	for _, in := range ins.Data {
-		outs = append(outs, &fbmessaging.FbObjectTo{
-			ID:    in.ID,
-			Name:  in.Name,
-			Email: in.Email,
-		})
+		out := &fbmessaging.FbObjectTo{
+			ID:        in.ID,
+			Name:      in.Name,
+			Email:     in.Email,
+			FirstName: in.FirstName,
+			LastName:  in.LastName,
+		}
+		if in.Picture != nil {
+			out.ImageURL = in.Picture.Data.Url
+		}
+
+		outs = append(outs, out)
 	}
 
 	return outs
@@ -28,11 +35,19 @@ func ConvertObjectFrom(in *model.ObjectFrom) *fbmessaging.FbObjectFrom {
 	if in == nil {
 		return nil
 	}
-	return &fbmessaging.FbObjectFrom{
-		ID:    in.ID,
-		Name:  in.Name,
-		Email: in.Email,
+
+	result := &fbmessaging.FbObjectFrom{
+		ID:        in.ID,
+		Name:      in.Name,
+		Email:     in.Email,
+		FirstName: in.FirstName,
+		LastName:  in.LastName,
 	}
+	if in.Picture != nil {
+		result.ImageURL = in.Picture.Data.Url
+	}
+
+	return result
 }
 
 func ConvertObjectsFrom(ins *model.ObjectsFrom) []*fbmessaging.FbObjectFrom {

@@ -395,7 +395,7 @@ func (f *FbClient) CallAPIListComments(accessToken, postID string, pagination *m
 	}
 
 	query.Add(AccessToken, accessToken)
-	query.Add(Fields, fmt.Sprintf("comments.filter(stream).limit(%d){message,attachment,id,created_time,comment_count,parent,from,is_hidden}", limit))
+	query.Add(Fields, fmt.Sprintf("comments.filter(stream).limit(%d){message,attachment,id,created_time,comment_count,parent,from{id,name,email,first_name,last_name,picture},is_hidden}", limit))
 	query.Add(DateFormat, UnixDateFormat)
 
 	URL.RawQuery = query.Encode()
@@ -442,7 +442,7 @@ func (f *FbClient) CallAPIListCommentsByPostIDs(accessToken string, postIDs []st
 	query.Add(IDs, strings.Join(postIDs, ","))
 	query.Add(Filter, "stream")
 	query.Add(Limit, fmt.Sprintf("%d", DefaultLimitGetComments))
-	query.Add(Fields, "message,id,from,attachment,comment_count,parent,created_time")
+	query.Add(Fields, "message,id,from{id,name,email,first_name,last_name,picture},attachment,comment_count,parent,created_time")
 	query.Add(DateFormat, UnixDateFormat)
 
 	URL.RawQuery = query.Encode()
@@ -798,7 +798,7 @@ func (f *FbClient) CallAPICommentByID(accessToken, commentID string) (*model.Com
 	}
 
 	query.Add(AccessToken, accessToken)
-	query.Add(Fields, "message,attachment,id,created_time,comment_count,parent,from,is_hidden")
+	query.Add(Fields, "message,attachment,id,created_time,comment_count,parent,from{id,name,email,first_name,last_name,picture},is_hidden")
 	query.Add(DateFormat, UnixDateFormat)
 
 	URL.RawQuery = query.Encode()

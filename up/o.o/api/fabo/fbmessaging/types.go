@@ -25,17 +25,21 @@ type FbExternalMessage struct {
 }
 
 type FbObjectTo struct {
-	ID       string
-	Name     string
-	Email    string
-	ImageURL string
+	ID        string
+	Name      string
+	Email     string
+	FirstName string
+	LastName  string
+	ImageURL  string
 }
 
 type FbObjectFrom struct {
-	ID       string
-	Name     string
-	Email    string
-	ImageURL string
+	ID        string
+	Name      string
+	Email     string
+	FirstName string
+	LastName  string
+	ImageURL  string
 }
 
 type FbMessageAttachment struct {

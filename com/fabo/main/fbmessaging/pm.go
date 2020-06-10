@@ -373,22 +373,27 @@ func (m *ProcessManager) handleCreateExternalCustomerUser(
 			createFbExternalUserArgs := &fbusering.CreateFbExternalUserArgs{
 				ExternalID: fbObjectFromAndPageID.objectFrom.ID,
 				ExternalInfo: &fbusering.FbExternalUserInfo{
-					Name: fbObjectFromAndPageID.objectFrom.Name,
+					Name:      fbObjectFromAndPageID.objectFrom.Name,
+					FirstName: fbObjectFromAndPageID.objectFrom.FirstName,
+					LastName:  fbObjectFromAndPageID.objectFrom.LastName,
+					ImageURL:  fbObjectFromAndPageID.objectFrom.ImageURL,
 				},
 				ExternalPageID: fbObjectFromAndPageID.externalPageID,
 			}
-			psid := fbObjectFromAndPageID.psid
-			if psid == "" {
-				psid = fbObjectFromAndPageID.objectFrom.ID
-			}
-			profile, err := m.rd.LoadProfilePSID(fbObjectFromAndPageID.externalPageID, psid)
-			switch err {
-			case redis.ErrNil:
-				createFbExternalUserArgs.ExternalInfo.ImageURL = fbclientconvert.GenerateFacebookUserPicture(fbObjectFromAndPageID.objectFrom.ID)
-			case nil:
-				createFbExternalUserArgs.ExternalInfo.ImageURL = profile.ProfilePic
-			default:
-				return err
+			if fbObjectFromAndPageID.objectFrom.ImageURL == "" {
+				psid := fbObjectFromAndPageID.psid
+				if psid == "" {
+					psid = fbObjectFromAndPageID.objectFrom.ID
+				}
+				profile, err := m.rd.LoadProfilePSID(fbObjectFromAndPageID.externalPageID, psid)
+				switch err {
+				case redis.ErrNil:
+					createFbExternalUserArgs.ExternalInfo.ImageURL = fbclientconvert.GenerateFacebookUserPicture(fbObjectFromAndPageID.objectFrom.ID)
+				case nil:
+					createFbExternalUserArgs.ExternalInfo.ImageURL = profile.ProfilePic
+				default:
+					return err
+				}
 			}
 
 			createFbExternalUsersArgs = append(createFbExternalUsersArgs, createFbExternalUserArgs)
