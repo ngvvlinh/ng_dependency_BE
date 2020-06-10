@@ -251,6 +251,7 @@ func PbFbCustomerConversation(fbCustomerConversation *fbmessaging.FbCustomerConv
 		ExternalID:                 dot.String(fbCustomerConversation.ExternalID),
 		ExternalUserID:             dot.String(fbCustomerConversation.ExternalUserID),
 		ExternalUserName:           dot.String(fbCustomerConversation.ExternalUserName),
+		ExternalUserPictureURL:     dot.String(fbCustomerConversation.ExternalUserPictureURL),
 		ExternalFrom:               PbFbExternalFrom(fbCustomerConversation.ExternalFrom),
 		IsRead:                     dot.Bool(fbCustomerConversation.IsRead),
 		Type:                       fbCustomerConversation.Type,

@@ -46,6 +46,7 @@ type FbCustomerConversation struct {
 	ExternalPageID             dot.NullString                                           `json:"external_page_id"`
 	ExternalID                 dot.NullString                                           `json:"external_id"`
 	ExternalUserID             dot.NullString                                           `json:"external_user_id"`
+	ExternalUserPictureURL     dot.NullString                                           `json:"external_user_picture_url"`
 	ExternalUserName           dot.NullString                                           `json:"external_user_name"`
 	ExternalFrom               *FbObjectFrom                                            `json:"external_from"`
 	IsRead                     dot.NullBool                                             `json:"is_read"`
