@@ -61,6 +61,21 @@ func (s *ShopPriceListStore) ShopID(id dot.ID) *ShopPriceListStore {
 	return s
 }
 
+func (s *ShopPriceListStore) OptionalShopID(id dot.ID) *ShopPriceListStore {
+	s.preds = append(s.preds, s.ft.ByShopID(id).Optional())
+	return s
+}
+
+func (s *ShopPriceListStore) ConnectionID(connID dot.ID) *ShopPriceListStore {
+	s.preds = append(s.preds, s.ft.ByConnectionID(connID))
+	return s
+}
+
+func (s *ShopPriceListStore) OptionalConnectionID(connID dot.ID) *ShopPriceListStore {
+	s.preds = append(s.preds, s.ft.ByConnectionID(connID).Optional())
+	return s
+}
+
 func (s *ShopPriceListStore) ShipmentPriceListID(id dot.ID) *ShopPriceListStore {
 	s.preds = append(s.preds, s.ft.ByShipmentPriceListID(id))
 	return s
@@ -150,13 +165,10 @@ func (s *ShopPriceListStore) CreateShopPriceList(priceList *shopshipmentpricelis
 func (s *ShopPriceListStore) UpdateShopPriceList(priceList *shopshipmentpricelist.ShopShipmentPriceList) error {
 	sqlstore.MustNoPreds(s.preds)
 	var priceListDB model.ShopShipmentPriceList
-	if priceList.ShopID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing shop ID").WithMetap("sqlstore", "UpdateShopPriceList")
-	}
 	if err := scheme.Convert(priceList, &priceListDB); err != nil {
 		return err
 	}
-	query := s.query().Where(s.ft.ByShopID(priceList.ShopID))
+	query := s.query().Where(s.ft.ByShopID(priceList.ShopID)).Where(s.ft.ByConnectionID(priceList.ConnectionID))
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	return query.ShouldUpdate(&priceListDB)
 }

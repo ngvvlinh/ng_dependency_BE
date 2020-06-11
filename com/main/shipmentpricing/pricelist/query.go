@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"o.o/api/main/shipmentpricing/pricelist"
-	"o.o/api/meta"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/pricelist/sqlstore"
 	"o.o/backend/pkg/common/bus"
@@ -35,15 +34,15 @@ func (q *QueryService) GetShipmentPriceList(ctx context.Context, id dot.ID) (*pr
 	return q.shipmentPriceListStore(ctx).ID(id).GetShipmentPriceList()
 }
 
-func (q *QueryService) GetActiveShipmentPriceList(ctx context.Context, _ *meta.Empty) (*pricelist.ShipmentPriceList, error) {
-	return q.shipmentPriceListStore(ctx).IsActive(true).GetShipmentPriceList()
+func (q *QueryService) GetActiveShipmentPriceList(ctx context.Context, connectionID dot.ID) (*pricelist.ShipmentPriceList, error) {
+	return q.shipmentPriceListStore(ctx).ConnectionID(connectionID).IsActive(true).GetShipmentPriceList()
 }
 
 func (q *QueryService) ListShipmentPriceLists(ctx context.Context,
 	args *pricelist.ListShipmentPriceListsArgs) ([]*pricelist.ShipmentPriceList, error) {
-	query := q.shipmentPriceListStore(ctx)
-	if len(args.SubShipmentPriceListIDs) != 0 {
-		query = query.SubPriceListIDs(args.SubShipmentPriceListIDs...)
+	query := q.shipmentPriceListStore(ctx).OptionalConnectionID(args.ConnectionID)
+	if args.IsActive.Valid {
+		query = query.IsActive(args.IsActive.Bool)
 	}
 	return query.ListShipmentPriceLists()
 }

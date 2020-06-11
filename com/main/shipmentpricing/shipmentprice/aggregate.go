@@ -5,7 +5,7 @@ import (
 
 	"o.o/api/main/shipmentpricing/pricelist"
 	"o.o/api/main/shipmentpricing/shipmentprice"
-	"o.o/api/main/shipmentpricing/subpricelist"
+	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice/convert"
@@ -26,17 +26,17 @@ type Aggregate struct {
 	db                 *cmsql.Database
 	redisStore         redis.Store
 	shipmentPriceStore sqlstore.ShipmentPriceStoreFactory
-	subPriceListQS     subpricelist.QueryBus
 	priceListQS        pricelist.QueryBus
+	shipmentServiceQS  shipmentservice.QueryBus
 }
 
-func NewAggregate(db com.MainDB, redisStore redis.Store, subPriceListQS subpricelist.QueryBus, priceListQS pricelist.QueryBus) *Aggregate {
+func NewAggregate(db com.MainDB, redisStore redis.Store, priceListQS pricelist.QueryBus, shipmentServiceQS shipmentservice.QueryBus) *Aggregate {
 	return &Aggregate{
 		db:                 db,
 		redisStore:         redisStore,
 		shipmentPriceStore: sqlstore.NewShipmentPriceStore(db),
-		subPriceListQS:     subPriceListQS,
 		priceListQS:        priceListQS,
+		shipmentServiceQS:  shipmentServiceQS,
 	}
 }
 
@@ -49,8 +49,11 @@ func (a *Aggregate) CreateShipmentPrice(ctx context.Context, args *shipmentprice
 	if args.ShipmentServiceID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn gói vận chuyển")
 	}
-	if args.ShipmentSubPriceListID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn bảng giá (SubPriceList)")
+	if args.ShipmentPriceListID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn bảng giá (PriceList)")
+	}
+	if err := a.validateShipmentPrice(ctx, args.ShipmentServiceID, args.ShipmentPriceListID); err != nil {
+		return nil, err
 	}
 
 	var pricing shipmentprice.ShipmentPrice
@@ -70,9 +73,30 @@ func (a *Aggregate) CreateShipmentPrice(ctx context.Context, args *shipmentprice
 		}
 
 		// delete redis cache
-		return a.deleteCachePriceList(ctx, 0, pricing.ID)
+		return a.deleteCachePriceList(ctx, pricing.ShipmentPriceListID)
 	})
 	return
+}
+
+func (a *Aggregate) validateShipmentPrice(ctx context.Context, shipmentServiceID, shipmentPriceListID dot.ID) error {
+	queryShipmentService := &shipmentservice.GetShipmentServiceQuery{
+		ID: shipmentServiceID,
+	}
+	if err := a.shipmentServiceQS.Dispatch(ctx, queryShipmentService); err != nil {
+		return err
+	}
+	queryPriceList := &pricelist.GetShipmentPriceListQuery{
+		ID: shipmentPriceListID,
+	}
+	if err := a.priceListQS.Dispatch(ctx, queryPriceList); err != nil {
+		return err
+	}
+	shipmentService := queryShipmentService.Result
+	priceList := queryPriceList.Result
+	if shipmentService.ConnectionID != priceList.ConnectionID {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Cấu hình giá không hợp lệ. Gói dịch vụ và bảng giá không thuộc cùng một nhà vận chuyển")
+	}
+	return nil
 }
 
 func (a *Aggregate) UpdateShipmentPrice(ctx context.Context, args *shipmentprice.UpdateShipmentPriceArgs) (res *shipmentprice.ShipmentPrice, err error) {
@@ -83,7 +107,14 @@ func (a *Aggregate) UpdateShipmentPrice(ctx context.Context, args *shipmentprice
 	if err != nil {
 		return nil, err
 	}
-	oldShipmentSubPriceList := sp.ShipmentSubPriceListID
+	oldShipmentPriceList := sp.ShipmentPriceListID
+	if args.ShipmentPriceListID != 0 || args.ShipmentServiceID != 0 {
+		if err := a.validateShipmentPrice(ctx,
+			cm.CoalesceID(args.ShipmentServiceID, sp.ShipmentServiceID),
+			cm.CoalesceID(args.ShipmentPriceListID, sp.ShipmentPriceListID)); err != nil {
+			return nil, err
+		}
+	}
 
 	pricing := convert.Apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(args, sp)
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
@@ -92,24 +123,22 @@ func (a *Aggregate) UpdateShipmentPrice(ctx context.Context, args *shipmentprice
 			return err
 		}
 		// delete redis cache
-		if args.ShipmentSubPriceListID != 0 {
-			if err := a.deleteCachePriceList(ctx, oldShipmentSubPriceList, 0); err != nil {
-				return err
-			}
-		}
-		return a.deleteCachePriceList(ctx, args.ShipmentSubPriceListID, 0)
+		return a.deleteCachePriceList(ctx, args.ShipmentPriceListID, oldShipmentPriceList)
 	})
 	return
 }
 
 func (a *Aggregate) DeleteShipmentPrice(ctx context.Context, id dot.ID) error {
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		_, err := a.shipmentPriceStore(ctx).ID(id).SoftDelete()
+		sp, err := a.shipmentPriceStore(ctx).ID(id).GetShipmentPrice()
 		if err != nil {
 			return err
 		}
+		if _, err = a.shipmentPriceStore(ctx).ID(id).SoftDelete(); err != nil {
+			return err
+		}
 		// delete redis cache
-		return a.deleteCachePriceList(ctx, 0, id)
+		return a.deleteCachePriceList(ctx, sp.ShipmentPriceListID)
 	})
 }
 
@@ -139,9 +168,9 @@ func (a *Aggregate) UpdateShipmentPricesPriorityPoint(ctx context.Context, args 
 		if err != nil {
 			return err
 		}
-		var subPriceListIDs []dot.ID
+		var priceListIDs []dot.ID
 		for _, sp := range shipmentPrices {
-			subPriceListIDs = append(subPriceListIDs, sp.ShipmentSubPriceListID)
+			priceListIDs = append(priceListIDs, sp.ShipmentPriceListID)
 			update := &model.ShipmentPrice{
 				ID:            sp.ID,
 				PriorityPoint: sp.PriorityPoint,
@@ -153,40 +182,17 @@ func (a *Aggregate) UpdateShipmentPricesPriorityPoint(ctx context.Context, args 
 		}
 
 		// delete cache shipmentpricelistID
-		queryPriceList := &pricelist.ListShipmentPriceListsQuery{
-			SubShipmentPriceListIDs: subPriceListIDs,
-		}
-		if err := a.priceListQS.Dispatch(ctx, queryPriceList); err != nil {
-			return err
-		}
-		for _, pl := range queryPriceList.Result {
-			if err := DeleteRedisCache(ctx, a.redisStore, pl.ID); err != nil {
-				return err
-			}
-		}
-		return nil
+		return a.deleteCachePriceList(ctx, shipmentPriceIDs...)
 	})
 	return
 }
 
-func (a *Aggregate) deleteCachePriceList(ctx context.Context, subShipmentPriceListID dot.ID, shipmentPriceID dot.ID) error {
-	if subShipmentPriceListID == 0 {
-		shipmentPrice, err := a.shipmentPriceStore(ctx).ID(shipmentPriceID).GetShipmentPrice()
-		if err != nil {
-			return err
-		}
-		subShipmentPriceListID = shipmentPrice.ShipmentSubPriceListID
-	}
-
-	queryPriceList := &pricelist.ListShipmentPriceListsQuery{
-		SubShipmentPriceListIDs: []dot.ID{subShipmentPriceListID},
-	}
-	if err := a.priceListQS.Dispatch(ctx, queryPriceList); err != nil {
-		return err
-	}
-	for _, pl := range queryPriceList.Result {
-		if err := DeleteRedisCache(ctx, a.redisStore, pl.ID); err != nil {
-			return err
+func (a *Aggregate) deleteCachePriceList(ctx context.Context, shipmentPriceIDs ...dot.ID) error {
+	for _, spID := range shipmentPriceIDs {
+		if spID != 0 {
+			if err := DeleteRedisCache(ctx, a.redisStore, spID); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

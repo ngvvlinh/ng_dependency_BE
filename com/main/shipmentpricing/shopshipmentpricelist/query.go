@@ -31,7 +31,7 @@ func QueryServiceMessageBus(q *QueryService) shopshipmentpricelist.QueryBus {
 }
 
 func (q *QueryService) ListShopShipmentPriceLists(ctx context.Context, args *shopshipmentpricelist.GetShopShipmentPriceListsArgs) (*shopshipmentpricelist.GetShopShipmentPriceListsResponse, error) {
-	query := q.shopPriceListStore(ctx).WithPaging(args.Paging).OptionalShipmentPriceListID(args.ShipmentPriceListID)
+	query := q.shopPriceListStore(ctx).WithPaging(args.Paging).OptionalShipmentPriceListID(args.ShipmentPriceListID).OptionalConnectionID(args.ConnectionID).OptionalShopID(args.ShopID)
 	priceLists, err := query.ListShopPriceLists()
 	if err != nil {
 		return nil, err
@@ -46,6 +46,6 @@ func (q *QueryService) ListShopShipmentPriceListsByPriceListIDs(ctx context.Cont
 	return q.shopPriceListStore(ctx).ShipmentPriceListIDs(priceListIDs).ListShopPriceLists()
 }
 
-func (q *QueryService) GetShopShipmentPriceList(ctx context.Context, shopID dot.ID) (*shopshipmentpricelist.ShopShipmentPriceList, error) {
-	return q.shopPriceListStore(ctx).ShopID(shopID).GetShopPriceList()
+func (q *QueryService) GetShopShipmentPriceList(ctx context.Context, shopID, connectionID dot.ID) (*shopshipmentpricelist.ShopShipmentPriceList, error) {
+	return q.shopPriceListStore(ctx).ShopID(shopID).ConnectionID(connectionID).GetShopPriceList()
 }

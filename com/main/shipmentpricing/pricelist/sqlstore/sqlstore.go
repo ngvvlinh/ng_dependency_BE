@@ -12,7 +12,6 @@ import (
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
-	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -56,12 +55,17 @@ func (s *ShipmentPriceListStore) ID(id dot.ID) *ShipmentPriceListStore {
 }
 
 func (s *ShipmentPriceListStore) IsActive(isActive bool) *ShipmentPriceListStore {
-	s.preds = append(s.preds, s.ft.ByIsActive(isActive))
+	s.preds = append(s.preds, s.ft.ByIsActivePtr(&isActive))
 	return s
 }
 
-func (s *ShipmentPriceListStore) SubPriceListIDs(subPriceListIDs ...dot.ID) *ShipmentPriceListStore {
-	s.preds = append(s.preds, sq.NewExpr("shipment_sub_price_list_ids && ?", core.Array{V: subPriceListIDs}))
+func (s *ShipmentPriceListStore) OptionalConnectionID(connID dot.ID) *ShipmentPriceListStore {
+	s.preds = append(s.preds, s.ft.ByConnectionID(connID).Optional())
+	return s
+}
+
+func (s *ShipmentPriceListStore) ConnectionID(connID dot.ID) *ShipmentPriceListStore {
+	s.preds = append(s.preds, s.ft.ByConnectionID(connID))
 	return s
 }
 

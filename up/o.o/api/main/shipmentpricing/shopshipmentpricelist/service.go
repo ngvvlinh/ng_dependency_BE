@@ -14,7 +14,7 @@ type Aggregate interface {
 
 	UpdateShopShipmentPriceList(context.Context, *UpdateShopShipmentPriceListArgs) error
 
-	DeleteShopShipmentPriceList(ctx context.Context, ShopID dot.ID) error
+	DeleteShopShipmentPriceList(ctx context.Context, ShopID, ConnectionID dot.ID) error
 }
 
 type QueryService interface {
@@ -22,7 +22,7 @@ type QueryService interface {
 
 	ListShopShipmentPriceListsByPriceListIDs(ctx context.Context, PriceListIDs []dot.ID) ([]*ShopShipmentPriceList, error)
 
-	GetShopShipmentPriceList(ctx context.Context, ShopID dot.ID) (*ShopShipmentPriceList, error)
+	GetShopShipmentPriceList(ctx context.Context, ShopID, ConnectionID dot.ID) (*ShopShipmentPriceList, error)
 }
 
 // +convert:create=ShopShipmentPriceList
@@ -31,18 +31,22 @@ type CreateShopShipmentPriceListArgs struct {
 	ShipmentPriceListID dot.ID
 	Note                string
 	UpdatedBy           dot.ID
+	ConnectionID        dot.ID
 }
 
 // +convert:update=ShopShipmentPriceList
 type UpdateShopShipmentPriceListArgs struct {
 	ShopID              dot.ID
 	ShipmentPriceListID dot.ID
+	ConnectionID        dot.ID
 	Note                string
 	UpdatedBy           dot.ID
 }
 
 type GetShopShipmentPriceListsArgs struct {
 	ShipmentPriceListID dot.ID
+	ConnectionID        dot.ID
+	ShopID              dot.ID
 	Paging              meta.Paging
 }
 

@@ -9,7 +9,6 @@ import (
 	"o.o/api/main/shipmentpricing/pricelist"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
-	"o.o/api/main/shipmentpricing/subpricelist"
 	"o.o/api/top/types/etc/route_type"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
@@ -29,17 +28,15 @@ type QueryService struct {
 	shipmentPriceStore sqlstore.ShipmentPriceStoreFactory
 	locationQS         location.QueryBus
 	priceListQS        pricelist.QueryBus
-	subPriceListQS     subpricelist.QueryBus
 	shopPriceListQS    shopshipmentpricelist.QueryBus
 }
 
-func NewQueryService(db com.MainDB, redisStore redis.Store, locationQS location.QueryBus, priceListQS pricelist.QueryBus, subPriceListQS subpricelist.QueryBus, shopPriceListQS shopshipmentpricelist.QueryBus) *QueryService {
+func NewQueryService(db com.MainDB, redisStore redis.Store, locationQS location.QueryBus, priceListQS pricelist.QueryBus, shopPriceListQS shopshipmentpricelist.QueryBus) *QueryService {
 	return &QueryService{
 		redisStore:         redisStore,
 		shipmentPriceStore: sqlstore.NewShipmentPriceStore(db),
 		locationQS:         locationQS,
 		priceListQS:        priceListQS,
-		subPriceListQS:     subPriceListQS,
 		shopPriceListQS:    shopPriceListQS,
 	}
 }
@@ -50,7 +47,7 @@ func QueryServiceMessageBus(q *QueryService) shipmentprice.QueryBus {
 }
 
 func (q *QueryService) ListShipmentPrices(ctx context.Context, args *shipmentprice.ListShipmentPricesArgs) ([]*shipmentprice.ShipmentPrice, error) {
-	return q.shipmentPriceStore(ctx).OptionalShipmentServiceID(args.ShipmentServiceID).OptionalShipmentSubPriceListID(args.ShipmentSubPriceListID).ListShipmentPrices()
+	return q.shipmentPriceStore(ctx).OptionalShipmentServiceID(args.ShipmentServiceID).OptionalShipmentPriceListID(args.ShipmentPriceListID).ListShipmentPrices()
 }
 
 func (q *QueryService) GetShipmentPrice(ctx context.Context, ID dot.ID) (*shipmentprice.ShipmentPrice, error) {
@@ -60,8 +57,10 @@ func (q *QueryService) GetShipmentPrice(ctx context.Context, ID dot.ID) (*shipme
 /*
 	func: GetActiveShipmentPrices
 
-	- shipmentPriceListID: dùng để tính giá cho một bảng giá cụ thể (sử dụng trong trường hợp admin kiểm tra giá trước khi public bảng giá)
-	- Khi shop sử dụng, shipmentPriceListID = 0 vì bảng giá sử dụng để tính toán mặc định lấy từ database ra (GetActiveShipmentPriceListQuery)
+	- Field `shipmentPriceListID`: dùng để tính giá cho một bảng giá cụ thể (sử dụng trong trường hợp admin kiểm tra giá trước khi public bảng giá)
+	- Khi shop sử dụng & `shipmentPriceListID` = 0:
+		- Tìm bảng giá của shop đó trong bảng `shop_shipment_price_list`, nếu có, sử dụng bảng giá đó
+		- Nếu shop ko có bảng giá riêng, sử dụng bảng giá mặc định (GetActiveShipmentPriceListQuery)
 */
 
 func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipmentprice.CalculatePriceArgs) ([]*shipmentprice.ShipmentPrice, error) {
@@ -70,7 +69,8 @@ func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipme
 
 	if shipmentPriceListID == 0 && args.AccountID != 0 {
 		queryShopPriceList := &shopshipmentpricelist.GetShopShipmentPriceListQuery{
-			ShopID: args.AccountID,
+			ShopID:       args.AccountID,
+			ConnectionID: args.ConnectionID,
 		}
 		if err := q.shopPriceListQS.Dispatch(ctx, queryShopPriceList); err == nil {
 			shipmentPriceListID = queryShopPriceList.Result.ShipmentPriceListID
@@ -80,11 +80,14 @@ func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipme
 
 	err := q.redisStore.Get(key, &res)
 	if err != nil {
-		activePriceList, err := q.getActivePriceList(ctx)
-		if err != nil {
-			return nil, err
+		if shipmentPriceListID == 0 {
+			activePriceList, err := q.getActivePriceList(ctx, args.ConnectionID)
+			if err != nil {
+				return nil, err
+			}
+			shipmentPriceListID = activePriceList.ID
 		}
-		res, err = q.shipmentPriceStore(ctx).ShipmentSubPriceListIDs(activePriceList.ShipmentSubPriceListIDs...).Status(status3.P).ListShipmentPrices()
+		res, err = q.shipmentPriceStore(ctx).OptionalShipmentPriceListID(shipmentPriceListID).Status(status3.P).ListShipmentPrices()
 		if err == nil {
 			_ = q.redisStore.SetWithTTL(key, res, util.DefaultTTL)
 		}
@@ -94,8 +97,10 @@ func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipme
 	return res, nil
 }
 
-func (q *QueryService) getActivePriceList(ctx context.Context) (*pricelist.ShipmentPriceList, error) {
-	query := &pricelist.GetActiveShipmentPriceListQuery{}
+func (q *QueryService) getActivePriceList(ctx context.Context, connectionID dot.ID) (*pricelist.ShipmentPriceList, error) {
+	query := &pricelist.GetActiveShipmentPriceListQuery{
+		ConnectionID: connectionID,
+	}
 	if err := q.priceListQS.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}

@@ -5,7 +5,6 @@ import (
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
-	"o.o/api/main/shipmentpricing/subpricelist"
 	"o.o/api/top/int/admin"
 )
 
@@ -147,12 +146,13 @@ func PbShipmentPriceList(in *pricelist.ShipmentPriceList) *admin.ShipmentPriceLi
 		return nil
 	}
 	return &admin.ShipmentPriceList{
-		ID:          in.ID,
-		Name:        in.Name,
-		Description: in.Description,
-		IsActive:    in.IsActive,
-		CreatedAt:   in.CreatedAt,
-		UpdatedAt:   in.UpdatedAt,
+		ID:           in.ID,
+		Name:         in.Name,
+		Description:  in.Description,
+		IsActive:     in.IsActive,
+		ConnectionID: in.ConnectionID,
+		CreatedAt:    in.CreatedAt,
+		UpdatedAt:    in.UpdatedAt,
 	}
 }
 
@@ -164,48 +164,25 @@ func PbShipmentPriceLists(items []*pricelist.ShipmentPriceList) []*admin.Shipmen
 	return result
 }
 
-func PbShipmentSubPriceList(in *subpricelist.ShipmentSubPriceList) *admin.ShipmentSubPriceList {
-	if in == nil {
-		return nil
-	}
-	return &admin.ShipmentSubPriceList{
-		ID:           in.ID,
-		Name:         in.Name,
-		Description:  in.Description,
-		Status:       in.Status,
-		ConnectionID: in.ConnectionID,
-		CreatedAt:    in.CreatedAt,
-		UpdatedAt:    in.UpdatedAt,
-	}
-}
-
-func PbShipmentSubPriceLists(items []*subpricelist.ShipmentSubPriceList) []*admin.ShipmentSubPriceList {
-	result := make([]*admin.ShipmentSubPriceList, len(items))
-	for i, item := range items {
-		result[i] = PbShipmentSubPriceList(item)
-	}
-	return result
-}
-
 func PbShipmentPrice(in *shipmentprice.ShipmentPrice) *admin.ShipmentPrice {
 	if in == nil {
 		return nil
 	}
 	return &admin.ShipmentPrice{
-		ID:                     in.ID,
-		ShipmentSubPriceListID: in.ShipmentSubPriceListID,
-		ShipmentServiceID:      in.ShipmentServiceID,
-		Name:                   in.Name,
-		CustomRegionTypes:      in.CustomRegionTypes,
-		CustomRegionIDs:        in.CustomRegionIDs,
-		RegionTypes:            in.RegionTypes,
-		ProvinceTypes:          in.ProvinceTypes,
-		UrbanTypes:             in.UrbanTypes,
-		PriorityPoint:          in.PriorityPoint,
-		Details:                PbPricingDetails(in.Details),
-		CreatedAt:              in.CreatedAt,
-		UpdatedAt:              in.UpdatedAt,
-		Status:                 in.Status,
+		ID:                  in.ID,
+		ShipmentPriceListID: in.ShipmentPriceListID,
+		ShipmentServiceID:   in.ShipmentServiceID,
+		Name:                in.Name,
+		CustomRegionTypes:   in.CustomRegionTypes,
+		CustomRegionIDs:     in.CustomRegionIDs,
+		RegionTypes:         in.RegionTypes,
+		ProvinceTypes:       in.ProvinceTypes,
+		UrbanTypes:          in.UrbanTypes,
+		PriorityPoint:       in.PriorityPoint,
+		Details:             PbPricingDetails(in.Details),
+		CreatedAt:           in.CreatedAt,
+		UpdatedAt:           in.UpdatedAt,
+		Status:              in.Status,
 	}
 }
 
@@ -278,6 +255,7 @@ func PbShopShipmentPriceList(in *shopshipmentpricelist.ShopShipmentPriceList) *a
 	return &admin.ShopShipmentPriceList{
 		ShopID:              in.ShopID,
 		ShipmentPriceListID: in.ShipmentPriceListID,
+		ConnectionID:        in.ConnectionID,
 		Note:                in.Note,
 		CreatedAt:           in.CreatedAt,
 		UpdatedAt:           in.UpdatedAt,

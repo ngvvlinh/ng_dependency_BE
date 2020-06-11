@@ -728,7 +728,7 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 			Name:     conn.Name,
 			ImageURL: conn.ImageURL,
 		}
-		if !m.FlagApplyShipmentPrice {
+		if !m.FlagApplyShipmentPrice || conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
 			// không áp dụng bảng giá
 			res = append(res, s)
 			continue
@@ -946,6 +946,7 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 		FromDistrictCode:    args.FromDistrictCode,
 		ToDistrictCode:      args.ToDistrictCode,
 		ShipmentServiceID:   service.ShipmentServiceInfo.ID,
+		ConnectionID:        service.ConnectionInfo.ID,
 		Weight:              args.ChargeableWeight,
 	}
 	err := m.shipmentPriceQS.Dispatch(ctx, query)
@@ -1003,6 +1004,7 @@ func (m *ShipmentManager) CalcMakeupShipmentPrice(ctx context.Context, ffm *ship
 		FromDistrictCode:    args.FromDistrictCode,
 		ToDistrictCode:      args.ToDistrictCode,
 		ShipmentServiceID:   shipmentService.ID,
+		ConnectionID:        connectionID,
 		Weight:              args.ChargeableWeight,
 	}
 	if err := m.shipmentPriceQS.Dispatch(ctx, query); err != nil {

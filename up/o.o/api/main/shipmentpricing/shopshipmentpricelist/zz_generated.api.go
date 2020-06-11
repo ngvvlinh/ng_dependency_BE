@@ -30,6 +30,7 @@ type CreateShopShipmentPriceListCommand struct {
 	ShipmentPriceListID dot.ID
 	Note                string
 	UpdatedBy           dot.ID
+	ConnectionID        dot.ID
 
 	Result *ShopShipmentPriceList `json:"-"`
 }
@@ -40,7 +41,8 @@ func (h AggregateHandler) HandleCreateShopShipmentPriceList(ctx context.Context,
 }
 
 type DeleteShopShipmentPriceListCommand struct {
-	ShopID dot.ID
+	ShopID       dot.ID
+	ConnectionID dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -53,6 +55,7 @@ func (h AggregateHandler) HandleDeleteShopShipmentPriceList(ctx context.Context,
 type UpdateShopShipmentPriceListCommand struct {
 	ShopID              dot.ID
 	ShipmentPriceListID dot.ID
+	ConnectionID        dot.ID
 	Note                string
 	UpdatedBy           dot.ID
 
@@ -65,7 +68,8 @@ func (h AggregateHandler) HandleUpdateShopShipmentPriceList(ctx context.Context,
 }
 
 type GetShopShipmentPriceListQuery struct {
-	ShopID dot.ID
+	ShopID       dot.ID
+	ConnectionID dot.ID
 
 	Result *ShopShipmentPriceList `json:"-"`
 }
@@ -77,6 +81,8 @@ func (h QueryServiceHandler) HandleGetShopShipmentPriceList(ctx context.Context,
 
 type ListShopShipmentPriceListsQuery struct {
 	ShipmentPriceListID dot.ID
+	ConnectionID        dot.ID
+	ShopID              dot.ID
 	Paging              meta.Paging
 
 	Result *GetShopShipmentPriceListsResponse `json:"-"`
@@ -117,6 +123,7 @@ func (q *CreateShopShipmentPriceListCommand) GetArgs(ctx context.Context) (_ con
 			ShipmentPriceListID: q.ShipmentPriceListID,
 			Note:                q.Note,
 			UpdatedBy:           q.UpdatedBy,
+			ConnectionID:        q.ConnectionID,
 		}
 }
 
@@ -125,11 +132,13 @@ func (q *CreateShopShipmentPriceListCommand) SetCreateShopShipmentPriceListArgs(
 	q.ShipmentPriceListID = args.ShipmentPriceListID
 	q.Note = args.Note
 	q.UpdatedBy = args.UpdatedBy
+	q.ConnectionID = args.ConnectionID
 }
 
-func (q *DeleteShopShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID) {
+func (q *DeleteShopShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, ConnectionID dot.ID) {
 	return ctx,
-		q.ShopID
+		q.ShopID,
+		q.ConnectionID
 }
 
 func (q *UpdateShopShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopShipmentPriceListArgs) {
@@ -137,6 +146,7 @@ func (q *UpdateShopShipmentPriceListCommand) GetArgs(ctx context.Context) (_ con
 		&UpdateShopShipmentPriceListArgs{
 			ShopID:              q.ShopID,
 			ShipmentPriceListID: q.ShipmentPriceListID,
+			ConnectionID:        q.ConnectionID,
 			Note:                q.Note,
 			UpdatedBy:           q.UpdatedBy,
 		}
@@ -145,25 +155,31 @@ func (q *UpdateShopShipmentPriceListCommand) GetArgs(ctx context.Context) (_ con
 func (q *UpdateShopShipmentPriceListCommand) SetUpdateShopShipmentPriceListArgs(args *UpdateShopShipmentPriceListArgs) {
 	q.ShopID = args.ShopID
 	q.ShipmentPriceListID = args.ShipmentPriceListID
+	q.ConnectionID = args.ConnectionID
 	q.Note = args.Note
 	q.UpdatedBy = args.UpdatedBy
 }
 
-func (q *GetShopShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID) {
+func (q *GetShopShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, ConnectionID dot.ID) {
 	return ctx,
-		q.ShopID
+		q.ShopID,
+		q.ConnectionID
 }
 
 func (q *ListShopShipmentPriceListsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopShipmentPriceListsArgs) {
 	return ctx,
 		&GetShopShipmentPriceListsArgs{
 			ShipmentPriceListID: q.ShipmentPriceListID,
+			ConnectionID:        q.ConnectionID,
+			ShopID:              q.ShopID,
 			Paging:              q.Paging,
 		}
 }
 
 func (q *ListShopShipmentPriceListsQuery) SetGetShopShipmentPriceListsArgs(args *GetShopShipmentPriceListsArgs) {
 	q.ShipmentPriceListID = args.ShipmentPriceListID
+	q.ConnectionID = args.ConnectionID
+	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 }
 

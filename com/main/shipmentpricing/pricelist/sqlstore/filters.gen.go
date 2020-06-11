@@ -176,3 +176,22 @@ func (ft *ShipmentPriceListFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.Co
 		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
 	}
 }
+
+func (ft *ShipmentPriceListFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == 0,
+	}
+}
+
+func (ft *ShipmentPriceListFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == nil,
+		IsZero: ConnectionID != nil && (*ConnectionID) == 0,
+	}
+}

@@ -7,7 +7,6 @@ package pricelist
 import (
 	context "context"
 
-	meta "o.o/api/meta"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
@@ -26,7 +25,8 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type ActivateShipmentPriceListCommand struct {
-	ID dot.ID
+	ID           dot.ID
+	ConnectionID dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -37,10 +37,10 @@ func (h AggregateHandler) HandleActivateShipmentPriceList(ctx context.Context, m
 }
 
 type CreateShipmentPriceListCommand struct {
-	Name                    string
-	Description             string
-	IsActive                bool
-	ShipmentSubPriceListIDs []dot.ID
+	Name         string
+	Description  string
+	IsActive     bool
+	ConnectionID dot.ID
 
 	Result *ShipmentPriceList `json:"-"`
 }
@@ -62,10 +62,9 @@ func (h AggregateHandler) HandleDeleteShipmentPriceList(ctx context.Context, msg
 }
 
 type UpdateShipmentPriceListCommand struct {
-	ID                      dot.ID
-	Name                    string
-	Description             string
-	ShipmentSubPriceListIDs []dot.ID
+	ID          dot.ID
+	Name        string
+	Description string
 
 	Result struct {
 	} `json:"-"`
@@ -76,6 +75,8 @@ func (h AggregateHandler) HandleUpdateShipmentPriceList(ctx context.Context, msg
 }
 
 type GetActiveShipmentPriceListQuery struct {
+	ConnectionID dot.ID
+
 	Result *ShipmentPriceList `json:"-"`
 }
 
@@ -96,7 +97,8 @@ func (h QueryServiceHandler) HandleGetShipmentPriceList(ctx context.Context, msg
 }
 
 type ListShipmentPriceListsQuery struct {
-	SubShipmentPriceListIDs []dot.ID
+	ConnectionID dot.ID
+	IsActive     dot.NullBool
 
 	Result []*ShipmentPriceList `json:"-"`
 }
@@ -119,18 +121,19 @@ func (q *ListShipmentPriceListsQuery) query()     {}
 
 // implement conversion
 
-func (q *ActivateShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+func (q *ActivateShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, connectionID dot.ID) {
 	return ctx,
-		q.ID
+		q.ID,
+		q.ConnectionID
 }
 
 func (q *CreateShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShipmentPriceListArg) {
 	return ctx,
 		&CreateShipmentPriceListArg{
-			Name:                    q.Name,
-			Description:             q.Description,
-			IsActive:                q.IsActive,
-			ShipmentSubPriceListIDs: q.ShipmentSubPriceListIDs,
+			Name:         q.Name,
+			Description:  q.Description,
+			IsActive:     q.IsActive,
+			ConnectionID: q.ConnectionID,
 		}
 }
 
@@ -138,7 +141,7 @@ func (q *CreateShipmentPriceListCommand) SetCreateShipmentPriceListArg(args *Cre
 	q.Name = args.Name
 	q.Description = args.Description
 	q.IsActive = args.IsActive
-	q.ShipmentSubPriceListIDs = args.ShipmentSubPriceListIDs
+	q.ConnectionID = args.ConnectionID
 }
 
 func (q *DeleteShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -149,10 +152,9 @@ func (q *DeleteShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context
 func (q *UpdateShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipmentPriceListArgs) {
 	return ctx,
 		&UpdateShipmentPriceListArgs{
-			ID:                      q.ID,
-			Name:                    q.Name,
-			Description:             q.Description,
-			ShipmentSubPriceListIDs: q.ShipmentSubPriceListIDs,
+			ID:          q.ID,
+			Name:        q.Name,
+			Description: q.Description,
 		}
 }
 
@@ -160,15 +162,11 @@ func (q *UpdateShipmentPriceListCommand) SetUpdateShipmentPriceListArgs(args *Up
 	q.ID = args.ID
 	q.Name = args.Name
 	q.Description = args.Description
-	q.ShipmentSubPriceListIDs = args.ShipmentSubPriceListIDs
 }
 
-func (q *GetActiveShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
+func (q *GetActiveShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Context, ConnectionID dot.ID) {
 	return ctx,
-		&meta.Empty{}
-}
-
-func (q *GetActiveShipmentPriceListQuery) SetEmpty(args *meta.Empty) {
+		q.ConnectionID
 }
 
 func (q *GetShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -179,12 +177,14 @@ func (q *GetShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Cont
 func (q *ListShipmentPriceListsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShipmentPriceListsArgs) {
 	return ctx,
 		&ListShipmentPriceListsArgs{
-			SubShipmentPriceListIDs: q.SubShipmentPriceListIDs,
+			ConnectionID: q.ConnectionID,
+			IsActive:     q.IsActive,
 		}
 }
 
 func (q *ListShipmentPriceListsQuery) SetListShipmentPriceListsArgs(args *ListShipmentPriceListsArgs) {
-	q.SubShipmentPriceListIDs = args.SubShipmentPriceListIDs
+	q.ConnectionID = args.ConnectionID
+	q.IsActive = args.IsActive
 }
 
 // implement dispatching

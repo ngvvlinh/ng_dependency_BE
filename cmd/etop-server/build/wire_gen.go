@@ -71,7 +71,6 @@ import (
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice"
 	"o.o/backend/com/main/shipmentpricing/shopshipmentpricelist"
-	"o.o/backend/com/main/shipmentpricing/subpricelist"
 	"o.o/backend/com/main/shipnow"
 	pm12 "o.o/backend/com/main/shipnow/pm"
 	"o.o/backend/com/main/shipnowcarrier"
@@ -320,11 +319,9 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	shipmentserviceQueryBus := shipmentservice.QueryServiceMessageBus(shipmentserviceQueryService)
 	pricelistQueryService := pricelist.NewQueryService(mainDB, store)
 	pricelistQueryBus := pricelist.QueryServiceMessageBus(pricelistQueryService)
-	subpricelistQueryService := subpricelist.NewQueryService(mainDB)
-	subpricelistQueryBus := subpricelist.QueryServiceMessageBus(subpricelistQueryService)
 	shopshipmentpricelistQueryService := shopshipmentpricelist.NewQueryService(mainDB, store)
 	shopshipmentpricelistQueryBus := shopshipmentpricelist.QueryServiceMessageBus(shopshipmentpricelistQueryService)
-	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, store, queryBus, pricelistQueryBus, subpricelistQueryBus, shopshipmentpricelistQueryBus)
+	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, store, queryBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	flagApplyShipmentPrice := cfg.FlagApplyShipmentPrice
 	carrierConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
@@ -509,15 +506,13 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		ConnectionAggr:  connectioningCommandBus,
 		ConnectionQuery: connectioningQueryBus,
 	}
-	shipmentpriceAggregate := shipmentprice.NewAggregate(mainDB, store, subpricelistQueryBus, pricelistQueryBus)
+	shipmentpriceAggregate := shipmentprice.NewAggregate(mainDB, store, pricelistQueryBus, shipmentserviceQueryBus)
 	shipmentpriceCommandBus := shipmentprice.AggregateMessageBus(shipmentpriceAggregate)
 	shipmentserviceAggregate := shipmentservice.NewAggregate(mainDB, store)
 	shipmentserviceCommandBus := shipmentservice.AggregateMessageBus(shipmentserviceAggregate)
 	pricelistAggregate := pricelist.NewAggregate(mainDB, eventBus, shopshipmentpricelistQueryBus)
 	pricelistCommandBus := pricelist.AggregateMessageBus(pricelistAggregate)
-	subpricelistAggregate := subpricelist.NewAggregate(mainDB, eventBus)
-	subpricelistCommandBus := subpricelist.AggregateMessageBus(subpricelistAggregate)
-	shopshipmentpricelistAggregate := shopshipmentpricelist.NewAggregate(mainDB)
+	shopshipmentpricelistAggregate := shopshipmentpricelist.NewAggregate(mainDB, pricelistQueryBus)
 	shopshipmentpricelistCommandBus := shopshipmentpricelist.AggregateMessageBus(shopshipmentpricelistAggregate)
 	shipmentPriceService := admin.ShipmentPriceService{
 		ShipmentManager:            shipmentManager,
@@ -527,8 +522,6 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		ShipmentServiceAggr:        shipmentserviceCommandBus,
 		ShipmentPriceListAggr:      pricelistCommandBus,
 		ShipmentPriceListQuery:     pricelistQueryBus,
-		ShipmentSubPriceListQuery:  subpricelistQueryBus,
-		ShipmentSubPriceListAggr:   subpricelistCommandBus,
 		ShopShipmentPriceListQuery: shopshipmentpricelistQueryBus,
 		ShopShipmentPriceListAggr:  shopshipmentpricelistCommandBus,
 	}

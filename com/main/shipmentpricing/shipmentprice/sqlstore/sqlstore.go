@@ -67,13 +67,13 @@ func (s *ShipmentPriceStore) OptionalShipmentServiceID(id dot.ID) *ShipmentPrice
 	return s
 }
 
-func (s *ShipmentPriceStore) ShipmentSubPriceListIDs(ids ...dot.ID) *ShipmentPriceStore {
-	s.preds = append(s.preds, sq.In("shipment_sub_price_list_id", ids))
+func (s *ShipmentPriceStore) ShipmentPriceListIDs(ids ...dot.ID) *ShipmentPriceStore {
+	s.preds = append(s.preds, sq.In("shipment_price_list_id", ids))
 	return s
 }
 
-func (s *ShipmentPriceStore) OptionalShipmentSubPriceListID(id dot.ID) *ShipmentPriceStore {
-	s.preds = append(s.preds, s.ft.ByShipmentSubPriceListID(id).Optional())
+func (s *ShipmentPriceStore) OptionalShipmentPriceListID(id dot.ID) *ShipmentPriceStore {
+	s.preds = append(s.preds, s.ft.ByShipmentPriceListID(id).Optional())
 	return s
 }
 

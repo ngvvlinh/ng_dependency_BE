@@ -115,17 +115,11 @@ type ShipmentPriceService interface {
 	UpdateShipmentServicesAvailableLocations(context.Context, *UpdateShipmentServicesAvailableLocationsRequest) (*cm.UpdatedResponse, error)
 	UpdateShipmentServicesBlacklistLocations(context.Context, *UpdateShipmentServicesBlacklistLocationsRequest) (*cm.UpdatedResponse, error)
 
-	GetShipmentSubPriceLists(context.Context, *GetShipmentSubPriceListsRequest) (*GetShipmentSubPriceListsResponse, error)
-	GetShipmentSubPriceList(context.Context, *cm.IDRequest) (*ShipmentSubPriceList, error)
-	CreateShipmentSubPriceList(context.Context, *CreateShipmentSubPriceListRequest) (*ShipmentSubPriceList, error)
-	UpdateShipmentSubPriceList(context.Context, *UpdateShipmentSubPriceListRequest) (*cm.UpdatedResponse, error)
-	DeleteShipmentSubPriceList(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
-
-	GetShipmentPriceLists(context.Context, *cm.Empty) (*GetShipmentPriceListsResponse, error)
+	GetShipmentPriceLists(context.Context, *GetShipmentPriceListsRequest) (*GetShipmentPriceListsResponse, error)
 	GetShipmentPriceList(context.Context, *cm.IDRequest) (*ShipmentPriceList, error)
 	CreateShipmentPriceList(context.Context, *CreateShipmentPriceListRequest) (*ShipmentPriceList, error)
 	UpdateShipmentPriceList(context.Context, *UpdateShipmentPriceListRequest) (*cm.UpdatedResponse, error)
-	ActivateShipmentPriceList(context.Context, *cm.IDRequest) (*cm.UpdatedResponse, error)
+	ActivateShipmentPriceList(context.Context, *ActiveShipmentPriceListRequest) (*cm.UpdatedResponse, error)
 	DeleteShipmentPriceList(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 
 	GetShipmentPrices(context.Context, *GetShipmentPricesRequest) (*GetShipmentPricesResponse, error)

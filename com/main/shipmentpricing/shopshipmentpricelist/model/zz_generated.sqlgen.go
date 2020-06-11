@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShopShipmentPriceLists []*ShopShipmentPriceList
 
 const __sqlShopShipmentPriceList_Table = "shop_shipment_price_list"
-const __sqlShopShipmentPriceList_ListCols = "\"shop_id\",\"shipment_price_list_id\",\"note\",\"created_at\",\"updated_at\",\"deleted_at\",\"updated_by\",\"wl_partner_id\""
-const __sqlShopShipmentPriceList_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"shipment_price_list_id\" = EXCLUDED.\"shipment_price_list_id\",\"note\" = EXCLUDED.\"note\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"updated_by\" = EXCLUDED.\"updated_by\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
+const __sqlShopShipmentPriceList_ListCols = "\"shop_id\",\"shipment_price_list_id\",\"connection_id\",\"note\",\"created_at\",\"updated_at\",\"deleted_at\",\"updated_by\",\"wl_partner_id\""
+const __sqlShopShipmentPriceList_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"shipment_price_list_id\" = EXCLUDED.\"shipment_price_list_id\",\"connection_id\" = EXCLUDED.\"connection_id\",\"note\" = EXCLUDED.\"note\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"updated_by\" = EXCLUDED.\"updated_by\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
 const __sqlShopShipmentPriceList_Insert = "INSERT INTO \"shop_shipment_price_list\" (" + __sqlShopShipmentPriceList_ListCols + ") VALUES"
 const __sqlShopShipmentPriceList_Select = "SELECT " + __sqlShopShipmentPriceList_ListCols + " FROM \"shop_shipment_price_list\""
 const __sqlShopShipmentPriceList_Select_history = "SELECT " + __sqlShopShipmentPriceList_ListCols + " FROM history.\"shop_shipment_price_list\""
@@ -67,6 +67,13 @@ func (m *ShopShipmentPriceList) Migration(db *cmsql.Database) {
 		},
 		"shipment_price_list_id": {
 			ColumnName:       "shipment_price_list_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"connection_id": {
+			ColumnName:       "connection_id",
 			ColumnType:       "dot.ID",
 			ColumnDBType:     "int64",
 			ColumnTag:        "",
@@ -129,6 +136,7 @@ func (m *ShopShipmentPriceList) SQLArgs(opts core.Opts, create bool) []interface
 	return []interface{}{
 		m.ShopID,
 		m.ShipmentPriceListID,
+		m.ConnectionID,
 		core.String(m.Note),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -142,6 +150,7 @@ func (m *ShopShipmentPriceList) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ShopID,
 		&m.ShipmentPriceListID,
+		&m.ConnectionID,
 		(*core.String)(&m.Note),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -185,7 +194,7 @@ func (_ *ShopShipmentPriceLists) SQLSelect(w SQLWriter) error {
 func (m *ShopShipmentPriceList) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopShipmentPriceList_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -195,7 +204,7 @@ func (ms ShopShipmentPriceLists) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopShipmentPriceList_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(9)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -241,6 +250,14 @@ func (m *ShopShipmentPriceList) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ShipmentPriceListID)
+	}
+	if m.ConnectionID != 0 {
+		flag = true
+		w.WriteName("connection_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ConnectionID)
 	}
 	if m.Note != "" {
 		flag = true
@@ -300,7 +317,7 @@ func (m *ShopShipmentPriceList) SQLUpdate(w SQLWriter) error {
 func (m *ShopShipmentPriceList) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopShipmentPriceList_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -330,6 +347,9 @@ func (m ShopShipmentPriceListHistory) ShopID() core.Interface { return core.Inte
 func (m ShopShipmentPriceListHistory) ShipmentPriceListID() core.Interface {
 	return core.Interface{m["shipment_price_list_id"]}
 }
+func (m ShopShipmentPriceListHistory) ConnectionID() core.Interface {
+	return core.Interface{m["connection_id"]}
+}
 func (m ShopShipmentPriceListHistory) Note() core.Interface { return core.Interface{m["note"]} }
 func (m ShopShipmentPriceListHistory) CreatedAt() core.Interface {
 	return core.Interface{m["created_at"]}
@@ -348,31 +368,32 @@ func (m ShopShipmentPriceListHistory) WLPartnerID() core.Interface {
 }
 
 func (m *ShopShipmentPriceListHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopShipmentPriceListHistory, 8)
+	res := make(ShopShipmentPriceListHistory, 9)
 	res["shop_id"] = data[0]
 	res["shipment_price_list_id"] = data[1]
-	res["note"] = data[2]
-	res["created_at"] = data[3]
-	res["updated_at"] = data[4]
-	res["deleted_at"] = data[5]
-	res["updated_by"] = data[6]
-	res["wl_partner_id"] = data[7]
+	res["connection_id"] = data[2]
+	res["note"] = data[3]
+	res["created_at"] = data[4]
+	res["updated_at"] = data[5]
+	res["deleted_at"] = data[6]
+	res["updated_by"] = data[7]
+	res["wl_partner_id"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *ShopShipmentPriceListHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopShipmentPriceListHistories, 0, 128)
@@ -383,12 +404,13 @@ func (ms *ShopShipmentPriceListHistories) SQLScan(opts core.Opts, rows *sql.Rows
 		m := make(ShopShipmentPriceListHistory)
 		m["shop_id"] = data[0]
 		m["shipment_price_list_id"] = data[1]
-		m["note"] = data[2]
-		m["created_at"] = data[3]
-		m["updated_at"] = data[4]
-		m["deleted_at"] = data[5]
-		m["updated_by"] = data[6]
-		m["wl_partner_id"] = data[7]
+		m["connection_id"] = data[2]
+		m["note"] = data[3]
+		m["created_at"] = data[4]
+		m["updated_at"] = data[5]
+		m["deleted_at"] = data[6]
+		m["updated_by"] = data[7]
+		m["wl_partner_id"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

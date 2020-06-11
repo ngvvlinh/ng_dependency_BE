@@ -554,12 +554,6 @@ var _acl = map[string]*permission.Decl{
 	"admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations": {Type: EtopAdmin},
 	"admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations": {Type: EtopAdmin},
 
-	"admin.ShipmentPrice/GetShipmentSubPriceLists":   {Type: EtopAdmin},
-	"admin.ShipmentPrice/GetShipmentSubPriceList":    {Type: EtopAdmin},
-	"admin.ShipmentPrice/CreateShipmentSubPriceList": {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShipmentSubPriceList": {Type: EtopAdmin},
-	"admin.ShipmentPrice/DeleteShipmentSubPriceList": {Type: EtopAdmin},
-
 	"admin.ShipmentPrice/GetShipmentPriceLists":     {Type: EtopAdmin},
 	"admin.ShipmentPrice/GetShipmentPriceList":      {Type: EtopAdmin},
 	"admin.ShipmentPrice/CreateShipmentPriceList":   {Type: EtopAdmin},

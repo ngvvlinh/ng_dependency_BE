@@ -67,6 +67,7 @@ func Convert_shopshipmentpricelistmodel_ShopShipmentPriceList_shopshipmentpricel
 func convert_shopshipmentpricelistmodel_ShopShipmentPriceList_shopshipmentpricelist_ShopShipmentPriceList(arg *shopshipmentpricelistmodel.ShopShipmentPriceList, out *shopshipmentpricelist.ShopShipmentPriceList) {
 	out.ShopID = arg.ShopID                           // simple assign
 	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
+	out.ConnectionID = arg.ConnectionID               // simple assign
 	out.Note = arg.Note                               // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
@@ -100,6 +101,7 @@ func Convert_shopshipmentpricelist_ShopShipmentPriceList_shopshipmentpricelistmo
 func convert_shopshipmentpricelist_ShopShipmentPriceList_shopshipmentpricelistmodel_ShopShipmentPriceList(arg *shopshipmentpricelist.ShopShipmentPriceList, out *shopshipmentpricelistmodel.ShopShipmentPriceList) {
 	out.ShopID = arg.ShopID                           // simple assign
 	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
+	out.ConnectionID = arg.ConnectionID               // simple assign
 	out.Note = arg.Note                               // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
@@ -134,6 +136,7 @@ func Apply_shopshipmentpricelist_CreateShopShipmentPriceListArgs_shopshipmentpri
 func apply_shopshipmentpricelist_CreateShopShipmentPriceListArgs_shopshipmentpricelist_ShopShipmentPriceList(arg *shopshipmentpricelist.CreateShopShipmentPriceListArgs, out *shopshipmentpricelist.ShopShipmentPriceList) {
 	out.ShopID = arg.ShopID                           // simple assign
 	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
+	out.ConnectionID = arg.ConnectionID               // simple assign
 	out.Note = arg.Note                               // simple assign
 	out.CreatedAt = time.Time{}                       // zero value
 	out.UpdatedAt = time.Time{}                       // zero value
@@ -155,6 +158,7 @@ func Apply_shopshipmentpricelist_UpdateShopShipmentPriceListArgs_shopshipmentpri
 func apply_shopshipmentpricelist_UpdateShopShipmentPriceListArgs_shopshipmentpricelist_ShopShipmentPriceList(arg *shopshipmentpricelist.UpdateShopShipmentPriceListArgs, out *shopshipmentpricelist.ShopShipmentPriceList) {
 	out.ShopID = arg.ShopID                           // simple assign
 	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
+	out.ConnectionID = arg.ConnectionID               // simple assign
 	out.Note = arg.Note                               // simple assign
 	out.CreatedAt = out.CreatedAt                     // no change
 	out.UpdatedAt = out.UpdatedAt                     // no change

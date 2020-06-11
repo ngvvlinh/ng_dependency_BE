@@ -45,8 +45,8 @@ func (a *Aggregate) CreateShipmentPriceList(ctx context.Context, args *pricelist
 	if args.Name == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing name")
 	}
-	if len(args.ShipmentSubPriceListIDs) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Please choose at least 1 sub price list")
+	if args.ConnectionID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing connection ID")
 	}
 	var plist pricelist.ShipmentPriceList
 	if err := scheme.Convert(args, &plist); err != nil {
@@ -61,7 +61,7 @@ func (a *Aggregate) CreateShipmentPriceList(ctx context.Context, args *pricelist
 			return err
 		}
 		if args.IsActive {
-			err = a.ActivateShipmentPriceList(ctx, plist.ID)
+			err = a.ActivateShipmentPriceList(ctx, plist.ID, plist.ConnectionID)
 		}
 		return err
 	})
@@ -84,16 +84,19 @@ func (a *Aggregate) UpdateShipmentPriceList(ctx context.Context, args *pricelist
 	})
 }
 
-func (a *Aggregate) ActivateShipmentPriceList(ctx context.Context, id dot.ID) error {
+// ActivateShipmentPriceList
+//
+// Mỗi connection chỉ có duy nhất 1 bảng giá được active
+func (a *Aggregate) ActivateShipmentPriceList(ctx context.Context, id dot.ID, connectionID dot.ID) error {
 	if id == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		err := a.shipmentPriceListStore(ctx).DeactivePriceList()
+		err := a.shipmentPriceListStore(ctx).ConnectionID(connectionID).DeactivePriceList()
 		if err != nil {
 			return err
 		}
-		err = a.shipmentPriceListStore(ctx).ID(id).ActivePriceList()
+		err = a.shipmentPriceListStore(ctx).ID(id).ConnectionID(connectionID).ActivePriceList()
 		if err != nil {
 			return err
 		}

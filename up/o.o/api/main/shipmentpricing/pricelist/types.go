@@ -10,15 +10,15 @@ import (
 // +gen:event:topic=event/shipmentpricelist
 
 type ShipmentPriceList struct {
-	ID                      dot.ID    `json:"id"`
-	Name                    string    `json:"name"`
-	Description             string    `json:"description"`
-	WLPartnerID             dot.ID    `json:"-"`
-	IsActive                bool      `json:"is_active"`
-	CreatedAt               time.Time `json:"-"`
-	UpdatedAt               time.Time `json:"-"`
-	DeletedAt               time.Time `json:"-"`
-	ShipmentSubPriceListIDs []dot.ID  `json:"-"`
+	ID           dot.ID    `json:"id"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	WLPartnerID  dot.ID    `json:"-"`
+	IsActive     bool      `json:"is_active"`
+	CreatedAt    time.Time `json:"-"`
+	UpdatedAt    time.Time `json:"-"`
+	DeletedAt    time.Time `json:"-"`
+	ConnectionID dot.ID    `json:"-"`
 }
 
 type DeleteCachePriceListEvent struct {

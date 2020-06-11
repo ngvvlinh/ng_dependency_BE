@@ -45,22 +45,22 @@ func (ft *ShipmentPriceFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShipmentPriceFilters) ByShipmentSubPriceListID(ShipmentSubPriceListID dot.ID) *sq.ColumnFilter {
+func (ft *ShipmentPriceFilters) ByShipmentPriceListID(ShipmentPriceListID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "shipment_sub_price_list_id",
-		Value:  ShipmentSubPriceListID,
-		IsNil:  ShipmentSubPriceListID == 0,
+		Column: "shipment_price_list_id",
+		Value:  ShipmentPriceListID,
+		IsNil:  ShipmentPriceListID == 0,
 	}
 }
 
-func (ft *ShipmentPriceFilters) ByShipmentSubPriceListIDPtr(ShipmentSubPriceListID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *ShipmentPriceFilters) ByShipmentPriceListIDPtr(ShipmentPriceListID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "shipment_sub_price_list_id",
-		Value:  ShipmentSubPriceListID,
-		IsNil:  ShipmentSubPriceListID == nil,
-		IsZero: ShipmentSubPriceListID != nil && (*ShipmentSubPriceListID) == 0,
+		Column: "shipment_price_list_id",
+		Value:  ShipmentPriceListID,
+		IsNil:  ShipmentPriceListID == nil,
+		IsZero: ShipmentPriceListID != nil && (*ShipmentPriceListID) == 0,
 	}
 }
 
