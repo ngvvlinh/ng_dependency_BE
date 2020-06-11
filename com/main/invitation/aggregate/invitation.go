@@ -198,11 +198,12 @@ func (a *InvitationAggregate) CreateInvitation(
 				"ShopRoles":       shopRoles,
 				"ShopName":        shopName,
 				"InvitedUsername": invitedUsername,
+				"WlName":          wl.X(ctx).Name,
 			}); err != nil {
 				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
 			}
 			cmd := &email.SendEmailCommand{
-				FromName:    "eTop.vn (no-reply)",
+				FromName:    wl.X(ctx).CompanyName + " (no-reply)",
 				ToAddresses: []string{string(emailNorm)},
 				Subject:     "Invitation",
 				Content:     b.String(),

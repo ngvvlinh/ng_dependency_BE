@@ -517,7 +517,7 @@ func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel
 	}
 	address := emailVerify
 	cmd := &email.SendEmailCommand{
-		FromName:    "eTop.vn (no-reply)",
+		FromName:    wl.X(ctx).Name + " (no-reply)",
 		ToAddresses: []string{address},
 		Subject:     "Xác nhận thay đổi thông tin tài khoản",
 		Content:     b.String(),
@@ -936,17 +936,18 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 	resetUrl.RawQuery = urlQuery.Encode()
 
 	var b strings.Builder
-	if err := templatemessages.ResetPasswordTpl.Execute(&b, map[string]interface{}{
+	if err = templatemessages.ResetPasswordTpl.Execute(&b, map[string]interface{}{
 		"FullName": user.FullName,
 		"URL":      resetUrl.String(),
 		"Email":    user.Email,
+		"WlName":   wl.X(ctx).Name,
 	}); err != nil {
 		return r, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate email content")
 	}
 
 	address := user.Email
 	cmd := &email.SendEmailCommand{
-		FromName:    "eTop.vn (no-reply)",
+		FromName:    wl.X(ctx).CompanyName + " (no-reply)",
 		ToAddresses: []string{address},
 		Subject:     "Khôi phục mật khẩu eTop",
 		Content:     b.String(),
@@ -1340,15 +1341,16 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 
 	var b strings.Builder
 	if err := templatemessages.EmailVerificationByOTPTpl.Execute(&b, map[string]interface{}{
-		"Email": user.Email,
-		"Code":  code,
+		"Email":  user.Email,
+		"Code":   code,
+		"WlName": wl.X(ctx).Name,
 	}); err != nil {
 		return r, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
 	}
 
 	address := user.Email
 	cmd := &email.SendEmailCommand{
-		FromName:    "eTop.vn (no-reply)",
+		FromName:    wl.X(ctx).CompanyName + " (no-reply)",
 		ToAddresses: []string{address},
 		Subject:     "Xác nhận địa chỉ email",
 		Content:     b.String(),
@@ -1439,13 +1441,14 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 		"FullName": user.FullName,
 		"URL":      verificationUrl.String(),
 		"Email":    user.Email,
+		"WlName":   wl.X(ctx).Name,
 	}); err != nil {
 		return r, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
 	}
 
 	address := user.Email
 	cmd := &email.SendEmailCommand{
-		FromName:    "eTop.vn (no-reply)",
+		FromName:    wl.X(ctx).CompanyName + " (no-reply)",
 		ToAddresses: []string{address},
 		Subject:     "Xác nhận địa chỉ email",
 		Content:     b.String(),
@@ -1877,6 +1880,7 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 		"Code":        code,
 		"Email":       user.Email,
 		"AccountName": account.Name,
+		"WlName":      wl.X(ctx).Name,
 	}
 	switch account.Type {
 	case account_type.Shop:
@@ -1894,7 +1898,7 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 
 	address := user.Email
 	cmd := &email.SendEmailCommand{
-		FromName:    "eTop.vn (no-reply)",
+		FromName:    wl.X(ctx).CompanyName + " (no-reply)",
 		ToAddresses: []string{address},
 		Subject:     "Xác nhận thay đổi thông tin tài khoản",
 		Content:     b.String(),

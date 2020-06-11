@@ -14,7 +14,7 @@ Nếu là bạn, hãy bấm vào liên kết bên dưới để khôi phục m�
 
 Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 
-Đội ngũ eTop
+Đội ngũ {{.WlName}}
 `))
 
 var UpdateEmailTpl = template.Must(template.New("update-email").Parse(`
@@ -66,7 +66,7 @@ Nếu là bạn, hãy bấm vào liên kết bên dưới để xác nhận đ�
 
 Nếu không phải bạn, hãy bỏ qua email này. Bạn cũng có thể sử dụng chức năng khôi phục mật khẩu để lấy lại tài khoản.<br><br>
 
-Đội ngũ eTop
+Đội ngũ {{.WlName}}
 `))
 
 var EmailInvitationTpl = template.Must(template.New("email-verification").Parse(`
@@ -78,7 +78,7 @@ Hãy bấm vào liên kết bên dưới để xác nhận lời mời: (có hi�
 
 Nếu bạn không nhận ra cửa hàng trên, hãy bỏ qua email này.<br><br>
 
-Đội ngũ eTop
+Đội ngũ {{.WlName}}
 `))
 
 var PhoneInvitationTpl = template.Must(template.New("phone-verification").Parse(`Bạn được {{.InvitedUsername}} mời tham gia cửa hàng {{.ShopName}} với vai trò {{.ShopRoles}}. Hãy bấm vào liên kết bên dưới để xác nhận lời mời: (có hiệu lực trong 24 giờ) {{.URL}}`))
@@ -93,7 +93,7 @@ Nếu là bạn, hãy sử dụng mã bên dưới để tiếp tục thực hi�
 
 Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 
-Đội ngũ eTop
+Đội ngũ {{.WlName}}
 `))
 
 var SmsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
@@ -127,7 +127,7 @@ Bạn (hoặc một ai đó) đang muốn đăng nhập vào tài khoản <b>{{.
 
 Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 
-Đội ngũ eTop
+Đội ngũ {{.WlName}}
 `))
 
 var EmailVerificationByOTPTpl = template.Must(template.New("verify-email-by-otp").Parse(`
@@ -137,7 +137,7 @@ Bạn (hoặc một ai đó) đang muốn xác nhận địa chỉ email <b>{{.E
 
 Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 
-Đội ngũ eTop
+Đội ngũ {{.WlName}}
 {{.Extra}}
 `))
 

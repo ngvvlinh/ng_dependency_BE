@@ -41,7 +41,7 @@ func baseHost(env cmenv.EnvType) string {
 		return "g.etop.vn"
 
 	case cmenv.EnvProd:
-		return "faboshop.vn"
+		return "m.faboshop.vn"
 
 	default:
 		ll.S.Panicf("unexpected env: %v", env)
@@ -63,14 +63,14 @@ func (c config) siteUrl(env cmenv.EnvType, path string) string {
 func Fabo(env cmenv.EnvType) *whitelabel.WL {
 	InitTemplateMsg()
 	cfg := config{
-		prodHost: "faboshop.vn",
+		prodHost: "m.faboshop.vn",
 		key:      "fabo",
 	}
 	return &whitelabel.WL{
 		Partner: identity.Partner{
 			ID:         0,
-			Name:       "FaboShop",
-			PublicName: "FaboShop",
+			Name:       "Faboshop",
+			PublicName: "Faboshop",
 			ImageURL:   "",
 			WebsiteURL: "",
 		},

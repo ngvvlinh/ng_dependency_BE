@@ -354,12 +354,13 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *RequestLoginEn
 			"PartnerWebsite":    validate.DomainFromURL(partner.WebsiteURL),
 			"Notice":            notice,
 			"Extra":             extraMessage,
+			"WlName":            wl.X(ctx).Name,
 		}); err != nil {
 			return r, cm.Errorf(cm.Internal, err, "Không thể gửi mã đăng nhập").WithMeta("reason", "can not generate email content")
 		}
 		address := emailNorm
 		cmd := &email.SendEmailCommand{
-			FromName:    "eTop.vn (no-reply)",
+			FromName:    wl.X(ctx).CompanyName + " (no-reply)",
 			ToAddresses: []string{address},
 			Subject:     fmt.Sprintf("Đăng nhập vào eTop.vn thông qua hệ thống %v", partner.PublicName),
 			Content:     b.String(),
