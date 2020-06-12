@@ -127,6 +127,7 @@ func (g *Group) doCall(c *call, key string, timeout time.Duration, fn func() (_ 
 func (g *Group) Forget(key string) {
 	g.Lock()
 	defer g.Unlock()
+
 	if c, ok := g.m[key]; ok {
 		delete(g.m, key)
 		if c.cleanup != nil {

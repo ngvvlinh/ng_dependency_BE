@@ -253,7 +253,6 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 			if query.Result.Order.Status != status5.N {
 				return res, nil // keep the response
 			}
-
 			// release the old key and retry
 			idempgroup.ReleaseKey(key, "")
 			_res, _, _err := idempgroup.DoAndWrap(
@@ -281,7 +280,6 @@ func (s *OrderService) CancelOrder(ctx context.Context, q *CancelOrderEndpoint) 
 	res, _, err := idempgroup.DoAndWrap(
 		ctx, key, 5*time.Second, "hủy đơn hàng",
 		func() (interface{}, error) { return s.cancelOrder(ctx, q) })
-
 	if err != nil {
 		return err
 	}

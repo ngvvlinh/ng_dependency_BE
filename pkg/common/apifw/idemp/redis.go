@@ -144,7 +144,7 @@ func (rg *RedisGroup) setKeyAndAquireLock(groupKey, subkey string) (exec ExecFun
 	rg.Unlock()
 	return func(taskKey string, timeout time.Duration, fn TaskFunc) (v interface{}, cached bool, err error, idempErr error) {
 		v, err, _ = rg.g.DoAndCleanup(taskKey, timeout, fn, func() {
-			rg.ReleaseKey(groupKey, subkey)
+			rg.releaseKey(groupKey, subkey)
 		})
 		return v, false, err, nil
 	}, nil
@@ -175,7 +175,7 @@ func (rg *RedisGroup) get(key string) (string, error) {
 	return rg.rd.GetString(rg.prefix + key)
 }
 
-func (rg *RedisGroup) ReleaseKey(groupKey, subkey string) {
+func (rg *RedisGroup) releaseKey(groupKey, subkey string) {
 	skey, _ := rg.get(groupKey)
 	if skey == subkey {
 		rg.rd.Del(rg.prefix + groupKey)
@@ -184,6 +184,11 @@ func (rg *RedisGroup) ReleaseKey(groupKey, subkey string) {
 
 func (rg *RedisGroup) forget(key string) {
 	rg.g.Forget(key)
+}
+
+func (rg *RedisGroup) ReleaseKey(key string, subkey string) {
+	rg.forget(key)
+	rg.releaseKey(key, subkey)
 }
 
 func WrapError(ctx context.Context, err error, msg string) error {
