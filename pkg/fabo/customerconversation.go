@@ -2,6 +2,8 @@ package fabo
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
@@ -396,12 +398,22 @@ func (s *CustomerConversationService) SendComment(
 		Message:       request.Message,
 		AttachmentURL: request.AttachmentURL,
 	}
+
 	sendCommentResponse, err := s.FBClient.CallAPISendComment(accessToken, sendCommentRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	newComment, err := s.FBClient.CallAPICommentByID(accessToken, sendCommentResponse.ID)
+	var commentID string
+	{
+		// {page_id}_{post_id}
+		postIDParts := strings.Split(request.ExternalPostID, "_")
+
+		// {post_id}_{comment_id}
+		commentID = fmt.Sprintf("%s_%s", postIDParts[1], sendCommentResponse.ID)
+	}
+
+	newComment, err := s.FBClient.CallAPICommentByID(accessToken, commentID)
 	if err != nil {
 		return nil, err
 	}
