@@ -224,7 +224,22 @@ func PbPostAttachment(m *fbmessaging.PostAttachment) *fabo.PostAttachment {
 	return &fabo.PostAttachment{
 		MediaType:      m.MediaType,
 		Type:           m.Type,
+		Media:          PbMediaForCustomerConversation(m.Media),
 		SubAttachments: subAttachments,
+	}
+}
+
+func PbMediaForCustomerConversation(m *fbmessaging.MediaPostAttachment) *fabo.MediaPostAttachment {
+	return &fabo.MediaPostAttachment{
+		Image: PbImageForCustomerConversation(m.Image),
+	}
+}
+
+func PbImageForCustomerConversation(m *fbmessaging.ImageMediaPostAttachment) *fabo.ImageMediaPostAttachment {
+	return &fabo.ImageMediaPostAttachment{
+		Height: m.Height,
+		Width:  m.Width,
+		Src:    m.Src,
 	}
 }
 

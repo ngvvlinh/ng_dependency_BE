@@ -1178,6 +1178,20 @@
         }
       }
     },
+    "cvImageMediaPostAttachment": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer"
+        },
+        "src": {
+          "type": "string"
+        },
+        "width": {
+          "type": "integer"
+        }
+      }
+    },
     "cvListCommentsByExternalPostIDRequest": {
       "type": "object",
       "properties": {
@@ -1315,6 +1329,14 @@
         }
       }
     },
+    "cvMediaPostAttachment": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "$ref": "#/definitions/cvImageMediaPostAttachment"
+        }
+      }
+    },
     "cvMessageFilter": {
       "type": "object",
       "properties": {
@@ -1344,6 +1366,9 @@
     "cvPostAttachment": {
       "type": "object",
       "properties": {
+        "media": {
+          "$ref": "#/definitions/cvMediaPostAttachment"
+        },
         "media_type": {
           "type": "string"
         },
