@@ -96,7 +96,7 @@ func ShouldSendEvent(event *Event, subscriber *Subscriber) bool {
 		(event.UserID != 0 && event.UserID == subscriber.UserID)
 }
 
-func (s *EventStream) SubscribeShop(userID dot.ID) (id int64, ch chan *Event) {
+func (s *EventStream) SubscribeUser(userID dot.ID) (id int64, ch chan *Event) {
 	subscriber := &Subscriber{
 		ID:        cm.RandomInt64(),
 		AllEvents: true,
@@ -106,9 +106,9 @@ func (s *EventStream) SubscribeShop(userID dot.ID) (id int64, ch chan *Event) {
 	}
 
 	s.m.Lock()
-	s.subscribers[id] = subscriber
+	s.subscribers[subscriber.ID] = subscriber
 	defer s.m.Unlock()
-	return id, subscriber.ch
+	return subscriber.ID, subscriber.ch
 }
 
 func (s *EventStream) Unsubscribe(id int64) {
@@ -121,7 +121,7 @@ func (s *EventStream) HandleEventStream(c *httpx.Context) error {
 	userID := c.Session.GetUserID()
 	ctx := c.Context()
 
-	subscriberID, eventChannel := s.SubscribeShop(userID)
+	subscriberID, eventChannel := s.SubscribeUser(userID)
 	defer s.Unsubscribe(subscriberID)
 
 	w := c.SetResultRaw()
