@@ -12,6 +12,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
 )
 
@@ -38,7 +39,13 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	if err != nil {
 		return nil, err
 	}
-
+	if args.Phone == "" {
+		return nil, cm.Error(cm.InvalidArgument, "Vui lòng cung cấp số điện thoại", nil)
+	}
+	_, ok := validate.NormalizePhone(args.Phone)
+	if !ok {
+		return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
+	}
 	if args.IsDefault {
 		if err := q.store(ctx).UpdateStatusAddresses(args.ShopID, args.TraderID, false); err != nil {
 			return nil, err
@@ -57,6 +64,15 @@ func (q *AddressAggregate) UpdateAddress(ctx context.Context, ID dot.ID, ShopID 
 	addr, err := q.store(ctx).ID(ID).ShopID(ShopID).GetAddress()
 	if err != nil {
 		return nil, err
+	}
+	if args.Phone.Valid {
+		if args.Phone.String == "" {
+			return nil, cm.Error(cm.InvalidArgument, "Vui lòng cung cấp số điện thoại", nil)
+		}
+		_, ok := validate.NormalizePhone(args.Phone.String)
+		if !ok {
+			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
+		}
 	}
 	if err = scheme.Convert(args, addr); err != nil {
 		return nil, err
