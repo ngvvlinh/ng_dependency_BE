@@ -106,8 +106,8 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 	switch order.Status {
 	case status5.N:
 		return resp, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hủy")
-	case status5.P:
-		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil)
+	// case status5.P:
+	// 	return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil)
 	case status5.NS:
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil)
 	}

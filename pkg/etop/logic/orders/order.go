@@ -492,10 +492,10 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, claim *claims.ShopClaim, a
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã hủy, không thể cập nhật đơn", nil)
 	case status5.NS:
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã trả hàng, không thể cập nhật đơn", nil)
-	case status5.P:
-		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã hoàn thành, không thể cập nhật đơn", nil)
-	case status5.S:
-		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đang xử lý, không thể cập nhật đơn", nil)
+		// case status5.P:
+		// 	return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã hoàn thành, không thể cập nhật đơn", nil)
+		// case status5.S:
+		// 	return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đang xử lý, không thể cập nhật đơn", nil)
 	}
 
 	customerId := query.Result.Order.CustomerID

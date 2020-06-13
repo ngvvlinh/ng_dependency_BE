@@ -434,7 +434,7 @@ func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatus
 	}
 
 	s := x.Table("order").
-		Where("status = 0 OR status = 2 OR status IS NULL"). // Only update orders in 'processing'
+		// Where("status = 0 OR status = 2 OR status IS NULL"). // Only update orders in 'processing'
 		InOrEqIDs("id", cmd.OrderIDs)
 	if cmd.ShopID != 0 {
 		s = s.Where("shop_id = ?", cmd.ShopID)
@@ -668,8 +668,8 @@ func UpdateOrder(ctx context.Context, cmd *ordermodelx.UpdateOrderCommand) error
 
 		// TODO: Handle status
 		s2 := x.Table("order").
-			Where("id = ? AND shop_id = ?", order.ID, order.ShopID).
-			Where("status = 0 OR status = 2 OR status IS NULL") // Only update orders in 'processing'
+			Where("id = ? AND shop_id = ?", order.ID, order.ShopID)
+			// Where("status = 0 OR status = 2 OR status IS NULL") // Only update orders in 'processing'
 		if err := s2.ShouldUpdate(order); err != nil {
 			return err
 		}
@@ -702,7 +702,7 @@ func UpdateOrder(ctx context.Context, cmd *ordermodelx.UpdateOrderCommand) error
 		}
 		if _, err := x.Table("order").
 			Where("id = ? AND shop_id = ?", order.ID, order.ShopID).
-			Where("status = 0 OR status = 2 OR status IS NULL").
+			Where("status not in (-1, -2)").
 			UpdateMap(m); err != nil {
 			return err
 		}
