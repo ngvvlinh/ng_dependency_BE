@@ -190,10 +190,10 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 		}
 
 		// Ignore UserID == PageID
-		if fbExternalComment.ExternalUserID == fbExternalComment.ExternalPageID &&
-			(fbExternalComment.ExternalParentUserID == "" || fbExternalComment.ExternalParent == nil || fbExternalComment.ExternalParent.From == nil) {
-			continue
-		}
+		//if fbExternalComment.ExternalUserID == fbExternalComment.ExternalPageID &&
+		//	(fbExternalComment.ExternalParentUserID == "" || fbExternalComment.ExternalParent == nil || fbExternalComment.ExternalParent.From == nil) {
+		//	continue
+		//}
 
 		if _, ok := mapExternalPostIDAndMapExternalUserIDAndExternalPageID[fbExternalComment.ExternalPostID]; !ok {
 			mapExternalPostIDAndMapExternalUserIDAndExternalPageID[fbExternalComment.ExternalPostID] = make(map[string]string)
@@ -282,9 +282,6 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 		var fbObjectFromsAndPageIDs []*fbObjectFromAndPageID
 		mapExternalUserID := make(map[string]bool)
 		for _, externalComment := range event.FbExternalComments {
-			if externalComment.ExternalID == "122501556114814_122958706069099" {
-				fmt.Println("abbc")
-			}
 			if externalComment.ExternalUserID != "" && externalComment.ExternalUserID == externalComment.ExternalParentID {
 				continue
 			}

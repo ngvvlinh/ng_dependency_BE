@@ -533,9 +533,6 @@ func (s *Synchronizer) handleTaskGetComments(
 		return nil
 	}
 
-	// Get PSIDs to get avatars
-	var PSIDs []string
-
 	var createOrUpdateFbExternalCommentsArgs []*fbmessaging.CreateFbExternalCommentArgs
 	for _, fbExternalComment := range fbExternalCommentsResp.Comments.CommentData {
 		// Ignore comment is hidden
@@ -549,11 +546,6 @@ func (s *Synchronizer) handleTaskGetComments(
 		var externalUserID, externalParentID, externalParentUserID string
 		if fbExternalComment.From != nil {
 			externalUserID = fbExternalComment.From.ID
-
-			// get PSID
-			if externalUserID != externalPageID {
-				PSIDs = append(PSIDs, externalUserID)
-			}
 		}
 		if fbExternalComment.Parent != nil {
 			externalParentID = fbExternalComment.Parent.ID
