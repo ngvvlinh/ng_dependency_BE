@@ -252,7 +252,7 @@ func (f *FbClient) CallAPICheckAccessToken(accessToken string) (*model.UserToken
 }
 
 func (f *FbClient) CallAPIListPublishedPosts(accessToken, pageID string, pagination *model.FacebookPagingRequest) (*model.PublishedPostsResponse, error) {
-	URL, err := url.Parse(fmt.Sprintf("%s/%s/published_posts", f.apiInfo.Url(), pageID))
+	URL, err := url.Parse(fmt.Sprintf("%s/me/published_posts", f.apiInfo.Url()))
 	if err != nil {
 		return nil, err
 	}

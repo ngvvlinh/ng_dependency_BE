@@ -93,13 +93,13 @@ func main() {
 	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
 	fbUseringQuery := servicefbusering.FbUserQueryMessageBus(servicefbusering.NewFbUserQuery(db, customerQuery))
 	fbUseringAggr := servicefbusering.FbUserAggregateMessageBus(servicefbusering.NewFbUserAggregate(db, fbPagingAggr, customerQuery))
-	fbMessagingPM := servicefbmessaging.NewProcessManager(
+	// fbMessagingPM
+	_ = servicefbmessaging.NewProcessManager(
 		eventBus,
 		fbMessagingQuery, fbMessagingAggr,
 		fbPagingQuery,
 		fbUseringQuery, fbUseringAggr,
 		fbRedis)
-	fbMessagingPM.RegisterEventHandlers(eventBus)
 	synchronizer := sync.New(
 		db,
 		fbClient,

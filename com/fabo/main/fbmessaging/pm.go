@@ -42,6 +42,7 @@ func NewProcessManager(
 		fbuseringA:   fbuseringA,
 		rd:           faboRedis,
 	}
+	p.RegisterEventHandlers(eventBus)
 	return p
 }
 

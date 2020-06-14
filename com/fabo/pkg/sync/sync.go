@@ -2,7 +2,6 @@ package sync
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -47,7 +46,6 @@ const (
 	GetComments      TaskActionType = 655
 	GetConversations TaskActionType = 363
 	GetMessages      TaskActionType = 160
-	GetAvatar        TaskActionType = 529
 )
 
 type getCommentsArguments struct {
@@ -109,6 +107,8 @@ type Synchronizer struct {
 	mu sync.Mutex
 	rd *faboRedis.FaboRedis
 
+	mapExternalPageAndTimeStart map[string]time.Time
+
 	timeLimit int
 }
 
@@ -121,15 +121,16 @@ func New(
 ) *Synchronizer {
 	sched := scheduler.New(defaultNumWorkers)
 	s := &Synchronizer{
-		scheduler:        sched,
-		db:               db,
-		fbClient:         fbClient,
-		mapTaskArguments: make(map[dot.ID]*TaskArguments),
-		fbMessagingAggr:  fbMessagingAggr,
-		fbMessagingQuery: fbMessagingQuery,
-		fbUseringAggr:    fbUseringAggr,
-		rd:               fbRedis,
-		timeLimit:        timeLimit,
+		scheduler:                   sched,
+		db:                          db,
+		fbClient:                    fbClient,
+		mapTaskArguments:            make(map[dot.ID]*TaskArguments),
+		mapExternalPageAndTimeStart: make(map[string]time.Time),
+		fbMessagingAggr:             fbMessagingAggr,
+		fbMessagingQuery:            fbMessagingQuery,
+		fbUseringAggr:               fbUseringAggr,
+		rd:                          fbRedis,
+		timeLimit:                   timeLimit,
 	}
 	return s
 }
@@ -155,7 +156,7 @@ func (s *Synchronizer) addTask(taskArguments *TaskArguments) (taskID dot.ID) {
 	s.mu.Lock()
 	taskID = cm.NewID()
 	s.mapTaskArguments[taskID] = taskArguments
-	t := rand.Intn(int(time.Second) / 1000)
+	t := rand.Intn(int(time.Second))
 	s.scheduler.AddAfter(taskID, time.Duration(t), s.syncCallbackLogs)
 	s.mu.Unlock()
 	return
@@ -180,22 +181,47 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 		return err
 	}
 
+	now := time.Now()
 	for _, fbPageCombined := range fbPageCombineds {
 		// Task get post of specific page
-		{
-			s.addTask(&TaskArguments{
-				actionType:     GetPosts,
-				accessToken:    fbPageCombined.FbExternalPageInternal.Token,
-				shopID:         fbPageCombined.FbExternalPage.ShopID,
-				pageID:         fbPageCombined.FbExternalPage.ID,
-				externalPageID: fbPageCombined.FbExternalPage.ExternalID,
-				fbPagingRequest: &model.FacebookPagingRequest{
-					Limit: dot.Int(fbclient.DefaultLimitGetPosts),
-					TimePagination: &model.TimePaginationRequest{
-						Since: time.Now().AddDate(0, 0, -s.timeLimit),
-					},
-				},
-			})
+		updatedAt := fbPageCombined.FbExternalPage.UpdatedAt
+		externalPageID := fbPageCombined.FbExternalPage.ExternalID
+
+		timeDiff := now.Sub(updatedAt).Seconds()
+		var createTaskGetPosts bool
+
+		if timeStart, ok := s.mapExternalPageAndTimeStart[externalPageID]; !ok {
+			createTaskGetPosts = true
+		} else {
+			timeStartDiff := now.Sub(timeStart).Seconds()
+
+			// less than 10 mins sync every 30s
+			if timeDiff <= 10*60 && timeStartDiff >= 30 {
+				createTaskGetPosts = true
+			}
+
+			// between 10mins and 30mins sync every 1min
+			if 10*60 < timeDiff && timeDiff <= 30*60 && timeStartDiff >= 60 {
+				createTaskGetPosts = true
+			}
+
+			// between 30mins and 1hour sync every 2mins
+			if 30*60 < timeDiff && timeDiff <= 60*60 && timeStartDiff >= 2*60 {
+				createTaskGetPosts = true
+			}
+
+			// greater than 1hour sync every 5mins
+			if 60*60 < timeDiff && timeStartDiff > 5*60 {
+				createTaskGetPosts = true
+			}
+
+		}
+
+		if createTaskGetPosts {
+			s.mu.Lock()
+			s.mapExternalPageAndTimeStart[externalPageID] = now
+			s.mu.Unlock()
+			s.addTaskGetPosts(fbPageCombined)
 		}
 
 		// Task get conversation
@@ -216,23 +242,25 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 		//}
 	}
 
-	//mapExternalUserIDAndPageInternal, err := getMapExternalUserIDAndPageInternal(s.db)
-	//if err != nil {
-	//	return err
-	//}
-	//for externalUserID, externalPageInternal := range mapExternalUserIDAndPageInternal {
-	//	s.addTask(&TaskArguments{
-	//		actionType: GetAvatar,
-	//		getAvatarArgs: &getAvatarArguments{
-	//			externalUserID:       externalUserID,
-	//			externalPageInternal: externalPageInternal,
-	//		},
-	//	})
-	//}
-
-	s.scheduler.AddAfter(cm.NewID(), 5*time.Minute, s.addJobs)
+	s.scheduler.AddAfter(cm.NewID(), 10*time.Second, s.addJobs)
 
 	return
+}
+
+func (s *Synchronizer) addTaskGetPosts(fbPageCombined *fbpaging.FbExternalPageCombined) dot.ID {
+	return s.addTask(&TaskArguments{
+		actionType:     GetPosts,
+		accessToken:    fbPageCombined.FbExternalPageInternal.Token,
+		shopID:         fbPageCombined.FbExternalPage.ShopID,
+		pageID:         fbPageCombined.FbExternalPage.ID,
+		externalPageID: fbPageCombined.FbExternalPage.ExternalID,
+		fbPagingRequest: &model.FacebookPagingRequest{
+			Limit: dot.Int(fbclient.DefaultLimitGetPosts),
+			TimePagination: &model.TimePaginationRequest{
+				Since: time.Now().AddDate(0, 0, -s.timeLimit),
+			},
+		},
+	})
 }
 
 func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_err error) {
@@ -252,11 +280,6 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		case fbclient.AccessTokenHasExpired.String():
 			// no-op
 			return
-		case fbclient.InvalidParameter.String():
-			if taskArgs.actionType == GetAvatar {
-				// Ignore error because different between get pageInfo and PSID info
-				return
-			}
 		case fbclient.ApiTooManyCalls.String(), fbclient.ApplicationLimitReached.String():
 			s.scheduler.AddAfter(taskID, defaultRecurrentFacebookThrottling, s.syncCallbackLogs)
 			return
@@ -297,10 +320,6 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		}
 	case GetMessages:
 		if err := s.handleTaskGetMessages(ctx, shopID, pageID, accessToken, externalPageID, taskArgs, fbPagingReq); err != nil {
-			return err
-		}
-	case GetAvatar:
-		if err := s.handleTaskGetAvatar(ctx, taskArgs); err != nil {
 			return err
 		}
 	}
@@ -374,44 +393,6 @@ func (s *Synchronizer) handleTaskGetMessages(
 			fbPagingRequest: fbMessagesResp.Messages.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetMessages),
 		})
 	}
-	return nil
-}
-
-func (s *Synchronizer) handleTaskGetAvatar(
-	ctx context.Context, taskArgs *TaskArguments,
-) error {
-	fmt.Println("GetAvatar")
-
-	avatarArgs := taskArgs.getAvatarArgs
-	externalUserID := avatarArgs.externalUserID
-	externalPageInternal := avatarArgs.externalPageInternal
-
-	profile, err := s.fbClient.CallAPIGetProfileByPSID(externalPageInternal.Token, externalUserID)
-	if err != nil {
-		return err
-	}
-
-	profilePic := fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", externalUserID)
-	if profile.ProfilePic != "" {
-		profilePic = profile.ProfilePic
-	}
-
-	createFbExternalUserCmd := &fbusering.CreateFbExternalUserCommand{
-		ExternalID: externalUserID,
-		ExternalInfo: &fbusering.FbExternalUserInfo{
-			Name:      profile.Name,
-			FirstName: profile.FirstName,
-			LastName:  profile.LastName,
-			ImageURL:  profilePic,
-		},
-		ExternalPageID: externalPageInternal.ExternalID,
-		Status:         0,
-	}
-
-	if err := s.fbUseringAggr.Dispatch(ctx, createFbExternalUserCmd); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -755,7 +736,7 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 			Where("id > ?", fromID.Int64()).
 			Where("connection_status = ?", status3.P.Enum()).
 			Where("status = ?", status3.P.Enum()).
-			OrderBy("id").
+			OrderBy("updated_at desc, id asc").
 			Limit(1000).
 			Find(&fbPageModels); err != nil {
 			return nil, err
@@ -773,6 +754,7 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 
 		var fbExternalPageInternalModels fbpagemodel.FbExternalPageInternals
 
+		// TODO(ngoc): refactor
 		if err := db.
 			In("id", listFbPageIDs).
 			OrderBy("id").
@@ -782,11 +764,15 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 		}
 
 		fbExternalPageInternals := convert.Convert_fbpagemodel_FbExternalPageInternals_fbpaging_FbExternalPageInternals(fbExternalPageInternalModels)
+		mapFbExternalPageInternal := make(map[string]*fbpaging.FbExternalPageInternal)
+		for _, fbExternalPageInternal := range fbExternalPageInternals {
+			mapFbExternalPageInternal[fbExternalPageInternal.ExternalID] = fbExternalPageInternal
+		}
 
-		for i, fbPage := range fbExternalPages {
+		for _, fbPage := range fbExternalPages {
 			fbExternalPageCombineds = append(fbExternalPageCombineds, &fbpaging.FbExternalPageCombined{
 				FbExternalPage:         fbPage,
-				FbExternalPageInternal: fbExternalPageInternals[i],
+				FbExternalPageInternal: mapFbExternalPageInternal[fbPage.ExternalID],
 			})
 		}
 
@@ -794,55 +780,6 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 	}
 
 	return fbExternalPageCombineds, nil
-}
-
-func getMapExternalUserIDAndPageInternal(db *cmsql.Database) (map[string]*fbpaging.FbExternalPageInternal, error) {
-	fromExternalID := ""
-
-	// key is id
-	mapExternalUserIDAndPageToken := make(map[string]*fbpaging.FbExternalPageInternal)
-
-	for {
-		rows, err := db.
-			Query(fmt.Sprintf(`
-				select 
-					u.external_id external_id ,
-					p.id page_id,
-					p.external_id external_page_id,
-					p.token token
-				from fb_external_user u
-				inner join fb_external_page_internal p
-				on u.external_page_id = p.external_id
-				where u.external_id > '%s' and u.external_page_id != ''
-				order by u.external_id
-				limit %d`, fromExternalID, 1000))
-
-		if err != nil {
-			return nil, err
-		}
-
-		var pageID sql.NullInt64
-		var externalID, externalPageID, token string
-		for rows.Next() {
-			err := rows.Scan(&externalID, &pageID, &externalPageID, &token)
-			if err != nil {
-				return nil, err
-			}
-			mapExternalUserIDAndPageToken[externalID] = &fbpaging.FbExternalPageInternal{
-				ID:         dot.ID(pageID.Int64),
-				ExternalID: externalPageID,
-				Token:      token,
-			}
-		}
-
-		if externalID == "" {
-			break
-		} else {
-			fromExternalID = externalID
-		}
-	}
-
-	return mapExternalUserIDAndPageToken, nil
 }
 
 func ternaryString(statement bool, a, b string) string {
