@@ -6,6 +6,7 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
+	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
@@ -25,18 +26,20 @@ import (
 const MinShopBalance = -200000
 
 type ProcessManager struct {
-	eventBus      capi.EventBus
-	shippingAggr  shipping.CommandBus
-	shippingQuery shipping.QueryBus
-	redisStore    redis.Store
+	eventBus        capi.EventBus
+	shippingAggr    shipping.CommandBus
+	shippingQuery   shipping.QueryBus
+	redisStore      redis.Store
+	connectionQuery connectioning.QueryBus
 }
 
-func New(eventBus bus.EventRegistry, shippingQ shipping.QueryBus, shippingA shipping.CommandBus, redisS redis.Store) *ProcessManager {
+func New(eventBus bus.EventRegistry, shippingQ shipping.QueryBus, shippingA shipping.CommandBus, redisS redis.Store, connectionQ connectioning.QueryBus) *ProcessManager {
 	p := &ProcessManager{
-		eventBus:      eventBus,
-		shippingQuery: shippingQ,
-		shippingAggr:  shippingA,
-		redisStore:    redisS,
+		eventBus:        eventBus,
+		shippingQuery:   shippingQ,
+		shippingAggr:    shippingA,
+		redisStore:      redisS,
+		connectionQuery: connectionQ,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -233,6 +236,20 @@ func (m *ProcessManager) ShopConnectionUpdated(ctx context.Context, event *conne
 }
 
 func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, event *shipping.SingleFulfillmentCreatingEvent) error {
+	if event.ConnectionID != 0 {
+		queryConn := &connectioning.GetConnectionByIDQuery{
+			ID: event.ConnectionID,
+		}
+		err := m.connectionQuery.Dispatch(ctx, queryConn)
+		if err != nil {
+			return err
+		}
+
+		if queryConn.Result.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
+			return nil
+		}
+	}
+
 	fromAddress := event.FromAddress
 	if fromAddress == nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing from address").WithMeta("event", "SingleFulfillmentCreatingEvent")

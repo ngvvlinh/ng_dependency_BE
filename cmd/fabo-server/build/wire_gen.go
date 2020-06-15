@@ -559,7 +559,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	processManager6 := pm7.New(eventBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus)
 	processManager7 := pm8.New(eventBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, queryBus)
 	processManager8 := pm9.New(eventBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
-	processManager9 := pm10.New(eventBus, shippingQueryBus, shippingCommandBus, store)
+	processManager9 := pm10.New(eventBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus)
 	processManager10 := pm11.New(eventBus, fbuseringCommandBus)
 	fbmessagingProcessManager := fbmessaging.NewProcessManager(eventBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)

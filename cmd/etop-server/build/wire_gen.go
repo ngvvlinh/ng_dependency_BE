@@ -802,7 +802,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	processManager9 := pm10.New(eventBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, identityQueryBus)
 	processManager10 := pm11.New(eventBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
 	processManager11 := pm12.New(eventBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, shipnowManager)
-	processManager12 := pm13.New(eventBus, shippingQueryBus, shippingCommandBus, store)
+	processManager12 := pm13.New(eventBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus)
 	processManager13 := pm14.New(eventBus, affiliateCommandBus)
 	traderAgg := aggregate22.NewTraderAgg(mainDB)
 	traderingCommandBus := aggregate22.TraderAggMessageBus(traderAgg)

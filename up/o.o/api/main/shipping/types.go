@@ -222,9 +222,10 @@ type FulfillmentShippingFeeChangedEvent struct {
 
 type SingleFulfillmentCreatingEvent struct {
 	meta.EventMeta
-	ShopID      dot.ID
-	FromAddress *ordertypes.Address
-	ShippingFee int
+	ShopID       dot.ID
+	FromAddress  *ordertypes.Address
+	ShippingFee  int
+	ConnectionID dot.ID
 }
 
 func CalcShopShippingFee(externalFee int, ffm *Fulfillment) int {
