@@ -6,9 +6,11 @@ import (
 
 	"o.o/api/main/refund"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/status5"
 	com "o.o/backend/com/main"
 	catalogconvert "o.o/backend/com/main/catalog/convert"
 	"o.o/backend/com/main/ordering/model"
+	ordermodel "o.o/backend/com/main/ordering/model"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/com/main/refund/convert"
 	"o.o/backend/com/main/refund/sqlstore"
@@ -53,7 +55,7 @@ func (a *RefundAggregate) CreateRefund(ctx context.Context, args *refund.CreateR
 	if err != nil {
 		return nil, err
 	}
-	preLine, err := a.checkLineOrder(ctx, args.ShopID, refundResult.OrderID, refundResult.ID, refundResult.Lines)
+	preLine, err := a.checkLineOrder(ctx, args.ShopID, refundResult.OrderID, refundResult.ID, refundResult.Lines, true)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +93,7 @@ func (a *RefundAggregate) UpdateRefund(ctx context.Context, args *refund.UpdateR
 	if err != nil {
 		return nil, err
 	}
-	preLine, err := a.checkLineOrder(ctx, args.ShopID, refundDB.OrderID, refundDB.ID, refundDB.Lines)
+	preLine, err := a.checkLineOrder(ctx, args.ShopID, refundDB.OrderID, refundDB.ID, refundDB.Lines, false)
 	if err != nil {
 		return nil, err
 	}
@@ -106,8 +108,31 @@ func (a *RefundAggregate) UpdateRefund(ctx context.Context, args *refund.UpdateR
 	return refundDB, err
 }
 
-func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, orderID dot.ID, refundID dot.ID, lines []*refund.RefundLine) (*refund.CheckReceiptLinesResponse, error) {
+func (a *RefundAggregate) checkOrder(arg *ordermodel.Order) error {
+	if len(arg.FulfillmentIDs) == 0 {
+		// Đơn không có giao hàng
+		if arg.Status == status5.NS || arg.Status == status5.Z || arg.Status == status5.P {
+			return nil
+		}
+	} else {
+		//  Đơn có giao hàng và bị trả hàng
+		if arg.FulfillmentShippingStatus == status5.NS {
+			for _, v := range arg.FulfillmentShippingStates {
+				if v == "returned" {
+					return nil
+				}
+			}
+		}
+		//  Đơn có giao hàng và đơn giao thành công
+		if arg.FulfillmentShippingStatus == status5.P {
+			return nil
+		}
+	}
 
+	return cm.Errorf(cm.FailedPrecondition, nil, "Không thể tạo đơn trả hàng cho đơn hàng %v", arg.ID)
+}
+
+func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, orderID dot.ID, refundID dot.ID, lines []*refund.RefundLine, isCreate bool) (*refund.CheckReceiptLinesResponse, error) {
 	queryOrder := &ordermodelx.GetOrderQuery{
 		OrderID: orderID,
 		ShopID:  shopID,
@@ -117,7 +142,12 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 		return nil, err
 	}
 	order := queryOrder.Result.Order
-
+	if isCreate {
+		err = a.checkOrder(order)
+		if err != nil {
+			return nil, err
+		}
+	}
 	var linesVariant = make(map[dot.ID]*model.OrderLine, len(order.Lines))
 	for _, value := range order.Lines {
 		linesVariant[value.VariantID] = value
@@ -133,7 +163,7 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 	}
 	for key, value := range lines {
 		if linesVariant[value.VariantID] == nil {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Sản phẩm không tồn tại trong đơn hàng %v", queryOrder.Result.Order.Code)
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Sản phẩm không tồn tại trong đơn hàng %v", order.Code)
 		}
 		if linesVariant[value.VariantID].Quantity < value.Quantity {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng sản phẩm trong đơn trả hàng lớn hơn đơn hàng")
@@ -149,7 +179,7 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 		}
 	}
 	return &refund.CheckReceiptLinesResponse{
-		CustomerID: queryOrder.Result.Order.CustomerID,
+		CustomerID: order.CustomerID,
 		RefundLine: lines,
 	}, nil
 }
