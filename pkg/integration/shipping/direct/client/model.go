@@ -147,14 +147,14 @@ func (s *ShippingService) validate() error {
 		errMsg = "Missing service_code"
 	case s.Name == "":
 		errMsg = "Missing service name"
-	case s.ExpectedPickAt.IsZero():
-		errMsg = "Missing expected_pick_at"
-	case s.ExpectedDeliveryAt.IsZero():
-		errMsg = "Missing expected_delivery_at"
+	// case s.ExpectedPickAt.IsZero():
+	// 	errMsg = "Missing expected_pick_at"
+	// case s.ExpectedDeliveryAt.IsZero():
+	// 	errMsg = "Missing expected_delivery_at"
 	case s.ServiceFee == 0:
 		errMsg = "Missing service_fee"
-	case s.ServiceFeeMain == 0:
-		errMsg = "Missing service_fee_main"
+		// case s.ServiceFeeMain == 0:
+		// 	errMsg = "Missing service_fee_main"
 	}
 	if errMsg != "" {
 		return cm.Errorf(cm.InvalidArgument, nil, errMsg)
@@ -173,10 +173,10 @@ func (ffm *Fulfillment) validate() error {
 		errMsg = "Missing tracking_url"
 	case ffm.ShippingState == 0:
 		errMsg = "Missing shipping_state"
-	case ffm.ExpectedPickAt.IsZero():
-		errMsg = "Missing expected_pick_at"
-	case ffm.ExpectedDeliveryAt.IsZero():
-		errMsg = "Missing expected_delivered_at"
+	// case ffm.ExpectedPickAt.IsZero():
+	// 	errMsg = "Missing expected_pick_at"
+	// case ffm.ExpectedDeliveryAt.IsZero():
+	// 	errMsg = "Missing expected_delivered_at"
 	case ffm.ShippingFeeLines == nil || len(ffm.ShippingFeeLines) == 0:
 		errMsg = "Missing shipping_fee_lines"
 	}
