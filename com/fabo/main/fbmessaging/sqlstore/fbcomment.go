@@ -162,18 +162,21 @@ func (s *FbExternalCommentStore) ExternalPageIDAndExternalUserID(externalPageID,
 	return s
 }
 
-func (s *FbExternalCommentStore) GetLatestExternalComment(externalPageID, externalPostID, externalUserID string) (*fbmessaging.FbExternalComment, error) {
+func (s *FbExternalCommentStore) GetLatestExternalComment(
+	externalPageID, externalPostID,
+	externalUserID, externalParentUserID string,
+) (*fbmessaging.FbExternalComment, error) {
 	var fbExternalComment model.FbExternalComment
+
 	if err := s.query().
 		Where(fmt.Sprintf(`
 			external_post_id = '%s' AND 
 			(
-				external_user_id = '%s' OR 
-				(
-					external_user_id = '%s' AND external_parent_user_id = '%s'
-				)
+				(external_user_id = '%s' AND external_parent_user_id IS NULL) OR
+				(external_user_id = '%s' AND external_parent_user_id = '%s') OR 
+				(external_user_id = '%s' AND external_parent_user_id = '%s')
 			)
-		`, externalPostID, externalUserID, externalPageID, externalUserID)).
+		`, externalPostID, externalUserID, externalUserID, externalParentUserID, externalPageID, externalParentUserID)).
 		OrderBy("external_created_time desc", "id asc").
 		Limit(1).
 		ShouldGet(&fbExternalComment); err != nil {
@@ -209,16 +212,30 @@ func (s *FbExternalCommentStore) GetFbExternalComment() (*fbmessaging.FbExternal
 }
 
 func (s *FbExternalCommentStore) GetLatestCustomerExternalComment(
-	externalPostID, externalUserID string,
+	externalPostID, externalUserID, externalPageID string,
 ) (*fbmessaging.FbExternalComment, error) {
 	var fbExternalComment model.FbExternalComment
-	if err := s.query().
-		Where(s.ft.ByExternalPostID(externalPostID)).
-		Where(s.ft.ByExternalUserID(externalUserID)).
-		OrderBy("external_created_time desc", "id desc").
-		Limit(1).
-		ShouldGet(&fbExternalComment); err != nil {
-		return nil, err
+
+	if externalUserID != externalPageID {
+		if err := s.query().
+			Where(s.ft.ByExternalPostID(externalPostID)).
+			Where(s.ft.ByExternalUserID(externalUserID)).
+			OrderBy("external_created_time desc", "id desc").
+			Limit(1).
+			ShouldGet(&fbExternalComment); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := s.query().
+			Where(fmt.Sprintf(`
+				(external_user_id = '%s' AND external_parent_user_id IS NULL) OR
+				(external_user_id = '%s' AND external_parent_user_id = '%s')
+			`, externalPageID, externalPageID, externalPageID)).
+			OrderBy("external_created_time desc", "id desc").
+			Limit(1).
+			ShouldGet(&fbExternalComment); err != nil {
+			return nil, err
+		}
 	}
 
 	result := fbmessaging.FbExternalComment{}

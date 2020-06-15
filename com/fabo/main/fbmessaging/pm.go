@@ -3,6 +3,7 @@ package fbmessaging
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"o.o/api/fabo/fbmessaging"
@@ -186,14 +187,12 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 	ctx context.Context, event *fbmessaging.FbExternalCommentsCreatedEvent,
 ) error {
-	fmt.Println("aaaaaaa")
-
 	if len(event.FbExternalComments) == 0 {
 		return nil
 	}
 
 	externalPostIDsSet := NewSet()
-	mapExternalPostIDAndMapExternalUserIDAndExternalPageID := make(map[string]map[string]string)
+	mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID := make(map[string]map[string]string)
 
 	for _, fbExternalComment := range event.FbExternalComments {
 		// Ignore ExternalUserID = "" and ExternalFrom = nil
@@ -201,13 +200,13 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 			continue
 		}
 
-		if _, ok := mapExternalPostIDAndMapExternalUserIDAndExternalPageID[fbExternalComment.ExternalPostID]; !ok {
-			mapExternalPostIDAndMapExternalUserIDAndExternalPageID[fbExternalComment.ExternalPostID] = make(map[string]string)
+		if _, ok := mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID[fbExternalComment.ExternalPostID]; !ok {
+			mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID[fbExternalComment.ExternalPostID] = make(map[string]string)
 			externalPostIDsSet.Push(fbExternalComment.ExternalPostID)
 		}
 
 		tempExternalUserID := fbExternalComment.ExternalUserID
-		mapExternalPostIDAndMapExternalUserIDAndExternalPageID[fbExternalComment.ExternalPostID][tempExternalUserID] = fbExternalComment.ExternalPageID
+		mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID[fbExternalComment.ExternalPostID][tempExternalUserID] = fbExternalComment.ExternalParentUserID
 	}
 
 	listExternalPostsByExternalIDsQuery := &fbmessaging.ListFbExternalPostsByExternalIDsQuery{
@@ -221,12 +220,14 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 		mapExternalPost[externalPost.ExternalID] = externalPost
 	}
 
-	for externalPostID, mapExternalUserIDAndExternalPageID := range mapExternalPostIDAndMapExternalUserIDAndExternalPageID {
-		for externalUserID, externalPageID := range mapExternalUserIDAndExternalPageID {
+	for externalPostID, mapExternalUserIDAndExternalParentUserID := range mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID {
+		for externalUserID, externalParentUserID := range mapExternalUserIDAndExternalParentUserID {
+			externalPageID := strings.Split(externalPostID, "_")[0]
 			getLatestFbExternalCommentQuery := &fbmessaging.GetLatestFbExternalCommentQuery{
-				ExternalPostID: externalPostID,
-				ExternalUserID: externalUserID,
-				ExternalPageID: externalPageID,
+				ExternalPageID:       externalPageID,
+				ExternalPostID:       externalPostID,
+				ExternalUserID:       externalUserID,
+				ExternalParentUserID: externalParentUserID,
 			}
 			if err := m.fbmessagingQ.Dispatch(ctx, getLatestFbExternalCommentQuery); err != nil {
 				return err

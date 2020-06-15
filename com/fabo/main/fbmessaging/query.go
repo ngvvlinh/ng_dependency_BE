@@ -229,15 +229,15 @@ func (q *FbMessagingQuery) GetFbCustomerConversation(
 }
 
 func (q *FbMessagingQuery) GetLatestFbExternalComment(
-	ctx context.Context, externalPageID, externalPostID, externalUserID string,
+	ctx context.Context, externalPageID, externalPostID, externalUserID, externalParentUserID string,
 ) (*fbmessaging.FbExternalComment, error) {
-	return q.fbExternalCommentStore(ctx).GetLatestExternalComment(externalPageID, externalPostID, externalUserID)
+	return q.fbExternalCommentStore(ctx).GetLatestExternalComment(externalPageID, externalPostID, externalUserID, externalParentUserID)
 }
 
 func (q *FbMessagingQuery) GetLatestCustomerExternalComment(
-	ctx context.Context, externalPostID, externalUserID string,
+	ctx context.Context, externalPostID, externalUserID, externalPageID string,
 ) (*fbmessaging.FbExternalComment, error) {
-	return q.fbExternalCommentStore(ctx).GetLatestCustomerExternalComment(externalPostID, externalUserID)
+	return q.fbExternalCommentStore(ctx).GetLatestCustomerExternalComment(externalPostID, externalUserID, externalPageID)
 }
 
 func (q *FbMessagingQuery) ListFbExternalComments(
@@ -313,7 +313,17 @@ func (q *FbMessagingQuery) GetFbExternalConversationByID(
 func (q *FbMessagingQuery) GetFbCustomerConversationByID(
 	ctx context.Context, ID dot.ID,
 ) (*fbmessaging.FbCustomerConversation, error) {
-	return q.fbCustomerConversationStore(ctx).ID(ID).GetFbCustomerConversation()
+	fbCustomerConversation, err := q.fbCustomerConversationStore(ctx).ID(ID).GetFbCustomerConversation()
+	if err != nil {
+		return nil, err
+	}
+	fbCustomerConversationState, err := q.fbExternalConversationStateStore(ctx).ID(ID).GetFbCustomerConversationState()
+	if err != nil {
+		return nil, err
+	}
+
+	fbCustomerConversation.IsRead = fbCustomerConversationState.IsRead
+	return fbCustomerConversation, nil
 }
 
 func (q *FbMessagingQuery) GetFbExternalCommentByExternalID(

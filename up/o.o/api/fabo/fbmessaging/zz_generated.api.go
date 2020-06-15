@@ -244,6 +244,7 @@ func (h QueryServiceHandler) HandleGetFbExternalPostByExternalID(ctx context.Con
 type GetLatestCustomerExternalCommentQuery struct {
 	ExternalPostID string
 	ExternalUserID string
+	ExternalPageID string
 
 	Result *FbExternalComment `json:"-"`
 }
@@ -254,9 +255,10 @@ func (h QueryServiceHandler) HandleGetLatestCustomerExternalComment(ctx context.
 }
 
 type GetLatestFbExternalCommentQuery struct {
-	ExternalPageID string
-	ExternalPostID string
-	ExternalUserID string
+	ExternalPageID       string
+	ExternalPostID       string
+	ExternalUserID       string
+	ExternalParentUserID string
 
 	Result *FbExternalComment `json:"-"`
 }
@@ -592,17 +594,19 @@ func (q *GetFbExternalPostByExternalIDQuery) GetArgs(ctx context.Context) (_ con
 		q.ExternalID
 }
 
-func (q *GetLatestCustomerExternalCommentQuery) GetArgs(ctx context.Context) (_ context.Context, externalPostID string, externalUserID string) {
+func (q *GetLatestCustomerExternalCommentQuery) GetArgs(ctx context.Context) (_ context.Context, externalPostID string, externalUserID string, externalPageID string) {
 	return ctx,
 		q.ExternalPostID,
-		q.ExternalUserID
+		q.ExternalUserID,
+		q.ExternalPageID
 }
 
-func (q *GetLatestFbExternalCommentQuery) GetArgs(ctx context.Context) (_ context.Context, externalPageID string, externalPostID string, externalUserID string) {
+func (q *GetLatestFbExternalCommentQuery) GetArgs(ctx context.Context) (_ context.Context, externalPageID string, externalPostID string, externalUserID string, externalParentUserID string) {
 	return ctx,
 		q.ExternalPageID,
 		q.ExternalPostID,
-		q.ExternalUserID
+		q.ExternalUserID,
+		q.ExternalParentUserID
 }
 
 func (q *ListFbCustomerConversationStatesQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {

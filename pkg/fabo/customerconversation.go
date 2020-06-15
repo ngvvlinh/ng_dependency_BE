@@ -282,6 +282,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 		getLatestCustomerExternalCommentQuery := &fbmessaging.GetLatestCustomerExternalCommentQuery{
 			ExternalPostID: request.Filter.ExternalPostID,
 			ExternalUserID: request.Filter.ExternalUserID,
+			ExternalPageID: fbExternalPost.ExternalPageID,
 		}
 		if err := s.FBMessagingQuery.Dispatch(ctx, getLatestCustomerExternalCommentQuery); err != nil {
 			return nil, err
