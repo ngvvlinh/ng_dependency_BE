@@ -1023,6 +1023,7 @@ func (s *OrderLogic) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.
 		return nil, err
 	}
 	event := &ordering.OrderCancelledEvent{
+		OrderCode:            order.Code,
 		OrderID:              order.ID,
 		ShopID:               shopID,
 		AutoInventoryVoucher: autoInventoryVoucher,

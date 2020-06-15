@@ -2,6 +2,7 @@ package pm
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
@@ -57,7 +58,7 @@ func (p *ProcessManager) OrderCancelledEvent(ctx context.Context, event *orderin
 			ShopID:               event.ShopID,
 			ID:                   value.ID,
 			UpdatedBy:            event.UpdatedBy,
-			CancelReason:         "Hủy đơn bán hàng",
+			CancelReason:         fmt.Sprintf("Hủy đơn hàng %v", event.OrderCode),
 			AutoInventoryVoucher: event.AutoInventoryVoucher,
 		}
 		err = p.refundAggr.Dispatch(ctx, cmd)

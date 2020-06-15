@@ -254,6 +254,7 @@ type OrderConfirmedEvent struct {
 
 type OrderCancelledEvent struct {
 	OrderID              dot.ID
+	OrderCode            string
 	ShopID               dot.ID
 	AutoInventoryVoucher inventory_auto.AutoInventoryVoucher
 	UpdatedBy            dot.ID
