@@ -61,7 +61,7 @@ func (d VTPostDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,
 	args *carriertypes.GetShippingServicesArgs,
-	service *etopmodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+	service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
 	if ffm.AddressFrom.WardCode == "" || ffm.AddressTo.WardCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "VTPost yêu cầu thông tin phường xã hợp lệ để giao hàng")
 	}
@@ -198,7 +198,7 @@ func (d VTPostDriver) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulf
 	return err
 }
 
-func (d VTPostDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*etopmodel.AvailableShippingService, error) {
+func (d VTPostDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
 	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
@@ -228,13 +228,13 @@ func (d VTPostDriver) GetShippingServices(ctx context.Context, args *carriertype
 	return d.CalcShippingFee(ctx, cmd)
 }
 
-func (d *VTPostDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeArgs) ([]*etopmodel.AvailableShippingService, error) {
+func (d *VTPostDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	req := args.Request
 	resp, err := d.client.CalcShippingFeeAllServices(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	var result []*etopmodel.AvailableShippingService
+	var result []*shippingsharemodel.AvailableShippingService
 	generator := randgenerator.NewGenerator(args.ArbitraryID)
 	now := time.Now()
 	expectedPickAt := shipping.CalcPickTime(shipping_provider.VTPost, now)

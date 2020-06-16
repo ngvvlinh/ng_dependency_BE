@@ -6,6 +6,7 @@ import (
 	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
+	"o.o/api/top/types/etc/shipping_provider"
 	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -125,4 +126,51 @@ type FulfillmentSyncStates struct {
 	Error     *etopmodel.Error `json:"error"`
 
 	NextShippingState shipping.State `json:"next_shipping_state"`
+}
+
+type AvailableShippingService struct {
+	Name string
+
+	// ServiceFee: Tổng phí giao hàng (đã bao gồm phí chính + các phụ phí khác)
+	ServiceFee int
+
+	// ShippingFeeMain: Phí chính giao hàng
+	ShippingFeeMain   int
+	Provider          shipping_provider.ShippingProvider
+	ProviderServiceID string
+
+	ExpectedPickAt     time.Time
+	ExpectedDeliveryAt time.Time
+	Source             etopmodel.ShippingPriceSource
+	ConnectionInfo     *ConnectionInfo
+
+	// Thông tin các gói được admin định nghĩa
+	ShipmentServiceInfo *ShipmentServiceInfo
+	ShipmentPriceInfo   *ShipmentPriceInfo
+	ShippingFeeLines    []*ShippingFeeLine
+}
+
+type ConnectionInfo struct {
+	ID       dot.ID
+	Name     string
+	ImageURL string
+}
+
+type ShipmentServiceInfo struct {
+	ID           dot.ID
+	Code         string
+	Name         string
+	IsAvailable  bool
+	ErrorMessage string
+}
+
+type ShipmentPriceInfo struct {
+	ID        dot.ID
+	OriginFee int
+	MakeupFee int
+}
+
+func (service *AvailableShippingService) ApplyFeeMain(feeMain int) {
+	service.ServiceFee = service.ServiceFee - service.ShippingFeeMain + feeMain
+	service.ShippingFeeMain = feeMain
 }

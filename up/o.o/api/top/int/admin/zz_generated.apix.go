@@ -1185,19 +1185,6 @@ func (s *ShipmentPriceServiceServer) ServeHTTP(resp http.ResponseWriter, req *ht
 
 func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/admin.ShipmentPrice/ActivateShipmentPriceList":
-		msg := &ActiveShipmentPriceListRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.ActivateShipmentPriceList(ctx, msg)
-			return
-		}
-		return msg, fn, nil
 	case "/admin.ShipmentPrice/CreateShipmentPrice":
 		msg := &CreateShipmentPriceRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -1416,6 +1403,19 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 				return
 			}
 			resp, err = inner.GetShopShipmentPriceLists(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/SetDefaultShipmentPriceList":
+		msg := &ActiveShipmentPriceListRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.SetDefaultShipmentPriceList(ctx, msg)
 			return
 		}
 		return msg, fn, nil

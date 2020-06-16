@@ -6,6 +6,7 @@ import (
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpreq"
 	"o.o/backend/pkg/etop/model"
@@ -168,11 +169,11 @@ type ShippingFee struct {
 	DeliveryType String `json:"delivery_type"`
 }
 
-func (s *ShippingFee) ToShippingService(providerServiceID string, transport TransportType, expectedPickTime, expectedDeliveryTime time.Time) *model.AvailableShippingService {
+func (s *ShippingFee) ToShippingService(providerServiceID string, transport TransportType, expectedPickTime, expectedDeliveryTime time.Time) *shippingsharemodel.AvailableShippingService {
 	if s == nil {
 		return nil
 	}
-	return &model.AvailableShippingService{
+	return &shippingsharemodel.AvailableShippingService{
 		// GHTK always returns the same name, so we replace it with our name
 		// (Chuẩn, Nhanh)
 		Name:              transport.Name(),

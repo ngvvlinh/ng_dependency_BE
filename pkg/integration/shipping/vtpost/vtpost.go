@@ -18,7 +18,6 @@ import (
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
-	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
@@ -87,7 +86,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 			WithMeta("reason", "timeout")
 	}
 	generator := newServiceIDGenerator(cmd.ArbitraryID.Int64())
-	var res []*model.AvailableShippingService
+	var res []*shippingsharemodel.AvailableShippingService
 	client, err := c.getClient(ctx, VTPostCodePublic)
 	if err != nil {
 		return err
@@ -247,7 +246,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 		update.TotalWeight = orderMsg.ProductWeight
 		update.AdminNote = ffm.AdminNote + "\n" + changeWeightNote
 	}
-	if ffm.ShippingFeeShop != orderMsg.MoneyTotal && shipping.CanUpdateFulfillmentFeelines(ffm) {
+	if ffm.ShippingFeeShop != orderMsg.MoneyTotal {
 		// keep all shipping fee lines except shippingFeeMain
 		mainFee := orderMsg.MoneyTotal
 		for _, line := range ffm.ProviderShippingFeeLines {
@@ -264,7 +263,6 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 			}
 		}
 		update.ProviderShippingFeeLines = ffm.ProviderShippingFeeLines
-		update.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, false, dot.NullInt{})
 	}
 
 	// Only update status5 if the current status is not ending status

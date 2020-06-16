@@ -37,6 +37,7 @@ type CreateShipmentPriceCommand struct {
 	UrbanTypes          []route_type.UrbanType
 	PriorityPoint       int
 	Details             []*PricingDetail
+	AdditionalFees      []*AdditionalFee
 
 	Result *ShipmentPrice `json:"-"`
 }
@@ -69,6 +70,7 @@ type UpdateShipmentPriceCommand struct {
 	UrbanTypes          []route_type.UrbanType
 	PriorityPoint       int
 	Details             []*PricingDetail
+	AdditionalFees      []*AdditionalFee
 	Status              status3.Status
 
 	Result *ShipmentPrice `json:"-"`
@@ -104,12 +106,41 @@ type CalculatePriceQuery struct {
 	ConnectionID        dot.ID
 	ShipmentPriceListID dot.ID
 	Weight              int
+	BasketValue         int
+	CODAmount           int
+	IncludeInsurance    bool
 
 	Result *CalculatePriceResult `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleCalculatePrice(ctx context.Context, msg *CalculatePriceQuery) (err error) {
 	msg.Result, err = h.inner.CalculatePrice(msg.GetArgs(ctx))
+	return err
+}
+
+type CalculateShippingFeesQuery struct {
+	AccountID           dot.ID
+	FromProvince        string
+	FromProvinceCode    string
+	FromDistrict        string
+	FromDistrictCode    string
+	ToProvince          string
+	ToProvinceCode      string
+	ToDistrict          string
+	ToDistrictCode      string
+	ShipmentServiceID   dot.ID
+	ConnectionID        dot.ID
+	ShipmentPriceListID dot.ID
+	Weight              int
+	BasketValue         int
+	CODAmount           int
+	IncludeInsurance    bool
+
+	Result *CalculateShippingFeesResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleCalculateShippingFees(ctx context.Context, msg *CalculateShippingFeesQuery) (err error) {
+	msg.Result, err = h.inner.CalculateShippingFees(msg.GetArgs(ctx))
 	return err
 }
 
@@ -143,9 +174,10 @@ func (q *DeleteShipmentPriceCommand) command()               {}
 func (q *UpdateShipmentPriceCommand) command()               {}
 func (q *UpdateShipmentPricesPriorityPointCommand) command() {}
 
-func (q *CalculatePriceQuery) query()     {}
-func (q *GetShipmentPriceQuery) query()   {}
-func (q *ListShipmentPricesQuery) query() {}
+func (q *CalculatePriceQuery) query()        {}
+func (q *CalculateShippingFeesQuery) query() {}
+func (q *GetShipmentPriceQuery) query()      {}
+func (q *ListShipmentPricesQuery) query()    {}
 
 // implement conversion
 
@@ -162,6 +194,7 @@ func (q *CreateShipmentPriceCommand) GetArgs(ctx context.Context) (_ context.Con
 			UrbanTypes:          q.UrbanTypes,
 			PriorityPoint:       q.PriorityPoint,
 			Details:             q.Details,
+			AdditionalFees:      q.AdditionalFees,
 		}
 }
 
@@ -176,6 +209,7 @@ func (q *CreateShipmentPriceCommand) SetCreateShipmentPriceArgs(args *CreateShip
 	q.UrbanTypes = args.UrbanTypes
 	q.PriorityPoint = args.PriorityPoint
 	q.Details = args.Details
+	q.AdditionalFees = args.AdditionalFees
 }
 
 func (q *DeleteShipmentPriceCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -197,6 +231,7 @@ func (q *UpdateShipmentPriceCommand) GetArgs(ctx context.Context) (_ context.Con
 			UrbanTypes:          q.UrbanTypes,
 			PriorityPoint:       q.PriorityPoint,
 			Details:             q.Details,
+			AdditionalFees:      q.AdditionalFees,
 			Status:              q.Status,
 		}
 }
@@ -213,6 +248,7 @@ func (q *UpdateShipmentPriceCommand) SetUpdateShipmentPriceArgs(args *UpdateShip
 	q.UrbanTypes = args.UrbanTypes
 	q.PriorityPoint = args.PriorityPoint
 	q.Details = args.Details
+	q.AdditionalFees = args.AdditionalFees
 	q.Status = args.Status
 }
 
@@ -243,6 +279,9 @@ func (q *CalculatePriceQuery) GetArgs(ctx context.Context) (_ context.Context, _
 			ConnectionID:        q.ConnectionID,
 			ShipmentPriceListID: q.ShipmentPriceListID,
 			Weight:              q.Weight,
+			BasketValue:         q.BasketValue,
+			CODAmount:           q.CODAmount,
+			IncludeInsurance:    q.IncludeInsurance,
 		}
 }
 
@@ -260,6 +299,50 @@ func (q *CalculatePriceQuery) SetCalculatePriceArgs(args *CalculatePriceArgs) {
 	q.ConnectionID = args.ConnectionID
 	q.ShipmentPriceListID = args.ShipmentPriceListID
 	q.Weight = args.Weight
+	q.BasketValue = args.BasketValue
+	q.CODAmount = args.CODAmount
+	q.IncludeInsurance = args.IncludeInsurance
+}
+
+func (q *CalculateShippingFeesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *CalculatePriceArgs) {
+	return ctx,
+		&CalculatePriceArgs{
+			AccountID:           q.AccountID,
+			FromProvince:        q.FromProvince,
+			FromProvinceCode:    q.FromProvinceCode,
+			FromDistrict:        q.FromDistrict,
+			FromDistrictCode:    q.FromDistrictCode,
+			ToProvince:          q.ToProvince,
+			ToProvinceCode:      q.ToProvinceCode,
+			ToDistrict:          q.ToDistrict,
+			ToDistrictCode:      q.ToDistrictCode,
+			ShipmentServiceID:   q.ShipmentServiceID,
+			ConnectionID:        q.ConnectionID,
+			ShipmentPriceListID: q.ShipmentPriceListID,
+			Weight:              q.Weight,
+			BasketValue:         q.BasketValue,
+			CODAmount:           q.CODAmount,
+			IncludeInsurance:    q.IncludeInsurance,
+		}
+}
+
+func (q *CalculateShippingFeesQuery) SetCalculatePriceArgs(args *CalculatePriceArgs) {
+	q.AccountID = args.AccountID
+	q.FromProvince = args.FromProvince
+	q.FromProvinceCode = args.FromProvinceCode
+	q.FromDistrict = args.FromDistrict
+	q.FromDistrictCode = args.FromDistrictCode
+	q.ToProvince = args.ToProvince
+	q.ToProvinceCode = args.ToProvinceCode
+	q.ToDistrict = args.ToDistrict
+	q.ToDistrictCode = args.ToDistrictCode
+	q.ShipmentServiceID = args.ShipmentServiceID
+	q.ConnectionID = args.ConnectionID
+	q.ShipmentPriceListID = args.ShipmentPriceListID
+	q.Weight = args.Weight
+	q.BasketValue = args.BasketValue
+	q.CODAmount = args.CODAmount
+	q.IncludeInsurance = args.IncludeInsurance
 }
 
 func (q *GetShipmentPriceQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -312,6 +395,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleCalculatePrice)
+	b.AddHandler(h.HandleCalculateShippingFees)
 	b.AddHandler(h.HandleGetShipmentPrice)
 	b.AddHandler(h.HandleListShipmentPrices)
 	return QueryBus{b}

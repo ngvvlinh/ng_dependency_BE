@@ -1285,33 +1285,6 @@
         }
       }
     },
-    "/api/admin.ShipmentPrice/ActivateShipmentPriceList": {
-      "post": {
-        "tags": [
-          "ShipmentPrice"
-        ],
-        "summary": "ActivateShipmentPriceList",
-        "operationId": "admin.ShipmentPrice-ActivateShipmentPriceList",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/xuActiveShipmentPriceListRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktUpdatedResponse"
-            }
-          }
-        }
-      }
-    },
     "/api/admin.ShipmentPrice/CreateShipmentPrice": {
       "post": {
         "tags": [
@@ -1766,6 +1739,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/xuGetShopShipmentPriceListsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/SetDefaultShipmentPriceList": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "SetDefaultShipmentPriceList",
+        "operationId": "admin.ShipmentPrice-SetDefaultShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuActiveShipmentPriceListRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -3241,7 +3241,8 @@
         "other",
         "cods",
         "address_change",
-        "discount"
+        "discount",
+        "redelivery"
       ]
     },
     "blStatus": {
@@ -5167,13 +5168,10 @@
           "type": "string",
           "format": "int64"
         },
-        "makeup_main_fee": {
+        "makeup_fee": {
           "type": "integer"
         },
         "origin_fee": {
-          "type": "integer"
-        },
-        "origin_main_fee": {
           "type": "integer"
         }
       }
@@ -6152,6 +6150,40 @@
         }
       }
     },
+    "xuAdditionalFee": {
+      "type": "object",
+      "properties": {
+        "fee_type": {
+          "$ref": "#/definitions/bjShippingFeeType"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuAdditionalFeeRule"
+          }
+        }
+      }
+    },
+    "xuAdditionalFeeRule": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "max_value": {
+          "type": "integer"
+        },
+        "min_price": {
+          "type": "integer"
+        },
+        "min_value": {
+          "type": "integer"
+        },
+        "price_modifier_type": {
+          "$ref": "#/definitions/yjPriceModifierType"
+        }
+      }
+    },
     "xuAvailableLocation": {
       "type": "object",
       "properties": {
@@ -6358,7 +6390,7 @@
         "description": {
           "type": "string"
         },
-        "is_active": {
+        "is_default": {
           "type": "boolean"
         },
         "name": {
@@ -6369,6 +6401,12 @@
     "xuCreateShipmentPriceRequest": {
       "type": "object",
       "properties": {
+        "additional_fees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuAdditionalFee"
+          }
+        },
         "custom_region_ids": {
           "type": "array",
           "items": {
@@ -6686,7 +6724,7 @@
           "type": "string",
           "format": "int64"
         },
-        "is_active": {
+        "is_default": {
           "type": "boolean"
         }
       }
@@ -6944,6 +6982,12 @@
     "xuShipmentPrice": {
       "type": "object",
       "properties": {
+        "additional_fees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuAdditionalFee"
+          }
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -7030,7 +7074,7 @@
           "type": "string",
           "format": "int64"
         },
-        "is_active": {
+        "is_default": {
           "type": "boolean"
         },
         "name": {
@@ -7325,6 +7369,12 @@
     "xuUpdateShipmentPriceRequest": {
       "type": "object",
       "properties": {
+        "additional_fees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuAdditionalFee"
+          }
+        },
         "custom_region_ids": {
           "type": "array",
           "items": {
@@ -7500,6 +7550,13 @@
         "momo",
         "bankdeposit",
         "manual"
+      ]
+    },
+    "yjPriceModifierType": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "fixed_amount"
       ]
     }
   },

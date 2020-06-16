@@ -4,7 +4,7 @@ import (
 	"context"
 
 	shipmodel "o.o/backend/com/main/shipping/model"
-	"o.o/backend/pkg/etop/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/capi/dot"
 )
 
@@ -13,13 +13,13 @@ type ShipmentCarrier interface {
 
 	GetAffiliateID() string
 
-	CreateFulfillment(context.Context, *shipmodel.Fulfillment, *GetShippingServicesArgs, *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error)
+	CreateFulfillment(context.Context, *shipmodel.Fulfillment, *GetShippingServicesArgs, *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error)
 
 	UpdateFulfillment(context.Context, *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error)
 
 	CancelFulfillment(context.Context, *shipmodel.Fulfillment) error
 
-	GetShippingServices(ctx context.Context, args *GetShippingServicesArgs) ([]*model.AvailableShippingService, error)
+	GetShippingServices(ctx context.Context, args *GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error)
 
 	// Return "chuẩn" or "nhanh"
 	GetServiceName(code string) (serviceName string, ok bool)

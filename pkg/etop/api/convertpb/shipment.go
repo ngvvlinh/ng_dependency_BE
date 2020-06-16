@@ -149,7 +149,7 @@ func PbShipmentPriceList(in *pricelist.ShipmentPriceList) *admin.ShipmentPriceLi
 		ID:           in.ID,
 		Name:         in.Name,
 		Description:  in.Description,
-		IsActive:     in.IsActive,
+		IsDefault:    in.IsDefault,
 		ConnectionID: in.ConnectionID,
 		CreatedAt:    in.CreatedAt,
 		UpdatedAt:    in.UpdatedAt,
@@ -183,6 +183,7 @@ func PbShipmentPrice(in *shipmentprice.ShipmentPrice) *admin.ShipmentPrice {
 		CreatedAt:           in.CreatedAt,
 		UpdatedAt:           in.UpdatedAt,
 		Status:              in.Status,
+		AdditionalFees:      Convert_core_AdditionalFees_To_api_AdditionalFees(in.AdditionalFees),
 	}
 }
 
@@ -246,6 +247,83 @@ func PricingDetailOverweights(items []*admin.PricingDetailOverweight) (res []*sh
 		})
 	}
 	return
+}
+
+func Convert_api_AdditionalFee_To_core_AdditionalFee(in *admin.AdditionalFee) *shipmentprice.AdditionalFee {
+	if in == nil {
+		return nil
+	}
+	return &shipmentprice.AdditionalFee{
+		FeeType: in.FeeType,
+		Rules:   Convert_api_AdditionalFeeRules_To_core_AdditionalFeeRules(in.Rules),
+	}
+}
+
+func Convert_api_AdditionalFees_To_core_AdditionalFees(items []*admin.AdditionalFee) (res []*shipmentprice.AdditionalFee) {
+	for _, item := range items {
+		res = append(res, Convert_api_AdditionalFee_To_core_AdditionalFee(item))
+	}
+	return
+}
+
+func Convert_api_AdditionalFeeRule_To_core_AdditionalFeeRule(in *admin.AdditionalFeeRule) *shipmentprice.AdditionalFeeRule {
+	if in == nil {
+		return nil
+	}
+	return &shipmentprice.AdditionalFeeRule{
+		MinValue:          in.MinValue,
+		MaxValue:          in.MaxValue,
+		PriceModifierType: in.PriceModifierType,
+		Amount:            in.Amount,
+		MinPrice:          in.MinPrice,
+	}
+}
+
+func Convert_api_AdditionalFeeRules_To_core_AdditionalFeeRules(items []*admin.AdditionalFeeRule) []*shipmentprice.AdditionalFeeRule {
+	result := make([]*shipmentprice.AdditionalFeeRule, len(items))
+	for i, item := range items {
+		result[i] = Convert_api_AdditionalFeeRule_To_core_AdditionalFeeRule(item)
+	}
+	return result
+}
+
+func Convert_core_AdditionalFee_To_api_AdditionalFee(in *shipmentprice.AdditionalFee) *admin.AdditionalFee {
+	if in == nil {
+		return nil
+	}
+	return &admin.AdditionalFee{
+		FeeType: in.FeeType,
+		Rules:   Convert_core_AdditionalFeeRules_To_api_AdditionalFeeRules(in.Rules),
+	}
+}
+
+func Convert_core_AdditionalFees_To_api_AdditionalFees(items []*shipmentprice.AdditionalFee) []*admin.AdditionalFee {
+	result := make([]*admin.AdditionalFee, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_AdditionalFee_To_api_AdditionalFee(item)
+	}
+	return result
+}
+
+func Convert_core_AdditionalFeeRule_To_api_AdditionalFeeRule(in *shipmentprice.AdditionalFeeRule) *admin.AdditionalFeeRule {
+	if in == nil {
+		return nil
+	}
+	return &admin.AdditionalFeeRule{
+		MinValue:          in.MinValue,
+		MaxValue:          in.MaxValue,
+		PriceModifierType: in.PriceModifierType,
+		Amount:            in.Amount,
+		MinPrice:          in.MinPrice,
+	}
+}
+
+func Convert_core_AdditionalFeeRules_To_api_AdditionalFeeRules(items []*shipmentprice.AdditionalFeeRule) []*admin.AdditionalFeeRule {
+	result := make([]*admin.AdditionalFeeRule, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_AdditionalFeeRule_To_api_AdditionalFeeRule(item)
+	}
+	return result
 }
 
 func PbShopShipmentPriceList(in *shopshipmentpricelist.ShopShipmentPriceList) *admin.ShopShipmentPriceList {

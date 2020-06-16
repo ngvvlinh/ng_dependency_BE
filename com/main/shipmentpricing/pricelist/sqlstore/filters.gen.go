@@ -82,22 +82,22 @@ func (ft *ShipmentPriceListFilters) ByDescriptionPtr(Description *string) *sq.Co
 	}
 }
 
-func (ft *ShipmentPriceListFilters) ByIsActive(IsActive bool) *sq.ColumnFilter {
+func (ft *ShipmentPriceListFilters) ByIsDefault(IsDefault bool) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "is_active",
-		Value:  IsActive,
-		IsNil:  bool(!IsActive),
+		Column: "is_default",
+		Value:  IsDefault,
+		IsNil:  bool(!IsDefault),
 	}
 }
 
-func (ft *ShipmentPriceListFilters) ByIsActivePtr(IsActive *bool) *sq.ColumnFilterPtr {
+func (ft *ShipmentPriceListFilters) ByIsDefaultPtr(IsDefault *bool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "is_active",
-		Value:  IsActive,
-		IsNil:  IsActive == nil,
-		IsZero: IsActive != nil && bool(!(*IsActive)),
+		Column: "is_default",
+		Value:  IsDefault,
+		IsNil:  IsDefault == nil,
+		IsZero: IsDefault != nil && bool(!(*IsDefault)),
 	}
 }
 

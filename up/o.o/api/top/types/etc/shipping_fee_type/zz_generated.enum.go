@@ -15,16 +15,17 @@ import (
 var __jsonNull = []byte("null")
 
 var enumShippingFeeTypeName = map[int]string{
-	0: "unknown",
-	1: "main",
-	2: "return",
-	3: "adjustment",
-	4: "insurance",
-	5: "tax",
-	6: "other",
-	7: "cods",
-	8: "address_change",
-	9: "discount",
+	0:  "unknown",
+	1:  "main",
+	2:  "return",
+	3:  "adjustment",
+	4:  "insurance",
+	5:  "tax",
+	6:  "other",
+	7:  "cods",
+	8:  "address_change",
+	9:  "discount",
+	10: "redelivery",
 }
 
 var enumShippingFeeTypeValue = map[string]int{
@@ -38,6 +39,7 @@ var enumShippingFeeTypeValue = map[string]int{
 	"cods":           7,
 	"address_change": 8,
 	"discount":       9,
+	"redelivery":     10,
 }
 
 func ParseShippingFeeType(s string) (ShippingFeeType, bool) {

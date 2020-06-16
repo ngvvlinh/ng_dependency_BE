@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShipmentPriceLists []*ShipmentPriceList
 
 const __sqlShipmentPriceList_Table = "shipment_price_list"
-const __sqlShipmentPriceList_ListCols = "\"id\",\"name\",\"description\",\"is_active\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"connection_id\""
-const __sqlShipmentPriceList_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"is_active\" = EXCLUDED.\"is_active\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"connection_id\" = EXCLUDED.\"connection_id\""
+const __sqlShipmentPriceList_ListCols = "\"id\",\"name\",\"description\",\"is_default\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"connection_id\""
+const __sqlShipmentPriceList_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"description\" = EXCLUDED.\"description\",\"is_default\" = EXCLUDED.\"is_default\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"connection_id\" = EXCLUDED.\"connection_id\""
 const __sqlShipmentPriceList_Insert = "INSERT INTO \"shipment_price_list\" (" + __sqlShipmentPriceList_ListCols + ") VALUES"
 const __sqlShipmentPriceList_Select = "SELECT " + __sqlShipmentPriceList_ListCols + " FROM \"shipment_price_list\""
 const __sqlShipmentPriceList_Select_history = "SELECT " + __sqlShipmentPriceList_ListCols + " FROM history.\"shipment_price_list\""
@@ -79,8 +79,8 @@ func (m *ShipmentPriceList) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
-		"is_active": {
-			ColumnName:       "is_active",
+		"is_default": {
+			ColumnName:       "is_default",
 			ColumnType:       "bool",
 			ColumnDBType:     "bool",
 			ColumnTag:        "",
@@ -137,7 +137,7 @@ func (m *ShipmentPriceList) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		core.String(m.Name),
 		core.String(m.Description),
-		core.Bool(m.IsActive),
+		core.Bool(m.IsDefault),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -151,7 +151,7 @@ func (m *ShipmentPriceList) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Description),
-		(*core.Bool)(&m.IsActive),
+		(*core.Bool)(&m.IsDefault),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
@@ -259,13 +259,13 @@ func (m *ShipmentPriceList) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Description)
 	}
-	if m.IsActive {
+	if m.IsDefault {
 		flag = true
-		w.WriteName("is_active")
+		w.WriteName("is_default")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.IsActive)
+		w.WriteArg(m.IsDefault)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -344,7 +344,7 @@ func (m ShipmentPriceListHistory) Name() core.Interface { return core.Interface{
 func (m ShipmentPriceListHistory) Description() core.Interface {
 	return core.Interface{m["description"]}
 }
-func (m ShipmentPriceListHistory) IsActive() core.Interface  { return core.Interface{m["is_active"]} }
+func (m ShipmentPriceListHistory) IsDefault() core.Interface { return core.Interface{m["is_default"]} }
 func (m ShipmentPriceListHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m ShipmentPriceListHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 func (m ShipmentPriceListHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
@@ -368,7 +368,7 @@ func (m *ShipmentPriceListHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["id"] = data[0]
 	res["name"] = data[1]
 	res["description"] = data[2]
-	res["is_active"] = data[3]
+	res["is_default"] = data[3]
 	res["created_at"] = data[4]
 	res["updated_at"] = data[5]
 	res["deleted_at"] = data[6]
@@ -393,7 +393,7 @@ func (ms *ShipmentPriceListHistories) SQLScan(opts core.Opts, rows *sql.Rows) er
 		m["id"] = data[0]
 		m["name"] = data[1]
 		m["description"] = data[2]
-		m["is_active"] = data[3]
+		m["is_default"] = data[3]
 		m["created_at"] = data[4]
 		m["updated_at"] = data[5]
 		m["deleted_at"] = data[6]

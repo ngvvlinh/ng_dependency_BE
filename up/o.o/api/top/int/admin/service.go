@@ -119,7 +119,7 @@ type ShipmentPriceService interface {
 	GetShipmentPriceList(context.Context, *cm.IDRequest) (*ShipmentPriceList, error)
 	CreateShipmentPriceList(context.Context, *CreateShipmentPriceListRequest) (*ShipmentPriceList, error)
 	UpdateShipmentPriceList(context.Context, *UpdateShipmentPriceListRequest) (*cm.UpdatedResponse, error)
-	ActivateShipmentPriceList(context.Context, *ActiveShipmentPriceListRequest) (*cm.UpdatedResponse, error)
+	SetDefaultShipmentPriceList(context.Context, *ActiveShipmentPriceListRequest) (*cm.UpdatedResponse, error)
 	DeleteShipmentPriceList(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 
 	GetShipmentPrices(context.Context, *GetShipmentPricesRequest) (*GetShipmentPricesResponse, error)

@@ -8,9 +8,9 @@ import (
 	exttypes "o.o/api/top/external/types"
 	"o.o/api/top/int/types"
 	locationlist "o.o/backend/com/main/location/list"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/apix/convertpb"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -99,7 +99,7 @@ func (s *Shipping) GetShippingServices(ctx context.Context, accountID dot.ID, r 
 	}, nil
 }
 
-func (s *Shipping) buildCodeForShippingServices(ctx context.Context, services []*model.AvailableShippingService) error {
+func (s *Shipping) buildCodeForShippingServices(ctx context.Context, services []*shippingsharemodel.AvailableShippingService) error {
 	// add connection code to service code to identify which connects
 	// code format: XXXXYYYYYYYY (12 characters)
 	for _, srv := range services {

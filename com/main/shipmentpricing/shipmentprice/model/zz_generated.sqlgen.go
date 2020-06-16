@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShipmentPrices []*ShipmentPrice
 
 const __sqlShipmentPrice_Table = "shipment_price"
-const __sqlShipmentPrice_ListCols = "\"id\",\"shipment_price_list_id\",\"shipment_service_id\",\"name\",\"custom_region_types\",\"custom_region_ids\",\"region_types\",\"province_types\",\"urban_types\",\"details\",\"priority_point\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"status\""
-const __sqlShipmentPrice_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shipment_price_list_id\" = EXCLUDED.\"shipment_price_list_id\",\"shipment_service_id\" = EXCLUDED.\"shipment_service_id\",\"name\" = EXCLUDED.\"name\",\"custom_region_types\" = EXCLUDED.\"custom_region_types\",\"custom_region_ids\" = EXCLUDED.\"custom_region_ids\",\"region_types\" = EXCLUDED.\"region_types\",\"province_types\" = EXCLUDED.\"province_types\",\"urban_types\" = EXCLUDED.\"urban_types\",\"details\" = EXCLUDED.\"details\",\"priority_point\" = EXCLUDED.\"priority_point\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"status\" = EXCLUDED.\"status\""
+const __sqlShipmentPrice_ListCols = "\"id\",\"shipment_price_list_id\",\"shipment_service_id\",\"name\",\"custom_region_types\",\"custom_region_ids\",\"region_types\",\"province_types\",\"urban_types\",\"details\",\"additional_fees\",\"priority_point\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"status\""
+const __sqlShipmentPrice_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shipment_price_list_id\" = EXCLUDED.\"shipment_price_list_id\",\"shipment_service_id\" = EXCLUDED.\"shipment_service_id\",\"name\" = EXCLUDED.\"name\",\"custom_region_types\" = EXCLUDED.\"custom_region_types\",\"custom_region_ids\" = EXCLUDED.\"custom_region_ids\",\"region_types\" = EXCLUDED.\"region_types\",\"province_types\" = EXCLUDED.\"province_types\",\"urban_types\" = EXCLUDED.\"urban_types\",\"details\" = EXCLUDED.\"details\",\"additional_fees\" = EXCLUDED.\"additional_fees\",\"priority_point\" = EXCLUDED.\"priority_point\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"status\" = EXCLUDED.\"status\""
 const __sqlShipmentPrice_Insert = "INSERT INTO \"shipment_price\" (" + __sqlShipmentPrice_ListCols + ") VALUES"
 const __sqlShipmentPrice_Select = "SELECT " + __sqlShipmentPrice_ListCols + " FROM \"shipment_price\""
 const __sqlShipmentPrice_Select_history = "SELECT " + __sqlShipmentPrice_ListCols + " FROM history.\"shipment_price\""
@@ -128,6 +128,13 @@ func (m *ShipmentPrice) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"additional_fees": {
+			ColumnName:       "additional_fees",
+			ColumnType:       "[]*AdditionalFee",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"priority_point": {
 			ColumnName:       "priority_point",
 			ColumnType:       "int",
@@ -193,6 +200,7 @@ func (m *ShipmentPrice) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Array{m.ProvinceTypes, opts},
 		core.Array{m.UrbanTypes, opts},
 		core.JSON{m.Details},
+		core.JSON{m.AdditionalFees},
 		core.Int(m.PriorityPoint),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -214,6 +222,7 @@ func (m *ShipmentPrice) SQLScanArgs(opts core.Opts) []interface{} {
 		core.Array{&m.ProvinceTypes, opts},
 		core.Array{&m.UrbanTypes, opts},
 		core.JSON{&m.Details},
+		core.JSON{&m.AdditionalFees},
 		(*core.Int)(&m.PriorityPoint),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -257,7 +266,7 @@ func (_ *ShipmentPrices) SQLSelect(w SQLWriter) error {
 func (m *ShipmentPrice) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentPrice_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -267,7 +276,7 @@ func (ms ShipmentPrices) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentPrice_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -378,6 +387,14 @@ func (m *ShipmentPrice) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.Details})
 	}
+	if m.AdditionalFees != nil {
+		flag = true
+		w.WriteName("additional_fees")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.AdditionalFees})
+	}
 	if m.PriorityPoint != 0 {
 		flag = true
 		w.WriteName("priority_point")
@@ -436,7 +453,7 @@ func (m *ShipmentPrice) SQLUpdate(w SQLWriter) error {
 func (m *ShipmentPrice) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipmentPrice_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -478,6 +495,9 @@ func (m ShipmentPriceHistory) ProvinceTypes() core.Interface {
 }
 func (m ShipmentPriceHistory) UrbanTypes() core.Interface { return core.Interface{m["urban_types"]} }
 func (m ShipmentPriceHistory) Details() core.Interface    { return core.Interface{m["details"]} }
+func (m ShipmentPriceHistory) AdditionalFees() core.Interface {
+	return core.Interface{m["additional_fees"]}
+}
 func (m ShipmentPriceHistory) PriorityPoint() core.Interface {
 	return core.Interface{m["priority_point"]}
 }
@@ -488,15 +508,15 @@ func (m ShipmentPriceHistory) WLPartnerID() core.Interface { return core.Interfa
 func (m ShipmentPriceHistory) Status() core.Interface      { return core.Interface{m["status"]} }
 
 func (m *ShipmentPriceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipmentPriceHistory, 16)
+	res := make(ShipmentPriceHistory, 17)
 	res["id"] = data[0]
 	res["shipment_price_list_id"] = data[1]
 	res["shipment_service_id"] = data[2]
@@ -507,20 +527,21 @@ func (m *ShipmentPriceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["province_types"] = data[7]
 	res["urban_types"] = data[8]
 	res["details"] = data[9]
-	res["priority_point"] = data[10]
-	res["created_at"] = data[11]
-	res["updated_at"] = data[12]
-	res["deleted_at"] = data[13]
-	res["wl_partner_id"] = data[14]
-	res["status"] = data[15]
+	res["additional_fees"] = data[10]
+	res["priority_point"] = data[11]
+	res["created_at"] = data[12]
+	res["updated_at"] = data[13]
+	res["deleted_at"] = data[14]
+	res["wl_partner_id"] = data[15]
+	res["status"] = data[16]
 	*m = res
 	return nil
 }
 
 func (ms *ShipmentPriceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipmentPriceHistories, 0, 128)
@@ -539,12 +560,13 @@ func (ms *ShipmentPriceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		m["province_types"] = data[7]
 		m["urban_types"] = data[8]
 		m["details"] = data[9]
-		m["priority_point"] = data[10]
-		m["created_at"] = data[11]
-		m["updated_at"] = data[12]
-		m["deleted_at"] = data[13]
-		m["wl_partner_id"] = data[14]
-		m["status"] = data[15]
+		m["additional_fees"] = data[10]
+		m["priority_point"] = data[11]
+		m["created_at"] = data[12]
+		m["updated_at"] = data[13]
+		m["deleted_at"] = data[14]
+		m["wl_partner_id"] = data[15]
+		m["status"] = data[16]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

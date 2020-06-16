@@ -7,7 +7,6 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/etop/model"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
 	"o.o/capi/dot"
 )
@@ -52,7 +51,7 @@ type CalcShippingFeeAllServicesArgs struct {
 	ToDistrict   *mdlocation.District
 
 	Request *vtpostclient.CalcShippingFeeAllServicesRequest
-	Result  []*model.AvailableShippingService
+	Result  []*shippingsharemodel.AvailableShippingService
 }
 
 type GetShippingFeeLinesCommand struct {

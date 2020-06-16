@@ -208,10 +208,10 @@ func CalcShopShippingFee(externalFee int, ffm *Fulfillment) int {
 	return fee
 }
 
-func (f *Fulfillment) ApplyEtopPrice(price int) error {
+func (f *Fulfillment) ApplyEtopPrice(price int) {
 	f.EtopPriceRule = true
 	f.EtopAdjustedShippingFeeMain = price
-	return nil
+	return
 }
 
 // +convert:type=shipping.ExternalShippingLog

@@ -14,7 +14,7 @@ type ShipmentPriceList struct {
 	Name         string    `json:"name"`
 	Description  string    `json:"description"`
 	WLPartnerID  dot.ID    `json:"-"`
-	IsActive     bool      `json:"is_active"`
+	IsDefault    bool      `json:"is_default"`
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
 	DeletedAt    time.Time `json:"-"`

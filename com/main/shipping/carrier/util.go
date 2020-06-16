@@ -2,12 +2,13 @@ package carrier
 
 import (
 	shipmodel "o.o/backend/com/main/shipping/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/logic/etop_shipping_price"
 	"o.o/backend/pkg/etop/model"
 )
 
-func GetEtopServiceFromSeviceCode(shippingServiceCode string, shippingServiceFee int, services []*model.AvailableShippingService) (etopService *model.AvailableShippingService, err error) {
+func GetEtopServiceFromSeviceCode(shippingServiceCode string, shippingServiceFee int, services []*shippingsharemodel.AvailableShippingService) (etopService *shippingsharemodel.AvailableShippingService, err error) {
 	if shippingServiceCode == "" {
 		return nil, cm.Error(cm.InvalidArgument, "ShopShipping is invalid", nil)
 	}
@@ -25,7 +26,7 @@ func GetEtopServiceFromSeviceCode(shippingServiceCode string, shippingServiceFee
 	return nil, cm.Error(cm.NotFound, "Không có gói vận chuyển phù hợp", nil)
 }
 
-func CheckShippingService(ffm *shipmodel.Fulfillment, services []*model.AvailableShippingService) (service *model.AvailableShippingService, _err error) {
+func CheckShippingService(ffm *shipmodel.Fulfillment, services []*shippingsharemodel.AvailableShippingService) (service *shippingsharemodel.AvailableShippingService, _err error) {
 	providerServiceID := ffm.ProviderServiceID
 	if providerServiceID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần chọn gói dịch vụ giao hàng")

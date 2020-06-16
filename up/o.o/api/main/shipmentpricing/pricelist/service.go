@@ -13,7 +13,7 @@ type Aggregate interface {
 
 	UpdateShipmentPriceList(context.Context, *UpdateShipmentPriceListArgs) error
 
-	ActivateShipmentPriceList(ctx context.Context, ID dot.ID, connectionID dot.ID) error
+	SetDefaultShipmentPriceList(ctx context.Context, ID dot.ID, connectionID dot.ID) error
 
 	DeleteShipmentPriceList(ctx context.Context, ID dot.ID) error
 }
@@ -30,13 +30,13 @@ type QueryService interface {
 type CreateShipmentPriceListArg struct {
 	Name         string
 	Description  string
-	IsActive     bool
+	IsDefault    bool
 	ConnectionID dot.ID
 }
 
 type ListShipmentPriceListsArgs struct {
 	ConnectionID dot.ID
-	IsActive     dot.NullBool
+	IsDefault    dot.NullBool
 }
 
 // +convert:update=ShipmentPriceList

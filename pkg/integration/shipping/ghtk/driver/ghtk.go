@@ -64,7 +64,7 @@ func (d *GHTKDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,
 	args *carriertypes.GetShippingServicesArgs,
-	service *etopmodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+	service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
 	note := carrierutil.GetShippingProviderNote(ffm)
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
@@ -190,7 +190,7 @@ func (d *GHTKDriver) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfi
 	return err
 }
 
-func (d *GHTKDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*etopmodel.AvailableShippingService, error) {
+func (d *GHTKDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
 	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
@@ -242,7 +242,7 @@ func (d *GHTKDriver) GetShippingServices(ctx context.Context, args *carriertypes
 
 }
 
-func (d *GHTKDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeArgs) ([]*etopmodel.AvailableShippingService, error) {
+func (d *GHTKDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	type Result struct {
 		Transport ghtkclient.TransportType
 		Result    *ghtkclient.CalcShippingFeeResponse
@@ -295,7 +295,7 @@ func (d *GHTKDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeA
 	now := time.Now()
 	expectedPickAt := shipping.CalcPickTime(shipping_provider.GHTK, now)
 	generator := randgenerator.NewGenerator(args.ArbitraryID)
-	var res []*etopmodel.AvailableShippingService
+	var res []*shippingsharemodel.AvailableShippingService
 	for _, result := range results {
 		providerServiceID, err := d.GenerateServiceID(generator, result.Transport)
 		if err != nil {

@@ -11,7 +11,7 @@ type ShipmentPriceList struct {
 	ID           dot.ID
 	Name         string
 	Description  string
-	IsActive     bool
+	IsDefault    bool
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
 	DeletedAt    time.Time

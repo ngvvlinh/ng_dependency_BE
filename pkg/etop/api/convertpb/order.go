@@ -834,7 +834,7 @@ func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *identitymodel
 	return res
 }
 
-func PbAvailableShippingServices(items []*model.AvailableShippingService) []*types.ExternalShippingService {
+func PbAvailableShippingServices(items []*shippingsharemodel.AvailableShippingService) []*types.ExternalShippingService {
 	res := make([]*types.ExternalShippingService, len(items))
 	for i, item := range items {
 		res[i] = PbAvailableShippingService(item)
@@ -846,7 +846,7 @@ var exportedShippingService = cm.SortStrings([]string{
 	"name", "code", "fee", "carrier", "estimated_pickup_at", "estimated_delivery_at",
 })
 
-func PbAvailableShippingService(s *model.AvailableShippingService) *types.ExternalShippingService {
+func PbAvailableShippingService(s *shippingsharemodel.AvailableShippingService) *types.ExternalShippingService {
 	return &types.ExternalShippingService{
 		ExportedFields: exportedShippingService,
 
@@ -867,7 +867,7 @@ func PbAvailableShippingService(s *model.AvailableShippingService) *types.Extern
 	}
 }
 
-func PbConnectionInfo(item *model.ConnectionInfo) *types.ConnectionInfo {
+func PbConnectionInfo(item *shippingsharemodel.ConnectionInfo) *types.ConnectionInfo {
 	if item == nil {
 		return nil
 	}
@@ -878,7 +878,7 @@ func PbConnectionInfo(item *model.ConnectionInfo) *types.ConnectionInfo {
 	}
 }
 
-func PbShipmentServiceInfo(item *model.ShipmentServiceInfo) *types.ShipmentServiceInfo {
+func PbShipmentServiceInfo(item *shippingsharemodel.ShipmentServiceInfo) *types.ShipmentServiceInfo {
 	if item == nil {
 		return nil
 	}
@@ -891,15 +891,14 @@ func PbShipmentServiceInfo(item *model.ShipmentServiceInfo) *types.ShipmentServi
 	}
 }
 
-func PbShipmentPriceInfo(item *model.ShipmentPriceInfo) *types.ShipmentPriceInfo {
+func PbShipmentPriceInfo(item *shippingsharemodel.ShipmentPriceInfo) *types.ShipmentPriceInfo {
 	if item == nil {
 		return nil
 	}
 	return &types.ShipmentPriceInfo{
-		ID:            item.ID,
-		OriginFee:     item.OriginFee,
-		OriginMainFee: item.OriginMainFee,
-		MakeupMainFee: item.MakeupMainFee,
+		ID:        item.ID,
+		OriginFee: item.OriginFee,
+		MakeupFee: item.MakeupFee,
 	}
 }
 

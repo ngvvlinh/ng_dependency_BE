@@ -146,7 +146,7 @@ func (s *ShipmentPriceService) GetShipmentPriceList(ctx context.Context, r *GetS
 func (s *ShipmentPriceService) GetShipmentPriceLists(ctx context.Context, r *GetShipmentPriceListsEndpoint) error {
 	query := &pricelist.ListShipmentPriceListsQuery{
 		ConnectionID: r.ConnectionID,
-		IsActive:     r.IsActive,
+		IsDefault:    r.IsDefault,
 	}
 	if err := s.ShipmentPriceListQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -162,7 +162,7 @@ func (s *ShipmentPriceService) CreateShipmentPriceList(ctx context.Context, r *C
 		Name:         r.Name,
 		Description:  r.Description,
 		ConnectionID: r.ConnectionID,
-		IsActive:     r.IsActive,
+		IsDefault:    r.IsDefault,
 	}
 	if err := s.ShipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -184,8 +184,8 @@ func (s *ShipmentPriceService) UpdateShipmentPriceList(ctx context.Context, r *U
 	return nil
 }
 
-func (s *ShipmentPriceService) ActivateShipmentPriceList(ctx context.Context, r *ActivateShipmentPriceListEndpoint) error {
-	cmd := &pricelist.ActivateShipmentPriceListCommand{
+func (s *ShipmentPriceService) SetDefaultShipmentPriceList(ctx context.Context, r *SetDefaultShipmentPriceListEndpoint) error {
+	cmd := &pricelist.SetDefaultShipmentPriceListCommand{
 		ID:           r.ID,
 		ConnectionID: r.ConnectionID,
 	}
@@ -248,6 +248,7 @@ func (s *ShipmentPriceService) CreateShipmentPrice(ctx context.Context, r *Creat
 		UrbanTypes:          r.UrbanTypes,
 		PriorityPoint:       r.PriorityPoint,
 		Details:             convertpb.PricingDetails(r.Details),
+		AdditionalFees:      convertpb.Convert_api_AdditionalFees_To_core_AdditionalFees(r.AdditionalFees),
 	}
 	if err := s.ShipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -269,6 +270,7 @@ func (s *ShipmentPriceService) UpdateShipmentPrice(ctx context.Context, r *Updat
 		UrbanTypes:          r.UrbanTypes,
 		PriorityPoint:       r.PriorityPoint,
 		Details:             convertpb.PricingDetails(r.Details),
+		AdditionalFees:      convertpb.Convert_api_AdditionalFees_To_core_AdditionalFees(r.AdditionalFees),
 		Status:              r.Status,
 	}
 	if err := s.ShipmentPriceAggr.Dispatch(ctx, cmd); err != nil {

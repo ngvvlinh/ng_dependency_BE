@@ -3,9 +3,9 @@ package ghtk
 import (
 	"strings"
 
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/etop/model"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 	"o.o/capi/dot"
 )
@@ -63,7 +63,7 @@ type CalcShippingFeeCommand struct {
 	ToDistrictCode   string
 
 	Request *ghtkclient.CalcShippingFeeRequest
-	Result  []*model.AvailableShippingService
+	Result  []*shippingsharemodel.AvailableShippingService
 }
 
 type CalcSingleShippingFeeCommand struct {
@@ -74,7 +74,7 @@ type CalcSingleShippingFeeCommand struct {
 
 	Request *ghtkclient.CalcShippingFeeRequest
 
-	Result *model.AvailableShippingService
+	Result *shippingsharemodel.AvailableShippingService
 }
 
 type CreateOrderCommand struct {

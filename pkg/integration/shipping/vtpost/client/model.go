@@ -373,7 +373,7 @@ type ShippingFeeData struct {
 	KpiHt    float32 `json:"KPI_HT"`
 }
 
-func ToShippingService(lines []*shippingsharemodel.ShippingFeeLine, providerServiceID string, orderService VTPostOrderServiceCode, expectedPickTime, expectedDeliveryTime time.Time) *model.AvailableShippingService {
+func ToShippingService(lines []*shippingsharemodel.ShippingFeeLine, providerServiceID string, orderService VTPostOrderServiceCode, expectedPickTime, expectedDeliveryTime time.Time) *shippingsharemodel.AvailableShippingService {
 	if lines == nil {
 		return nil
 	}
@@ -381,7 +381,7 @@ func ToShippingService(lines []*shippingsharemodel.ShippingFeeLine, providerServ
 	for _, line := range lines {
 		shippingFeeShop += line.Cost
 	}
-	return &model.AvailableShippingService{
+	return &shippingsharemodel.AvailableShippingService{
 		Name:               orderService.Name(),
 		ServiceFee:         shippingFeeShop,
 		Provider:           shipping_provider.VTPost,
@@ -391,9 +391,9 @@ func ToShippingService(lines []*shippingsharemodel.ShippingFeeLine, providerServ
 	}
 }
 
-func (s *ShippingFeeService) ToAvailableShippingService(providerServiceID string, expectedPickTime, expectedDeliveryTime time.Time, shippingFeeMain int) *model.AvailableShippingService {
+func (s *ShippingFeeService) ToAvailableShippingService(providerServiceID string, expectedPickTime, expectedDeliveryTime time.Time, shippingFeeMain int) *shippingsharemodel.AvailableShippingService {
 	serviceCode := VTPostOrderServiceCode(s.MaDVChinh)
-	return &model.AvailableShippingService{
+	return &shippingsharemodel.AvailableShippingService{
 		Name:               serviceCode.Name(),
 		ServiceFee:         s.GiaCuoc,
 		ShippingFeeMain:    shippingFeeMain,

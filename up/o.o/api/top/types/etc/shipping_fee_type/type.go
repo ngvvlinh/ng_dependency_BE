@@ -39,4 +39,7 @@ const (
 
 	// +enum=discount
 	Discount ShippingFeeType = 9
+
+	// +enum=redelivery
+	Redelivery ShippingFeeType = 10
 )

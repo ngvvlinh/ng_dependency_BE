@@ -10,6 +10,7 @@ import (
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
 	"o.o/api/top/types/etc/route_type"
+	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	locationutil "o.o/backend/com/main/location/util"
@@ -348,4 +349,73 @@ func getPricingByPriorityPoint(pricings []*shipmentprice.ShipmentPrice) *shipmen
 		return pricings[i].PriorityPoint > pricings[j].PriorityPoint
 	})
 	return pricings[0]
+}
+
+func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipmentprice.CalculatePriceArgs) (*shipmentprice.CalculateShippingFeesResponse, error) {
+	if args.Weight == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing weight")
+	}
+	fromQuery := &location.FindOrGetLocationQuery{
+		Province:     args.FromProvince,
+		District:     args.FromDistrict,
+		ProvinceCode: args.FromProvinceCode,
+		DistrictCode: args.FromDistrictCode,
+	}
+	toQuery := &location.FindOrGetLocationQuery{
+		Province:     args.ToProvince,
+		District:     args.ToDistrict,
+		ProvinceCode: args.ToProvinceCode,
+		DistrictCode: args.ToDistrictCode,
+	}
+	if err := q.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
+		return nil, err
+	}
+	from, to := fromQuery.Result, toQuery.Result
+
+	pricings, err := q.GetActiveShipmentPrices(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	matchingPricings, err := q.GetMatchingPricings(ctx, pricings, from.Province, to.Province, to.District)
+	if len(matchingPricings) == 0 || err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không có gói phù hợp")
+	}
+
+	// calculate main fee
+	pricing := getPricingByPriorityPoint(matchingPricings)
+	pRuleDetail, err := GetPriceRuleDetail(args.Weight, pricing.Details)
+	if err != nil {
+		return nil, err
+	}
+	mainFee, err := GetPriceByPricingDetail(args.Weight, pRuleDetail)
+	if err != nil {
+		return nil, err
+	}
+
+	// calculate additional fee
+	calcAdditionalFeeArgs := CalcAdditionalFeeArgs{
+		BasketValue:      args.BasketValue,
+		CODAmount:        args.CODAmount,
+		MainFee:          mainFee,
+		IncludeInsurance: args.IncludeInsurance,
+	}
+	feeLines, err := calcAdditionalFees(calcAdditionalFeeArgs, pricing.AdditionalFees)
+	if err != nil {
+		return nil, err
+	}
+	feeLines = append(feeLines, &shipmentprice.ShippingFee{
+		FeeType: shipping_fee_type.Main,
+		Price:   mainFee,
+	})
+
+	totalFee := 0
+	for _, line := range feeLines {
+		totalFee += line.Price
+	}
+
+	return &shipmentprice.CalculateShippingFeesResponse{
+		ShipmentPriceID: pricing.ID,
+		TotalFee:        totalFee,
+		FeeLines:        feeLines,
+	}, nil
 }

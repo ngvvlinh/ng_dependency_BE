@@ -54,8 +54,8 @@ func (s *ShipmentPriceListStore) ID(id dot.ID) *ShipmentPriceListStore {
 	return s
 }
 
-func (s *ShipmentPriceListStore) IsActive(isActive bool) *ShipmentPriceListStore {
-	s.preds = append(s.preds, s.ft.ByIsActivePtr(&isActive))
+func (s *ShipmentPriceListStore) IsDefault(isDefault bool) *ShipmentPriceListStore {
+	s.preds = append(s.preds, s.ft.ByIsDefaultPtr(&isDefault))
 	return s
 }
 
@@ -145,21 +145,21 @@ func (s *ShipmentPriceListStore) SoftDelete() (int, error) {
 	})
 }
 
-func (s *ShipmentPriceListStore) ActivePriceList() error {
+func (s *ShipmentPriceListStore) SetDefaultPriceList() error {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	return query.Table("shipment_price_list").ShouldUpdateMap(map[string]interface{}{
-		"is_active": true,
+		"is_default": true,
 	})
 }
 
-func (s *ShipmentPriceListStore) DeactivePriceList() error {
+func (s *ShipmentPriceListStore) SetUndefaultPriceList() error {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	return query.Table("shipment_price_list").ShouldUpdateMap(map[string]interface{}{
-		"is_active": false,
+		"is_default": false,
 	})
 }
 

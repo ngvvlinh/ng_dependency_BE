@@ -66,7 +66,7 @@ func (d *GHNDriver) GetAffiliateID() string {
 func (d *GHNDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,
-	args *carriertypes.GetShippingServicesArgs, service *etopmodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+	args *carriertypes.GetShippingServicesArgs, service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
 	note := carrierutil.GetShippingProviderNote(ffm)
 	noteCode := ffm.TryOn
 	if noteCode == 0 {
@@ -179,7 +179,7 @@ func (d *GHNDriver) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfil
 	return d.client.CancelOrder(ctx, cmd)
 }
 
-func (d *GHNDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*etopmodel.AvailableShippingService, error) {
+func (d *GHNDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
 	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
@@ -275,7 +275,7 @@ func (d *GHNDriver) parseServiceID(code string) (serviceID int, err error) {
 	return
 }
 
-func (d *GHNDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeArgs) ([]*etopmodel.AvailableShippingService, error) {
+func (d *GHNDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	req := args.Request
 	resp, err := d.client.FindAvailableServices(ctx, args.Request)
 	if err != nil {
@@ -313,7 +313,7 @@ func (d *GHNDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeAr
 		return res[i].ServiceID < res[j].ServiceFee
 	})
 
-	var result []*etopmodel.AvailableShippingService
+	var result []*shippingsharemodel.AvailableShippingService
 	generator := randgenerator.NewGenerator(args.ArbitraryID)
 	for _, s := range res {
 		providerServiceID, err := GenerateServiceID(generator, s.Name.String(), s.ServiceID.String())

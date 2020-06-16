@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"o.o/api/top/types/etc/shipping_provider"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/etop/model"
@@ -101,7 +102,7 @@ func (c *Carrier) FindAvailableServices(ctx context.Context, cmd *RequestFindAva
 	}
 	wg.Wait()
 
-	var res []*model.AvailableShippingService
+	var res []*shippingsharemodel.AvailableShippingService
 	for _, result := range results {
 		if result.Error != nil {
 			ll.Error("Error requesting GHN", l.Error(result.Error))

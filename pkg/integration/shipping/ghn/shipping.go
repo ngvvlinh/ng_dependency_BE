@@ -74,7 +74,7 @@ func (c *Carrier) CreateFulfillment(
 	order *ordermodel.Order,
 	ffm *shipmodel.Fulfillment,
 	args shipping_provider.GetShippingServicesArgs,
-	service *model.AvailableShippingService,
+	service *shippingsharemodel.AvailableShippingService,
 ) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
 
 	note := shipping_provider.GetShippingProviderNote(order, ffm)
@@ -205,7 +205,7 @@ func (c *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillm
 	return ghnErr
 }
 
-func (c *Carrier) GetShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (c *Carrier) GetShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
 	if err := c.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
@@ -238,7 +238,7 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 	return cmd.Result, err
 }
 
-func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
 	if err := c.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
@@ -291,7 +291,7 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	return allServices, nil
 }
 
-func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
+func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *shippingsharemodel.AvailableShippingService, etopService *shippingsharemodel.AvailableShippingService, err error) {
 	return nil, nil, cm.ErrTODO
 }
 

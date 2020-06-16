@@ -10,6 +10,7 @@ import (
 	"o.o/api/top/int/types"
 	pbsp "o.o/api/top/types/etc/shipping_provider"
 	shippingprovider "o.o/api/top/types/etc/shipping_provider"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
@@ -28,7 +29,7 @@ var blockCarriers = map[shippingprovider.ShippingProvider]*struct {
 	},
 }
 
-func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *types.GetExternalShippingServicesRequest) ([]*model.AvailableShippingService, error) {
+func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *types.GetExternalShippingServicesRequest) ([]*shippingsharemodel.AvailableShippingService, error) {
 	fromQuery := &location.FindOrGetLocationQuery{
 		ProvinceCode: q.FromProvinceCode,
 		DistrictCode: q.FromDistrictCode,
@@ -57,7 +58,7 @@ func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, acc
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "địa chỉ nhận không hợp lệ")
 	}
 
-	var res []*model.AvailableShippingService
+	var res []*shippingsharemodel.AvailableShippingService
 	weight := q.Weight
 	if q.GrossWeight != 0 {
 		weight = q.GrossWeight
@@ -104,11 +105,11 @@ func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, acc
 
 	switch q.Provider {
 	case pbsp.All, pbsp.Unknown:
-		ch := make(chan []*model.AvailableShippingService, 2)
+		ch := make(chan []*shippingsharemodel.AvailableShippingService, 2)
 		go func() {
 			defer catchAndRecover()
 
-			var services []*model.AvailableShippingService
+			var services []*shippingsharemodel.AvailableShippingService
 			var err error
 			defer func() { sendServices(ch, services, err) }()
 			services, err = ctrl.GetShippingProviderDriver(shippingprovider.GHN).GetAllShippingServices(ctx, args)
@@ -116,7 +117,7 @@ func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, acc
 		go func() {
 			defer catchAndRecover()
 
-			var services []*model.AvailableShippingService
+			var services []*shippingsharemodel.AvailableShippingService
 			var err error
 			defer func() { sendServices(ch, services, err) }()
 			services, err = ctrl.GetShippingProviderDriver(shippingprovider.GHTK).GetAllShippingServices(ctx, args)
@@ -161,7 +162,7 @@ func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, acc
 	return res, nil
 }
 
-func sendServices(ch chan<- []*model.AvailableShippingService, services []*model.AvailableShippingService, err error) {
+func sendServices(ch chan<- []*shippingsharemodel.AvailableShippingService, services []*shippingsharemodel.AvailableShippingService, err error) {
 	if err == nil {
 		ch <- services
 	} else {
@@ -174,9 +175,9 @@ func sendServices(ch chan<- []*model.AvailableShippingService, services []*model
 // - Có gói TopShip: chỉ sử dụng gói TopShip
 // - Mỗi NVC phải có 2 dịch vụ: Nhanh và Chuẩn, ưu tiên gói TopShip
 // - Không có gói TopShip: Sử dụng gói của NVC như bình thường
-func CompactServices(services []*model.AvailableShippingService) []*model.AvailableShippingService {
-	var res []*model.AvailableShippingService
-	carrierServicesIndex := make(map[string][]*model.AvailableShippingService)
+func CompactServices(services []*shippingsharemodel.AvailableShippingService) []*shippingsharemodel.AvailableShippingService {
+	var res []*shippingsharemodel.AvailableShippingService
+	carrierServicesIndex := make(map[string][]*shippingsharemodel.AvailableShippingService)
 	for _, s := range services {
 		connectionID := dot.ID(0)
 		if s.ConnectionInfo != nil {
@@ -186,7 +187,7 @@ func CompactServices(services []*model.AvailableShippingService) []*model.Availa
 		carrierServicesIndex[key] = append(carrierServicesIndex[key], s)
 	}
 	for _, carrierServices := range carrierServicesIndex {
-		var ss []*model.AvailableShippingService
+		var ss []*shippingsharemodel.AvailableShippingService
 		for _, s := range carrierServices {
 			if s.Source == model.TypeShippingSourceEtop {
 				ss = append(ss, s)

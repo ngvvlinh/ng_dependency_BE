@@ -218,7 +218,8 @@
         "other",
         "cods",
         "address_change",
-        "discount"
+        "discount",
+        "redelivery"
       ]
     },
     "blStatus": {

@@ -3,7 +3,9 @@ package model
 import (
 	"time"
 
+	"o.o/api/top/types/etc/price_modifier_type"
 	"o.o/api/top/types/etc/route_type"
+	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 )
@@ -20,6 +22,7 @@ type ShipmentPrice struct {
 	ProvinceTypes       []route_type.ProvinceRouteType
 	UrbanTypes          []route_type.UrbanType
 	Details             []*PricingDetail
+	AdditionalFees      []*AdditionalFee
 	PriorityPoint       int
 	CreatedAt           time.Time `sq:"create"`
 	UpdatedAt           time.Time `sq:"update"`
@@ -39,4 +42,17 @@ type PricingDetailOverweight struct {
 	MaxWeight  int `json:"max_weight"`
 	WeightStep int `json:"weight_step"`
 	PriceStep  int `json:"price_step"`
+}
+
+type AdditionalFee struct {
+	FeeType shipping_fee_type.ShippingFeeType `json:"fee_type"`
+	Rules   []*AdditionalFeeRule              `json:"rules"`
+}
+
+type AdditionalFeeRule struct {
+	MinValue          int                                   `json:"min_value"`
+	MaxValue          int                                   `json:"max_value"`
+	PriceModifierType price_modifier_type.PriceModifierType `json:"price_modifier_type"`
+	Amount            int                                   `json:"amount"`
+	MinPrice          int                                   `json:"min_price"`
 }

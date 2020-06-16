@@ -179,7 +179,7 @@ func (ctrl *CarrierManager) createSingleFulfillment(ctx context.Context, order *
 	}
 
 	// check if etop package
-	var etopService, providerService *model.AvailableShippingService
+	var etopService, providerService *shippingsharemodel.AvailableShippingService
 	sType, isEtopService := etop_shipping_price.ParseEtopServiceCode(shopShipping.ProviderServiceID)
 	if isEtopService {
 		// ETOP serivce
@@ -209,10 +209,7 @@ func (ctrl *CarrierManager) createSingleFulfillment(ctx context.Context, order *
 	}
 
 	if etopService != nil {
-		err := ffmToUpdate.ApplyEtopPrice(etopService.ShippingFeeMain)
-		if err != nil {
-			return err
-		}
+		ffmToUpdate.ApplyEtopPrice(etopService.ShippingFeeMain)
 		ffmToUpdate.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
 	}
 
@@ -245,7 +242,7 @@ func GetShippingProviderNote(order *ordermodel.Order, ffm *shipmodel.Fulfillment
 	return noteB.String()
 }
 
-func CheckShippingService(order *ordermodel.Order, services []*model.AvailableShippingService) (service *model.AvailableShippingService, _err error) {
+func CheckShippingService(order *ordermodel.Order, services []*shippingsharemodel.AvailableShippingService) (service *shippingsharemodel.AvailableShippingService, _err error) {
 	if order.ShopShipping != nil {
 		providerServiceID := cm.Coalesce(order.ShopShipping.ProviderServiceID, order.ShopShipping.ExternalServiceID)
 		if providerServiceID == "" {
@@ -378,7 +375,7 @@ func CheckShippingFeeWithinDelta(providerShippingFee int, shippingFee int) bool 
 	return abs(providerShippingFee-shippingFee) < 10
 }
 
-func GetEtopServiceFromShopShipping(shopShipping *ordermodel.OrderShipping, services []*model.AvailableShippingService) (etopService *model.AvailableShippingService, err error) {
+func GetEtopServiceFromShopShipping(shopShipping *ordermodel.OrderShipping, services []*shippingsharemodel.AvailableShippingService) (etopService *shippingsharemodel.AvailableShippingService, err error) {
 	if shopShipping == nil || shopShipping.ProviderServiceID == "" {
 		return nil, cm.Error(cm.InvalidArgument, "ShopShipping is invalid", nil)
 	}
@@ -397,8 +394,8 @@ func GetEtopServiceFromShopShipping(shopShipping *ordermodel.OrderShipping, serv
 }
 
 // GetCheapestService chooses cheapest provider service (except etop service) using ServiceType (Nhanh | Chuan)
-func GetCheapestService(services []*model.AvailableShippingService, sType string) *model.AvailableShippingService {
-	var service *model.AvailableShippingService
+func GetCheapestService(services []*shippingsharemodel.AvailableShippingService, sType string) *shippingsharemodel.AvailableShippingService {
+	var service *shippingsharemodel.AvailableShippingService
 	for _, s := range services {
 		if s.Source == model.TypeShippingSourceEtop || s.Name != sType {
 			continue

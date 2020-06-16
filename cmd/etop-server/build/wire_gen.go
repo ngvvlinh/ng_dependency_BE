@@ -68,6 +68,7 @@ import (
 	pm11 "o.o/backend/com/main/refund/pm"
 	query11 "o.o/backend/com/main/refund/query"
 	"o.o/backend/com/main/shipmentpricing/pricelist"
+	pm17 "o.o/backend/com/main/shipmentpricing/pricelist/pm"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice"
 	"o.o/backend/com/main/shipmentpricing/shopshipmentpricelist"
@@ -804,6 +805,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	traderingCommandBus := aggregate22.TraderAggMessageBus(traderAgg)
 	processManager14 := pm15.New(eventBus, traderingCommandBus)
 	processManager15 := pm16.New(eventBus, connectioningCommandBus, connectioningQueryBus)
+	processManager16 := pm17.New(store, eventBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, identityQueryBus)
 	captchaConfig := cfg.Captcha
@@ -826,6 +828,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		_affiliatePM:      processManager13,
 		_traderPM:         processManager14,
 		_connectionPM:     processManager15,
+		_pricelistPM:      processManager16,
 		_s:                sqlstoreStore,
 		_m:                middlewareMiddleware,
 		_c:                captchaCaptcha,

@@ -25,6 +25,7 @@ import (
 	inventorymodel "o.o/backend/com/main/inventory/model"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	customermodel "o.o/backend/com/shopping/customering/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
@@ -509,7 +510,7 @@ func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *exttypes.Fulfillment 
 	}
 }
 
-func PbShippingServices(items []*model.AvailableShippingService) []*exttypes.ShippingService {
+func PbShippingServices(items []*shippingsharemodel.AvailableShippingService) []*exttypes.ShippingService {
 	res := make([]*exttypes.ShippingService, len(items))
 	for i, item := range items {
 		res[i] = PbShippingService(item)
@@ -517,7 +518,7 @@ func PbShippingServices(items []*model.AvailableShippingService) []*exttypes.Shi
 	return res
 }
 
-func PbShippingService(m *model.AvailableShippingService) *exttypes.ShippingService {
+func PbShippingService(m *shippingsharemodel.AvailableShippingService) *exttypes.ShippingService {
 	return &exttypes.ShippingService{
 		Code:                m.ProviderServiceID,
 		Name:                m.Name,
@@ -529,7 +530,7 @@ func PbShippingService(m *model.AvailableShippingService) *exttypes.ShippingServ
 	}
 }
 
-func PbCarrierInfo(m *model.ConnectionInfo) *exttypes.CarrierInfo {
+func PbCarrierInfo(m *shippingsharemodel.ConnectionInfo) *exttypes.CarrierInfo {
 	if m == nil {
 		return nil
 	}

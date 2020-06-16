@@ -5,12 +5,10 @@ import (
 	"time"
 
 	shipmodel "o.o/backend/com/main/shipping/model"
-	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
-	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
 
@@ -56,18 +54,7 @@ func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, ghtkOrder *ghtkclien
 		EtopDiscount:              ffm.EtopDiscount,
 		ShippingStatus:            stateID.ToStatus5(),
 	}
-
-	// make sure can not update ffm's shipping fee when it belong to a money transaction
-	if shipping.CanUpdateFulfillmentFeelines(ffm) {
-		update.ProviderShippingFeeLines = ghtk.CalcAndConvertShippingFeeLines(ghtkOrder)
-		shippingFeeShopLines := shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
-		shippingFeeShop := 0
-		for _, line := range shippingFeeShopLines {
-			shippingFeeShop += line.Cost
-		}
-		update.ShippingFeeShopLines = shippingFeeShopLines
-		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
-	}
+	update.ProviderShippingFeeLines = ghtk.CalcAndConvertShippingFeeLines(ghtkOrder)
 
 	return update, nil
 }

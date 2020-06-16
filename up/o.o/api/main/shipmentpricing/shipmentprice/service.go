@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/top/types/etc/route_type"
+	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 )
@@ -21,6 +22,7 @@ type QueryService interface {
 	ListShipmentPrices(context.Context, *ListShipmentPricesArgs) ([]*ShipmentPrice, error)
 	GetShipmentPrice(ctx context.Context, ID dot.ID) (*ShipmentPrice, error)
 	CalculatePrice(context.Context, *CalculatePriceArgs) (*CalculatePriceResult, error)
+	CalculateShippingFees(context.Context, *CalculatePriceArgs) (*CalculateShippingFeesResponse, error)
 }
 
 // +convert:create=ShipmentPrice
@@ -35,6 +37,7 @@ type CreateShipmentPriceArgs struct {
 	UrbanTypes          []route_type.UrbanType
 	PriorityPoint       int
 	Details             []*PricingDetail
+	AdditionalFees      []*AdditionalFee
 }
 
 // +convert:update=ShipmentPrice
@@ -50,6 +53,7 @@ type UpdateShipmentPriceArgs struct {
 	UrbanTypes          []route_type.UrbanType
 	PriorityPoint       int
 	Details             []*PricingDetail
+	AdditionalFees      []*AdditionalFee
 	Status              status3.Status
 }
 
@@ -72,11 +76,25 @@ type CalculatePriceArgs struct {
 	ConnectionID        dot.ID
 	ShipmentPriceListID dot.ID
 	Weight              int
+	BasketValue         int
+	CODAmount           int
+	IncludeInsurance    bool
 }
 
 type CalculatePriceResult struct {
 	ShipmentPriceID dot.ID
 	Price           int
+}
+
+type CalculateShippingFeesResponse struct {
+	ShipmentPriceID dot.ID
+	TotalFee        int
+	FeeLines        []*ShippingFee
+}
+
+type ShippingFee struct {
+	FeeType shipping_fee_type.ShippingFeeType
+	Price   int
 }
 
 type UpdateShipmentPricePriorityPointArgs struct {

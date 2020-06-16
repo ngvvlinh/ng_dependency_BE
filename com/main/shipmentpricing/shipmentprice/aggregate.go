@@ -52,7 +52,10 @@ func (a *Aggregate) CreateShipmentPrice(ctx context.Context, args *shipmentprice
 	if args.ShipmentPriceListID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn bảng giá (PriceList)")
 	}
-	if err := a.validateShipmentPrice(ctx, args.ShipmentServiceID, args.ShipmentPriceListID); err != nil {
+	if err := a.validateShipmentPriceConnection(ctx, args.ShipmentServiceID, args.ShipmentPriceListID); err != nil {
+		return nil, err
+	}
+	if err := validateShipmentPriceAdditionalFees(args.AdditionalFees); err != nil {
 		return nil, err
 	}
 
@@ -78,7 +81,7 @@ func (a *Aggregate) CreateShipmentPrice(ctx context.Context, args *shipmentprice
 	return
 }
 
-func (a *Aggregate) validateShipmentPrice(ctx context.Context, shipmentServiceID, shipmentPriceListID dot.ID) error {
+func (a *Aggregate) validateShipmentPriceConnection(ctx context.Context, shipmentServiceID, shipmentPriceListID dot.ID) error {
 	queryShipmentService := &shipmentservice.GetShipmentServiceQuery{
 		ID: shipmentServiceID,
 	}
@@ -103,13 +106,17 @@ func (a *Aggregate) UpdateShipmentPrice(ctx context.Context, args *shipmentprice
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing id")
 	}
+	if err := validateShipmentPriceAdditionalFees(args.AdditionalFees); err != nil {
+		return nil, err
+	}
+
 	sp, err := a.shipmentPriceStore(ctx).ID(args.ID).GetShipmentPrice()
 	if err != nil {
 		return nil, err
 	}
 	oldShipmentPriceList := sp.ShipmentPriceListID
 	if args.ShipmentPriceListID != 0 || args.ShipmentServiceID != 0 {
-		if err := a.validateShipmentPrice(ctx,
+		if err := a.validateShipmentPriceConnection(ctx,
 			cm.CoalesceID(args.ShipmentServiceID, sp.ShipmentServiceID),
 			cm.CoalesceID(args.ShipmentPriceListID, sp.ShipmentPriceListID)); err != nil {
 			return nil, err
@@ -151,6 +158,20 @@ func validateShipmentPrice(pricing *shipmentprice.ShipmentPrice) error {
 	}
 	if len(pricing.Details) == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cấu hình giá").WithMeta("field", "details")
+	}
+	return nil
+}
+
+func validateShipmentPriceAdditionalFees(addFees []*shipmentprice.AdditionalFee) error {
+	for _, fee := range addFees {
+		if fee.FeeType == 0 {
+			return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình cước phí không hợp lệ. Loại cước phí không hợp lệ.")
+		}
+		for _, rule := range fee.Rules {
+			if rule.MaxValue != shipmentprice.MaximumValue && rule.MinValue > rule.MaxValue {
+				return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình cước phí không hợp lệ. (min_value > max_value)")
+			}
+		}
 	}
 	return nil
 }

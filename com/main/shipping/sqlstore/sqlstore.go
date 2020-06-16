@@ -253,6 +253,14 @@ func (s *FulfillmentStore) UpdateFulfillmentDB(ffm *model.Fulfillment) error {
 	return s.query().Where(s.preds).ShouldUpdate(ffm)
 }
 
+func (s *FulfillmentStore) UpdateFulfillment(ffm *shipping.Fulfillment) error {
+	var ffmDB model.Fulfillment
+	if err := scheme.Convert(ffm, &ffmDB); err != nil {
+		return err
+	}
+	return s.UpdateFulfillmentDB(&ffmDB)
+}
+
 func (s *FulfillmentStore) UpdateFulfillmentsDB(ffms []*model.Fulfillment) error {
 	for _, ffm := range ffms {
 		if err := ffm.BeforeInsert(); err != nil {

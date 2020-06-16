@@ -6849,7 +6849,8 @@
         "other",
         "cods",
         "address_change",
-        "discount"
+        "discount",
+        "redelivery"
       ]
     },
     "blStatus": {
@@ -8068,7 +8069,7 @@
           "type": "string"
         },
         "product_type": {
-          "$ref": "#/definitions/yjProductType"
+          "$ref": "#/definitions/pdProductType"
         },
         "retail_price": {
           "type": "integer"
@@ -11024,7 +11025,7 @@
           "format": "int64"
         },
         "product_type": {
-          "$ref": "#/definitions/yjProductType"
+          "$ref": "#/definitions/pdProductType"
         },
         "retail_price": {
           "type": "integer"
@@ -11965,7 +11966,7 @@
           "type": "string"
         },
         "product_type": {
-          "$ref": "#/definitions/yjProductType"
+          "$ref": "#/definitions/pdProductType"
         },
         "retail_price": {
           "type": "integer"
@@ -12771,6 +12772,14 @@
           "format": "date-time"
         }
       }
+    },
+    "pdProductType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "services",
+        "goods"
+      ]
     },
     "peReceiptType": {
       "type": "string",
@@ -14637,13 +14646,10 @@
           "type": "string",
           "format": "int64"
         },
-        "makeup_main_fee": {
+        "makeup_fee": {
           "type": "integer"
         },
         "origin_fee": {
-          "type": "integer"
-        },
-        "origin_main_fee": {
           "type": "integer"
         }
       }
@@ -15667,14 +15673,6 @@
         "momo",
         "bankdeposit",
         "manual"
-      ]
-    },
-    "yjProductType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "services",
-        "goods"
       ]
     },
     "ywPaymentProvider": {

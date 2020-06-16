@@ -925,7 +925,8 @@
         "other",
         "cods",
         "address_change",
-        "discount"
+        "discount",
+        "redelivery"
       ]
     },
     "blStatus": {
@@ -1832,7 +1833,7 @@
           "format": "int64"
         },
         "product_type": {
-          "$ref": "#/definitions/yjProductType"
+          "$ref": "#/definitions/pdProductType"
         },
         "retail_price": {
           "type": "integer"
@@ -1994,6 +1995,14 @@
           "type": "string"
         }
       }
+    },
+    "pdProductType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "services",
+        "goods"
+      ]
     },
     "pjGHNNoteCode": {
       "type": "string",
@@ -3429,14 +3438,6 @@
         "momo",
         "bankdeposit",
         "manual"
-      ]
-    },
-    "yjProductType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "services",
-        "goods"
       ]
     }
   },

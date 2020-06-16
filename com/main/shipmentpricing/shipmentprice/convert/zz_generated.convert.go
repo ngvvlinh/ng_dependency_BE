@@ -13,9 +13,11 @@ import (
 )
 
 /*
-Custom conversions: (none)
+Custom conversions:
+    Convert_shipmentprice_ShippingFee_To_shippingsharemodel_ShippingFeeLine    // not use, no conversions between params
 
-Ignored functions: (none)
+Ignored functions:
+    Convert_shipmentprice_ShippingFees_To_shippingsharemodel_ShippingFeeLines    // params are not pointer to named types
 */
 
 func RegisterConversions(s *conversion.Scheme) {
@@ -23,6 +25,42 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
+	s.Register((*shipmentpricemodel.AdditionalFee)(nil), (*shipmentprice.AdditionalFee)(nil), func(arg, out interface{}) error {
+		Convert_shipmentpricemodel_AdditionalFee_shipmentprice_AdditionalFee(arg.(*shipmentpricemodel.AdditionalFee), out.(*shipmentprice.AdditionalFee))
+		return nil
+	})
+	s.Register(([]*shipmentpricemodel.AdditionalFee)(nil), (*[]*shipmentprice.AdditionalFee)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentpricemodel_AdditionalFees_shipmentprice_AdditionalFees(arg.([]*shipmentpricemodel.AdditionalFee))
+		*out.(*[]*shipmentprice.AdditionalFee) = out0
+		return nil
+	})
+	s.Register((*shipmentprice.AdditionalFee)(nil), (*shipmentpricemodel.AdditionalFee)(nil), func(arg, out interface{}) error {
+		Convert_shipmentprice_AdditionalFee_shipmentpricemodel_AdditionalFee(arg.(*shipmentprice.AdditionalFee), out.(*shipmentpricemodel.AdditionalFee))
+		return nil
+	})
+	s.Register(([]*shipmentprice.AdditionalFee)(nil), (*[]*shipmentpricemodel.AdditionalFee)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentprice_AdditionalFees_shipmentpricemodel_AdditionalFees(arg.([]*shipmentprice.AdditionalFee))
+		*out.(*[]*shipmentpricemodel.AdditionalFee) = out0
+		return nil
+	})
+	s.Register((*shipmentpricemodel.AdditionalFeeRule)(nil), (*shipmentprice.AdditionalFeeRule)(nil), func(arg, out interface{}) error {
+		Convert_shipmentpricemodel_AdditionalFeeRule_shipmentprice_AdditionalFeeRule(arg.(*shipmentpricemodel.AdditionalFeeRule), out.(*shipmentprice.AdditionalFeeRule))
+		return nil
+	})
+	s.Register(([]*shipmentpricemodel.AdditionalFeeRule)(nil), (*[]*shipmentprice.AdditionalFeeRule)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentpricemodel_AdditionalFeeRules_shipmentprice_AdditionalFeeRules(arg.([]*shipmentpricemodel.AdditionalFeeRule))
+		*out.(*[]*shipmentprice.AdditionalFeeRule) = out0
+		return nil
+	})
+	s.Register((*shipmentprice.AdditionalFeeRule)(nil), (*shipmentpricemodel.AdditionalFeeRule)(nil), func(arg, out interface{}) error {
+		Convert_shipmentprice_AdditionalFeeRule_shipmentpricemodel_AdditionalFeeRule(arg.(*shipmentprice.AdditionalFeeRule), out.(*shipmentpricemodel.AdditionalFeeRule))
+		return nil
+	})
+	s.Register(([]*shipmentprice.AdditionalFeeRule)(nil), (*[]*shipmentpricemodel.AdditionalFeeRule)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipmentprice_AdditionalFeeRules_shipmentpricemodel_AdditionalFeeRules(arg.([]*shipmentprice.AdditionalFeeRule))
+		*out.(*[]*shipmentpricemodel.AdditionalFeeRule) = out0
+		return nil
+	})
 	s.Register((*shipmentpricemodel.PricingDetail)(nil), (*shipmentprice.PricingDetail)(nil), func(arg, out interface{}) error {
 		Convert_shipmentpricemodel_PricingDetail_shipmentprice_PricingDetail(arg.(*shipmentpricemodel.PricingDetail), out.(*shipmentprice.PricingDetail))
 		return nil
@@ -85,6 +123,128 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg.(*shipmentprice.UpdateShipmentPriceArgs), out.(*shipmentprice.ShipmentPrice))
 		return nil
 	})
+}
+
+//-- convert o.o/api/main/shipmentpricing/shipmentprice.AdditionalFee --//
+
+func Convert_shipmentpricemodel_AdditionalFee_shipmentprice_AdditionalFee(arg *shipmentpricemodel.AdditionalFee, out *shipmentprice.AdditionalFee) *shipmentprice.AdditionalFee {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentprice.AdditionalFee{}
+	}
+	convert_shipmentpricemodel_AdditionalFee_shipmentprice_AdditionalFee(arg, out)
+	return out
+}
+
+func convert_shipmentpricemodel_AdditionalFee_shipmentprice_AdditionalFee(arg *shipmentpricemodel.AdditionalFee, out *shipmentprice.AdditionalFee) {
+	out.FeeType = arg.FeeType // simple assign
+	out.Rules = Convert_shipmentpricemodel_AdditionalFeeRules_shipmentprice_AdditionalFeeRules(arg.Rules)
+}
+
+func Convert_shipmentpricemodel_AdditionalFees_shipmentprice_AdditionalFees(args []*shipmentpricemodel.AdditionalFee) (outs []*shipmentprice.AdditionalFee) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentprice.AdditionalFee, len(args))
+	outs = make([]*shipmentprice.AdditionalFee, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentpricemodel_AdditionalFee_shipmentprice_AdditionalFee(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shipmentprice_AdditionalFee_shipmentpricemodel_AdditionalFee(arg *shipmentprice.AdditionalFee, out *shipmentpricemodel.AdditionalFee) *shipmentpricemodel.AdditionalFee {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentpricemodel.AdditionalFee{}
+	}
+	convert_shipmentprice_AdditionalFee_shipmentpricemodel_AdditionalFee(arg, out)
+	return out
+}
+
+func convert_shipmentprice_AdditionalFee_shipmentpricemodel_AdditionalFee(arg *shipmentprice.AdditionalFee, out *shipmentpricemodel.AdditionalFee) {
+	out.FeeType = arg.FeeType // simple assign
+	out.Rules = Convert_shipmentprice_AdditionalFeeRules_shipmentpricemodel_AdditionalFeeRules(arg.Rules)
+}
+
+func Convert_shipmentprice_AdditionalFees_shipmentpricemodel_AdditionalFees(args []*shipmentprice.AdditionalFee) (outs []*shipmentpricemodel.AdditionalFee) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentpricemodel.AdditionalFee, len(args))
+	outs = make([]*shipmentpricemodel.AdditionalFee, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentprice_AdditionalFee_shipmentpricemodel_AdditionalFee(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/main/shipmentpricing/shipmentprice.AdditionalFeeRule --//
+
+func Convert_shipmentpricemodel_AdditionalFeeRule_shipmentprice_AdditionalFeeRule(arg *shipmentpricemodel.AdditionalFeeRule, out *shipmentprice.AdditionalFeeRule) *shipmentprice.AdditionalFeeRule {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentprice.AdditionalFeeRule{}
+	}
+	convert_shipmentpricemodel_AdditionalFeeRule_shipmentprice_AdditionalFeeRule(arg, out)
+	return out
+}
+
+func convert_shipmentpricemodel_AdditionalFeeRule_shipmentprice_AdditionalFeeRule(arg *shipmentpricemodel.AdditionalFeeRule, out *shipmentprice.AdditionalFeeRule) {
+	out.MinValue = arg.MinValue                   // simple assign
+	out.MaxValue = arg.MaxValue                   // simple assign
+	out.PriceModifierType = arg.PriceModifierType // simple assign
+	out.Amount = arg.Amount                       // simple assign
+	out.MinPrice = arg.MinPrice                   // simple assign
+}
+
+func Convert_shipmentpricemodel_AdditionalFeeRules_shipmentprice_AdditionalFeeRules(args []*shipmentpricemodel.AdditionalFeeRule) (outs []*shipmentprice.AdditionalFeeRule) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentprice.AdditionalFeeRule, len(args))
+	outs = make([]*shipmentprice.AdditionalFeeRule, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentpricemodel_AdditionalFeeRule_shipmentprice_AdditionalFeeRule(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shipmentprice_AdditionalFeeRule_shipmentpricemodel_AdditionalFeeRule(arg *shipmentprice.AdditionalFeeRule, out *shipmentpricemodel.AdditionalFeeRule) *shipmentpricemodel.AdditionalFeeRule {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipmentpricemodel.AdditionalFeeRule{}
+	}
+	convert_shipmentprice_AdditionalFeeRule_shipmentpricemodel_AdditionalFeeRule(arg, out)
+	return out
+}
+
+func convert_shipmentprice_AdditionalFeeRule_shipmentpricemodel_AdditionalFeeRule(arg *shipmentprice.AdditionalFeeRule, out *shipmentpricemodel.AdditionalFeeRule) {
+	out.MinValue = arg.MinValue                   // simple assign
+	out.MaxValue = arg.MaxValue                   // simple assign
+	out.PriceModifierType = arg.PriceModifierType // simple assign
+	out.Amount = arg.Amount                       // simple assign
+	out.MinPrice = arg.MinPrice                   // simple assign
+}
+
+func Convert_shipmentprice_AdditionalFeeRules_shipmentpricemodel_AdditionalFeeRules(args []*shipmentprice.AdditionalFeeRule) (outs []*shipmentpricemodel.AdditionalFeeRule) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipmentpricemodel.AdditionalFeeRule, len(args))
+	outs = make([]*shipmentpricemodel.AdditionalFeeRule, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipmentprice_AdditionalFeeRule_shipmentpricemodel_AdditionalFeeRule(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert o.o/api/main/shipmentpricing/shipmentprice.PricingDetail --//
@@ -233,6 +393,7 @@ func convert_shipmentpricemodel_ShipmentPrice_shipmentprice_ShipmentPrice(arg *s
 	out.ProvinceTypes = arg.ProvinceTypes             // simple assign
 	out.UrbanTypes = arg.UrbanTypes                   // simple assign
 	out.Details = Convert_shipmentpricemodel_PricingDetails_shipmentprice_PricingDetails(arg.Details)
+	out.AdditionalFees = Convert_shipmentpricemodel_AdditionalFees_shipmentprice_AdditionalFees(arg.AdditionalFees)
 	out.PriorityPoint = arg.PriorityPoint // simple assign
 	out.CreatedAt = arg.CreatedAt         // simple assign
 	out.UpdatedAt = arg.UpdatedAt         // simple assign
@@ -275,6 +436,7 @@ func convert_shipmentprice_ShipmentPrice_shipmentpricemodel_ShipmentPrice(arg *s
 	out.ProvinceTypes = arg.ProvinceTypes             // simple assign
 	out.UrbanTypes = arg.UrbanTypes                   // simple assign
 	out.Details = Convert_shipmentprice_PricingDetails_shipmentpricemodel_PricingDetails(arg.Details)
+	out.AdditionalFees = Convert_shipmentprice_AdditionalFees_shipmentpricemodel_AdditionalFees(arg.AdditionalFees)
 	out.PriorityPoint = arg.PriorityPoint // simple assign
 	out.CreatedAt = arg.CreatedAt         // simple assign
 	out.UpdatedAt = arg.UpdatedAt         // simple assign
@@ -317,6 +479,7 @@ func apply_shipmentprice_CreateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg
 	out.ProvinceTypes = arg.ProvinceTypes             // simple assign
 	out.UrbanTypes = arg.UrbanTypes                   // simple assign
 	out.Details = arg.Details                         // simple assign
+	out.AdditionalFees = arg.AdditionalFees           // simple assign
 	out.PriorityPoint = arg.PriorityPoint             // simple assign
 	out.CreatedAt = time.Time{}                       // zero value
 	out.UpdatedAt = time.Time{}                       // zero value
@@ -347,6 +510,7 @@ func apply_shipmentprice_UpdateShipmentPriceArgs_shipmentprice_ShipmentPrice(arg
 	out.ProvinceTypes = arg.ProvinceTypes             // simple assign
 	out.UrbanTypes = arg.UrbanTypes                   // simple assign
 	out.Details = arg.Details                         // simple assign
+	out.AdditionalFees = arg.AdditionalFees           // simple assign
 	out.PriorityPoint = arg.PriorityPoint             // simple assign
 	out.CreatedAt = out.CreatedAt                     // no change
 	out.UpdatedAt = out.UpdatedAt                     // no change

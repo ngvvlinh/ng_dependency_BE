@@ -3,7 +3,6 @@ package driver
 import (
 	"o.o/api/top/types/etc/shipping_provider"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
-	etopmodel "o.o/backend/pkg/etop/model"
 	directclient "o.o/backend/pkg/integration/shipping/direct/client"
 )
 
@@ -24,11 +23,11 @@ func toShippingFeeLines(lines []*directclient.ShippingFeeLine) (res []*shippings
 	return
 }
 
-func toAvailableShippingService(s *directclient.ShippingService) *etopmodel.AvailableShippingService {
+func toAvailableShippingService(s *directclient.ShippingService) *shippingsharemodel.AvailableShippingService {
 	if s == nil {
 		return nil
 	}
-	return &etopmodel.AvailableShippingService{
+	return &shippingsharemodel.AvailableShippingService{
 		Name:               s.Name.String(),
 		ServiceFee:         s.ServiceFee.Int(),
 		ShippingFeeMain:    s.ServiceFeeMain.Int(),
@@ -39,7 +38,7 @@ func toAvailableShippingService(s *directclient.ShippingService) *etopmodel.Avai
 	}
 }
 
-func toAvailableShippingServices(services []*directclient.ShippingService) (res []*etopmodel.AvailableShippingService) {
+func toAvailableShippingServices(services []*directclient.ShippingService) (res []*shippingsharemodel.AvailableShippingService) {
 	for _, s := range services {
 		res = append(res, toAvailableShippingService(s))
 	}

@@ -119,7 +119,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 
 	now := time.Now()
 	expectedPickTime := shipping.CalcPickTime(shipping_provider.GHTK, now)
-	var res []*model.AvailableShippingService
+	var res []*shippingsharemodel.AvailableShippingService
 	for _, result := range results {
 		// always generate service id, even if the result is error
 		providerServiceID, err := generator.GenerateServiceID(result.Code, result.Transport)

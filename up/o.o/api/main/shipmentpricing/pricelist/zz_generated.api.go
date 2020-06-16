@@ -24,22 +24,10 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 	return b.bus.Dispatch(ctx, msg)
 }
 
-type ActivateShipmentPriceListCommand struct {
-	ID           dot.ID
-	ConnectionID dot.ID
-
-	Result struct {
-	} `json:"-"`
-}
-
-func (h AggregateHandler) HandleActivateShipmentPriceList(ctx context.Context, msg *ActivateShipmentPriceListCommand) (err error) {
-	return h.inner.ActivateShipmentPriceList(msg.GetArgs(ctx))
-}
-
 type CreateShipmentPriceListCommand struct {
 	Name         string
 	Description  string
-	IsActive     bool
+	IsDefault    bool
 	ConnectionID dot.ID
 
 	Result *ShipmentPriceList `json:"-"`
@@ -59,6 +47,18 @@ type DeleteShipmentPriceListCommand struct {
 
 func (h AggregateHandler) HandleDeleteShipmentPriceList(ctx context.Context, msg *DeleteShipmentPriceListCommand) (err error) {
 	return h.inner.DeleteShipmentPriceList(msg.GetArgs(ctx))
+}
+
+type SetDefaultShipmentPriceListCommand struct {
+	ID           dot.ID
+	ConnectionID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleSetDefaultShipmentPriceList(ctx context.Context, msg *SetDefaultShipmentPriceListCommand) (err error) {
+	return h.inner.SetDefaultShipmentPriceList(msg.GetArgs(ctx))
 }
 
 type UpdateShipmentPriceListCommand struct {
@@ -98,7 +98,7 @@ func (h QueryServiceHandler) HandleGetShipmentPriceList(ctx context.Context, msg
 
 type ListShipmentPriceListsQuery struct {
 	ConnectionID dot.ID
-	IsActive     dot.NullBool
+	IsDefault    dot.NullBool
 
 	Result []*ShipmentPriceList `json:"-"`
 }
@@ -110,10 +110,10 @@ func (h QueryServiceHandler) HandleListShipmentPriceLists(ctx context.Context, m
 
 // implement interfaces
 
-func (q *ActivateShipmentPriceListCommand) command() {}
-func (q *CreateShipmentPriceListCommand) command()   {}
-func (q *DeleteShipmentPriceListCommand) command()   {}
-func (q *UpdateShipmentPriceListCommand) command()   {}
+func (q *CreateShipmentPriceListCommand) command()     {}
+func (q *DeleteShipmentPriceListCommand) command()     {}
+func (q *SetDefaultShipmentPriceListCommand) command() {}
+func (q *UpdateShipmentPriceListCommand) command()     {}
 
 func (q *GetActiveShipmentPriceListQuery) query() {}
 func (q *GetShipmentPriceListQuery) query()       {}
@@ -121,18 +121,12 @@ func (q *ListShipmentPriceListsQuery) query()     {}
 
 // implement conversion
 
-func (q *ActivateShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, connectionID dot.ID) {
-	return ctx,
-		q.ID,
-		q.ConnectionID
-}
-
 func (q *CreateShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShipmentPriceListArg) {
 	return ctx,
 		&CreateShipmentPriceListArg{
 			Name:         q.Name,
 			Description:  q.Description,
-			IsActive:     q.IsActive,
+			IsDefault:    q.IsDefault,
 			ConnectionID: q.ConnectionID,
 		}
 }
@@ -140,13 +134,19 @@ func (q *CreateShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context
 func (q *CreateShipmentPriceListCommand) SetCreateShipmentPriceListArg(args *CreateShipmentPriceListArg) {
 	q.Name = args.Name
 	q.Description = args.Description
-	q.IsActive = args.IsActive
+	q.IsDefault = args.IsDefault
 	q.ConnectionID = args.ConnectionID
 }
 
 func (q *DeleteShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
+}
+
+func (q *SetDefaultShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, connectionID dot.ID) {
+	return ctx,
+		q.ID,
+		q.ConnectionID
 }
 
 func (q *UpdateShipmentPriceListCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipmentPriceListArgs) {
@@ -178,13 +178,13 @@ func (q *ListShipmentPriceListsQuery) GetArgs(ctx context.Context) (_ context.Co
 	return ctx,
 		&ListShipmentPriceListsArgs{
 			ConnectionID: q.ConnectionID,
-			IsActive:     q.IsActive,
+			IsDefault:    q.IsDefault,
 		}
 }
 
 func (q *ListShipmentPriceListsQuery) SetListShipmentPriceListsArgs(args *ListShipmentPriceListsArgs) {
 	q.ConnectionID = args.ConnectionID
-	q.IsActive = args.IsActive
+	q.IsDefault = args.IsDefault
 }
 
 // implement dispatching
@@ -199,9 +199,9 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
-	b.AddHandler(h.HandleActivateShipmentPriceList)
 	b.AddHandler(h.HandleCreateShipmentPriceList)
 	b.AddHandler(h.HandleDeleteShipmentPriceList)
+	b.AddHandler(h.HandleSetDefaultShipmentPriceList)
 	b.AddHandler(h.HandleUpdateShipmentPriceList)
 	return CommandBus{b}
 }

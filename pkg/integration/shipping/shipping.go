@@ -19,7 +19,6 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
@@ -50,14 +49,14 @@ func CalcPickTime(shippingProvider shipping_provider.ShippingProvider, t time.Ti
 	return res
 }
 
-func CalcServicesTime(shippingProvider shipping_provider.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, services []*model.AvailableShippingService) []*model.AvailableShippingService {
+func CalcServicesTime(shippingProvider shipping_provider.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, services []*shippingsharemodel.AvailableShippingService) []*shippingsharemodel.AvailableShippingService {
 	for _, service := range services {
 		_ = CalcServiceTime(shippingProvider, fromDistrict, toDistrict, service)
 	}
 	return services
 }
 
-func CalcServiceTime(shippingProvider shipping_provider.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, service *model.AvailableShippingService) *model.AvailableShippingService {
+func CalcServiceTime(shippingProvider shipping_provider.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, service *shippingsharemodel.AvailableShippingService) *shippingsharemodel.AvailableShippingService {
 	// GHN, GHTK
 	// Thời gian lấy hàng dự kiến:
 	// Chỉ lấy vào chủ chủ nhật trường hợp nội thành HCM,HN.

@@ -29,6 +29,7 @@ import (
 	purchaserefundpm "o.o/backend/com/main/purchaserefund/pm"
 	receiptpm "o.o/backend/com/main/receipting/pm"
 	refundpm "o.o/backend/com/main/refund/pm"
+	pricelistpm "o.o/backend/com/main/shipmentpricing/pricelist/pm"
 	shipnowpm "o.o/backend/com/main/shipnow/pm"
 	shippingpm "o.o/backend/com/main/shipping/pm"
 	affiliatepm "o.o/backend/com/services/affiliate/pm"
@@ -75,6 +76,7 @@ type Output struct {
 	_affiliatePM      *affiliatepm.ProcessManager
 	_traderPM         *traderpm.ProcessManager
 	_connectionPM     *connectioningpm.ProcessManager
+	_pricelistPM      *pricelistpm.ProcessManager
 
 	// inject
 	_s *sqlstore.Store

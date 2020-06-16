@@ -84,6 +84,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 
 	err = wh.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		// request get order in GHTK
+		// get provider shipping fee lines
 		// if error occurred, ignore it, update data from webhook
 		updateFfm, _ := wh.shipmentManager.UpdateFulfillment(ctx, ffm)
 		// trạng thái phụ của đơn ghtk nằm trong data webhook

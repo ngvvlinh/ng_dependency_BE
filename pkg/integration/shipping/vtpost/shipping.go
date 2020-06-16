@@ -106,7 +106,7 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 	return nil
 }
 
-func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment, args shippingprovider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
+func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment, args shippingprovider.GetShippingServicesArgs, service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
 	note := shippingprovider.GetShippingProviderNote(order, ffm)
 	weight := order.TotalWeight
 	if weight == 0 {
@@ -260,7 +260,7 @@ func (c *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillm
 	return c.cancelOrder(ctx, cmd)
 }
 
-func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
@@ -295,7 +295,7 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider
 	return cmd.Result, nil
 }
 
-func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	return c.GetShippingServices(ctx, args)
 }
 

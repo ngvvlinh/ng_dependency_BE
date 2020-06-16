@@ -10,8 +10,10 @@ import (
 	"o.o/api/top/types/etc/filter_type"
 	"o.o/api/top/types/etc/location_type"
 	notifier_entity "o.o/api/top/types/etc/notifier_entity"
+	"o.o/api/top/types/etc/price_modifier_type"
 	"o.o/api/top/types/etc/route_type"
 	shipping "o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_fee_type"
 	status3 "o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -307,6 +309,7 @@ type ShipmentPrice struct {
 	CreatedAt           time.Time                          `json:"created_at"`
 	UpdatedAt           time.Time                          `json:"updated_at"`
 	Status              status3.Status                     `json:"status"`
+	AdditionalFees      []*AdditionalFee                   `json:"additional_fees"`
 }
 
 func (m *ShipmentPrice) String() string { return jsonx.MustMarshalToString(m) }
@@ -328,6 +331,23 @@ type PricingDetailOverweight struct {
 
 func (m *PricingDetailOverweight) String() string { return jsonx.MustMarshalToString(m) }
 
+type AdditionalFee struct {
+	FeeType shipping_fee_type.ShippingFeeType `json:"fee_type"`
+	Rules   []*AdditionalFeeRule              `json:"rules"`
+}
+
+func (m *AdditionalFee) String() string { return jsonx.MustMarshalToString(m) }
+
+type AdditionalFeeRule struct {
+	MinValue          int                                   `json:"min_value"`
+	MaxValue          int                                   `json:"max_value"`
+	PriceModifierType price_modifier_type.PriceModifierType `json:"price_modifier_type"`
+	Amount            int                                   `json:"amount"`
+	MinPrice          int                                   `json:"min_price"`
+}
+
+func (m *AdditionalFeeRule) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetShipmentPricesResponse struct {
 	ShipmentPrices []*ShipmentPrice `json:"shipment_prices"`
 }
@@ -345,6 +365,7 @@ type CreateShipmentPriceRequest struct {
 	UrbanTypes          []route_type.UrbanType             `json:"urban_types"`
 	PriorityPoint       int                                `json:"priority_point"`
 	Details             []*PricingDetail                   `json:"details"`
+	AdditionalFees      []*AdditionalFee                   `json:"additional_fees"`
 }
 
 func (m *CreateShipmentPriceRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -362,6 +383,7 @@ type UpdateShipmentPriceRequest struct {
 	PriorityPoint       int                                `json:"priority_point"`
 	Details             []*PricingDetail                   `json:"details"`
 	Status              status3.Status                     `json:"status"`
+	AdditionalFees      []*AdditionalFee                   `json:"additional_fees"`
 }
 
 func (m *UpdateShipmentPriceRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -525,7 +547,7 @@ type ShipmentPriceList struct {
 	ID           dot.ID    `json:"id"`
 	Name         string    `json:"name"`
 	Description  string    `json:"description"`
-	IsActive     bool      `json:"is_active"`
+	IsDefault    bool      `json:"is_default"`
 	ConnectionID dot.ID    `json:"connection_id"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
@@ -535,7 +557,7 @@ func (m *ShipmentPriceList) String() string { return jsonx.MustMarshalToString(m
 
 type GetShipmentPriceListsRequest struct {
 	ConnectionID dot.ID       `json:"connection_id"`
-	IsActive     dot.NullBool `json:"is_active"`
+	IsDefault    dot.NullBool `json:"is_default"`
 }
 
 func (m *GetShipmentPriceListsRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -549,7 +571,7 @@ func (m *GetShipmentPriceListsResponse) String() string { return jsonx.MustMarsh
 type CreateShipmentPriceListRequest struct {
 	Name         string `json:"name"`
 	Description  string `json:"description"`
-	IsActive     bool   `json:"is_active"`
+	IsDefault    bool   `json:"is_default"`
 	ConnectionID dot.ID `json:"connection_id"`
 }
 

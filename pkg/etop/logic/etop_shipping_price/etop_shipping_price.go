@@ -9,6 +9,7 @@ import (
 
 	"o.o/api/main/location"
 	"o.o/api/top/types/etc/shipping_provider"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/backend/pkg/etop/model"
@@ -84,8 +85,8 @@ type GetEtopShippingServicesArgs struct {
 	Weight       int
 }
 
-func GetEtopShippingServices(args *GetEtopShippingServicesArgs) []*model.AvailableShippingService {
-	var res []*model.AvailableShippingService
+func GetEtopShippingServices(args *GetEtopShippingServicesArgs) []*shippingsharemodel.AvailableShippingService {
+	var res []*shippingsharemodel.AvailableShippingService
 	pricings := priceRuleIndex[args.Carrier]
 	pricingsMatch := GetESPricingsMatch(pricings, args.FromProvince, args.ToProvince, args.ToDistrict)
 
@@ -162,7 +163,7 @@ func ContainRouteType(types []model.ShippingRouteType, routeType model.ShippingR
 	return false
 }
 
-func (pricing *ESPricing) ToService(generator serviceIDGenerator, weight int, carrier shipping_provider.ShippingProvider) (*model.AvailableShippingService, error) {
+func (pricing *ESPricing) ToService(generator serviceIDGenerator, weight int, carrier shipping_provider.ShippingProvider) (*shippingsharemodel.AvailableShippingService, error) {
 	pRuleDetail := GetPriceRuleDetail(weight, pricing.Details)
 	if pRuleDetail == nil {
 		return nil, cm.Error(cm.Internal, "Không có bảng giá phù hợp", nil)
@@ -176,7 +177,7 @@ func (pricing *ESPricing) ToService(generator serviceIDGenerator, weight int, ca
 	if err != nil {
 		return nil, err
 	}
-	return &model.AvailableShippingService{
+	return &shippingsharemodel.AvailableShippingService{
 		Name:              pricing.Type,
 		ProviderServiceID: serviceID,
 		ServiceFee:        price,
@@ -291,7 +292,7 @@ func DecodeShippingServiceName(code string) (name string, ok bool) {
 	return ParseEtopServiceCode(code)
 }
 
-func FillInfoEtopServices(providerServices []*model.AvailableShippingService, etopServices []*model.AvailableShippingService) ([]*model.AvailableShippingService, error) {
+func FillInfoEtopServices(providerServices []*shippingsharemodel.AvailableShippingService, etopServices []*shippingsharemodel.AvailableShippingService) ([]*shippingsharemodel.AvailableShippingService, error) {
 	if len(etopServices) == 0 {
 		return nil, nil
 	}
@@ -299,7 +300,7 @@ func FillInfoEtopServices(providerServices []*model.AvailableShippingService, et
 		return nil, cm.Error(cm.InvalidArgument, "Không đủ thông tin", nil)
 	}
 
-	serviceTypeIndex := make(map[string]*model.AvailableShippingService)
+	serviceTypeIndex := make(map[string]*shippingsharemodel.AvailableShippingService)
 	for _, service := range providerServices {
 		key := fmt.Sprintf("%v_%v", service.Provider.String(), service.Name)
 		if serviceTypeIndex[key] == nil {

@@ -69,7 +69,7 @@ func convert_pricelistmodel_ShipmentPriceList_pricelist_ShipmentPriceList(arg *p
 	out.Name = arg.Name                 // simple assign
 	out.Description = arg.Description   // simple assign
 	out.WLPartnerID = arg.WLPartnerID   // simple assign
-	out.IsActive = arg.IsActive         // simple assign
+	out.IsDefault = arg.IsDefault       // simple assign
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
 	out.DeletedAt = arg.DeletedAt       // simple assign
@@ -103,7 +103,7 @@ func convert_pricelist_ShipmentPriceList_pricelistmodel_ShipmentPriceList(arg *p
 	out.ID = arg.ID                     // simple assign
 	out.Name = arg.Name                 // simple assign
 	out.Description = arg.Description   // simple assign
-	out.IsActive = arg.IsActive         // simple assign
+	out.IsDefault = arg.IsDefault       // simple assign
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
 	out.DeletedAt = arg.DeletedAt       // simple assign
@@ -139,7 +139,7 @@ func apply_pricelist_CreateShipmentPriceListArg_pricelist_ShipmentPriceList(arg 
 	out.Name = arg.Name                 // simple assign
 	out.Description = arg.Description   // simple assign
 	out.WLPartnerID = 0                 // zero value
-	out.IsActive = arg.IsActive         // simple assign
+	out.IsDefault = arg.IsDefault       // simple assign
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
 	out.DeletedAt = time.Time{}         // zero value
@@ -162,7 +162,7 @@ func apply_pricelist_UpdateShipmentPriceListArgs_pricelist_ShipmentPriceList(arg
 	out.Name = arg.Name                 // simple assign
 	out.Description = arg.Description   // simple assign
 	out.WLPartnerID = out.WLPartnerID   // no change
-	out.IsActive = out.IsActive         // no change
+	out.IsDefault = out.IsDefault       // no change
 	out.CreatedAt = out.CreatedAt       // no change
 	out.UpdatedAt = out.UpdatedAt       // no change
 	out.DeletedAt = out.DeletedAt       // no change

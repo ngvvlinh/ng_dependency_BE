@@ -13,7 +13,6 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpreq"
-	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/common/strs"
 )
@@ -484,12 +483,12 @@ type ExtraService struct {
 	ServiceID  Int    `json:"ServiceID"`  // 53337
 }
 
-func (s *AvailableService) ToShippingService(providerServiceID string) *model.AvailableShippingService {
+func (s *AvailableService) ToShippingService(providerServiceID string) *shippingsharemodel.AvailableShippingService {
 	if s == nil {
 		return nil
 	}
 	serviceFeeMain := cm.CoalesceInt(int(s.ServiceFeeMain), int(s.ServiceFee))
-	return &model.AvailableShippingService{
+	return &shippingsharemodel.AvailableShippingService{
 		Name:              s.Name.String(),
 		ServiceFee:        int(s.ServiceFee),
 		ShippingFeeMain:   serviceFeeMain,
@@ -602,11 +601,11 @@ type CalculateFeeResponse struct {
 	WeightDimension int          `json:"WeightDimension"`
 }
 
-func (r *CalculateFeeResponse) ToShippingService(providerServiceID string) *model.AvailableShippingService {
+func (r *CalculateFeeResponse) ToShippingService(providerServiceID string) *shippingsharemodel.AvailableShippingService {
 	if r == nil {
 		return nil
 	}
-	return &model.AvailableShippingService{
+	return &shippingsharemodel.AvailableShippingService{
 		Name:                "",
 		ServiceFee:          r.CalculatedFee,
 		ShippingFeeMain:     r.ServiceFee,

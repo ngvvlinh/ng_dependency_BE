@@ -14,7 +14,6 @@ import (
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
-	etopmodel "o.o/backend/pkg/etop/model"
 	directclient "o.o/backend/pkg/integration/shipping/direct/client"
 )
 
@@ -59,7 +58,7 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,
 	args *carriertypes.GetShippingServicesArgs,
-	service *etopmodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+	service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
 	note := carriertypes.GetShippingProviderNote(ffm)
 
 	fromQuery := &location.GetLocationQuery{
@@ -174,7 +173,7 @@ func (d *DirectShipmentDriver) CancelFulfillment(ctx context.Context, ffm *shipm
 	return d.client.CancelFulfillment(ctx, cmd)
 }
 
-func (d *DirectShipmentDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*etopmodel.AvailableShippingService, error) {
+func (d *DirectShipmentDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
 	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {

@@ -551,8 +551,9 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 // UpdateFulfillmentShippingFeesFromWebhook
 //
 // Cập nhật giá vận chuyển từ webhook
+// Luôn cập nhật ProviderShippingFeeLines
 // Kiểm tra nếu có thay đổi về khối lượng, sẽ tính lại giá theo bảng giá hiện tại của TOPSHIP. Nếu không có giá TOPSHIP sẽ giữ nguyên giá từ NVC => cập nhật lại giá mới hoặc thông báo qua telegram nếu đơn đã nằm trong phiên thanh toán với shop
-func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context, args *shipping.UpdateFulfillmentShippingFeesFromWebhookArgs) error {
+func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context, args *shipping.UpdateFulfillmentShippingFeesFromWebhookArgs) (_err error) {
 	providerFeeLines := args.ProviderFeeLines
 	if providerFeeLines == nil || len(providerFeeLines) == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing providerFeeLines")
@@ -561,59 +562,62 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	if err != nil {
 		return err
 	}
-	ffmDB := shippingconvert.Convert_shipping_Fulfillment_shippingmodel_Fulfillment(ffm, nil)
 
-	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
-	if connectionID == 0 {
-		return cm.Errorf(cm.FailedPrecondition, nil, "ConnectionID can not be empty")
+	update := &shipping.Fulfillment{
+		ID:                       ffm.ID,
+		ProviderShippingFeeLines: args.ProviderFeeLines,
 	}
-
-	applyPriceList, makeupMainPrice := ffm.EtopPriceRule, ffm.EtopAdjustedShippingFeeMain
-	if args.NewWeight != 0 && args.NewWeight != ffm.TotalWeight {
-		if a.shimentManager.FlagApplyShipmentPrice {
-			mainPrice, err := a.shimentManager.CalcMakeupShipmentPrice(ctx, ffmDB, args.NewWeight)
-			if err == nil {
-				// apply topship pricelist
-				applyPriceList = true
-				makeupMainPrice = mainPrice
-			} else {
-				applyPriceList = false
-				makeupMainPrice = 0
+	defer func() error {
+		// always update shipping fee even if error occurred
+		if update.ShippingFeeShopLines != nil {
+			totalFee := shipping.GetTotalShippingFee(update.ShippingFeeShopLines)
+			shippingFeeShop := shipping.CalcShopShippingFee(totalFee, ffm)
+			update.ShippingFeeShop = shippingFeeShop
+			if shippingFeeShop != ffm.ShippingFeeShop {
+				// Giá thay đổi
+				// check money_transaction_shipping
+				if ffm.MoneyTransactionID != 0 {
+					// Đơn đã nằm trong phiên
+					// Giá cước đơn thay đổi
+					// Không cập nhật + bắn noti telegram để follow
+					connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
+					if connectionID == 0 {
+						return cm.Errorf(cm.FailedPrecondition, nil, "ConnectionID can not be empty")
+					}
+					connection, _ := a.shimentManager.GetConnectionByID(ctx, connectionID)
+					str := "–––\n👹 %v: đơn %v có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- Giá hiện tại: %v \n- Giá mới: %v\n–––"
+					ll.SendMessage(fmt.Sprintf(str, connection.Name, ffm.ShippingCode, ffm.ShippingFeeShop, shippingFeeShop))
+					// shop shipping fee does not change
+					update.ShippingFeeShopLines = nil
+					update.ShippingFeeShop = 0
+				}
 			}
 		}
-	}
 
-	shippingFeeShopLines := shipping.GetShippingFeeShopLines(providerFeeLines, applyPriceList, dot.Int(makeupMainPrice))
-	shippingFee := shipping.GetTotalShippingFee(shippingFeeShopLines)
+		if err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillment(update); err != nil {
+			return err
+		}
+		// keep origin error
+		return _err
+	}()
 
-	if shipping.CalcShopShippingFee(shippingFee, ffm) == ffm.ShippingFeeShop {
-		// Giá không thay đổi
-		// Không cần làm gì
+	if !a.shimentManager.FlagApplyShipmentPrice || !ffm.EtopPriceRule {
+		update.ShippingFeeShopLines = shipping.GetShippingFeeShopLines(providerFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		return nil
 	}
 
-	// check money_transaction_shipping
-	if ffm.MoneyTransactionID != 0 {
-		// Đơn đã nằm trong phiên
-		// Giá cước đơn thay đổi
-		// Không cập nhật + bắn noti telegram để follow
-		connection, _ := a.shimentManager.GetConnectionByID(ctx, connectionID)
-		str := "–––\n👹 %v: đơn %v có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- Giá hiện tại: %v \n- Giá mới: %v\n–––"
-		ll.SendMessage(fmt.Sprintf(str, connection.Name, ffm.ShippingCode, ffm.ShippingFeeShop, shippingFee))
-
-		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn (ffmID = %v) có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật")
-	}
-
-	update := &shipping.UpdateFulfillmentShippingFeesArgs{
-		FulfillmentID:               ffm.ID,
-		ShippingCode:                ffm.ShippingCode,
-		EtopPriceRule:               dot.Bool(applyPriceList),
-		EtopAdjustedShippingFeeMain: dot.Int(makeupMainPrice),
-		ProviderShippingFeeLines:    providerFeeLines,
-		ShippingFeeLines:            shippingFeeShopLines,
-	}
-	if _, err := a.UpdateFulfillmentShippingFees(ctx, update); err != nil {
-		return err
+	// Trường hợp có áp dụng bảng giá
+	// Check khối lượng:
+	//      + Nếu thay đổi: tính lại giá mới
+	//      + Nếu không đổi: Không cập nhật giá shop
+	if args.NewWeight != 0 && args.NewWeight != ffm.TotalWeight {
+		feeLines, err := a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, ffm, args.NewWeight)
+		if err != nil {
+			return err
+		}
+		update.ShippingFeeShopLines = shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(feeLines)
+		// Remove if not use
+		update.EtopAdjustedShippingFeeMain = shippingsharemodel.GetMainFee(feeLines)
 	}
 	return nil
 }

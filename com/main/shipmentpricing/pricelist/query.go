@@ -35,14 +35,14 @@ func (q *QueryService) GetShipmentPriceList(ctx context.Context, id dot.ID) (*pr
 }
 
 func (q *QueryService) GetActiveShipmentPriceList(ctx context.Context, connectionID dot.ID) (*pricelist.ShipmentPriceList, error) {
-	return q.shipmentPriceListStore(ctx).ConnectionID(connectionID).IsActive(true).GetShipmentPriceList()
+	return q.shipmentPriceListStore(ctx).ConnectionID(connectionID).IsDefault(true).GetShipmentPriceList()
 }
 
 func (q *QueryService) ListShipmentPriceLists(ctx context.Context,
 	args *pricelist.ListShipmentPriceListsArgs) ([]*pricelist.ShipmentPriceList, error) {
 	query := q.shipmentPriceListStore(ctx).OptionalConnectionID(args.ConnectionID)
-	if args.IsActive.Valid {
-		query = query.IsActive(args.IsActive.Bool)
+	if args.IsDefault.Valid {
+		query = query.IsDefault(args.IsDefault.Bool)
 	}
 	return query.ListShipmentPriceLists()
 }

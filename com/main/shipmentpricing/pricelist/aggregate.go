@@ -60,8 +60,8 @@ func (a *Aggregate) CreateShipmentPriceList(ctx context.Context, args *pricelist
 		if err != nil {
 			return err
 		}
-		if args.IsActive {
-			err = a.ActivateShipmentPriceList(ctx, plist.ID, plist.ConnectionID)
+		if args.IsDefault {
+			err = a.SetDefaultShipmentPriceList(ctx, plist.ID, plist.ConnectionID)
 		}
 		return err
 	})
@@ -84,19 +84,19 @@ func (a *Aggregate) UpdateShipmentPriceList(ctx context.Context, args *pricelist
 	})
 }
 
-// ActivateShipmentPriceList
+// SetDefaultShipmentPriceList
 //
 // Mỗi connection chỉ có duy nhất 1 bảng giá được active
-func (a *Aggregate) ActivateShipmentPriceList(ctx context.Context, id dot.ID, connectionID dot.ID) error {
+func (a *Aggregate) SetDefaultShipmentPriceList(ctx context.Context, id dot.ID, connectionID dot.ID) error {
 	if id == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		err := a.shipmentPriceListStore(ctx).ConnectionID(connectionID).DeactivePriceList()
+		err := a.shipmentPriceListStore(ctx).ConnectionID(connectionID).SetUndefaultPriceList()
 		if err != nil {
 			return err
 		}
-		err = a.shipmentPriceListStore(ctx).ID(id).ConnectionID(connectionID).ActivePriceList()
+		err = a.shipmentPriceListStore(ctx).ID(id).ConnectionID(connectionID).SetDefaultPriceList()
 		if err != nil {
 			return err
 		}
@@ -110,7 +110,7 @@ func (a *Aggregate) DeleteShipmentPriceList(ctx context.Context, id dot.ID) erro
 	if err != nil {
 		return err
 	}
-	if priceList.IsActive {
+	if priceList.IsDefault {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Can not delete an active price list")
 	}
 
