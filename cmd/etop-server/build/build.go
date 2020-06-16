@@ -127,6 +127,8 @@ func BuildMainServer(
 	)
 	intHandlers = httprpc.WithPrefix("/api/", intHandlers)
 	extHandlers = httprpc.WithPrefix("/v1/", extHandlers)
+	mux.Handle("/api/", http.NotFoundHandler())
+	mux.Handle("/v1/", http.NotFoundHandler())
 
 	var handlers []httprpc.Server
 	handlers = append(handlers, intHandlers...)

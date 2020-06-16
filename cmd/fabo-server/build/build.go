@@ -145,6 +145,7 @@ func BuildMainServer(
 		bus.Middleware,
 	)
 	intHandlers = httprpc.WithPrefix("/api/", intHandlers)
+	mux.Handle("/api/", http.NotFoundHandler())
 
 	var handlers []httprpc.Server
 	handlers = append(handlers, intHandlers...)
