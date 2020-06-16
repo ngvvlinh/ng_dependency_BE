@@ -190,7 +190,7 @@ func (q *FbUserQuery) populateFbExternalUsersWithCustomerInfo(ctx context.Contex
 	return result, nil
 }
 
-func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, args *fbusering.ListCustomerWithFbAvatarsArgs) ([]*fbusering.ShopCustomerWithFbExternalUser, error) {
+func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, args *fbusering.ListCustomerWithFbAvatarsArgs) (*fbusering.ListShopCustomerWithFbExternalUserResponse, error) {
 	query := &customering.ListCustomersQuery{
 		ShopID:  args.ShopID,
 		Paging:  args.Paging,
@@ -233,5 +233,8 @@ func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, ar
 	for k, v := range listCustomerFbUser {
 		listCustomerFbUser[k].FbUsers = customerfbUsers[v.ID]
 	}
-	return listCustomerFbUser, nil
+	return &fbusering.ListShopCustomerWithFbExternalUserResponse{
+		Customers: listCustomerFbUser,
+		Paging:    query.Result.Paging,
+	}, nil
 }

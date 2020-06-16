@@ -91,7 +91,13 @@ func (s *CustomerService) ListCustomersWithFbUsers(ctx context.Context, request 
 		if err := s.FBUseringQuery.Dispatch(ctx, query); err != nil {
 			return nil, err
 		}
-		result.Customers = append(result.Customers, convertpbfabo.PbCustomersWithFbUsers(query.Result)...)
+		result.Customers = append(result.Customers, convertpbfabo.PbCustomersWithFbUsers(query.Result.Customers)...)
+		result.Paging = cmapi.PbPageInfo(paging)
+		result.Paging.Total = len(result.Customers)
+		// Nếu có chứa customer anonymous
+		if result.Customers[0].Id == 1 {
+			result.Paging.Limit++
+		}
 	}
 	return result, nil
 }

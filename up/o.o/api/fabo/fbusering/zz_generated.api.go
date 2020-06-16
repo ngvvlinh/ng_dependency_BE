@@ -188,7 +188,7 @@ type ListShopCustomerWithFbExternalUserQuery struct {
 	Paging  meta.Paging
 	Filters meta.Filters
 
-	Result []*ShopCustomerWithFbExternalUser `json:"-"`
+	Result *ListShopCustomerWithFbExternalUserResponse `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleListShopCustomerWithFbExternalUser(ctx context.Context, msg *ListShopCustomerWithFbExternalUserQuery) (err error) {

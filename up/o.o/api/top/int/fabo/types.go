@@ -37,6 +37,7 @@ type CustomerWithFbUserAvatars struct {
 
 type ListCustomersWithFbUsersResponse struct {
 	Customers []*CustomerWithFbUserAvatars `json:"customers"`
+	Paging    *common.PageInfo             `json:"paging"`
 }
 
 func (m *ListCustomersWithFbUsersResponse) String() string {

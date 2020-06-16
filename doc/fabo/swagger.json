@@ -1253,6 +1253,9 @@
           "items": {
             "$ref": "#/definitions/cvCustomerWithFbUserAvatars"
           }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },
