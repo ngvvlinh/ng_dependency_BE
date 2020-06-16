@@ -105,6 +105,12 @@ func (a *Aggregate) CreateFulfillments(ctx context.Context, args *shipping.Creat
 		if err != nil {
 			return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 		}
+		if args.ReturnAddress != nil {
+			_, _, err = a.getAndVerifyAddress(ctx, args.ReturnAddress)
+			if err != nil {
+				return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ trả hàng không hợp lệ: %v", err)
+			}
+		}
 
 		oldFulfillments, err := a.ffmStore(ctx).OrderID(args.OrderID).ListFfmsDB()
 		if err != nil {
