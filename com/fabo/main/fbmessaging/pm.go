@@ -238,7 +238,7 @@ func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
 			externalUserNameCustomerConversation := lastFbExternalComment.ExternalFrom.Name
 			externalFromCustomerConversation := lastFbExternalComment.ExternalFrom
 			if lastFbExternalComment.ExternalUserID == lastFbExternalComment.ExternalPageID &&
-				lastFbExternalComment.ExternalParent != nil {
+				lastFbExternalComment.ExternalParent != nil && lastFbExternalComment.ExternalParent.From != nil {
 				externalUserIDCustomerConversation = lastFbExternalComment.ExternalParent.From.ID
 				externalUserNameCustomerConversation = lastFbExternalComment.ExternalParent.From.Name
 			}
