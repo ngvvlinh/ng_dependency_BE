@@ -10,7 +10,7 @@ services:
 
   postgres:
     container_name: etop_postgres
-    image: postgres:12-alpine
+    image: postgres:12
     ports:
     - 5432:5432
     shm_size: 4GB

@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -36,12 +35,21 @@ func main() {
 
 	var contents []Content
 	err := filepath.Walk(sqlPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			ll.Error("error", l.Error(err))
+			return err
+		}
+		if info == nil {
+			ll.Error("unexpected")
+			return err
+		}
+
 		baseName := filepath.Base(path)
 		if strings.HasPrefix(baseName, "_") {
 			if info.IsDir() {
-				log.Println("skipped directory", baseName)
+				ll.S.Infof("skipped directory %v", baseName)
 			} else {
-				log.Println("skipped file", baseName)
+				ll.S.Infof("skipped file %v", baseName)
 			}
 			return filepath.SkipDir
 		}
@@ -49,7 +57,7 @@ func main() {
 			return nil
 		}
 		if !strings.HasSuffix(baseName, ".sql") {
-			log.Println("skipped non-sql file", baseName)
+			ll.S.Infof("skipped non-sql file %v", baseName)
 			return nil
 		}
 		body, err := ioutil.ReadFile(path)
@@ -84,9 +92,9 @@ func main() {
 
 	err = db.InTransaction(bus.Ctx(), func(tx cmsql.QueryInterface) error {
 		for _, content := range contents {
-			log.Println("--- Executing", content.Path)
-			_, err := tx.SQL(string(content.Body)).Exec()
-			if err != nil {
+			ll.S.Infof("--- Executing %v", content.Path)
+			_, _err := tx.SQL(string(content.Body)).Exec()
+			if _err != nil {
 				ll.Error("Error while executing", l.String("script", content.Path), l.Error(err))
 				return err
 			}
@@ -96,5 +104,5 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
-	log.Println("Initialized database for testing")
+	ll.Info("Initialized database for testing")
 }
