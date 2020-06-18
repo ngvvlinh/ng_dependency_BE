@@ -13,9 +13,6 @@ services:
     image: postgres:12-alpine
     ports:
     - 5432:5432
-    build:
-      context: .
-      shm_size: 4GB
     shm_size: 4GB
     volumes:
     - etop_postgres_data:/var/lib/postgresql/data

@@ -1,12 +1,10 @@
 # eTop Backend
 
-[![pipeline status](http://code.eyeteam.vn/etop-backend/backend/badges/master/pipeline.svg)](http://code.eyeteam.vn/etop-backend/backend/commits/master) [![coverage report](http://code.eyeteam.vn/etop-backend/backend/badges/master/coverage.svg)](http://code.eyeteam.vn/etop-backend/backend/commits/master)
-
 ## Quick Start
 
 - Install [Go](https://golang.org/dl/)
-- Install [dep](https://github.com/golang/dep)
-- Put the project at `$GOPATH/src/etop.vn/backend`
+- Set the environment variable `PROJECT_DIR` to an empty directory
+- Clone the project to `$PROJECT_DIR/backend`
 - Add the following line to `/etc/hosts`:
 
 ```
@@ -17,13 +15,15 @@
 
 ```bash
 $ export PATH=$GOPATH/bin:$PATH
-$ cd $GOPATH/src/etop.vn/backend
-$ dep ensure
+$ cd $PROJECT_DIR/backend
 $ go install ./...
-
-$ docker volume create --name=etop_redis_data
-$ docker volume create --name=etop_postgres_data
 $ docker-compose up -d
+```
+
+Create a database with name `etop_dev`, and initialize database schema:
+
+```
+$ go run ./scripts/init_testdb -dbname etop_dev -drop
 $ etop-server
 ```
 
@@ -46,21 +46,12 @@ To view API documentation, open these URLs in browser:
 
 ## Development
 
-- Install [protobuf](https://developers.google.com/protocol-buffers/docs/downloads)
 - Install [jq](https://stedolan.github.io/jq/)
 - Run the following script:
 
 ```
 $ scripts/install-tools.sh
 ```
-
-### Install dependencies
-
-    $ scripts/install-tools.sh
-
-### Generate protobuf
-
-    $ scripts/protobuf-gen.sh
 
 ## Deployment
 
