@@ -12,6 +12,7 @@ import (
 	"o.o/backend/com/shopping/customering/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/validate"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
 	"o.o/capi/dot"
 )
@@ -115,10 +116,20 @@ func (q *CustomerQuery) ListCustomers(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*customering.CustomersResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID).WithPaging(args.Paging).Filters(args.Filters)
+	if args.Name != "" {
+		query = query.FullTextSearchFullName(args.Name)
+	}
 	customers, err := query.ListCustomers()
 	if err != nil {
 		return nil, err
 	}
+	var customerFilter []*customering.ShopCustomer
+	for _, v := range customers {
+		if validate.VerifySearchName(v.FullName, args.Name) {
+			customerFilter = append(customerFilter, v)
+		}
+	}
+	customers = customerFilter
 	var mapCustomerGroup = make(map[dot.ID][]dot.ID)
 	var customerIDs []dot.ID
 	for _, customer := range customers {

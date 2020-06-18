@@ -139,7 +139,7 @@ func createShopProduct(arg *catalog.CreateShopProductArgs, out *catalog.ShopProd
 	out.CostPrice = arg.CostPrice
 	out.ListPrice = arg.ListPrice
 	out.RetailPrice = arg.RetailPrice
-	out.NameNorm = validate.NormalizeSearch(arg.Name)
+	out.NameNorm = validate.NormalizeSearchCharacter(arg.Name)
 }
 
 func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.ShopProduct) *catalog.ShopProduct {
@@ -147,7 +147,7 @@ func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.Shop
 		return nil
 	}
 	apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(args, in)
-	in.NameNorm = validate.NormalizeSearch(in.Name)
+	in.NameNorm = validate.NormalizeSearchCharacter(in.Name)
 	in.UpdatedAt = time.Now()
 	if args.DescHTML.Valid == true {
 		var descHTML = htmlPolicy.Sanitize(args.DescHTML.String)

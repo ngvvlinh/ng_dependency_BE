@@ -14,6 +14,7 @@ import (
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -140,6 +141,7 @@ type ListPurchaseOrdersQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *PurchaseOrdersResponse `json:"-"`
 }
@@ -319,6 +321,7 @@ func (q *ListPurchaseOrdersQuery) GetArgs(ctx context.Context) (_ context.Contex
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -326,6 +329,7 @@ func (q *ListPurchaseOrdersQuery) SetListQueryShopArgs(args *shopping.ListQueryS
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListPurchaseOrdersByReceiptIDQuery) GetArgs(ctx context.Context) (_ context.Context, receiptID dot.ID, shopID dot.ID) {

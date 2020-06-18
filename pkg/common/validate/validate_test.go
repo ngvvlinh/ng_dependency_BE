@@ -9,6 +9,7 @@ import (
 
 	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/capi/filter"
 )
 
 func TestNormalize(t *testing.T) {
@@ -672,4 +673,62 @@ func BenchmarkNormalizeSearchPhone(b *testing.B) {
 		_s = s
 	}
 	_ = _s
+}
+
+func TestVerifySearchName(t *testing.T) {
+	tests := []struct {
+		str       string
+		strSearch filter.FullTextSearch
+		want      bool // NormalizeSerachPhone
+	}{
+		{
+			"abcxyzghlmnk abcded",
+			"abcxyzghlmnk",
+			true,
+		}, {
+			"abcxyzghlmek asdsadsa",
+			"abcxyzghlmnk",
+			false,
+		}, {
+			"abcxyzghlmnk asdsadsa aaaaaaaaaaaa",
+			"abcxyzghlmnk aaaaaaaaaabbb",
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run("Verify Search", func(t *testing.T) {
+			output := VerifySearchName(tt.str, tt.strSearch)
+			assert.Equal(t, tt.want, output)
+		})
+	}
+}
+
+func TestNormalizeSearchCharacter(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string // NormalizeSerachPhone
+	}{
+		{
+			"0945389709",
+			"0945389709 0 09 094 0945 09453 094538 0945389 09453897 094538970",
+		}, {
+			"09453897091",
+			"09453897091 0 09 094 0945 09453 094538 0945389 09453897 094538970 0945389709",
+		}, {
+			"hello '@' world",
+			"hello '@' world h he hel hell w wo wor worl",
+		}, {
+			"1 2 3 4 5 6 7 8 9 10 11 12",
+			"1 2 3 4 5 6 7 8 9 10 11 12 1 1 1",
+		}, {
+			"toidicodebua abc",
+			"toidicodebua abc t to toi toid toidi toidic toidico toidicod toidicode toidicodeb a ab",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			output := NormalizeSearchCharacter(tt.input)
+			assert.Equal(t, tt.want, output)
+		})
+	}
 }

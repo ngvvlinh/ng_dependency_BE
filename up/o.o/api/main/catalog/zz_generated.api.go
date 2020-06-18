@@ -13,6 +13,7 @@ import (
 	product_type "o.o/api/top/types/etc/product_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -603,6 +604,7 @@ type ListShopCategoriesQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *ShopCategoriesResponse `json:"-"`
 }
@@ -628,6 +630,7 @@ type ListShopCollectionsQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *ShopCollectionsResponse `json:"-"`
 }
@@ -692,6 +695,7 @@ type ListShopProductsQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *ShopProductsResponse `json:"-"`
 }
@@ -734,6 +738,7 @@ type ListShopProductsWithVariantsQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *ShopProductsWithVariantsResponse `json:"-"`
 }
@@ -760,6 +765,7 @@ type ListShopVariantsQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *ShopVariantsResponse `json:"-"`
 }
@@ -1524,6 +1530,7 @@ func (q *ListShopCategoriesQuery) GetArgs(ctx context.Context) (_ context.Contex
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -1531,6 +1538,7 @@ func (q *ListShopCategoriesQuery) SetListQueryShopArgs(args *shopping.ListQueryS
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListShopCategoriesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, ids []dot.ID) {
@@ -1545,6 +1553,7 @@ func (q *ListShopCollectionsQuery) GetArgs(ctx context.Context) (_ context.Conte
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -1552,6 +1561,7 @@ func (q *ListShopCollectionsQuery) SetListQueryShopArgs(args *shopping.ListQuery
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListShopCollectionsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopCollectionsByIDsArg) {
@@ -1618,6 +1628,7 @@ func (q *ListShopProductsQuery) GetArgs(ctx context.Context) (_ context.Context,
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -1625,6 +1636,7 @@ func (q *ListShopProductsQuery) SetListQueryShopArgs(args *shopping.ListQuerySho
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListShopProductsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopProductsByIDsArgs) {
@@ -1669,6 +1681,7 @@ func (q *ListShopProductsWithVariantsQuery) GetArgs(ctx context.Context) (_ cont
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -1676,6 +1689,7 @@ func (q *ListShopProductsWithVariantsQuery) SetListQueryShopArgs(args *shopping.
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
@@ -1699,6 +1713,7 @@ func (q *ListShopVariantsQuery) GetArgs(ctx context.Context) (_ context.Context,
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -1706,6 +1721,7 @@ func (q *ListShopVariantsQuery) SetListQueryShopArgs(args *shopping.ListQuerySho
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListShopVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopVariantsByIDsArgs) {

@@ -51,6 +51,7 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 		ShopID:  modeletop.EtopTradingAccountID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
+		Name:    q.Filter.Name,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
 		return err

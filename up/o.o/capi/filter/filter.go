@@ -37,3 +37,6 @@ type date struct {
 func (d Date) IsZero() bool {
 	return d.From.IsZero() && d.To.IsZero()
 }
+
+// +swagger:type=string
+type FullTextSearch string

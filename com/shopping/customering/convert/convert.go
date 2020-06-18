@@ -67,7 +67,7 @@ func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *model.ShopCu
 		Status:       1,
 	}
 	result.PhoneNorm = validate.NormalizeSearchPhone(args.Phone)
-	result.FullNameNorm = validate.NormalizeSearch(args.FullName)
+	result.FullNameNorm = validate.NormalizeSearchCharacter(args.FullName)
 	return result
 }
 
@@ -83,7 +83,7 @@ func updateShopCustomer(args *customering.UpdateCustomerArgs, in *customering.Sh
 func shopCustomerDB(args *customering.ShopCustomer, out *model.ShopCustomer) {
 	convert_customering_ShopCustomer_customeringmodel_ShopCustomer(args, out)
 	out.PhoneNorm = validate.NormalizeSearchPhone(args.Phone)
-	out.FullNameNorm = validate.NormalizeSearch(args.FullName)
+	out.FullNameNorm = validate.NormalizeSearchCharacter(args.FullName)
 }
 
 func shopCustomer(args *model.ShopCustomer, out *customering.ShopCustomer) {

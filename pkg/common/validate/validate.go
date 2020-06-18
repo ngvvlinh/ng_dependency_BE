@@ -14,6 +14,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 const (
@@ -559,6 +560,10 @@ func NormalizeSearch(s string) string {
 	return normalizeSearch(s, " ", true, true)
 }
 
+func NormalizeSearchCharacter(s string) string {
+	return normalizeSearchCharacters(normalizeSearch(s, " ", true, true))
+}
+
 func NormalizeSearchSimple(s string) string {
 	return normalizeSearchSimple(s, " ")
 }
@@ -573,6 +578,10 @@ func NormalizeUnderscore(s string) string {
 
 func NormalizeSearchQueryAnd(s string) string {
 	return normalizeSearch(s, " & ", true, true)
+}
+
+func NormalizeFullTextSearchQueryAnd(s filter.FullTextSearch) string {
+	return normalizeFullTextSearchQueryAnd(string(s))
 }
 
 func NormalizeSearchQueryOr(s string) string {
@@ -616,14 +625,13 @@ func normalizeSearchSimple(s string, space string) string {
 
 // Keep alphanumeric and some special characters while ignoring the rest.
 //
-//     hello@world -> hello @ world
-//     hello #@@@ world -> hello # @ @@@ world
-//     hello(1) -> hello ( 1 )
-//     hello.world -> hello . world
+//    hello@world -> hello @ world
+//    hello #@@@ world -> hello # @ @@@ world
+//    hello(1) -> hello ( 1 )
+//    hello.world -> hello . world
 func normalizeSearch(s string, space string, quote bool, lower bool) string {
 	var lastChar rune
 	lastGroup := 0 // space
-
 	b := make([]byte, 0, len(s))
 	for _, c := range s {
 		switch {
@@ -685,9 +693,107 @@ func normalizeSearch(s string, space string, quote bool, lower bool) string {
 	return unsafeBytesToString(b)
 }
 
+// Get max 10 character each word(split by space)
+func normalizeFullTextSearchQueryAnd(arg string) string {
+	arrSplit := strings.Split(arg, " ")
+	for k, v := range arrSplit {
+		if len(v) > 10 {
+			arrSplit[k] = v[:10]
+		}
+	}
+	return normalizeSearch(strings.Join(arrSplit, " "), " & ", true, true)
+}
+
+// 	  Add key for function normalizeSearch
+//    Change:https://github.com/etopvn/one/issues/2295
+//
+//    hello '@' world -> hello '@' world h he hel hell w wo wor worl
+func normalizeSearchCharacters(arg string) string {
+	prefixNorm := arg
+	arg = NormalizeSearchSimple(arg)
+	var arrKey []string
+	var arrSplit = strings.Split(arg, " ")
+	var n = 0
+	// 5 first words
+	for i := 0; i < 5 && i < len(arrSplit); i++ {
+		if len(arrSplit[i]) > 0 && string(arrSplit[i][0]) == "'" {
+			continue
+		}
+		arrKey = append(arrKey, arrSplit[i])
+		ln := len(arrSplit[i])
+		if ln > 1 {
+			n += (1+ln)*ln/2 + ln
+		}
+	}
+	// 5 lenghest words
+	sort.Slice(arrSplit, func(i, j int) bool {
+		return len(arrSplit[i]) > len(arrSplit[j])
+	})
+	count := 0
+	for _, v := range arrSplit {
+		if len(v) == 0 || string(v[0]) == "'" {
+			continue
+		}
+		if count >= 5 {
+			break
+		}
+		if !cm.StringsContain(arrKey, v) {
+			arrKey = append(arrKey, v)
+			ln := len(v)
+			if ln > 1 {
+				n += (1+ln)*ln/2 + ln
+			}
+			count++
+		}
+	}
+	b := make([]byte, 0, n)
+	for _, v := range arrKey {
+		for i := 1; i < len(v) && i <= 10; i++ {
+			b = append(b, ' ')
+			b = append(b, v[:i]...)
+		}
+	}
+	return prefixNorm + cm.UnsafeBytesToString(b)
+}
+
 func NormalizeSearchPhone(s string) string {
 	_, ss := normalizeSearchPhone(s)
 	return ss
+}
+
+func VerifySearchName(str string, searchKey filter.FullTextSearch) bool {
+	str = NormalizeSearch(str)
+	searchStr := NormalizeSearch(string(searchKey))
+
+	strSplit := strings.Split(str, " ")
+	var strSplitTenWord []string
+	for _, v := range strSplit {
+		if len(v) > 10 {
+			strSplitTenWord = append(strSplitTenWord, v)
+		}
+	}
+
+	searchStrSplit := strings.Split(searchStr, " ")
+	var searchStrSplitTenWord []string
+	for _, v := range searchStrSplit {
+		if len(v) > 10 {
+			searchStrSplitTenWord = append(searchStrSplitTenWord, v)
+		}
+	}
+
+	for _, v1 := range searchStrSplitTenWord {
+		isExited := false
+		for _, v2 := range strSplitTenWord {
+			if strings.HasPrefix(v2, v1) {
+				isExited = true
+				break
+			}
+		}
+		if !isExited {
+			return false
+		}
+	}
+	return true
 }
 
 func normalizeSearchPhone(s string) (int, string) {

@@ -11,6 +11,7 @@ import (
 	"o.o/backend/com/main/catalog/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/validate"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
 	"o.o/capi/dot"
 )
@@ -186,10 +187,20 @@ func (s *QueryService) ListShopProducts(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopProductsResponse, error) {
 	q := s.shopProduct(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
+	if args.Name != "" {
+		q = q.FullTextSearchName(args.Name)
+	}
 	products, err := q.WithPaging(args.Paging).ListShopProducts()
 	if err != nil {
 		return nil, err
 	}
+	var productsFilter []*catalog.ShopProduct
+	for _, v := range products {
+		if validate.VerifySearchName(v.Name, args.Name) {
+			productsFilter = append(productsFilter, v)
+		}
+	}
+	products = productsFilter
 	return &catalog.ShopProductsResponse{
 		Products: products,
 		Paging:   q.GetPaging(),
@@ -200,10 +211,20 @@ func (s *QueryService) ListShopProductsWithVariants(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopProductsWithVariantsResponse, error) {
 	q := s.shopProduct(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
+	if args.Name != "" {
+		q = q.FullTextSearchName(args.Name)
+	}
 	products, err := q.WithPaging(args.Paging).ListShopProductsWithVariants()
 	if err != nil {
 		return nil, err
 	}
+	var productsFilter []*catalog.ShopProductWithVariants
+	for _, v := range products {
+		if validate.VerifySearchName(v.Name, args.Name) {
+			productsFilter = append(productsFilter, v)
+		}
+	}
+	products = productsFilter
 	var mapProductCollection = make(map[dot.ID][]dot.ID)
 	var productIDs []dot.ID
 	for _, product := range products {

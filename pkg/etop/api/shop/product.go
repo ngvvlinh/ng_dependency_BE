@@ -14,6 +14,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type ProductService struct {
@@ -116,10 +117,15 @@ func (s *ProductService) GetProductsByIDs(ctx context.Context, q *GetProductsByI
 func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
 	shopID := q.Context.Shop.ID
+	var fullTextSearch filter.FullTextSearch = ""
+	if q.Filter != nil {
+		fullTextSearch = q.Filter.Name
+	}
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  shopID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
+		Name:    fullTextSearch,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
 		return err

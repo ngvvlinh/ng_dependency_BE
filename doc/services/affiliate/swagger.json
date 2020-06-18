@@ -1547,9 +1547,15 @@
         }
       }
     },
+    "kfFullTextSearch": {
+      "type": "string"
+    },
     "ktCommonListRequest": {
       "type": "object",
       "properties": {
+        "filter": {
+          "$ref": "#/definitions/ktFilterCommonListRequest"
+        },
         "filters": {
           "type": "array",
           "items": {
@@ -1592,6 +1598,14 @@
         "value": {
           "description": "Must always be string\n",
           "type": "string"
+        }
+      }
+    },
+    "ktFilterCommonListRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
         }
       }
     },

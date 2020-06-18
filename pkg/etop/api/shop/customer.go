@@ -18,6 +18,7 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type CustomerService struct {
@@ -178,10 +179,15 @@ func (s *CustomerService) getAllCustomers(ctx context.Context, paging *cm.Paging
 }
 
 func (s *CustomerService) getCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) ([]*shop.Customer, error) {
+	var fullTextSearch filter.FullTextSearch = ""
+	if r.Filter != nil {
+		fullTextSearch = r.Filter.FullName
+	}
 	query := &customering.ListCustomersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
+		Name:    fullTextSearch,
 	}
 	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err

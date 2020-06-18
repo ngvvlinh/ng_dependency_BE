@@ -11,6 +11,7 @@ import (
 	shopping "o.o/api/shopping"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -82,6 +83,7 @@ type ListCarriersQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *CarriersResponse `json:"-"`
 }
@@ -175,6 +177,7 @@ func (q *ListCarriersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -182,6 +185,7 @@ func (q *ListCarriersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArg
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListCarriersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {

@@ -13,6 +13,7 @@ import (
 	ledger_type "o.o/api/top/types/etc/ledger_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -100,6 +101,7 @@ type ListLedgersQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *ShopLedgersResponse `json:"-"`
 }
@@ -220,6 +222,7 @@ func (q *ListLedgersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *s
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -227,6 +230,7 @@ func (q *ListLedgersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListLedgersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, IDs []dot.ID) {

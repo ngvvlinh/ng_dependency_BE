@@ -13,6 +13,7 @@ import (
 	gender "o.o/api/top/types/etc/gender"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -272,6 +273,7 @@ type ListCustomersQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *CustomersResponse `json:"-"`
 }
@@ -582,6 +584,7 @@ func (q *ListCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ 
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -589,6 +592,7 @@ func (q *ListCustomersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopAr
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListCustomersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerByIDsArgs) {

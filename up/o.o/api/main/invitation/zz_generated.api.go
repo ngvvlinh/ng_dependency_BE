@@ -14,6 +14,7 @@ import (
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
+	filter "o.o/capi/filter"
 )
 
 type CommandBus struct{ bus capi.Bus }
@@ -112,6 +113,7 @@ type ListInvitationsQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 
 	Result *InvitationsResponse `json:"-"`
 }
@@ -225,6 +227,7 @@ func (q *ListInvitationsQuery) GetArgs(ctx context.Context) (_ context.Context, 
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
+			Name:    q.Name,
 		}
 }
 
@@ -232,6 +235,7 @@ func (q *ListInvitationsQuery) SetListQueryShopArgs(args *shopping.ListQueryShop
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.Name = args.Name
 }
 
 func (q *ListInvitationsAcceptedByEmailQuery) GetArgs(ctx context.Context) (_ context.Context, email string) {

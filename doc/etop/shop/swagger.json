@@ -6983,9 +6983,15 @@
         "etop"
       ]
     },
+    "kfFullTextSearch": {
+      "type": "string"
+    },
     "ktCommonListRequest": {
       "type": "object",
       "properties": {
+        "filter": {
+          "$ref": "#/definitions/ktFilterCommonListRequest"
+        },
         "filters": {
           "type": "array",
           "items": {
@@ -7039,6 +7045,14 @@
         "value": {
           "description": "Must always be string\n",
           "type": "string"
+        }
+      }
+    },
+    "ktFilterCommonListRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
         }
       }
     },
@@ -8926,6 +8940,22 @@
         }
       }
     },
+    "paFilterGetCustomersRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        }
+      }
+    },
+    "paFilterGetVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        }
+      }
+    },
     "paGetAuthorizedPartnersResponse": {
       "type": "object",
       "properties": {
@@ -9046,6 +9076,9 @@
     "paGetCustomersRequest": {
       "type": "object",
       "properties": {
+        "filter": {
+          "$ref": "#/definitions/paFilterGetCustomersRequest"
+        },
         "filters": {
           "type": "array",
           "items": {
@@ -9534,6 +9567,9 @@
     "paGetVariantsRequest": {
       "type": "object",
       "properties": {
+        "filter": {
+          "$ref": "#/definitions/paFilterGetVariantsRequest"
+        },
         "filters": {
           "type": "array",
           "items": {

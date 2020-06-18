@@ -31,6 +31,7 @@ import (
 	"o.o/api/top/types/etc/ws_banner_show_style"
 	"o.o/api/top/types/etc/ws_list_product_show_style"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
 
@@ -813,9 +814,16 @@ type ShopCollection struct {
 
 func (m *ShopCollection) String() string { return jsonx.MustMarshalToString(m) }
 
+type FilterGetVariantsRequest struct {
+	Name filter.FullTextSearch `json:"name"`
+}
+
+func (m *FilterGetVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetVariantsRequest struct {
-	Paging  *common.Paging   `json:"paging"`
-	Filters []*common.Filter `json:"filters"`
+	Paging  *common.Paging            `json:"paging"`
+	Filters []*common.Filter          `json:"filters"`
+	Filter  *FilterGetVariantsRequest `json:"filter"`
 }
 
 func (m *GetVariantsRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -1530,10 +1538,17 @@ type UpdateCustomerRequest struct {
 
 func (m *UpdateCustomerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type FilterGetCustomersRequest struct {
+	FullName filter.FullTextSearch `json:"full_name"`
+}
+
+func (m *FilterGetCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetCustomersRequest struct {
-	Paging  *common.Paging   `json:"paging"`
-	Filters []*common.Filter `json:"filters"`
-	GetAll  dot.NullBool     `json:"get_all"`
+	Paging  *common.Paging             `json:"paging"`
+	Filters []*common.Filter           `json:"filters"`
+	GetAll  dot.NullBool               `json:"get_all"`
+	Filter  *FilterGetCustomersRequest `json:"filter"`
 }
 
 func (m *GetCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }

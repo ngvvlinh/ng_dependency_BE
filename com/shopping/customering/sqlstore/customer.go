@@ -14,7 +14,9 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type CustomerStoreFactory func(context.Context) *CustomerStore
@@ -50,6 +52,11 @@ func (s *CustomerStore) Filters(filters meta.Filters) *CustomerStore {
 	} else {
 		s.filters = append(s.filters, filters...)
 	}
+	return s
+}
+
+func (s *CustomerStore) FullTextSearchFullName(name filter.FullTextSearch) *CustomerStore {
+	s.preds = append(s.preds, s.ft.Filter(`full_name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
 	return s
 }
 

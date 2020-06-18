@@ -2,6 +2,7 @@ package common
 
 import (
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
 
@@ -137,9 +138,16 @@ type Filter struct {
 
 func (m *Filter) String() string { return jsonx.MustMarshalToString(m) }
 
+type FilterCommonListRequest struct {
+	Name filter.FullTextSearch `json:"name"`
+}
+
+func (m *FilterCommonListRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type CommonListRequest struct {
-	Paging  *Paging   `json:"paging"`
-	Filters []*Filter `json:"filters"`
+	Paging  *Paging                 `json:"paging"`
+	Filters []*Filter               `json:"filters"`
+	Filter  FilterCommonListRequest `json:"filter"`
 }
 
 func (m *CommonListRequest) String() string { return jsonx.MustMarshalToString(m) }
