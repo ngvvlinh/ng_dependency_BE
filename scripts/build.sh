@@ -19,6 +19,7 @@ preprocess() {
     COMMIT=$(replace "$COMMIT" "<builamquangngoc91@gmail.com>" "@quangngoc430")
     COMMIT=$(replace "$COMMIT" "<congvan2498@gmail.com>" "@congvan2498")
     COMMIT=$(replace "$COMMIT" "<huynhhainam96qt@gmail.com>" "@hai_nam_qt")
+    COMMIT=$(replace "$COMMIT" "<nakhoa17@gmail.com>" "@nakhoa17")
     COMMIT=$(replace "$COMMIT" "<olvrng@gmail.com>" "@vunmq")
     COMMIT=$(replace "$COMMIT" "<tuan@eye-solution.vn>" "@tuanpn")
 }
