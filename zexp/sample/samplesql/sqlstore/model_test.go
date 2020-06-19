@@ -8,7 +8,7 @@ import (
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/sql/cmsql"
 	. "o.o/backend/pkg/common/testing"
-	"o.o/backend/zexp/sample/model"
+	"o.o/backend/zexp/sample/samplesql/model"
 )
 
 var db *cmsql.Database
