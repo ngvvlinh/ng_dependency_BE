@@ -95,7 +95,7 @@ func (s *CustomerService) ListCustomersWithFbUsers(ctx context.Context, request 
 		result.Paging = cmapi.PbPageInfo(paging)
 		result.Paging.Total = len(result.Customers)
 		// Nếu có chứa customer anonymous
-		if result.Customers[0].Id == 1 {
+		if len(result.Customers) > 0 && result.Customers[0].Id == 1 {
 			result.Paging.Limit++
 		}
 	}
