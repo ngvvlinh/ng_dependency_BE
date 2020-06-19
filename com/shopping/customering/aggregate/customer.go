@@ -129,6 +129,9 @@ func (a *CustomerAggregate) UpdateCustomer(
 	if args.Type == customer_type.Independent {
 		return nil, cm.Error(cm.InvalidArgument, "Không dược phép thay đổi thành khách lẻ", nil)
 	}
+	if args.FullName.Valid == true && args.FullName.String == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập tên đầy đủ")
+	}
 	// Verify phone
 	if args.Phone.Valid {
 		if args.Phone.String == "" {
