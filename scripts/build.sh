@@ -12,7 +12,7 @@ preprocess() {
     mkdir -p "$BACKEND/bin"
     "$BACKEND"/scripts/generate-release.sh
 
-    COMMIT=$(git log -10 --pretty='¶%h <%ae> %B' | grep -E '^(¶[0-9a-f]{6,10} )|(Change-Id:)|(Issue:)')
+    COMMIT=$(git log -10 --pretty='¶%h <%ae> %B' | grep -E '^(¶[0-9a-f]{6,10} )|(Change-Id:)|(Issue:)|(Reviewed-on:)')
     COMMIT=$(echo -e "${COMMIT}\n\n@thangtran268")
     COMMIT=$(echo "${COMMIT}" | tr '\n' '¶' | sed 's/\s/·/g')
 
