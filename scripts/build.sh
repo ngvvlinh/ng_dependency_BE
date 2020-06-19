@@ -36,7 +36,10 @@ build_docker() {
             sleep 3600
     fi
 
+    # ENV_FILE: environment variables to pass into build-inner script
+    # it should be relative path from o.o/backend
     if [[ -n $ENV_FILE ]]; then _env_file="-e=ENV_FILE=$ENV_FILE" ; fi
+
     docker exec -it -e COMMIT="$COMMIT" $_env_file \
         project_golang scripts/build-inner.sh $target /_/o.o/backend
 }
@@ -52,6 +55,7 @@ esac
 case "$2" in
 "")
     preprocess
+    if [[ -n $ENV_FILE ]]; then source "$ENV_FILE" ; fi
     COMMIT="$COMMIT" scripts/build-inner.sh $target
     ;;
 docker)
