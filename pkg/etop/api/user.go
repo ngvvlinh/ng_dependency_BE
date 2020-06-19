@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"crypto/sha1"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -863,30 +864,8 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *api.ResetP
 		}
 		token, expiresIn = tokenCmd.Result.TokenStr, tokenCmd.Result.ExpiresIn
 	}
-
-	var msg string
-	var sendTime int
 	var redisCodeCount = fmt.Sprintf("reset-pasword-phone-%v", user.ID)
-	err = s.RedisStore.Get(redisCodeCount, &sendTime)
-	if err != nil && err != redis.ErrNil {
-		return nil, err
-	}
-	if err != nil && err == redis.ErrNil {
-		err = s.RedisStore.SetWithTTL(redisCodeCount, 1, 1*60*60)
-		if err != nil {
-			return nil, err
-		}
-		msg = templatemessages.SmsResetPasswordTpl
-	} else {
-		sendTime++
-		err = s.RedisStore.SetWithTTL(redisCodeCount, sendTime, 1*60*60)
-		if err != nil {
-			return nil, err
-		}
-		msg = fmt.Sprintf(templatemessages.SmsResetPasswordTplRepeat, "%v", sendTime)
-	}
-
-	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, msg, false); err != nil {
+	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, redisCodeCount, templatemessages.SmsResetPasswordTpl, templatemessages.SmsResetPasswordTplRepeat, false); err != nil {
 		return nil, err
 	}
 
@@ -1481,7 +1460,7 @@ func (s *UserService) SendPhoneVerification(ctx context.Context, r *api.SendPhon
 	return resp.(*pbcm.MessageResponse), nil
 }
 
-func (s *UserService) sendPhoneVerification(ctx context.Context, r *api.SendPhoneVerificationRequest) (*pbcm.MessageResponse, error) {
+func (s *UserService) sendPhoneVerification(ctx context.Context, r *api.SendPhoneVerificationRequest) (resp *pbcm.MessageResponse, _ error) {
 	if !enabledSMS {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi tin nhắn xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
@@ -1503,44 +1482,63 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *api.SendPhon
 	if !ok {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp le. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
+	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", s.SS.User().ID)
+	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, redisCodeCount, templatemessages.SmsVerificationTpl, templatemessages.SmsVerificationTplRepeat, true); err != nil {
+		return nil, err
+	}
+
+	return cmapi.Message("ok", fmt.Sprintf(
+		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", r.Phone, wl.X(ctx).CSEmail)), nil
+}
+
+func (s *UserService) countSendtimeMsg(code, msgFirst, msgSecond string) (string, error) {
+	h := sha1.New()
+	h.Write([]byte(code))
+	bs := h.Sum(nil)
+	code = fmt.Sprintf("%x", bs)
 	var msg string
 	var sendTime int
-	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", s.SS.Claim().UserID)
-	err := s.RedisStore.Get(redisCodeCount, &sendTime)
+	err := s.RedisStore.Get(code, &sendTime)
 	if err != nil && err != redis.ErrNil {
-		return nil, err
+		return "", err
 	}
 	if err != nil && err == redis.ErrNil {
-		err := s.RedisStore.SetWithTTL(redisCodeCount, 1, 2*60*60)
+		err = s.RedisStore.SetWithTTL(code, 1, 2*60*60)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		msg = templatemessages.SmsVerificationTpl
+		msg = msgFirst
 	} else {
 		sendTime++
-		err := s.RedisStore.SetWithTTL(redisCodeCount, sendTime, 2*60*60)
+		msg = msgSecond
+		err = s.RedisStore.SetWithTTL(code, sendTime, 2*60*60)
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		msg = fmt.Sprintf(templatemessages.SmsVerificationTplRepeat, "%v", sendTime)
+		// Print sendtime in last value of msg
+		countMsg := strings.Count(msgSecond, "%v")
+		i := 1
+		var arrString = []interface{}{}
+		for i < countMsg {
+			arrString = append(arrString, "%v")
+			i++
+		}
+		arrString = append(arrString, sendTime)
+		msg = fmt.Sprintf(msgSecond, arrString...)
 	}
-	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, msg, true); err != nil {
-		return nil, err
-	}
-	result := cmapi.Message("ok", fmt.Sprintf(
-		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", r.Phone, wl.X(ctx).CSEmail))
-	return result, nil
+	return msg, nil
 }
+
 func (s *UserService) VerifyEmailUsingToken(ctx context.Context, r *api.VerifyEmailUsingTokenRequest) (*pbcm.MessageResponse, error) {
 	key := fmt.Sprintf("VerifyEmailUsingToken %v-%v", s.SS.User().ID, r.VerificationToken)
-	resp, _, err := idempgroup.DoAndWrap(
+	res, _, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "xác nhận địa chỉ email",
 		func() (interface{}, error) { return s.verifyEmailUsingToken(ctx, r) })
 
 	if err != nil {
 		return nil, err
 	}
-	return resp.(*pbcm.MessageResponse), nil
+	return res.(*pbcm.MessageResponse), nil
 }
 
 func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *api.VerifyEmailUsingTokenRequest) (*pbcm.MessageResponse, error) {
@@ -2008,32 +2006,20 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *a
 		return nil, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp lệ", nil)
 	}
 	var msg string
-	var sendTime int
-	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", s.SS.Claim().UserID)
-	err := s.RedisStore.Get(redisCodeCount, &sendTime)
-	if err != nil && err != redis.ErrNil {
+	var redisCodeCount = fmt.Sprintf("confirm-phone-%v-%v", s.SS.User().ID, r.Phone)
+	redisCodeCount = login.EncodePassword(redisCodeCount)
+	msg, err := s.countSendtimeMsg(redisCodeCount, templatemessages.SmsVerificationTpl, templatemessages.SmsVerificationTplRepeat)
+	if err != nil {
 		return nil, err
 	}
-	if err != nil && err == redis.ErrNil {
-		err = s.RedisStore.SetWithTTL(redisCodeCount, 1, 2*60*60)
-		if err != nil {
-			return nil, err
-		}
-		msg = templatemessages.SmsVerificationTpl
-	} else {
-		sendTime++
-		err = s.RedisStore.SetWithTTL(redisCodeCount, sendTime, 2*60*60)
-		if err != nil {
-			return nil, err
-		}
-		msg = fmt.Sprintf(templatemessages.SmsVerificationTplRepeat, "%v", sendTime)
+	if err != nil && err != redis.ErrNil {
+		return nil, err
 	}
 	if err = s.sendPhoneVerificationImpl(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, msg, false); err != nil {
 		return nil, err
 	}
-	result := cmapi.Message("ok", fmt.Sprintf(
-		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", phone, wl.X(ctx).CSEmail))
-	return result, nil
+	return cmapi.Message("ok", fmt.Sprintf(
+		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", phone, wl.X(ctx).CSEmail)), nil
 }
 
 func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *identitymodel.User, ttl int, usage string,
@@ -2086,9 +2072,13 @@ func getUserByPhone(ctx context.Context, phone string) (*identitymodel.User, err
 	return userByPhone.Result, nil
 }
 
-func (s *UserService) verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, msg string, checkVerifyPhoneForUser bool) error {
-	if user.Phone != phone {
+func (s *UserService) verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, redisCodeCount string, msgFirstime string, msgMultiTime string, checkVerifyPhoneForUser bool) error {
+	if user != nil && user.Phone != phone {
 		return cm.Error(cm.FailedPrecondition, "Số điện này không hợp lệ vì chưa được đăng kí", nil)
+	}
+	msg, err := s.countSendtimeMsg(redisCodeCount, msgFirstime, msgMultiTime)
+	if err != nil {
+		return err
 	}
 	if checkVerifyPhoneForUser {
 		if !user.PhoneVerifiedAt.IsZero() {
