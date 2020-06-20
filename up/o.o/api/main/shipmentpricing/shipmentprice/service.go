@@ -21,8 +21,7 @@ type Aggregate interface {
 type QueryService interface {
 	ListShipmentPrices(context.Context, *ListShipmentPricesArgs) ([]*ShipmentPrice, error)
 	GetShipmentPrice(ctx context.Context, ID dot.ID) (*ShipmentPrice, error)
-	CalculatePrice(context.Context, *CalculatePriceArgs) (*CalculatePriceResult, error)
-	CalculateShippingFees(context.Context, *CalculatePriceArgs) (*CalculateShippingFeesResponse, error)
+	CalculateShippingFees(context.Context, *CalculateShippingFeeArgs) (*CalculateShippingFeesResponse, error)
 }
 
 // +convert:create=ShipmentPrice
@@ -62,7 +61,7 @@ type ListShipmentPricesArgs struct {
 	ShipmentServiceID   dot.ID
 }
 
-type CalculatePriceArgs struct {
+type CalculateShippingFeeArgs struct {
 	AccountID           dot.ID
 	FromProvince        string
 	FromProvinceCode    string

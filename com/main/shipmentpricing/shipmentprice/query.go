@@ -64,7 +64,7 @@ func (q *QueryService) GetShipmentPrice(ctx context.Context, ID dot.ID) (*shipme
 		- Nếu shop ko có bảng giá riêng, sử dụng bảng giá mặc định (GetActiveShipmentPriceListQuery)
 */
 
-func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipmentprice.CalculatePriceArgs) ([]*shipmentprice.ShipmentPrice, error) {
+func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipmentprice.CalculateShippingFeeArgs) ([]*shipmentprice.ShipmentPrice, error) {
 	shipmentServiceID, shipmentPriceListID := args.ShipmentServiceID, args.ShipmentPriceListID
 	var res []*shipmentprice.ShipmentPrice
 
@@ -81,14 +81,14 @@ func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipme
 
 	err := q.redisStore.Get(key, &res)
 	if err != nil {
+		priceListIDs := []dot.ID{shipmentPriceListID}
 		if shipmentPriceListID == 0 {
-			activePriceList, err := q.getActivePriceList(ctx, args.ConnectionID)
+			priceListIDs, err = q.listActivePriceLists(ctx)
 			if err != nil {
 				return nil, err
 			}
-			shipmentPriceListID = activePriceList.ID
 		}
-		res, err = q.shipmentPriceStore(ctx).OptionalShipmentPriceListID(shipmentPriceListID).Status(status3.P).ListShipmentPrices()
+		res, err = q.shipmentPriceStore(ctx).ShipmentPriceListIDs(priceListIDs...).Status(status3.P).ListShipmentPrices()
 		if err == nil {
 			_ = q.redisStore.SetWithTTL(key, res, util.DefaultTTL)
 		}
@@ -98,14 +98,21 @@ func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipme
 	return res, nil
 }
 
-func (q *QueryService) getActivePriceList(ctx context.Context, connectionID dot.ID) (*pricelist.ShipmentPriceList, error) {
-	query := &pricelist.GetActiveShipmentPriceListQuery{
-		ConnectionID: connectionID,
+// getActivePriceList
+//
+// Lấy tất cả các bảng giá mặc định của các NVC (đang có is_default = true)
+func (q *QueryService) listActivePriceLists(ctx context.Context) ([]dot.ID, error) {
+	query := &pricelist.ListShipmentPriceListsQuery{
+		IsDefault: dot.Bool(true),
 	}
 	if err := q.priceListQS.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	return query.Result, nil
+	res := make([]dot.ID, len(query.Result))
+	for i, priceList := range query.Result {
+		res[i] = priceList.ID
+	}
+	return res, nil
 }
 
 func filterShipmentPricesByShipmentServiceID(shipmentPrices []*shipmentprice.ShipmentPrice, shipmentServiceID dot.ID) (res []*shipmentprice.ShipmentPrice) {
@@ -115,51 +122,6 @@ func filterShipmentPricesByShipmentServiceID(shipmentPrices []*shipmentprice.Shi
 		}
 	}
 	return res
-}
-
-func (q *QueryService) CalculatePrice(ctx context.Context, args *shipmentprice.CalculatePriceArgs) (*shipmentprice.CalculatePriceResult, error) {
-	if args.Weight == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing weight")
-	}
-	fromQuery := &location.FindOrGetLocationQuery{
-		Province:     args.FromProvince,
-		District:     args.FromDistrict,
-		ProvinceCode: args.FromProvinceCode,
-		DistrictCode: args.FromDistrictCode,
-	}
-	toQuery := &location.FindOrGetLocationQuery{
-		Province:     args.ToProvince,
-		District:     args.ToDistrict,
-		ProvinceCode: args.ToProvinceCode,
-		DistrictCode: args.ToDistrictCode,
-	}
-	if err := q.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
-		return nil, err
-	}
-	from, to := fromQuery.Result, toQuery.Result
-
-	pricings, err := q.GetActiveShipmentPrices(ctx, args)
-	if err != nil {
-		return nil, err
-	}
-	matchingPricings, err := q.GetMatchingPricings(ctx, pricings, from.Province, to.Province, to.District)
-	if len(matchingPricings) == 0 || err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không có gói phù hợp")
-	}
-
-	pricing := getPricingByPriorityPoint(matchingPricings)
-	pRuleDetail, err := GetPriceRuleDetail(args.Weight, pricing.Details)
-	if err != nil {
-		return nil, err
-	}
-	price, err := GetPriceByPricingDetail(args.Weight, pRuleDetail)
-	if err != nil {
-		return nil, err
-	}
-	return &shipmentprice.CalculatePriceResult{
-		ShipmentPriceID: pricing.ID,
-		Price:           price,
-	}, nil
 }
 
 func (q *QueryService) GetMatchingPricings(ctx context.Context, pricings []*shipmentprice.ShipmentPrice, fromProvince, toProvince *location.Province, toDistrict *location.District) (res []*shipmentprice.ShipmentPrice, err error) {
@@ -351,7 +313,7 @@ func getPricingByPriorityPoint(pricings []*shipmentprice.ShipmentPrice) *shipmen
 	return pricings[0]
 }
 
-func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipmentprice.CalculatePriceArgs) (*shipmentprice.CalculateShippingFeesResponse, error) {
+func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipmentprice.CalculateShippingFeeArgs) (*shipmentprice.CalculateShippingFeesResponse, error) {
 	if args.Weight == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing weight")
 	}
