@@ -366,17 +366,9 @@ func (s *CustomerConversationService) UpdateReadStatus(
 func (s *CustomerConversationService) SendComment(
 	ctx context.Context, request *fabo.SendCommentRequest,
 ) (*fabo.FbExternalComment, error) {
-	if request.ExternalPageID == "" {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "missing external_page_id")
-	}
-	if request.ExternalID == "" {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "missing external_id")
-	}
-	if request.ExternalPostID == "" {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "missing external_post_id")
-	}
-	if request.Message == "" && request.AttachmentURL == "" {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "missing content")
+	err := request.Validate()
+	if err != nil {
+		return nil, err
 	}
 
 	getFbExternalPageInternalQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{

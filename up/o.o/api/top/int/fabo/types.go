@@ -1,6 +1,7 @@
 package fabo
 
 import (
+	"strings"
 	"time"
 
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
@@ -12,6 +13,7 @@ import (
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 	"o.o/common/jsonx"
+	"o.o/common/xerrors"
 )
 
 type CustomerWithFbUserAvatars struct {
@@ -490,6 +492,24 @@ type SendCommentRequest struct {
 	ExternalPostID string `json:"external_post_id"`
 	Message        string `json:"message"`
 	AttachmentURL  string `json:"attachment_url"`
+}
+
+func (m *SendCommentRequest) Validate() error {
+	if m.ExternalPageID == "" {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_page_id")
+	}
+	if m.ExternalID == "" {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_id")
+	}
+	if m.ExternalPostID == "" {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_post_id")
+	}
+
+	m.Message = strings.TrimSpace(m.Message)
+	if m.Message == "" && m.AttachmentURL == "" {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing message content")
+	}
+	return nil
 }
 
 func (m *SendCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
