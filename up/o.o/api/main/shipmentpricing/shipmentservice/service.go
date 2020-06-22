@@ -3,7 +3,6 @@ package shipmentservice
 import (
 	"context"
 
-	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 )
@@ -25,7 +24,7 @@ type QueryService interface {
 
 	GetShipmentServiceByServiceID(ctx context.Context, ServiceID string, ConnID dot.ID) (*ShipmentService, error)
 
-	ListShipmentServices(context.Context, *meta.Empty) ([]*ShipmentService, error)
+	ListShipmentServices(context.Context, *ListShipmentServicesArgs) ([]*ShipmentService, error)
 }
 
 // +convert:create=ShipmentService
@@ -58,4 +57,8 @@ type UpdateShipmentServicesLocationConfigArgs struct {
 	IDs                []dot.ID
 	AvailableLocations []*AvailableLocation
 	BlacklistLocations []*BlacklistLocation
+}
+
+type ListShipmentServicesArgs struct {
+	ConnectionID dot.ID
 }

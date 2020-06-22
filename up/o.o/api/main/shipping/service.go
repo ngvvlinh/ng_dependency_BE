@@ -179,6 +179,7 @@ type UpdateFfmExternalShippingInfoArgs struct {
 type UpdateFulfillmentShippingFeesFromWebhookArgs struct {
 	FulfillmentID    dot.ID
 	NewWeight        int
+	NewState         shippingstate.State
 	ProviderFeeLines []*ShippingFeeLine
 }
 

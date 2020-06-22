@@ -98,7 +98,13 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 
 		// update shipping fee lines
 		weight := orderData.ProductWeight
-		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, ffm.ID, weight, updateFfm.ProviderShippingFeeLines); err != nil {
+		updateFeeLinesArgs := &shipping.UpdateShippingFeeLinesArgs{
+			FfmID:            ffm.ID,
+			Weight:           weight,
+			State:            updateFfm.ShippingState,
+			ProviderFeeLines: updateFfm.ProviderShippingFeeLines,
+		}
+		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, updateFeeLinesArgs); err != nil {
 			ll.S.Errorf("Lỗi cập nhật cước phí VTPost: %v", err.Error())
 		}
 

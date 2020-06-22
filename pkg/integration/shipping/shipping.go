@@ -235,11 +235,19 @@ func WebhookWlWrapContext(ctx context.Context, shopID dot.ID, identityQS identit
 	return ctx, nil
 }
 
-func UpdateShippingFeeLines(ctx context.Context, shippingAggr shippingcore.CommandBus, ffmID dot.ID, weight int, providerFeeLines []*shippingsharemodel.ShippingFeeLine) error {
-	providerFeeLinesCore := shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(providerFeeLines)
+type UpdateShippingFeeLinesArgs struct {
+	FfmID            dot.ID
+	Weight           int
+	State            shipping.State
+	ProviderFeeLines []*shippingsharemodel.ShippingFeeLine
+}
+
+func UpdateShippingFeeLines(ctx context.Context, shippingAggr shippingcore.CommandBus, args *UpdateShippingFeeLinesArgs) error {
+	providerFeeLinesCore := shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(args.ProviderFeeLines)
 	cmd := &shippingcore.UpdateFulfillmentShippingFeesFromWebhookCommand{
-		FulfillmentID:    ffmID,
-		NewWeight:        weight,
+		FulfillmentID:    args.FfmID,
+		NewWeight:        args.Weight,
+		NewState:         args.State,
 		ProviderFeeLines: providerFeeLinesCore,
 	}
 	return shippingAggr.Dispatch(ctx, cmd)

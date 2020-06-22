@@ -2856,12 +2856,12 @@ func (s wrapShipmentPriceService) GetShipmentService(ctx context.Context, req *c
 }
 
 type GetShipmentServicesEndpoint struct {
-	*cm.Empty
+	*api.GetShipmentServicesRequest
 	Result  *api.GetShipmentServicesResponse
 	Context claims.AdminClaim
 }
 
-func (s wrapShipmentPriceService) GetShipmentServices(ctx context.Context, req *cm.Empty) (resp *api.GetShipmentServicesResponse, err error) {
+func (s wrapShipmentPriceService) GetShipmentServices(ctx context.Context, req *api.GetShipmentServicesRequest) (resp *api.GetShipmentServicesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2880,7 +2880,7 @@ func (s wrapShipmentPriceService) GetShipmentServices(ctx context.Context, req *
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetShipmentServicesEndpoint{Empty: req}
+	query := &GetShipmentServicesEndpoint{GetShipmentServicesRequest: req}
 	if session != nil {
 		query.Context.Claim = session.Claim
 	}

@@ -271,6 +271,29 @@ func GetShippingFeeShopLine(item ShippingFeeLine, etopPriceRule bool, mainFee do
 	return nil
 }
 
+func ApplyShippingFeeLine(lines []*ShippingFeeLine, item *ShippingFeeLine) []*ShippingFeeLine {
+	if item == nil {
+		return lines
+	}
+	for _, line := range lines {
+		if line.ShippingFeeType == item.ShippingFeeType {
+			line.Cost = item.Cost
+			return lines
+		}
+	}
+	lines = append(lines, item)
+	return lines
+}
+
+func GetShippingFeeLine(lines []*ShippingFeeLine, _type shipping_fee_type.ShippingFeeType) *ShippingFeeLine {
+	for _, line := range lines {
+		if line.ShippingFeeType == _type {
+			return line
+		}
+	}
+	return nil
+}
+
 func contains(lines []shipping_fee_type.ShippingFeeType, feeType shipping_fee_type.ShippingFeeType) bool {
 	for _, line := range lines {
 		if feeType == line {
@@ -296,4 +319,8 @@ func GetConnectionID(connectionID dot.ID, carrier shipping_provider.ShippingProv
 	default:
 		return 0
 	}
+}
+
+func IsStateReturn(state shipping.State) bool {
+	return state == shipping.Returning || state == shipping.Returned
 }

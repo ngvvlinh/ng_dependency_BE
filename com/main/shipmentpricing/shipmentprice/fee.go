@@ -26,14 +26,17 @@ func calcAdditionalFees(args CalcAdditionalFeeArgs, additionalFees []*shipmentpr
 }
 
 type CalcAdditionalFeeArgs struct {
-	BasketValue      int
-	CODAmount        int
-	MainFee          int
-	IncludeInsurance bool
+	BasketValue    int
+	CODAmount      int
+	MainFee        int
+	AdditionalFees []shipping_fee_type.ShippingFeeType
 }
 
 func calcAdditionalFee(args CalcAdditionalFeeArgs, addFee *shipmentprice.AdditionalFee) (*shipmentprice.ShippingFee, error) {
 	if addFee == nil {
+		return nil, nil
+	}
+	if !shipping_fee_type.Contain(args.AdditionalFees, addFee.FeeType) {
 		return nil, nil
 	}
 	var fee int
@@ -48,9 +51,6 @@ func calcAdditionalFee(args CalcAdditionalFeeArgs, addFee *shipmentprice.Additio
 	case shipping_fee_type.Insurance:
 		// Phí bảo hiểm
 		// Giá trị tính theo % so với giá trị khai giá, có giá trị tối thiểu, thay đổi theo ngưỡng
-		if !args.IncludeInsurance {
-			return nil, nil
-		}
 		fee, err = applyFeeRule(addFee, args.BasketValue)
 		if err != nil {
 			return nil, err

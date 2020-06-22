@@ -20,6 +20,7 @@ import (
 	"o.o/api/top/types/etc/filter_type"
 	"o.o/api/top/types/etc/location_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	addressconvert "o.o/backend/com/main/address/convert"
@@ -933,7 +934,10 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 		return cm.Errorf(cm.FailedPrecondition, nil, "Thiếu shipment service.")
 	}
 	originFee := service.ServiceFee
-
+	addFees := []shipping_fee_type.ShippingFeeType{}
+	if args.IncludeInsurance {
+		addFees = append(addFees, shipping_fee_type.Insurance)
+	}
 	query := &shipmentprice.CalculateShippingFeesQuery{
 		AccountID:           args.AccountID,
 		ShipmentPriceListID: args.ShipmentPriceListID,
@@ -944,7 +948,7 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 		Weight:              args.ChargeableWeight,
 		BasketValue:         args.BasketValue,
 		CODAmount:           args.CODAmount,
-		IncludeInsurance:    args.IncludeInsurance,
+		AdditionalFees:      addFees,
 	}
 	err := m.shipmentPriceQS.Dispatch(ctx, query)
 	switch cm.ErrorCode(err) {
@@ -969,7 +973,7 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 	return nil
 }
 
-func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, ffm *shipping.Fulfillment, weight int) ([]*shippingsharemodel.ShippingFeeLine, error) {
+func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, ffm *shipping.Fulfillment, weight int, state shippingstate.State) ([]*shipping.ShippingFeeLine, error) {
 	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
 	if err != nil {
@@ -987,13 +991,20 @@ func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, ffm *
 		ToDistrictCode:   ffm.AddressTo.DistrictCode,
 		ToProvinceCode:   ffm.AddressTo.ProvinceCode,
 		ToWardCode:       ffm.AddressTo.WardCode,
-		ChargeableWeight: weight,
+		ChargeableWeight: cm.CoalesceInt(weight, ffm.TotalWeight),
 		BasketValue:      ffm.BasketValue,
 		CODAmount:        ffm.TotalCODAmount,
 	}
 	shipmentService, err := m.getShipmentService(ctx, args, serviceID, connectionID, true)
 	if err != nil {
 		return nil, err
+	}
+	addFees := []shipping_fee_type.ShippingFeeType{}
+	if args.IncludeInsurance {
+		addFees = append(addFees, shipping_fee_type.Insurance)
+	}
+	if shipping.IsStateReturn(state) {
+		addFees = append(addFees, shipping_fee_type.Return)
 	}
 	query := &shipmentprice.CalculateShippingFeesQuery{
 		AccountID:         ffm.ShopID,
@@ -1006,11 +1017,11 @@ func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, ffm *
 		Weight:            weight,
 		BasketValue:       ffm.BasketValue,
 		CODAmount:         ffm.TotalCODAmount,
-		IncludeInsurance:  ffm.IncludeInsurance,
+		AdditionalFees:    addFees,
 	}
 	if err := m.shipmentPriceQS.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	res := shipmentpriceconvert.Convert_shipmentprice_ShippingFees_To_shippingsharemodel_ShippingFeeLines(query.Result.FeeLines)
+	res := shipmentpriceconvert.Convert_shipmentprice_ShippingFees_To_shipping_ShippingFeeLines(query.Result.FeeLines)
 	return res, nil
 }

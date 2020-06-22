@@ -12,6 +12,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	shipstate "o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
@@ -607,17 +608,35 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	}
 
 	// Trường hợp có áp dụng bảng giá
-	// Check khối lượng:
-	//      + Nếu thay đổi: tính lại giá mới
-	//      + Nếu không đổi: Không cập nhật giá shop
-	if args.NewWeight != 0 && args.NewWeight != ffm.TotalWeight {
-		feeLines, err := a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, ffm, args.NewWeight)
+	// Các trường hợp cần tính lại cước phí đơn
+	//   - Thay đổi khối lượng
+	//   - Đơn trả hàng => tính phí trả hàng
+	var feeLines []*shipping.ShippingFeeLine
+	shippingFeeShopLines := ffm.ShippingFeeShopLines
+	if args.NewWeight != ffm.TotalWeight {
+		feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, ffm, args.NewWeight, args.NewState)
 		if err != nil {
 			return err
 		}
-		update.ShippingFeeShopLines = shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(feeLines)
-		// Remove if not use
-		update.EtopAdjustedShippingFeeMain = shippingsharemodel.GetMainFee(feeLines)
+		mainFeeLine := shipping.GetShippingFeeLine(feeLines, shipping_fee_type.Main)
+		shippingFeeShopLines = shipping.ApplyShippingFeeLine(shippingFeeShopLines, mainFeeLine)
+
+		// Remove field EtopAdjustedShippingFeeMain if not use
+		update.ShippingFeeShopLines = shippingFeeShopLines
+		update.EtopAdjustedShippingFeeMain = mainFeeLine.Cost
 	}
+
+	if shipping.IsStateReturn(args.NewState) {
+		if feeLines == nil {
+			feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, ffm, args.NewWeight, args.NewState)
+			if err != nil {
+				return err
+			}
+		}
+		returnFeeLine := shipping.GetShippingFeeLine(feeLines, shipping_fee_type.Return)
+		shippingFeeShopLines = shipping.ApplyShippingFeeLine(shippingFeeShopLines, returnFeeLine)
+		update.ShippingFeeShopLines = shippingFeeShopLines
+	}
+
 	return nil
 }

@@ -1357,7 +1357,7 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		}
 		return msg, fn, nil
 	case "/admin.ShipmentPrice/GetShipmentServices":
-		msg := &common.Empty{}
+		msg := &GetShipmentServicesRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

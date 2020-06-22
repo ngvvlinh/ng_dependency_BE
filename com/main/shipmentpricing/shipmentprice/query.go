@@ -64,7 +64,7 @@ func (q *QueryService) GetShipmentPrice(ctx context.Context, ID dot.ID) (*shipme
 		- Nếu shop ko có bảng giá riêng, sử dụng bảng giá mặc định (GetActiveShipmentPriceListQuery)
 */
 
-func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipmentprice.CalculateShippingFeeArgs) ([]*shipmentprice.ShipmentPrice, error) {
+func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipmentprice.CalculateShippingFeesArgs) ([]*shipmentprice.ShipmentPrice, error) {
 	shipmentServiceID, shipmentPriceListID := args.ShipmentServiceID, args.ShipmentPriceListID
 	var res []*shipmentprice.ShipmentPrice
 
@@ -313,7 +313,7 @@ func getPricingByPriorityPoint(pricings []*shipmentprice.ShipmentPrice) *shipmen
 	return pricings[0]
 }
 
-func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipmentprice.CalculateShippingFeeArgs) (*shipmentprice.CalculateShippingFeesResponse, error) {
+func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipmentprice.CalculateShippingFeesArgs) (*shipmentprice.CalculateShippingFeesResponse, error) {
 	if args.Weight == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing weight")
 	}
@@ -356,10 +356,10 @@ func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipment
 
 	// calculate additional fee
 	calcAdditionalFeeArgs := CalcAdditionalFeeArgs{
-		BasketValue:      args.BasketValue,
-		CODAmount:        args.CODAmount,
-		MainFee:          mainFee,
-		IncludeInsurance: args.IncludeInsurance,
+		BasketValue:    args.BasketValue,
+		CODAmount:      args.CODAmount,
+		MainFee:        mainFee,
+		AdditionalFees: args.AdditionalFees,
 	}
 	feeLines, err := calcAdditionalFees(calcAdditionalFeeArgs, pricing.AdditionalFees)
 	if err != nil {

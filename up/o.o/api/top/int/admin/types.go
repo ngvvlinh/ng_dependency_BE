@@ -479,7 +479,7 @@ type ShipmentService struct {
 	OtherCondition     *OtherCondition      `json:"other_condition"`
 }
 
-func (m *OtherCondition) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ShipmentService) String() string { return jsonx.MustMarshalToString(m) }
 
 type AvailableLocation struct {
 	FilterType           filter_type.FilterType             `json:"filter_type"`
@@ -506,7 +506,13 @@ type OtherCondition struct {
 	MaxWeight int `json:"max_weight"`
 }
 
-func (m *ShipmentService) String() string { return jsonx.MustMarshalToString(m) }
+func (m *OtherCondition) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetShipmentServicesRequest struct {
+	ConnectionID dot.ID `json:"connection_id"`
+}
+
+func (m *GetShipmentServicesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShipmentServicesResponse struct {
 	ShipmentServices []*ShipmentService `json:"shipment_services"`

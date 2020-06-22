@@ -45,7 +45,9 @@ func (s *ShipmentPriceService) GetShipmentService(ctx context.Context, r *GetShi
 }
 
 func (s *ShipmentPriceService) GetShipmentServices(ctx context.Context, r *GetShipmentServicesEndpoint) error {
-	query := &shipmentservice.ListShipmentServicesQuery{}
+	query := &shipmentservice.ListShipmentServicesQuery{
+		ConnectionID: r.ConnectionID,
+	}
 	if err := s.ShipmentServiceQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}

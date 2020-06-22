@@ -7,7 +7,6 @@ package shipmentservice
 import (
 	context "context"
 
-	meta "o.o/api/meta"
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -112,6 +111,8 @@ func (h QueryServiceHandler) HandleGetShipmentServiceByServiceID(ctx context.Con
 }
 
 type ListShipmentServicesQuery struct {
+	ConnectionID dot.ID
+
 	Result []*ShipmentService `json:"-"`
 }
 
@@ -218,12 +219,15 @@ func (q *GetShipmentServiceByServiceIDQuery) GetArgs(ctx context.Context) (_ con
 		q.ConnID
 }
 
-func (q *ListShipmentServicesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
+func (q *ListShipmentServicesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShipmentServicesArgs) {
 	return ctx,
-		&meta.Empty{}
+		&ListShipmentServicesArgs{
+			ConnectionID: q.ConnectionID,
+		}
 }
 
-func (q *ListShipmentServicesQuery) SetEmpty(args *meta.Empty) {
+func (q *ListShipmentServicesQuery) SetListShipmentServicesArgs(args *ListShipmentServicesArgs) {
+	q.ConnectionID = args.ConnectionID
 }
 
 // implement dispatching

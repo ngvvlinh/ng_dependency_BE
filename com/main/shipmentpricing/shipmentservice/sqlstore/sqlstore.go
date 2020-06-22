@@ -78,6 +78,11 @@ func (s *ShipmentServiceStore) ConnectionID(connID dot.ID) *ShipmentServiceStore
 	return s
 }
 
+func (s *ShipmentServiceStore) OptionalConnectionID(connID dot.ID) *ShipmentServiceStore {
+	s.preds = append(s.preds, s.ft.ByConnectionID(connID).Optional())
+	return s
+}
+
 func (s *ShipmentServiceStore) GetShipmentServiceDB() (*model.ShipmentService, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

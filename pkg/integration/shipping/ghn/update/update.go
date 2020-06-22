@@ -57,7 +57,6 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 	data, _ := jsonx.Marshal(msg)
 
 	// GET LOGS
-	ffm, _ = SyncTrackingOrder(ffm)
 	var isReturnOrder bool
 	if msg.ReturnInfo != "" {
 		isReturnOrder = true

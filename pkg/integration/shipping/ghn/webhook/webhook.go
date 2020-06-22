@@ -91,7 +91,13 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
 
 		// update shipping fee lines
-		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, ffm.ID, msg.Weight.Int(), updateFfm.ProviderShippingFeeLines); err != nil {
+		updateFeeLinesArgs := &shipping.UpdateShippingFeeLinesArgs{
+			FfmID:            ffm.ID,
+			Weight:           msg.Weight.Int(),
+			State:            updateFfm.ShippingState,
+			ProviderFeeLines: updateFfm.ProviderShippingFeeLines,
+		}
+		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, updateFeeLinesArgs); err != nil {
 			ll.S.Errorf("Lỗi cập nhật cước phí GHN: %v", err.Error())
 		}
 

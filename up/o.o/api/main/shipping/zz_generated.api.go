@@ -134,6 +134,7 @@ func (h AggregateHandler) HandleUpdateFulfillmentShippingFees(ctx context.Contex
 type UpdateFulfillmentShippingFeesFromWebhookCommand struct {
 	FulfillmentID    dot.ID
 	NewWeight        int
+	NewState         shipping.State
 	ProviderFeeLines []*ShippingFeeLine
 
 	Result struct {
@@ -463,6 +464,7 @@ func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) GetArgs(ctx context.Co
 		&UpdateFulfillmentShippingFeesFromWebhookArgs{
 			FulfillmentID:    q.FulfillmentID,
 			NewWeight:        q.NewWeight,
+			NewState:         q.NewState,
 			ProviderFeeLines: q.ProviderFeeLines,
 		}
 }
@@ -470,6 +472,7 @@ func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) GetArgs(ctx context.Co
 func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) SetUpdateFulfillmentShippingFeesFromWebhookArgs(args *UpdateFulfillmentShippingFeesFromWebhookArgs) {
 	q.FulfillmentID = args.FulfillmentID
 	q.NewWeight = args.NewWeight
+	q.NewState = args.NewState
 	q.ProviderFeeLines = args.ProviderFeeLines
 }
 

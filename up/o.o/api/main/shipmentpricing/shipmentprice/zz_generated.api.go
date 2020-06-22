@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	route_type "o.o/api/top/types/etc/route_type"
+	shipping_fee_type "o.o/api/top/types/etc/shipping_fee_type"
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -108,7 +109,7 @@ type CalculateShippingFeesQuery struct {
 	Weight              int
 	BasketValue         int
 	CODAmount           int
-	IncludeInsurance    bool
+	AdditionalFees      []shipping_fee_type.ShippingFeeType
 
 	Result *CalculateShippingFeesResponse `json:"-"`
 }
@@ -236,9 +237,9 @@ func (q *UpdateShipmentPricesPriorityPointCommand) SetUpdateShipmentPricesPriori
 	q.ShipmentPrices = args.ShipmentPrices
 }
 
-func (q *CalculateShippingFeesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *CalculateShippingFeeArgs) {
+func (q *CalculateShippingFeesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *CalculateShippingFeesArgs) {
 	return ctx,
-		&CalculateShippingFeeArgs{
+		&CalculateShippingFeesArgs{
 			AccountID:           q.AccountID,
 			FromProvince:        q.FromProvince,
 			FromProvinceCode:    q.FromProvinceCode,
@@ -254,11 +255,11 @@ func (q *CalculateShippingFeesQuery) GetArgs(ctx context.Context) (_ context.Con
 			Weight:              q.Weight,
 			BasketValue:         q.BasketValue,
 			CODAmount:           q.CODAmount,
-			IncludeInsurance:    q.IncludeInsurance,
+			AdditionalFees:      q.AdditionalFees,
 		}
 }
 
-func (q *CalculateShippingFeesQuery) SetCalculateShippingFeeArgs(args *CalculateShippingFeeArgs) {
+func (q *CalculateShippingFeesQuery) SetCalculateShippingFeesArgs(args *CalculateShippingFeesArgs) {
 	q.AccountID = args.AccountID
 	q.FromProvince = args.FromProvince
 	q.FromProvinceCode = args.FromProvinceCode
@@ -274,7 +275,7 @@ func (q *CalculateShippingFeesQuery) SetCalculateShippingFeeArgs(args *Calculate
 	q.Weight = args.Weight
 	q.BasketValue = args.BasketValue
 	q.CODAmount = args.CODAmount
-	q.IncludeInsurance = args.IncludeInsurance
+	q.AdditionalFees = args.AdditionalFees
 }
 
 func (q *GetShipmentPriceQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {

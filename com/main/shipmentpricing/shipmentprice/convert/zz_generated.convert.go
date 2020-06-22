@@ -14,9 +14,11 @@ import (
 
 /*
 Custom conversions:
+    Convert_shipmentprice_ShippingFee_To_shipping_ShippingFeeLine              // not use, no conversions between params
     Convert_shipmentprice_ShippingFee_To_shippingsharemodel_ShippingFeeLine    // not use, no conversions between params
 
 Ignored functions:
+    Convert_shipmentprice_ShippingFees_To_shipping_ShippingFeeLines              // params are not pointer to named types
     Convert_shipmentprice_ShippingFees_To_shippingsharemodel_ShippingFeeLines    // params are not pointer to named types
 */
 

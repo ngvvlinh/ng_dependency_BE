@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"o.o/api/main/shipmentpricing/shipmentservice"
-	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice/sqlstore"
@@ -51,6 +50,6 @@ func (q *QueryService) GetShipmentServiceByServiceID(ctx context.Context, servic
 	return res, err
 }
 
-func (q *QueryService) ListShipmentServices(ctx context.Context, _ *meta.Empty) ([]*shipmentservice.ShipmentService, error) {
-	return q.shipmentServiceStore(ctx).ListShipmentServices()
+func (q *QueryService) ListShipmentServices(ctx context.Context, args *shipmentservice.ListShipmentServicesArgs) ([]*shipmentservice.ShipmentService, error) {
+	return q.shipmentServiceStore(ctx).OptionalConnectionID(args.ConnectionID).ListShipmentServices()
 }

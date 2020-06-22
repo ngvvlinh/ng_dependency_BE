@@ -1649,7 +1649,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/xuGetShipmentServicesRequest"
             }
           }
         ],
@@ -6889,6 +6889,15 @@
           "items": {
             "$ref": "#/definitions/xuShipmentPrice"
           }
+        }
+      }
+    },
+    "xuGetShipmentServicesRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

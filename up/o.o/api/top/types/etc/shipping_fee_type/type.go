@@ -43,3 +43,12 @@ const (
 	// +enum=redelivery
 	Redelivery ShippingFeeType = 10
 )
+
+func Contain(list []ShippingFeeType, _type ShippingFeeType) bool {
+	for _, item := range list {
+		if item == _type {
+			return true
+		}
+	}
+	return false
+}

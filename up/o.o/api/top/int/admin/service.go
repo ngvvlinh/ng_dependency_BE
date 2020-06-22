@@ -114,7 +114,7 @@ type ConnectionService interface {
 type ShipmentPriceService interface {
 	GetShippingServices(context.Context, *GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
 
-	GetShipmentServices(context.Context, *cm.Empty) (*GetShipmentServicesResponse, error)
+	GetShipmentServices(context.Context, *GetShipmentServicesRequest) (*GetShipmentServicesResponse, error)
 	GetShipmentService(context.Context, *cm.IDRequest) (*ShipmentService, error)
 	CreateShipmentService(context.Context, *CreateShipmentServiceRequest) (*ShipmentService, error)
 	UpdateShipmentService(context.Context, *UpdateShipmentServiceRequest) (*cm.UpdatedResponse, error)
