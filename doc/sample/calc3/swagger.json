@@ -1,0 +1,265 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/calc.Calc/Calc": {
+      "post": {
+        "tags": [
+          "Calc"
+        ],
+        "summary": "Calc",
+        "operationId": "calc.Calc-Calc",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mdCreateEquationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mdEquation"
+            }
+          }
+        }
+      }
+    },
+    "/api/calc.Calc/Get": {
+      "post": {
+        "tags": [
+          "Calc"
+        ],
+        "summary": "Get",
+        "operationId": "calc.Calc-Get",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mdGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mdEquation"
+            }
+          }
+        }
+      }
+    },
+    "/api/calc.Calc/List": {
+      "post": {
+        "tags": [
+          "Calc"
+        ],
+        "summary": "List",
+        "operationId": "calc.Calc-List",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mdListEquationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mdEquations"
+            }
+          }
+        }
+      }
+    },
+    "/api/calc.Calc/Update": {
+      "post": {
+        "tags": [
+          "Calc"
+        ],
+        "summary": "Update",
+        "operationId": "calc.Calc-Update",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mdUpdateEquationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mdEquation"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ktFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Comma separated properties: \"name,s_name\"\n",
+          "type": "string"
+        },
+        "op": {
+          "description": "Can be = ≠ (!=) \u003c ≤ (\u003c=) \u003e ≥ (\u003e=) ⊃ (c) ∈ (in) ∩ (n)\n\n- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ \u003c ≤ \u003e ≥\n- Array: = ≠ (only with value is {})\n",
+          "type": "string"
+        },
+        "value": {
+          "description": "Must always be string\n",
+          "type": "string"
+        }
+      }
+    },
+    "mdCreateEquationRequest": {
+      "type": "object",
+      "properties": {
+        "a": {
+          "description": "the first param\n",
+          "type": "string"
+        },
+        "b": {
+          "description": "the second param\n",
+          "type": "string"
+        },
+        "op": {
+          "allOf": [
+            {
+              "description": "(+, -, * /)\n"
+            },
+            {
+              "$ref": "#/definitions/mdEquationOperator"
+            }
+          ]
+        }
+      }
+    },
+    "mdEquation": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "equation": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "result": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mdEquationOperator": {
+      "type": "string",
+      "enum": [
+        "add",
+        "sub",
+        "div",
+        "mul"
+      ]
+    },
+    "mdEquations": {
+      "type": "object",
+      "properties": {
+        "equations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mdEquation"
+          }
+        }
+      }
+    },
+    "mdGetRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mdListEquationRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        }
+      }
+    },
+    "mdUpdateEquationRequest": {
+      "type": "object",
+      "properties": {
+        "a": {
+          "description": "the first param\n",
+          "type": "string"
+        },
+        "b": {
+          "description": "the second param\n",
+          "type": "string"
+        },
+        "id": {
+          "description": "id of equation\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "op": {
+          "allOf": [
+            {
+              "description": "the operator (+, -, *, /)\n"
+            },
+            {
+              "$ref": "#/definitions/mdEquationOperator"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Calc"
+    }
+  ]
+}
