@@ -13,7 +13,9 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type ListShopVariantsForImportArgs struct {
@@ -42,6 +44,11 @@ type ShopVariantStore struct {
 	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
+}
+
+func (s *ShopVariantStore) FullTextSearchName(name filter.FullTextSearch) *ShopVariantStore {
+	s.preds = append(s.preds, s.FtShopVariant.Filter(`name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
+	return s
 }
 
 func (s *ShopVariantStore) extend() *ShopVariantStore {

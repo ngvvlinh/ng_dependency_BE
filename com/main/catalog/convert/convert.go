@@ -65,7 +65,6 @@ func shopProduct(in *catalogmodel.ShopProduct, out *catalog.ShopProduct) {
 }
 
 func shopProductDB(in *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
-
 	metaFields := []*catalogmodel.MetaField{}
 	for _, metaField := range in.MetaFields {
 		metaFields = append(metaFields, &catalogmodel.MetaField{
@@ -74,6 +73,7 @@ func shopProductDB(in *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
 		})
 	}
 	convert_catalog_ShopProduct_catalogmodel_ShopProduct(in, out)
+	out.NameNorm = validate.NormalizeSearchCharacter(in.Name+" "+in.Code) + " " + validate.NormalizeSearchCode(in.Code)
 	out.MetaFields = metaFields
 }
 
@@ -100,6 +100,7 @@ func ShopProductsWithVariants(ins []*catalogmodel.ShopProductWithVariants) (outs
 func shopVariantDB(in *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
 	convert_catalog_ShopVariant_catalogmodel_ShopVariant(in, out)
 	attributes, attrNormKv := catalogmodel.NormalizeAttributes(in.Attributes)
+	out.NameNorm = validate.NormalizeSearchCharacter(in.Code) + " " + validate.NormalizeSearchCode(in.Code)
 	out.Attributes = Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(attributes)
 	out.AttrNormKv = attrNormKv
 }
@@ -139,7 +140,6 @@ func createShopProduct(arg *catalog.CreateShopProductArgs, out *catalog.ShopProd
 	out.CostPrice = arg.CostPrice
 	out.ListPrice = arg.ListPrice
 	out.RetailPrice = arg.RetailPrice
-	out.NameNorm = validate.NormalizeSearchCharacter(arg.Name)
 }
 
 func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.ShopProduct) *catalog.ShopProduct {
@@ -147,14 +147,10 @@ func updateShopProduct(args *catalog.UpdateShopProductInfoArgs, in *catalog.Shop
 		return nil
 	}
 	apply_catalog_UpdateShopProductInfoArgs_catalog_ShopProduct(args, in)
-	in.NameNorm = validate.NormalizeSearchCharacter(in.Name)
 	in.UpdatedAt = time.Now()
 	if args.DescHTML.Valid == true {
 		var descHTML = htmlPolicy.Sanitize(args.DescHTML.String)
 		in.DescHTML = descHTML
-	}
-	if args.Code.Valid {
-		in.Code = NormalizeExternalCode(args.Code.String)
 	}
 	return in
 }

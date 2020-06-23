@@ -224,7 +224,44 @@ func (s *QueryService) ListShopProductsWithVariants(
 			productsFilter = append(productsFilter, v)
 		}
 	}
-	products = productsFilter
+	products = []*catalog.ShopProductWithVariants{}
+	var productsByVariantFilter []*catalog.ShopProductWithVariants
+	isSearchByVariant := false
+	if len(args.Name) > 2 {
+		// filter full text search variant
+		qVariant, err := s.shopVariant(ctx).OptionalShopID(args.ShopID).FullTextSearchName(args.Name).ListShopVariants()
+		if err != nil {
+			return nil, err
+		}
+		var productIDs []dot.ID
+		for _, v := range qVariant {
+			if v.Code == args.Name.String() {
+				isSearchByVariant = true
+			}
+			if !cm.IDsContain(productIDs, v.ProductID) {
+				productIDs = append(productIDs, v.ProductID)
+			}
+		}
+		productByVariant, err := s.shopProduct(ctx).ShopID(args.ShopID).IDs(productIDs...).ListShopProductsWithVariants()
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range productByVariant {
+			if !contains(productsFilter, p.ProductID) {
+				productsByVariantFilter = append(productsByVariantFilter, p)
+			}
+		}
+	}
+	productsFilter, productsByVariantFilter = ProportionProduct(productsFilter, productsByVariantFilter, 7, 3, args.Paging.Limit)
+	// if search have code of variant result of variant is in first
+	if isSearchByVariant {
+		products = productsByVariantFilter
+		products = append(products, productsFilter...)
+	} else {
+		products = productsFilter
+		products = append(products, productsByVariantFilter...)
+	}
+
 	var mapProductCollection = make(map[dot.ID][]dot.ID)
 	var productIDs []dot.ID
 	for _, product := range products {
@@ -244,6 +281,35 @@ func (s *QueryService) ListShopProductsWithVariants(
 		Products: products,
 		Paging:   q.GetPaging(),
 	}, nil
+}
+
+func ProportionProduct(listProduct1, listProduct2 []*catalog.ShopProductWithVariants, proportion1, proportion2, limit int) ([]*catalog.ShopProductWithVariants, []*catalog.ShopProductWithVariants) {
+	if len(listProduct1)+len(listProduct2) <= limit {
+		return listProduct1, listProduct2
+	}
+	var ln1 int
+	var ln2 int
+
+	if len(listProduct1) <= limit*proportion1/(proportion1+proportion2) {
+		ln1 = len(listProduct1)
+		ln2 = limit - ln1
+	} else if len(listProduct2) <= limit*proportion2/(proportion1+proportion2) {
+		ln2 = limit - len(listProduct2)
+		ln1 = limit - ln2
+	} else {
+		ln1 = limit * proportion1 / (proportion1 + proportion2)
+		ln2 = limit - ln1
+	}
+	return listProduct1[:ln1], listProduct2[:ln2]
+}
+
+func contains(a []*catalog.ShopProductWithVariants, productID dot.ID) bool {
+	for _, v := range a {
+		if v.ProductID == productID {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *QueryService) ListShopVariants(

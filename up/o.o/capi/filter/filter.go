@@ -40,3 +40,5 @@ func (d Date) IsZero() bool {
 
 // +swagger:type=string
 type FullTextSearch string
+
+func (f FullTextSearch) String() string { return string(f) }

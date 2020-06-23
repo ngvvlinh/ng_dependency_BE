@@ -45,20 +45,20 @@ func main() {
 		var fromID dot.ID = 0
 		count, updated := 0, 0
 		for {
-			products, err := scanProduct(fromID)
+			variants, err := scanVariant(fromID)
 			if err != nil {
 				ll.Fatal("Error", l.Error(err))
 			}
-			if len(products) == 0 {
+			if len(variants) == 0 {
 				ll.S.Infof("Done: updated %v/%v", updated, count)
 				break
 			}
-			fromID = products[len(products)-1].ProductID
-			count += len(products)
-			for _, product := range products {
+			fromID = variants[len(variants)-1].VariantID
+			count += len(variants)
+			for _, variant := range variants {
 
-				ch <- product.ProductID
-				go func(p *catalogmodel.ShopProduct) (_err error) {
+				ch <- variant.VariantID
+				go func(p *catalogmodel.ShopVariant) (_err error) {
 					_, ctxCancel := context.WithCancel(context.Background())
 					defer func() {
 						<-ch
@@ -66,9 +66,9 @@ func main() {
 						ctxCancel()
 					}()
 
-					nameNorm := validate.NormalizeSearchCharacter(p.Name)
+					nameNorm := ""
 					if p.Code != "" {
-						nameNorm = validate.NormalizeSearchCharacter(p.Name+" "+p.Code) + " " + validate.NormalizeSearchCode(p.Code)
+						nameNorm = validate.NormalizeSearchCharacter(p.Code)
 					}
 					update := make(map[string]interface{})
 					if p.NameNorm != "" && p.Name != "" {
@@ -77,14 +77,14 @@ func main() {
 
 					if len(update) > 0 {
 						_err = db.
-							Table("shop_product").
-							Where("product_id = ?", p.ProductID).
+							Table("shop_variant").
+							Where("variant_id = ?", p.VariantID).
 							ShouldUpdateMap(update)
 					}
 					return _err
-				}(product)
+				}(variant)
 			}
-			for i := 0; i < len(products); i++ {
+			for i := 0; i < len(variants); i++ {
 				err = <-chInsert
 				if err != nil {
 					errCount++
@@ -93,15 +93,15 @@ func main() {
 				}
 			}
 		}
-		ll.S.Infof("Updated shop product: success %v/%v, error %v/%v", updated, count, errCount, count)
+		ll.S.Infof("Updated shop variant: success %v/%v, error %v/%v", updated, count, errCount, count)
 	}
 }
 
-func scanProduct(fromID dot.ID) (products catalogmodel.ShopProducts, err error) {
+func scanVariant(fromID dot.ID) (variants catalogmodel.ShopVariants, err error) {
 	err = db.
-		Where("product_id > ?", fromID.String()).
-		OrderBy("product_id").
+		Where("variant_id > ?", fromID.String()).
+		OrderBy("variant_id").
 		Limit(1000).
-		Find(&products)
+		Find(&variants)
 	return
 }

@@ -732,3 +732,27 @@ func TestNormalizeSearchCharacter(t *testing.T) {
 		})
 	}
 }
+
+func TestNormalizeSearchCode(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string // NormalizeSerachPhone
+	}{
+		{
+			"123456789",
+			"123456789 23456789 3456789 456789 56789 6789 789",
+		}, {
+			"abcd 1234",
+			"abcd 1234 bcd 234",
+		}, {
+			"hello '@' world",
+			"hello '@' world ello llo orld rld",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			output := NormalizeSearchCode(tt.input)
+			assert.Equal(t, tt.want, output)
+		})
+	}
+}

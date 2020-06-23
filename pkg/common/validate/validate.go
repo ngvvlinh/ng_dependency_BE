@@ -761,6 +761,20 @@ func NormalizeSearchPhone(s string) string {
 	return ss
 }
 
+func NormalizeSearchCode(str string) string {
+	str = NormalizeSearch(str)
+	strSplit := strings.Split(str, " ")
+	for _, v := range strSplit {
+		if len(v) < 4 {
+			continue
+		}
+		for i := 1; i < len(v)-2; i++ {
+			str += " " + v[i:]
+		}
+	}
+	return str
+}
+
 func VerifySearchName(str string, searchKey filter.FullTextSearch) bool {
 	str = NormalizeSearch(str)
 	searchStr := NormalizeSearch(string(searchKey))
