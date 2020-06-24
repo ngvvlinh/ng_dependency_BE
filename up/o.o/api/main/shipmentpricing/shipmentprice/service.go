@@ -77,7 +77,7 @@ type CalculateShippingFeesArgs struct {
 	Weight              int
 	BasketValue         int
 	CODAmount           int
-	AdditionalFees      []shipping_fee_type.ShippingFeeType
+	AdditionalFeeTypes  []shipping_fee_type.ShippingFeeType
 }
 
 type CalculateShippingFeesResponse struct {

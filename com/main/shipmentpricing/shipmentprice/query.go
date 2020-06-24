@@ -223,6 +223,9 @@ func GetPriceRuleDetail(weight int, priceRuleDetails []*shipmentprice.PricingDet
 	return priceRuleDetailsMap[index], nil
 }
 
+// GetPriceByPricingDetail
+//
+// Main fee
 func GetPriceByPricingDetail(weight int, pRuleDetail *shipmentprice.PricingDetail) (int, error) {
 	if (pRuleDetail.Overweight == nil || len(pRuleDetail.Overweight) == 0) && weight > pRuleDetail.Weight {
 		// can not apply this rule
@@ -356,10 +359,10 @@ func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipment
 
 	// calculate additional fee
 	calcAdditionalFeeArgs := CalcAdditionalFeeArgs{
-		BasketValue:    args.BasketValue,
-		CODAmount:      args.CODAmount,
-		MainFee:        mainFee,
-		AdditionalFees: args.AdditionalFees,
+		BasketValue:        args.BasketValue,
+		CODAmount:          args.CODAmount,
+		MainFee:            mainFee,
+		AdditionalFeeTypes: args.AdditionalFeeTypes,
 	}
 	feeLines, err := calcAdditionalFees(calcAdditionalFeeArgs, pricing.AdditionalFees)
 	if err != nil {

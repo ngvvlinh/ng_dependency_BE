@@ -9,6 +9,13 @@ import (
 	cm "o.o/backend/pkg/common"
 )
 
+// acceptedAdditionalFeeTypes
+//
+// Luôn tính cước phí của các phụ phí trong mảng này
+var acceptedAdditionalFeeTypes = []shipping_fee_type.ShippingFeeType{
+	shipping_fee_type.Cods,
+}
+
 // calcAdditionalFees
 //
 // link desc: https://www.notion.so/c-t-B-sung-c-i-lo-i-ph-v-o-c-u-h-nh-gi-fa8a56e96bd0445bb46821d7125e9abd
@@ -26,17 +33,17 @@ func calcAdditionalFees(args CalcAdditionalFeeArgs, additionalFees []*shipmentpr
 }
 
 type CalcAdditionalFeeArgs struct {
-	BasketValue    int
-	CODAmount      int
-	MainFee        int
-	AdditionalFees []shipping_fee_type.ShippingFeeType
+	BasketValue        int
+	CODAmount          int
+	MainFee            int
+	AdditionalFeeTypes []shipping_fee_type.ShippingFeeType
 }
 
 func calcAdditionalFee(args CalcAdditionalFeeArgs, addFee *shipmentprice.AdditionalFee) (*shipmentprice.ShippingFee, error) {
 	if addFee == nil {
 		return nil, nil
 	}
-	if !shipping_fee_type.Contain(args.AdditionalFees, addFee.FeeType) {
+	if !shipping_fee_type.Contain(args.AdditionalFeeTypes, addFee.FeeType) && !shipping_fee_type.Contain(acceptedAdditionalFeeTypes, addFee.FeeType) {
 		return nil, nil
 	}
 	var fee int

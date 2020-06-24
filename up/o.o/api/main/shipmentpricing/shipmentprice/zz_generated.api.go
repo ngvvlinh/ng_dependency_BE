@@ -109,7 +109,7 @@ type CalculateShippingFeesQuery struct {
 	Weight              int
 	BasketValue         int
 	CODAmount           int
-	AdditionalFees      []shipping_fee_type.ShippingFeeType
+	AdditionalFeeTypes  []shipping_fee_type.ShippingFeeType
 
 	Result *CalculateShippingFeesResponse `json:"-"`
 }
@@ -255,7 +255,7 @@ func (q *CalculateShippingFeesQuery) GetArgs(ctx context.Context) (_ context.Con
 			Weight:              q.Weight,
 			BasketValue:         q.BasketValue,
 			CODAmount:           q.CODAmount,
-			AdditionalFees:      q.AdditionalFees,
+			AdditionalFeeTypes:  q.AdditionalFeeTypes,
 		}
 }
 
@@ -275,7 +275,7 @@ func (q *CalculateShippingFeesQuery) SetCalculateShippingFeesArgs(args *Calculat
 	q.Weight = args.Weight
 	q.BasketValue = args.BasketValue
 	q.CODAmount = args.CODAmount
-	q.AdditionalFees = args.AdditionalFees
+	q.AdditionalFeeTypes = args.AdditionalFeeTypes
 }
 
 func (q *GetShipmentPriceQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {

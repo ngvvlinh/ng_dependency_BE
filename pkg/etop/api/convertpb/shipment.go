@@ -226,15 +226,19 @@ func PbShipmentPrices(items []*shipmentprice.ShipmentPrice) []*admin.ShipmentPri
 	return result
 }
 
-func PricingDetails(ins []*admin.PricingDetail) (res []*shipmentprice.PricingDetail) {
-	for _, in := range ins {
-		res = append(res, &shipmentprice.PricingDetail{
+func PricingDetails(ins []*admin.PricingDetail) []*shipmentprice.PricingDetail {
+	if ins == nil {
+		return nil
+	}
+	var res = make([]*shipmentprice.PricingDetail, len(ins))
+	for i, in := range ins {
+		res[i] = &shipmentprice.PricingDetail{
 			Weight:     in.Weight,
 			Price:      in.Price,
 			Overweight: PricingDetailOverweights(in.Overweight),
-		})
+		}
 	}
-	return
+	return res
 }
 
 func PricingDetailOverweights(items []*admin.PricingDetailOverweight) (res []*shipmentprice.PricingDetailOverweight) {
@@ -259,11 +263,15 @@ func Convert_api_AdditionalFee_To_core_AdditionalFee(in *admin.AdditionalFee) *s
 	}
 }
 
-func Convert_api_AdditionalFees_To_core_AdditionalFees(items []*admin.AdditionalFee) (res []*shipmentprice.AdditionalFee) {
-	for _, item := range items {
-		res = append(res, Convert_api_AdditionalFee_To_core_AdditionalFee(item))
+func Convert_api_AdditionalFees_To_core_AdditionalFees(items []*admin.AdditionalFee) []*shipmentprice.AdditionalFee {
+	if items == nil {
+		return nil
 	}
-	return
+	var res = make([]*shipmentprice.AdditionalFee, len(items))
+	for i, item := range items {
+		res[i] = Convert_api_AdditionalFee_To_core_AdditionalFee(item)
+	}
+	return res
 }
 
 func Convert_api_AdditionalFeeRule_To_core_AdditionalFeeRule(in *admin.AdditionalFeeRule) *shipmentprice.AdditionalFeeRule {

@@ -934,9 +934,9 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 		return cm.Errorf(cm.FailedPrecondition, nil, "Thiếu shipment service.")
 	}
 	originFee := service.ServiceFee
-	addFees := []shipping_fee_type.ShippingFeeType{}
+	addFeeTypes := []shipping_fee_type.ShippingFeeType{}
 	if args.IncludeInsurance {
-		addFees = append(addFees, shipping_fee_type.Insurance)
+		addFeeTypes = append(addFeeTypes, shipping_fee_type.Insurance)
 	}
 	query := &shipmentprice.CalculateShippingFeesQuery{
 		AccountID:           args.AccountID,
@@ -948,7 +948,7 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 		Weight:              args.ChargeableWeight,
 		BasketValue:         args.BasketValue,
 		CODAmount:           args.CODAmount,
-		AdditionalFees:      addFees,
+		AdditionalFeeTypes:  addFeeTypes,
 	}
 	err := m.shipmentPriceQS.Dispatch(ctx, query)
 	switch cm.ErrorCode(err) {
@@ -999,25 +999,25 @@ func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, ffm *
 	if err != nil {
 		return nil, err
 	}
-	addFees := []shipping_fee_type.ShippingFeeType{}
+	addFeeTypes := []shipping_fee_type.ShippingFeeType{}
 	if args.IncludeInsurance {
-		addFees = append(addFees, shipping_fee_type.Insurance)
+		addFeeTypes = append(addFeeTypes, shipping_fee_type.Insurance)
 	}
 	if shipping.IsStateReturn(state) {
-		addFees = append(addFees, shipping_fee_type.Return)
+		addFeeTypes = append(addFeeTypes, shipping_fee_type.Return)
 	}
 	query := &shipmentprice.CalculateShippingFeesQuery{
-		AccountID:         ffm.ShopID,
-		FromDistrictCode:  ffm.AddressFrom.DistrictCode,
-		FromProvinceCode:  ffm.AddressFrom.ProvinceCode,
-		ToDistrictCode:    ffm.AddressTo.DistrictCode,
-		ToProvinceCode:    ffm.AddressTo.ProvinceCode,
-		ShipmentServiceID: shipmentService.ID,
-		ConnectionID:      connectionID,
-		Weight:            weight,
-		BasketValue:       ffm.BasketValue,
-		CODAmount:         ffm.TotalCODAmount,
-		AdditionalFees:    addFees,
+		AccountID:          ffm.ShopID,
+		FromDistrictCode:   ffm.AddressFrom.DistrictCode,
+		FromProvinceCode:   ffm.AddressFrom.ProvinceCode,
+		ToDistrictCode:     ffm.AddressTo.DistrictCode,
+		ToProvinceCode:     ffm.AddressTo.ProvinceCode,
+		ShipmentServiceID:  shipmentService.ID,
+		ConnectionID:       connectionID,
+		Weight:             weight,
+		BasketValue:        ffm.BasketValue,
+		CODAmount:          ffm.TotalCODAmount,
+		AdditionalFeeTypes: addFeeTypes,
 	}
 	if err := m.shipmentPriceQS.Dispatch(ctx, query); err != nil {
 		return nil, err
