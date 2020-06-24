@@ -2035,6 +2035,16 @@ func (s wrapConnectionService) DeleteShopConnection(ctx context.Context, req *in
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/connection:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/connection:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().DeleteShopConnection(ctx, query)
 	resp = query.Result
@@ -2081,6 +2091,16 @@ func (s wrapConnectionService) GetAvailableConnections(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/connection:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/connection:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().GetAvailableConnections(ctx, query)
 	resp = query.Result
@@ -2127,6 +2147,16 @@ func (s wrapConnectionService) GetConnections(ctx context.Context, req *cm.Empty
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/connection:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/connection:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().GetConnections(ctx, query)
 	resp = query.Result
@@ -2173,6 +2203,16 @@ func (s wrapConnectionService) GetShopConnections(ctx context.Context, req *cm.E
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/connection:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/connection:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().GetShopConnections(ctx, query)
 	resp = query.Result
@@ -2219,6 +2259,16 @@ func (s wrapConnectionService) LoginShopConnection(ctx context.Context, req *int
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/connection:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/connection:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().LoginShopConnection(ctx, query)
 	resp = query.Result
@@ -2265,6 +2315,16 @@ func (s wrapConnectionService) RegisterShopConnection(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/connection:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/connection:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().RegisterShopConnection(ctx, query)
 	resp = query.Result
@@ -2311,6 +2371,16 @@ func (s wrapConnectionService) UpdateShopConnection(ctx context.Context, req *in
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	// Do not check permission for 3rd party requests
+	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "shop/connection:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/connection:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s().UpdateShopConnection(ctx, query)
 	resp = query.Result

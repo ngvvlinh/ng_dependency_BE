@@ -26,6 +26,11 @@ const (
 	m = g(r.role, p.role) && r.action == p.action`
 
 	policy = `
+	#connection
+	p, shop/connection:create, owner
+	p, shop/connection:update, owner
+	p, shop/connection:delete, owner
+	p, shop/connection:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, analyst
 	# carrier
     p, shop/carrier:create, admin, owner, salesman
 	p, shop/carrier:update, admin, owner, salesman

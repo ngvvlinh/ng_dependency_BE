@@ -70,6 +70,11 @@ const (
 
 	// Actions
 
+	ShopConnectionCreate permission.ActionType = "shop/connection:create"
+	ShopConnectionUpdate permission.ActionType = "shop/connection:update"
+	ShopConnectionDelete permission.ActionType = "shop/connection:delete"
+	ShopConnectionView   permission.ActionType = "shop/connection:view"
+
 	ShopCarrierCreate permission.ActionType = "shop/carrier:create"
 	ShopCarrierUpdate permission.ActionType = "shop/carrier:update"
 	ShopCarrierDelete permission.ActionType = "shop/carrier:delete"
@@ -818,13 +823,13 @@ var _acl = map[string]*permission.Decl{
 	"shop.Brand/GetBrandsByIDs":  {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 	"shop.Brand/ListBrands":      {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 
-	"shop.Connection/GetConnections":          {Type: Shop},
-	"shop.Connection/GetAvailableConnections": {Type: Shop},
-	"shop.Connection/GetShopConnections":      {Type: Shop},
-	"shop.Connection/LoginShopConnection":     {Type: Shop},
-	"shop.Connection/RegisterShopConnection":  {Type: Shop},
-	"shop.Connection/DeleteShopConnection":    {Type: Shop},
-	"shop.Connection/UpdateShopConnection":    {Type: Shop},
+	"shop.Connection/GetConnections":          {Type: Shop, Actions: actions(ShopConnectionView)},
+	"shop.Connection/GetAvailableConnections": {Type: Shop, Actions: actions(ShopConnectionView)},
+	"shop.Connection/GetShopConnections":      {Type: Shop, Actions: actions(ShopConnectionView)},
+	"shop.Connection/LoginShopConnection":     {Type: Shop, Actions: actions(ShopConnectionUpdate)},
+	"shop.Connection/RegisterShopConnection":  {Type: Shop, Actions: actions(ShopConnectionCreate)},
+	"shop.Connection/DeleteShopConnection":    {Type: Shop, Actions: actions(ShopConnectionDelete)},
+	"shop.Connection/UpdateShopConnection":    {Type: Shop, Actions: actions(ShopConnectionUpdate)},
 
 	"shop.Subscription/GetSubscription":  {Type: Shop},
 	"shop.Subscription/GetSubscriptions": {Type: Shop},
