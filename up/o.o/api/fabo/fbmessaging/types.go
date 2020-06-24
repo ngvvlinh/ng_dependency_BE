@@ -215,3 +215,9 @@ type FbExternalCommentsCreatedEvent struct {
 type FbExternalConversationsCreatedEvent struct {
 	FbExternalConversations []*FbExternalConversation
 }
+
+type FbCreatePostArgs struct {
+	ExternalPageID string
+	AccessToken    string
+	Message        string
+}

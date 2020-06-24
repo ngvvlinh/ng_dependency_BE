@@ -786,6 +786,44 @@ func (f *FbClient) CallAPISendComment(accessToken string, sendCommentRequest *mo
 	return &sendCommentResponse, nil
 }
 
+func (f *FbClient) CallAPICreatePost(accessToken string, pageID string, request *model.CreatePostRequest) (*model.CreatePostResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/%s/feed", f.apiInfo.Url(), pageID))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Message, request.Message)
+	URL.RawQuery = query.Encode()
+
+	resp, err := http.Post(URL.String(), "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var response *model.CreatePostResponse
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
 func (f *FbClient) CallAPICommentByID(accessToken, commentID string) (*model.Comment, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), commentID))
 	if err != nil {

@@ -1006,6 +1006,7 @@ var _acl = map[string]*permission.Decl{
 	"fabo.CustomerConversation/UpdateReadStatus":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true},
 
 	// -- Fabo Customer --
 	"fabo.Customer/CreateFbUserCustomer":     {Type: Shop},

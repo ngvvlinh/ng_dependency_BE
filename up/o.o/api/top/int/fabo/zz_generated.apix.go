@@ -77,6 +77,19 @@ func (s *CustomerConversationServiceServer) ServeHTTP(resp http.ResponseWriter, 
 
 func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/fabo.CustomerConversation/CreatePost":
+		msg := &CreatePostRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreatePost(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/fabo.CustomerConversation/ListCommentsByExternalPostID":
 		msg := &ListCommentsByExternalPostIDRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

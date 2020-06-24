@@ -485,7 +485,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	}
 	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB)
 	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
-	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, eventBus)
+	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, eventBus, fbClient)
 	fbmessagingCommandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
 	customerConversationService := &fabo.CustomerConversationService{
 		Session:          session,

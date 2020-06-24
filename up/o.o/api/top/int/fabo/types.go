@@ -513,3 +513,20 @@ func (m *SendCommentRequest) Validate() error {
 }
 
 func (m *SendCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreatePostRequest struct {
+	ExternalPageID string `json:"external_page_id"`
+	Message        string `json:"message"`
+}
+
+func (m *CreatePostRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type CreatePostResponse struct {
+	ExternalPostID string `json:"external_post_id"`
+}
+
+func (m *CreatePostResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}

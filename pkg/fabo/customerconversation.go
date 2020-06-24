@@ -456,6 +456,33 @@ func (s *CustomerConversationService) SendComment(
 	return result, nil
 }
 
+func (s *CustomerConversationService) CreatePost(
+	ctx context.Context, request *fabo.CreatePostRequest,
+) (*fabo.CreatePostResponse, error) {
+	getFbExternalPageInternalQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
+		ExternalID: request.ExternalPageID,
+	}
+	if err := s.FBPagingQuery.Dispatch(ctx, getFbExternalPageInternalQuery); err != nil {
+		return nil, err
+	}
+	accessToken := getFbExternalPageInternalQuery.Result.Token
+
+	createPostCmd := &fbmessaging.CreateFbExternalPostCommand{
+		ExternalPageID: request.ExternalPageID,
+		Message:        request.Message,
+		AccessToken:    accessToken,
+	}
+
+	if err := s.FBMessagingAggr.Dispatch(ctx, createPostCmd); err != nil {
+		return nil, err
+	}
+
+	response := &fabo.CreatePostResponse{
+		ExternalPostID: createPostCmd.Result.ExternalID,
+	}
+	return response, nil
+}
+
 func (s *CustomerConversationService) SendMessage(
 	ctx context.Context, request *fabo.SendMessageRequest,
 ) (*fabo.FbExternalMessage, error) {

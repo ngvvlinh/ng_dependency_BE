@@ -89,7 +89,7 @@ func main() {
 	customerQuery := customerquery.CustomerQueryMessageBus(customerquery.NewCustomerQuery(db))
 	fbPagingQuery := servicefbpaging.FbPageQueryMessageBus(servicefbpaging.NewFbPageQuery(db))
 	fbPagingAggr := servicefbpaging.FbExternalPageAggregateMessageBus(servicefbpaging.NewFbPageAggregate(db))
-	fbMessagingAggr := servicefbmessaging.FbExternalMessagingAggregateMessageBus(servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus))
+	fbMessagingAggr := servicefbmessaging.FbExternalMessagingAggregateMessageBus(servicefbmessaging.NewFbExternalMessagingAggregate(db, eventBus, fbClient))
 	fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
 	fbUseringQuery := servicefbusering.FbUserQueryMessageBus(servicefbusering.NewFbUserQuery(db, customerQuery))
 	fbUseringAggr := servicefbusering.FbUserAggregateMessageBus(servicefbusering.NewFbUserAggregate(db, fbPagingAggr, customerQuery))

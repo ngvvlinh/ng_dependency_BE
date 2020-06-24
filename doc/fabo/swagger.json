@@ -123,6 +123,33 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/CreatePost": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "CreatePost",
+        "operationId": "fabo.CustomerConversation-CreatePost",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvCreatePostRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvCreatePostResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/ListCommentsByExternalPostID": {
       "post": {
         "tags": [
@@ -443,6 +470,25 @@
           "format": "int64"
         },
         "external_id": {
+          "type": "string"
+        }
+      }
+    },
+    "cvCreatePostRequest": {
+      "type": "object",
+      "properties": {
+        "external_page_id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "cvCreatePostResponse": {
+      "type": "object",
+      "properties": {
+        "external_post_id": {
           "type": "string"
         }
       }

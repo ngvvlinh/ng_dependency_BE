@@ -28,6 +28,8 @@ type Aggregate interface {
 	CreateFbCustomerConversations(context.Context, *CreateFbCustomerConversationsArgs) ([]*FbCustomerConversation, error)
 	CreateOrUpdateFbCustomerConversations(context.Context, *CreateOrUpdateFbCustomerConversationsArgs) ([]*FbCustomerConversation, error)
 	UpdateIsReadCustomerConversation(ctx context.Context, conversationCustomerID dot.ID, isRead bool) (int, error)
+
+	CreateFbExternalPost(context.Context, *FbCreatePostArgs) (*FbExternalPost, error)
 }
 
 type QueryService interface {

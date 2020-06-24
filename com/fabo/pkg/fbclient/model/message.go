@@ -115,3 +115,11 @@ type SendCommentRequest struct {
 type SendCommentResponse struct {
 	ID string `json:"id"`
 }
+
+type CreatePostRequest struct {
+	Message string `json:"message"`
+}
+
+type CreatePostResponse struct {
+	ID string `json:"id"`
+}

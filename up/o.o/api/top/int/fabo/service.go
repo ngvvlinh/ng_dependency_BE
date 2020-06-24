@@ -28,6 +28,8 @@ type CustomerConversationService interface {
 	SendMessage(context.Context, *SendMessageRequest) (*FbExternalMessage, error)
 
 	SendComment(context.Context, *SendCommentRequest) (*FbExternalComment, error)
+
+	CreatePost(context.Context, *CreatePostRequest) (*CreatePostResponse, error)
 }
 
 // +apix:path=/fabo.Customer

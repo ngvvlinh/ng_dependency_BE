@@ -2,6 +2,7 @@ package fbmessaging
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
@@ -9,7 +10,10 @@ import (
 	"o.o/backend/com/fabo/main/compare"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/sqlstore"
+	"o.o/backend/com/fabo/pkg/fbclient"
+	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	com "o.o/backend/com/main"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -28,9 +32,10 @@ type FbExternalMessagingAggregate struct {
 	fbExternalMessageStore           sqlstore.FbExternalMessageStoreFactory
 	fbCustomerConversationStore      sqlstore.FbCustomerConversationStoreFactory
 	fbCustomerConversationStateStore sqlstore.FbCustomerConversationStateStoreFactory
+	fbClient                         *fbclient.FbClient
 }
 
-func NewFbExternalMessagingAggregate(db com.MainDB, eventBus capi.EventBus) *FbExternalMessagingAggregate {
+func NewFbExternalMessagingAggregate(db com.MainDB, eventBus capi.EventBus, client *fbclient.FbClient) *FbExternalMessagingAggregate {
 	return &FbExternalMessagingAggregate{
 		db:                               db,
 		eventBus:                         eventBus,
@@ -40,6 +45,7 @@ func NewFbExternalMessagingAggregate(db com.MainDB, eventBus capi.EventBus) *FbE
 		fbExternalMessageStore:           sqlstore.NewFbExternalMessageStore(db),
 		fbCustomerConversationStore:      sqlstore.NewFbCustomerConversationStore(db),
 		fbCustomerConversationStateStore: sqlstore.NewFbCustomerConversationStateStore(db),
+		fbClient:                         client,
 	}
 }
 
@@ -550,4 +556,23 @@ func (a *FbExternalMessagingAggregate) UpdateIsReadCustomerConversation(
 	ctx context.Context, conversationCustomerID dot.ID, isRead bool,
 ) (int, error) {
 	return a.fbCustomerConversationStateStore(ctx).ID(conversationCustomerID).UpdateIsRead(isRead)
+}
+
+func (a *FbExternalMessagingAggregate) CreateFbExternalPost(ctx context.Context, args *fbmessaging.FbCreatePostArgs) (*fbmessaging.FbExternalPost, error) {
+	args.Message = strings.TrimSpace(args.Message)
+	if args.Message == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing post message content")
+	}
+
+	createPostRequest := &fbclientmodel.CreatePostRequest{
+		Message: args.Message,
+	}
+	post, err := a.fbClient.CallAPICreatePost(args.AccessToken, args.ExternalPageID, createPostRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	return &fbmessaging.FbExternalPost{
+		ExternalID: post.ID,
+	}, nil
 }

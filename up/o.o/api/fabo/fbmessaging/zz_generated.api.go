@@ -60,6 +60,19 @@ func (h AggregateHandler) HandleCreateFbExternalMessages(ctx context.Context, ms
 	return err
 }
 
+type CreateFbExternalPostCommand struct {
+	ExternalPageID string
+	AccessToken    string
+	Message        string
+
+	Result *FbExternalPost `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateFbExternalPost(ctx context.Context, msg *CreateFbExternalPostCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalPost(msg.GetArgs(ctx))
+	return err
+}
+
 type CreateFbExternalPostsCommand struct {
 	FbExternalPosts []*CreateFbExternalPostArgs
 
@@ -407,6 +420,7 @@ func (h QueryServiceHandler) HandleListLatestFbExternalMessages(ctx context.Cont
 func (q *CreateFbCustomerConversationsCommand) command()         {}
 func (q *CreateFbExternalConversationsCommand) command()         {}
 func (q *CreateFbExternalMessagesCommand) command()              {}
+func (q *CreateFbExternalPostCommand) command()                  {}
 func (q *CreateFbExternalPostsCommand) command()                 {}
 func (q *CreateOrUpdateFbCustomerConversationsCommand) command() {}
 func (q *CreateOrUpdateFbExternalCommentsCommand) command()      {}
@@ -471,6 +485,21 @@ func (q *CreateFbExternalMessagesCommand) GetArgs(ctx context.Context) (_ contex
 
 func (q *CreateFbExternalMessagesCommand) SetCreateFbExternalMessagesArgs(args *CreateFbExternalMessagesArgs) {
 	q.FbExternalMessages = args.FbExternalMessages
+}
+
+func (q *CreateFbExternalPostCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbCreatePostArgs) {
+	return ctx,
+		&FbCreatePostArgs{
+			ExternalPageID: q.ExternalPageID,
+			AccessToken:    q.AccessToken,
+			Message:        q.Message,
+		}
+}
+
+func (q *CreateFbExternalPostCommand) SetFbCreatePostArgs(args *FbCreatePostArgs) {
+	q.ExternalPageID = args.ExternalPageID
+	q.AccessToken = args.AccessToken
+	q.Message = args.Message
 }
 
 func (q *CreateFbExternalPostsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalPostsArgs) {
@@ -729,6 +758,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateFbCustomerConversations)
 	b.AddHandler(h.HandleCreateFbExternalConversations)
 	b.AddHandler(h.HandleCreateFbExternalMessages)
+	b.AddHandler(h.HandleCreateFbExternalPost)
 	b.AddHandler(h.HandleCreateFbExternalPosts)
 	b.AddHandler(h.HandleCreateOrUpdateFbCustomerConversations)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalComments)
