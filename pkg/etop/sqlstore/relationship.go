@@ -28,6 +28,7 @@ func init() {
 		UpdateAccountUser,
 		GetAllAccountUsers,
 		DeleteAccountUser,
+		UpdateRole,
 	)
 }
 
