@@ -418,6 +418,7 @@ type UpdateShopVariantInfoCommand struct {
 	CostPrice    dot.NullInt
 	ListPrice    dot.NullInt
 	RetailPrice  dot.NullInt
+	Attributes   *catalogtypes.Attributes
 
 	Result *ShopVariant `json:"-"`
 }
@@ -1350,6 +1351,7 @@ func (q *UpdateShopVariantInfoCommand) GetArgs(ctx context.Context) (_ context.C
 			CostPrice:    q.CostPrice,
 			ListPrice:    q.ListPrice,
 			RetailPrice:  q.RetailPrice,
+			Attributes:   q.Attributes,
 		}
 }
 
@@ -1365,6 +1367,7 @@ func (q *UpdateShopVariantInfoCommand) SetUpdateShopVariantInfoArgs(args *Update
 	q.CostPrice = args.CostPrice
 	q.ListPrice = args.ListPrice
 	q.RetailPrice = args.RetailPrice
+	q.Attributes = args.Attributes
 }
 
 func (q *UpdateShopVariantStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateStatusArgs) {

@@ -1070,7 +1070,7 @@ func apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(arg *catalog.Up
 	out.DescHTML = arg.DescHTML.Apply(out.DescHTML)          // apply change
 	out.ImageURLs = out.ImageURLs                            // no change
 	out.Status = out.Status                                  // no change
-	out.Attributes = out.Attributes                          // no change
+	out.Attributes = out.Attributes                          // types do not match
 	out.CostPrice = arg.CostPrice.Apply(out.CostPrice)       // apply change
 	out.ListPrice = arg.ListPrice.Apply(out.ListPrice)       // apply change
 	out.RetailPrice = arg.RetailPrice.Apply(out.RetailPrice) // apply change

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/catalog"
+	"o.o/api/main/catalog/types"
 	"o.o/api/main/inventory"
 	"o.o/api/meta"
 	"o.o/api/top/int/shop"
@@ -27,6 +28,11 @@ func (s *ProductService) Clone() *ProductService { res := *s; return &res }
 
 func (s *ProductService) UpdateVariant(ctx context.Context, q *UpdateVariantEndpoint) error {
 	shopID := q.Context.Shop.ID
+	var attributes *types.Attributes = nil
+	if q.Attributes != nil {
+		attributesRequest := types.Attributes(q.Attributes)
+		attributes = &attributesRequest
+	}
 	cmd := &catalog.UpdateShopVariantInfoCommand{
 		ShopID:    shopID,
 		VariantID: q.Id,
@@ -41,6 +47,7 @@ func (s *ProductService) UpdateVariant(ctx context.Context, q *UpdateVariantEndp
 		CostPrice:   q.CostPrice,
 		ListPrice:   q.ListPrice,
 		RetailPrice: q.RetailPrice,
+		Attributes:  attributes,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err

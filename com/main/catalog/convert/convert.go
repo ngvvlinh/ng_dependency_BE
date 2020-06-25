@@ -177,6 +177,9 @@ func updateShopVariant(args *catalog.UpdateShopVariantInfoArgs, in *catalog.Shop
 		return nil
 	}
 	apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(args, in)
+	if args.Attributes != nil {
+		in.Attributes = *args.Attributes
+	}
 	in.UpdatedAt = time.Now()
 	if args.DescHTML.Valid == true {
 		var descHTML = htmlPolicy.Sanitize(args.DescHTML.String)

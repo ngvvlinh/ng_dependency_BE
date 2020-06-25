@@ -414,6 +414,7 @@ type UpdateShopVariantInfoArgs struct {
 	CostPrice    NullInt
 	ListPrice    NullInt
 	RetailPrice  NullInt
+	Attributes   *types.Attributes
 }
 
 type UpdateStatusArgs struct {
