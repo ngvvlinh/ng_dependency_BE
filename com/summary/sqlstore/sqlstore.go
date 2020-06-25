@@ -122,6 +122,7 @@ func (s *SummaryStore) GetTopSellItem(shopID dot.ID, dateFrom time.Time, dateTo 
 	q = q.Where("ol.order_id = o.id and sp.product_id = ol.product_id")
 	q = q.Where("sp.product_id = sv.product_id")
 	q = q.Where("sp.deleted_at is null")
+	q = q.Where("sv.variant_id = ol.variant_id")
 	q = q.Where("sv.deleted_at is null")
 	q = q.Where("o.status != -1").Where("o.shop_id = ?", shopID)
 	q = q.GroupBy("sp.code, ol.product_id, sp.name, sp.image_urls").Limit(10).OrderBy("sum desc")
