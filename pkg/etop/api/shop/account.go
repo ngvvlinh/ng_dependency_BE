@@ -19,7 +19,7 @@ import (
 	"o.o/backend/pkg/common/validate"
 	etop "o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
-	authorizeauth "o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/tools/pkg/acl"
@@ -218,7 +218,7 @@ func (s *AccountService) GetExternalAccountAhamove(ctx context.Context, q *GetEx
 	}
 
 	var hideInfo bool
-	if !authorization.IsContainsActionString(authorizeauth.ListActionsByRoles(q.Context.Roles), string(acl.ShopExternalAccountManage)) {
+	if !authorization.IsContainsActionString(auth.ListActionsByRoles(q.Context.Roles), string(acl.ShopExternalAccountManage)) {
 		hideInfo = true
 	}
 	q.Result = convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(account, hideInfo)

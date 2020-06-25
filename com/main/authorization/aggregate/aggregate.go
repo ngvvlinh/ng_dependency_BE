@@ -9,7 +9,7 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	authservice "o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/capi/dot"
 )
 
@@ -55,7 +55,7 @@ func (a *AuthorizationAggregate) UpdatePermission(
 		ShortName: updateRoleCmd.Result.ShortName,
 		Position:  updateRoleCmd.Result.Position,
 		Roles:     convert.ConvertStringsToRoles(updateRoleCmd.Result.Permission.Roles),
-		Actions:   convert.ConvertStringsToActions(authservice.ListActionsByRoles(updateRoleCmd.Result.Permission.Roles)),
+		Actions:   convert.ConvertStringsToActions(auth.ListActionsByRoles(updateRoleCmd.Result.Permission.Roles)),
 	}
 
 	return relationship, nil
@@ -84,7 +84,7 @@ func (a *AuthorizationAggregate) UpdateRelationship(
 		ShortName: updateRelationshipCmd.Result.ShortName,
 		Position:  updateRelationshipCmd.Result.Position,
 		Roles:     convert.ConvertStringsToRoles(updateRelationshipCmd.Result.Permission.Roles),
-		Actions:   convert.ConvertStringsToActions(authservice.ListActionsByRoles(updateRelationshipCmd.Result.Permission.Roles)),
+		Actions:   convert.ConvertStringsToActions(auth.ListActionsByRoles(updateRelationshipCmd.Result.Permission.Roles)),
 	}
 	return relationship, nil
 }

@@ -14,6 +14,8 @@ import (
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/lifecycle"
 	"o.o/backend/pkg/common/sql/sqltrace"
+	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/authetop"
 	"o.o/backend/pkg/etop/model"
 	"o.o/common/l"
 )
@@ -23,6 +25,7 @@ var ll = l.New()
 func main() {
 	cc.InitFlags()
 	cc.ParseFlags()
+	auth.Init(authetop.Policy)
 
 	// load config
 	cfg, err := config.Load(false)

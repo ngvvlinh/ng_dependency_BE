@@ -4,9 +4,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"o.o/backend/pkg/etop/authorize/authcommon"
 )
 
 func TestCheckAction(t *testing.T) {
+	Init(authcommon.CommonPolicy)
 	t.Run("Test Check()", func(t *testing.T) {
 		roles := Roles{"owner"}
 		assert.True(t, roles.Check("shop/customer:view"))

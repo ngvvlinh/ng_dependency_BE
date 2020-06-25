@@ -229,6 +229,14 @@ const (
 	WsPageUpdate permission.ActionType = "shop/webserver/wspage:update"
 	WsPageDelete permission.ActionType = "shop/webserver/wspage:delete"
 	WsPageView   permission.ActionType = "shop/webserver/wspage:view"
+
+	// Fabo
+	FbCommentView   permission.ActionType = "facebook/comment:view"
+	FbCommentCreate permission.ActionType = "facebook/comment:create"
+	FbMessageCreate permission.ActionType = "facebook/message:create"
+	FbMessageView   permission.ActionType = "facebook/message:view"
+	FbUserCreate    permission.ActionType = "facebook/fbuser:create" // Liên kết fb_user với customer
+	FbUserView      permission.ActionType = "facebook/fbuser:view"
 )
 
 // ACL declares access control list
@@ -1006,17 +1014,17 @@ var _acl = map[string]*permission.Decl{
 	"fabo.Page/RemovePages":                                  {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.Page/ListPages":                                    {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/ListCustomerConversations":    {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/ListMessages":                 {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/ListMessages":                 {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageView)},
 	"fabo.CustomerConversation/ListCommentsByExternalPostID": {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/UpdateReadStatus":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageCreate)},
+	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentCreate)},
 	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true},
 
 	// -- Fabo Customer --
-	"fabo.Customer/CreateFbUserCustomer":     {Type: Shop},
+	"fabo.Customer/CreateFbUserCustomer":     {Type: Shop, Actions: actions(FbUserCreate)},
 	"fabo.Customer/ListFbUsers":              {Type: Shop},
-	"fabo.Customer/GetFbUser":                {Type: Shop},
+	"fabo.Customer/GetFbUser":                {Type: Shop, Actions: actions(FbUserView)},
 	"fabo.Customer/ListCustomersWithFbUsers": {Type: Shop},
 }
 

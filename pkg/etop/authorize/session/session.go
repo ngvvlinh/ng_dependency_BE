@@ -10,6 +10,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
@@ -106,6 +107,26 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 		}
 		s.admin = query.Result
 	}
+
+	var session *middleware.Session
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+
+	authorization := auth.New()
+	for _, action := range perm.Actions {
+		_action := string(action)
+		if !authorization.Check(session.Roles, _action, 0) {
+			return ctx, cm.ErrPermissionDenied
+		}
+	}
+
 	ok := middleware.StartSessionUser(ctx, perm.Type == permission.CurUsr || perm.Auth == permission.User, claim, &s.user) &&
 		middleware.StartSessionPartner(ctx, perm.Type == permission.Partner, claim, account, &s.partner) &&
 		middleware.StartSessionShop(ctx, perm.Type == permission.Shop, claim, account, &s.shop, &s.permission) &&

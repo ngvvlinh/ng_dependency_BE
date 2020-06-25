@@ -7,7 +7,7 @@ import (
 	"o.o/api/top/int/etop"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/headers"
-	authservice "o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 )
 
@@ -46,7 +46,7 @@ func (s *EcomService) SessionInfo(ctx context.Context, r *EcomSessionInfoEndpoin
 
 func getEcomSessionCookie(cookies []*http.Cookie) *http.Cookie {
 	for _, c := range cookies {
-		if c.Name == authservice.EcomAuthorization {
+		if c.Name == auth.EcomAuthorization {
 			return c
 		}
 	}
