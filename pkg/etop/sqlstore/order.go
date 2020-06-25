@@ -499,22 +499,22 @@ func CreateOrder(ctx context.Context, cmd *ordermodelx.CreateOrderCommand) error
 			return errCode
 		}
 		order.Code = code
-		if err := order.BeforeInsert(); err != nil {
-			return err
-		}
-		if err := x.Table("order").ShouldInsert(order); err != nil {
+		if err = order.BeforeInsert(); err != nil {
 			return err
 		}
 
-		// there is no line
-		if len(order.Lines) == 0 {
-			return nil
+		if len(order.Lines) > 0 {
+			fn := gencode.GenerateLineCode(order.Code, len(order.Lines))
+			for i, _ := range order.Lines {
+				order.Lines[i].Code = fn(i)
+			}
 		}
-		fn := gencode.GenerateLineCode(order.Code, len(order.Lines))
-		for i, line := range order.Lines {
+		if err = x.Table("order").ShouldInsert(order); err != nil {
+			return err
+		}
+		for _, line := range order.Lines {
 			line.OrderID = order.ID
-			line.Code = fn(i)
-			if err := x.Table("order_line").
+			if err = x.Table("order_line").
 				ShouldInsert(line); err != nil {
 				return err
 			}

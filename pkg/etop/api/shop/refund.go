@@ -39,6 +39,7 @@ func (s *RefundService) CreateRefund(ctx context.Context, q *CreateRefundEndpoin
 			VariantID:  v.VariantID,
 			Quantity:   v.Quantity,
 			Adjustment: v.Adjustment,
+			Code:       v.Code,
 		})
 	}
 	cmd := refund.CreateRefundCommand{

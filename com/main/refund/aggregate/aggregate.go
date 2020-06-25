@@ -148,9 +148,9 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 			return nil, err
 		}
 	}
-	var linesVariant = make(map[dot.ID]*model.OrderLine, len(order.Lines))
+	var linesByCode = make(map[string]*model.OrderLine, len(order.Lines))
 	for _, value := range order.Lines {
-		linesVariant[value.VariantID] = value
+		linesByCode[value.Code] = value
 	}
 	refundByOrder, err := a.store(ctx).ShopID(shopID).OrderID(orderID).ListRefunds()
 	for _, value := range refundByOrder {
@@ -158,22 +158,23 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 			continue
 		}
 		for _, _value := range value.Lines {
-			linesVariant[_value.VariantID].Quantity = linesVariant[_value.VariantID].Quantity - _value.Quantity
+			linesByCode[_value.Code].Quantity = linesByCode[_value.Code].Quantity - _value.Quantity
 		}
 	}
 	for key, value := range lines {
-		if linesVariant[value.VariantID] == nil {
+		if linesByCode[value.Code] == nil {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Sản phẩm không tồn tại trong đơn hàng %v", order.Code)
 		}
-		if linesVariant[value.VariantID].Quantity < value.Quantity {
+		if linesByCode[value.Code].Quantity < value.Quantity {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng sản phẩm trong đơn trả hàng lớn hơn đơn hàng")
 		}
-		lines[key].Code = linesVariant[value.VariantID].Code
-		lines[key].ImageURL = linesVariant[value.VariantID].ImageURL
-		lines[key].ProductName = linesVariant[value.VariantID].ProductName
-		lines[key].RetailPrice = linesVariant[value.VariantID].RetailPrice
-		lines[key].ProductID = linesVariant[value.VariantID].ProductID
-		err = scheme.Convert(linesVariant[value.VariantID].Attributes, &lines[key].Attributes)
+		lines[key].Code = linesByCode[value.Code].Code
+		lines[key].ImageURL = linesByCode[value.Code].ImageURL
+		lines[key].ProductName = linesByCode[value.Code].ProductName
+		lines[key].RetailPrice = linesByCode[value.Code].RetailPrice
+		lines[key].ProductID = linesByCode[value.Code].ProductID
+		lines[key].VariantID = linesByCode[value.Code].VariantID
+		err = scheme.Convert(linesByCode[value.Code].Attributes, &lines[key].Attributes)
 		if err != nil {
 			return nil, err
 		}
