@@ -10,6 +10,7 @@ import (
 	"o.o/backend/pkg/integration/sms"
 	imgroupsms "o.o/backend/pkg/integration/sms/imgroup"
 	"o.o/backend/pkg/integration/sms/mock"
+	telegramsms "o.o/backend/pkg/integration/sms/telegram"
 	"o.o/backend/pkg/integration/sms/vietguys"
 	"o.o/common/l"
 )
@@ -32,6 +33,8 @@ func SupportedSMSDrivers(wlCfg cc.WhiteLabel, cfg sms.Config) []sms.DriverConfig
 	var mainDriver sms.Driver
 	if cfg.Mock {
 		mainDriver = mock.GetMock()
+	} else if cfg.Telegram {
+		mainDriver = telegramsms.GetTelegram()
 	} else {
 		mainDriver = vietguys.New(cfg.Vietguys)
 	}

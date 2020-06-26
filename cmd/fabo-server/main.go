@@ -35,6 +35,8 @@ func main() {
 	ll.Must(err, "can not load config")
 	cmenv.SetEnvironment(cfg.SharedConfig.Env)
 	if cmenv.IsDev() {
+		cfg.SMS.Telegram = true
+		cfg.SMS.Enabled = true
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 

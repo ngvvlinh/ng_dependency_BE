@@ -30,6 +30,7 @@ type Config struct {
 	Enabled  bool            `yaml:"enabled"`
 	Mock     bool            `yaml:"mock"`
 	Vietguys vietguys.Config `yaml:"vietguys"`
+	Telegram bool            `yaml:"telegram"`
 }
 
 func (c *Config) MustLoadEnv(prefix ...string) {
