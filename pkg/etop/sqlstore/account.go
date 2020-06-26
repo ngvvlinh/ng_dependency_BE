@@ -75,21 +75,21 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 				Roles: []string{string(authorization.RoleShopOwner)},
 			},
 		}
-		if _, err := x.Insert(account); err != nil {
+		if _, err := s.Insert(account); err != nil {
 			return err
 		}
-		if _, err := x.Insert(permission); err != nil {
+		if _, err := s.Insert(permission); err != nil {
 			return err
 		}
 		if cmd.Address != nil {
-			addressID, err := updateOrCreateAddress(ctx, x, cmd.Address, account.ID, model.AddressTypeGeneral)
+			addressID, err := updateOrCreateAddress(ctx, s, cmd.Address, account.ID, model.AddressTypeGeneral)
 			if err != nil {
 				return err
 			}
 			cmd.AddressID = addressID
 		}
 
-		code, errCode := GenerateCode(ctx, x, model.CodeTypeShop, "")
+		code, errCode := GenerateCode(ctx, s, model.CodeTypeShop, "")
 		if errCode != nil {
 			return errCode
 		}
@@ -124,12 +124,12 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 		if cmd.IsTest {
 			shop.IsTest = 1
 		}
-		if _, err := x.Insert(shop); err != nil {
+		if _, err := s.Insert(shop); err != nil {
 			return err
 		}
 
 		cmd.Result = new(identitymodel.ShopExtended)
-		if has, err := x.
+		if has, err := s.
 			Table("shop").
 			Where("s.id = ?", shop.ID).
 			Get(cmd.Result); err != nil || !has {
