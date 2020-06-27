@@ -100,8 +100,10 @@ func (t *Time) Scan(src interface{}) error {
 		*t = Time{}
 		return err
 	}
-	if !_t.Valid {
-		*t = Time(time.Time{})
+	if _t.Valid {
+		*t = Time(_t.Time)
+	} else {
+		*t = Time{}
 	}
 	return nil
 }
