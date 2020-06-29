@@ -340,15 +340,14 @@ func CompareFulfillments(olds []*shipmodel.Fulfillment, ffm *shipmodel.Fulfillme
 }
 
 func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *shipping.UpdateFulfillmentShippingStateArgs) (updated int, _ error) {
-	if args.FulfillmentID == 0 {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "Fulfillment ID không được để trống.")
+	if args.FulfillmentID == 0 && args.ShippingCode == "" {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
 	}
 	if args.ShippingState == 0 {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "shipping_state không được để trống.")
 	}
 
-	query := a.ffmStore(ctx).OptionalPartnerID(args.PartnerID).ID(args.FulfillmentID)
-
+	query := a.ffmStore(ctx).OptionalPartnerID(args.PartnerID).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode)
 	ffm, err := query.GetFulfillment()
 	if err != nil {
 		return 0, err
@@ -639,8 +638,15 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	//   - Đơn trả hàng => tính phí trả hàng
 	var feeLines []*shipping.ShippingFeeLine
 	shippingFeeShopLines := ffm.ShippingFeeShopLines
+	calcShippingFeesArgs := &carrier.CalcMakeupShippingFeesByFfmArgs{
+		Fulfillment:        ffm,
+		Weight:             args.NewWeight,
+		State:              args.NewState,
+		AdditionalFeeTypes: nil,
+	}
+
 	if args.NewWeight != ffm.TotalWeight {
-		feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, ffm, args.NewWeight, args.NewState)
+		feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 		if err != nil {
 			return err
 		}
@@ -654,7 +660,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 
 	if shipping.IsStateReturn(args.NewState) {
 		if feeLines == nil {
-			feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, ffm, args.NewWeight, args.NewState)
+			feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 			if err != nil {
 				return err
 			}
@@ -668,13 +674,13 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 }
 
 func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.UpdateFulfillmentInfoArgs) (updated int, err error) {
-	if args.ID == 0 {
-		return 0, cm.Error(cm.InvalidArgument, "Thiếu ID đơn vận chuyển", nil)
+	if args.FulfillmentID == 0 && args.ShippingCode == "" {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
 	}
 	if args.AdminNote == "" {
 		return 0, cm.Error(cm.InvalidArgument, "Ghi chú chỉnh sửa không được để trống", nil)
 	}
-	ffm, err := a.ffmStore(ctx).ID(args.ID).GetFulfillment()
+	ffm, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).GetFulfillment()
 	if err != nil {
 		return 0, err
 	}
@@ -683,7 +689,7 @@ func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.Up
 	}
 
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		err := a.ffmStore(ctx).ID(args.ID).UpdateFulfillmentInfo(args, ffm.AddressTo)
+		err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).UpdateFulfillmentInfo(args, ffm.AddressTo)
 		if err != nil {
 			return err
 		}
@@ -705,4 +711,51 @@ func canUpdateFulfillment(ffm *shipping.Fulfillment) error {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã đối soát").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
 	}
 	return nil
+}
+
+// AddFulfillmentShippingFee
+//
+// Sử dụng khi thêm phí kích hoạt giao lại/phí điều chỉnh thông tin đơn hàng
+// Các phí trên có thể thêm nhiều lần
+var allowAddShippingFeeTypes = []shipping_fee_type.ShippingFeeType{shipping_fee_type.Redelivery, shipping_fee_type.Adjustment}
+
+func (a *Aggregate) AddFulfillmentShippingFee(ctx context.Context, args *shipping.AddFulfillmentShippingFeeArgs) error {
+	if args.FulfillmentID == 0 && args.ShippingCode == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
+	}
+	ffm, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).GetFulfillment()
+	if err != nil {
+		return err
+	}
+
+	if !shipping_fee_type.Contain(allowAddShippingFeeTypes, args.ShippingFeeType) {
+		return cm.Errorf(cm.InvalidArgument, nil, "Chỉ hỗ trợ thêm phí kích hoạt giao lại, phí điều chỉnh thông tin đơn hàng.")
+	}
+	if err := canUpdateFulfillment(ffm); err != nil {
+		return err
+	}
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		calcShippingFeesArgs := &carrier.CalcMakeupShippingFeesByFfmArgs{
+			Fulfillment:        ffm,
+			AdditionalFeeTypes: []shipping_fee_type.ShippingFeeType{args.ShippingFeeType},
+		}
+		feeLines, err := a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
+		if err != nil {
+			return err
+		}
+		feeLine := shipping.GetShippingFeeLine(feeLines, args.ShippingFeeType)
+		if feeLine == nil || feeLine.Cost == 0 {
+			return nil
+		}
+		update := &shipping.UpdateFulfillmentShippingFeesArgs{
+			FulfillmentID:    ffm.ID,
+			ShippingCode:     ffm.ShippingCode,
+			ShippingFeeLines: append(ffm.ShippingFeeShopLines, feeLine),
+			UpdatedBy:        args.UpdatedBy,
+		}
+		if _, err := a.UpdateFulfillmentShippingFees(ctx, update); err != nil {
+			return err
+		}
+		return nil
+	})
 }

@@ -8,6 +8,7 @@ import (
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipping/types"
 	shippingstate "o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -40,6 +41,8 @@ type Aggregate interface {
 	UpdateFulfillmentExternalShippingInfo(context.Context, *UpdateFfmExternalShippingInfoArgs) (updated int, _ error)
 
 	UpdateFulfillmentShippingFeesFromWebhook(context.Context, *UpdateFulfillmentShippingFeesFromWebhookArgs) error
+
+	AddFulfillmentShippingFee(context.Context, *AddFulfillmentShippingFeeArgs) error
 }
 
 type QueryService interface {
@@ -108,10 +111,11 @@ type CancelFulfillmentArgs struct {
 }
 
 type UpdateFulfillmentInfoArgs struct {
-	ID        dot.ID
-	FullName  dot.NullString
-	Phone     dot.NullString
-	AdminNote string
+	FulfillmentID dot.ID
+	ShippingCode  string
+	FullName      dot.NullString
+	Phone         dot.NullString
+	AdminNote     string
 }
 
 //-- Queries --//
@@ -123,6 +127,7 @@ type GetFulfillmentByIDQueryArgs struct {
 type UpdateFulfillmentShippingStateArgs struct {
 	PartnerID                dot.ID
 	FulfillmentID            dot.ID
+	ShippingCode             string
 	ShippingState            shippingstate.State
 	ActualCompensationAmount dot.NullInt
 	UpdatedBy                dot.ID
@@ -191,6 +196,13 @@ type UpdateFulfillmentShippingFeesFromWebhookArgs struct {
 	NewWeight        int
 	NewState         shippingstate.State
 	ProviderFeeLines []*ShippingFeeLine
+}
+
+type AddFulfillmentShippingFeeArgs struct {
+	FulfillmentID   dot.ID
+	ShippingCode    string
+	ShippingFeeType shipping_fee_type.ShippingFeeType
+	UpdatedBy       dot.ID
 }
 
 type GetFulfillmentByIDOrShippingCodeArgs struct {

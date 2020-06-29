@@ -49,12 +49,6 @@ func calcAdditionalFee(args CalcAdditionalFeeArgs, addFee *shipmentprice.Additio
 	var fee int
 	var err error
 	switch addFee.FeeType {
-	case shipping_fee_type.Redelivery,
-		shipping_fee_type.Adjustment:
-		// Phí kích hoạt giao lại, phí đổi thông tin
-		// Giá trị cố định
-		fee, err = applyFeeRule(addFee, 0)
-
 	case shipping_fee_type.Insurance:
 		// Phí bảo hiểm
 		// Giá trị tính theo % so với giá trị khai giá, có giá trị tối thiểu, thay đổi theo ngưỡng
@@ -69,8 +63,10 @@ func calcAdditionalFee(args CalcAdditionalFeeArgs, addFee *shipmentprice.Additio
 		if err != nil {
 			return nil, err
 		}
-	case shipping_fee_type.Return:
-		// Phí trả hàng
+	case shipping_fee_type.Return,
+		shipping_fee_type.Redelivery,
+		shipping_fee_type.Adjustment:
+		// Phí trả hàng, Phí kích hoạt giao lại, phí đổi thông tin
 		// Giá trị tính theo % so với phí chính, có giá trị tối thiểu
 		fee, err = applyFeeRule(addFee, args.MainFee)
 	default:

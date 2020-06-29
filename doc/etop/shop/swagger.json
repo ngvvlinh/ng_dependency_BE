@@ -12901,11 +12901,17 @@
           "type": "string",
           "format": "int64"
         },
+        "image_url": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
         "status": {
           "$ref": "#/definitions/blStatus"
+        },
+        "tracking_url": {
+          "type": "string"
         },
         "updated_at": {
           "type": "string",

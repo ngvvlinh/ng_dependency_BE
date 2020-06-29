@@ -4,6 +4,7 @@ import (
 	"github.com/google/wire"
 
 	service "o.o/api/top/int/admin"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/admin"
 	"o.o/capi/httprpc"
 )
@@ -13,6 +14,7 @@ var WireSet = wire.NewSet(
 )
 
 func NewServers(
+	rd redis.Store,
 	miscService admin.MiscService,
 	accountService admin.AccountService,
 	orderService admin.OrderService,
@@ -25,6 +27,8 @@ func NewServers(
 	shipmentPriceService admin.ShipmentPriceService,
 	locationService admin.LocationService,
 ) admin.Servers {
+	admin.InitIdemp(rd)
+
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(admin.WrapMiscService(miscService.Clone)),
 		service.NewAccountServiceServer(admin.WrapAccountService(accountService.Clone)),

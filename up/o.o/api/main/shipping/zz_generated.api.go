@@ -12,6 +12,7 @@ import (
 	orderingtypes "o.o/api/main/ordering/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	shipping "o.o/api/top/types/etc/shipping"
+	shipping_fee_type "o.o/api/top/types/etc/shipping_fee_type"
 	shipping_provider "o.o/api/top/types/etc/shipping_provider"
 	status3 "o.o/api/top/types/etc/status3"
 	status4 "o.o/api/top/types/etc/status4"
@@ -32,6 +33,20 @@ func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) er
 }
 func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
 	return b.bus.Dispatch(ctx, msg)
+}
+
+type AddFulfillmentShippingFeeCommand struct {
+	FulfillmentID   dot.ID
+	ShippingCode    string
+	ShippingFeeType shipping_fee_type.ShippingFeeType
+	UpdatedBy       dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleAddFulfillmentShippingFee(ctx context.Context, msg *AddFulfillmentShippingFeeCommand) (err error) {
+	return h.inner.AddFulfillmentShippingFee(msg.GetArgs(ctx))
 }
 
 type CancelFulfillmentCommand struct {
@@ -116,10 +131,11 @@ func (h AggregateHandler) HandleUpdateFulfillmentExternalShippingInfo(ctx contex
 }
 
 type UpdateFulfillmentInfoCommand struct {
-	ID        dot.ID
-	FullName  dot.NullString
-	Phone     dot.NullString
-	AdminNote string
+	FulfillmentID dot.ID
+	ShippingCode  string
+	FullName      dot.NullString
+	Phone         dot.NullString
+	AdminNote     string
 
 	Result int `json:"-"`
 }
@@ -162,6 +178,7 @@ func (h AggregateHandler) HandleUpdateFulfillmentShippingFeesFromWebhook(ctx con
 type UpdateFulfillmentShippingStateCommand struct {
 	PartnerID                dot.ID
 	FulfillmentID            dot.ID
+	ShippingCode             string
 	ShippingState            shipping.State
 	ActualCompensationAmount dot.NullInt
 	UpdatedBy                dot.ID
@@ -313,6 +330,7 @@ func (h QueryServiceHandler) HandleListFulfillmentsForMoneyTx(ctx context.Contex
 
 // implement interfaces
 
+func (q *AddFulfillmentShippingFeeCommand) command()                {}
 func (q *CancelFulfillmentCommand) command()                        {}
 func (q *CreateFulfillmentsCommand) command()                       {}
 func (q *RemoveFulfillmentsMoneyTxIDCommand) command()              {}
@@ -335,6 +353,23 @@ func (q *ListFulfillmentsByShippingCodesQuery) query()             {}
 func (q *ListFulfillmentsForMoneyTxQuery) query()                  {}
 
 // implement conversion
+
+func (q *AddFulfillmentShippingFeeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *AddFulfillmentShippingFeeArgs) {
+	return ctx,
+		&AddFulfillmentShippingFeeArgs{
+			FulfillmentID:   q.FulfillmentID,
+			ShippingCode:    q.ShippingCode,
+			ShippingFeeType: q.ShippingFeeType,
+			UpdatedBy:       q.UpdatedBy,
+		}
+}
+
+func (q *AddFulfillmentShippingFeeCommand) SetAddFulfillmentShippingFeeArgs(args *AddFulfillmentShippingFeeArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingCode = args.ShippingCode
+	q.ShippingFeeType = args.ShippingFeeType
+	q.UpdatedBy = args.UpdatedBy
+}
 
 func (q *CancelFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelFulfillmentArgs) {
 	return ctx,
@@ -457,15 +492,17 @@ func (q *UpdateFulfillmentExternalShippingInfoCommand) SetUpdateFfmExternalShipp
 func (q *UpdateFulfillmentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentInfoArgs) {
 	return ctx,
 		&UpdateFulfillmentInfoArgs{
-			ID:        q.ID,
-			FullName:  q.FullName,
-			Phone:     q.Phone,
-			AdminNote: q.AdminNote,
+			FulfillmentID: q.FulfillmentID,
+			ShippingCode:  q.ShippingCode,
+			FullName:      q.FullName,
+			Phone:         q.Phone,
+			AdminNote:     q.AdminNote,
 		}
 }
 
 func (q *UpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoArgs(args *UpdateFulfillmentInfoArgs) {
-	q.ID = args.ID
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingCode = args.ShippingCode
 	q.FullName = args.FullName
 	q.Phone = args.Phone
 	q.AdminNote = args.AdminNote
@@ -514,6 +551,7 @@ func (q *UpdateFulfillmentShippingStateCommand) GetArgs(ctx context.Context) (_ 
 		&UpdateFulfillmentShippingStateArgs{
 			PartnerID:                q.PartnerID,
 			FulfillmentID:            q.FulfillmentID,
+			ShippingCode:             q.ShippingCode,
 			ShippingState:            q.ShippingState,
 			ActualCompensationAmount: q.ActualCompensationAmount,
 			UpdatedBy:                q.UpdatedBy,
@@ -523,6 +561,7 @@ func (q *UpdateFulfillmentShippingStateCommand) GetArgs(ctx context.Context) (_ 
 func (q *UpdateFulfillmentShippingStateCommand) SetUpdateFulfillmentShippingStateArgs(args *UpdateFulfillmentShippingStateArgs) {
 	q.PartnerID = args.PartnerID
 	q.FulfillmentID = args.FulfillmentID
+	q.ShippingCode = args.ShippingCode
 	q.ShippingState = args.ShippingState
 	q.ActualCompensationAmount = args.ActualCompensationAmount
 	q.UpdatedBy = args.UpdatedBy
@@ -659,6 +698,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
+	b.AddHandler(h.HandleAddFulfillmentShippingFee)
 	b.AddHandler(h.HandleCancelFulfillment)
 	b.AddHandler(h.HandleCreateFulfillments)
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)

@@ -453,6 +453,19 @@ func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 
 func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/admin.Fulfillment/AddShippingFee":
+		msg := &AddShippingFeeRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.AddShippingFee(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.Fulfillment/GetFulfillment":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

@@ -40,7 +40,7 @@ func PbConnection(c *connectioning.Connection) *types.Connection {
 	if c == nil {
 		return nil
 	}
-	return &types.Connection{
+	res := &types.Connection{
 		ID:                 c.ID,
 		Name:               c.Name,
 		Status:             c.Status,
@@ -50,7 +50,12 @@ func PbConnection(c *connectioning.Connection) *types.Connection {
 		ConnectionSubtype:  c.ConnectionSubtype,
 		ConnectionMethod:   c.ConnectionMethod,
 		ConnectionProvider: c.ConnectionProvider,
+		ImageURL:           c.ImageURL,
 	}
+	if c.DriverConfig != nil {
+		res.TrackingURL = c.DriverConfig.TrackingURL
+	}
+	return res
 }
 
 func PbConnections(items []*connectioning.Connection) []*types.Connection {

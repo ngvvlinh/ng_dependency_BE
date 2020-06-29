@@ -453,7 +453,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		LocationAggr:  locationCommandBus,
 		LocationQuery: locationQueryBus,
 	}
-	adminServers := admin_min.NewServers(adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService)
+	adminServers := admin_min.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService)
 	sharedConfig := cfg.SharedConfig
 	session := config_server.NewSession(sharedConfig, store)
 	sadminMiscService := &sadmin.MiscService{

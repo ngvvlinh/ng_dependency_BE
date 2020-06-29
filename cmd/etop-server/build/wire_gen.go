@@ -561,7 +561,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	adminUserService := admin.UserService{
 		IdentityQuery: identityQueryBus,
 	}
-	adminServers := admin_all.NewServers(adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService)
+	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService)
 	sharedConfig := cfg.SharedConfig
 	session := config_server.NewSession(sharedConfig, store)
 	sadminMiscService := &sadmin.MiscService{

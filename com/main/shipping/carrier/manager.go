@@ -59,10 +59,9 @@ var (
 )
 
 const (
-	MinShopBalance        = -200000
 	DefaultTTl            = 2 * 60 * 60
 	SecretKey             = "connectionsecretkey"
-	VersionCaching        = "0.1.8"
+	VersionCaching        = "0.1.9"
 	PrefixMakeupPriceCode = "###"
 )
 
@@ -746,7 +745,9 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 		}
 
 		// Makeup price & change provider_service_id
-		if err = m.makeupPriceByShipmentPrice(ctx, s, args); err != nil {
+		// Nếu không tìm thấy cấu hình giá (shipment_price) tương ứng
+		// Trả về kết quả của NVC
+		if err = m.makeupPriceByShipmentPrice(ctx, s, args); err != nil && cm.ErrorCode(err) != cm.NotFound {
 			ll.Error("MakeupPriceByShipmentPrice failed", l.String("serviceID", serviceID), l.ID("connectionID", connID), l.Error(err))
 			continue
 		}
@@ -973,7 +974,15 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 	return nil
 }
 
-func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, ffm *shipping.Fulfillment, weight int, state shippingstate.State) ([]*shipping.ShippingFeeLine, error) {
+type CalcMakeupShippingFeesByFfmArgs struct {
+	Fulfillment        *shipping.Fulfillment
+	Weight             int
+	State              shippingstate.State
+	AdditionalFeeTypes []shipping_fee_type.ShippingFeeType
+}
+
+func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, args *CalcMakeupShippingFeesByFfmArgs) ([]*shipping.ShippingFeeLine, error) {
+	ffm := args.Fulfillment
 	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
 	if err != nil {
@@ -984,26 +993,26 @@ func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, ffm *
 		return nil, err
 	}
 
-	args := &GetShippingServicesArgs{
+	serviceArgs := &GetShippingServicesArgs{
 		FromDistrictCode: ffm.AddressFrom.DistrictCode,
 		FromProvinceCode: ffm.AddressFrom.ProvinceCode,
 		FromWardCode:     ffm.AddressFrom.WardCode,
 		ToDistrictCode:   ffm.AddressTo.DistrictCode,
 		ToProvinceCode:   ffm.AddressTo.ProvinceCode,
 		ToWardCode:       ffm.AddressTo.WardCode,
-		ChargeableWeight: cm.CoalesceInt(weight, ffm.TotalWeight),
+		ChargeableWeight: cm.CoalesceInt(args.Weight, ffm.TotalWeight),
 		BasketValue:      ffm.BasketValue,
 		CODAmount:        ffm.TotalCODAmount,
 	}
-	shipmentService, err := m.getShipmentService(ctx, args, serviceID, connectionID, true)
+	shipmentService, err := m.getShipmentService(ctx, serviceArgs, serviceID, connectionID, true)
 	if err != nil {
 		return nil, err
 	}
-	addFeeTypes := []shipping_fee_type.ShippingFeeType{}
-	if args.IncludeInsurance {
+	addFeeTypes := args.AdditionalFeeTypes
+	if serviceArgs.IncludeInsurance && !shipping_fee_type.Contain(addFeeTypes, shipping_fee_type.Insurance) {
 		addFeeTypes = append(addFeeTypes, shipping_fee_type.Insurance)
 	}
-	if shipping.IsStateReturn(state) {
+	if shipping.IsStateReturn(args.State) && !shipping_fee_type.Contain(addFeeTypes, shipping_fee_type.Return) {
 		addFeeTypes = append(addFeeTypes, shipping_fee_type.Return)
 	}
 	query := &shipmentprice.CalculateShippingFeesQuery{
@@ -1014,7 +1023,7 @@ func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, ffm *
 		ToProvinceCode:     ffm.AddressTo.ProvinceCode,
 		ShipmentServiceID:  shipmentService.ID,
 		ConnectionID:       connectionID,
-		Weight:             weight,
+		Weight:             cm.CoalesceInt(args.Weight, ffm.TotalWeight),
 		BasketValue:        ffm.BasketValue,
 		CODAmount:          ffm.TotalCODAmount,
 		AdditionalFeeTypes: addFeeTypes,

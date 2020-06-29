@@ -2,11 +2,12 @@ package admin
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"o.o/api/main/identity"
 	"o.o/api/main/shipping"
 	"o.o/api/top/int/types"
-	"o.o/api/top/types/common"
 	pbcm "o.o/api/top/types/common"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
@@ -53,10 +54,11 @@ func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *UpdateFul
 
 func (s *FulfillmentService) UpdateFulfillmentInfo(ctx context.Context, q *UpdateFulfillmentInfoEndpoint) error {
 	cmd := &shipping.UpdateFulfillmentInfoCommand{
-		ID:        q.Id,
-		FullName:  q.FullName,
-		Phone:     q.Phone,
-		AdminNote: q.AdminNote,
+		FulfillmentID: q.ID,
+		ShippingCode:  q.ShippingCode,
+		FullName:      q.FullName,
+		Phone:         q.Phone,
+		AdminNote:     q.AdminNote,
 	}
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -101,6 +103,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context, r *UpdateFulfillmentShippingStateEndpoint) error {
 	cmd := &shipping.UpdateFulfillmentShippingStateCommand{
 		FulfillmentID:            r.ID,
+		ShippingCode:             r.ShippingCode,
 		ShippingState:            r.ShippingState,
 		ActualCompensationAmount: r.ActualCompensationAmount,
 		UpdatedBy:                r.Context.UserID,
@@ -108,7 +111,7 @@ func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context,
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &common.UpdatedResponse{
+	r.Result = &pbcm.UpdatedResponse{
 		Updated: cmd.Result,
 	}
 	return nil
@@ -125,8 +128,34 @@ func (s *FulfillmentService) UpdateFulfillmentShippingFees(ctx context.Context, 
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = &common.UpdatedResponse{
+	r.Result = &pbcm.UpdatedResponse{
 		Updated: cmd.Result,
 	}
+	return nil
+}
+
+func (s *FulfillmentService) addShippingFee(ctx context.Context, r *AddShippingFeeEndpoint) (*AddShippingFeeEndpoint, error) {
+	cmd := &shipping.AddFulfillmentShippingFeeCommand{
+		FulfillmentID:   r.ID,
+		ShippingCode:    r.ShippingCode,
+		ShippingFeeType: r.ShippingFeeType,
+		UpdatedBy:       r.Context.UserID,
+	}
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	resp := &AddShippingFeeEndpoint{
+		Result: &pbcm.UpdatedResponse{Updated: 1},
+	}
+	return resp, nil
+}
+
+func (s *FulfillmentService) AddShippingFee(ctx context.Context, r *AddShippingFeeEndpoint) error {
+	key := fmt.Sprintf("addShippingFee %v-%v", r.ID, r.ShippingFeeType.String())
+	res, _, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second, "Thêm cước phí cho đơn vận chuyển", func() (interface{}, error) { return s.addShippingFee(ctx, r) })
+	if err != nil {
+		return err
+	}
+	r.Result = res.(*AddShippingFeeEndpoint).Result
 	return nil
 }

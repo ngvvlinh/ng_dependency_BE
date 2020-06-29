@@ -44,6 +44,8 @@ type Connection struct {
 	ConnectionSubtype  connection_type.ConnectionSubtype  `json:"connection_subtype"`
 	ConnectionMethod   connection_type.ConnectionMethod   `json:"connection_method"`
 	ConnectionProvider connection_type.ConnectionProvider `json:"connection_provider"`
+	ImageURL           string                             `json:"image_url"`
+	TrackingURL        string                             `json:"tracking_url"`
 }
 
 func (m *Connection) Reset() {

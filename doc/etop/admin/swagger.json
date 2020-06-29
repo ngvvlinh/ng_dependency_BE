@@ -420,6 +420,33 @@
         }
       }
     },
+    "/api/admin.Fulfillment/AddShippingFee": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "AddShippingFee",
+        "operationId": "admin.Fulfillment-AddShippingFee",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuAddShippingFeeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Fulfillment/GetFulfillment": {
       "post": {
         "tags": [
@@ -3719,11 +3746,17 @@
           "type": "string",
           "format": "int64"
         },
+        "image_url": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
         "status": {
           "$ref": "#/definitions/blStatus"
+        },
+        "tracking_url": {
+          "type": "string"
         },
         "updated_at": {
           "type": "string",
@@ -6266,6 +6299,21 @@
         }
       }
     },
+    "xuAddShippingFeeRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_fee_type": {
+          "$ref": "#/definitions/bjShippingFeeType"
+        }
+      }
+    },
     "xuAdditionalFee": {
       "type": "object",
       "properties": {
@@ -7348,6 +7396,9 @@
           "format": "int64"
         },
         "phone": {
+          "type": "string"
+        },
+        "shipping_code": {
           "type": "string"
         }
       }

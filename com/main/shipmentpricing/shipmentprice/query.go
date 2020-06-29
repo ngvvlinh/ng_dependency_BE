@@ -343,7 +343,7 @@ func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipment
 	}
 	matchingPricings, err := q.GetMatchingPricings(ctx, pricings, from.Province, to.Province, to.District)
 	if len(matchingPricings) == 0 || err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Không có gói phù hợp")
+		return nil, cm.Errorf(cm.NotFound, err, "Không có gói phù hợp")
 	}
 
 	// calculate main fee
