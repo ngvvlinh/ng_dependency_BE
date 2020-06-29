@@ -99,6 +99,19 @@ func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/admin.Account/CreateAdminUser":
+		msg := &CreateAdminUserRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateAdminUser(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.Account/CreatePartner":
 		msg := &CreatePartnerRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -122,6 +135,19 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 				return
 			}
 			resp, err = inner.GenerateAPIKey(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Account/UpdateAdminUser":
+		msg := &UpdateAdminUserRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateAdminUser(ctx, msg)
 			return
 		}
 		return msg, fn, nil

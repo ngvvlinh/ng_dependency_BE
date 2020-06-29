@@ -79,6 +79,7 @@ type ShopClaim struct {
 type AdminClaim struct {
 	UserClaim
 	CommonAccountClaim
+	Actions []string
 
 	IsEtopAdmin bool
 }

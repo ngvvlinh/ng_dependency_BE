@@ -3,6 +3,7 @@ package session
 import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
+	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
@@ -49,6 +50,14 @@ func (s *session) Affiliate() *identitymodel.Affiliate {
 
 func (s *session) Permission() identitymodel.Permission {
 	s.ensureInit()
+	accQuery := &identitymodelx.GetAccountRolesQuery{
+		AccountID: s.claim.AccountID,
+		UserID:    s.claim.UserID,
+	}
+	if err := bus.Dispatch(s.ctx, accQuery); err != nil {
+		panic(err)
+	}
+	s.permission = accQuery.Result.AccountUser.Permission
 	return s.permission
 }
 

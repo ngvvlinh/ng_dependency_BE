@@ -15,6 +15,33 @@
     "version": "v1"
   },
   "paths": {
+    "/api/admin.Account/CreateAdminUser": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "CreateAdminUser",
+        "operationId": "admin.Account-CreateAdminUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateAdminUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuCreateAdminUserResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Account/CreatePartner": {
       "post": {
         "tags": [
@@ -64,6 +91,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/xuGenerateAPIKeyResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Account/UpdateAdminUser": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "UpdateAdminUser",
+        "operationId": "admin.Account-UpdateAdminUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateAdminUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuUpdateAdminUserResponse"
             }
           }
         }
@@ -6479,6 +6533,38 @@
         }
       }
     },
+    "xuCreateAdminUserRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "xuCreateAdminUserResponse": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "xuCreateCreditRequest": {
       "type": "object",
       "properties": {
@@ -7373,6 +7459,42 @@
           "format": "date-time"
         },
         "updated_by": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuUpdateAdminUserRequest": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuUpdateAdminUserResponse": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "user_id": {
           "type": "string",
           "format": "int64"
         }

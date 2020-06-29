@@ -723,3 +723,34 @@ type UserResponse struct {
 }
 
 func (m *UserResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateAdminUserRequest struct {
+	Email string   `json:"email"`
+	Roles []string `json:"roles"`
+}
+
+func (m *CreateAdminUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateAdminUserResponse struct {
+	UserId dot.ID         `json:"user_id"`
+	Roles  []string       `json:"roles"`
+	Status status3.Status `json:"status"`
+}
+
+func (m *CreateAdminUserResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateAdminUserRequest struct {
+	UserId dot.ID         `json:"user_id"`
+	Roles  []string       `json:"roles"`
+	Status status3.Status `json:"status"`
+}
+
+func (m *UpdateAdminUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateAdminUserResponse struct {
+	UserId dot.ID         `json:"user_id"`
+	Roles  []string       `json:"roles"`
+	Status status3.Status `json:"status"`
+}
+
+func (m *UpdateAdminUserResponse) String() string { return jsonx.MustMarshalToString(m) }

@@ -60,7 +60,7 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 		panic("already init")
 	}
 	s.init = true
-
+	s.ctx = ctx
 	var wlPartnerID dot.ID
 	defer func() {
 		if wlPartnerID == 0 {
@@ -91,6 +91,7 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 	}
 	ctx = wl.WrapContext(ctx, wlPartnerID)
 	s.claim = *claim
+	s.Permission() // load permission of account
 
 	// handle stoken
 	if claim.STokenExpiresAt != nil && claim.STokenExpiresAt.Before(time.Now()) {
@@ -111,20 +112,10 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 		s.admin = query.Result
 	}
 
-	var ss *middleware.Session
-	sessionQuery := &middleware.StartSessionQuery{
-		RequireAuth: true,
-	}
-	ctx, err = middleware.StartSession(ctx, sessionQuery)
-	if err != nil {
-		return nil, err
-	}
-	ss = sessionQuery.Result
-
 	authorization := auth.New()
 	for _, action := range perm.Actions {
 		_action := string(action)
-		if !authorization.Check(ss.Roles, _action, 0) {
+		if !authorization.Check(s.permission.Roles, _action, 0) {
 			return ctx, cm.ErrPermissionDenied
 		}
 	}

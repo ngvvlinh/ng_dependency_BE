@@ -237,6 +237,104 @@ const (
 	FbMessageView   permission.ActionType = "facebook/message:view"
 	FbUserCreate    permission.ActionType = "facebook/fbuser:create" // Liên kết fb_user với customer
 	FbUserView      permission.ActionType = "facebook/fbuser:view"
+
+	// Admin Credit
+	AdminCreditCreate  permission.ActionType = "admin/credit:create"
+	AdminCreditView    permission.ActionType = "admin/credit:view"
+	AdminCreditUpdate  permission.ActionType = "admin/credit:update"
+	AdminCreditList    permission.ActionType = "admin/credit:list"
+	AdminCreditConfirm permission.ActionType = "admin/credit:confirm"
+	AdminCreditDelete  permission.ActionType = "admin/credit:delete"
+
+	// Admin Fulfillment
+	AdminFulfillmentView                permission.ActionType = "admin/fulfillment:view"
+	AdminFulfillmentList                permission.ActionType = "admin/fulfillment:list"
+	AdminFulfillmentCreate              permission.ActionType = "admin/fulfillment:create"
+	AdminFulfillmentUpdate              permission.ActionType = "admin/fulfillment:update"
+	AdminFulfillmentInfoUpdate          permission.ActionType = "admin/fulfillment_info:update"
+	AdminFulfillmentShippingStateUpdate permission.ActionType = "admin/fulfillment_shipping_state:update"
+	AdminFulfillmentShippingFeesUpdate  permission.ActionType = "admin/fulfillment_shipping_fees:update"
+	AdminFulfillmentShippingFeesCreate  permission.ActionType = "admin/fulfillment_shipping_fees:create"
+
+	// Admin Account
+	AdminAdminUserCreate permission.ActionType = "admin/admin_user:create"
+	AdminAdminUserUpdate permission.ActionType = "admin/admin_user:update"
+	AdminPartnerCreate   permission.ActionType = "admin/partner:create"
+
+	// Admin MoneyTransaction
+	AdminMoneyTransactionView   permission.ActionType = "admin/money_transaction:view"
+	AdminMoneyTransactionList   permission.ActionType = "admin/money_transaction:list"
+	AdminMoneyTransactionUpdate permission.ActionType = "admin/money_transaction:update"
+
+	AdminMoneyTransactionShippingEtopView              permission.ActionType = "admin/money_transaction_shipping_etop:view"
+	AdminMoneyTransactionShippingEtopList              permission.ActionType = "admin/money_transaction_shipping_etop:list"
+	AdminMoneyTransactionShippingExternalView          permission.ActionType = "admin/money_transaction_shipping_external:view"
+	AdminMoneyTransactionShippingExternalList          permission.ActionType = "admin/money_transaction_shipping_external:list"
+	AdminMoneyTransactionConfirm                       permission.ActionType = "admin/money_transaction_confirm:confirm"
+	AdminMoneyTransactionShippingEtopConfirm           permission.ActionType = "admin/money_transaction_shipping_etop_confirm:confirm"
+	AdminMoneyTransactionShippingEtopCreate            permission.ActionType = "admin/money_transaction_shipping_etop_confirm:create"
+	AdminMoneyTransactionShippingEtopUpdate            permission.ActionType = "admin/money_transaction_shipping_etop_confirm:update"
+	AdminMoneyTransactionShippingEtopDelete            permission.ActionType = "admin/money_transaction_shipping_etop_confirm:delete"
+	AdminConfirmMoneyTransactionShippingExternalList   permission.ActionType = "admin/money_transaction_shipping_external_confirm:list"
+	AdminConfirmMoneyTransactionShippingExternalUpdate permission.ActionType = "admin/money_transaction_shipping_external_confirm:update"
+	AdminMoneyTransactionShippingExternalDelete        permission.ActionType = "admin/money_transaction_shipping_external:delete"
+	AdminMoneyTransactionShippingExternalLinesRemove   permission.ActionType = "admin/money_transaction_shipping_external_lines:remove"
+
+	// Admin Order
+	AdminOrderView     permission.ActionType = "admin/order:view"
+	AdminOrderList     permission.ActionType = "admin/order:list"
+	AdminOrderByIdList permission.ActionType = "admin/order_by_id:list"
+
+	// Admin ShipmentPrice
+	AdminShopShipmentPriceListCreate permission.ActionType = "admin/shop_shipment_price_list:create"
+	AdminShopShipmentPriceListUpdate permission.ActionType = "admin/shop_shipment_price_list:update"
+	AdminShopShipmentPriceListDelete permission.ActionType = "admin/shop_shipment_price_list:delete"
+	AdminShopShipmentPriceListView   permission.ActionType = "admin/shop_shipment_price_list:view"
+	AdminShopShipmentPriceListList   permission.ActionType = "admin/shop_shipment_price_list:list"
+
+	// Admin Shop
+	AdminShopView     permission.ActionType = "admin/shop:view"
+	AdminShopList     permission.ActionType = "admin/shop:list"
+	AdminShopByIDList permission.ActionType = "admin/shop_by_id:list"
+
+	// Admin User
+	AdminUserView     permission.ActionType = "admin/user:view"
+	AdminUserList     permission.ActionType = "admin/user:list"
+	AdminUserByIDList permission.ActionType = "admin/user_by_id:list"
+	AdminUserBlock    permission.ActionType = "admin/user:block"
+
+	// AdminSubscription
+	AdminSubscriptionProductCreate permission.ActionType = "admin/subscription_product:create"
+	AdminSubscriptionProductList   permission.ActionType = "admin/subscription_product:list"
+	AdminSubscriptionProductDelete permission.ActionType = "admin/subscription_product:delete"
+	AdminSubscriptionPlanCreate    permission.ActionType = "admin/subscription_plan:create"
+	AdminSubscriptionPlanUpdate    permission.ActionType = "admin/subscription_plan:update"
+	AdminSubscriptionPlanView      permission.ActionType = "admin/subscription_plan:view"
+	AdminSubscriptionPlanDelete    permission.ActionType = "admin/subscription_plan:delete"
+
+	AdminSubscriptionView                    permission.ActionType = "admin/subscription:view"
+	AdminSubscriptionList                    permission.ActionType = "admin/subscription:list"
+	AdminSubscriptionCreate                  permission.ActionType = "admin/subscription:create"
+	AdminSubscriptionUpdate                  permission.ActionType = "admin/subscription:update"
+	AdminSubscriptionCancel                  permission.ActionType = "admin/subscription:cancel"
+	AdminSubscriptionActive                  permission.ActionType = "admin/subscription:active"
+	AdminSubscriptionDelete                  permission.ActionType = "admin/subscription:delete"
+	AdminSubscriptionBillView                permission.ActionType = "admin/subscription_bill:view"
+	AdminSubscriptionBillCreate              permission.ActionType = "admin/subscription_bill:create"
+	AdminManualPaymentSubscriptionBillCreate permission.ActionType = "admin/subscription_bill_manual_payment:create"
+	AdminSubscriptionBillDelete              permission.ActionType = "admin/subscription_bill:delete"
+
+	// AdminMisc
+	AdminMiscLoginAccount permission.ActionType = "admin/misc_account:login"
+
+	// AdminConnection
+	AdminConnectionView              permission.ActionType = "admin/connection:view"
+	AdminConnectionConfirm           permission.ActionType = "admin/connection:confirm"
+	AdminConnectionDisable           permission.ActionType = "admin/connection:disable"
+	AdminConnectionBuiltinCreate     permission.ActionType = "admin/connection_builtin:create"
+	AdminConnectionShopBuiltinCreate permission.ActionType = "admin/connection_shop_builtin:create"
+	AdminConnectionShopBuiltinUpdate permission.ActionType = "admin/connection_shop_builtin:update"
+	AdminConnectionServiceView       permission.ActionType = "admin/connection_service:view"
 )
 
 // ACL declares access control list
@@ -257,7 +355,7 @@ var _acl = map[string]*permission.Decl{
 	"   ext/shop.Misc/VersionInfo": {Type: Partner, Auth: APIKey},
 	"integration.Misc/VersionInfo": {Type: Public},
 
-	"admin.Misc/AdminLoginAsAccount": {Type: EtopAdmin},
+	"admin.Misc/AdminLoginAsAccount": {Type: EtopAdmin, Actions: actions(AdminMiscLoginAccount)},
 
 	"etop.User/Register":                 {Type: Public},
 	"etop.User/RegisterUsingToken":       {Type: Public},
@@ -491,8 +589,10 @@ var _acl = map[string]*permission.Decl{
 
 	//-- admin --//
 
-	"admin.Account/CreatePartner":  {Type: EtopAdmin},
-	"admin.Account/GenerateAPIKey": {Type: EtopAdmin},
+	"admin.Account/CreatePartner":   {Type: EtopAdmin, Actions: actions(AdminPartnerCreate)},
+	"admin.Account/GenerateAPIKey":  {Type: EtopAdmin},
+	"admin.Account/CreateAdminUser": {Type: EtopAdmin, Actions: actions(AdminAdminUserCreate)},
+	"admin.Account/UpdateAdminUser": {Type: EtopAdmin, Actions: actions(AdminAdminUserUpdate)},
 
 	"admin.Category/CreateCategory":         {Type: EtopAdmin},
 	"admin.Category/GetCategories":          {Type: EtopAdmin},
@@ -511,59 +611,59 @@ var _acl = map[string]*permission.Decl{
 	"admin.Product/UpdateVariantImages":  {Type: EtopAdmin},
 	"admin.Product/UpdateProductImages":  {Type: EtopAdmin},
 
-	"admin.Order/GetOrder":       {Type: EtopAdmin},
-	"admin.Order/GetOrders":      {Type: EtopAdmin},
-	"admin.Order/GetOrdersByIDs": {Type: EtopAdmin},
+	"admin.Order/GetOrder":       {Type: EtopAdmin, Actions: actions(AdminOrderView)},
+	"admin.Order/GetOrders":      {Type: EtopAdmin, Actions: actions(AdminOrderList)},
+	"admin.Order/GetOrdersByIDs": {Type: EtopAdmin, Actions: actions(AdminOrderByIdList)},
 
-	"admin.User/GetUsers":      {Type: EtopAdmin},
-	"admin.User/GetUser":       {Type: EtopAdmin},
-	"admin.User/GetUsersByIDs": {Type: EtopAdmin},
+	"admin.User/GetUsers":      {Type: EtopAdmin, Actions: actions(AdminUserList)},
+	"admin.User/GetUser":       {Type: EtopAdmin, Actions: actions(AdminUserView)},
+	"admin.User/GetUsersByIDs": {Type: EtopAdmin, Actions: actions(AdminUserByIDList)},
 
-	"admin.Fulfillment/GetFulfillment":                 {Type: EtopAdmin},
-	"admin.Fulfillment/GetFulfillments":                {Type: EtopAdmin},
-	"admin.Fulfillment/UpdateFulfillment":              {Type: EtopAdmin},
-	"admin.Fulfillment/UpdateFulfillmentInfo":          {Type: EtopAdmin},
-	"admin.Fulfillment/UpdateFulfillmentShippingState": {Type: EtopAdmin},
-	"admin.Fulfillment/UpdateFulfillmentShippingFees":  {Type: EtopAdmin},
-	"admin.Fulfillment/AddShippingFee":                 {Type: EtopAdmin},
+	"admin.Fulfillment/GetFulfillment":                 {Type: EtopAdmin, Actions: actions(AdminFulfillmentView)},
+	"admin.Fulfillment/GetFulfillments":                {Type: EtopAdmin, Actions: actions(AdminFulfillmentList)},
+	"admin.Fulfillment/UpdateFulfillment":              {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
+	"admin.Fulfillment/UpdateFulfillmentInfo":          {Type: EtopAdmin, Actions: actions(AdminFulfillmentInfoUpdate)},
+	"admin.Fulfillment/UpdateFulfillmentShippingState": {Type: EtopAdmin, Actions: actions(AdminFulfillmentShippingStateUpdate)},
+	"admin.Fulfillment/UpdateFulfillmentShippingFees":  {Type: EtopAdmin, Actions: actions(AdminFulfillmentShippingFeesUpdate)},
+	"admin.Fulfillment/AddShippingFee":                 {Type: EtopAdmin, Actions: actions(AdminFulfillmentShippingFeesCreate)},
 
-	"admin.MoneyTransaction/GetMoneyTransaction":                         {Type: EtopAdmin},
-	"admin.MoneyTransaction/GetMoneyTransactions":                        {Type: EtopAdmin},
-	"admin.MoneyTransaction/ConfirmMoneyTransaction":                     {Type: EtopAdmin},
-	"admin.MoneyTransaction/UpdateMoneyTransaction":                      {Type: EtopAdmin},
-	"admin.MoneyTransaction/GetMoneyTransactionShippingExternal":         {Type: EtopAdmin},
-	"admin.MoneyTransaction/GetMoneyTransactionShippingExternals":        {Type: EtopAdmin},
-	"admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines": {Type: EtopAdmin},
-	"admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal":      {Type: EtopAdmin},
-	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":    {Type: EtopAdmin},
-	"admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":      {Type: EtopAdmin},
-	"admin.MoneyTransaction/GetMoneyTransactionShippingEtop":             {Type: EtopAdmin},
-	"admin.MoneyTransaction/GetMoneyTransactionShippingEtops":            {Type: EtopAdmin},
-	"admin.MoneyTransaction/CreateMoneyTransactionShippingEtop":          {Type: EtopAdmin},
-	"admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop":          {Type: EtopAdmin},
-	"admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":          {Type: EtopAdmin},
-	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop":         {Type: EtopAdmin},
+	"admin.MoneyTransaction/GetMoneyTransaction":                         {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionView)},
+	"admin.MoneyTransaction/GetMoneyTransactions":                        {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionList)},
+	"admin.MoneyTransaction/ConfirmMoneyTransaction":                     {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionConfirm)},
+	"admin.MoneyTransaction/UpdateMoneyTransaction":                      {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionUpdate)},
+	"admin.MoneyTransaction/GetMoneyTransactionShippingExternal":         {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalView)},
+	"admin.MoneyTransaction/GetMoneyTransactionShippingExternals":        {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalList)},
+	"admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines": {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalLinesRemove)},
+	"admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal":      {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalDelete)},
+	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":    {Type: EtopAdmin, Actions: actions(AdminConfirmMoneyTransactionShippingExternalList)},
+	"admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":      {Type: EtopAdmin, Actions: actions(AdminConfirmMoneyTransactionShippingExternalUpdate)},
+	"admin.MoneyTransaction/GetMoneyTransactionShippingEtop":             {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopView)},
+	"admin.MoneyTransaction/GetMoneyTransactionShippingEtops":            {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopList)},
+	"admin.MoneyTransaction/CreateMoneyTransactionShippingEtop":          {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopCreate)},
+	"admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop":          {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopUpdate)},
+	"admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":          {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopDelete)},
+	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop":         {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopConfirm)},
 
-	"admin.Shop/GetShop":       {Type: EtopAdmin},
-	"admin.Shop/GetShops":      {Type: EtopAdmin},
-	"admin.Shop/GetShopsByIDs": {Type: EtopAdmin},
+	"admin.Shop/GetShop":       {Type: EtopAdmin, Actions: actions(AdminShopView)},
+	"admin.Shop/GetShops":      {Type: EtopAdmin, Actions: actions(AdminShopList)},
+	"admin.Shop/GetShopsByIDs": {Type: EtopAdmin, Actions: actions(AdminShopByIDList)},
 
-	"admin.Credit/GetCredit":     {Type: EtopAdmin},
-	"admin.Credit/GetCredits":    {Type: EtopAdmin},
-	"admin.Credit/CreateCredit":  {Type: EtopAdmin},
-	"admin.Credit/UpdateCredit":  {Type: EtopAdmin},
-	"admin.Credit/ConfirmCredit": {Type: EtopAdmin},
-	"admin.Credit/DeleteCredit":  {Type: EtopAdmin},
+	"admin.Credit/GetCredit":     {Type: EtopAdmin, Actions: actions(AdminCreditView)},
+	"admin.Credit/GetCredits":    {Type: EtopAdmin, Actions: actions(AdminCreditList)},
+	"admin.Credit/CreateCredit":  {Type: EtopAdmin, Actions: actions(AdminCreditCreate)},
+	"admin.Credit/UpdateCredit":  {Type: EtopAdmin, Actions: actions(AdminCreditUpdate)},
+	"admin.Credit/ConfirmCredit": {Type: EtopAdmin, Actions: actions(AdminCreditConfirm)},
+	"admin.Credit/DeleteCredit":  {Type: EtopAdmin, Actions: actions(AdminCreditDelete)},
 
 	"admin.Notification/CreateNotifications": {Type: EtopAdmin},
 
-	"admin.Connection/GetConnections":              {Type: EtopAdmin},
-	"admin.Connection/ConfirmConnection":           {Type: EtopAdmin},
-	"admin.Connection/DisableConnection":           {Type: EtopAdmin},
-	"admin.Connection/CreateBuiltinConnection":     {Type: EtopAdmin},
-	"admin.Connection/GetBuiltinShopConnections":   {Type: EtopAdmin},
-	"admin.Connection/UpdateBuiltinShopConnection": {Type: EtopAdmin},
-	"admin.Connection/GetConnectionServices":       {Type: EtopAdmin},
+	"admin.Connection/GetConnections":              {Type: EtopAdmin, Actions: actions(AdminConnectionView)},
+	"admin.Connection/ConfirmConnection":           {Type: EtopAdmin, Actions: actions(AdminConnectionConfirm)},
+	"admin.Connection/DisableConnection":           {Type: EtopAdmin, Actions: actions(AdminConnectionDisable)},
+	"admin.Connection/CreateBuiltinConnection":     {Type: EtopAdmin, Actions: actions(AdminConnectionBuiltinCreate)},
+	"admin.Connection/GetBuiltinShopConnections":   {Type: EtopAdmin, Actions: actions(AdminConnectionShopBuiltinCreate)},
+	"admin.Connection/UpdateBuiltinShopConnection": {Type: EtopAdmin, Actions: actions(AdminConnectionShopBuiltinUpdate)},
+	"admin.Connection/GetConnectionServices":       {Type: EtopAdmin, Actions: actions(AdminConnectionServiceView)},
 
 	"admin.ShipmentPrice/GetShipmentServices":                      {Type: EtopAdmin},
 	"admin.ShipmentPrice/GetShipmentService":                       {Type: EtopAdmin},
@@ -587,11 +687,11 @@ var _acl = map[string]*permission.Decl{
 	"admin.ShipmentPrice/DeleteShipmentPrice":               {Type: EtopAdmin},
 	"admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint": {Type: EtopAdmin},
 
-	"admin.ShipmentPrice/GetShopShipmentPriceLists":   {Type: EtopAdmin},
-	"admin.ShipmentPrice/GetShopShipmentPriceList":    {Type: EtopAdmin},
-	"admin.ShipmentPrice/CreateShopShipmentPriceList": {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShopShipmentPriceList": {Type: EtopAdmin},
-	"admin.ShipmentPrice/DeleteShopShipmentPriceList": {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShopShipmentPriceLists":   {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceListList)},
+	"admin.ShipmentPrice/GetShopShipmentPriceList":    {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceListView)},
+	"admin.ShipmentPrice/CreateShopShipmentPriceList": {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceListCreate)},
+	"admin.ShipmentPrice/UpdateShopShipmentPriceList": {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceListUpdate)},
+	"admin.ShipmentPrice/DeleteShopShipmentPriceList": {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceListDelete)},
 
 	"admin.ShipmentPrice/GetShippingServices": {Type: EtopAdmin},
 
@@ -601,25 +701,25 @@ var _acl = map[string]*permission.Decl{
 	"admin.Location/UpdateCustomRegion": {Type: EtopAdmin},
 	"admin.Location/DeleteCustomRegion": {Type: EtopAdmin},
 
-	"admin.Subscription/CreateSubscriptionProduct": {Type: EtopAdmin},
-	"admin.Subscription/GetSubscriptionProducts":   {Type: EtopAdmin},
-	"admin.Subscription/DeleteSubscriptionProduct": {Type: EtopAdmin},
-	"admin.Subscription/CreateSubscriptionPlan":    {Type: EtopAdmin},
-	"admin.Subscription/UpdateSubscriptionPlan":    {Type: EtopAdmin},
-	"admin.Subscription/GetSubscriptionPlans":      {Type: EtopAdmin},
-	"admin.Subscription/DeleteSubscriptionPlan":    {Type: EtopAdmin},
+	"admin.Subscription/CreateSubscriptionProduct": {Type: EtopAdmin, Actions: actions(AdminSubscriptionProductCreate)},
+	"admin.Subscription/GetSubscriptionProducts":   {Type: EtopAdmin, Actions: actions(AdminSubscriptionProductList)},
+	"admin.Subscription/DeleteSubscriptionProduct": {Type: EtopAdmin, Actions: actions(AdminSubscriptionProductDelete)},
+	"admin.Subscription/CreateSubscriptionPlan":    {Type: EtopAdmin, Actions: actions(AdminSubscriptionPlanCreate)},
+	"admin.Subscription/UpdateSubscriptionPlan":    {Type: EtopAdmin, Actions: actions(AdminSubscriptionPlanUpdate)},
+	"admin.Subscription/GetSubscriptionPlans":      {Type: EtopAdmin, Actions: actions(AdminSubscriptionPlanView)},
+	"admin.Subscription/DeleteSubscriptionPlan":    {Type: EtopAdmin, Actions: actions(AdminSubscriptionPlanDelete)},
 
-	"admin.Subscription/GetSubscription":               {Type: EtopAdmin},
-	"admin.Subscription/GetSubscriptions":              {Type: EtopAdmin},
-	"admin.Subscription/CreateSubscription":            {Type: EtopAdmin},
-	"admin.Subscription/UpdateSubscriptionInfo":        {Type: EtopAdmin},
-	"admin.Subscription/CancelSubscription":            {Type: EtopAdmin},
-	"admin.Subscription/ActivateSubscription":          {Type: EtopAdmin},
-	"admin.Subscription/DeleteSubscription":            {Type: EtopAdmin},
-	"admin.Subscription/GetSubscriptionBills":          {Type: EtopAdmin},
-	"admin.Subscription/CreateSubscriptionBill":        {Type: EtopAdmin},
-	"admin.Subscription/ManualPaymentSubscriptionBill": {Type: EtopAdmin},
-	"admin.Subscription/DeleteSubscriptionBill":        {Type: EtopAdmin},
+	"admin.Subscription/GetSubscription":               {Type: EtopAdmin, Actions: actions(AdminSubscriptionView)},
+	"admin.Subscription/GetSubscriptions":              {Type: EtopAdmin, Actions: actions(AdminSubscriptionList)},
+	"admin.Subscription/CreateSubscription":            {Type: EtopAdmin, Actions: actions(AdminSubscriptionCreate)},
+	"admin.Subscription/UpdateSubscriptionInfo":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionUpdate)},
+	"admin.Subscription/CancelSubscription":            {Type: EtopAdmin, Actions: actions(AdminSubscriptionCancel)},
+	"admin.Subscription/ActivateSubscription":          {Type: EtopAdmin, Actions: actions(AdminSubscriptionActive)},
+	"admin.Subscription/DeleteSubscription":            {Type: EtopAdmin, Actions: actions(AdminSubscriptionDelete)},
+	"admin.Subscription/GetSubscriptionBills":          {Type: EtopAdmin, Actions: actions(AdminSubscriptionBillView)},
+	"admin.Subscription/CreateSubscriptionBill":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionBillCreate)},
+	"admin.Subscription/ManualPaymentSubscriptionBill": {Type: EtopAdmin, Actions: actions(AdminManualPaymentSubscriptionBillCreate)},
+	"admin.Subscription/DeleteSubscriptionBill":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionBillDelete)},
 	//-- shop --//
 
 	"shop.Account/RegisterShop": {Type: CurUsr, AuthPartner: Opt},

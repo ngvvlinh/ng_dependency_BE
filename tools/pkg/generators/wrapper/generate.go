@@ -285,9 +285,11 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 
 	{{if requireActions $m -}}
 	isTest := 0
+	{{if requireEtopAdmin $m | not -}}
 	if query.Context.Shop != nil {
 		isTest = query.Context.Shop.IsTest
 	}
+	{{end -}}
 	authorization := auth.New()
 	// Do not check permission for 3rd party requests
 	if session.Claim.AuthPartnerID == 0 && !authorization.Check(query.Context.Roles, "{{$m|requireActions}}", isTest) {

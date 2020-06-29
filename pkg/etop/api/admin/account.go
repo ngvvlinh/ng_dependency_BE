@@ -2,9 +2,12 @@ package admin
 
 import (
 	"context"
+	"fmt"
 
+	"o.o/api/main/authorization"
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/etop"
+	"o.o/api/top/types/etc/status3"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
@@ -13,6 +16,8 @@ import (
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 )
+
+const EtopAccountId = 101
 
 type AccountService struct {
 	session.Session
@@ -44,7 +49,7 @@ func (s *AccountService) GenerateAPIKey(ctx context.Context, q *admin.GenerateAP
 
 	aa := &identitymodel.AccountAuth{
 		AccountID:   q.AccountId,
-		Status:      1,
+		Status:      status3.P,
 		Roles:       nil,
 		Permissions: nil,
 	}
@@ -54,4 +59,105 @@ func (s *AccountService) GenerateAPIKey(ctx context.Context, q *admin.GenerateAP
 		ApiKey:    aa.AuthKey,
 	}
 	return result, err
+}
+
+func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdminUserRequest) (*admin.CreateAdminUserResponse, error) {
+	for _, role := range q.Roles {
+		if !authorization.IsContainsRole(authorization.InternalRoles, authorization.Role(role)) {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, fmt.Sprintf("invalid role %v", role))
+		}
+	}
+
+	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Email: q.Email,
+	}
+	if err := sqlstore.GetUserByEmail(ctx, query); err != nil {
+		return nil, err
+	}
+
+	user := query.Result
+	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
+		AccountID:       EtopAccountId,
+		UserID:          user.ID,
+		FindByAccountID: false,
+	}
+	err := sqlstore.GetAccountUser(ctx, getAccountUserQuery)
+	if err == nil {
+		// this case mean `account_user` with `user_id` and `account_id` already exists.
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "this user already admin of etop")
+	}
+
+	// Oke let create
+	accountUser := &identitymodel.AccountUser{
+		UserID:    user.ID,
+		AccountID: EtopAccountId,
+		Status:    status3.P, // Enable
+		Permission: identitymodel.Permission{
+			Roles: q.Roles,
+		},
+	}
+	createAccountUserCmd := &identitymodelx.CreateAccountUserCommand{
+		AccountUser: accountUser,
+	}
+	if err := bus.Dispatch(ctx, createAccountUserCmd); err != nil {
+		return nil, err
+	}
+
+	createdAccountUser := createAccountUserCmd.Result
+	return &admin.CreateAdminUserResponse{
+		UserId: createdAccountUser.UserID,
+		Roles:  createdAccountUser.Roles,
+		Status: createdAccountUser.Status,
+	}, nil
+}
+
+func (s *AccountService) UpdateAdminUser(ctx context.Context, q *admin.UpdateAdminUserRequest) (*admin.UpdateAdminUserResponse, error) {
+	for _, role := range q.Roles {
+		if !authorization.IsContainsRole(authorization.InternalRoles, authorization.Role(role)) {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, fmt.Sprintf("invalid role %v", role))
+		}
+	}
+
+	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
+		AccountID:       EtopAccountId,
+		UserID:          q.UserId,
+		FindByAccountID: false,
+	}
+	if err := sqlstore.GetAccountUser(ctx, getAccountUserQuery); err != nil {
+		return nil, err
+	}
+
+	accountUser := &identitymodel.AccountUser{
+		UserID:    q.UserId,
+		AccountID: EtopAccountId,
+		Status:    q.Status,
+	}
+
+	if q.Status != status3.P && q.Status != status3.N {
+		accountUser.Status = getAccountUserQuery.Result.Status
+	}
+
+	if len(q.Roles) == 0 {
+		accountUser.Permission = identitymodel.Permission{
+			Roles: getAccountUserQuery.Result.Permission.Roles,
+		}
+	} else {
+		accountUser.Permission = identitymodel.Permission{
+			Roles: q.Roles,
+		}
+	}
+
+	updateInternalAccountCmd := &identitymodelx.UpdateAccountUserCommand{
+		AccountUser: accountUser,
+	}
+	if err := bus.Dispatch(ctx, updateInternalAccountCmd); err != nil {
+		return nil, err
+	}
+
+	updatedUserAccount := updateInternalAccountCmd.Result
+	return &admin.UpdateAdminUserResponse{
+		UserId: updatedUserAccount.UserID,
+		Roles:  updatedUserAccount.Roles,
+		Status: updatedUserAccount.Status,
+	}, nil
 }

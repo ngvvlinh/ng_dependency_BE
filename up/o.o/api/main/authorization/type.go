@@ -8,8 +8,15 @@ type Action string
 func (r Role) String() string   { return string(r) }
 func (a Action) String() string { return string(a) }
 
+var InternalRoles = []Role{RoleAdmin, RoleAdminSaleLead, RoleAdminSale, RoleAdminCustomerService, RoleAdminAccountant}
+
 const (
 	RoleAdmin                Role = "admin"
+	RoleAdminSaleLead        Role = "ad_salelead"
+	RoleAdminSale            Role = "ad_sale"
+	RoleAdminCustomerService Role = "ad_customerservice"
+	RoleAdminAccountant      Role = "ad_accountant"
+
 	RoleInventoryManagement  Role = "inventory_management"
 	RoleSalesMan             Role = "salesman"
 	RoleShopOwner            Role = "owner"
@@ -19,8 +26,12 @@ const (
 	RoleStaffManagement      Role = "staff_management"
 )
 
-var Roles = [8]Role{
+var Roles = [12]Role{
 	RoleAdmin,
+	RoleAdminSaleLead,
+	RoleAdminSale,
+	RoleAdminAccountant,
+	RoleAdminCustomerService,
 	RoleInventoryManagement,
 	RoleSalesMan,
 	RoleShopOwner,
@@ -32,6 +43,10 @@ var Roles = [8]Role{
 
 var roleLabels = map[Role]string{
 	RoleAdmin:                "Quản trị viên",
+	RoleAdminSaleLead:        "Trưởng Sale",
+	RoleAdminSale:            "Sale",
+	RoleAdminAccountant:      "Kế Toán",
+	RoleAdminCustomerService: "Chăm Sóc Khách Hàng",
 	RoleShopOwner:            "Chủ sở hữu",
 	RoleStaffManagement:      "Quản lý nhân viên",
 	RoleAnalyst:              "Phân tích",

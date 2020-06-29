@@ -21,6 +21,8 @@ type MiscService interface {
 type AccountService interface {
 	CreatePartner(context.Context, *CreatePartnerRequest) (*etop.Partner, error)
 	GenerateAPIKey(context.Context, *GenerateAPIKeyRequest) (*GenerateAPIKeyResponse, error)
+	CreateAdminUser(context.Context, *CreateAdminUserRequest) (*CreateAdminUserResponse, error)
+	UpdateAdminUser(ctx context.Context, request *UpdateAdminUserRequest) (*UpdateAdminUserResponse, error)
 }
 
 // +apix:path=/admin.Order

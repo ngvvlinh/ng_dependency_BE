@@ -126,7 +126,7 @@ func GetAccountUser(ctx context.Context, query *identitymodelx.GetAccountUserQue
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
 	if query.AccountID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
+		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
 
 	query.Result = new(identitymodel.AccountUser)
@@ -207,10 +207,15 @@ func UpdateAccountUser(ctx context.Context, cmd *identitymodelx.UpdateAccountUse
 		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
 	}
 
-	return x.Table("account_user").
+	if err := x.Table("account_user").
 		Where("user_id = ?", accUser.UserID).
 		Where("account_id = ?", accUser.AccountID).
-		ShouldUpdate(accUser)
+		ShouldUpdate(accUser); err != nil {
+		return err
+	}
+
+	cmd.Result = accUser
+	return nil
 }
 
 func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccountUsersQuery) error {

@@ -1,6 +1,6 @@
 package authcommon
 
-const CommonPolicy = `#connection
+const shopPolicy = `#connection
 	p, shop/connection:create, owner
 	p, shop/connection:update, owner
 	p, shop/connection:delete, owner
@@ -158,5 +158,97 @@ const CommonPolicy = `#connection
 	p, shop/webserver/wscategory:view, admin, owner
 	p, shop/webserver/wspage:create, admin, owner
 	p, shop/webserver/wspage:update, admin, owner
-	p, shop/webserver/wspage:delete, admin, owner,
-	p, shop/webserver/wspage:view, admin, owner`
+	p, shop/webserver/wspage:delete, admin, owner
+	p, shop/webserver/wspage:view, admin, owner
+`
+
+const adminPolicy = `
+	# account
+	p, admin/admin_user:create, admin
+	p, admin/admin_user:update, admin
+	# credit
+	p, admin/credit:view, admin, ad_accountant
+	p, admin/credit:update, admin, ad_accountant
+	p, admin/credit:list, admin, ad_accountant
+	p, admin/credit:create, admin, ad_accountant
+	p, admin/credit:confirm, admin, ad_accountant
+	p, admin/credit:delete, admin, ad_accountant
+	# fulfillment
+	p, admin/fulfillment:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice  
+	p, admin/fulfillment:list, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice
+	p, admin/fulfillment:create, admin, ad_accountant, ad_customerservice
+	p, admin/fulfillment:update, admin, ad_accountant, ad_customerservice
+	p, admin/fulfillment_info:update, admin, ad_accountant, ad_customerservice
+	p, admin/fulfillment_shipping_state:update, admin, ad_accountant, ad_customerservice
+	p, admin/fulfillment_shipping_fees:update, admin, ad_accountant, ad_customerservice
+	p, admin/fulfillment_shipping_fees:create, admin, ad_accountant, ad_customerservice
+	# money transaction
+	p, admin/money_transaction:view, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction:list, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction_shipping_etop:view, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction_shipping_etop:list, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction_shipping_external:view, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction_shipping_external:list, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction_shipping_external:view, admin, ad_accountant
+	p, admin/money_transaction_confirm:confirm, admin, ad_accountant
+	p, admin/money_transaction_shipping_etop_confirm:confirm, admin, ad_accountant
+	p, admin/money_transaction_shipping_etop_confirm:create, admin, ad_accountant
+	p, admin/money_transaction_shipping_etop_confirm:update, admin, ad_accountant
+	p, admin/money_transaction_shipping_external_confirm:list, admin, ad_accountant
+	p, admin/money_transaction_shipping_external_confirm:update, admin, ad_accountant
+	p, admin/money_transaction_shipping_external:delete, admin, ad_accountant
+	p, admin/money_transaction_shipping_external_lines:remove, admin, ad_accountant
+	p, admin/money_transaction:update, admin, ad_accountant
+	# order
+	p, admin/order:view, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
+	p, admin/order:list, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
+	p, admin/order_by_id:list, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
+	# shipment price
+	p, admin/shop_shipment_price:update, admin, ad_salelead, ad_sale
+	p, admin/shop_shipment_price_list:create, admin, ad_salelead
+	p, admin/shop_shipment_price_list:delete, admin, ad_salelead
+	p, admin/shop_shipment_price_list:view, admin, ad_salelead
+	p, admin/shop_shipment_price_list:list, admin, ad_salelead
+	# admin shop
+	p, admin/shop:view, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
+	p, admin/shop:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
+	p, admin/shop_by_id:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
+	# admin user
+	p, admin/user:view, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
+	p, admin/user:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
+	p, admin/user_by_id:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
+	p, admin/user:block, admin, ad_customerservice, ad_salelead, ad_sale
+	# admin subscription
+	p, admin/subscription_product:create, admin
+	p, admin/subscription_product:list, admin
+	p, admin/subscription_product:delete, admin
+	p, admin/subscription_plan:create, admin
+	p, admin/subscription_plan:update, admin
+	p, admin/subscription_plan:view, admin
+	p, admin/subscription_plan:delete, admin
+	p, admin/subscription:view, admin
+	p, admin/subscription:list, admin
+	p, admin/subscription:create, admin
+	p, admin/subscription:update, admin
+	p, admin/subscription:cancel, admin
+	p, admin/subscription:active, admin
+	p, admin/subscription:delete, admin
+	p, admin/subscription_bill:view, admin
+	p, admin/subscription_bill:create, admin
+	p, admin/subscription_bill_manual_payment:create, admin
+	p, admin/subscription_bill:delete, admin
+	# admin misc
+	p, admin/misc_account:login, admin
+	# admin partner
+	p, admin/partner:create, admin
+	# admin connection
+	p, admin/connection:view, admin, ad_sale, ad_salelead
+	p, admin/connection:confirm, admin
+	p, admin/connection:disable, admin
+	p, admin/connection_builtin:create, admin
+	p, admin/connection_shop_builtin:create, admin, ad_sale, ad_salelead
+	p, admin/connection_shop_builtin:update, admin
+	p, admin/connection_service:view, admin, ad_sale, ad_salelead
+`
+
+const CommonPolicy = shopPolicy + adminPolicy

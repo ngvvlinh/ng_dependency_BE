@@ -47,6 +47,8 @@ type CreateAccountUserCommand struct {
 
 type UpdateAccountUserCommand struct {
 	AccountUser *identitymodel.AccountUser
+
+	Result *identitymodel.AccountUser
 }
 
 type AccountPermission struct {
