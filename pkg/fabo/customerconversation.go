@@ -486,9 +486,11 @@ func (s *CustomerConversationService) CreatePost(
 func (s *CustomerConversationService) SendMessage(
 	ctx context.Context, request *fabo.SendMessageRequest,
 ) (*fabo.FbExternalMessage, error) {
+	request.Message.Text = strings.TrimSpace(request.Message.Text)
+	request.Message.URL = strings.TrimSpace(request.Message.URL)
 	if request.Message == nil || request.Message.Type == "" ||
 		(request.Message.URL == "" && request.Message.Text == "") {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing message content")
 	}
 
 	getFbExternalPageInternalByIDQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
