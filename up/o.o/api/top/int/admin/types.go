@@ -122,8 +122,8 @@ type UsersFilter struct {
 func (m *UsersFilter) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetUsersRequest struct {
-	Paging  *common.CursorPaging `json:"paging"`
-	Filters *UsersFilter         `json:"filters"`
+	Paging  *common.Paging `json:"paging"`
+	Filters *UsersFilter   `json:"filters"`
 }
 
 func (m *GetUsersRequest) String() string { return jsonx.MustMarshalToString(m) }

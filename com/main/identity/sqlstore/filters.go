@@ -37,3 +37,9 @@ var filterShopExtendedWhitelist = sqlstore.FilterWhitelist{
 		"bank_account":            "s",
 	},
 }
+
+var SortUser = map[string]string{
+	"id":         "",
+	"created_at": "",
+	"updated_at": "",
+}

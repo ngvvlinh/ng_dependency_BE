@@ -108,8 +108,17 @@ func (s *UserStore) GetUser(ctx context.Context) (*identity.User, error) {
 }
 
 func (s *UserStore) ListUsersDB() ([]*identitymodel.User, error) {
+	query := s.query().Where(s.preds)
+	// default sort by created_at
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
+	}
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortUser)
+	if err != nil {
+		return nil, err
+	}
 	var users identitymodel.Users
-	err := s.query().Where(s.preds).Find(&users)
+	err = query.Find(&users)
 	return users, err
 }
 

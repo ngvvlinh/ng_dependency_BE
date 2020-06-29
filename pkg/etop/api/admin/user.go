@@ -22,9 +22,9 @@ func (s *UserService) Clone() *UserService {
 }
 
 func (s *UserService) GetUsers(ctx context.Context, q *GetUsersEndpoint) error {
-	paging, err := cmapi.CMCursorPaging(q.Paging)
-	if err != nil {
-		return err
+	paging := cmapi.CMPaging(q.Paging)
+	if q.Filters == nil {
+		q.Filters = &admin.UsersFilter{}
 	}
 	query := &identity.GetUsersQuery{
 		Name:      q.Filters.Name,
