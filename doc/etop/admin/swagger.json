@@ -2698,7 +2698,8 @@
       "type": "string",
       "enum": [
         "noi_mien",
-        "lien_mien"
+        "lien_mien",
+        "can_mien"
       ]
     },
     "ajUrbanType": {
@@ -6332,7 +6333,8 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer"
+          "type": "integer",
+          "format": "float32"
         },
         "max_value": {
           "type": "integer"

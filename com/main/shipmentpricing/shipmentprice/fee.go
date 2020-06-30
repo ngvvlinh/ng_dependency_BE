@@ -94,10 +94,10 @@ func applyFeeRule(addFee *shipmentprice.AdditionalFee, baseValue int) (int, erro
 		applyRule = true
 		switch rule.PriceModifierType {
 		case price_modifier_type.Percentage:
-			fee := float64(rule.Amount * baseValue / 100)
-			price = int(math.Ceil(fee/1000) * 1000)
+			fee := rule.Amount * float64(baseValue) / 100
+			price = int(math.Round(fee))
 		case price_modifier_type.FixedAmount:
-			price = rule.Amount
+			price = int(rule.Amount)
 		}
 
 		if price < rule.MinPrice {

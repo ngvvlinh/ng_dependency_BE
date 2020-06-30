@@ -378,7 +378,7 @@ type AdditionalFeeRule struct {
 	MinValue          int                                   `json:"min_value"`
 	MaxValue          int                                   `json:"max_value"`
 	PriceModifierType price_modifier_type.PriceModifierType `json:"price_modifier_type"`
-	Amount            int                                   `json:"amount"`
+	Amount            float64                               `json:"amount"`
 	MinPrice          int                                   `json:"min_price"`
 }
 

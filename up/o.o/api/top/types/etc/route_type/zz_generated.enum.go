@@ -277,11 +277,13 @@ func (n *NullProvinceRouteType) UnmarshalJSON(data []byte) error {
 var enumRegionRouteTypeName = map[int]string{
 	1: "noi_mien",
 	2: "lien_mien",
+	3: "can_mien",
 }
 
 var enumRegionRouteTypeValue = map[string]int{
 	"noi_mien":  1,
 	"lien_mien": 2,
+	"can_mien":  3,
 }
 
 func ParseRegionRouteType(s string) (RegionRouteType, bool) {

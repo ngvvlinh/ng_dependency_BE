@@ -15,6 +15,9 @@ const (
 
 	// +enum=lien_mien
 	DifferentRegion RegionRouteType = 2
+
+	// +enum=can_mien
+	NearRegion RegionRouteType = 3
 )
 
 // +enum

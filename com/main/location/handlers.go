@@ -185,7 +185,7 @@ func (im *Query) GetCustomRegion(ctx context.Context, id dot.ID) (*location.Cust
 	return im.customRegionStore(ctx).ID(id).GetCustomRegion()
 }
 
-func (im *Query) GetCustomRegionByCode(ctx context.Context, provinceCode string, districtCode string) (*location.CustomRegion, error) {
+func (im *Query) ListCustomRegionsByCode(ctx context.Context, provinceCode string, districtCode string) ([]*location.CustomRegion, error) {
 	if provinceCode == "" && districtCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing required params")
 	}
@@ -193,7 +193,7 @@ func (im *Query) GetCustomRegionByCode(ctx context.Context, provinceCode string,
 		district := GetDistrictByCode(districtCode, location.LocCodeTypeInternal)
 		provinceCode = district.ProvinceCode
 	}
-	return im.customRegionStore(ctx).ProvinceCode(provinceCode).GetCustomRegion()
+	return im.customRegionStore(ctx).ProvinceCode(provinceCode).ListCustomRegions()
 }
 
 func (im *Query) ListCustomRegions(ctx context.Context, _ *meta.Empty) ([]*location.CustomRegion, error) {

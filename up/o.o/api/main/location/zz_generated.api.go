@@ -121,18 +121,6 @@ func (h QueryServiceHandler) HandleGetCustomRegion(ctx context.Context, msg *Get
 	return err
 }
 
-type GetCustomRegionByCodeQuery struct {
-	ProvinceCode string
-	DistrictCode string
-
-	Result *CustomRegion `json:"-"`
-}
-
-func (h QueryServiceHandler) HandleGetCustomRegionByCode(ctx context.Context, msg *GetCustomRegionByCodeQuery) (err error) {
-	msg.Result, err = h.inner.GetCustomRegionByCode(msg.GetArgs(ctx))
-	return err
-}
-
 type GetLocationQuery struct {
 	ProvinceCode     string
 	DistrictCode     string
@@ -156,19 +144,31 @@ func (h QueryServiceHandler) HandleListCustomRegions(ctx context.Context, msg *L
 	return err
 }
 
+type ListCustomRegionsByCodeQuery struct {
+	ProvinceCode string
+	DistrictCode string
+
+	Result []*CustomRegion `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListCustomRegionsByCode(ctx context.Context, msg *ListCustomRegionsByCodeQuery) (err error) {
+	msg.Result, err = h.inner.ListCustomRegionsByCode(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateCustomRegionCommand) command() {}
 func (q *DeleteCustomRegionCommand) command() {}
 func (q *UpdateCustomRegionCommand) command() {}
 
-func (q *FindLocationQuery) query()          {}
-func (q *FindOrGetLocationQuery) query()     {}
-func (q *GetAllLocationsQuery) query()       {}
-func (q *GetCustomRegionQuery) query()       {}
-func (q *GetCustomRegionByCodeQuery) query() {}
-func (q *GetLocationQuery) query()           {}
-func (q *ListCustomRegionsQuery) query()     {}
+func (q *FindLocationQuery) query()            {}
+func (q *FindOrGetLocationQuery) query()       {}
+func (q *GetAllLocationsQuery) query()         {}
+func (q *GetCustomRegionQuery) query()         {}
+func (q *GetLocationQuery) query()             {}
+func (q *ListCustomRegionsQuery) query()       {}
+func (q *ListCustomRegionsByCodeQuery) query() {}
 
 // implement conversion
 
@@ -273,12 +273,6 @@ func (q *GetCustomRegionQuery) GetArgs(ctx context.Context) (_ context.Context, 
 		q.ID
 }
 
-func (q *GetCustomRegionByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, ProvinceCode string, DistrictCode string) {
-	return ctx,
-		q.ProvinceCode,
-		q.DistrictCode
-}
-
 func (q *GetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetLocationQueryArgs) {
 	return ctx,
 		&GetLocationQueryArgs{
@@ -302,6 +296,12 @@ func (q *ListCustomRegionsQuery) GetArgs(ctx context.Context) (_ context.Context
 }
 
 func (q *ListCustomRegionsQuery) SetEmpty(args *meta.Empty) {
+}
+
+func (q *ListCustomRegionsByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, ProvinceCode string, DistrictCode string) {
+	return ctx,
+		q.ProvinceCode,
+		q.DistrictCode
 }
 
 // implement dispatching
@@ -338,8 +338,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleFindOrGetLocation)
 	b.AddHandler(h.HandleGetAllLocations)
 	b.AddHandler(h.HandleGetCustomRegion)
-	b.AddHandler(h.HandleGetCustomRegionByCode)
 	b.AddHandler(h.HandleGetLocation)
 	b.AddHandler(h.HandleListCustomRegions)
+	b.AddHandler(h.HandleListCustomRegionsByCode)
 	return QueryBus{b}
 }

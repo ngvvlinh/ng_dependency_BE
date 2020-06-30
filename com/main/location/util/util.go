@@ -1,6 +1,8 @@
 package util
 
 import (
+	"math"
+
 	corelocation "o.o/api/main/location"
 	"o.o/api/top/types/etc/location_type"
 	"o.o/api/top/types/etc/route_type"
@@ -20,11 +22,20 @@ func CheckUrbanHCMHN(district *corelocation.District) bool {
 	return true
 }
 
-func GetRegionRouteType(fromProvince, toProvince *corelocation.Province) route_type.RegionRouteType {
+func GetRegionRouteTypes(fromProvince, toProvince *corelocation.Province) (res []route_type.RegionRouteType) {
 	if fromProvince.Region == toProvince.Region {
-		return route_type.SameRegion
+		res = append(res, route_type.SameRegion)
+		return
 	}
-	return route_type.DifferentRegion
+
+	// kiểm tra cận miền (vd: Miền Trung - Nam là cận miền)
+	// Cận miền cũng là khác miền luôn
+	if math.Abs(float64(fromProvince.Region)-float64(toProvince.Region)) > 1 {
+		res = append(res, route_type.DifferentRegion)
+		return
+	}
+
+	return []route_type.RegionRouteType{route_type.NearRegion, route_type.DifferentRegion}
 }
 
 func GetProvinceRouteType(fromProvince, toProvince *corelocation.Province) route_type.ProvinceRouteType {

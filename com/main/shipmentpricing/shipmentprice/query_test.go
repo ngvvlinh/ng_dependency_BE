@@ -387,7 +387,7 @@ func TestCalcInsuranceFees(t *testing.T) {
 				MinValue:          0,
 				MaxValue:          50000,
 				PriceModifierType: price_modifier_type.Percentage,
-				Amount:            10,
+				Amount:            10.15,
 				MinPrice:          3000,
 			},
 			{
@@ -395,6 +395,13 @@ func TestCalcInsuranceFees(t *testing.T) {
 				MaxValue:          -1,
 				PriceModifierType: price_modifier_type.Percentage,
 				Amount:            20,
+				MinPrice:          0,
+			},
+			{
+				MinValue:          50001,
+				MaxValue:          100000,
+				PriceModifierType: price_modifier_type.Percentage,
+				Amount:            15,
 				MinPrice:          0,
 			},
 			{
@@ -418,7 +425,7 @@ func TestCalcInsuranceFees(t *testing.T) {
 		}, {
 			description:        "Giá trị đơn 50k",
 			basketValue:        50000,
-			insuranceFeeResult: 5000,
+			insuranceFeeResult: 5075,
 		}, {
 			description:        "Giá trị đơn 100k",
 			basketValue:        100000,

@@ -745,7 +745,7 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 		}
 
 		// Makeup price & change provider_service_id
-		// Nếu không tìm thấy cấu hình giá (shipment_price) tương ứng
+		// Nếu không có cấu hình giá (shipment_price) của mã dịch vụ (shipment_service_id) trong bảng giá (mã lỗi not_found)
 		// Trả về kết quả của NVC
 		if err = m.makeupPriceByShipmentPrice(ctx, s, args); err != nil && cm.ErrorCode(err) != cm.NotFound {
 			ll.Error("MakeupPriceByShipmentPrice failed", l.String("serviceID", serviceID), l.ID("connectionID", connID), l.Error(err))
@@ -864,15 +864,19 @@ func (m *ShipmentManager) checkShipmentServiceAvailableLocation(ctx context.Cont
 	}
 
 	if len(al.CustomRegionIDs) > 0 {
-		var customRegionID dot.ID
-		query := &location.GetCustomRegionByCodeQuery{
+		query := &location.ListCustomRegionsByCodeQuery{
 			ProvinceCode: provinceCode,
 		}
 		if err := m.LocationQS.Dispatch(ctx, query); err != nil {
 			return err
 		}
-		customRegionID = query.Result.ID
-		isContain := cm.IDsContain(al.CustomRegionIDs, customRegionID)
+		isContain := false
+		for _, customRegion := range query.Result {
+			isContain = cm.IDsContain(al.CustomRegionIDs, customRegion.ID)
+			if isContain {
+				break
+			}
+		}
 		if isInclude && !isContain {
 			return cm.Errorf(cm.FailedPrecondition, nil, "%v nằm ngoài vùng quy định", shippingLocationLabel)
 		}
@@ -951,15 +955,10 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 		CODAmount:           args.CODAmount,
 		AdditionalFeeTypes:  addFeeTypes,
 	}
-	err := m.shipmentPriceQS.Dispatch(ctx, query)
-	switch cm.ErrorCode(err) {
-	case cm.NoError:
-	// continue
-	case cm.NotFound:
-		return nil
-	default:
-		return cm.Errorf(cm.Internal, err, "")
+	if err := m.shipmentPriceQS.Dispatch(ctx, query); err != nil {
+		return err
 	}
+
 	calcShippingFeesRes := query.Result
 	service.ProviderServiceID = PrefixMakeupPriceCode + service.ProviderServiceID
 	service.ServiceFee = calcShippingFeesRes.TotalFee

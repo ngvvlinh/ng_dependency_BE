@@ -125,52 +125,85 @@ func filterShipmentPricesByShipmentServiceID(shipmentPrices []*shipmentprice.Shi
 }
 
 func (q *QueryService) GetMatchingPricings(ctx context.Context, pricings []*shipmentprice.ShipmentPrice, fromProvince, toProvince *location.Province, toDistrict *location.District) (res []*shipmentprice.ShipmentPrice, err error) {
-	queryFrom := &location.GetCustomRegionByCodeQuery{
+	queryFrom := &location.ListCustomRegionsByCodeQuery{
 		ProvinceCode: fromProvince.Code,
 	}
-	queryTo := &location.GetCustomRegionByCodeQuery{
+	queryTo := &location.ListCustomRegionsByCodeQuery{
 		ProvinceCode: toProvince.Code,
 	}
 	if err := q.locationQS.DispatchAll(ctx, queryFrom, queryTo); err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
-	fromCustomRegion, toCustomRegion := dot.ID(0), dot.ID(0)
-	if queryFrom.Result != nil {
-		fromCustomRegion = queryFrom.Result.ID
+	fromCustomRegions, toCustomRegions := []dot.ID{}, []dot.ID{}
+	for _, fromRegion := range queryFrom.Result {
+		fromCustomRegions = append(fromCustomRegions, fromRegion.ID)
 	}
-	if queryTo.Result != nil {
-		toCustomRegion = queryTo.Result.ID
+	for _, toRegion := range queryTo.Result {
+		toCustomRegions = append(toCustomRegions, toRegion.ID)
 	}
 
 	for _, pricing := range pricings {
-		if checkMatchingPricing(pricing, fromProvince, toProvince, toDistrict, fromCustomRegion, toCustomRegion) {
+		if checkMatchingPricing(pricing, fromProvince, toProvince, toDistrict, fromCustomRegions, toCustomRegions) {
 			res = append(res, pricing)
 		}
 	}
 	return res, nil
 }
 
-func checkMatchingPricing(pricing *shipmentprice.ShipmentPrice, fromProvince, toProvince *location.Province, toDistrict *location.District, fromCustomRegion, toCustomRegion dot.ID) bool {
+func checkMatchingPricing(pricing *shipmentprice.ShipmentPrice, fromProvince, toProvince *location.Province, toDistrict *location.District, fromCustomRegions, toCustomRegions []dot.ID) bool {
 	if pricing.Status != status3.P {
 		return false
 	}
 	// check CustomRegionRouteType
 	if len(pricing.CustomRegionTypes) > 0 {
-		customRegionRouteType := locationutil.GetCustomRegionRouteType(fromCustomRegion, toCustomRegion)
-		if !containCustomRegionRouteType(pricing.CustomRegionTypes, customRegionRouteType) {
+		checkValidRegion := false
+		for _, fromRegion := range fromCustomRegions {
+			for _, toRegion := range toCustomRegions {
+				customRegionRouteType := locationutil.GetCustomRegionRouteType(fromRegion, toRegion)
+				if containCustomRegionRouteType(pricing.CustomRegionTypes, customRegionRouteType) {
+					checkValidRegion = true
+					break
+				}
+			}
+			if checkValidRegion {
+				break
+			}
+		}
+		if !checkValidRegion {
 			return false
 		}
 	}
 	if len(pricing.CustomRegionIDs) > 0 {
-		if !cm.IDsContain(pricing.CustomRegionIDs, fromCustomRegion) || !cm.IDsContain(pricing.CustomRegionIDs, toCustomRegion) {
+		// yêu cầu cả địa điểm gửi và lấy hàng đều phải nằm trong danh sách CustomRegionIDs này
+		matchCount := 0
+		for _, fromRegionID := range fromCustomRegions {
+			if cm.IDsContain(pricing.CustomRegionIDs, fromRegionID) {
+				matchCount++
+				break
+			}
+		}
+		for _, toRegionID := range toCustomRegions {
+			if cm.IDsContain(pricing.CustomRegionIDs, toRegionID) {
+				matchCount++
+				break
+			}
+		}
+		if matchCount != 2 {
 			return false
 		}
 	}
 
 	// check RegionRouteType
 	if len(pricing.RegionTypes) > 0 {
-		regionRouteType := locationutil.GetRegionRouteType(fromProvince, toProvince)
-		if !containRegionRouteType(pricing.RegionTypes, regionRouteType) {
+		regionRouteTypes := locationutil.GetRegionRouteTypes(fromProvince, toProvince)
+		matchRegion := false
+		for _, regionType := range regionRouteTypes {
+			if containRegionRouteType(pricing.RegionTypes, regionType) {
+				matchRegion = true
+				break
+			}
+		}
+		if !matchRegion {
 			return false
 		}
 	}
@@ -341,9 +374,15 @@ func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipment
 	if err != nil {
 		return nil, err
 	}
+	if len(pricings) == 0 {
+		return nil, cm.Errorf(cm.NotFound, nil, "Chưa cấu hình giá cho connection này (conn_id = %v)", args.ConnectionID)
+	}
+
 	matchingPricings, err := q.GetMatchingPricings(ctx, pricings, from.Province, to.Province, to.District)
 	if len(matchingPricings) == 0 || err != nil {
-		return nil, cm.Errorf(cm.NotFound, err, "Không có gói phù hợp")
+		// Không thay đổi mã lỗi (yêu cầu: ko sử dụng mã not_found)
+		// not_found chỉ sử dụng khi không có cấu hình giá nào trong bảng giá
+		return nil, cm.Errorf(cm.FailedPrecondition, err, "Không có cấu hình giá phù hợp")
 	}
 
 	// calculate main fee
