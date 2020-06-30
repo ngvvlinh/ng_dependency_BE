@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	service "o.o/api/top/int/etop"
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/bus"
 	cc "o.o/backend/pkg/common/config"
@@ -16,9 +15,6 @@ import (
 	"o.o/capi/httprpc"
 	"o.o/common/l"
 )
-
-// +gen:wrapper=o.o/api/top/int/etop
-// +gen:wrapper:package=etop
 
 type Servers []httprpc.Server
 
@@ -75,17 +71,19 @@ func NewServers(
 		}
 	}
 
-	servers := []httprpc.Server{
-		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
-		service.NewUserServiceServer(WrapUserService(userService.Clone), cookieHooks),
-		service.NewAccountServiceServer(WrapAccountService(accountService.Clone)),
-		service.NewLocationServiceServer(WrapLocationService(locationService.Clone)),
-		service.NewBankServiceServer(WrapBankService(bankService.Clone)),
-		service.NewAddressServiceServer(WrapAddressService(addressService.Clone)),
-		service.NewAccountRelationshipServiceServer(WrapAccountRelationshipService(accountRelationshipService.Clone)),
-		service.NewUserRelationshipServiceServer(WrapUserRelationshipService(userRelationshipService.Clone)),
-		service.NewEcomServiceServer(WrapEcomService(ecomService.Clone)),
-	}
+	servers := httprpc.MustNewServers(
+		accountRelationshipService.Clone,
+		accountService.Clone,
+		addressService.Clone,
+		bankService.Clone,
+		ecomService.Clone,
+		locationService.Clone,
+		miscService.Clone,
+		userRelationshipService.Clone,
+	)
+	servers = append(servers,
+		httprpc.MustNewServer(userService.Clone, cookieHooks),
+	)
 
 	var result []httprpc.Server
 	result = append(result, servers...)

@@ -158,7 +158,7 @@ func Load(isTest bool) (Config, error) {
 	cfg.VTPay.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
 
-	if cfg.ThirdPartyHost == "" && !cmenv.IsDev() {
+	if cfg.ThirdPartyHost == "" && cfg.SharedConfig.Env != cmenv.EnvDev.String() {
 		return cfg, errors.New("Empty third_party_host")
 	}
 	cfg.ThirdPartyHost = strings.TrimSuffix(cfg.ThirdPartyHost, "/")

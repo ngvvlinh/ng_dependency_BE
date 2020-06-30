@@ -11,6 +11,7 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/invitation"
 	"o.o/api/top/int/etop"
+	api "o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/authentication_method"
@@ -33,6 +34,7 @@ import (
 	authservice "o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/authorize/login"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/logic/usering"
 	"o.o/backend/pkg/etop/model"
@@ -69,6 +71,8 @@ const (
 )
 
 type UserService struct {
+	session.Session
+
 	IdentityAggr    identity.CommandBus
 	IdentityQuery   identity.QueryBus
 	InvitationQuery invitation.QueryBus
@@ -82,48 +86,49 @@ type UserService struct {
 
 var UserServiceImpl = &UserService{} // MUSTDO: fix it
 
-func (s *UserService) Clone() *UserService {
+func (s *UserService) Clone() api.UserService {
 	res := *s
 	return &res
 }
 
-func (s *UserService) UpdateUserEmail(ctx context.Context, r *UpdateUserEmailEndpoint) error {
+func (s *UserService) UpdatePermission(ctx context.Context, q *api.UpdatePermissionRequest) (*api.UpdatePermissionResponse, error) {
+	return nil, cm.ErrTODO
+}
+
+func (s *UserService) UpdateUserEmail(ctx context.Context, r *api.UpdateUserEmailRequest) (*api.UpdateUserEmailResponse, error) {
 	key := fmt.Sprintf("UpdateUserEmail %v-%v-%v-%v", r.Email, r.FirstCode, r.SecondCode, r.AuthenticationMethod)
-	res, _, err := idempgroup.DoAndWrap(
+	result, _, err := idempgroup.DoAndWrap(
 		ctx, key, 60*time.Second, "thay đổi email",
 		func() (interface{}, error) { return s.updateUserEmail(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*UpdateUserEmailEndpoint).Result
-	return err
+	return result.(*api.UpdateUserEmailResponse), nil
 }
 
-func (s *UserService) UpdateUserPhone(ctx context.Context, r *UpdateUserPhoneEndpoint) error {
+func (s *UserService) UpdateUserPhone(ctx context.Context, r *api.UpdateUserPhoneRequest) (*api.UpdateUserPhoneResponse, error) {
 	key := fmt.Sprintf("UpdateUserPhone %v-%v-%v-%v", r.Phone, r.FirstCode, r.SecondCode, r.AuthenticationMethod)
-	res, _, err := idempgroup.DoAndWrap(
+	result, _, err := idempgroup.DoAndWrap(
 		ctx, key, 60*time.Second, "thay đổi số điện thoại",
 		func() (interface{}, error) { return s.updateUserPhone(ctx, r) })
-
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*UpdateUserPhoneEndpoint).Result
-	return err
+	return result.(*api.UpdateUserPhoneResponse), nil
 }
 
-func (s *UserService) updateUserPhone(ctx context.Context, r *UpdateUserPhoneEndpoint) (*UpdateUserPhoneEndpoint, error) {
-	code, count, err := s.getRedisCode(r.Context.User.ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
+func (s *UserService) updateUserPhone(ctx context.Context, r *api.UpdateUserPhoneRequest) (*api.UpdateUserPhoneResponse, error) {
+	code, count, err := s.getRedisCode(s.SS.User().ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
 	if err != nil && err != redis.ErrNil {
 		return nil, err
 	}
 	var failCount int
-	failCount, err = s.checkFailCount(r.Context.UserID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
+	failCount, err = s.checkFailCount(s.SS.Claim().UserID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
 	if err != nil {
-		return r, err
+		return nil, err
 	}
-	user, err := checkUserInfo(ctx, r.Context.User.ID, r.AuthenticationMethod)
+	user, err := checkUserInfo(ctx, s.SS.User().ID, r.AuthenticationMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -138,33 +143,35 @@ func (s *UserService) updateUserPhone(ctx context.Context, r *UpdateUserPhoneEnd
 		if r.AuthenticationMethod == authentication_method.Phone {
 			msg, err := s.sendPhoneUserCode(ctx, user, user.Phone, keyRedisFirstCodeUpdateUser, signalUpdateUserPhone, code, count, r.AuthenticationMethod)
 			if err != nil {
-				return r, err
+				return nil, err
 			}
-			r.Result = &etop.UpdateUserPhoneResponse{Msg: msg}
-			return r, nil
+			result := &api.UpdateUserPhoneResponse{Msg: msg}
+			return result, nil
 		}
 		if r.AuthenticationMethod == authentication_method.Email {
 			msg, err := s.sendEmailUserCode(ctx, user, user.Email, keyRedisFirstCodeUpdateUser, signalUpdateUserPhone, code, count, r.AuthenticationMethod)
 			if err != nil {
-				return r, err
+				return nil, err
 			}
-			r.Result = &etop.UpdateUserPhoneResponse{Msg: msg}
-			return r, nil
+			result := &api.UpdateUserPhoneResponse{Msg: msg}
+			return result, nil
 		}
 		return nil, cm.Errorf(cm.STokenRequired, nil, "Cần chọn phương thức xác nhận. Vui lòng chọn email hoặc số điện thoại.")
+
 	case code:
 		return s.updatePhoneVerifySecondCode(ctx, r, user)
+
 	default:
 		failCount++
-		err = s.setFailCountToRedis(r.Context.User.ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone, failCount)
+		err = s.setFailCountToRedis(s.SS.User().ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone, failCount)
 		if err != nil {
-			return r, err
+			return nil, err
 		}
 		return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
 	}
 }
 
-func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *UpdateUserPhoneEndpoint, user *identitymodel.User) (*UpdateUserPhoneEndpoint, error) {
+func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *api.UpdateUserPhoneRequest, user *identitymodel.User) (*api.UpdateUserPhoneResponse, error) {
 	if r.Phone == user.Phone {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại mới đang trùng với số điện thoại hiện tại.")
 	}
@@ -179,58 +186,62 @@ func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *Update
 	codeSecond, count, err := s.getRedisCode(user.ID, keyRedisSecondCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserPhone)
 	switch err {
 	case redis.ErrNil:
-		msg, err := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod)
-		if err != nil {
-			return r, err
+		msg, err2 := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod)
+		if err2 != nil {
+			return nil, err2
 		}
-		r.Result = &etop.UpdateUserPhoneResponse{Msg: msg}
-		return r, nil
+		result := &api.UpdateUserPhoneResponse{Msg: msg}
+		return result, nil
 	case nil:
-		switch r.SecondCode {
-		case "":
-			msg, err := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod)
-			if err != nil {
-				return r, err
-			}
-			r.Result = &etop.UpdateUserPhoneResponse{Msg: msg}
-			return r, nil
-		case codeSecond:
-			cmd := &identity.UpdateUserPhoneCommand{
-				UserID: user.ID,
-				Phone:  r.Phone,
-			}
-			err = s.IdentityAggr.Dispatch(ctx, cmd)
-			if err != nil {
-				return nil, err
-			}
-			err = s.clearRedisUpdateUser(user.ID, r.AuthenticationMethod, signalUpdateUserPhone)
-			if err != nil {
-				return nil, err
-			}
-			r.Result = &etop.UpdateUserPhoneResponse{
-				Msg: "Cập nhật số điện thoại thành công",
-			}
-			ll.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi số điện thoại từ %v thành %v", user.FullName, user.ID, user.Phone, r.Phone))
-		default:
-			return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
-		}
+		// continue
 	default:
-		return r, err
+		return nil, err
 	}
-	return r, err
+
+	switch r.SecondCode {
+	case "":
+		msg, err2 := s.sendPhoneUserCode(ctx, user, r.Phone, keyRedisSecondCodeUpdateUser, signalUpdateUserPhone, codeSecond, count, r.AuthenticationMethod)
+		if err2 != nil {
+			return nil, err2
+		}
+		result := &api.UpdateUserPhoneResponse{Msg: msg}
+		return result, nil
+
+	case codeSecond:
+		cmd := &identity.UpdateUserPhoneCommand{
+			UserID: user.ID,
+			Phone:  r.Phone,
+		}
+		err = s.IdentityAggr.Dispatch(ctx, cmd)
+		if err != nil {
+			return nil, err
+		}
+		err = s.clearRedisUpdateUser(user.ID, r.AuthenticationMethod, signalUpdateUserPhone)
+		if err != nil {
+			return nil, err
+		}
+		result := &api.UpdateUserPhoneResponse{
+			Msg: "Cập nhật số điện thoại thành công",
+		}
+		ll.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi số điện thoại từ %v thành %v", user.FullName, user.ID, user.Phone, r.Phone))
+		return result, nil
+
+	default:
+		return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
+	}
 }
 
-func (s *UserService) updateUserEmail(ctx context.Context, r *UpdateUserEmailEndpoint) (*UpdateUserEmailEndpoint, error) {
-	code, count, err := s.getRedisCode(r.Context.User.ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
+func (s *UserService) updateUserEmail(ctx context.Context, r *api.UpdateUserEmailRequest) (*api.UpdateUserEmailResponse, error) {
+	code, count, err := s.getRedisCode(s.SS.User().ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
 	if err != nil && err != redis.ErrNil {
 		return nil, err
 	}
 	var failCount int
-	failCount, err = s.checkFailCount(r.Context.UserID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
+	failCount, err = s.checkFailCount(s.SS.Claim().UserID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
 	if err != nil {
-		return r, err
+		return nil, err
 	}
-	user, err := checkUserInfo(ctx, r.Context.User.ID, r.AuthenticationMethod)
+	user, err := checkUserInfo(ctx, s.SS.User().ID, r.AuthenticationMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -239,27 +250,29 @@ func (s *UserService) updateUserEmail(ctx context.Context, r *UpdateUserEmailEnd
 		if r.AuthenticationMethod == authentication_method.Phone {
 			msg, err := s.sendPhoneUserCode(ctx, user, user.Phone, keyRedisFirstCodeUpdateUser, signalUpdateUserEmail, code, count, r.AuthenticationMethod)
 			if err != nil {
-				return r, err
+				return nil, err
 			}
-			r.Result = &etop.UpdateUserEmailResponse{Msg: msg}
-			return r, nil
+			result := &api.UpdateUserEmailResponse{Msg: msg}
+			return result, nil
 		}
 		if r.AuthenticationMethod == authentication_method.Email {
 			msg, err := s.sendEmailUserCode(ctx, user, user.Email, keyRedisFirstCodeUpdateUser, signalUpdateUserEmail, code, count, r.AuthenticationMethod)
 			if err != nil {
-				return r, err
+				return nil, err
 			}
-			r.Result = &etop.UpdateUserEmailResponse{Msg: msg}
-			return r, nil
+			result := &api.UpdateUserEmailResponse{Msg: msg}
+			return result, nil
 		}
 		return nil, cm.Errorf(cm.STokenRequired, nil, "Cần chọn phương thức xác nhận. Vui lòng chọn email hoặc số điện thoại.")
+
 	case code:
 		return s.updateEmailVerifySecondCode(ctx, r, user)
+
 	default:
 		failCount++
-		err = s.setFailCountToRedis(r.Context.User.ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail, failCount)
+		err = s.setFailCountToRedis(s.SS.User().ID, keyRedisFirstCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail, failCount)
 		if err != nil {
-			return r, err
+			return nil, err
 		}
 		return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
 	}
@@ -361,7 +374,7 @@ func (s *UserService) clearRedisUpdateUser(userID dot.ID, method authentication_
 	return nil
 }
 
-func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *UpdateUserEmailEndpoint, user *identitymodel.User) (*UpdateUserEmailEndpoint, error) {
+func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *api.UpdateUserEmailRequest, user *identitymodel.User) (*api.UpdateUserEmailResponse, error) {
 	normalizeEmail, _ := validate.NormalizeEmail(r.Email)
 	r.Email = normalizeEmail.String()
 	if r.Email == user.Email {
@@ -377,24 +390,24 @@ func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *Update
 	if err == nil || userByEmailQuery.Result.ID != 0 {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email đã tồn tại vui lòng kiểm tra lại.")
 	}
-	codeSecond, count, err := s.getRedisCode(r.Context.User.ID, keyRedisSecondCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
+	codeSecond, count, err := s.getRedisCode(s.SS.User().ID, keyRedisSecondCodeUpdateUser, r.AuthenticationMethod, signalUpdateUserEmail)
 	switch err {
 	case redis.ErrNil:
 		msg, err := s.sendEmailUserCode(ctx, user, r.Email, keyRedisSecondCodeUpdateUser, signalUpdateUserEmail, codeSecond, count, r.AuthenticationMethod)
 		if err != nil {
-			return r, err
+			return nil, err
 		}
-		r.Result = &etop.UpdateUserEmailResponse{Msg: msg}
-		return r, nil
+		result := &api.UpdateUserEmailResponse{Msg: msg}
+		return result, nil
 	case nil:
 		switch r.SecondCode {
 		case "":
 			msg, err := s.sendEmailUserCode(ctx, user, r.Email, keyRedisSecondCodeUpdateUser, signalUpdateUserEmail, codeSecond, count, r.AuthenticationMethod)
 			if err != nil {
-				return r, err
+				return nil, err
 			}
-			r.Result = &etop.UpdateUserEmailResponse{Msg: msg}
-			return r, nil
+			result := &api.UpdateUserEmailResponse{Msg: msg}
+			return result, nil
 		case codeSecond:
 			cmd := &identity.UpdateUserEmailCommand{
 				Email:  r.Email,
@@ -408,17 +421,17 @@ func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *Update
 			if err != nil {
 				return nil, err
 			}
-			r.Result = &etop.UpdateUserEmailResponse{
+			result := &api.UpdateUserEmailResponse{
 				Msg: "Cập nhật email thành công",
 			}
 			ll.SendMessage(fmt.Sprintf("–– User: %v (%v) \n Update: thay đổi email từ %v thành %v", user.FullName, user.ID, user.Email, r.Email))
+			return result, nil
 		default:
 			return nil, cm.Errorf(cm.STokenRequired, nil, "Mã xác thực không tồn tại vui lòng thử lại.")
 		}
 	default:
 		return nil, err
 	}
-	return r, err
 }
 
 func (s *UserService) sendPhoneUserCode(ctx context.Context, user *identitymodel.User, phone string, redisCode string, signal SignalUpdate, code6Digits string, sendCount int, method authentication_method.AuthenticationMethod) (string, error) {
@@ -534,49 +547,48 @@ func (s *UserService) sendEmailUserCode(ctx context.Context, user *identitymodel
 // 1b. If any email or phone is activated -> AlreadyExists.
 //   - If both email and phone exist (but not activated) -> Merge them.
 //   - Otherwise, update existing user with the other identifier.
-func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
-	if err := validateRegister(ctx, r.CreateUserRequest); err != nil {
-		return err
+func (s *UserService) Register(ctx context.Context, r *api.CreateUserRequest) (*api.RegisterResponse, error) {
+	if err := validateRegister(ctx, r); err != nil {
+		return nil, err
 	}
-	if r.Context.Claim != nil {
-		if r.Context.Extra[keyRequestVerifyPhone] != "" || r.Context.Extra[keyRequestPhoneVerificationVerified] != "" {
+	claim := s.SS.Claim()
+	if claim.Extra != nil {
+		if claim.Extra[keyRequestVerifyPhone] != "" || claim.Extra[keyRequestPhoneVerificationVerified] != "" {
 			phoneNorm, _ := validate.NormalizePhone(r.Phone)
-			if r.Context.Extra[keyRequestVerifyPhone] != phoneNorm.String() {
-				return cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v không hợp lệ bởi vì bạn đã xác nhận số điện thoại: %v", phoneNorm.String(), r.Context.Extra[keyRequestVerifyPhone])
+			if claim.Extra[keyRequestVerifyPhone] != phoneNorm.String() {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v không hợp lệ bởi vì bạn đã xác nhận số điện thoại: %v", phoneNorm.String(), claim.Extra[keyRequestVerifyPhone])
 			}
 
-			resp, err := s.register(ctx, r.Context, r.CreateUserRequest, true)
-			r.Result = resp
-			s.AuthStore.Revoke(auth.UsageAccessToken, r.Context.Token)
-			return err
+			resp, err := s.register(ctx, claim.Extra, r, true)
+			s.AuthStore.Revoke(auth.UsageAccessToken, claim.Token)
+			return resp, err
 		}
 	}
-	resp, err := s.register(ctx, r.Context, r.CreateUserRequest, false)
-	r.Result = resp
-	return err
+	resp, err := s.register(ctx, nil, r, false)
+	return resp, err
 }
 
-func (s *UserService) RegisterUsingToken(ctx context.Context, r *RegisterUsingTokenEndpoint) error {
-	if r.Context.Extra[keyRequestVerifyPhone] == "" || r.Context.Extra[keyRequestPhoneVerificationVerified] == "" {
-		return cm.Error(cm.InvalidArgument, "Bạn vui lòng xác nhận só điện thoại trước khi đăng kí", nil)
+func (s *UserService) RegisterUsingToken(ctx context.Context, r *api.CreateUserRequest) (*api.RegisterResponse, error) {
+	claimExtra := s.SS.Claim().Extra
+	if claimExtra[keyRequestVerifyPhone] == "" || claimExtra[keyRequestPhoneVerificationVerified] == "" {
+		return nil, cm.Error(cm.InvalidArgument, "Bạn vui lòng xác nhận só điện thoại trước khi đăng kí", nil)
 	}
-	if err := validateRegister(ctx, r.CreateUserRequest); err != nil {
-		return err
+	if err := validateRegister(ctx, r); err != nil {
+		return nil, err
 	}
 
 	phoneNorm, _ := validate.NormalizePhone(r.Phone)
-	if r.Context.Extra[keyRequestVerifyPhone] != phoneNorm.String() {
-		return cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v không hợp lệ bởi vì bạn đã xác nhận số điện thoại: %v", phoneNorm.String(), r.Context.Extra[keyRequestVerifyPhone])
+	if claimExtra[keyRequestVerifyPhone] != phoneNorm.String() {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại %v không hợp lệ bởi vì bạn đã xác nhận số điện thoại: %v", phoneNorm.String(), claimExtra[keyRequestVerifyPhone])
 	}
 
-	resp, err := s.register(ctx, r.Context, r.CreateUserRequest, true)
-	r.Result = resp
-	return err
+	resp, err := s.register(ctx, claimExtra, r, true)
+	return resp, err
 }
 
 func (s *UserService) register(
 	ctx context.Context,
-	claim claims.EmptyClaim,
+	claimExtra map[string]string,
 	r *etop.CreateUserRequest,
 	usingToken bool,
 ) (*etop.RegisterResponse, error) {
@@ -625,7 +637,7 @@ func (s *UserService) register(
 		if user.PhoneVerifiedAt.IsZero() {
 			if usingToken {
 				if invitationTemp == nil ||
-					(invitationTemp.Phone == "" || invitationTemp.Phone == claim.Extra[keyRequestVerifyPhone]) {
+					(invitationTemp.Phone == "" || invitationTemp.Phone == claimExtra[keyRequestVerifyPhone]) {
 					shouldUpdate = true
 				}
 			} else {
@@ -741,11 +753,11 @@ func (s *UserService) getInvitation(ctx context.Context, r *etop.CreateUserReque
 	return invitationTemp, nil
 }
 
-func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserRegistrationEndpoint) error {
+func (s *UserService) CheckUserRegistration(ctx context.Context, q *api.GetUserByPhoneRequest) (*api.GetUserByPhoneResponse, error) {
 	_, ok := validate.NormalizePhone(q.Phone)
 	if !ok {
-		q.Result = &etop.GetUserByPhoneResponse{Exists: false}
-		return nil
+		result := &api.GetUserByPhoneResponse{Exists: false}
+		return result, nil
 	}
 
 	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
@@ -753,14 +765,14 @@ func (s *UserService) CheckUserRegistration(ctx context.Context, q *CheckUserReg
 	}
 	err := bus.Dispatch(ctx, userByPhoneQuery)
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
-		return err
+		return nil, err
 	}
 	if err != nil && cm.ErrorCode(err) == cm.NotFound {
-		q.Result = &etop.GetUserByPhoneResponse{Exists: false}
-		return nil
+		result := &api.GetUserByPhoneResponse{Exists: false}
+		return result, nil
 	}
-	q.Result = &etop.GetUserByPhoneResponse{Exists: true}
-	return nil
+	result := &api.GetUserByPhoneResponse{Exists: true}
+	return result, nil
 }
 
 func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email string) (userByPhone, userByEmail identitymodel.UserExtended, err error) {
@@ -786,13 +798,13 @@ func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email
 	return
 }
 
-func (s *UserService) Login(ctx context.Context, r *LoginEndpoint) error {
+func (s *UserService) Login(ctx context.Context, r *api.LoginRequest) (*api.LoginResponse, error) {
 	query := &login.LoginUserQuery{
 		PhoneOrEmail: r.Login,
 		Password:     r.Password,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
 	user := query.Result.User
@@ -803,34 +815,31 @@ func (s *UserService) Login(ctx context.Context, r *LoginEndpoint) error {
 		0,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = resp
-
 	setCookieForEcomify(ctx, resp.Account)
-	return err
+	return resp, err
 }
 
-func (s *UserService) ResetPassword(ctx context.Context, r *ResetPasswordEndpoint) error {
+func (s *UserService) ResetPassword(ctx context.Context, r *api.ResetPasswordRequest) (*api.ResetPasswordResponse, error) {
 	key := fmt.Sprintf("ResetPassword %v-%v", r.Email, r.Phone)
-	res, _, err := idempgroup.DoAndWrap(
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 60*time.Second, "gửi email khôi phục mật khẩu",
 		func() (interface{}, error) { return s.resetPassword(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*ResetPasswordEndpoint).Result
-	return err
+	return resp.(*api.ResetPasswordResponse), nil
 }
 
-func (s *UserService) resetPassword(ctx context.Context, r *ResetPasswordEndpoint) (*ResetPasswordEndpoint, error) {
+func (s *UserService) resetPassword(ctx context.Context, r *api.ResetPasswordRequest) (*api.ResetPasswordResponse, error) {
 	// không thể gửi cùng 1 lúc cả phone và email
 	if r.Email == "" && r.Phone == "" {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Email != "" && r.Phone != "" {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu khôi phục mật khẩu không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Phone != "" {
 		return s.resetPasswordUsingPhone(ctx, r)
@@ -838,29 +847,23 @@ func (s *UserService) resetPassword(ctx context.Context, r *ResetPasswordEndpoin
 	if r.Email != "" {
 		return s.resetPasswordUsingEmail(ctx, r)
 	}
-	return r, nil
+	panic("unreachable")
 }
 
-func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPasswordEndpoint) (*ResetPasswordEndpoint, error) {
+func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *api.ResetPasswordRequest) (*api.ResetPasswordResponse, error) {
 	user, err := getUserByPhone(ctx, r.Phone)
 	if err != nil {
-		return r, err
+		return nil, err
 	}
-	expiresIn := 0
-	if r.Context.Claim == nil {
-		tokenCmd := &tokens.GenerateTokenCommand{
-			ClaimInfo: claims.ClaimInfo{},
-		}
+	token, expiresIn := s.SS.Claim().Token, 0
+	if token == "" {
+		tokenCmd := &tokens.GenerateTokenCommand{}
 		if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
-			return r, cm.Errorf(cm.Internal, err, "")
+			return nil, cm.Errorf(cm.Internal, err, "")
 		}
-		r.Context.Claim = &claims.Claim{
-			ClaimInfo: claims.ClaimInfo{
-				Token: tokenCmd.Result.TokenStr,
-			},
-		}
-		expiresIn = tokenCmd.Result.ExpiresIn
+		token, expiresIn = tokenCmd.Result.TokenStr, tokenCmd.Result.ExpiresIn
 	}
+
 	var msg string
 	var sendTime int
 	var redisCodeCount = fmt.Sprintf("reset-pasword-phone-%v", user.ID)
@@ -883,33 +886,33 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *ResetPassw
 		msg = fmt.Sprintf(templatemessages.SmsResetPasswordTplRepeat, "%v", sendTime)
 	}
 
-	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, msg, r.Context, false); err != nil {
-		return r, err
+	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, msg, false); err != nil {
+		return nil, err
 	}
 
-	r.Result = &etop.ResetPasswordResponse{
-		AccessToken: r.Context.Token,
+	result := &api.ResetPasswordResponse{
+		AccessToken: token,
 		ExpiresIn:   expiresIn,
 		Code:        "ok",
 		Msg: fmt.Sprintf(
 			"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", r.Phone, wl.X(ctx).CSEmail),
 	}
-	return r, nil
+	return result, nil
 }
 
-func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPasswordEndpoint) (*ResetPasswordEndpoint, error) {
+func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *api.ResetPasswordRequest) (*api.ResetPasswordResponse, error) {
 	if !enabledEmail {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email khôi phục mật khẩu. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email khôi phục mật khẩu. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if !strings.Contains(r.Email, "@") {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	query := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Email,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return r, cm.MapError(err).
+		return nil, cm.MapError(err).
 			Wrap(cm.NotFound, fmt.Sprintf("Người dùng chưa đăng ký. Vui lòng kiểm tra lại thông tin (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ %v.", wl.X(ctx).CSEmail)).
 			Throw()
 	}
@@ -924,12 +927,12 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 		},
 	}
 	if _, err := s.AuthStore.GenerateWithValue(tok, 24*60*60); err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate token")
+		return nil, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate token")
 	}
 
 	resetUrl, err := url.Parse(cfgEmail.ResetPasswordURL)
 	if err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Can not parse url")
+		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
 	}
 	urlQuery := resetUrl.Query()
 	urlQuery.Set("t", tok.TokenStr)
@@ -942,7 +945,7 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 		"Email":    user.Email,
 		"WlName":   wl.X(ctx).Name,
 	}); err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate email content")
+		return nil, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate email content")
 	}
 
 	address := user.Email
@@ -953,82 +956,82 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *ResetPassw
 		Content:     b.String(),
 	}
 	if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
-		return r, err
+		return nil, err
 	}
-	r.Result = &etop.ResetPasswordResponse{
+	result := &api.ResetPasswordResponse{
 		Code: "ok",
 		Msg: fmt.Sprintf(
-			"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra updatepemail (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail),
+			"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail),
 	}
-	return r, nil
+	return result, nil
 }
-func (s *UserService) ChangePassword(ctx context.Context, r *ChangePasswordEndpoint) error {
+
+func (s *UserService) ChangePassword(ctx context.Context, r *api.ChangePasswordRequest) (*pbcm.Empty, error) {
 	if r.CurrentPassword == "" {
-		return cm.Error(cm.InvalidArgument, "Missing current_password", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing current_password", nil)
 	}
 
 	query := &login.LoginUserQuery{
-		UserID:   r.Context.User.ID,
+		UserID:   s.SS.User().ID,
 		Password: r.CurrentPassword,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return cm.MapError(err).
+		return nil, cm.MapError(err).
 			Wrap(cm.Unauthenticated, fmt.Sprintf("Mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập. Nếu cần thêm thông tin, vui lòng liên hệ %v.", wl.X(ctx).CSEmail)).
 			Throw()
 	}
 
 	if len(r.NewPassword) < 8 {
-		return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
 	}
 	if r.NewPassword != r.ConfirmPassword {
-		return cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
 	}
 
 	cmd := &identitymodelx.SetPasswordCommand{
-		UserID:   r.Context.User.ID,
+		UserID:   s.SS.User().ID,
 		Password: r.NewPassword,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	r.Result = &pbcm.Empty{}
-	return nil
+	result := &pbcm.Empty{}
+	return result, nil
 }
 
-func (s *UserService) ChangePasswordUsingToken(ctx context.Context, r *ChangePasswordUsingTokenEndpoint) error {
+func (s *UserService) ChangePasswordUsingToken(ctx context.Context, r *api.ChangePasswordUsingTokenRequest) (*pbcm.Empty, error) {
 	key := fmt.Sprintf("ChangePasswordUsingToken %v-%v-%v", r.ResetPasswordToken, r.NewPassword, r.ConfirmPassword)
-	res, _, err := idempgroup.DoAndWrap(
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "khôi phục mật khẩu",
 		func() (interface{}, error) { return s.changePasswordUsingToken(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*ChangePasswordUsingTokenEndpoint).Result
-	return err
+	return resp.(*pbcm.Empty), nil
 }
 
-func (s *UserService) changePasswordUsingToken(ctx context.Context, r *ChangePasswordUsingTokenEndpoint) (*ChangePasswordUsingTokenEndpoint, error) {
+func (s *UserService) changePasswordUsingToken(ctx context.Context, r *api.ChangePasswordUsingTokenRequest) (*pbcm.Empty, error) {
 	return s.changePasswordUsingTokenForEmail(ctx, r)
 }
 
-func (s *UserService) changePasswordUsingTokenForEmail(ctx context.Context, r *ChangePasswordUsingTokenEndpoint) (*ChangePasswordUsingTokenEndpoint, error) {
+func (s *UserService) changePasswordUsingTokenForEmail(ctx context.Context, r *api.ChangePasswordUsingTokenRequest) (*pbcm.Empty, error) {
 	if r.ResetPasswordToken == "" {
-		return r, cm.Error(cm.InvalidArgument, "Missing reset_password_token", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing reset_password_token", nil)
 	}
 	var v map[string]string
 	tok, err := s.AuthStore.Validate(auth.UsageResetPassword, r.ResetPasswordToken, &v)
 	if err != nil {
-		return r, cm.Errorf(cm.InvalidArgument, err, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	if err := changePassword("", v["email"], tok.UserID, ctx, r.NewPassword, r.ConfirmPassword); err != nil {
-		return r, err
+		return nil, err
 	}
 	s.AuthStore.Revoke(auth.UsageResetPassword, r.ResetPasswordToken)
-	r.Result = &pbcm.Empty{}
-	return r, nil
+	result := &pbcm.Empty{}
+	return result, nil
 }
 
 func changePassword(phone string, email string, tokUserID dot.ID, ctx context.Context, newPassword string, confirmPassword string) error {
@@ -1059,47 +1062,46 @@ func changePassword(phone string, email string, tokUserID dot.ID, ctx context.Co
 	return nil
 }
 
-func (s *UserService) SessionInfo(ctx context.Context, r *SessionInfoEndpoint) error {
+func (s *UserService) SessionInfo(ctx context.Context, r *pbcm.Empty) (*api.LoginResponse, error) {
+	claim := s.SS.Claim().ClaimInfo
 	resp, err := s.CreateLoginResponse(
 		ctx,
-		&r.Context.ClaimInfo,
-		r.Context.Token,
-		r.Context.UserID,
-		r.Context.User.User,
-		r.Context.AccountID,
+		&claim,
+		s.SS.Claim().Token,
+		s.SS.Claim().UserID,
+		s.SS.User().User,
+		s.SS.Claim().AccountID,
 		0,
 		false,
 		0,
 	)
-	r.Result = resp
-	return err
+	return resp, err
 }
 
-func (s *UserService) SwitchAccount(ctx context.Context, r *SwitchAccountEndpoint) error {
+func (s *UserService) SwitchAccount(ctx context.Context, r *api.SwitchAccountRequest) (*api.AccessTokenResponse, error) {
 	if r.AccountId == 0 && !r.RegenerateTokens {
-		return cm.Error(cm.InvalidArgument, "Missing account_id", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing account_id", nil)
 	}
 	resp, err := s.CreateSessionResponse(
 		ctx,
 		nil, // Do not forward claim data
 		"",  // Empty to generate new token
-		r.Context.UserID,
-		r.Context.User.User,
+		s.SS.Claim().UserID,
+		s.SS.User().User,
 		r.AccountId,
 		0,
 		0,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if resp.Account == nil {
-		return cm.Error(cm.PermissionDenied, "Tài khoản không hợp lệ.", nil)
+		return nil, cm.Error(cm.PermissionDenied, "Tài khoản không hợp lệ.", nil)
 	}
-	r.Result = resp
 
 	// set cookie for ecomify
 	setCookieForEcomify(ctx, resp.Account)
-	return err
+	return resp, err
 }
 
 func setCookieForEcomify(ctx context.Context, account *etop.LoginAccount) {
@@ -1288,54 +1290,53 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	return resp, respShop, nil
 }
 
-func (s *UserService) SendEmailVerificationUsingOTP(ctx context.Context, r *SendEmailVerificationUsingOTPEndpoint) error {
-	key := fmt.Sprintf("SendEmailVerificationUsingOTP %s-%s", r.Context.User.ID, r.Email)
-	res, _, err := idempgroup.DoAndWrap(
+func (s *UserService) SendEmailVerificationUsingOTP(ctx context.Context, r *api.SendEmailVerificationUsingOTPRequest) (*pbcm.MessageResponse, error) {
+	key := fmt.Sprintf("SendEmailVerificationUsingOTP %s-%s", s.SS.User().ID, r.Email)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "gửi email xác nhận tài khoản",
 		func() (interface{}, error) { return s.sendEmailVerificationUsingOTP(ctx, r) })
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*SendEmailVerificationUsingOTPEndpoint).Result
-	return err
+	return resp.(*pbcm.MessageResponse), nil
 }
 
 func (s *UserService) sendEmailVerificationUsingOTP(
-	ctx context.Context, r *SendEmailVerificationUsingOTPEndpoint,
-) (_ *SendEmailVerificationUsingOTPEndpoint, err error) {
+	ctx context.Context, r *api.SendEmailVerificationUsingOTPRequest,
+) (_ *pbcm.MessageResponse, err error) {
 	if !enabledEmail {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Email == "" {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin địa chỉ email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin địa chỉ email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !strings.Contains(r.Email, "@") {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
-	user := r.Context.User.User
+	user := s.SS.User()
 	emailNorm, ok := validate.NormalizeEmail(r.Email)
 	if !ok || user.Email != emailNorm.String() {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !user.EmailVerifiedAt.IsZero() {
-		r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
-		return r, nil
+		result := cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
+		return result, nil
 	}
 
 	var code string
 	err = s.RedisStore.Get(fmt.Sprintf("Code:%v-%v-%v", user.Email, user.ID, keyRequestEmailVerifyCode), &code)
 	if err != nil && err != redis.ErrNil {
-		return r, err
+		return nil, err
 	}
 	if code == "" {
 		code, err = gencode.Random6Digits()
 		if err != nil {
-			return r, err
+			return nil, err
 		}
 		err = s.RedisStore.SetWithTTL(fmt.Sprintf("Code:%v-%v-%v", user.Email, user.ID, keyRequestEmailVerifyCode), code, 2*60*60)
 		if err != nil {
-			return r, err
+			return nil, err
 		}
 	}
 
@@ -1345,7 +1346,7 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 		"Code":   code,
 		"WlName": wl.X(ctx).Name,
 	}); err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
+		return nil, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
 	}
 
 	address := user.Email
@@ -1356,9 +1357,9 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 		Content:     b.String(),
 	}
 	if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
-		return r, err
+		return nil, err
 	}
-	r.Result = cmapi.Message("ok", fmt.Sprintf(
+	result := cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail))
 
 	updateCmd := &identitymodelx.UpdateUserVerificationCommand{
@@ -1366,54 +1367,53 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 		EmailVerificationSentAt: time.Now(),
 	}
 	if err := bus.Dispatch(ctx, updateCmd); err != nil {
-		return r, err
+		return nil, err
 	}
 
-	extra := make(map[string]string)
-	if r.Context.Claim.Extra != nil {
-		extra = r.Context.Claim.Extra
+	extra := s.SS.Claim().Extra
+	if extra == nil {
+		extra = map[string]string{}
 	}
 
 	extra[keyRequestEmailVerifyCode] = code
 	extra[keyRequestAuthUsage] = auth.UsageEmailVerification
-	if err := s.TokenStore.UpdateSession(ctx, r.Context.Token, extra); err != nil {
+	if err := s.TokenStore.UpdateSession(ctx, s.SS.Claim().Token, extra); err != nil {
 		return nil, err
 	}
-	return r, nil
+	return result, nil
 }
 
-func (s *UserService) SendEmailVerification(ctx context.Context, r *SendEmailVerificationEndpoint) error {
-	key := fmt.Sprintf("SendEmailVerification %v-%v", r.Context.User.ID, r.Email)
-	res, _, err := idempgroup.DoAndWrap(
+func (s *UserService) SendEmailVerification(ctx context.Context, r *api.SendEmailVerificationRequest) (*pbcm.MessageResponse, error) {
+	key := fmt.Sprintf("SendEmailVerification %v-%v", s.SS.User().ID, r.Email)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "gửi email xác nhận tài khoản",
 		func() (interface{}, error) { return s.sendEmailVerification(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*SendEmailVerificationEndpoint).Result
-	return err
+	return resp.(*pbcm.MessageResponse), nil
 }
 
-func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVerificationEndpoint) (*SendEmailVerificationEndpoint, error) {
+func (s *UserService) sendEmailVerification(ctx context.Context, r *api.SendEmailVerificationRequest) (*pbcm.MessageResponse, error) {
 	if !enabledEmail {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Email == "" {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin địa chỉ email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin địa chỉ email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !strings.Contains(r.Email, "@") {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
-	user := r.Context.User.User
+	user := s.SS.User()
 	emailNorm, ok := validate.NormalizeEmail(r.Email)
 	if !ok || user.Email != emailNorm.String() {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !user.EmailVerifiedAt.IsZero() {
-		r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
-		return r, nil
+		result := cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
+		return result, nil
 	}
 
 	tok := &auth.Token{
@@ -1425,12 +1425,12 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 		},
 	}
 	if _, err := s.AuthStore.GenerateWithValue(tok, 24*60*60); err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate token")
+		return nil, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate token")
 	}
 
 	verificationUrl, err := url.Parse(cfgEmail.EmailVerificationURL)
 	if err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Can not parse url")
+		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
 	}
 	urlQuery := verificationUrl.Query()
 	urlQuery.Set("t", tok.TokenStr)
@@ -1443,7 +1443,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 		"Email":    user.Email,
 		"WlName":   wl.X(ctx).Name,
 	}); err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
+		return nil, cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
 	}
 
 	address := user.Email
@@ -1454,9 +1454,9 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 		Content:     b.String(),
 	}
 	if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
-		return r, err
+		return nil, err
 	}
-	r.Result = cmapi.Message("ok", fmt.Sprintf(
+	result := cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail))
 
 	updateCmd := &identitymodelx.UpdateUserVerificationCommand{
@@ -1464,49 +1464,48 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 		EmailVerificationSentAt: time.Now(),
 	}
 	if err := bus.Dispatch(ctx, updateCmd); err != nil {
-		return r, err
+		return nil, err
 	}
-	return r, nil
+	return result, nil
 }
 
-func (s *UserService) SendPhoneVerification(ctx context.Context, r *SendPhoneVerificationEndpoint) error {
-	key := fmt.Sprintf("SendPhoneVerification %v-%v", r.Context.Token, r.Phone)
-	res, _, err := idempgroup.DoAndWrap(
+func (s *UserService) SendPhoneVerification(ctx context.Context, r *api.SendPhoneVerificationRequest) (*pbcm.MessageResponse, error) {
+	key := fmt.Sprintf("SendPhoneVerification %v-%v", s.SS.Claim().Token, r.Phone)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 60*time.Second, "gửi tin nhắn xác nhận số điện thoại",
 		func() (interface{}, error) { return s.sendPhoneVerification(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*SendPhoneVerificationEndpoint).Result
-	return err
+	return resp.(*pbcm.MessageResponse), nil
 }
 
-func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVerificationEndpoint) (*SendPhoneVerificationEndpoint, error) {
+func (s *UserService) sendPhoneVerification(ctx context.Context, r *api.SendPhoneVerificationRequest) (*pbcm.MessageResponse, error) {
 	if !enabledSMS {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi tin nhắn xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi tin nhắn xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Phone == "" {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin số điện thoại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin số điện thoại. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	// update token when user not exists
-	if r.Context.UserID == 0 {
+	if s.SS.Claim().UserID == 0 {
 		return s.sendPhoneVerificationForRegister(ctx, r)
 	}
 	getUserByID := &identitymodelx.GetUserByIDQuery{
-		UserID: r.Context.UserID,
+		UserID: s.SS.Claim().UserID,
 	}
 	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
-		return r, err
+		return nil, err
 	}
 	user := getUserByID.Result
 	_, ok := validate.NormalizePhone(r.Phone)
 	if !ok {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp le. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp le. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	var msg string
 	var sendTime int
-	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", r.Context.UserID)
+	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", s.SS.Claim().UserID)
 	err := s.RedisStore.Get(redisCodeCount, &sendTime)
 	if err != nil && err != redis.ErrNil {
 		return nil, err
@@ -1525,40 +1524,39 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 		}
 		msg = fmt.Sprintf(templatemessages.SmsVerificationTplRepeat, "%v", sendTime)
 	}
-	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, msg, r.Context, true); err != nil {
-		return r, err
+	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, msg, true); err != nil {
+		return nil, err
 	}
-	r.Result = cmapi.Message("ok", fmt.Sprintf(
+	result := cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", r.Phone, wl.X(ctx).CSEmail))
-	return r, nil
+	return result, nil
 }
-func (s *UserService) VerifyEmailUsingToken(ctx context.Context, r *VerifyEmailUsingTokenEndpoint) error {
-	key := fmt.Sprintf("VerifyEmailUsingToken %v-%v", r.Context.User.ID, r.VerificationToken)
-	res, _, err := idempgroup.DoAndWrap(
+func (s *UserService) VerifyEmailUsingToken(ctx context.Context, r *api.VerifyEmailUsingTokenRequest) (*pbcm.MessageResponse, error) {
+	key := fmt.Sprintf("VerifyEmailUsingToken %v-%v", s.SS.User().ID, r.VerificationToken)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "xác nhận địa chỉ email",
 		func() (interface{}, error) { return s.verifyEmailUsingToken(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*VerifyEmailUsingTokenEndpoint).Result
-	return err
+	return resp.(*pbcm.MessageResponse), nil
 }
 
-func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailUsingTokenEndpoint) (*VerifyEmailUsingTokenEndpoint, error) {
+func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *api.VerifyEmailUsingTokenRequest) (*pbcm.MessageResponse, error) {
 	if r.VerificationToken == "" {
-		return r, cm.Error(cm.InvalidArgument, "Missing verification_token", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing verification_token", nil)
 	}
 
 	var v map[string]string
 	tok, err := s.AuthStore.Validate(auth.UsageEmailVerification, r.VerificationToken, &v)
 	if err != nil {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
-	user := r.Context.User.User
+	user := s.SS.User()
 	if user.ID != tok.UserID || user.Email != v["email"] {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (địa chỉ email không đúng). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (địa chỉ email không đúng). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	if user.EmailVerifiedAt.IsZero() {
@@ -1567,39 +1565,39 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 			EmailVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
-			return r, err
+			return nil, err
 		}
 	}
 
 	s.AuthStore.Revoke(auth.UsageEmailVerification, r.VerificationToken)
-	r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
-	return r, nil
+	result := cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
+	return result, nil
 }
 
-func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *VerifyEmailUsingOTPEndpoint) error {
-	extra := r.Context.Extra
-	user := r.Context.User
+func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *api.VerifyEmailUsingOTPRequest) (*pbcm.MessageResponse, error) {
+	extra := s.SS.Claim().Extra
+	user := s.SS.User()
 
 	if r.VerificationToken == "" {
-		return cm.Error(cm.InvalidArgument, "Missing verification_token", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing verification_token", nil)
 	}
 
 	if extra == nil || extra[keyRequestAuthUsage] != auth.UsageEmailVerification {
-		return cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email. Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email. Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if extra[keyRequestEmailVerifyCode] != r.VerificationToken {
-		return cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (mã xác thực không đúng). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể xác nhận địa chỉ email (mã xác thực không đúng). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	delete(extra, keyRequestAuthUsage)
 	delete(extra, keyRequestEmailVerifyCode)
 
-	if err := s.TokenStore.UpdateSession(ctx, r.Context.Token, extra); err != nil {
-		return err
+	if err := s.TokenStore.UpdateSession(ctx, s.SS.Claim().Token, extra); err != nil {
+		return nil, err
 	}
 
 	if err := s.RedisStore.Del(fmt.Sprintf("Code:%v-%v-%v", user.Email, user.ID, keyRequestEmailVerifyCode)); err != nil {
-		return err
+		return nil, err
 	}
 
 	if user.EmailVerifiedAt.IsZero() {
@@ -1608,60 +1606,59 @@ func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *VerifyEmailUsi
 			EmailVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
-	return nil
+	result := cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
+	return result, nil
 }
 
-func (s *UserService) VerifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneUsingTokenEndpoint) error {
-	key := fmt.Sprintf("VerifyPhoneUsingToken %v-%v", r.Context.Token, r.VerificationToken)
-	res, _, err := idempgroup.DoAndWrap(
+func (s *UserService) VerifyPhoneUsingToken(ctx context.Context, r *api.VerifyPhoneUsingTokenRequest) (*pbcm.MessageResponse, error) {
+	key := fmt.Sprintf("VerifyPhoneUsingToken %v-%v", s.SS.Claim().Token, r.VerificationToken)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "xác nhận số điện thoại",
 		func() (interface{}, error) { return s.verifyPhoneUsingToken(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*VerifyPhoneUsingTokenEndpoint).Result
-	return err
+	return resp.(*pbcm.MessageResponse), nil
 }
 
-func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneUsingTokenEndpoint) (*VerifyPhoneUsingTokenEndpoint, error) {
+func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *api.VerifyPhoneUsingTokenRequest) (*pbcm.MessageResponse, error) {
 	if r.VerificationToken == "" {
-		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
-	if r.Context.Extra[keyRequestVerifyCode] != "" && r.Context.Extra[keyRequestVerifyCode] != r.VerificationToken {
-		r.Result = cmapi.Message("fail", "Mã xác thực không chính xác.")
-		return r, nil
+	if s.SS.Claim().Extra[keyRequestVerifyCode] != "" && s.SS.Claim().Extra[keyRequestVerifyCode] != r.VerificationToken {
+		result := cmapi.Message("fail", "Mã xác thực không chính xác.")
+		return result, nil
 	}
-	if r.Context.UserID == 0 && r.Context.Extra != nil {
-		extra := r.Context.Extra
+	if s.SS.Claim().UserID == 0 && s.SS.Claim().Extra != nil {
+		extra := s.SS.Claim().Extra
 		extra[keyRequestPhoneVerificationVerified] = "1"
 
-		if err := s.TokenStore.UpdateSession(ctx, r.Context.Claim.Token, extra); err != nil {
-			return r, err
+		if err := s.TokenStore.UpdateSession(ctx, s.SS.Claim().Token, extra); err != nil {
+			return nil, err
 		}
-		r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
-		return r, nil
+		result := cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
+		return result, nil
 	}
 	getUserByID := &identitymodelx.GetUserByIDQuery{
-		UserID: r.Context.UserID,
+		UserID: s.SS.Claim().UserID,
 	}
 	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
-		return r, err
+		return nil, err
 	}
 	var v map[string]string
 	user := getUserByID.Result
-	tok, code, v := s.getToken(r.Context.Extra[keyRequestAuthUsage], user.ID, user.Phone)
+	tok, code, v := s.getToken(s.SS.Claim().Extra[keyRequestAuthUsage], user.ID, user.Phone)
 	if tok == nil || code == "" || v == nil {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if v["extra"] != user.Phone {
 		s.AuthStore.Revoke(auth.UsageSToken, tok.TokenStr)
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	var err error
@@ -1675,7 +1672,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 			v["tries"] += "."
 			s.AuthStore.SetTTL(tok, 60*60)
 		}
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	if user.PhoneVerifiedAt.IsZero() {
@@ -1684,49 +1681,48 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 			PhoneVerifiedAt: time.Now(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
-			return r, err
+			return nil, err
 		}
 	}
 
 	s.AuthStore.Revoke(auth.UsagePhoneVerification, tok.TokenStr)
-	r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
-	return r, nil
+	result := cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
+	return result, nil
 }
 
-func (s *UserService) VerifyPhoneResetPasswordUsingToken(ctx context.Context, r *VerifyPhoneResetPasswordUsingTokenEndpoint) error {
-	key := fmt.Sprintf("VerifyPhoneResetPasswordUsingToken %v-%v", r.Context.Token, r.VerificationToken)
-	res, _, err := idempgroup.DoAndWrap(
+func (s *UserService) VerifyPhoneResetPasswordUsingToken(ctx context.Context, r *api.VerifyPhoneResetPasswordUsingTokenRequest) (*api.VerifyPhoneResetPasswordUsingTokenResponse, error) {
+	key := fmt.Sprintf("VerifyPhoneResetPasswordUsingToken %v-%v", s.SS.Claim().Token, r.VerificationToken)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "xác nhận số điện thoại",
 		func() (interface{}, error) { return s.verifyPhoneResetPasswordUsingToken(ctx, r) })
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*VerifyPhoneResetPasswordUsingTokenEndpoint).Result
-	return nil
+	return resp.(*api.VerifyPhoneResetPasswordUsingTokenResponse), nil
 }
 
-func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r *VerifyPhoneResetPasswordUsingTokenEndpoint) (*VerifyPhoneResetPasswordUsingTokenEndpoint, error) {
+func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r *api.VerifyPhoneResetPasswordUsingTokenRequest) (*api.VerifyPhoneResetPasswordUsingTokenResponse, error) {
 	if r.VerificationToken == "" {
-		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
-	if r.Context.Extra[keyRequestVerifyCode] != "" && r.Context.Extra[keyRequestVerifyCode] != r.VerificationToken {
-		return r, cm.Error(cm.InvalidArgument, "Mã xác thực không chính xác.", nil)
+	if s.SS.Claim().Extra[keyRequestVerifyCode] != "" && s.SS.Claim().Extra[keyRequestVerifyCode] != r.VerificationToken {
+		return nil, cm.Error(cm.InvalidArgument, "Mã xác thực không chính xác.", nil)
 	}
 	getUserByID := &identitymodelx.GetUserByEmailOrPhoneQuery{
-		Phone: r.Context.Extra[keyRequestVerifyPhone],
+		Phone: s.SS.Claim().Extra[keyRequestVerifyPhone],
 	}
 	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
-		return r, err
+		return nil, err
 	}
 	var v map[string]string
 	user := getUserByID.Result
-	tok, code, v := s.getToken(r.Context.Extra[keyRequestAuthUsage], user.ID, user.Phone)
+	tok, code, v := s.getToken(s.SS.Claim().Extra[keyRequestAuthUsage], user.ID, user.Phone)
 	if tok == nil || code == "" || v == nil {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if v["extra"] != user.Phone {
 		s.AuthStore.Revoke(auth.UsageSToken, tok.TokenStr)
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	var err error
@@ -1740,7 +1736,7 @@ func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r 
 			v["tries"] += "."
 			s.AuthStore.SetTTL(tok, 60*60)
 		}
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
 	recaptchaToken := &auth.Token{
@@ -1752,46 +1748,44 @@ func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r 
 		},
 	}
 	if _, err := s.AuthStore.GenerateWithValue(recaptchaToken, 1*60*60); err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate token")
+		return nil, cm.Errorf(cm.Internal, err, "Không thể khôi phục mật khẩu").WithMeta("reason", "can not generate token")
 	}
 
 	s.AuthStore.Revoke(auth.UsageResetPassword, tok.TokenStr)
-	r.Result = &etop.VerifyPhoneResetPasswordUsingTokenResponse{ResetPasswordToken: recaptchaToken.TokenStr}
-	return r, nil
+	result := &api.VerifyPhoneResetPasswordUsingTokenResponse{ResetPasswordToken: recaptchaToken.TokenStr}
+	return result, nil
 }
 
-func (s *UserService) UpgradeAccessToken(ctx context.Context, r *UpgradeAccessTokenEndpoint) error {
-	key := fmt.Sprintf("UpgradeAccessToken %v-%v", r.Context.User.ID, r.Stoken)
-	res, _, err := idempgroup.DoAndWrap(
+func (s *UserService) UpgradeAccessToken(ctx context.Context, r *api.UpgradeAccessTokenRequest) (*api.AccessTokenResponse, error) {
+	key := fmt.Sprintf("UpgradeAccessToken %v-%v", s.SS.User().ID, r.Stoken)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 15*time.Second, "cập nhật thông tin",
 		func() (interface{}, error) { return s.upgradeAccessToken(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*UpgradeAccessTokenEndpoint).Result
-	return err
+	return resp.(*api.AccessTokenResponse), nil
 }
 
-func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTokenEndpoint) (*UpgradeAccessTokenEndpoint, error) {
+func (s *UserService) upgradeAccessToken(ctx context.Context, r *api.UpgradeAccessTokenRequest) (*api.AccessTokenResponse, error) {
 	if r.Stoken == "" {
-		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
 
-	user := r.Context.User.User
+	user := s.SS.User()
 	tok, code, v := s.getToken(auth.UsageSToken, user.ID, user.Email)
 	if tok == nil || code == "" || v == nil {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if v["extra"] != user.Email {
 		s.AuthStore.Revoke(auth.UsageSToken, tok.TokenStr)
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
-	var err error
 	if code == r.Stoken {
 		expiresAt := time.Now().Add(30 * time.Minute)
-		r.Result, err = s.CreateSessionResponse(
+		result, err := s.CreateSessionResponse(
 			ctx,
 			&claims.ClaimInfo{
 				SToken:          true,
@@ -1799,80 +1793,79 @@ func (s *UserService) upgradeAccessToken(ctx context.Context, r *UpgradeAccessTo
 			},
 			"", // Generate new token
 			user.ID,
-			user,
-			r.Context.AccountID,
+			user.User,
+			s.SS.Claim().AccountID,
 			0,
 			0,
 		)
 		if err != nil {
-			return r, err
+			return nil, err
 		}
 		if err = s.AuthStore.Revoke(auth.UsageSToken, tok.TokenStr); err != nil {
 			ll.Error("Can not revoke token", l.Error(err))
 		}
-		return r, nil
+		return result, nil
 	}
 
 	// Delete token after 3 times
 	if len(v["tries"]) >= 2 {
-		if err = s.AuthStore.Revoke(auth.UsageSToken, tok.TokenStr); err != nil {
+		if err := s.AuthStore.Revoke(auth.UsageSToken, tok.TokenStr); err != nil {
 			ll.Error("Can not revoke token", l.Error(err))
 		}
 	} else {
 		v["tries"] += "."
 		s.AuthStore.SetTTL(tok, 60*60)
 	}
-	return r, cm.Errorf(cm.PermissionDenied, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+	return nil, cm.Errorf(cm.PermissionDenied, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 }
 
-func (s *UserService) SendSTokenEmail(ctx context.Context, r *SendSTokenEmailEndpoint) error {
-	key := fmt.Sprintf("SendSTokenEmail %v-%v-%v", r.Context.User.ID, r.Email, r.AccountId)
-	res, _, err := idempgroup.DoAndWrap(
+func (s *UserService) SendSTokenEmail(ctx context.Context, r *api.SendSTokenEmailRequest) (*pbcm.MessageResponse, error) {
+	key := fmt.Sprintf("SendSTokenEmail %v-%v-%v", s.SS.User().ID, r.Email, r.AccountId)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "gửi email xác nhận",
 		func() (interface{}, error) { return s.sendSTokenEmail(ctx, r) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*SendSTokenEmailEndpoint).Result
-	return err
+	return resp.(*pbcm.MessageResponse), nil
 }
 
-func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEndpoint) (*SendSTokenEmailEndpoint, error) {
+func (s *UserService) sendSTokenEmail(ctx context.Context, r *api.SendSTokenEmailRequest) (*pbcm.MessageResponse, error) {
 	if !enabledEmail {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email xác nhận. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail).WithMeta("reason", "not configured")
 	}
 	if r.Email == "" {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin email. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	if !strings.Contains(r.Email, "@") {
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ  %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Địa chỉ email không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ  %v.", wl.X(ctx).CSEmail)
 	}
 	if r.AccountId == 0 {
-		return r, cm.Error(cm.InvalidArgument, "Missing account_id", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Missing account_id", nil)
 	}
 
-	user := r.Context.User.User
+	user := s.SS.User()
 	accQuery := &identitymodelx.GetAccountRolesQuery{
 		AccountID: r.AccountId,
 		UserID:    user.ID,
 	}
 	if err := bus.Dispatch(ctx, accQuery); err != nil {
-		return r, err
+		return nil, err
 	}
 	account := accQuery.Result.Account
 	emailNorm, ok := validate.NormalizeEmail(r.Email)
 	userEmail, _ := validate.NormalizeEmail(user.Email)
 	if !ok {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ. Vui lòng thử lại hoặc liên hệ  %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ. Vui lòng thử lại hoặc liên hệ  %v.", wl.X(ctx).CSEmail)
 	}
 	if emailNorm != userEmail {
-		return r, cm.Errorf(cm.InvalidArgument, nil, "Email không đúng. Vui lòng thử lại hoặc liên hệ  %v.", wl.X(ctx).CSEmail)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Email không đúng. Vui lòng thử lại hoặc liên hệ  %v.", wl.X(ctx).CSEmail)
 	}
 
 	_, code, _, err := s.generateToken(auth.UsageSToken, user.ID, true, 2*60*60, user.Email)
 	if err != nil {
-		return r, err
+		return nil, err
 	}
 
 	emailData := map[string]interface{}{
@@ -1886,14 +1879,14 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 	case account_type.Shop:
 		emailData["AccountType"] = model.AccountTypeLabel(account.Type)
 	case account_type.Etop:
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email đến tài khoản %v", account.Name, account).WithMeta("type", account.Type.String())
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email đến tài khoản %v", account.Name, account).WithMeta("type", account.Type.String())
 	default:
-		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email đến tài khoản %v", account.Name).WithMeta("type", account.Type.String())
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email đến tài khoản %v", account.Name).WithMeta("type", account.Type.String())
 	}
 
 	var b strings.Builder
 	if err := templatemessages.EmailSTokenTpl.Execute(&b, emailData); err != nil {
-		return r, cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", account.Name).WithMeta("reason", "can not generate email content")
+		return nil, cm.Errorf(cm.Internal, err, "Không thể gửi email đến tài khoản %v", account.Name).WithMeta("reason", "can not generate email content")
 	}
 
 	address := user.Email
@@ -1904,11 +1897,11 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 		Content:     b.String(),
 	}
 	if err := s.EmailClient.SendMail(ctx, cmd); err != nil {
-		return r, err
+		return nil, err
 	}
-	r.Result = cmapi.Message("ok", fmt.Sprintf(
+	result := cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ %v.", address, wl.X(ctx).CSEmail))
-	return r, nil
+	return result, nil
 }
 
 func (s *UserService) getToken(usage string, userID dot.ID, extra string) (*auth.Token, string, map[string]string) {
@@ -1959,46 +1952,46 @@ func (s *UserService) generateToken(usage string, userID dot.ID, generate bool, 
 	return tok, code, v, nil
 }
 
-func (s *UserService) UpdateReferenceUser(ctx context.Context, r *UpdateReferenceUserEndpoint) error {
+func (s *UserService) UpdateReferenceUser(ctx context.Context, r *api.UpdateReferenceUserRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &identity.UpdateUserReferenceUserIDCommand{
-		UserID:       r.Context.UserID,
+		UserID:       s.SS.Claim().UserID,
 		RefUserPhone: r.Phone,
 	}
 	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: 1,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *UserService) UpdateReferenceSale(ctx context.Context, r *UpdateReferenceSaleEndpoint) error {
+func (s *UserService) UpdateReferenceSale(ctx context.Context, r *api.UpdateReferenceSaleRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &identity.UpdateUserReferenceSaleIDCommand{
-		UserID:       r.Context.UserID,
+		UserID:       s.SS.Claim().UserID,
 		RefSalePhone: r.Phone,
 	}
 	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: 1,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *UserService) InitSession(ctx context.Context, r *InitSessionEndpoint) error {
+func (s *UserService) InitSession(ctx context.Context, r *pbcm.Empty) (*api.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{},
 	}
 	if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
-		return cm.Errorf(cm.Internal, err, "")
+		return nil, cm.Errorf(cm.Internal, err, "")
 	}
 
-	r.Result = generateShopLoginResponse(
+	result := generateShopLoginResponse(
 		tokenCmd.Result.TokenStr, tokenCmd.Result.ExpiresIn,
 	)
-	return nil
+	return result, nil
 }
 
 func generateShopLoginResponse(accessToken string, expiresIn int) *etop.LoginResponse {
@@ -2009,14 +2002,14 @@ func generateShopLoginResponse(accessToken string, expiresIn int) *etop.LoginRes
 	return resp
 }
 
-func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *SendPhoneVerificationEndpoint) (*SendPhoneVerificationEndpoint, error) {
+func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *api.SendPhoneVerificationRequest) (*pbcm.MessageResponse, error) {
 	phone, ok := validate.NormalizePhone(r.Phone)
 	if !ok {
-		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp lệ", nil)
+		return nil, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp lệ", nil)
 	}
 	var msg string
 	var sendTime int
-	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", r.Context.UserID)
+	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", s.SS.Claim().UserID)
 	err := s.RedisStore.Get(redisCodeCount, &sendTime)
 	if err != nil && err != redis.ErrNil {
 		return nil, err
@@ -2035,16 +2028,16 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *S
 		}
 		msg = fmt.Sprintf(templatemessages.SmsVerificationTplRepeat, "%v", sendTime)
 	}
-	if err = s.sendPhoneVerificationImpl(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, r.Context, msg, false); err != nil {
-		return r, err
+	if err = s.sendPhoneVerificationImpl(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, msg, false); err != nil {
+		return nil, err
 	}
-	r.Result = cmapi.Message("ok", fmt.Sprintf(
+	result := cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ %v.", phone, wl.X(ctx).CSEmail))
-	return r, nil
+	return result, nil
 }
 
 func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *identitymodel.User, ttl int, usage string,
-	phone string, r claims.EmptyClaim, msg string, checkVerifyPhoneForUser bool) error {
+	phone string, msg string, checkVerifyPhoneForUser bool) error {
 	var userIDUse dot.ID
 	userIDUse = 0
 	if user != nil {
@@ -2063,9 +2056,9 @@ func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *ident
 	if err := s.SMSClient.SendSMS(ctx, cmd); err != nil {
 		return err
 	}
-	extra := make(map[string]string)
-	if r.Claim.Extra != nil {
-		extra = r.Extra
+	extra := s.SS.Claim().Extra
+	if extra == nil {
+		extra = map[string]string{}
 	}
 	if !checkVerifyPhoneForUser {
 		extra[keyRequestVerifyPhone] = phoneUse
@@ -2073,7 +2066,7 @@ func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *ident
 	}
 	extra[keyRequestAuthUsage] = usage
 
-	if err := s.TokenStore.UpdateSession(ctx, r.Token, extra); err != nil {
+	if err := s.TokenStore.UpdateSession(ctx, s.SS.Claim().Token, extra); err != nil {
 		return err
 	}
 	return nil
@@ -2093,15 +2086,15 @@ func getUserByPhone(ctx context.Context, phone string) (*identitymodel.User, err
 	return userByPhone.Result, nil
 }
 
-func (s *UserService) verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, msg string, r claims.EmptyClaim, checkVerifyPhoneForUser bool) error {
-	if user != nil && user.Phone != phone {
+func (s *UserService) verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, msg string, checkVerifyPhoneForUser bool) error {
+	if user.Phone != phone {
 		return cm.Error(cm.FailedPrecondition, "Số điện này không hợp lệ vì chưa được đăng kí", nil)
 	}
 	if checkVerifyPhoneForUser {
 		if !user.PhoneVerifiedAt.IsZero() {
 			return nil
 		}
-		if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, r, msg, true); err != nil {
+		if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, true); err != nil {
 			return err
 		}
 		updateCmd := &identitymodelx.UpdateUserVerificationCommand{
@@ -2113,7 +2106,7 @@ func (s *UserService) verifyPhone(ctx context.Context, usage string, user *ident
 		}
 		return nil
 	}
-	if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, r, msg, false); err != nil {
+	if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, false); err != nil {
 		return err
 	}
 	return nil

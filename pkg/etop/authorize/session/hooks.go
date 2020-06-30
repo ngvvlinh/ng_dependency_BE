@@ -2,7 +2,6 @@ package session
 
 import (
 	"context"
-	"fmt"
 
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/headers"
@@ -35,7 +34,10 @@ func (h Hook) BeforeServing(ctx context.Context, info httprpc.HookInfo) (context
 	if ok {
 		return _auth.StartSession(ctx, *perm, getToken(ctx))
 	}
-	panic(fmt.Sprintf("%T must be an Authenticator", info.Inner))
+	if perm.Type != permission.Public {
+		return ctx, cm.Errorf(cm.Internal, nil, "no session implementation for %v", info.Route)
+	}
+	return ctx, nil
 }
 
 func getToken(ctx context.Context) string {

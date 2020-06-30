@@ -4,7 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"o.o/api/top/int/etop"
+	api "o.o/api/top/int/etop"
+	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/etop/authorize/auth"
@@ -13,16 +14,16 @@ import (
 
 type EcomService struct{}
 
-func (s *EcomService) Clone() *EcomService { res := *s; return &res }
+func (s *EcomService) Clone() api.EcomService { res := *s; return &res }
 
-func (s *EcomService) SessionInfo(ctx context.Context, r *EcomSessionInfoEndpoint) error {
+func (s *EcomService) SessionInfo(ctx context.Context, r *pbcm.Empty) (*api.EcomSessionInfoResponse, error) {
 	cookies := headers.GetCookiesFromCtx(ctx)
 	if cookies == nil || len(cookies) == 0 {
-		return cm.ErrUnauthenticated
+		return nil, cm.ErrUnauthenticated
 	}
 	cookie := getEcomSessionCookie(cookies)
 	if cookie == nil {
-		return cm.ErrUnauthenticated
+		return nil, cm.ErrUnauthenticated
 	}
 
 	var err error
@@ -32,16 +33,16 @@ func (s *EcomService) SessionInfo(ctx context.Context, r *EcomSessionInfoEndpoin
 	}
 	ctx, err = middleware.StartSessionWithToken(ctx, cookie.Value, sessionQuery)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	session := sessionQuery.Result
 	if session.Shop == nil {
-		return cm.ErrUnauthenticated
+		return nil, cm.ErrUnauthenticated
 	}
-	r.Result = &etop.EcomSessionInfoResponse{
+	result := &api.EcomSessionInfoResponse{
 		AllowAccess: true,
 	}
-	return nil
+	return result, nil
 }
 
 func getEcomSessionCookie(cookies []*http.Cookie) *http.Cookie {

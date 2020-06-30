@@ -122,6 +122,10 @@ import (
 
 func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServer *health.Service, consumer mq.KafkaConsumer) (Output, func(), error) {
 	miscService := &api.MiscService{}
+	sharedConfig := cfg.SharedConfig
+	redisRedis := cfg.Redis
+	store := redis.Connect(redisRedis)
+	session := config_server.NewSession(sharedConfig, store)
 	database_minConfig := cfg.Databases
 	databases, err := database_min.BuildDatabases(database_minConfig)
 	if err != nil {
@@ -135,8 +139,6 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	queryBus := identity.QueryServiceMessageBus(queryService)
 	invitationQuery := query.NewInvitationQuery(mainDB)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
-	redisRedis := cfg.Redis
-	store := redis.Connect(redisRedis)
 	generator := auth.NewGenerator(store)
 	tokenStore := tokens.NewTokenStore(store)
 	smsConfig := cfg.SMS
@@ -148,6 +150,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	smtpConfig := cfg.SMTP
 	emailClient := email.New(smtpConfig)
 	userService := &api.UserService{
+		Session:         session,
 		IdentityAggr:    commandBus,
 		IdentityQuery:   queryBus,
 		InvitationQuery: invitationQueryBus,
@@ -158,14 +161,18 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		SMSClient:       client,
 		EmailClient:     emailClient,
 	}
-	accountService := &api.AccountService{}
+	accountService := &api.AccountService{
+		Session: session,
+	}
 	locationQuery := location.New(mainDB)
 	locationQueryBus := location.QueryMessageBus(locationQuery)
 	locationService := &api.LocationService{
 		LocationQuery: locationQueryBus,
 	}
 	bankService := &api.BankService{}
-	addressService := &api.AddressService{}
+	addressService := &api.AddressService{
+		Session: session,
+	}
 	invitationConfig := cfg.Invitation
 	customerQuery := query2.NewCustomerQuery(mainDB)
 	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
@@ -176,11 +183,13 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	authorizationAggregate := aggregate3.NewAuthorizationAggregate()
 	authorizationCommandBus := aggregate3.AuthorizationAggregateMessageBus(authorizationAggregate)
 	accountRelationshipService := &api.AccountRelationshipService{
+		Session:           session,
 		InvitationAggr:    invitationCommandBus,
 		InvitationQuery:   invitationQueryBus,
 		AuthorizationAggr: authorizationCommandBus,
 	}
 	userRelationshipService := &api.UserRelationshipService{
+		Session:                session,
 		InvitationAggr:         invitationCommandBus,
 		InvitationQuery:        invitationQueryBus,
 		AuthorizationAggregate: authorizationCommandBus,
@@ -225,6 +234,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	addressQueryService := address.NewQueryService(mainDB)
 	addressQueryBus := address.QueryServiceMessageBus(addressQueryService)
 	shopAccountService := &shop.AccountService{
+		Session:       session,
 		IdentityAggr:  commandBus,
 		IdentityQuery: queryBus,
 		AddressQuery:  addressQueryBus,
@@ -403,10 +413,17 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		InventoryQuery:      inventoryQueryBus,
 	}
 	shopServers := shop_min.NewServers(store, shopMiscService, brandService, inventoryService, shopAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportService, notificationService, authorizeService, receiptService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService)
-	adminMiscService := admin.MiscService{}
-	adminAccountService := admin.AccountService{}
-	adminOrderService := admin.OrderService{}
+	adminMiscService := admin.MiscService{
+		Session: session,
+	}
+	adminAccountService := admin.AccountService{
+		Session: session,
+	}
+	adminOrderService := admin.OrderService{
+		Session: session,
+	}
 	adminFulfillmentService := admin.FulfillmentService{
+		Session:       session,
 		EventBus:      eventBus,
 		IdentityQuery: queryBus,
 		RedisStore:    store,
@@ -416,15 +433,22 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	moneyTxAggregate := aggregate16.NewMoneyTxAggregate(mainDB, shippingQueryBus, queryBus, eventBus)
 	moneytxCommandBus := aggregate16.MoneyTxAggregateMessageBus(moneyTxAggregate)
 	adminMoneyTransactionService := admin.MoneyTransactionService{
+		Session:      session,
 		MoneyTxQuery: moneytxQueryBus,
 		MoneyTxAggr:  moneytxCommandBus,
 	}
 	shopService := admin.ShopService{
+		Session:       session,
 		IdentityQuery: queryBus,
 	}
-	creditService := admin.CreditService{}
-	adminNotificationService := admin.NotificationService{}
+	creditService := admin.CreditService{
+		Session: session,
+	}
+	adminNotificationService := admin.NotificationService{
+		Session: session,
+	}
 	adminConnectionService := admin.ConnectionService{
+		Session:         session,
 		ConnectionAggr:  connectioningCommandBus,
 		ConnectionQuery: connectioningQueryBus,
 	}
@@ -437,6 +461,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	shopshipmentpricelistAggregate := shopshipmentpricelist.NewAggregate(mainDB, pricelistQueryBus)
 	shopshipmentpricelistCommandBus := shopshipmentpricelist.AggregateMessageBus(shopshipmentpricelistAggregate)
 	shipmentPriceService := admin.ShipmentPriceService{
+		Session:                    session,
 		ShipmentManager:            shipmentManager,
 		ShipmentPriceAggr:          shipmentpriceCommandBus,
 		ShipmentPriceQuery:         shipmentpriceQueryBus,
@@ -450,12 +475,11 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	locationAggregate := location.NewAggregate(mainDB)
 	locationCommandBus := location.AggregateMessageBus(locationAggregate)
 	adminLocationService := admin.LocationService{
+		Session:       session,
 		LocationAggr:  locationCommandBus,
 		LocationQuery: locationQueryBus,
 	}
 	adminServers := admin_min.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService)
-	sharedConfig := cfg.SharedConfig
-	session := config_server.NewSession(sharedConfig, store)
 	sadminMiscService := &sadmin.MiscService{
 		Session: session,
 	}

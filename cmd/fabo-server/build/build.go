@@ -113,9 +113,9 @@ func BuildIntHandlers(
 	logging := middlewares.NewLogging()
 	ssHooks := session.NewHook(acl.GetACL())
 
-	hs = append(hs, rootServers...)
+	hs = append(hs, httprpc.WithHooks(rootServers, ssHooks, logging)...)
 	hs = append(hs, shopServers...)
-	hs = append(hs, adminServers...)
+	hs = append(hs, httprpc.WithHooks(adminServers, ssHooks, logging)...)
 	hs = append(hs, httprpc.WithHooks(faboServers, ssHooks, logging)...)
 	hs = append(hs, httprpc.WithHooks(sadminServers, ssHooks, logging)...)
 	hs = httprpc.WithHooks(hs)

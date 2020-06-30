@@ -7,54 +7,57 @@ import (
 	"o.o/api/top/int/admin"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type LocationService struct {
+	session.Session
+
 	LocationAggr  location.CommandBus
 	LocationQuery location.QueryBus
 }
 
-func (s *LocationService) Clone() *LocationService {
+func (s *LocationService) Clone() admin.LocationService {
 	res := *s
 	return &res
 }
 
-func (s *LocationService) GetCustomRegion(ctx context.Context, r *GetCustomRegionEndpoint) error {
+func (s *LocationService) GetCustomRegion(ctx context.Context, r *pbcm.IDRequest) (*admin.CustomRegion, error) {
 	query := &location.GetCustomRegionQuery{
 		ID: r.Id,
 	}
 	if err := s.LocationQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = convertpb.PbCustomRegion(query.Result)
-	return nil
+	result := convertpb.PbCustomRegion(query.Result)
+	return result, nil
 }
 
-func (s *LocationService) GetCustomRegions(ctx context.Context, r *GetCustomRegionsEndpoint) error {
+func (s *LocationService) GetCustomRegions(ctx context.Context, r *pbcm.Empty) (*admin.GetCustomRegionsResponse, error) {
 	query := &location.ListCustomRegionsQuery{}
 	if err := s.LocationQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &admin.GetCustomRegionsResponse{
+	result := &admin.GetCustomRegionsResponse{
 		CustomRegions: convertpb.PbCustomRegions(query.Result),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *LocationService) CreateCustomRegion(ctx context.Context, r *CreateCustomRegionEndpoint) error {
+func (s *LocationService) CreateCustomRegion(ctx context.Context, r *admin.CreateCustomRegionRequest) (*admin.CustomRegion, error) {
 	cmd := &location.CreateCustomRegionCommand{
 		Name:          r.Name,
 		Description:   r.Description,
 		ProvinceCodes: r.ProvinceCodes,
 	}
 	if err := s.LocationAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = convertpb.PbCustomRegion(cmd.Result)
-	return nil
+	result := convertpb.PbCustomRegion(cmd.Result)
+	return result, nil
 }
 
-func (s *LocationService) UpdateCustomRegion(ctx context.Context, r *UpdateCustomRegionEndpoint) error {
+func (s *LocationService) UpdateCustomRegion(ctx context.Context, r *admin.CustomRegion) (*pbcm.UpdatedResponse, error) {
 	cmd := &location.UpdateCustomRegionCommand{
 		ID:            r.ID,
 		Name:          r.Name,
@@ -62,19 +65,19 @@ func (s *LocationService) UpdateCustomRegion(ctx context.Context, r *UpdateCusto
 		Description:   r.Description,
 	}
 	if err := s.LocationAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: 1}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: 1}
+	return result, nil
 }
 
-func (s *LocationService) DeleteCustomRegion(ctx context.Context, r *DeleteCustomRegionEndpoint) error {
+func (s *LocationService) DeleteCustomRegion(ctx context.Context, r *pbcm.IDRequest) (*pbcm.DeletedResponse, error) {
 	cmd := &location.DeleteCustomRegionCommand{
 		ID: r.Id,
 	}
 	if err := s.LocationAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: 1}
-	return nil
+	result := &pbcm.DeletedResponse{Deleted: 1}
+	return result, nil
 }

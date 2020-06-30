@@ -3,16 +3,17 @@ package api
 import (
 	"context"
 
+	"o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 )
 
 type MiscService struct{}
 
-func (s *MiscService) Clone() *MiscService { res := *s; return &res }
+func (s *MiscService) Clone() etop.MiscService { res := *s; return &res }
 
-func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
-	q.Result = &pbcm.VersionInfoResponse{
+func (s *MiscService) VersionInfo(ctx context.Context, q *pbcm.Empty) (*pbcm.VersionInfoResponse, error) {
+	result := &pbcm.VersionInfoResponse{
 		Service: "etop",
 		Version: "0.1",
 		Meta: map[string]string{
@@ -21,5 +22,5 @@ func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) e
 			"host": wl.X(ctx).Host,
 		},
 	}
-	return nil
+	return result, nil
 }

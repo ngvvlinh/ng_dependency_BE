@@ -26,20 +26,17 @@ func (s *UserService) Clone() sadmin.UserService {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, r *sadmin.SAdminCreateUserRequest) (*etop.RegisterResponse, error) {
-	r2 := &api.RegisterEndpoint{
-		CreateUserRequest: r.Info,
+	resp, err := api.UserServiceImpl.Register(ctx, r.Info)
+	if err != nil {
+		return nil, err
 	}
-	if err := api.UserServiceImpl.Register(ctx, r2); err != nil {
-		return r2.Result, err
-	}
-
 	if r.IsEtopAdmin {
 		if r.Permission != nil {
 
 		}
 		roleCmd := &identitymodelx.UpdateRoleCommand{
 			AccountID: model.EtopAccountID,
-			UserID:    r2.Result.User.Id,
+			UserID:    resp.User.Id,
 			Permission: identitymodel.Permission{
 				Roles:       r.Permission.GetRoles(),
 				Permissions: r.Permission.GetPermissions(),
@@ -49,7 +46,7 @@ func (s *UserService) CreateUser(ctx context.Context, r *sadmin.SAdminCreateUser
 			return nil, err
 		}
 	}
-	return r2.Result, nil
+	return resp, nil
 }
 
 func (s *UserService) ResetPassword(ctx context.Context, r *sadmin.SAdminResetPasswordRequest) (*pbcm.Empty, error) {

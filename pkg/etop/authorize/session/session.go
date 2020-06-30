@@ -69,6 +69,9 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 		s.ctx = newCtx
 	}()
 
+	if tokenStr == "" && perm.Type == permission.Public {
+		return ctx, nil
+	}
 	if tokenStr == "" && perm.Type != permission.Public {
 		return ctx, cm.Errorf(cm.Unauthenticated, nil, "")
 	}
@@ -108,21 +111,20 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 		s.admin = query.Result
 	}
 
-	var session *middleware.Session
+	var ss *middleware.Session
 	sessionQuery := &middleware.StartSessionQuery{
 		RequireAuth: true,
-		RequireShop: true,
 	}
 	ctx, err = middleware.StartSession(ctx, sessionQuery)
 	if err != nil {
 		return nil, err
 	}
-	session = sessionQuery.Result
+	ss = sessionQuery.Result
 
 	authorization := auth.New()
 	for _, action := range perm.Actions {
 		_action := string(action)
-		if !authorization.Check(session.Roles, _action, 0) {
+		if !authorization.Check(ss.Roles, _action, 0) {
 			return ctx, cm.ErrPermissionDenied
 		}
 	}

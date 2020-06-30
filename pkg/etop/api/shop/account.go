@@ -20,12 +20,15 @@ import (
 	etop "o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/tools/pkg/acl"
 )
 
 type AccountService struct {
+	session.Session
+
 	IdentityAggr  identity.CommandBus
 	IdentityQuery identity.QueryBus
 	AddressQuery  address.QueryBus
@@ -77,20 +80,17 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 		}
 
 		if !q.Context.Claim.SToken {
-			stokenCmd := &etop.SendSTokenEmailEndpoint{
-				SendSTokenEmailRequest: &apietop.SendSTokenEmailRequest{
-					Email:     user.Email,
-					AccountId: q.Context.Shop.ID,
-				},
+			req := &apietop.SendSTokenEmailRequest{
+				Email:     user.Email,
+				AccountId: q.Context.Shop.ID,
 			}
-			stokenCmd.Context.Claim = q.Context.Claim
-			stokenCmd.Context.Admin = q.Context.Admin
-			stokenCmd.Context.User = &identitymodelx.SignedInUser{user} // TODO: remove this hack
-			if err := etop.UserServiceImpl.SendSTokenEmail(ctx, stokenCmd); err != nil {
+			userService := etop.UserServiceImpl.Clone().(*etop.UserService)
+			userService.Session = s.Session
+			result, err := userService.SendSTokenEmail(ctx, req)
+			if err != nil {
 				return err
 			}
-
-			return cm.Errorf(cm.STokenRequired, nil, "Cần được xác nhận trước khi thay đổi tài khoản ngân hàng. "+stokenCmd.Result.Msg)
+			return cm.Errorf(cm.STokenRequired, nil, "Cần được xác nhận trước khi thay đổi tài khoản ngân hàng. "+result.Msg)
 		}
 	}
 

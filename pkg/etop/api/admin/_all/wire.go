@@ -3,7 +3,6 @@ package admin_all
 import (
 	"github.com/google/wire"
 
-	service "o.o/api/top/int/admin"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/admin"
 	"o.o/capi/httprpc"
@@ -30,21 +29,20 @@ func NewServers(
 	userService admin.UserService,
 ) admin.Servers {
 	admin.InitIdemp(rd)
-
-	servers := []httprpc.Server{
-		service.NewMiscServiceServer(admin.WrapMiscService(miscService.Clone)),
-		service.NewAccountServiceServer(admin.WrapAccountService(accountService.Clone)),
-		service.NewOrderServiceServer(admin.WrapOrderService(orderService.Clone)),
-		service.NewFulfillmentServiceServer(admin.WrapFulfillmentService(fulfillmentService.Clone)),
-		service.NewMoneyTransactionServiceServer(admin.WrapMoneyTransactionService(moneyTransactionService.Clone)),
-		service.NewShopServiceServer(admin.WrapShopService(shopService.Clone)),
-		service.NewCreditServiceServer(admin.WrapCreditService(creditService.Clone)),
-		service.NewNotificationServiceServer(admin.WrapNotificationService(notificationService.Clone)),
-		service.NewConnectionServiceServer(admin.WrapConnectionService(connectionService.Clone)),
-		service.NewShipmentPriceServiceServer(admin.WrapShipmentPriceService(shipmentPriceService.Clone)),
-		service.NewLocationServiceServer(admin.WrapLocationService(locationService.Clone)),
-		service.NewSubscriptionServiceServer(admin.WrapSubscriptionService(subscriptionService.Clone)),
-		service.NewUserServiceServer(admin.WrapUserService(userService.Clone)),
-	}
+	servers := httprpc.MustNewServers(
+		miscService.Clone,
+		accountService.Clone,
+		orderService.Clone,
+		fulfillmentService.Clone,
+		moneyTransactionService.Clone,
+		shopService.Clone,
+		creditService.Clone,
+		notificationService.Clone,
+		connectionService.Clone,
+		shipmentPriceService.Clone,
+		locationService.Clone,
+		subscriptionService.Clone,
+		userService.Clone,
+	)
 	return servers
 }

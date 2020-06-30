@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/main/shipping"
+	"o.o/api/top/int/admin"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
@@ -14,12 +15,15 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
 
 type FulfillmentService struct {
+	session.Session
+
 	EventBus      capi.EventBus
 	IdentityQuery identity.QueryBus
 	RedisStore    redis.Store
@@ -27,12 +31,12 @@ type FulfillmentService struct {
 	ShippingQuery shipping.QueryBus
 }
 
-func (s *FulfillmentService) Clone() *FulfillmentService {
+func (s *FulfillmentService) Clone() admin.FulfillmentService {
 	res := *s
 	return &res
 }
 
-func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *UpdateFulfillmentEndpoint) error {
+func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *admin.UpdateFulfillmentRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipmodelx.AdminUpdateFulfillmentCommand{
 		FulfillmentID:            q.Id,
 		FullName:                 q.FullName,
@@ -44,15 +48,15 @@ func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *UpdateFul
 		ShippingState:            q.ShippingState,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: cmd.Result.Updated,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *FulfillmentService) UpdateFulfillmentInfo(ctx context.Context, q *UpdateFulfillmentInfoEndpoint) error {
+func (s *FulfillmentService) UpdateFulfillmentInfo(ctx context.Context, q *admin.UpdateFulfillmentInfoRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipping.UpdateFulfillmentInfoCommand{
 		FulfillmentID: q.ID,
 		ShippingCode:  q.ShippingCode,
@@ -61,26 +65,26 @@ func (s *FulfillmentService) UpdateFulfillmentInfo(ctx context.Context, q *Updat
 		AdminNote:     q.AdminNote,
 	}
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: cmd.Result,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *GetFulfillmentEndpoint) error {
+func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *pbcm.IDRequest) (*types.Fulfillment, error) {
 	query := &shipmodelx.GetFulfillmentExtendedQuery{
 		FulfillmentID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = convertpb.PbFulfillment(query.Result.Fulfillment, model.TagEtop, query.Result.Shop, query.Result.Order)
-	return nil
+	result := convertpb.PbFulfillment(query.Result.Fulfillment, model.TagEtop, query.Result.Shop, query.Result.Order)
+	return result, nil
 }
 
-func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillmentsEndpoint) error {
+func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *admin.GetFulfillmentsRequest) (*types.FulfillmentsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &shipmodelx.GetFulfillmentExtendedsQuery{
 		OrderID: q.OrderId,
@@ -92,70 +96,68 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 		query.ShopIDs = []dot.ID{q.ShopId}
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &types.FulfillmentsResponse{
+	result := &types.FulfillmentsResponse{
 		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagEtop),
 		Paging:       cmapi.PbPageInfo(paging),
 	}
-	return nil
+	return result, nil
 }
-func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context, r *UpdateFulfillmentShippingStateEndpoint) error {
+func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context, r *admin.UpdateFulfillmentShippingStateRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipping.UpdateFulfillmentShippingStateCommand{
 		FulfillmentID:            r.ID,
 		ShippingCode:             r.ShippingCode,
 		ShippingState:            r.ShippingState,
 		ActualCompensationAmount: r.ActualCompensationAmount,
-		UpdatedBy:                r.Context.UserID,
+		UpdatedBy:                s.SS.Claim().UserID,
 	}
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: cmd.Result,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *FulfillmentService) UpdateFulfillmentShippingFees(ctx context.Context, r *UpdateFulfillmentShippingFeesEndpoint) error {
+func (s *FulfillmentService) UpdateFulfillmentShippingFees(ctx context.Context, r *admin.UpdateFulfillmentShippingFeesRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipping.UpdateFulfillmentShippingFeesCommand{
 		FulfillmentID:    r.ID,
 		ShippingCode:     r.ShippingCode,
 		ShippingFeeLines: convertpb.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
 		TotalCODAmount:   r.TotalCODAmount,
-		UpdatedBy:        r.Context.UserID,
-	}
-	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	r.Result = &pbcm.UpdatedResponse{
-		Updated: cmd.Result,
-	}
-	return nil
-}
-
-func (s *FulfillmentService) addShippingFee(ctx context.Context, r *AddShippingFeeEndpoint) (*AddShippingFeeEndpoint, error) {
-	cmd := &shipping.AddFulfillmentShippingFeeCommand{
-		FulfillmentID:   r.ID,
-		ShippingCode:    r.ShippingCode,
-		ShippingFeeType: r.ShippingFeeType,
-		UpdatedBy:       r.Context.UserID,
+		UpdatedBy:        s.SS.Claim().UserID,
 	}
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	resp := &AddShippingFeeEndpoint{
-		Result: &pbcm.UpdatedResponse{Updated: 1},
+	result := &pbcm.UpdatedResponse{
+		Updated: cmd.Result,
 	}
+	return result, nil
+}
+
+func (s *FulfillmentService) addShippingFee(ctx context.Context, r *admin.AddShippingFeeRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &shipping.AddFulfillmentShippingFeeCommand{
+		FulfillmentID:   r.ID,
+		ShippingCode:    r.ShippingCode,
+		ShippingFeeType: r.ShippingFeeType,
+		UpdatedBy:       s.SS.Claim().UserID,
+	}
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	resp := &pbcm.UpdatedResponse{Updated: 1}
 	return resp, nil
 }
 
-func (s *FulfillmentService) AddShippingFee(ctx context.Context, r *AddShippingFeeEndpoint) error {
+func (s *FulfillmentService) AddShippingFee(ctx context.Context, r *admin.AddShippingFeeRequest) (*pbcm.UpdatedResponse, error) {
 	key := fmt.Sprintf("addShippingFee %v-%v", r.ID, r.ShippingFeeType.String())
 	res, _, err := idempgroup.DoAndWrap(ctx, key, 15*time.Second, "Thêm cước phí cho đơn vận chuyển", func() (interface{}, error) { return s.addShippingFee(ctx, r) })
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*AddShippingFeeEndpoint).Result
-	return nil
+	result := res.(*pbcm.UpdatedResponse)
+	return result, nil
 }

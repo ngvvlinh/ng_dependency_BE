@@ -3,39 +3,40 @@ package api
 import (
 	"context"
 
-	apietop "o.o/api/top/int/etop"
+	api "o.o/api/top/int/etop"
+	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/integration/bank"
 )
 
 type BankService struct{}
 
-func (s *BankService) Clone() *BankService {
+func (s *BankService) Clone() api.BankService {
 	res := *s
 	return &res
 }
 
-func (s *BankService) GetBanks(ctx context.Context, q *GetBanksEndpoint) error {
-	q.Result = &apietop.GetBanksResponse{
+func (s *BankService) GetBanks(ctx context.Context, q *pbcm.Empty) (*api.GetBanksResponse, error) {
+	result := &api.GetBanksResponse{
 		Banks: convertpb.PbBanks(bank.Banks),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *BankService) GetProvincesByBank(ctx context.Context, q *GetProvincesByBankEndpoint) error {
+func (s *BankService) GetProvincesByBank(ctx context.Context, q *api.GetProvincesByBankResquest) (*api.GetBankProvincesResponse, error) {
 	query := &bank.BankQuery{
 		Code: q.BankCode,
 		Name: q.BankName,
 	}
 
 	provinces := bank.GetProvinceByBank(query)
-	q.Result = &apietop.GetBankProvincesResponse{
+	result := &api.GetBankProvincesResponse{
 		Provinces: convertpb.PbBankProvinces(provinces),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *GetBranchesByBankProvinceEndpoint) error {
+func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *api.GetBranchesByBankProvinceResquest) (*api.GetBranchesByBankProvinceResponse, error) {
 	bankQuery := &bank.BankQuery{
 		Code: q.BankCode,
 		Name: q.BankName,
@@ -46,8 +47,8 @@ func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *GetBranc
 	}
 
 	branches := bank.GetBranchByBankProvince(bankQuery, provinceQuery)
-	q.Result = &apietop.GetBranchesByBankProvinceResponse{
+	result := &api.GetBranchesByBankProvinceResponse{
 		Branches: convertpb.PbBankBranches(branches),
 	}
-	return nil
+	return result, nil
 }

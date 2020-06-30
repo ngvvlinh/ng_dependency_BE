@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/main/authorization"
 	"o.o/api/main/invitation"
+	api "o.o/api/top/int/etop"
 	apietop "o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
 	identitymodel "o.o/backend/com/main/identity/model"
@@ -13,62 +14,65 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
 
 type UserRelationshipService struct {
+	session.Session
+
 	InvitationAggr         invitation.CommandBus
 	InvitationQuery        invitation.QueryBus
 	AuthorizationAggregate authorization.CommandBus
 }
 
-func (s *UserRelationshipService) Clone() *UserRelationshipService {
+func (s *UserRelationshipService) Clone() api.UserRelationshipService {
 	res := *s
 	return &res
 }
 
-func (s *UserRelationshipService) AcceptInvitation(ctx context.Context, q *UserRelationshipAcceptInvitationEndpoint) error {
+func (s *UserRelationshipService) AcceptInvitation(ctx context.Context, q *api.AcceptInvitationRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &invitation.AcceptInvitationCommand{
-		UserID: q.Context.UserID,
+		UserID: s.SS.Claim().UserID,
 		Token:  q.Token,
 	}
 	if err := s.InvitationAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return result, nil
 }
 
-func (s *UserRelationshipService) RejectInvitation(ctx context.Context, q *UserRelationshipRejectInvitationEndpoint) error {
+func (s *UserRelationshipService) RejectInvitation(ctx context.Context, q *api.RejectInvitationRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &invitation.RejectInvitationCommand{
-		UserID: q.Context.UserID,
+		UserID: s.SS.Claim().UserID,
 		Token:  q.Token,
 	}
 	if err := s.InvitationAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return result, nil
 }
 
-func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *UserRelationshipGetInvitationByTokenEndpoint) error {
+func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *api.GetInvitationByTokenRequest) (*api.Invitation, error) {
 	query := &invitation.GetInvitationByTokenQuery{
 		Token: q.Token,
 	}
 	if err := s.InvitationQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = convertpb.PbInvitation(query.Result)
+	result := convertpb.PbInvitation(query.Result)
 
 	getAccountQuery := &identitymodelx.GetShopQuery{
 		ShopID: query.Result.AccountID,
 	}
 	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result.ShopShort = &apietop.ShopShort{
+	result.ShopShort = &apietop.ShopShort{
 		ID:       getAccountQuery.Result.ID,
 		Name:     getAccountQuery.Result.Name,
 		Code:     getAccountQuery.Result.Code,
@@ -84,34 +88,33 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *U
 	case cm.NotFound:
 	// no-op
 	case cm.NoError:
-		q.Result.UserId = getUserQuery.Result.ID
+		result.UserId = getUserQuery.Result.ID
 	default:
-		return err
+		return nil, err
 	}
 
 	getInvitedByUserQuery := &identitymodelx.GetUserByIDQuery{
 		UserID: query.Result.InvitedBy,
 	}
 	if err := bus.Dispatch(ctx, getInvitedByUserQuery); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result.InvitedByUser = getInvitedByUserQuery.Result.FullName
-
-	return nil
+	result.InvitedByUser = getInvitedByUserQuery.Result.FullName
+	return result, nil
 }
 
-func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *UserRelationshipGetInvitationsEndpoint) error {
+func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *api.GetInvitationsRequest) (*api.InvitationsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &invitation.ListInvitationsByEmailAndPhoneQuery{
-		Email:   q.Context.User.Email,
-		Phone:   q.Context.User.Phone,
+		Email:   s.SS.User().Email,
+		Phone:   s.SS.User().Phone,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := s.InvitationQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &apietop.InvitationsResponse{
+	result := &api.InvitationsResponse{
 		Invitations: convertpb.PbInvitations(query.Result.Invitations),
 		Paging:      cmapi.PbPageInfo(paging),
 	}
@@ -134,14 +137,14 @@ func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *UserRel
 		ShopIDs: accountIDs,
 	}
 	if err := bus.Dispatch(ctx, getAccountsQuery); err != nil {
-		return err
+		return nil, err
 	}
 	mapShop := make(map[dot.ID]*identitymodel.Shop)
 	for _, shop := range getAccountsQuery.Result.Shops {
 		mapShop[shop.ID] = shop
 	}
 
-	for _, invitationEl := range q.Result.Invitations {
+	for _, invitationEl := range result.Invitations {
 		invitationEl.ShopShort = &apietop.ShopShort{
 			ID:       invitationEl.ShopId,
 			Name:     mapShop[invitationEl.ShopId].Name,
@@ -149,18 +152,17 @@ func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *UserRel
 			ImageUrl: mapShop[invitationEl.ShopId].ImageURL,
 		}
 	}
-
-	return nil
+	return result, nil
 }
 
-func (s *UserRelationshipService) LeaveAccount(ctx context.Context, q *UserRelationshipLeaveAccountEndpoint) error {
+func (s *UserRelationshipService) LeaveAccount(ctx context.Context, q *api.UserRelationshipLeaveAccountRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &authorization.LeaveAccountCommand{
-		UserID:    q.Context.UserID,
+		UserID:    s.SS.Claim().UserID,
 		AccountID: q.AccountID,
 	}
 	if err := s.AuthorizationAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return result, nil
 }
