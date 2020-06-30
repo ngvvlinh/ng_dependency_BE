@@ -55,6 +55,7 @@ func NewServers(
 	productCollectionService *ProductCollectionService,
 	productCollectionRelationshipService *ProductCollectionRelationshipService,
 ) (Servers, func()) {
+	authStore = auth.NewGenerator(rd)
 	authURL = string(_authURL)
 	if authURL == "" {
 		ll.Panic("no auth_url")
