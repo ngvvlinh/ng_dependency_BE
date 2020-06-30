@@ -375,6 +375,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		}
 	}
 	ffmToUpdate.ExternalAffiliateID = driver.GetAffiliateID()
+	ffmToUpdate.ChargeableWeight = weight
 	updateCmd := &shipmodelx.UpdateFulfillmentCommand{
 		Fulfillment: ffmToUpdate,
 	}
