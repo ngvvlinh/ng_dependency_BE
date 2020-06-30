@@ -66,6 +66,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 		Status:      int(status3.Z),
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		PaidAt:      q.PaidAt.ToTime(),
+		Note:        q.Note,
 	}
 	if err := s.ReceiptAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -87,6 +88,7 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndp
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		Trader:      nil,
 		PaidAt:      q.PaidAt.ToTime(),
+		Note:        q.Note,
 	}
 	err = s.ReceiptAggr.Dispatch(ctx, cmd)
 	if err != nil {

@@ -41,7 +41,8 @@ type Receipt struct {
 	UpdatedAt       time.Time `sq:"update"`
 	DeletedAt       time.Time
 
-	Rid dot.ID
+	Note string
+	Rid  dot.ID
 }
 
 type ReceiptLine struct {

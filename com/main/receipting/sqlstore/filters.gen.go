@@ -485,6 +485,25 @@ func (ft *ReceiptFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterP
 	}
 }
 
+func (ft *ReceiptFilters) ByNote(Note string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "note",
+		Value:  Note,
+		IsNil:  Note == "",
+	}
+}
+
+func (ft *ReceiptFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "note",
+		Value:  Note,
+		IsNil:  Note == nil,
+		IsZero: Note != nil && (*Note) == "",
+	}
+}
+
 func (ft *ReceiptFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

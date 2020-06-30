@@ -120,6 +120,7 @@ func convert_receiptmodel_Receipt_receiptingmodel_Receipt(arg *receiptmodel.Rece
 	out.CreatedAt = arg.CreatedAt             // simple assign
 	out.UpdatedAt = arg.UpdatedAt             // simple assign
 	out.DeletedAt = time.Time{}               // zero value
+	out.Note = arg.Note                       // simple assign
 	out.Rid = arg.Rid                         // simple assign
 }
 
@@ -170,6 +171,7 @@ func convert_receiptingmodel_Receipt_receiptmodel_Receipt(arg *receiptingmodel.R
 	out.CancelledAt = arg.CancelledAt         // simple assign
 	out.CreatedAt = arg.CreatedAt             // simple assign
 	out.UpdatedAt = arg.UpdatedAt             // simple assign
+	out.Note = arg.Note                       // simple assign
 	out.Rid = arg.Rid                         // simple assign
 }
 

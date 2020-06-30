@@ -86,6 +86,7 @@ type CreateReceiptCommand struct {
 	CreatedBy   dot.ID
 	Mode        receipt_mode.ReceiptMode
 	ConfirmedAt time.Time
+	Note        string
 
 	Result *Receipt `json:"-"`
 }
@@ -120,6 +121,7 @@ type UpdateReceiptCommand struct {
 	Lines       []*ReceiptLine
 	Trader      *Trader
 	PaidAt      time.Time
+	Note        dot.NullString
 
 	Result *Receipt `json:"-"`
 }
@@ -303,6 +305,7 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			CreatedBy:   q.CreatedBy,
 			Mode:        q.Mode,
 			ConfirmedAt: q.ConfirmedAt,
+			Note:        q.Note,
 		}
 }
 
@@ -323,6 +326,7 @@ func (q *CreateReceiptCommand) SetCreateReceiptArgs(args *CreateReceiptArgs) {
 	q.CreatedBy = args.CreatedBy
 	q.Mode = args.Mode
 	q.ConfirmedAt = args.ConfirmedAt
+	q.Note = args.Note
 }
 
 func (q *DeleteReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
@@ -346,6 +350,7 @@ func (q *UpdateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Lines:       q.Lines,
 			Trader:      q.Trader,
 			PaidAt:      q.PaidAt,
+			Note:        q.Note,
 		}
 }
 
@@ -362,6 +367,7 @@ func (q *UpdateReceiptCommand) SetUpdateReceiptArgs(args *UpdateReceiptArgs) {
 	q.Lines = args.Lines
 	q.Trader = args.Trader
 	q.PaidAt = args.PaidAt
+	q.Note = args.Note
 }
 
 func (q *GetReceiptByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID dot.ID) {

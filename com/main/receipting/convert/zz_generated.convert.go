@@ -131,6 +131,7 @@ func convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 	out.Mode = 0                      // zero value
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.Note = arg.Note               // simple assign
 }
 
 func Convert_receiptingmodel_Receipts_receipting_Receipts(args []*receiptingmodel.Receipt) (outs []*receipting.Receipt) {
@@ -184,6 +185,7 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
 	out.DeletedAt = time.Time{}       // zero value
+	out.Note = arg.Note               // simple assign
 	out.Rid = 0                       // zero value
 }
 
@@ -234,6 +236,7 @@ func apply_receipting_CreateReceiptArgs_receipting_Receipt(arg *receipting.Creat
 	out.Mode = arg.Mode                     // simple assign
 	out.CreatedAt = time.Time{}             // zero value
 	out.UpdatedAt = time.Time{}             // zero value
+	out.Note = arg.Note                     // simple assign
 }
 
 func Apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.UpdateReceiptArgs, out *receipting.Receipt) *receipting.Receipt {
@@ -271,6 +274,7 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.Mode = out.Mode                                      // no change
 	out.CreatedAt = out.CreatedAt                            // no change
 	out.UpdatedAt = out.UpdatedAt                            // no change
+	out.Note = arg.Note.Apply(out.Note)                      // apply change
 }
 
 //-- convert o.o/api/main/receipting.ReceiptLine --//

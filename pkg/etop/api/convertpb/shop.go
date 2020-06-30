@@ -325,6 +325,7 @@ func PbReceipt(m *receipting.Receipt) *apishop.Receipt {
 		CancelledAt:  cmapi.PbTime(m.CancelledAt),
 		CreatedAt:    cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:    cmapi.PbTime(m.UpdatedAt),
+		Note:         m.Note,
 	}
 }
 

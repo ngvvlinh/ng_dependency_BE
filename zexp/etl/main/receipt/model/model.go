@@ -37,7 +37,8 @@ type Receipt struct {
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 
-	Rid dot.ID
+	Note string
+	Rid  dot.ID
 }
 
 type ReceiptLine struct {

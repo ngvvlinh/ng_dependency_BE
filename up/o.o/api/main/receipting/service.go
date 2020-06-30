@@ -85,6 +85,7 @@ type CreateReceiptArgs struct {
 	CreatedBy   dot.ID
 	Mode        receipt_mode.ReceiptMode
 	ConfirmedAt time.Time
+	Note        string
 }
 
 // +convert:update=Receipt(ID,ShopID)
@@ -101,6 +102,7 @@ type UpdateReceiptArgs struct {
 	Lines       []*ReceiptLine
 	Trader      *Trader
 	PaidAt      time.Time
+	Note        NullString
 }
 
 type CancelReceiptArgs struct {

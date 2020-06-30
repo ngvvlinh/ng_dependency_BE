@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Receipts []*Receipt
 
 const __sqlReceipt_Table = "receipt"
-const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"code\",\"title\",\"type\",\"description\",\"trader_type\",\"amount\",\"status\",\"ref_ids\",\"ref_type\",\"lines\",\"ledger_id\",\"trader\",\"cancelled_reason\",\"created_type\",\"created_by\",\"paid_at\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"rid\""
-const __sqlReceipt_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"trader_id\" = EXCLUDED.\"trader_id\",\"code\" = EXCLUDED.\"code\",\"title\" = EXCLUDED.\"title\",\"type\" = EXCLUDED.\"type\",\"description\" = EXCLUDED.\"description\",\"trader_type\" = EXCLUDED.\"trader_type\",\"amount\" = EXCLUDED.\"amount\",\"status\" = EXCLUDED.\"status\",\"ref_ids\" = EXCLUDED.\"ref_ids\",\"ref_type\" = EXCLUDED.\"ref_type\",\"lines\" = EXCLUDED.\"lines\",\"ledger_id\" = EXCLUDED.\"ledger_id\",\"trader\" = EXCLUDED.\"trader\",\"cancelled_reason\" = EXCLUDED.\"cancelled_reason\",\"created_type\" = EXCLUDED.\"created_type\",\"created_by\" = EXCLUDED.\"created_by\",\"paid_at\" = EXCLUDED.\"paid_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"code\",\"title\",\"type\",\"description\",\"trader_type\",\"amount\",\"status\",\"ref_ids\",\"ref_type\",\"lines\",\"ledger_id\",\"trader\",\"cancelled_reason\",\"created_type\",\"created_by\",\"paid_at\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"note\",\"rid\""
+const __sqlReceipt_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"trader_id\" = EXCLUDED.\"trader_id\",\"code\" = EXCLUDED.\"code\",\"title\" = EXCLUDED.\"title\",\"type\" = EXCLUDED.\"type\",\"description\" = EXCLUDED.\"description\",\"trader_type\" = EXCLUDED.\"trader_type\",\"amount\" = EXCLUDED.\"amount\",\"status\" = EXCLUDED.\"status\",\"ref_ids\" = EXCLUDED.\"ref_ids\",\"ref_type\" = EXCLUDED.\"ref_type\",\"lines\" = EXCLUDED.\"lines\",\"ledger_id\" = EXCLUDED.\"ledger_id\",\"trader\" = EXCLUDED.\"trader\",\"cancelled_reason\" = EXCLUDED.\"cancelled_reason\",\"created_type\" = EXCLUDED.\"created_type\",\"created_by\" = EXCLUDED.\"created_by\",\"paid_at\" = EXCLUDED.\"paid_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"cancelled_at\" = EXCLUDED.\"cancelled_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"note\" = EXCLUDED.\"note\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlReceipt_Insert = "INSERT INTO \"receipt\" (" + __sqlReceipt_ListCols + ") VALUES"
 const __sqlReceipt_Select = "SELECT " + __sqlReceipt_ListCols + " FROM \"receipt\""
 const __sqlReceipt_Select_history = "SELECT " + __sqlReceipt_ListCols + " FROM history.\"receipt\""
@@ -219,6 +219,13 @@ func (m *Receipt) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"note": {
+			ColumnName:       "note",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"rid": {
 			ColumnName:       "rid",
 			ColumnType:       "dot.ID",
@@ -261,6 +268,7 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.CancelledAt),
 		core.Time(m.CreatedAt),
 		core.Time(m.UpdatedAt),
+		core.String(m.Note),
 		m.Rid,
 	}
 }
@@ -290,6 +298,7 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CancelledAt),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
+		(*core.String)(&m.Note),
 		&m.Rid,
 	}
 }
@@ -328,7 +337,7 @@ func (_ *Receipts) SQLSelect(w SQLWriter) error {
 func (m *Receipt) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(24)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -338,7 +347,7 @@ func (ms Receipts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(24)
+		w.WriteMarkers(25)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -553,6 +562,14 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.UpdatedAt)
 	}
+	if m.Note != "" {
+		flag = true
+		w.WriteName("note")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Note)
+	}
 	if m.Rid != 0 {
 		flag = true
 		w.WriteName("rid")
@@ -571,7 +588,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 func (m *Receipt) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(24)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -618,18 +635,19 @@ func (m ReceiptHistory) ConfirmedAt() core.Interface { return core.Interface{m["
 func (m ReceiptHistory) CancelledAt() core.Interface { return core.Interface{m["cancelled_at"]} }
 func (m ReceiptHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
 func (m ReceiptHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ReceiptHistory) Note() core.Interface        { return core.Interface{m["note"]} }
 func (m ReceiptHistory) Rid() core.Interface         { return core.Interface{m["rid"]} }
 
 func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 24)
-	args := make([]interface{}, 24)
-	for i := 0; i < 24; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ReceiptHistory, 24)
+	res := make(ReceiptHistory, 25)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["trader_id"] = data[2]
@@ -653,15 +671,16 @@ func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["cancelled_at"] = data[20]
 	res["created_at"] = data[21]
 	res["updated_at"] = data[22]
-	res["rid"] = data[23]
+	res["note"] = data[23]
+	res["rid"] = data[24]
 	*m = res
 	return nil
 }
 
 func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 24)
-	args := make([]interface{}, 24)
-	for i := 0; i < 24; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ReceiptHistories, 0, 128)
@@ -693,7 +712,8 @@ func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["cancelled_at"] = data[20]
 		m["created_at"] = data[21]
 		m["updated_at"] = data[22]
-		m["rid"] = data[23]
+		m["note"] = data[23]
+		m["rid"] = data[24]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

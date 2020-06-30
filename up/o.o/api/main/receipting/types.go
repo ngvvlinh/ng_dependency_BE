@@ -37,6 +37,7 @@ type Receipt struct {
 	Mode         receipt_mode.ReceiptMode
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+	Note         string
 }
 
 type ReceiptLine struct {

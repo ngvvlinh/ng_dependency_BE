@@ -8200,6 +8200,9 @@
             "$ref": "#/definitions/paReceiptLine"
           }
         },
+        "note": {
+          "type": "string"
+        },
         "paid_at": {
           "type": "string",
           "format": "date-time"
@@ -10524,6 +10527,9 @@
         "mode": {
           "$ref": "#/definitions/umReceiptMode"
         },
+        "note": {
+          "type": "string"
+        },
         "paid_at": {
           "type": "string",
           "format": "date-time"
@@ -12206,6 +12212,9 @@
           "items": {
             "$ref": "#/definitions/paReceiptLine"
           }
+        },
+        "note": {
+          "type": "string"
         },
         "paid_at": {
           "type": "string",

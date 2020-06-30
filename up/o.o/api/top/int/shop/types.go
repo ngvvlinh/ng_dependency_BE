@@ -1903,6 +1903,7 @@ type Receipt struct {
 	User         *etop.User               `json:"user"`
 	Trader       *Trader                  `json:"trader"`
 	Ledger       *Ledger                  `json:"ledger"`
+	Note         string                   `json:"note"`
 
 	// deprecated: use mode
 	CreatedType receipt_mode.ReceiptMode `json:"created_type"`
@@ -1920,6 +1921,7 @@ type CreateReceiptRequest struct {
 	RefType     receipt_ref.ReceiptRef   `json:"ref_type"`
 	PaidAt      dot.Time                 `json:"paid_at"`
 	Lines       []*ReceiptLine           `json:"lines"`
+	Note        string                   `json:"note"`
 }
 
 func (m *CreateReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -1934,6 +1936,7 @@ type UpdateReceiptRequest struct {
 	RefType     receipt_ref.NullReceiptRef `json:"ref_type"`
 	PaidAt      dot.Time                   `json:"paid_at"`
 	Lines       []*ReceiptLine             `json:"lines"`
+	Note        dot.NullString             `json:"note"`
 }
 
 func (m *UpdateReceiptRequest) String() string { return jsonx.MustMarshalToString(m) }
