@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"o.o/api/main/catalog"
+	"o.o/api/main/catalog/types"
 	"o.o/api/meta"
 	"o.o/api/shopping"
 	com "o.o/backend/com/main"
@@ -194,6 +195,10 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 	if err != nil {
 		return nil, err
 	}
+	err = validateAttributes(variant.Attributes)
+	if err != nil {
+		return nil, err
+	}
 	if variant.Code != "" {
 		ss := strings.Split(variant.Code, "-")
 		if len(ss) == 2 {
@@ -232,12 +237,30 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 	return variant, nil
 }
 
+func validateAttributes(a []*types.Attribute) error {
+	if a == nil {
+		return nil
+	}
+	var temp []*types.Attribute
+	for _, v := range a {
+		if types.Attributes(temp).Contains(v.Name) {
+			return cm.Errorf(cm.InvalidArgument, nil, "Thuộc tính bị trùng '%v'", v.Name)
+		}
+		temp = append(temp, v)
+	}
+	return nil
+}
+
 func (a *Aggregate) UpdateShopVariantInfo(ctx context.Context, args *catalog.UpdateShopVariantInfoArgs) (*catalog.ShopVariant, error) {
 	variant, err := a.shopVariant(ctx).ShopID(args.ShopID).ID(args.VariantID).GetShopVariant()
 	if err != nil {
 		return nil, err
 	}
 	variant = convert.Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(args, variant)
+	err = validateAttributes(variant.Attributes)
+	if err != nil {
+		return nil, err
+	}
 	variantModel := &model.ShopVariant{}
 	if err := scheme.Convert(variant, variantModel); err != nil {
 		return nil, err

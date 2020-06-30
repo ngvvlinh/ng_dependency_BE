@@ -11,6 +11,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"golang.org/x/text/unicode/norm"
+
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/capi/dot"

@@ -7,6 +7,35 @@ type Attribute struct {
 	Value string `json:"value"`
 }
 
+func ValidateAttributesEmpty(a []*Attribute) []*Attribute {
+	if a == nil {
+		return nil
+	}
+	return Attributes(a).ValidateEmptyValue()
+}
+
+func (attrs Attributes) ValidateEmptyValue() Attributes {
+	if attrs == nil {
+		return nil
+	}
+	var tempAttributes Attributes
+	for _, v := range attrs {
+		if v.Value != "" {
+			tempAttributes = append(tempAttributes, v)
+		}
+	}
+	return tempAttributes
+}
+
+func (attrs Attributes) Contains(name string) bool {
+	for _, a := range attrs {
+		if a.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
 func (m *Attribute) String() string { return jsonx.MustMarshalToString(m) }
 
 type Attributes []*Attribute

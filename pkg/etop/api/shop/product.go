@@ -30,8 +30,8 @@ func (s *ProductService) UpdateVariant(ctx context.Context, q *UpdateVariantEndp
 	shopID := q.Context.Shop.ID
 	var attributes *types.Attributes = nil
 	if q.Attributes != nil {
-		attributesRequest := types.Attributes(q.Attributes)
-		attributes = &attributesRequest
+		attributesRequest := types.ValidateAttributesEmpty(q.Attributes)
+		attributes = (*types.Attributes)(&attributesRequest)
 	}
 	cmd := &catalog.UpdateShopVariantInfoCommand{
 		ShopID:    shopID,
@@ -353,13 +353,14 @@ func (s *ProductService) GetVariantsByIDs(ctx context.Context, q *GetVariantsByI
 
 func (s *ProductService) CreateVariant(ctx context.Context, q *CreateVariantEndpoint) error {
 	cmd := &catalog.CreateShopVariantCommand{
-		ShopID:     q.Context.Shop.ID,
-		ProductID:  q.ProductId,
-		Code:       q.Code,
-		Name:       q.Name,
-		ImageURLs:  q.ImageUrls,
-		Note:       q.Note,
-		Attributes: q.Attributes,
+		ShopID:    q.Context.Shop.ID,
+		ProductID: q.ProductId,
+		Code:      q.Code,
+		Name:      q.Name,
+		ImageURLs: q.ImageUrls,
+		Note:      q.Note,
+		Attributes: types.ValidateAttributesEmpty(
+			q.Attributes),
 		DescriptionInfo: catalog.DescriptionInfo{
 			ShortDesc:   q.ShortDesc,
 			Description: q.Description,
