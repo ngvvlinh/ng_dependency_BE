@@ -418,6 +418,10 @@ type User struct {
 	WLPartnerID             dot.ID
 
 	Rid int
+
+	BlockedAt   time.Time
+	BlockedBy   dot.ID
+	BlockReason string
 }
 
 type UserExtended struct {

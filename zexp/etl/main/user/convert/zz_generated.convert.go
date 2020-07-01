@@ -5,6 +5,8 @@
 package convert
 
 import (
+	time "time"
+
 	identitymodel "o.o/backend/com/main/identity/model"
 	conversion "o.o/backend/pkg/common/conversion"
 	usermodel "o.o/backend/zexp/etl/main/user/model"
@@ -93,6 +95,9 @@ func convert_usermodel_User_identitymodel_User(arg *usermodel.User, out *identit
 	out.RefSaleID = 0                                         // zero value
 	out.WLPartnerID = 0                                       // zero value
 	out.Rid = int(arg.Rid)                                    // simple conversion
+	out.BlockedAt = time.Time{}                               // zero value
+	out.BlockedBy = 0                                         // zero value
+	out.BlockReason = ""                                      // zero value
 }
 
 func Convert_usermodel_Users_identitymodel_Users(args []*usermodel.User) (outs []*identitymodel.User) {

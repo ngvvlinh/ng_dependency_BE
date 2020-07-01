@@ -1008,6 +1008,9 @@ func convert_identitymodel_User_identity_User(arg *identitymodel.User, out *iden
 	out.RefSaleID = arg.RefSaleID                             // simple assign
 	out.WLPartnerID = arg.WLPartnerID                         // simple assign
 	out.Source = arg.Source                                   // simple assign
+	out.BlockedAt = arg.BlockedAt                             // simple assign
+	out.BlockedBy = arg.BlockedBy                             // simple assign
+	out.BlockReason = arg.BlockReason                         // simple assign
 }
 
 func Convert_identitymodel_Users_identity_Users(args []*identitymodel.User) (outs []*identity.User) {
@@ -1052,6 +1055,9 @@ func convert_identity_User_identitymodel_User(arg *identity.User, out *identitym
 	out.RefSaleID = arg.RefSaleID                             // simple assign
 	out.WLPartnerID = arg.WLPartnerID                         // simple assign
 	out.Rid = 0                                               // zero value
+	out.BlockedAt = arg.BlockedAt                             // simple assign
+	out.BlockedBy = arg.BlockedBy                             // simple assign
+	out.BlockReason = arg.BlockReason                         // simple assign
 }
 
 func Convert_identity_Users_identitymodel_Users(args []*identity.User) (outs []*identitymodel.User) {

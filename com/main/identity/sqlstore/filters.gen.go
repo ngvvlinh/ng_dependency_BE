@@ -2693,6 +2693,63 @@ func (ft *UserFilters) ByRidPtr(Rid *int) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *UserFilters) ByBlockedAt(BlockedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "blocked_at",
+		Value:  BlockedAt,
+		IsNil:  BlockedAt.IsZero(),
+	}
+}
+
+func (ft *UserFilters) ByBlockedAtPtr(BlockedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "blocked_at",
+		Value:  BlockedAt,
+		IsNil:  BlockedAt == nil,
+		IsZero: BlockedAt != nil && (*BlockedAt).IsZero(),
+	}
+}
+
+func (ft *UserFilters) ByBlockedBy(BlockedBy dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "blocked_by",
+		Value:  BlockedBy,
+		IsNil:  BlockedBy == 0,
+	}
+}
+
+func (ft *UserFilters) ByBlockedByPtr(BlockedBy *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "blocked_by",
+		Value:  BlockedBy,
+		IsNil:  BlockedBy == nil,
+		IsZero: BlockedBy != nil && (*BlockedBy) == 0,
+	}
+}
+
+func (ft *UserFilters) ByBlockReason(BlockReason string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "block_reason",
+		Value:  BlockReason,
+		IsNil:  BlockReason == "",
+	}
+}
+
+func (ft *UserFilters) ByBlockReasonPtr(BlockReason *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "block_reason",
+		Value:  BlockReason,
+		IsNil:  BlockReason == nil,
+		IsZero: BlockReason != nil && (*BlockReason) == "",
+	}
+}
+
 type UserAuthFilters struct{ prefix string }
 
 func NewUserAuthFilters(prefix string) UserAuthFilters {

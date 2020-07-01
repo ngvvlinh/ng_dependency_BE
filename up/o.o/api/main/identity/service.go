@@ -40,6 +40,11 @@ type Aggregate interface {
 	UpdateAffiliateBankAccount(context.Context, *UpdateAffiliateBankAccountArgs) (*Affiliate, error)
 
 	DeleteAffiliate(context.Context, *DeleteAffiliateArgs) error
+
+	// -- Block, Unblock User -- //
+	BlockUser(context.Context, *BlockUserArgs) (*User, error)
+
+	UnblockUser(ctx context.Context, userID dot.ID) (*User, error)
 }
 
 type QueryService interface {
@@ -86,6 +91,12 @@ type QueryService interface {
 	GetAllAccountsByUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
 
 	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
+}
+
+type BlockUserArgs struct {
+	UserID      dot.ID
+	BlockBy     dot.ID
+	BlockReason string
 }
 
 //-- queries --//

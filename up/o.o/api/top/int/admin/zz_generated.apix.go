@@ -1983,6 +1983,19 @@ func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/admin.User/BlockUser":
+		msg := &BlockUserRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.BlockUser(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.User/GetUser":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -2019,6 +2032,19 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.GetUsersByIDs(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.User/UnblockUser":
+		msg := &UnblockUserRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UnblockUser(ctx, msg)
 			return
 		}
 		return msg, fn, nil

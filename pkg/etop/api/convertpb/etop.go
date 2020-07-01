@@ -13,6 +13,7 @@ import (
 	etop "o.o/api/top/int/etop"
 	"o.o/api/top/types/etc/account_type"
 	addresstype "o.o/api/top/types/etc/address_type"
+	"o.o/api/top/types/etc/status3"
 	notimodel "o.o/backend/com/eventhandler/notifier/model"
 	addressmodel "o.o/backend/com/main/address/model"
 	creditmodel "o.o/backend/com/main/credit/model"
@@ -400,6 +401,10 @@ func Convert_core_User_To_api_User(in *identity.User) *etop.User {
 	if in == nil {
 		return nil
 	}
+	isBlocked := false
+	if in.Status == status3.N {
+		isBlocked = true
+	}
 	return &etop.User{
 		Id:              in.ID,
 		FullName:        in.FullName,
@@ -411,6 +416,7 @@ func Convert_core_User_To_api_User(in *identity.User) *etop.User {
 		EmailVerifiedAt: cmapi.PbTime(in.EmailVerifiedAt),
 		PhoneVerifiedAt: cmapi.PbTime(in.PhoneVerifiedAt),
 		Source:          in.Source,
+		IsBlocked:       isBlocked,
 	}
 }
 

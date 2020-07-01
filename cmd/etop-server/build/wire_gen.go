@@ -639,6 +639,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	adminUserService := admin.UserService{
 		Session:       session,
 		IdentityQuery: identityQueryBus,
+		IdentityAggr:  commandBus,
 	}
 	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService)
 	sadminMiscService := &sadmin.MiscService{

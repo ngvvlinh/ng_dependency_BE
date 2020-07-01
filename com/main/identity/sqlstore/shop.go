@@ -68,6 +68,11 @@ func (s *ShopStore) ByIDs(ids ...dot.ID) *ShopStore {
 	return s
 }
 
+func (s *ShopStore) ByOwnerID(id dot.ID) *ShopStore {
+	s.preds = append(s.preds, s.shopFt.ByOwnerID(id))
+	return s
+}
+
 func (s *ShopStore) GetShopDB() (*identitymodel.Shop, error) {
 	var shop identitymodel.Shop
 	query := s.query().Where(s.preds)
@@ -151,6 +156,29 @@ func (s *ShopStore) ListShopExtendeds() ([]*identity.ShopExtended, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+func (s *ShopStore) UpdateShop(args *identity.Shop) error {
+	var result = &identitymodel.Shop{}
+	err := scheme.Convert(args, result)
+	if err != nil {
+		return err
+	}
+	err = s.UpdateShopDB(result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *ShopStore) UpdateShopDB(args *identitymodel.Shop) error {
+	query := s.query().Where(s.preds)
+	return query.ShouldUpdate(args)
+}
+
+func (s *ShopStore) NotDeleted() *ShopStore {
+	s.preds = append(s.preds, sq.NewExpr("deleted_at is null"))
+	return s
 }
 
 // Only use this function when get model.ShopExtended

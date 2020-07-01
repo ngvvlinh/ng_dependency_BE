@@ -103,6 +103,10 @@ type User struct {
 	RefSaleID   dot.ID
 	WLPartnerID dot.ID
 	Source      user_source.UserSource
+
+	BlockedAt   time.Time
+	BlockedBy   dot.ID
+	BlockReason string
 }
 
 type ExternalAccountAhamove struct {

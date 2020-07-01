@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
@@ -96,6 +97,46 @@ func (s *UserStore) UpdateUserPhone(phone string) (int, error) {
 		map[string]interface{}{
 			"phone":             phone,
 			"phone_verified_at": time.Now(),
+		})
+}
+
+func (s *UserStore) UpdateUser(args *identity.User) error {
+	var result = &identitymodel.User{}
+	err := scheme.Convert(args, result)
+	if err != nil {
+		return err
+	}
+	err = s.UpdateUserDB(result)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserStore) UpdateUserDB(args *identitymodel.User) error {
+	query := s.query().Where(s.preds)
+	return query.ShouldUpdate(args)
+}
+
+func (s *UserStore) UpdateUserStatus(userID dot.ID, blockedBy dot.ID, status status3.Status, blockReason string) (int, error) {
+	var updateMap = map[string]interface{}{
+		"status": status,
+	}
+	// update blocked_at and blocked_by if block user
+	if status == status3.N {
+		updateMap["blocked_at"] = time.Now()
+		updateMap["blocked_by"] = blockedBy
+		updateMap["blocked_reason"] = blockReason
+	}
+	return s.query().Where("user_id = ?", userID).Table("user").UpdateMap(updateMap)
+
+}
+
+func (s *UserStore) UnblockUser() (int, error) {
+	return s.query().Where(s.preds).Table("user").UpdateMap(
+		map[string]interface{}{
+			"status":     1,
+			"blocked_at": nil,
 		})
 }
 

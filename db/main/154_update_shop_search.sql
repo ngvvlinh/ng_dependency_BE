@@ -5,4 +5,4 @@ create table  shop_search(
 	"id" int8,
 	"name_norm" tsvector,
 	"name" text
-)
+);

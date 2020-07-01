@@ -28,6 +28,19 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 	return b.bus.Dispatch(ctx, msg)
 }
 
+type BlockUserCommand struct {
+	UserID      dot.ID
+	BlockBy     dot.ID
+	BlockReason string
+
+	Result *User `json:"-"`
+}
+
+func (h AggregateHandler) HandleBlockUser(ctx context.Context, msg *BlockUserCommand) (err error) {
+	msg.Result, err = h.inner.BlockUser(msg.GetArgs(ctx))
+	return err
+}
+
 type CreateAffiliateCommand struct {
 	Name        string
 	OwnerID     dot.ID
@@ -79,6 +92,17 @@ type RequestVerifyExternalAccountAhamoveCommand struct {
 
 func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.Context, msg *RequestVerifyExternalAccountAhamoveCommand) (err error) {
 	msg.Result, err = h.inner.RequestVerifyExternalAccountAhamove(msg.GetArgs(ctx))
+	return err
+}
+
+type UnblockUserCommand struct {
+	UserID dot.ID
+
+	Result *User `json:"-"`
+}
+
+func (h AggregateHandler) HandleUnblockUser(ctx context.Context, msg *UnblockUserCommand) (err error) {
+	msg.Result, err = h.inner.UnblockUser(msg.GetArgs(ctx))
 	return err
 }
 
@@ -419,10 +443,12 @@ func (h QueryServiceHandler) HandleListUsersByWLPartnerID(ctx context.Context, m
 
 // implement interfaces
 
+func (q *BlockUserCommand) command()                                {}
 func (q *CreateAffiliateCommand) command()                          {}
 func (q *CreateExternalAccountAhamoveCommand) command()             {}
 func (q *DeleteAffiliateCommand) command()                          {}
 func (q *RequestVerifyExternalAccountAhamoveCommand) command()      {}
+func (q *UnblockUserCommand) command()                              {}
 func (q *UpdateAffiliateBankAccountCommand) command()               {}
 func (q *UpdateAffiliateInfoCommand) command()                      {}
 func (q *UpdateExternalAccountAhamoveVerificationCommand) command() {}
@@ -454,6 +480,21 @@ func (q *ListShopsByIDsQuery) query()                        {}
 func (q *ListUsersByWLPartnerIDQuery) query()                {}
 
 // implement conversion
+
+func (q *BlockUserCommand) GetArgs(ctx context.Context) (_ context.Context, _ *BlockUserArgs) {
+	return ctx,
+		&BlockUserArgs{
+			UserID:      q.UserID,
+			BlockBy:     q.BlockBy,
+			BlockReason: q.BlockReason,
+		}
+}
+
+func (q *BlockUserCommand) SetBlockUserArgs(args *BlockUserArgs) {
+	q.UserID = args.UserID
+	q.BlockBy = args.BlockBy
+	q.BlockReason = args.BlockReason
+}
 
 func (q *CreateAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateAffiliateArgs) {
 	return ctx,
@@ -517,6 +558,11 @@ func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs(ctx context.Context
 func (q *RequestVerifyExternalAccountAhamoveCommand) SetRequestVerifyExternalAccountAhamoveArgs(args *RequestVerifyExternalAccountAhamoveArgs) {
 	q.OwnerID = args.OwnerID
 	q.Phone = args.Phone
+}
+
+func (q *UnblockUserCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
+	return ctx,
+		q.UserID
 }
 
 func (q *UpdateAffiliateBankAccountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAffiliateBankAccountArgs) {
@@ -831,10 +877,12 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
+	b.AddHandler(h.HandleBlockUser)
 	b.AddHandler(h.HandleCreateAffiliate)
 	b.AddHandler(h.HandleCreateExternalAccountAhamove)
 	b.AddHandler(h.HandleDeleteAffiliate)
 	b.AddHandler(h.HandleRequestVerifyExternalAccountAhamove)
+	b.AddHandler(h.HandleUnblockUser)
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
 	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerification)

@@ -405,6 +405,9 @@
           "type": "string",
           "format": "int64"
         },
+        "is_blocked": {
+          "type": "boolean"
+        },
         "phone": {
           "type": "string"
         },

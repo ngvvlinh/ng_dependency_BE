@@ -7,7 +7,10 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/shipnow/carrier"
 	carriertypes "o.o/api/main/shipnow/carrier/types"
+	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
+	"o.o/backend/com/main/identity/convert"
+	identitymodel "o.o/backend/com/main/identity/model"
 	"o.o/backend/com/main/identity/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -379,4 +382,62 @@ func (a *Aggregate) DeleteAffiliate(ctx context.Context, args *identity.DeleteAf
 		}
 		return a.accountUserStore(ctx).DeleteAccountUser(args2)
 	})
+}
+
+func (a *Aggregate) BlockUser(ctx context.Context, args *identity.BlockUserArgs) (*identity.User, error) {
+	user, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if user.Status == status3.N {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể khóa tài khoản đã bị khóa")
+	}
+	userUpdate := &identitymodel.User{
+		BlockReason: args.BlockReason,
+		Status:      status3.N,
+		BlockedAt:   time.Now(),
+		BlockedBy:   args.BlockBy,
+	}
+	err = a.userStore(ctx).ByID(user.ID).UpdateUserDB(userUpdate)
+	if err != nil {
+		return nil, err
+	}
+	user, err = a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	shopUpdate := &identitymodel.Shop{
+		Status: status3.N,
+	}
+	err = a.shopStore(ctx).ByOwnerID(args.UserID).NotDeleted().UpdateShopDB(shopUpdate)
+	if err != nil {
+		return nil, err
+	}
+	return convert.User(user), nil
+}
+
+func (a *Aggregate) UnblockUser(ctx context.Context, userID dot.ID) (*identity.User, error) {
+	user, err := a.userStore(ctx).ByID(userID).GetUserDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if user.Status != status3.N {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Tài khoản chưa bị khóa vui lòng kiểm tra lại")
+	}
+	_, err = a.userStore(ctx).ByID(userID).UnblockUser()
+	if err != nil {
+		return nil, err
+	}
+	user, err = a.userStore(ctx).ByID(userID).GetUserDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	shopUpdate := &identitymodel.Shop{
+		Status: status3.P,
+	}
+	err = a.shopStore(ctx).ByOwnerID(userID).NotDeleted().UpdateShopDB(shopUpdate)
+	if err != nil {
+		return nil, err
+	}
+	return convert.User(user), nil
 }

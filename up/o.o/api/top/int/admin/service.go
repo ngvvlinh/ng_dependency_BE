@@ -86,6 +86,9 @@ type UserService interface {
 	GetUser(context.Context, *cm.IDRequest) (*etop.User, error)
 	GetUsersByIDs(context.Context, *cm.IDsRequest) (*UserResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*UserResponse, error)
+
+	BlockUser(context.Context, *BlockUserRequest) (*etop.User, error)
+	UnblockUser(context.Context, *UnblockUserRequest) (*etop.User, error)
 }
 
 // +apix:path=/admin.Credit

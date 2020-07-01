@@ -180,6 +180,19 @@ type CreatePartnerRequest struct {
 
 func (m *CreatePartnerRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type BlockUserRequest struct {
+	UserID      dot.ID `json:"user_id"`
+	BlockReason string `json:"block_reason"`
+}
+
+func (m *BlockUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UnblockUserRequest struct {
+	UserID dot.ID `json:"user_id"`
+}
+
+func (m *UnblockUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type UpdateFulfillmentRequest struct {
 	Id                       dot.ID             `json:"id"`
 	FullName                 string             `json:"full_name"`

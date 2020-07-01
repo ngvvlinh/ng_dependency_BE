@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/account_type"
+	"o.o/api/top/types/etc/status3"
 	identityconvert "o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
@@ -227,6 +228,9 @@ func StartSessionUser(ctx context.Context, require bool, claim *claims.Claim, us
 			ll.Error("Invalid UserID", l.Error(err))
 			return false
 		}
+		if query.Result.Status == status3.N {
+			return false
+		}
 		*user = query.Result
 	}
 	return true
@@ -295,6 +299,9 @@ func StartSessionShop(ctx context.Context, require bool, claim *claims.Claim, ac
 			}
 			if err := bus.Dispatch(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
+				return false
+			}
+			if query.Result.Shop.Status == status3.N {
 				return false
 			}
 

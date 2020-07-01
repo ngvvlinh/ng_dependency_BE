@@ -2608,6 +2608,33 @@
         }
       }
     },
+    "/api/admin.User/BlockUser": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "BlockUser",
+        "operationId": "admin.User-BlockUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuBlockUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baUser"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.User/GetUser": {
       "post": {
         "tags": [
@@ -2684,6 +2711,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/xuUserResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.User/UnblockUser": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "UnblockUser",
+        "operationId": "admin.User-UnblockUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUnblockUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baUser"
             }
           }
         }
@@ -3294,6 +3348,9 @@
         "id": {
           "type": "string",
           "format": "int64"
+        },
+        "is_blocked": {
+          "type": "boolean"
         },
         "phone": {
           "type": "string"
@@ -6462,6 +6519,18 @@
         }
       }
     },
+    "xuBlockUserRequest": {
+      "type": "object",
+      "properties": {
+        "block_reason": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "xuConfirmCreditRequest": {
       "type": "object",
       "properties": {
@@ -7452,6 +7521,15 @@
           "format": "date-time"
         },
         "updated_by": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuUnblockUserRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
           "type": "string",
           "format": "int64"
         }

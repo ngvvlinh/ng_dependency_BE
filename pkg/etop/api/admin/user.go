@@ -18,11 +18,37 @@ type UserService struct {
 	session.Session
 
 	IdentityQuery identity.QueryBus
+	IdentityAggr  identity.CommandBus
 }
 
 func (s *UserService) Clone() admin.UserService {
 	res := *s
 	return &res
+}
+
+func (s *UserService) BlockUser(ctx context.Context, q *admin.BlockUserRequest) (*etop.User, error) {
+	blockBy := s.SS.User().ID
+	cmd := &identity.BlockUserCommand{
+		UserID:      q.UserID,
+		BlockBy:     blockBy,
+		BlockReason: q.BlockReason,
+	}
+	err := s.IdentityAggr.Dispatch(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+	return convertpb.Convert_core_User_To_api_User(cmd.Result), nil
+}
+
+func (s *UserService) UnblockUser(ctx context.Context, q *admin.UnblockUserRequest) (*etop.User, error) {
+	cmd := &identity.UnblockUserCommand{
+		UserID: q.UserID,
+	}
+	err := s.IdentityAggr.Dispatch(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+	return convertpb.Convert_core_User_To_api_User(cmd.Result), nil
 }
 
 func (s *UserService) GetUsers(ctx context.Context, q *admin.GetUsersRequest) (*admin.UserResponse, error) {
