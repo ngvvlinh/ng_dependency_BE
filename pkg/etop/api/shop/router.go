@@ -10,9 +10,6 @@ import (
 var ll = l.New()
 var idempgroup *idemp.RedisGroup
 
-// +gen:wrapper=o.o/api/top/int/shop
-// +gen:wrapper:package=shop
-
 type Servers []httprpc.Server
 
 // workaround for imcsv

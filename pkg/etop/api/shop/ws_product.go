@@ -6,13 +6,14 @@ import (
 	"o.o/api/main/catalog"
 	"o.o/api/main/inventory"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	"o.o/api/webserver"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/capi/dot"
 )
 
-func (s *WebServerService) CreateOrUpdateWsProduct(ctx context.Context, r *CreateOrUpdateWsProductEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) CreateOrUpdateWsProduct(ctx context.Context, r *api.CreateOrUpdateWsProductRequest) (*api.WsProduct, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &webserver.CreateOrUpdateWsProductCommand{
 		ID:           r.ProductID,
 		ShopID:       shopID,
@@ -24,33 +25,33 @@ func (s *WebServerService) CreateOrUpdateWsProduct(ctx context.Context, r *Creat
 	}
 	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = PbWsProduct(cmd.Result)
-	return nil
+	result := PbWsProduct(cmd.Result)
+	return result, nil
 }
 
-func (s *WebServerService) GetWsProduct(ctx context.Context, r *GetWsProductEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsProduct(ctx context.Context, r *api.GetWsProductRequest) (*api.WsProduct, error) {
+	shopID := s.SS.Shop().ID
 	query := &webserver.GetWsProductByIDQuery{
 		ID:     r.ID,
 		ShopID: shopID,
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	result, err := getProductQuantity(ctx, s.InventoryQuery, shopID, query.Result.Product)
+	resp, err := getProductQuantity(ctx, s.InventoryQuery, shopID, query.Result.Product)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = PbWsProduct(query.Result)
-	r.Result.Product = result
-	return nil
+	result := PbWsProduct(query.Result)
+	result.Product = resp
+	return result, nil
 }
 
-func (s *WebServerService) GetWsProducts(ctx context.Context, r *GetWsProductsEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsProducts(ctx context.Context, r *api.GetWsProductsRequest) (*api.GetWsProductsResponse, error) {
+	shopID := s.SS.Shop().ID
 	paging := cmapi.CMPaging(r.Paging)
 	query := &webserver.ListWsProductsQuery{
 		ShopID:  shopID,
@@ -59,21 +60,21 @@ func (s *WebServerService) GetWsProducts(ctx context.Context, r *GetWsProductsEn
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	mapProductWithQuantity, err := mapListProductsWithQuantity(ctx, s.InventoryQuery, query.Result.WsProducts)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	resultWsProducts := PbWsProducts(query.Result.WsProducts)
 	for k, v := range resultWsProducts {
 		resultWsProducts[k].Product = mapProductWithQuantity[v.ID]
 	}
-	r.Result = &shop.GetWsProductsResponse{
+	result := &api.GetWsProductsResponse{
 		WsProducts: resultWsProducts,
 		Paging:     cmapi.PbPaging(query.Paging),
 	}
-	return nil
+	return result, nil
 }
 
 func mapListProductsWithQuantity(ctx context.Context, inventoryQuery inventory.QueryBus, args []*webserver.WsProduct) (map[dot.ID]*shop.ShopProduct, error) {
@@ -95,18 +96,18 @@ func mapListProductsWithQuantity(ctx context.Context, inventoryQuery inventory.Q
 	return mapProduct, nil
 }
 
-func (s *WebServerService) GetWsProductsByIDs(ctx context.Context, r *GetWsProductsByIDsEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsProductsByIDs(ctx context.Context, r *api.GetWsProductsByIDsRequest) (*api.GetWsProductsByIDsResponse, error) {
+	shopID := s.SS.Shop().ID
 	query := &webserver.ListWsProductsByIDsQuery{
 		ShopID: shopID,
 		IDs:    r.IDs,
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.GetWsProductsByIDsResponse{
+	result := &api.GetWsProductsByIDsResponse{
 		WsProducts: PbWsProducts(query.Result),
 	}
-	return nil
+	return result, nil
 }

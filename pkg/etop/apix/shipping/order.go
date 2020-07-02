@@ -78,7 +78,7 @@ func (s *Shipping) CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim,
 		GhnNoteCode:     0, // will be over-written by try_on
 	}
 
-	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
+	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim.Shop, partner, req, nil, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -217,7 +217,7 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, acc
 	if err := validateAddress(req.Shipping.PickupAddress); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
-	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
+	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim.Shop, partner, req, nil, 0)
 	if err != nil {
 		return nil, err
 	}

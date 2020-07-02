@@ -8,6 +8,8 @@ import (
 	"o.o/api/main/refund"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/receipt_ref"
 	"o.o/api/top/types/etc/status3"
 	ordermodel "o.o/backend/com/main/ordering/model"
@@ -17,10 +19,13 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
 
 type RefundService struct {
+	session.Session
+
 	CustomerQuery  customering.QueryBus
 	InventoryQuery inventory.QueryBus
 	ReceiptQuery   receipting.QueryBus
@@ -28,11 +33,11 @@ type RefundService struct {
 	RefundQuery    refund.QueryBus
 }
 
-func (s *RefundService) Clone() *RefundService { res := *s; return &res }
+func (s *RefundService) Clone() api.RefundService { res := *s; return &res }
 
-func (s *RefundService) CreateRefund(ctx context.Context, q *CreateRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
+func (s *RefundService) CreateRefund(ctx context.Context, q *api.CreateRefundRequest) (*api.Refund, error) {
+	shopID := s.SS.Shop().ID
+	userID := s.SS.Claim().UserID
 	var lines []*refund.RefundLine
 	for _, v := range q.Lines {
 		lines = append(lines, &refund.RefundLine{
@@ -55,20 +60,19 @@ func (s *RefundService) CreateRefund(ctx context.Context, q *CreateRefundEndpoin
 	}
 	err := s.RefundAggr.Dispatch(ctx, &cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result := PbRefund(cmd.Result)
 	result, err = s.populateRefund(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *RefundService) UpdateRefund(ctx context.Context, q *UpdateRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
+func (s *RefundService) UpdateRefund(ctx context.Context, q *api.UpdateRefundRequest) (*api.Refund, error) {
+	shopID := s.SS.Shop().ID
+	userID := s.SS.Claim().UserID
 	var lines []*refund.RefundLine
 	for _, v := range q.Lines {
 		lines = append(lines, &refund.RefundLine{
@@ -89,21 +93,20 @@ func (s *RefundService) UpdateRefund(ctx context.Context, q *UpdateRefundEndpoin
 		TotalAdjustment: q.TotalAjustment,
 	}
 	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
 	result := PbRefund(cmd.Result)
 	result, err := s.populateRefund(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *RefundService) ConfirmRefund(ctx context.Context, q *ConfirmRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
-	roles := auth.Roles(q.Context.Roles)
+func (s *RefundService) ConfirmRefund(ctx context.Context, q *api.ConfirmRefundRequest) (*api.Refund, error) {
+	shopID := s.SS.Shop().ID
+	userID := s.SS.Claim().UserID
+	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := refund.ConfirmRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
@@ -111,21 +114,20 @@ func (s *RefundService) ConfirmRefund(ctx context.Context, q *ConfirmRefundEndpo
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 	}
 	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
 	result := PbRefund(cmd.Result)
 	result, err := s.populateRefund(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *RefundService) CancelRefund(ctx context.Context, q *CancelRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
-	roles := auth.Roles(q.Context.Roles)
+func (s *RefundService) CancelRefund(ctx context.Context, q *api.CancelRefundRequest) (*api.Refund, error) {
+	shopID := s.SS.Shop().ID
+	userID := s.SS.Claim().UserID
+	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := refund.CancelRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
@@ -134,66 +136,63 @@ func (s *RefundService) CancelRefund(ctx context.Context, q *CancelRefundEndpoin
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 	}
 	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
 	result := PbRefund(cmd.Result)
 	result, err := s.populateRefund(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *RefundService) GetRefund(ctx context.Context, q *GetRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *RefundService) GetRefund(ctx context.Context, q *pbcm.IDRequest) (*api.Refund, error) {
+	shopID := s.SS.Shop().ID
 	query := &refund.GetRefundByIDQuery{
 		ShopID: shopID,
 		ID:     q.Id,
 	}
 	if err := s.RefundQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	queryOrder := &ordermodelx.GetOrderQuery{
 		OrderID:            query.Result.OrderID,
 		IncludeFulfillment: false,
 	}
 	if err := bus.Dispatch(ctx, queryOrder); err != nil {
-		return err
+		return nil, err
 	}
 	result := PbRefund(query.Result)
 	result, err := s.populateRefund(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result.Customer = convertpb.PbOrderCustomer(queryOrder.Result.Order.Customer)
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *RefundService) GetRefundsByIDs(ctx context.Context, q *GetRefundsByIDsEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *RefundService) GetRefundsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*api.GetRefundsByIDsResponse, error) {
+	shopID := s.SS.Shop().ID
 	query := &refund.GetRefundsByIDsQuery{
 		ShopID: shopID,
 		IDs:    q.Ids,
 	}
 	if err := s.RefundQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	result := PbRefunds(query.Result)
-	var err error
-	result, err = s.populateRefunds(ctx, result)
+	resp := PbRefunds(query.Result)
+	resp, err := s.populateRefunds(ctx, resp)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.GetRefundsByIDsResponse{
-		Refund: result,
+	result := &api.GetRefundsByIDsResponse{
+		Refund: resp,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *RefundService) GetRefunds(ctx context.Context, q *GetRefundsEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *RefundService) GetRefunds(ctx context.Context, q *api.GetRefundsRequest) (*api.GetRefundsResponse, error) {
+	shopID := s.SS.Shop().ID
 	paging := cmapi.CMPaging(q.Paging)
 	query := &refund.GetRefundsQuery{
 		ShopID:  shopID,
@@ -201,19 +200,18 @@ func (s *RefundService) GetRefunds(ctx context.Context, q *GetRefundsEndpoint) e
 		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := s.RefundQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	result := PbRefunds(query.Result.Refunds)
-	var err error
-	result, err = s.populateRefunds(ctx, result)
+	resp := PbRefunds(query.Result.Refunds)
+	resp, err := s.populateRefunds(ctx, resp)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.GetRefundsResponse{
-		Refunds: result,
+	result := &api.GetRefundsResponse{
+		Refunds: resp,
 		Paging:  cmapi.PbPageInfo(paging),
 	}
-	return nil
+	return result, nil
 }
 
 // Get total paid amount of refund from receipt which have status = P

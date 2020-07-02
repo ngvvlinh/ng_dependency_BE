@@ -3,13 +3,13 @@ package shop
 import (
 	"context"
 
-	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	"o.o/api/webserver"
 	"o.o/backend/pkg/common/apifw/cmapi"
 )
 
-func (s *WebServerService) CreateWsPage(ctx context.Context, r *CreateWsPageEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) CreateWsPage(ctx context.Context, r *api.CreateWsPageRequest)(*api.WsPage, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &webserver.CreateWsPageCommand{
 		ShopID:    shopID,
 		SEOConfig: ConvertSEOConfig(r.SEOConfig),
@@ -21,14 +21,14 @@ func (s *WebServerService) CreateWsPage(ctx context.Context, r *CreateWsPageEndp
 	}
 	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = PbWsPage(cmd.Result)
-	return nil
+	result := PbWsPage(cmd.Result)
+	return result, nil
 }
 
-func (s *WebServerService) UpdateWsPage(ctx context.Context, r *UpdateWsPageEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) UpdateWsPage(ctx context.Context, r *api.UpdateWsPageRequest)(*api.WsPage, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &webserver.UpdateWsPageCommand{
 		ShopID:    shopID,
 		ID:        r.ID,
@@ -41,44 +41,44 @@ func (s *WebServerService) UpdateWsPage(ctx context.Context, r *UpdateWsPageEndp
 	}
 	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = PbWsPage(cmd.Result)
-	return nil
+	result := PbWsPage(cmd.Result)
+	return result, nil
 }
 
-func (s *WebServerService) DeleteWsPage(ctx context.Context, r *DeleteWsPageEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) DeleteWsPage(ctx context.Context, r *api.DeteleWsPageRequest)(*api.DeteleWsPageResponse, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &webserver.DeleteWsPageCommand{
 		ID:     r.ID,
 		ShopID: shopID,
 	}
 	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.DeteleWsPageResponse{
+	result := &api.DeteleWsPageResponse{
 		Count: cmd.Result,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *WebServerService) GetWsPage(ctx context.Context, r *GetWsPageEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsPage(ctx context.Context, r *api.GetWsPageRequest)(*api.WsPage, error) {
+	shopID := s.SS.Shop().ID
 	query := &webserver.GetWsPageByIDQuery{
 		ID:     r.ID,
 		ShopID: shopID,
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = PbWsPage(query.Result)
-	return nil
+	result := PbWsPage(query.Result)
+	return result, nil
 }
 
-func (s *WebServerService) GetWsPages(ctx context.Context, r *GetWsPagesEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsPages(ctx context.Context, r *api.GetWsPagesRequest)(*api.GetWsPagesResponse, error) {
+	shopID := s.SS.Shop().ID
 	paging := cmapi.CMPaging(r.Paging)
 	query := &webserver.ListWsPagesQuery{
 		ShopID:  shopID,
@@ -87,27 +87,27 @@ func (s *WebServerService) GetWsPages(ctx context.Context, r *GetWsPagesEndpoint
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.GetWsPagesResponse{
+	result := &api.GetWsPagesResponse{
 		WsPages: PbWsPages(query.Result.WsPages),
 		Paging:  cmapi.PbPaging(query.Paging),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *WebServerService) GetWsPagesByIDs(ctx context.Context, r *GetWsPagesByIDsEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsPagesByIDs(ctx context.Context, r *api.GetWsPagesByIDsRequest)(*api.GetWsPagesByIDsResponse, error) {
+	shopID := s.SS.Shop().ID
 	query := &webserver.ListWsPagesByIDsQuery{
 		ShopID: shopID,
 		IDs:    r.IDs,
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.GetWsPagesByIDsResponse{
+	result := &api.GetWsPagesByIDsResponse{
 		WsPages: PbWsPages(query.Result),
 	}
-	return nil
+	return result, nil
 }

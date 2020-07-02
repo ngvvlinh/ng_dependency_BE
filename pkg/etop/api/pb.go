@@ -8,7 +8,7 @@ import (
 	"o.o/capi/dot"
 )
 
-func MixAccount(claim *claims.Claim, m *etop.MixedAccount) ([]dot.ID, error) {
+func MixAccount(claim claims.Claim, m *etop.MixedAccount) ([]dot.ID, error) {
 	switch {
 	case m == nil:
 		// The same as default.

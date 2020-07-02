@@ -37,7 +37,6 @@ import (
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
-	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/tools/pkg/acl" // TODO: remove this
@@ -66,22 +65,16 @@ func New(_locationBus location.QueryBus, rd redis.Store, ul *upload.Uploader, db
 }
 
 func (im *Import) HandleImportOrders(c *httpx.Context) error {
-	claim := c.Claim.(*claims.ShopClaim)
-	authorization := auth.New()
-	isTest := 0
-	if claim.Shop != nil {
-		isTest = claim.Shop.IsTest
-	}
+	claim, shop, user, roles := c.SS.Claim(), c.SS.Shop(), c.SS.User(), c.SS.Permission().Roles
+
 	// Do not check permission for 3rd party requests
-	if claim.AuthPartnerID == 0 && !authorization.Check(claim.Roles, string(acl.ShopOrderImport), isTest) {
+	if auth.New().Check(roles, string(acl.ShopOrderImport), shop.IsTest) {
 		return cm.Error(cm.PermissionDenied, "", nil)
 	}
-	userID := c.Session.GetUserID()
-	shop := claim.Shop
 	key := shop.ID.String()
 
 	resp, _, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
-		return im.handleImportOrder(c.Req.Context(), c, shop, userID)
+		return im.handleImportOrder(c.Req.Context(), c, shop, user.ID)
 	}, "import đơn hàng")
 	if err != nil {
 		return err

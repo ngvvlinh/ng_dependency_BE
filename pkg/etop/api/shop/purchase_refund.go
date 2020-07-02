@@ -8,14 +8,19 @@ import (
 	"o.o/api/main/purchaserefund"
 	"o.o/api/shopping/suppliering"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
 
 type PurchaseRefundService struct {
+	session.Session
+
 	PurchaseRefundAggr  purchaserefund.CommandBus
 	PurchaseRefundQuery purchaserefund.QueryBus
 	SupplierQuery       suppliering.QueryBus
@@ -23,11 +28,11 @@ type PurchaseRefundService struct {
 	InventoryQuery      inventory.QueryBus
 }
 
-func (s *PurchaseRefundService) Clone() *PurchaseRefundService { res := *s; return &res }
+func (s *PurchaseRefundService) Clone() api.PurchaseRefundService { res := *s; return &res }
 
-func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *CreatePurchaseRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
+func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *api.CreatePurchaseRefundRequest) (*api.PurchaseRefund, error) {
+	shopID := s.SS.Shop().ID
+	userID := s.SS.Claim().UserID
 	var lines []*purchaserefund.PurchaseRefundLine
 	for _, v := range q.Lines {
 		lines = append(lines, &purchaserefund.PurchaseRefundLine{
@@ -50,24 +55,23 @@ func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *Cre
 	}
 	err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result := PbPurchaseRefund(cmd.Result)
 	result, err = s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *PurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, q *UpdatePurchaseRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
+func (s *PurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, q *api.UpdatePurchaseRefundRequest) (*api.PurchaseRefund, error) {
+	shopID := s.SS.Shop().ID
+	userID := s.SS.Claim().UserID
 	var lines []*purchaserefund.PurchaseRefundLine
 	for _, v := range q.Lines {
 		lines = append(lines, &purchaserefund.PurchaseRefundLine{
@@ -87,26 +91,25 @@ func (s *PurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, q *Upd
 		Note:            q.Note,
 	}
 	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
 	result := PbPurchaseRefund(cmd.Result)
 	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *PurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, q *ConfirmPurchaseRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
-	inventoryOverStock := q.Context.Shop.InventoryOverstock
-	roles := auth.Roles(q.Context.Roles)
+func (s *PurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, q *api.ConfirmPurchaseRefundRequest) (*api.PurchaseRefund, error) {
+	shopID := s.SS.Shop().ID
+	userID := s.SS.Claim().UserID
+	inventoryOverStock := s.SS.Shop().InventoryOverstock
+	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := purchaserefund.ConfirmPurchaseRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
@@ -115,108 +118,105 @@ func (s *PurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, q *Co
 		InventoryOverStock:   inventoryOverStock.Apply(true),
 	}
 	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
 	result := PbPurchaseRefund(cmd.Result)
 	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *PurchaseRefundService) CancelPurchaseRefund(ctx context.Context, q *CancelPurchaseRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
-	roles := auth.Roles(q.Context.Roles)
+func (s *PurchaseRefundService) CancelPurchaseRefund(ctx context.Context, q *api.CancelPurchaseRefundRequest) (*api.PurchaseRefund, error) {
+	shopID := s.SS.Shop().ID
+	userID := s.SS.Claim().UserID
+	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := purchaserefund.CancelPurchaseRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
 		UpdatedBy:            userID,
 		CancelReason:         q.CancelReason,
-		InventoryOverStock:   q.Context.Shop.InventoryOverstock.Apply(true),
+		InventoryOverStock:   s.SS.Shop().InventoryOverstock.Apply(true),
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
 	}
 	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
 	result := PbPurchaseRefund(cmd.Result)
 	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *PurchaseRefundService) GetPurchaseRefund(ctx context.Context, q *GetPurchaseRefundEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *PurchaseRefundService) GetPurchaseRefund(ctx context.Context, q *pbcm.IDRequest) (*api.PurchaseRefund, error) {
+	shopID := s.SS.Shop().ID
 	query := &purchaserefund.GetPurchaseRefundByIDQuery{
 		ShopID: shopID,
 		ID:     q.Id,
 	}
 	if err := s.PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	queryPurchaseOrder := &purchaseorder.GetPurchaseOrderByIDQuery{
 		ID:     query.Result.PurchaseOrderID,
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.PurchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
-		return err
+		return nil, err
 	}
 	result := PbPurchaseRefund(query.Result)
 	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result, err = s.populatePurchaseRefundWithInventoryVoucher(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result.Supplier = convertpb.PbPurchaseOrderSupplier(queryPurchaseOrder.Result.Supplier)
-	q.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *PurchaseRefundService) GetPurchaseRefundsByIDs(ctx context.Context, q *GetPurchaseRefundsByIDsEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *PurchaseRefundService) GetPurchaseRefundsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*api.GetPurchaseRefundsByIDsResponse, error) {
+	shopID := s.SS.Shop().ID
 	query := &purchaserefund.GetPurchaseRefundsByIDsQuery{
 		ShopID: shopID,
 		IDs:    q.Ids,
 	}
 	if err := s.PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	result := PbPurchaseRefunds(query.Result)
+	resp := PbPurchaseRefunds(query.Result)
 	var err error
-	if len(result) > 0 {
-		result, err = s.populatePurchaseRefundsWithSupplier(ctx, result)
+	if len(resp) > 0 {
+		resp, err = s.populatePurchaseRefundsWithSupplier(ctx, resp)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		result, err = s.populatePurchaseRefundsWithInventoryVouchers(ctx, result)
+		resp, err = s.populatePurchaseRefundsWithInventoryVouchers(ctx, resp)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	q.Result = &shop.GetPurchaseRefundsByIDsResponse{
-		PurchaseRefund: result,
+	result := &api.GetPurchaseRefundsByIDsResponse{
+		PurchaseRefund: resp,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *PurchaseRefundService) GetPurchaseRefunds(ctx context.Context, q *GetPurchaseRefundsEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *PurchaseRefundService) GetPurchaseRefunds(ctx context.Context, q *api.GetPurchaseRefundsRequest) (*api.GetPurchaseRefundsResponse, error) {
+	shopID := s.SS.Shop().ID
 	paging := cmapi.CMPaging(q.Paging)
 	query := &purchaserefund.ListPurchaseRefundsQuery{
 		ShopID:  shopID,
@@ -224,25 +224,25 @@ func (s *PurchaseRefundService) GetPurchaseRefunds(ctx context.Context, q *GetPu
 		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := s.PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	result := PbPurchaseRefunds(query.Result.PurchaseRefunds)
+	resp := PbPurchaseRefunds(query.Result.PurchaseRefunds)
 	var err error
-	if len(result) > 0 {
-		result, err = s.populatePurchaseRefundsWithSupplier(ctx, result)
+	if len(resp) > 0 {
+		resp, err = s.populatePurchaseRefundsWithSupplier(ctx, resp)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		result, err = s.populatePurchaseRefundsWithInventoryVouchers(ctx, result)
+		resp, err = s.populatePurchaseRefundsWithInventoryVouchers(ctx, resp)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	q.Result = &shop.GetPurchaseRefundsResponse{
-		PurchaseRefunds: result,
+	result := &api.GetPurchaseRefundsResponse{
+		PurchaseRefunds: resp,
 		Paging:          cmapi.PbPageInfo(paging),
 	}
-	return nil
+	return result, nil
 }
 
 func (s *PurchaseRefundService) populatePurchaseRefundsWithSupplier(ctx context.Context, purchaseRefunds []*shop.PurchaseRefund) ([]*shop.PurchaseRefund, error) {

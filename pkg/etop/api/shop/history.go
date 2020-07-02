@@ -4,20 +4,24 @@ import (
 	"context"
 
 	"o.o/api/top/int/etop"
+	api "o.o/api/top/int/shop"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
 )
 
-type HistoryService struct{}
+type HistoryService struct {
+	session.Session
+}
 
-func (s *HistoryService) Clone() *HistoryService { res := *s; return &res }
+func (s *HistoryService) Clone() api.HistoryService { res := *s; return &res }
 
-func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *GetFulfillmentHistoryEndpoint) error {
+func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *api.GetFulfillmentHistoryRequest) (*etop.HistoryResponse, error) {
 
 	filters := map[string]interface{}{
-		"shop_id": r.Context.Shop.ID,
+		"shop_id": s.SS.Shop().ID,
 	}
 	count := 0
 	if r.All {
@@ -32,7 +36,7 @@ func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *GetFulfil
 		filters["id"] = r.Id
 	}
 	if count != 1 {
-		return cm.Error(cm.InvalidArgument, "Must provide either all, id or order_id", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Must provide either all, id or order_id", nil)
 	}
 
 	paging := cmapi.CMPaging(r.Paging, "-rid")
@@ -42,12 +46,12 @@ func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *GetFulfil
 		Filters: filters,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
-	r.Result = &etop.HistoryResponse{
+	result := &etop.HistoryResponse{
 		Paging: cmapi.PbPageInfo(paging),
 		Data:   cmapi.RawJSONObjectMsg(query.Result.Data),
 	}
-	return nil
+	return result, nil
 }

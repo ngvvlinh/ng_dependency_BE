@@ -7,56 +7,59 @@ import (
 
 	"o.o/api/main/shipping"
 	shippingtypes "o.o/api/main/shipping/types"
-	"o.o/api/top/int/shop"
-	"o.o/api/top/int/types"
+	api "o.o/api/top/int/shop"
+	inttypes "o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
 type ShipmentService struct {
+	session.Session
+
 	ShipmentManager   *shippingcarrier.ShipmentManager
 	ShippingAggregate shipping.CommandBus
 }
 
-func (s *ShipmentService) Clone() *ShipmentService { res := *s; return &res }
+func (s *ShipmentService) Clone() api.ShipmentService { res := *s; return &res }
 
-func (s *ShipmentService) GetShippingServices(ctx context.Context, q *GetShippingServicesEndpoint) error {
-	shopID := q.Context.Shop.ID
-	args, err := s.ShipmentManager.PrepareDataGetShippingServices(ctx, q.GetShippingServicesRequest)
+func (s *ShipmentService) GetShippingServices(ctx context.Context, q *inttypes.GetShippingServicesRequest) (*inttypes.GetShippingServicesResponse, error) {
+	shopID := s.SS.Shop().ID
+	args, err := s.ShipmentManager.PrepareDataGetShippingServices(ctx, q)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	args.AccountID = shopID
 	resp, err := s.ShipmentManager.GetShippingServices(ctx, args)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &types.GetShippingServicesResponse{
+	result := &inttypes.GetShippingServicesResponse{
 		Services: convertpb.PbAvailableShippingServices(resp),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ShipmentService) CreateFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) error {
-	key := fmt.Sprintf("CreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderID)
+func (s *ShipmentService) CreateFulfillments(ctx context.Context, q *api.CreateFulfillmentsRequest) (*api.CreateFulfillmentsResponse, error) {
+	key := fmt.Sprintf("CreateFulfillments %v-%v", s.SS.Shop().ID, q.OrderID)
 	res, _, err := idempgroup.DoAndWrap(
 		ctx, key, 10*time.Second, "tạo đơn giao hàng",
 		func() (interface{}, error) { return s.createFulfillments(ctx, q) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = res.(*CreateFulfillmentsEndpoint).Result
-	return nil
+	result := res.(*api.CreateFulfillmentsResponse)
+	return result, nil
 }
 
-func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfillmentsEndpoint) (_ *CreateFulfillmentsEndpoint, _err error) {
-	shopID := q.Context.Shop.ID
+func (s *ShipmentService) createFulfillments(ctx context.Context, q *api.CreateFulfillmentsRequest) (_ *api.CreateFulfillmentsResponse, _err error) {
+	shopID := s.SS.Shop().ID
 	args := &shipping.CreateFulfillmentsCommand{
 		ShopID:              shopID,
 		OrderID:             q.OrderID,
@@ -94,28 +97,26 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *CreateFulfi
 		return nil, err
 	}
 	ffms := convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop)
-	res := &CreateFulfillmentsEndpoint{
-		Result: &shop.CreateFulfillmentsResponse{
-			Fulfillments: ffms,
-		},
+	res := &api.CreateFulfillmentsResponse{
+		Fulfillments: ffms,
 	}
 	return res, nil
 }
 
-func (s *ShipmentService) CancelFulfillment(ctx context.Context, q *CancelFulfillmentEndpoint) error {
-	key := fmt.Sprintf("CancelFulfillment %v-%v", q.Context.Shop.ID, q.FulfillmentID)
+func (s *ShipmentService) CancelFulfillment(ctx context.Context, q *api.CancelFulfillmentRequest) (*pbcm.UpdatedResponse, error) {
+	key := fmt.Sprintf("CancelFulfillment %v-%v", s.SS.Shop().ID, q.FulfillmentID)
 	res, _, err := idempgroup.DoAndWrap(
 		ctx, key, 10*time.Second, "huỷ đơn giao hàng",
 		func() (interface{}, error) { return s.cancelFulfillment(ctx, q) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = res.(*CancelFulfillmentEndpoint).Result
-	return nil
+	result := res.(*pbcm.UpdatedResponse)
+	return result, nil
 }
 
-func (s *ShipmentService) cancelFulfillment(ctx context.Context, q *CancelFulfillmentEndpoint) (*CancelFulfillmentEndpoint, error) {
+func (s *ShipmentService) cancelFulfillment(ctx context.Context, q *api.CancelFulfillmentRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipping.CancelFulfillmentCommand{
 		FulfillmentID: q.FulfillmentID,
 		CancelReason:  q.CancelReason,
@@ -123,7 +124,5 @@ func (s *ShipmentService) cancelFulfillment(ctx context.Context, q *CancelFulfil
 	if err := s.ShippingAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return &CancelFulfillmentEndpoint{
-		Result: &pbcm.UpdatedResponse{Updated: 1},
-	}, nil
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }

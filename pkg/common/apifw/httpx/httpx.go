@@ -18,9 +18,9 @@ import (
 	cmWrapper "o.o/backend/pkg/common/apifw/wrapper"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
-	"o.o/backend/pkg/etop/authorize/claims"
-	"o.o/backend/pkg/etop/authorize/middleware"
+	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/etop/authorize/permission"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/httprpc"
 	"o.o/common/jsonx"
 	"o.o/common/l"
@@ -40,10 +40,9 @@ type Handler func(c *Context) error
 type MiddlewareFunc func(Handler) Handler
 
 type Context struct {
-	Req     *http.Request
-	Resp    http.ResponseWriter
-	Session *middleware.Session
-	Claim   claims.ClaimInterface
+	Req  *http.Request
+	Resp http.ResponseWriter
+	session.Session
 	httprouter.Params
 
 	hasResult bool
@@ -267,7 +266,7 @@ func RecoverAndLog(logRequest bool) func(Handler) Handler {
 					result := parseErr.Meta["result"]
 					if result == "ignore" {
 						twError := xerrors.TwirpError(_err)
-						go cmWrapper.SendErrorToBot(ctx, req.RequestURI, c.Session, reqData, twError, nil, d, xerrors.LevelPartialError, nil)
+						go cmWrapper.SendErrorToBot(ctx, req.RequestURI, cmWrapper.AdaptSession(c.Session), reqData, twError, nil, d, xerrors.LevelPartialError, nil)
 						c.result = map[string]string{
 							"code": "ok",
 						}
@@ -280,7 +279,7 @@ func RecoverAndLog(logRequest bool) func(Handler) Handler {
 							l.Duration("d", d),
 							l.String("req", string(reqData)),
 							l.String("resp", jsonx.MustMarshalToString(c.result)))
-						go cmWrapper.SendErrorToBot(ctx, req.RequestURI, c.Session, reqData, nil, errs, d, xerrors.LevelPartialError, nil)
+						go cmWrapper.SendErrorToBot(ctx, req.RequestURI, cmWrapper.AdaptSession(c.Session), reqData, nil, errs, d, xerrors.LevelPartialError, nil)
 						return
 					}
 
@@ -311,7 +310,7 @@ func RecoverAndLog(logRequest bool) func(Handler) Handler {
 				if lvl >= xerrors.LevelTrace {
 					cmWrapper.PrintErrorWithStack(ctx, _err, nil)
 				}
-				go cmWrapper.SendErrorToBot(ctx, req.RequestURI, c.Session, reqData, twError, nil, d, lvl, nil)
+				go cmWrapper.SendErrorToBot(ctx, req.RequestURI, cmWrapper.AdaptSession(c.Session), reqData, twError, nil, d, lvl, nil)
 			}()
 
 			if logRequest {
@@ -329,75 +328,15 @@ func RecoverAndLog(logRequest bool) func(Handler) Handler {
 	}
 }
 
-func Auth(perm permission.PermType) func(Handler) Handler {
-	switch perm {
-	case permission.EtopAdmin:
-	case permission.Shop:
-	default:
-		ll.Panic("Not supported permission!")
-	}
-
+func Auth(perm permission.Decl, _ss session.Session) func(Handler) Handler {
 	return func(next Handler) Handler {
-		return func(c *Context) (_err error) {
-			ctx := c.Req.Context()
-			sessionQuery := &middleware.StartSessionQuery{
-				RequireAuth: true,
-				RequireUser: true,
-			}
-			switch perm {
-			case permission.EtopAdmin:
-				sessionQuery.RequireEtopAdmin = true
-			case permission.Shop:
-				sessionQuery.RequireShop = true
-			}
-			ctx, err := middleware.StartSession(ctx, sessionQuery)
+		return func(c *Context) error {
+			c.Session = _ss // clone the session
+			ctx := c.Context()
+			tokenStr := headers.GetBearerTokenFromCtx(ctx)
+			ctx, err := c.StartSession(ctx, perm, tokenStr)
 			if err != nil {
 				return err
-			}
-			c.Req = c.Req.WithContext(ctx)
-
-			session := sessionQuery.Result
-			//var actions []string
-			//switch c.Req.RequestURI {
-			//case "/api/shop.Import/Products":
-			//	actions = []string{"shop/product:import"}
-			//}
-			//
-			//if len(actions) > 0 {
-			//	isTest := 0
-			//	if session.Shop != nil {
-			//		isTest = session.Shop.IsTest
-			//	}
-			//	authorization := auth.New()
-			//	if !authorization.Check(session.Roles, "relationship/user:remove", isTest) {
-			//		return cm.Error(cm.PermissionDenied, "", nil)
-			//	}
-			//}
-
-			userClaim := claims.UserClaim{
-				Claim: session.Claim,
-				Admin: session.Admin,
-				User:  session.User,
-			}
-			accountClaim := claims.CommonAccountClaim{
-				IsOwner:     session.IsOwner,
-				Roles:       session.Roles,
-				Permissions: session.Permissions,
-			}
-			c.Session = session
-			switch perm {
-			case permission.EtopAdmin:
-				c.Claim = &claims.AdminClaim{
-					UserClaim:          userClaim,
-					CommonAccountClaim: accountClaim,
-					IsEtopAdmin:        session.IsEtopAdmin,
-				}
-			case permission.Shop:
-				c.Claim = &claims.ShopClaim{
-					UserClaim:          userClaim,
-					CommonAccountClaim: accountClaim,
-					Shop:               session.Shop,
-				}
 			}
 			return next(c)
 		}

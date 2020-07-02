@@ -11,17 +11,21 @@ import (
 	"o.o/api/shopping/addressing"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/receipt_type"
 	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
 
 type CustomerService struct {
+	session.Session
+
 	LocationQuery location.QueryBus
 	CustomerQuery customering.QueryBus
 	CustomerAggr  customering.CommandBus
@@ -31,16 +35,16 @@ type CustomerService struct {
 	ReceiptQuery  receipting.QueryBus
 }
 
-func (s *CustomerService) Clone() *CustomerService { res := *s; return &res }
+func (s *CustomerService) Clone() api.CustomerService { res := *s; return &res }
 
-func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerEndpoint) error {
+func (s *CustomerService) CreateCustomer(ctx context.Context, r *api.CreateCustomerRequest) (*api.Customer, error) {
 	key := fmt.Sprintf("CreateCustomer %v-%v-%v-%v-%v",
-		r.Context.Shop.ID, r.Context.UserID, r.Phone, r.FullName, r.Email)
+		s.SS.Shop().ID, s.SS.Claim().UserID, r.Phone, r.FullName, r.Email)
 	res, _, err := idempgroup.DoAndWrap(
 		ctx, key, 15*time.Second, "tạo khách hàng",
 		func() (interface{}, error) {
 			cmd := &customering.CreateCustomerCommand{
-				ShopID:   r.Context.Shop.ID,
+				ShopID:   s.SS.Shop().ID,
 				FullName: r.FullName,
 				Gender:   r.Gender,
 				Type:     r.Type,
@@ -52,21 +56,21 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerE
 			if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 				return nil, err
 			}
-			r.Result = convertpb.PbCustomer(cmd.Result)
-			return r, nil
+			result := convertpb.PbCustomer(cmd.Result)
+			return result, nil
 		})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = res.(*CreateCustomerEndpoint).Result
-	return nil
+	result := res.(*shop.Customer)
+	return result, nil
 }
 
-func (s *CustomerService) UpdateCustomer(ctx context.Context, r *UpdateCustomerEndpoint) error {
+func (s *CustomerService) UpdateCustomer(ctx context.Context, r *api.UpdateCustomerRequest) (*api.Customer, error) {
 	cmd := &customering.UpdateCustomerCommand{
 		ID:       r.Id,
-		ShopID:   r.Context.Shop.ID,
+		ShopID:   s.SS.Shop().ID,
 		FullName: r.FullName,
 		Gender:   r.Gender,
 		Birthday: r.Birthday,
@@ -77,114 +81,109 @@ func (s *CustomerService) UpdateCustomer(ctx context.Context, r *UpdateCustomerE
 	}
 	err := s.CustomerAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	r.Result = convertpb.PbCustomer(cmd.Result)
-	return nil
+	result := convertpb.PbCustomer(cmd.Result)
+	return result, nil
 }
 
-func (s *CustomerService) BatchSetCustomersStatus(ctx context.Context, r *BatchSetCustomersStatusEndpoint) error {
+func (s *CustomerService) BatchSetCustomersStatus(ctx context.Context, r *api.SetCustomersStatusRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &customering.BatchSetCustomersStatusCommand{
 		IDs:    r.Ids,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 		Status: int(r.Status),
 	}
 	if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result.Updated}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result.Updated}
+	return result, nil
 }
 
-func (s *CustomerService) DeleteCustomer(ctx context.Context, r *DeleteCustomerEndpoint) error {
+func (s *CustomerService) DeleteCustomer(ctx context.Context, r *pbcm.IDRequest) (*pbcm.DeletedResponse, error) {
 	cmd := &customering.DeleteCustomerCommand{
 		ID:     r.Id,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
-	return nil
+	result := &pbcm.DeletedResponse{Deleted: cmd.Result}
+	return result, nil
 }
 
-func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoint) error {
+func (s *CustomerService) GetCustomer(ctx context.Context, r *pbcm.IDRequest) (*api.Customer, error) {
 	query := &customering.GetCustomerByIDQuery{
 		ID:     r.Id,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = convertpb.PbCustomer(query.Result)
-	if err := s.listLiabilities(ctx, r.Context.Shop.ID, []*shop.Customer{r.Result}); err != nil {
-		return err
+	result := convertpb.PbCustomer(query.Result)
+	if err := s.listLiabilities(ctx, s.SS.Shop().ID, []*shop.Customer{result}); err != nil {
+		return nil, err
 	}
-	return nil
+	return result, nil
 }
 
-func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpoint) error {
+func (s *CustomerService) GetCustomers(ctx context.Context, r *api.GetCustomersRequest) (resp *api.CustomersResponse, err error) {
 	paging := cmapi.CMPaging(r.Paging)
 	if !r.GetAll.Valid {
 		r.GetAll = dot.Bool(true)
 	}
-	switch r.GetAll.Bool {
-	case true:
-		if err := s.getAllCustomers(ctx, paging, r); err != nil {
-			return err
-		}
-	case false:
-		customers, err := s.getCustomers(ctx, paging, r)
-		if err != nil {
-			return err
-		}
-		r.Result.Customers = customers
+	if r.GetAll.Apply(false) {
+		resp, err = s.getAllCustomers(ctx, paging, r)
+	} else {
+		resp, err = s.getCustomers(ctx, paging, r)
 	}
-	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
-		return err
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	err = s.listLiabilities(ctx, s.SS.Shop().ID, resp.Customers)
+	return resp, err
 }
 
-func (s *CustomerService) getAllCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) error {
+func (s *CustomerService) getAllCustomers(ctx context.Context, paging *cm.Paging, r *api.GetCustomersRequest) (*api.CustomersResponse, error) {
 	queryCustomerIndenpendent := &customering.GetCustomerIndependentQuery{}
 	if err := s.CustomerQuery.Dispatch(ctx, queryCustomerIndenpendent); err != nil {
-		return err
+		return nil, err
 	}
 	var customers []*shop.Customer
 	customers = append(customers, convertpb.PbCustomer(queryCustomerIndenpendent.Result))
 
+	result := &api.CustomersResponse{}
 	if paging.Limit == 1 && paging.Offset == 0 {
-		r.Result.Customers = customers
-		return nil
+		result.Customers = customers
+		return result, nil
 	}
 	if paging.Offset == 0 {
 		paging.Limit--
-		cts, err := s.getCustomers(ctx, paging, r)
+		resp, err := s.getCustomers(ctx, paging, r)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		customers = append(customers, cts...)
-		r.Result.Customers = customers
-		r.Result.Paging.Limit++
+		customers = append(customers, resp.Customers...)
+		result.Customers = customers
+		result.Paging.Limit++
 	} else {
 		paging.Offset--
 		_, err := s.getCustomers(ctx, paging, r)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	return result, nil
 }
 
-func (s *CustomerService) getCustomers(ctx context.Context, paging *cm.Paging, r *GetCustomersEndpoint) ([]*shop.Customer, error) {
+func (s *CustomerService) getCustomers(ctx context.Context, paging *cm.Paging, r *api.GetCustomersRequest) (*api.CustomersResponse, error) {
 	var fullTextSearch filter.FullTextSearch = ""
 	if r.Filter != nil {
 		fullTextSearch = r.Filter.FullName
 	}
 	query := &customering.ListCustomersQuery{
-		ShopID:  r.Context.Shop.ID,
+		ShopID:  s.SS.Shop().ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 		Name:    fullTextSearch,
@@ -192,58 +191,58 @@ func (s *CustomerService) getCustomers(ctx context.Context, paging *cm.Paging, r
 	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	r.Result = &shop.CustomersResponse{
+	result := &api.CustomersResponse{
 		Customers: convertpb.PbCustomers(query.Result.Customers),
 		Paging:    cmapi.PbPageInfo(paging),
 	}
-	return convertpb.PbCustomers(query.Result.Customers), nil
+	return result, nil
 }
 
-func (s *CustomerService) GetCustomersByIDs(ctx context.Context, r *GetCustomersByIDsEndpoint) error {
+func (s *CustomerService) GetCustomersByIDs(ctx context.Context, r *pbcm.IDsRequest) (*api.CustomersResponse, error) {
 	query := &customering.ListCustomersByIDsQuery{
 		IDs:    r.Ids,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.CustomersResponse{
+	result := &api.CustomersResponse{
 		Customers: convertpb.PbCustomers(query.Result.Customers),
 	}
-	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
-		return err
+	if err := s.listLiabilities(ctx, s.SS.Shop().ID, result.Customers); err != nil {
+		return nil, err
 	}
-	return nil
+	return result, nil
 }
 
-func (s *CustomerService) GetCustomerDetails(ctx context.Context, r *GetCustomerDetailsEndpoint) error {
-	return cm.ErrTODO
+func (s *CustomerService) GetCustomerDetails(ctx context.Context, r *pbcm.IDRequest) (*api.CustomerDetailsResponse, error) {
+	return nil, cm.ErrTODO
 }
 
-func (s *CustomerService) AddCustomersToGroup(ctx context.Context, r *AddCustomersToGroupEndpoint) error {
+func (s *CustomerService) AddCustomersToGroup(ctx context.Context, r *api.AddCustomerToGroupRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &customering.AddCustomersToGroupCommand{
-		ShopID:      r.Context.Shop.ID,
+		ShopID:      s.SS.Shop().ID,
 		GroupID:     r.GroupId,
 		CustomerIDs: r.CustomerIds,
 	}
 	if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return result, nil
 }
 
-func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *RemoveCustomersFromGroupEndpoint) error {
+func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *api.RemoveCustomerOutOfGroupRequest) (*pbcm.RemovedResponse, error) {
 	cmd := &customering.RemoveCustomersFromGroupCommand{
-		ShopID:      r.Context.Shop.ID,
+		ShopID:      s.SS.Shop().ID,
 		GroupID:     r.GroupId,
 		CustomerIDs: r.CustomerIds,
 	}
 	if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.RemovedResponse{Removed: cmd.Result}
-	return nil
+	result := &pbcm.RemovedResponse{Removed: cmd.Result}
+	return result, nil
 }
 
 func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, customers []*shop.Customer) error {
@@ -293,6 +292,5 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, cu
 			Liability:      mapCustomerIDAndTotalAmountOrders[customer.Id] - mapCustomerIDAndTotalAmountReceipts[customer.Id],
 		}
 	}
-
 	return nil
 }

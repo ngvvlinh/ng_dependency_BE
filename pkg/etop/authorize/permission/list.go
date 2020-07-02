@@ -5,6 +5,16 @@ type PermType int
 type AuthType int
 type AuthOpt int
 type ActionType string
+type Actions []ActionType
+
+func (as Actions) Contains(action ActionType) bool {
+	for _, a := range as {
+		if a == action {
+			return true
+		}
+	}
+	return false
+}
 
 // PermType constants
 const (
@@ -45,7 +55,7 @@ type Decl struct {
 	Validate        string
 	Captcha         string
 	AuthPartner     AuthOpt
-	Actions         []ActionType
+	Actions         Actions
 	IncludeFaboInfo bool
 
 	Rename string

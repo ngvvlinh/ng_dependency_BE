@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/connectioning"
+	api "o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/connection_type"
@@ -12,62 +13,65 @@ import (
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type ConnectionService struct {
+	session.Session
+
 	ShipmentManager *shippingcarrier.ShipmentManager
 	ConnectionQuery connectioning.QueryBus
 	ConnectionAggr  connectioning.CommandBus
 }
 
-func (s *ConnectionService) Clone() *ConnectionService { res := *s; return &res }
+func (s *ConnectionService) Clone() api.ConnectionService { res := *s; return &res }
 
-func (s *ConnectionService) GetConnections(ctx context.Context, q *GetConnectionsEndpoint) error {
+func (s *ConnectionService) GetConnections(ctx context.Context, q *pbcm.Empty) (*types.GetConnectionsResponse, error) {
 	query := &connectioning.ListConnectionsQuery{
 		ConnectionType: connection_type.Shipping,
 		Status:         status3.WrapStatus(status3.P),
 	}
 	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &types.GetConnectionsResponse{
+	result := &types.GetConnectionsResponse{
 		Connections: convertpb.PbConnections(query.Result),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ConnectionService) GetAvailableConnections(ctx context.Context, q *GetAvailableConnectionsEndpoint) error {
+func (s *ConnectionService) GetAvailableConnections(ctx context.Context, q *pbcm.Empty) (*types.GetConnectionsResponse, error) {
 	query := &connectioning.ListConnectionsQuery{
 		ConnectionType:   connection_type.Shipping,
 		ConnectionMethod: connection_type.ConnectionMethodDirect,
 		Status:           status3.WrapStatus(status3.P),
 	}
 	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &types.GetConnectionsResponse{
+	result := &types.GetConnectionsResponse{
 		Connections: convertpb.PbConnections(query.Result),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ConnectionService) GetShopConnections(ctx context.Context, q *GetShopConnectionsEndpoint) error {
+func (s *ConnectionService) GetShopConnections(ctx context.Context, q *pbcm.Empty) (*types.GetShopConnectionsResponse, error) {
 	query := &connectioning.ListShopConnectionsByShopIDQuery{
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &types.GetShopConnectionsResponse{
+	result := &types.GetShopConnectionsResponse{
 		ShopConnections: convertpb.PbShopConnections(query.Result),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ConnectionService) RegisterShopConnection(ctx context.Context, q *RegisterShopConnectionEndpoint) error {
+func (s *ConnectionService) RegisterShopConnection(ctx context.Context, q *types.RegisterShopConnectionRequest) (*types.ShopConnection, error) {
 	cmd := &carrier.ShopConnectionSignUpArgs{
 		ConnectionID: q.ConnectionID,
-		ShopID:       q.Context.Shop.ID,
+		ShopID:       s.SS.Shop().ID,
 		Name:         q.Name,
 		Email:        q.Email,
 		Password:     q.Password,
@@ -78,47 +82,47 @@ func (s *ConnectionService) RegisterShopConnection(ctx context.Context, q *Regis
 	}
 	shopConnection, err := s.ShipmentManager.ShopConnectionSignUp(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = convertpb.PbShopConnection(shopConnection)
-	return nil
+	result := convertpb.PbShopConnection(shopConnection)
+	return result, nil
 }
 
-func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *LoginShopConnectionEndpoint) error {
+func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *types.LoginShopConnectionRequest) (*types.ShopConnection, error) {
 	cmd := &carrier.ShopConnectionSignInArgs{
 		ConnectionID: q.ConnectionID,
-		ShopID:       q.Context.Shop.ID,
+		ShopID:       s.SS.Shop().ID,
 		Email:        q.Email,
 		Password:     q.Password,
 	}
 	shopConnection, err := s.ShipmentManager.ShopConnectionSignIn(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = convertpb.PbShopConnection(shopConnection)
-	return nil
+	result := convertpb.PbShopConnection(shopConnection)
+	return result, nil
 }
 
-func (s *ConnectionService) DeleteShopConnection(ctx context.Context, q *DeleteShopConnectionEndpoint) error {
+func (s *ConnectionService) DeleteShopConnection(ctx context.Context, q *types.DeleteShopConnectionRequest) (*pbcm.DeletedResponse, error) {
 	cmd := &connectioning.DeleteShopConnectionCommand{
 		ConnectionID: q.ConnectionID,
-		ShopID:       q.Context.Shop.ID,
+		ShopID:       s.SS.Shop().ID,
 	}
 	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.DeletedResponse{
+	result := &pbcm.DeletedResponse{
 		Deleted: cmd.Result,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ConnectionService) UpdateShopConnection(ctx context.Context, r *UpdateShopConnectionEndpoint) error {
+func (s *ConnectionService) UpdateShopConnection(ctx context.Context, r *types.UpdateShopConnectionRequest) (*pbcm.UpdatedResponse, error) {
 	if r.ExternalData == nil || r.ExternalData.UserID == "" {
-		return cm.Errorf(cm.InvalidArgument, nil, "UserID không được để trống")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "UserID không được để trống")
 	}
 	cmd := &connectioning.UpdateShopConnectionTokenCommand{
-		ShopID:       r.Context.Shop.ID,
+		ShopID:       s.SS.Shop().ID,
 		ConnectionID: r.ConnectionID,
 		Token:        r.Token,
 		ExternalData: &connectioning.ShopConnectionExternalData{
@@ -127,8 +131,8 @@ func (s *ConnectionService) UpdateShopConnection(ctx context.Context, r *UpdateS
 		},
 	}
 	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: 1}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: 1}
+	return result, nil
 }

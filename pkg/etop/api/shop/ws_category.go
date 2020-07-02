@@ -5,13 +5,14 @@ import (
 
 	"o.o/api/main/catalog"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	"o.o/api/webserver"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/capi/dot"
 )
 
-func (s *WebServerService) CreateOrUpdateWsCategory(ctx context.Context, r *CreateOrUpdateWsCategoryEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) CreateOrUpdateWsCategory(ctx context.Context, r *api.CreateOrUpdateWsCategoryRequest) (*api.WsCategory, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &webserver.CreateOrUpdateWsCategoryCommand{
 		ID:        r.CategoryID,
 		ShopID:    shopID,
@@ -22,30 +23,30 @@ func (s *WebServerService) CreateOrUpdateWsCategory(ctx context.Context, r *Crea
 	}
 	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = PbWsCategory(cmd.Result)
-	r.Result, err = s.populateWsCategoryWithProductCount(ctx, r.Result)
-	return err
+	result := PbWsCategory(cmd.Result)
+	result, err = s.populateWsCategoryWithProductCount(ctx, result)
+	return result, err
 }
 
-func (s *WebServerService) GetWsCategory(ctx context.Context, r *GetWsCategoryEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsCategory(ctx context.Context, r *api.GetWsCategoryRequest) (*api.WsCategory, error) {
+	shopID := s.SS.Shop().ID
 	query := &webserver.GetWsCategoryByIDQuery{
 		ID:     r.ID,
 		ShopID: shopID,
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = PbWsCategory(query.Result)
-	r.Result, err = s.populateWsCategoryWithProductCount(ctx, r.Result)
-	return err
+	result := PbWsCategory(query.Result)
+	result, err = s.populateWsCategoryWithProductCount(ctx, result)
+	return nil, err
 }
 
-func (s *WebServerService) GetWsCategories(ctx context.Context, r *GetWsCategoriesEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsCategories(ctx context.Context, r *api.GetWsCategoriesRequest) (*api.GetWsCategoriesResponse, error) {
+	shopID := s.SS.Shop().ID
 	paging := cmapi.CMPaging(r.Paging)
 	query := &webserver.ListWsCategoriesQuery{
 		ShopID:  shopID,
@@ -54,31 +55,31 @@ func (s *WebServerService) GetWsCategories(ctx context.Context, r *GetWsCategori
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.GetWsCategoriesResponse{
+	result := &api.GetWsCategoriesResponse{
 		WsCategories: PbWsCategories(query.Result.WsCategories),
 		Paging:       cmapi.PbPaging(query.Paging),
 	}
-	r.Result.WsCategories, err = s.populateWsCategoriesWithProductCount(ctx, r.Result.WsCategories)
-	return err
+	result.WsCategories, err = s.populateWsCategoriesWithProductCount(ctx, result.WsCategories)
+	return nil, err
 }
 
-func (s *WebServerService) GetWsCategoriesByIDs(ctx context.Context, r *GetWsCategoriesByIDsEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsCategoriesByIDs(ctx context.Context, r *api.GetWsCategoriesByIDsRequest) (*api.GetWsCategoriesByIDsResponse, error) {
+	shopID := s.SS.Shop().ID
 	query := &webserver.ListWsCategoriesByIDsQuery{
 		ShopID: shopID,
 		IDs:    r.IDs,
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.GetWsCategoriesByIDsResponse{
+	result := &api.GetWsCategoriesByIDsResponse{
 		WsCategories: PbWsCategories(query.Result),
 	}
-	r.Result.WsCategories, err = s.populateWsCategoriesWithProductCount(ctx, r.Result.WsCategories)
-	return err
+	result.WsCategories, err = s.populateWsCategoriesWithProductCount(ctx, result.WsCategories)
+	return nil, err
 }
 
 func (s *WebServerService) populateWsCategoriesWithProductCount(ctx context.Context, args []*shop.WsCategory) ([]*shop.WsCategory, error) {

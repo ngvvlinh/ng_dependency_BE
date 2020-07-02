@@ -118,9 +118,7 @@ func (s *EventStream) Unsubscribe(id int64) {
 }
 
 func (s *EventStream) HandleEventStream(c *httpx.Context) error {
-	userID := c.Session.GetUserID()
-	ctx := c.Context()
-
+	ctx, userID := c.Context(), c.SS.User().ID
 	subscriberID, eventChannel := s.SubscribeUser(userID)
 	defer s.Unsubscribe(subscriberID)
 

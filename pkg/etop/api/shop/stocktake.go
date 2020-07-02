@@ -3,40 +3,42 @@ package shop
 import (
 	"context"
 
-	"o.o/api/main/authorization"
 	"o.o/api/main/catalog"
 	"o.o/api/main/inventory"
 	"o.o/api/main/stocktaking"
 	st "o.o/api/main/stocktaking"
 	"o.o/api/meta"
-	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/tools/pkg/acl"
 	"o.o/capi/dot"
 )
 
 type StocktakeService struct {
+	session.Session
+
 	CatalogQuery   catalog.QueryBus
 	StocktakeAggr  st.CommandBus
 	StocktakeQuery st.QueryBus
 	InventoryQuery inventory.QueryBus
 }
 
-func (s *StocktakeService) Clone() *StocktakeService { res := *s; return &res }
+func (s *StocktakeService) Clone() api.StocktakeService { res := *s; return &res }
 
-func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStocktakeEndpoint) error {
+func (s *StocktakeService) CreateStocktake(ctx context.Context, q *api.CreateStocktakeRequest) (*api.Stocktake, error) {
 	result, err := s.createStocktake(ctx, q)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = result.Result
-	return err
+	return result, err
 }
 
-func (s *StocktakeService) createStocktake(ctx context.Context, q *CreateStocktakeEndpoint) (*CreateStocktakeEndpoint, error) {
-	shopID := q.Context.Shop.ID
-	UserID := q.Context.User.ID
+func (s *StocktakeService) createStocktake(ctx context.Context, q *api.CreateStocktakeRequest) (*api.Stocktake, error) {
+	shopID := s.SS.Shop().ID
+	UserID := s.SS.User().ID
 	var lines []*stocktaking.StocktakeLine
 	for _, value := range q.Lines {
 		lines = append(lines, &stocktaking.StocktakeLine{
@@ -47,7 +49,7 @@ func (s *StocktakeService) createStocktake(ctx context.Context, q *CreateStockta
 	}
 	err := s.AttachShopVariantsInformation(ctx, shopID, lines)
 	if err != nil {
-		return q, err
+		return nil, err
 	}
 	cmd := &stocktaking.CreateStocktakeCommand{
 		ShopID:        shopID,
@@ -59,10 +61,10 @@ func (s *StocktakeService) createStocktake(ctx context.Context, q *CreateStockta
 	}
 	err = s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return q, err
+		return nil, err
 	}
-	q.Result = PbStocktake(cmd.Result)
-	return q, nil
+	result := PbStocktake(cmd.Result)
+	return result, nil
 }
 
 func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, shopID dot.ID, stocktakeLines []*stocktaking.StocktakeLine) error {
@@ -149,22 +151,23 @@ func ConvertInfoVariants(stocktakeLine *stocktaking.StocktakeLine, shopVariant *
 }
 
 func (s *StocktakeService) UpdateStocktake(
-	ctx context.Context, q *UpdateStocktakeEndpoint) error {
-	shopID := q.Context.Shop.ID
-	UserID := q.Context.UserID
+	ctx context.Context, q *api.UpdateStocktakeRequest) (*api.Stocktake, error) {
+	shopID := s.SS.Shop().ID
+	UserID := s.SS.Claim().UserID
+	perm := s.SS.PermissionDecl()
 
 	query := &stocktaking.GetStocktakeByIDQuery{
 		Id:     q.Id,
 		ShopID: shopID,
 	}
 	if err := s.StocktakeQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
-	if !authorization.IsContainsActionString(q.Context.Actions, string(acl.ShopStocktakeUpdate)) &&
-		authorization.IsContainsActionString(q.Context.Actions, string(acl.ShopStocktakeSelfUpdate)) {
+	if !perm.Actions.Contains(acl.ShopStocktakeUpdate) &&
+		perm.Actions.Contains(acl.ShopStocktakeSelfUpdate) {
 		if query.Result.CreatedBy != UserID {
-			return cm.Errorf(cm.PermissionDenied, nil, "")
+			return nil, cm.Errorf(cm.PermissionDenied, nil, "")
 		}
 	}
 
@@ -178,7 +181,7 @@ func (s *StocktakeService) UpdateStocktake(
 	}
 	err := s.AttachShopVariantsInformation(ctx, shopID, lines)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	cmd := &stocktaking.UpdateStocktakeCommand{
 		ShopID:        shopID,
@@ -190,19 +193,18 @@ func (s *StocktakeService) UpdateStocktake(
 	}
 	err = s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbStocktake(cmd.Result)
-	return nil
+	result := PbStocktake(cmd.Result)
+	return result, nil
 }
 
-func (s *StocktakeService) ConfirmStocktake(ctx context.Context, q *ConfirmStocktakeEndpoint) error {
-	shopID := q.Context.Shop.ID
-	userID := q.Context.UserID
-	overStock := q.Context.Shop.InventoryOverstock
+func (s *StocktakeService) ConfirmStocktake(ctx context.Context, q *api.ConfirmStocktakeRequest) (*api.Stocktake, error) {
+	shop, userID := s.SS.Shop(), s.SS.Claim().UserID
+	overStock := shop.InventoryOverstock
 	cmd := &stocktaking.ConfirmStocktakeCommand{
 		ID:                   q.Id,
-		ShopID:               shopID,
+		ShopID:               shop.ID,
 		ConfirmedBy:          userID,
 		OverStock:            overStock.Apply(true),
 		AutoInventoryVoucher: q.AutoInventoryVoucher,
@@ -210,14 +212,14 @@ func (s *StocktakeService) ConfirmStocktake(ctx context.Context, q *ConfirmStock
 	}
 	err := s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbStocktake(cmd.Result)
-	return nil
+	result := PbStocktake(cmd.Result)
+	return result, nil
 }
 
-func (s *StocktakeService) CancelStocktake(ctx context.Context, q *CancelStocktakeEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *StocktakeService) CancelStocktake(ctx context.Context, q *api.CancelStocktakeRequest) (*api.Stocktake, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &stocktaking.CancelStocktakeCommand{
 		ShopID:       shopID,
 		ID:           q.Id,
@@ -225,44 +227,44 @@ func (s *StocktakeService) CancelStocktake(ctx context.Context, q *CancelStockta
 	}
 	err := s.StocktakeAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbStocktake(cmd.Result)
-	return nil
+	result := PbStocktake(cmd.Result)
+	return result, nil
 }
 
-func (s *StocktakeService) GetStocktake(ctx context.Context, q *GetStocktakeEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *StocktakeService) GetStocktake(ctx context.Context, q *pbcm.IDRequest) (*api.Stocktake, error) {
+	shopID := s.SS.Shop().ID
 	query := &stocktaking.GetStocktakeByIDQuery{
 		ShopID: shopID,
 		Id:     q.Id,
 	}
 	err := s.StocktakeQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbStocktake(query.Result)
-	return nil
+	result := PbStocktake(query.Result)
+	return result, nil
 }
 
-func (s *StocktakeService) GetStocktakesByIDs(ctx context.Context, q *GetStocktakesByIDsEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *StocktakeService) GetStocktakesByIDs(ctx context.Context, q *pbcm.IDsRequest) (*api.GetStocktakesByIDsResponse, error) {
+	shopID := s.SS.Shop().ID
 	query := &stocktaking.GetStocktakesByIDsQuery{
 		ShopID: shopID,
 		Ids:    q.Ids,
 	}
 	err := s.StocktakeQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.GetStocktakesByIDsResponse{
+	result := &api.GetStocktakesByIDsResponse{
 		Stocktakes: PbStocktakes(query.Result),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *StocktakeService) GetStocktakes(ctx context.Context, q *GetStocktakesEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *StocktakeService) GetStocktakes(ctx context.Context, q *api.GetStocktakesRequest) (*api.GetStocktakesResponse, error) {
+	shopID := s.SS.Shop().ID
 	var filters []meta.Filter
 	for _, value := range q.Filters {
 		filters = append(filters, meta.Filter{
@@ -279,11 +281,11 @@ func (s *StocktakeService) GetStocktakes(ctx context.Context, q *GetStocktakesEn
 	}
 	err := s.StocktakeQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.GetStocktakesResponse{
+	result := &api.GetStocktakesResponse{
 		Stocktakes: PbStocktakes(query.Result.Stocktakes),
 		Paging:     cmapi.PbPaging(query.Page),
 	}
-	return nil
+	return result, nil
 }

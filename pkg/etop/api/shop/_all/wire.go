@@ -3,7 +3,6 @@ package shop_all
 import (
 	"github.com/google/wire"
 
-	service "o.o/api/top/int/shop"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/capi/httprpc"
@@ -55,40 +54,40 @@ func NewServers(
 	shop.StocktakeServiceImpl = stocktakeService
 	shop.InventoryServiceImpl = inventoryService
 
-	servers := []httprpc.Server{
-		service.NewAccountServiceServer(shop.WrapAccountService(accountService.Clone)),
-		service.NewAuthorizeServiceServer(shop.WrapAuthorizeService(authorizeService.Clone)),
-		service.NewBrandServiceServer(shop.WrapBrandService(brandService.Clone)),
-		service.NewCarrierServiceServer(shop.WrapCarrierService(carrierService.Clone)),
-		service.NewCategoryServiceServer(shop.WrapCategoryService(categoryService.Clone)),
-		service.NewCollectionServiceServer(shop.WrapCollectionService(collectionService.Clone)),
-		service.NewConnectionServiceServer(shop.WrapConnectionService(connectionService.Clone)),
-		service.NewCustomerGroupServiceServer(shop.WrapCustomerGroupService(customerGroupService.Clone)),
-		service.NewCustomerServiceServer(shop.WrapCustomerService(customerService.Clone)),
-		service.NewExportServiceServer(shop.WrapExportService(exportService.Clone)),
-		service.NewFulfillmentServiceServer(shop.WrapFulfillmentService(fulfillmentService.Clone)),
-		service.NewHistoryServiceServer(shop.WrapHistoryService(historyService.Clone)),
-		service.NewInventoryServiceServer(shop.WrapInventoryService(inventoryService.Clone)),
-		service.NewLedgerServiceServer(shop.WrapLedgerService(ledgerService.Clone)),
-		service.NewMiscServiceServer(shop.WrapMiscService(miscService.Clone)),
-		service.NewMoneyTransactionServiceServer(shop.WrapMoneyTransactionService(moneyTransactionService.Clone)),
-		service.NewNotificationServiceServer(shop.WrapNotificationService(notificationService.Clone)),
-		service.NewOrderServiceServer(shop.WrapOrderService(orderService.Clone)),
-		service.NewPaymentServiceServer(shop.WrapPaymentService(paymentService.Clone)),
-		service.NewProductServiceServer(shop.WrapProductService(productService.Clone)),
-		service.NewProductSourceServiceServer(shop.WrapProductSourceService(productSourceService.Clone)),
-		service.NewPurchaseOrderServiceServer(shop.WrapPurchaseOrderService(purchaseOrderService.Clone)),
-		service.NewPurchaseRefundServiceServer(shop.WrapPurchaseRefundService(purchaseRefundService.Clone)),
-		service.NewReceiptServiceServer(shop.WrapReceiptService(receiptService.Clone)),
-		service.NewRefundServiceServer(shop.WrapRefundService(refundService.Clone)),
-		service.NewShipmentServiceServer(shop.WrapShipmentService(shipmentService.Clone)),
-		service.NewShipnowServiceServer(shop.WrapShipnowService(shipnowService.Clone)),
-		service.NewStocktakeServiceServer(shop.WrapStocktakeService(stocktakeService.Clone)),
-		service.NewSubscriptionServiceServer(shop.WrapSubscriptionService(subscriptionService.Clone)),
-		service.NewSummaryServiceServer(shop.WrapSummaryService(summaryService.Clone)),
-		service.NewSupplierServiceServer(shop.WrapSupplierService(supplierService.Clone)),
-		service.NewTradingServiceServer(shop.WrapTradingService(tradingService.Clone)),
-		service.NewWebServerServiceServer(shop.WrapWebServerService(webServerService.Clone)),
-	}
+	servers := httprpc.MustNewServers(
+		accountService.Clone,
+		authorizeService.Clone,
+		brandService.Clone,
+		carrierService.Clone,
+		categoryService.Clone,
+		collectionService.Clone,
+		connectionService.Clone,
+		customerGroupService.Clone,
+		customerService.Clone,
+		exportService.Clone,
+		fulfillmentService.Clone,
+		historyService.Clone,
+		inventoryService.Clone,
+		ledgerService.Clone,
+		miscService.Clone,
+		moneyTransactionService.Clone,
+		notificationService.Clone,
+		orderService.Clone,
+		paymentService.Clone,
+		productService.Clone,
+		productSourceService.Clone,
+		purchaseOrderService.Clone,
+		purchaseRefundService.Clone,
+		receiptService.Clone,
+		refundService.Clone,
+		shipmentService.Clone,
+		shipnowService.Clone,
+		stocktakeService.Clone,
+		subscriptionService.Clone,
+		summaryService.Clone,
+		supplierService.Clone,
+		tradingService.Clone,
+		webServerService.Clone,
+	)
 	return servers
 }

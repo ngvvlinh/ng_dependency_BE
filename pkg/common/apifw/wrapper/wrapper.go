@@ -209,16 +209,20 @@ func SendErrorToBot(ctx context.Context, rpcName string, session *middleware.Ses
 func RecoverAndLog2(ctx context.Context, rpcName string, session *session.Session, req, resp capi.Message, recovered interface{}, err error, errs []*typescommon.Error, t0 time.Time) (twError xerrors.TwError) {
 	var ss *middleware.Session
 	if session != nil {
-		ss = &middleware.Session{
-			User:       session.SS.User(),
-			Admin:      nil,
-			Partner:    session.SS.Partner(),
-			CtxPartner: session.SS.CtxPartner(),
-			Shop:       session.SS.Shop(),
-			Affiliate:  session.SS.Affiliate(),
-		}
+		ss = AdaptSession(*session)
 	}
 	return RecoverAndLog(ctx, rpcName, ss, req, resp, recovered, err, errs, t0)
+}
+
+func AdaptSession(ss session.Session) *middleware.Session {
+	return &middleware.Session{
+		User:       ss.SS.User(),
+		Admin:      nil,
+		Partner:    ss.SS.Partner(),
+		CtxPartner: ss.SS.CtxPartner(),
+		Shop:       ss.SS.Shop(),
+		Affiliate:  ss.SS.Affiliate(),
+	}
 }
 
 func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Session, req, resp capi.Message, recovered interface{}, err error, errs []*typescommon.Error, t0 time.Time) (twError xerrors.TwError) {

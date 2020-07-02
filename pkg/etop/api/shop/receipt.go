@@ -12,6 +12,7 @@ import (
 	"o.o/api/shopping/suppliering"
 	"o.o/api/shopping/tradering"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/receipt_mode"
 	"o.o/api/top/types/etc/status3"
@@ -21,12 +22,15 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 	"o.o/capi/util"
 )
 
 type ReceiptService struct {
+	session.Session
+
 	CarrierQuery  carrying.QueryBus
 	CustomerQuery customering.QueryBus
 	LedgerQuery   ledgering.QueryBus
@@ -36,25 +40,25 @@ type ReceiptService struct {
 	TraderQuery   tradering.QueryBus
 }
 
-func (s *ReceiptService) Clone() *ReceiptService { res := *s; return &res }
+func (s *ReceiptService) Clone() api.ReceiptService { res := *s; return &res }
 
-func (s *ReceiptService) CreateReceipt(ctx context.Context, q *CreateReceiptEndpoint) (_err error) {
+func (s *ReceiptService) CreateReceipt(ctx context.Context, q *api.CreateReceiptRequest) (_ *api.Receipt, _err error) {
 	key := fmt.Sprintf("Create receipt %v-%v-%v-%v-%v-%v-%v-%v",
-		q.Context.Shop.ID, q.Context.UserID, q.TraderId, q.LedgerId, q.Title, q.Description, q.Amount, q.Type)
-	result, _, err := idempgroup.DoAndWrap(
+		s.SS.Shop().ID, s.SS.Claim().UserID, q.TraderId, q.LedgerId, q.Title, q.Description, q.Amount, q.Type)
+	resp, _, err := idempgroup.DoAndWrap(
 		ctx, key, 15*time.Second, "Create receipt",
 		func() (interface{}, error) { return s.createReceipt(ctx, q) })
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = convertpb.PbReceipt(result.(*receipting.CreateReceiptCommand).Result)
-	return nil
+	result := convertpb.PbReceipt(resp.(*receipting.Receipt))
+	return result, nil
 }
 
-func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndpoint) (_ *receipting.CreateReceiptCommand, err error) {
+func (s *ReceiptService) createReceipt(ctx context.Context, q *api.CreateReceiptRequest) (_ *receipting.Receipt, err error) {
 	cmd := &receipting.CreateReceiptCommand{
-		ShopID:      q.Context.Shop.ID,
-		CreatedBy:   q.Context.UserID,
+		ShopID:      s.SS.Shop().ID,
+		CreatedBy:   s.SS.Claim().UserID,
 		TraderID:    q.TraderId,
 		Title:       q.Title,
 		Description: q.Description,
@@ -71,13 +75,13 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 	if err := s.ReceiptAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return cmd, nil
+	return cmd.Result, nil
 }
 
-func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndpoint) (err error) {
+func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *api.UpdateReceiptRequest) (_ *api.Receipt, err error) {
 	cmd := &receipting.UpdateReceiptCommand{
 		ID:          q.Id,
-		ShopID:      q.Context.Shop.ID,
+		ShopID:      s.SS.Shop().ID,
 		TraderID:    q.TraderId,
 		Title:       q.Title,
 		Description: q.Description,
@@ -92,94 +96,91 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndp
 	}
 	err = s.ReceiptAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = convertpb.PbReceipt(cmd.Result)
-	return nil
+	result := convertpb.PbReceipt(cmd.Result)
+	return result, nil
 }
 
-func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *ConfirmReceiptEndpoint) error {
+func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *pbcm.IDRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &receipting.ConfirmReceiptCommand{
 		ID:     q.Id,
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.ReceiptAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
 
-	return nil
+	return result, nil
 }
 
-func (s *ReceiptService) CancelReceipt(ctx context.Context, q *CancelReceiptEndpoint) error {
+func (s *ReceiptService) CancelReceipt(ctx context.Context, q *api.CancelReceiptRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &receipting.CancelReceiptCommand{
 		ID:           q.Id,
-		ShopID:       q.Context.Shop.ID,
+		ShopID:       s.SS.Shop().ID,
 		CancelReason: util.CoalesceString(q.CancelReason, q.Reason),
 	}
 	if err := s.ReceiptAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
 
-	return nil
+	return result, nil
 }
 
-func (s *ReceiptService) GetReceipt(ctx context.Context, q *GetReceiptEndpoint) error {
+func (s *ReceiptService) GetReceipt(ctx context.Context, q *pbcm.IDRequest) (*api.Receipt, error) {
 	// Check receipt is exist
 	getReceiptQuery := &receipting.GetReceiptByIDQuery{
 		ID:     q.Id,
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.ReceiptQuery.Dispatch(ctx, getReceiptQuery); err != nil {
-		return cm.MapError(err).
+		return nil, cm.MapError(err).
 			Wrap(cm.NotFound, "Không tìm thấy phiếu").
 			Throw()
 	}
-
-	if receipts, err := s.getInfosForReceipts(ctx, q.Context.Shop.ID, []*receipting.Receipt{getReceiptQuery.Result}); err != nil {
-		return err
-	} else {
-		q.Result = receipts[0]
+	receipts, err := s.getInfosForReceipts(ctx, s.SS.Shop().ID, []*receipting.Receipt{getReceiptQuery.Result})
+	if err != nil {
+		return nil, err
 	}
-
-	return nil
+	result := receipts[0]
+	return result, nil
 }
 
-func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint) error {
+func (s *ReceiptService) GetReceipts(ctx context.Context, q *api.GetReceiptsRequest) (*api.ReceiptsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &receipting.ListReceiptsQuery{
-		ShopID:  q.Context.Shop.ID,
+		ShopID:  s.SS.Shop().ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := s.ReceiptQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
-	if receipts, err := s.getInfosForReceipts(ctx, q.Context.Shop.ID, query.Result.Receipts); err != nil {
-		return err
-	} else {
-		q.Result = &shop.ReceiptsResponse{
-			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
-			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
-			Receipts:                    receipts,
-			Paging:                      cmapi.PbPageInfo(paging),
-		}
+	receipts, err := s.getInfosForReceipts(ctx, s.SS.Shop().ID, query.Result.Receipts)
+	if err != nil {
+		return nil, err
 	}
-
-	return nil
+	result := &api.ReceiptsResponse{
+		TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
+		TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
+		Receipts:                    receipts,
+		Paging:                      cmapi.PbPageInfo(paging),
+	}
+	return result, nil
 }
 
-func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetReceiptsByLedgerTypeEndpoint) error {
+func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *api.GetReceiptsByLedgerTypeRequest) (*api.ReceiptsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
 	listLedgersByType := &ledgering.ListLedgersByTypeQuery{
 		LedgerType: q.Type,
-		ShopID:     q.Context.Shop.ID,
+		ShopID:     s.SS.Shop().ID,
 	}
 	if err := s.LedgerQuery.Dispatch(ctx, listLedgersByType); err != nil {
-		return err
+		return nil, err
 	}
 
 	var ledgerIDs []dot.ID
@@ -188,25 +189,25 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 	}
 
 	query := &receipting.ListReceiptsByLedgerIDsQuery{
-		ShopID:    q.Context.Shop.ID,
+		ShopID:    s.SS.Shop().ID,
 		LedgerIDs: ledgerIDs,
 		Paging:    *paging,
 		Filters:   cmapi.ToFilters(q.Filters),
 	}
 	if err := s.ReceiptQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	if receipts, err := s.getInfosForReceipts(ctx, q.Context.Shop.ID, query.Result.Receipts); err != nil {
-		return err
-	} else {
-		q.Result = &shop.ReceiptsResponse{
-			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
-			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
-			Receipts:                    receipts,
-			Paging:                      cmapi.PbPageInfo(paging),
-		}
+	receipts, err := s.getInfosForReceipts(ctx, s.SS.Shop().ID, query.Result.Receipts)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	result := &api.ReceiptsResponse{
+		TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
+		TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
+		Receipts:                    receipts,
+		Paging:                      cmapi.PbPageInfo(paging),
+	}
+	return result, nil
 }
 
 func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID, receipts []*receipting.Receipt) (receiptsResult []*shop.Receipt, _ error) {

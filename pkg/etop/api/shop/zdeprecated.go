@@ -4,51 +4,51 @@ import (
 	"context"
 
 	"o.o/api/main/identity"
-	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/pkg/common/bus"
 )
 
 // deprecated
-func (s *ProductSourceService) CreateProductSource(ctx context.Context, q *CreateProductSourceEndpoint) error {
-	q.Result = &shop.ProductSource{
-		Id:     q.Context.Shop.ID,
+func (s *ProductSourceService) CreateProductSource(ctx context.Context, q *api.CreateProductSourceRequest) (*api.ProductSource, error) {
+	result := &api.ProductSource{
+		Id:     s.SS.Shop().ID,
 		Status: 1,
 	}
-	return nil
+	return result, nil
 }
 
 // deprecated: 2018.07.24+14
-func (s *ProductSourceService) GetShopProductSources(ctx context.Context, q *GetShopProductSourcesEndpoint) error {
-	q.Result = &shop.ProductSourcesResponse{
-		ProductSources: []*shop.ProductSource{
+func (s *ProductSourceService) GetShopProductSources(ctx context.Context, q *pbcm.Empty) (*api.ProductSourcesResponse, error) {
+	result := &api.ProductSourcesResponse{
+		ProductSources: []*api.ProductSource{
 			{
-				Id:     q.Context.Shop.ID,
+				Id:     s.SS.Shop().ID,
 				Status: 1,
 			},
 		},
 	}
-	return nil
+	return result, nil
 }
 
 // deprecated
-func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
+func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *api.UpdateXAccountAhamoveVerificationRequest) (*pbcm.UpdatedResponse, error) {
 	if err := validateUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg, r.WebsiteUrl, r.FanpageUrl); err != nil {
-		return err
+		return nil, err
 	}
 	if err := validateUrl(r.BusinessLicenseImgs...); err != nil {
-		return err
+		return nil, err
 	}
 	if err := validateUrl(r.CompanyImgs...); err != nil {
-		return err
+		return nil, err
 	}
 
 	query := &identitymodelx.GetUserByIDQuery{
-		UserID: r.Context.Shop.OwnerID,
+		UserID: s.SS.Shop().OwnerID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	user := query.Result
 	phone := user.Phone
@@ -65,11 +65,11 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx cont
 		BusinessLicenseImgs: r.BusinessLicenseImgs,
 	}
 	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	r.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: 1,
 	}
-	return nil
+	return result, nil
 }

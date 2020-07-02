@@ -9,6 +9,8 @@ import (
 	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
 	"o.o/api/shopping/customering"
+	"o.o/api/top/int/etop"
+	"o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/receipt_ref"
@@ -22,12 +24,15 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
 type OrderService struct {
+	session.Session
+
 	OrderAggr     ordering.CommandBus
 	CustomerQuery customering.QueryBus
 	OrderQuery    ordering.QueryBus
@@ -35,61 +40,60 @@ type OrderService struct {
 	OrderLogic    *logicorder.OrderLogic
 }
 
-func (s *OrderService) Clone() *OrderService { res := *s; return &res }
+func (s *OrderService) Clone() shop.OrderService { res := *s; return &res }
 
-func (s *OrderService) GetOrder(ctx context.Context, q *GetOrderEndpoint) error {
+func (s *OrderService) GetOrder(ctx context.Context, q *pbcm.IDRequest) (*types.Order, error) {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID:            q.Id,
-		ShopID:             q.Context.Shop.ID,
-		PartnerID:          q.CtxPartner.GetID(),
+		ShopID:             s.SS.Shop().ID,
+		PartnerID:          s.SS.CtxPartner().GetID(),
 		IncludeFulfillment: true,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
-	q.Result.ShopName = q.Context.Shop.Name
-	q.Result.Fulfillments = convertpb.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
-	if err := s.checkValidateCustomer(ctx, []*types.Order{q.Result}); err != nil {
-		return err
+	result := convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
+	result.ShopName = s.SS.Shop().Name
+	result.Fulfillments = convertpb.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
+	if err := s.checkValidateCustomer(ctx, []*types.Order{result}); err != nil {
+		return nil, err
 	}
-
-	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, []*types.Order{q.Result}); err != nil {
-		return err
+	if err := s.addReceivedAmountToOrders(ctx, s.SS.Shop().ID, []*types.Order{result}); err != nil {
+		return nil, err
 	}
-
-	return nil
+	return result, nil
 }
 
-func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) error {
-	shopIDs, err := api.MixAccount(q.Context.Claim, q.Mixed)
+func (s *OrderService) GetOrders(ctx context.Context, q *shop.GetOrdersRequest) (*types.OrdersResponse, error) {
+	claim, partner := s.SS.Claim(), s.SS.CtxPartner()
+	shopIDs, err := api.MixAccount(claim, q.Mixed)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	paging := cmapi.CMPaging(q.Paging)
 	query := &ordermodelx.GetOrdersQuery{
 		ShopIDs:   shopIDs,
-		PartnerID: q.CtxPartner.GetID(),
+		PartnerID: partner.GetID(),
 		Paging:    paging,
 		Filters:   cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &types.OrdersResponse{
+	result := &types.OrdersResponse{
 		Paging: cmapi.PbPageInfo(paging),
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
-	if err := s.checkValidateCustomer(ctx, q.Result.Orders); err != nil {
-		return err
+	if err := s.checkValidateCustomer(ctx, result.Orders); err != nil {
+		return nil, err
 	}
-	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
-		return err
+	if err := s.addReceivedAmountToOrders(ctx, s.SS.Shop().ID, result.Orders); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return result, nil
 }
 
 func (s *OrderService) checkValidateCustomer(ctx context.Context, orders []*types.Order) error {
@@ -125,39 +129,38 @@ func (s *OrderService) checkValidateCustomer(ctx context.Context, orders []*type
 	return nil
 }
 
-func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *GetOrdersByIDsEndpoint) error {
-	shopIDs, err := api.MixAccount(q.Context.Claim, q.Mixed)
+func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *etop.IDsRequest) (*types.OrdersResponse, error) {
+	shopIDs, err := api.MixAccount(s.SS.Claim(), q.Mixed)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	query := &ordermodelx.GetOrdersQuery{
 		ShopIDs:   shopIDs,
-		PartnerID: q.CtxPartner.GetID(),
+		PartnerID: s.SS.CtxPartner().GetID(),
 		IDs:       q.Ids,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &types.OrdersResponse{
+	result := &types.OrdersResponse{
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
-
-	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
-		return err
+	if err := s.addReceivedAmountToOrders(ctx, s.SS.Shop().ID, result.Orders); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return result, nil
 }
 
-func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *GetOrdersByReceiptIDEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *shop.GetOrdersByReceiptIDRequest) (*types.OrdersResponse, error) {
+	shopID := s.SS.Shop().ID
 	queryReceipt := &receipting.GetReceiptByIDQuery{
 		ID:     q.ReceiptId,
 		ShopID: shopID,
 	}
 	if err := s.ReceiptQuery.Dispatch(ctx, queryReceipt); err != nil {
-		return err
+		return nil, err
 	}
 	var arrOrderID []dot.ID
 	for _, value := range queryReceipt.Result.Lines {
@@ -166,42 +169,42 @@ func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *GetOrdersByR
 
 	query := &ordermodelx.GetOrdersQuery{
 		ShopIDs:   []dot.ID{shopID},
-		PartnerID: q.CtxPartner.GetID(),
+		PartnerID: s.SS.CtxPartner().GetID(),
 		IDs:       arrOrderID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &types.OrdersResponse{
+	result := &types.OrdersResponse{
 		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 
-	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
-		return err
+	if err := s.addReceivedAmountToOrders(ctx, s.SS.Shop().ID, result.Orders); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return result, nil
 }
 
-func (s *OrderService) UpdateOrdersStatus(ctx context.Context, q *UpdateOrdersStatusEndpoint) error {
+func (s *OrderService) UpdateOrdersStatus(ctx context.Context, q *shop.UpdateOrdersStatusRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &ordermodelx.UpdateOrdersStatusCommand{
-		ShopID:       q.Context.Shop.ID,
-		PartnerID:    q.CtxPartner.GetID(),
+		ShopID:       s.SS.Shop().ID,
+		PartnerID:    s.SS.CtxPartner().GetID(),
 		OrderIDs:     q.Ids,
 		ShopConfirm:  q.Confirm,
 		CancelReason: q.CancelReason,
 		Status:       q.Status.Wrap(),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: cmd.Result.Updated}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result.Updated}
+	return result, nil
 }
 
-func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) error {
+func (s *OrderService) CreateOrder(ctx context.Context, q *types.CreateOrderRequest) (result *types.Order, err error) {
 	if q.CustomerId == 0 && q.Customer == nil {
-		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin tên khách hàng, vui lòng kiểm tra lại.")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin tên khách hàng, vui lòng kiểm tra lại.")
 	}
 	customerKey := q.CustomerId.String()
 	if q.Customer != nil {
@@ -216,19 +219,19 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 		variantIDs = append(variantIDs, line.VariantId)
 	}
 	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v-%v",
-		q.Context.Shop.ID, customerKey,
+		s.SS.Shop().ID, customerKey,
 		q.TotalAmount, q.BasketValue, q.ShopCod, dot.JoinIDs(variantIDs))
 
 	res, cached, err := idempgroup.DoAndWrap(
 		ctx, key, 30*time.Second, "tạo đơn hàng",
 		func() (interface{}, error) { return s.createOrder(ctx, q) })
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	defer func() { q.Result = res.(*CreateOrderEndpoint).Result }()
+	defer func() { result = res.(*types.Order) }()
 	if !cached {
-		return nil
+		return result, nil
 	}
 
 	// FIX(vu): https://github.com/etopvn/one/issues/1910
@@ -242,9 +245,9 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 		ctx, key2, 5*time.Second, "tạo đơn hàng",
 		func() (interface{}, error) {
 			query := &ordermodelx.GetOrderQuery{
-				OrderID:            res.(*CreateOrderEndpoint).Result.Id,
-				ShopID:             q.Context.Shop.ID,
-				PartnerID:          q.CtxPartner.GetID(),
+				OrderID:            res.(*types.Order).Id,
+				ShopID:             s.SS.Shop().ID,
+				PartnerID:          s.SS.CtxPartner().GetID(),
 				IncludeFulfillment: true,
 			}
 			if _err := bus.Dispatch(ctx, query); _err != nil {
@@ -260,71 +263,64 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 				func() (interface{}, error) { return s.createOrder(ctx, q) })
 			return _res, _err // keep the response
 		})
-	return nil
+	return result, nil
 }
 
-func (s *OrderService) createOrder(ctx context.Context, q *CreateOrderEndpoint) (*CreateOrderEndpoint, error) {
-	result, err := s.OrderLogic.CreateOrder(ctx, &q.Context, q.CtxPartner, q.CreateOrderRequest, nil, q.Context.UserID)
-	q.Result = result
-	return q, err
+func (s *OrderService) createOrder(ctx context.Context, q *types.CreateOrderRequest) (*types.Order, error) {
+	result, err := s.OrderLogic.CreateOrder(ctx, s.SS.Shop(), s.SS.CtxPartner(), q, nil, s.SS.Claim().UserID)
+	return result, err
 }
 
-func (s *OrderService) UpdateOrder(ctx context.Context, q *UpdateOrderEndpoint) error {
-	result, err := s.OrderLogic.UpdateOrder(ctx, &q.Context, q.CtxPartner, q.UpdateOrderRequest)
-	q.Result = result
-	return err
+func (s *OrderService) UpdateOrder(ctx context.Context, q *types.UpdateOrderRequest) (*types.Order, error) {
+	result, err := s.OrderLogic.UpdateOrder(ctx, s.SS.Shop(), s.SS.CtxPartner(), q)
+	return result, err
 }
 
-func (s *OrderService) CancelOrder(ctx context.Context, q *CancelOrderEndpoint) error {
-	key := fmt.Sprintf("cancelOrder %v-%v", q.Context.Shop.ID, q.OrderId)
+func (s *OrderService) CancelOrder(ctx context.Context, q *shop.CancelOrderRequest) (*types.OrderWithErrorsResponse, error) {
+	key := fmt.Sprintf("cancelOrder %v-%v", s.SS.Shop().ID, q.OrderId)
 	res, _, err := idempgroup.DoAndWrap(
 		ctx, key, 5*time.Second, "hủy đơn hàng",
 		func() (interface{}, error) { return s.cancelOrder(ctx, q) })
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = res.(*CancelOrderEndpoint).Result
-	return nil
+	result := res.(*types.OrderWithErrorsResponse)
+	return result, nil
 }
 
-func (s *OrderService) cancelOrder(ctx context.Context, q *CancelOrderEndpoint) (*CancelOrderEndpoint, error) {
-	resp, err := s.OrderLogic.CancelOrder(ctx, q.Context.UserID, q.Context.Shop.ID, q.Context.AuthPartnerID, q.OrderId, q.CancelReason, q.AutoInventoryVoucher)
-	q.Result = resp
-	return q, err
+func (s *OrderService) cancelOrder(ctx context.Context, q *shop.CancelOrderRequest) (*types.OrderWithErrorsResponse, error) {
+	resp, err := s.OrderLogic.CancelOrder(ctx, s.SS.Claim().UserID, s.SS.Shop().ID, s.SS.Claim().AuthPartnerID, q.OrderId, q.CancelReason, q.AutoInventoryVoucher)
+	return resp, err
 }
 
-func (s *OrderService) CompleteOrder(ctx context.Context, q *CompleteOrderEndpoint) error {
+func (s *OrderService) CompleteOrder(ctx context.Context, q *shop.OrderIDRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &ordering.CompleteOrderCommand{
 		OrderID: q.OrderId,
-		ShopID:  q.Context.Shop.ID,
+		ShopID:  s.SS.Shop().ID,
 	}
 	if err := s.OrderAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{Updated: 1}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: 1}
+	return result, nil
 
 }
 
-func (s *OrderService) ConfirmOrder(ctx context.Context, q *ConfirmOrderEndpoint) error {
-	key := fmt.Sprintf("ConfirmOrder %v-%v", q.Context.Shop.ID, q.OrderId)
+func (s *OrderService) ConfirmOrder(ctx context.Context, q *shop.ConfirmOrderRequest) (*types.Order, error) {
+	key := fmt.Sprintf("ConfirmOrder %v-%v", s.SS.Shop().ID, q.OrderId)
 	res, _, err := idempgroup.DoAndWrap(
 		ctx, key, 10*time.Second, "Xác nhận đơn hàng",
 		func() (interface{}, error) { return s.confirmOrder(ctx, q) })
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = res.(*ConfirmOrderEndpoint).Result
-	return nil
+	result := res.(*types.Order)
+	return result, nil
 }
 
-func (s *OrderService) confirmOrder(ctx context.Context, q *ConfirmOrderEndpoint) (_ *ConfirmOrderEndpoint, _err error) {
-	resp, err := s.OrderLogic.ConfirmOrder(ctx, q.Context.UserID, q.Context.Shop, q.ConfirmOrderRequest)
-	if err != nil {
-		return q, err
-	}
-	q.Result = resp
-	return q, nil
+func (s *OrderService) confirmOrder(ctx context.Context, q *shop.ConfirmOrderRequest) (*types.Order, error) {
+	resp, err := s.OrderLogic.ConfirmOrder(ctx, s.SS.Claim().UserID, s.SS.Shop(), q)
+	return resp, err
 }
 
 /*
@@ -340,17 +336,17 @@ func (s *OrderService) confirmOrder(ctx context.Context, q *ConfirmOrderEndpoint
 	4. UpdateInfo fulfillment information and status from GHN
 */
 
-func (s *OrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) (_err error) {
-	key := fmt.Sprintf("ConfirmOrderAndCreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderId)
+func (s *OrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, q *shop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
+	key := fmt.Sprintf("ConfirmOrderAndCreateFulfillments %v-%v", s.SS.Shop().ID, q.OrderId)
 	res, _, err := idempgroup.DoAndWrap(
 		ctx, key, 10*time.Second, "xác nhận đơn hàng",
 		func() (interface{}, error) { return s.confirmOrderAndCreateFulfillments(ctx, q) })
 
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = res.(*ConfirmOrderAndCreateFulfillmentsEndpoint).Result
-	return err
+	result := res.(*types.OrderWithErrorsResponse)
+	return result, nil
 }
 
 func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot.ID, orders []*types.Order) error {
@@ -395,52 +391,50 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot
 	return nil
 }
 
-func (s *OrderService) confirmOrderAndCreateFulfillments(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) (_ *ConfirmOrderAndCreateFulfillmentsEndpoint, _err error) {
-	resp, err := s.OrderLogic.ConfirmOrderAndCreateFulfillments(ctx, q.Context.UserID, q.Context.Shop, q.Context.AuthPartnerID, q.OrderIDRequest)
+func (s *OrderService) confirmOrderAndCreateFulfillments(ctx context.Context, q *shop.OrderIDRequest) (resp *types.OrderWithErrorsResponse, _err error) {
+	resp, err := s.OrderLogic.ConfirmOrderAndCreateFulfillments(ctx, s.SS.Claim().UserID, s.SS.Shop(), s.SS.Claim().AuthPartnerID, q)
 	if err != nil {
-		return q, err
+		return nil, err
 	}
-	q.Result = resp
-
-	return q, nil
+	return resp, nil
 }
 
-func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOrderPaymentStatusEndpoint) error {
+func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *shop.UpdateOrderPaymentStatusRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &ordermodelx.UpdateOrderPaymentStatusCommand{
-		ShopID:        q.Context.Shop.ID,
+		ShopID:        s.SS.Shop().ID,
 		OrderID:       q.OrderId,
 		PaymentStatus: q.Status,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: cmd.Result.Updated,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrderShippingInfoEndpoint) error {
+func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *shop.UpdateOrderShippingInfoRequest) (*pbcm.UpdatedResponse, error) {
 	shippingAddressModel, err := convertpb.OrderAddressToModel(q.ShippingAddress)
 	if err != nil {
-		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
 	}
 	var order = new(ordermodel.Order)
 	if err := convertpb.OrderShippingToModel(ctx, q.Shipping, order); err != nil {
-		return err
+		return nil, err
 	}
 	cmd := &ordermodelx.UpdateOrderShippingInfoCommand{
-		ShopID:          q.Context.Shop.ID,
+		ShopID:          s.SS.Shop().ID,
 		OrderID:         q.OrderId,
 		ShippingAddress: shippingAddressModel,
 		Shipping:        order.ShopShipping,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: cmd.Result.Updated,
 	}
-	return nil
+	return result, nil
 }

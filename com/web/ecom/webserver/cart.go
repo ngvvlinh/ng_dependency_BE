@@ -174,7 +174,7 @@ func (s *Server) CreateOrder(c echo.Context) error {
 		PreOrder:        true,
 	}
 
-	order, err := orderLogic.CreateOrder(c.Request().Context(), &claimsShop, nil, cmdCreateOrder, nil, 0)
+	order, err := orderLogic.CreateOrder(c.Request().Context(), claimsShop.Shop, nil, cmdCreateOrder, nil, 0)
 	if err != nil {
 		return err
 	}

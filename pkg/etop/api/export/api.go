@@ -51,7 +51,7 @@ func New(rd redis.Store, p eventstream.Publisher, cfg Config) (*Service, func())
 	}, idempgroup.Shutdown
 }
 
-func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *identitymodel.Shop, userID dot.ID, r *apishop.RequestExportRequest) (_ *apishop.RequestExportResponse, _err error) {
+func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *identitymodel.Shop, userID dot.ID, r *apishop.RequestExportRequest) (_ *apishop.RequestExportResponse, _err error) {
 	if userID == 0 {
 		return nil, cm.Errorf(cm.PermissionDenied, nil, "")
 	}

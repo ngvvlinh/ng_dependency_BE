@@ -28,7 +28,6 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
-	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -39,7 +38,7 @@ import (
 var ll = l.New()
 
 func (s *OrderLogic) CreateOrder(
-	ctx context.Context, claim *claims.ShopClaim,
+	ctx context.Context, shop *identitymodel.Shop,
 	authPartner *identitymodel.Partner, r *types.CreateOrderRequest,
 	tradingShopID *dot.ID, userID dot.ID) (*types.Order, error) {
 	shipping := r.ShopShipping
@@ -58,7 +57,7 @@ func (s *OrderLogic) CreateOrder(
 		return nil, cm.Error(cm.InvalidArgument, "Nhà vận chuyển không hợp lệ", nil)
 	}
 	if r.ExternalUrl != "" {
-		recognizedHosts := claim.Shop.RecognizedHosts
+		recognizedHosts := shop.RecognizedHosts
 		if authPartner != nil {
 			recognizedHosts = authPartner.RecognizedHosts
 		}
@@ -82,7 +81,7 @@ func (s *OrderLogic) CreateOrder(
 	if r.CustomerId != 0 && r.Customer == nil {
 		getCustomerQuery := &customering.GetCustomerByIDQuery{
 			ID:     r.CustomerId,
-			ShopID: claim.Shop.ID,
+			ShopID: shop.ID,
 		}
 		if err := customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
 			return nil, err
@@ -97,7 +96,7 @@ func (s *OrderLogic) CreateOrder(
 		isHaveCustomerAddress := true
 		getAddressQuery := &addressing.GetAddressActiveByTraderIDQuery{
 			TraderID: r.CustomerId,
-			ShopID:   claim.Shop.ID,
+			ShopID:   shop.ID,
 		}
 		if err := traderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
 			switch cm.ErrorCode(err) {
@@ -136,7 +135,7 @@ func (s *OrderLogic) CreateOrder(
 		shippingAddress.Phone != "" && shippingAddress.FullName != "" {
 		getCustomerByPhone := &customering.GetCustomerByPhoneQuery{
 			Phone:  shippingAddress.Phone,
-			ShopID: claim.Shop.ID,
+			ShopID: shop.ID,
 		}
 		if err := customerQuery.Dispatch(ctx, getCustomerByPhone); err != nil && cm.ErrorCode(err) != cm.NotFound {
 			return nil, err
@@ -147,7 +146,7 @@ func (s *OrderLogic) CreateOrder(
 		if shippingAddress.Email != "" {
 			getCustomerByEmail := &customering.GetCustomerByEmailQuery{
 				Email:  shippingAddress.Email,
-				ShopID: claim.Shop.ID,
+				ShopID: shop.ID,
 			}
 			if err := customerQuery.Dispatch(ctx, getCustomerByEmail); err != nil && cm.ErrorCode(err) != cm.NotFound {
 				return nil, err
@@ -158,7 +157,7 @@ func (s *OrderLogic) CreateOrder(
 		if phoneCustomer == nil {
 			if emailCustomer == nil {
 				createCustomerCmd := &customering.CreateCustomerCommand{
-					ShopID:   claim.Shop.ID,
+					ShopID:   shop.ID,
 					FullName: shippingAddress.FullName,
 					Type:     customer_type.Individual,
 					Phone:    shippingAddress.Phone,
@@ -170,7 +169,7 @@ func (s *OrderLogic) CreateOrder(
 				r.CustomerId = createCustomerCmd.Result.ID
 			} else {
 				createCustomerCmd := &customering.CreateCustomerCommand{
-					ShopID:   claim.Shop.ID,
+					ShopID:   shop.ID,
 					FullName: shippingAddress.FullName,
 					Type:     customer_type.Individual,
 					Phone:    shippingAddress.Phone,
@@ -184,7 +183,7 @@ func (s *OrderLogic) CreateOrder(
 			if emailCustomer == nil {
 				cmd := &customering.UpdateCustomerCommand{
 					ID:       phoneCustomer.ID,
-					ShopID:   claim.Shop.ID,
+					ShopID:   shop.ID,
 					FullName: dot.String(shippingAddress.FullName),
 					Email:    dot.String(shippingAddress.Email),
 				}
@@ -194,7 +193,7 @@ func (s *OrderLogic) CreateOrder(
 			} else {
 				cmd := &customering.UpdateCustomerCommand{
 					ID:       phoneCustomer.ID,
-					ShopID:   claim.Shop.ID,
+					ShopID:   shop.ID,
 					FullName: dot.String(shippingAddress.FullName),
 				}
 				if err := customerAggr.Dispatch(ctx, cmd); err != nil {
@@ -204,10 +203,10 @@ func (s *OrderLogic) CreateOrder(
 			r.CustomerId = phoneCustomer.ID
 		}
 		// ignore err
-		if _err := updateOrCreateCustomerAddress(ctx, claim.Shop.ID, r.CustomerId, shippingAddress); _err != nil {
+		if _err := updateOrCreateCustomerAddress(ctx, shop.ID, r.CustomerId, shippingAddress); _err != nil {
 			ll.Error("Auto cập nhật Customer Address lỗi", l.Error(_err))
 		}
-		r.Customer = getCustomerByID(ctx, claim.Shop.ID, r.CustomerId)
+		r.Customer = getCustomerByID(ctx, shop.ID, r.CustomerId)
 	}
 	if r.CustomerId == 0 && r.ShippingAddress == nil {
 		cmd := &customering.GetCustomerIndependentQuery{}
@@ -220,7 +219,6 @@ func (s *OrderLogic) CreateOrder(
 			Type:     cmd.Result.Type,
 		}
 	}
-	shop := claim.Shop
 	lines, err := PrepareOrderLines(ctx, shop.ID, r.Lines)
 	if err != nil {
 		return nil, err
@@ -291,7 +289,7 @@ func (s *OrderLogic) CreateOrder(
 		return nil, err
 	}
 	result := convertpb.PbOrder(order, nil, model.TagShop)
-	result.ShopName = claim.Shop.Name
+	result.ShopName = shop.Name
 	return result, nil
 }
 
@@ -477,10 +475,10 @@ func PrepareOrderLines(
 	return res, nil
 }
 
-func (s *OrderLogic) UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *identitymodel.Partner, q *types.UpdateOrderRequest) (*types.Order, error) {
+func (s *OrderLogic) UpdateOrder(ctx context.Context, shop *identitymodel.Shop, authPartner *identitymodel.Partner, q *types.UpdateOrderRequest) (*types.Order, error) {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID: q.Id,
-		ShopID:  claim.Shop.ID,
+		ShopID:  shop.ID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -505,7 +503,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, claim *claims.ShopClaim, a
 	}
 
 	// make sure update always has Lines and FeeLines
-	lines, err := PrepareOrderLines(ctx, claim.Shop.ID, q.Lines)
+	lines, err := PrepareOrderLines(ctx, shop.ID, q.Lines)
 	if err != nil {
 		return nil, err
 	}
@@ -591,7 +589,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, claim *claims.ShopClaim, a
 	if q.CustomerId != 0 {
 		query := &customering.GetCustomerByIDQuery{
 			ID:     q.CustomerId,
-			ShopID: claim.Shop.ID,
+			ShopID: shop.ID,
 		}
 		if err := customerQuery.Dispatch(ctx, query); err != nil {
 			return nil, cm.MapError(err).
@@ -609,7 +607,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, claim *claims.ShopClaim, a
 
 		isHaveAddress := true
 		getAddressQuery := &addressing.GetAddressActiveByTraderIDQuery{
-			ShopID:   claim.Shop.ID,
+			ShopID:   shop.ID,
 			TraderID: q.CustomerId,
 		}
 		if err := traderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
@@ -651,7 +649,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, claim *claims.ShopClaim, a
 
 	cmd := &ordermodelx.UpdateOrderCommand{
 		ID:              q.Id,
-		ShopID:          claim.Shop.ID,
+		ShopID:          shop.ID,
 		Customer:        convertpb.OrderCustomerToModel(q.Customer),
 		CustomerAddress: customerAddress,
 		BillingAddress:  billingAddress,
@@ -686,7 +684,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, claim *claims.ShopClaim, a
 		return nil, err
 	}
 	result := convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
-	result.ShopName = claim.Shop.Name
+	result.ShopName = shop.Name
 
 	return result, nil
 }

@@ -4,48 +4,52 @@ import (
 	"context"
 
 	"o.o/api/main/catalog"
-	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
+	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type CollectionService struct {
+	session.Session
+
 	CatalogQuery catalog.QueryBus
 	CatalogAggr  catalog.CommandBus
 }
 
-func (s *CollectionService) Clone() *CollectionService { res := *s; return &res }
+func (s *CollectionService) Clone() api.CollectionService { res := *s; return &res }
 
-func (s *CollectionService) GetCollection(ctx context.Context, q *GetCollectionEndpoint) error {
+func (s *CollectionService) GetCollection(ctx context.Context, q *pbcm.IDRequest) (*api.ShopCollection, error) {
 	query := &catalog.GetShopCollectionQuery{
 		ID:     q.Id,
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopCollection(query.Result)
-	return nil
+	result := PbShopCollection(query.Result)
+	return result, nil
 }
 
-func (s *CollectionService) GetCollections(ctx context.Context, q *GetCollectionsEndpoint) error {
+func (s *CollectionService) GetCollections(ctx context.Context, q *api.GetCollectionsRequest) (*api.ShopCollectionsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopCollectionsQuery{
-		ShopID:  q.Context.Shop.ID,
+		ShopID:  s.SS.Shop().ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.ShopCollectionsResponse{
+	result := &api.ShopCollectionsResponse{
 		Paging:      cmapi.PbPageInfo(paging),
 		Collections: PbShopCollections(query.Result.Collections),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *CollectionService) UpdateCollection(ctx context.Context, q *UpdateCollectionEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *CollectionService) UpdateCollection(ctx context.Context, q *api.UpdateCollectionRequest) (*api.ShopCollection, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &catalog.UpdateShopCollectionCommand{
 		ID:          q.Id,
 		ShopID:      shopID,
@@ -55,37 +59,37 @@ func (s *CollectionService) UpdateCollection(ctx context.Context, q *UpdateColle
 		ShortDesc:   q.ShortDesc,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopCollection(cmd.Result)
-	return nil
+	result := PbShopCollection(cmd.Result)
+	return result, nil
 }
 
-func (s *CollectionService) CreateCollection(ctx context.Context, q *CreateCollectionEndpoint) error {
+func (s *CollectionService) CreateCollection(ctx context.Context, q *api.CreateCollectionRequest) (*api.ShopCollection, error) {
 	cmd := &catalog.CreateShopCollectionCommand{
-		ShopID:      q.Context.Shop.ID,
+		ShopID:      s.SS.Shop().ID,
 		Name:        q.Name,
 		DescHTML:    q.DescHtml,
 		Description: q.Description,
 		ShortDesc:   q.ShortDesc,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopCollection(cmd.Result)
-	return nil
+	result := PbShopCollection(cmd.Result)
+	return result, nil
 }
 
-func (s *CollectionService) GetCollectionsByProductID(ctx context.Context, q *GetCollectionsByProductIDEndpoint) error {
+func (s *CollectionService) GetCollectionsByProductID(ctx context.Context, q *api.GetShopCollectionsByProductIDRequest) (*api.CollectionsResponse, error) {
 	query := &catalog.ListShopCollectionsByProductIDQuery{
-		ShopID:    q.Context.Shop.ID,
+		ShopID:    s.SS.Shop().ID,
 		ProductID: q.ProductId,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.CollectionsResponse{
+	result := &api.CollectionsResponse{
 		Collections: PbShopCollections(query.Result),
 	}
-	return nil
+	return result, nil
 }

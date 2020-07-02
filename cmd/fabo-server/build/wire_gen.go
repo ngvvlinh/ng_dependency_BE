@@ -202,12 +202,15 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	}
 	emailConfig := cfg.Email
 	servers, cleanup := api.NewServers(miscService, userService, accountService, locationService, bankService, addressService, accountRelationshipService, userRelationshipService, ecomService, store, emailConfig, smsConfig)
-	shopMiscService := &shop.MiscService{}
+	shopMiscService := &shop.MiscService{
+		Session: session,
+	}
 	queryQueryService := query3.New(mainDB)
 	catalogQueryBus := query3.QueryServiceMessageBus(queryQueryService)
 	aggregateAggregate := aggregate4.New(eventBus, mainDB)
 	catalogCommandBus := aggregate4.AggregateMessageBus(aggregateAggregate)
 	brandService := &shop.BrandService{
+		Session:      session,
 		CatalogQuery: catalogQueryBus,
 		CatalogAggr:  catalogCommandBus,
 	}
@@ -232,6 +235,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	inventoryAggregate := aggregate5.NewAggregateInventory(eventBus, mainDB, traderingQueryBus, purchaseorderQueryBus, stocktakingQueryBus, refundQueryBus, purchaserefundQueryBus, catalogQueryBus)
 	inventoryCommandBus := aggregate5.InventoryAggregateMessageBus(inventoryAggregate)
 	inventoryService := &shop.InventoryService{
+		Session:        session,
 		TraderQuery:    traderingQueryBus,
 		InventoryAggr:  inventoryCommandBus,
 		InventoryQuery: inventoryQueryBus,
@@ -245,6 +249,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		AddressQuery:  addressQueryBus,
 	}
 	collectionService := &shop.CollectionService{
+		Session:      session,
 		CatalogQuery: catalogQueryBus,
 		CatalogAggr:  catalogCommandBus,
 	}
@@ -257,6 +262,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	orderingQueryService := ordering.NewQueryService(mainDB)
 	orderingQueryBus := ordering.QueryServiceMessageBus(orderingQueryService)
 	customerService := &shop.CustomerService{
+		Session:       session,
 		LocationQuery: locationQueryBus,
 		CustomerQuery: customeringQueryBus,
 		CustomerAggr:  customeringCommandBus,
@@ -266,19 +272,24 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		ReceiptQuery:  receiptingQueryBus,
 	}
 	customerGroupService := &shop.CustomerGroupService{
+		Session:       session,
 		CustomerAggr:  customeringCommandBus,
 		CustomerQuery: customeringQueryBus,
 	}
 	productService := &shop.ProductService{
+		Session:        session,
 		CatalogQuery:   catalogQueryBus,
 		CatalogAggr:    catalogCommandBus,
 		InventoryQuery: inventoryQueryBus,
 	}
 	categoryService := &shop.CategoryService{
+		Session:      session,
 		CatalogQuery: catalogQueryBus,
 		CatalogAggr:  catalogCommandBus,
 	}
-	productSourceService := &shop.ProductSourceService{}
+	productSourceService := &shop.ProductSourceService{
+		Session: session,
+	}
 	orderingAggregate := ordering.NewAggregate(eventBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
 	notifierDB := databases.Notifier
@@ -308,6 +319,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	}
 	orderLogic := orderS.New(carrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, locationQueryBus, eventBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
 	orderService := &shop.OrderService{
+		Session:       session,
 		OrderAggr:     orderingCommandBus,
 		CustomerQuery: customeringQueryBus,
 		OrderQuery:    orderingQueryBus,
@@ -317,6 +329,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	queryService2 := query14.NewQueryService(mainDB)
 	shippingQueryBus := query14.QueryServiceMessageBus(queryService2)
 	fulfillmentService := &shop.FulfillmentService{
+		Session:       session,
 		ShippingQuery: shippingQueryBus,
 		ShippingCtrl:  carrierManager,
 	}
@@ -325,19 +338,24 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	shipnowQueryService := shipnow.NewQueryService(mainDB)
 	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
 	shipnowService := &shop.ShipnowService{
+		Session:      session,
 		ShipnowAggr:  shipnowCommandBus,
 		ShipnowQuery: shipnowQueryBus,
 	}
-	historyService := &shop.HistoryService{}
+	historyService := &shop.HistoryService{
+		Session: session,
+	}
 	moneyTxQuery := query15.NewMoneyTxQuery(mainDB, shippingQueryBus)
 	moneytxQueryBus := query15.MoneyTxQueryMessageBus(moneyTxQuery)
 	moneyTransactionService := &shop.MoneyTransactionService{
+		Session:      session,
 		MoneyTxQuery: moneytxQueryBus,
 	}
 	dashboardQuery := query16.NewDashboardQuery(mainDB, store, locationQueryBus)
 	summaryQueryBus := query16.DashboardQueryMessageBus(dashboardQuery)
 	summarySummary := summary.New(mainDB)
 	summaryService := &shop.SummaryService{
+		Session:      session,
 		SummaryQuery: summaryQueryBus,
 		SummaryOld:   summarySummary,
 	}
@@ -345,15 +363,21 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	exportConfig := cfg.Export
 	service, cleanup2 := export.New(store, eventStream, exportConfig)
 	exportService := &shop.ExportService{
+		Session:     session,
 		ExportInner: service,
 	}
-	notificationService := &shop.NotificationService{}
-	authorizeService := &shop.AuthorizeService{}
+	notificationService := &shop.NotificationService{
+		Session: session,
+	}
+	authorizeService := &shop.AuthorizeService{
+		Session: session,
+	}
 	ledgerQuery := query17.NewLedgerQuery(mainDB)
 	ledgeringQueryBus := query17.LedgerQueryMessageBus(ledgerQuery)
 	receiptAggregate := aggregate8.NewReceiptAggregate(mainDB, eventBus, traderingQueryBus, ledgeringQueryBus, orderingQueryBus, customeringQueryBus, carryingQueryBus, supplieringQueryBus, purchaseorderQueryBus)
 	receiptingCommandBus := aggregate8.ReceiptAggregateMessageBus(receiptAggregate)
 	receiptService := &shop.ReceiptService{
+		Session:       session,
 		CarrierQuery:  carryingQueryBus,
 		CustomerQuery: customeringQueryBus,
 		LedgerQuery:   ledgeringQueryBus,
@@ -365,24 +389,28 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	carrierAggregate := aggregate9.NewCarrierAggregate(eventBus, mainDB)
 	carryingCommandBus := aggregate9.CarrierAggregateMessageBus(carrierAggregate)
 	carrierService := &shop.CarrierService{
+		Session:      session,
 		CarrierAggr:  carryingCommandBus,
 		CarrierQuery: carryingQueryBus,
 	}
 	ledgerAggregate := aggregate10.NewLedgerAggregate(mainDB, receiptingQueryBus)
 	ledgeringCommandBus := aggregate10.LedgerAggregateMessageBus(ledgerAggregate)
 	ledgerService := &shop.LedgerService{
+		Session:     session,
 		LedgerAggr:  ledgeringCommandBus,
 		LedgerQuery: ledgeringQueryBus,
 	}
 	purchaseOrderAggregate := aggregate11.NewPurchaseOrderAggregate(mainDB, eventBus, catalogQueryBus, supplieringQueryBus, inventoryQueryBus)
 	purchaseorderCommandBus := aggregate11.PurchaseOrderAggregateMessageBus(purchaseOrderAggregate)
 	purchaseOrderService := &shop.PurchaseOrderService{
+		Session:            session,
 		PurchaseOrderAggr:  purchaseorderCommandBus,
 		PurchaseOrderQuery: purchaseorderQueryBus,
 	}
 	stocktakeAggregate := aggregate12.NewAggregateStocktake(mainDB, eventBus, store)
 	stocktakingCommandBus := aggregate12.StocktakeAggregateMessageBus(stocktakeAggregate)
 	stocktakeService := &shop.StocktakeService{
+		Session:        session,
 		CatalogQuery:   catalogQueryBus,
 		StocktakeAggr:  stocktakingCommandBus,
 		StocktakeQuery: stocktakingQueryBus,
@@ -391,10 +419,12 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	aggregate17 := aggregate13.NewAggregate(mainDB, eventBus, locationQueryBus, orderingQueryBus, shipmentManager, connectioningQueryBus)
 	shippingCommandBus := aggregate13.AggregateMessageBus(aggregate17)
 	shipmentService := &shop.ShipmentService{
+		Session:           session,
 		ShipmentManager:   shipmentManager,
 		ShippingAggregate: shippingCommandBus,
 	}
 	connectionService := &shop.ConnectionService{
+		Session:         session,
 		ShipmentManager: shipmentManager,
 		ConnectionQuery: connectioningQueryBus,
 		ConnectionAggr:  connectioningCommandBus,
@@ -402,6 +432,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	refundAggregate := aggregate14.NewRefundAggregate(mainDB, eventBus)
 	refundCommandBus := aggregate14.RefundAggregateMessageBus(refundAggregate)
 	refundService := &shop.RefundService{
+		Session:        session,
 		CustomerQuery:  customeringQueryBus,
 		InventoryQuery: inventoryQueryBus,
 		ReceiptQuery:   receiptingQueryBus,
@@ -411,6 +442,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	purchaseRefundAggregate := aggregate15.NewPurchaseRefundAggregate(mainDB, eventBus, purchaseorderQueryBus)
 	purchaserefundCommandBus := aggregate15.PurchaseRefundAggregateMessageBus(purchaseRefundAggregate)
 	purchaseRefundService := &shop.PurchaseRefundService{
+		Session:             session,
 		PurchaseRefundAggr:  purchaserefundCommandBus,
 		PurchaseRefundQuery: purchaserefundQueryBus,
 		SupplierQuery:       supplieringQueryBus,
@@ -545,7 +577,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	vtpostimxlsxImport := vtpostimxlsx.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}
-	importServer := server_admin.BuildImportHandlers(imcsvImport, ghtkimcsvImport, vtpostimxlsxImport)
+	importServer := server_admin.BuildImportHandlers(imcsvImport, ghtkimcsvImport, vtpostimxlsxImport, session)
 	uploadConfig := cfg.Upload
 	uploader, err := _uploader.NewUploader(uploadConfig)
 	if err != nil {
@@ -555,8 +587,8 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	}
 	import2, cleanup3 := imcsv2.New(locationQueryBus, store, uploader, mainDB)
 	import3, cleanup4 := imcsv3.New(store, uploader, mainDB)
-	importHandler := server_shop.BuildImportHandler(import2, import3)
-	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream)
+	importHandler := server_shop.BuildImportHandler(import2, import3, session)
+	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
 	mainServer := BuildMainServer(healthServer, intHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler)
 	webhookConfig := shipment_allConfig.GHNWebhook

@@ -3,20 +3,23 @@ package shop
 import (
 	"context"
 
-	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	catalogmodelx "o.o/backend/com/main/catalog/modelx"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
-type ProductSourceService struct{}
+type ProductSourceService struct {
+	session.Session
+}
 
-func (s *ProductSourceService) Clone() *ProductSourceService { res := *s; return &res }
+func (s *ProductSourceService) Clone() api.ProductSourceService { res := *s; return &res }
 
-func (s *ProductSourceService) CreateVariant(ctx context.Context, q *DeprecatedCreateVariantEndpoint) error {
+func (s *ProductSourceService) CreateVariant(ctx context.Context, q *api.DeprecatedCreateVariantRequest) (*api.ShopProduct, error) {
 	cmd := &catalogmodelx.DeprecatedCreateVariantCommand{
-		ShopID:      q.Context.Shop.ID,
+		ShopID:      s.SS.Shop().ID,
 		ProductID:   q.ProductId,
 		ProductName: q.ProductName,
 		Name:        q.Name,
@@ -41,95 +44,95 @@ func (s *ProductSourceService) CreateVariant(ctx context.Context, q *DeprecatedC
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = PbShopProductWithVariants(cmd.Result)
-	return nil
+	result := PbShopProductWithVariants(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductSourceService) CreateProductSourceCategory(ctx context.Context, q *CreateProductSourceCategoryEndpoint) error {
+func (s *ProductSourceService) CreateProductSourceCategory(ctx context.Context, q *api.CreatePSCategoryRequest) (*api.Category, error) {
 	cmd := &catalogmodelx.CreateShopCategoryCommand{
-		ShopID:   q.Context.Shop.ID,
+		ShopID:   s.SS.Shop().ID,
 		Name:     q.Name,
 		ParentID: q.ParentId,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = convertpb.PbCategory(cmd.Result)
-	return nil
+	result := convertpb.PbCategory(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductSourceService) UpdateProductsPSCategory(ctx context.Context, q *UpdateProductsPSCategoryEndpoint) error {
+func (s *ProductSourceService) UpdateProductsPSCategory(ctx context.Context, q *api.UpdateProductsPSCategoryRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &catalogmodelx.UpdateProductsShopCategoryCommand{
 		CategoryID: q.CategoryId,
 		ProductIDs: q.ProductIds,
-		ShopID:     q.Context.Shop.ID,
+		ShopID:     s.SS.Shop().ID,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: cmd.Result.Updated,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ProductSourceService) GetProductSourceCategory(ctx context.Context, q *GetProductSourceCategoryEndpoint) error {
+func (s *ProductSourceService) GetProductSourceCategory(ctx context.Context, q *pbcm.IDRequest) (*api.Category, error) {
 	cmd := &catalogmodelx.GetShopCategoryQuery{
-		ShopID:     q.Context.Shop.ID,
+		ShopID:     s.SS.Shop().ID,
 		CategoryID: q.Id,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = convertpb.PbCategory(cmd.Result)
-	return nil
+	result := convertpb.PbCategory(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductSourceService) GetProductSourceCategories(ctx context.Context, q *GetProductSourceCategoriesEndpoint) error {
+func (s *ProductSourceService) GetProductSourceCategories(ctx context.Context, q *api.GetProductSourceCategoriesRequest) (*api.CategoriesResponse, error) {
 	cmd := &catalogmodelx.GetProductSourceCategoriesQuery{
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = &shop.CategoriesResponse{
+	result := &api.CategoriesResponse{
 		Categories: convertpb.PbCategories(cmd.Result.Categories),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ProductSourceService) UpdateProductSourceCategory(ctx context.Context, q *UpdateProductSourceCategoryEndpoint) error {
+func (s *ProductSourceService) UpdateProductSourceCategory(ctx context.Context, q *api.UpdateProductSourceCategoryRequest) (*api.Category, error) {
 	cmd := &catalogmodelx.UpdateShopCategoryCommand{
 		ID:       q.Id,
-		ShopID:   q.Context.Shop.ID,
+		ShopID:   s.SS.Shop().ID,
 		ParentID: q.ParentId,
 		Name:     q.Name,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = convertpb.PbCategory(cmd.Result)
-	return nil
+	result := convertpb.PbCategory(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductSourceService) RemoveProductSourceCategory(ctx context.Context, q *RemoveProductSourceCategoryEndpoint) error {
+func (s *ProductSourceService) RemoveProductSourceCategory(ctx context.Context, q *pbcm.IDRequest) (*pbcm.RemovedResponse, error) {
 	cmd := &catalogmodelx.RemoveShopCategoryCommand{
 		ID:     q.Id,
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.RemovedResponse{
+	result := &pbcm.RemovedResponse{
 		Removed: cmd.Result.Removed,
 	}
-	return nil
+	return result, nil
 }

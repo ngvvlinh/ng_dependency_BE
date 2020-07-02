@@ -5,23 +5,23 @@ import (
 
 	"o.o/api/main/location"
 	"o.o/api/shopping/addressing"
-	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/api/convertpb"
 )
 
-func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *CreateCustomerAddressEndpoint) error {
+func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *api.CreateCustomerAddressRequest) (*api.CustomerAddress, error) {
 	query := &location.GetLocationQuery{
 		DistrictCode: r.DistrictCode,
 		WardCode:     r.WardCode,
 	}
 	if err := s.LocationQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
 	cmd := &addressing.CreateAddressCommand{
-		ShopID:       r.Context.Shop.ID,
+		ShopID:       s.SS.Shop().ID,
 		TraderID:     r.CustomerId,
 		FullName:     r.FullName,
 		Phone:        r.Phone,
@@ -36,59 +36,59 @@ func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *CreateCu
 		IsDefault:    true,
 	}
 	if err := s.AddressAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 	pbAddr, err := convertpb.PbShopAddress(ctx, cmd.Result, s.LocationQuery)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = pbAddr
-	return nil
+	result := pbAddr
+	return result, nil
 }
 
-func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *DeleteCustomerAddressEndpoint) error {
+func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *pbcm.IDRequest) (*pbcm.DeletedResponse, error) {
 	cmd := &addressing.DeleteAddressCommand{
 		ID:     r.Id,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.AddressAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.DeletedResponse{Deleted: cmd.Result}
-	return nil
+	result := &pbcm.DeletedResponse{Deleted: cmd.Result}
+	return result, nil
 }
 
-func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *GetCustomerAddressesEndpoint) error {
+func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *api.GetCustomerAddressesRequest) (*api.CustomerAddressesResponse, error) {
 	query := &addressing.ListAddressesByTraderIDQuery{
-		ShopID:   r.Context.Shop.ID,
+		ShopID:   s.SS.Shop().ID,
 		TraderID: r.CustomerId,
 	}
 	if err := s.AddressQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	addrs, err := convertpb.PbShopAddresses(ctx, query.Result.ShopTraderAddresses, s.LocationQuery)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.CustomerAddressesResponse{Addresses: addrs}
-	return nil
+	result := &api.CustomerAddressesResponse{Addresses: addrs}
+	return result, nil
 }
 
-func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCustomerAddressEndpoint) error {
+func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *api.UpdateCustomerAddressRequest) (*api.CustomerAddress, error) {
 	if r.DistrictCode.Valid && r.WardCode.Valid {
 		query := &location.GetLocationQuery{
 			DistrictCode: r.DistrictCode.String,
 			WardCode:     r.WardCode.String,
 		}
 		if err := s.LocationQuery.Dispatch(ctx, query); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	// TODO: verify district & ward code
 	cmd := &addressing.UpdateAddressCommand{
 		ID:           r.Id,
-		ShopID:       r.Context.Shop.ID,
+		ShopID:       s.SS.Shop().ID,
 		FullName:     r.FullName,
 		Phone:        r.Phone,
 		Email:        r.Email,
@@ -101,23 +101,23 @@ func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCu
 		Coordinates:  convertpb.PbCoordinatesToModel(r.Coordinates),
 	}
 	if err := s.AddressAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 	addr, err := convertpb.PbShopAddress(ctx, cmd.Result, s.LocationQuery)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = addr
-	return nil
+	result := addr
+	return result, nil
 }
 
-func (s *CustomerService) SetDefaultCustomerAddress(ctx context.Context, r *SetDefaultCustomerAddressEndpoint) error {
+func (s *CustomerService) SetDefaultCustomerAddress(ctx context.Context, r *pbcm.IDRequest) (*pbcm.UpdatedResponse, error) {
 	query := &addressing.GetAddressByIDQuery{
 		ID:     r.Id,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.AddressQuery.Dispatch(ctx, query); err != nil {
-		return cm.MapError(err).
+		return nil, cm.MapError(err).
 			Wrap(cm.NotFound, "traderAddress not found").
 			Throw()
 	}
@@ -125,11 +125,11 @@ func (s *CustomerService) SetDefaultCustomerAddress(ctx context.Context, r *SetD
 	setDefaultAddressCmd := &addressing.SetDefaultAddressCommand{
 		ID:       r.Id,
 		TraderID: query.Result.TraderID,
-		ShopID:   r.Context.Shop.ID,
+		ShopID:   s.SS.Shop().ID,
 	}
 	if err := s.AddressAggr.Dispatch(ctx, setDefaultAddressCmd); err != nil {
-		return nil
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: setDefaultAddressCmd.Result.Updated}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: setDefaultAddressCmd.Result.Updated}
+	return result, nil
 }

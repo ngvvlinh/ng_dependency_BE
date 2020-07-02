@@ -10,6 +10,7 @@ import (
 	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/etop/authorize/permission"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/eventstream"
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
 	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
@@ -27,10 +28,13 @@ type ImportHandler httpx.Server
 func BuildImportHandler(
 	orderImport *imcsv.Import,
 	productImport *productimcsv.Import,
+	ss session.Session,
 ) ImportHandler {
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(false))
-	rt.Use(httpx.Auth(permission.Shop))
+
+	perm := permission.Decl{Type: permission.Shop}
+	rt.Use(httpx.Auth(perm, ss))
 
 	rt.POST("/api/shop.Import/Orders", orderImport.HandleImportOrders)
 	rt.POST("/api/shop.Import/Products", productImport.HandleShopImportProducts)
@@ -42,10 +46,13 @@ type EventStreamHandler httpx.Server
 
 func BuildEventStreamHandler(
 	eventStreamer *eventstream.EventStream,
+	ss session.Session,
 ) EventStreamHandler {
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(false))
-	rt.Use(httpx.Auth(permission.Shop))
+
+	perm := permission.Decl{Type: permission.Shop}
+	rt.Use(httpx.Auth(perm, ss))
 	rt.GET("/api/event-stream", eventStreamer.HandleEventStream)
 
 	s := headers.ForwardHeaders(rt, headers.Config{AllowQueryAuthorization: true})

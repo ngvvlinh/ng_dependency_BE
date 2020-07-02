@@ -8,26 +8,30 @@ import (
 	"o.o/api/main/inventory"
 	"o.o/api/meta"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	catalogmodelx "o.o/backend/com/main/catalog/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
 
 type ProductService struct {
+	session.Session
+
 	CatalogQuery   catalog.QueryBus
 	CatalogAggr    catalog.CommandBus
 	InventoryQuery inventory.QueryBus
 }
 
-func (s *ProductService) Clone() *ProductService { res := *s; return &res }
+func (s *ProductService) Clone() api.ProductService { res := *s; return &res }
 
-func (s *ProductService) UpdateVariant(ctx context.Context, q *UpdateVariantEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateVariant(ctx context.Context, q *api.UpdateVariantRequest) (*api.ShopVariant, error) {
+	shopID := s.SS.Shop().ID
 	var attributes *types.Attributes = nil
 	if q.Attributes != nil {
 		attributesRequest := types.ValidateAttributesEmpty(q.Attributes)
@@ -50,80 +54,80 @@ func (s *ProductService) UpdateVariant(ctx context.Context, q *UpdateVariantEndp
 		Attributes:  attributes,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopVariant(cmd.Result)
-	return nil
+	result := PbShopVariant(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) UpdateVariantAttributes(ctx context.Context, q *UpdateVariantAttributesEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateVariantAttributes(ctx context.Context, q *api.UpdateVariantAttributesRequest) (*api.ShopVariant, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &catalog.UpdateShopVariantAttributesCommand{
 		ShopID:     shopID,
 		VariantID:  q.VariantId,
 		Attributes: q.Attributes,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopVariant(cmd.Result)
-	return nil
+	result := PbShopVariant(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) RemoveVariants(ctx context.Context, q *RemoveVariantsEndpoint) error {
+func (s *ProductService) RemoveVariants(ctx context.Context, q *api.RemoveVariantsRequest) (*pbcm.RemovedResponse, error) {
 	cmd := &catalog.DeleteShopVariantsCommand{
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 		IDs:    q.Ids,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.RemovedResponse{
+	result := &pbcm.RemovedResponse{
 		Removed: cmd.Result,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ProductService) GetProduct(ctx context.Context, q *GetProductEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) GetProduct(ctx context.Context, q *pbcm.IDRequest) (*api.ShopProduct, error) {
+	shopID := s.SS.Shop().ID
 	query := &catalog.GetShopProductWithVariantsByIDQuery{
 		ProductID: q.Id,
-		ShopID:    q.Context.Shop.ID,
+		ShopID:    s.SS.Shop().ID,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	productPb, err := getProductQuantity(ctx, s.InventoryQuery, shopID, query.Result)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	applyProductInfoForVariants([]*shop.ShopProduct{productPb})
-	q.Result = productPb
-	return nil
+	result := productPb
+	return result, nil
 }
 
-func (s *ProductService) GetProductsByIDs(ctx context.Context, q *GetProductsByIDsEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) GetProductsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*api.ShopProductsResponse, error) {
+	shopID := s.SS.Shop().ID
 	query := &catalog.ListShopProductsWithVariantsByIDsQuery{
 		IDs:    q.Ids,
 		ShopID: shopID,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	products, err := getProductsQuantity(ctx, s.InventoryQuery, shopID, query.Result.Products)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.ShopProductsResponse{
+	result := &api.ShopProductsResponse{
 		Products: products,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint) error {
+func (s *ProductService) GetProducts(ctx context.Context, q *api.GetVariantsRequest) (*api.ShopProductsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
-	shopID := q.Context.Shop.ID
+	shopID := s.SS.Shop().ID
 	var fullTextSearch filter.FullTextSearch = ""
 	if q.Filter != nil {
 		fullTextSearch = q.Filter.Name
@@ -135,23 +139,23 @@ func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint
 		Name:    fullTextSearch,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	products, err := getProductsQuantity(ctx, s.InventoryQuery, shopID, query.Result.Products)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	applyProductInfoForVariants(products)
 
-	q.Result = &shop.ShopProductsResponse{
+	result := &api.ShopProductsResponse{
 		Paging: cmapi.PbPaging(cm.Paging{
 			Limit: query.Result.Paging.Limit,
 			Sort:  query.Result.Paging.Sort,
 		}),
 		Products: products,
 	}
-	return nil
+	return result, nil
 }
 
 func applyProductInfoForVariants(products []*shop.ShopProduct) {
@@ -168,7 +172,7 @@ func applyProductInfoForVariants(products []*shop.ShopProduct) {
 	}
 }
 
-func (s *ProductService) CreateProduct(ctx context.Context, q *CreateProductEndpoint) error {
+func (s *ProductService) CreateProduct(ctx context.Context, q *api.CreateProductRequest) (*api.ShopProduct, error) {
 	metaFields := []*catalog.MetaField{}
 
 	for _, metaField := range q.MetaFields {
@@ -178,7 +182,7 @@ func (s *ProductService) CreateProduct(ctx context.Context, q *CreateProductEndp
 		})
 	}
 	cmd := &catalog.CreateShopProductCommand{
-		ShopID:    q.Context.Shop.ID,
+		ShopID:    s.SS.Shop().ID,
 		Code:      q.Code,
 		Name:      q.Name,
 		Unit:      q.Unit,
@@ -199,28 +203,28 @@ func (s *ProductService) CreateProduct(ctx context.Context, q *CreateProductEndp
 		MetaFields:  metaFields,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopProductWithVariants(cmd.Result)
-	return nil
+	result := PbShopProductWithVariants(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) RemoveProducts(ctx context.Context, q *RemoveProductsEndpoint) error {
+func (s *ProductService) RemoveProducts(ctx context.Context, q *api.RemoveVariantsRequest) (*pbcm.RemovedResponse, error) {
 	cmd := &catalog.DeleteShopProductsCommand{
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 		IDs:    q.Ids,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.RemovedResponse{
+	result := &pbcm.RemovedResponse{
 		Removed: cmd.Result,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ProductService) UpdateProduct(ctx context.Context, q *UpdateProductEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateProduct(ctx context.Context, q *api.UpdateProductRequest) (*api.ShopProduct, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &catalog.UpdateShopProductInfoCommand{
 		ShopID:    shopID,
 		ProductID: q.Id,
@@ -240,42 +244,42 @@ func (s *ProductService) UpdateProduct(ctx context.Context, q *UpdateProductEndp
 		ProductType: q.ProductType,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopProductWithVariants(cmd.Result)
-	return nil
+	result := PbShopProductWithVariants(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) UpdateProductsStatus(ctx context.Context, q *UpdateProductsStatusEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateProductsStatus(ctx context.Context, q *api.UpdateProductStatusRequest) (*api.UpdateProductStatusResponse, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &catalog.UpdateShopProductStatusCommand{
 		IDs:    q.Ids,
 		ShopID: shopID,
 		Status: int16(q.Status),
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.UpdateProductStatusResponse{Updated: cmd.Result}
-	return nil
+	result := &api.UpdateProductStatusResponse{Updated: cmd.Result}
+	return result, nil
 }
 
-func (s *ProductService) UpdateVariantsStatus(ctx context.Context, q *UpdateVariantsStatusEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateVariantsStatus(ctx context.Context, q *api.UpdateProductStatusRequest) (*api.UpdateProductStatusResponse, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &catalog.UpdateShopVariantStatusCommand{
 		IDs:    q.Ids,
 		ShopID: shopID,
 		Status: int16(q.Status),
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &shop.UpdateProductStatusResponse{Updated: cmd.Result}
-	return nil
+	result := &api.UpdateProductStatusResponse{Updated: cmd.Result}
+	return result, nil
 }
 
-func (s *ProductService) UpdateProductsTags(ctx context.Context, q *UpdateProductsTagsEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateProductsTags(ctx context.Context, q *api.UpdateProductsTagsRequest) (*pbcm.UpdatedResponse, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &catalogmodelx.UpdateShopProductsTagsCommand{
 		ShopID:     shopID,
 		ProductIDs: q.Ids,
@@ -288,12 +292,12 @@ func (s *ProductService) UpdateProductsTags(ctx context.Context, q *UpdateProduc
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: cmd.Result.Updated,
 	}
-	return nil
+	return result, nil
 }
 
 func (s *ProductService) populateVariantInfos(ctx context.Context, shopID dot.ID, variants []*shop.ShopVariant) error {
@@ -319,48 +323,47 @@ func (s *ProductService) populateVariantInfos(ctx context.Context, shopID dot.ID
 	return nil
 }
 
-func (s *ProductService) GetVariant(ctx context.Context, q *GetVariantEndpoint) error {
+func (s *ProductService) GetVariant(ctx context.Context, q *api.GetVariantRequest) (*api.ShopVariant, error) {
 	query := &catalog.GetShopVariantQuery{
 		Code:      q.Code,
 		VariantID: q.ID,
-		ShopID:    q.Context.Shop.ID,
+		ShopID:    s.SS.Shop().ID,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	shopVariantPb := PbShopVariant(query.Result)
-	if err := s.populateVariantInfos(ctx, q.Context.Shop.ID, []*shop.ShopVariant{shopVariantPb}); err != nil {
-		return err
+	if err := s.populateVariantInfos(ctx, s.SS.Shop().ID, []*shop.ShopVariant{shopVariantPb}); err != nil {
+		return nil, err
 	}
-	q.Result = shopVariantPb
+	result := shopVariantPb
 
-	return nil
+	return result, nil
 }
 
-func (s *ProductService) GetVariantsByIDs(ctx context.Context, q *GetVariantsByIDsEndpoint) error {
+func (s *ProductService) GetVariantsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*api.ShopVariantsResponse, error) {
 	query := &catalog.ListShopVariantsWithProductByIDsQuery{
 		IDs:    q.Ids,
-		ShopID: q.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = &shop.ShopVariantsResponse{Variants: PbShopVariantsWithProducts(query.Result.Variants)}
+	result := &api.ShopVariantsResponse{Variants: PbShopVariantsWithProducts(query.Result.Variants)}
 
-	return nil
+	return result, nil
 }
 
-func (s *ProductService) CreateVariant(ctx context.Context, q *CreateVariantEndpoint) error {
+func (s *ProductService) CreateVariant(ctx context.Context, q *api.CreateVariantRequest) (*api.ShopVariant, error) {
 	cmd := &catalog.CreateShopVariantCommand{
-		ShopID:    q.Context.Shop.ID,
-		ProductID: q.ProductId,
-		Code:      q.Code,
-		Name:      q.Name,
-		ImageURLs: q.ImageUrls,
-		Note:      q.Note,
-		Attributes: types.ValidateAttributesEmpty(
-			q.Attributes),
+		ShopID:     s.SS.Shop().ID,
+		ProductID:  q.ProductId,
+		Code:       q.Code,
+		Name:       q.Name,
+		ImageURLs:  q.ImageUrls,
+		Note:       q.Note,
+		Attributes: types.ValidateAttributesEmpty(q.Attributes),
 		DescriptionInfo: catalog.DescriptionInfo{
 			ShortDesc:   q.ShortDesc,
 			Description: q.Description,
@@ -373,14 +376,14 @@ func (s *ProductService) CreateVariant(ctx context.Context, q *CreateVariantEndp
 		},
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopVariant(cmd.Result)
-	return nil
+	result := PbShopVariant(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) UpdateProductImages(ctx context.Context, q *UpdateProductImagesEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateProductImages(ctx context.Context, q *api.UpdateVariantImagesRequest) (*api.ShopProduct, error) {
+	shopID := s.SS.Shop().ID
 
 	var metaUpdate []*meta.UpdateSet
 	if q.DeleteAll {
@@ -410,13 +413,13 @@ func (s *ProductService) UpdateProductImages(ctx context.Context, q *UpdateProdu
 	}
 
 	if err := s.CatalogAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopProductWithVariants(cmd.Result)
-	return nil
+	result := PbShopProductWithVariants(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) UpdateProductMetaFields(ctx context.Context, q *UpdateProductMetaFieldsEndpoint) error {
+func (s *ProductService) UpdateProductMetaFields(ctx context.Context, q *api.UpdateProductMetaFieldsRequest) (*api.ShopProduct, error) {
 	metaFields := []*catalog.MetaField{}
 	for _, metaField := range q.MetaFields {
 		metaFields = append(metaFields, &catalog.MetaField{
@@ -426,18 +429,18 @@ func (s *ProductService) UpdateProductMetaFields(ctx context.Context, q *UpdateP
 	}
 	cmd := catalog.UpdateShopProductMetaFieldsCommand{
 		ID:         q.Id,
-		ShopID:     q.Context.Shop.ID,
+		ShopID:     s.SS.Shop().ID,
 		MetaFields: metaFields,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopProductWithVariants(cmd.Result)
-	return nil
+	result := PbShopProductWithVariants(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) UpdateVariantImages(ctx context.Context, q *UpdateVariantImagesEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateVariantImages(ctx context.Context, q *api.UpdateVariantImagesRequest) (*api.ShopVariant, error) {
+	shopID := s.SS.Shop().ID
 
 	var metaUpdate []*meta.UpdateSet
 	if q.DeleteAll {
@@ -466,62 +469,62 @@ func (s *ProductService) UpdateVariantImages(ctx context.Context, q *UpdateVaria
 		Updates: metaUpdate,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, &cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopVariant(cmd.Result)
-	return nil
+	result := PbShopVariant(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) UpdateProductCategory(ctx context.Context, q *UpdateProductCategoryEndpoint) error {
-	shopID := q.Context.Shop.ID
+func (s *ProductService) UpdateProductCategory(ctx context.Context, q *api.UpdateProductCategoryRequest) (*api.ShopProduct, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &catalog.UpdateShopProductCategoryCommand{
 		ProductID:  q.ProductId,
 		CategoryID: q.CategoryId,
 		ShopID:     shopID,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = PbShopProductWithVariants(cmd.Result)
-	return nil
+	result := PbShopProductWithVariants(cmd.Result)
+	return result, nil
 }
 
-func (s *ProductService) AddProductCollection(ctx context.Context, r *AddProductCollectionEndpoint) error {
+func (s *ProductService) AddProductCollection(ctx context.Context, r *api.AddShopProductCollectionRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &catalog.AddShopProductCollectionCommand{
 		ProductID:     r.ProductId,
 		CollectionIDs: r.CollectionIds,
-		ShopID:        r.Context.Shop.ID,
+		ShopID:        s.SS.Shop().ID,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return result, nil
 }
 
-func (s *ProductService) RemoveProductCollection(ctx context.Context, r *RemoveProductCollectionEndpoint) error {
+func (s *ProductService) RemoveProductCollection(ctx context.Context, r *api.RemoveShopProductCollectionRequest) (*pbcm.RemovedResponse, error) {
 	cmd := &catalog.RemoveShopProductCollectionCommand{
 		ProductID:     r.ProductId,
 		CollectionIDs: r.CollectionIds,
-		ShopID:        r.Context.Shop.ID,
+		ShopID:        s.SS.Shop().ID,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.RemovedResponse{Removed: cmd.Result}
-	return nil
+	result := &pbcm.RemovedResponse{Removed: cmd.Result}
+	return result, nil
 }
 
-func (s *ProductService) RemoveProductCategory(ctx context.Context, r *RemoveProductCategoryEndpoint) error {
+func (s *ProductService) RemoveProductCategory(ctx context.Context, r *pbcm.IDRequest) (*api.ShopProduct, error) {
 	cmd := &catalog.RemoveShopProductCategoryCommand{
-		ShopID:    r.Context.Shop.ID,
+		ShopID:    s.SS.Shop().ID,
 		ProductID: r.Id,
 	}
 	if err := s.CatalogAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = PbShopProductWithVariants(cmd.Result)
-	return nil
+	result := PbShopProductWithVariants(cmd.Result)
+	return result, nil
 }
 
 func getProductsQuantity(ctx context.Context, inventoryQuery inventory.QueryBus, shopID dot.ID, products []*catalog.ShopProductWithVariants) ([]*shop.ShopProduct, error) {
@@ -571,19 +574,19 @@ func getVariantsQuantity(ctx context.Context, inventoryQuery inventory.QueryBus,
 	return mapInventoryVariant, nil
 }
 
-func (s *ProductService) GetVariantsBySupplierID(ctx context.Context, q *GetVariantsBySupplierIDEndpoint) error {
+func (s *ProductService) GetVariantsBySupplierID(ctx context.Context, q *api.GetVariantsBySupplierIDRequest) (*api.ShopVariantsResponse, error) {
 	query := &catalog.GetVariantsBySupplierIDQuery{
 		SupplierID: q.SupplierId,
-		ShopID:     q.Context.Shop.ID,
+		ShopID:     s.SS.Shop().ID,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
 	shopVariantsPb := PbShopVariants(query.Result.Variants)
-	if err := s.populateVariantInfos(ctx, q.Context.Shop.ID, shopVariantsPb); err != nil {
-		return err
+	if err := s.populateVariantInfos(ctx, s.SS.Shop().ID, shopVariantsPb); err != nil {
+		return nil, err
 	}
-	q.Result = &shop.ShopVariantsResponse{Variants: shopVariantsPb}
-	return nil
+	result := &api.ShopVariantsResponse{Variants: shopVariantsPb}
+	return result, nil
 }

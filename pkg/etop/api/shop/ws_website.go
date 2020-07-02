@@ -5,14 +5,15 @@ import (
 
 	"o.o/api/main/catalog"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	"o.o/api/webserver"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/capi/dot"
 )
 
-func (s *WebServerService) CreateWsWebsite(ctx context.Context, r *CreateWsWebsiteEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) CreateWsWebsite(ctx context.Context, r *api.CreateWsWebsiteRequest) (*api.WsWebsite, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &webserver.CreateWsWebsiteCommand{
 		ShopID:             shopID,
 		MainColor:          r.MainColor,
@@ -32,19 +33,18 @@ func (s *WebServerService) CreateWsWebsite(ctx context.Context, r *CreateWsWebsi
 	}
 	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result := PbWsWebsite(cmd.Result)
 	result, err = s.populateWsWebSiteWithProduct(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *WebServerService) UpdateWsWebsite(ctx context.Context, r *UpdateWsWebsiteEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) UpdateWsWebsite(ctx context.Context, r *api.UpdateWsWebsiteRequest) (*api.WsWebsite, error) {
+	shopID := s.SS.Shop().ID
 	cmd := &webserver.UpdateWsWebsiteCommand{
 		ShopID:             shopID,
 		ID:                 r.ID,
@@ -65,19 +65,18 @@ func (s *WebServerService) UpdateWsWebsite(ctx context.Context, r *UpdateWsWebsi
 	}
 	err := s.WebserverAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result := PbWsWebsite(cmd.Result)
 	result, err = s.populateWsWebSiteWithProduct(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *WebServerService) GetWsWebsite(ctx context.Context, r *GetWsWebsiteEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsWebsite(ctx context.Context, r *api.GetWsWebsiteRequest) (*api.WsWebsite, error) {
+	shopID := s.SS.Shop().ID
 	query := &webserver.GetWsWebsiteByIDQuery{
 		ShopID: shopID,
 		ID:     0,
@@ -85,19 +84,18 @@ func (s *WebServerService) GetWsWebsite(ctx context.Context, r *GetWsWebsiteEndp
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result := PbWsWebsite(query.Result)
 	result, err = s.populateWsWebSiteWithProduct(ctx, result)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = result
-	return nil
+	return result, nil
 }
 
-func (s *WebServerService) GetWsWebsites(ctx context.Context, r *GetWsWebsitesEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsWebsites(ctx context.Context, r *api.GetWsWebsitesRequest) (*api.GetWsWebsitesResponse, error) {
+	shopID := s.SS.Shop().ID
 	paging := cmapi.CMPaging(r.Paging)
 	query := &webserver.ListWsWebsitesQuery{
 		ShopID:  shopID,
@@ -107,22 +105,22 @@ func (s *WebServerService) GetWsWebsites(ctx context.Context, r *GetWsWebsitesEn
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	result := PbWsWebsites(query.Result.WsWebsites)
-	result, err = s.populateWsWebSitesWithProduct(ctx, result)
+	resp := PbWsWebsites(query.Result.WsWebsites)
+	resp, err = s.populateWsWebSitesWithProduct(ctx, resp)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.GetWsWebsitesResponse{
-		WsWebsites: result,
+	result := &api.GetWsWebsitesResponse{
+		WsWebsites: resp,
 		Paging:     cmapi.PbPaging(query.Paging),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *WebServerService) GetWsWebsitesByIDs(ctx context.Context, r *GetWsWebsitesByIDsEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *WebServerService) GetWsWebsitesByIDs(ctx context.Context, r *api.GetWsWebsitesByIDsRequest) (*api.GetWsWebsitesByIDsResponse, error) {
+	shopID := s.SS.Shop().ID
 	query := &webserver.ListWsWebsitesByIDsQuery{
 		ShopID: shopID,
 		IDs:    r.IDs,
@@ -130,20 +128,20 @@ func (s *WebServerService) GetWsWebsitesByIDs(ctx context.Context, r *GetWsWebsi
 	}
 	err := s.WebserverQuery.Dispatch(ctx, query)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	result := PbWsWebsites(query.Result)
-	result, err = s.populateWsWebSitesWithProduct(ctx, result)
+	resp := PbWsWebsites(query.Result)
+	resp, err = s.populateWsWebSitesWithProduct(ctx, resp)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.GetWsWebsitesByIDsResponse{
-		WsWebsites: result,
+	result := &api.GetWsWebsitesByIDsResponse{
+		WsWebsites: resp,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *WebServerService) populateWsWebSiteWithProduct(ctx context.Context, args *shop.WsWebsite) (*shop.WsWebsite, error) {
+func (s *WebServerService) populateWsWebSiteWithProduct(ctx context.Context, args *api.WsWebsite) (*api.WsWebsite, error) {
 	var productIDs []dot.ID
 	if args.NewProduct == nil && args.OutstandingProduct == nil {
 		return args, nil

@@ -5,42 +5,46 @@ import (
 
 	"o.o/api/main/purchaseorder"
 	"o.o/api/top/int/shop"
+	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/util"
 )
 
 type PurchaseOrderService struct {
+	session.Session
+
 	PurchaseOrderAggr  purchaseorder.CommandBus
 	PurchaseOrderQuery purchaseorder.QueryBus
 }
 
-func (s *PurchaseOrderService) Clone() *PurchaseOrderService { res := *s; return &res }
+func (s *PurchaseOrderService) Clone() api.PurchaseOrderService { res := *s; return &res }
 
-func (s *PurchaseOrderService) GetPurchaseOrder(ctx context.Context, r *GetPurchaseOrderEndpoint) error {
+func (s *PurchaseOrderService) GetPurchaseOrder(ctx context.Context, r *pbcm.IDRequest) (*api.PurchaseOrder, error) {
 	query := &purchaseorder.GetPurchaseOrderByIDQuery{
 		ID:     r.Id,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.PurchaseOrderQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = convertpb.PbPurchaseOrder(query.Result)
-	r.Result.InventoryVoucher = PbShopInventoryVoucher(query.Result.InventoryVoucher)
-	return nil
+	result := convertpb.PbPurchaseOrder(query.Result)
+	result.InventoryVoucher = PbShopInventoryVoucher(query.Result.InventoryVoucher)
+	return result, nil
 }
 
-func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *GetPurchaseOrdersEndpoint) error {
+func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *api.GetPurchaseOrdersRequest) (*api.PurchaseOrdersResponse, error) {
 	paging := cmapi.CMPaging(r.Paging)
 	query := &purchaseorder.ListPurchaseOrdersQuery{
-		ShopID:  r.Context.Shop.ID,
+		ShopID:  s.SS.Shop().ID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(r.Filters),
 	}
 	if err := s.PurchaseOrderQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
 	var purchaseOrders []*shop.PurchaseOrder
@@ -50,40 +54,40 @@ func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *GetPurc
 		purchaseOrders = append(purchaseOrders, purchaseOrderTemp)
 	}
 
-	r.Result = &shop.PurchaseOrdersResponse{
+	result := &api.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
 		Paging:         cmapi.PbPageInfo(paging),
 	}
-	return nil
+	return result, nil
 }
 
-func (s *PurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, r *GetPurchaseOrdersByIDsEndpoint) error {
+func (s *PurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, r *pbcm.IDsRequest) (*api.PurchaseOrdersResponse, error) {
 	query := &purchaseorder.GetPurchaseOrdersByIDsQuery{
 		IDs:    r.Ids,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.PurchaseOrderQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
-	return nil
+	result := &api.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
+	return result, nil
 }
 
-func (s *PurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context, r *GetPurchaseOrdersByReceiptIDEndpoint) error {
+func (s *PurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context, r *pbcm.IDRequest) (*api.PurchaseOrdersResponse, error) {
 	query := &purchaseorder.ListPurchaseOrdersByReceiptIDQuery{
 		ReceiptID: r.Id,
-		ShopID:    r.Context.Shop.ID,
+		ShopID:    s.SS.Shop().ID,
 	}
 	if err := s.PurchaseOrderQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &shop.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
-	return nil
+	result := &api.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
+	return result, nil
 }
 
-func (s *PurchaseOrderService) CreatePurchaseOrder(ctx context.Context, r *CreatePurchaseOrderEndpoint) error {
+func (s *PurchaseOrderService) CreatePurchaseOrder(ctx context.Context, r *api.CreatePurchaseOrderRequest) (*api.PurchaseOrder, error) {
 	cmd := &purchaseorder.CreatePurchaseOrderCommand{
-		ShopID:        r.Context.Shop.ID,
+		ShopID:        s.SS.Shop().ID,
 		SupplierID:    r.SupplierId,
 		BasketValue:   r.BasketValue,
 		TotalDiscount: r.TotalDiscount,
@@ -93,19 +97,19 @@ func (s *PurchaseOrderService) CreatePurchaseOrder(ctx context.Context, r *Creat
 		TotalAmount:   r.TotalAmount,
 		Note:          r.Note,
 		Lines:         convertpb.Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(r.Lines),
-		CreatedBy:     r.Context.UserID,
+		CreatedBy:     s.SS.Claim().UserID,
 	}
 	if err := s.PurchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = convertpb.PbPurchaseOrder(cmd.Result)
-	return nil
+	result := convertpb.PbPurchaseOrder(cmd.Result)
+	return result, nil
 }
 
-func (s *PurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, r *UpdatePurchaseOrderEndpoint) error {
+func (s *PurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, r *api.UpdatePurchaseOrderRequest) (*api.PurchaseOrder, error) {
 	cmd := &purchaseorder.UpdatePurchaseOrderCommand{
 		ID:            r.Id,
-		ShopID:        r.Context.Shop.ID,
+		ShopID:        s.SS.Shop().ID,
 		BasketValue:   r.BasketValue,
 		TotalDiscount: r.TotalDiscount,
 		DiscountLines: r.DiscountLines,
@@ -116,50 +120,50 @@ func (s *PurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, r *Updat
 		Lines:         convertpb.Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(r.Lines),
 	}
 	if err := s.PurchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = convertpb.PbPurchaseOrder(cmd.Result)
-	return nil
+	result := convertpb.PbPurchaseOrder(cmd.Result)
+	return result, nil
 }
 
-func (s *PurchaseOrderService) DeletePurchaseOrder(ctx context.Context, r *DeletePurchaseOrderEndpoint) error {
+func (s *PurchaseOrderService) DeletePurchaseOrder(ctx context.Context, r *pbcm.IDRequest) (*pbcm.DeletedResponse, error) {
 	cmd := &purchaseorder.DeletePurchaseOrderCommand{
 		ID:     r.Id,
-		ShopID: r.Context.Shop.ID,
+		ShopID: s.SS.Shop().ID,
 	}
 	if err := s.PurchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &pbcm.DeletedResponse{Deleted: cmd.Result}, nil
 }
 
-func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *ConfirmPurchaseOrderEndpoint) error {
-	roles := auth.Roles(r.Context.Roles)
+func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *api.ConfirmPurchaseOrderRequest) (*pbcm.UpdatedResponse, error) {
+	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := &purchaseorder.ConfirmPurchaseOrderCommand{
 		ID:                   r.Id,
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, r.AutoInventoryVoucher),
-		ShopID:               r.Context.Shop.ID,
+		ShopID:               s.SS.Shop().ID,
 	}
 	if err := s.PurchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return result, nil
 }
 
-func (s *PurchaseOrderService) CancelPurchaseOrder(ctx context.Context, r *CancelPurchaseOrderEndpoint) error {
-	roles := auth.Roles(r.Context.Roles)
+func (s *PurchaseOrderService) CancelPurchaseOrder(ctx context.Context, r *api.CancelPurchaseOrderRequest) (*pbcm.UpdatedResponse, error) {
+	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := &purchaseorder.CancelPurchaseOrderCommand{
 		ID:                   r.Id,
-		ShopID:               r.Context.Shop.ID,
+		ShopID:               s.SS.Shop().ID,
 		CancelReason:         util.CoalesceString(r.CancelReason, r.Reason),
-		UpdatedBy:            r.Context.UserID,
-		InventoryOverStock:   r.Context.Shop.InventoryOverstock.Apply(true),
+		UpdatedBy:            s.SS.Claim().UserID,
+		InventoryOverStock:   s.SS.Shop().InventoryOverstock.Apply(true),
 		AutoInventoryVoucher: checkRoleAutoInventoryVoucher(roles, r.AutoInventoryVoucher),
 	}
 	if err := s.PurchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{Updated: cmd.Result}
-	return nil
+	result := &pbcm.UpdatedResponse{Updated: cmd.Result}
+	return result, nil
 }

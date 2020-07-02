@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	api "o.o/api/top/int/integration"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
@@ -19,34 +20,35 @@ import (
 	"o.o/common/jsonx"
 )
 
-func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsingTokenWLEndpoint) (_err error) {
+func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *api.LoginUsingTokenRequest) (_ *api.LoginResponse, _err error) {
 	if r.Login == "" || r.VerificationCode == "" {
-		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin")
 	}
 	r.VerificationCode = strings.Replace(r.VerificationCode, " ", "", -1)
 	if _, err := s.validateWhiteLabel(ctx); err != nil {
-		return err
+		return nil, err
 	}
+	claim := s.SS.Claim()
 	var requestInfo apipartner.PartnerShopToken
-	if err := jsonx.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
+	if err := jsonx.Unmarshal([]byte(claim.Extra["request_login"]), &requestInfo); err != nil {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
 	}
 
 	verifiedEmail, verifiedPhone, ok := validate.NormalizeEmailOrPhone(r.Login)
 	if !ok {
-		return cm.Errorf(cm.InvalidArgument, nil, "Email hoặc số điện thoại không hợp lệ")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Email hoặc số điện thoại không hợp lệ")
 	}
 
-	partner := r.CtxPartner
+	partner := s.SS.CtxPartner()
 	key := fmt.Sprintf("%v-%v", partner.ID, cm.Coalesce(verifiedEmail, verifiedPhone))
 
 	var v map[string]string
 	tok, err := s.AuthStore.Validate(auth.UsageRequestLogin, key, &v)
 	if err != nil {
-		return cm.Errorf(cm.Unauthenticated, nil, "Mã xác nhận không hợp lệ")
+		return nil, cm.Errorf(cm.Unauthenticated, nil, "Mã xác nhận không hợp lệ")
 	}
 	if v == nil || v["code"] != r.VerificationCode {
-		return cm.Errorf(cm.Unauthenticated, nil, "Mã xác thực không hợp lệ")
+		return nil, cm.Errorf(cm.Unauthenticated, nil, "Mã xác thực không hợp lệ")
 	}
 	// delete the token after 5 minutes if login successfully
 	defer func() {
@@ -70,7 +72,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		case cm.NotFound:
 			actionUser = "create"
 		default:
-			return err
+			return nil, err
 		}
 	} else {
 		userQuery := &identitymodelx.GetUserByLoginQuery{
@@ -84,7 +86,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		case cm.NotFound:
 			actionUser = "create"
 		default:
-			return err
+			return nil, err
 		}
 	}
 
@@ -97,7 +99,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		// xem như email, phone đều đã xác thực
 		newUser, err := s.registerUser(ctx, false, partner.ID, requestInfo.ShopOwnerName, requestInfo.ShopOwnerEmail, requestInfo.ShopOwnerPhone, true, true, true, true)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		user = newUser
 		if requestInfo.ExternalUserID != "" {
@@ -108,7 +110,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 				ExternalID: requestInfo.ExternalUserID,
 			}
 			if err := bus.Dispatch(ctx, relationCmd); err != nil {
-				return err
+				return nil, err
 			}
 		}
 	}
@@ -125,19 +127,19 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 			STokenExpiresAt: nil,
 			CAS:             0,
 			Extra: map[string]string{
-				"request_login": r.Context.Extra["request_login"],
+				"request_login": claim.Extra["request_login"],
 			},
 		},
 	}
 	if err := s.TokenStore.GenerateToken(ctx, userTokenCmd); err != nil {
-		return err
+		return nil, err
 	}
 	availableAccounts, err := s.getAvailableAccounts(ctx, user.ID, requestInfo)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if requestInfo.ShopID != 0 && len(availableAccounts) == 0 {
-		return cm.Errorf(cm.NotFound, nil, "Bạn đã từng liên kết với đối tác này, nhưng tài khoản cũ không còn hiệu lực (mã tài khoản: &v)", requestInfo.ShopID).WithMeta("reason", "shop_id not found")
+		return nil, cm.Errorf(cm.NotFound, nil, "Bạn đã từng liên kết với đối tác này, nhưng tài khoản cũ không còn hiệu lực (mã tài khoản: &v)", requestInfo.ShopID).WithMeta("reason", "shop_id not found")
 	}
 
 	if requestInfo.ExternalUserID != "" && isExtraTokenInvitation(requestInfo.ExtraToken) {
@@ -145,10 +147,9 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 		// Đối tác chỉ cung cấp ExternalUserID và ExtraToken
 		resp, err := s.generateNewSession(ctx, user, partner, nil, requestInfo)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		r.Result = resp
-		return nil
+		return resp, nil
 	}
 
 	var shop *identitymodel.Shop
@@ -159,7 +160,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 				ShopID: acc.Id,
 			}
 			if err := bus.Dispatch(ctx, query); err != nil {
-				return err
+				return nil, err
 			}
 			shop = query.Result
 			isGrantAccess = true
@@ -175,7 +176,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 			Email:   requestInfo.ShopOwnerEmail,
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
-			return nil
+			return nil, err
 		}
 		shop = cmd.Result.Shop
 	}
@@ -187,16 +188,15 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *LoginUsin
 			ExternalID: requestInfo.ExternalShopID,
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	resp, err := s.generateNewSession(ctx, user, partner, shop, requestInfo)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = resp
-	return nil
+	return resp, nil
 }
 
 func (s *IntegrationService) validateWhiteLabel(ctx context.Context) (*whitelabel.WL, error) {

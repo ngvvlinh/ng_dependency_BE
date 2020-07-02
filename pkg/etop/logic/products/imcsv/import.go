@@ -30,7 +30,6 @@ import (
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
-	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/upload"
 )
@@ -47,9 +46,11 @@ type Import struct {
 
 func New(rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
-	im := &Import{}
-	im.shopProductStore = catalogsqlstore.NewShopProductStore(db)
-	im.shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
+	im := &Import{
+		uploader:         ul,
+		shopProductStore: catalogsqlstore.NewShopProductStore(db),
+		shopVariantStore: catalogsqlstore.NewShopVariantStore(db),
+	}
 	if ul != nil {
 		im.uploader = ul
 		ul.ExpectDir(model.ImportTypeShopProduct.String())
@@ -58,14 +59,10 @@ func New(rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
 }
 
 func (im *Import) HandleShopImportSampleProducts(c *httpx.Context) error {
-	claim := c.Claim.(*claims.ShopClaim)
-	shop := claim.Shop
-	user := claim.User
-
+	shop, user, token := c.SS.Shop(), c.SS.User(), c.SS.Claim().Token
 	// share the same key with HandleShopImportProducts
 	key := shop.ID.String()
-
-	resp, _, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, claim.Token, 30*time.Second, func() (interface{}, error) {
+	resp, _, err := idempgroup.DoAndWrapWithSubkey(c.Context(), key, token, 30*time.Second, func() (interface{}, error) {
 		return im.handleShopImportSampleProducts(c.Req.Context(), c, shop, user)
 	}, "tạo sản phẩm mẫu")
 	if err != nil {
@@ -75,7 +72,7 @@ func (im *Import) HandleShopImportSampleProducts(c *httpx.Context) error {
 	respMsg := resp.(*apishop.ImportProductsResponse)
 	if len(respMsg.CellErrors) > 0 {
 		// Allow re-uploading immediately after error
-		idempgroup.ReleaseKey(key, claim.Token)
+		idempgroup.ReleaseKey(key, token)
 	}
 	c.SetResult(respMsg)
 	return nil
@@ -103,10 +100,7 @@ func (im *Import) handleShopImportSampleProducts(ctx context.Context, c *httpx.C
 }
 
 func (im *Import) HandleShopImportProducts(c *httpx.Context) error {
-	claim := c.Claim.(*claims.ShopClaim)
-	shop := claim.Shop
-	user := claim.User
-
+	claim, shop, user := c.SS.Claim(), c.SS.Shop(), c.SS.User()
 	// share the same key with HandleShopImportSampleProducts
 	key := shop.ID.String()
 
@@ -277,7 +271,7 @@ func (im *Import) handleShopImportProductsFromFile(ctx context.Context, c *httpx
 		return imp.generateErrorResponse(_errs)
 	}
 
-	stocktakeId, msgs, _errs, _cellErrs, err := im.loadAndCreateProducts(ctx, schema, idx, imp.Mode, codeMode, shop, rowProducts, debugOpts, user)
+	stocktakeId, msgs, _errs, _cellErrs, err := im.loadAndCreateProducts(ctx, c.Session, schema, idx, imp.Mode, codeMode, shop, rowProducts, debugOpts, user)
 	if err != nil {
 		return nil, err
 	}
