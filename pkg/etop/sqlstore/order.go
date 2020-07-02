@@ -246,14 +246,14 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	}
 	var fulfillments []*shipmodel.Fulfillment
 	if err := x.Table("fulfillment").
-		In("order_id", orderIds).
+		In("order_id", orderIds).OrderBy("created_at desc").
 		Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 		return err
 	}
 
 	var shipnows []*shipnowmodel.ShipnowFulfillment
 	if err := x.Table("shipnow_fulfillment").
-		Where("status != ?", status5.N).
+		Where("status != ?", status5.N).OrderBy("created_at desc").
 		Where("order_ids && ?", pq.Int64Array(util.IDsToInt64(orderIds))).
 		Find((*shipnowmodel.ShipnowFulfillments)(&shipnows)); err != nil {
 		return err
