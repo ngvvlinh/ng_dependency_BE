@@ -221,12 +221,6 @@ type FulfillmentUpdatedInfoEvent struct {
 	Phone    dot.NullString
 }
 
-type FulfillmentShippingFeeChangedEvent struct {
-	meta.EventMeta
-	FulfillmentID     dot.ID
-	MoneyTxShippingID dot.ID
-}
-
 type SingleFulfillmentCreatingEvent struct {
 	meta.EventMeta
 	ShopID       dot.ID

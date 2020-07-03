@@ -3688,6 +3688,14 @@
         }
       }
     },
+    "liCalculationMethodType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "cumulative",
+        "first_satisfy"
+      ]
+    },
     "ljCustomerType": {
       "description": "Deprecated values: \"independent\"\\n",
       "type": "string",
@@ -6318,6 +6326,12 @@
     "xuAdditionalFee": {
       "type": "object",
       "properties": {
+        "base_value_type": {
+          "$ref": "#/definitions/yeBaseValueType"
+        },
+        "calculation_method": {
+          "$ref": "#/definitions/liCalculationMethodType"
+        },
         "fee_type": {
           "$ref": "#/definitions/bjShippingFeeType"
         },
@@ -6347,6 +6361,9 @@
         },
         "price_modifier_type": {
           "$ref": "#/definitions/yjPriceModifierType"
+        },
+        "start_value": {
+          "type": "integer"
         }
       }
     },
@@ -7779,6 +7796,15 @@
           "type": "string"
         }
       }
+    },
+    "yeBaseValueType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "cod_amount",
+        "main_fee",
+        "basket_value"
+      ]
     },
     "yiPaymentMethod": {
       "type": "string",

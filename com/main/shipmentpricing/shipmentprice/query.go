@@ -272,7 +272,7 @@ func GetPriceByPricingDetail(weight int, pRuleDetail *shipmentprice.PricingDetai
 
 	price := pRuleDetail.Price
 	if !checkValidOverweight(weight, pRuleDetail.Overweight) {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "The weight is out of range")
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "The weight is out of range")
 	}
 	for _, ov := range pRuleDetail.Overweight {
 		ovPrice := GetOverweightPrice(weight, ov)
@@ -288,9 +288,8 @@ func GetPriceByPricingDetail(weight int, pRuleDetail *shipmentprice.PricingDetai
 func checkValidOverweight(weight int, overWeights []*shipmentprice.PricingDetailOverweight) bool {
 	maxWeight := 0
 	for _, ov := range overWeights {
-		if ov.MaxWeight == -1 {
+		if ov.MaxWeight == shipmentprice.MaximumValue {
 			return true
-			break
 		}
 		if maxWeight < ov.MaxWeight {
 			maxWeight = ov.MaxWeight

@@ -5,8 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"o.o/api/main/shipmentpricing/shipmentprice"
-	"o.o/api/top/types/etc/price_modifier_type"
-	"o.o/api/top/types/etc/shipping_fee_type"
 )
 
 func TestGetOverweightPrice(t *testing.T) {
@@ -367,81 +365,6 @@ func TestGetPriceByPricingDetail(t *testing.T) {
 		t.Run("Get PriceByPricingDetail 4", func(t *testing.T) {
 			price, _ := GetPriceByPricingDetail(tt.weight, ruleDetail4)
 			if !assert.EqualValues(t, tt.want4, price) {
-				t.Fatalf("FAIL %v", tt.description)
-			}
-			t.Log("PASS", tt.description)
-		})
-	}
-}
-
-func TestCalcInsuranceFees(t *testing.T) {
-	args := CalcAdditionalFeeArgs{
-		AdditionalFeeTypes: []shipping_fee_type.ShippingFeeType{
-			shipping_fee_type.Insurance,
-		},
-	}
-	addFee := &shipmentprice.AdditionalFee{
-		FeeType: shipping_fee_type.Insurance,
-		Rules: []*shipmentprice.AdditionalFeeRule{
-			{
-				MinValue:          0,
-				MaxValue:          50000,
-				PriceModifierType: price_modifier_type.Percentage,
-				Amount:            10.15,
-				MinPrice:          3000,
-			},
-			{
-				MinValue:          100001,
-				MaxValue:          -1,
-				PriceModifierType: price_modifier_type.Percentage,
-				Amount:            20,
-				MinPrice:          0,
-			},
-			{
-				MinValue:          50001,
-				MaxValue:          100000,
-				PriceModifierType: price_modifier_type.Percentage,
-				Amount:            15,
-				MinPrice:          0,
-			},
-			{
-				MinValue:          50001,
-				MaxValue:          100000,
-				PriceModifierType: price_modifier_type.Percentage,
-				Amount:            15,
-				MinPrice:          0,
-			},
-		},
-	}
-	var Cases = []struct {
-		description        string
-		basketValue        int
-		insuranceFeeResult int
-	}{
-		{
-			description:        "Giá trị đơn 20k",
-			basketValue:        20000,
-			insuranceFeeResult: 3000,
-		}, {
-			description:        "Giá trị đơn 50k",
-			basketValue:        50000,
-			insuranceFeeResult: 5075,
-		}, {
-			description:        "Giá trị đơn 100k",
-			basketValue:        100000,
-			insuranceFeeResult: 15000,
-		}, {
-			description:        "Giá trị đơn 150k",
-			basketValue:        150000,
-			insuranceFeeResult: 30000,
-		},
-	}
-	for _, tt := range Cases {
-		t.Run("Calc Insurance Fee", func(t *testing.T) {
-			args.BasketValue = tt.basketValue
-			feeLine, err := calcAdditionalFee(args, addFee)
-			assert.NoError(t, err)
-			if !assert.EqualValues(t, tt.insuranceFeeResult, feeLine.Price) {
 				t.Fatalf("FAIL %v", tt.description)
 			}
 			t.Log("PASS", tt.description)

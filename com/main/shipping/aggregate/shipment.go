@@ -367,15 +367,44 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 	}
 
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		args.FulfillmentID = ffm.ID
 		if err := a.ffmStore(ctx).UpdateFulfillmentShippingState(args, ffm.CODAmount); err != nil {
 			return err
 		}
-		event := &shipping.FulfillmentUpdatedEvent{
-			FulfillmentID:     ffm.ID,
-			MoneyTxShippingID: ffm.MoneyTransactionID,
-		}
-		if err := a.eventBus.Publish(ctx, event); err != nil {
-			return err
+
+		if shipping.IsStateReturn(args.ShippingState) {
+			// Nếu là đơn trả hàng
+			// Cộng thêm phí trả hàng
+			// Nếu đã có phí trả hàng thì chỉ update giá theo bảng giá hiện tại
+			calcShippingFeesArgs := &carrier.CalcMakeupShippingFeesByFfmArgs{
+				Fulfillment: ffm,
+				State:       args.ShippingState,
+			}
+			feeLines, err := a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
+			if err != nil {
+				return err
+			}
+			returnFeeLine := shipping.GetShippingFeeLine(feeLines, shipping_fee_type.Return)
+			shippingFeeShopLines := shipping.ApplyShippingFeeLine(ffm.ShippingFeeShopLines, returnFeeLine)
+
+			update := &shipping.UpdateFulfillmentShippingFeesArgs{
+				FulfillmentID:    ffm.ID,
+				ShippingCode:     ffm.ShippingCode,
+				ShippingFeeLines: shippingFeeShopLines,
+				UpdatedBy:        args.UpdatedBy,
+			}
+			if _, err := a.UpdateFulfillmentShippingFees(ctx, update); err != nil {
+				return err
+			}
+		} else {
+			// this event is called in if statement already (in func UpdateFulfillmentShippingFees)
+			event := &shipping.FulfillmentUpdatedEvent{
+				FulfillmentID:     ffm.ID,
+				MoneyTxShippingID: ffm.MoneyTransactionID,
+			}
+			if err := a.eventBus.Publish(ctx, event); err != nil {
+				return err
+			}
 		}
 		return nil
 	})

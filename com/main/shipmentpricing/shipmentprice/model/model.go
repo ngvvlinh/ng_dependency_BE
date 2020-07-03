@@ -3,6 +3,8 @@ package model
 import (
 	"time"
 
+	"o.o/api/top/types/etc/additional_fee_base_value"
+	"o.o/api/top/types/etc/calculation_method"
 	"o.o/api/top/types/etc/price_modifier_type"
 	"o.o/api/top/types/etc/route_type"
 	"o.o/api/top/types/etc/shipping_fee_type"
@@ -45,8 +47,10 @@ type PricingDetailOverweight struct {
 }
 
 type AdditionalFee struct {
-	FeeType shipping_fee_type.ShippingFeeType `json:"fee_type"`
-	Rules   []*AdditionalFeeRule              `json:"rules"`
+	FeeType           shipping_fee_type.ShippingFeeType        `json:"fee_type"`
+	CalculationMethod calculation_method.CalculationMethodType `json:"calculation_method"`
+	BaseValueType     additional_fee_base_value.BaseValueType  `json:"base_value_type"`
+	Rules             []*AdditionalFeeRule                     `json:"rules"`
 }
 
 type AdditionalFeeRule struct {
@@ -55,4 +59,5 @@ type AdditionalFeeRule struct {
 	PriceModifierType price_modifier_type.PriceModifierType `json:"price_modifier_type"`
 	Amount            float64                               `json:"amount"`
 	MinPrice          int                                   `json:"min_price"`
+	StartValue        int                                   `json:"start_value"`
 }

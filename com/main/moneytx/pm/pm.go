@@ -31,7 +31,6 @@ func New(eventBus bus.EventRegistry, moneyTxQ moneytx.QueryBus,
 
 func (m *ProcessManager) registerEvenHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.FulfillmentUpdated)
-	eventBus.AddEventListener(m.FulfillmentShippingFeeChanged)
 	eventBus.AddEventListener(m.MoneyTxShippingExternalDeleted)
 }
 
@@ -61,24 +60,6 @@ func (m *ProcessManager) FulfillmentUpdated(ctx context.Context, event *shipping
 			return err
 		}
 	}
-	return nil
-}
-
-func (m *ProcessManager) FulfillmentShippingFeeChanged(ctx context.Context, event *shipping.FulfillmentShippingFeeChangedEvent) error {
-	if event.MoneyTxShippingID == 0 {
-		return nil
-	}
-	query := &shipping.GetFulfillmentByIDOrShippingCodeQuery{
-		ID: event.FulfillmentID,
-	}
-	if err := m.shippingQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	ffm := query.Result
-	if ffm.MoneyTransactionID == 0 {
-		return nil
-	}
-	// TODO: change total_cod, total_amount ... if needed
 	return nil
 }
 

@@ -6,6 +6,8 @@ import (
 	etop "o.o/api/top/int/etop"
 	"o.o/api/top/int/types"
 	common "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/additional_fee_base_value"
+	"o.o/api/top/types/etc/calculation_method"
 	credit_type "o.o/api/top/types/etc/credit_type"
 	"o.o/api/top/types/etc/filter_type"
 	"o.o/api/top/types/etc/location_type"
@@ -368,8 +370,10 @@ type PricingDetailOverweight struct {
 func (m *PricingDetailOverweight) String() string { return jsonx.MustMarshalToString(m) }
 
 type AdditionalFee struct {
-	FeeType shipping_fee_type.ShippingFeeType `json:"fee_type"`
-	Rules   []*AdditionalFeeRule              `json:"rules"`
+	FeeType           shipping_fee_type.ShippingFeeType        `json:"fee_type"`
+	CalculationMethod calculation_method.CalculationMethodType `json:"calculation_method"`
+	BaseValueType     additional_fee_base_value.BaseValueType  `json:"base_value_type"`
+	Rules             []*AdditionalFeeRule                     `json:"rules"`
 }
 
 func (m *AdditionalFee) String() string { return jsonx.MustMarshalToString(m) }
@@ -380,6 +384,7 @@ type AdditionalFeeRule struct {
 	PriceModifierType price_modifier_type.PriceModifierType `json:"price_modifier_type"`
 	Amount            float64                               `json:"amount"`
 	MinPrice          int                                   `json:"min_price"`
+	StartValue        int                                   `json:"start_value"`
 }
 
 func (m *AdditionalFeeRule) String() string { return jsonx.MustMarshalToString(m) }

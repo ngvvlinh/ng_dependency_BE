@@ -141,7 +141,9 @@ func Convert_shipmentpricemodel_AdditionalFee_shipmentprice_AdditionalFee(arg *s
 }
 
 func convert_shipmentpricemodel_AdditionalFee_shipmentprice_AdditionalFee(arg *shipmentpricemodel.AdditionalFee, out *shipmentprice.AdditionalFee) {
-	out.FeeType = arg.FeeType // simple assign
+	out.FeeType = arg.FeeType                     // simple assign
+	out.CalculationMethod = arg.CalculationMethod // simple assign
+	out.BaseValueType = arg.BaseValueType         // simple assign
 	out.Rules = Convert_shipmentpricemodel_AdditionalFeeRules_shipmentprice_AdditionalFeeRules(arg.Rules)
 }
 
@@ -169,7 +171,9 @@ func Convert_shipmentprice_AdditionalFee_shipmentpricemodel_AdditionalFee(arg *s
 }
 
 func convert_shipmentprice_AdditionalFee_shipmentpricemodel_AdditionalFee(arg *shipmentprice.AdditionalFee, out *shipmentpricemodel.AdditionalFee) {
-	out.FeeType = arg.FeeType // simple assign
+	out.FeeType = arg.FeeType                     // simple assign
+	out.CalculationMethod = arg.CalculationMethod // simple assign
+	out.BaseValueType = arg.BaseValueType         // simple assign
 	out.Rules = Convert_shipmentprice_AdditionalFeeRules_shipmentpricemodel_AdditionalFeeRules(arg.Rules)
 }
 
@@ -204,6 +208,7 @@ func convert_shipmentpricemodel_AdditionalFeeRule_shipmentprice_AdditionalFeeRul
 	out.PriceModifierType = arg.PriceModifierType // simple assign
 	out.Amount = arg.Amount                       // simple assign
 	out.MinPrice = arg.MinPrice                   // simple assign
+	out.StartValue = arg.StartValue               // simple assign
 }
 
 func Convert_shipmentpricemodel_AdditionalFeeRules_shipmentprice_AdditionalFeeRules(args []*shipmentpricemodel.AdditionalFeeRule) (outs []*shipmentprice.AdditionalFeeRule) {
@@ -235,6 +240,7 @@ func convert_shipmentprice_AdditionalFeeRule_shipmentpricemodel_AdditionalFeeRul
 	out.PriceModifierType = arg.PriceModifierType // simple assign
 	out.Amount = arg.Amount                       // simple assign
 	out.MinPrice = arg.MinPrice                   // simple assign
+	out.StartValue = arg.StartValue               // simple assign
 }
 
 func Convert_shipmentprice_AdditionalFeeRules_shipmentpricemodel_AdditionalFeeRules(args []*shipmentprice.AdditionalFeeRule) (outs []*shipmentpricemodel.AdditionalFeeRule) {

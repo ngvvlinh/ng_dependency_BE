@@ -150,12 +150,6 @@ func (a *Aggregate) DeleteShipmentPrice(ctx context.Context, id dot.ID) error {
 }
 
 func validateShipmentPrice(pricing *shipmentprice.ShipmentPrice) error {
-	if len(pricing.RegionTypes) == 0 &&
-		len(pricing.CustomRegionIDs) == 0 &&
-		len(pricing.ProvinceTypes) == 0 &&
-		len(pricing.UrbanTypes) == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cấu hình địa điểm áp dụng gói.").WithMeta("field", "region_types")
-	}
 	if len(pricing.Details) == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cấu hình giá").WithMeta("field", "details")
 	}
@@ -164,12 +158,21 @@ func validateShipmentPrice(pricing *shipmentprice.ShipmentPrice) error {
 
 func validateShipmentPriceAdditionalFees(addFees []*shipmentprice.AdditionalFee) error {
 	for _, fee := range addFees {
+		if fee.CalculationMethod == 0 {
+			return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình phụ phí không hợp lệ. Vui lòng chọn phương pháp tính giá (calculation_method).")
+		}
+		if fee.BaseValueType == 0 {
+			return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình phụ phí không hợp lệ. Vui lòng chọn loại giá trị gốc tính cước phí (base_value_type).")
+		}
 		if fee.FeeType == 0 {
-			return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình cước phí không hợp lệ. Loại cước phí không hợp lệ.")
+			return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình phụ phí không hợp lệ. Loại cước phí không hợp lệ.")
+		}
+		if len(fee.Rules) == 0 {
+			return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình phụ phí không hợp lệ. Vui lòng tạo quy tắc tính cước phí.")
 		}
 		for _, rule := range fee.Rules {
 			if rule.MaxValue != shipmentprice.MaximumValue && rule.MinValue > rule.MaxValue {
-				return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình cước phí không hợp lệ. (min_value > max_value)")
+				return cm.Errorf(cm.InvalidArgument, nil, "Cấu hình phụ phí không hợp lệ. (min_value > max_value).")
 			}
 		}
 	}

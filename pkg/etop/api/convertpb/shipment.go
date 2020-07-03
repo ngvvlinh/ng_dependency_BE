@@ -258,8 +258,10 @@ func Convert_api_AdditionalFee_To_core_AdditionalFee(in *admin.AdditionalFee) *s
 		return nil
 	}
 	return &shipmentprice.AdditionalFee{
-		FeeType: in.FeeType,
-		Rules:   Convert_api_AdditionalFeeRules_To_core_AdditionalFeeRules(in.Rules),
+		FeeType:           in.FeeType,
+		CalculationMethod: in.CalculationMethod,
+		BaseValueType:     in.BaseValueType,
+		Rules:             Convert_api_AdditionalFeeRules_To_core_AdditionalFeeRules(in.Rules),
 	}
 }
 
@@ -284,6 +286,7 @@ func Convert_api_AdditionalFeeRule_To_core_AdditionalFeeRule(in *admin.Additiona
 		PriceModifierType: in.PriceModifierType,
 		Amount:            in.Amount,
 		MinPrice:          in.MinPrice,
+		StartValue:        in.StartValue,
 	}
 }
 
@@ -300,8 +303,10 @@ func Convert_core_AdditionalFee_To_api_AdditionalFee(in *shipmentprice.Additiona
 		return nil
 	}
 	return &admin.AdditionalFee{
-		FeeType: in.FeeType,
-		Rules:   Convert_core_AdditionalFeeRules_To_api_AdditionalFeeRules(in.Rules),
+		FeeType:           in.FeeType,
+		CalculationMethod: in.CalculationMethod,
+		BaseValueType:     in.BaseValueType,
+		Rules:             Convert_core_AdditionalFeeRules_To_api_AdditionalFeeRules(in.Rules),
 	}
 }
 
@@ -323,6 +328,7 @@ func Convert_core_AdditionalFeeRule_To_api_AdditionalFeeRule(in *shipmentprice.A
 		PriceModifierType: in.PriceModifierType,
 		Amount:            in.Amount,
 		MinPrice:          in.MinPrice,
+		StartValue:        in.StartValue,
 	}
 }
 

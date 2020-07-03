@@ -3,6 +3,8 @@ package shipmentprice
 import (
 	"time"
 
+	"o.o/api/top/types/etc/additional_fee_base_value"
+	"o.o/api/top/types/etc/calculation_method"
 	"o.o/api/top/types/etc/price_modifier_type"
 	"o.o/api/top/types/etc/route_type"
 	"o.o/api/top/types/etc/shipping_fee_type"
@@ -49,9 +51,26 @@ type PricingDetailOverweight struct {
 }
 
 type AdditionalFee struct {
-	FeeType shipping_fee_type.ShippingFeeType `json:"fee_type"`
-	Rules   []*AdditionalFeeRule              `json:"rules"`
+	FeeType           shipping_fee_type.ShippingFeeType        `json:"fee_type"`
+	CalculationMethod calculation_method.CalculationMethodType `json:"calculation_method"`
+	BaseValueType     additional_fee_base_value.BaseValueType  `json:"base_value_type"`
+	Rules             []*AdditionalFeeRule                     `json:"rules"`
 }
+
+/* Cách tính AdditionalFeeRule
+{
+	MinValue: 300,
+	MaxValue: 500,
+	PriceModifierType: "percentage",
+	Amount: 10,
+	MinPrice: 2,
+	StartValue: 200
+}
+Giá trị truyền vào: 400
+- Thõa mãn công thức trên (>= MinValue & <= MaxValue)
+- result = (400 - 200) * 10 / 100 = 20
+- result > MinPrice => result = 20
+*/
 
 type AdditionalFeeRule struct {
 	MinValue          int                                   `json:"min_value"`
@@ -59,4 +78,6 @@ type AdditionalFeeRule struct {
 	PriceModifierType price_modifier_type.PriceModifierType `json:"price_modifier_type"`
 	Amount            float64                               `json:"amount"`
 	MinPrice          int                                   `json:"min_price"`
+	// StartValue: giá trị bắt đầu tính
+	StartValue int `json:"start_value"`
 }
