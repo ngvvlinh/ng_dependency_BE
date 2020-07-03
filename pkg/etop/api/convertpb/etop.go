@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/authorization"
+	"o.o/api/main/credit"
 	"o.o/api/main/identity"
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/main/invitation"
@@ -770,6 +771,32 @@ func PbCreditExtendeds(items []*creditmodel.CreditExtended) []*etop.Credit {
 	result := make([]*etop.Credit, len(items))
 	for i, item := range items {
 		result[i] = PbCreditExtended(item)
+	}
+	return result
+}
+
+func Convert_core_CreditExtended_to_api_Credit(item *credit.CreditExtended) *etop.Credit {
+	if item == nil {
+		return nil
+	}
+
+	return &etop.Credit{
+		Id:        item.ID,
+		Amount:    item.Amount,
+		ShopId:    item.ShopID,
+		Type:      item.Type,
+		Shop:      Convert_core_Shop_To_api_Shop(item.Shop),
+		CreatedAt: cmapi.PbTime(item.CreatedAt),
+		UpdatedAt: cmapi.PbTime(item.UpdatedAt),
+		PaidAt:    cmapi.PbTime(item.PaidAt),
+		Status:    item.Status,
+	}
+}
+
+func Convert_core_CreditExtendeds_to_api_Credits(items []*credit.CreditExtended) []*etop.Credit {
+	result := make([]*etop.Credit, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_CreditExtended_to_api_Credit(item)
 	}
 	return result
 }

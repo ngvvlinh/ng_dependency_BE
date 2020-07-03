@@ -38,6 +38,7 @@ import (
 	aggregate7 "o.o/backend/com/main/connectioning/aggregate"
 	pm16 "o.o/backend/com/main/connectioning/pm"
 	query13 "o.o/backend/com/main/connectioning/query"
+	"o.o/backend/com/main/credit"
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/identity/pm"
 	aggregate5 "o.o/backend/com/main/inventory/aggregate"
@@ -566,8 +567,14 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		Session:       session,
 		IdentityQuery: identityQueryBus,
 	}
+	creditAggregate := credit.NewAggregateCredit(eventBus, mainDB, identityQueryBus)
+	creditCommandBus := credit.CreditAggregateMessageBus(creditAggregate)
+	creditQueryService := credit.NewQueryCredit(eventBus, mainDB, identityQueryBus)
+	creditQueryBus := credit.CreditQueryServiceMessageBus(creditQueryService)
 	creditService := admin.CreditService{
-		Session: session,
+		Session:     session,
+		CreditAggr:  creditCommandBus,
+		CreditQuery: creditQueryBus,
 	}
 	adminNotificationService := admin.NotificationService{
 		Session: session,

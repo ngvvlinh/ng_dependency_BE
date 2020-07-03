@@ -413,19 +413,6 @@ func (s *CreditServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			return
 		}
 		return msg, fn, nil
-	case "/admin.Credit/UpdateCredit":
-		msg := &UpdateCreditRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.UpdateCredit(ctx, msg)
-			return
-		}
-		return msg, fn, nil
 	default:
 		msg := fmt.Sprintf("no handler for path %q", path)
 		return nil, nil, httprpc.BadRouteError(msg, "POST", path)

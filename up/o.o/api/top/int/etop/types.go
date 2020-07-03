@@ -5,6 +5,7 @@ import (
 	"o.o/api/top/types/etc/account_type"
 	address_type "o.o/api/top/types/etc/address_type"
 	"o.o/api/top/types/etc/authentication_method"
+	"o.o/api/top/types/etc/credit_type"
 	"o.o/api/top/types/etc/ghn_note_code"
 	status3 "o.o/api/top/types/etc/status3"
 	try_on "o.o/api/top/types/etc/try_on"
@@ -994,15 +995,15 @@ type HistoryResponse struct {
 func (m *HistoryResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Credit struct {
-	Id        dot.ID         `json:"id"`
-	Amount    int            `json:"amount"`
-	ShopId    dot.ID         `json:"shop_id"`
-	Type      string         `json:"type"`
-	Shop      *Shop          `json:"shop"`
-	CreatedAt dot.Time       `json:"created_at"`
-	UpdatedAt dot.Time       `json:"updated_at"`
-	PaidAt    dot.Time       `json:"paid_at"`
-	Status    status3.Status `json:"status"`
+	Id        dot.ID                 `json:"id"`
+	Amount    int                    `json:"amount"`
+	ShopId    dot.ID                 `json:"shop_id"`
+	Type      credit_type.CreditType `json:"type"`
+	Shop      *Shop                  `json:"shop"`
+	CreatedAt dot.Time               `json:"created_at"`
+	UpdatedAt dot.Time               `json:"updated_at"`
+	PaidAt    dot.Time               `json:"paid_at"`
+	Status    status3.Status         `json:"status"`
 }
 
 func (m *Credit) String() string { return jsonx.MustMarshalToString(m) }

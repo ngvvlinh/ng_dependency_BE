@@ -671,7 +671,6 @@ var _acl = map[string]*permission.Decl{
 	"admin.Credit/GetCredit":     {Type: EtopAdmin, Actions: actions(AdminCreditView)},
 	"admin.Credit/GetCredits":    {Type: EtopAdmin, Actions: actions(AdminCreditList)},
 	"admin.Credit/CreateCredit":  {Type: EtopAdmin, Actions: actions(AdminCreditCreate)},
-	"admin.Credit/UpdateCredit":  {Type: EtopAdmin, Actions: actions(AdminCreditUpdate)},
 	"admin.Credit/ConfirmCredit": {Type: EtopAdmin, Actions: actions(AdminCreditConfirm)},
 	"admin.Credit/DeleteCredit":  {Type: EtopAdmin, Actions: actions(AdminCreditDelete)},
 

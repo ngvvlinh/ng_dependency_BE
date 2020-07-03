@@ -24,6 +24,7 @@ import (
 	"o.o/backend/com/main/address"
 	"o.o/backend/com/main/catalog"
 	"o.o/backend/com/main/connectioning"
+	"o.o/backend/com/main/credit"
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/inventory"
 	"o.o/backend/com/main/ledgering"
@@ -142,6 +143,7 @@ func Build(
 		wire.Bind(new(eventstream.Publisher), new(*eventstream.EventStream)),
 		sqlstore.WireSet,
 		captcha.WireSet,
+		credit.WireSet,
 
 		// fabo
 		handler.WireSet,

@@ -56,7 +56,6 @@ func init() {
 		CreateCredit,
 		GetCredit,
 		GetCredits,
-		UpdateCredit,
 		ConfirmCredit,
 		DeleteCredit,
 		CalcBalanceShop,
@@ -1266,7 +1265,7 @@ func CreateCredit(ctx context.Context, cmd *creditmodelx.CreateCreditCommand) er
 		ID:     cm.NewID(),
 		Amount: cmd.Amount,
 		ShopID: cmd.ShopID,
-		Type:   cmd.Type.String(),
+		Type:   cmd.Type,
 		PaidAt: cmd.PaidAt,
 	}
 	if err := x.Table("credit").ShouldInsert(credit); err != nil {
@@ -1319,31 +1318,6 @@ func GetCredits(ctx context.Context, query *creditmodelx.GetCreditsQuery) error 
 		}
 		query.Result.Credits = credits
 	}
-	return nil
-}
-
-func UpdateCredit(ctx context.Context, cmd *creditmodelx.UpdateCreditCommand) error {
-	if cmd.ID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
-	}
-	s := x.Table("credit").Where("id = ?", cmd.ID)
-	if cmd.ShopID != 0 {
-		s = s.Where("shop_id = ?", cmd.ShopID)
-	}
-	credit := &creditmodel.Credit{
-		PaidAt: cmd.PaidAt,
-		Amount: cmd.Amount,
-	}
-	if err := s.ShouldUpdate(credit); err != nil {
-		return err
-	}
-	query := &creditmodelx.GetCreditQuery{
-		ID: cmd.ID,
-	}
-	if err := GetCredit(ctx, query); err != nil {
-		return err
-	}
-	cmd.Result = query.Result
 	return nil
 }
 

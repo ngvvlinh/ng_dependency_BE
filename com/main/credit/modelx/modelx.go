@@ -9,6 +9,8 @@ import (
 	"o.o/capi/dot"
 )
 
+//TODO(Vu) Delete all
+
 type CreateCreditCommand struct {
 	Amount int
 	ShopID dot.ID
@@ -41,15 +43,6 @@ type ConfirmCreditCommand struct {
 	Result struct {
 		Updated int
 	}
-}
-
-type UpdateCreditCommand struct {
-	ID     dot.ID
-	ShopID dot.ID
-	PaidAt time.Time
-	Amount int
-
-	Result *creditmodel.CreditExtended
 }
 
 type DeleteCreditCommand struct {

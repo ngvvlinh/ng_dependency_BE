@@ -1,0 +1,101 @@
+package credit
+
+import (
+	"context"
+
+	"o.o/api/main/credit"
+	"o.o/api/main/identity"
+	com "o.o/backend/com/main"
+	"o.o/backend/com/main/credit/sqlstore"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/bus"
+	"o.o/capi"
+	"o.o/capi/dot"
+)
+
+var _ credit.QueryService = &CreditQueryService{}
+
+type CreditQueryService struct {
+	CreditStore   sqlstore.CreditFactory
+	eventBus      capi.EventBus
+	identityQuery identity.QueryBus
+}
+
+func NewQueryCredit(
+	bus capi.EventBus,
+	db com.MainDB,
+	identityQ identity.QueryBus,
+) *CreditQueryService {
+	return &CreditQueryService{
+		identityQuery: identityQ,
+		eventBus:      bus,
+		CreditStore:   sqlstore.NewCreditStore(db),
+	}
+}
+
+func CreditQueryServiceMessageBus(q *CreditQueryService) credit.QueryBus {
+	b := bus.New()
+	return credit.NewQueryServiceHandler(q).RegisterHandlers(b)
+}
+
+func (q CreditQueryService) GetCredit(ctx context.Context, args *credit.GetCreditArgs) (*credit.CreditExtended, error) {
+	if args.ID == 0 {
+		return nil, cm.Error(cm.InvalidArgument, "Missing ID", nil)
+	}
+	query := q.CreditStore(ctx).ID(args.ID)
+	if args.ShopID != 0 {
+		query = query.ShopID(args.ShopID)
+	}
+	creditValue, err := query.Get()
+	if err != nil {
+		return nil, err
+	}
+	getShopQuery := &identity.GetShopByIDQuery{
+		ID: creditValue.ShopID,
+	}
+	if err = q.identityQuery.Dispatch(ctx, getShopQuery); err != nil {
+		return nil, err
+	}
+	return &credit.CreditExtended{
+		Credit: creditValue,
+		Shop:   getShopQuery.Result,
+	}, nil
+}
+
+func (q CreditQueryService) ListCredits(ctx context.Context, args *credit.ListCreditsArgs) (*credit.ListCreditsResponse, error) {
+	var creditsResult []*credit.CreditExtended
+	query := q.CreditStore(ctx)
+	if args.ShopID != 0 {
+		query = query.ShopID(args.ShopID)
+	}
+	creditValues, err := query.WithPaging(args.Paging).ListCredit()
+	if err != nil {
+		return nil, err
+	}
+	if len(creditValues) > 0 {
+		var shopIDs []dot.ID
+		var mapShop = make(map[dot.ID]*identity.Shop)
+		for _, v := range creditValues {
+			shopIDs = append(shopIDs, v.ShopID)
+		}
+
+		getShopQuery := &identity.ListShopsByIDsQuery{
+			IDs: shopIDs,
+		}
+		if err = q.identityQuery.Dispatch(ctx, getShopQuery); err != nil {
+			return nil, err
+		}
+		for _, v := range getShopQuery.Result {
+			mapShop[v.ID] = v
+		}
+		for _, v := range creditValues {
+			creditsResult = append(creditsResult, &credit.CreditExtended{
+				Credit: v,
+				Shop:   mapShop[v.ShopID],
+			})
+		}
+	}
+	return &credit.ListCreditsResponse{
+		Credits: creditsResult,
+	}, nil
+}

@@ -82,10 +82,10 @@ func (m *Credit) Migration(db *cmsql.Database) {
 		},
 		"type": {
 			ColumnName:       "type",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
+			ColumnType:       "credit_type.CreditType",
+			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{},
+			ColumnEnumValues: []string{"shop"},
 		},
 		"status": {
 			ColumnName:       "status",
@@ -131,7 +131,7 @@ func (m *Credit) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		core.Int(m.Amount),
 		m.ShopID,
-		core.String(m.Type),
+		m.Type,
 		m.Status,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -144,7 +144,7 @@ func (m *Credit) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		(*core.Int)(&m.Amount),
 		&m.ShopID,
-		(*core.String)(&m.Type),
+		&m.Type,
 		&m.Status,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -251,7 +251,7 @@ func (m *Credit) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ShopID)
 	}
-	if m.Type != "" {
+	if m.Type != 0 {
 		flag = true
 		w.WriteName("type")
 		w.WriteByte('=')

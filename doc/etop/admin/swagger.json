@@ -447,33 +447,6 @@
         }
       }
     },
-    "/api/admin.Credit/UpdateCredit": {
-      "post": {
-        "tags": [
-          "Credit"
-        ],
-        "summary": "UpdateCredit",
-        "operationId": "admin.Credit-UpdateCredit",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/xuUpdateCreditRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/baCredit"
-            }
-          }
-        }
-      }
-    },
     "/api/admin.Fulfillment/AddShippingFee": {
       "post": {
         "tags": [
@@ -2982,7 +2955,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "type": {
-          "type": "string"
+          "$ref": "#/definitions/aeCreditType"
         },
         "updated_at": {
           "type": "string",
@@ -7511,29 +7484,6 @@
         "user_id": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "xuUpdateCreditRequest": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "integer"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "paid_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "type": {
-          "$ref": "#/definitions/aeCreditType"
         }
       }
     },

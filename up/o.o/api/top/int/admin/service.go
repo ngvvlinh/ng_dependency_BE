@@ -93,7 +93,6 @@ type CreditService interface {
 	GetCredit(context.Context, *GetCreditRequest) (*etop.Credit, error)
 	GetCredits(context.Context, *GetCreditsRequest) (*etop.CreditsResponse, error)
 	CreateCredit(context.Context, *CreateCreditRequest) (*etop.Credit, error)
-	UpdateCredit(context.Context, *UpdateCreditRequest) (*etop.Credit, error)
 	ConfirmCredit(context.Context, *ConfirmCreditRequest) (*cm.UpdatedResponse, error)
 	DeleteCredit(context.Context, *cm.IDRequest) (*cm.RemovedResponse, error)
 }

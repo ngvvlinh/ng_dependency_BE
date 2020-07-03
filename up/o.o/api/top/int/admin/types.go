@@ -167,16 +167,6 @@ type CreateCreditRequest struct {
 
 func (m *CreateCreditRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type UpdateCreditRequest struct {
-	Id     dot.ID                  `json:"id"`
-	Amount int                     `json:"amount"`
-	ShopId dot.ID                  `json:"shop_id"`
-	Type   *credit_type.CreditType `json:"type"`
-	PaidAt dot.Time                `json:"paid_at"`
-}
-
-func (m *UpdateCreditRequest) String() string { return jsonx.MustMarshalToString(m) }
-
 type ConfirmCreditRequest struct {
 	Id     dot.ID `json:"id"`
 	ShopId dot.ID `json:"shop_id"`

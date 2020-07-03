@@ -1,15 +1,14 @@
-package model
+package credit
 
 import (
 	"time"
 
+	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/credit_type"
 	"o.o/api/top/types/etc/status3"
-	identitymodel "o.o/backend/com/main/identity/model"
 	"o.o/capi/dot"
 )
 
-// +sqlgen
 type Credit struct {
 	ID        dot.ID
 	Amount    int
@@ -21,9 +20,7 @@ type Credit struct {
 	PaidAt    time.Time
 }
 
-// +sqlgen:           Credit as c
-// +sqlgen:left-join: Shop   as s on s.id = c.shop_id
 type CreditExtended struct {
 	*Credit
-	Shop *identitymodel.Shop
+	Shop *identity.Shop
 }
