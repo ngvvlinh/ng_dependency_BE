@@ -7,9 +7,12 @@ import (
 	api "o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type LocationService struct {
+	session.Session
+
 	LocationQuery location.QueryBus
 }
 

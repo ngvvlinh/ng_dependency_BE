@@ -10,9 +10,12 @@ import (
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
-type EcomService struct{}
+type EcomService struct {
+	session.Session
+}
 
 func (s *EcomService) Clone() api.EcomService { res := *s; return &res }
 

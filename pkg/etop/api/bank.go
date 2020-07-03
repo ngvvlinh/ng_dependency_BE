@@ -6,10 +6,13 @@ import (
 	api "o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/integration/bank"
 )
 
-type BankService struct{}
+type BankService struct {
+	session.Session
+}
 
 func (s *BankService) Clone() api.BankService {
 	res := *s

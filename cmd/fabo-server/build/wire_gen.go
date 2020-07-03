@@ -167,9 +167,12 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	locationQuery := location.New(mainDB)
 	locationQueryBus := location.QueryMessageBus(locationQuery)
 	locationService := &api.LocationService{
+		Session:       session,
 		LocationQuery: locationQueryBus,
 	}
-	bankService := &api.BankService{}
+	bankService := &api.BankService{
+		Session: session,
+	}
 	addressService := &api.AddressService{
 		Session: session,
 	}
@@ -194,7 +197,9 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		InvitationQuery:        invitationQueryBus,
 		AuthorizationAggregate: authorizationCommandBus,
 	}
-	ecomService := &api.EcomService{}
+	ecomService := &api.EcomService{
+		Session: session,
+	}
 	emailConfig := cfg.Email
 	servers, cleanup := api.NewServers(miscService, userService, accountService, locationService, bankService, addressService, accountRelationshipService, userRelationshipService, ecomService, store, emailConfig, smsConfig)
 	shopMiscService := &shop.MiscService{}
