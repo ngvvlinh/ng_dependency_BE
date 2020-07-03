@@ -260,6 +260,7 @@ func PbFbCustomerConversation(fbCustomerConversation *fbmessaging.FbCustomerConv
 		ExternalMessageAttachments: PbFbMessageAttachments(fbCustomerConversation.ExternalMessageAttachments),
 		LastMessage:                dot.String(fbCustomerConversation.LastMessage),
 		LastMessageAt:              fbCustomerConversation.LastMessageAt,
+		LastCustomerMessageAt:      fbCustomerConversation.LastCustomerMessageAt,
 		CreatedAt:                  fbCustomerConversation.CreatedAt,
 		UpdatedAt:                  fbCustomerConversation.UpdatedAt,
 	}

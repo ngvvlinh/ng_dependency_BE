@@ -167,6 +167,16 @@ func (q *FbMessagingQuery) ListLatestFbExternalMessages(
 	return fbExternalMessages, nil
 }
 
+func (q *FbMessagingQuery) ListLatestCustomerFbExternalMessages(
+	ctx context.Context, externalConversationIDs filter.Strings,
+) ([]*fbmessaging.FbExternalMessage, error) {
+	fbExternalMessages, err := q.fbExternalMessagesStore(ctx).ListLatestCustomerExternalMessages(externalConversationIDs)
+	if err != nil {
+		return nil, err
+	}
+	return fbExternalMessages, nil
+}
+
 func (q *FbMessagingQuery) ListFbExternalPostsByExternalIDs(
 	ctx context.Context, externalIDs filter.Strings,
 ) ([]*fbmessaging.FbExternalPost, error) {

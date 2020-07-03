@@ -183,6 +183,7 @@ type FbCustomerConversation struct {
 	Type                       int
 	LastMessage                string
 	LastMessageAt              time.Time `paging:"last_message_at"`
+	LastCustomerMessageAt      time.Time
 	LastMessageExternalID      string
 	CreatedAt                  time.Time `sq:"create"`
 	UpdatedAt                  time.Time `sq:"update"`

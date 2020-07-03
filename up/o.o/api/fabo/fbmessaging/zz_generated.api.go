@@ -404,6 +404,17 @@ func (h QueryServiceHandler) HandleListFbExternalPostsByIDs(ctx context.Context,
 	return err
 }
 
+type ListLatestCustomerFbExternalMessagesQuery struct {
+	ExternalConversationIDs filter.Strings
+
+	Result []*FbExternalMessage `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListLatestCustomerFbExternalMessages(ctx context.Context, msg *ListLatestCustomerFbExternalMessagesQuery) (err error) {
+	msg.Result, err = h.inner.ListLatestCustomerFbExternalMessages(msg.GetArgs(ctx))
+	return err
+}
+
 type ListLatestFbExternalMessagesQuery struct {
 	ExternalConversationIDs filter.Strings
 
@@ -450,6 +461,7 @@ func (q *ListFbExternalMessagesQuery) query()                                   
 func (q *ListFbExternalMessagesByExternalIDsQuery) query()                        {}
 func (q *ListFbExternalPostsByExternalIDsQuery) query()                           {}
 func (q *ListFbExternalPostsByIDsQuery) query()                                   {}
+func (q *ListLatestCustomerFbExternalMessagesQuery) query()                       {}
 func (q *ListLatestFbExternalMessagesQuery) query()                               {}
 
 // implement conversion
@@ -738,6 +750,11 @@ func (q *ListFbExternalPostsByIDsQuery) GetArgs(ctx context.Context) (_ context.
 		q.IDs
 }
 
+func (q *ListLatestCustomerFbExternalMessagesQuery) GetArgs(ctx context.Context) (_ context.Context, externalConversationIDs filter.Strings) {
+	return ctx,
+		q.ExternalConversationIDs
+}
+
 func (q *ListLatestFbExternalMessagesQuery) GetArgs(ctx context.Context) (_ context.Context, externalConversationIDs filter.Strings) {
 	return ctx,
 		q.ExternalConversationIDs
@@ -802,6 +819,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListFbExternalMessagesByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalPostsByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalPostsByIDs)
+	b.AddHandler(h.HandleListLatestCustomerFbExternalMessages)
 	b.AddHandler(h.HandleListLatestFbExternalMessages)
 	return QueryBus{b}
 }

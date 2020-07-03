@@ -193,6 +193,61 @@ func (s *FbExternalMessageStore) ListLatestExternalMessages(externalConversation
 	return
 }
 
+func (s *FbExternalMessageStore) ListLatestCustomerExternalMessages(externalConversationIDs []string) (result []*fbmessaging.FbExternalMessage, err error) {
+	if len(externalConversationIDs) == 0 {
+		return nil, nil
+	}
+
+	rows, err := s.query().
+		SQL(fmt.Sprintf(`
+			select a.id
+			from fb_external_message as a
+			where 
+				external_conversation_id in ('%s')
+				and 
+				id =
+				(
+					select id
+					from fb_external_message as b
+					where b.external_conversation_id = a.external_conversation_id AND 
+						b.external_from IS NOT NULL AND 
+						b.external_from->>'id' <> b.external_page_id
+					order by b.external_created_time desc, id asc
+					limit 1
+				)
+		`, strings.Join(externalConversationIDs, "','"))).
+		Query()
+	if err != nil {
+		return nil, err
+	}
+
+	var fbExternalMessageIDs []dot.ID
+	var id dot.ID
+	for rows.Next() {
+		err := rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+		fbExternalMessageIDs = append(fbExternalMessageIDs, id)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	var fbExternalMessages model.FbExternalMessages
+	if err := s.query().
+		Where(sq.In("id", fbExternalMessageIDs)).
+		Find(&fbExternalMessages); err != nil {
+		return nil, err
+	}
+
+	if err := scheme.Convert([]*model.FbExternalMessage(fbExternalMessages), &result); err != nil {
+		return nil, err
+	}
+	return
+}
+
 func (s *FbExternalMessageStore) GetFbExternalMessageDB() (*model.FbExternalMessage, error) {
 	query := s.query().Where(s.preds)
 

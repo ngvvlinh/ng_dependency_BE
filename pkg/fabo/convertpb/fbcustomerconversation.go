@@ -24,6 +24,7 @@ func PbFbCustomerConversation(m *fbmessaging.FbCustomerConversation) *fabo.FbCus
 		ExternalUserPictureURL:    fbclientconvert.GenerateFacebookUserPicture(m.ExternalUserID),
 		LastMessage:               m.LastMessage,
 		LastMessageAt:             m.LastMessageAt,
+		LastCustomerMessageAt:     m.LastCustomerMessageAt,
 		CreatedAt:                 m.CreatedAt,
 		UpdatedAt:                 m.UpdatedAt,
 	}

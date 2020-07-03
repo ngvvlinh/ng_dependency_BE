@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
@@ -61,7 +62,8 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 	}
 
 	var externalConversationIDs []string
-	mapLastExternalMessages := make(map[string]*fbmessaging.FbExternalMessage)
+	mapLatestExternalMessages := make(map[string]*fbmessaging.FbExternalMessage)
+	mapLatestCustomerExternalMessages := make(map[string]*fbmessaging.FbExternalMessage)
 	mapExternalConversationIDAndPSID := make(map[string]string)
 	{
 		setExternalConversationIDs := NewSet()
@@ -89,7 +91,18 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 		}
 
 		for _, fbExternalMessage := range listLastExternalMessagesQuery.Result {
-			mapLastExternalMessages[fbExternalMessage.ExternalConversationID] = fbExternalMessage
+			mapLatestExternalMessages[fbExternalMessage.ExternalConversationID] = fbExternalMessage
+		}
+
+		listLatestCustomerExternalMessagesQuery := &fbmessaging.ListLatestCustomerFbExternalMessagesQuery{
+			ExternalConversationIDs: externalConversationIDs,
+		}
+		if err := m.fbmessagingQ.Dispatch(ctx, listLatestCustomerExternalMessagesQuery); err != nil {
+			return err
+		}
+
+		for _, fbExternalMessage := range listLatestCustomerExternalMessagesQuery.Result {
+			mapLatestCustomerExternalMessages[fbExternalMessage.ExternalConversationID] = fbExternalMessage
 		}
 	}
 
@@ -102,7 +115,11 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 
 	var updateFbCustomerConversationsCmd []*fbmessaging.CreateFbCustomerConversationArgs
 	for _, oldFbCustomerConversation := range listFbCustomerConversationsQuery.Result {
-		lastExternalMessage := mapLastExternalMessages[oldFbCustomerConversation.ExternalID]
+		lastExternalMessage := mapLatestExternalMessages[oldFbCustomerConversation.ExternalID]
+		var lastCustomerMessageAt time.Time
+		if latestCustomerExternalMessage, ok := mapLatestCustomerExternalMessages[oldFbCustomerConversation.ExternalID]; ok {
+			lastCustomerMessageAt = latestCustomerExternalMessage.ExternalCreatedTime
+		}
 
 		isRead := oldFbCustomerConversation.LastMessageExternalID == lastExternalMessage.ExternalID
 
@@ -130,6 +147,7 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 			ExternalMessageAttachments: externalMessageAttachments,
 			LastMessage:                lastExternalMessage.ExternalMessage,
 			LastMessageAt:              lastExternalMessage.ExternalCreatedTime,
+			LastCustomerMessageAt:      lastCustomerMessageAt,
 			LastMessageExternalID:      lastExternalMessage.ExternalID,
 		})
 	}

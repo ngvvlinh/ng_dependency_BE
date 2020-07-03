@@ -36,6 +36,7 @@ type QueryService interface {
 	ListFbExternalMessagesByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalMessage, error)
 	ListFbExternalMessages(context.Context, *ListFbExternalMessagesArgs) (*FbExternalMessagesResponse, error)
 	ListLatestFbExternalMessages(_ context.Context, externalConversationIDs filter.Strings) ([]*FbExternalMessage, error)
+	ListLatestCustomerFbExternalMessages(_ context.Context, externalConversationIDs filter.Strings) ([]*FbExternalMessage, error)
 
 	GetLatestFbExternalComment(_ context.Context, externalPageID, externalPostID, externalUserID, externalParentUserID string) (*FbExternalComment, error)
 	GetLatestCustomerExternalComment(_ context.Context, externalPostID, externalUserID, externalPageID string) (*FbExternalComment, error)
@@ -164,6 +165,7 @@ type CreateFbCustomerConversationArgs struct {
 	ExternalMessageAttachments []*FbMessageAttachment
 	LastMessage                string
 	LastMessageAt              time.Time
+	LastCustomerMessageAt      time.Time
 	LastMessageExternalID      string
 }
 

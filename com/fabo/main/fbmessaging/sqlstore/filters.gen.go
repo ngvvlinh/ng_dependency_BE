@@ -177,6 +177,25 @@ func (ft *FbCustomerConversationFilters) ByLastMessageAtPtr(LastMessageAt *time.
 	}
 }
 
+func (ft *FbCustomerConversationFilters) ByLastCustomerMessageAt(LastCustomerMessageAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "last_customer_message_at",
+		Value:  LastCustomerMessageAt,
+		IsNil:  LastCustomerMessageAt.IsZero(),
+	}
+}
+
+func (ft *FbCustomerConversationFilters) ByLastCustomerMessageAtPtr(LastCustomerMessageAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "last_customer_message_at",
+		Value:  LastCustomerMessageAt,
+		IsNil:  LastCustomerMessageAt == nil,
+		IsZero: LastCustomerMessageAt != nil && (*LastCustomerMessageAt).IsZero(),
+	}
+}
+
 func (ft *FbCustomerConversationFilters) ByLastMessageExternalID(LastMessageExternalID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

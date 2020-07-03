@@ -689,6 +689,10 @@
         "is_read": {
           "type": "boolean"
         },
+        "last_customer_message_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "last_message": {
           "type": "string"
         },

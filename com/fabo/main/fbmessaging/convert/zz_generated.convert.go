@@ -498,6 +498,7 @@ func convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConve
 	out.ExternalMessageAttachments = Convert_fbmessagingmodel_FbMessageAttachments_fbmessaging_FbMessageAttachments(arg.ExternalMessageAttachments)
 	out.LastMessage = arg.LastMessage                     // simple assign
 	out.LastMessageAt = arg.LastMessageAt                 // simple assign
+	out.LastCustomerMessageAt = arg.LastCustomerMessageAt // simple assign
 	out.LastMessageExternalID = arg.LastMessageExternalID // simple assign
 	out.CreatedAt = arg.CreatedAt                         // simple assign
 	out.UpdatedAt = arg.UpdatedAt                         // simple assign
@@ -539,6 +540,7 @@ func convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConve
 	out.Type = int(arg.Type)                              // simple conversion
 	out.LastMessage = arg.LastMessage                     // simple assign
 	out.LastMessageAt = arg.LastMessageAt                 // simple assign
+	out.LastCustomerMessageAt = arg.LastCustomerMessageAt // simple assign
 	out.LastMessageExternalID = arg.LastMessageExternalID // simple assign
 	out.CreatedAt = arg.CreatedAt                         // simple assign
 	out.UpdatedAt = arg.UpdatedAt                         // simple assign
@@ -583,6 +585,7 @@ func apply_fbmessaging_CreateFbCustomerConversationArgs_fbmessaging_FbCustomerCo
 	out.ExternalMessageAttachments = arg.ExternalMessageAttachments // simple assign
 	out.LastMessage = arg.LastMessage                               // simple assign
 	out.LastMessageAt = arg.LastMessageAt                           // simple assign
+	out.LastCustomerMessageAt = arg.LastCustomerMessageAt           // simple assign
 	out.LastMessageExternalID = arg.LastMessageExternalID           // simple assign
 	out.CreatedAt = time.Time{}                                     // zero value
 	out.UpdatedAt = time.Time{}                                     // zero value

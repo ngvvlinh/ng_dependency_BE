@@ -156,6 +156,7 @@ type FbCustomerConversation struct {
 	ExternalMessageAttachments []*FbMessageAttachment
 	LastMessage                string
 	LastMessageAt              time.Time
+	LastCustomerMessageAt      time.Time
 	LastMessageExternalID      string
 	CreatedAt                  time.Time `compare:"ignore"`
 	UpdatedAt                  time.Time `compare:"ignore"`

@@ -56,6 +56,7 @@ type FbCustomerConversation struct {
 	ExternalMessageAttachments []*FbMessageAttachment                                   `json:"external_message_attachments"`
 	LastMessage                dot.NullString                                           `json:"last_message"`
 	LastMessageAt              time.Time                                                `json:"last_message_at"`
+	LastCustomerMessageAt      time.Time                                                `json:"last_customer_message_at"`
 	CreatedAt                  time.Time                                                `json:"created_at"`
 	UpdatedAt                  time.Time                                                `json:"updated_at"`
 }

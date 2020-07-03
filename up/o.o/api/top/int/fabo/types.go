@@ -256,6 +256,7 @@ type FbCustomerConversation struct {
 	ExternalUserPictureURL     string                 `json:"external_user_picture_url"`
 	LastMessage                string                 `json:"last_message"`
 	LastMessageAt              time.Time              `json:"last_message_at"`
+	LastCustomerMessageAt      time.Time              `json:"last_customer_message_at"`
 	CreatedAt                  time.Time              `json:"created_at"`
 	UpdatedAt                  time.Time              `json:"updated_at"`
 	Customer                   *types.Customer        `json:"customer"`
