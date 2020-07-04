@@ -185,8 +185,10 @@ func (a *Aggregate) UpdateShipmentPricesPriorityPoint(ctx context.Context, args 
 	}
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		var shipmentPriceIDs []dot.ID
+		var priorityPointMap = make(map[dot.ID]int)
 		for _, sp := range args.ShipmentPrices {
 			shipmentPriceIDs = append(shipmentPriceIDs, sp.ID)
+			priorityPointMap[sp.ID] = sp.PriorityPoint
 		}
 		shipmentPrices, err := a.shipmentPriceStore(ctx).IDs(shipmentPriceIDs...).ListShipmentPrices()
 		if err != nil {
@@ -194,10 +196,12 @@ func (a *Aggregate) UpdateShipmentPricesPriorityPoint(ctx context.Context, args 
 		}
 		var priceListIDs []dot.ID
 		for _, sp := range shipmentPrices {
-			priceListIDs = append(priceListIDs, sp.ShipmentPriceListID)
+			if !cm.IDsContain(priceListIDs, sp.ShipmentPriceListID) {
+				priceListIDs = append(priceListIDs, sp.ShipmentPriceListID)
+			}
 			update := &model.ShipmentPrice{
 				ID:            sp.ID,
-				PriorityPoint: sp.PriorityPoint,
+				PriorityPoint: priorityPointMap[sp.ID],
 			}
 			if _err := a.shipmentPriceStore(ctx).UpdateShipmentPriceDB(update); _err != nil {
 				return _err
@@ -206,13 +210,13 @@ func (a *Aggregate) UpdateShipmentPricesPriorityPoint(ctx context.Context, args 
 		}
 
 		// delete cache shipmentpricelistID
-		return a.deleteCachePriceList(ctx, shipmentPriceIDs...)
+		return a.deleteCachePriceList(ctx, priceListIDs...)
 	})
 	return
 }
 
-func (a *Aggregate) deleteCachePriceList(ctx context.Context, shipmentPriceIDs ...dot.ID) error {
-	for _, spID := range shipmentPriceIDs {
+func (a *Aggregate) deleteCachePriceList(ctx context.Context, shipmentPriceListIDs ...dot.ID) error {
+	for _, spID := range shipmentPriceListIDs {
 		if spID != 0 {
 			if err := DeleteRedisCache(ctx, a.redisStore, spID); err != nil {
 				return err

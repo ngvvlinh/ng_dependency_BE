@@ -29,8 +29,8 @@ func TestGetOverweightPrice(t *testing.T) {
 		{
 			description: "100g",
 			weight:      100,
-			want1:       0,
-			want2:       0,
+			want1:       2000,
+			want2:       2000,
 		}, {
 			description: "200g",
 			weight:      200,

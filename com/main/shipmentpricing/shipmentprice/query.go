@@ -89,9 +89,10 @@ func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipme
 			}
 		}
 		res, err = q.shipmentPriceStore(ctx).ShipmentPriceListIDs(priceListIDs...).Status(status3.P).ListShipmentPrices()
-		if err == nil {
-			_ = q.redisStore.SetWithTTL(key, res, util.DefaultTTL)
+		if err != nil {
+			return nil, err
 		}
+		_ = q.redisStore.SetWithTTL(key, res, util.DefaultTTL)
 	}
 
 	res = filterShipmentPricesByShipmentServiceID(res, shipmentServiceID)
@@ -302,8 +303,11 @@ func checkValidOverweight(weight int, overWeights []*shipmentprice.PricingDetail
 }
 
 func GetOverweightPrice(weight int, ov *shipmentprice.PricingDetailOverweight) int {
-	if weight <= ov.MinWeight {
+	if weight < ov.MinWeight {
 		return 0
+	}
+	if weight == ov.MinWeight {
+		return ov.PriceStep
 	}
 	if ov.MaxWeight != -1 && weight > ov.MaxWeight {
 		weight = ov.MaxWeight
@@ -404,7 +408,7 @@ func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipment
 	}
 	feeLines, err := calcAdditionalFees(calcAdditionalFeeArgs, pricing.AdditionalFees)
 	if err != nil {
-		return nil, err
+		return nil, cm.Errorf(cm.FailedPrecondition, err, "Không thể tính phí từ cấu hình giá shipment_price = %v", pricing.ID)
 	}
 	feeLines = append(feeLines, &shipmentprice.ShippingFee{
 		FeeType: shipping_fee_type.Main,
