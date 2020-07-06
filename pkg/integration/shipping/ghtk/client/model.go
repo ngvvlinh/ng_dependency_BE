@@ -275,6 +275,7 @@ type OrderRequest struct {
 	District string `json:"district"` // required - Tên quận/huyện của người nhận hàng hóa
 	Ward     string `json:"ward"`     // Tên phường/xã của người nhận hàng hóa
 	Street   string `json:"street"`   // Tên đường/phố của người nhận hàng hóa
+	Hamlet   string `json:"hamlet"`   // required - Tên thôn/ấp/xóm/tổ/… của người nhận hàng hóa. Nếu không có, vui lòng điền “Khác”
 	Tel      string `json:"tel"`      // required - Số điện thoại người nhận hàng hóa
 	Note     string `json:"note"`
 	Email    string `json:"string"` // required - Email người nhận hàng hóa

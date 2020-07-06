@@ -155,6 +155,7 @@ func (c *Client) CalcShippingFee(ctx context.Context, req *CalcShippingFeeReques
 func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error) {
 	// Setup freeship: COD sẽ chỉ thu người nhận hàng số tiền bằng pick_money
 	req.Order.IsFreeship = 1
+	req.Order.Hamlet = "Khác"
 	if err := req.Validate(); err != nil {
 		return nil, err
 	}
