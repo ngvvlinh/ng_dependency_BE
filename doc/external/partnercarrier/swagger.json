@@ -529,6 +529,9 @@
     "zkUpdateFulfillmentRequest": {
       "type": "object",
       "properties": {
+        "cod_amount": {
+          "type": "integer"
+        },
         "note": {
           "type": "string"
         },

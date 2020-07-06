@@ -31,6 +31,7 @@ func (m *LocationResponse) String() string { return jsonx.MustMarshalToString(m)
 type LocationAddress struct {
 	Province string `json:"province"`
 	District string `json:"district"`
+	Ward     string `json:"ward"`
 }
 
 func (m *LocationAddress) String() string { return jsonx.MustMarshalToString(m) }

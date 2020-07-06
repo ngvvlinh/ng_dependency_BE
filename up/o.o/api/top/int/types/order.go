@@ -969,12 +969,16 @@ type GetShippingServicesRequest struct {
 	ConnectionIDs    []dot.ID     `json:"connection_ids"`
 	FromDistrictCode string       `json:"from_district_code"`
 	FromProvinceCode string       `json:"from_province_code"`
+	FromWardCode     string       `json:"from_ward_code"`
 	ToDistrictCode   string       `json:"to_district_code"`
 	ToProvinceCode   string       `json:"to_province_code"`
+	ToWardCode       string       `json:"to_ward_code"`
 	FromProvince     string       `json:"from_province"`
 	FromDistrict     string       `json:"from_district"`
+	FromWard         string       `json:"from_ward"`
 	ToProvince       string       `json:"to_province"`
 	ToDistrict       string       `json:"to_district"`
+	ToWard           string       `json:"to_ward"`
 	GrossWeight      int          `json:"gross_weight"`
 	ChargeableWeight int          `json:"chargeable_weight"`
 	Length           int          `json:"length"`

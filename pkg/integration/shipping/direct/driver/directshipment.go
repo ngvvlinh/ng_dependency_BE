@@ -6,7 +6,6 @@ import (
 
 	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
-	"o.o/api/main/ordering/types"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
@@ -85,40 +84,31 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 	}
 
 	cmd := &directclient.CreateFulfillmentRequest{
-		PickupAddress: types.Address{
+		PickupAddress: directclient.SimpleAddress{
 			FullName: ffm.AddressFrom.GetFullName(),
 			Phone:    ffm.AddressFrom.Phone,
 			Email:    ffm.AddressFrom.Email,
 			Address1: ffm.AddressFrom.Address1,
 			Address2: ffm.AddressFrom.Address2,
-			Location: types.Location{
-				ProvinceCode: fromAddress.Province.Code,
-				Province:     fromAddress.Province.Name,
-				DistrictCode: fromAddress.District.Code,
-				District:     fromAddress.District.Name,
-				WardCode:     fromAddress.Ward.Code,
-				Ward:         fromAddress.Ward.Name,
-			},
+			Province: fromAddress.Province.Name,
+			District: fromAddress.District.Name,
+			Ward:     fromAddress.Ward.Name,
 		},
-		ShippingAddress: types.Address{
+		ShippingAddress: directclient.SimpleAddress{
 			FullName: ffm.AddressTo.GetFullName(),
 			Phone:    ffm.AddressTo.Phone,
 			Email:    ffm.AddressTo.Email,
 			Address1: ffm.AddressTo.Address1,
 			Address2: ffm.AddressTo.Address2,
-			Location: types.Location{
-				ProvinceCode: toAddress.Province.Code,
-				Province:     toAddress.Province.Name,
-				DistrictCode: toAddress.District.Code,
-				District:     toAddress.District.Name,
-				WardCode:     toAddress.Ward.Code,
-				Ward:         toAddress.Ward.Name,
-			},
+			Province: toAddress.Province.Name,
+			District: toAddress.District.Name,
+			Ward:     toAddress.Ward.Name,
 		},
 		Lines:               lines,
 		TotalWeight:         args.ChargeableWeight,
 		BasketValue:         ffm.BasketValue,
 		TotalCODAmount:      ffm.TotalCODAmount,
+		CODAmount:           ffm.TotalCODAmount,
 		ShippingNote:        note,
 		IncludeInsurance:    ffm.IncludeInsurance,
 		ShippingServiceCode: service.ProviderServiceID,
@@ -174,35 +164,43 @@ func (d *DirectShipmentDriver) CancelFulfillment(ctx context.Context, ffm *shipm
 }
 
 func (d *DirectShipmentDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
-	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
-	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
+	if args.FromWardCode == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ gửi hàng - phường/xã không được để trống!")
+	}
+	if args.ToWardCode == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ nhận hàng - phường/xã không được để trống!")
+	}
+
+	fromQuery := &location.GetLocationQuery{
+		DistrictCode: args.FromDistrictCode,
+		WardCode:     args.FromWardCode,
+	}
+	toQuery := &location.GetLocationQuery{
+		DistrictCode: args.ToDistrictCode,
+		WardCode:     args.ToWardCode,
+	}
 	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
 		return nil, err
 	}
-	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
-	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
+	fromDistrict, fromProvince, fromWard := fromQuery.Result.District, fromQuery.Result.Province, fromQuery.Result.Ward
+	toDistrict, toProvince, toWard := toQuery.Result.District, toQuery.Result.Province, toQuery.Result.Ward
 
 	cmd := &directclient.GetShippingServicesRequest{
 		BasketValue: args.BasketValue,
 		TotalWeight: args.ChargeableWeight,
-		PickupAddress: types.Address{
-			Location: types.Location{
-				ProvinceCode: fromProvince.Code,
-				Province:     fromProvince.Name,
-				DistrictCode: fromDistrict.Code,
-				District:     fromDistrict.Name,
-			},
+		PickupAddress: directclient.SimpleAddress{
+			Province: fromProvince.Name,
+			District: fromDistrict.Name,
+			Ward:     fromWard.Name,
 		},
-		ShippingAddress: types.Address{
-			Location: types.Location{
-				ProvinceCode: toProvince.Code,
-				Province:     toProvince.Name,
-				DistrictCode: toDistrict.Code,
-				District:     toDistrict.Name,
-			},
+		ShippingAddress: directclient.SimpleAddress{
+			Province: toProvince.Name,
+			District: toDistrict.Name,
+			Ward:     toWard.Name,
 		},
 		IncludeInsurance: args.IncludeInsurance,
 		TotalCODAmount:   args.CODAmount,
+		CODAmount:        args.CODAmount,
 	}
 	carrierServices, err := d.client.GetShippingServices(ctx, cmd)
 	if err != nil {

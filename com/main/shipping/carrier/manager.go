@@ -432,6 +432,7 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, args *GetShip
 			}
 			services, err := m.GetShipmentServicesAndMakeupPrice(ctx, args, connID)
 			if err != nil {
+				ll.Error("GetShipmentServicesAndMakeupPrice :: ", l.ID("connection_id", connID), l.Error(err))
 				return err
 			}
 			mutex.Lock()

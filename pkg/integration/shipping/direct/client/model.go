@@ -2,7 +2,6 @@ package client
 
 import (
 	"o.o/api/main/connectioning"
-	orderingtypes "o.o/api/main/ordering/types"
 	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
@@ -62,12 +61,25 @@ func (c CommonResponse) GetCommonResponse() CommonResponse {
 }
 
 type GetShippingServicesRequest struct {
-	BasketValue      int                   `json:"basket_value"`
-	TotalWeight      int                   `json:"total_weight"`
-	PickupAddress    orderingtypes.Address `json:"pickup_address"`
-	ShippingAddress  orderingtypes.Address `json:"shipping_address"`
-	IncludeInsurance bool                  `json:"include_insurance"`
-	TotalCODAmount   int                   `json:"total_cod_amount"`
+	BasketValue      int           `json:"basket_value"`
+	TotalWeight      int           `json:"total_weight"`
+	PickupAddress    SimpleAddress `json:"pickup_address"`
+	ShippingAddress  SimpleAddress `json:"shipping_address"`
+	IncludeInsurance bool          `json:"include_insurance"`
+	// @Deprecated use CODAmount instead
+	TotalCODAmount int `json:"total_cod_amount"`
+	CODAmount      int `json:"cod_amount"`
+}
+
+type SimpleAddress struct {
+	FullName string `json:"full_name"`
+	Phone    string `json:"phone"`
+	Email    string `json:"email"`
+	Address1 string `json:"address_1"`
+	Address2 string `json:"address_2"`
+	Province string `json:"province"`
+	District string `json:"district"`
+	Ward     string `json:"ward"`
 }
 
 type GetShippingServiceResponse struct {
@@ -85,17 +97,19 @@ type ShippingService struct {
 }
 
 type CreateFulfillmentRequest struct {
-	PickupAddress       orderingtypes.Address `json:"pickup_address"`
-	ShippingAddress     orderingtypes.Address `json:"shipping_address"`
-	Lines               []*ItemLine           `json:"lines"`
-	TotalWeight         int                   `json:"total_weight"`
-	BasketValue         int                   `json:"basket_value"`
-	TotalCODAmount      int                   `json:"total_cod_amount"`
-	ShippingNote        string                `json:"shipping_note"`
-	IncludeInsurance    bool                  `json:"include_insurance"`
-	ShippingServiceCode string                `json:"shipping_service_code"`
-	ShippingFee         int                   `json:"shipping_fee"`
-	AffiliateID         string                `json:"affiliate_id"`
+	PickupAddress   SimpleAddress `json:"pickup_address"`
+	ShippingAddress SimpleAddress `json:"shipping_address"`
+	Lines           []*ItemLine   `json:"lines"`
+	TotalWeight     int           `json:"total_weight"`
+	BasketValue     int           `json:"basket_value"`
+	// @Deprecated use CODAmount instead
+	TotalCODAmount      int    `json:"total_cod_amount"`
+	CODAmount           int    `json:"cod_amount"`
+	ShippingNote        string `json:"shipping_note"`
+	IncludeInsurance    bool   `json:"include_insurance"`
+	ShippingServiceCode string `json:"shipping_service_code"`
+	ShippingFee         int    `json:"shipping_fee"`
+	AffiliateID         string `json:"affiliate_id"`
 }
 
 type ItemLine struct {

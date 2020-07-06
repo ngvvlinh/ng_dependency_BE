@@ -64,7 +64,9 @@ type GetShippingServicesArgs struct {
 func (a *GetShippingServicesArgs) ToShipmentServiceArgs(arbitraryID, accountID dot.ID) *carriertypes.GetShippingServicesArgs {
 	return &carriertypes.GetShippingServicesArgs{
 		FromDistrictCode:       a.FromDistrictCode,
+		FromWardCode:           a.FromWardCode,
 		ToDistrictCode:         a.ToDistrictCode,
+		ToWardCode:             a.ToWardCode,
 		ChargeableWeight:       a.ChargeableWeight,
 		Length:                 a.Length,
 		Width:                  a.Width,

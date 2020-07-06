@@ -70,6 +70,7 @@ type UpdateFulfillmentRequest struct {
 	ShippingState    shippingstate.NullState `json:"shipping_state"`
 	Note             dot.NullString          `json:"note"`
 	Weight           types.Int               `json:"weight"`
+	CODAmount        dot.NullInt             `json:"cod_amount"`
 	ShippingFeeLines []*ShippingFeeLine      `json:"shipping_fee_lines"`
 }
 

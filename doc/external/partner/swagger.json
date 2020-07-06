@@ -3327,6 +3327,9 @@
         },
         "province": {
           "type": "string"
+        },
+        "ward": {
+          "type": "string"
         }
       }
     },

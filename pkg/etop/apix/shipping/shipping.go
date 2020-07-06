@@ -65,14 +65,12 @@ func (s *Shipping) GetShippingServices(ctx context.Context, accountID dot.ID, r 
 	}
 	req := &types.GetShippingServicesRequest{
 		ConnectionIDs:    r.ConnectionIDs,
-		FromDistrictCode: "",
-		FromProvinceCode: "",
-		ToDistrictCode:   "",
-		ToProvinceCode:   "",
 		FromProvince:     r.PickupAddress.Province,
 		FromDistrict:     r.PickupAddress.District,
+		FromWard:         r.PickupAddress.Ward,
 		ToProvince:       r.ShippingAddress.Province,
 		ToDistrict:       r.ShippingAddress.District,
+		ToWard:           r.ShippingAddress.Ward,
 		GrossWeight:      r.GrossWeight,
 		ChargeableWeight: r.ChargeableWeight,
 		Length:           r.Length,
@@ -85,6 +83,9 @@ func (s *Shipping) GetShippingServices(ctx context.Context, accountID dot.ID, r 
 	args, err := s.ShipmentManager.PrepareDataGetShippingServices(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+	if args.FromWardCode == "" || args.ToWardCode == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ gửi/giao hàng không được thiếu phường/xã")
 	}
 	args.AccountID = accountID
 	resp, err := s.ShipmentManager.GetShippingServices(ctx, args)
@@ -116,7 +117,7 @@ func (s *Shipping) buildCodeForShippingServices(ctx context.Context, services []
 }
 
 func (s *Shipping) parseServiceCode(ctx context.Context, serviceCode string) (conn *connectioning.Connection, code string, _ error) {
-	if len(serviceCode) <= 8 {
+	if len(serviceCode) <= 4 {
 		return nil, "", cm.Errorf(cm.InvalidArgument, nil, "Shipping service code is invalid")
 	}
 	connCode, code := serviceCode[:4], serviceCode[4:]

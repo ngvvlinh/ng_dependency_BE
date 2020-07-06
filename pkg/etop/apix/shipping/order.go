@@ -12,7 +12,6 @@ import (
 	exttypes "o.o/api/top/external/types"
 	apishop "o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
-	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/inventory_auto"
 	pbsource "o.o/api/top/types/etc/order_source"
 	identitymodel "o.o/backend/com/main/identity/model"
@@ -209,13 +208,13 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, acc
 		},
 	}
 
-	if err := validateAddress(req.CustomerAddress, conn.ConnectionProvider); err != nil {
+	if err := validateAddress(req.CustomerAddress); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ khách hàng không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.ShippingAddress, conn.ConnectionProvider); err != nil {
+	if err := validateAddress(req.ShippingAddress); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ người nhận không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.Shipping.PickupAddress, conn.ConnectionProvider); err != nil {
+	if err := validateAddress(req.Shipping.PickupAddress); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
 	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim, partner, req, nil, 0)
@@ -425,7 +424,7 @@ func (s *Shipping) GetFulfillment(ctx context.Context, shopID dot.ID, r *exttype
 	return convertpb.PbFulfillment(ffm), nil
 }
 
-func validateAddress(address *types.OrderAddress, shippingProvider connection_type.ConnectionProvider) error {
+func validateAddress(address *types.OrderAddress) error {
 	if address == nil {
 		return errors.New("Thiếu thông tin địa chỉ")
 	}
@@ -452,18 +451,16 @@ func validateAddress(address *types.OrderAddress, shippingProvider connection_ty
 		address.FullName = s
 	}
 
-	if shippingProvider == connection_type.ConnectionProviderVTP {
-		// required Ward
-		_address, err := convertpbint.OrderAddressToModel(address)
-		if err != nil {
-			return err
-		}
-		if _address.Ward == "" {
-			return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin phường/xã (%v, %v) - ViettelPost yêu cầu thông tin phường/xã đúng để giao hàng.", address.District, address.Province)
-		}
-		if _address.WardCode == "" {
-			return cm.Errorf(cm.InvalidArgument, nil, "Phường/xã không hợp lệ (%v, %v, %v) - ViettelPost yêu cầu thông tin phường/xã đúng để giao hàng.", address.Ward, address.District, address.Province)
-		}
+	// required Ward
+	_address, err := convertpbint.OrderAddressToModel(address)
+	if err != nil {
+		return err
+	}
+	if _address.Ward == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin phường/xã (%v, %v)", address.District, address.Province)
+	}
+	if _address.WardCode == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Phường/xã không hợp lệ (%v, %v, %v) ", address.Ward, address.District, address.Province)
 	}
 	return nil
 }

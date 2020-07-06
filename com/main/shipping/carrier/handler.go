@@ -91,14 +91,18 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 	fromQuery := &location.FindOrGetLocationQuery{
 		Province:     q.FromProvince,
 		District:     q.FromDistrict,
+		Ward:         q.FromWard,
 		ProvinceCode: q.FromProvinceCode,
 		DistrictCode: q.FromDistrictCode,
+		WardCode:     q.FromWardCode,
 	}
 	toQuery := &location.FindOrGetLocationQuery{
 		Province:     q.ToProvince,
 		District:     q.ToDistrict,
+		Ward:         q.ToWard,
 		ProvinceCode: q.ToProvinceCode,
 		DistrictCode: q.ToDistrictCode,
+		WardCode:     q.ToWardCode,
 	}
 	if err := m.LocationQS.Dispatch(ctx, fromQuery); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ gửi không hợp lệ: %v", err)
@@ -107,8 +111,8 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ nhận không hợp lệ: %v", err)
 	}
 
-	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
-	topDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
+	fromDistrict, fromProvince, fromWard := fromQuery.Result.District, fromQuery.Result.Province, fromQuery.Result.Ward
+	topDistrict, toProvince, toWard := toQuery.Result.District, toQuery.Result.Province, toQuery.Result.Ward
 	if fromDistrict == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ gửi không hợp lệ")
 	}
@@ -126,7 +130,7 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 		return nil, err
 	}
 
-	return &GetShippingServicesArgs{
+	res := &GetShippingServicesArgs{
 		ConnectionIDs:    q.ConnectionIDs,
 		FromDistrictCode: fromDistrict.Code,
 		FromProvinceCode: fromProvince.Code,
@@ -139,7 +143,14 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 		IncludeInsurance: q.IncludeInsurance.Apply(false),
 		BasketValue:      q.BasketValue,
 		CODAmount:        q.TotalCodAmount,
-	}, nil
+	}
+	if fromWard != nil {
+		res.FromWardCode = fromWard.Code
+	}
+	if toWard != nil {
+		res.ToWardCode = toWard.Code
+	}
+	return res, nil
 }
 
 func ValidateFfmWeight(grossWeight, length, width, height, chargeableWeight int) (int, error) {

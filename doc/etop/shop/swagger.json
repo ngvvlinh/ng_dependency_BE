@@ -13849,6 +13849,12 @@
         "from_province_code": {
           "type": "string"
         },
+        "from_ward": {
+          "type": "string"
+        },
+        "from_ward_code": {
+          "type": "string"
+        },
         "gross_weight": {
           "type": "integer"
         },
@@ -13871,6 +13877,12 @@
           "type": "string"
         },
         "to_province_code": {
+          "type": "string"
+        },
+        "to_ward": {
+          "type": "string"
+        },
+        "to_ward_code": {
           "type": "string"
         },
         "total_cod_amount": {

@@ -38,7 +38,9 @@ type GetShippingServicesArgs struct {
 	ArbitraryID      dot.ID
 	AccountID        dot.ID
 	FromDistrictCode string
+	FromWardCode     string
 	ToDistrictCode   string
+	ToWardCode       string
 
 	ChargeableWeight       int
 	Length                 int

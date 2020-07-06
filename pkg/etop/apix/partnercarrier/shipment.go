@@ -31,9 +31,6 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 	if r.ShippingCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping_code")
 	}
-	if !r.ShippingState.Valid {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping_state")
-	}
 
 	query := &connectioning.ListConnectionsQuery{
 		PartnerID: s.SS.Partner().ID,
@@ -58,23 +55,30 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 	}
 	ffm := ffmQuery.Result
 
-	cmd := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
-		FulfillmentID:        ffm.ID,
-		ShippingState:        r.ShippingState.Enum,
-		ExternalShippingNote: r.Note,
-		Weight:               r.Weight.Int(),
-	}
-	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
-		return nil, err
+	if r.ShippingState.Valid || r.Note.Valid || r.Weight != 0 {
+		cmd := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
+			FulfillmentID:        ffm.ID,
+			ShippingState:        r.ShippingState.Enum,
+			ExternalShippingNote: r.Note,
+			Weight:               r.Weight.Int(),
+		}
+
+		if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
+			return nil, err
+		}
 	}
 
-	// update shippingFeeLines
-	cmd2 := &shippingcore.UpdateFulfillmentShippingFeesCommand{
-		FulfillmentID:            ffm.ID,
-		ProviderShippingFeeLines: partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
+	if r.ShippingFeeLines != nil || r.CODAmount.Valid {
+		// update shippingFeeLines
+		cmd2 := &shippingcore.UpdateFulfillmentShippingFeesCommand{
+			FulfillmentID:            ffm.ID,
+			ProviderShippingFeeLines: partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
+			TotalCODAmount:           r.CODAmount,
+		}
+		if err := s.ShippingAggr.Dispatch(ctx, cmd2); err != nil {
+			return nil, err
+		}
 	}
-	if err := s.ShippingAggr.Dispatch(ctx, cmd2); err != nil {
-		return nil, err
-	}
-	return &pbcm.UpdatedResponse{Updated: cmd.Result}, nil
+
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }

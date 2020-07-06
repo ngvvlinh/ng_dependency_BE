@@ -117,6 +117,7 @@ func (c *Client) sendPostRequest(ctx context.Context, path string, req interface
 	res, err := c.rclient.R().
 		SetBody(req).
 		SetHeader("Authorization", "Bearer "+c.token).
+		SetHeader("Ref-Account-ID", c.affiliateID).
 		Post(path)
 	if err != nil {
 		return cm.Errorf(cm.Internal, err, "Lỗi kết nối với %v", c.connName)
