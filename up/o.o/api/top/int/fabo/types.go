@@ -526,6 +526,7 @@ func (m *CreatePostRequest) String() string {
 
 type CreatePostResponse struct {
 	ExternalPostID string `json:"external_post_id"`
+	ExternalURL    string `json:"external_url"`
 }
 
 func (m *CreatePostResponse) String() string {

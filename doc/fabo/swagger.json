@@ -490,6 +490,9 @@
       "properties": {
         "external_post_id": {
           "type": "string"
+        },
+        "external_url": {
+          "type": "string"
         }
       }
     },

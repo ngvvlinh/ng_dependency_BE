@@ -1,8 +1,12 @@
 package fabo
 
 import (
+	"o.o/backend/pkg/common/apifw/idemp"
+	"o.o/backend/pkg/common/redis"
 	"o.o/capi/httprpc"
 )
+
+var idempgroup *idemp.RedisGroup
 
 type FaboServer struct {
 	pageService                 *PageService
@@ -15,7 +19,9 @@ func NewServers(
 	pageService *PageService,
 	conversationService *CustomerConversationService,
 	customerService *CustomerService,
+	rd redis.Store,
 ) Servers {
+	idempgroup = idemp.NewRedisGroup(rd, "idemp_fabo", 30)
 	servers := httprpc.MustNewServers(
 		pageService.Clone,
 		conversationService.Clone,

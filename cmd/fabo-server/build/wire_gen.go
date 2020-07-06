@@ -534,7 +534,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		FBUseringQuery: fbuseringQueryBus,
 		FBUseringAggr:  fbuseringCommandBus,
 	}
-	faboServers := fabo.NewServers(pageService, customerConversationService, faboCustomerService)
+	faboServers := fabo.NewServers(pageService, customerConversationService, faboCustomerService, store)
 	intHandlers := BuildIntHandlers(servers, shopServers, adminServers, sadminServers, faboServers)
 	imcsvImport := imcsv.Import{
 		MoneyTxAggr: moneytxCommandBus,

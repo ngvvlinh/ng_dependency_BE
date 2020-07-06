@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
@@ -459,6 +460,21 @@ func (s *CustomerConversationService) SendComment(
 func (s *CustomerConversationService) CreatePost(
 	ctx context.Context, request *fabo.CreatePostRequest,
 ) (*fabo.CreatePostResponse, error) {
+	key := fmt.Sprintf("CreatePost %v-%v", request.ExternalPageID, request.Message)
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 7*60*time.Second, "tạo bài viết",
+		func() (interface{}, error) { return s.createPost(ctx, request) })
+
+	if err != nil {
+		return nil, err
+	}
+	return res.(*fabo.CreatePostResponse), err
+
+}
+
+func (s *CustomerConversationService) createPost(
+	ctx context.Context, request *fabo.CreatePostRequest,
+) (*fabo.CreatePostResponse, error) {
 	getFbExternalPageInternalQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
 		ExternalID: request.ExternalPageID,
 	}
@@ -477,8 +493,11 @@ func (s *CustomerConversationService) CreatePost(
 		return nil, err
 	}
 
+	externalPostID := strings.Split(createPostCmd.Result.ExternalID, "_")[1]
+
 	response := &fabo.CreatePostResponse{
 		ExternalPostID: createPostCmd.Result.ExternalID,
+		ExternalURL:    fmt.Sprintf("https://www.facebook.com/%s/posts/%s/", request.ExternalPageID, externalPostID),
 	}
 	return response, nil
 }
