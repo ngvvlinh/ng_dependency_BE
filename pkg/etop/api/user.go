@@ -2006,7 +2006,7 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *a
 		return nil, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp lệ", nil)
 	}
 	var msg string
-	var redisCodeCount = fmt.Sprintf("confirm-phone-%v-%v", s.SS.User().ID, r.Phone)
+	var redisCodeCount = fmt.Sprintf("confirm-phone-%v-%v", s.SS.Claim().UserID, r.Phone)
 	redisCodeCount = login.EncodePassword(redisCodeCount)
 	msg, err := s.countSendtimeMsg(redisCodeCount, templatemessages.SmsVerificationTpl, templatemessages.SmsVerificationTplRepeat)
 	if err != nil {

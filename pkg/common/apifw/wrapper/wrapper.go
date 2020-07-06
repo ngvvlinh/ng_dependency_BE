@@ -225,6 +225,7 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 	var stacktrace []byte
 	if recovered != nil {
 		stacktrace = debug.Stack()
+		ll.SendMessagef("[%s] stacktrace\n%s", cmenv.Env(), stacktrace)
 		if _err, ok := recovered.(error); ok {
 			err = cm.Error(cm.RuntimePanic, "", _err)
 		} else {
