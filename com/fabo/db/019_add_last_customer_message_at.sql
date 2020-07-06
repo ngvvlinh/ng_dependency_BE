@@ -1,7 +1,7 @@
 ALTER TABLE fb_customer_conversation
-    ADD COLUMN last_customer_message_at TEXT;
+    ADD COLUMN last_customer_message_at TIMESTAMP WITH TIME ZONE;
 ALTER TABLE history.fb_customer_conversation
-    ADD COLUMN last_customer_message_at TEXT;
+    ADD COLUMN last_customer_message_at TIMESTAMP WITH TIME ZONE;
 
 -- migrate last_customer_message_at for message
 -- update last_customer_message_at where external_from.id <> b.external_page_id
