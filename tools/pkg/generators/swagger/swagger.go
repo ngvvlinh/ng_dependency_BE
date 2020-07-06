@@ -299,6 +299,7 @@ func parseSchema(ng generator.Engine, path string, definitions Definitions, typ 
 				deprecatedEnumNames = append(deprecatedEnumNames, name)
 			}
 		}
+		sort.Strings(deprecatedEnumNames)
 
 		s := spec.Schema{
 			SchemaProps: spec.SchemaProps{
