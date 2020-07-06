@@ -226,35 +226,35 @@ func Connect(c ConfigPostgres) (*Database, error) {
 	return database, nil
 }
 
-func (db Database) TxKey() TxKey {
+func (db *Database) TxKey() TxKey {
 	return TxKey{db.id}
 }
 
-func (db Database) DBID() string {
+func (db *Database) DBID() string {
 	return db.db.DBID()
 }
 
 // DB ...
-func (db Database) DB() *sq.Database {
+func (db *Database) DB() *sq.Database {
 	return &db.db
 }
 
-func (db Database) Opts() core.Opts {
+func (db *Database) Opts() core.Opts {
 	return db.db.Opts()
 }
 
 // Exec ...
-func (db Database) Exec(query string, args ...interface{}) (sql.Result, error) {
+func (db *Database) Exec(query string, args ...interface{}) (sql.Result, error) {
 	return db.db.Exec(query, args...)
 }
 
 // ExecContext ...
-func (db Database) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (db *Database) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
 	return db.db.ExecContext(ctx, query, args...)
 }
 
 // MustExec ...
-func (db Database) MustExec(query string, args ...interface{}) sql.Result {
+func (db *Database) MustExec(query string, args ...interface{}) sql.Result {
 	res, err := db.db.Exec(query, args...)
 	if err != nil {
 		ll.Fatal("Unable to execute query", l.Error(err))
@@ -263,41 +263,41 @@ func (db Database) MustExec(query string, args ...interface{}) sql.Result {
 }
 
 // Query ...
-func (db Database) Query(query string, args ...interface{}) (*sql.Rows, error) {
+func (db *Database) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	return db.db.Query(query, args...)
 }
 
 // QueryContext ...
-func (db Database) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (db *Database) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
 	return db.db.QueryContext(ctx, query, args...)
 }
 
 // QueryRow ...
-func (db Database) QueryRow(query string, args ...interface{}) sq.Row {
+func (db *Database) QueryRow(query string, args ...interface{}) sq.Row {
 	return db.db.QueryRow(query, args...)
 }
 
 // QueryRowContext ...
-func (db Database) QueryRowContext(ctx context.Context, query string, args ...interface{}) sq.Row {
+func (db *Database) QueryRowContext(ctx context.Context, query string, args ...interface{}) sq.Row {
 	return db.db.QueryRowContext(ctx, query, args...)
 }
 
 // NewQuery ...
-func (db Database) NewQuery() Query {
+func (db *Database) NewQuery() Query {
 	return Query{db.db.NewQuery()}
 }
 
-func (db Database) WithContext(ctx context.Context) Query {
+func (db *Database) WithContext(ctx context.Context) Query {
 	return Query{db.db.NewQuery().WithContext(ctx)}
 }
 
 // Begin ...
-func (db Database) Begin() (Tx, error) {
+func (db *Database) Begin() (Tx, error) {
 	t, err := db.db.Begin()
 	return tx{tx: t, db: db}, err
 }
 
-func (db Database) BeginContext(ctx context.Context) (Tx, error) {
+func (db *Database) BeginContext(ctx context.Context) (Tx, error) {
 	t, err := db.db.BeginContext(ctx)
 	return tx{tx: t, db: db}, err
 }
@@ -347,7 +347,7 @@ func (q Query) ScanRow(dest ...interface{}) (bool, error) {
 
 type tx struct {
 	tx sq.Tx
-	db Database
+	db *Database
 }
 
 func (tx tx) DBID() string {
@@ -431,7 +431,7 @@ func DefaultErrorMapper(err error, entry *sq.LogEntry) error {
 }
 
 // InTransaction ...
-func (db Database) InTransaction(ctx context.Context, callback func(QueryInterface) error) (err error) {
+func (db *Database) InTransaction(ctx context.Context, callback func(QueryInterface) error) (err error) {
 	txKey := db.TxKey()
 	{
 		tx := ctx.Value(txKey)

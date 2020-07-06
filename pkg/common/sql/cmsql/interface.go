@@ -71,7 +71,7 @@ type Tx interface {
 	QueryInterface
 }
 
-var _ DBX = Database{}
+var _ DBX = &Database{}
 var _ DBX = tx{}
 var _ QueryInterface = Query{}
 var _ QueryInterface = tx{}
@@ -219,140 +219,140 @@ func (q Query) Apply(funcs ...func(core.CommonQuery)) Query {
 //-- Database --//
 
 // Get ...
-func (db Database) Get(obj core.IGet, preds ...interface{}) (bool, error) {
+func (db *Database) Get(obj core.IGet, preds ...interface{}) (bool, error) {
 	return db.db.Get(obj, preds...)
 }
 
 // Find ...
-func (db Database) Find(objs core.IFind, preds ...interface{}) error {
+func (db *Database) Find(objs core.IFind, preds ...interface{}) error {
 	return db.db.Find(objs, preds...)
 }
 
 // FindRows ...
-func (db Database) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.Rows, error) {
+func (db *Database) FindRows(objs core.IFind, preds ...interface{}) (core.Opts, *sql.Rows, error) {
 	return db.db.FindRows(objs, preds...)
 }
 
 // Insert ...
-func (db Database) Insert(objs ...core.IInsert) (int, error) {
+func (db *Database) Insert(objs ...core.IInsert) (int, error) {
 	return db.db.Insert(objs...)
 }
 
 // Upsert ...
-func (db Database) Upsert(objs ...core.IUpsert) (int, error) {
+func (db *Database) Upsert(objs ...core.IUpsert) (int, error) {
 	return db.db.Upsert(objs...)
 }
 
 // UpdateInfo ...
-func (db Database) Update(objs ...core.IUpdate) (int, error) {
+func (db *Database) Update(objs ...core.IUpdate) (int, error) {
 	return db.db.Update(objs...)
 }
 
 // UpdateMap ...
-func (db Database) UpdateMap(m map[string]interface{}) (int, error) {
+func (db *Database) UpdateMap(m map[string]interface{}) (int, error) {
 	return db.db.UpdateMap(m)
 }
 
 // Delete ...
-func (db Database) Delete(obj core.ITableName) (int, error) {
+func (db *Database) Delete(obj core.ITableName) (int, error) {
 	return db.db.Delete(obj)
 }
 
 // Count ...
-func (db Database) Count(obj core.ITableName, preds ...interface{}) (int, error) {
+func (db *Database) Count(obj core.ITableName, preds ...interface{}) (int, error) {
 	return db.db.Count(obj, preds...)
 }
 
 // Table ...
-func (db Database) Table(name string, alias ...string) Query {
+func (db *Database) Table(name string, alias ...string) Query {
 	return Query{db.db.Table(name, alias...)}
 }
 
 // Prefix ...
-func (db Database) Prefix(sql string, args ...interface{}) Query {
+func (db *Database) Prefix(sql string, args ...interface{}) Query {
 	return Query{db.db.Prefix(sql, args...)}
 }
 
 // Select ...
-func (db Database) Select(cols ...string) Query {
+func (db *Database) Select(cols ...string) Query {
 	return Query{db.db.Select(cols...)}
 }
 
 // From ...
-func (db Database) From(table string) Query {
+func (db *Database) From(table string) Query {
 	return Query{db.db.From(table)}
 }
 
 // SQL ...
-func (db Database) SQL(args ...interface{}) Query {
+func (db *Database) SQL(args ...interface{}) Query {
 	return Query{db.db.SQL(args...)}
 }
 
 // Where ...
-func (db Database) Where(args ...interface{}) Query {
+func (db *Database) Where(args ...interface{}) Query {
 	return Query{db.db.Where(args...)}
 }
 
 // OrderBy ...
-func (db Database) OrderBy(orderBys ...string) Query {
+func (db *Database) OrderBy(orderBys ...string) Query {
 	return Query{db.db.OrderBy(orderBys...)}
 }
 
 // GroupBy ...
-func (db Database) GroupBy(groupBys ...string) Query {
+func (db *Database) GroupBy(groupBys ...string) Query {
 	return Query{db.db.GroupBy(groupBys...)}
 }
 
 // Limit ...
-func (db Database) Limit(limit uint64) Query {
+func (db *Database) Limit(limit uint64) Query {
 	return Query{db.db.Limit(limit)}
 }
 
 // Offset ...
-func (db Database) Offset(offset uint64) Query {
+func (db *Database) Offset(offset uint64) Query {
 	return Query{db.db.Offset(offset)}
 }
 
 // Suffix ...
-func (db Database) Suffix(sql string, args ...interface{}) Query {
+func (db *Database) Suffix(sql string, args ...interface{}) Query {
 	return Query{db.db.Suffix(sql)}
 }
 
 // UpdateAll ...
-func (db Database) UpdateAll() Query {
+func (db *Database) UpdateAll() Query {
 	return Query{db.db.UpdateAll()}
 }
 
 // In ...
-func (db Database) In(column string, args ...interface{}) Query {
+func (db *Database) In(column string, args ...interface{}) Query {
 	return Query{db.db.In(column, args...)}
 }
 
 // NotIn ...
-func (db Database) NotIn(column string, args ...interface{}) Query {
+func (db *Database) NotIn(column string, args ...interface{}) Query {
 	return Query{db.db.NotIn(column, args...)}
 }
 
 // Exists ...
-func (db Database) Exists(column string, exists bool) Query {
+func (db *Database) Exists(column string, exists bool) Query {
 	return Query{db.db.Exists(column, exists)}
 }
 
 // IsNull ...
-func (db Database) IsNull(column string, null bool) Query {
+func (db *Database) IsNull(column string, null bool) Query {
 	return Query{db.db.In(column, null)}
 }
 
 // InOrEqIDs ...
-func (db Database) InOrEqIDs(column string, ids []dot.ID) Query {
+func (db *Database) InOrEqIDs(column string, ids []dot.ID) Query {
 	return inOrEqIDs(&db.db, column, ids)
 }
 
-func (db Database) Preload(table string, preds ...interface{}) Query {
+func (db *Database) Preload(table string, preds ...interface{}) Query {
 	return Query{db.db.Preload(table, preds...)}
 }
 
-func (db Database) Apply(funcs ...func(core.CommonQuery)) Query {
+func (db *Database) Apply(funcs ...func(core.CommonQuery)) Query {
 	return Query{db.db.Apply(funcs...)}
 }
 
@@ -503,31 +503,31 @@ func (tx tx) Apply(funcs ...func(core.CommonQuery)) Query {
 //-- Should --//
 
 // ShouldGet ...
-func (db Database) ShouldGet(obj core.IGet, preds ...interface{}) error {
+func (db *Database) ShouldGet(obj core.IGet, preds ...interface{}) error {
 	return ShouldGet(db.db.Get(obj, preds...))
 }
 
 // ShouldUpdate ...
-func (db Database) ShouldUpdate(obj ...core.IUpdate) error {
+func (db *Database) ShouldUpdate(obj ...core.IUpdate) error {
 	return Should(db.db.Update(obj...))
 }
 
 // ShouldUpdateMap ...
-func (db Database) ShouldUpdateMap(obj map[string]interface{}) error {
+func (db *Database) ShouldUpdateMap(obj map[string]interface{}) error {
 	return Should(db.db.UpdateMap(obj))
 }
 
 // ShouldInsert ...
-func (db Database) ShouldInsert(objs ...core.IInsert) error {
+func (db *Database) ShouldInsert(objs ...core.IInsert) error {
 	return Should(db.db.Insert(objs...))
 }
 
-func (db Database) ShouldUpsert(objs ...core.IUpsert) error {
+func (db *Database) ShouldUpsert(objs ...core.IUpsert) error {
 	return Should(db.db.Upsert(objs...))
 }
 
 // ShouldDelete ...
-func (db Database) ShouldDelete(obj core.ITableName) error {
+func (db *Database) ShouldDelete(obj core.ITableName) error {
 	return Should(db.db.Delete(obj))
 }
 
