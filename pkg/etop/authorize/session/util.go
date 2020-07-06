@@ -50,6 +50,12 @@ func (s *session) Affiliate() *identitymodel.Affiliate {
 
 func (s *session) Permission() identitymodel.Permission {
 	s.ensureInit()
+	if s.claim.UserID == 0 || s.claim.AccountID == 0 {
+		s.permission = identitymodel.Permission{Permissions: []string{}}
+	}
+	if s.permission.Permissions != nil {
+		return s.permission
+	}
 	accQuery := &identitymodelx.GetAccountRolesQuery{
 		AccountID: s.claim.AccountID,
 		UserID:    s.claim.UserID,
@@ -58,6 +64,9 @@ func (s *session) Permission() identitymodel.Permission {
 		panic(err)
 	}
 	s.permission = accQuery.Result.AccountUser.Permission
+	if s.permission.Permissions == nil {
+		s.permission.Permissions = []string{}
+	}
 	return s.permission
 }
 
