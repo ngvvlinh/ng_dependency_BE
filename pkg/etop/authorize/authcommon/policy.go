@@ -18,7 +18,7 @@ const shopPolicy = `#connection
 	# collection
 	p, shop/collection:create, admin, owner, purchasing_management
 	p, shop/collection:update, admin, owner, purchasing_management
-    p, shop/collection:view, admin, owner, accountant, purchasing_management, inventory_management
+    p, shop/collection:view, admin, owner, accountant, salesman, purchasing_management, inventory_management
 	# customer
 	p, shop/customer:create, admin, owner, salesman
 	p, shop/customer:update, admin, owner, salesman
@@ -203,12 +203,27 @@ const adminPolicy = `
 	p, admin/order:view, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
 	p, admin/order:list, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
 	p, admin/order_by_id:list, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
+	# shop shipment price
+	p, admin/shop_shipment_price_list:update, admin, ad_salelead, ad_sale
+	p, admin/shop_shipment_price_list:create, admin, ad_salelead, ad_sale
+	p, admin/shop_shipment_price_list:delete, admin, ad_salelead, ad_sale
+	p, admin/shop_shipment_price_list:view, admin, ad_salelead, ad_sale
+	p, admin/shop_shipment_price_list:list, admin, ad_salelead, ad_sale
+	# shipment price services
+	p, admin/shop_shipment_price_shipment_service:view, admin, ad_salelead
+	p, admin/shop_shipment_price_shipment_service:create, admin, ad_salelead
+	p, admin/shop_shipment_price_shipment_service:delete, admin, ad_salelead
+	p, admin/shop_shipment_price_shipment_service:update, admin, ad_salelead
+	# shipment price list
+	p, admin/shipment_price_list:create, admin, ad_salelead
+	p, admin/shipment_price_list:update, admin, ad_salelead
+	p, admin/shipment_price_list:delete, admin, ad_salelead
+	p, admin/shipment_price_list:view, admin, ad_salelead
 	# shipment price
-	p, admin/shop_shipment_price:update, admin, ad_salelead, ad_sale
-	p, admin/shop_shipment_price_list:create, admin, ad_salelead
-	p, admin/shop_shipment_price_list:delete, admin, ad_salelead
-	p, admin/shop_shipment_price_list:view, admin, ad_salelead
-	p, admin/shop_shipment_price_list:list, admin, ad_salelead
+	p, admin/shipment_price:create, admin, ad_salelead
+	p, admin/shipment_price:update, admin, ad_salelead
+	p, admin/shipment_price:delete, admin, ad_salelead
+	p, admin/shipment_price:view, admin, ad_salelead
 	# admin shop
 	p, admin/shop:view, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
 	p, admin/shop:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant

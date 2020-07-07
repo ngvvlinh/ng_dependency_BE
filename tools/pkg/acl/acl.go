@@ -285,12 +285,30 @@ const (
 	AdminOrderList     permission.ActionType = "admin/order:list"
 	AdminOrderByIdList permission.ActionType = "admin/order_by_id:list"
 
-	// Admin ShipmentPrice
+	// Admin Shop ShipmentPrice
 	AdminShopShipmentPriceListCreate permission.ActionType = "admin/shop_shipment_price_list:create"
 	AdminShopShipmentPriceListUpdate permission.ActionType = "admin/shop_shipment_price_list:update"
 	AdminShopShipmentPriceListDelete permission.ActionType = "admin/shop_shipment_price_list:delete"
 	AdminShopShipmentPriceListView   permission.ActionType = "admin/shop_shipment_price_list:view"
 	AdminShopShipmentPriceListList   permission.ActionType = "admin/shop_shipment_price_list:list"
+
+	// Admin ShipmentPrice Services
+	AdminShopShipmentPriceShipmentServiceView   permission.ActionType = "admin/shop_shipment_price_shipment_service:view"
+	AdminShopShipmentPriceShipmentServiceCreate permission.ActionType = "admin/shop_shipment_price_shipment_service:create"
+	AdminShopShipmentPriceShipmentServiceUpdate permission.ActionType = "admin/shop_shipment_price_shipment_service:update"
+	AdminShopShipmentPriceShipmentServiceDelete permission.ActionType = "admin/shop_shipment_price_shipment_service:delete"
+
+	// Admin ShipmentPrice List
+	AdminShipmentPriceListCreate permission.ActionType = "admin/shipment_price_list:create"
+	AdminShipmentPriceListUpdate permission.ActionType = "admin/shipment_price_list:update"
+	AdminShipmentPriceListDelete permission.ActionType = "admin/shipment_price_list:delete"
+	AdminShipmentPriceListView   permission.ActionType = "admin/shipment_price_list:view"
+
+	// Admin ShipmentPrice
+	AdminShipmentPriceCreate permission.ActionType = "admin/shipment_price:create"
+	AdminShipmentPriceUpdate permission.ActionType = "admin/shipment_price:update"
+	AdminShipmentPriceDelete permission.ActionType = "admin/shipment_price:delete"
+	AdminShipmentPriceView   permission.ActionType = "admin/shipment_price:view"
 
 	// Admin Shop
 	AdminShopView     permission.ActionType = "admin/shop:view"
@@ -665,27 +683,27 @@ var _acl = map[string]*permission.Decl{
 	"admin.Connection/UpdateBuiltinShopConnection": {Type: EtopAdmin, Actions: actions(AdminConnectionShopBuiltinUpdate)},
 	"admin.Connection/GetConnectionServices":       {Type: EtopAdmin, Actions: actions(AdminConnectionServiceView)},
 
-	"admin.ShipmentPrice/GetShipmentServices":                      {Type: EtopAdmin},
-	"admin.ShipmentPrice/GetShipmentService":                       {Type: EtopAdmin},
-	"admin.ShipmentPrice/CreateShipmentService":                    {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShipmentService":                    {Type: EtopAdmin},
-	"admin.ShipmentPrice/DeleteShipmentService":                    {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations": {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations": {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShipmentServices":                      {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceShipmentServiceView)},
+	"admin.ShipmentPrice/GetShipmentService":                       {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceShipmentServiceView)},
+	"admin.ShipmentPrice/CreateShipmentService":                    {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceShipmentServiceCreate)},
+	"admin.ShipmentPrice/UpdateShipmentService":                    {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceShipmentServiceUpdate)},
+	"admin.ShipmentPrice/DeleteShipmentService":                    {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceShipmentServiceDelete)},
+	"admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations": {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceShipmentServiceUpdate)},
+	"admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations": {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceShipmentServiceUpdate)},
 
-	"admin.ShipmentPrice/GetShipmentPriceLists":       {Type: EtopAdmin},
-	"admin.ShipmentPrice/GetShipmentPriceList":        {Type: EtopAdmin},
-	"admin.ShipmentPrice/CreateShipmentPriceList":     {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShipmentPriceList":     {Type: EtopAdmin},
-	"admin.ShipmentPrice/SetDefaultShipmentPriceList": {Type: EtopAdmin},
-	"admin.ShipmentPrice/DeleteShipmentPriceList":     {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShipmentPriceLists":       {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListView)},
+	"admin.ShipmentPrice/GetShipmentPriceList":        {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListView)},
+	"admin.ShipmentPrice/CreateShipmentPriceList":     {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListCreate)},
+	"admin.ShipmentPrice/UpdateShipmentPriceList":     {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListUpdate)},
+	"admin.ShipmentPrice/SetDefaultShipmentPriceList": {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListUpdate)},
+	"admin.ShipmentPrice/DeleteShipmentPriceList":     {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListDelete)},
 
-	"admin.ShipmentPrice/GetShipmentPrice":                  {Type: EtopAdmin},
-	"admin.ShipmentPrice/GetShipmentPrices":                 {Type: EtopAdmin},
-	"admin.ShipmentPrice/CreateShipmentPrice":               {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShipmentPrice":               {Type: EtopAdmin},
-	"admin.ShipmentPrice/DeleteShipmentPrice":               {Type: EtopAdmin},
-	"admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint": {Type: EtopAdmin},
+	"admin.ShipmentPrice/GetShipmentPrice":                  {Type: EtopAdmin, Actions: actions(AdminShipmentPriceView)},
+	"admin.ShipmentPrice/GetShipmentPrices":                 {Type: EtopAdmin, Actions: actions(AdminShipmentPriceView)},
+	"admin.ShipmentPrice/CreateShipmentPrice":               {Type: EtopAdmin, Actions: actions(AdminShipmentPriceCreate)},
+	"admin.ShipmentPrice/UpdateShipmentPrice":               {Type: EtopAdmin, Actions: actions(AdminShipmentPriceUpdate)},
+	"admin.ShipmentPrice/DeleteShipmentPrice":               {Type: EtopAdmin, Actions: actions(AdminShipmentPriceDelete)},
+	"admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint": {Type: EtopAdmin, Actions: actions(AdminShipmentPriceUpdate)},
 
 	"admin.ShipmentPrice/GetShopShipmentPriceLists":   {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceListList)},
 	"admin.ShipmentPrice/GetShopShipmentPriceList":    {Type: EtopAdmin, Actions: actions(AdminShopShipmentPriceListView)},
@@ -935,7 +953,7 @@ var _acl = map[string]*permission.Decl{
 	"shop.Connection/GetConnections":          {Type: Shop, Actions: actions(ShopConnectionView)},
 	"shop.Connection/GetAvailableConnections": {Type: Shop, Actions: actions(ShopConnectionView)},
 	"shop.Connection/GetShopConnections":      {Type: Shop, Actions: actions(ShopConnectionView)},
-	"shop.Connection/LoginShopConnection":     {Type: Shop, Actions: actions(ShopConnectionUpdate)},
+	"shop.Connection/LoginShopConnection":     {Type: Shop, Actions: actions(ShopConnectionCreate)},
 	"shop.Connection/RegisterShopConnection":  {Type: Shop, Actions: actions(ShopConnectionCreate)},
 	"shop.Connection/DeleteShopConnection":    {Type: Shop, Actions: actions(ShopConnectionDelete)},
 	"shop.Connection/UpdateShopConnection":    {Type: Shop, Actions: actions(ShopConnectionUpdate)},
