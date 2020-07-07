@@ -154,11 +154,30 @@ func checkMatchingPricing(pricing *shipmentprice.ShipmentPrice, fromProvince, to
 	if pricing.Status != status3.P {
 		return false
 	}
+	var _fromCustomRegions, _toCustomRegions []dot.ID
+	if len(pricing.CustomRegionIDs) > 0 {
+		// yêu cầu cả địa điểm gửi và lấy hàng đều phải nằm trong danh sách CustomRegionIDs này
+		for _, fromRegionID := range fromCustomRegions {
+			if cm.IDsContain(pricing.CustomRegionIDs, fromRegionID) {
+				_fromCustomRegions = append(_fromCustomRegions, fromRegionID)
+			}
+		}
+		for _, toRegionID := range toCustomRegions {
+			if cm.IDsContain(pricing.CustomRegionIDs, toRegionID) {
+				_toCustomRegions = append(_toCustomRegions, toRegionID)
+			}
+		}
+		if len(_fromCustomRegions) == 0 || len(_toCustomRegions) == 0 {
+			return false
+		}
+	}
+
 	// check CustomRegionRouteType
-	if len(pricing.CustomRegionTypes) > 0 {
+	// CustomRegionRouteType và CustomRegionIDs luôn đi chung với nhau
+	if len(pricing.CustomRegionTypes) > 0 && len(_fromCustomRegions) > 0 {
 		checkValidRegion := false
-		for _, fromRegion := range fromCustomRegions {
-			for _, toRegion := range toCustomRegions {
+		for _, fromRegion := range _fromCustomRegions {
+			for _, toRegion := range _toCustomRegions {
 				customRegionRouteType := locationutil.GetCustomRegionRouteType(fromRegion, toRegion)
 				if containCustomRegionRouteType(pricing.CustomRegionTypes, customRegionRouteType) {
 					checkValidRegion = true
@@ -170,25 +189,6 @@ func checkMatchingPricing(pricing *shipmentprice.ShipmentPrice, fromProvince, to
 			}
 		}
 		if !checkValidRegion {
-			return false
-		}
-	}
-	if len(pricing.CustomRegionIDs) > 0 {
-		// yêu cầu cả địa điểm gửi và lấy hàng đều phải nằm trong danh sách CustomRegionIDs này
-		matchCount := 0
-		for _, fromRegionID := range fromCustomRegions {
-			if cm.IDsContain(pricing.CustomRegionIDs, fromRegionID) {
-				matchCount++
-				break
-			}
-		}
-		for _, toRegionID := range toCustomRegions {
-			if cm.IDsContain(pricing.CustomRegionIDs, toRegionID) {
-				matchCount++
-				break
-			}
-		}
-		if matchCount != 2 {
 			return false
 		}
 	}

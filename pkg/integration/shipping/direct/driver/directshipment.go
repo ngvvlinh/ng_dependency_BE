@@ -164,12 +164,12 @@ func (d *DirectShipmentDriver) CancelFulfillment(ctx context.Context, ffm *shipm
 }
 
 func (d *DirectShipmentDriver) GetShippingServices(ctx context.Context, args *carriertypes.GetShippingServicesArgs) ([]*shippingsharemodel.AvailableShippingService, error) {
-	if args.FromWardCode == "" {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ gửi hàng - phường/xã không được để trống!")
-	}
-	if args.ToWardCode == "" {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ nhận hàng - phường/xã không được để trống!")
-	}
+	// if args.FromWardCode == "" {
+	// 	return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ gửi hàng - phường/xã không được để trống!")
+	// }
+	// if args.ToWardCode == "" {
+	// 	return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ nhận hàng - phường/xã không được để trống!")
+	// }
 
 	fromQuery := &location.GetLocationQuery{
 		DistrictCode: args.FromDistrictCode,
@@ -191,16 +191,20 @@ func (d *DirectShipmentDriver) GetShippingServices(ctx context.Context, args *ca
 		PickupAddress: directclient.SimpleAddress{
 			Province: fromProvince.Name,
 			District: fromDistrict.Name,
-			Ward:     fromWard.Name,
 		},
 		ShippingAddress: directclient.SimpleAddress{
 			Province: toProvince.Name,
 			District: toDistrict.Name,
-			Ward:     toWard.Name,
 		},
 		IncludeInsurance: args.IncludeInsurance,
 		TotalCODAmount:   args.CODAmount,
 		CODAmount:        args.CODAmount,
+	}
+	if fromWard != nil {
+		cmd.PickupAddress.Ward = fromWard.Name
+	}
+	if toWard != nil {
+		cmd.ShippingAddress.Ward = toWard.Name
 	}
 	carrierServices, err := d.client.GetShippingServices(ctx, cmd)
 	if err != nil {
