@@ -475,6 +475,19 @@ func (s *CustomerConversationService) CreatePost(
 func (s *CustomerConversationService) createPost(
 	ctx context.Context, request *fabo.CreatePostRequest,
 ) (*fabo.CreatePostResponse, error) {
+	getFbExternalPageQuery := &fbpaging.GetFbExternalPageByExternalIDQuery{
+		ExternalID: request.ExternalPageID,
+	}
+	if err := s.FBPagingQuery.Dispatch(ctx, getFbExternalPageQuery); err != nil {
+		return nil, err
+	}
+	externalPage := getFbExternalPageQuery.Result
+
+	// Verify permissions
+	if err := verifyScopes(appScopes, externalPage.ExternalPermissions); err != nil {
+		return nil, err
+	}
+
 	getFbExternalPageInternalQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
 		ExternalID: request.ExternalPageID,
 	}

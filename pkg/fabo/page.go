@@ -3,6 +3,7 @@ package fabo
 import (
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"o.o/api/fabo/fbpaging"
@@ -19,12 +20,15 @@ import (
 	"o.o/backend/pkg/fabo/faboinfo"
 )
 
-var _appScopes = map[string]string{
-	"manage_pages":    "Quản lý các trang của bạn",
-	"pages_show_list": "Hiển thị các trang do tài khoản quản lý",
-	"publish_pages":   "Đăng nội dung lên trang do bạn quản lý",
-	"pages_messaging": "Quản lý và truy cập các cuộc trò chuyện của trang",
-	"public_profile":  "Hiển thị thông tin cơ bản của tài khoản",
+var appScopes = map[string]string{
+	"public_profile":          "Hiển thị thông tin cơ bản của tài khoản",
+	"pages_show_list":         "Hiển thị các trang do tài khoản quản lý",
+	"pages_messaging":         "Quản lý và truy cập các cuộc trò chuyện của trang",
+	"pages_read_engagement":   "",
+	"pages_manage_metadata":   "",
+	"pages_read_user_content": "",
+	"pages_manage_engagement": "",
+	"pages_manage_posts":      "",
 }
 
 type PageService struct {
@@ -88,10 +92,10 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		return nil, err
 	}
 
-	// verify permissions
-	//if err := verifyScopes(s.appScopes, userToken.Data.Scopes); err != nil {
-	//	return nil, err
-	//}
+	// Verify permissions
+	if err := verifyScopes(appScopes, userToken.Data.Scopes); err != nil {
+		return nil, err
+	}
 
 	// Get long lived accessToken from accessToken (above)
 	if r.AccessToken == "" {
@@ -257,12 +261,24 @@ func verifyScopes(appScopes map[string]string, scopes []string) error {
 		mapScope[scope] = true
 	}
 
-	for scope, messageScope := range appScopes {
+	var permissionsMissing []string
+	for scope := range appScopes {
 		if _, ok := mapScope[scope]; !ok {
-			return cm.Errorf(cm.FacebookPermissionDenied, nil, "Bạn chưa cấp đủ quyền để tiếp tục").
-				WithMeta(fmt.Sprintf("scope.%s", scope), messageScope)
+			permissionsMissing = append(permissionsMissing, scope)
 		}
 	}
+
+	if len(permissionsMissing) > 0 {
+		listPermissions := strings.Join(permissionsMissing, ",")
+		dialogMsg := fmt.Sprintf("You must grant permission (%s) to perform this action.", listPermissions)
+		if len(permissionsMissing) > 1 {
+			dialogMsg = fmt.Sprintf("You must grant permissions (%s) to perform this action.", listPermissions)
+		}
+		return cm.Errorf(cm.FacebookPermissionMissing, nil, "Missing permissions").
+			WithMeta("require_permissions", strings.Join(permissionsMissing, ",")).
+			WithMeta("dialog_msg", dialogMsg)
+	}
+
 	return nil
 }
 

@@ -86,8 +86,9 @@ const (
 
 	SkipSync = Code(2101)
 
-	FacebookPermissionDenied = Code(3001)
-	Facebook                 = Code(3005)
+	FacebookPermissionDenied  = Code(3001)
+	FacebookPermissionMissing = Code(3002)
+	Facebook                  = Code(3005)
 )
 
 var (
@@ -142,6 +143,7 @@ func init() {
 	mapCustomCodes[RegisterRequired] = &CustomCode{FailedPrecondition, "register_required", "register_required"}
 	mapCustomCodes[AccountClosed] = &CustomCode{Unavailable, "account_closed", "Tài khoản không còn được sử dụng hoặc đã bị xoá"}
 	mapCustomCodes[FacebookPermissionDenied] = &CustomCode{PermissionDenied, "facebook_permission_denied", ""}
+	mapCustomCodes[FacebookPermissionMissing] = &CustomCode{FailedPrecondition, "facebook_permission_missing", ""}
 	mapCustomCodes[Facebook] = &CustomCode{FailedPrecondition, "facebook", ""}
 }
 
