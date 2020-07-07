@@ -638,7 +638,12 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	sadminUserService := &sadmin.UserService{
 		Session: session,
 	}
-	sadminServers := sadmin.NewServers(sadminMiscService, sadminUserService)
+	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
+	webhookService := &sadmin.WebhookService{
+		Session:                session,
+		WebhookCallbackService: webhookCallbackService,
+	}
+	sadminServers := sadmin.NewServers(sadminMiscService, sadminUserService, webhookService)
 	integrationMiscService := &integration.MiscService{}
 	integrationService := &integration.IntegrationService{
 		Session:     session,
@@ -692,9 +697,9 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		cleanup()
 		return Output{}, nil, err
 	}
-	webhookService := webhook.New(producer, store)
+	service2 := webhook.New(producer, store)
 	partnerWebhookService := &partner.WebhookService{
-		WebhookInner: webhookService,
+		WebhookInner: service2,
 	}
 	partnerHistoryService := &partner.HistoryService{}
 	shippingService := &partner.ShippingService{
@@ -748,7 +753,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		Shipping: shippingShipping,
 	}
 	xshopWebhookService := &xshop.WebhookService{
-		WebhookInner: webhookService,
+		WebhookInner: service2,
 	}
 	xshopHistoryService := &xshop.HistoryService{}
 	xshopShippingService := &xshop.ShippingService{

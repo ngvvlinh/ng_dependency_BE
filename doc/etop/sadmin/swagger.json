@@ -122,6 +122,60 @@
           }
         }
       }
+    },
+    "/api/sadmin.Webhook/RegisterWebhook": {
+      "post": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "RegisterWebhook",
+        "operationId": "sadmin.Webhook-RegisterWebhook",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/puSAdminRegisterWebhookRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/api/sadmin.Webhook/UnregisterWebhook": {
+      "post": {
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "UnregisterWebhook",
+        "operationId": "sadmin.Webhook-UnregisterWebhook",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/puSAdminUnregisterWebhookRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -783,6 +837,13 @@
         "etop_app_android"
       ]
     },
+    "fjWebhookType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "fabo"
+      ]
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -854,6 +915,17 @@
         }
       }
     },
+    "puSAdminRegisterWebhookRequest": {
+      "type": "object",
+      "properties": {
+        "callback_url": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/fjWebhookType"
+        }
+      }
+    },
     "puSAdminResetPasswordRequest": {
       "type": "object",
       "properties": {
@@ -868,6 +940,17 @@
           "format": "int64"
         }
       }
+    },
+    "puSAdminUnregisterWebhookRequest": {
+      "type": "object",
+      "properties": {
+        "callback_url": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/fjWebhookType"
+        }
+      }
     }
   },
   "tags": [
@@ -876,6 +959,9 @@
     },
     {
       "name": "User"
+    },
+    {
+      "name": "Webhook"
     }
   ]
 }

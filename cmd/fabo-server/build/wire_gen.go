@@ -523,7 +523,12 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	sadminUserService := &sadmin.UserService{
 		Session: session,
 	}
-	sadminServers := sadmin.NewServers(sadminMiscService, sadminUserService)
+	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
+	webhookService := &sadmin.WebhookService{
+		Session:                session,
+		WebhookCallbackService: webhookCallbackService,
+	}
+	sadminServers := sadmin.NewServers(sadminMiscService, sadminUserService, webhookService)
 	fbPageQuery := fbpage.NewFbPageQuery(mainDB)
 	fbpagingQueryBus := fbpage.FbPageQueryMessageBus(fbPageQuery)
 	fbUserQuery := fbuser.NewFbUserQuery(mainDB, customeringQueryBus)
@@ -608,7 +613,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, queryBus, shippingCommandBus, webhook6)
 	configWebhookConfig := cfg.Webhook
 	faboRedis := redis2.NewFaboRedis(store)
-	webhook7 := webhook4.New(mainDB, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
+	webhook7 := webhook4.New(mainDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
 	fbWebhookServer := BuildWebhookServer(configWebhookConfig, webhook7)
 	v3 := BuildServers(mainServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, fbWebhookServer)
 	kafka := cfg.Kafka

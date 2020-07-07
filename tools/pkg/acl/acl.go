@@ -359,10 +359,12 @@ const (
 var _acl = map[string]*permission.Decl{
 	//-- sadmin --//
 
-	"sadmin.User/CreateUser":     {Type: SuperAdmin},
-	"sadmin.User/ResetPassword":  {Type: SuperAdmin},
-	"sadmin.User/LoginAsAccount": {Type: SuperAdmin},
-	"sadmin.Misc/VersionInfo":    {Type: SuperAdmin},
+	"sadmin.User/CreateUser":           {Type: SuperAdmin},
+	"sadmin.User/ResetPassword":        {Type: SuperAdmin},
+	"sadmin.User/LoginAsAccount":       {Type: SuperAdmin},
+	"sadmin.Misc/VersionInfo":          {Type: SuperAdmin},
+	"sadmin.Webhook/RegisterWebhook":   {Type: SuperAdmin},
+	"sadmin.Webhook/UnregisterWebhook": {Type: SuperAdmin},
 
 	//-- common --//
 

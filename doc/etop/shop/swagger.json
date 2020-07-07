@@ -6965,13 +6965,6 @@
         }
       }
     },
-    "fjWsBannerShowStyle": {
-      "type": "string",
-      "enum": [
-        "slider",
-        "grid"
-      ]
-    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -7327,7 +7320,7 @@
           }
         },
         "style": {
-          "$ref": "#/definitions/fjWsBannerShowStyle"
+          "$ref": "#/definitions/ueWsBannerShowStyle"
         }
       }
     },
@@ -11266,7 +11259,7 @@
           }
         },
         "style": {
-          "$ref": "#/definitions/ueWsListProductShowStyle"
+          "$ref": "#/definitions/zmWsListProductShowStyle"
         }
       }
     },
@@ -15677,13 +15670,11 @@
         "ahamove"
       ]
     },
-    "ueWsListProductShowStyle": {
+    "ueWsBannerShowStyle": {
       "type": "string",
       "enum": [
-        "first",
-        "second",
-        "third",
-        "fourth"
+        "slider",
+        "grid"
       ]
     },
     "umReceiptMode": {
@@ -15737,6 +15728,15 @@
         "vtpay",
         "bank",
         "manual"
+      ]
+    },
+    "zmWsListProductShowStyle": {
+      "type": "string",
+      "enum": [
+        "first",
+        "second",
+        "third",
+        "fourth"
       ]
     }
   },

@@ -1,13 +1,18 @@
 package webhook
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"sync"
+	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
+	"o.o/api/top/types/etc/webhook_type"
 	"o.o/backend/cmd/fabo-server/config"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
@@ -18,24 +23,32 @@ import (
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/common/l"
 	"o.o/common/xerrors"
 )
 
+const oneHour = 1 * time.Hour
+
 var ll = l.New()
 
 type Webhook struct {
-	db               *cmsql.Database
-	verifyToken      string
-	faboRedis        *faboredis.FaboRedis
-	fbClient         *fbclient.FbClient
-	fbmessagingQuery fbmessaging.QueryBus
-	fbmessagingAggr  fbmessaging.CommandBus
-	fbPageQuery      fbpaging.QueryBus
+	db                     *cmsql.Database
+	webhookCallbackService *sadmin.WebhookCallbackService
+	verifyToken            string
+	faboRedis              *faboredis.FaboRedis
+	fbClient               *fbclient.FbClient
+	fbmessagingQuery       fbmessaging.QueryBus
+	fbmessagingAggr        fbmessaging.CommandBus
+	fbPageQuery            fbpaging.QueryBus
+
+	mu                               sync.RWMutex
+	mapCallbackURLAndLatestTimeError map[string]time.Time
 }
 
 func New(
 	db com.MainDB,
+	rd redis.Store,
 	cfg config.WebhookConfig,
 	faboRedis *faboredis.FaboRedis,
 	fbClient *fbclient.FbClient,
@@ -44,13 +57,14 @@ func New(
 	fbPageQuery fbpaging.QueryBus,
 ) *Webhook {
 	wh := &Webhook{
-		db:               db,
-		verifyToken:      cfg.VerifyToken,
-		faboRedis:        faboRedis,
-		fbClient:         fbClient,
-		fbmessagingQuery: fbmessagingQuery,
-		fbmessagingAggr:  fbmessagingAggregate,
-		fbPageQuery:      fbPageQuery,
+		db:                     db,
+		webhookCallbackService: sadmin.NewWebhookCallbackService(rd),
+		verifyToken:            cfg.VerifyToken,
+		faboRedis:              faboRedis,
+		fbClient:               fbClient,
+		fbmessagingQuery:       fbmessagingQuery,
+		fbmessagingAggr:        fbmessagingAggregate,
+		fbPageQuery:            fbPageQuery,
 	}
 	return wh
 }
@@ -92,6 +106,8 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	}
 	ctx := c.Context()
 
+	go wh.forwardWebhook(c, body)
+
 	var webhookMessages WebhookMessages
 
 	if err := json.Unmarshal(body, &webhookMessages); err != nil {
@@ -132,6 +148,68 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	writer.WriteHeader(200)
 
 	return nil
+}
+
+func (wh *Webhook) forwardWebhook(c *httpx.Context, body []byte) {
+	callbackURLs, err := wh.webhookCallbackService.GetWebhookCallbackURLs(webhook_type.Fabo.String())
+	if err != nil {
+		return
+	}
+
+	client := http.Client{
+		Timeout: 3 * time.Second,
+	}
+	for _, callbackURL := range callbackURLs {
+		callbackURL, header := callbackURL, c.Req.Header // closure
+		go func() (_err error) {                         // ignore the error
+			defer func() {
+				wh.mu.RLock()
+				latestTimeError, ok := wh.mapCallbackURLAndLatestTimeError[callbackURL]
+				wh.mu.RUnlock()
+				if _err == nil {
+					if ok { // reset the timer when callback is successful
+						wh.mu.Lock()
+						delete(wh.mapCallbackURLAndLatestTimeError, callbackURL)
+						wh.mu.Unlock()
+					}
+					return
+				}
+
+				ll.SendMessagef(`[Error] callback_url: %v\n\n%v`, callbackURL, _err.Error())
+				switch {
+				case !ok:
+					// first time error, store the time
+					wh.mu.Lock()
+					wh.mapCallbackURLAndLatestTimeError[callbackURL] = time.Now()
+					wh.mu.Unlock()
+
+				case time.Now().Sub(latestTimeError) < oneHour:
+					// under one hour, do nothing
+
+				default:
+					// error for too long, remove the webhook
+					wh.mu.Lock()
+					delete(wh.mapCallbackURLAndLatestTimeError, callbackURL)
+					_ = wh.webhookCallbackService.RemoveWebhookCallbackURL(webhook_type.Fabo.String(), callbackURL)
+					wh.mu.Unlock()
+				}
+			}()
+
+			req, err2 := http.NewRequest("POST", callbackURL, bytes.NewReader(body))
+			if err2 != nil {
+				return err2
+			}
+			req.Header = header
+			resp, err2 := client.Do(req)
+			if err2 != nil {
+				return err2
+			}
+			if resp.StatusCode != 200 {
+				return fmt.Errorf("response status: %v", resp.StatusCode)
+			}
+			return nil
+		}()
+	}
 }
 
 // TODO: Ngoc

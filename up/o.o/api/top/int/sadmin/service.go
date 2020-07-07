@@ -21,3 +21,9 @@ type UserService interface {
 	ResetPassword(context.Context, *SAdminResetPasswordRequest) (*cm.Empty, error)
 	LoginAsAccount(context.Context, *LoginAsAccountRequest) (*etop.LoginResponse, error)
 }
+
+// +apix:path=/sadmin.Webhook
+type WebhookService interface {
+	RegisterWebhook(context.Context, *SAdminRegisterWebhookRequest) (*cm.Empty, error)
+	UnregisterWebhook(context.Context, *SAdminUnregisterWebhookRequest) (*cm.Empty, error)
+}

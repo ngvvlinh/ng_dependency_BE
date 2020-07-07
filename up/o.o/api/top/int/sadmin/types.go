@@ -2,6 +2,7 @@ package sadmin
 
 import (
 	etop "o.o/api/top/int/etop"
+	"o.o/api/top/types/etc/webhook_type"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
@@ -43,3 +44,17 @@ func (m *SAdminResetPasswordRequest) Censor() {
 		m.Confirm = "..."
 	}
 }
+
+type SAdminRegisterWebhookRequest struct {
+	CallbackURL string                   `json:"callback_url"`
+	Type        webhook_type.WebhookType `json:"type"`
+}
+
+func (m *SAdminRegisterWebhookRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type SAdminUnregisterWebhookRequest struct {
+	CallbackURL string                   `json:"callback_url"`
+	Type        webhook_type.WebhookType `json:"type"`
+}
+
+func (m *SAdminUnregisterWebhookRequest) String() string { return jsonx.MustMarshalToString(m) }
