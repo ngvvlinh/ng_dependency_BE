@@ -220,6 +220,7 @@ type ListUsersByWLPartnerID struct {
 type ListShopQuery struct {
 	Paging  meta.Paging
 	Filters meta.Filters
+	Name    filter.FullTextSearch
 }
 
 type ListShopExtendedsResponse struct {

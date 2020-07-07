@@ -820,9 +820,10 @@ func Convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitym
 
 func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitymodel.Shop) {
 	out.ID = arg.ID                               // simple assign
-	out.Name = arg.Name                           // simple assign
 	out.OwnerID = arg.OwnerID                     // simple assign
 	out.IsTest = arg.IsTest                       // simple assign
+	out.Name = arg.Name                           // simple assign
+	out.NameNorm = ""                             // zero value
 	out.AddressID = arg.AddressID                 // simple assign
 	out.ShipToAddressID = arg.ShipToAddressID     // simple assign
 	out.ShipFromAddressID = arg.ShipFromAddressID // simple assign

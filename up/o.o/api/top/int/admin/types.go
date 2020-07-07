@@ -107,9 +107,16 @@ type DeleteMoneyTransactionRequest struct {
 
 func (m *DeleteMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type FilterShopRequest struct {
+	Name filter.FullTextSearch `json:"name"`
+}
+
+func (m *FilterShopRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetShopsRequest struct {
-	Paging  *common.Paging   `json:"paging"`
-	Filters []*common.Filter `json:"filters"`
+	Paging  *common.Paging     `json:"paging"`
+	Filters []*common.Filter   `json:"filters"`
+	Filter  *FilterShopRequest `json:"filter"`
 }
 
 func (m *GetShopsRequest) String() string { return jsonx.MustMarshalToString(m) }

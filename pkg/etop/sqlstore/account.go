@@ -93,7 +93,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 		if errCode != nil {
 			return errCode
 		}
-
+		nameNorm := validate.NormalizeSearchCharacter(cmd.Name)
 		shop := &identitymodel.Shop{
 			ID:                            id,
 			Name:                          cmd.Name,
@@ -113,6 +113,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 			SurveyInfo:                    cmd.SurveyInfo,
 			ShippingServiceSelectStrategy: cmd.ShippingServicePickStrategy,
 			AutoCreateFFM:                 cmd.AutoCreateFFM,
+			NameNorm:                      nameNorm,
 		}
 		if cmd.MoneyTransactionRRule == "" {
 			// set shop MoneyTransactionRRule default value: FREQ=WEEKLY;BYDAY=MO,WE,FR
@@ -158,6 +159,7 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 		if shop.Name, ok = validate.NormalizeName(shop.Name); !ok {
 			return cm.Error(cm.InvalidArgument, "Invalid name", nil)
 		}
+		shop.NameNorm = validate.NormalizeSearchCharacter(shop.Name)
 	}
 	if shop.Email != "" {
 		if emailNorm, ok = validate.NormalizeEmail(shop.Email); !ok {

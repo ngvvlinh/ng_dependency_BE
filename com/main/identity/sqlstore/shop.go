@@ -11,8 +11,10 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type ShopStoreFactory func(context.Context) *ShopStore
@@ -149,4 +151,9 @@ func (s *ShopStore) ListShopExtendeds() ([]*identity.ShopExtended, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+func (s *ShopStore) FullTextSearchName(name filter.FullTextSearch) *ShopStore {
+	s.preds = append(s.preds, s.shopFt.Filter(`name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
+	return s
 }

@@ -3579,6 +3579,9 @@
       "description": "Filter by date value\n\nObject:\n\n    - {\"from\":\"2020-01-01T00:00:00Z\",\"to\":\"2020-02-01T00:00:00Z\"}\n\nString:\n\n    - \"2020-01-01T00:00:00Z,2010-02-01T00:00:00Z\":\n    - \"2020-01-01T00:00:00Z,\":\n    - \",2020-01-01T00:00:00Z\":\n",
       "type": "string"
     },
+    "kfFullTextSearch": {
+      "type": "string"
+    },
     "ktCursorPageInfo": {
       "type": "object",
       "properties": {
@@ -6820,6 +6823,14 @@
         }
       }
     },
+    "xuFilterShopRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        }
+      }
+    },
     "xuGenerateAPIKeyRequest": {
       "type": "object",
       "properties": {
@@ -7154,6 +7165,9 @@
     "xuGetShopsRequest": {
       "type": "object",
       "properties": {
+        "filter": {
+          "$ref": "#/definitions/xuFilterShopRequest"
+        },
         "filters": {
           "type": "array",
           "items": {

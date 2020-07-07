@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/capi/filter"
 )
 
 type ShopService struct {
@@ -38,9 +39,14 @@ func (s *ShopService) GetShop(ctx context.Context, q *pbcm.IDRequest) (*etop.Sho
 
 func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*admin.GetShopsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
+	var fullTextSearch filter.FullTextSearch = ""
+	if q.Filter != nil {
+		fullTextSearch = q.Filter.Name
+	}
 	query := &identity.ListShopExtendedsQuery{
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
+		Name:    fullTextSearch,
 	}
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err

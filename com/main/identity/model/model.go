@@ -132,9 +132,11 @@ func (s *Partner) GetAccount() *Account {
 // +sqlgen
 type Shop struct {
 	ID      dot.ID
-	Name    string
 	OwnerID dot.ID
 	IsTest  int
+
+	Name     string
+	NameNorm string
 
 	AddressID         dot.ID
 	ShipToAddressID   dot.ID
