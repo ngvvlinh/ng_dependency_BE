@@ -186,12 +186,26 @@ func (a *Aggregate) DeleteShopProducts(ctx context.Context, args *shopping.IDsQu
 }
 
 func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateShopVariantArgs) (*catalog.ShopVariant, error) {
-	prodcut, err := a.shopProduct(ctx).
+	product, err := a.shopProduct(ctx).
 		ShopID(args.ShopID).
 		ID(args.ProductID).
 		GetShopProductDB()
 	if err != nil {
 		return nil, err
+	}
+	if len(args.Attributes) == 0 {
+		// Each product can only have one variant without any attribute
+		variants, err := a.shopVariant(ctx).
+			ShopID(args.ShopID).
+			ProductIDs(args.ProductID).ListShopVariants()
+		if err != nil {
+			return nil, err
+		}
+		for _, v := range variants {
+			if len(v.Attributes) == 0 {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập thuộc tính phiên bản")
+			}
+		}
 	}
 	var variant = &catalog.ShopVariant{}
 	err = scheme.Convert(args, variant)
@@ -230,7 +244,7 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
 		}
 		codeNorm := maxCodeNorm + 1
-		variant.Code = convert.GenerateCodeVariant(prodcut.Code, codeNorm)
+		variant.Code = convert.GenerateCodeVariant(product.Code, codeNorm)
 		variant.CodeNorm = codeNorm
 	}
 
@@ -261,6 +275,20 @@ func (a *Aggregate) UpdateShopVariantInfo(ctx context.Context, args *catalog.Upd
 	variant, err := a.shopVariant(ctx).ShopID(args.ShopID).ID(args.VariantID).GetShopVariant()
 	if err != nil {
 		return nil, err
+	}
+	if args.Attributes != nil && len(args.Attributes.ValidateEmptyValue()) == 0 {
+		// Each product can only have one variant without any attribute
+		variants, err := a.shopVariant(ctx).
+			ShopID(args.ShopID).
+			ProductIDs(variant.ProductID).ListShopVariants()
+		if err != nil {
+			return nil, err
+		}
+		for _, v := range variants {
+			if len(v.Attributes) == 0 && v.VariantID != variant.VariantID {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập thuộc tính phiên bản")
+			}
+		}
 	}
 	variant = convert.Apply_catalog_UpdateShopVariantInfoArgs_catalog_ShopVariant(args, variant)
 	err = validateAttributes(variant.Attributes)
