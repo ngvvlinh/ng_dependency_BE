@@ -153,7 +153,9 @@ func (s *CustomerService) getAllCustomers(ctx context.Context, paging *cm.Paging
 	var customers []*shop.Customer
 	customers = append(customers, convertpb.PbCustomer(queryCustomerIndenpendent.Result))
 
-	result := &api.CustomersResponse{}
+	result := &api.CustomersResponse{
+		Paging: cmapi.PbPageInfo(paging),
+	}
 	if paging.Limit == 1 && paging.Offset == 0 {
 		result.Customers = customers
 		return result, nil
@@ -166,13 +168,9 @@ func (s *CustomerService) getAllCustomers(ctx context.Context, paging *cm.Paging
 		}
 		customers = append(customers, resp.Customers...)
 		result.Customers = customers
-		result.Paging.Limit++
 	} else {
 		paging.Offset--
-		_, err := s.getCustomers(ctx, paging, r)
-		if err != nil {
-			return nil, err
-		}
+		return s.getCustomers(ctx, paging, r)
 	}
 	return result, nil
 }
