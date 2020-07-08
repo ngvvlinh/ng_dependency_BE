@@ -75,6 +75,20 @@ type ShopTraderAddress struct {
 	Rid dot.ID
 }
 
+// +sqlgen
+// +sqlgen:           ShopTraderAddress as a
+// +sqlgen:left-join: ShopTraderAddressSearch as b on a.id = b.id
+type ShopTraderAddressExtended struct {
+	ShopTraderAddress       *ShopTraderAddress
+	ShopTraderAddressSearch *ShopTraderAddressSearch
+}
+
+// +sqlgen
+type ShopTraderAddressSearch struct {
+	ID        dot.ID
+	PhoneNorm string
+}
+
 // +convert:type=customering.ShopCustomerGroupCustomer
 // +sqlgen
 type ShopCustomerGroupCustomer struct {

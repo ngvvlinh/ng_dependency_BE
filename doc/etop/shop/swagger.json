@@ -8489,6 +8489,10 @@
         "country": {
           "type": "string"
         },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "district": {
           "type": "string"
         },
@@ -8936,6 +8940,14 @@
         }
       }
     },
+    "paFilterGetCustomerAddresses": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
     "paFilterGetCustomersRequest": {
       "type": "object",
       "properties": {
@@ -9052,6 +9064,9 @@
         "customer_id": {
           "type": "string",
           "format": "int64"
+        },
+        "filter": {
+          "$ref": "#/definitions/paFilterGetCustomerAddresses"
         }
       }
     },

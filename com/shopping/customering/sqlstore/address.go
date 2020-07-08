@@ -10,6 +10,7 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
 )
 
@@ -54,6 +55,11 @@ func (s *AddressStore) ShopID(shopID dot.ID) *AddressStore {
 	return s
 }
 
+func (s *AddressStore) TraderID(traderID dot.ID) *AddressStore {
+	s.preds = append(s.preds, s.ft.ByTraderID(traderID))
+	return s
+}
+
 func (s *AddressStore) ShopTraderID(shopID, traderID dot.ID) *AddressStore {
 	s.preds = append(s.preds, s.ft.ByShopID(shopID))
 	s.preds = append(s.preds, s.ft.ByTraderID(traderID))
@@ -68,7 +74,7 @@ func (s *AddressStore) IsDefault(isDefault bool) *AddressStore {
 func (s *AddressStore) Count() (_ int, err error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	return query.Count((*model.ShopTraderAddress)(nil))
+	return query.Count((*model.ShopTraderAddressExtendeds)(nil))
 }
 
 func (s *AddressStore) UpdateStatusAddresses(shopID, traderID dot.ID, isDefault bool) error {
@@ -103,6 +109,14 @@ func (s *AddressStore) CreateAddress(addr *addressing.ShopTraderAddress) error {
 		return err
 	}
 	_, err := s.query().Insert(addrDB)
+	if err != nil {
+		return err
+	}
+	addrSearchDB := &model.ShopTraderAddressSearch{
+		ID:        addrDB.ID,
+		PhoneNorm: validate.NormalizeSearchPhone(addrDB.Phone),
+	}
+	_, err = s.query().Insert(addrSearchDB)
 	return err
 }
 
@@ -113,6 +127,15 @@ func (s *AddressStore) UpdateAddressDB(addr *model.ShopTraderAddress) error {
 		s.ft.ByShopID(addr.ShopID),
 		s.ft.ByTraderID(addr.TraderID),
 	).UpdateAll().ShouldUpdate(addr)
+	if err != nil {
+		return err
+	}
+	addrSearchDB := &model.ShopTraderAddressSearch{
+		PhoneNorm: validate.NormalizeSearchPhone(addr.Phone),
+	}
+	err = s.query().Where(
+		s.ft.ByID(addr.ID),
+	).UpdateAll().ShouldUpdate(addrSearchDB)
 	return err
 }
 
@@ -156,11 +179,15 @@ func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
 		return nil, err
 	}
 
-	var addrs model.ShopTraderAddresses
-	s.Paging.Apply(addrs)
-	err = query.Find(&addrs)
+	var addrsEx model.ShopTraderAddressExtendeds
+	s.Paging.Apply(addrsEx)
+	err = query.Find(&addrsEx)
 	if err != nil {
 		return nil, err
+	}
+	var addrs []*model.ShopTraderAddress
+	for _, v := range addrsEx {
+		addrs = append(addrs, v.ShopTraderAddress)
 	}
 
 	return addrs, err
@@ -182,5 +209,10 @@ func (s *AddressStore) ListAddresses() (result []*addressing.ShopTraderAddress, 
 
 func (s *AddressStore) IncludeDeleted() *AddressStore {
 	s.includeDeleted = true
+	return s
+}
+
+func (s *AddressStore) SearchPhone(phone string) *AddressStore {
+	s.preds = append(s.preds, s.ft.Filter(`phone_norm @@ ?::tsquery`, phone))
 	return s
 }

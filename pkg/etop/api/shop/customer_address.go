@@ -59,9 +59,14 @@ func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *pbcm.IDR
 }
 
 func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *api.GetCustomerAddressesRequest) (*api.CustomerAddressesResponse, error) {
-	query := &addressing.ListAddressesByTraderIDQuery{
+	var phone = ""
+	if r.Filter != nil {
+		phone = r.Filter.Phone
+	}
+	query := &addressing.ListAddressesQuery{
 		ShopID:   s.SS.Shop().ID,
 		TraderID: r.CustomerId,
+		Phone:    phone,
 	}
 	if err := s.AddressQuery.Dispatch(ctx, query); err != nil {
 		return nil, err

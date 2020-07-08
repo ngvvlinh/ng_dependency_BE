@@ -2160,3 +2160,316 @@ func (ms *ShopTraderAddressHistories) SQLScan(opts core.Opts, rows *sql.Rows) er
 	*ms = res
 	return nil
 }
+
+type ShopTraderAddressExtendeds []*ShopTraderAddressExtended
+
+func (m *ShopTraderAddressExtended) SQLTableName() string  { return "shop_trader_address" }
+func (m *ShopTraderAddressExtendeds) SQLTableName() string { return "shop_trader_address" }
+
+func (m *ShopTraderAddressExtended) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopTraderAddressExtendeds) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopTraderAddressExtendeds, 0, 128)
+	for rows.Next() {
+		m := new(ShopTraderAddressExtended)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (m *ShopTraderAddressExtended) SQLSelect(w SQLWriter) error {
+	(*ShopTraderAddressExtended)(nil).__sqlSelect(w)
+	w.WriteByte(' ')
+	(*ShopTraderAddressExtended)(nil).__sqlJoin(w)
+	return nil
+}
+
+func (m *ShopTraderAddressExtendeds) SQLSelect(w SQLWriter) error {
+	return (*ShopTraderAddressExtended)(nil).SQLSelect(w)
+}
+
+func (m *ShopTraderAddressExtended) SQLJoin(w SQLWriter) error {
+	m.__sqlJoin(w)
+	return nil
+}
+
+func (m *ShopTraderAddressExtendeds) SQLJoin(w SQLWriter) error {
+	return (*ShopTraderAddressExtended)(nil).SQLJoin(w)
+}
+
+func (m *ShopTraderAddressExtended) __sqlSelect(w SQLWriter) {
+	w.WriteRawString("SELECT ")
+	core.WriteCols(w, "a", (*ShopTraderAddress)(nil).SQLListCols())
+	w.WriteByte(',')
+	core.WriteCols(w, "b", (*ShopTraderAddressSearch)(nil).SQLListCols())
+}
+
+func (m *ShopTraderAddressExtended) __sqlJoin(w SQLWriter) {
+	w.WriteRawString("FROM ")
+	w.WriteName("shop_trader_address")
+	w.WriteRawString(" AS ")
+	w.WriteName("a")
+	w.WriteRawString(" LEFT JOIN ")
+	w.WriteName((*ShopTraderAddressSearch)(nil).SQLTableName())
+	w.WriteRawString(" AS b ON")
+	w.WriteQueryString(" a.id = b.id")
+}
+
+func (m *ShopTraderAddressExtended) SQLScanArgs(opts core.Opts) []interface{} {
+	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
+	m.ShopTraderAddress = new(ShopTraderAddress)
+	args = append(args, m.ShopTraderAddress.SQLScanArgs(opts)...)
+	m.ShopTraderAddressSearch = new(ShopTraderAddressSearch)
+	args = append(args, m.ShopTraderAddressSearch.SQLScanArgs(opts)...)
+	return args
+}
+
+type ShopTraderAddressSearchs []*ShopTraderAddressSearch
+
+const __sqlShopTraderAddressSearch_Table = "shop_trader_address_search"
+const __sqlShopTraderAddressSearch_ListCols = "\"id\",\"phone_norm\""
+const __sqlShopTraderAddressSearch_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"phone_norm\" = EXCLUDED.\"phone_norm\""
+const __sqlShopTraderAddressSearch_Insert = "INSERT INTO \"shop_trader_address_search\" (" + __sqlShopTraderAddressSearch_ListCols + ") VALUES"
+const __sqlShopTraderAddressSearch_Select = "SELECT " + __sqlShopTraderAddressSearch_ListCols + " FROM \"shop_trader_address_search\""
+const __sqlShopTraderAddressSearch_Select_history = "SELECT " + __sqlShopTraderAddressSearch_ListCols + " FROM history.\"shop_trader_address_search\""
+const __sqlShopTraderAddressSearch_UpdateAll = "UPDATE \"shop_trader_address_search\" SET (" + __sqlShopTraderAddressSearch_ListCols + ")"
+const __sqlShopTraderAddressSearch_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_trader_address_search_pkey DO UPDATE SET"
+
+func (m *ShopTraderAddressSearch) SQLTableName() string  { return "shop_trader_address_search" }
+func (m *ShopTraderAddressSearchs) SQLTableName() string { return "shop_trader_address_search" }
+func (m *ShopTraderAddressSearch) SQLListCols() string   { return __sqlShopTraderAddressSearch_ListCols }
+
+func (m *ShopTraderAddressSearch) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopTraderAddressSearch_ListCols + " FROM \"shop_trader_address_search\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *ShopTraderAddressSearch) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "shop_trader_address_search"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"phone_norm": {
+			ColumnName:       "phone_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "shop_trader_address_search", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopTraderAddressSearch)(nil))
+}
+
+func (m *ShopTraderAddressSearch) SQLArgs(opts core.Opts, create bool) []interface{} {
+	return []interface{}{
+		m.ID,
+		core.String(m.PhoneNorm),
+	}
+}
+
+func (m *ShopTraderAddressSearch) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		&m.ID,
+		(*core.String)(&m.PhoneNorm),
+	}
+}
+
+func (m *ShopTraderAddressSearch) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopTraderAddressSearchs) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopTraderAddressSearchs, 0, 128)
+	for rows.Next() {
+		m := new(ShopTraderAddressSearch)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ShopTraderAddressSearch) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopTraderAddressSearch_Select)
+	return nil
+}
+
+func (_ *ShopTraderAddressSearchs) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopTraderAddressSearch_Select)
+	return nil
+}
+
+func (m *ShopTraderAddressSearch) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopTraderAddressSearch_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(2)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ShopTraderAddressSearchs) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopTraderAddressSearch_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(2)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopTraderAddressSearch) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopTraderAddressSearch_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopTraderAddressSearch_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopTraderAddressSearchs) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopTraderAddressSearch_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopTraderAddressSearch_ListColsOnConflict)
+	return nil
+}
+
+func (m *ShopTraderAddressSearch) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("shop_trader_address_search")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.PhoneNorm != "" {
+		flag = true
+		w.WriteName("phone_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PhoneNorm)
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ShopTraderAddressSearch) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopTraderAddressSearch_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(2)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ShopTraderAddressSearchHistory map[string]interface{}
+type ShopTraderAddressSearchHistories []map[string]interface{}
+
+func (m *ShopTraderAddressSearchHistory) SQLTableName() string {
+	return "history.\"shop_trader_address_search\""
+}
+func (m ShopTraderAddressSearchHistories) SQLTableName() string {
+	return "history.\"shop_trader_address_search\""
+}
+
+func (m *ShopTraderAddressSearchHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopTraderAddressSearch_Select_history)
+	return nil
+}
+
+func (m ShopTraderAddressSearchHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopTraderAddressSearch_Select_history)
+	return nil
+}
+
+func (m ShopTraderAddressSearchHistory) ID() core.Interface { return core.Interface{m["id"]} }
+func (m ShopTraderAddressSearchHistory) PhoneNorm() core.Interface {
+	return core.Interface{m["phone_norm"]}
+}
+
+func (m *ShopTraderAddressSearchHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 2)
+	args := make([]interface{}, 2)
+	for i := 0; i < 2; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ShopTraderAddressSearchHistory, 2)
+	res["id"] = data[0]
+	res["phone_norm"] = data[1]
+	*m = res
+	return nil
+}
+
+func (ms *ShopTraderAddressSearchHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 2)
+	args := make([]interface{}, 2)
+	for i := 0; i < 2; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ShopTraderAddressSearchHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ShopTraderAddressSearchHistory)
+		m["id"] = data[0]
+		m["phone_norm"] = data[1]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}

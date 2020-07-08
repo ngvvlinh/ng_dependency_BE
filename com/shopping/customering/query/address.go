@@ -48,7 +48,6 @@ func (q *AddressQuery) ListAddressesByTraderID(ctx context.Context, args *addres
 	if err != nil {
 		return nil, err
 	}
-
 	addrs, err := query.WithPaging(args.Paging).ListAddresses()
 	if err != nil {
 		return nil, err
@@ -59,6 +58,7 @@ func (q *AddressQuery) ListAddressesByTraderID(ctx context.Context, args *addres
 		Paging:              query.GetPaging(),
 	}, err
 }
+
 func (q *AddressQuery) ListAddressesByTraderIDs(ctx context.Context, args *addressing.ListAddressesByTraderIDsArgs) (*addressing.ShopTraderAddressesResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID)
 	if len(args.TraderIDs) != 0 {
@@ -66,6 +66,27 @@ func (q *AddressQuery) ListAddressesByTraderIDs(ctx context.Context, args *addre
 	}
 	if args.IncludeDeleted {
 		query = query.IncludeDeleted()
+	}
+	if args.Phone != "" {
+		query = query.SearchPhone(args.Phone)
+	}
+	addrs, err := query.WithPaging(args.Paging).ListAddresses()
+	if err != nil {
+		return nil, err
+	}
+	return &addressing.ShopTraderAddressesResponse{
+		ShopTraderAddresses: addrs,
+		Paging:              query.GetPaging(),
+	}, err
+}
+
+func (q *AddressQuery) ListAddresses(ctx context.Context, args *addressing.ListAddressesArgs) (*addressing.ShopTraderAddressesResponse, error) {
+	query := q.store(ctx).ShopID(args.ShopID)
+	if args.TraderID != 0 {
+		query = query.TraderID(args.TraderID)
+	}
+	if args.Phone != "" {
+		query = query.SearchPhone(args.Phone)
 	}
 	addrs, err := query.WithPaging(args.Paging).ListAddresses()
 	if err != nil {

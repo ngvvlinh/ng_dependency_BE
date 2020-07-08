@@ -1147,3 +1147,55 @@ func (ft *ShopTraderAddressFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
 		IsZero: Rid != nil && (*Rid) == 0,
 	}
 }
+
+type ShopTraderAddressSearchFilters struct{ prefix string }
+
+func NewShopTraderAddressSearchFilters(prefix string) ShopTraderAddressSearchFilters {
+	return ShopTraderAddressSearchFilters{prefix}
+}
+
+func (ft *ShopTraderAddressSearchFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft ShopTraderAddressSearchFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *ShopTraderAddressSearchFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *ShopTraderAddressSearchFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *ShopTraderAddressSearchFilters) ByPhoneNorm(PhoneNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == "",
+	}
+}
+
+func (ft *ShopTraderAddressSearchFilters) ByPhoneNormPtr(PhoneNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == nil,
+		IsZero: PhoneNorm != nil && (*PhoneNorm) == "",
+	}
+}

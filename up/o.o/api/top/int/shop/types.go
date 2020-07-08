@@ -1584,8 +1584,15 @@ type IndependentSummaryItem struct {
 
 func (m *IndependentSummaryItem) String() string { return jsonx.MustMarshalToString(m) }
 
+type FilterGetCustomerAddresses struct {
+	Phone string `json:"phone"`
+}
+
+func (m *FilterGetCustomerAddresses) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetCustomerAddressesRequest struct {
-	CustomerId dot.ID `json:"customer_id"`
+	CustomerId dot.ID                      `json:"customer_id"`
+	Filter     *FilterGetCustomerAddresses `json:"filter"`
 }
 
 func (m *GetCustomerAddressesRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -1607,6 +1614,7 @@ type CustomerAddress struct {
 	Email        string            `json:"email"`
 	Position     string            `json:"position"`
 	Coordinates  *etop.Coordinates `json:"coordinates"`
+	CustomerID   dot.ID            `json:"customer_id"`
 }
 
 func (m *CustomerAddress) String() string { return jsonx.MustMarshalToString(m) }

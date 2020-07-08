@@ -2649,6 +2649,9 @@
       "properties": {
         "customer_id": {
           "$ref": "#/definitions/kfIDs"
+        },
+        "phone": {
+          "type": "string"
         }
       }
     },

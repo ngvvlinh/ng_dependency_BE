@@ -161,6 +161,7 @@ func (m *CustomerAddressesResponse) String() string { return jsonx.MustMarshalTo
 
 type CustomerAddressFilter struct {
 	CustomerId filter.IDs `json:"customer_id"`
+	Phone      string     `json:"phone"`
 }
 
 func (m *CustomerAddressFilter) String() string { return jsonx.MustMarshalToString(m) }

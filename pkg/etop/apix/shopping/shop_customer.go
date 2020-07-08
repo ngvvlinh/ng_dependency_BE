@@ -124,6 +124,7 @@ func (s *Shopping) ListAddresses(ctx context.Context, shopID dot.ID, request *ex
 	query := &addressing.ListAddressesByTraderIDsQuery{
 		TraderIDs:      IDs,
 		ShopID:         shopID,
+		Phone:          request.Filter.Phone,
 		Paging:         *paging,
 		IncludeDeleted: request.IncludeDeleted,
 	}

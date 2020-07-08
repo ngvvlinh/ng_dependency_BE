@@ -134,9 +134,24 @@ func (h QueryServiceHandler) HandleGetAddressByTraderID(ctx context.Context, msg
 	return err
 }
 
+type ListAddressesQuery struct {
+	ShopID   dot.ID
+	TraderID dot.ID
+	Phone    string
+	Paging   meta.Paging
+
+	Result *ShopTraderAddressesResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListAddresses(ctx context.Context, msg *ListAddressesQuery) (err error) {
+	msg.Result, err = h.inner.ListAddresses(msg.GetArgs(ctx))
+	return err
+}
+
 type ListAddressesByTraderIDQuery struct {
 	ShopID   dot.ID
 	TraderID dot.ID
+	Phone    string
 	Paging   meta.Paging
 
 	Result *ShopTraderAddressesResponse `json:"-"`
@@ -150,6 +165,7 @@ func (h QueryServiceHandler) HandleListAddressesByTraderID(ctx context.Context, 
 type ListAddressesByTraderIDsQuery struct {
 	ShopID         dot.ID
 	TraderIDs      []dot.ID
+	Phone          string
 	Paging         meta.Paging
 	IncludeDeleted bool
 
@@ -171,6 +187,7 @@ func (q *UpdateAddressCommand) command()     {}
 func (q *GetAddressActiveByTraderIDQuery) query() {}
 func (q *GetAddressByIDQuery) query()             {}
 func (q *GetAddressByTraderIDQuery) query()       {}
+func (q *ListAddressesQuery) query()              {}
 func (q *ListAddressesByTraderIDQuery) query()    {}
 func (q *ListAddressesByTraderIDsQuery) query()   {}
 
@@ -277,11 +294,29 @@ func (q *GetAddressByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Cont
 		q.ShopID
 }
 
+func (q *ListAddressesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListAddressesArgs) {
+	return ctx,
+		&ListAddressesArgs{
+			ShopID:   q.ShopID,
+			TraderID: q.TraderID,
+			Phone:    q.Phone,
+			Paging:   q.Paging,
+		}
+}
+
+func (q *ListAddressesQuery) SetListAddressesArgs(args *ListAddressesArgs) {
+	q.ShopID = args.ShopID
+	q.TraderID = args.TraderID
+	q.Phone = args.Phone
+	q.Paging = args.Paging
+}
+
 func (q *ListAddressesByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListAddressesByTraderIDArgs) {
 	return ctx,
 		&ListAddressesByTraderIDArgs{
 			ShopID:   q.ShopID,
 			TraderID: q.TraderID,
+			Phone:    q.Phone,
 			Paging:   q.Paging,
 		}
 }
@@ -289,6 +324,7 @@ func (q *ListAddressesByTraderIDQuery) GetArgs(ctx context.Context) (_ context.C
 func (q *ListAddressesByTraderIDQuery) SetListAddressesByTraderIDArgs(args *ListAddressesByTraderIDArgs) {
 	q.ShopID = args.ShopID
 	q.TraderID = args.TraderID
+	q.Phone = args.Phone
 	q.Paging = args.Paging
 }
 
@@ -297,6 +333,7 @@ func (q *ListAddressesByTraderIDsQuery) GetArgs(ctx context.Context) (_ context.
 		&ListAddressesByTraderIDsArgs{
 			ShopID:         q.ShopID,
 			TraderIDs:      q.TraderIDs,
+			Phone:          q.Phone,
 			Paging:         q.Paging,
 			IncludeDeleted: q.IncludeDeleted,
 		}
@@ -305,6 +342,7 @@ func (q *ListAddressesByTraderIDsQuery) GetArgs(ctx context.Context) (_ context.
 func (q *ListAddressesByTraderIDsQuery) SetListAddressesByTraderIDsArgs(args *ListAddressesByTraderIDsArgs) {
 	q.ShopID = args.ShopID
 	q.TraderIDs = args.TraderIDs
+	q.Phone = args.Phone
 	q.Paging = args.Paging
 	q.IncludeDeleted = args.IncludeDeleted
 }
@@ -343,6 +381,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetAddressActiveByTraderID)
 	b.AddHandler(h.HandleGetAddressByID)
 	b.AddHandler(h.HandleGetAddressByTraderID)
+	b.AddHandler(h.HandleListAddresses)
 	b.AddHandler(h.HandleListAddressesByTraderID)
 	b.AddHandler(h.HandleListAddressesByTraderIDs)
 	return QueryBus{b}
