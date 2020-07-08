@@ -77,6 +77,7 @@ func convert_moneytransactionshippingmodel_MoneyTransactionShipping_moneytxmodel
 	out.InvoiceNumber = arg.InvoiceNumber      // simple assign
 	out.Type = arg.Type                        // simple assign
 	out.Rid = arg.Rid                          // simple assign
+	out.WLPartnerID = 0                        // zero value
 }
 
 func Convert_moneytransactionshippingmodel_MoneyTransactionShippings_moneytxmodel_MoneyTransactionShippings(args []*moneytransactionshippingmodel.MoneyTransactionShipping) (outs []*moneytxmodel.MoneyTransactionShipping) {

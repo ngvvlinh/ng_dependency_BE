@@ -223,6 +223,7 @@ func convert_moneytxmodel_MoneyTransactionShipping_moneytx_MoneyTransactionShipp
 	out.Note = arg.Note                   // simple assign
 	out.InvoiceNumber = arg.InvoiceNumber // simple assign
 	out.Type = arg.Type                   // simple assign
+	out.WLPartnerID = arg.WLPartnerID     // simple assign
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippings_moneytx_MoneyTransactionShippings(args []*moneytxmodel.MoneyTransactionShipping) (outs []*moneytx.MoneyTransactionShipping) {
@@ -269,6 +270,7 @@ func convert_moneytx_MoneyTransactionShipping_moneytxmodel_MoneyTransactionShipp
 	out.InvoiceNumber = arg.InvoiceNumber // simple assign
 	out.Type = arg.Type                   // simple assign
 	out.Rid = 0                           // zero value
+	out.WLPartnerID = arg.WLPartnerID     // simple assign
 }
 
 func Convert_moneytx_MoneyTransactionShippings_moneytxmodel_MoneyTransactionShippings(args []*moneytx.MoneyTransactionShipping) (outs []*moneytxmodel.MoneyTransactionShipping) {
@@ -311,6 +313,7 @@ func convert_moneytxmodel_MoneyTransactionShippingEtop_moneytx_MoneyTransactionS
 	out.BankAccount = identityconvert.Convert_sharemodel_BankAccount_identitytypes_BankAccount(arg.BankAccount, nil)
 	out.Note = arg.Note                   // simple assign
 	out.InvoiceNumber = arg.InvoiceNumber // simple assign
+	out.WLPartnerID = arg.WLPartnerID     // simple assign
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippingEtops_moneytx_MoneyTransactionShippingEtops(args []*moneytxmodel.MoneyTransactionShippingEtop) (outs []*moneytx.MoneyTransactionShippingEtop) {
@@ -351,6 +354,7 @@ func convert_moneytx_MoneyTransactionShippingEtop_moneytxmodel_MoneyTransactionS
 	out.BankAccount = identityconvert.Convert_identitytypes_BankAccount_sharemodel_BankAccount(arg.BankAccount, nil)
 	out.Note = arg.Note                   // simple assign
 	out.InvoiceNumber = arg.InvoiceNumber // simple assign
+	out.WLPartnerID = arg.WLPartnerID     // simple assign
 }
 
 func Convert_moneytx_MoneyTransactionShippingEtops_moneytxmodel_MoneyTransactionShippingEtops(args []*moneytx.MoneyTransactionShippingEtop) (outs []*moneytxmodel.MoneyTransactionShippingEtop) {
@@ -507,6 +511,8 @@ func convert_moneytxmodel_MoneyTransactionShippingExternal_moneytx_MoneyTransact
 	out.BankAccount = identityconvert.Convert_sharemodel_BankAccount_identitytypes_BankAccount(arg.BankAccount, nil)
 	out.Note = arg.Note                   // simple assign
 	out.InvoiceNumber = arg.InvoiceNumber // simple assign
+	out.ConnectionID = arg.ConnectionID   // simple assign
+	out.WLPartnerID = arg.WLPartnerID     // simple assign
 }
 
 func Convert_moneytxmodel_MoneyTransactionShippingExternals_moneytx_MoneyTransactionShippingExternals(args []*moneytxmodel.MoneyTransactionShippingExternal) (outs []*moneytx.MoneyTransactionShippingExternal) {
@@ -545,6 +551,8 @@ func convert_moneytx_MoneyTransactionShippingExternal_moneytxmodel_MoneyTransact
 	out.BankAccount = identityconvert.Convert_identitytypes_BankAccount_sharemodel_BankAccount(arg.BankAccount, nil)
 	out.Note = arg.Note                   // simple assign
 	out.InvoiceNumber = arg.InvoiceNumber // simple assign
+	out.ConnectionID = arg.ConnectionID   // simple assign
+	out.WLPartnerID = arg.WLPartnerID     // simple assign
 }
 
 func Convert_moneytx_MoneyTransactionShippingExternals_moneytxmodel_MoneyTransactionShippingExternals(args []*moneytx.MoneyTransactionShippingExternal) (outs []*moneytxmodel.MoneyTransactionShippingExternal) {

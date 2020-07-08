@@ -1,4 +1,4 @@
-package imcsv
+package ghnimport
 
 import (
 	"bytes"

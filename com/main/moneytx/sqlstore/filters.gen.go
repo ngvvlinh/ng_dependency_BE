@@ -388,6 +388,25 @@ func (ft *MoneyTransactionShippingFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilte
 	}
 }
 
+func (ft *MoneyTransactionShippingFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == 0,
+	}
+}
+
+func (ft *MoneyTransactionShippingFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == nil,
+		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
 type MoneyTransactionShippingEtopFilters struct{ prefix string }
 
 func NewMoneyTransactionShippingEtopFilters(prefix string) MoneyTransactionShippingEtopFilters {
@@ -649,6 +668,25 @@ func (ft *MoneyTransactionShippingEtopFilters) ByInvoiceNumberPtr(InvoiceNumber 
 	}
 }
 
+func (ft *MoneyTransactionShippingEtopFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == 0,
+	}
+}
+
+func (ft *MoneyTransactionShippingEtopFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == nil,
+		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
 type MoneyTransactionShippingExternalFilters struct{ prefix string }
 
 func NewMoneyTransactionShippingExternalFilters(prefix string) MoneyTransactionShippingExternalFilters {
@@ -869,6 +907,44 @@ func (ft *MoneyTransactionShippingExternalFilters) ByInvoiceNumberPtr(InvoiceNum
 		Value:  InvoiceNumber,
 		IsNil:  InvoiceNumber == nil,
 		IsZero: InvoiceNumber != nil && (*InvoiceNumber) == "",
+	}
+}
+
+func (ft *MoneyTransactionShippingExternalFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == 0,
+	}
+}
+
+func (ft *MoneyTransactionShippingExternalFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == nil,
+		IsZero: ConnectionID != nil && (*ConnectionID) == 0,
+	}
+}
+
+func (ft *MoneyTransactionShippingExternalFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == 0,
+	}
+}
+
+func (ft *MoneyTransactionShippingExternalFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == nil,
+		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
 	}
 }
 

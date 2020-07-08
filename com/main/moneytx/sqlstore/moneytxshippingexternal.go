@@ -9,6 +9,7 @@ import (
 	identityconvert "o.o/backend/com/main/identity/convert"
 	"o.o/backend/com/main/moneytx/model"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
@@ -23,6 +24,8 @@ type MoneyTxShippingExternalStore struct {
 	preds   []interface{}
 	filters meta.Filters
 	sqlstore.Paging
+
+	ctx context.Context
 }
 
 func (s *MoneyTxShippingExternalStore) extend() *MoneyTxShippingExternalStore {
@@ -38,6 +41,7 @@ func NewMoneyTxShippingExternalStore(db *cmsql.Database) MoneyTxShippingExternal
 			query: func() cmsql.QueryInterface {
 				return cmsql.GetTxOrNewQuery(ctx, db)
 			},
+			ctx: ctx,
 		}
 	}
 }
@@ -68,8 +72,12 @@ func (s *MoneyTxShippingExternalStore) Filters(filters meta.Filters) *MoneyTxShi
 
 func (s *MoneyTxShippingExternalStore) GetMoneyTxShippingExternalFtLineDB() (*model.MoneyTransactionShippingExternalFtLine, error) {
 	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+
 	moneyTx := &model.MoneyTransactionShippingExternal{}
-	err := query.ShouldGet(moneyTx)
+	if err := query.ShouldGet(moneyTx); err != nil {
+		return nil, err
+	}
 
 	lines, err := s.ListMoneyTxShippingExternalLinesDBByMoneyTxID([]dot.ID{moneyTx.ID})
 	res := &model.MoneyTransactionShippingExternalFtLine{
@@ -81,6 +89,8 @@ func (s *MoneyTxShippingExternalStore) GetMoneyTxShippingExternalFtLineDB() (*mo
 
 func (s *MoneyTxShippingExternalStore) GetMoneyTxShippingExternalDB() (*model.MoneyTransactionShippingExternal, error) {
 	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+
 	moneyTx := &model.MoneyTransactionShippingExternal{}
 	err := query.ShouldGet(moneyTx)
 	return moneyTx, err
@@ -124,6 +134,8 @@ func (s *MoneyTxShippingExternalStore) ListMoneyTxShippingExternalsDB() ([]*mode
 	if err != nil {
 		return nil, err
 	}
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+
 	var moneyTxs model.MoneyTransactionShippingExternals
 	if err := query.Find(&moneyTxs); err != nil {
 		return nil, err
@@ -189,6 +201,8 @@ func (s *MoneyTxShippingExternalStore) CreateMoneyTxShippingExternal(moneyTx *mo
 	if err := scheme.Convert(moneyTx, moneyTxDB); err != nil {
 		return err
 	}
+	moneyTxDB.WLPartnerID = wl.GetWLPartnerID(s.ctx)
+
 	if err := s.query().ShouldInsert(moneyTxDB); err != nil {
 		return err
 	}
@@ -203,7 +217,10 @@ func (s *MoneyTxShippingExternalStore) UpdateMoneyTxShippingExternalInfo(args *m
 		InvoiceNumber: args.InvoiceNumber,
 		BankAccount:   bankAccount,
 	}
-	return s.query().Where(s.ft.ByID(args.MoneyTxShippingExternalID)).ShouldUpdate(update)
+
+	query := s.query().Where(s.ft.ByID(args.MoneyTxShippingExternalID))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	return query.ShouldUpdate(update)
 }
 
 type UpdateMoneyTxShippingExternalStatisticsArgs struct {
@@ -225,17 +242,22 @@ func (s *MoneyTxShippingExternalStore) UpdateMoneyTxShippingExternalStatistics(a
 		// money tx does not have any ffm => update status = -1
 		update["status"] = status3.N
 	}
-	return s.query().Table("money_transaction_shipping_external").Where(s.ft.ByID(args.MoneyTxShippingExternalID)).ShouldUpdateMap(update)
+	query := s.query().Table("money_transaction_shipping_external").Where(s.ft.ByID(args.MoneyTxShippingExternalID))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	return query.ShouldUpdateMap(update)
 }
 
 func (s *MoneyTxShippingExternalStore) ConfirmMoneyTxShippingExternals(ids []dot.ID) error {
-	return s.query().Table("money_transaction_shipping_external").Where(sq.In("id", ids)).ShouldUpdateMap(map[string]interface{}{
+	query := s.query().Table("money_transaction_shipping_external").Where(sq.In("id", ids))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	return query.ShouldUpdateMap(map[string]interface{}{
 		"status": status3.P,
 	})
 }
 
 func (s *MoneyTxShippingExternalStore) DeleteMoneyTxShippingExternal(id dot.ID) error {
 	query := s.query().Where(s.ft.ByID(id))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 	return query.ShouldDelete((&model.MoneyTransactionShippingExternal{}))
 }
 
@@ -285,4 +307,12 @@ func (s *MoneyTxShippingExternalStore) DeleteMoneyTxShippingExternalLines() erro
 	}
 	query := s.query().Where(s.preds)
 	return query.ShouldDelete(&model.MoneyTransactionShippingExternalLine{})
+}
+
+func (s *MoneyTxShippingExternalStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
+	partner := wl.X(ctx)
+	if partner.IsWhiteLabel() {
+		return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	}
+	return query.Where(s.ft.NotBelongWLPartner())
 }

@@ -1,4 +1,4 @@
-package vtpostimxlsx
+package ghtkimport
 
 import "github.com/google/wire"
 

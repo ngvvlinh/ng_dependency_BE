@@ -33,6 +33,10 @@ func main() {
 	cmenv.SetEnvironment(cfg.SharedConfig.Env)
 
 	postgres := cfg.Databases.Postgres
+	postgres.Port = 25434
+	postgres.Username = "etop"
+	postgres.Database = "etopv1_2"
+	postgres.Password = "ZMp42845Rd5Lwbvj"
 
 	errCount, maxGoroutines := 0, 8
 	ch := make(chan dot.ID, maxGoroutines)
@@ -88,7 +92,7 @@ func main() {
 					if m[p.ID] != nil {
 						// update
 						update := make(map[string]interface{})
-						if p.Name != "" {
+						if p.Name != "" && m[p.ID].NameNorm == "" {
 							update["name_norm"] = nameNorm
 						}
 

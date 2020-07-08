@@ -40,6 +40,7 @@ type MoneyTransactionShipping struct {
 	Note                               string
 	InvoiceNumber                      string
 	Type                               string
+	WLPartnerID                        dot.ID
 }
 
 type MoneyTransactionShippingExternal struct {
@@ -55,6 +56,8 @@ type MoneyTransactionShippingExternal struct {
 	BankAccount    *identitytypes.BankAccount
 	Note           string
 	InvoiceNumber  string
+	ConnectionID   dot.ID
+	WLPartnerID    dot.ID
 }
 
 type MoneyTransactionShippingExternalLine struct {
@@ -90,6 +93,7 @@ type MoneyTransactionShippingEtop struct {
 	BankAccount           *identitytypes.BankAccount
 	Note                  string
 	InvoiceNumber         string
+	WLPartnerID           dot.ID
 }
 
 type MoneyTransactionShippingExtended struct {

@@ -126,6 +126,7 @@ func (h AggregateHandler) HandleCreateMoneyTxShippingEtop(ctx context.Context, m
 
 type CreateMoneyTxShippingExternalCommand struct {
 	Provider       shipping_provider.ShippingProvider
+	ConnectionID   dot.ID
 	ExternalPaidAt time.Time
 	Lines          []*MoneyTransactionShippingExternalLine
 	BankAccount    *identitytypes.BankAccount
@@ -530,6 +531,7 @@ func (q *CreateMoneyTxShippingExternalCommand) GetArgs(ctx context.Context) (_ c
 	return ctx,
 		&CreateMoneyTxShippingExternalArgs{
 			Provider:       q.Provider,
+			ConnectionID:   q.ConnectionID,
 			ExternalPaidAt: q.ExternalPaidAt,
 			Lines:          q.Lines,
 			BankAccount:    q.BankAccount,
@@ -540,6 +542,7 @@ func (q *CreateMoneyTxShippingExternalCommand) GetArgs(ctx context.Context) (_ c
 
 func (q *CreateMoneyTxShippingExternalCommand) SetCreateMoneyTxShippingExternalArgs(args *CreateMoneyTxShippingExternalArgs) {
 	q.Provider = args.Provider
+	q.ConnectionID = args.ConnectionID
 	q.ExternalPaidAt = args.ExternalPaidAt
 	q.Lines = args.Lines
 	q.BankAccount = args.BankAccount

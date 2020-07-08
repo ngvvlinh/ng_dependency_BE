@@ -8,6 +8,7 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/main/moneytx/model"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
@@ -20,6 +21,8 @@ type MoneyTxShippingEtopStore struct {
 	preds   []interface{}
 	filters meta.Filters
 	sqlstore.Paging
+
+	ctx context.Context
 }
 
 type MoneyTxShippingEtopStoreFactory func(ctx context.Context) *MoneyTxShippingEtopStore
@@ -30,6 +33,7 @@ func NewMoneyTxShippingEtopStore(db *cmsql.Database) MoneyTxShippingEtopStoreFac
 			query: func() cmsql.QueryInterface {
 				return cmsql.GetTxOrNewQuery(ctx, db)
 			},
+			ctx: ctx,
 		}
 	}
 }
@@ -65,6 +69,7 @@ func (s *MoneyTxShippingEtopStore) Status(status status3.Status) *MoneyTxShippin
 
 func (s *MoneyTxShippingEtopStore) GetMoneyTxShippingEtopDB() (*model.MoneyTransactionShippingEtop, error) {
 	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 	var moneyTx model.MoneyTransactionShippingEtop
 	if err := query.ShouldGet(&moneyTx); err != nil {
 		return nil, err
@@ -97,6 +102,8 @@ func (s *MoneyTxShippingEtopStore) ListMoneyTxShippingEtopsDB() ([]*model.MoneyT
 	if err != nil {
 		return nil, err
 	}
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+
 	var moneyTxs model.MoneyTransactionShippingEtops
 	if err := query.Find(&moneyTxs); err != nil {
 		return nil, err
@@ -120,6 +127,7 @@ func (s *MoneyTxShippingEtopStore) CreateMoneyTxShippingEtopDB(moneyTx *model.Mo
 	if moneyTx.ID == 0 {
 		moneyTx.ID = cm.NewID()
 	}
+	moneyTx.WLPartnerID = wl.GetWLPartnerID(s.ctx)
 	return s.query().ShouldInsert(moneyTx)
 }
 
@@ -135,7 +143,9 @@ func (s *MoneyTxShippingEtopStore) UpdateMoneyTxShippingEtopDB(moneyTx *model.Mo
 	if len(s.preds) == 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
 	}
-	return s.query().Where(s.preds).ShouldUpdate(moneyTx)
+	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	return query.ShouldUpdate(moneyTx)
 }
 
 type UpdateMoneyTxShippingEtopStatisticsArgs struct {
@@ -166,12 +176,23 @@ func (s *MoneyTxShippingEtopStore) UpdateMoneyTxShippingEtopStatistics(args *Upd
 	}
 
 	if len(update) > 0 {
-		return s.query().Table("money_transaction_shipping_etop").Where(s.ft.ByID(args.ID)).ShouldUpdateMap(update)
+		query := s.query().Table("money_transaction_shipping_etop").Where(s.ft.ByID(args.ID))
+		query = s.ByWhiteLabelPartner(s.ctx, query)
+		return query.ShouldUpdateMap(update)
 	}
 	return nil
 }
 
 func (s *MoneyTxShippingEtopStore) DeleteMoneyTxShippingEtop(id dot.ID) error {
 	query := s.query().Where(s.ft.ByID(id))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 	return query.ShouldDelete((&model.MoneyTransactionShippingEtop{}))
+}
+
+func (s *MoneyTxShippingEtopStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
+	partner := wl.X(ctx)
+	if partner.IsWhiteLabel() {
+		return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	}
+	return query.Where(s.ft.NotBelongWLPartner())
 }

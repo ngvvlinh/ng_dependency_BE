@@ -109,6 +109,7 @@ type DeleteMoneyTxShippingArgs struct {
 
 type CreateMoneyTxShippingExternalArgs struct {
 	Provider       shipping_provider.ShippingProvider
+	ConnectionID   dot.ID
 	ExternalPaidAt time.Time
 	Lines          []*MoneyTransactionShippingExternalLine
 	BankAccount    *identitytypes.BankAccount

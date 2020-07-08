@@ -1,6 +1,9 @@
 package sqlstore
 
-import "o.o/backend/pkg/common/sql/sqlstore"
+import (
+	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
+)
 
 var filterMoneyTxShippingExtendedWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,
@@ -50,4 +53,16 @@ var filterMoneyTxShippingExternalWhitelist = sqlstore.FilterWhitelist{
 var SortMoneyTx = map[string]string{
 	"created_at": "created_at",
 	"updated_at": "updated_at",
+}
+
+func (ft *MoneyTransactionShippingFilters) NotBelongWLPartner() sq.WriterTo {
+	return ft.Filter("$.wl_partner_id IS NULL")
+}
+
+func (ft *MoneyTransactionShippingExternalFilters) NotBelongWLPartner() sq.WriterTo {
+	return ft.Filter("$.wl_partner_id IS NULL")
+}
+
+func (ft *MoneyTransactionShippingEtopFilters) NotBelongWLPartner() sq.WriterTo {
+	return ft.Filter("$.wl_partner_id IS NULL")
 }

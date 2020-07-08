@@ -1,4 +1,4 @@
-package imcsv
+package vtpostimport
 
 import "github.com/google/wire"
 

@@ -124,12 +124,13 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
-	"o.o/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
-	"o.o/backend/pkg/etop/logic/money-transaction/imcsv"
-	"o.o/backend/pkg/etop/logic/money-transaction/vtpost-imxlsx"
+	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
+	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
+	"o.o/backend/pkg/etop/logic/money-transaction/handlers"
+	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	"o.o/backend/pkg/etop/logic/orders"
-	imcsv2 "o.o/backend/pkg/etop/logic/orders/imcsv"
-	imcsv3 "o.o/backend/pkg/etop/logic/products/imcsv"
+	"o.o/backend/pkg/etop/logic/orders/imcsv"
+	imcsv2 "o.o/backend/pkg/etop/logic/products/imcsv"
 	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -822,16 +823,20 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	importService := partnerimport.New(mainDB, catalogCommandBus)
 	partnerimportServers := partnerimport.NewServers(importService)
 	extHandlers := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers)
-	imcsvImport := imcsv.Import{
+	ghnimportImport := ghnimport.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}
-	ghtkimcsvImport := ghtkimcsv.Import{
+	ghtkimportImport := ghtkimport.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}
-	vtpostimxlsxImport := vtpostimxlsx.Import{
+	vtpostimportImport := vtpostimport.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}
-	importServer := server_admin.BuildImportHandlers(imcsvImport, ghtkimcsvImport, vtpostimxlsxImport, session)
+	handlersImportService := handlers.ImportService{
+		MoneyTxAggr:     moneytxCommandBus,
+		ConnectionQuery: connectioningQueryBus,
+	}
+	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, session)
 	uploadConfig := cfg.Upload
 	uploader, err := _uploader.NewUploader(uploadConfig)
 	if err != nil {
@@ -843,9 +848,9 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		cleanup()
 		return Output{}, nil, err
 	}
-	import2, cleanup7 := imcsv2.New(queryBus, store, uploader, mainDB)
-	import3, cleanup8 := imcsv3.New(store, uploader, mainDB)
-	importHandler := server_shop.BuildImportHandler(import2, import3, session)
+	imcsvImport, cleanup7 := imcsv.New(queryBus, store, uploader, mainDB)
+	import2, cleanup8 := imcsv2.New(store, uploader, mainDB)
+	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
 	client3 := client2.New(config2)

@@ -9,6 +9,7 @@ import (
 	"o.o/backend/com/main/moneytx/convert"
 	"o.o/backend/com/main/moneytx/model"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
@@ -24,6 +25,8 @@ type MoneyTxShippingStore struct {
 	preds   []interface{}
 	filters meta.Filters
 	sqlstore.Paging
+
+	ctx context.Context
 }
 
 type MoneyTxShippingStoreFactory func(ctx context.Context) *MoneyTxShippingStore
@@ -36,6 +39,7 @@ func NewMoneyTxShippingStore(db *cmsql.Database) MoneyTxShippingStoreFactory {
 			query: func() cmsql.QueryInterface {
 				return cmsql.GetTxOrNewQuery(ctx, db)
 			},
+			ctx: ctx,
 		}
 	}
 }
@@ -96,6 +100,7 @@ func (s *MoneyTxShippingStore) MoneyTxShippingEtopID(id dot.ID) *MoneyTxShipping
 
 func (s *MoneyTxShippingStore) GetMoneyTxShippingDB() (*model.MoneyTransactionShipping, error) {
 	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 	var moneyTx model.MoneyTransactionShipping
 	err := query.ShouldGet(&moneyTx)
 	return &moneyTx, err
@@ -140,6 +145,8 @@ func (s *MoneyTxShippingStore) ListMoneyTxShippingsDB() ([]*model.MoneyTransacti
 	if err != nil {
 		return nil, err
 	}
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+
 	if err := query.Find((*model.MoneyTransactionShippings)(&res)); err != nil {
 		return nil, err
 	}
@@ -160,6 +167,7 @@ func (s *MoneyTxShippingStore) ListMoneyTxShippingFtShopsDB() ([]*model.MoneyTra
 	if err != nil {
 		return nil, err
 	}
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 
 	var moneyTxs model.MoneyTransactionShippingFtShops
 	if err := query.Find(&moneyTxs); err != nil {
@@ -198,6 +206,7 @@ func (s *MoneyTxShippingStore) CreateMoneyTxShippingDB(moneyTx *model.MoneyTrans
 	if moneyTx.ID == 0 {
 		moneyTx.ID = cm.NewID()
 	}
+	moneyTx.WLPartnerID = wl.GetWLPartnerID(s.ctx)
 	return s.query().ShouldInsert(moneyTx)
 }
 
@@ -214,11 +223,14 @@ func (s *MoneyTxShippingStore) UpdateMoneyTxShippingDB(moneyTx *model.MoneyTrans
 	if len(s.preds) == 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
 	}
-	return s.query().Where(s.preds).ShouldUpdate(moneyTx)
+	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	return query.ShouldUpdate(moneyTx)
 }
 
 func (s *MoneyTxShippingStore) DeleteMoneyTxShipping(id dot.ID) error {
 	query := s.query().Where(s.ft.ByID(id))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 	return query.ShouldDelete((&model.MoneyTransactionShipping{}))
 }
 
@@ -244,7 +256,9 @@ func (s *MoneyTxShippingStore) UpdateMoneyTxShippingStatistics(args *UpdateMoney
 		update["status"] = status3.Z
 	}
 	if len(update) > 0 {
-		return s.query().Table("money_transaction_shipping").Where(s.ft.ByID(args.ID)).ShouldUpdateMap(update)
+		query := s.query().Table("money_transaction_shipping").Where(s.ft.ByID(args.ID))
+		query = s.ByWhiteLabelPartner(s.ctx, query)
+		return query.ShouldUpdateMap(update)
 	}
 	return nil
 }
@@ -253,7 +267,17 @@ func (s *MoneyTxShippingStore) RemoveMoneyTxShippingMoneyTxShippingEtopID() erro
 	if len(s.preds) == 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
 	}
-	return s.query().Table("money_transaction_shipping").Where(s.preds).ShouldUpdateMap(map[string]interface{}{
+	query := s.query().Table("money_transaction_shipping").Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	return query.ShouldUpdateMap(map[string]interface{}{
 		"money_transaction_shipping_etop_id": nil,
 	})
+}
+
+func (s *MoneyTxShippingStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
+	partner := wl.X(ctx)
+	if partner.IsWhiteLabel() {
+		return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	}
+	return query.Where(s.ft.NotBelongWLPartner())
 }

@@ -27,6 +27,8 @@ type MoneyTransactionShippingExternal struct {
 	BankAccount    *identitysharemodel.BankAccount
 	Note           string
 	InvoiceNumber  string
+	ConnectionID   dot.ID
+	WLPartnerID    dot.ID
 }
 
 // +sqlgen
@@ -91,6 +93,7 @@ type MoneyTransactionShipping struct {
 	InvoiceNumber                      string
 	Type                               string
 	Rid                                dot.ID
+	WLPartnerID                        dot.ID
 }
 
 // +sqlgen:           MoneyTransactionShipping as m
@@ -116,4 +119,5 @@ type MoneyTransactionShippingEtop struct {
 	BankAccount           *identitysharemodel.BankAccount
 	Note                  string
 	InvoiceNumber         string
+	WLPartnerID           dot.ID
 }

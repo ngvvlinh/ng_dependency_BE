@@ -6,9 +6,10 @@ import (
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/etop/authorize/permission"
 	"o.o/backend/pkg/etop/authorize/session"
-	imcsvghtk "o.o/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
-	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/imcsv"
-	vtpostimxlsx "o.o/backend/pkg/etop/logic/money-transaction/vtpost-imxlsx"
+	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
+	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
+	moneytxhandlers "o.o/backend/pkg/etop/logic/money-transaction/handlers"
+	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 )
 
 var WireSet = wire.NewSet(
@@ -18,9 +19,10 @@ var WireSet = wire.NewSet(
 type ImportServer httpx.Server
 
 func BuildImportHandlers(
-	ghnIm imcsvghn.Import,
-	ghtkIm imcsvghtk.Import,
-	vtpostIm vtpostimxlsx.Import,
+	ghnIm ghnimport.Import,
+	ghtkIm ghtkimport.Import,
+	vtpostIm vtpostimport.Import,
+	importer moneytxhandlers.ImportService,
 	ss session.Session,
 ) ImportServer {
 	rt := httpx.New()
@@ -31,5 +33,7 @@ func BuildImportHandlers(
 	rt.POST("/api/admin.Import/ghn/MoneyTransactions", ghnIm.HandleImportMoneyTransactions)
 	rt.POST("/api/admin.Import/ghtk/MoneyTransactions", ghtkIm.HandleImportMoneyTransactions)
 	rt.POST("/api/admin.Import/vtpost/MoneyTransactions", vtpostIm.HandleImportMoneyTransactions)
+
+	rt.POST("/api/admin.Import/MoneyTxShippingExternal", importer.HandleImportMoneyTxs)
 	return httpx.MakeServer("/api/admin.Import/", rt)
 }

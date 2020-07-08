@@ -33,8 +33,8 @@ type SQLWriter = core.SQLWriter
 type MoneyTransactionShippings []*MoneyTransactionShipping
 
 const __sqlMoneyTransactionShipping_Table = "money_transaction_shipping"
-const __sqlMoneyTransactionShipping_ListCols = "\"id\",\"shop_id\",\"created_at\",\"updated_at\",\"closed_at\",\"status\",\"total_cod\",\"total_amount\",\"total_orders\",\"code\",\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\",\"provider\",\"confirmed_at\",\"etop_transfered_at\",\"bank_account\",\"note\",\"invoice_number\",\"type\",\"rid\""
-const __sqlMoneyTransactionShipping_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"status\" = EXCLUDED.\"status\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_orders\" = EXCLUDED.\"total_orders\",\"code\" = EXCLUDED.\"code\",\"money_transaction_shipping_external_id\" = EXCLUDED.\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\" = EXCLUDED.\"money_transaction_shipping_etop_id\",\"provider\" = EXCLUDED.\"provider\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"etop_transfered_at\" = EXCLUDED.\"etop_transfered_at\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\",\"type\" = EXCLUDED.\"type\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlMoneyTransactionShipping_ListCols = "\"id\",\"shop_id\",\"created_at\",\"updated_at\",\"closed_at\",\"status\",\"total_cod\",\"total_amount\",\"total_orders\",\"code\",\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\",\"provider\",\"confirmed_at\",\"etop_transfered_at\",\"bank_account\",\"note\",\"invoice_number\",\"type\",\"rid\",\"wl_partner_id\""
+const __sqlMoneyTransactionShipping_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"status\" = EXCLUDED.\"status\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_orders\" = EXCLUDED.\"total_orders\",\"code\" = EXCLUDED.\"code\",\"money_transaction_shipping_external_id\" = EXCLUDED.\"money_transaction_shipping_external_id\",\"money_transaction_shipping_etop_id\" = EXCLUDED.\"money_transaction_shipping_etop_id\",\"provider\" = EXCLUDED.\"provider\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"etop_transfered_at\" = EXCLUDED.\"etop_transfered_at\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\",\"type\" = EXCLUDED.\"type\",\"rid\" = EXCLUDED.\"rid\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
 const __sqlMoneyTransactionShipping_Insert = "INSERT INTO \"money_transaction_shipping\" (" + __sqlMoneyTransactionShipping_ListCols + ") VALUES"
 const __sqlMoneyTransactionShipping_Select = "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM \"money_transaction_shipping\""
 const __sqlMoneyTransactionShipping_Select_history = "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM history.\"money_transaction_shipping\""
@@ -203,6 +203,13 @@ func (m *MoneyTransactionShipping) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"wl_partner_id": {
+			ColumnName:       "wl_partner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "money_transaction_shipping", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -236,6 +243,7 @@ func (m *MoneyTransactionShipping) SQLArgs(opts core.Opts, create bool) []interf
 		core.String(m.InvoiceNumber),
 		core.String(m.Type),
 		m.Rid,
+		m.WLPartnerID,
 	}
 }
 
@@ -261,6 +269,7 @@ func (m *MoneyTransactionShipping) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.InvoiceNumber),
 		(*core.String)(&m.Type),
 		&m.Rid,
+		&m.WLPartnerID,
 	}
 }
 
@@ -298,7 +307,7 @@ func (_ *MoneyTransactionShippings) SQLSelect(w SQLWriter) error {
 func (m *MoneyTransactionShipping) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShipping_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -308,7 +317,7 @@ func (ms MoneyTransactionShippings) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShipping_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(20)
+		w.WriteMarkers(21)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -499,6 +508,14 @@ func (m *MoneyTransactionShipping) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Rid)
 	}
+	if m.WLPartnerID != 0 {
+		flag = true
+		w.WriteName("wl_partner_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.WLPartnerID)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -509,7 +526,7 @@ func (m *MoneyTransactionShipping) SQLUpdate(w SQLWriter) error {
 func (m *MoneyTransactionShipping) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShipping_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -581,17 +598,20 @@ func (m MoneyTransactionShippingHistory) InvoiceNumber() core.Interface {
 }
 func (m MoneyTransactionShippingHistory) Type() core.Interface { return core.Interface{m["type"]} }
 func (m MoneyTransactionShippingHistory) Rid() core.Interface  { return core.Interface{m["rid"]} }
+func (m MoneyTransactionShippingHistory) WLPartnerID() core.Interface {
+	return core.Interface{m["wl_partner_id"]}
+}
 
 func (m *MoneyTransactionShippingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(MoneyTransactionShippingHistory, 20)
+	res := make(MoneyTransactionShippingHistory, 21)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["created_at"] = data[2]
@@ -612,14 +632,15 @@ func (m *MoneyTransactionShippingHistory) SQLScan(opts core.Opts, row *sql.Row) 
 	res["invoice_number"] = data[17]
 	res["type"] = data[18]
 	res["rid"] = data[19]
+	res["wl_partner_id"] = data[20]
 	*m = res
 	return nil
 }
 
 func (ms *MoneyTransactionShippingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	res := make(MoneyTransactionShippingHistories, 0, 128)
@@ -648,6 +669,7 @@ func (ms *MoneyTransactionShippingHistories) SQLScan(opts core.Opts, rows *sql.R
 		m["invoice_number"] = data[17]
 		m["type"] = data[18]
 		m["rid"] = data[19]
+		m["wl_partner_id"] = data[20]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -660,8 +682,8 @@ func (ms *MoneyTransactionShippingHistories) SQLScan(opts core.Opts, rows *sql.R
 type MoneyTransactionShippingEtops []*MoneyTransactionShippingEtop
 
 const __sqlMoneyTransactionShippingEtop_Table = "money_transaction_shipping_etop"
-const __sqlMoneyTransactionShippingEtop_ListCols = "\"id\",\"code\",\"total_cod\",\"total_orders\",\"total_amount\",\"total_fee\",\"total_money_transaction\",\"created_at\",\"updated_at\",\"confirmed_at\",\"status\",\"bank_account\",\"note\",\"invoice_number\""
-const __sqlMoneyTransactionShippingEtop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_orders\" = EXCLUDED.\"total_orders\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_fee\" = EXCLUDED.\"total_fee\",\"total_money_transaction\" = EXCLUDED.\"total_money_transaction\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"status\" = EXCLUDED.\"status\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\""
+const __sqlMoneyTransactionShippingEtop_ListCols = "\"id\",\"code\",\"total_cod\",\"total_orders\",\"total_amount\",\"total_fee\",\"total_money_transaction\",\"created_at\",\"updated_at\",\"confirmed_at\",\"status\",\"bank_account\",\"note\",\"invoice_number\",\"wl_partner_id\""
+const __sqlMoneyTransactionShippingEtop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_orders\" = EXCLUDED.\"total_orders\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_fee\" = EXCLUDED.\"total_fee\",\"total_money_transaction\" = EXCLUDED.\"total_money_transaction\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"status\" = EXCLUDED.\"status\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
 const __sqlMoneyTransactionShippingEtop_Insert = "INSERT INTO \"money_transaction_shipping_etop\" (" + __sqlMoneyTransactionShippingEtop_ListCols + ") VALUES"
 const __sqlMoneyTransactionShippingEtop_Select = "SELECT " + __sqlMoneyTransactionShippingEtop_ListCols + " FROM \"money_transaction_shipping_etop\""
 const __sqlMoneyTransactionShippingEtop_Select_history = "SELECT " + __sqlMoneyTransactionShippingEtop_ListCols + " FROM history.\"money_transaction_shipping_etop\""
@@ -792,6 +814,13 @@ func (m *MoneyTransactionShippingEtop) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"wl_partner_id": {
+			ColumnName:       "wl_partner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "money_transaction_shipping_etop", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -819,6 +848,7 @@ func (m *MoneyTransactionShippingEtop) SQLArgs(opts core.Opts, create bool) []in
 		core.JSON{m.BankAccount},
 		core.String(m.Note),
 		core.String(m.InvoiceNumber),
+		m.WLPartnerID,
 	}
 }
 
@@ -838,6 +868,7 @@ func (m *MoneyTransactionShippingEtop) SQLScanArgs(opts core.Opts) []interface{}
 		core.JSON{&m.BankAccount},
 		(*core.String)(&m.Note),
 		(*core.String)(&m.InvoiceNumber),
+		&m.WLPartnerID,
 	}
 }
 
@@ -875,7 +906,7 @@ func (_ *MoneyTransactionShippingEtops) SQLSelect(w SQLWriter) error {
 func (m *MoneyTransactionShippingEtop) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShippingEtop_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -885,7 +916,7 @@ func (ms MoneyTransactionShippingEtops) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShippingEtop_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(15)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1028,6 +1059,14 @@ func (m *MoneyTransactionShippingEtop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.InvoiceNumber)
 	}
+	if m.WLPartnerID != 0 {
+		flag = true
+		w.WriteName("wl_partner_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.WLPartnerID)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1038,7 +1077,7 @@ func (m *MoneyTransactionShippingEtop) SQLUpdate(w SQLWriter) error {
 func (m *MoneyTransactionShippingEtop) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShippingEtop_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1100,17 +1139,20 @@ func (m MoneyTransactionShippingEtopHistory) Note() core.Interface { return core
 func (m MoneyTransactionShippingEtopHistory) InvoiceNumber() core.Interface {
 	return core.Interface{m["invoice_number"]}
 }
+func (m MoneyTransactionShippingEtopHistory) WLPartnerID() core.Interface {
+	return core.Interface{m["wl_partner_id"]}
+}
 
 func (m *MoneyTransactionShippingEtopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(MoneyTransactionShippingEtopHistory, 14)
+	res := make(MoneyTransactionShippingEtopHistory, 15)
 	res["id"] = data[0]
 	res["code"] = data[1]
 	res["total_cod"] = data[2]
@@ -1125,14 +1167,15 @@ func (m *MoneyTransactionShippingEtopHistory) SQLScan(opts core.Opts, row *sql.R
 	res["bank_account"] = data[11]
 	res["note"] = data[12]
 	res["invoice_number"] = data[13]
+	res["wl_partner_id"] = data[14]
 	*m = res
 	return nil
 }
 
 func (ms *MoneyTransactionShippingEtopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	res := make(MoneyTransactionShippingEtopHistories, 0, 128)
@@ -1155,6 +1198,7 @@ func (ms *MoneyTransactionShippingEtopHistories) SQLScan(opts core.Opts, rows *s
 		m["bank_account"] = data[11]
 		m["note"] = data[12]
 		m["invoice_number"] = data[13]
+		m["wl_partner_id"] = data[14]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -1167,8 +1211,8 @@ func (ms *MoneyTransactionShippingEtopHistories) SQLScan(opts core.Opts, rows *s
 type MoneyTransactionShippingExternals []*MoneyTransactionShippingExternal
 
 const __sqlMoneyTransactionShippingExternal_Table = "money_transaction_shipping_external"
-const __sqlMoneyTransactionShippingExternal_ListCols = "\"id\",\"code\",\"total_cod\",\"total_orders\",\"created_at\",\"updated_at\",\"status\",\"external_paid_at\",\"provider\",\"bank_account\",\"note\",\"invoice_number\""
-const __sqlMoneyTransactionShippingExternal_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_orders\" = EXCLUDED.\"total_orders\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"status\" = EXCLUDED.\"status\",\"external_paid_at\" = EXCLUDED.\"external_paid_at\",\"provider\" = EXCLUDED.\"provider\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\""
+const __sqlMoneyTransactionShippingExternal_ListCols = "\"id\",\"code\",\"total_cod\",\"total_orders\",\"created_at\",\"updated_at\",\"status\",\"external_paid_at\",\"provider\",\"bank_account\",\"note\",\"invoice_number\",\"connection_id\",\"wl_partner_id\""
+const __sqlMoneyTransactionShippingExternal_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"total_cod\" = EXCLUDED.\"total_cod\",\"total_orders\" = EXCLUDED.\"total_orders\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"status\" = EXCLUDED.\"status\",\"external_paid_at\" = EXCLUDED.\"external_paid_at\",\"provider\" = EXCLUDED.\"provider\",\"bank_account\" = EXCLUDED.\"bank_account\",\"note\" = EXCLUDED.\"note\",\"invoice_number\" = EXCLUDED.\"invoice_number\",\"connection_id\" = EXCLUDED.\"connection_id\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\""
 const __sqlMoneyTransactionShippingExternal_Insert = "INSERT INTO \"money_transaction_shipping_external\" (" + __sqlMoneyTransactionShippingExternal_ListCols + ") VALUES"
 const __sqlMoneyTransactionShippingExternal_Select = "SELECT " + __sqlMoneyTransactionShippingExternal_ListCols + " FROM \"money_transaction_shipping_external\""
 const __sqlMoneyTransactionShippingExternal_Select_history = "SELECT " + __sqlMoneyTransactionShippingExternal_ListCols + " FROM history.\"money_transaction_shipping_external\""
@@ -1285,6 +1329,20 @@ func (m *MoneyTransactionShippingExternal) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"connection_id": {
+			ColumnName:       "connection_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"wl_partner_id": {
+			ColumnName:       "wl_partner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "money_transaction_shipping_external", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -1310,6 +1368,8 @@ func (m *MoneyTransactionShippingExternal) SQLArgs(opts core.Opts, create bool) 
 		core.JSON{m.BankAccount},
 		core.String(m.Note),
 		core.String(m.InvoiceNumber),
+		m.ConnectionID,
+		m.WLPartnerID,
 	}
 }
 
@@ -1327,6 +1387,8 @@ func (m *MoneyTransactionShippingExternal) SQLScanArgs(opts core.Opts) []interfa
 		core.JSON{&m.BankAccount},
 		(*core.String)(&m.Note),
 		(*core.String)(&m.InvoiceNumber),
+		&m.ConnectionID,
+		&m.WLPartnerID,
 	}
 }
 
@@ -1364,7 +1426,7 @@ func (_ *MoneyTransactionShippingExternals) SQLSelect(w SQLWriter) error {
 func (m *MoneyTransactionShippingExternal) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShippingExternal_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1374,7 +1436,7 @@ func (ms MoneyTransactionShippingExternals) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShippingExternal_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(12)
+		w.WriteMarkers(14)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1501,6 +1563,22 @@ func (m *MoneyTransactionShippingExternal) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.InvoiceNumber)
 	}
+	if m.ConnectionID != 0 {
+		flag = true
+		w.WriteName("connection_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ConnectionID)
+	}
+	if m.WLPartnerID != 0 {
+		flag = true
+		w.WriteName("wl_partner_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.WLPartnerID)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1511,7 +1589,7 @@ func (m *MoneyTransactionShippingExternal) SQLUpdate(w SQLWriter) error {
 func (m *MoneyTransactionShippingExternal) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlMoneyTransactionShippingExternal_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1571,17 +1649,23 @@ func (m MoneyTransactionShippingExternalHistory) Note() core.Interface {
 func (m MoneyTransactionShippingExternalHistory) InvoiceNumber() core.Interface {
 	return core.Interface{m["invoice_number"]}
 }
+func (m MoneyTransactionShippingExternalHistory) ConnectionID() core.Interface {
+	return core.Interface{m["connection_id"]}
+}
+func (m MoneyTransactionShippingExternalHistory) WLPartnerID() core.Interface {
+	return core.Interface{m["wl_partner_id"]}
+}
 
 func (m *MoneyTransactionShippingExternalHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(MoneyTransactionShippingExternalHistory, 12)
+	res := make(MoneyTransactionShippingExternalHistory, 14)
 	res["id"] = data[0]
 	res["code"] = data[1]
 	res["total_cod"] = data[2]
@@ -1594,14 +1678,16 @@ func (m *MoneyTransactionShippingExternalHistory) SQLScan(opts core.Opts, row *s
 	res["bank_account"] = data[9]
 	res["note"] = data[10]
 	res["invoice_number"] = data[11]
+	res["connection_id"] = data[12]
+	res["wl_partner_id"] = data[13]
 	*m = res
 	return nil
 }
 
 func (ms *MoneyTransactionShippingExternalHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	res := make(MoneyTransactionShippingExternalHistories, 0, 128)
@@ -1622,6 +1708,8 @@ func (ms *MoneyTransactionShippingExternalHistories) SQLScan(opts core.Opts, row
 		m["bank_account"] = data[9]
 		m["note"] = data[10]
 		m["invoice_number"] = data[11]
+		m["connection_id"] = data[12]
+		m["wl_partner_id"] = data[13]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

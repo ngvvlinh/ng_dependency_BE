@@ -13,9 +13,10 @@ import (
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	"o.o/backend/pkg/common/cmenv"
-	imcsvghtk "o.o/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
-	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/imcsv"
-	vtpostimxlsx "o.o/backend/pkg/etop/logic/money-transaction/vtpost-imxlsx"
+	imcsvghn "o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
+	imcsvghtk "o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
+	imhandlers "o.o/backend/pkg/etop/logic/money-transaction/handlers"
+	vtpostimxlsx "o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/shipping/ghn"
@@ -38,6 +39,7 @@ var WireSet = wire.NewSet(
 	imcsvghn.WireSet,
 	imcsvghtk.WireSet,
 	vtpostimxlsx.WireSet,
+	imhandlers.WireSet,
 	SupportedCarrierDrivers,
 	SupportedShippingCarrierConfig,
 )

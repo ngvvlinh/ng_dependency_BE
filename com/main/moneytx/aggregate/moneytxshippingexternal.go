@@ -21,12 +21,15 @@ import (
 )
 
 func (a *MoneyTxAggregate) CreateMoneyTxShippingExternal(ctx context.Context, args *moneytx.CreateMoneyTxShippingExternalArgs) (*moneytx.MoneyTransactionShippingExternalFtLine, error) {
-	if args.Provider == 0 {
+	if len(args.Lines) == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Danh sách Vận đơn không được rỗng")
+	}
+
+	connectionID := shipping.GetConnectionID(args.ConnectionID, args.Provider)
+	if connectionID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn nhà vận chuyển")
 	}
-	if len(args.Lines) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vận đơn không được rỗng")
-	}
+
 	totalCOD := 0
 	totalOrders := 0
 	for _, line := range args.Lines {
@@ -52,6 +55,7 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternal(ctx context.Context, ar
 			BankAccount:    args.BankAccount,
 			Note:           args.Note,
 			InvoiceNumber:  args.InvoiceNumber,
+			ConnectionID:   connectionID,
 		}
 		if err := a.moneyTxShippingExternalStore(ctx).CreateMoneyTxShippingExternal(externalTx); err != nil {
 			return err

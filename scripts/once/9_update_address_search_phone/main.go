@@ -73,10 +73,14 @@ func main() {
 						ctxCancel()
 					}()
 
-					phoneNorm := validate.NormalizeSearchPhone(p.Phone)
+					phone, ok := validate.NormalizePhone(p.Phone)
+					if !ok {
+						return
+					}
+					phoneNorm := validate.NormalizeSearchPhone(phone.String())
 					if m[p.ID] != nil {
 						update := make(map[string]interface{})
-						if p.Phone != "" {
+						if phone != "" && m[p.ID].PhoneNorm == "" {
 							update["phone_norm"] = phoneNorm
 						}
 						if len(update) > 0 {
