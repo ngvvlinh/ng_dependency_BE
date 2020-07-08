@@ -236,8 +236,7 @@ func (im *Import) loadAndCreateProducts(
 
 		} else {
 			productReq := rowToCreateProduct(rowProduct, now)
-			// createProductCmd.Context.Shop = shop
-			resp, err := apishop.ProductServiceImpl.CreateProduct(ctx, productReq)
+			resp, err := productService.CreateProduct(ctx, productReq)
 			if err != nil {
 				err = imcsv.CellErrorWithCode(idx.indexer, cm.Unknown, err, rowProduct.RowIndex, -1,
 					`Không thể tạo sản phẩm "%v": %v`,
@@ -264,7 +263,7 @@ func (im *Import) loadAndCreateProducts(
 				VariantId: variantResp.Id,
 				CostPrice: rowProduct.CostPrice,
 			}
-			_, err2 := apishop.InventoryServiceImpl.UpdateInventoryVariantCostPrice(ctx, updatePriceReq)
+			_, err2 := inventoryService.UpdateInventoryVariantCostPrice(ctx, updatePriceReq)
 			if err2 != nil {
 				err2 = imcsv.CellErrorWithCode(idx.indexer, cm.Unknown, err2, rowProduct.RowIndex, -1,
 					`Không thể cập nhập giá cho phiên bản "%v" của sản phẩm "%v": %v`,
@@ -352,14 +351,13 @@ func (im *Import) loadAndCreateProducts(
 	if len(stocktakeLines) > 0 {
 		stocktakeService := apishop.StocktakeServiceImpl.Clone().(*apishop.StocktakeService)
 		stocktakeService.Session = ss
-		resp, err := apishop.StocktakeServiceImpl.CreateStocktake(ctx, createStockTakeReq)
+		resp, err := stocktakeService.CreateStocktake(ctx, createStockTakeReq)
 		if err != nil {
 			_errs = append(_errs, err)
 		} else {
 			stocktakeId = resp.Id
 		}
 	}
-
 	return
 }
 
