@@ -30,12 +30,12 @@ const (
 	EcomAuthorization = "e-authorization"
 )
 
-var authoration *Authorization
+var authorization *Authorization
 
 func Init(policy string) {
 	sa := adapter.NewAdapter(policy)
 	enforcer := casbin.NewEnforcer(casbin.NewModel(model), sa)
-	authoration = &Authorization{Enforcer: enforcer, Policy: policy}
+	authorization = &Authorization{Enforcer: enforcer, Policy: policy}
 }
 
 type Authorization struct {
@@ -48,7 +48,7 @@ type AuthorizationService interface {
 }
 
 func New() *Authorization {
-	return authoration
+	return authorization
 }
 
 func (a *Authorization) Check(roles []string, actionsArgs string, isTest int) bool {
@@ -77,7 +77,7 @@ func (r Roles) Check(actionArg string) bool {
 }
 
 func ListActionsByRoles(roles []string) (actions []string) {
-	strs := strings.Split(authoration.Policy, "\n")
+	strs := strings.Split(authorization.Policy, "\n")
 
 	mapRoleAndActions := make(map[string][]string)
 	for _, str := range strs {

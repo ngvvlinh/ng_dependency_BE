@@ -4,21 +4,21 @@ const shopPolicy = `#connection
 	p, shop/connection:create, owner
 	p, shop/connection:update, owner
 	p, shop/connection:delete, owner
-	p, shop/connection:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, analyst
+	p, shop/connection:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	# carrier
     p, shop/carrier:create, admin, owner, salesman
 	p, shop/carrier:update, admin, owner, salesman
 	p, shop/carrier:delete, admin, owner, salesman
 	p, shop/carrier:view, admin, owner, salesman, accountant
 	# category
-	p, shop/category:create, admin, owner, salesman
-	p, shop/category:update, admin, owner, salesman, purchasing_management
-    p, shop/category:delete, admin, owner, salesman
+	p, shop/category:create, admin, owner
+	p, shop/category:update, admin, owner, purchasing_management
+    p, shop/category:delete, admin, owner
     p, shop/category:view, admin, owner, salesman, accountant, purchasing_management, inventory_management
 	# collection
-	p, shop/collection:create, admin, owner, salesman, purchasing_management
-	p, shop/collection:update, admin, owner, salesman, purchasing_management
-    p, shop/collection:view, admin, owner, salesman, accountant, purchasing_management, inventory_management
+	p, shop/collection:create, admin, owner, purchasing_management
+	p, shop/collection:update, admin, owner, purchasing_management
+    p, shop/collection:view, admin, owner, accountant, purchasing_management, inventory_management
 	# customer
 	p, shop/customer:create, admin, owner, salesman
 	p, shop/customer:update, admin, owner, salesman
@@ -48,7 +48,7 @@ const shopPolicy = `#connection
 	p, shop/ledger:delete, admin, owner, accountant
 	# money_transaction
 	p, shop/money_transaction:view, admin, owner, accountant
-	p, shop/money_transaction:export, admin, owner
+	p, shop/money_transaction:export, admin, owner, accountant
 	# order
 	p, shop/order:create, admin, owner, salesman
 	p, shop/order:confirm, admin, owner, salesman
