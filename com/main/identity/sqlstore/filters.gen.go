@@ -1834,25 +1834,6 @@ func (ft *ShopFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopFilters) ByNameNorm(NameNorm string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "name_norm",
-		Value:  NameNorm,
-		IsNil:  NameNorm == "",
-	}
-}
-
-func (ft *ShopFilters) ByNameNormPtr(NameNorm *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "name_norm",
-		Value:  NameNorm,
-		IsNil:  NameNorm == nil,
-		IsZero: NameNorm != nil && (*NameNorm) == "",
-	}
-}
-
 func (ft *ShopFilters) ByAddressID(AddressID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -2225,6 +2206,77 @@ func (ft *ShopDeleteFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilt
 		Value:  DeletedAt,
 		IsNil:  DeletedAt == nil,
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+type ShopSearchFilters struct{ prefix string }
+
+func NewShopSearchFilters(prefix string) ShopSearchFilters {
+	return ShopSearchFilters{prefix}
+}
+
+func (ft *ShopSearchFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft ShopSearchFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *ShopSearchFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *ShopSearchFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *ShopSearchFilters) ByName(Name string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == "",
+	}
+}
+
+func (ft *ShopSearchFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == nil,
+		IsZero: Name != nil && (*Name) == "",
+	}
+}
+
+func (ft *ShopSearchFilters) ByNameNorm(NameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name_norm",
+		Value:  NameNorm,
+		IsNil:  NameNorm == "",
+	}
+}
+
+func (ft *ShopSearchFilters) ByNameNormPtr(NameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name_norm",
+		Value:  NameNorm,
+		IsNil:  NameNorm == nil,
+		IsZero: NameNorm != nil && (*NameNorm) == "",
 	}
 }
 

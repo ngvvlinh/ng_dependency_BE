@@ -134,9 +134,7 @@ type Shop struct {
 	ID      dot.ID
 	OwnerID dot.ID
 	IsTest  int
-
-	Name     string
-	NameNorm string
+	Name    string
 
 	AddressID         dot.ID
 	ShipToAddressID   dot.ID
@@ -228,10 +226,19 @@ func (s *Shop) GetTryOn() try_on.TryOnCode {
 // +sqlgen:           Shop    as s
 // +sqlgen:left-join: Address as a on s.address_id = a.id
 // +sqlgen:left-join: User    as u on s.owner_id = u.id
+// +sqlgen:left-join: ShopSearch as ss on s.id = ss.id
 type ShopExtended struct {
 	*Shop
-	Address *addressmodel.Address
-	User    *User
+	ShopSearch *ShopSearch
+	Address    *addressmodel.Address
+	User       *User
+}
+
+// +sqlgen
+type ShopSearch struct {
+	ID       dot.ID
+	Name     string
+	NameNorm string
 }
 
 // +sqlgen=Shop

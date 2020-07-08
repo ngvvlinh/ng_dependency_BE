@@ -53,11 +53,19 @@ func main() {
 				ll.S.Infof("Done: updated %v/%v", updated, count)
 				break
 			}
+			shopSearchs, err := scanShopSearch(shops[0].ID, shops[len(shops)-1].ID)
+			if err != nil {
+				ll.Fatal("Error", l.Error(err))
+			}
+			var shopSearchMap = make(map[dot.ID]*identitymodel.ShopSearch)
+			for _, v := range shopSearchs {
+				shopSearchMap[v.ID] = v
+			}
 			fromID = shops[len(shops)-1].ID
 			count += len(shops)
 			for _, shop := range shops {
 				ch <- shop.ID
-				go func(p *identitymodel.Shop) (_err error) {
+				go func(p *identitymodel.Shop, m map[dot.ID]*identitymodel.ShopSearch) (_err error) {
 					_, ctxCancel := context.WithCancel(context.Background())
 					defer func() {
 						<-ch
@@ -69,19 +77,36 @@ func main() {
 					if p.Code != "" {
 						nameNorm += " " + validate.NormalizeSearchCode(p.Code)
 					}
-					update := make(map[string]interface{})
+					var shopSearch *identitymodel.ShopSearch
 					if p.Name != "" {
-						update["name_norm"] = nameNorm
+						shopSearch = &identitymodel.ShopSearch{
+							ID:       p.ID,
+							Name:     p.Name,
+							NameNorm: nameNorm,
+						}
 					}
+					if m[p.ID] != nil {
+						// update
+						update := make(map[string]interface{})
+						if p.Name != "" {
+							update["name_norm"] = nameNorm
+						}
 
-					if len(update) > 0 {
-						_err = db.
-							Table("shop").
-							Where("id = ?", p.ID).
-							ShouldUpdateMap(update)
+						if len(update) > 0 {
+							_err = db.
+								Table("shop_search").
+								Where("id = ?", p.ID).
+								ShouldUpdateMap(update)
+						}
+					} else {
+						if shopSearch != nil {
+							_, _err = db.
+								Table("shop_search").
+								Insert(shopSearch)
+						}
 					}
 					return _err
-				}(shop)
+				}(shop, shopSearchMap)
 			}
 			for i := 0; i < len(shops); i++ {
 				err = <-chInsert
@@ -98,9 +123,17 @@ func main() {
 
 func scanShop(fromID dot.ID) (shops identitymodel.Shops, err error) {
 	err = db.
-		Where("id > ?", fromID.String()).
+		Where(`id > ? `, fromID.String()).
 		OrderBy("id").
 		Limit(1000).
 		Find(&shops)
+	return
+}
+
+func scanShopSearch(fromID dot.ID, toID dot.ID) (shopSearchs identitymodel.ShopSearchs, err error) {
+	err = db.
+		Where(`id >= ? and id <=  ?`, fromID.String(), toID.String()).
+		OrderBy("id").
+		Find(&shopSearchs)
 	return
 }

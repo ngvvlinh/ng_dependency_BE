@@ -93,7 +93,6 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 		if errCode != nil {
 			return errCode
 		}
-		nameNorm := validate.NormalizeSearchCharacter(cmd.Name)
 		shop := &identitymodel.Shop{
 			ID:                            id,
 			Name:                          cmd.Name,
@@ -113,7 +112,6 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 			SurveyInfo:                    cmd.SurveyInfo,
 			ShippingServiceSelectStrategy: cmd.ShippingServicePickStrategy,
 			AutoCreateFFM:                 cmd.AutoCreateFFM,
-			NameNorm:                      nameNorm,
 		}
 		if cmd.MoneyTransactionRRule == "" {
 			// set shop MoneyTransactionRRule default value: FREQ=WEEKLY;BYDAY=MO,WE,FR
@@ -126,6 +124,20 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 			shop.IsTest = 1
 		}
 		if _, err := s.Insert(shop); err != nil {
+			return err
+		}
+
+		// create for search
+		nameNorm := validate.NormalizeSearchCharacter(shop.Name)
+		if shop.Code != "" {
+			nameNorm += " " + validate.NormalizeSearchCode(shop.Code)
+		}
+		shopSearch := &identitymodel.ShopSearch{
+			ID:       shop.ID,
+			Name:     shop.Name,
+			NameNorm: nameNorm,
+		}
+		if _, err := s.Insert(shopSearch); err != nil {
 			return err
 		}
 
@@ -159,7 +171,6 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 		if shop.Name, ok = validate.NormalizeName(shop.Name); !ok {
 			return cm.Error(cm.InvalidArgument, "Invalid name", nil)
 		}
-		shop.NameNorm = validate.NormalizeSearchCharacter(shop.Name)
 	}
 	if shop.Email != "" {
 		if emailNorm, ok = validate.NormalizeEmail(shop.Email); !ok {
@@ -202,6 +213,22 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 			if err := x.Table("shop").Where("id= ?", shop.ID).ShouldUpdateMap(updateMapValue); err != nil {
 				return err
 			}
+		}
+		// update for search
+		nameNorm := validate.NormalizeSearchCharacter(shop.Name)
+		if shop.Code != "" {
+			nameNorm += " " + validate.NormalizeSearchCode(shop.Code)
+		}
+		updateShopSearchValue := make(map[string]interface{})
+		if shop.Name != "" {
+			updateShopSearchValue["name_norm"] = nameNorm
+		}
+		err := x.
+			Table("shop_search").
+			Where("id = ?", shop.ID).
+			ShouldUpdateMap(updateShopSearchValue)
+		if err != nil {
+			return err
 		}
 
 		cmd.Result = new(identitymodel.ShopExtended)

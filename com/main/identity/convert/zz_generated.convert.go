@@ -823,7 +823,6 @@ func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitym
 	out.OwnerID = arg.OwnerID                     // simple assign
 	out.IsTest = arg.IsTest                       // simple assign
 	out.Name = arg.Name                           // simple assign
-	out.NameNorm = ""                             // zero value
 	out.AddressID = arg.AddressID                 // simple assign
 	out.ShipToAddressID = arg.ShipToAddressID     // simple assign
 	out.ShipFromAddressID = arg.ShipFromAddressID // simple assign
@@ -908,6 +907,7 @@ func Convert_identity_ShopExtended_identitymodel_ShopExtended(arg *identity.Shop
 
 func convert_identity_ShopExtended_identitymodel_ShopExtended(arg *identity.ShopExtended, out *identitymodel.ShopExtended) {
 	out.Shop = Convert_identity_Shop_identitymodel_Shop(arg.Shop, nil)
+	out.ShopSearch = nil // zero value
 	out.Address = addressconvert.Convert_address_Address_addressmodel_Address(arg.Address, nil)
 	out.User = Convert_identity_User_identitymodel_User(arg.User, nil)
 }

@@ -153,7 +153,8 @@ func (s *ShopStore) ListShopExtendeds() ([]*identity.ShopExtended, error) {
 	return res, nil
 }
 
+// Only use this function when get model.ShopExtended
 func (s *ShopStore) FullTextSearchName(name filter.FullTextSearch) *ShopStore {
-	s.preds = append(s.preds, s.shopFt.Filter(`name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
+	s.preds = append(s.preds, s.shopFt.Filter(`ss.name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
 	return s
 }

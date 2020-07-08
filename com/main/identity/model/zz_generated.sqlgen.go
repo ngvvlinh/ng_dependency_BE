@@ -4011,8 +4011,8 @@ func (m *PartnerRelationFtUser) SQLScanArgs(opts core.Opts) []interface{} {
 type Shops []*Shop
 
 const __sqlShop_Table = "shop"
-const __sqlShop_ListCols = "\"id\",\"owner_id\",\"is_test\",\"name\",\"name_norm\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\",\"inventory_overstock\",\"wl_partner_id\",\"rid\""
-const __sqlShop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"is_test\" = EXCLUDED.\"is_test\",\"name\" = EXCLUDED.\"name\",\"name_norm\" = EXCLUDED.\"name_norm\",\"address_id\" = EXCLUDED.\"address_id\",\"ship_to_address_id\" = EXCLUDED.\"ship_to_address_id\",\"ship_from_address_id\" = EXCLUDED.\"ship_from_address_id\",\"phone\" = EXCLUDED.\"phone\",\"bank_account\" = EXCLUDED.\"bank_account\",\"website_url\" = EXCLUDED.\"website_url\",\"image_url\" = EXCLUDED.\"image_url\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"auto_create_ffm\" = EXCLUDED.\"auto_create_ffm\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"company_info\" = EXCLUDED.\"company_info\",\"money_transaction_rrule\" = EXCLUDED.\"money_transaction_rrule\",\"survey_info\" = EXCLUDED.\"survey_info\",\"shipping_service_select_strategy\" = EXCLUDED.\"shipping_service_select_strategy\",\"inventory_overstock\" = EXCLUDED.\"inventory_overstock\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlShop_ListCols = "\"id\",\"owner_id\",\"is_test\",\"name\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\",\"inventory_overstock\",\"wl_partner_id\",\"rid\""
+const __sqlShop_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"is_test\" = EXCLUDED.\"is_test\",\"name\" = EXCLUDED.\"name\",\"address_id\" = EXCLUDED.\"address_id\",\"ship_to_address_id\" = EXCLUDED.\"ship_to_address_id\",\"ship_from_address_id\" = EXCLUDED.\"ship_from_address_id\",\"phone\" = EXCLUDED.\"phone\",\"bank_account\" = EXCLUDED.\"bank_account\",\"website_url\" = EXCLUDED.\"website_url\",\"image_url\" = EXCLUDED.\"image_url\",\"email\" = EXCLUDED.\"email\",\"code\" = EXCLUDED.\"code\",\"auto_create_ffm\" = EXCLUDED.\"auto_create_ffm\",\"order_source_id\" = EXCLUDED.\"order_source_id\",\"status\" = EXCLUDED.\"status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"recognized_hosts\" = EXCLUDED.\"recognized_hosts\",\"ghn_note_code\" = EXCLUDED.\"ghn_note_code\",\"try_on\" = EXCLUDED.\"try_on\",\"company_info\" = EXCLUDED.\"company_info\",\"money_transaction_rrule\" = EXCLUDED.\"money_transaction_rrule\",\"survey_info\" = EXCLUDED.\"survey_info\",\"shipping_service_select_strategy\" = EXCLUDED.\"shipping_service_select_strategy\",\"inventory_overstock\" = EXCLUDED.\"inventory_overstock\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShop_Insert = "INSERT INTO \"shop\" (" + __sqlShop_ListCols + ") VALUES"
 const __sqlShop_Select = "SELECT " + __sqlShop_ListCols + " FROM \"shop\""
 const __sqlShop_Select_history = "SELECT " + __sqlShop_ListCols + " FROM history.\"shop\""
@@ -4062,13 +4062,6 @@ func (m *Shop) Migration(db *cmsql.Database) {
 		},
 		"name": {
 			ColumnName:       "name",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
-			ColumnTag:        "",
-			ColumnEnumValues: []string{},
-		},
-		"name_norm": {
-			ColumnName:       "name_norm",
 			ColumnType:       "string",
 			ColumnDBType:     "string",
 			ColumnTag:        "",
@@ -4266,7 +4259,6 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.OwnerID,
 		core.Int(m.IsTest),
 		core.String(m.Name),
-		core.String(m.NameNorm),
 		m.AddressID,
 		m.ShipToAddressID,
 		m.ShipFromAddressID,
@@ -4301,7 +4293,6 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.OwnerID,
 		(*core.Int)(&m.IsTest),
 		(*core.String)(&m.Name),
-		(*core.String)(&m.NameNorm),
 		&m.AddressID,
 		&m.ShipToAddressID,
 		&m.ShipFromAddressID,
@@ -4364,7 +4355,7 @@ func (_ *Shops) SQLSelect(w SQLWriter) error {
 func (m *Shop) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(30)
+	w.WriteMarkers(29)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -4374,7 +4365,7 @@ func (ms Shops) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(30)
+		w.WriteMarkers(29)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -4436,14 +4427,6 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.Name)
-	}
-	if m.NameNorm != "" {
-		flag = true
-		w.WriteName("name_norm")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.NameNorm)
 	}
 	if m.AddressID != 0 {
 		flag = true
@@ -4655,7 +4638,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 func (m *Shop) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(30)
+	w.WriteMarkers(29)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -4681,7 +4664,6 @@ func (m ShopHistory) ID() core.Interface              { return core.Interface{m[
 func (m ShopHistory) OwnerID() core.Interface         { return core.Interface{m["owner_id"]} }
 func (m ShopHistory) IsTest() core.Interface          { return core.Interface{m["is_test"]} }
 func (m ShopHistory) Name() core.Interface            { return core.Interface{m["name"]} }
-func (m ShopHistory) NameNorm() core.Interface        { return core.Interface{m["name_norm"]} }
 func (m ShopHistory) AddressID() core.Interface       { return core.Interface{m["address_id"]} }
 func (m ShopHistory) ShipToAddressID() core.Interface { return core.Interface{m["ship_to_address_id"]} }
 func (m ShopHistory) ShipFromAddressID() core.Interface {
@@ -4717,53 +4699,52 @@ func (m ShopHistory) WLPartnerID() core.Interface { return core.Interface{m["wl_
 func (m ShopHistory) Rid() core.Interface         { return core.Interface{m["rid"]} }
 
 func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 30)
-	args := make([]interface{}, 30)
-	for i := 0; i < 30; i++ {
+	data := make([]interface{}, 29)
+	args := make([]interface{}, 29)
+	for i := 0; i < 29; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopHistory, 30)
+	res := make(ShopHistory, 29)
 	res["id"] = data[0]
 	res["owner_id"] = data[1]
 	res["is_test"] = data[2]
 	res["name"] = data[3]
-	res["name_norm"] = data[4]
-	res["address_id"] = data[5]
-	res["ship_to_address_id"] = data[6]
-	res["ship_from_address_id"] = data[7]
-	res["phone"] = data[8]
-	res["bank_account"] = data[9]
-	res["website_url"] = data[10]
-	res["image_url"] = data[11]
-	res["email"] = data[12]
-	res["code"] = data[13]
-	res["auto_create_ffm"] = data[14]
-	res["order_source_id"] = data[15]
-	res["status"] = data[16]
-	res["created_at"] = data[17]
-	res["updated_at"] = data[18]
-	res["deleted_at"] = data[19]
-	res["recognized_hosts"] = data[20]
-	res["ghn_note_code"] = data[21]
-	res["try_on"] = data[22]
-	res["company_info"] = data[23]
-	res["money_transaction_rrule"] = data[24]
-	res["survey_info"] = data[25]
-	res["shipping_service_select_strategy"] = data[26]
-	res["inventory_overstock"] = data[27]
-	res["wl_partner_id"] = data[28]
-	res["rid"] = data[29]
+	res["address_id"] = data[4]
+	res["ship_to_address_id"] = data[5]
+	res["ship_from_address_id"] = data[6]
+	res["phone"] = data[7]
+	res["bank_account"] = data[8]
+	res["website_url"] = data[9]
+	res["image_url"] = data[10]
+	res["email"] = data[11]
+	res["code"] = data[12]
+	res["auto_create_ffm"] = data[13]
+	res["order_source_id"] = data[14]
+	res["status"] = data[15]
+	res["created_at"] = data[16]
+	res["updated_at"] = data[17]
+	res["deleted_at"] = data[18]
+	res["recognized_hosts"] = data[19]
+	res["ghn_note_code"] = data[20]
+	res["try_on"] = data[21]
+	res["company_info"] = data[22]
+	res["money_transaction_rrule"] = data[23]
+	res["survey_info"] = data[24]
+	res["shipping_service_select_strategy"] = data[25]
+	res["inventory_overstock"] = data[26]
+	res["wl_partner_id"] = data[27]
+	res["rid"] = data[28]
 	*m = res
 	return nil
 }
 
 func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 30)
-	args := make([]interface{}, 30)
-	for i := 0; i < 30; i++ {
+	data := make([]interface{}, 29)
+	args := make([]interface{}, 29)
+	for i := 0; i < 29; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopHistories, 0, 128)
@@ -4776,32 +4757,31 @@ func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["owner_id"] = data[1]
 		m["is_test"] = data[2]
 		m["name"] = data[3]
-		m["name_norm"] = data[4]
-		m["address_id"] = data[5]
-		m["ship_to_address_id"] = data[6]
-		m["ship_from_address_id"] = data[7]
-		m["phone"] = data[8]
-		m["bank_account"] = data[9]
-		m["website_url"] = data[10]
-		m["image_url"] = data[11]
-		m["email"] = data[12]
-		m["code"] = data[13]
-		m["auto_create_ffm"] = data[14]
-		m["order_source_id"] = data[15]
-		m["status"] = data[16]
-		m["created_at"] = data[17]
-		m["updated_at"] = data[18]
-		m["deleted_at"] = data[19]
-		m["recognized_hosts"] = data[20]
-		m["ghn_note_code"] = data[21]
-		m["try_on"] = data[22]
-		m["company_info"] = data[23]
-		m["money_transaction_rrule"] = data[24]
-		m["survey_info"] = data[25]
-		m["shipping_service_select_strategy"] = data[26]
-		m["inventory_overstock"] = data[27]
-		m["wl_partner_id"] = data[28]
-		m["rid"] = data[29]
+		m["address_id"] = data[4]
+		m["ship_to_address_id"] = data[5]
+		m["ship_from_address_id"] = data[6]
+		m["phone"] = data[7]
+		m["bank_account"] = data[8]
+		m["website_url"] = data[9]
+		m["image_url"] = data[10]
+		m["email"] = data[11]
+		m["code"] = data[12]
+		m["auto_create_ffm"] = data[13]
+		m["order_source_id"] = data[14]
+		m["status"] = data[15]
+		m["created_at"] = data[16]
+		m["updated_at"] = data[17]
+		m["deleted_at"] = data[18]
+		m["recognized_hosts"] = data[19]
+		m["ghn_note_code"] = data[20]
+		m["try_on"] = data[21]
+		m["company_info"] = data[22]
+		m["money_transaction_rrule"] = data[23]
+		m["survey_info"] = data[24]
+		m["shipping_service_select_strategy"] = data[25]
+		m["inventory_overstock"] = data[26]
+		m["wl_partner_id"] = data[27]
+		m["rid"] = data[28]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -5079,6 +5059,8 @@ func (m *ShopExtended) __sqlSelect(w SQLWriter) {
 	core.WriteCols(w, "a", (*addressmodel.Address)(nil).SQLListCols())
 	w.WriteByte(',')
 	core.WriteCols(w, "u", (*User)(nil).SQLListCols())
+	w.WriteByte(',')
+	core.WriteCols(w, "ss", (*ShopSearch)(nil).SQLListCols())
 }
 
 func (m *ShopExtended) __sqlJoin(w SQLWriter) {
@@ -5094,6 +5076,10 @@ func (m *ShopExtended) __sqlJoin(w SQLWriter) {
 	w.WriteName((*User)(nil).SQLTableName())
 	w.WriteRawString(" AS u ON")
 	w.WriteQueryString(" s.owner_id = u.id")
+	w.WriteRawString(" LEFT JOIN ")
+	w.WriteName((*ShopSearch)(nil).SQLTableName())
+	w.WriteRawString(" AS ss ON")
+	w.WriteQueryString(" s.id = ss.id")
 }
 
 func (m *ShopExtended) SQLScanArgs(opts core.Opts) []interface{} {
@@ -5104,7 +5090,263 @@ func (m *ShopExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args = append(args, m.Address.SQLScanArgs(opts)...)
 	m.User = new(User)
 	args = append(args, m.User.SQLScanArgs(opts)...)
+	m.ShopSearch = new(ShopSearch)
+	args = append(args, m.ShopSearch.SQLScanArgs(opts)...)
 	return args
+}
+
+type ShopSearchs []*ShopSearch
+
+const __sqlShopSearch_Table = "shop_search"
+const __sqlShopSearch_ListCols = "\"id\",\"name\",\"name_norm\""
+const __sqlShopSearch_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"name_norm\" = EXCLUDED.\"name_norm\""
+const __sqlShopSearch_Insert = "INSERT INTO \"shop_search\" (" + __sqlShopSearch_ListCols + ") VALUES"
+const __sqlShopSearch_Select = "SELECT " + __sqlShopSearch_ListCols + " FROM \"shop_search\""
+const __sqlShopSearch_Select_history = "SELECT " + __sqlShopSearch_ListCols + " FROM history.\"shop_search\""
+const __sqlShopSearch_UpdateAll = "UPDATE \"shop_search\" SET (" + __sqlShopSearch_ListCols + ")"
+const __sqlShopSearch_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT shop_search_pkey DO UPDATE SET"
+
+func (m *ShopSearch) SQLTableName() string  { return "shop_search" }
+func (m *ShopSearchs) SQLTableName() string { return "shop_search" }
+func (m *ShopSearch) SQLListCols() string   { return __sqlShopSearch_ListCols }
+
+func (m *ShopSearch) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopSearch_ListCols + " FROM \"shop_search\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *ShopSearch) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "shop_search"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"name": {
+			ColumnName:       "name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"name_norm": {
+			ColumnName:       "name_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "shop_search", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopSearch)(nil))
+}
+
+func (m *ShopSearch) SQLArgs(opts core.Opts, create bool) []interface{} {
+	return []interface{}{
+		m.ID,
+		core.String(m.Name),
+		core.String(m.NameNorm),
+	}
+}
+
+func (m *ShopSearch) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		&m.ID,
+		(*core.String)(&m.Name),
+		(*core.String)(&m.NameNorm),
+	}
+}
+
+func (m *ShopSearch) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopSearchs) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopSearchs, 0, 128)
+	for rows.Next() {
+		m := new(ShopSearch)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ShopSearch) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopSearch_Select)
+	return nil
+}
+
+func (_ *ShopSearchs) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopSearch_Select)
+	return nil
+}
+
+func (m *ShopSearch) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopSearch_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(3)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ShopSearchs) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopSearch_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(3)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopSearch) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlShopSearch_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopSearch_ListColsOnConflict)
+	return nil
+}
+
+func (ms ShopSearchs) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlShopSearch_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlShopSearch_ListColsOnConflict)
+	return nil
+}
+
+func (m *ShopSearch) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("shop_search")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
+	if m.NameNorm != "" {
+		flag = true
+		w.WriteName("name_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.NameNorm)
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ShopSearch) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopSearch_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(3)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ShopSearchHistory map[string]interface{}
+type ShopSearchHistories []map[string]interface{}
+
+func (m *ShopSearchHistory) SQLTableName() string  { return "history.\"shop_search\"" }
+func (m ShopSearchHistories) SQLTableName() string { return "history.\"shop_search\"" }
+
+func (m *ShopSearchHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopSearch_Select_history)
+	return nil
+}
+
+func (m ShopSearchHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopSearch_Select_history)
+	return nil
+}
+
+func (m ShopSearchHistory) ID() core.Interface       { return core.Interface{m["id"]} }
+func (m ShopSearchHistory) Name() core.Interface     { return core.Interface{m["name"]} }
+func (m ShopSearchHistory) NameNorm() core.Interface { return core.Interface{m["name_norm"]} }
+
+func (m *ShopSearchHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 3)
+	args := make([]interface{}, 3)
+	for i := 0; i < 3; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ShopSearchHistory, 3)
+	res["id"] = data[0]
+	res["name"] = data[1]
+	res["name_norm"] = data[2]
+	*m = res
+	return nil
+}
+
+func (ms *ShopSearchHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 3)
+	args := make([]interface{}, 3)
+	for i := 0; i < 3; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ShopSearchHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ShopSearchHistory)
+		m["id"] = data[0]
+		m["name"] = data[1]
+		m["name_norm"] = data[2]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
 }
 
 type Users []*User

@@ -156,7 +156,6 @@ func convert_shopmodel_Shop_identitymodel_Shop(arg *shopmodel.Shop, out *identit
 	out.OwnerID = arg.OwnerID                             // simple assign
 	out.IsTest = 0                                        // zero value
 	out.Name = arg.Name                                   // simple assign
-	out.NameNorm = ""                                     // zero value
 	out.AddressID = arg.AddressID                         // simple assign
 	out.ShipToAddressID = arg.ShipToAddressID             // simple assign
 	out.ShipFromAddressID = arg.ShipFromAddressID         // simple assign
