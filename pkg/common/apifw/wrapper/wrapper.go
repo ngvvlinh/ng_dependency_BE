@@ -215,6 +215,9 @@ func RecoverAndLog2(ctx context.Context, rpcName string, session *session.Sessio
 }
 
 func AdaptSession(ss session.Session) *middleware.Session {
+	if !ss.SS.IsInit() {
+		return nil
+	}
 	return &middleware.Session{
 		User:       ss.SS.User(),
 		Admin:      nil,

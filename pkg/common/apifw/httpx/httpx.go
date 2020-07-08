@@ -288,7 +288,6 @@ func RecoverAndLog(logRequest bool) func(Handler) Handler {
 						l.Duration("d", d),
 						l.String("req", string(reqData)))
 					return
-
 				}
 
 				lvl := xerrors.GetTraceLevel(_err)

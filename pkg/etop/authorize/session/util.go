@@ -9,6 +9,10 @@ import (
 	"o.o/backend/pkg/etop/authorize/permission"
 )
 
+func (s *session) IsInit() bool {
+	return s.init
+}
+
 func (s *session) Claim() claims.Claim {
 	s.ensureInit()
 	return s.claim
