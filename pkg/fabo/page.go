@@ -132,7 +132,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			go func(accessToken string) {
 				defer wg.Done()
 				// TODO: Ngoc handle err
-				if _, err := s.FBClient.CallAPICreateSubscribedApps(accessToken, []string{fbclient.MessagesField, fbclient.MessageEchoesField}); err != nil {
+				if _, err := s.FBClient.CallAPICreateSubscribedApps(accessToken, []string{fbclient.MessagesField, fbclient.MessageEchoesField, fbclient.FeedField}); err != nil {
 					return
 				}
 			}(account.AccessToken)

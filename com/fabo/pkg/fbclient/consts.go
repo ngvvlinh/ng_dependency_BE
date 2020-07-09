@@ -35,6 +35,7 @@ const (
 	SubscribedFields   = "subscribed_fields"
 	MessagesField      = "messages"
 	MessageEchoesField = "message_echoes"
+	FeedField          = "feed"
 
 	// Send message
 	AttachmentURL = "attachment_url"

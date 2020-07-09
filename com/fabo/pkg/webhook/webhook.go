@@ -175,7 +175,7 @@ func (wh *Webhook) forwardWebhook(c *httpx.Context, body []byte) {
 					return
 				}
 
-				ll.SendMessagef(`[Error] callback_url: %v\n\n%v`, callbackURL, _err.Error())
+				ll.SendMessagef("[Error] callback_url: %v\n\n%v", callbackURL, _err.Error())
 				switch {
 				case !ok:
 					// first time error, store the time
