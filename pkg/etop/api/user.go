@@ -865,7 +865,7 @@ func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *api.ResetP
 		token, expiresIn = tokenCmd.Result.TokenStr, tokenCmd.Result.ExpiresIn
 	}
 	var redisCodeCount = fmt.Sprintf("reset-pasword-phone-%v", user.ID)
-	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, redisCodeCount, templatemessages.SmsResetPasswordTpl, templatemessages.SmsResetPasswordTplRepeat, false); err != nil {
+	if err = s.verifyPhone(ctx, auth.UsageResetPassword, user, 1*60*60, r.Phone, redisCodeCount, templatemessages.SmsResetPasswordTpl, templatemessages.SmsResetPasswordTplRepeat, false, token); err != nil {
 		return nil, err
 	}
 
@@ -1483,7 +1483,7 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *api.SendPhon
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp le. Nếu cần thêm thông tin vui lòng liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 	var redisCodeCount = fmt.Sprintf("confirm-phone-%v", s.SS.User().ID)
-	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, redisCodeCount, templatemessages.SmsVerificationTpl, templatemessages.SmsVerificationTplRepeat, true); err != nil {
+	if err := s.verifyPhone(ctx, auth.UsagePhoneVerification, user, 2*60*60, r.Phone, redisCodeCount, templatemessages.SmsVerificationTpl, templatemessages.SmsVerificationTplRepeat, true, s.SS.Claim().Token); err != nil {
 		return nil, err
 	}
 
@@ -2015,7 +2015,7 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *a
 	if err != nil && err != redis.ErrNil {
 		return nil, err
 	}
-	if err = s.sendPhoneVerificationImpl(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, msg, false); err != nil {
+	if err = s.sendPhoneVerificationImpl(ctx, nil, 2*60*60, auth.UsagePhoneVerification, r.Phone, msg, false, s.SS.Claim().Token); err != nil {
 		return nil, err
 	}
 	return cmapi.Message("ok", fmt.Sprintf(
@@ -2023,7 +2023,7 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *a
 }
 
 func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *identitymodel.User, ttl int, usage string,
-	phone string, msg string, checkVerifyPhoneForUser bool) error {
+	phone string, msg string, checkVerifyPhoneForUser bool, token string) error {
 	var userIDUse dot.ID
 	userIDUse = 0
 	if user != nil {
@@ -2052,7 +2052,7 @@ func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *ident
 	}
 	extra[keyRequestAuthUsage] = usage
 
-	if err := s.TokenStore.UpdateSession(ctx, s.SS.Claim().Token, extra); err != nil {
+	if err := s.TokenStore.UpdateSession(ctx, token, extra); err != nil {
 		return err
 	}
 	return nil
@@ -2072,7 +2072,7 @@ func getUserByPhone(ctx context.Context, phone string) (*identitymodel.User, err
 	return userByPhone.Result, nil
 }
 
-func (s *UserService) verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, redisCodeCount string, msgFirstime string, msgMultiTime string, checkVerifyPhoneForUser bool) error {
+func (s *UserService) verifyPhone(ctx context.Context, usage string, user *identitymodel.User, ttl int, phone string, redisCodeCount string, msgFirstime string, msgMultiTime string, checkVerifyPhoneForUser bool, token string) error {
 	if user != nil && user.Phone != phone {
 		return cm.Error(cm.FailedPrecondition, "Số điện này không hợp lệ vì chưa được đăng kí", nil)
 	}
@@ -2084,7 +2084,7 @@ func (s *UserService) verifyPhone(ctx context.Context, usage string, user *ident
 		if !user.PhoneVerifiedAt.IsZero() {
 			return nil
 		}
-		if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, true); err != nil {
+		if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, true, token); err != nil {
 			return err
 		}
 		updateCmd := &identitymodelx.UpdateUserVerificationCommand{
@@ -2096,7 +2096,7 @@ func (s *UserService) verifyPhone(ctx context.Context, usage string, user *ident
 		}
 		return nil
 	}
-	if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, false); err != nil {
+	if err := s.sendPhoneVerificationImpl(ctx, user, ttl, usage, user.Phone, msg, false, token); err != nil {
 		return err
 	}
 	return nil
