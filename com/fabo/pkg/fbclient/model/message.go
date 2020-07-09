@@ -1,10 +1,5 @@
 package model
 
-import (
-	"encoding/json"
-	"fmt"
-)
-
 type MessagesResponse struct {
 	ID       string    `json:"id"`
 	Messages *Messages `json:"messages"`
@@ -75,20 +70,8 @@ type RecipientSendMessageRequest struct {
 }
 
 type MessageSendMessageRequest struct {
-	Text       string                        `json:"text"`
-	Attachment *AttachmentSendMessageRequest `json:"attachment"`
-}
-
-func (m MessageSendMessageRequest) MarshalJSON() ([]byte, error) {
-	if m.Text != "" {
-		return []byte(fmt.Sprintf(`{"text": "%s"}`, m.Text)), nil
-	}
-	attachmentJSON, err := json.Marshal(m.Attachment)
-	if err != nil {
-		return nil, err
-	}
-
-	return []byte(fmt.Sprintf(`{"attachment": %s}`, string(attachmentJSON))), nil
+	Text       string                        `json:"text,omitempty"`
+	Attachment *AttachmentSendMessageRequest `json:"attachment,omitempty"`
 }
 
 type AttachmentSendMessageRequest struct {
