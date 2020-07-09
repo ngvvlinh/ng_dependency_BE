@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/casbin/casbin"
@@ -30,25 +32,27 @@ const (
 	EcomAuthorization = "e-authorization"
 )
 
+type Roles []string
+type Authorization struct {
+	*casbin.Enforcer
+}
+
 var authorization *Authorization
+var mapRoleAndActions map[string][]string
 
 func Init(policy string) {
 	sa := adapter.NewAdapter(policy)
 	enforcer := casbin.NewEnforcer(casbin.NewModel(model), sa)
-	authorization = &Authorization{Enforcer: enforcer, Policy: policy}
-}
-
-type Authorization struct {
-	*casbin.Enforcer
-	Policy string
-}
-
-type AuthorizationService interface {
-	Check(roles []string, action string) bool
+	authorization = &Authorization{Enforcer: enforcer}
+	mapRoleAndActions = buildMapRoleActions(policy)
 }
 
 func New() *Authorization {
 	return authorization
+}
+
+type AuthorizationService interface {
+	Check(roles []string, action string) bool
 }
 
 func (a *Authorization) Check(roles []string, actionsArgs string, isTest int) bool {
@@ -63,49 +67,69 @@ func (a *Authorization) Check(roles []string, actionsArgs string, isTest int) bo
 	return false
 }
 
-type Roles []string
-
-func (r Roles) Check(actionArg string) bool {
-	actions := ListActionsByRoles(r)
-
-	for _, action := range actions {
-		if actionArg == action {
-			return true
+func (roles Roles) Check(action string) bool {
+	for _, role := range roles {
+		for _, a := range mapRoleAndActions[role] {
+			if a == action {
+				return true
+			}
 		}
 	}
 	return false
 }
 
-func ListActionsByRoles(roles []string) (actions []string) {
-	strs := strings.Split(authorization.Policy, "\n")
+func ListActionsByRolesMap(roles []string) map[string]struct{} {
+	m := make(map[string]struct{})
+	for _, role := range roles {
+		for _, action := range mapRoleAndActions[role] {
+			m[action] = struct{}{}
+		}
+	}
+	return m
+}
 
-	mapRoleAndActions := make(map[string][]string)
-	for _, str := range strs {
+func ListActionsByRoles(roles []string) (actions []string) {
+	m := ListActionsByRolesMap(roles)
+	for action := range m {
+		actions = append(actions, action)
+	}
+	sort.Strings(actions)
+	return
+}
+
+func buildMapRoleActions(policy string) map[string][]string {
+	lines := strings.Split(policy, "\n")
+	checkedActions := map[string]struct{}{}
+	m := make(map[string][]string) // map role and actions
+	for _, line := range lines {
 		// prefix '#' for comment
-		str = strings.TrimSpace(str)
-		if str == "" || strings.HasPrefix(str, "#") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
 
-		elements := strings.Split(str, ",")
-		_ = elements[0] // prefix 'p' | 'g'
+		// p, readAndWriteBook, me, you => ["p",    "readAndWriteBook", "me", "you"]
+		//                                   ^              ^                ^
+		//                                 prefix         action          roles......
+		elements := strings.Split(line, ",")
+		if len(elements) < 3 {
+			panic(fmt.Sprintf("Invalid policy setup, error line content: %v", line))
+		}
+
 		action := strings.TrimSpace(elements[1])
+		if _, ok := checkedActions[action]; ok {
+			panic(fmt.Sprintf("Duplicate action, error line content: %v", line))
+		}
+		checkedActions[action] = struct{}{}
+
 		roles := elements[2:]
 		for _, role := range roles {
 			role = strings.TrimSpace(role)
-			mapRoleAndActions[role] = append(mapRoleAndActions[role], action)
+			if role == "" {
+				panic(fmt.Sprintf("Invalid policy setup, error line content: %v", line))
+			}
+			m[role] = append(m[role], action)
 		}
 	}
-
-	mapAction := make(map[string]bool)
-	for _, role := range roles {
-		for _, action := range mapRoleAndActions[role] {
-			mapAction[action] = true
-		}
-	}
-
-	for action := range mapAction {
-		actions = append(actions, action)
-	}
-	return
+	return m
 }
