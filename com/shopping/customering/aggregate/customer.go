@@ -64,9 +64,11 @@ func (a *CustomerAggregate) CreateCustomer(
 	if args.Type == customer_type.Independent {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "loại khách hàng không hợp lệ")
 	}
-	if args.FullName == "" {
+	fullName, ok := validate.NormalizeName(args.FullName)
+	if !ok {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập tên đầy đủ")
 	}
+	args.FullName = fullName
 	if args.Phone == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập số điện thoại")
 	}
@@ -122,6 +124,13 @@ func (a *CustomerAggregate) UpdateCustomer(
 	customer, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetCustomer()
 	if err != nil {
 		return nil, err
+	}
+	if args.FullName.Valid {
+		fullName, ok := validate.NormalizeName(args.FullName.String)
+		if !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập tên đầy đủ")
+		}
+		args.FullName.String = fullName
 	}
 	if customer.Type == customer_type.Independent {
 		return nil, cm.Error(cm.InvalidArgument, "Không dược phép thay đổi khách lẻ", nil)
