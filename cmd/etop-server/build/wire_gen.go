@@ -750,6 +750,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	integrationServers, cleanup3 := integration.NewIntegrationServer(store, integrationMiscService, integrationService)
 	affiliateMiscService := affiliate.MiscService{}
 	affiliateAccountService := affiliate.AccountService{
+		Session:      session,
 		IdentityAggr: commandBus,
 	}
 	affiliateServers := affiliate.NewServers(affiliateMiscService, affiliateAccountService)
@@ -757,28 +758,32 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	affiliateAggregate := affiliate2.NewAggregate(affiliateDB, identityQueryBus, catalogQueryBus, orderingQueryBus)
 	affiliateCommandBus := affiliate2.AggregateMessageBus(affiliateAggregate)
 	apiUserService := &api2.UserService{
+		Session:       session,
 		AffiliateAggr: affiliateCommandBus,
 	}
 	affiliateQueryService := affiliate2.NewQuery(affiliateDB)
 	affiliateQueryBus := affiliate2.QueryServiceMessageBus(affiliateQueryService)
 	apiTradingService := &api2.TradingService{
+		Session:        session,
 		AffiliateAggr:  affiliateCommandBus,
 		AffiliateQuery: affiliateQueryBus,
 		CatalogQuery:   catalogQueryBus,
 		InventoryQuery: inventoryQueryBus,
 	}
 	apiShopService := &api2.ShopService{
+		Session:        session,
 		CatalogQuery:   catalogQueryBus,
 		InventoryQuery: inventoryQueryBus,
 		AffiliateQuery: affiliateQueryBus,
 	}
 	affiliateService := &api2.AffiliateService{
+		Session:        session,
 		AffiliateAggr:  affiliateCommandBus,
 		CatalogQuery:   catalogQueryBus,
 		AffiliateQuery: affiliateQueryBus,
 		IdentityQuery:  identityQueryBus,
 	}
-	apiServers := api2.NewServers(secretToken, apiUserService, apiTradingService, apiShopService, affiliateService)
+	apiServers := api2.NewServers(apiUserService, apiTradingService, apiShopService, affiliateService)
 	intHandlers := server_max.BuildIntHandlers(servers, shopServers, adminServers, sadminServers, integrationServers, affiliateServers, apiServers)
 	shippingShipping := shipping.New(queryBus, mainDB, shipmentManager, shippingCommandBus, shippingQueryBus, orderLogic, shipnowCommandBus, shipnowQueryBus)
 	partnerMiscService := &partner.MiscService{

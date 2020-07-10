@@ -6,47 +6,51 @@ import (
 	"o.o/api/main/catalog"
 	"o.o/api/main/inventory"
 	"o.o/api/services/affiliate"
-	apiaffiliate "o.o/api/top/services/affiliate"
+	api "o.o/api/top/services/affiliate"
+	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
-	product2 "o.o/backend/pkg/etop/api/shop/product"
+	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/backend/pkg/etop/api/shop/trading"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
 
 type ShopService struct {
+	session.Session
+
 	CatalogQuery   catalog.QueryBus
 	InventoryQuery inventory.QueryBus
 	AffiliateQuery affiliate.QueryBus
 }
 
-func (s *ShopService) Clone() *ShopService { res := *s; return &res }
+func (s *ShopService) Clone() api.ShopService { res := *s; return &res }
 
-func (s *ShopService) GetProductPromotion(ctx context.Context, q *GetProductPromotionEndpoint) error {
+func (s *ShopService) GetProductPromotion(ctx context.Context, q *api.GetProductPromotionRequest) (*api.GetProductPromotionResponse, error) {
 	promotionQuery := &affiliate.GetShopProductPromotionQuery{
 		ShopID:    idutil.EtopTradingAccountID,
 		ProductID: q.ProductId,
 	}
 	if err := s.AffiliateQuery.Dispatch(ctx, promotionQuery); err != nil {
-		return err
+		return nil, err
 	}
-	var pbReferralDiscount *apiaffiliate.CommissionSetting
+	var pbReferralDiscount *api.CommissionSetting
 	if q.ReferralCode.Valid {
 		commissionSetting, err := GetCommissionSettingByReferralCode(ctx, s.AffiliateQuery, q.ReferralCode.String, q.ProductId)
 		if err == nil {
 			pbReferralDiscount = convertpb.PbCommissionSetting(commissionSetting)
 		}
 	}
-	q.Result = &apiaffiliate.GetProductPromotionResponse{
+	result := &api.GetProductPromotionResponse{
 		Promotion:        convertpb.PbProductPromotion(promotionQuery.Result),
 		ReferralDiscount: pbReferralDiscount,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEndpoint) error {
+func (s *ShopService) ShopGetProducts(ctx context.Context, q *pbcm.CommonListRequest) (*api.ShopGetProductsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  idutil.EtopTradingAccountID,
@@ -55,7 +59,7 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 		Name:    q.Filter.Name,
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
 	var productIds []dot.ID
@@ -63,40 +67,40 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 		productIds = append(productIds, product.ProductID)
 	}
 	productPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, s.AffiliateQuery, idutil.EtopTradingAccountID, productIds)
-	var products []*apiaffiliate.ShopProductResponse
-	for _, product := range query.Result.Products {
-		productPromotion := productPromotionMap[product.ProductID]
-		var pbProductPromotion *apiaffiliate.ProductPromotion = nil
+	var products []*api.ShopProductResponse
+	for _, p := range query.Result.Products {
+		productPromotion := productPromotionMap[p.ProductID]
+		var pbProductPromotion *api.ProductPromotion = nil
 		if productPromotion != nil {
 			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
 		}
-		productResult := product2.PbShopProductWithVariants(product)
+		productResult := product.PbShopProductWithVariants(p)
 		productResult, err := trading.PopulateTradingProductWithInventoryCount(ctx, s.InventoryQuery, productResult)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		products = append(products, &apiaffiliate.ShopProductResponse{
+		products = append(products, &api.ShopProductResponse{
 			Product:   productResult,
 			Promotion: pbProductPromotion,
 		})
 	}
-	q.Result = &apiaffiliate.ShopGetProductsResponse{
+	result := &api.ShopGetProductsResponse{
 		Paging:   cmapi.PbPageInfo(paging),
 		Products: products,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *ShopService) CheckReferralCodeValid(ctx context.Context, q *CheckReferralCodeValidEndpoint) error {
+func (s *ShopService) CheckReferralCodeValid(ctx context.Context, q *api.CheckReferralCodeValidRequest) (*api.GetProductPromotionResponse, error) {
 	affiliateAccountReferralQ := &affiliate.GetAffiliateAccountReferralByCodeQuery{
 		Code: q.ReferralCode,
 	}
 	if err := s.AffiliateQuery.Dispatch(ctx, affiliateAccountReferralQ); err != nil {
-		return cm.Errorf(cm.NotFound, nil, "Mã giới thiệu không hợp lệ")
+		return nil, cm.Errorf(cm.NotFound, nil, "Mã giới thiệu không hợp lệ")
 	}
 
-	if affiliateAccountReferralQ.Result.UserID == q.Context.Shop.OwnerID {
-		return cm.Errorf(cm.ValidationFailed, nil, "Mã giới thiệu không hợp lệ")
+	if affiliateAccountReferralQ.Result.UserID == s.SS.Shop().OwnerID {
+		return nil, cm.Errorf(cm.ValidationFailed, nil, "Mã giới thiệu không hợp lệ")
 	}
 
 	promotionQuery := &affiliate.GetShopProductPromotionQuery{
@@ -107,12 +111,12 @@ func (s *ShopService) CheckReferralCodeValid(ctx context.Context, q *CheckReferr
 
 	commissionSetting, err := GetCommissionSettingByReferralCode(ctx, s.AffiliateQuery, q.ReferralCode, q.ProductId)
 	if err != nil {
-		return cm.Errorf(cm.ValidationFailed, nil, "Không thể sử dụng mã giới thiệu của chính bạn")
+		return nil, cm.Errorf(cm.ValidationFailed, nil, "Không thể sử dụng mã giới thiệu của chính bạn")
 	}
 	pbReferralDiscount := convertpb.PbCommissionSetting(commissionSetting)
-	q.Result = &apiaffiliate.GetProductPromotionResponse{
+	result := &api.GetProductPromotionResponse{
 		Promotion:        convertpb.PbProductPromotion(promotionQuery.Result),
 		ReferralDiscount: pbReferralDiscount,
 	}
-	return nil
+	return result, nil
 }

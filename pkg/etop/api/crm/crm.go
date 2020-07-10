@@ -8,6 +8,7 @@ import (
 	"o.o/api/supporting/crm/vht"
 	"o.o/api/supporting/crm/vtiger"
 	"o.o/api/top/services/crm"
+	api "o.o/api/top/services/crm"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping_provider"
 	notimodel "o.o/backend/com/eventhandler/notifier/model"
@@ -17,30 +18,12 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
 	"o.o/capi/dot"
 )
-
-func init() {
-	bus.AddHandlers("crm",
-		miscService.VersionInfo,
-		crmService.RefreshFulfillmentFromCarrier,
-		crmService.SendNotification,
-		vtigerService.CreateTicket,
-		vtigerService.UpdateTicket,
-		vtigerService.CreateOrUpdateContact,
-		vtigerService.CreateOrUpdateLead,
-		vhtService.CreateOrUpdateCallHistoryBySDKCallID,
-		vhtService.CreateOrUpdateCallHistoryByCallID,
-		vhtService.GetCallHistories,
-		vtigerService.GetContacts,
-		vtigerService.GetTickets,
-		vtigerService.GetCategories,
-		vtigerService.GetTicketStatusCount,
-	)
-}
 
 var (
 	ghnCarrier *ghn.Carrier
@@ -63,40 +46,51 @@ func Init(ghn *ghn.Carrier,
 
 }
 
-type MiscService struct{}
-type CrmService struct{}
-type VtigerService struct{}
-type VhtService struct{}
+type MiscService struct {
+	session.Session
+}
+
+type CrmService struct {
+	session.Session
+}
+
+type VtigerService struct {
+	session.Session
+}
+
+type VhtService struct {
+	session.Session
+}
 
 var miscService = &MiscService{}
 var crmService = &CrmService{}
 var vtigerService = &VtigerService{}
 var vhtService = &VhtService{}
 
-func (s *MiscService) Clone() *MiscService {
+func (s *MiscService) Clone() api.MiscService {
 	res := *s
 	return &res
 }
 
-func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
-	q.Result = &pbcm.VersionInfoResponse{
+func (s *MiscService) VersionInfo(ctx context.Context, q *pbcm.Empty) (*pbcm.VersionInfoResponse, error) {
+	result := &pbcm.VersionInfoResponse{
 		Service: "etop-crm",
 		Version: "0.1",
 	}
-	return nil
+	return result, nil
 }
 
-func (s *CrmService) Clone() *CrmService {
+func (s *CrmService) Clone() api.CrmService {
 	res := *s
 	return &res
 }
 
-func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *RefreshFulfillmentFromCarrierEndpoint) error {
+func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *api.RefreshFulfillmentFromCarrierRequest) (*pbcm.UpdatedResponse, error) {
 	query := &shipmodelx.GetFulfillmentQuery{
 		ShippingCode: r.ShippingCode,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	ffm := query.Result
 	var ffmUpdate *shipmodel.Fulfillment
@@ -111,15 +105,15 @@ func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *Refre
 			Result: nil,
 		}
 		if err = ghnCarrier.GetOrder(ctx, ghnCmd); err != nil {
-			return err
+			return nil, err
 		}
 		ffmUpdate, err = ghnCarrier.CalcRefreshFulfillmentInfo(ctx, ffm, ghnCmd.Result)
 	default:
-		return cm.Errorf(cm.InvalidArgument, nil, "This feature is not available for this carrier (%v)", ffm.ShippingProvider)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "This feature is not available for this carrier (%v)", ffm.ShippingProvider)
 	}
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 	t0 := time.Now()
 	ffmUpdate.LastSyncAt = t0
@@ -127,15 +121,15 @@ func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *Refre
 		Fulfillment: ffmUpdate,
 	}
 	if err = bus.Dispatch(ctx, update); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &pbcm.UpdatedResponse{
+	result := &pbcm.UpdatedResponse{
 		Updated: 1,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *CrmService) SendNotification(ctx context.Context, r *SendNotificationEndpoint) error {
+func (s *CrmService) SendNotification(ctx context.Context, r *api.SendNotificationRequest) (*pbcm.MessageResponse, error) {
 	cmd := &notimodel.CreateNotificationsArgs{
 		AccountIDs:       []dot.ID{r.AccountId},
 		Title:            r.Title,
@@ -147,31 +141,31 @@ func (s *CrmService) SendNotification(ctx context.Context, r *SendNotificationEn
 	}
 	_, _, err := sqlstore.CreateNotifications(ctx, cmd)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	r.Result = cmapi.Message("ok", fmt.Sprintf(
+	result := cmapi.Message("ok", fmt.Sprintf(
 		"Create successful"))
-	return nil
+	return result, nil
 }
 
-func (s *VtigerService) Clone() *VtigerService {
+func (s *VtigerService) Clone() api.VtigerService {
 	res := *s
 	return &res
 }
 
-func (s *VtigerService) CreateTicket(ctx context.Context, r *CreateTicketEndpoint) error {
+func (s *VtigerService) CreateTicket(ctx context.Context, r *api.CreateOrUpdateTicketRequest) (*api.Ticket, error) {
 	cmd := &vtiger.CreateTicketCommand{
 		FfmCode:     r.FfmCode,
 		FfmID:       r.FfmId,
 		ID:          r.Id,
-		EtopUserID:  r.Context.UserID,
+		EtopUserID:  s.SS.Claim().UserID,
 		Code:        r.Code,
 		Title:       r.Title,
 		Value:       r.Value,
 		OldValue:    r.OldValue,
 		Reason:      r.Reason,
-		ShopID:      r.Context.Shop.ID,
+		ShopID:      s.SS.Shop().ID,
 		OrderID:     r.OrderId,
 		OrderCode:   r.OrderCode,
 		FfmUrl:      r.FfmUrl,
@@ -190,9 +184,9 @@ func (s *VtigerService) CreateTicket(ctx context.Context, r *CreateTicketEndpoin
 		},
 	}
 	if err := vtigerAgg.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &crm.Ticket{
+	result := &api.Ticket{
 		TicketNo:         cmd.Result.TicketNo,
 		AssignedUserId:   cmd.Result.AssignedUserId,
 		ParentId:         cmd.Result.ParentID,
@@ -234,21 +228,21 @@ func (s *VtigerService) CreateTicket(ctx context.Context, r *CreateTicketEndpoin
 		Reason:           cmd.Result.Reason,
 		Id:               cmd.Result.ID,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *VtigerService) UpdateTicket(ctx context.Context, r *UpdateTicketEndpoint) error {
+func (s *VtigerService) UpdateTicket(ctx context.Context, r *api.CreateOrUpdateTicketRequest) (*api.Ticket, error) {
 	cmd := &vtiger.UpdateTicketCommand{
 		FfmCode:     r.FfmCode,
 		FfmID:       r.FfmId,
 		ID:          r.Id,
-		EtopUserID:  r.Context.UserID,
+		EtopUserID:  s.SS.Claim().UserID,
 		Code:        r.Code,
 		Title:       r.Title,
 		Value:       r.Value,
 		OldValue:    r.OldValue,
 		Reason:      r.Reason,
-		ShopID:      r.Context.Shop.ID,
+		ShopID:      s.SS.Shop().ID,
 		OrderID:     r.OrderId,
 		OrderCode:   r.OrderCode,
 		FfmUrl:      r.FfmUrl,
@@ -259,9 +253,9 @@ func (s *VtigerService) UpdateTicket(ctx context.Context, r *UpdateTicketEndpoin
 		FromApp:     r.FromApp,
 	}
 	if err := vtigerAgg.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &crm.Ticket{
+	result := &api.Ticket{
 		TicketNo:         cmd.Result.TicketNo,
 		AssignedUserId:   cmd.Result.AssignedUserId,
 		ParentId:         cmd.Result.ParentID,
@@ -303,13 +297,13 @@ func (s *VtigerService) UpdateTicket(ctx context.Context, r *UpdateTicketEndpoin
 		Reason:           cmd.Result.Reason,
 		Id:               cmd.Result.ID,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, r *CreateOrUpdateContactEndpoint) error {
+func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, r *api.ContactRequest) (*api.ContactResponse, error) {
 	cmd := &vtiger.CreateOrUpdateContactCommand{
 		ID:                   r.Id,
-		EtopUserID:           r.Context.UserID,
+		EtopUserID:           s.SS.Claim().UserID,
 		ContactNo:            r.ContactNo,
 		Phone:                r.Phone,
 		Lastname:             r.Lastname,
@@ -332,9 +326,9 @@ func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, r *CreateOrUp
 		AssignedUserID:       r.AssignedUserId,
 	}
 	if err := vtigerAgg.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &crm.ContactResponse{
+	result := &api.ContactResponse{
 		ContactNo:            cmd.Result.ContactNo,
 		Phone:                cmd.Result.Phone,
 		Lastname:             cmd.Result.Lastname,
@@ -360,13 +354,13 @@ func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, r *CreateOrUp
 		Modifiedtime:         cmapi.PbTime(cmd.Result.Createdtime),
 		AssignedUserId:       cmd.Result.AssignedUserID,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, r *CreateOrUpdateLeadEndpoint) error {
+func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, r *api.LeadRequest) (*api.LeadResponse, error) {
 	cmd := &vtiger.CreateOrUpdateLeadCommand{
 		ID:                   r.Id,
-		EtopUserID:           r.Context.UserID,
+		EtopUserID:           s.SS.Claim().UserID,
 		ContactNo:            r.ContactNo,
 		Phone:                r.Phone,
 		Lastname:             r.Lastname,
@@ -389,9 +383,9 @@ func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, r *CreateOrUpdat
 		AssignedUserID:       r.AssignedUserId,
 	}
 	if err := vtigerAgg.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	r.Result = &crm.LeadResponse{
+	result := &api.LeadResponse{
 		ContactNo:            cmd.Result.ContactNo,
 		Phone:                cmd.Result.Phone,
 		Lastname:             cmd.Result.Lastname,
@@ -415,15 +409,15 @@ func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, r *CreateOrUpdat
 		Id:                   cmd.Result.ID,
 		Firstname:            cmd.Result.Firstname,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *VhtService) Clone() *VhtService {
+func (s *VhtService) Clone() api.VhtService {
 	res := *s
 	return &res
 }
 
-func (s *VhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, r *CreateOrUpdateCallHistoryBySDKCallIDEndpoint) error {
+func (s *VhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, r *api.VHTCallLog) (*api.VHTCallLog, error) {
 	cmd := &vht.CreateOrUpdateCallHistoryByCallIDCommand{
 		Direction:       r.Direction,
 		CdrID:           r.CdrId,
@@ -447,12 +441,13 @@ func (s *VhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, r
 		VtigerAccountID: r.VtigerAccountId,
 	}
 	if err := vhtAgg.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	// TODO: convert result
+	return nil, nil
 }
 
-func (s *VhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r *CreateOrUpdateCallHistoryByCallIDEndpoint) error {
+func (s *VhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r *api.VHTCallLog) (*api.VHTCallLog, error) {
 	cmd := &vht.CreateOrUpdateCallHistoryByCallIDCommand{
 		Direction:       r.Direction,
 		CdrID:           r.CdrId,
@@ -476,18 +471,19 @@ func (s *VhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r *C
 		VtigerAccountID: r.VtigerAccountId,
 	}
 	if err := vhtAgg.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	// TODO: convert result
+	return nil, nil
 }
 
-func (s *VhtService) GetCallHistories(ctx context.Context, r *GetCallHistoriesEndpoint) error {
+func (s *VhtService) GetCallHistories(ctx context.Context, r *api.GetCallHistoriesRequest) (*api.GetCallHistoriesResponse, error) {
 	query := &vht.GetCallHistoriesQuery{
 		Paging:     cmapi.PagingToModel(r.Paging, 1, 100, 1000),
 		TextSearch: r.TextSearch,
 	}
 	if err := vhtQS.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	var vhtCallLog []*crm.VHTCallLog
 	for _, value := range query.Result.VhtCallLog {
@@ -514,19 +510,19 @@ func (s *VhtService) GetCallHistories(ctx context.Context, r *GetCallHistoriesEn
 			VtigerAccountId: value.VtigerAccountID,
 		})
 	}
-	r.Result = &crm.GetCallHistoriesResponse{
+	result := &api.GetCallHistoriesResponse{
 		VhtCallLog: vhtCallLog,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *VtigerService) GetContacts(ctx context.Context, r *GetContactsEndpoint) error {
+func (s *VtigerService) GetContacts(ctx context.Context, r *api.GetContactsRequest) (*api.GetContactsResponse, error) {
 	query := &vtiger.GetContactsQuery{
 		Search: r.TextSearch,
 		Paging: cmapi.PagingToModel(r.Paging, 1, 100, 1000),
 	}
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	var arrContact []*crm.ContactResponse
 	for _, value := range query.Result.Contacts {
@@ -557,14 +553,14 @@ func (s *VtigerService) GetContacts(ctx context.Context, r *GetContactsEndpoint)
 			AssignedUserId:       value.AssignedUserID,
 		})
 	}
-	r.Result = &crm.GetContactsResponse{
+	result := &api.GetContactsResponse{
 		Contacts: arrContact,
 	}
 
-	return nil
+	return result, nil
 }
 
-func (s *VtigerService) GetTickets(ctx context.Context, r *GetTicketsEndpoint) error {
+func (s *VtigerService) GetTickets(ctx context.Context, r *api.GetTicketsRequest) (*api.GetTicketsResponse, error) {
 	paging := cmapi.PagingToModel(r.Paging, 1, 250, 250)
 	query := &vtiger.GetTicketsQuery{
 		Paging: paging,
@@ -594,7 +590,7 @@ func (s *VtigerService) GetTickets(ctx context.Context, r *GetTicketsEndpoint) e
 		Result: nil,
 	}
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	var arrTicket []*crm.Ticket
 	for _, value := range query.Result.Tickets {
@@ -641,16 +637,16 @@ func (s *VtigerService) GetTickets(ctx context.Context, r *GetTicketsEndpoint) e
 			Id:               value.ID,
 		})
 	}
-	r.Result = &crm.GetTicketsResponse{
+	result := &api.GetTicketsResponse{
 		Tickets: arrTicket,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *VtigerService) GetCategories(ctx context.Context, r *GetCategoriesEndpoint) error {
+func (s *VtigerService) GetCategories(ctx context.Context, r *pbcm.Empty) (*api.GetCategoriesResponse, error) {
 	query := &vtiger.GetCategoriesQuery{}
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	var arrCategory []*crm.Category
 	for _, value := range query.Result.Categories {
@@ -659,16 +655,16 @@ func (s *VtigerService) GetCategories(ctx context.Context, r *GetCategoriesEndpo
 			Label: value.Label,
 		})
 	}
-	r.Result = &crm.GetCategoriesResponse{
+	result := &api.GetCategoriesResponse{
 		Categories: arrCategory,
 	}
-	return nil
+	return result, nil
 }
 
-func (s *VtigerService) GetTicketStatusCount(ctx context.Context, r *GetTicketStatusCountEndpoint) error {
+func (s *VtigerService) GetTicketStatusCount(ctx context.Context, r *pbcm.Empty) (*api.GetTicketStatusCountResponse, error) {
 	query := &vtiger.GetTicketStatusCountQuery{}
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 	var arrStatus []*crm.CountTicketByStatusResponse
 	for _, value := range query.Result.StatusCount {
@@ -677,8 +673,8 @@ func (s *VtigerService) GetTicketStatusCount(ctx context.Context, r *GetTicketSt
 			Count: value.Count,
 		})
 	}
-	r.Result = &crm.GetTicketStatusCountResponse{
+	result := &api.GetTicketStatusCountResponse{
 		StatusCount: arrStatus,
 	}
-	return nil
+	return result, nil
 }

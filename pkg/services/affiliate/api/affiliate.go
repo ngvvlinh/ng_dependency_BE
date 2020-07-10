@@ -7,37 +7,41 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/meta"
 	"o.o/api/services/affiliate"
-	apiaffiliate "o.o/api/top/services/affiliate"
+	api "o.o/api/top/services/affiliate"
+	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_tag"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
-	product2 "o.o/backend/pkg/etop/api/shop/product"
+	"o.o/backend/pkg/etop/api/shop/product"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
 
 type AffiliateService struct {
+	session.Session
+
 	AffiliateAggr  affiliate.CommandBus
 	CatalogQuery   catalog.QueryBus
 	AffiliateQuery affiliate.QueryBus
 	IdentityQuery  identity.QueryBus
 }
 
-func (s *AffiliateService) Clone() *AffiliateService { res := *s; return &res }
+func (s *AffiliateService) Clone() api.AffiliateService { res := *s; return &res }
 
-func (s *AffiliateService) GetCommissions(ctx context.Context, q *GetCommissionsEndpoint) error {
+func (s *AffiliateService) GetCommissions(ctx context.Context, q *pbcm.CommonListRequest) (*api.GetCommissionsResponse, error) {
 	commissionQ := &affiliate.GetSellerCommissionsQuery{
-		SellerID: q.Context.Affiliate.ID,
+		SellerID: s.SS.Affiliate().ID,
 		Paging:   meta.Paging{},
 		Filters:  cmapi.ToFilters(q.Filters),
 	}
 	if err := s.AffiliateQuery.Dispatch(ctx, commissionQ); err != nil {
-		return err
+		return nil, err
 	}
 
-	var pbCommissions []*apiaffiliate.SellerCommission
+	var pbCommissions []*api.SellerCommission
 
 	for _, commission := range commissionQ.Result {
 		pbCommission := convertpb.PbSellerCommission(commission)
@@ -72,41 +76,41 @@ func (s *AffiliateService) GetCommissions(ctx context.Context, q *GetCommissions
 		}
 	}
 
-	q.Result = &apiaffiliate.GetCommissionsResponse{
+	result := &api.GetCommissionsResponse{
 		Commissions: pbCommissions,
 	}
 
-	return nil
+	return result, nil
 }
 
-func (s *AffiliateService) NotifyNewShopPurchase(ctx context.Context, q *NotifyNewShopPurchaseEndpoint) error {
+func (s *AffiliateService) NotifyNewShopPurchase(ctx context.Context, q *api.NotifyNewShopPurchaseRequest) (*api.NotifyNewShopPurchaseResponse, error) {
 	panic("IMPLEMENT ME")
 }
 
-func (s *AffiliateService) GetTransactions(ctx context.Context, q *GetTransactionsEndpoint) error {
+func (s *AffiliateService) GetTransactions(ctx context.Context, q *pbcm.CommonListRequest) (*api.GetTransactionsResponse, error) {
 	panic("IMPLEMENT ME")
 }
 
-func (s *AffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, q *CreateOrUpdateAffiliateCommissionSettingEndpoint) error {
+func (s *AffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, q *api.CreateOrUpdateCommissionSettingRequest) (*api.CommissionSetting, error) {
 	cmd := &affiliate.CreateOrUpdateCommissionSettingCommand{
 		ProductID: q.ProductId,
-		AccountID: q.Context.Affiliate.ID,
+		AccountID: s.SS.Affiliate().ID,
 		Amount:    q.Amount,
 		Unit:      q.Unit.Apply(""),
 		Type:      "affiliate",
 	}
 	if err := s.AffiliateAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
-	q.Result = convertpb.PbCommissionSetting(cmd.Result)
-	return nil
+	result := convertpb.PbCommissionSetting(cmd.Result)
+	return result, nil
 }
 
-func (s *AffiliateService) GetProductPromotionByProductID(ctx context.Context, q *GetProductPromotionByProductIDEndpoint) error {
+func (s *AffiliateService) GetProductPromotionByProductID(ctx context.Context, q *api.GetProductPromotionByProductIDRequest) (*api.GetProductPromotionByProductIDResponse, error) {
 	panic("IMPLEMENT ME")
 }
 
-func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *AffiliateGetProductsEndpoint) error {
+func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *pbcm.CommonListRequest) (*api.AffiliateGetProductsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  idutil.EtopTradingAccountID,
@@ -114,7 +118,7 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := s.CatalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
 	var productIds []dot.ID
@@ -123,83 +127,83 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 	}
 
 	tradingCommissionMap := GetSupplyCommissionSettingByProductIdsMap(ctx, s.AffiliateQuery, idutil.EtopTradingAccountID, productIds)
-	affCommissionMap := GetShopCommissionSettingsByProducts(ctx, s.AffiliateQuery, q.Context.Affiliate.ID, productIds)
+	affCommissionMap := GetShopCommissionSettingsByProducts(ctx, s.AffiliateQuery, s.SS.Affiliate().ID, productIds)
 	shopPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, s.AffiliateQuery, idutil.EtopTradingAccountID, productIds)
 
-	var products []*apiaffiliate.AffiliateProductResponse
-	for _, product := range query.Result.Products {
-		tradingCommissionSetting := tradingCommissionMap[product.ProductID]
-		affCommissionSetting := affCommissionMap[product.ProductID]
-		shopPromotion := shopPromotionMap[product.ProductID]
+	var products []*api.AffiliateProductResponse
+	for _, p := range query.Result.Products {
+		tradingCommissionSetting := tradingCommissionMap[p.ProductID]
+		affCommissionSetting := affCommissionMap[p.ProductID]
+		shopPromotion := shopPromotionMap[p.ProductID]
 
-		var pbTradingCommissionSetting *apiaffiliate.CommissionSetting = nil
+		var pbTradingCommissionSetting *api.CommissionSetting = nil
 		if tradingCommissionSetting != nil {
-			pbTradingCommissionSetting = &apiaffiliate.CommissionSetting{
+			pbTradingCommissionSetting = &api.CommissionSetting{
 				ProductId: tradingCommissionSetting.ProductID,
 				Amount:    tradingCommissionSetting.Level1DirectCommission,
 				Unit:      "percent",
 			}
 		}
-		var pbAffCommissionSetting *apiaffiliate.CommissionSetting = nil
+		var pbAffCommissionSetting *api.CommissionSetting = nil
 		if affCommissionSetting != nil {
 			pbAffCommissionSetting = convertpb.PbCommissionSetting(affCommissionSetting)
 		}
-		var pbShopPromotion *apiaffiliate.ProductPromotion = nil
+		var pbShopPromotion *api.ProductPromotion = nil
 		if shopPromotion != nil {
 			pbShopPromotion = convertpb.PbProductPromotion(shopPromotion)
 		}
 
-		products = append(products, &apiaffiliate.AffiliateProductResponse{
-			Product:                    product2.PbShopProductWithVariants(product),
+		products = append(products, &api.AffiliateProductResponse{
+			Product:                    product.PbShopProductWithVariants(p),
 			ShopCommissionSetting:      pbTradingCommissionSetting,
 			AffiliateCommissionSetting: pbAffCommissionSetting,
 			Promotion:                  pbShopPromotion,
 		})
 	}
 
-	q.Result = &apiaffiliate.AffiliateGetProductsResponse{
+	result := &api.AffiliateGetProductsResponse{
 		Paging:   cmapi.PbPageInfo(paging),
 		Products: products,
 	}
 
-	return nil
+	return result, nil
 }
 
-func (s *AffiliateService) CreateReferralCode(ctx context.Context, q *CreateReferralCodeEndpoint) error {
+func (s *AffiliateService) CreateReferralCode(ctx context.Context, q *api.CreateReferralCodeRequest) (*api.ReferralCode, error) {
 	cmd := &affiliate.CreateAffiliateReferralCodeCommand{
-		AffiliateAccountID: q.Context.Affiliate.ID,
+		AffiliateAccountID: s.SS.Affiliate().ID,
 		Code:               q.Code,
 	}
 	if err := s.AffiliateAggr.Dispatch(ctx, cmd); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = convertpb.PbReferralCode(cmd.Result)
+	result := convertpb.PbReferralCode(cmd.Result)
 
-	return nil
+	return result, nil
 }
 
-func (s *AffiliateService) GetReferralCodes(ctx context.Context, q *GetReferralCodesEndpoint) error {
+func (s *AffiliateService) GetReferralCodes(ctx context.Context, q *pbcm.CommonListRequest) (*api.GetReferralCodesResponse, error) {
 	query := &affiliate.GetAffiliateAccountReferralCodesQuery{
-		AffiliateAccountID: q.Context.Affiliate.ID,
+		AffiliateAccountID: s.SS.Affiliate().ID,
 	}
 	if err := s.AffiliateQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return nil, err
 	}
 
-	q.Result = &apiaffiliate.GetReferralCodesResponse{
+	result := &api.GetReferralCodesResponse{
 		ReferralCodes: convertpb.PbReferralCodes(query.Result),
 	}
 
-	return nil
+	return result, nil
 }
 
-func (s *AffiliateService) GetReferrals(ctx context.Context, q *GetReferralsEndpoint) error {
+func (s *AffiliateService) GetReferrals(ctx context.Context, q *pbcm.CommonListRequest) (*api.GetReferralsResponse, error) {
 	referralQ := &affiliate.GetReferralsByReferralIDQuery{
-		ID: q.Context.Affiliate.ID,
+		ID: s.SS.Affiliate().ID,
 	}
 	if err := s.AffiliateQuery.Dispatch(ctx, referralQ); err != nil {
-		return err
+		return nil, err
 	}
 
 	var affiliateIDs []dot.ID
@@ -214,17 +218,17 @@ func (s *AffiliateService) GetReferrals(ctx context.Context, q *GetReferralsEndp
 
 	affiliateQ := &identity.GetAffiliatesByIDsQuery{AffiliateIDs: affiliateIDs}
 	if err := s.IdentityQuery.Dispatch(ctx, affiliateQ); err != nil {
-		return err
+		return nil, err
 	}
 
-	var referrals []*apiaffiliate.Referral
+	var referrals []*api.Referral
 	for _, aff := range affiliateQ.Result {
 		pbAffiliate := convertpb.PbReferral(aff)
 		referrals = append(referrals, pbAffiliate)
 	}
 
-	q.Result = &apiaffiliate.GetReferralsResponse{
+	result := &api.GetReferralsResponse{
 		Referrals: referrals,
 	}
-	return nil
+	return result, nil
 }
