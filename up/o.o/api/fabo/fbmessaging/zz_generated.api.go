@@ -6,6 +6,7 @@ package fbmessaging
 
 import (
 	context "context"
+	time "time"
 
 	fb_customer_conversation_type "o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	meta "o.o/api/meta"
@@ -139,6 +140,49 @@ func (h AggregateHandler) HandleCreateOrUpdateFbExternalPosts(ctx context.Contex
 	return err
 }
 
+type SaveFbExternalPostCommand struct {
+	ExternalPageID      string
+	ExternalID          string
+	ExternalFrom        *FbObjectFrom
+	ExternalPicture     string
+	ExternalIcon        string
+	ExternalMessage     string
+	ExternalAttachments []*PostAttachment `compare:"ignore"`
+	ExternalCreatedTime time.Time
+	ExternalParent      *FbExternalPost
+
+	Result *FbExternalPost `json:"-"`
+}
+
+func (h AggregateHandler) HandleSaveFbExternalPost(ctx context.Context, msg *SaveFbExternalPostCommand) (err error) {
+	msg.Result, err = h.inner.SaveFbExternalPost(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateFbCommentMessageCommand struct {
+	ExternalCommentID string
+	Message           string
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFbCommentMessage(ctx context.Context, msg *UpdateFbCommentMessageCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFbCommentMessage(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateFbPostMessageCommand struct {
+	ExternalPostID string
+	Message        string
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFbPostMessage(ctx context.Context, msg *UpdateFbPostMessageCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFbPostMessage(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateIsReadCustomerConversationCommand struct {
 	ConversationCustomerID dot.ID
 	IsRead                 bool
@@ -148,6 +192,18 @@ type UpdateIsReadCustomerConversationCommand struct {
 
 func (h AggregateHandler) HandleUpdateIsReadCustomerConversation(ctx context.Context, msg *UpdateIsReadCustomerConversationCommand) (err error) {
 	msg.Result, err = h.inner.UpdateIsReadCustomerConversation(msg.GetArgs(ctx))
+	return err
+}
+
+type GetExternalPostByExternalIDWithExternalCreatedTimeQuery struct {
+	ExternalID string
+	Time       time.Time
+
+	Result *FbExternalPost `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetExternalPostByExternalIDWithExternalCreatedTime(ctx context.Context, msg *GetExternalPostByExternalIDWithExternalCreatedTimeQuery) (err error) {
+	msg.Result, err = h.inner.GetExternalPostByExternalIDWithExternalCreatedTime(msg.GetArgs(ctx))
 	return err
 }
 
@@ -437,8 +493,12 @@ func (q *CreateOrUpdateFbExternalCommentsCommand) command()      {}
 func (q *CreateOrUpdateFbExternalConversationsCommand) command() {}
 func (q *CreateOrUpdateFbExternalMessagesCommand) command()      {}
 func (q *CreateOrUpdateFbExternalPostsCommand) command()         {}
+func (q *SaveFbExternalPostCommand) command()                    {}
+func (q *UpdateFbCommentMessageCommand) command()                {}
+func (q *UpdateFbPostMessageCommand) command()                   {}
 func (q *UpdateIsReadCustomerConversationCommand) command()      {}
 
+func (q *GetExternalPostByExternalIDWithExternalCreatedTimeQuery) query()         {}
 func (q *GetFbCustomerConversationQuery) query()                                  {}
 func (q *GetFbCustomerConversationByIDQuery) query()                              {}
 func (q *GetFbExternalCommentByExternalIDQuery) query()                           {}
@@ -579,10 +639,69 @@ func (q *CreateOrUpdateFbExternalPostsCommand) SetCreateOrUpdateFbExternalPostsA
 	q.FbExternalPosts = args.FbExternalPosts
 }
 
+func (q *SaveFbExternalPostCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbSavePostArgs) {
+	return ctx,
+		&FbSavePostArgs{
+			ExternalPageID:      q.ExternalPageID,
+			ExternalID:          q.ExternalID,
+			ExternalFrom:        q.ExternalFrom,
+			ExternalPicture:     q.ExternalPicture,
+			ExternalIcon:        q.ExternalIcon,
+			ExternalMessage:     q.ExternalMessage,
+			ExternalAttachments: q.ExternalAttachments,
+			ExternalCreatedTime: q.ExternalCreatedTime,
+			ExternalParent:      q.ExternalParent,
+		}
+}
+
+func (q *SaveFbExternalPostCommand) SetFbSavePostArgs(args *FbSavePostArgs) {
+	q.ExternalPageID = args.ExternalPageID
+	q.ExternalID = args.ExternalID
+	q.ExternalFrom = args.ExternalFrom
+	q.ExternalPicture = args.ExternalPicture
+	q.ExternalIcon = args.ExternalIcon
+	q.ExternalMessage = args.ExternalMessage
+	q.ExternalAttachments = args.ExternalAttachments
+	q.ExternalCreatedTime = args.ExternalCreatedTime
+	q.ExternalParent = args.ExternalParent
+}
+
+func (q *UpdateFbCommentMessageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdateCommentMessageArgs) {
+	return ctx,
+		&FbUpdateCommentMessageArgs{
+			ExternalCommentID: q.ExternalCommentID,
+			Message:           q.Message,
+		}
+}
+
+func (q *UpdateFbCommentMessageCommand) SetFbUpdateCommentMessageArgs(args *FbUpdateCommentMessageArgs) {
+	q.ExternalCommentID = args.ExternalCommentID
+	q.Message = args.Message
+}
+
+func (q *UpdateFbPostMessageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdatePostMessageArgs) {
+	return ctx,
+		&FbUpdatePostMessageArgs{
+			ExternalPostID: q.ExternalPostID,
+			Message:        q.Message,
+		}
+}
+
+func (q *UpdateFbPostMessageCommand) SetFbUpdatePostMessageArgs(args *FbUpdatePostMessageArgs) {
+	q.ExternalPostID = args.ExternalPostID
+	q.Message = args.Message
+}
+
 func (q *UpdateIsReadCustomerConversationCommand) GetArgs(ctx context.Context) (_ context.Context, conversationCustomerID dot.ID, isRead bool) {
 	return ctx,
 		q.ConversationCustomerID,
 		q.IsRead
+}
+
+func (q *GetExternalPostByExternalIDWithExternalCreatedTimeQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string, time time.Time) {
+	return ctx,
+		q.ExternalID,
+		q.Time
 }
 
 func (q *GetFbCustomerConversationQuery) GetArgs(ctx context.Context) (_ context.Context, customerConversationType fb_customer_conversation_type.FbCustomerConversationType, externalID string, externalUserID string) {
@@ -780,6 +899,9 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalConversations)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalMessages)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalPosts)
+	b.AddHandler(h.HandleSaveFbExternalPost)
+	b.AddHandler(h.HandleUpdateFbCommentMessage)
+	b.AddHandler(h.HandleUpdateFbPostMessage)
 	b.AddHandler(h.HandleUpdateIsReadCustomerConversation)
 	return CommandBus{b}
 }
@@ -796,6 +918,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetExternalPostByExternalIDWithExternalCreatedTime)
 	b.AddHandler(h.HandleGetFbCustomerConversation)
 	b.AddHandler(h.HandleGetFbCustomerConversationByID)
 	b.AddHandler(h.HandleGetFbExternalCommentByExternalID)

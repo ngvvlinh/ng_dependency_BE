@@ -59,10 +59,11 @@ type SubAttachments struct {
 }
 
 type DataSubAttachment struct {
-	Media  *MediaDataSubAttachment  `json:"media"`
-	Target *TargetDataSubAttachment `json:"target"`
-	Type   string
-	URL    string
+	Description string                   `json:"description"`
+	Media       *MediaDataSubAttachment  `json:"media"`
+	Target      *TargetDataSubAttachment `json:"target"`
+	Type        string
+	URL         string
 }
 
 type MediaDataSubAttachment struct {

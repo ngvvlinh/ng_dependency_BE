@@ -182,10 +182,11 @@ type ImageMediaPostAttachment struct {
 }
 
 type SubAttachment struct {
-	Media  *MediaDataSubAttachment
-	Target *TargetDataSubAttachment
-	Type   string
-	URL    string
+	Description string
+	Media       *MediaDataSubAttachment
+	Target      *TargetDataSubAttachment
+	Type        string
+	URL         string
 }
 
 type ImageMediaDataSubAttachment struct {
@@ -217,10 +218,4 @@ type FbExternalCommentCreatedOrUpdatedEvent struct {
 
 type FbExternalConversationsCreatedEvent struct {
 	FbExternalConversations []*FbExternalConversation
-}
-
-type FbCreatePostArgs struct {
-	ExternalPageID string
-	AccessToken    string
-	Message        string
 }

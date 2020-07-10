@@ -2,6 +2,7 @@ package fbmessaging
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
@@ -295,7 +296,24 @@ func (q *FbMessagingQuery) GetFbExternalPostByExternalID(
 ) (*fbmessaging.FbExternalPost, error) {
 
 	fbExternalPost, err := q.fbExternalPostStore(ctx).ExternalID(externalID).GetFbExternalPost()
+	if err != nil {
+		return nil, err
+	}
 	err = q.mapPostParent(ctx, []*fbmessaging.FbExternalPost{fbExternalPost})
+	if err != nil {
+		return nil, err
+	}
+	return fbExternalPost, nil
+}
+
+func (q *FbMessagingQuery) GetExternalPostByExternalIDWithExternalCreatedTime(
+	ctx context.Context, externalID string, created time.Time,
+) (*fbmessaging.FbExternalPost, error) {
+	fbExternalPost, err := q.
+		fbExternalPostStore(ctx).
+		ExternalID(externalID).
+		ExternalCreatedTime(created).
+		GetFbExternalPost()
 	if err != nil {
 		return nil, err
 	}

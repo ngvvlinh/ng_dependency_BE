@@ -1787,6 +1787,7 @@ func Convert_fbmessagingmodel_SubAttachment_fbmessaging_SubAttachment(arg *fbmes
 }
 
 func convert_fbmessagingmodel_SubAttachment_fbmessaging_SubAttachment(arg *fbmessagingmodel.SubAttachment, out *fbmessaging.SubAttachment) {
+	out.Description = "" // zero value
 	out.Media = Convert_fbmessagingmodel_MediaDataSubAttachment_fbmessaging_MediaDataSubAttachment(arg.Media, nil)
 	out.Target = Convert_fbmessagingmodel_TargetDataSubAttachment_fbmessaging_TargetDataSubAttachment(arg.Target, nil)
 	out.Type = arg.Type // simple assign

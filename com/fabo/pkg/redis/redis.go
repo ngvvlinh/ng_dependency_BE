@@ -88,3 +88,15 @@ func (r *FaboRedis) SaveExternalConversationID(externalPageID, externalUserID, e
 func (r *FaboRedis) GenerateExternalConversationKey(externalPageID, externalUserID string) string {
 	return fmt.Sprintf("%s:%s_%s", PrefixExternalConversation, externalPageID, externalUserID)
 }
+
+func (r *FaboRedis) SetKey(key string, val interface{}) error {
+	return r.redisStore.Set(key, val)
+}
+
+func (r *FaboRedis) IsExist(key string) bool {
+	return r.redisStore.IsExist(key)
+}
+
+func (r *FaboRedis) DelKey(key string) error {
+	return r.redisStore.Del(key)
+}

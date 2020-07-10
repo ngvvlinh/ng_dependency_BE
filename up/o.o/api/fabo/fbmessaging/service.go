@@ -32,6 +32,9 @@ type Aggregate interface {
 	UpdateIsReadCustomerConversation(ctx context.Context, conversationCustomerID dot.ID, isRead bool) (int, error)
 
 	CreateFbExternalPost(context.Context, *FbCreatePostArgs) (*FbExternalPost, error)
+	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
+	UpdateFbPostMessage(context.Context, *FbUpdatePostMessageArgs) (int, error)
+	UpdateFbCommentMessage(context.Context, *FbUpdateCommentMessageArgs) (int, error)
 }
 
 type QueryService interface {
@@ -45,6 +48,7 @@ type QueryService interface {
 	ListFbExternalComments(context.Context, *ListFbExternalCommentsArgs) (*FbExternalCommentsResponse, error)
 	ListFbExternalCommentsByExternalIDs(context.Context, *ListFbExternalCommentsByIDsArgs) (*FbExternalCommentsResponse, error)
 
+	GetExternalPostByExternalIDWithExternalCreatedTime(_ context.Context, externalID string, time time.Time) (*FbExternalPost, error)
 	GetFbExternalPostByExternalID(_ context.Context, externalID string) (*FbExternalPost, error)
 	GetFbExternalMessageByID(_ context.Context, ID dot.ID) (*FbExternalMessage, error)
 	GetFbExternalCommentByID(_ context.Context, ID dot.ID) (*FbExternalComment, error)
@@ -225,4 +229,32 @@ type ListFbExternalCommentsByIDsArgs struct {
 type FbExternalCommentsResponse struct {
 	FbExternalComments []*FbExternalComment
 	Paging             meta.PageInfo
+}
+
+type FbCreatePostArgs struct {
+	ExternalPageID string
+	AccessToken    string
+	Message        string
+}
+
+type FbSavePostArgs struct {
+	ExternalPageID      string
+	ExternalID          string
+	ExternalFrom        *FbObjectFrom
+	ExternalPicture     string
+	ExternalIcon        string
+	ExternalMessage     string
+	ExternalAttachments []*PostAttachment `compare:"ignore"`
+	ExternalCreatedTime time.Time
+	ExternalParent      *FbExternalPost
+}
+
+type FbUpdatePostMessageArgs struct {
+	ExternalPostID string
+	Message        string
+}
+
+type FbUpdateCommentMessageArgs struct {
+	ExternalCommentID string
+	Message           string
 }

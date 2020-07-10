@@ -571,3 +571,37 @@ func (a *FbExternalMessagingAggregate) CreateFbExternalPost(ctx context.Context,
 		ExternalID: post.ID,
 	}, nil
 }
+
+// Temp use
+func (a *FbExternalMessagingAggregate) SaveFbExternalPost(
+	ctx context.Context, post *fbmessaging.FbSavePostArgs,
+) (*fbmessaging.FbExternalPost, error) {
+	extPost := &fbmessaging.FbExternalPost{
+		ID:                  cm.NewID(),
+		ExternalPageID:      post.ExternalPageID,
+		ExternalID:          post.ExternalID,
+		ExternalFrom:        post.ExternalFrom,
+		ExternalPicture:     post.ExternalPicture,
+		ExternalIcon:        post.ExternalIcon,
+		ExternalMessage:     post.ExternalMessage,
+		ExternalAttachments: post.ExternalAttachments,
+		ExternalCreatedTime: post.ExternalCreatedTime,
+		ExternalParent:      post.ExternalParent,
+	}
+	if err := a.fbExternalPostStore(ctx).CreateFbExternalPost(extPost); err != nil {
+		return nil, err
+	}
+	return extPost, nil
+}
+
+func (a *FbExternalMessagingAggregate) UpdateFbPostMessage(
+	ctx context.Context, feedMessage *fbmessaging.FbUpdatePostMessageArgs,
+) (int, error) {
+	return a.fbExternalPostStore(ctx).ExternalID(feedMessage.ExternalPostID).UpdatePostMessage(feedMessage.Message)
+}
+
+func (a *FbExternalMessagingAggregate) UpdateFbCommentMessage(
+	ctx context.Context, updateArgs *fbmessaging.FbUpdateCommentMessageArgs,
+) (int, error) {
+	return a.fbExternalCommentStore(ctx).ExternalID(updateArgs.ExternalCommentID).UpdateMessage(updateArgs.Message)
+}

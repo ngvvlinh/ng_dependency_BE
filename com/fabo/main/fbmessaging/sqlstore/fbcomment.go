@@ -222,3 +222,12 @@ func (s *FbExternalCommentStore) GetLatestCustomerExternalComment(
 	}
 	return &result, nil
 }
+
+func (s *FbExternalCommentStore) UpdateMessage(
+	message string,
+) (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_external_comment").UpdateMap(map[string]interface{}{
+		"external_message": message,
+	})
+}

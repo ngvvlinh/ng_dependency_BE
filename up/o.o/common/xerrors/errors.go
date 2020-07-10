@@ -89,6 +89,7 @@ const (
 	FacebookPermissionDenied  = Code(3001)
 	FacebookPermissionMissing = Code(3002)
 	Facebook                  = Code(3005)
+	FacebookWebhookIgnored    = Code(3006)
 )
 
 var (

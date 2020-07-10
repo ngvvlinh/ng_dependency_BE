@@ -37,6 +37,7 @@ const (
 	FacebookPermissionDenied  = xerrors.FacebookPermissionDenied
 	FacebookPermissionMissing = xerrors.FacebookPermissionMissing
 	FacebookError             = xerrors.Facebook
+	FacebookWebhookIgnored    = xerrors.FacebookWebhookIgnored
 )
 
 var (

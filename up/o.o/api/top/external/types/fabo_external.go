@@ -65,6 +65,7 @@ func (m *FbCustomerConversation) String() string { return jsonx.MustMarshalToStr
 
 type FbExternalComment struct {
 	ID                   dot.ID             `json:"id"`
+	ExternalPageID       dot.NullString     `json:"external_page_id"`
 	ExternalUserID       dot.NullString     `json:"external_user_id"`
 	ExternalParentID     dot.NullString     `json:"external_parent_id"`
 	ExternalParentUserID dot.NullString     `json:"external_parent_user_id"`

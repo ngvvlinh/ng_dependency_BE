@@ -14,6 +14,7 @@ func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment) *exttypes.FbE
 	}
 	return &exttypes.FbExternalComment{
 		ID:                   fbcomment.ID,
+		ExternalPageID:       dot.String(fbcomment.ExternalPageID),
 		ExternalUserID:       dot.String(fbcomment.ExternalUserID),
 		ExternalParentID:     dot.String(fbcomment.ExternalParentID),
 		ExternalParentUserID: dot.String(fbcomment.ExternalParentUserID),

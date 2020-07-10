@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/meta"
@@ -50,6 +51,11 @@ func (s *FbExternalPostStore) IDs(IDs []dot.ID) *FbExternalPostStore {
 
 func (s *FbExternalPostStore) ExternalID(externalID string) *FbExternalPostStore {
 	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
+	return s
+}
+
+func (s *FbExternalPostStore) ExternalCreatedTime(created time.Time) *FbExternalPostStore {
+	s.preds = append(s.preds, s.ft.ByExternalCreatedTime(created))
 	return s
 }
 
@@ -145,4 +151,11 @@ func (s *FbExternalPostStore) ListFbExternalPosts() (result []*fbmessaging.FbExt
 		return nil, err
 	}
 	return
+}
+
+func (s *FbExternalPostStore) UpdatePostMessage(message string) (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_external_post").UpdateMap(map[string]interface{}{
+		"external_message": message,
+	})
 }

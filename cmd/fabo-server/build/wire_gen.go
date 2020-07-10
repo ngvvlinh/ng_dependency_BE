@@ -640,7 +640,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, queryBus, shippingCommandBus, webhook4)
 	configWebhookConfig := cfg.Webhook
 	faboRedis := redis2.NewFaboRedis(store)
-	webhook5 := webhook3.New(mainDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
+	webhook5 := webhook3.New(mainDB, logDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
 	fbWebhookServer := BuildWebhookServer(configWebhookConfig, webhook5)
 	v4 := BuildServers(mainServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, fbWebhookServer)
 	kafka := cfg.Kafka
