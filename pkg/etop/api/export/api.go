@@ -176,12 +176,13 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 			return nil, cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
 		}
 
-		go ignoreError(s.exportAndReportProgress(
+		go s.exportAndReportProgress(
 			func() { s.idempgroup.ReleaseKey(key, claim.Token) },
 			exportItem, fileName, exportOpts,
 			query.Result.Total, query.Result.Rows, query.Result.Opts,
 			ExportFulfillments,
-		))
+		)
+
 	case PathShopOrders:
 		query := &ordering.GetOrderExtendedsQuery{
 			IDs:          r.Ids,
@@ -205,12 +206,12 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 			return nil, cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
 		}
 
-		go ignoreError(s.exportAndReportProgress(
+		go s.exportAndReportProgress(
 			func() { s.idempgroup.ReleaseKey(key, claim.Token) },
 			exportItem, fileName, exportOpts,
 			query.Result.Total, query.Result.Rows, query.Result.Opts,
 			ExportOrders,
-		))
+		)
 	}
 	return resp, nil
 }
@@ -221,5 +222,3 @@ func (s *Service) GetExports(ctx context.Context, shopID dot.ID, r *apishop.GetE
 		ExportItems: convertpb.PbExportAttempts(exportAttempts),
 	}, err
 }
-
-func ignoreError(err error) {}

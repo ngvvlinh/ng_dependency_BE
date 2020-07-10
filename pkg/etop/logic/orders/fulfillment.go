@@ -616,7 +616,7 @@ func (s *OrderLogic) TryCancellingFulfillments(ctx context.Context, order *order
 		i, ffm := i, ffm // https://golang.org/doc/faq#closures_and_goroutines
 
 		wg.Add(1)
-		go ignoreError(func() (_err error) {
+		go func() (_err error) {
 			defer func() {
 				wg.Done()
 				errs[i] = _err
@@ -670,10 +670,8 @@ func (s *OrderLogic) TryCancellingFulfillments(ctx context.Context, order *order
 				return err
 			}
 			return nil
-		}())
+		}()
 	}
 	wg.Wait()
 	return errs, nil
 }
-
-func ignoreError(err error) {}

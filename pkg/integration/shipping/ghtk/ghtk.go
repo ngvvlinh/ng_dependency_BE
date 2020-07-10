@@ -491,7 +491,7 @@ func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error)
 			time.Sleep(20 * time.Second)
 			count = 0
 		}
-		go ignoreError(func(ffm *shipmodel.Fulfillment) (_err error) {
+		go func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				ch <- _err
 			}()
@@ -507,7 +507,7 @@ func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error)
 			updateFfm := CalcUpdateFulfillment(ffm, nil, &ghtkCmd.Result.Order)
 			_ffms = append(_ffms, updateFfm)
 			return nil
-		}(ffm))
+		}(ffm)
 	}
 	var successCount, errorCount int
 	for i, n := 0, len(ffms); i < n; i++ {
@@ -521,5 +521,3 @@ func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error)
 	ll.S.Infof("Sync fulfillments GHTK info success: %v/%v, errors %v/%v", successCount, len(ffms), errorCount, len(ffms))
 	return _ffms, nil
 }
-
-func ignoreError(err error) {}

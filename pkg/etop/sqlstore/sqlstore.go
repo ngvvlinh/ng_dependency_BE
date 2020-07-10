@@ -104,5 +104,3 @@ func IDs(items []int64) []interface{} {
 	}
 	return res
 }
-
-func ignoreError(err error) {}

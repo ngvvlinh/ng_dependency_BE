@@ -1051,7 +1051,7 @@ func UpdateFulfillmentsWithoutTransaction(ctx context.Context, cmd *shipmodelx.U
 
 	for i, ffm := range cmd.Fulfillments {
 		guard <- i
-		go ignoreError(func(ffm *shipmodel.Fulfillment) (_err error) {
+		go func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				<-guard
 				chUpdate <- _err
@@ -1067,7 +1067,7 @@ func UpdateFulfillmentsWithoutTransaction(ctx context.Context, cmd *shipmodelx.U
 				return cm.Error(cm.NotFound, "", nil)
 			}
 			return nil
-		}(ffm))
+		}(ffm)
 	}
 
 	var updated, errors int
@@ -1122,7 +1122,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *shipmodelx.SyncUpdateFulfi
 	guard := make(chan int, maxGoroutines)
 	for i, ffm := range cmd.Fulfillments {
 		guard <- i
-		go ignoreError(func(ffm *shipmodel.Fulfillment) (_err error) {
+		go func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				<-guard
 				chUpdate <- _err
@@ -1138,7 +1138,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *shipmodelx.SyncUpdateFulfi
 				return cm.Error(cm.NotFound, "", nil)
 			}
 			return nil
-		}(ffm))
+		}(ffm)
 	}
 
 	var errs xerrors.ErrorCollector

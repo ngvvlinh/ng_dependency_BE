@@ -57,7 +57,7 @@ func CreateNotifications(ctx context.Context, cmds []*notifiermodel.CreateNotifi
 	}
 	chErr := make(chan error, len(cmds))
 	for _, cmd := range cmds {
-		go ignoreError(func(_cmd *notifiermodel.CreateNotificationArgs) (_err error) {
+		go func(_cmd *notifiermodel.CreateNotificationArgs) (_err error) {
 			defer func() {
 				chErr <- _err
 			}()
@@ -66,7 +66,7 @@ func CreateNotifications(ctx context.Context, cmds []*notifiermodel.CreateNotifi
 				ll.Debug("err", l.Error(_err))
 			}
 			return
-		}(cmd))
+		}(cmd)
 	}
 	var created, errors int
 	for i, n := 0, len(cmds); i < n; i++ {
@@ -80,5 +80,3 @@ func CreateNotifications(ctx context.Context, cmds []*notifiermodel.CreateNotifi
 	ll.S.Infof("Create notifications: success %v/%v, errors %v/%v", created, len(cmds), errors, len(cmds))
 	return nil
 }
-
-func ignoreError(err error) {}
