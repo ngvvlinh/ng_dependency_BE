@@ -23,6 +23,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
+	"o.o/common/jsonx"
 	"o.o/common/l"
 	"o.o/common/xerrors"
 )
@@ -110,7 +111,8 @@ type Synchronizer struct {
 
 	mapExternalPageAndTimeStart map[string]time.Time
 
-	timeLimit int
+	timeLimit   int
+	timeToCrawl int
 }
 
 func New(
@@ -118,7 +120,7 @@ func New(
 	fbClient *fbclient.FbClient,
 	fbMessagingAggr fbmessaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus,
 	fbUseringAggr fbusering.CommandBus, fbUseringQuery fbusering.QueryBus,
-	fbRedis *faboRedis.FaboRedis, timeLimit int,
+	fbRedis *faboRedis.FaboRedis, timeLimit, timeToCrawl int,
 ) *Synchronizer {
 	sched := scheduler.New(defaultNumWorkers)
 	s := &Synchronizer{
@@ -133,6 +135,7 @@ func New(
 		fbUseringQuery:              fbUseringQuery,
 		rd:                          fbRedis,
 		timeLimit:                   timeLimit,
+		timeToCrawl:                 timeToCrawl,
 	}
 	return s
 }
@@ -178,7 +181,7 @@ func (s *Synchronizer) getTaskArguments(taskID dot.ID) (taskArguments *TaskArgum
 }
 
 func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error) {
-	ticker := time.NewTicker(60 * time.Minute)
+	ticker := time.NewTicker(time.Duration(s.timeToCrawl) * time.Minute)
 	defer ticker.Stop()
 
 	for ; true; <-ticker.C {
@@ -189,23 +192,28 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 
 		//now := time.Now()
 		for _, fbPageCombined := range fbPageCombineds {
-			// Task get post
-			s.addTaskGetPosts(fbPageCombined)
+			if !s.rd.IsLockCallAPIPage(fbPageCombined.FbExternalPage.ExternalID) {
+				// Task get post
+				s.addTaskGetPosts(fbPageCombined)
 
-			// Task get conversation
-			s.addTask(&TaskArguments{
-				actionType:     GetConversations,
-				accessToken:    fbPageCombined.FbExternalPageInternal.Token,
-				shopID:         fbPageCombined.FbExternalPage.ShopID,
-				pageID:         fbPageCombined.FbExternalPage.ID,
-				externalPageID: fbPageCombined.FbExternalPage.ExternalID,
-				fbPagingRequest: &model.FacebookPagingRequest{
-					Limit: dot.Int(fbclient.DefaultLimitGetConversations),
-					TimePagination: &model.TimePaginationRequest{
-						Since: time.Now().AddDate(0, 0, -s.timeLimit),
+			}
+
+			if !s.rd.IsLockCallAPIMessenger(fbPageCombined.FbExternalPage.ExternalID) {
+				// Task get conversation
+				s.addTask(&TaskArguments{
+					actionType:     GetConversations,
+					accessToken:    fbPageCombined.FbExternalPageInternal.Token,
+					shopID:         fbPageCombined.FbExternalPage.ShopID,
+					pageID:         fbPageCombined.FbExternalPage.ID,
+					externalPageID: fbPageCombined.FbExternalPage.ExternalID,
+					fbPagingRequest: &model.FacebookPagingRequest{
+						Limit: dot.Int(fbclient.DefaultLimitGetConversations),
+						TimePagination: &model.TimePaginationRequest{
+							Since: time.Now().AddDate(0, 0, -s.timeLimit),
+						},
 					},
-				},
-			})
+				})
+			}
 		}
 	}
 	return nil
@@ -232,6 +240,12 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 	ctx := bus.Ctx()
 	taskArgs := s.getTaskArguments(taskID)
 
+	accessToken := taskArgs.accessToken
+	shopID := taskArgs.shopID
+	pageID := taskArgs.pageID
+	externalPageID := taskArgs.externalPageID
+	fbPagingReq := taskArgs.fbPagingRequest
+
 	defer func() {
 		if _err == nil {
 			s.finishTask(taskID)
@@ -247,6 +261,26 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		case fbclient.ApiTooManyCalls.String(), fbclient.ApplicationLimitReached.String():
 			s.scheduler.AddAfter(taskID, defaultRecurrentFacebookThrottling, s.syncCallbackLogs)
 			return
+		case fbclient.RateLimitCallWithPage.String():
+			xBusinessUseCaseUsage := facebookError.Meta[fbclient.XBusinessUseCaseUsage]
+			var xBusinessUseCaseUsageHeader fbclient.XBusinessUseCaseUsageHeader
+			if err := jsonx.Unmarshal([]byte(xBusinessUseCaseUsage), &xBusinessUseCaseUsageHeader); err != nil {
+				return
+			}
+
+			estimatedTimeToRegainAccess := xBusinessUseCaseUsageHeader.GetEstimatedTimeToRegainAccessOfPage(externalPageID)
+			_ = s.rd.LockCallAPIPage(externalPageID, estimatedTimeToRegainAccess)
+			return
+		case fbclient.RateLimitCallWithMessenger.String():
+			xBusinessUseCaseUsage := facebookError.Meta[fbclient.XBusinessUseCaseUsage]
+			var xBusinessUseCaseUsageHeader fbclient.XBusinessUseCaseUsageHeader
+			if err := jsonx.Unmarshal([]byte(xBusinessUseCaseUsage), &xBusinessUseCaseUsageHeader); err != nil {
+				return
+			}
+
+			estimatedTimeToRegainAccess := xBusinessUseCaseUsageHeader.GetEstimatedTimeToRegainAccessOfMessenger(externalPageID)
+			_ = s.rd.LockCallAPIMessenger(externalPageID, estimatedTimeToRegainAccess)
+			return
 		default:
 			if codeNum, err := strconv.ParseInt(code, 10, 64); err == nil {
 				if 200 <= codeNum && codeNum <= 299 {
@@ -258,12 +292,6 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		go ll.SendMessage(_err.Error())
 		s.scheduler.AddAfter(taskID, defaultRecurrentFacebook, s.syncCallbackLogs)
 	}()
-
-	accessToken := taskArgs.accessToken
-	shopID := taskArgs.shopID
-	pageID := taskArgs.pageID
-	externalPageID := taskArgs.externalPageID
-	fbPagingReq := taskArgs.fbPagingRequest
 
 	switch taskArgs.actionType {
 	case GetPosts:
@@ -610,7 +638,7 @@ func (s *Synchronizer) handleTaskGetChildPost(
 	externalPostID := taskArgs.getChildPostArgs.externalPostID
 
 	// Call api get (child) post that depends on postID
-	fbExternalPostResp, err := s.fbClient.CallAPIGetPost(externalChildPostID, accessToken)
+	fbExternalPostResp, err := s.fbClient.CallAPIGetPost(accessToken, externalChildPostID)
 	if err != nil {
 		return err
 	}
@@ -804,13 +832,12 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 		}
 
 		for _, fbPage := range fbExternalPages {
+			fromID = max(fromID, fbPage.ID)
 			fbExternalPageCombineds = append(fbExternalPageCombineds, &fbpaging.FbExternalPageCombined{
 				FbExternalPage:         fbPage,
 				FbExternalPageInternal: mapFbExternalPageInternal[fbPage.ExternalID],
 			})
 		}
-
-		fromID = fbExternalPages[len(fbExternalPages)-1].ID
 	}
 
 	return fbExternalPageCombineds, nil
@@ -818,6 +845,13 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 
 func ternaryString(statement bool, a, b string) string {
 	if statement {
+		return a
+	}
+	return b
+}
+
+func max(a, b dot.ID) dot.ID {
+	if a > b {
 		return a
 	}
 	return b

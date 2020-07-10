@@ -15,7 +15,8 @@ type Config struct {
 	TelegramBot cc.TelegramBot     `yaml:"telegram_bot"`
 	Redis       cc.Redis           `yaml:"redis"`
 	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
-	TimeLimit   int                `yaml:"time_limit"` // days
+	TimeLimit   int                `yaml:"time_limit"`    // days
+	TimeToCrawl int                `yaml:"time_to_crawl"` // mins
 
 	Env string `yaml:"env"`
 }
@@ -33,8 +34,9 @@ func Default() Config {
 				"default": 0,
 			},
 		},
-		Env:       cmenv.EnvDev.String(),
-		TimeLimit: 3,
+		Env:         cmenv.EnvDev.String(),
+		TimeLimit:   3,
+		TimeToCrawl: 60,
 	}
 	return cfg
 }

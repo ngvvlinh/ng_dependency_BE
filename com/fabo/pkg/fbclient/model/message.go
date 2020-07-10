@@ -56,7 +56,7 @@ type MessageDataAttachmentVideoData struct {
 	Rotation   int    `json:"rotation"`
 }
 
-type SubcribedAppResponse struct {
+type SubscribedAppResponse struct {
 	Success bool `json:"success"`
 }
 

@@ -63,6 +63,10 @@ func main() {
 	output, cancel, err := build.Build(sdCtx, cfg, consumer)
 	ll.Must(err, "can not build server")
 
+	// ping facebook
+	err = output.FbClient.Ping()
+	ll.Must(err, "can not ping facebook")
+
 	// start forwarder
 	go func() { defer cm.RecoverAndLog(); output.EventStream.RunForwarder() }()
 	h, fp := output.Handler, output.Publisher

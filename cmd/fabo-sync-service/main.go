@@ -92,7 +92,7 @@ func main() {
 		fbClient,
 		fbMessagingAggr, fbMessagingQuery,
 		fbUseringAggr, fbUseringQuery,
-		fbRedis, cfg.TimeLimit,
+		fbRedis, cfg.TimeLimit, cfg.TimeToCrawl,
 	)
 	if err := synchronizer.Init(); err != nil {
 		panic(err)

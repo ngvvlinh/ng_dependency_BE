@@ -679,6 +679,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Health:         service,
 		Handler:        handlerHandler,
 		Publisher:      publisherPublisher,
+		FbClient:       fbClient,
 		_catalogPM:     processManager,
 		_identityPM:    pmProcessManager,
 		_inventoryPM:   processManager2,

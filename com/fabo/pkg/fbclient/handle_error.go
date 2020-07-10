@@ -7,9 +7,12 @@ import (
 	"reflect"
 	"strings"
 
+	"gopkg.in/resty.v1"
+
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
+	"o.o/common/xerrors"
 )
 
 const (
@@ -24,25 +27,34 @@ func NewFacebookErrorService() *FacebookErrorService {
 	return &FacebookErrorService{}
 }
 
-func (s *FacebookErrorService) HandleErrorFacebookAPI(body []byte, currentURL string) error {
+func (s *FacebookErrorService) HandleErrorFacebookAPI(res *resty.Response, currentURL string) error {
 	var bodyJson interface{}
 
-	if err := json.Unmarshal(body, &bodyJson); err != nil {
+	if err := json.Unmarshal(res.Body(), &bodyJson); err != nil {
 		return err
 	}
 
+	xBusinessUseCaseUsage := res.Header().Get(XBusinessUseCaseUsage)
+
 	if facebookError := findError(bodyJson); facebookError != nil {
-		return handleErrorFacebookAPI(facebookError, currentURL)
+		return handleErrorFacebookAPI(facebookError, currentURL, xBusinessUseCaseUsage)
 	}
 
 	return nil
 }
 
-func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL string) error {
+func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL, xBusinessUseCaseUsageHeader string) (_err error) {
 	currentURL, err := censorTokens(currentURL)
 	if err != nil {
 		return err
 	}
+
+	defer func() {
+		if _err != nil && xBusinessUseCaseUsageHeader != "" {
+			_err = _err.(*xerrors.APIError).WithMetap(XBusinessUseCaseUsage, xBusinessUseCaseUsageHeader)
+		}
+	}()
+
 	if facebookError.Code.Valid {
 		if 200 <= facebookError.Code.Int && facebookError.Code.Int <= 299 {
 			_err := cm.Errorf(cm.FacebookPermissionDenied, nil, "Facebook API error").
@@ -211,6 +223,8 @@ const (
 	ErrorPostingLink                        = Code(1609005)
 	PageLevelThrottling                     = Code(32)
 	CustomLevelThrottling                   = Code(613)
+	RateLimitCallWithPage                   = Code(80001)
+	RateLimitCallWithMessenger              = Code(80006)
 )
 
 var mapErrorCodeMessage = map[Code]map[string]string{

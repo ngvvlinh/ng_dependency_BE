@@ -41,6 +41,8 @@ const (
 	AttachmentURL = "attachment_url"
 	Recipient     = "recipient"
 	Message       = "message"
+
+	XBusinessUseCaseUsage = "x-business-use-case-usage"
 )
 
 type FacebookRole int

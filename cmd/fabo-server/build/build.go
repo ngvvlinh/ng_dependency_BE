@@ -15,6 +15,7 @@ import (
 	"o.o/backend/com/eventhandler/handler"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	fbuserpm "o.o/backend/com/fabo/main/fbuser/pm"
+	"o.o/backend/com/fabo/pkg/fbclient"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
@@ -58,6 +59,9 @@ type Output struct {
 	// handlers
 	Handler   *handler.Handler
 	Publisher *fabopublisher.Publisher
+
+	// fbClient
+	FbClient *fbclient.FbClient
 
 	// pm
 	_catalogPM     *catalogpm.ProcessManager
