@@ -16,6 +16,7 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status4"
 	com "o.o/backend/com/main"
+	"o.o/backend/com/main/catalog/convert"
 	catalogmodel "o.o/backend/com/main/catalog/model"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	identitymodel "o.o/backend/com/main/identity/model"
@@ -578,6 +579,7 @@ func rowToCreateVariant(row *RowProduct, now time.Time) *apishop.CreateVariantRe
 	return &apishop.CreateVariantRequest{
 		Code:        row.VariantCode,
 		Name:        variantNameFromAttributes(row.Attributes),
+		Attributes:  convert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(row.Attributes),
 		ProductId:   0, // will be filled later
 		Note:        "",
 		Description: row.Description,
