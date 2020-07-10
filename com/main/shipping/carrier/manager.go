@@ -245,10 +245,11 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 
 	// raise event to check balance
 	event := &shipping.SingleFulfillmentCreatingEvent{
-		EventMeta:   meta.NewEvent(),
-		ShopID:      ffm.ShopID,
-		FromAddress: addressconvert.Convert_addressmodel_Address_orderingtypes_Address(ffm.AddressFrom, nil),
-		ShippingFee: ffm.ShippingServiceFee,
+		EventMeta:    meta.NewEvent(),
+		ShopID:       ffm.ShopID,
+		FromAddress:  addressconvert.Convert_addressmodel_Address_orderingtypes_Address(ffm.AddressFrom, nil),
+		ShippingFee:  ffm.ShippingServiceFee,
+		ConnectionID: ffm.ConnectionID,
 	}
 	if err := m.eventBus.Publish(ctx, event); err != nil {
 		return err
