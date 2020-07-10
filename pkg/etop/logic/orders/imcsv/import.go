@@ -68,7 +68,7 @@ func (im *Import) HandleImportOrders(c *httpx.Context) error {
 	claim, shop, user, roles := c.SS.Claim(), c.SS.Shop(), c.SS.User(), c.SS.Permission().Roles
 
 	// Do not check permission for 3rd party requests
-	if auth.New().Check(roles, string(acl.ShopOrderImport), shop.IsTest) {
+	if !auth.New().Check(roles, string(acl.ShopOrderImport), shop.IsTest) {
 		return cm.Error(cm.PermissionDenied, "", nil)
 	}
 	key := shop.ID.String()
