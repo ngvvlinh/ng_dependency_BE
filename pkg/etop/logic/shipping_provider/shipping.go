@@ -105,7 +105,7 @@ func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, acc
 
 	switch q.Provider {
 	case pbsp.All, pbsp.Unknown:
-		ch := make(chan []*shippingsharemodel.AvailableShippingService, 2)
+		ch := make(chan []*shippingsharemodel.AvailableShippingService, 3)
 		go func() {
 			defer catchAndRecover()
 
@@ -122,19 +122,19 @@ func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, acc
 			defer func() { sendServices(ch, services, err) }()
 			services, err = ctrl.GetShippingProviderDriver(shippingprovider.GHTK).GetAllShippingServices(ctx, args)
 		}()
-		// go func() {
-		// 	var services []*model.AvailableShippingService
-		//
-		// 	if err := checkBlockCarrier(shippingprovider.VTPost); err != nil {
-		// 		sendServices(ch, nil, nil)
-		// 		return
-		// 	}
-		//
-		// 	var err error
-		// 	defer func() { sendServices(ch, services, err) }()
-		// 	services, err = ctrl.VTPost.GetAllShippingServices(ctx, args)
-		// }()
-		for i := 0; i < 2; i++ {
+		go func() {
+			var services []*shippingsharemodel.AvailableShippingService
+
+			if err := checkBlockCarrier(shippingprovider.VTPost); err != nil {
+				sendServices(ch, nil, nil)
+				return
+			}
+
+			var err error
+			defer func() { sendServices(ch, services, err) }()
+			services, err = ctrl.GetShippingProviderDriver(shippingprovider.VTPost).GetAllShippingServices(ctx, args)
+		}()
+		for i := 0; i < 3; i++ {
 			res = append(res, <-ch...)
 		}
 
