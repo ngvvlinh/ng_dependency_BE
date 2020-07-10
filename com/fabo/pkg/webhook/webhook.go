@@ -65,6 +65,8 @@ func New(
 		fbmessagingQuery:       fbmessagingQuery,
 		fbmessagingAggr:        fbmessagingAggregate,
 		fbPageQuery:            fbPageQuery,
+
+		mapCallbackURLAndLatestTimeError: make(map[string]time.Time),
 	}
 	return wh
 }
