@@ -69,7 +69,7 @@ func main() {
 	ll.Must(err, "can not build server")
 
 	// start forwarder
-	go output.EventStream.RunForwarder()
+	go func() { defer cm.RecoverAndLog(); output.EventStream.RunForwarder() }()
 	h, fp := output.Handler, output.Publisher
 	h.StartConsuming(sdCtx, fabopublisher.GetTopics(fp.TopicsAndHandlers()), fp.TopicsAndHandlers())
 

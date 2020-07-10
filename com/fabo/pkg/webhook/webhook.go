@@ -108,7 +108,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	}
 	ctx := c.Context()
 
-	go wh.forwardWebhook(c, body)
+	go func() { defer cm.RecoverAndLog(); wh.forwardWebhook(c, body) }()
 
 	var webhookMessages WebhookMessages
 

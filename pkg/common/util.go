@@ -2,6 +2,7 @@ package cm
 
 import (
 	"fmt"
+	"runtime/debug"
 	"sort"
 	"strconv"
 	"strings"
@@ -125,4 +126,19 @@ func ConvertStructToMapStringString(data interface{}) map[string]string {
 		meta[k] = fmt.Sprint(v)
 	}
 	return meta
+}
+
+var llHigh = ll.WithChannel("high")
+
+// RecoverAndLog captures panic in goroutine, prevents the process from crashing
+// and writes the error to logger. Note that the gorountine is still stopped.
+// You still have to check the error and fix the real bug. Usage:
+//
+//     go func() { defer cm.RecoverAndLog(); doSomething() }()
+//
+func RecoverAndLog() {
+	r := recover()
+	if r != nil {
+		llHigh.SendMessagef("🔥 [panic+stopped] @thangtran268 %v\n%s", r, debug.Stack())
+	}
 }
