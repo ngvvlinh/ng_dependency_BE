@@ -28,6 +28,8 @@ type Aggregate interface {
 
 	CreateBuiltinConnection(context.Context, *CreateBuiltinConnectionArgs) (*Connection, error)
 
+	UpdateConnectionFromOrigin(ctx context.Context, ConnectionID dot.ID) error
+
 	// -- Shop Connection -- //
 	CreateShopConnection(context.Context, *CreateShopConnectionArgs) (*ShopConnection, error)
 

@@ -133,12 +133,17 @@ func (a *ConnectionAggregate) ConfirmConnection(ctx context.Context, id dot.ID) 
 	if err != nil {
 		return 0, err
 	}
-	if conn.Status != status3.Z {
-		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this Connection")
+	if conn.Status == status3.P {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "This Connection was confirmed")
 	}
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		updated, err = a.connectionStore(ctx).ConfirmConnection(id)
 		if err != nil {
+			return err
+		}
+
+		// enable/confirm all shop_connection
+		if _, err := a.shopConnectionStore(ctx).ConnectionID(id).ConfirmShopConnection(); err != nil {
 			return err
 		}
 		return a.raiseConnectionUpdatedEvent(ctx, id)
@@ -152,6 +157,12 @@ func (a *ConnectionAggregate) DeleteConnection(ctx context.Context, args *connec
 		if err != nil {
 			return err
 		}
+
+		// disable all shop_connection
+		if _, err := a.shopConnectionStore(ctx).ConnectionID(args.ID).DisableShopConnection(); err != nil {
+			return err
+		}
+
 		return a.raiseConnectionUpdatedEvent(ctx, args.ID)
 	})
 	return
@@ -197,9 +208,45 @@ func (a *ConnectionAggregate) DisableConnection(ctx context.Context, id dot.ID) 
 		if err != nil {
 			return err
 		}
+
+		// disable all shop_connection
+		if _, err := a.shopConnectionStore(ctx).ConnectionID(id).DisableShopConnection(); err != nil {
+			return err
+		}
+
 		return a.raiseConnectionUpdatedEvent(ctx, id)
 	})
 	return
+}
+
+func (a *ConnectionAggregate) UpdateConnectionFromOrigin(ctx context.Context, connectionID dot.ID) error {
+	conn, err := a.connectionStore(ctx).ID(connectionID).GetConnection()
+	if err != nil {
+		return err
+	}
+	// chỉ quan tâm tới connection direct (NVC trực tiếp tích hợp)
+	if conn.ConnectionMethod != connection_type.ConnectionMethodDirect {
+		return nil
+	}
+
+	childConns, err := a.connectionStore(ctx).OriginConnectionID(connectionID).OptionalConnectionMethod(connection_type.ConnectionMethodBuiltin).ListConnections(status3.NullStatus{})
+	if err != nil {
+		return err
+	}
+
+	// Lấy tất cả các connection có origin_connection_id = conn.ID
+	// thay đổi thông tin của các conn đó theo thông tin của connection gốc
+	for _, _conn := range childConns {
+		update := &connectioning.UpdateConnectionArgs{
+			ID:           _conn.ID,
+			ImageURL:     conn.ImageURL,
+			DriverConfig: conn.DriverConfig,
+		}
+		if _, err := a.UpdateConnection(ctx, update); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (a *ConnectionAggregate) raiseConnectionUpdatedEvent(ctx context.Context, connectionID dot.ID) error {
@@ -377,10 +424,10 @@ func (a *ConnectionAggregate) ConfirmShopConnection(ctx context.Context, shopID 
 		return 0, err
 	}
 	if conn.Status != status3.Z {
-		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this Connection")
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this Shop Connection")
 	}
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		updated, err = a.shopConnectionStore(ctx).ConfirmShopConnection(shopID, connectionID)
+		updated, err = a.shopConnectionStore(ctx).ShopID(shopID).ConnectionID(connectionID).ConfirmShopConnection()
 		if err != nil {
 			return err
 		}

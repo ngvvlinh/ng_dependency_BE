@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"o.o/api/main/connectioning"
-	"o.o/api/top/types/etc/connection_type"
 	"o.o/backend/pkg/common/bus"
 )
 
@@ -34,29 +33,12 @@ func (m *ProcessManager) ConnectionUpdated(ctx context.Context, event *connectio
 		return err
 	}
 	conn := query.Result
-	// chỉ quan tâm tới connection direct (NVC trực tiếp tích hợp)
-	if conn.ConnectionMethod != connection_type.ConnectionMethodDirect {
-		return nil
-	}
 
-	queryListConn := &connectioning.ListConnectionsByOriginConnectionIDQuery{
-		OriginConnectionID: conn.ID,
+	args := &connectioning.UpdateConnectionFromOriginCommand{
+		ConnectionID: conn.ID,
 	}
-	if err := m.connectionQuery.Dispatch(ctx, queryListConn); err != nil {
+	if err := m.connectionAggr.Dispatch(ctx, args); err != nil {
 		return err
-	}
-
-	// Lấy tất cả các connection có origin_connection_id = conn.ID
-	// thay đổi thông tin của các conn đó theo thông tin của connection gốc
-	for _, _conn := range queryListConn.Result {
-		update := &connectioning.UpdateConnectionCommand{
-			ID:           _conn.ID,
-			ImageURL:     conn.ImageURL,
-			DriverConfig: conn.DriverConfig,
-		}
-		if err := m.connectionAggr.Dispatch(ctx, update); err != nil {
-			return err
-		}
 	}
 	return nil
 }

@@ -161,11 +161,22 @@ func (s *ShopConnectionStore) UpdateShopConnectionToken(args *connectioning.Upda
 	return s.OptionalShopID(args.ShopID).ConnectionID(args.ConnectionID).GetShopConnection()
 }
 
-func (s *ShopConnectionStore) ConfirmShopConnection(shopID dot.ID, connID dot.ID) (updated int, err error) {
-	if err := s.query().Table("shop_connection").Where(s.ft.ByShopID(shopID)).Where(s.ft.ByConnectionID(connID)).ShouldUpdateMap(map[string]interface{}{
-		"status": status3.P,
-	}); err != nil {
-		return 0, err
+func (s *ShopConnectionStore) ConfirmShopConnection() (updated int, _ error) {
+	if len(s.preds) == 0 {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
 	}
-	return 1, nil
+	update := &model.ShopConnection{
+		Status: status3.P,
+	}
+	return s.query().Where(s.preds).Update(update)
+}
+
+func (s *ShopConnectionStore) DisableShopConnection() (updated int, _ error) {
+	if len(s.preds) == 0 {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
+	}
+	update := &model.ShopConnection{
+		Status: status3.N,
+	}
+	return s.query().Where(s.preds).Update(update)
 }

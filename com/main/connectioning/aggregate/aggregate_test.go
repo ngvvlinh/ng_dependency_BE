@@ -145,7 +145,7 @@ func TestConnectionAggregate(t *testing.T) {
 					ID: connID,
 				}
 				err := Aggr.Dispatch(ctx, cmd)
-				So(err, ShouldCMError, cm.FailedPrecondition, "Can not confirm this Connection")
+				So(err, ShouldCMError, cm.FailedPrecondition, "This Connection was confirmed")
 			})
 		})
 
@@ -230,7 +230,7 @@ func TestShopConnectionAggregate(t *testing.T) {
 					ConnectionID: connID,
 				}
 				err := Aggr.Dispatch(ctx, cmd)
-				So(err, ShouldCMError, cm.FailedPrecondition, "Can not confirm this Connection")
+				So(err, ShouldCMError, cm.FailedPrecondition, "Can not confirm this Shop Connection")
 			})
 		})
 

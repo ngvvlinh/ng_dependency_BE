@@ -181,7 +181,7 @@ func (s *ConnectionStore) DisableConnection(connID dot.ID) (updated int, err err
 	query := s.query().Table("connection").Where(s.ft.ByID(connID))
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	if err := query.ShouldUpdateMap(map[string]interface{}{
-		"status": status3.Z,
+		"status": status3.N,
 	}); err != nil {
 		return 0, err
 	}

@@ -179,6 +179,17 @@ func (h AggregateHandler) HandleUpdateConnectionAffiliateAccount(ctx context.Con
 	return err
 }
 
+type UpdateConnectionFromOriginCommand struct {
+	ConnectionID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateConnectionFromOrigin(ctx context.Context, msg *UpdateConnectionFromOriginCommand) (err error) {
+	return h.inner.UpdateConnectionFromOrigin(msg.GetArgs(ctx))
+}
+
 type UpdateShopConnectionTokenCommand struct {
 	ShopID         dot.ID
 	ConnectionID   dot.ID
@@ -322,6 +333,7 @@ func (q *DeleteShopConnectionCommand) command()             {}
 func (q *DisableConnectionCommand) command()                {}
 func (q *UpdateConnectionCommand) command()                 {}
 func (q *UpdateConnectionAffiliateAccountCommand) command() {}
+func (q *UpdateConnectionFromOriginCommand) command()       {}
 func (q *UpdateShopConnectionTokenCommand) command()        {}
 
 func (q *GetConnectionByCodeQuery) query()                 {}
@@ -492,6 +504,11 @@ func (q *UpdateConnectionAffiliateAccountCommand) SetUpdateConnectionAffiliateAc
 	q.EtopAffiliateAccount = args.EtopAffiliateAccount
 }
 
+func (q *UpdateConnectionFromOriginCommand) GetArgs(ctx context.Context) (_ context.Context, ConnectionID dot.ID) {
+	return ctx,
+		q.ConnectionID
+}
+
 func (q *UpdateShopConnectionTokenCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopConnectionExternalDataArgs) {
 	return ctx,
 		&UpdateShopConnectionExternalDataArgs{
@@ -612,6 +629,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDisableConnection)
 	b.AddHandler(h.HandleUpdateConnection)
 	b.AddHandler(h.HandleUpdateConnectionAffiliateAccount)
+	b.AddHandler(h.HandleUpdateConnectionFromOrigin)
 	b.AddHandler(h.HandleUpdateShopConnectionToken)
 	return CommandBus{b}
 }

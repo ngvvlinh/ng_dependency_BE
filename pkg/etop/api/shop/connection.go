@@ -29,7 +29,6 @@ func (s *ConnectionService) Clone() api.ConnectionService { res := *s; return &r
 func (s *ConnectionService) GetConnections(ctx context.Context, q *pbcm.Empty) (*types.GetConnectionsResponse, error) {
 	query := &connectioning.ListConnectionsQuery{
 		ConnectionType: connection_type.Shipping,
-		Status:         status3.WrapStatus(status3.P),
 	}
 	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
