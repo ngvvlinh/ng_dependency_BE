@@ -114,6 +114,13 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 		ShippingServiceCode: service.ProviderServiceID,
 		ShippingFee:         service.ServiceFee,
 	}
+
+	// `service.ServiceFee`: giá đã makeup của TopShip
+	// Khi tạo đơn qua NVC, gửi giá gốc của NVC lên để bên họ kiểm tra giá trước khi tạo
+	if service.ShipmentPriceInfo != nil {
+		cmd.ShippingFee = service.ShipmentPriceInfo.OriginFee
+	}
+
 	resp, err := d.client.CreateFulfillment(ctx, cmd)
 	if err != nil {
 		return nil, err
