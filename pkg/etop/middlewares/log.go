@@ -36,6 +36,7 @@ func (log *Logging) errorServing(ctx context.Context, info httprpc.HookInfo, err
 	if _ss, ok := info.Inner.(session.Sessioner); ok {
 		ss = _ss.GetSession()
 	}
+	cmwrapper.Censor(info.Request)
 	err = cmwrapper.RecoverAndLog2(ctx, info.Route, ss, info.Request, info.Response, nil, err, cmwrapper.HasErrors(info.Response), log.t0)
 	return ctx, err
 }
