@@ -947,6 +947,9 @@
         "callback_url": {
           "type": "string"
         },
+        "remove_all": {
+          "type": "boolean"
+        },
         "type": {
           "$ref": "#/definitions/fjWebhookType"
         }

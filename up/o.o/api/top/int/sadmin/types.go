@@ -54,6 +54,7 @@ func (m *SAdminRegisterWebhookRequest) String() string { return jsonx.MustMarsha
 
 type SAdminUnregisterWebhookRequest struct {
 	CallbackURL string                   `json:"callback_url"`
+	RemoveAll   bool                     `json:"remove_all"`
 	Type        webhook_type.WebhookType `json:"type"`
 }
 

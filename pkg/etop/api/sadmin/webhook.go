@@ -55,20 +55,25 @@ func (s *WebhookService) RegisterWebhook(
 }
 
 func (s *WebhookService) UnregisterWebhook(
-	ctx context.Context, request *sadmin.SAdminUnregisterWebhookRequest,
-) (*common.Empty, error) {
-	if request.CallbackURL == "" {
+	ctx context.Context,
+	req *sadmin.SAdminUnregisterWebhookRequest,
+) (_ *common.Empty, _err error) {
+	if req.CallbackURL == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "callback must not be empty")
 	}
-
-	if err := s.WebhookCallbackService.RemoveWebhookCallbackURL(request.Type.String(), request.CallbackURL); err != nil {
-		return nil, err
+	if req.RemoveAll {
+		_err = s.WebhookCallbackService.RemoveAllWebhookCallbackURLs(req.Type.String())
+	} else {
+		_err = s.WebhookCallbackService.RemoveWebhookCallbackURL(req.Type.String(), req.CallbackURL)
 	}
-	ll.SendMessagef("[sadmin] Webhook registered type: %s, callback_url: %s", request.Type.String(), request.CallbackURL)
+	if _err != nil {
+		return nil, _err
+	}
+	ll.SendMessagef("[sadmin] Webhook unregistered type: %s, callback_url: %s", req.Type.String(), req.CallbackURL)
 	return &common.Empty{}, nil
 }
 
-func (s *WebhookCallbackService) GetWebhookCallbackKey(webhookType string) string {
+func WebhookCallbackKey(webhookType string) string {
 	return fmt.Sprintf("%v-%v", PrefixWebhookCallbackURL, webhookType)
 }
 
@@ -93,6 +98,16 @@ func (s *WebhookCallbackService) AddWebhookCallbackURL(webhookType, newCallbackU
 	return s.SetWebhookCallbackURLs(webhookType, callbackURLs)
 }
 
+func (s *WebhookCallbackService) RemoveAllWebhookCallbackURLs(webhookType string) error {
+	key := WebhookCallbackKey(webhookType)
+	switch err := s.rd.Del(key); err {
+	case nil, redis.ErrNil:
+		return nil
+	default:
+		return err
+	}
+}
+
 func (s *WebhookCallbackService) RemoveWebhookCallbackURL(webhookType, oldCallbackURL string) error {
 	callbackURLs, err := s.GetWebhookCallbackURLs(webhookType)
 	if err != nil {
@@ -110,20 +125,23 @@ func (s *WebhookCallbackService) RemoveWebhookCallbackURL(webhookType, oldCallba
 }
 
 func (s *WebhookCallbackService) GetWebhookCallbackURLs(webhookType string) ([]string, error) {
-	key := s.GetWebhookCallbackKey(webhookType)
+	key := WebhookCallbackKey(webhookType)
 	callbackURLsJoined, err := s.rd.GetString(key)
 	switch err {
 	case redis.ErrNil:
-		return []string{}, nil
+		return nil, nil
 	case nil:
+		if callbackURLsJoined == "" {
+			return nil, nil
+		}
 		return strings.Split(callbackURLsJoined, Separator), nil
 	default:
-		return []string{}, err
+		return nil, err
 	}
 }
 
 func (s *WebhookCallbackService) SetWebhookCallbackURLs(webhookType string, callbackURLs []string) error {
-	key := s.GetWebhookCallbackKey(webhookType)
+	key := WebhookCallbackKey(webhookType)
 	if err := s.rd.SetStringWithTTL(key, strings.Join(callbackURLs, Separator), OneDay); err != nil {
 		return err
 	}
