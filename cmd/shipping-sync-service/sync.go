@@ -25,7 +25,7 @@ const (
 	defaultNumWorkers = 32
 )
 
-func SyncUnCompleteFfms() {
+func SyncIncompleteFfms() {
 	gScheduler = scheduler.New(defaultNumWorkers)
 
 	// now := time.Now()

@@ -8,6 +8,7 @@ import (
 	"o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/com/eventhandler/pgevent"
 	com "o.o/backend/com/main"
+	cm "o.o/backend/pkg/common"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -61,6 +62,7 @@ func CreateNotifications(ctx context.Context, cmds []*notifiermodel.CreateNotifi
 			defer func() {
 				chErr <- _err
 			}()
+			defer cm.RecoverAndLog()
 			_, _err = notiStore.CreateNotification(cmd)
 			if _err != nil {
 				ll.Debug("err", l.Error(_err))

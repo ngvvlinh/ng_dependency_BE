@@ -44,7 +44,6 @@ func main() {
 	sqltrace.Init()
 	wl.Init(cmenv.Env(), wl.FaboServer)
 	auth.Init(authfabo.Policy)
-	cfg.TelegramBot.MustRegister()
 	eventBus := bus.New()
 	healthService := health.New()
 
@@ -55,6 +54,7 @@ func main() {
 	sdCtx, ctxCancel := lifecycle.WithCancel(context.Background())
 	defer sdCtx.Wait()
 	lifecycle.ListenForSignal(ctxCancel, 30*time.Second)
+	cfg.TelegramBot.MustRegister(sdCtx)
 
 	// kafka
 	kafkaCfg := sarama.NewConfig()

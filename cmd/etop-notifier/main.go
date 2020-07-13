@@ -73,7 +73,7 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
-	cfg.TelegramBot.MustRegister()
+	cfg.TelegramBot.MustRegister(ctx)
 
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {

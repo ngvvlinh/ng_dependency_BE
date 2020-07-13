@@ -66,7 +66,7 @@ func main() {
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 
-	cfg.TelegramBot.MustRegister()
+	cfg.TelegramBot.MustRegister(ctx)
 
 	ll.SendMessage("–––\n✨ fabo-sync-service started ✨\n" + cm.CommitMessage())
 	defer ll.SendMessage("👹 fabo-sync-service stopped 👹\n–––")
@@ -111,9 +111,7 @@ func main() {
 		panic(err)
 	}
 
-	go func() {
-		synchronizer.Start()
-	}()
+	go func() { defer cm.RecoverAndLog(); synchronizer.Start() }()
 
 	mux := http.NewServeMux()
 	l.RegisterHTTPHandler(mux)

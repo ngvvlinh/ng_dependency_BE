@@ -88,7 +88,7 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
-	cfg.TelegramBot.MustRegister()
+	cfg.TelegramBot.MustRegister(ctx)
 
 	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
 	db, err := cmsql.Connect(cfg.Postgres)

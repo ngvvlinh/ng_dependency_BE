@@ -1,6 +1,7 @@
 package cc
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -292,17 +293,17 @@ func (c *TelegramBot) MustLoadEnv(prefix ...string) {
 	}.MustLoad()
 }
 
-func (c *TelegramBot) ConnectDefault() (*telebot.Channel, error) {
-	return c.ConnectChannel("")
+func (c *TelegramBot) ConnectDefault(ctx context.Context) (*telebot.Channel, error) {
+	return c.ConnectChannel(ctx, "")
 }
 
-func (c *TelegramBot) ConnectChannel(channel string) (*telebot.Channel, error) {
+func (c *TelegramBot) ConnectChannel(ctx context.Context, channel string) (*telebot.Channel, error) {
 	if c.Token == "" {
 		ll.Warn("Disabled sending messages to telegram")
 		return nil, nil
 	}
 
-	ch, err := telebot.NewChannel(channel, c.Token, c.Chats[channel])
+	ch, err := telebot.NewChannel(ctx, channel, c.Token, c.Chats[channel])
 	if err != nil {
 		return nil, err
 	}
@@ -311,13 +312,13 @@ func (c *TelegramBot) ConnectChannel(channel string) (*telebot.Channel, error) {
 	return ch, err
 }
 
-func (c *TelegramBot) MustRegister() {
+func (c *TelegramBot) MustRegister(ctx context.Context) {
 	chans := make(map[string]l.Messenger, len(c.Chats))
 	for name, chatID := range c.Chats {
 		var ch l.Messenger
 		if c.Token != "" && chatID != 0 {
 			var err error
-			ch, err = telebot.NewChannel(name, c.Token, chatID)
+			ch, err = telebot.NewChannel(ctx, name, c.Token, chatID)
 			if err != nil {
 				panic(err)
 			}
@@ -329,8 +330,8 @@ func (c *TelegramBot) MustRegister() {
 	l.RegisterChannels(chans)
 }
 
-func (c *TelegramBot) MustConnectChannel(channel string) *telebot.Channel {
-	ch, err := c.ConnectChannel(channel)
+func (c *TelegramBot) MustConnectChannel(ctx context.Context, channel string) *telebot.Channel {
+	ch, err := c.ConnectChannel(ctx, channel)
 	if err != nil {
 		ll.Panic("Connect Telegram bot", l.String("channel", channel), l.Error(err))
 	}

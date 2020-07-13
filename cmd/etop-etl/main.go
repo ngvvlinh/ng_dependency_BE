@@ -63,7 +63,7 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
-	cfg.TelegramBot.MustRegister()
+	cfg.TelegramBot.MustRegister(ctx)
 
 	util := etlutil.New(cfg.MapDB, resetDB)
 	util.HandleETL(ctx)

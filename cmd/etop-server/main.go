@@ -40,7 +40,6 @@ func main() {
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite) // TODO(vu): refactor
 	sqltrace.Init()
 	wl.Init(cmenv.Env(), wl.EtopServer)
-	cfg.TelegramBot.MustRegister()
 	eventBus := bus.New()
 	healthService := health.New()
 
@@ -48,19 +47,20 @@ func main() {
 	model.GetShippingServiceRegistry().Initialize()
 
 	// lifecycle
-	sd, ctxCancel := lifecycle.WithCancel(context.Background())
+	sdCtx, ctxCancel := lifecycle.WithCancel(context.Background())
 	defer ll.SendMessagef("🎃 etop-server on %v stopped 🎃", cmenv.Env())
-	defer sd.Wait()
+	defer sdCtx.Wait()
 	lifecycle.ListenForSignal(ctxCancel, 30*time.Second)
+	cfg.TelegramBot.MustRegister(sdCtx)
 
 	// build servers
-	output, cancelServer, err := build.Build(sd, cfg, eventBus, healthService, cfg.URL.Auth)
+	output, cancelServer, err := build.Build(sdCtx, cfg, eventBus, healthService, cfg.URL.Auth)
 	ll.Must(err, "can not build server")
 
 	// start servers
 	cancelHTTP := lifecycle.StartHTTP(ctxCancel, output.Servers...)
-	sd.Register(cancelHTTP)
-	sd.Register(cancelServer)
+	sdCtx.Register(cancelHTTP)
+	sdCtx.Register(cancelServer)
 	healthService.MarkReady()
 
 	ll.SendMessagef("✨ etop-server on %v started ✨\n%v", cmenv.Env(), cm.CommitMessage())

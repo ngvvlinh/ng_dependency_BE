@@ -2,6 +2,7 @@ package telebot
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -64,19 +65,42 @@ type Channel struct {
 	chatID     int64
 	urlSendMsg string
 	console    l.MockMessenger
+	ch         chan string
 }
 
-func NewChannel(name, token string, chatID int64) (*Channel, error) {
+func NewChannel(ctx context.Context, name, token string, chatID int64) (*Channel, error) {
 	bot, err := NewBot(token)
 	if err != nil {
 		return nil, err
 	}
-	return &Channel{
+	ch := &Channel{
 		bot:        *bot,
 		chatID:     chatID,
 		urlSendMsg: bot.baseURL + "sendMessage",
 		console:    l.MockMessenger{Name: name},
-	}, nil
+		ch:         make(chan string, 256),
+	}
+	go ch.ListenAndSend(ctx)
+	return ch, nil
+}
+
+func (c *Channel) ListenAndSend(ctx context.Context) {
+	select {
+	case <-ctx.Done():
+		return
+
+	case msg := <-c.ch:
+		c.DoSendMessage(msg)
+	}
+}
+
+func (c *Channel) SendMessage(msg string) {
+	select {
+	case c.ch <- msg:
+		// ok
+	default:
+		ll.Warn("dropped message", l.String("msg", msg))
+	}
 }
 
 func (c *Channel) MaySendMessagef(msg string, args ...interface{}) {
@@ -84,17 +108,24 @@ func (c *Channel) MaySendMessagef(msg string, args ...interface{}) {
 		if len(args) > 0 {
 			msg = fmt.Sprintf(msg, args...)
 		}
-		c.SendMessage(msg)
+		c.DoSendMessage(msg)
 	}
 }
 
 func (c *Channel) MaySendMessage(msg string) {
 	if c != nil {
-		c.SendMessage(msg)
+		c.DoSendMessage(msg)
 	}
 }
 
-func (c *Channel) SendMessage(msg string) {
+func (c *Channel) DoSendMessage(msg string) {
+	defer func() {
+		r := recover()
+		if r != nil {
+			ll.Error("panic", l.Any("recovered", r), l.Stack())
+		}
+	}()
+
 	err := c.sendMessage("", msg)
 	if err != nil {
 		ll.Error("Telegram Bot: Unable to send message", l.Error(err))

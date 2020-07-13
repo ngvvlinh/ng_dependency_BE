@@ -131,14 +131,27 @@ func ConvertStructToMapStringString(data interface{}) map[string]string {
 var llHigh = ll.WithChannel("high")
 
 // RecoverAndLog captures panic in goroutine, prevents the process from crashing
-// and writes the error to logger. Note that the gorountine is still stopped.
-// You still have to check the error and fix the real bug. Usage:
+// and writes the error to logger. It also receives an optional error pointer
+// for storing the recovered error.
+//
+// Note that the goroutine is still stopped. You still have to check the error
+// and fix the real bug. Usage:
 //
 //     go func() { defer cm.RecoverAndLog(); doSomething() }()
 //
-func RecoverAndLog() {
+//     go func() (_err error) {
+//         defer cm.RecoverAndLog(&_err);
+//         doSomething()
+//     }()
+func RecoverAndLog(errs ...*error) {
 	r := recover()
-	if r != nil {
-		llHigh.SendMessagef("🔥 [panic+stopped] @thangtran268 %v\n%s", r, debug.Stack())
+	if r == nil {
+		return
+	}
+	llHigh.SendMessagef("🔥 [panic+stopped] @thangtran268 %v\n%s", r, debug.Stack())
+	for _, err := range errs {
+		if err != nil {
+			*err = Errorf(Internal, nil, "panic+stopped: %v", err)
+		}
 	}
 }

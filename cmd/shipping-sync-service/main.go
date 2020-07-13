@@ -62,7 +62,7 @@ func main() {
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 
-	cfg.TelegramBot.MustRegister()
+	cfg.TelegramBot.MustRegister(ctx)
 	svrs := startServers()
 	ll.SendMessage(fmt.Sprintf("–––\n✨ shipping-sync-service started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
 	defer ll.SendMessage("👻 shipping-sync-service stopped 👻\n–––")
@@ -72,12 +72,8 @@ func main() {
 	ghnSynchronizer := ghnsync.New(ghnCarrier)
 
 	ll.Info("Start ghn sync order")
-	go func() {
-		ghnSynchronizer.Start()
-	}()
-	go func() {
-		SyncUnCompleteFfms()
-	}()
+	go func() { defer cm.RecoverAndLog(); ghnSynchronizer.Start() }()
+	go func() { defer cm.RecoverAndLog(); SyncIncompleteFfms() }()
 
 	healthservice.MarkReady()
 

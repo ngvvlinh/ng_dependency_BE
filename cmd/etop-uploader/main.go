@@ -90,7 +90,7 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
-	cfg.TelegramBot.MustRegister()
+	cfg.TelegramBot.MustRegister(ctx)
 	ctx, ctxCancel = context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)

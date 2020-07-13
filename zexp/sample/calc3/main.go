@@ -26,11 +26,11 @@ func main() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 
-	sd, ctxCancel := lifecycle.WithCancel(context.Background())
-	defer sd.Wait()
+	sdCtx, ctxCancel := lifecycle.WithCancel(context.Background())
+	defer sdCtx.Wait()
 	lifecycle.ListenForSignal(ctxCancel, 30*time.Second)
 
 	server, err := build.Build(cfg)
 	cancelHTTP := lifecycle.StartHTTP(ctxCancel, server)
-	sd.Register(cancelHTTP)
+	sdCtx.Register(cancelHTTP)
 }

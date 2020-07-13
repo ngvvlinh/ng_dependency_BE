@@ -31,8 +31,8 @@ func main() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 
-	sd, ctxCancel := lifecycle.WithCancel(context.Background())
-	defer sd.Wait()
+	sdCtx, ctxCancel := lifecycle.WithCancel(context.Background())
+	defer sdCtx.Wait()
 	lifecycle.ListenForSignal(ctxCancel, 30*time.Second)
 
 	mux := http.NewServeMux()
@@ -70,5 +70,5 @@ func main() {
 		Server: s,
 	}
 	cancelHTTP := lifecycle.StartHTTP(ctxCancel, server)
-	sd.Register(cancelHTTP)
+	sdCtx.Register(cancelHTTP)
 }
