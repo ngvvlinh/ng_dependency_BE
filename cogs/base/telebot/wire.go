@@ -9,6 +9,7 @@ func DefaultConfig() cc.TelegramBot {
 			"webhook": 0,
 			"import":  0,
 			"sms":     0,
+			"high":    0,
 		},
 	}
 }
