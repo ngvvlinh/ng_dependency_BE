@@ -34,7 +34,9 @@ type Aggregate interface {
 
 	UpdateFulfillmentsStatus(context.Context, *UpdateFulfillmentsStatusArgs) error
 
-	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoArgs) (updated int, _ error)
+	ShopUpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoArgs) (updated int, _ error)
+
+	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoByAdminArgs) (updated int, _ error)
 
 	CancelFulfillment(context.Context, *CancelFulfillmentArgs) error
 
@@ -98,6 +100,8 @@ type CreateFulfillmentsArgs struct {
 	ConnectionID dot.ID
 
 	ShopCarrierID dot.ID
+
+	Coupon string
 }
 
 type ConfirmFulfillmentArgs struct {
@@ -110,7 +114,7 @@ type CancelFulfillmentArgs struct {
 	CancelReason string
 }
 
-type UpdateFulfillmentInfoArgs struct {
+type UpdateFulfillmentInfoByAdminArgs struct {
 	FulfillmentID dot.ID
 	ShippingCode  string
 	FullName      dot.NullString
@@ -159,6 +163,18 @@ type UpdateFulfillmentsStatusArgs struct {
 	Status         status4.NullStatus
 	ShopConfirm    status3.NullStatus
 	SyncStatus     status4.NullStatus
+}
+
+// +convert:update=Fulfillment(ID,ShopID)
+type UpdateFulfillmentInfoArgs struct {
+	FulfillmentID    dot.ID
+	AddressTo        *ordertypes.Address
+	AddressFrom      *ordertypes.Address
+	IncludeInsurance dot.NullBool
+	InsuranceValue   dot.NullInt
+	GrossWeight      dot.NullInt
+	TryOn            try_on.TryOnCode
+	ShippingNote     dot.NullString
 }
 
 type UpdateFulfillmentsCODTransferedAtArgs struct {

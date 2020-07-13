@@ -15,7 +15,7 @@ import (
 	database_min "o.o/backend/cogs/database/_min"
 	server_admin "o.o/backend/cogs/server/admin"
 	server_shop "o.o/backend/cogs/server/shop"
-	shipment_all "o.o/backend/cogs/shipment/_all"
+	shipment_fabo "o.o/backend/cogs/shipment/_fabo"
 	sms_min "o.o/backend/cogs/sms/_min"
 	_uploader "o.o/backend/cogs/uploader"
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
@@ -95,7 +95,7 @@ func Build(
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
-		shipment_all.WireSet,
+		shipment_fabo.WireSet,
 		database_min.WireSet,
 		sms_min.WireSet,
 		config_server.WireSet,

@@ -171,8 +171,28 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 		return fmt.Errorf(`unable to parse time %s`, data)
 	}
 
+	// handle timestamp
+	if len(data) > 0 && isNumber(string(data)) {
+		i, err := strconv.ParseInt(string(data), 10, 64)
+		if err != nil {
+			ll.Error("Unable to parse time", l.String("data", string(data)))
+		}
+		tt := time.Unix(i, 0)
+		*t = Time(tt)
+		return nil
+	}
+
 	// Zero time
 	return nil
+}
+
+func isNumber(text string) bool {
+	for _, ch := range text {
+		if ch < '0' || ch > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 var reDateString = regexp.MustCompile(`[0-9]{12,14}`)

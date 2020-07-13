@@ -2,6 +2,7 @@ package carrier
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
@@ -13,12 +14,53 @@ import (
 /*
 	- Sign In to connection using driver.
 	- Create order Update Shop Connection.
+	- Sign in email + password or send OTP (loginShopConnectionWithOTP)
 */
-func (m *ShipmentManager) ShopConnectionSignIn(ctx context.Context, args *ShopConnectionSignInArgs) (*connectioning.ShopConnection, error) {
+func (m *ShipmentManager) ShopConnectionSignIn(ctx context.Context, args *ShopConnectionSignInArgs) (*types.LoginShopConnectionResponse, error) {
 	signInCmd := &ConnectionSignInArgs{
 		ConnectionID: args.ConnectionID,
-		Email:        args.Email,
+		Identifier:   args.Identifier,
 		Password:     args.Password,
+	}
+	account, err := m.SignIn(ctx, signInCmd)
+	if err != nil {
+		return nil, err
+	}
+
+	// chỉ tạo hoặc cập nhật thông tin shopConnection khi login bằng email + password
+	if !account.IsRequiredOTP {
+		cmd2 := &connectioning.CreateOrUpdateShopConnectionCommand{
+			ShopID:       args.ShopID,
+			ConnectionID: args.ConnectionID,
+			Token:        account.Token,
+			ExternalData: &connectioning.ShopConnectionExternalData{
+				UserID:     account.UserID,
+				Identifier: args.Identifier,
+				ShopID:     account.ShopID,
+			},
+		}
+		if err := m.connectionAggr.Dispatch(ctx, cmd2); err != nil {
+			return nil, err
+		}
+		return &types.LoginShopConnectionResponse{
+			Code: "OK",
+		}, nil
+	}
+	return &types.LoginShopConnectionResponse{
+		Code: "OTP_SENT",
+		Msg:  fmt.Sprintf("đã gửi OTP đến sđt %s", args.Identifier),
+	}, nil
+}
+
+func (m *ShipmentManager) ShopConnectionSignInWithOTP(ctx context.Context, args *ShopConnectionSignInWithOTPArgs) (*connectioning.ShopConnection, error) {
+	if args.OTP == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "OTP không được rỗng.")
+	}
+
+	signInCmd := &ConnectionSignInArgs{
+		ConnectionID: args.ConnectionID,
+		Identifier:   args.Identifier,
+		OTP:          args.OTP,
 	}
 	account, err := m.SignIn(ctx, signInCmd)
 	if err != nil {
@@ -30,8 +72,9 @@ func (m *ShipmentManager) ShopConnectionSignIn(ctx context.Context, args *ShopCo
 		ConnectionID: args.ConnectionID,
 		Token:        account.Token,
 		ExternalData: &connectioning.ShopConnectionExternalData{
-			UserID: account.UserID,
-			Email:  args.Email,
+			UserID:     account.UserID,
+			Identifier: args.Identifier,
+			ShopID:     account.ShopID,
 		},
 	}
 	if err := m.connectionAggr.Dispatch(ctx, cmd2); err != nil {
@@ -48,7 +91,7 @@ func (m *ShipmentManager) ShopConnectionSignUp(ctx context.Context, args *ShopCo
 	signUpCmd := &ConnectionSignUpArgs{
 		ConnectionID: args.ConnectionID,
 		Name:         args.Name,
-		Email:        args.Email,
+		Identifier:   args.Identifier,
 		Password:     args.Password,
 		Phone:        args.Phone,
 		Province:     args.Province,
@@ -63,7 +106,7 @@ func (m *ShipmentManager) ShopConnectionSignUp(ctx context.Context, args *ShopCo
 		// Sign In
 		signInCmd := &ConnectionSignInArgs{
 			ConnectionID: args.ConnectionID,
-			Email:        args.Email,
+			Identifier:   args.Identifier,
 			Password:     args.Password,
 		}
 		newAccount, err = m.SignIn(ctx, signInCmd)
@@ -77,8 +120,8 @@ func (m *ShipmentManager) ShopConnectionSignUp(ctx context.Context, args *ShopCo
 		ConnectionID: args.ConnectionID,
 		Token:        newAccount.Token,
 		ExternalData: &connectioning.ShopConnectionExternalData{
-			UserID: newAccount.UserID,
-			Email:  args.Email,
+			UserID:     newAccount.UserID,
+			Identifier: args.Identifier,
 		},
 	}
 	if err := m.connectionAggr.Dispatch(ctx, cmd2); err != nil {
@@ -112,11 +155,11 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 	}
 
 	fromDistrict, fromProvince, fromWard := fromQuery.Result.District, fromQuery.Result.Province, fromQuery.Result.Ward
-	topDistrict, toProvince, toWard := toQuery.Result.District, toQuery.Result.Province, toQuery.Result.Ward
+	toDistrict, toProvince, toWard := toQuery.Result.District, toQuery.Result.Province, toQuery.Result.Ward
 	if fromDistrict == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ gửi không hợp lệ")
 	}
-	if topDistrict == nil {
+	if toDistrict == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ nhận không hợp lệ")
 	}
 
@@ -134,15 +177,17 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 		ConnectionIDs:    q.ConnectionIDs,
 		FromDistrictCode: fromDistrict.Code,
 		FromProvinceCode: fromProvince.Code,
-		ToDistrictCode:   topDistrict.Code,
+		ToDistrictCode:   toDistrict.Code,
 		ToProvinceCode:   toProvince.Code,
 		ChargeableWeight: chargeableWeight,
 		Length:           length,
 		Width:            width,
 		Height:           height,
 		IncludeInsurance: q.IncludeInsurance.Apply(false),
+		InsuranceValue:   q.InsuranceValue,
 		BasketValue:      q.BasketValue,
 		CODAmount:        q.TotalCodAmount,
+		Coupon:           q.Coupon,
 	}
 	if fromWard != nil {
 		res.FromWardCode = fromWard.Code

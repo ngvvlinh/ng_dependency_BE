@@ -1155,6 +1155,25 @@ func (ft *FulfillmentFilters) ByIncludeInsurancePtr(IncludeInsurance *bool) *sq.
 	}
 }
 
+func (ft *FulfillmentFilters) ByInsuranceValue(InsuranceValue int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "insurance_value",
+		Value:  InsuranceValue,
+		IsNil:  InsuranceValue == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByInsuranceValuePtr(InsuranceValue *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "insurance_value",
+		Value:  InsuranceValue,
+		IsNil:  InsuranceValue == nil,
+		IsZero: InsuranceValue != nil && (*InsuranceValue) == 0,
+	}
+}
+
 func (ft *FulfillmentFilters) ByShippingType(ShippingType orderingtypes.ShippingType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1817,6 +1836,25 @@ func (ft *FulfillmentFilters) ByExternalAffiliateIDPtr(ExternalAffiliateID *stri
 		Value:  ExternalAffiliateID,
 		IsNil:  ExternalAffiliateID == nil,
 		IsZero: ExternalAffiliateID != nil && (*ExternalAffiliateID) == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByCoupon(Coupon string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "coupon",
+		Value:  Coupon,
+		IsNil:  Coupon == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByCouponPtr(Coupon *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "coupon",
+		Value:  Coupon,
+		IsNil:  Coupon == nil,
+		IsZero: Coupon != nil && (*Coupon) == "",
 	}
 }
 

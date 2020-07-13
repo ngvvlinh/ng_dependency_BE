@@ -110,6 +110,7 @@ type Fulfillment struct {
 	ShippingNote        string
 	TryOn               try_on.TryOnCode
 	IncludeInsurance    bool
+	InsuranceValue      int
 	ShippingType        ordertypes.ShippingType
 	ConnectionID        dot.ID
 	ConnectionMethod    connection_type.ConnectionMethod
@@ -165,6 +166,8 @@ type Fulfillment struct {
 
 	DeliveryRoute       string
 	ExternalAffiliateID string
+
+	Coupon string
 
 	Rid dot.ID
 }

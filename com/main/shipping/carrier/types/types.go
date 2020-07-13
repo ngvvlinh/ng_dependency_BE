@@ -5,6 +5,7 @@ import (
 
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
 )
 
@@ -15,7 +16,11 @@ type ShipmentCarrier interface {
 
 	CreateFulfillment(context.Context, *shipmodel.Fulfillment, *GetShippingServicesArgs, *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error)
 
-	UpdateFulfillment(context.Context, *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error)
+	RefreshFulfillment(context.Context, *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error)
+
+	UpdateFulfillmentInfo(context.Context, *shipmodel.Fulfillment) error
+
+	UpdateFulfillmentCOD(context.Context, *shipmodel.Fulfillment) error
 
 	CancelFulfillment(context.Context, *shipmodel.Fulfillment) error
 
@@ -42,19 +47,22 @@ type GetShippingServicesArgs struct {
 	ToDistrictCode   string
 	ToWardCode       string
 
-	ChargeableWeight       int
-	Length                 int
-	Width                  int
-	Height                 int
-	IncludeInsurance       bool
-	BasketValue            int
-	CODAmount              int
+	ChargeableWeight int
+	Length           int
+	Width            int
+	Height           int
+	IncludeInsurance bool
+	InsuranceValue   int
+	BasketValue      int
+	CODAmount        int
+	Coupon           string
+
 	IncludeTopshipServices bool
 }
 
 func (args *GetShippingServicesArgs) GetInsuranceAmount(maxValueFreeInsurance int) int {
 	if args.IncludeInsurance {
-		return args.BasketValue
+		return cm.CoalesceInt(args.InsuranceValue, args.BasketValue)
 	}
 	if args.BasketValue <= maxValueFreeInsurance {
 		return args.BasketValue
@@ -63,8 +71,10 @@ func (args *GetShippingServicesArgs) GetInsuranceAmount(maxValueFreeInsurance in
 }
 
 type SignInArgs struct {
-	Email    string
-	Password string
+	Identifier string // email or phone
+	Password   string
+	// Field is added to resolve a situation when signIn(new mechanism) with  GHN
+	OTP string
 }
 
 type SignUpArgs struct {
@@ -78,6 +88,8 @@ type SignUpArgs struct {
 }
 
 type AccountResponse struct {
-	Token  string
-	UserID string
+	Token         string
+	UserID        string
+	ShopID        string
+	IsRequiredOTP bool
 }

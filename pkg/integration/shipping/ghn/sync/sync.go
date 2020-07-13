@@ -15,7 +15,7 @@ import (
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
-	"o.o/backend/pkg/integration/shipping/ghn/update"
+	ghnupdatev1 "o.o/backend/pkg/integration/shipping/ghn/update/v1"
 	"o.o/capi/dot"
 	"o.o/common/l"
 	"o.o/common/xerrors"
@@ -185,7 +185,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		ffmLastSyncAt := ffm.LastSyncAt
 		if logUpdateAt.After(ffmLastSyncAt) {
 			msgFakeCallback := oLog.OrderInfo.ToFakeCallbackOrder()
-			ffm, err = update.CalcUpdateFulfillment(ffm, msgFakeCallback)
+			ffm, err = ghnupdatev1.CalcUpdateFulfillment(ffm, msgFakeCallback)
 			if err != nil {
 				continue
 			}

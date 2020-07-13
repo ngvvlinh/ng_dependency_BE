@@ -67,6 +67,10 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*shippingmodel.Fulfillment) = out0
 		return nil
 	})
+	s.Register((*shipping.UpdateFulfillmentInfoArgs)(nil), (*shipping.Fulfillment)(nil), func(arg, out interface{}) error {
+		Apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg.(*shipping.UpdateFulfillmentInfoArgs), out.(*shipping.Fulfillment))
+		return nil
+	})
 	s.Register((*modely.FulfillmentExtended)(nil), (*shipping.FulfillmentExtended)(nil), func(arg, out interface{}) error {
 		Convert_modely_FulfillmentExtended_shipping_FulfillmentExtended(arg.(*modely.FulfillmentExtended), out.(*shipping.FulfillmentExtended))
 		return nil
@@ -234,6 +238,8 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.ShippingNote = arg.ShippingNote                                             // simple assign
 	out.TryOn = arg.TryOn                                                           // simple assign
 	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
+	out.InsuranceValue = arg.InsuranceValue                                         // simple assign
+	out.Coupon = arg.Coupon                                                         // simple assign
 	out.CreatedAt = arg.CreatedAt                                                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                                                   // simple assign
 	out.ClosedAt = arg.ClosedAt                                                     // simple assign
@@ -356,6 +362,7 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.ShippingNote = arg.ShippingNote                                             // simple assign
 	out.TryOn = arg.TryOn                                                           // simple assign
 	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
+	out.InsuranceValue = arg.InsuranceValue                                         // simple assign
 	out.ShippingType = arg.ShippingType                                             // simple assign
 	out.ConnectionID = arg.ConnectionID                                             // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod                                     // simple assign
@@ -394,6 +401,7 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.Height = 0                // zero value
 	out.DeliveryRoute = ""        // zero value
 	out.ExternalAffiliateID = ""  // zero value
+	out.Coupon = arg.Coupon       // simple assign
 	out.Rid = 0                   // zero value
 }
 
@@ -407,6 +415,89 @@ func Convert_shipping_Fulfillments_shippingmodel_Fulfillments(args []*shipping.F
 		outs[i] = Convert_shipping_Fulfillment_shippingmodel_Fulfillment(args[i], &tmps[i])
 	}
 	return outs
+}
+
+func Apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping.UpdateFulfillmentInfoArgs, out *shipping.Fulfillment) *shipping.Fulfillment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipping.Fulfillment{}
+	}
+	apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg, out)
+	return out
+}
+
+func apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping.UpdateFulfillmentInfoArgs, out *shipping.Fulfillment) {
+	out.ID = out.ID                                                                 // identifier
+	out.OrderID = out.OrderID                                                       // no change
+	out.ShopID = out.ShopID                                                         // identifier
+	out.PartnerID = out.PartnerID                                                   // no change
+	out.Lines = out.Lines                                                           // no change
+	out.ShopConfirm = out.ShopConfirm                                               // no change
+	out.ConfirmStatus = out.ConfirmStatus                                           // no change
+	out.Status = out.Status                                                         // no change
+	out.ShippingState = out.ShippingState                                           // no change
+	out.ShippingStatus = out.ShippingStatus                                         // no change
+	out.EtopPaymentStatus = out.EtopPaymentStatus                                   // no change
+	out.ShippingFeeShop = out.ShippingFeeShop                                       // no change
+	out.ProviderShippingFeeLines = out.ProviderShippingFeeLines                     // no change
+	out.ShippingFeeShopLines = out.ShippingFeeShopLines                             // no change
+	out.TotalItems = out.TotalItems                                                 // no change
+	out.TotalWeight = out.TotalWeight                                               // no change
+	out.TotalDiscount = out.TotalDiscount                                           // no change
+	out.TotalAmount = out.TotalAmount                                               // no change
+	out.TotalCODAmount = out.TotalCODAmount                                         // no change
+	out.ActualCompensationAmount = out.ActualCompensationAmount                     // no change
+	out.EtopDiscount = out.EtopDiscount                                             // no change
+	out.EtopFeeAdjustment = out.EtopFeeAdjustment                                   // no change
+	out.WeightInfo = out.WeightInfo                                                 // no change
+	out.ValueInfo = out.ValueInfo                                                   // no change
+	out.CODEtopTransferedAt = out.CODEtopTransferedAt                               // no change
+	out.MoneyTransactionID = out.MoneyTransactionID                                 // no change
+	out.MoneyTransactionShippingExternalID = out.MoneyTransactionShippingExternalID // no change
+	out.ShippingType = out.ShippingType                                             // no change
+	out.ConnectionID = out.ConnectionID                                             // no change
+	out.ConnectionMethod = out.ConnectionMethod                                     // no change
+	out.ShopCarrierID = out.ShopCarrierID                                           // no change
+	out.ProviderServiceID = out.ProviderServiceID                                   // no change
+	out.ShippingCode = out.ShippingCode                                             // no change
+	out.ShippingServiceName = out.ShippingServiceName                               // no change
+	out.ShippingNote = arg.ShippingNote.Apply(out.ShippingNote)                     // apply change
+	out.TryOn = arg.TryOn                                                           // simple assign
+	out.IncludeInsurance = arg.IncludeInsurance.Apply(out.IncludeInsurance)         // apply change
+	out.InsuranceValue = arg.InsuranceValue.Apply(out.InsuranceValue)               // apply change
+	out.Coupon = out.Coupon                                                         // no change
+	out.CreatedAt = out.CreatedAt                                                   // no change
+	out.UpdatedAt = out.UpdatedAt                                                   // no change
+	out.ClosedAt = out.ClosedAt                                                     // no change
+	out.ShippingCancelledAt = out.ShippingCancelledAt                               // no change
+	out.CancelReason = out.CancelReason                                             // no change
+	out.ShippingProvider = out.ShippingProvider                                     // no change
+	out.ExternalShippingName = out.ExternalShippingName                             // no change
+	out.ExternalShippingFee = out.ExternalShippingFee                               // no change
+	out.ShippingFeeCustomer = out.ShippingFeeCustomer                               // no change
+	out.ExternalShippingID = out.ExternalShippingID                                 // no change
+	out.ExternalShippingCode = out.ExternalShippingCode                             // no change
+	out.ExternalShippingCreatedAt = out.ExternalShippingCreatedAt                   // no change
+	out.ExternalShippingUpdatedAt = out.ExternalShippingUpdatedAt                   // no change
+	out.ExternalShippingCancelledAt = out.ExternalShippingCancelledAt               // no change
+	out.ExternalShippingDeliveredAt = out.ExternalShippingDeliveredAt               // no change
+	out.ExternalShippingReturnedAt = out.ExternalShippingReturnedAt                 // no change
+	out.ExternalShippingState = out.ExternalShippingState                           // no change
+	out.ExternalShippingStatus = out.ExternalShippingStatus                         // no change
+	out.ExternalShippingNote = out.ExternalShippingNote                             // no change
+	out.ExternalShippingSubState = out.ExternalShippingSubState                     // no change
+	out.ExternalShippingLogs = out.ExternalShippingLogs                             // no change
+	out.SyncStatus = out.SyncStatus                                                 // no change
+	out.SyncStates = out.SyncStates                                                 // no change
+	out.ExpectedDeliveryAt = out.ExpectedDeliveryAt                                 // no change
+	out.ExpectedPickAt = out.ExpectedPickAt                                         // no change
+	out.ShippingFeeShopTransferedAt = out.ShippingFeeShopTransferedAt               // no change
+	out.AddressTo = arg.AddressTo                                                   // simple assign
+	out.AddressFrom = arg.AddressFrom                                               // simple assign
+	out.EtopAdjustedShippingFeeMain = out.EtopAdjustedShippingFeeMain               // no change
+	out.EtopPriceRule = out.EtopPriceRule                                           // no change
 }
 
 //-- convert o.o/api/main/shipping.FulfillmentExtended --//

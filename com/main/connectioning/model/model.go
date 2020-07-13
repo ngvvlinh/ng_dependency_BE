@@ -31,6 +31,7 @@ type Connection struct {
 	Services             []*ConnectionService
 	WLPartnerID          dot.ID
 	OriginConnectionID   dot.ID
+	Version              string // version api
 }
 
 // +sqlgen
@@ -55,11 +56,16 @@ type ConnectionStates struct {
 type EtopAffiliateAccount struct {
 	UserID string `json:"user_id"`
 	Token  string `json:"token"`
+	// shop_id used for GHN
+	ShopID string `json:"shop_id"`
 }
 
 type ShopConnectionExternalData struct {
 	UserID string `json:"user_id"`
-	Email  string `json:"email"`
+	// old: email
+	// new: identifier include either email or phone
+	Identifier string `json:"identifier"` // email or phone
+	ShopID     string `json:"shop_id"`
 }
 
 type ConnectionService struct {

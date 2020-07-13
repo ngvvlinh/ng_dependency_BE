@@ -17,7 +17,7 @@ import (
 	"o.o/backend/cogs/server/shop"
 	"o.o/backend/cogs/server/vtpay"
 	"o.o/backend/cogs/shipment/_all"
-	"o.o/backend/cogs/shipment/ghn"
+	"o.o/backend/cogs/shipment/ghn/_all"
 	"o.o/backend/cogs/shipment/ghtk"
 	"o.o/backend/cogs/shipment/vtpost"
 	"o.o/backend/cogs/shipnow/_all"
@@ -139,13 +139,14 @@ import (
 	"o.o/backend/pkg/integration/shipnow/ahamove"
 	"o.o/backend/pkg/integration/shipnow/ahamove/client"
 	server2 "o.o/backend/pkg/integration/shipnow/ahamove/server"
-	webhook5 "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
+	webhook4 "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
 	"o.o/backend/pkg/integration/shipping/ghn"
-	webhook2 "o.o/backend/pkg/integration/shipping/ghn/webhook"
+	"o.o/backend/pkg/integration/shipping/ghn/webhook/v1"
+	"o.o/backend/pkg/integration/shipping/ghn/webhook/v2"
 	"o.o/backend/pkg/integration/shipping/ghtk"
-	webhook3 "o.o/backend/pkg/integration/shipping/ghtk/webhook"
+	webhook2 "o.o/backend/pkg/integration/shipping/ghtk/webhook"
 	"o.o/backend/pkg/integration/shipping/vtpost"
-	webhook4 "o.o/backend/pkg/integration/shipping/vtpost/webhook"
+	webhook3 "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	"o.o/backend/pkg/integration/sms"
 	api2 "o.o/backend/pkg/services/affiliate/api"
 )
@@ -185,11 +186,11 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	tokenStore := tokens.NewTokenStore(store)
 	smsConfig := cfg.SMS
 	whiteLabel := cfg.WhiteLabel
-	v2 := sms_all.SupportedSMSDrivers(whiteLabel, smsConfig)
+	v3 := sms_all.SupportedSMSDrivers(whiteLabel, smsConfig)
 	logDB := databases.Log
 	smsLogAggregate := aggregate.NewSmsLogAggregate(eventBus, logDB)
 	smslogCommandBus := aggregate.SmsLogAggregateMessageBus(smsLogAggregate)
-	smsClient := sms.New(smsConfig, v2, smslogCommandBus)
+	smsClient := sms.New(smsConfig, v3, smslogCommandBus)
 	smtpConfig := cfg.SMTP
 	emailClient := email.New(smtpConfig)
 	userService := &api.UserService{
@@ -336,8 +337,8 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	notifierDB := databases.Notifier
 	sqlstoreStore := sqlstore.New(mainDB, notifierDB, queryBus, eventBus)
 	shipment_allConfig := cfg.Shipment
-	v3 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, queryBus)
-	carrierManager := shipping_provider.NewCtrl(eventBus, queryBus, v3)
+	v4 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, queryBus)
+	carrierManager := shipping_provider.NewCtrl(eventBus, queryBus, v4)
 	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	connectionQuery := query13.NewConnectionQuery(mainDB)
 	connectioningQueryBus := query13.ConnectionQueryMessageBus(connectionQuery)
@@ -370,9 +371,10 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	queryService2 := query14.NewQueryService(mainDB)
 	shippingQueryBus := query14.QueryServiceMessageBus(queryService2)
 	fulfillmentService := &shop.FulfillmentService{
-		Session:       session,
-		ShippingQuery: shippingQueryBus,
-		ShippingCtrl:  carrierManager,
+		Session:         session,
+		ShipmentManager: shipmentManager,
+		ShippingQuery:   shippingQueryBus,
+		ShippingCtrl:    carrierManager,
 	}
 	shipnowAggregate := shipnow.NewAggregate(eventBus, mainDB, queryBus, identityQueryBus, addressQueryBus, orderingQueryBus, shipnowManager)
 	shipnowCommandBus := shipnow.AggregateMessageBus(shipnowAggregate)
@@ -422,8 +424,8 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	}
 	config2 := cfg.VTPay
 	provider := vtpay.New(config2)
-	v4 := payment_all.AllSupportedPaymentProviders(provider)
-	paymentManager := manager.NewManager(v4, orderingQueryBus)
+	v5 := payment_all.AllSupportedPaymentProviders(provider)
+	paymentManager := manager.NewManager(v5, orderingQueryBus)
 	managerCommandBus := manager.ManagerMesssageBus(paymentManager)
 	paymentService := &shop.PaymentService{
 		Session:     session,
@@ -858,23 +860,24 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	webhookConfig := shipment_allConfig.GHNWebhook
 	ghnConfig := shipment_allConfig.GHN
 	ghnCarrier := ghn.New(ghnConfig, queryBus)
-	webhookWebhook := webhook2.New(mainDB, logDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
-	ghnWebhookServer := _ghn.NewGHNWebhookServer(webhookConfig, shipmentManager, ghnCarrier, identityQueryBus, shippingCommandBus, webhookWebhook)
+	v1Webhook := v1.New(mainDB, logDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
+	v2Webhook := v2.New(mainDB, logDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
+	ghnWebhookServer := _all.NewGHNWebhookServer(webhookConfig, shipmentManager, ghnCarrier, identityQueryBus, shippingCommandBus, v1Webhook, v2Webhook)
 	_ghtkWebhookConfig := shipment_allConfig.GHTKWebhook
 	ghtkConfig := shipment_allConfig.GHTK
 	ghtkCarrier := ghtk.New(ghtkConfig, queryBus)
-	webhook6 := webhook3.New(mainDB, logDB, ghtkCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
-	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, ghtkCarrier, identityQueryBus, shippingCommandBus, webhook6)
+	webhookWebhook := webhook2.New(mainDB, logDB, ghtkCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
+	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, ghtkCarrier, identityQueryBus, shippingCommandBus, webhookWebhook)
 	_vtpostWebhookConfig := shipment_allConfig.VTPostWebhook
 	vtpostConfig := shipment_allConfig.VTPost
 	vtpostCarrier := vtpost.New(vtpostConfig, queryBus)
-	webhook7 := webhook4.New(mainDB, logDB, vtpostCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
-	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, identityQueryBus, shippingCommandBus, webhook7)
+	webhook5 := webhook3.New(mainDB, logDB, vtpostCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
+	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, identityQueryBus, shippingCommandBus, webhook5)
 	serverWebhookConfig := cfg.AhamoveWebhook
 	ahamoveVerificationFileServer := server2.NewAhamoveVerificationFileServer(ctx, identityQueryBus)
-	webhook8 := webhook5.New(mainDB, logDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus)
-	ahamoveWebhookServer := server2.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, identityQueryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook8)
-	v5 := BuildServers(mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
+	webhook6 := webhook4.New(mainDB, logDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus)
+	ahamoveWebhookServer := server2.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, identityQueryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook6)
+	v6 := BuildServers(mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
 	processManager := pm.New(eventBus, identityQueryBus, invitationQueryBus)
 	pmProcessManager := pm2.New(eventBus, catalogQueryBus, orderingQueryBus, inventoryCommandBus)
 	processManager2 := pm3.New(eventBus, invitationQueryBus, invitationCommandBus)
@@ -899,7 +902,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	captchaConfig := cfg.Captcha
 	captchaCaptcha := captcha.New(captchaConfig)
 	output := Output{
-		Servers:           v5,
+		Servers:           v6,
 		_identityPM:       processManager,
 		_inventoryPM:      pmProcessManager,
 		_invitationPM:     processManager2,

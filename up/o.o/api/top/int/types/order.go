@@ -456,17 +456,19 @@ type OrderWithErrorsResponse struct {
 func (m *OrderWithErrorsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetExternalShippingServicesRequest struct {
-	// @deprecated use carrier instead
-	Provider         shipping_provider.ShippingProvider `json:"provider"`
-	Carrier          shipping_provider.ShippingProvider `json:"carrier"`
-	FromDistrictCode string                             `json:"from_district_code"`
-	FromProvinceCode string                             `json:"from_province_code"`
-	ToDistrictCode   string                             `json:"to_district_code"`
-	ToProvinceCode   string                             `json:"to_province_code"`
-	FromProvince     string                             `json:"from_province"`
-	FromDistrict     string                             `json:"from_district"`
-	ToProvince       string                             `json:"to_province"`
-	ToDistrict       string                             `json:"to_district"`
+	FromProvinceCode string `json:"from_province_code"`
+	FromDistrictCode string `json:"from_district_code"`
+	FromWardCode     string `json:"from_ward_code"`
+	FromProvince     string `json:"from_province"`
+	FromDistrict     string `json:"from_district"`
+	FromWard         string `json:"from_ward"`
+	ToProvince       string `json:"to_province"`
+	ToDistrict       string `json:"to_district"`
+	ToWard           string `json:"to_ward"`
+	ToProvinceCode   string `json:"to_province_code"`
+	ToDistrictCode   string `json:"to_district_code"`
+	ToWardCode       string `json:"to_ward_code"`
+
 	// @deprecated use gross_weight instead
 	Weight           int `json:"weight"`
 	GrossWeight      int `json:"gross_weight"`
@@ -479,8 +481,40 @@ type GetExternalShippingServicesRequest struct {
 	// @deprecated use cod_amount instead
 	TotalCodAmount   int          `json:"total_cod_amount"`
 	CodAmount        int          `json:"cod_amount"`
+	Coupon           string       `json:"coupon"`
 	BasketValue      int          `json:"basket_value"`
 	IncludeInsurance dot.NullBool `json:"include_insurance"`
+	InsuranceValue   int          `json:"insurance_value"`
+}
+
+func (m *GetExternalShippingServicesRequest) ToGetShippingServicesRequest() *GetShippingServicesRequest {
+	if m == nil {
+		return nil
+	}
+	return &GetShippingServicesRequest{
+		FromProvinceCode: m.FromProvinceCode,
+		FromDistrictCode: m.FromDistrictCode,
+		FromWardCode:     m.FromWardCode,
+		FromProvince:     m.FromProvince,
+		FromDistrict:     m.FromDistrict,
+		FromWard:         m.FromWard,
+		ToProvinceCode:   m.ToProvinceCode,
+		ToDistrictCode:   m.ToDistrictCode,
+		ToWardCode:       m.ToWardCode,
+		ToProvince:       m.ToProvince,
+		ToDistrict:       m.ToDistrict,
+		ToWard:           m.ToWard,
+		GrossWeight:      m.GrossWeight,
+		ChargeableWeight: m.ChargeableWeight,
+		Length:           m.Length,
+		Width:            m.Width,
+		Height:           m.Height,
+		TotalCodAmount:   m.TotalCodAmount,
+		BasketValue:      m.BasketValue,
+		IncludeInsurance: m.IncludeInsurance,
+		InsuranceValue:   m.InsuranceValue,
+		Coupon:           m.Coupon,
+	}
 }
 
 func (m *GetExternalShippingServicesRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -987,6 +1021,8 @@ type GetShippingServicesRequest struct {
 	TotalCodAmount   int          `json:"total_cod_amount"`
 	BasketValue      int          `json:"basket_value"`
 	IncludeInsurance dot.NullBool `json:"include_insurance"`
+	InsuranceValue   int          `json:"insurance_value"`
+	Coupon           string       `json:"coupon"`
 }
 
 func (m *GetShippingServicesRequest) String() string { return jsonx.MustMarshalToString(m) }

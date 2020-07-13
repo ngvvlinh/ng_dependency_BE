@@ -152,12 +152,21 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 		ExpectedDeliveryAt:       service.ExpectedDeliveryAt,
 		ProviderShippingFeeLines: toShippingFeeLines(resp.ShippingFeeLines),
 		ShippingFeeShopLines:     toShippingFeeLines(resp.ShippingFeeLines),
+		InsuranceValue:           args.BasketValue,
 	}
 	return updateFfm, nil
 }
 
-func (d *DirectShipmentDriver) UpdateFulfillment(context.Context, *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+func (d *DirectShipmentDriver) RefreshFulfillment(context.Context, *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
 	return nil, cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+}
+
+func (d *DirectShipmentDriver) UpdateFulfillmentCOD(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+}
+
+func (d *DirectShipmentDriver) UpdateFulfillmentInfo(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
 }
 
 func (d *DirectShipmentDriver) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) error {
@@ -230,7 +239,7 @@ func (d *DirectShipmentDriver) GetMaxValueFreeInsuranceFee() int {
 
 func (d *DirectShipmentDriver) SignIn(ctx context.Context, args *carriertypes.SignInArgs) (*carriertypes.AccountResponse, error) {
 	cmd := &directclient.SignInRequest{
-		Email:    args.Email,
+		Email:    args.Identifier,
 		Password: args.Password,
 	}
 	resp, err := d.client.SignIn(ctx, cmd)

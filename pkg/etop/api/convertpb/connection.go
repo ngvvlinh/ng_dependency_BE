@@ -21,8 +21,9 @@ func PbShopConnection(c *connectioning.ShopConnection) *types.ShopConnection {
 	}
 	if c.ExternalData != nil {
 		res.ExternalData = &types.ShopConnectionExternalData{
-			Email:  c.ExternalData.Email,
-			UserID: c.ExternalData.UserID,
+			Email:      c.ExternalData.Identifier,
+			Identifier: c.ExternalData.Identifier,
+			UserID:     c.ExternalData.UserID,
 		}
 	}
 	return res

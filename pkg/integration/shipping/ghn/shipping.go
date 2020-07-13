@@ -21,7 +21,7 @@ import (
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
-	ghnupdate "o.o/backend/pkg/integration/shipping/ghn/update"
+	ghnupdatev1 "o.o/backend/pkg/integration/shipping/ghn/update/v1"
 	"o.o/capi/dot"
 )
 
@@ -296,7 +296,7 @@ func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermod
 }
 
 func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fulfillment, orderGHN *ghnclient.Order) (*shipmodel.Fulfillment, error) {
-	update, err := ghnupdate.CalcRefreshFulfillmentInfo(ffm, orderGHN)
+	update, err := ghnupdatev1.CalcRefreshFulfillmentInfo(ffm, orderGHN)
 	if err != nil {
 		return nil, err
 	}

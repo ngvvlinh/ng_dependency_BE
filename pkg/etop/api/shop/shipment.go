@@ -79,12 +79,14 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *api.CreateF
 		ValueInfo: shippingtypes.ValueInfo{
 			CODAmount:        q.CODAmount,
 			IncludeInsurance: q.IncludeInsurance,
+			InsuranceValue:   q.InsuranceValue,
 		},
 		TryOn:         q.TryOn,
 		ShippingNote:  q.ShippingNote,
 		ShippingType:  q.ShippingType,
 		ConnectionID:  q.ConnectionID,
 		ShopCarrierID: q.ShopCarrierID,
+		Coupon:        q.Coupon,
 	}
 	if err := s.ShippingAggregate.Dispatch(ctx, args); err != nil {
 		return nil, err
@@ -101,6 +103,49 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *api.CreateF
 		Fulfillments: ffms,
 	}
 	return res, nil
+}
+
+func (s *ShipmentService) UpdateFulfillmentInfo(ctx context.Context, q *api.UpdateFulfillmentInfoRequest) (res *pbcm.UpdatedResponse, _ error) {
+	updateFulfillmentInfo := &shipping.ShopUpdateFulfillmentInfoCommand{
+		FulfillmentID:    q.FulfillmentID,
+		AddressTo:        convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.PickupAddress),
+		AddressFrom:      convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ShippingAddress),
+		IncludeInsurance: q.IncludeInsurance,
+		InsuranceValue:   q.InsuranceValue,
+		GrossWeight:      q.GrossWeight,
+		TryOn:            q.TryOn,
+		ShippingNote:     q.ShippingNote,
+	}
+	if err := s.ShippingAggregate.Dispatch(ctx, updateFulfillmentInfo); err != nil {
+		return nil, err
+	}
+	res = &pbcm.UpdatedResponse{Updated: updateFulfillmentInfo.Result}
+	return res, nil
+}
+
+func (s *ShipmentService) UpdateFulfillmentCOD(ctx context.Context, q *api.UpdateFulfillmentCODRequest) (*pbcm.UpdatedResponse, error) {
+	key := fmt.Sprintf("UpdateFulfillmentCOD %v-%v", s.SS.Shop().ID, q.FulfillmentID)
+	res, _, err := idempgroup.DoAndWrap(
+		ctx, key, 10*time.Second, "cập nhật COD",
+		func() (interface{}, error) { return s.updateFulfillmentCOD(ctx, q) })
+
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pbcm.UpdatedResponse), nil
+}
+
+func (s *ShipmentService) updateFulfillmentCOD(ctx context.Context, q *api.UpdateFulfillmentCODRequest) (*pbcm.UpdatedResponse, error) {
+	updateFulfillmentShippingFeesCmd := &shipping.UpdateFulfillmentShippingFeesCommand{
+		FulfillmentID:  q.FulfillmentID,
+		TotalCODAmount: dot.Int(q.CODAmount),
+	}
+	if err := s.ShippingAggregate.Dispatch(ctx, updateFulfillmentShippingFeesCmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{
+		Updated: 1,
+	}, nil
 }
 
 func (s *ShipmentService) CancelFulfillment(ctx context.Context, q *api.CancelFulfillmentRequest) (*pbcm.UpdatedResponse, error) {

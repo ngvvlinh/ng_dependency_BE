@@ -86,7 +86,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		// request get order in GHTK
 		// get provider shipping fee lines
 		// if error occurred, ignore it, update data from webhook
-		updateFfm, _ := wh.shipmentManager.UpdateFulfillment(ctx, ffm)
+		updateFfm, _ := wh.shipmentManager.RefreshFulfillment(ctx, ffm)
 		// trạng thái phụ của đơn ghtk nằm trong data webhook
 		// state_id ở webhook khác state_id khi get order ghtk
 		updateFfm, err = ghtkupdate.CalcUpdateFulfillmentFromWebhook(ffm, &msg, updateFfm)

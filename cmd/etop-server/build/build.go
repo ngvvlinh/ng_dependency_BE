@@ -14,7 +14,7 @@ import (
 	_main "o.o/backend/cogs/server/main"
 	server_shop "o.o/backend/cogs/server/shop"
 	server_vtpay "o.o/backend/cogs/server/vtpay"
-	_ghn "o.o/backend/cogs/shipment/ghn"
+	_ghn "o.o/backend/cogs/shipment/ghn/_all"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	catalogpm "o.o/backend/com/main/catalog/pm"

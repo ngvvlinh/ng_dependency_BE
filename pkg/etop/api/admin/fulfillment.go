@@ -104,6 +104,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *admin.GetFu
 	}
 	return result, nil
 }
+
 func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context, r *admin.UpdateFulfillmentShippingStateRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipping.UpdateFulfillmentShippingStateCommand{
 		FulfillmentID:            r.ID,

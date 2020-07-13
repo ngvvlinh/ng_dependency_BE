@@ -308,8 +308,9 @@ func (a *ConnectionAggregate) CreateBuiltinConnection(ctx context.Context, args 
 			Status:       status3.P,
 			IsGlobal:     true,
 			ExternalData: &model.ShopConnectionExternalData{
-				UserID: args.ExternalData.UserID,
-				Email:  args.ExternalData.Email,
+				UserID:     args.ExternalData.UserID,
+				Identifier: args.ExternalData.Identifier,
+				ShopID:     args.ExternalData.ShopID,
 			},
 		}
 

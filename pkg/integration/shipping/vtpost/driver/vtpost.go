@@ -107,6 +107,7 @@ func (d VTPostDriver) CreateFulfillment(
 
 	deliveryDate := time.Now()
 	deliveryDate.Add(30 * time.Minute)
+	insuranceValue := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 	cmd := &vtpostclient.CreateOrderRequest{
 		OrderNumber: "", // will be filled later
 		// hard code: 30 mins from now
@@ -125,7 +126,7 @@ func (d VTPostDriver) CreateFulfillment(
 		ReceiverWard:       toWard.VtpostId,
 		ReceiverDistrict:   toDistrict.VtpostId,
 		ReceiverProvince:   toProvince.VtpostId,
-		ProductPrice:       args.GetInsuranceAmount(maxValueFreeInsuranceFee),
+		ProductPrice:       insuranceValue,
 		ProductWeight:      args.ChargeableWeight,
 		OrderNote:          note,
 		MoneyCollection:    ffm.TotalCODAmount,
@@ -170,6 +171,7 @@ func (d VTPostDriver) CreateFulfillment(
 		},
 		ExpectedPickAt:     service.ExpectedPickAt,
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
+		InsuranceValue:     insuranceValue,
 	}
 
 	// recalculate shipping fee
@@ -392,6 +394,14 @@ func (d *VTPostDriver) GenerateServiceID(generator *randgenerator.RandGenerator,
 	return string(code) + _serviceCode, nil
 }
 
-func (d *VTPostDriver) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+func (d *VTPostDriver) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
 	return nil, cm.Errorf(cm.InvalidArgument, nil, "VTPost does not support API get order info")
+}
+
+func (d *VTPostDriver) UpdateFulfillmentInfo(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+}
+
+func (d *VTPostDriver) UpdateFulfillmentCOD(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
 }

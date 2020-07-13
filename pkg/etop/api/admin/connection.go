@@ -65,13 +65,16 @@ func (s *ConnectionService) CreateBuiltinConnection(ctx context.Context, r *type
 	if r.ExternalData == nil || r.ExternalData.UserID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "UserID không được để trống")
 	}
+
+	identifier := cm.Coalesce(r.ExternalData.Email, r.ExternalData.Identifier)
 	cmd := &connectioning.CreateBuiltinConnectionCommand{
 		ID:    r.ConnectionID,
 		Name:  r.Name,
 		Token: r.Token,
 		ExternalData: &connectioning.ShopConnectionExternalData{
-			UserID: r.ExternalData.UserID,
-			Email:  r.ExternalData.Email,
+			UserID:     r.ExternalData.UserID,
+			Identifier: identifier,
+			ShopID:     r.ExternalData.ShopID,
 		},
 	}
 	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
@@ -107,12 +110,14 @@ func (s *ConnectionService) UpdateBuiltinShopConnection(ctx context.Context, r *
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Connection không hợp lệ")
 	}
 
+	identifier := cm.Coalesce(r.ExternalData.Email, r.ExternalData.Identifier)
 	cmd := &connectioning.UpdateShopConnectionTokenCommand{
 		ConnectionID: r.ConnectionID,
 		Token:        r.Token,
 		ExternalData: &connectioning.ShopConnectionExternalData{
-			UserID: r.ExternalData.UserID,
-			Email:  r.ExternalData.Email,
+			UserID:     r.ExternalData.UserID,
+			Identifier: identifier,
+			ShopID:     r.ExternalData.ShopID,
 		},
 	}
 	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {

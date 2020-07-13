@@ -8,7 +8,7 @@ import (
 	config_server "o.o/backend/cogs/config/_server"
 	server_admin "o.o/backend/cogs/server/admin"
 	server_shop "o.o/backend/cogs/server/shop"
-	_ghn "o.o/backend/cogs/shipment/ghn"
+	ghnv2 "o.o/backend/cogs/shipment/ghn/v2"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
@@ -86,7 +86,7 @@ type Output struct {
 
 func BuildServers(
 	mainServer MainServer,
-	ghnServer _ghn.GHNWebhookServer,
+	ghnServer ghnv2.GHNWebhookServer,
 	ghtkServer _ghtk.GHTKWebhookServer,
 	vtpostServer _vtpost.VTPostWebhookServer,
 	fbWebhook FBWebhookServer,

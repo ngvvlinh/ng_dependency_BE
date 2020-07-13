@@ -44,7 +44,9 @@ import (
 	directclient "o.o/backend/pkg/integration/shipping/direct/client"
 	directdriver "o.o/backend/pkg/integration/shipping/direct/driver"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
+	ghnclientv2 "o.o/backend/pkg/integration/shipping/ghn/clientv2"
 	ghndriver "o.o/backend/pkg/integration/shipping/ghn/driver"
+	ghndriverv2 "o.o/backend/pkg/integration/shipping/ghn/driverv2"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 	ghtkdriver "o.o/backend/pkg/integration/shipping/ghtk/driver"
 	vtpostdriver "o.o/backend/pkg/integration/shipping/vtpost/driver"
@@ -170,6 +172,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 
 	switch connection.ConnectionProvider {
 	case connection_type.ConnectionProviderGHN:
+		version := connection.Version
 		if shopConnection.ExternalData == nil {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection ExternalData is missing (connection_id = %v, shop_id = %v)", connection.ID, shopConnection.ShopID)
 		}
@@ -178,21 +181,41 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 		if err != nil {
 			return nil, cm.Errorf(cm.InvalidArgument, err, "Connection ExternalData: UserID is invalid")
 		}
-		cfg := ghnclient.GHNAccountCfg{
-			ClientID: clientID,
-			Token:    shopConnection.Token,
-		}
-		if etopAffiliateAccount != nil {
+
+		switch version {
+		case "v2":
+			shopIDConnectionStr := shopConnection.ExternalData.ShopID
+			shopIDConnection, err := strconv.Atoi(shopIDConnectionStr)
+			if err != nil {
+				return nil, cm.Errorf(cm.InvalidArgument, err, "Connection ExternalData: ShopID is invalid")
+			}
+			cfg := ghnclientv2.GHNAccountCfg{
+				ClientID: clientID,
+				ShopID:   shopIDConnection,
+				Token:    shopConnection.Token,
+			}
 			if affiliateID, err := strconv.Atoi(etopAffiliateAccount.UserID); err == nil {
 				cfg.AffiliateID = affiliateID
 			}
+			driver := ghndriverv2.New(m.Env, cfg, m.LocationQS)
+			return driver, nil
+		default:
+			cfg := ghnclient.GHNAccountCfg{
+				ClientID: clientID,
+				Token:    shopConnection.Token,
+			}
+			if etopAffiliateAccount != nil {
+				if affiliateID, err := strconv.Atoi(etopAffiliateAccount.UserID); err == nil {
+					cfg.AffiliateID = affiliateID
+				}
+			}
+			webhookEndpoint, err := m.GetWebhookEndpoint(connection_type.ConnectionProviderGHN)
+			if err != nil {
+				return nil, err
+			}
+			driver := ghndriver.New(m.Env, cfg, m.LocationQS, webhookEndpoint)
+			return driver, nil
 		}
-		webhookEndpoint, err := m.GetWebhookEndpoint(connection_type.ConnectionProviderGHN)
-		if err != nil {
-			return nil, err
-		}
-		driver := ghndriver.New(m.Env, cfg, m.LocationQS, webhookEndpoint)
-		return driver, nil
 
 	case connection_type.ConnectionProviderGHTK:
 		cfg := ghtkclient.GhtkAccount{
@@ -303,8 +326,10 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		Width:            ffm.Width,
 		Height:           ffm.Height,
 		IncludeInsurance: ffm.IncludeInsurance,
+		InsuranceValue:   ffm.InsuranceValue,
 		BasketValue:      ffm.BasketValue,
 		CODAmount:        ffm.TotalCODAmount,
+		Coupon:           ffm.Coupon,
 	}
 	allServices, err := m.GetShipmentServicesAndMakeupPrice(ctx, args, ffm.ConnectionID)
 	if err != nil {
@@ -364,6 +389,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	if err != nil {
 		return err
 	}
+
 	// update shipping service name
 	ffmToUpdate.ShippingServiceName = providerService.Name
 
@@ -474,8 +500,9 @@ func (m *ShipmentManager) SignIn(ctx context.Context, args *ConnectionSignInArgs
 		return nil, err
 	}
 	cmd := &carriertypes.SignInArgs{
-		Email:    args.Email,
-		Password: args.Password,
+		Identifier: args.Identifier,
+		Password:   args.Password,
+		OTP:        args.OTP,
 	}
 	return driver.SignIn(ctx, cmd)
 }
@@ -487,7 +514,7 @@ func (m *ShipmentManager) SignUp(ctx context.Context, args *ConnectionSignUpArgs
 	}
 	cmd := &carriertypes.SignUpArgs{
 		Name:     args.Name,
-		Email:    args.Email,
+		Email:    args.Identifier,
 		Password: args.Password,
 		Phone:    args.Phone,
 		Province: args.Province,
@@ -508,10 +535,12 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Do not support this feature for this connection")
 	}
 
-	var userID, token string
+	var userID, token, shopIDStr string
+	version := conn.Version
 	if conn.EtopAffiliateAccount != nil {
 		userID = conn.EtopAffiliateAccount.UserID
 		token = conn.EtopAffiliateAccount.Token
+		shopIDStr = conn.EtopAffiliateAccount.ShopID
 	}
 
 	switch conn.ConnectionProvider {
@@ -520,16 +549,31 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 		if err != nil {
 			return nil, cm.Errorf(cm.InvalidArgument, err, "AffiliateAccount: UserID is invalid")
 		}
-		cfg := ghnclient.GHNAccountCfg{
-			ClientID: clientID,
-			Token:    token,
+		switch version {
+		case "v2":
+			shopID, err := strconv.Atoi(shopIDStr)
+			if err != nil {
+				return nil, cm.Errorf(cm.InvalidArgument, err, "AffiliateAcount: ShopID is invalid")
+			}
+			cfg := ghnclientv2.GHNAccountCfg{
+				ClientID: clientID,
+				ShopID:   shopID,
+				Token:    token,
+			}
+			driver := ghndriverv2.New(m.Env, cfg, m.LocationQS)
+			return driver, nil
+		default:
+			cfg := ghnclient.GHNAccountCfg{
+				ClientID: clientID,
+				Token:    token,
+			}
+			webhookEndpoint, err := m.GetWebhookEndpoint(connection_type.ConnectionProviderGHN)
+			if err != nil {
+				return nil, err
+			}
+			driver := ghndriver.New(m.Env, cfg, m.LocationQS, webhookEndpoint)
+			return driver, nil
 		}
-		webhookEndpoint, err := m.GetWebhookEndpoint(connection_type.ConnectionProviderGHN)
-		if err != nil {
-			return nil, err
-		}
-		driver := ghndriver.New(m.Env, cfg, m.LocationQS, webhookEndpoint)
-		return driver, nil
 	case connection_type.ConnectionProviderGHTK:
 		cfg := ghtkclient.GhtkAccount{
 			AccountID: userID,
@@ -548,18 +592,42 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 	}
 }
 
-func (m *ShipmentManager) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (updateFfm *shipmodel.Fulfillment, err error) {
+func (m *ShipmentManager) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (updateFfm *shipmodel.Fulfillment, err error) {
 	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "invalid connection (ffm_id = %v)", ffm.ID)
 	}
 
-	updateFfm, err = driver.UpdateFulfillment(ctx, ffm)
+	updateFfm, err = driver.RefreshFulfillment(ctx, ffm)
 	if err != nil {
 		return nil, err
 	}
 	return
+}
+
+func (m *ShipmentManager) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fulfillment) error {
+	driver, err := m.getShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
+	if err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "invalid connection")
+	}
+
+	if _, _, err := m.VerifyDistrictCode(ffm.AddressFrom); err != nil {
+		return cm.Errorf(cm.Internal, err, "FromDistrictCode: %v", err)
+	}
+	if _, _, err := m.VerifyDistrictCode(ffm.AddressTo); err != nil {
+		return cm.Errorf(cm.Internal, err, "ToDistrictCode: %v", err)
+	}
+
+	return driver.UpdateFulfillmentInfo(ctx, ffm)
+}
+
+func (m *ShipmentManager) UpdateFulfillmentCOD(ctx context.Context, ffm *shipmodel.Fulfillment) error {
+	driver, err := m.getShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
+	if err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "invalid connection")
+	}
+	return driver.UpdateFulfillmentCOD(ctx, ffm)
 }
 
 func (m *ShipmentManager) GetConnectionByID(ctx context.Context, connID dot.ID) (*connectioning.Connection, error) {

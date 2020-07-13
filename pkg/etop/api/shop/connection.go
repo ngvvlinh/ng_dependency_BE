@@ -72,7 +72,7 @@ func (s *ConnectionService) RegisterShopConnection(ctx context.Context, q *types
 		ConnectionID: q.ConnectionID,
 		ShopID:       s.SS.Shop().ID,
 		Name:         q.Name,
-		Email:        q.Email,
+		Identifier:   q.Email,
 		Password:     q.Password,
 		Phone:        q.Phone,
 		Province:     q.Province,
@@ -87,19 +87,35 @@ func (s *ConnectionService) RegisterShopConnection(ctx context.Context, q *types
 	return result, nil
 }
 
-func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *types.LoginShopConnectionRequest) (*types.ShopConnection, error) {
+func (s *ConnectionService) LoginShopConnection(ctx context.Context, q *types.LoginShopConnectionRequest) (*types.LoginShopConnectionResponse, error) {
+	identifier := cm.Coalesce(q.Email, q.Identifier)
 	cmd := &carrier.ShopConnectionSignInArgs{
 		ConnectionID: q.ConnectionID,
 		ShopID:       s.SS.Shop().ID,
-		Email:        q.Email,
+		Identifier:   identifier,
 		Password:     q.Password,
 	}
-	shopConnection, err := s.ShipmentManager.ShopConnectionSignIn(ctx, cmd)
+	result, err := s.ShipmentManager.ShopConnectionSignIn(ctx, cmd)
 	if err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShopConnection(shopConnection)
 	return result, nil
+}
+
+func (s *ConnectionService) LoginShopConnectionWithOTP(ctx context.Context, q *types.LoginShopConnectionWithOTPRequest) (*types.LoginShopConnectionWithOTPResponse, error) {
+	cmd := &carrier.ShopConnectionSignInWithOTPArgs{
+		ConnectionID: q.ConnectionID,
+		ShopID:       s.SS.Shop().ID,
+		Identifier:   q.Identifier,
+		OTP:          q.OTP,
+	}
+	_, err := s.ShipmentManager.ShopConnectionSignInWithOTP(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+	return &types.LoginShopConnectionWithOTPResponse{
+		Code: "OK",
+	}, nil
 }
 
 func (s *ConnectionService) DeleteShopConnection(ctx context.Context, q *types.DeleteShopConnectionRequest) (*pbcm.DeletedResponse, error) {
@@ -120,13 +136,16 @@ func (s *ConnectionService) UpdateShopConnection(ctx context.Context, r *types.U
 	if r.ExternalData == nil || r.ExternalData.UserID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "UserID không được để trống")
 	}
+
+	identifier := cm.Coalesce(r.ExternalData.Email, r.ExternalData.Identifier)
 	cmd := &connectioning.UpdateShopConnectionTokenCommand{
 		ShopID:       s.SS.Shop().ID,
 		ConnectionID: r.ConnectionID,
 		Token:        r.Token,
 		ExternalData: &connectioning.ShopConnectionExternalData{
-			UserID: r.ExternalData.UserID,
-			Email:  r.ExternalData.Email,
+			UserID:     r.ExternalData.UserID,
+			Identifier: identifier,
+			ShopID:     r.ExternalData.ShopID,
 		},
 	}
 	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {

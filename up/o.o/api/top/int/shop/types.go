@@ -2701,6 +2701,8 @@ type CreateFulfillmentsRequest struct {
 	Length              int                     `json:"length"`
 	CODAmount           int                     `json:"cod_amount"`
 	IncludeInsurance    bool                    `json:"include_insurance"`
+	InsuranceValue      int                     `json:"insurance_value"`
+	Coupon              string                  `json:"coupon"`
 
 	ConnectionID  dot.ID `json:"connection_id"`
 	ShopCarrierID dot.ID `json:"shop_carrier_id"`
@@ -2721,6 +2723,17 @@ func (m *CreateFulfillmentsResponse) Reset() {
 }
 func (m *CreateFulfillmentsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
+type UpdateFulfillmentCODRequest struct {
+	FulfillmentID dot.ID `json:"fulfillment_id"`
+	CODAmount     int    `json:"cod_amount"`
+}
+
+func (m *UpdateFulfillmentCODRequest) Reset() {
+	*m = UpdateFulfillmentCODRequest{}
+}
+
+func (m *UpdateFulfillmentCODRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type CancelFulfillmentRequest struct {
 	FulfillmentID dot.ID `json:"fulfillment_id"`
 	CancelReason  string `json:"cancel_reason"`
@@ -2730,3 +2743,18 @@ func (m *CancelFulfillmentRequest) Reset() {
 	*m = CancelFulfillmentRequest{}
 }
 func (m *CancelFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateFulfillmentInfoRequest struct {
+	FulfillmentID    dot.ID              `json:"fulfillment_id"`
+	PickupAddress    *types.OrderAddress `json:"pickup_address"`
+	ShippingAddress  *types.OrderAddress `json:"shipping_address"`
+	IncludeInsurance dot.NullBool        `json:"include_insurance"`
+	InsuranceValue   dot.NullInt         `json:"insurance_value"`
+	GrossWeight      dot.NullInt         `json:"gross_weight"`
+	TryOn            try_on.TryOnCode    `json:"try_on"`
+	ShippingNote     dot.NullString      `json:"shipping_note"`
+}
+
+func (m *UpdateFulfillmentInfoRequest) Reset() { *m = UpdateFulfillmentInfoRequest{} }
+
+func (m *UpdateFulfillmentInfoRequest) String() string { return jsonx.MustMarshalToString(m) }

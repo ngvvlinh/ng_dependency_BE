@@ -5,7 +5,7 @@ import (
 	_telebot "o.o/backend/cogs/base/telebot"
 	config_server "o.o/backend/cogs/config/_server"
 	database_min "o.o/backend/cogs/database/_min"
-	shipment_all "o.o/backend/cogs/shipment/_all"
+	shipment_fabo "o.o/backend/cogs/shipment/_fabo"
 	_uploader "o.o/backend/cogs/uploader"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/main/invitation/aggregate"
@@ -22,7 +22,7 @@ import (
 type Config struct {
 	SharedConfig config_server.SharedConfig `yaml:",inline"`
 	Databases    database_min.Config        `yaml:",inline"`
-	Shipment     shipment_all.Config        `yaml:",inline"`
+	Shipment     shipment_fabo.Config       `yaml:",inline"`
 
 	Redis cc.Redis `yaml:"redis"`
 
@@ -70,7 +70,7 @@ func Default() Config {
 			URLPrefix: "http://localhost:8080",
 		},
 		TelegramBot: _telebot.DefaultConfig(),
-		Shipment:    shipment_all.DefaultConfig(),
+		Shipment:    shipment_fabo.DefaultConfig(),
 		SMS: sms.Config{
 			Mock:    true,
 			Enabled: true,

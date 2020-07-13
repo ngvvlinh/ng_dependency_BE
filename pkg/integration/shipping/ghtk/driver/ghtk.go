@@ -91,6 +91,7 @@ func (d *GHTKDriver) CreateFulfillment(
 		return nil, err
 	}
 
+	insuranceValue := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 	cmd := &ghtkclient.CreateOrderRequest{
 		Products: products,
 		Order: &ghtkclient.OrderRequest{
@@ -110,7 +111,7 @@ func (d *GHTKDriver) CreateFulfillment(
 			Tel:          ffm.AddressTo.Phone,
 			Note:         note,
 			WeightOption: "gram",
-			Value:        args.GetInsuranceAmount(maxValueFreeInsuranceFee),
+			Value:        insuranceValue,
 			TotalWeight:  float32(args.ChargeableWeight),
 			Transport:    transport,
 		},
@@ -165,6 +166,7 @@ func (d *GHTKDriver) CreateFulfillment(
 		},
 		ExpectedPickAt:     service.ExpectedPickAt,
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
+		InsuranceValue:     insuranceValue,
 	}
 	// Calc expected delivery at
 	// add some rules
@@ -337,7 +339,7 @@ func (d *GHTKDriver) GetMaxValueFreeInsuranceFee() int {
 
 func (d *GHTKDriver) SignIn(ctx context.Context, args *carriertypes.SignInArgs) (*carriertypes.AccountResponse, error) {
 	cmd := &ghtkclient.SignInRequest{
-		Email:    args.Email,
+		Email:    args.Identifier,
 		Password: args.Password,
 	}
 	resp, err := d.client.SignIn(ctx, cmd)
@@ -426,7 +428,7 @@ func (d *GHTKDriver) GenerateServiceID(generator *randgenerator.RandGenerator, t
 	return string(code), nil
 }
 
-func (d *GHTKDriver) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, err error) {
+func (d *GHTKDriver) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, err error) {
 	externalOrder, err := d.client.GetOrder(ctx, ffm.ShippingCode, "")
 	if err != nil {
 		return nil, err
@@ -434,4 +436,12 @@ func (d *GHTKDriver) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfi
 
 	ffmToUpdate, err = ghtkupdate.CalcRefreshFulfillmentInfo(ffm, &externalOrder.Order)
 	return
+}
+
+func (d *GHTKDriver) UpdateFulfillmentCOD(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+}
+
+func (d *GHTKDriver) UpdateFulfillmentInfo(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
 }

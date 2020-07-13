@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Connections []*Connection
 
 const __sqlConnection_Table = "connection"
-const __sqlConnection_ListCols = "\"id\",\"name\",\"status\",\"partner_id\",\"created_at\",\"updated_at\",\"deleted_at\",\"driver_config\",\"driver\",\"connection_type\",\"connection_subtype\",\"connection_method\",\"connection_provider\",\"etop_affiliate_account\",\"code\",\"image_url\",\"services\",\"wl_partner_id\",\"origin_connection_id\""
-const __sqlConnection_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"status\" = EXCLUDED.\"status\",\"partner_id\" = EXCLUDED.\"partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"driver_config\" = EXCLUDED.\"driver_config\",\"driver\" = EXCLUDED.\"driver\",\"connection_type\" = EXCLUDED.\"connection_type\",\"connection_subtype\" = EXCLUDED.\"connection_subtype\",\"connection_method\" = EXCLUDED.\"connection_method\",\"connection_provider\" = EXCLUDED.\"connection_provider\",\"etop_affiliate_account\" = EXCLUDED.\"etop_affiliate_account\",\"code\" = EXCLUDED.\"code\",\"image_url\" = EXCLUDED.\"image_url\",\"services\" = EXCLUDED.\"services\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"origin_connection_id\" = EXCLUDED.\"origin_connection_id\""
+const __sqlConnection_ListCols = "\"id\",\"name\",\"status\",\"partner_id\",\"created_at\",\"updated_at\",\"deleted_at\",\"driver_config\",\"driver\",\"connection_type\",\"connection_subtype\",\"connection_method\",\"connection_provider\",\"etop_affiliate_account\",\"code\",\"image_url\",\"services\",\"wl_partner_id\",\"origin_connection_id\",\"version\""
+const __sqlConnection_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"status\" = EXCLUDED.\"status\",\"partner_id\" = EXCLUDED.\"partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"driver_config\" = EXCLUDED.\"driver_config\",\"driver\" = EXCLUDED.\"driver\",\"connection_type\" = EXCLUDED.\"connection_type\",\"connection_subtype\" = EXCLUDED.\"connection_subtype\",\"connection_method\" = EXCLUDED.\"connection_method\",\"connection_provider\" = EXCLUDED.\"connection_provider\",\"etop_affiliate_account\" = EXCLUDED.\"etop_affiliate_account\",\"code\" = EXCLUDED.\"code\",\"image_url\" = EXCLUDED.\"image_url\",\"services\" = EXCLUDED.\"services\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"origin_connection_id\" = EXCLUDED.\"origin_connection_id\",\"version\" = EXCLUDED.\"version\""
 const __sqlConnection_Insert = "INSERT INTO \"connection\" (" + __sqlConnection_ListCols + ") VALUES"
 const __sqlConnection_Select = "SELECT " + __sqlConnection_ListCols + " FROM \"connection\""
 const __sqlConnection_Select_history = "SELECT " + __sqlConnection_ListCols + " FROM history.\"connection\""
@@ -191,6 +191,13 @@ func (m *Connection) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"version": {
+			ColumnName:       "version",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "connection", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -223,6 +230,7 @@ func (m *Connection) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.Services},
 		m.WLPartnerID,
 		m.OriginConnectionID,
+		core.String(m.Version),
 	}
 }
 
@@ -247,6 +255,7 @@ func (m *Connection) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.Services},
 		&m.WLPartnerID,
 		&m.OriginConnectionID,
+		(*core.String)(&m.Version),
 	}
 }
 
@@ -284,7 +293,7 @@ func (_ *Connections) SQLSelect(w SQLWriter) error {
 func (m *Connection) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlConnection_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -294,7 +303,7 @@ func (ms Connections) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlConnection_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(19)
+		w.WriteMarkers(20)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -477,6 +486,14 @@ func (m *Connection) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.OriginConnectionID)
 	}
+	if m.Version != "" {
+		flag = true
+		w.WriteName("version")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Version)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -487,7 +504,7 @@ func (m *Connection) SQLUpdate(w SQLWriter) error {
 func (m *Connection) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlConnection_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -540,17 +557,18 @@ func (m ConnectionHistory) WLPartnerID() core.Interface { return core.Interface{
 func (m ConnectionHistory) OriginConnectionID() core.Interface {
 	return core.Interface{m["origin_connection_id"]}
 }
+func (m ConnectionHistory) Version() core.Interface { return core.Interface{m["version"]} }
 
 func (m *ConnectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ConnectionHistory, 19)
+	res := make(ConnectionHistory, 20)
 	res["id"] = data[0]
 	res["name"] = data[1]
 	res["status"] = data[2]
@@ -570,14 +588,15 @@ func (m *ConnectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["services"] = data[16]
 	res["wl_partner_id"] = data[17]
 	res["origin_connection_id"] = data[18]
+	res["version"] = data[19]
 	*m = res
 	return nil
 }
 
 func (ms *ConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ConnectionHistories, 0, 128)
@@ -605,6 +624,7 @@ func (ms *ConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["services"] = data[16]
 		m["wl_partner_id"] = data[17]
 		m["origin_connection_id"] = data[18]
+		m["version"] = data[19]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

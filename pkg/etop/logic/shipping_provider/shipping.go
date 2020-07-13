@@ -1,14 +1,10 @@
 package shipping_provider
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"time"
 
-	"o.o/api/main/location"
-	"o.o/api/top/int/types"
-	pbsp "o.o/api/top/types/etc/shipping_provider"
 	shippingprovider "o.o/api/top/types/etc/shipping_provider"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
@@ -27,139 +23,6 @@ var blockCarriers = map[shippingprovider.ShippingProvider]*struct {
 		DateFrom: time.Date(2020, 1, 17, 0, 0, 0, 0, time.Local),
 		DateTo:   time.Date(2020, 2, 9, 0, 0, 0, 0, time.Local),
 	},
-}
-
-func (ctrl *CarrierManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *types.GetExternalShippingServicesRequest) ([]*shippingsharemodel.AvailableShippingService, error) {
-	fromQuery := &location.FindOrGetLocationQuery{
-		ProvinceCode: q.FromProvinceCode,
-		DistrictCode: q.FromDistrictCode,
-		Province:     q.FromProvince,
-		District:     q.FromDistrict,
-	}
-	toQuery := &location.FindOrGetLocationQuery{
-		ProvinceCode: q.ToProvinceCode,
-		DistrictCode: q.ToDistrictCode,
-		Province:     q.ToProvince,
-		District:     q.ToDistrict,
-	}
-	if err := ctrl.location.Dispatch(ctx, fromQuery); err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "địa chỉ gửi không hợp lệ: %v", err)
-	}
-	if err := ctrl.location.Dispatch(ctx, toQuery); err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "địa chỉ nhận không hợp lệ: %v", err)
-	}
-
-	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
-	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
-	if fromDistrict == nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "địa chỉ gửi không hợp lệ")
-	}
-	if toDistrict == nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "địa chỉ nhận không hợp lệ")
-	}
-
-	var res []*shippingsharemodel.AvailableShippingService
-	weight := q.Weight
-	if q.GrossWeight != 0 {
-		weight = q.GrossWeight
-	}
-	length := q.Length
-	width := q.Width
-	height := q.Height
-	chargeableWeight := q.ChargeableWeight
-	calculatedChargeableWeight := model.CalcChargeableWeight(weight, length, width, height)
-	if chargeableWeight == 0 {
-		chargeableWeight = calculatedChargeableWeight
-
-	} else if chargeableWeight < calculatedChargeableWeight {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Khối lượng tính phí không hợp lệ.").
-			WithMetap("chargeable_weight", chargeableWeight).
-			WithMetap("gross_weight", q.GrossWeight).
-			WithMetap("volumetric_weight (= length*width*height / 5)", length*width*height/5).
-			WithMetap("expected chargeable_weight (= MAX(gross_weight, volumetric_weight))", calculatedChargeableWeight)
-	}
-
-	value := q.Value
-	if q.BasketValue != 0 {
-		value = q.BasketValue
-	}
-	includeInsurance := q.IncludeInsurance.Apply(false)
-
-	totalCODAmount := q.TotalCodAmount
-	if q.CodAmount != 0 {
-		totalCODAmount = q.CodAmount
-	}
-
-	args := GetShippingServicesArgs{
-		AccountID:        accountID,
-		FromDistrictCode: fromDistrict.Code,
-		ToDistrictCode:   toDistrict.Code,
-		ChargeableWeight: chargeableWeight,
-		Length:           length,
-		Width:            width,
-		Height:           height,
-		IncludeInsurance: includeInsurance,
-		BasketValue:      value,
-		CODAmount:        totalCODAmount,
-	}
-
-	switch q.Provider {
-	case pbsp.All, pbsp.Unknown:
-		ch := make(chan []*shippingsharemodel.AvailableShippingService, 3)
-		go func() {
-			defer catchAndRecover()
-
-			var services []*shippingsharemodel.AvailableShippingService
-			var err error
-			defer func() { sendServices(ch, services, err) }()
-			services, err = ctrl.GetShippingProviderDriver(shippingprovider.GHN).GetAllShippingServices(ctx, args)
-		}()
-		go func() {
-			defer catchAndRecover()
-
-			var services []*shippingsharemodel.AvailableShippingService
-			var err error
-			defer func() { sendServices(ch, services, err) }()
-			services, err = ctrl.GetShippingProviderDriver(shippingprovider.GHTK).GetAllShippingServices(ctx, args)
-		}()
-		go func() {
-			var services []*shippingsharemodel.AvailableShippingService
-
-			if err := checkBlockCarrier(shippingprovider.VTPost); err != nil {
-				sendServices(ch, nil, nil)
-				return
-			}
-
-			var err error
-			defer func() { sendServices(ch, services, err) }()
-			services, err = ctrl.GetShippingProviderDriver(shippingprovider.VTPost).GetAllShippingServices(ctx, args)
-		}()
-		for i := 0; i < 3; i++ {
-			res = append(res, <-ch...)
-		}
-
-	default:
-		driver := ctrl.GetShippingProviderDriver(q.Provider)
-		if driver == nil {
-			return nil, cm.Error(cm.InvalidArgument, "Invalid carrier", nil)
-		}
-
-		services, err := driver.GetAllShippingServices(ctx, args)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, services...)
-	}
-
-	if len(res) == 0 {
-		return nil, cm.Errorf(cm.ExternalServiceError, nil,
-			"Tuyến giao hàng từ địa chỉ %v, %v đến địa chỉ %v, %v không được hỗ trợ bởi đơn vị vận chuyển nào",
-			fromDistrict.Name, fromProvince.Name, toDistrict.Name, toProvince.Name).
-			Log("District", l.String("from_code", fromDistrict.Code), l.String("to_code", toDistrict.Code))
-	}
-
-	res = CompactServices(res)
-	return res, nil
 }
 
 func sendServices(ch chan<- []*shippingsharemodel.AvailableShippingService, services []*shippingsharemodel.AvailableShippingService, err error) {

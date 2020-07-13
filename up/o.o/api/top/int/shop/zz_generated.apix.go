@@ -978,6 +978,19 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 			return
 		}
 		return msg, fn, nil
+	case "/shop.Connection/LoginShopConnectionWithOTP":
+		msg := &inttypes.LoginShopConnectionWithOTPRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.LoginShopConnectionWithOTP(ctx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Connection/RegisterShopConnection":
 		msg := &inttypes.RegisterShopConnectionRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -3763,6 +3776,32 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.GetShippingServices(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Shipment/UpdateFulfillmentCOD":
+		msg := &UpdateFulfillmentCODRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateFulfillmentCOD(ctx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Shipment/UpdateFulfillmentInfo":
+		msg := &UpdateFulfillmentInfoRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateFulfillmentInfo(ctx, msg)
 			return
 		}
 		return msg, fn, nil

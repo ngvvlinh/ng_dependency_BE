@@ -8,7 +8,7 @@ import (
 	"o.o/api/main/location"
 	"o.o/api/top/types/etc/connection_type"
 	_shipment "o.o/backend/cogs/shipment"
-	_ghn "o.o/backend/cogs/shipment/ghn"
+	_ghn "o.o/backend/cogs/shipment/ghn/_all"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"

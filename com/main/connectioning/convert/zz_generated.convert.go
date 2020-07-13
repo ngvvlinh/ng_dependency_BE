@@ -168,6 +168,7 @@ func convert_connectioningmodel_Connection_connectioning_Connection(arg *connect
 	out.Services = Convert_connectioningmodel_ConnectionServices_connectioning_ConnectionServices(arg.Services)
 	out.WLPartnerID = arg.WLPartnerID               // simple assign
 	out.OriginConnectionID = arg.OriginConnectionID // simple assign
+	out.Version = arg.Version                       // simple assign
 }
 
 func Convert_connectioningmodel_Connections_connectioning_Connections(args []*connectioningmodel.Connection) (outs []*connectioning.Connection) {
@@ -213,6 +214,7 @@ func convert_connectioning_Connection_connectioningmodel_Connection(arg *connect
 	out.Services = Convert_connectioning_ConnectionServices_connectioningmodel_ConnectionServices(arg.Services)
 	out.WLPartnerID = arg.WLPartnerID               // simple assign
 	out.OriginConnectionID = arg.OriginConnectionID // simple assign
+	out.Version = arg.Version                       // simple assign
 }
 
 func Convert_connectioning_Connections_connectioningmodel_Connections(args []*connectioning.Connection) (outs []*connectioningmodel.Connection) {
@@ -258,6 +260,7 @@ func apply_connectioning_CreateConnectionArgs_connectioning_Connection(arg *conn
 	out.Services = arg.Services                     // simple assign
 	out.WLPartnerID = 0                             // zero value
 	out.OriginConnectionID = arg.OriginConnectionID // simple assign
+	out.Version = ""                                // zero value
 }
 
 func Apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Connection(arg *connectioning.UpdateConnectionAffiliateAccountArgs, out *connectioning.Connection) *connectioning.Connection {
@@ -291,6 +294,7 @@ func apply_connectioning_UpdateConnectionAffiliateAccountArgs_connectioning_Conn
 	out.Services = out.Services                         // no change
 	out.WLPartnerID = out.WLPartnerID                   // no change
 	out.OriginConnectionID = out.OriginConnectionID     // no change
+	out.Version = out.Version                           // no change
 }
 
 func Apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *connectioning.UpdateConnectionArgs, out *connectioning.Connection) *connectioning.Connection {
@@ -324,6 +328,7 @@ func apply_connectioning_UpdateConnectionArgs_connectioning_Connection(arg *conn
 	out.Services = arg.Services                         // simple assign
 	out.WLPartnerID = out.WLPartnerID                   // no change
 	out.OriginConnectionID = out.OriginConnectionID     // no change
+	out.Version = out.Version                           // no change
 }
 
 //-- convert o.o/api/main/connectioning.ConnectionService --//
@@ -400,6 +405,7 @@ func Convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliate
 func convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliateAccount(arg *connectioningmodel.EtopAffiliateAccount, out *connectioning.EtopAffiliateAccount) {
 	out.UserID = arg.UserID // simple assign
 	out.Token = arg.Token   // simple assign
+	out.ShopID = arg.ShopID // simple assign
 }
 
 func Convert_connectioningmodel_EtopAffiliateAccounts_connectioning_EtopAffiliateAccounts(args []*connectioningmodel.EtopAffiliateAccount) (outs []*connectioning.EtopAffiliateAccount) {
@@ -428,6 +434,7 @@ func Convert_connectioning_EtopAffiliateAccount_connectioningmodel_EtopAffiliate
 func convert_connectioning_EtopAffiliateAccount_connectioningmodel_EtopAffiliateAccount(arg *connectioning.EtopAffiliateAccount, out *connectioningmodel.EtopAffiliateAccount) {
 	out.UserID = arg.UserID // simple assign
 	out.Token = arg.Token   // simple assign
+	out.ShopID = arg.ShopID // simple assign
 }
 
 func Convert_connectioning_EtopAffiliateAccounts_connectioningmodel_EtopAffiliateAccounts(args []*connectioning.EtopAffiliateAccount) (outs []*connectioningmodel.EtopAffiliateAccount) {
@@ -579,8 +586,9 @@ func Convert_connectioningmodel_ShopConnectionExternalData_connectioning_ShopCon
 }
 
 func convert_connectioningmodel_ShopConnectionExternalData_connectioning_ShopConnectionExternalData(arg *connectioningmodel.ShopConnectionExternalData, out *connectioning.ShopConnectionExternalData) {
-	out.UserID = arg.UserID // simple assign
-	out.Email = arg.Email   // simple assign
+	out.UserID = arg.UserID         // simple assign
+	out.Identifier = arg.Identifier // simple assign
+	out.ShopID = arg.ShopID         // simple assign
 }
 
 func Convert_connectioningmodel_ShopConnectionExternalDatas_connectioning_ShopConnectionExternalDatas(args []*connectioningmodel.ShopConnectionExternalData) (outs []*connectioning.ShopConnectionExternalData) {
@@ -607,8 +615,9 @@ func Convert_connectioning_ShopConnectionExternalData_connectioningmodel_ShopCon
 }
 
 func convert_connectioning_ShopConnectionExternalData_connectioningmodel_ShopConnectionExternalData(arg *connectioning.ShopConnectionExternalData, out *connectioningmodel.ShopConnectionExternalData) {
-	out.UserID = arg.UserID // simple assign
-	out.Email = arg.Email   // simple assign
+	out.UserID = arg.UserID         // simple assign
+	out.Identifier = arg.Identifier // simple assign
+	out.ShopID = arg.ShopID         // simple assign
 }
 
 func Convert_connectioning_ShopConnectionExternalDatas_connectioningmodel_ShopConnectionExternalDatas(args []*connectioning.ShopConnectionExternalData) (outs []*connectioningmodel.ShopConnectionExternalData) {

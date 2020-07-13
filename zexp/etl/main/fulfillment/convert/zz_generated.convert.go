@@ -122,6 +122,7 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.ShippingNote = arg.ShippingNote                                             // simple assign
 	out.TryOn = arg.TryOn                                                           // simple assign
 	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
+	out.InsuranceValue = 0                                                          // zero value
 	out.ShippingType = 0                                                            // zero value
 	out.ConnectionID = arg.ConnectionID                                             // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod                                     // simple assign
@@ -160,6 +161,7 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.Height = arg.Height                                                         // simple assign
 	out.DeliveryRoute = arg.DeliveryRoute                                           // simple assign
 	out.ExternalAffiliateID = ""                                                    // zero value
+	out.Coupon = ""                                                                 // zero value
 	out.Rid = arg.Rid                                                               // simple assign
 }
 

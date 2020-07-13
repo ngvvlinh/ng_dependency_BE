@@ -42,6 +42,9 @@ type Connection struct {
 	// Trường hợp tích hợp vận chuyển, để trở thành NVC nằm trong TopShip, NVC cần tạo một connection với method = direct
 	// Sau đó admin sẽ tạo một connection với method = builtin (nằm trong TopShip) với originConnectionID là connection ở trên.
 	OriginConnectionID dot.ID
+
+	// This field identify version of API
+	Version string
 }
 
 type ConnectionDriverConfig struct {
@@ -55,8 +58,9 @@ type ConnectionDriverConfig struct {
 }
 
 type EtopAffiliateAccount struct {
-	UserID string
+	UserID string // GHN(v3): client_id
 	Token  string
+	ShopID string // GHN(v3): shop_id
 }
 
 type ShopConnection struct {
@@ -74,7 +78,9 @@ type ShopConnection struct {
 
 type ShopConnectionExternalData struct {
 	UserID string
-	Email  string
+	//Email  string
+	Identifier string
+	ShopID     string
 }
 
 type ConnectionUpdatedEvent struct {

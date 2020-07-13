@@ -101,6 +101,7 @@ const (
 	ShopExternalAccountManage permission.ActionType = "shop/external_account:manage"
 
 	ShopFulfillmentCreate permission.ActionType = "shop/fulfillment:create"
+	ShopFulfillmentUpdate permission.ActionType = "shop/fulfillment:update"
 	ShopFulfillmentCancel permission.ActionType = "shop/fulfillment:cancel"
 	ShopFulfillmentView   permission.ActionType = "shop/fulfillment:view"
 	ShopFulfillmentExport permission.ActionType = "shop/fulfillment:export"
@@ -871,9 +872,11 @@ var _acl = map[string]*permission.Decl{
 	"shop.Fulfillment/GetFulfillments":                   {Type: Shop, AuthPartner: Opt, Actions: actions(ShopFulfillmentView)},
 	"shop.Fulfillment/UpdateFulfillmentsShippingState":   {Type: Shop},
 
-	"shop.Shipment/GetShippingServices": {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
-	"shop.Shipment/CreateFulfillments":  {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
-	"shop.Shipment/CancelFulfillment":   {Type: Shop, Actions: actions(ShopFulfillmentCancel)},
+	"shop.Shipment/GetShippingServices":   {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
+	"shop.Shipment/CreateFulfillments":    {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
+	"shop.Shipment/CancelFulfillment":     {Type: Shop, Actions: actions(ShopFulfillmentCancel)},
+	"shop.Shipment/UpdateFulfillmentInfo": {Type: Shop, Actions: actions(ShopFulfillmentUpdate)},
+	"shop.Shipment/UpdateFulfillmentCOD":  {Type: Shop, Actions: actions(ShopFulfillmentUpdate)},
 
 	"shop.Shipnow/GetShipnowFulfillment":      {Type: Shop, Actions: actions(ShopShipNowView)},
 	"shop.Shipnow/GetShipnowFulfillments":     {Type: Shop, Actions: actions(ShopShipNowView)},
@@ -951,13 +954,14 @@ var _acl = map[string]*permission.Decl{
 	"shop.Brand/GetBrandsByIDs":  {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 	"shop.Brand/ListBrands":      {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 
-	"shop.Connection/GetConnections":          {Type: Shop, Actions: actions(ShopConnectionView)},
-	"shop.Connection/GetAvailableConnections": {Type: Shop, Actions: actions(ShopConnectionView)},
-	"shop.Connection/GetShopConnections":      {Type: Shop, Actions: actions(ShopConnectionView)},
-	"shop.Connection/LoginShopConnection":     {Type: Shop, Actions: actions(ShopConnectionCreate)},
-	"shop.Connection/RegisterShopConnection":  {Type: Shop, Actions: actions(ShopConnectionCreate)},
-	"shop.Connection/DeleteShopConnection":    {Type: Shop, Actions: actions(ShopConnectionDelete)},
-	"shop.Connection/UpdateShopConnection":    {Type: Shop, Actions: actions(ShopConnectionUpdate)},
+	"shop.Connection/GetConnections":             {Type: Shop, Actions: actions(ShopConnectionView)},
+	"shop.Connection/GetAvailableConnections":    {Type: Shop, Actions: actions(ShopConnectionView)},
+	"shop.Connection/GetShopConnections":         {Type: Shop, Actions: actions(ShopConnectionView)},
+	"shop.Connection/LoginShopConnection":        {Type: Shop, Actions: actions(ShopConnectionCreate)},
+	"shop.Connection/LoginShopConnectionWithOTP": {Type: Shop, Actions: actions(ShopConnectionUpdate)},
+	"shop.Connection/RegisterShopConnection":     {Type: Shop, Actions: actions(ShopConnectionCreate)},
+	"shop.Connection/DeleteShopConnection":       {Type: Shop, Actions: actions(ShopConnectionDelete)},
+	"shop.Connection/UpdateShopConnection":       {Type: Shop, Actions: actions(ShopConnectionUpdate)},
 
 	"shop.Subscription/GetSubscription":  {Type: Shop},
 	"shop.Subscription/GetSubscriptions": {Type: Shop},

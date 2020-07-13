@@ -77,6 +77,7 @@ type CreateFulfillmentsCommand struct {
 	ShippingNote        string
 	ConnectionID        dot.ID
 	ShopCarrierID       dot.ID
+	Coupon              string
 
 	Result []dot.ID `json:"-"`
 }
@@ -96,6 +97,24 @@ type RemoveFulfillmentsMoneyTxIDCommand struct {
 
 func (h AggregateHandler) HandleRemoveFulfillmentsMoneyTxID(ctx context.Context, msg *RemoveFulfillmentsMoneyTxIDCommand) (err error) {
 	msg.Result, err = h.inner.RemoveFulfillmentsMoneyTxID(msg.GetArgs(ctx))
+	return err
+}
+
+type ShopUpdateFulfillmentInfoCommand struct {
+	FulfillmentID    dot.ID
+	AddressTo        *orderingtypes.Address
+	AddressFrom      *orderingtypes.Address
+	IncludeInsurance dot.NullBool
+	InsuranceValue   dot.NullInt
+	GrossWeight      dot.NullInt
+	TryOn            try_on.TryOnCode
+	ShippingNote     dot.NullString
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleShopUpdateFulfillmentInfo(ctx context.Context, msg *ShopUpdateFulfillmentInfoCommand) (err error) {
+	msg.Result, err = h.inner.ShopUpdateFulfillmentInfo(msg.GetArgs(ctx))
 	return err
 }
 
@@ -334,6 +353,7 @@ func (q *AddFulfillmentShippingFeeCommand) command()                {}
 func (q *CancelFulfillmentCommand) command()                        {}
 func (q *CreateFulfillmentsCommand) command()                       {}
 func (q *RemoveFulfillmentsMoneyTxIDCommand) command()              {}
+func (q *ShopUpdateFulfillmentInfoCommand) command()                {}
 func (q *UpdateFulfillmentExternalShippingInfoCommand) command()    {}
 func (q *UpdateFulfillmentInfoCommand) command()                    {}
 func (q *UpdateFulfillmentShippingFeesCommand) command()            {}
@@ -402,6 +422,7 @@ func (q *CreateFulfillmentsCommand) GetArgs(ctx context.Context) (_ context.Cont
 			ShippingNote:        q.ShippingNote,
 			ConnectionID:        q.ConnectionID,
 			ShopCarrierID:       q.ShopCarrierID,
+			Coupon:              q.Coupon,
 		}
 }
 
@@ -421,6 +442,7 @@ func (q *CreateFulfillmentsCommand) SetCreateFulfillmentsArgs(args *CreateFulfil
 	q.ShippingNote = args.ShippingNote
 	q.ConnectionID = args.ConnectionID
 	q.ShopCarrierID = args.ShopCarrierID
+	q.Coupon = args.Coupon
 }
 
 func (q *RemoveFulfillmentsMoneyTxIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveFulfillmentsMoneyTxIDArgs) {
@@ -436,6 +458,31 @@ func (q *RemoveFulfillmentsMoneyTxIDCommand) SetRemoveFulfillmentsMoneyTxIDArgs(
 	q.FulfillmentIDs = args.FulfillmentIDs
 	q.MoneyTxShippingID = args.MoneyTxShippingID
 	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
+}
+
+func (q *ShopUpdateFulfillmentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentInfoArgs) {
+	return ctx,
+		&UpdateFulfillmentInfoArgs{
+			FulfillmentID:    q.FulfillmentID,
+			AddressTo:        q.AddressTo,
+			AddressFrom:      q.AddressFrom,
+			IncludeInsurance: q.IncludeInsurance,
+			InsuranceValue:   q.InsuranceValue,
+			GrossWeight:      q.GrossWeight,
+			TryOn:            q.TryOn,
+			ShippingNote:     q.ShippingNote,
+		}
+}
+
+func (q *ShopUpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoArgs(args *UpdateFulfillmentInfoArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.AddressTo = args.AddressTo
+	q.AddressFrom = args.AddressFrom
+	q.IncludeInsurance = args.IncludeInsurance
+	q.InsuranceValue = args.InsuranceValue
+	q.GrossWeight = args.GrossWeight
+	q.TryOn = args.TryOn
+	q.ShippingNote = args.ShippingNote
 }
 
 func (q *UpdateFulfillmentExternalShippingInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFfmExternalShippingInfoArgs) {
@@ -489,9 +536,9 @@ func (q *UpdateFulfillmentExternalShippingInfoCommand) SetUpdateFfmExternalShipp
 	q.ShippingCancelledAt = args.ShippingCancelledAt
 }
 
-func (q *UpdateFulfillmentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentInfoArgs) {
+func (q *UpdateFulfillmentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentInfoByAdminArgs) {
 	return ctx,
-		&UpdateFulfillmentInfoArgs{
+		&UpdateFulfillmentInfoByAdminArgs{
 			FulfillmentID: q.FulfillmentID,
 			ShippingCode:  q.ShippingCode,
 			FullName:      q.FullName,
@@ -500,7 +547,7 @@ func (q *UpdateFulfillmentInfoCommand) GetArgs(ctx context.Context) (_ context.C
 		}
 }
 
-func (q *UpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoArgs(args *UpdateFulfillmentInfoArgs) {
+func (q *UpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoByAdminArgs(args *UpdateFulfillmentInfoByAdminArgs) {
 	q.FulfillmentID = args.FulfillmentID
 	q.ShippingCode = args.ShippingCode
 	q.FullName = args.FullName
@@ -702,6 +749,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCancelFulfillment)
 	b.AddHandler(h.HandleCreateFulfillments)
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
+	b.AddHandler(h.HandleShopUpdateFulfillmentInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentExternalShippingInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)

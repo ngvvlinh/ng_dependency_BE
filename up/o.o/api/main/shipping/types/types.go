@@ -48,6 +48,7 @@ type ValueInfo struct {
 	BasketValue      int
 	CODAmount        int
 	IncludeInsurance bool
+	InsuranceValue   int
 }
 
 type FeeLine struct {

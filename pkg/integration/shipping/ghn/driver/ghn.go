@@ -24,7 +24,7 @@ import (
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
-	ghnupdate "o.o/backend/pkg/integration/shipping/ghn/update"
+	v1 "o.o/backend/pkg/integration/shipping/ghn/update/v1"
 	"o.o/capi/dot"
 )
 
@@ -89,6 +89,7 @@ func (d *GHNDriver) CreateFulfillment(
 		return nil, err
 	}
 
+	insuranceValue := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 	cmd := &ghnclient.CreateOrderRequest{
 		FromDistrictID:     fromDistrict.GhnId,
 		ToDistrictID:       toDistrict.GhnId,
@@ -106,7 +107,7 @@ func (d *GHNDriver) CreateFulfillment(
 		Length:             cm.CoalesceInt(args.Length, 10),
 		Width:              cm.CoalesceInt(args.Width, 10),
 		Height:             cm.CoalesceInt(args.Height, 10),
-		InsuranceFee:       args.GetInsuranceAmount(maxValueFreeInsuranceFee),
+		InsuranceFee:       insuranceValue,
 		ServiceID:          serviceID,
 	}
 
@@ -155,6 +156,7 @@ func (d *GHNDriver) CreateFulfillment(
 		},
 		ExpectedPickAt:     service.ExpectedPickAt,
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
+		InsuranceValue:     insuranceValue,
 	}
 	// Calc expected delivery at
 	// add some rules
@@ -310,7 +312,7 @@ func (d *GHNDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeAr
 	}
 	// Sort result for stable service id generating. This must run before generating service id
 	sort.Slice(res, func(i, j int) bool {
-		return res[i].ServiceID < res[j].ServiceFee
+		return res[i].ServiceID < res[j].ServiceID
 	})
 
 	var result []*shippingsharemodel.AvailableShippingService
@@ -360,7 +362,7 @@ func (d *GHNDriver) SignIn(ctx context.Context, args *carriertypes.SignInArgs) (
 		return nil, cm.Errorf(cm.Internal, nil, "GHN đăng nhập cần cung cấp webhook endpoint.")
 	}
 	cmd := &ghnclient.SignInRequest{
-		Email:    args.Email,
+		Email:    args.Identifier,
 		Password: args.Password,
 	}
 	resp, err := d.client.SignIn(ctx, cmd)
@@ -423,7 +425,7 @@ func (d *GHNDriver) RegisterWebhook(ctx context.Context, args *RegisterWebhookFo
 	return d.client.RegisterWebhookForClient(ctx, cmd)
 }
 
-func (d *GHNDriver) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+func (d *GHNDriver) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
 	cmd := &ghnclient.OrderCodeRequest{
 		OrderCode: ffm.ExternalShippingCode,
 	}
@@ -432,6 +434,14 @@ func (d *GHNDriver) UpdateFulfillment(ctx context.Context, ffm *shipmodel.Fulfil
 		return nil, err
 	}
 
-	ffmToUpdate, err = ghnupdate.CalcRefreshFulfillmentInfo(ffm, externalOrder)
+	ffmToUpdate, err = v1.CalcRefreshFulfillmentInfo(ffm, externalOrder)
 	return
+}
+
+func (d *GHNDriver) UpdateFulfillmentCOD(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+}
+
+func (d *GHNDriver) UpdateFulfillmentInfo(ctx context.Context, fulfillment *shipmodel.Fulfillment) error {
+	return cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
 }

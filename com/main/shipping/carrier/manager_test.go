@@ -45,8 +45,8 @@ func TestShipmentManager(t *testing.T) {
 			Token:        "token",
 			Status:       1,
 			ExternalData: &connectioning.ShopConnectionExternalData{
-				UserID: "1158799",
-				Email:  "tuan@etop.vn",
+				UserID:     "1158799",
+				Identifier: "tuan@etop.vn",
 			},
 		}
 		return nil

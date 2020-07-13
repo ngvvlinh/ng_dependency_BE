@@ -292,6 +292,14 @@ func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateF
 	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
 }
 
+func (s *FulfillmentStore) UpdateFulfillmentCOD(codAmount int) (updated int, _ error) {
+	query := s.query().Where(s.preds)
+	update := map[string]interface{}{
+		"total_cod_amount": codAmount,
+	}
+	return query.Table("fulfillment").UpdateMap(update)
+}
+
 func (s *FulfillmentStore) UpdateFulfillmentsMoneyTxID(args *shipping.UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
 	update := &model.Fulfillment{
 		MoneyTransactionShippingExternalID: args.MoneyTxShippingExternalID,
@@ -327,7 +335,7 @@ func (s *FulfillmentStore) RemoveFulfillmentsMoneyTxID(args *shipping.RemoveFulf
 //
 // Fullname, Phone là của người nhận
 // Sẽ tách thành update thông tin người gửi, người nhận riêng. Cập nhật sau.
-func (s *FulfillmentStore) UpdateFulfillmentInfo(args *shipping.UpdateFulfillmentInfoArgs, oldAddress *ordertypes.Address) error {
+func (s *FulfillmentStore) UpdateFulfillmentInfo(args *shipping.UpdateFulfillmentInfoByAdminArgs, oldAddress *ordertypes.Address) error {
 	if len(s.preds) == 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
 	}

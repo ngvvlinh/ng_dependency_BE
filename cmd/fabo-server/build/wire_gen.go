@@ -13,8 +13,8 @@ import (
 	"o.o/backend/cogs/database/_min"
 	"o.o/backend/cogs/server/admin"
 	"o.o/backend/cogs/server/shop"
-	"o.o/backend/cogs/shipment/_all"
-	"o.o/backend/cogs/shipment/ghn"
+	"o.o/backend/cogs/shipment/_fabo"
+	v2_2 "o.o/backend/cogs/shipment/ghn/v2"
 	"o.o/backend/cogs/shipment/ghtk"
 	"o.o/backend/cogs/shipment/vtpost"
 	"o.o/backend/cogs/sms/_min"
@@ -28,7 +28,7 @@ import (
 	pm11 "o.o/backend/com/fabo/main/fbuser/pm"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	redis2 "o.o/backend/com/fabo/pkg/redis"
-	webhook4 "o.o/backend/com/fabo/pkg/webhook"
+	webhook3 "o.o/backend/com/fabo/pkg/webhook"
 	"o.o/backend/com/main/address"
 	aggregate3 "o.o/backend/com/main/authorization/aggregate"
 	aggregate4 "o.o/backend/com/main/catalog/aggregate"
@@ -111,11 +111,11 @@ import (
 	"o.o/backend/pkg/fabo/faboinfo"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/shipping/ghn"
-	"o.o/backend/pkg/integration/shipping/ghn/webhook"
+	"o.o/backend/pkg/integration/shipping/ghn/webhook/v2"
 	"o.o/backend/pkg/integration/shipping/ghtk"
-	webhook2 "o.o/backend/pkg/integration/shipping/ghtk/webhook"
+	"o.o/backend/pkg/integration/shipping/ghtk/webhook"
 	"o.o/backend/pkg/integration/shipping/vtpost"
-	webhook3 "o.o/backend/pkg/integration/shipping/vtpost/webhook"
+	webhook2 "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	"o.o/backend/pkg/integration/sms"
 )
 
@@ -296,8 +296,8 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	notifierDB := databases.Notifier
 	sqlstoreStore := sqlstore.New(mainDB, notifierDB, locationQueryBus, eventBus)
 	shipment_allConfig := cfg.Shipment
-	v2 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, locationQueryBus)
-	carrierManager := shipping_provider.NewCtrl(eventBus, locationQueryBus, v2)
+	v3 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, locationQueryBus)
+	carrierManager := shipping_provider.NewCtrl(eventBus, locationQueryBus, v3)
 	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	connectionQuery := query13.NewConnectionQuery(mainDB)
 	connectioningQueryBus := query13.ConnectionQueryMessageBus(connectionQuery)
@@ -330,9 +330,10 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	queryService2 := query14.NewQueryService(mainDB)
 	shippingQueryBus := query14.QueryServiceMessageBus(queryService2)
 	fulfillmentService := &shop.FulfillmentService{
-		Session:       session,
-		ShippingQuery: shippingQueryBus,
-		ShippingCtrl:  carrierManager,
+		Session:         session,
+		ShipmentManager: shipmentManager,
+		ShippingQuery:   shippingQueryBus,
+		ShippingCtrl:    carrierManager,
 	}
 	shipnowAggregate := shipnow.NewAggregate(eventBus, mainDB, locationQueryBus, queryBus, addressQueryBus, orderingQueryBus, manager)
 	shipnowCommandBus := shipnow.AggregateMessageBus(shipnowAggregate)
@@ -606,23 +607,23 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	webhookConfig := shipment_allConfig.GHNWebhook
 	ghnConfig := shipment_allConfig.GHN
 	ghnCarrier := ghn.New(ghnConfig, locationQueryBus)
-	webhookWebhook := webhook.New(mainDB, logDB, ghnCarrier, shipmentManager, queryBus, shippingCommandBus)
-	ghnWebhookServer := _ghn.NewGHNWebhookServer(webhookConfig, shipmentManager, ghnCarrier, queryBus, shippingCommandBus, webhookWebhook)
+	v2Webhook := v2.New(mainDB, logDB, ghnCarrier, shipmentManager, queryBus, shippingCommandBus)
+	ghnWebhookServer := v2_2.NewGHNWebhookServer(webhookConfig, shipmentManager, ghnCarrier, queryBus, shippingCommandBus, v2Webhook)
 	_ghtkWebhookConfig := shipment_allConfig.GHTKWebhook
 	ghtkConfig := shipment_allConfig.GHTK
 	ghtkCarrier := ghtk.New(ghtkConfig, locationQueryBus)
-	webhook5 := webhook2.New(mainDB, logDB, ghtkCarrier, shipmentManager, queryBus, shippingCommandBus)
-	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, ghtkCarrier, queryBus, shippingCommandBus, webhook5)
+	webhookWebhook := webhook.New(mainDB, logDB, ghtkCarrier, shipmentManager, queryBus, shippingCommandBus)
+	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, ghtkCarrier, queryBus, shippingCommandBus, webhookWebhook)
 	_vtpostWebhookConfig := shipment_allConfig.VTPostWebhook
 	vtpostConfig := shipment_allConfig.VTPost
 	vtpostCarrier := vtpost.New(vtpostConfig, locationQueryBus)
-	webhook6 := webhook3.New(mainDB, logDB, vtpostCarrier, shipmentManager, queryBus, shippingCommandBus)
-	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, queryBus, shippingCommandBus, webhook6)
+	webhook4 := webhook2.New(mainDB, logDB, vtpostCarrier, shipmentManager, queryBus, shippingCommandBus)
+	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, queryBus, shippingCommandBus, webhook4)
 	configWebhookConfig := cfg.Webhook
 	faboRedis := redis2.NewFaboRedis(store)
-	webhook7 := webhook4.New(mainDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
-	fbWebhookServer := BuildWebhookServer(configWebhookConfig, webhook7)
-	v3 := BuildServers(mainServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, fbWebhookServer)
+	webhook5 := webhook3.New(mainDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
+	fbWebhookServer := BuildWebhookServer(configWebhookConfig, webhook5)
+	v4 := BuildServers(mainServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, fbWebhookServer)
 	kafka := cfg.Kafka
 	handlerHandler := handler.New(consumer, kafka)
 	publisherPublisher := publisher.New(consumer, eventStream)
@@ -644,7 +645,7 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 	captchaConfig := cfg.Captcha
 	captchaCaptcha := captcha.New(captchaConfig)
 	output := Output{
-		Servers:        v3,
+		Servers:        v4,
 		EventStream:    eventStream,
 		Handler:        handlerHandler,
 		Publisher:      publisherPublisher,

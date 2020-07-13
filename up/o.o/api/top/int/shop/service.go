@@ -200,6 +200,8 @@ type FulfillmentService interface {
 type ShipmentService interface {
 	GetShippingServices(context.Context, *types.GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
 	CreateFulfillments(context.Context, *CreateFulfillmentsRequest) (*CreateFulfillmentsResponse, error)
+	UpdateFulfillmentCOD(context.Context, *UpdateFulfillmentCODRequest) (*cm.UpdatedResponse, error)
+	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoRequest) (*cm.UpdatedResponse, error)
 	CancelFulfillment(context.Context, *CancelFulfillmentRequest) (*cm.UpdatedResponse, error)
 }
 
@@ -351,7 +353,8 @@ type ConnectionService interface {
 	GetAvailableConnections(context.Context, *cm.Empty) (*types.GetConnectionsResponse, error)
 	GetShopConnections(context.Context, *cm.Empty) (*types.GetShopConnectionsResponse, error)
 	RegisterShopConnection(context.Context, *types.RegisterShopConnectionRequest) (*types.ShopConnection, error)
-	LoginShopConnection(context.Context, *types.LoginShopConnectionRequest) (*types.ShopConnection, error)
+	LoginShopConnection(context.Context, *types.LoginShopConnectionRequest) (*types.LoginShopConnectionResponse, error)
+	LoginShopConnectionWithOTP(context.Context, *types.LoginShopConnectionWithOTPRequest) (*types.LoginShopConnectionWithOTPResponse, error)
 	DeleteShopConnection(context.Context, *types.DeleteShopConnectionRequest) (*cm.DeletedResponse, error)
 	UpdateShopConnection(context.Context, *types.UpdateShopConnectionRequest) (*cm.UpdatedResponse, error)
 }

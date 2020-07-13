@@ -10,7 +10,7 @@ import (
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/integration/shipping/ghn/update"
+	ghnupdatev1 "o.o/backend/pkg/integration/shipping/ghn/update/v1"
 	"o.o/backend/pkg/integration/shipping/ghtk"
 	"o.o/common/l"
 )
@@ -85,7 +85,7 @@ func syncUnCompleteFfms(id interface{}, p scheduler.Planner) (_err error) {
 		}
 	}
 	if len(updateFfmsGHN) > 0 {
-		ffms, _ := update.SyncTrackingOrders(updateFfmsGHN)
+		ffms, _ := ghnupdatev1.SyncTrackingOrders(updateFfmsGHN)
 		for _, ffm := range ffms {
 			updateFfms = append(updateFfms, &shipmodel.Fulfillment{
 				ID:                   ffm.ID,

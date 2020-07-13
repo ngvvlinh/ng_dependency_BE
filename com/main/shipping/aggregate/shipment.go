@@ -293,6 +293,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		ShippingNote:        args.ShippingNote,
 		TryOn:               tryOn,
 		IncludeInsurance:    args.IncludeInsurance,
+		InsuranceValue:      args.InsuranceValue,
 		ConnectionID:        args.ConnectionID,
 		ConnectionMethod:    connectionMethod,
 		ShopCarrierID:       args.ShopCarrierID,
@@ -303,6 +304,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		Length:              args.Length,
 		ShippingState:       shipstate.Default,
 		ShippingType:        args.ShippingType,
+		Coupon:              args.Coupon,
 	}
 	if conn != nil {
 		// backward compatible
@@ -620,6 +622,9 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 		ProviderShippingFeeLines: args.ProviderFeeLines,
 	}
 	defer func() error {
+
+		update.ExternalShippingFee = shipping.GetTotalShippingFee(args.ProviderFeeLines)
+
 		// always update shipping fee even if error occurred
 		if update.ShippingFeeShopLines != nil {
 			totalFee := shipping.GetTotalShippingFee(update.ShippingFeeShopLines)
@@ -699,7 +704,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	return nil
 }
 
-func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.UpdateFulfillmentInfoArgs) (updated int, err error) {
+func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.UpdateFulfillmentInfoByAdminArgs) (updated int, err error) {
 	if args.FulfillmentID == 0 && args.ShippingCode == "" {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
 	}
@@ -729,6 +734,68 @@ func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.Up
 		}
 		return nil
 	})
+	return 1, err
+}
+
+func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shipping.UpdateFulfillmentInfoArgs) (updated int, _ error) {
+	ffm, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFulfillment()
+	if err != nil {
+		return 0, err
+	}
+
+	if _, _, err = a.getAndVerifyAddress(ctx, args.AddressFrom); err != nil {
+		return 0, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
+	}
+	if _, _, err = a.getAndVerifyAddress(ctx, args.AddressTo); err != nil {
+		return 0, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ lấy hàng không hợp lệ: %v", err)
+	}
+
+	switch ffm.Status {
+	case status5.P, status5.NS:
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hoàn thành. Không thể hủy")
+	case status5.N:
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hủy.")
+	}
+
+	if err := canUpdateFulfillment(ffm); err != nil {
+		return 0, err
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		// backward compatible
+		ffm.ConnectionID = shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
+
+		ffmUpdate := &shipmodel.Fulfillment{
+			ShopID:       ffm.ShopID,
+			ConnectionID: ffm.ConnectionID,
+			ShippingCode: ffm.ShippingCode,
+			AddressFrom:  addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressFrom, nil),
+			AddressTo:    addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressTo, nil),
+			TryOn:        args.TryOn.Apply(ffm.TryOn),
+			GrossWeight:  args.GrossWeight.Apply(0),
+			ShippingNote: args.ShippingNote.Apply(""),
+		}
+
+		// set new insuranceValue
+		if args.IncludeInsurance.Valid {
+			if args.IncludeInsurance.Bool {
+				ffmUpdate.InsuranceValue = args.InsuranceValue.Apply(0)
+			}
+		}
+
+		// case shipment: update ffm from carrier
+		if ffm.ConnectionID != 0 {
+			if err := a.shimentManager.UpdateFulfillmentInfo(ctx, ffmUpdate); err != nil {
+				return err
+			}
+		}
+		if err := a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(ffmUpdate); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
 	return 1, err
 }
 

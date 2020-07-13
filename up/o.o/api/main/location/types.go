@@ -85,6 +85,7 @@ type Ward struct {
 type Extra struct {
 	Special     bool
 	GhnId       int
+	GhnCode     string
 	VtpostId    int
 	HaravanCode string
 }

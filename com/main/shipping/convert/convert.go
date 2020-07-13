@@ -29,6 +29,7 @@ func Fulfillment(in *shippingmodel.Fulfillment, out *shipping.Fulfillment) {
 		BasketValue:      in.BasketValue,
 		CODAmount:        in.TotalCODAmount,
 		IncludeInsurance: in.IncludeInsurance,
+		InsuranceValue:   in.InsuranceValue,
 	}
 	return
 }

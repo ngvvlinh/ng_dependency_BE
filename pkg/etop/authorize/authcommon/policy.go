@@ -32,6 +32,7 @@ const shopPolicy = `#connection
     p, shop/external_account:manage, admin, owner
     # fulfillment
 	p, shop/fulfillment:create, admin, owner, salesman
+	p, shop/fulfillment:update, admin, owner, salesman
 	p, shop/fulfillment:cancel, admin, owner, salesman
 	p, shop/fulfillment:view, admin, owner, salesman, accountant
 	p, shop/fulfillment:export, admin, owner, salesman

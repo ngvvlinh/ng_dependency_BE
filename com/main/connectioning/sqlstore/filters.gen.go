@@ -331,6 +331,25 @@ func (ft *ConnectionFilters) ByOriginConnectionIDPtr(OriginConnectionID *dot.ID)
 	}
 }
 
+func (ft *ConnectionFilters) ByVersion(Version string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "version",
+		Value:  Version,
+		IsNil:  Version == "",
+	}
+}
+
+func (ft *ConnectionFilters) ByVersionPtr(Version *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "version",
+		Value:  Version,
+		IsNil:  Version == nil,
+		IsZero: Version != nil && (*Version) == "",
+	}
+}
+
 type ShopConnectionFilters struct{ prefix string }
 
 func NewShopConnectionFilters(prefix string) ShopConnectionFilters {

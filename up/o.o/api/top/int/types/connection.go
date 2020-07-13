@@ -9,7 +9,8 @@ import (
 
 type LoginShopConnectionRequest struct {
 	ConnectionID dot.ID `json:"connection_id"`
-	Email        string `json:"email"`
+	Identifier   string `json:"identifier"` // email or phone
+	Email        string `json:"email"`      // deprecated
 	Password     string `json:"password"`
 }
 
@@ -17,6 +18,32 @@ func (m *LoginShopConnectionRequest) Reset() {
 	*m = LoginShopConnectionRequest{}
 }
 func (m *LoginShopConnectionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type LoginShopConnectionResponse struct {
+	Code string `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+func (m *LoginShopConnectionResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type LoginShopConnectionWithOTPRequest struct {
+	ConnectionID dot.ID `json:"connection_id"`
+	Identifier   string `json:"identifier"`
+	OTP          string `json:"otp"`
+}
+
+func (m *LoginShopConnectionWithOTPRequest) Reset() {
+	*m = LoginShopConnectionWithOTPRequest{}
+}
+
+func (m *LoginShopConnectionWithOTPRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type LoginShopConnectionWithOTPResponse struct {
+	Code string `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+func (m *LoginShopConnectionWithOTPResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type RegisterShopConnectionRequest struct {
 	ConnectionID dot.ID `json:"connection_id"`
@@ -70,8 +97,10 @@ func (m *ShopConnection) Reset() {
 func (m *ShopConnection) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShopConnectionExternalData struct {
-	Email  string `json:"email"`
-	UserID string `json:"user_id"`
+	Email      string `json:"email"` // deprecated
+	Identifier string `json:"identifier"`
+	UserID     string `json:"user_id"`
+	ShopID     string `json:"shop_id"`
 }
 
 func (m *ShopConnectionExternalData) Reset() {

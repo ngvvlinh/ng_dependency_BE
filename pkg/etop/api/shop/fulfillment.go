@@ -7,6 +7,7 @@ import (
 	"o.o/api/top/int/shop"
 	inttypes "o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
+	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
@@ -20,8 +21,9 @@ import (
 type FulfillmentService struct {
 	session.Session
 
-	ShippingQuery shipping.QueryBus
-	ShippingCtrl  *shipping_provider.CarrierManager
+	ShipmentManager *shippingcarrier.ShipmentManager
+	ShippingQuery   shipping.QueryBus
+	ShippingCtrl    *shipping_provider.CarrierManager
 }
 
 func (s *FulfillmentService) Clone() shop.FulfillmentService { res := *s; return &res }
@@ -80,19 +82,36 @@ func (s *FulfillmentService) GetFulfillmentsByIDs(ctx context.Context, q *shop.G
 }
 
 func (s *FulfillmentService) GetExternalShippingServices(ctx context.Context, q *inttypes.GetExternalShippingServicesRequest) (*inttypes.GetExternalShippingServicesResponse, error) {
-	resp, err := s.ShippingCtrl.GetExternalShippingServices(ctx, s.SS.Shop().ID, q)
+	shopID := s.SS.Shop().ID
+	args, err := s.ShipmentManager.PrepareDataGetShippingServices(ctx, q.ToGetShippingServicesRequest())
+	if err != nil {
+		return nil, err
+	}
+	args.AccountID = shopID
+	resp, err := s.ShipmentManager.GetShippingServices(ctx, args)
+	if err != nil {
+		return nil, err
+	}
 	result := &inttypes.GetExternalShippingServicesResponse{
 		Services: convertpb.PbAvailableShippingServices(resp),
 	}
-	return result, err
+	return result, nil
 }
 
 func (s *FulfillmentService) GetPublicExternalShippingServices(ctx context.Context, q *inttypes.GetExternalShippingServicesRequest) (*inttypes.GetExternalShippingServicesResponse, error) {
-	resp, err := s.ShippingCtrl.GetExternalShippingServices(ctx, model.EtopAccountID, q)
+	args, err := s.ShipmentManager.PrepareDataGetShippingServices(ctx, q.ToGetShippingServicesRequest())
+	if err != nil {
+		return nil, err
+	}
+	args.AccountID = model.EtopAccountID
+	resp, err := s.ShipmentManager.GetShippingServices(ctx, args)
+	if err != nil {
+		return nil, err
+	}
 	result := &inttypes.GetExternalShippingServicesResponse{
 		Services: convertpb.PbAvailableShippingServices(resp),
 	}
-	return result, err
+	return result, nil
 }
 
 func (s *FulfillmentService) GetPublicFulfillment(ctx context.Context, q *shop.GetPublicFulfillmentRequest) (*inttypes.PublicFulfillment, error) {

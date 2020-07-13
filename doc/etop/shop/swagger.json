@@ -1091,7 +1091,34 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/qdShopConnection"
+              "$ref": "#/definitions/qdLoginShopConnectionResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/LoginShopConnectionWithOTP": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "LoginShopConnectionWithOTP",
+        "operationId": "shop.Connection-LoginShopConnectionWithOTP",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdLoginShopConnectionWithOTPRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdLoginShopConnectionWithOTPResponse"
             }
           }
         }
@@ -4803,6 +4830,60 @@
         }
       }
     },
+    "/api/shop.Shipment/UpdateFulfillmentCOD": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "UpdateFulfillmentCOD",
+        "operationId": "shop.Shipment-UpdateFulfillmentCOD",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateFulfillmentCODRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Shipment/UpdateFulfillmentInfo": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "UpdateFulfillmentInfo",
+        "operationId": "shop.Shipment-UpdateFulfillmentInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateFulfillmentInfoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Shipnow/CancelShipnowFulfillment": {
       "post": {
         "tags": [
@@ -7861,6 +7942,9 @@
           "type": "string",
           "format": "int64"
         },
+        "coupon": {
+          "type": "string"
+        },
         "gross_weight": {
           "type": "integer"
         },
@@ -7869,6 +7953,9 @@
         },
         "include_insurance": {
           "type": "boolean"
+        },
+        "insurance_value": {
+          "type": "integer"
         },
         "length": {
           "type": "integer"
@@ -11797,6 +11884,48 @@
         }
       }
     },
+    "paUpdateFulfillmentCODRequest": {
+      "type": "object",
+      "properties": {
+        "cod_amount": {
+          "type": "integer"
+        },
+        "fulfillment_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paUpdateFulfillmentInfoRequest": {
+      "type": "object",
+      "properties": {
+        "fulfillment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "insurance_value": {
+          "type": "integer"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        }
+      }
+    },
     "paUpdateFulfillmentsShippingStateRequest": {
       "type": "object",
       "required": [
@@ -13697,14 +13826,14 @@
         "basket_value": {
           "type": "integer"
         },
-        "carrier": {
-          "$ref": "#/definitions/bwShippingProvider"
-        },
         "chargeable_weight": {
           "type": "integer"
         },
         "cod_amount": {
           "type": "integer"
+        },
+        "coupon": {
+          "type": "string"
         },
         "from_district": {
           "type": "string"
@@ -13718,6 +13847,12 @@
         "from_province_code": {
           "type": "string"
         },
+        "from_ward": {
+          "type": "string"
+        },
+        "from_ward_code": {
+          "type": "string"
+        },
         "gross_weight": {
           "type": "integer"
         },
@@ -13727,18 +13862,11 @@
         "include_insurance": {
           "type": "boolean"
         },
-        "length": {
+        "insurance_value": {
           "type": "integer"
         },
-        "provider": {
-          "allOf": [
-            {
-              "description": "**Deprecated:** use carrier instead\n"
-            },
-            {
-              "$ref": "#/definitions/bwShippingProvider"
-            }
-          ]
+        "length": {
+          "type": "integer"
         },
         "to_district": {
           "type": "string"
@@ -13750,6 +13878,12 @@
           "type": "string"
         },
         "to_province_code": {
+          "type": "string"
+        },
+        "to_ward": {
+          "type": "string"
+        },
+        "to_ward_code": {
           "type": "string"
         },
         "total_cod_amount": {
@@ -13845,6 +13979,9 @@
             "format": "int64"
           }
         },
+        "coupon": {
+          "type": "string"
+        },
         "from_district": {
           "type": "string"
         },
@@ -13871,6 +14008,9 @@
         },
         "include_insurance": {
           "type": "boolean"
+        },
+        "insurance_value": {
+          "type": "integer"
         },
         "length": {
           "type": "integer"
@@ -13965,7 +14105,47 @@
         "email": {
           "type": "string"
         },
+        "identifier": {
+          "type": "string"
+        },
         "password": {
+          "type": "string"
+        }
+      }
+    },
+    "qdLoginShopConnectionResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "qdLoginShopConnectionWithOTPRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "otp": {
+          "type": "string"
+        }
+      }
+    },
+    "qdLoginShopConnectionWithOTPResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
           "type": "string"
         }
       }
@@ -14977,6 +15157,12 @@
       "type": "object",
       "properties": {
         "email": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "shop_id": {
           "type": "string"
         },
         "user_id": {

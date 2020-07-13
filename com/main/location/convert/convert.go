@@ -116,6 +116,7 @@ func Ward(in *types.Ward, out *location.Ward) error {
 		Code:         in.Code,
 		DistrictCode: in.DistrictCode,
 		Extra: location.Extra{
+			GhnCode:     in.GhnCode,
 			VtpostId:    in.VTPostID,
 			HaravanCode: in.HaravanCode,
 		},
