@@ -32,8 +32,9 @@ type Carrier struct {
 
 func New(ahamoveClient *client.Client, locationBus location.QueryBus, identityBus identity.QueryBus) *Carrier {
 	c := &Carrier{
-		client:   ahamoveClient,
-		location: locationBus,
+		client:        ahamoveClient,
+		location:      locationBus,
+		IdentityQuery: identityBus,
 	}
 	return c
 }
