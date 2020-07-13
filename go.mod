@@ -16,6 +16,7 @@ require (
 	github.com/Shopify/sarama v1.26.3
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
+	github.com/axw/gocov v1.0.0
 	github.com/casbin/casbin v1.9.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
@@ -38,6 +39,7 @@ require (
 	github.com/lfittl/pg_query_go v1.0.0
 	github.com/lib/pq v1.5.2
 	github.com/mailru/easyjson v0.7.1 // indirect
+	github.com/matm/gocov-html v0.0.0-20200509184451-71874e2e203b
 	github.com/microcosm-cc/bluemonday v1.0.2
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/pkg/errors v0.9.1

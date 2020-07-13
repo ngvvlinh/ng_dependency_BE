@@ -16,9 +16,8 @@ if [[ $# -gt 0 ]]; then
   printf 'mode: %s\n' "$mode" > "$profile"
 
   grep   -h -v -- "^mode:" *.cover \
-  | grep -h -v '\.pb\.go'   \
-  | grep -h -v '.twirp\.go' \
-  | grep -h -v '.gen\.go'   \
+  | grep -h -v '\.gen\.go'   \
+  | grep -h -v 'zz_generated\.' \
   >> "$profile"
 
   go tool cover -func="$profile" \

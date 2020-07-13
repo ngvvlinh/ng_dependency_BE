@@ -5,7 +5,9 @@
 package scripts
 
 import (
+	_ "github.com/axw/gocov/gocov"
 	_ "github.com/go-bindata/go-bindata/v3/go-bindata"
 	_ "github.com/google/wire/cmd/wire"
+	_ "github.com/matm/gocov-html"
 	_ "golang.org/x/tools/cmd/goimports"
 )

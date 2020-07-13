@@ -20,7 +20,7 @@ case "$1" in
 esac
 
 generator=$(::get cmd o.o/backend/tools/cmd/generator)
-"${generator}" -ignored-plugins=sample o.o/...
+"$generator" -ignored-plugins=sample o.o/...
 
 if [[ $1 != "simple" ]]; then
     go install github.com/google/wire/cmd/wire
