@@ -501,9 +501,6 @@ func (a *Aggregate) UpdateFulfillmentsCODTransferedAt(ctx context.Context, args 
 }
 
 func (a *Aggregate) RemoveFulfillmentsMoneyTxID(ctx context.Context, args *shipping.RemoveFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
-	if len(args.FulfillmentIDs) == 0 {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs").WithMetap("function", "RemoveFulfillmentsMoneyTxShippingExternalID")
-	}
 	return a.ffmStore(ctx).RemoveFulfillmentsMoneyTxID(args)
 }
 

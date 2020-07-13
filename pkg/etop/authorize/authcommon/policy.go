@@ -174,7 +174,7 @@ const adminPolicy = `
 	p, admin/credit:confirm, admin, ad_accountant
 	p, admin/credit:delete, admin, ad_accountant
 	# fulfillment
-	p, admin/fulfillment:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice  
+	p, admin/fulfillment:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice
 	p, admin/fulfillment:list, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice
 	p, admin/fulfillment:create, admin, ad_accountant, ad_customerservice
 	p, admin/fulfillment:update, admin, ad_accountant, ad_customerservice
@@ -184,21 +184,19 @@ const adminPolicy = `
 	p, admin/fulfillment_shipping_fees:create, admin, ad_accountant, ad_customerservice
 	# money transaction
 	p, admin/money_transaction:view, admin, ad_accountant, ad_customerservice
-	p, admin/money_transaction:list, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction:update, admin, ad_accountant
+	p, admin/money_transaction:confirm, admin, ad_accountant
 	p, admin/money_transaction_shipping_etop:view, admin, ad_accountant, ad_customerservice
-	p, admin/money_transaction_shipping_etop:list, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction_shipping_etop:create, admin, ad_accountant
+	p, admin/money_transaction_shipping_etop:update, admin, ad_accountant
+	p, admin/money_transaction_shipping_etop:confirm, admin, ad_accountant
+	p, admin/money_transaction_shipping_etop:delete, admin, ad_accountant
 	p, admin/money_transaction_shipping_external:view, admin, ad_accountant, ad_customerservice
-	p, admin/money_transaction_shipping_external:list, admin, ad_accountant, ad_customerservice
-	p, admin/money_transaction_shipping_external:view, admin, ad_accountant
-	p, admin/money_transaction_confirm:confirm, admin, ad_accountant
-	p, admin/money_transaction_shipping_etop_confirm:confirm, admin, ad_accountant
-	p, admin/money_transaction_shipping_etop_confirm:create, admin, ad_accountant
-	p, admin/money_transaction_shipping_etop_confirm:update, admin, ad_accountant
-	p, admin/money_transaction_shipping_external_confirm:list, admin, ad_accountant
-	p, admin/money_transaction_shipping_external_confirm:update, admin, ad_accountant
+	p, admin/money_transaction_shipping_external:create, admin, ad_accountant
+	p, admin/money_transaction_shipping_external:update, admin, ad_accountant
+	p, admin/money_transaction_shipping_external:confirm, admin, ad_accountant
 	p, admin/money_transaction_shipping_external:delete, admin, ad_accountant
 	p, admin/money_transaction_shipping_external_lines:remove, admin, ad_accountant
-	p, admin/money_transaction:update, admin, ad_accountant
 	# order
 	p, admin/order:view, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
 	p, admin/order:list, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant

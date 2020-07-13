@@ -262,23 +262,21 @@ const (
 	AdminPartnerCreate   permission.ActionType = "admin/partner:create"
 
 	// Admin MoneyTransaction
-	AdminMoneyTransactionView   permission.ActionType = "admin/money_transaction:view"
-	AdminMoneyTransactionList   permission.ActionType = "admin/money_transaction:list"
-	AdminMoneyTransactionUpdate permission.ActionType = "admin/money_transaction:update"
+	AdminMoneyTransactionView    permission.ActionType = "admin/money_transaction:view"
+	AdminMoneyTransactionUpdate  permission.ActionType = "admin/money_transaction:update"
+	AdminMoneyTransactionConfirm permission.ActionType = "admin/money_transaction:confirm"
 
-	AdminMoneyTransactionShippingEtopView              permission.ActionType = "admin/money_transaction_shipping_etop:view"
-	AdminMoneyTransactionShippingEtopList              permission.ActionType = "admin/money_transaction_shipping_etop:list"
-	AdminMoneyTransactionShippingExternalView          permission.ActionType = "admin/money_transaction_shipping_external:view"
-	AdminMoneyTransactionShippingExternalList          permission.ActionType = "admin/money_transaction_shipping_external:list"
-	AdminMoneyTransactionConfirm                       permission.ActionType = "admin/money_transaction_confirm:confirm"
-	AdminMoneyTransactionShippingEtopConfirm           permission.ActionType = "admin/money_transaction_shipping_etop_confirm:confirm"
-	AdminMoneyTransactionShippingEtopCreate            permission.ActionType = "admin/money_transaction_shipping_etop_confirm:create"
-	AdminMoneyTransactionShippingEtopUpdate            permission.ActionType = "admin/money_transaction_shipping_etop_confirm:update"
-	AdminMoneyTransactionShippingEtopDelete            permission.ActionType = "admin/money_transaction_shipping_etop_confirm:delete"
-	AdminConfirmMoneyTransactionShippingExternalList   permission.ActionType = "admin/money_transaction_shipping_external_confirm:list"
-	AdminConfirmMoneyTransactionShippingExternalUpdate permission.ActionType = "admin/money_transaction_shipping_external_confirm:update"
-	AdminMoneyTransactionShippingExternalDelete        permission.ActionType = "admin/money_transaction_shipping_external:delete"
-	AdminMoneyTransactionShippingExternalLinesRemove   permission.ActionType = "admin/money_transaction_shipping_external_lines:remove"
+	AdminMoneyTransactionShippingEtopView    permission.ActionType = "admin/money_transaction_shipping_etop:view"
+	AdminMoneyTransactionShippingEtopCreate  permission.ActionType = "admin/money_transaction_shipping_etop:create"
+	AdminMoneyTransactionShippingEtopUpdate  permission.ActionType = "admin/money_transaction_shipping_etop:update"
+	AdminMoneyTransactionShippingEtopConfirm permission.ActionType = "admin/money_transaction_shipping_etop:confirm"
+	AdminMoneyTransactionShippingEtopDelete  permission.ActionType = "admin/money_transaction_shipping_etop:delete"
+
+	AdminMoneyTransactionShippingExternalView        permission.ActionType = "admin/money_transaction_shipping_external:view"
+	AdminMoneyTransactionShippingExternalUpdate      permission.ActionType = "admin/money_transaction_shipping_external:update"
+	AdminMoneyTransactionShippingExternalConfirm     permission.ActionType = "admin/money_transaction_shipping_external:confirm"
+	AdminMoneyTransactionShippingExternalDelete      permission.ActionType = "admin/money_transaction_shipping_external:delete"
+	AdminMoneyTransactionShippingExternalLinesRemove permission.ActionType = "admin/money_transaction_shipping_external_lines:remove"
 
 	// Admin Order
 	AdminOrderView     permission.ActionType = "admin/order:view"
@@ -647,22 +645,24 @@ var _acl = map[string]*permission.Decl{
 	"admin.Fulfillment/UpdateFulfillmentShippingFees":  {Type: EtopAdmin, Actions: actions(AdminFulfillmentShippingFeesUpdate)},
 	"admin.Fulfillment/AddShippingFee":                 {Type: EtopAdmin, Actions: actions(AdminFulfillmentShippingFeesCreate)},
 
-	"admin.MoneyTransaction/GetMoneyTransaction":                         {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionView)},
-	"admin.MoneyTransaction/GetMoneyTransactions":                        {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionList)},
-	"admin.MoneyTransaction/ConfirmMoneyTransaction":                     {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionConfirm)},
-	"admin.MoneyTransaction/UpdateMoneyTransaction":                      {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionUpdate)},
+	"admin.MoneyTransaction/GetMoneyTransaction":     {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionView)},
+	"admin.MoneyTransaction/GetMoneyTransactions":    {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionView)},
+	"admin.MoneyTransaction/ConfirmMoneyTransaction": {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionConfirm)},
+	"admin.MoneyTransaction/UpdateMoneyTransaction":  {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionUpdate)},
+
 	"admin.MoneyTransaction/GetMoneyTransactionShippingExternal":         {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalView)},
-	"admin.MoneyTransaction/GetMoneyTransactionShippingExternals":        {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalList)},
+	"admin.MoneyTransaction/GetMoneyTransactionShippingExternals":        {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalView)},
 	"admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines": {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalLinesRemove)},
 	"admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal":      {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalDelete)},
-	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":    {Type: EtopAdmin, Actions: actions(AdminConfirmMoneyTransactionShippingExternalList)},
-	"admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":      {Type: EtopAdmin, Actions: actions(AdminConfirmMoneyTransactionShippingExternalUpdate)},
-	"admin.MoneyTransaction/GetMoneyTransactionShippingEtop":             {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopView)},
-	"admin.MoneyTransaction/GetMoneyTransactionShippingEtops":            {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopList)},
-	"admin.MoneyTransaction/CreateMoneyTransactionShippingEtop":          {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopCreate)},
-	"admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop":          {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopUpdate)},
-	"admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":          {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopDelete)},
-	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop":         {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopConfirm)},
+	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":    {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalConfirm)},
+	"admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":      {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalUpdate)},
+
+	"admin.MoneyTransaction/GetMoneyTransactionShippingEtop":     {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopView)},
+	"admin.MoneyTransaction/GetMoneyTransactionShippingEtops":    {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopView)},
+	"admin.MoneyTransaction/CreateMoneyTransactionShippingEtop":  {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopCreate)},
+	"admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop":  {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopUpdate)},
+	"admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":  {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopDelete)},
+	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop": {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopConfirm)},
 
 	"admin.Shop/GetShop":       {Type: EtopAdmin, Actions: actions(AdminShopView)},
 	"admin.Shop/GetShops":      {Type: EtopAdmin, Actions: actions(AdminShopList)},
