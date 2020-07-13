@@ -87,6 +87,11 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 
 	wlPartnerID, claim, account, err := s.verifyToken(ctx, perm, tokenStr)
 	if err != nil {
+		// Ignore invalid token for public permission. TopShip App is sending
+		// invalid token even for public API.
+		if perm.Type == permission.Public {
+			return ctx, nil
+		}
 		return ctx, err
 	}
 	ctx = wl.WrapContext(ctx, wlPartnerID)
