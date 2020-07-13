@@ -33,14 +33,14 @@ if [[ $# -gt 0 ]]; then
   fi
   echo COVERAGE: $(cat "$output")
 
-  # gocov
-  : ${PROJECT_DIR?Must set PROJECT_DIR}
-  BACKEND="${PROJECT_DIR}/backend"
-  source "${BACKEND}/scripts/lib/init.sh"
-
-  gocov=$(::get cmd github.com/axw/gocov/gocov)
-  gocov_html=$(::get cmd github.com/matm/gocov-html)
-  "$gocov" convert "$profile" | "$gocov_html" > "$output_html_gocov"
+## gocov
+#  : ${PROJECT_DIR?Must set PROJECT_DIR}
+#  BACKEND="${PROJECT_DIR}/backend"
+#  source "${BACKEND}/scripts/lib/init.sh"
+#
+#  gocov=$(::get cmd github.com/axw/gocov/gocov)
+#  gocov_html=$(::get cmd github.com/matm/gocov-html)
+#  "$gocov" convert "$profile" | "$gocov_html" > "$output_html_gocov"
 fi
 
 mv *.cover artifacts/coverage
