@@ -39,9 +39,9 @@ elif [[ ! -f "artifacts/BUILD_SUCCESS" ]] ; then
 else
   export verified="1"
   export message="Build successfully on ${CI_COMMIT_REF_NAME}. See ${pipelines_url}"
-  if [[ -f "artifacts/COVERAGE" ]] ; then
+  if [[ -f "artifacts/COVERAGE%" ]] ; then
     coverage_url="$(cat artifacts/ARTIFACTS_URL)/browse/artifacts/coverage/"
-    message="Build successfully on ${CI_COMMIT_REF_NAME} with coverage $(cat artifacts/COVERAGE) See ${pipelines_url} and ${coverage_url}"
+    message="Build successfully on ${CI_COMMIT_REF_NAME} with coverage $(cat artifacts/COVERAGE%) See ${pipelines_url} and ${coverage_url}"
     export message
   fi
 fi

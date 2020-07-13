@@ -3,7 +3,7 @@ set -e
 
 mode=atomic
 profile=artifacts/coverage/coverage.out
-output=artifacts/COVERAGE
+output=artifacts/COVERAGE%
 artifacts_url=artifacts/ARTIFACTS_URL
 output_html=artifacts/coverage/coverage.html
 output_html_gocov=artifacts/coverage/gocov.html
