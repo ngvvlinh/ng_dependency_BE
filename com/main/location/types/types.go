@@ -45,6 +45,7 @@ type Ward struct {
 	NameNorm    string
 	Alias       []string
 	VTPostID    int
+	GhnCode     string
 	HaravanCode string
 
 	Code         string
