@@ -101,7 +101,7 @@ var filterFulfillmentWhitelist = sqlstore.FilterWhitelist{
 		"shipping_code", "shop.id", "carrier",
 		"order.code", "order.external_code", "order.external_id",
 		"shipping_state", "customer.phone", "money_transaction.id",
-		"address_to.province_code", "address_to.district_code", "address_to.ward_code", "money_transaction_shipping_external_id", "money_transaction_id",
+		"address_to.province_code", "address_to.district_code", "address_to.ward_code", "money_transaction_shipping_external_id", "money_transaction_id", "connection_id",
 	},
 	Numbers: []string{"total_cod_amount", "cod_amount", "shipping_fee_shop", "shipping_service_fee", "basket_value", "chargeable_weight"},
 	Status:  []string{"shipping_status", "etop_payment_status"},
