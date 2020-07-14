@@ -756,7 +756,7 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 		}
 		res = append(res, s)
 	}
-	return res, nil
+	return filterShipmentServicesByEdCode(res), nil
 }
 
 func (m *ShipmentManager) mapWithShipmentService(ctx context.Context, args *GetShippingServicesArgs, serviceID string, connID dot.ID, service *shippingsharemodel.AvailableShippingService) error {

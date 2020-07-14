@@ -53,3 +53,63 @@ func CheckShippingService(ffm *shipmodel.Fulfillment, services []*shippingsharem
 
 	return service, nil
 }
+
+// filterShipmentServicesByCode
+//
+// Filter theo `ed_code` trong shipment_service.
+// Là mã do admin TopShip định nghĩa cho từng gói dịch vụ.
+// Yêu cầu chỉ trả về 1 gói duy nhất theo mã TopShip định nghĩa, với giá rẻ nhất từ NVC
+func filterShipmentServicesByEdCode(services []*shippingsharemodel.AvailableShippingService) []*shippingsharemodel.AvailableShippingService {
+	type UniqueService struct {
+		service      *shippingsharemodel.AvailableShippingService
+		carrierPrice int
+	}
+	var mapServices = make(map[string]*UniqueService)
+	res := []*shippingsharemodel.AvailableShippingService{}
+	for _, s := range services {
+		if s.ShipmentServiceInfo == nil || s.ShipmentServiceInfo.Code == "" {
+			res = append(res, s)
+			continue
+		}
+		code := s.ShipmentServiceInfo.Code
+		if mapServices[code] == nil {
+			_service := &UniqueService{service: s}
+			if s.ShipmentPriceInfo != nil {
+				_service.carrierPrice = s.ShipmentPriceInfo.OriginFee
+			} else {
+				_service.carrierPrice = s.ServiceFee
+			}
+			mapServices[code] = _service
+			continue
+		}
+
+		if !s.ShipmentServiceInfo.IsAvailable {
+			continue
+		}
+		carrierPrice := getCarrierPriceFromService(s)
+		currentService := mapServices[code]
+		if !currentService.service.ShipmentServiceInfo.IsAvailable ||
+			currentService.carrierPrice > carrierPrice {
+			mapServices[code] = &UniqueService{
+				service:      s,
+				carrierPrice: carrierPrice,
+			}
+		}
+	}
+
+	if len(mapServices) == 0 {
+		return res
+	}
+
+	for _, s := range mapServices {
+		res = append(res, s.service)
+	}
+	return res
+}
+
+func getCarrierPriceFromService(s *shippingsharemodel.AvailableShippingService) int {
+	if s.ShipmentPriceInfo == nil {
+		return s.ServiceFee
+	}
+	return s.ShipmentPriceInfo.OriginFee
+}
