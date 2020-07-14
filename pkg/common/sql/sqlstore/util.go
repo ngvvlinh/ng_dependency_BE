@@ -471,7 +471,16 @@ func Sort(s cmsql.Query, sorts []string, whitelist map[string]string, prefixed .
 func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cmsql.Query, bool, error) {
 	ok := false
 	for _, filter := range filters {
+		// ignore empty filter value
+		//
+		// NOTE(vu): this should be removed after client fixes the problem
+		// https://github.com/etopvn/one/issues/2562
 		filter.Name = strings.TrimSpace(filter.Name)
+		filter.Value = strings.TrimSpace(filter.Value)
+		if filter.Value == "" {
+			continue
+		}
+
 		names := reList.Split(filter.Name, -1)
 		for i, name := range names {
 			if name == "" {
