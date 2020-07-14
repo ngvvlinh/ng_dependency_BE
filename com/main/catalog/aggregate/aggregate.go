@@ -115,6 +115,9 @@ func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.Upd
 				Throw()
 		}
 	}
+	if args.Code.Valid && convert.NormalizeExternalCode(args.Code.String) == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã sản phẩm rỗng")
+	}
 	if args.Name.Valid {
 		productName := strings.ReplaceAll(args.Name.String, " ", "")
 		if len(productName) < 2 {
@@ -252,6 +255,9 @@ func validateAttributes(a []*types.Attribute) error {
 }
 
 func (a *Aggregate) UpdateShopVariantInfo(ctx context.Context, args *catalog.UpdateShopVariantInfoArgs) (*catalog.ShopVariant, error) {
+	if args.Code.Valid && convert.NormalizeExternalCode(args.Code.String) == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã phiên bản rỗng")
+	}
 	variant, err := a.shopVariant(ctx).ShopID(args.ShopID).ID(args.VariantID).GetShopVariant()
 	if err != nil {
 		return nil, err
