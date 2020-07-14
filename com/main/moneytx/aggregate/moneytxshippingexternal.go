@@ -298,7 +298,7 @@ func (a *MoneyTxAggregate) RemoveMoneyTxShippingExternalLines(ctx context.Contex
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "LineIDs can not be empty")
 	}
 
-	lines, err := a.moneyTxShippingExternalStore(ctx).Line_by_MoneyTxShippingExternalID(args.MoneyTxShippingExternalID).Line_by_LineIDs(args.LineIDs...).ListMoneyTxShippingExternalLinesDB()
+	lines, err := a.moneyTxShippingExternalStore(ctx).Line_by_MoneyTxShippingExternalID(args.MoneyTxShippingExternalID).ListMoneyTxShippingExternalLinesDB()
 	if err != nil {
 		return nil, err
 	}
