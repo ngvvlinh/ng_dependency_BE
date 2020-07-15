@@ -137,6 +137,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 					if code == fbclient.AccessTokenHasExpired.String() {
 						continue
 					} else {
+						ll.SendMessage(err.Error())
 						return err
 					}
 				}

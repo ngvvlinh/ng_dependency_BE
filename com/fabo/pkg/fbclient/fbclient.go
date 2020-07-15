@@ -564,7 +564,7 @@ func (f *FbClient) CallAPIListConversations(accessToken, pageID string, paginati
 }
 
 func (f *FbClient) CallAPIGetConversationByUserID(accessToken, pageID, userID string) (*model.ConversationsResponse, error) {
-	if userID != "" {
+	if userID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "user_id must not be null")
 	}
 	URL, err := url.Parse(fmt.Sprintf("%s/%s/conversations", f.apiInfo.Url(), pageID))
