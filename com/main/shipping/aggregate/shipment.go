@@ -557,6 +557,7 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		update := &shipmodel.Fulfillment{
+			ID:                        args.FulfillmentID,
 			ShippingState:             args.ShippingState,
 			ShippingStatus:            args.ShippingStatus,
 			ExternalShippingData:      args.ExternalShippingData,
