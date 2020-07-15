@@ -283,7 +283,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		case cm.NotFound:
 			// if conversation not found then get externalConversation through call api
 			// and create new externalConversation
-			conversations, err := wh.fbClient.CallAPIListConversations(accessToken, externalPageID, PSID, nil)
+			conversations, err := wh.fbClient.CallAPIGetConversationByUserID(accessToken, externalPageID, PSID)
 			if err != nil {
 				return err
 			}
@@ -390,25 +390,6 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	}
 
 	return nil
-}
-
-func (wh *Webhook) getProfileByPSID(accessToken, pageID, PSID string) (profile *fbclientmodel.Profile, err error) {
-	profile, err = wh.faboRedis.LoadProfilePSID(pageID, PSID)
-	switch err {
-	case redis.ErrNil:
-		profile, err = wh.fbClient.CallAPIGetProfileByPSID(accessToken, PSID)
-		if err != nil {
-			return nil, err
-		}
-		if err := wh.faboRedis.SaveProfilePSID(pageID, PSID, profile); err != nil {
-			return nil, err
-		}
-	case nil:
-	// no-op
-	default:
-		return nil, err
-	}
-	return profile, nil
 }
 
 type WebhookMessages struct {

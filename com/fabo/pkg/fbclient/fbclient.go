@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"o.o/backend/com/fabo/pkg/fbclient/model"
+	cm "o.o/backend/pkg/common"
 	cc "o.o/backend/pkg/common/config"
 )
 
@@ -517,7 +518,7 @@ func (f *FbClient) CallAPIListCommentSummaries(accessToken string, postIDs []str
 	return commentsSummariesResponse, nil
 }
 
-func (f *FbClient) CallAPIListConversations(accessToken, pageID, userID string, pagination *model.FacebookPagingRequest) (*model.ConversationsResponse, error) {
+func (f *FbClient) CallAPIListConversations(accessToken, pageID string, pagination *model.FacebookPagingRequest) (*model.ConversationsResponse, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), pageID))
 	if err != nil {
 		return nil, err
@@ -537,12 +538,52 @@ func (f *FbClient) CallAPIListConversations(accessToken, pageID, userID string, 
 	query.Add(Fields, fmt.Sprintf("conversations.limit(%d){id,message_count,updated_time,link,senders}", defaultPaging))
 	query.Add(DateFormat, UnixDateFormat)
 
-	if userID != "" {
-		query.Add(UserID, userID)
-	}
-
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(pagination.AddQueryParams(URL.String(), false, defaultPaging))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var conversationsResponse model.ConversationsResponse
+
+	if err := json.Unmarshal(body, &conversationsResponse); err != nil {
+		return nil, err
+	}
+
+	return &conversationsResponse, nil
+}
+
+func (f *FbClient) CallAPIGetConversationByUserID(accessToken, pageID, userID string) (*model.ConversationsResponse, error) {
+	if userID != "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "user_id must not be null")
+	}
+	URL, err := url.Parse(fmt.Sprintf("%s/%s/conversations", f.apiInfo.Url(), pageID))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, fmt.Sprintf("id,message_count,updated_time,link,senders"))
+	query.Add(DateFormat, UnixDateFormat)
+	query.Add(UserID, userID)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(URL.String())
 	if err != nil {
 		return nil, err
 	}
@@ -864,11 +905,6 @@ func (f *FbClient) CallAPICommentByID(accessToken, commentID string) (*model.Com
 	return &comment, nil
 }
 
-// API steps:
-//		(issue: some PSIDs are pageIDs or specialIDs that can't get profile or get profile with full fields)
-// 		get profile by psid with full fields
-//		if error don't occur then return
-//		else get profile by psid with fields "id,name"
 func (f *FbClient) CallAPIGetProfileByPSID(accessToken, PSID string) (*model.Profile, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/%s", f.apiInfo.Url(), PSID))
 	if err != nil {
@@ -881,7 +917,7 @@ func (f *FbClient) CallAPIGetProfileByPSID(accessToken, PSID string) (*model.Pro
 	}
 
 	query.Add(AccessToken, accessToken)
-	query.Add(Fields, "id,name,first_name,last_name,profile_pic,timezone,locale,gender")
+	query.Add(Fields, "id,name,first_name,last_name,profile_pic")
 
 	URL.RawQuery = query.Encode()
 	resp, err := http.Get(URL.String())
@@ -890,29 +926,6 @@ func (f *FbClient) CallAPIGetProfileByPSID(accessToken, PSID string) (*model.Pro
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err == nil {
-		var profile model.Profile
-
-		if err := json.Unmarshal(body, &profile); err != nil {
-			return nil, err
-		}
-
-		return &profile, nil
-	}
-
-	query.Set(Fields, "id,name")
-	URL.RawQuery = query.Encode()
-	resp, err = http.Get(URL.String())
-	if err != nil {
-		return nil, err
-	}
-
-	body, err = ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
 		return nil, err

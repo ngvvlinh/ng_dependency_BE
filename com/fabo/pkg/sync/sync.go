@@ -403,7 +403,7 @@ func (s *Synchronizer) handleTaskGetConversations(
 	fmt.Println("GetConversations")
 
 	// Call api list conversations that depends on externalPageID
-	fbConversationsResp, err := s.fbClient.CallAPIListConversations(accessToken, externalPageID, "", fbPagingReq)
+	fbConversationsResp, err := s.fbClient.CallAPIListConversations(accessToken, externalPageID, fbPagingReq)
 	if err != nil {
 		// TODO: Ngoc classify error type
 		return err
