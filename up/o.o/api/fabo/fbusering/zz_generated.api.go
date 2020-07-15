@@ -173,7 +173,8 @@ func (h QueryServiceHandler) HandleListFbExternalUsers(ctx context.Context, msg 
 }
 
 type ListFbExternalUsersByExternalIDsQuery struct {
-	ExternalIDs filter.Strings
+	ExternalIDs    filter.Strings
+	ExternalPageID dot.NullString
 
 	Result []*FbExternalUser `json:"-"`
 }
@@ -334,9 +335,10 @@ func (q *ListFbExternalUsersQuery) SetListFbExternalUsersArgs(args *ListFbExtern
 	q.ShopID = args.ShopID
 }
 
-func (q *ListFbExternalUsersByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs filter.Strings) {
+func (q *ListFbExternalUsersByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs filter.Strings, externalPageID dot.NullString) {
 	return ctx,
-		q.ExternalIDs
+		q.ExternalIDs,
+		q.ExternalPageID
 }
 
 func (q *ListShopCustomerWithFbExternalUserQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerWithFbAvatarsArgs) {

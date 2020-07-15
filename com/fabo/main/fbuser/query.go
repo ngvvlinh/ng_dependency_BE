@@ -57,9 +57,13 @@ func (q *FbUserQuery) GetFbExternalUserByExternalID(
 }
 
 func (q *FbUserQuery) ListFbExternalUsersByExternalIDs(
-	ctx context.Context, externalIDs filter.Strings,
+	ctx context.Context, externalIDs filter.Strings, externalPageID dot.NullString,
 ) ([]*fbusering.FbExternalUser, error) {
-	return q.fbUserStore(ctx).ExternalIDs(externalIDs).ListFbExternalUsers()
+	query := q.fbUserStore(ctx).ExternalIDs(externalIDs)
+	if externalPageID.Valid {
+		query = query.ExternalPageID(externalPageID.String)
+	}
+	return query.ListFbExternalUsers()
 }
 
 func (q *FbUserQuery) ListFbExternalUsers(ctx context.Context, args *fbusering.ListFbExternalUsersArgs) ([]*fbusering.FbExternalUserWithCustomer, error) {

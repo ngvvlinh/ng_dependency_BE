@@ -64,6 +64,11 @@ func (s *FbExternalUserStore) ExternalID(externalID string) *FbExternalUserStore
 	return s
 }
 
+func (s *FbExternalUserStore) ExternalPageID(externalPageID string) *FbExternalUserStore {
+	s.preds = append(s.preds, s.ft.ByExternalPageID(externalPageID))
+	return s
+}
+
 func (s *FbExternalUserStore) Status(status status3.Status) *FbExternalUserStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s

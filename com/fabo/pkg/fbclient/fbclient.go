@@ -563,7 +563,7 @@ func (f *FbClient) CallAPIListConversations(accessToken, pageID string, paginati
 	return &conversationsResponse, nil
 }
 
-func (f *FbClient) CallAPIGetConversationByUserID(accessToken, pageID, userID string) (*model.ConversationsResponse, error) {
+func (f *FbClient) CallAPIGetConversationByUserID(accessToken, pageID, userID string) (*model.Conversations, error) {
 	if userID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "user_id must not be null")
 	}
@@ -598,13 +598,13 @@ func (f *FbClient) CallAPIGetConversationByUserID(accessToken, pageID, userID st
 		return nil, err
 	}
 
-	var conversationsResponse model.ConversationsResponse
+	var conversations model.Conversations
 
-	if err := json.Unmarshal(body, &conversationsResponse); err != nil {
+	if err := json.Unmarshal(body, &conversations); err != nil {
 		return nil, err
 	}
 
-	return &conversationsResponse, nil
+	return &conversations, nil
 }
 
 func (f *FbClient) CallAPIListMessages(accessToken, conversationID string, pagination *model.FacebookPagingRequest) (*model.MessagesResponse, error) {

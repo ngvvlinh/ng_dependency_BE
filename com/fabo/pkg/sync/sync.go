@@ -103,6 +103,7 @@ type Synchronizer struct {
 	fbMessagingAggr  fbmessaging.CommandBus
 	fbMessagingQuery fbmessaging.QueryBus
 	fbUseringAggr    fbusering.CommandBus
+	fbUseringQuery   fbusering.QueryBus
 
 	mu sync.Mutex
 	rd *faboRedis.FaboRedis
@@ -116,7 +117,7 @@ func New(
 	db *cmsql.Database,
 	fbClient *fbclient.FbClient,
 	fbMessagingAggr fbmessaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus,
-	fbUseringAggr fbusering.CommandBus,
+	fbUseringAggr fbusering.CommandBus, fbUseringQuery fbusering.QueryBus,
 	fbRedis *faboRedis.FaboRedis, timeLimit int,
 ) *Synchronizer {
 	sched := scheduler.New(defaultNumWorkers)
@@ -129,6 +130,7 @@ func New(
 		fbMessagingAggr:             fbMessagingAggr,
 		fbMessagingQuery:            fbMessagingQuery,
 		fbUseringAggr:               fbUseringAggr,
+		fbUseringQuery:              fbUseringQuery,
 		rd:                          fbRedis,
 		timeLimit:                   timeLimit,
 	}
@@ -221,25 +223,24 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 			s.mu.Lock()
 			s.mapExternalPageAndTimeStart[externalPageID] = now
 			s.mu.Unlock()
+			// Task get post
 			s.addTaskGetPosts(fbPageCombined)
-		}
 
-		// Task get conversation
-		//{
-		//	s.addTask(&TaskArguments{
-		//		actionType:     GetConversations,
-		//		accessToken:    fbPageCombined.FbExternalPageInternal.Token,
-		//		shopID:         fbPageCombined.FbExternalPage.ShopID,
-		//		pageID:         fbPageCombined.FbExternalPage.ID,
-		//		externalPageID: fbPageCombined.FbExternalPage.ExternalID,
-		//		fbPagingRequest: &model.FacebookPagingRequest{
-		//			Limit: dot.Int(fbclient.DefaultLimitGetConversations),
-		//			TimePagination: &model.TimePaginationRequest{
-		//				Since: time.Now().AddDate(0, 0, -s.timeLimit),
-		//			},
-		//		},
-		//	})
-		//}
+			// Task get conversation
+			s.addTask(&TaskArguments{
+				actionType:     GetConversations,
+				accessToken:    fbPageCombined.FbExternalPageInternal.Token,
+				shopID:         fbPageCombined.FbExternalPage.ShopID,
+				pageID:         fbPageCombined.FbExternalPage.ID,
+				externalPageID: fbPageCombined.FbExternalPage.ExternalID,
+				fbPagingRequest: &model.FacebookPagingRequest{
+					Limit: dot.Int(fbclient.DefaultLimitGetConversations),
+					TimePagination: &model.TimePaginationRequest{
+						Since: time.Now().AddDate(0, 0, -s.timeLimit),
+					},
+				},
+			})
+		}
 	}
 
 	s.scheduler.AddAfter(cm.NewID(), 10*time.Second, s.addJobs)
@@ -347,27 +348,92 @@ func (s *Synchronizer) handleTaskGetMessages(
 	}
 
 	isFinished := false
+
+	var messagesData []*model.MessageData
+	mapPSIDAndAvatar := make(map[string]string)
 	var fbExternalMessagesArgs []*fbmessaging.CreateFbExternalMessageArgs
 	for _, fbMessage := range fbMessagesResp.Messages.MessagesData {
 		if time.Now().Sub(fbMessage.CreatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
 			isFinished = true
 			continue
 		}
-		var externalAttachments []*fbmessaging.FbMessageAttachment
-		if fbMessage.Attachments != nil {
-			externalAttachments = fbclientconvert.ConvertMessageDataAttachments(fbMessage.Attachments.Data)
+		messagesData = append(messagesData, fbMessage)
+		if fbMessage.From != nil && fbMessage.From.ID != externalPageID {
+			mapPSIDAndAvatar[fbMessage.From.ID] = ""
 		}
+
+		if fbMessage.To != nil {
+			for _, fbMessageTo := range fbMessage.To.Data {
+				if fbMessageTo.ID != externalPageID {
+					mapPSIDAndAvatar[fbMessageTo.ID] = ""
+				}
+			}
+		}
+	}
+
+	var PSIDs []string
+	for psid := range mapPSIDAndAvatar {
+		PSIDs = append(PSIDs, psid)
+	}
+
+	listFbExternalUserByExternalIDsQuery := &fbusering.ListFbExternalUsersByExternalIDsQuery{
+		ExternalIDs:    PSIDs,
+		ExternalPageID: dot.String(externalPageID),
+	}
+	if err := s.fbUseringQuery.Dispatch(ctx, listFbExternalUserByExternalIDsQuery); err != nil {
+		return err
+	}
+	for _, fbExternalUser := range listFbExternalUserByExternalIDsQuery.Result {
+		mapPSIDAndAvatar[fbExternalUser.ExternalID] = fbExternalUser.ExternalInfo.ImageURL
+	}
+
+	for psid, avatar := range mapPSIDAndAvatar {
+		if avatar == "" {
+			profile, err := s.fbClient.CallAPIGetProfileByPSID(accessToken, psid)
+			if err != nil {
+				return err
+			}
+			mapPSIDAndAvatar[psid] = profile.ProfilePic
+		}
+	}
+	mapPSIDAndAvatar[externalPageID] = fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", externalPageID)
+
+	for _, messageData := range messagesData {
+		var externalAttachments []*fbmessaging.FbMessageAttachment
+		if messageData.Attachments != nil {
+			externalAttachments = fbclientconvert.ConvertMessageDataAttachments(messageData.Attachments.Data)
+		}
+
+		if messageData.From != nil {
+			id := messageData.From.ID
+			messageData.From.Picture = &model.Picture{
+				Data: model.PictureData{
+					Url: mapPSIDAndAvatar[id],
+				},
+			}
+		}
+		if messageData.To != nil {
+			for _, messageTo := range messageData.To.Data {
+				id := messageTo.ID
+				messageTo.Picture = &model.Picture{
+					Data: model.PictureData{
+						Url: mapPSIDAndAvatar[id],
+					},
+				}
+			}
+		}
+
 		fbExternalMessagesArgs = append(fbExternalMessagesArgs, &fbmessaging.CreateFbExternalMessageArgs{
 			ID:                     cm.NewID(),
 			ExternalConversationID: externalConversationID,
 			ExternalPageID:         externalPageID,
-			ExternalID:             fbMessage.ID,
-			ExternalMessage:        fbMessage.Message,
-			ExternalSticker:        fbMessage.Sticker,
-			ExternalTo:             fbclientconvert.ConvertObjectsTo(fbMessage.To),
-			ExternalFrom:           fbclientconvert.ConvertObjectFrom(fbMessage.From),
+			ExternalID:             messageData.ID,
+			ExternalMessage:        messageData.Message,
+			ExternalSticker:        messageData.Sticker,
+			ExternalTo:             fbclientconvert.ConvertObjectsTo(messageData.To),
+			ExternalFrom:           fbclientconvert.ConvertObjectFrom(messageData.From),
 			ExternalAttachments:    externalAttachments,
-			ExternalCreatedTime:    fbMessage.CreatedTime.ToTime(),
+			ExternalCreatedTime:    messageData.CreatedTime.ToTime(),
 		})
 	}
 
@@ -441,6 +507,7 @@ func (s *Synchronizer) handleTaskGetConversations(
 			ExternalLink:         fbConversation.Link,
 			ExternalUpdatedTime:  fbConversation.UpdatedTime.ToTime(),
 			ExternalMessageCount: fbConversation.MessageCount,
+			PSID:                 externalUserID,
 		})
 	}
 

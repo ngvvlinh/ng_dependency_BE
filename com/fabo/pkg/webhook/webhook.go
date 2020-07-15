@@ -288,10 +288,10 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			if err != nil {
 				return err
 			}
-			if len(conversations.Conversations.ConversationsData) == 0 {
+			if len(conversations.ConversationsData) == 0 {
 				return cm.Errorf(cm.Internal, nil, fmt.Sprintf("Wrong PSID %s", PSID))
 			}
-			externalConversation := conversations.Conversations.ConversationsData[0]
+			externalConversation := conversations.ConversationsData[0]
 			externalConversationID = externalConversation.ID
 
 			var externalUserName string
