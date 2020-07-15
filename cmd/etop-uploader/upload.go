@@ -21,7 +21,7 @@ const (
 	minSize = 100
 	maxSize = 1024 * 1024 // 1MB
 	minWH   = 200
-	maxWH   = 2000
+	maxWH   = 2500
 )
 
 func getImageConfig(purpose Purpose) (*ImageConfig, error) {
