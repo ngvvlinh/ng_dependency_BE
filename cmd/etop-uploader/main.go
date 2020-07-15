@@ -39,11 +39,8 @@ type ImageConfig struct {
 var imageConfigs = map[Purpose]*ImageConfig{}
 
 var (
-	ll  = l.New()
-	cfg config.Config
-	ctx context.Context
-
-	ctxCancel     context.CancelFunc
+	ll            = l.New()
+	cfg           config.Config
 	healthservice = health.New()
 	tokenStore    auth.Validator
 )
@@ -90,8 +87,7 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
-	cfg.TelegramBot.MustRegister(ctx)
-	ctx, ctxCancel = context.WithCancel(context.Background())
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)
 		signal.Notify(osSignal, syscall.SIGINT, syscall.SIGTERM)
@@ -105,6 +101,7 @@ func main() {
 
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
+	cfg.TelegramBot.MustRegister(ctx)
 
 	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
 	tokenStore = auth.NewGenerator(redisStore)
