@@ -292,21 +292,22 @@ func Convert_core_Shop_To_api_Shop(in *identity.Shop) *etop.Shop {
 		return nil
 	}
 	return &etop.Shop{
-		Id:                in.ID,
-		Name:              in.Name,
-		Status:            in.Status,
-		IsTest:            in.IsTest == 1,
-		Phone:             in.Phone,
-		AutoCreateFfm:     in.AutoCreateFFM,
-		WebsiteUrl:        in.WebsiteURL,
-		ImageUrl:          in.ImageURL,
-		Email:             in.Email,
-		ShipToAddressId:   in.ShipToAddressID,
-		ShipFromAddressId: in.ShipFromAddressID,
-		OwnerId:           in.OwnerID,
-		Code:              in.Code,
-		BankAccount:       Convert_core_BankAccount_To_api_BankAccount(in.BankAccount),
-		TryOn:             in.TryOn,
+		Id:                    in.ID,
+		Name:                  in.Name,
+		Status:                in.Status,
+		IsTest:                in.IsTest == 1,
+		Phone:                 in.Phone,
+		AutoCreateFfm:         in.AutoCreateFFM,
+		WebsiteUrl:            in.WebsiteURL,
+		ImageUrl:              in.ImageURL,
+		Email:                 in.Email,
+		ShipToAddressId:       in.ShipToAddressID,
+		ShipFromAddressId:     in.ShipFromAddressID,
+		OwnerId:               in.OwnerID,
+		Code:                  in.Code,
+		BankAccount:           Convert_core_BankAccount_To_api_BankAccount(in.BankAccount),
+		TryOn:                 in.TryOn,
+		MoneyTransactionRrule: in.MoneyTransactionRRule,
 	}
 }
 
