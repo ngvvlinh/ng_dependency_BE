@@ -135,7 +135,7 @@ func (s *AddressStore) UpdateAddressDB(addr *model.ShopTraderAddress) error {
 	}
 	err = s.query().Where(
 		s.ft.ByID(addr.ID),
-	).UpdateAll().ShouldUpdate(addrSearchDB)
+	).ShouldUpdate(addrSearchDB)
 	return err
 }
 
