@@ -6,9 +6,11 @@ import (
 	"o.o/api/fabo/fbusering"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/int/fabo"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/authorize/session"
 	convertpbfabo "o.o/backend/pkg/fabo/convertpb"
+	"o.o/capi/dot"
 )
 
 type CustomerService struct {
@@ -65,39 +67,71 @@ func (s *CustomerService) ListFbUsers(ctx context.Context, request *fabo.ListFbU
 	return result, nil
 }
 
-func (s *CustomerService) ListCustomersWithFbUsers(ctx context.Context, request *fabo.ListCustomersWithFbUsersRequest) (*fabo.ListCustomersWithFbUsersResponse, error) {
-	var result = &fabo.ListCustomersWithFbUsersResponse{}
+func (s *CustomerService) ListCustomersWithFbUsers(ctx context.Context, request *fabo.ListCustomersWithFbUsersRequest) (resp *fabo.ListCustomersWithFbUsersResponse, err error) {
 	paging := cmapi.CMPaging(request.Paging)
-	shopID := s.SS.Shop().ID
-	if paging.Offset == 0 && request.GetAll && len(request.Filters) == 0 {
-		paging.Limit = paging.Limit - 1
-		queryCustomerIndenpendent := &customering.GetCustomerIndependentQuery{}
-		if err := s.CustomerQuery.Dispatch(ctx, queryCustomerIndenpendent); err != nil {
+
+	if !request.GetAll.Valid {
+		request.GetAll = dot.Bool(true)
+	}
+
+	if request.GetAll.Apply(false) {
+		resp, err = s.getAllCustomers(ctx, paging, request)
+	} else {
+		resp, err = s.getCustomers(ctx, paging, request)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return resp, err
+}
+
+func (s *CustomerService) getAllCustomers(ctx context.Context, paging *cm.Paging, request *fabo.ListCustomersWithFbUsersRequest) (*fabo.ListCustomersWithFbUsersResponse, error) {
+	queryCustomerIndependent := &customering.GetCustomerIndependentQuery{}
+	if err := s.CustomerQuery.Dispatch(ctx, queryCustomerIndependent); err != nil {
+		return nil, err
+	}
+
+	var customers []*fabo.CustomerWithFbUserAvatars
+	customers = append(customers, convertpbfabo.PbCustomerWithFbUser(
+		&fbusering.ShopCustomerWithFbExternalUser{
+			ShopCustomer: queryCustomerIndependent.Result,
+		},
+	))
+
+	result := &fabo.ListCustomersWithFbUsersResponse{
+		Paging: cmapi.PbPageInfo(paging),
+	}
+	if paging.Limit == 1 && paging.Offset == 0 {
+		result.Customers = customers
+		return result, nil
+	}
+	if paging.Offset == 0 {
+		paging.Limit--
+		resp, err := s.getCustomers(ctx, paging, request)
+		if err != nil {
 			return nil, err
 		}
-		result.Customers = append(result.Customers,
-			convertpbfabo.PbCustomerWithFbUser(
-				&fbusering.ShopCustomerWithFbExternalUser{
-					ShopCustomer: queryCustomerIndenpendent.Result,
-				},
-			))
+		customers = append(customers, resp.Customers...)
+		result.Customers = customers
+	} else {
+		paging.Offset--
+		return s.getCustomers(ctx, paging, request)
 	}
-	if paging.Limit > 0 {
-		query := &fbusering.ListShopCustomerWithFbExternalUserQuery{
-			ShopID:  shopID,
-			Paging:  *paging,
-			Filters: cmapi.ToFilters(request.Filters),
-		}
-		if err := s.FBUseringQuery.Dispatch(ctx, query); err != nil {
-			return nil, err
-		}
-		result.Customers = append(result.Customers, convertpbfabo.PbCustomersWithFbUsers(query.Result.Customers)...)
-		result.Paging = cmapi.PbPageInfo(paging)
-		result.Paging.Total = len(result.Customers)
-		// Nếu có chứa customer anonymous
-		if len(result.Customers) > 0 && result.Customers[0].Id == 1 {
-			result.Paging.Limit++
-		}
+	return result, nil
+}
+
+func (s *CustomerService) getCustomers(ctx context.Context, paging *cm.Paging, request *fabo.ListCustomersWithFbUsersRequest) (*fabo.ListCustomersWithFbUsersResponse, error) {
+	result := &fabo.ListCustomersWithFbUsersResponse{}
+	query := &fbusering.ListShopCustomerWithFbExternalUserQuery{
+		ShopID:  s.SS.Shop().ID,
+		Paging:  *paging,
+		Filters: cmapi.ToFilters(request.Filters),
 	}
+	if err := s.FBUseringQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	result.Customers = append(result.Customers, convertpbfabo.PbCustomersWithFbUsers(query.Result.Customers)...)
+	result.Paging = cmapi.PbPageInfo(paging)
+	result.Paging.Total = len(result.Customers)
 	return result, nil
 }

@@ -49,7 +49,7 @@ func (m *ListCustomersWithFbUsersResponse) String() string {
 type ListCustomersWithFbUsersRequest struct {
 	Filters []*common.Filter `json:"filters"`
 	Paging  *common.Paging   `json:"paging"`
-	GetAll  bool             `json:"get_all"`
+	GetAll  dot.NullBool     `json:"get_all"`
 }
 
 func (m *ListCustomersWithFbUsersRequest) String() string {
