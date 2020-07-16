@@ -556,9 +556,10 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 				return nil, cm.Errorf(cm.InvalidArgument, err, "AffiliateAcount: ShopID is invalid")
 			}
 			cfg := ghnclientv2.GHNAccountCfg{
-				ClientID: clientID,
-				ShopID:   shopID,
-				Token:    token,
+				ClientID:    clientID,
+				ShopID:      shopID,
+				Token:       token,
+				AffiliateID: clientID,
 			}
 			driver := ghndriverv2.New(m.Env, cfg, m.LocationQS)
 			return driver, nil

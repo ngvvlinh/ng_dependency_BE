@@ -406,6 +406,14 @@ func (d *GHNDriver) SignIn(
 	ctx context.Context, args *carriertypes.SignInArgs,
 ) (*carriertypes.AccountResponse, error) {
 	if args.OTP == "" {
+		// This function get all shops that depends on phone (args) to reduce creating new shop.
+		// And compare shop.created_client with affiliateID to finish do more request
+		// if response not nil which mean having an old shop, otherwise need to create new shop
+		response, err := d.checkAndGetOldShop(ctx, args)
+		if err != nil || response != nil {
+			return response, err
+		}
+
 		sendOTPShopAffiliateRequest := &ghnclient.SendOTPShopAffiliateRequest{
 			Phone: args.Identifier,
 		}
@@ -434,6 +442,44 @@ func (d *GHNDriver) SignIn(
 		ShopID: shopID,
 		Token:  d.client.GetToken(),
 	}, nil
+}
+
+func (d *GHNDriver) checkAndGetOldShop(ctx context.Context, args *carrierutil.SignInArgs) (*carrierutil.AccountResponse, error) {
+	var finish bool
+	offsetID := 0
+	limit := 100
+
+	for !finish {
+		getShopByClientOwnerReq := &ghnclient.GetShopByClientOwnerRequest{
+			OffsetID: offsetID,
+			Phone:    args.Identifier,
+			Limit:    limit,
+		}
+		getShopByClientOwnerResp, err := d.client.GetShopByClientOwner(ctx, getShopByClientOwnerReq)
+		if err != nil {
+			return nil, err
+		}
+
+		shops := *getShopByClientOwnerResp
+
+		for _, shop := range shops {
+			// check created_client == affiliateID to finish as soon as
+			if shop.CreatedClient.String() == d.client.GetAffiliateID() {
+				return &carriertypes.AccountResponse{
+					Token:  d.client.GetToken(),
+					UserID: shop.ClientID.String(),
+					ShopID: shop.ID.String(),
+				}, nil
+			}
+		}
+
+		if len(shops) < limit {
+			finish = true
+		} else {
+			offsetID = shops[len(shops)-1].ID.Int()
+		}
+	}
+	return nil, nil
 }
 
 func (d *GHNDriver) SignUp(

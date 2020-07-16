@@ -611,3 +611,11 @@ type OrderFeeCallback struct {
 	StationDO   Int `json:"StationDO"`
 	StationPU   Int `json:"StationPU"`
 }
+
+type GetShopByClientOwnerRequest struct {
+	OffsetID int    `json:"offset_id"`
+	Phone    string `json:"phone"`
+	Limit    int    `json:"limit"`
+}
+
+type GetShopByClientOwnerResponse []*ShopInfo

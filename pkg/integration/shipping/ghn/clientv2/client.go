@@ -255,6 +255,12 @@ func (c *Client) CancelOrder(ctx context.Context, req *CancelOrderRequest) error
 	return c.sendRequest(ctx, "/v2/switch-status/cancel", c.shopID, req, nil)
 }
 
+func (c *Client) GetShopByClientOwner(ctx context.Context, req *GetShopByClientOwnerRequest) (*GetShopByClientOwnerResponse, error) {
+	var resp GetShopByClientOwnerResponse
+	err := c.sendRequest(ctx, "/v2/client/shops-by-client-owner", c.shopID, req, &resp)
+	return &resp, err
+}
+
 func (c *Client) sendRequest(ctx context.Context, path string, shopID int, req, resp interface{}) error {
 	var errResp ErrorResponse
 	res, err := c.rclient.R().
