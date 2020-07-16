@@ -268,10 +268,9 @@ func (h QueryServiceHandler) HandleGetLatestCustomerExternalComment(ctx context.
 }
 
 type GetLatestFbExternalCommentQuery struct {
-	ExternalPageID       string
-	ExternalPostID       string
-	ExternalUserID       string
-	ExternalParentUserID string
+	ExternalPageID string
+	ExternalPostID string
+	ExternalUserID string
 
 	Result *FbExternalComment `json:"-"`
 }
@@ -642,12 +641,11 @@ func (q *GetLatestCustomerExternalCommentQuery) GetArgs(ctx context.Context) (_ 
 		q.ExternalPageID
 }
 
-func (q *GetLatestFbExternalCommentQuery) GetArgs(ctx context.Context) (_ context.Context, externalPageID string, externalPostID string, externalUserID string, externalParentUserID string) {
+func (q *GetLatestFbExternalCommentQuery) GetArgs(ctx context.Context) (_ context.Context, externalPageID string, externalPostID string, externalUserID string) {
 	return ctx,
 		q.ExternalPageID,
 		q.ExternalPostID,
-		q.ExternalUserID,
-		q.ExternalParentUserID
+		q.ExternalUserID
 }
 
 func (q *ListFbCustomerConversationStatesQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {

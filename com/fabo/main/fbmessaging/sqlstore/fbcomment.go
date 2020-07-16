@@ -71,7 +71,7 @@ func (s *FbExternalCommentStore) ID(ID dot.ID) *FbExternalCommentStore {
 	return s
 }
 
-func (s *FbExternalCommentStore) CreateFbExternalComment(fbExternalComment *fbmessaging.FbExternalComment) error {
+func (s *FbExternalCommentStore) CreateOrUpdateFbExternalComment(fbExternalComment *fbmessaging.FbExternalComment) error {
 	sqlstore.MustNoPreds(s.preds)
 	fbExternalCommentDB := new(model.FbExternalComment)
 	if err := scheme.Convert(fbExternalComment, fbExternalCommentDB); err != nil {
@@ -82,13 +82,6 @@ func (s *FbExternalCommentStore) CreateFbExternalComment(fbExternalComment *fbme
 	if err != nil {
 		return err
 	}
-
-	var tempFbExternalComment model.FbExternalComment
-	if err := s.query().Where(s.ft.ByID(fbExternalComment.ID)).ShouldGet(&tempFbExternalComment); err != nil {
-		return err
-	}
-	fbExternalComment.CreatedAt = tempFbExternalComment.CreatedAt
-	fbExternalComment.UpdatedAt = tempFbExternalComment.UpdatedAt
 
 	return nil
 }
@@ -163,23 +156,21 @@ func (s *FbExternalCommentStore) ExternalPageIDAndExternalUserID(externalPageID,
 }
 
 func (s *FbExternalCommentStore) GetLatestExternalComment(
-	externalPageID, externalPostID,
-	externalUserID, externalParentUserID string,
+	externalPageID, externalPostID, externalUserID string,
 ) (*fbmessaging.FbExternalComment, error) {
 	var fbExternalComment model.FbExternalComment
 
-	if err := s.query().
+	query := s.query().
 		Where(fmt.Sprintf(`
 			external_post_id = '%s' AND 
 			(
-				(external_user_id = '%s' AND external_parent_user_id IS NULL) OR
-				(external_user_id = '%s' AND external_parent_user_id = '%s') OR 
+				(external_user_id = '%s') OR
 				(external_user_id = '%s' AND external_parent_user_id = '%s')
 			)
-		`, externalPostID, externalUserID, externalUserID, externalParentUserID, externalPageID, externalParentUserID)).
+		`, externalPostID, externalUserID, externalPageID, externalUserID)).
 		OrderBy("external_created_time desc", "id asc").
-		Limit(1).
-		ShouldGet(&fbExternalComment); err != nil {
+		Limit(1)
+	if err := query.ShouldGet(&fbExternalComment); err != nil {
 		return nil, err
 	}
 
@@ -216,26 +207,13 @@ func (s *FbExternalCommentStore) GetLatestCustomerExternalComment(
 ) (*fbmessaging.FbExternalComment, error) {
 	var fbExternalComment model.FbExternalComment
 
-	if externalUserID != externalPageID {
-		if err := s.query().
-			Where(s.ft.ByExternalPostID(externalPostID)).
-			Where(s.ft.ByExternalUserID(externalUserID)).
-			OrderBy("external_created_time desc", "id desc").
-			Limit(1).
-			ShouldGet(&fbExternalComment); err != nil {
-			return nil, err
-		}
-	} else {
-		if err := s.query().
-			Where(fmt.Sprintf(`
-				(external_user_id = '%s' AND external_parent_user_id IS NULL) OR
-				(external_user_id = '%s' AND external_parent_user_id = '%s')
-			`, externalPageID, externalPageID, externalPageID)).
-			OrderBy("external_created_time desc", "id desc").
-			Limit(1).
-			ShouldGet(&fbExternalComment); err != nil {
-			return nil, err
-		}
+	if err := s.query().
+		Where(s.ft.ByExternalPostID(externalPostID)).
+		Where(s.ft.ByExternalUserID(externalUserID)).
+		OrderBy("external_created_time desc", "id desc").
+		Limit(1).
+		ShouldGet(&fbExternalComment); err != nil {
+		return nil, err
 	}
 
 	result := fbmessaging.FbExternalComment{}

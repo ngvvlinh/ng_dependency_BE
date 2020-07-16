@@ -139,6 +139,17 @@ func (h QueryServiceHandler) HandleGetFbExternalPageByID(ctx context.Context, ms
 	return err
 }
 
+type GetFbExternalPageInternalActiveByExternalIDQuery struct {
+	ExternalID string
+
+	Result *FbExternalPageInternal `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFbExternalPageInternalActiveByExternalID(ctx context.Context, msg *GetFbExternalPageInternalActiveByExternalIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalPageInternalActiveByExternalID(msg.GetArgs(ctx))
+	return err
+}
+
 type GetFbExternalPageInternalByExternalIDQuery struct {
 	ExternalID string
 
@@ -227,16 +238,17 @@ func (q *CreateFbExternalPageInternalCommand) command()        {}
 func (q *DisableAllFbExternalPagesCommand) command()           {}
 func (q *DisableFbExternalPagesByExternalIDsCommand) command() {}
 
-func (q *GetFbExternalPageActiveByExternalIDQuery) query()    {}
-func (q *GetFbExternalPageByExternalIDQuery) query()          {}
-func (q *GetFbExternalPageByIDQuery) query()                  {}
-func (q *GetFbExternalPageInternalByExternalIDQuery) query()  {}
-func (q *GetFbExternalPageInternalByIDQuery) query()          {}
-func (q *ListFbExternalPagesQuery) query()                    {}
-func (q *ListFbExternalPagesActiveByExternalIDsQuery) query() {}
-func (q *ListFbExternalPagesByExternalIDsQuery) query()       {}
-func (q *ListFbExternalPagesByIDsQuery) query()               {}
-func (q *ListFbPagesByShopQuery) query()                      {}
+func (q *GetFbExternalPageActiveByExternalIDQuery) query()         {}
+func (q *GetFbExternalPageByExternalIDQuery) query()               {}
+func (q *GetFbExternalPageByIDQuery) query()                       {}
+func (q *GetFbExternalPageInternalActiveByExternalIDQuery) query() {}
+func (q *GetFbExternalPageInternalByExternalIDQuery) query()       {}
+func (q *GetFbExternalPageInternalByIDQuery) query()               {}
+func (q *ListFbExternalPagesQuery) query()                         {}
+func (q *ListFbExternalPagesActiveByExternalIDsQuery) query()      {}
+func (q *ListFbExternalPagesByExternalIDsQuery) query()            {}
+func (q *ListFbExternalPagesByIDsQuery) query()                    {}
+func (q *ListFbPagesByShopQuery) query()                           {}
 
 // implement conversion
 
@@ -349,6 +361,11 @@ func (q *GetFbExternalPageByIDQuery) GetArgs(ctx context.Context) (_ context.Con
 		q.ID
 }
 
+func (q *GetFbExternalPageInternalActiveByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
+	return ctx,
+		q.ExternalID
+}
+
 func (q *GetFbExternalPageInternalByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
 		q.ExternalID
@@ -430,6 +447,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetFbExternalPageActiveByExternalID)
 	b.AddHandler(h.HandleGetFbExternalPageByExternalID)
 	b.AddHandler(h.HandleGetFbExternalPageByID)
+	b.AddHandler(h.HandleGetFbExternalPageInternalActiveByExternalID)
 	b.AddHandler(h.HandleGetFbExternalPageInternalByExternalID)
 	b.AddHandler(h.HandleGetFbExternalPageInternalByID)
 	b.AddHandler(h.HandleListFbExternalPages)

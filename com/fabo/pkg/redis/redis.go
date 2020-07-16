@@ -18,11 +18,13 @@ const (
 type FaboRedis struct {
 	redisStore redis.Store
 	mu         sync.Mutex
+	version    string
 }
 
 func NewFaboRedis(redisStore redis.Store) *FaboRedis {
 	return &FaboRedis{
 		redisStore: redisStore,
+		version:    "1.0",
 	}
 }
 
@@ -52,7 +54,7 @@ func (r *FaboRedis) SaveProfilePSID(pageID, PSID string, profile *fbclientmodel.
 }
 
 func (r *FaboRedis) GenerateProfilePSIDKey(externalPageID, PSID string) string {
-	return fmt.Sprintf("%s:%s_%s", PrefixProfilePSID, externalPageID, PSID)
+	return fmt.Sprintf("%s:%s:%s_%s", PrefixProfilePSID, r.version, externalPageID, PSID)
 }
 
 func (r *FaboRedis) LoadPSID(pageID, PSID string) (string, error) {

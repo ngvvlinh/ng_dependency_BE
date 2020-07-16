@@ -509,7 +509,6 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 	}
 
 	var resultFbExternalComments []*fbmessaging.FbExternalComment
-	var newFbExternalComments []*fbmessaging.FbExternalComment
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		for _, fbExternalCommentArg := range args.FbExternalComments {
 			newFbExternalComment := new(fbmessaging.FbExternalComment)
@@ -519,6 +518,7 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 
 			if oldFbExternalComment, ok := mapOldFbExternalComment[fbExternalCommentArg.ExternalID]; ok {
 				newFbExternalComment.ID = oldFbExternalComment.ID
+				newFbExternalComment.CreatedAt = oldFbExternalComment.CreatedAt
 				resultFbExternalComments = append(resultFbExternalComments, oldFbExternalComment)
 
 				if isEqual := compare.CompareFbExternalComments(oldFbExternalComment, newFbExternalComment); isEqual {
@@ -528,22 +528,17 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 				resultFbExternalComments = append(resultFbExternalComments, newFbExternalComment)
 			}
 
-			newFbExternalComments = append(newFbExternalComments, newFbExternalComment)
-		}
-
-		if len(newFbExternalComments) > 0 {
-			if err := a.fbExternalCommentStore(ctx).CreateFbExternalComments(newFbExternalComments); err != nil {
+			if err := a.fbExternalCommentStore(ctx).CreateOrUpdateFbExternalComment(newFbExternalComment); err != nil {
 				return err
 			}
 
-			event := &fbmessaging.FbExternalCommentsCreatedEvent{
-				FbExternalComments: newFbExternalComments,
+			event := &fbmessaging.FbExternalCommentCreatedOrUpdatedEvent{
+				FbExternalComment: newFbExternalComment,
 			}
 			if err := a.eventBus.Publish(ctx, event); err != nil {
 				return err
 			}
 		}
-
 		return nil
 	}); err != nil {
 		return nil, err

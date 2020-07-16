@@ -3,7 +3,6 @@ package fbmessaging
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -50,7 +49,7 @@ func NewProcessManager(
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.HandleFbExternalMessagesCreatedEvent)
-	eventBus.AddEventListener(m.HandleFbExternalCommentsCreatedEvent)
+	eventBus.AddEventListener(m.HandleFbExternalCommentCreatedOrUpdatedEvent)
 	eventBus.AddEventListener(m.HandleFbExternalConversationsCreatedEvent)
 }
 
@@ -202,129 +201,123 @@ func (m *ProcessManager) HandleFbExternalMessagesCreatedEvent(
 	return nil
 }
 
-func (m *ProcessManager) HandleFbExternalCommentsCreatedEvent(
-	ctx context.Context, event *fbmessaging.FbExternalCommentsCreatedEvent,
+func (m *ProcessManager) HandleFbExternalCommentCreatedOrUpdatedEvent(
+	ctx context.Context, event *fbmessaging.FbExternalCommentCreatedOrUpdatedEvent,
 ) error {
-	if len(event.FbExternalComments) == 0 {
+	if event.FbExternalComment == nil {
+		return nil
+	}
+	fbExternalComment := event.FbExternalComment
+	externalPostID := fbExternalComment.ExternalPostID
+	externalPageID := fbExternalComment.ExternalPageID
+	externalFrom := fbExternalComment.ExternalFrom
+
+	// Ignore ExternalUserID = "" and ExternalFrom = nil
+	if fbExternalComment.ExternalUserID == "" || fbExternalComment.ExternalFrom == nil {
+		return nil
+	}
+	// Ignore Page's comment if it hasn't parent
+	if fbExternalComment.ExternalUserID == externalPageID &&
+		(fbExternalComment.ExternalParentUserID == "" || fbExternalComment.ExternalParent == nil || fbExternalComment.ExternalParent.From == nil) {
 		return nil
 	}
 
-	externalPostIDsSet := NewSet()
-	mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID := make(map[string]map[string]string)
-
-	for _, fbExternalComment := range event.FbExternalComments {
-		// Ignore ExternalUserID = "" and ExternalFrom = nil
-		if fbExternalComment.ExternalUserID == "" || fbExternalComment.ExternalFrom == nil {
-			continue
-		}
-
-		if _, ok := mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID[fbExternalComment.ExternalPostID]; !ok {
-			mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID[fbExternalComment.ExternalPostID] = make(map[string]string)
-			externalPostIDsSet.Push(fbExternalComment.ExternalPostID)
-		}
-
-		tempExternalUserID := fbExternalComment.ExternalUserID
-		mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID[fbExternalComment.ExternalPostID][tempExternalUserID] = fbExternalComment.ExternalParentUserID
+	// Get FbExternalPost
+	getFbExternalPostQuery := &fbmessaging.GetFbExternalPostByExternalIDQuery{
+		ExternalID: externalPostID,
 	}
-
-	listExternalPostsByExternalIDsQuery := &fbmessaging.ListFbExternalPostsByExternalIDsQuery{
-		ExternalIDs: externalPostIDsSet.Strings(),
-	}
-	if err := m.fbmessagingQ.Dispatch(ctx, listExternalPostsByExternalIDsQuery); err != nil {
+	if err := m.fbmessagingQ.Dispatch(ctx, getFbExternalPostQuery); err != nil {
 		return err
 	}
-	mapExternalPost := make(map[string]*fbmessaging.FbExternalPost)
-	for _, externalPost := range listExternalPostsByExternalIDsQuery.Result {
-		mapExternalPost[externalPost.ExternalID] = externalPost
+	fbExternalPost := getFbExternalPostQuery.Result
+
+	// Get latestFbExternalComment
+	externalUserIDArg := fbExternalComment.ExternalUserID
+	if fbExternalComment.ExternalUserID == externalPageID {
+		externalUserIDArg = fbExternalComment.ExternalParentUserID
+	}
+	getLatestFbExternalCommentQuery := &fbmessaging.GetLatestFbExternalCommentQuery{
+		ExternalPageID: externalPageID,
+		ExternalPostID: externalPostID,
+		ExternalUserID: externalUserIDArg,
+	}
+	if err := m.fbmessagingQ.Dispatch(ctx, getLatestFbExternalCommentQuery); err != nil {
+		return err
+	}
+	lastFbExternalComment := getLatestFbExternalCommentQuery.Result
+
+	externalUserIDCustomerConversation := lastFbExternalComment.ExternalUserID
+	externalUserNameCustomerConversation := lastFbExternalComment.ExternalFrom.Name
+	externalFromCustomerConversation := lastFbExternalComment.ExternalFrom
+
+	if lastFbExternalComment.ExternalUserID == externalPageID &&
+		lastFbExternalComment.ExternalParent != nil && lastFbExternalComment.ExternalParent.From != nil {
+		externalParentFrom := lastFbExternalComment.ExternalParent.From
+
+		externalUserIDCustomerConversation = externalParentFrom.ID
+		externalUserNameCustomerConversation = externalParentFrom.Name
+		externalFromCustomerConversation = externalParentFrom
 	}
 
-	for externalPostID, mapExternalUserIDAndExternalParentUserID := range mapExternalPostIDAndMapExternalUserIDAndExternalParentUserID {
-		for externalUserID, externalParentUserID := range mapExternalUserIDAndExternalParentUserID {
-			externalPageID := strings.Split(externalPostID, "_")[0]
-			getLatestFbExternalCommentQuery := &fbmessaging.GetLatestFbExternalCommentQuery{
-				ExternalPageID:       externalPageID,
-				ExternalPostID:       externalPostID,
-				ExternalUserID:       externalUserID,
-				ExternalParentUserID: externalParentUserID,
-			}
-			if err := m.fbmessagingQ.Dispatch(ctx, getLatestFbExternalCommentQuery); err != nil {
-				return err
-			}
-			lastFbExternalComment := getLatestFbExternalCommentQuery.Result
+	getFbCustomerConversationQuery := &fbmessaging.GetFbCustomerConversationQuery{
+		ExternalID:               externalPostID,
+		ExternalUserID:           externalUserIDCustomerConversation,
+		CustomerConversationType: fb_customer_conversation_type.Comment,
+	}
+	if err := m.fbmessagingQ.Dispatch(ctx, getFbCustomerConversationQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return err
+	}
+	oldFbCustomerConversation := getFbCustomerConversationQuery.Result
 
-			externalUserIDCustomerConversation := lastFbExternalComment.ExternalUserID
-			externalUserNameCustomerConversation := lastFbExternalComment.ExternalFrom.Name
-			externalFromCustomerConversation := lastFbExternalComment.ExternalFrom
-			if lastFbExternalComment.ExternalUserID == lastFbExternalComment.ExternalPageID &&
-				lastFbExternalComment.ExternalParent != nil && lastFbExternalComment.ExternalParent.From != nil {
-				externalUserIDCustomerConversation = lastFbExternalComment.ExternalParent.From.ID
-				externalUserNameCustomerConversation = lastFbExternalComment.ExternalParent.From.Name
-			}
+	var isRead bool
+	ID := cm.NewID()
+	if oldFbCustomerConversation != nil {
+		ID = oldFbCustomerConversation.ID
+		externalUserIDCustomerConversation = oldFbCustomerConversation.ExternalUserID
+		externalUserNameCustomerConversation = oldFbCustomerConversation.ExternalUserName
+		externalFromCustomerConversation = oldFbCustomerConversation.ExternalFrom
+		isRead = lastFbExternalComment.ExternalID == oldFbCustomerConversation.LastMessageExternalID
+	}
 
-			getFbCustomerConversationQuery := &fbmessaging.GetFbCustomerConversationQuery{
-				ExternalID:               externalPostID,
-				ExternalUserID:           externalUserIDCustomerConversation,
-				CustomerConversationType: fb_customer_conversation_type.Comment,
-			}
-			if err := m.fbmessagingQ.Dispatch(ctx, getFbCustomerConversationQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
-				return err
-			}
-			oldFbCustomerConversation := getFbCustomerConversationQuery.Result
+	if lastFbExternalComment.ExternalFrom.ID == externalPageID {
+		isRead = true
+	}
 
-			var isRead bool
-			ID := cm.NewID()
-			if oldFbCustomerConversation != nil {
-				ID = oldFbCustomerConversation.ID
-				isRead = lastFbExternalComment.ExternalID == oldFbCustomerConversation.LastMessageExternalID
-			}
-
-			if lastFbExternalComment.ExternalFrom.ID == externalPageID {
-				isRead = true
-			}
-
-			if err := m.fbmessagingA.Dispatch(ctx, &fbmessaging.CreateFbCustomerConversationsCommand{
-				FbCustomerConversations: []*fbmessaging.CreateFbCustomerConversationArgs{
-					{
-						ID:                        ID,
-						ExternalPageID:            lastFbExternalComment.ExternalPageID,
-						ExternalID:                lastFbExternalComment.ExternalPostID,
-						ExternalUserID:            externalUserIDCustomerConversation,
-						ExternalUserName:          externalUserNameCustomerConversation,
-						ExternalFrom:              externalFromCustomerConversation,
-						IsRead:                    isRead,
-						Type:                      fb_customer_conversation_type.Comment,
-						ExternalPostAttachments:   mapExternalPost[externalPostID].ExternalAttachments,
-						ExternalCommentAttachment: lastFbExternalComment.ExternalAttachment,
-						LastMessage:               lastFbExternalComment.ExternalMessage,
-						LastMessageAt:             lastFbExternalComment.ExternalCreatedTime,
-						LastMessageExternalID:     lastFbExternalComment.ExternalID,
-					},
-				},
-			}); err != nil {
-				return err
-			}
-		}
+	if err := m.fbmessagingA.Dispatch(ctx, &fbmessaging.CreateFbCustomerConversationsCommand{
+		FbCustomerConversations: []*fbmessaging.CreateFbCustomerConversationArgs{
+			{
+				ID:                        ID,
+				ExternalPageID:            externalPageID,
+				ExternalID:                externalPostID,
+				ExternalUserID:            externalUserIDCustomerConversation,
+				ExternalUserName:          externalUserNameCustomerConversation,
+				ExternalFrom:              externalFromCustomerConversation,
+				IsRead:                    isRead,
+				Type:                      fb_customer_conversation_type.Comment,
+				ExternalPostAttachments:   fbExternalPost.ExternalAttachments,
+				ExternalCommentAttachment: lastFbExternalComment.ExternalAttachment,
+				LastMessage:               lastFbExternalComment.ExternalMessage,
+				LastMessageAt:             lastFbExternalComment.ExternalCreatedTime,
+				LastMessageExternalID:     lastFbExternalComment.ExternalID,
+			},
+		},
+	}); err != nil {
+		return err
 	}
 
 	// Handle create new FbExternalUser (customer)
 	{
 		var fbObjectFromsAndPageIDs []*fbObjectFromAndPageID
-		mapExternalUserID := make(map[string]bool)
-		for _, externalComment := range event.FbExternalComments {
-			if externalComment.ExternalUserID != "" && externalComment.ExternalUserID == externalComment.ExternalParentID {
-				continue
-			}
-			if externalComment.ExternalFrom == nil {
-				continue
-			}
-			if _, ok := mapExternalUserID[externalComment.ExternalFrom.ID]; !ok {
-				mapExternalUserID[externalComment.ExternalFrom.ID] = true
-				fbObjectFromsAndPageIDs = append(fbObjectFromsAndPageIDs, &fbObjectFromAndPageID{
-					externalPageID: externalComment.ExternalPageID,
-					objectFrom:     externalComment.ExternalFrom,
-				})
-			}
+		if fbExternalComment.ExternalUserID != "" && fbExternalComment.ExternalUserID == fbExternalComment.ExternalParentID {
+			return nil
 		}
+		if fbExternalComment.ExternalFrom == nil {
+			return nil
+		}
+		fbObjectFromsAndPageIDs = append(fbObjectFromsAndPageIDs, &fbObjectFromAndPageID{
+			externalPageID: externalPageID,
+			objectFrom:     externalFrom,
+		})
 
 		if err := m.handleCreateExternalCustomerUser(ctx, fbObjectFromsAndPageIDs); err != nil {
 			return err

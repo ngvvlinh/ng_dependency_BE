@@ -14,7 +14,8 @@ import (
 )
 
 /*
-Custom conversions: (none)
+Custom conversions:
+    ConvertCreateFbExternalCommentArgsToFbExternalComment    // in use
 
 Ignored functions: (none)
 */
@@ -680,6 +681,7 @@ func convert_fbmessagingmodel_FbExternalComment_fbmessaging_FbExternalComment(ar
 	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
 	out.ExternalAttachment = Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg.ExternalAttachment, nil)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
+	out.Source = arg.Source                           // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 }
@@ -721,6 +723,7 @@ func convert_fbmessaging_FbExternalComment_fbmessagingmodel_FbExternalComment(ar
 	out.ExternalFrom = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.ExternalFrom, nil)
 	out.ExternalAttachment = Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg.ExternalAttachment, nil)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
+	out.Source = arg.Source                           // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 	out.DeletedAt = time.Time{}                       // zero value
@@ -739,14 +742,7 @@ func Convert_fbmessaging_FbExternalComments_fbmessagingmodel_FbExternalComments(
 }
 
 func Apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment(arg *fbmessaging.CreateFbExternalCommentArgs, out *fbmessaging.FbExternalComment) *fbmessaging.FbExternalComment {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &fbmessaging.FbExternalComment{}
-	}
-	apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment(arg, out)
-	return out
+	return ConvertCreateFbExternalCommentArgsToFbExternalComment(arg, out)
 }
 
 func apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment(arg *fbmessaging.CreateFbExternalCommentArgs, out *fbmessaging.FbExternalComment) {
@@ -763,6 +759,7 @@ func apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment
 	out.ExternalFrom = arg.ExternalFrom                 // simple assign
 	out.ExternalAttachment = arg.ExternalAttachment     // simple assign
 	out.ExternalCreatedTime = arg.ExternalCreatedTime   // simple assign
+	out.Source = arg.Source                             // simple assign
 	out.CreatedAt = time.Time{}                         // zero value
 	out.UpdatedAt = time.Time{}                         // zero value
 }

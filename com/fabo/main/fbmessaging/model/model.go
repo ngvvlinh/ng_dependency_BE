@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/capi/dot"
 )
 
@@ -103,6 +104,7 @@ type FbExternalComment struct {
 	ExternalFrom         *FbObjectFrom
 	ExternalAttachment   *CommentAttachment
 	ExternalCreatedTime  time.Time `paging:"external_created_time"`
+	Source               fb_comment_source.FbCommentSource
 	CreatedAt            time.Time `sq:"create"`
 	UpdatedAt            time.Time `sq:"update"`
 	DeletedAt            time.Time

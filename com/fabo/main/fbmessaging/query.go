@@ -239,9 +239,9 @@ func (q *FbMessagingQuery) GetFbCustomerConversation(
 }
 
 func (q *FbMessagingQuery) GetLatestFbExternalComment(
-	ctx context.Context, externalPageID, externalPostID, externalUserID, externalParentUserID string,
+	ctx context.Context, externalPageID, externalPostID, externalUserID string,
 ) (*fbmessaging.FbExternalComment, error) {
-	return q.fbExternalCommentStore(ctx).GetLatestExternalComment(externalPageID, externalPostID, externalUserID, externalParentUserID)
+	return q.fbExternalCommentStore(ctx).GetLatestExternalComment(externalPageID, externalPostID, externalUserID)
 }
 
 func (q *FbMessagingQuery) GetLatestCustomerExternalComment(

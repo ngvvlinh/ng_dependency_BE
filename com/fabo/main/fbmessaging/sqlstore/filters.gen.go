@@ -7,6 +7,7 @@ package sqlstore
 import (
 	time "time"
 
+	fb_comment_source "o.o/api/fabo/fbmessaging/fb_comment_source"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
@@ -563,6 +564,25 @@ func (ft *FbExternalCommentFilters) ByExternalCreatedTimePtr(ExternalCreatedTime
 		Value:  ExternalCreatedTime,
 		IsNil:  ExternalCreatedTime == nil,
 		IsZero: ExternalCreatedTime != nil && (*ExternalCreatedTime).IsZero(),
+	}
+}
+
+func (ft *FbExternalCommentFilters) BySource(Source fb_comment_source.FbCommentSource) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "source",
+		Value:  Source,
+		IsNil:  Source == 0,
+	}
+}
+
+func (ft *FbExternalCommentFilters) BySourcePtr(Source *fb_comment_source.FbCommentSource) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "source",
+		Value:  Source,
+		IsNil:  Source == nil,
+		IsZero: Source != nil && (*Source) == 0,
 	}
 }
 

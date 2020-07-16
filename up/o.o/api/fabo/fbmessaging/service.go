@@ -4,6 +4,8 @@ import (
 	context "context"
 	"time"
 
+	"o.o/api/fabo/fbmessaging/fb_comment_source"
+
 	"o.o/capi/filter"
 
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
@@ -38,7 +40,7 @@ type QueryService interface {
 	ListLatestFbExternalMessages(_ context.Context, externalConversationIDs filter.Strings) ([]*FbExternalMessage, error)
 	ListLatestCustomerFbExternalMessages(_ context.Context, externalConversationIDs filter.Strings) ([]*FbExternalMessage, error)
 
-	GetLatestFbExternalComment(_ context.Context, externalPageID, externalPostID, externalUserID, externalParentUserID string) (*FbExternalComment, error)
+	GetLatestFbExternalComment(_ context.Context, externalPageID, externalPostID, externalUserID string) (*FbExternalComment, error)
 	GetLatestCustomerExternalComment(_ context.Context, externalPostID, externalUserID, externalPageID string) (*FbExternalComment, error)
 	ListFbExternalComments(context.Context, *ListFbExternalCommentsArgs) (*FbExternalCommentsResponse, error)
 	ListFbExternalCommentsByExternalIDs(context.Context, *ListFbExternalCommentsByIDsArgs) (*FbExternalCommentsResponse, error)
@@ -123,6 +125,7 @@ type CreateFbExternalCommentArgs struct {
 	ExternalFrom         *FbObjectFrom
 	ExternalAttachment   *CommentAttachment
 	ExternalCreatedTime  time.Time
+	Source               fb_comment_source.FbCommentSource
 }
 
 type CreateOrUpdateFbExternalCommentsArgs struct {

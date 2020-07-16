@@ -332,7 +332,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		return err
 	}
 
-	profile, err := wh.fbClient.CallAPIGetProfileByPSID(accessToken, PSID)
+	profile, err := wh.getProfile(accessToken, externalPageID, PSID)
 	if err != nil {
 		return err
 	}
@@ -391,6 +391,26 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	}
 
 	return nil
+}
+
+func (wh *Webhook) getProfile(accessToken, externalPageID, PSID string) (*fbclientmodel.Profile, error) {
+	profile, err := wh.faboRedis.LoadProfilePSID(externalPageID, PSID)
+	switch err {
+	// If profile not in redis then call api getProfileByPSID
+	case redis.ErrNil:
+		_profile, _err := wh.fbClient.CallAPIGetProfileByPSID(accessToken, PSID)
+		if _err != nil {
+			return nil, _err
+		}
+		if _err := wh.faboRedis.SaveProfilePSID(externalPageID, PSID, _profile); _err != nil {
+			return nil, _err
+		}
+		return _profile, nil
+	case nil:
+		return profile, nil
+	default:
+		return nil, err
+	}
 }
 
 type WebhookMessages struct {

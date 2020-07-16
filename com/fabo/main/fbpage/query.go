@@ -104,6 +104,20 @@ func (q *FbPageQuery) ListFbExternalPagesActiveByExternalIDs(
 	return fbPages, nil
 }
 
+func (q *FbPageQuery) GetFbExternalPageInternalActiveByExternalID(
+	ctx context.Context, externalID string,
+) (*fbpaging.FbExternalPageInternal, error) {
+	_, err := q.fbPageStore(ctx).ExternalID(externalID).Status(status3.P).GetFbExternalPage()
+	if err != nil {
+		return nil, err
+	}
+	fbExternalPageInternal, err := q.fbPageInternalStore(ctx).ExternalID(externalID).GetFbExternalPageInternal()
+	if err != nil {
+		return nil, err
+	}
+	return fbExternalPageInternal, nil
+}
+
 func (q *FbPageQuery) ListFbPagesByShop(ctx context.Context, shopIDs []dot.ID) ([]*fbpaging.FbExternalPage, error) {
 	return q.fbPageStore(ctx).ShopIDs(shopIDs...).ListFbPages()
 }

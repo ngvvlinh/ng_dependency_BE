@@ -587,14 +587,18 @@ func (s *Synchronizer) handleTaskGetComments(
 		if fbExternalComment.IsHidden {
 			continue
 		}
+		if fbExternalComment.From == nil {
+			continue
+		}
+		if fbExternalComment.From.ID == externalPageID {
+			continue
+		}
 
 		// Map externalUserID (From)
 		// Map externalParentID (Parent)
 
 		var externalUserID, externalParentID, externalParentUserID string
-		if fbExternalComment.From != nil {
-			externalUserID = fbExternalComment.From.ID
-		}
+		externalUserID = fbExternalComment.From.ID
 		if fbExternalComment.Parent != nil {
 			externalParentID = fbExternalComment.Parent.ID
 			if fbExternalComment.Parent.From != nil {

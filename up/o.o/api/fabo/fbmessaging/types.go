@@ -3,6 +3,7 @@ package fbmessaging
 import (
 	"time"
 
+	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/capi/dot"
 )
@@ -87,6 +88,7 @@ type FbExternalComment struct {
 	ExternalFrom         *FbObjectFrom
 	ExternalAttachment   *CommentAttachment `compare:"ignore"`
 	ExternalCreatedTime  time.Time
+	Source               fb_comment_source.FbCommentSource
 	CreatedAt            time.Time `compare:"ignore"`
 	UpdatedAt            time.Time `compare:"ignore"`
 }
@@ -209,8 +211,8 @@ type FbExternalMessagesCreatedEvent struct {
 	FbExternalMessages []*FbExternalMessage
 }
 
-type FbExternalCommentsCreatedEvent struct {
-	FbExternalComments []*FbExternalComment
+type FbExternalCommentCreatedOrUpdatedEvent struct {
+	FbExternalComment *FbExternalComment
 }
 
 type FbExternalConversationsCreatedEvent struct {

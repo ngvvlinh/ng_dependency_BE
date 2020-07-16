@@ -22,7 +22,8 @@ func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment) *exttypes.FbE
 		ExternalFrom:         PbFbExternalFrom(fbcomment.ExternalFrom),
 		ExternalAttachment:   PbFbCommentAttachment(fbcomment.ExternalAttachment),
 		ExternalCreatedTime:  fbcomment.ExternalCreatedTime,
-		ExternalID:           dot.String(fbcomment.ExternalUserID),
+		ExternalID:           dot.String(fbcomment.ExternalID),
+		ExternalPostID:       dot.String(fbcomment.ExternalPostID),
 		CreatedAt:            dot.Time(fbcomment.CreatedAt),
 		UpdatedAt:            dot.Time(fbcomment.UpdatedAt),
 	}
