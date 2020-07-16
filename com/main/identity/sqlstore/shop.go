@@ -135,6 +135,9 @@ func (s *ShopStore) ListShopExtendedDBs() (res []*identitymodel.ShopExtended, er
 		return nil, err
 	}
 	query, _, err = sqlstore.Filters(query, s.filter, filterShopExtendedWhitelist)
+	if err != nil {
+		return nil, err
+	}
 
 	err = query.Find((*identitymodel.ShopExtendeds)(&res))
 	return

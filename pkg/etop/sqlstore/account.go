@@ -228,7 +228,18 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 			Where("id = ?", shop.ID).
 			ShouldUpdateMap(updateShopSearchValue)
 		if err != nil {
-			return err
+			if cm.ErrorCode(err) == cm.NotFound {
+				shopSearch := &identitymodel.ShopSearch{
+					ID:       shop.ID,
+					Name:     shop.Name,
+					NameNorm: nameNorm,
+				}
+				if _, err := x.Insert(shopSearch); err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
 		}
 
 		cmd.Result = new(identitymodel.ShopExtended)

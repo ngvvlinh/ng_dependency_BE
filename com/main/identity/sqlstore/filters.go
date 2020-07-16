@@ -20,7 +20,6 @@ func (ft ShopFilters) NotDeleted() sq.WriterTo {
 var filterShopExtendedWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,
 	Bools:    nil,
-	Contains: []string{"name"},
 	Dates:    []string{"created_at"},
 	Equals:   []string{"code", "phone", "email", "money_transaction_rrule"},
 	Nullable: []string{"bank_account"},
