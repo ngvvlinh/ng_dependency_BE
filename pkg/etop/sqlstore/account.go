@@ -214,32 +214,15 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 				return err
 			}
 		}
+
 		// update for search
-		nameNorm := validate.NormalizeSearchCharacter(shop.Name)
-		if shop.Code != "" {
-			nameNorm += " " + validate.NormalizeSearchCode(shop.Code)
+		updateShopSearch := &updateOrCreateShopSearchArgs{
+			ID:       shop.ID,
+			Name:     shop.Name,
+			ShopCode: shop.Code,
 		}
-		updateShopSearchValue := make(map[string]interface{})
-		if shop.Name != "" {
-			updateShopSearchValue["name_norm"] = nameNorm
-		}
-		err := x.
-			Table("shop_search").
-			Where("id = ?", shop.ID).
-			ShouldUpdateMap(updateShopSearchValue)
-		if err != nil {
-			if cm.ErrorCode(err) == cm.NotFound {
-				shopSearch := &identitymodel.ShopSearch{
-					ID:       shop.ID,
-					Name:     shop.Name,
-					NameNorm: nameNorm,
-				}
-				if _, err := x.Insert(shopSearch); err != nil {
-					return err
-				}
-			} else {
-				return err
-			}
+		if err := updateOrCreateShopSearch(ctx, x, updateShopSearch); err != nil {
+			return err
 		}
 
 		cmd.Result = new(identitymodel.ShopExtended)
@@ -251,6 +234,52 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 		}
 		return nil
 	})
+}
+
+type updateOrCreateShopSearchArgs struct {
+	ID       dot.ID
+	Name     string
+	ShopCode string
+}
+
+func updateOrCreateShopSearch(ctx context.Context, x Qx, args *updateOrCreateShopSearchArgs) error {
+	if args.Name == "" {
+		return nil
+	}
+
+	var shopSearch identitymodel.ShopSearch
+	ok, err := x.
+		Table("shop_search").
+		Where("id = ?", args.ID).
+		Get(&shopSearch)
+	if err != nil {
+		return err
+	}
+
+	nameNorm := validate.NormalizeSearchCharacter(args.Name)
+	if args.ShopCode != "" {
+		nameNorm += " " + validate.NormalizeSearchCode(args.ShopCode)
+	}
+	if !ok {
+		shopSearch := &identitymodel.ShopSearch{
+			ID:       args.ID,
+			Name:     args.Name,
+			NameNorm: nameNorm,
+		}
+		if err := x.ShouldInsert(shopSearch); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	updateShopSearchValue := map[string]interface{}{
+		"name_norm": nameNorm,
+	}
+	if err = x.Table("shop_search").
+		Where("id = ?", args.ID).ShouldUpdateMap(updateShopSearchValue); err != nil {
+		return err
+	}
+	return nil
 }
 
 func DeleteShop(ctx context.Context, cmd *identitymodelx.DeleteShopCommand) error {
