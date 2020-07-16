@@ -4735,6 +4735,10 @@
         "code": {
           "type": "string"
         },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"

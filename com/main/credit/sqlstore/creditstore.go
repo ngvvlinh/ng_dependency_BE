@@ -107,6 +107,7 @@ func (s *CreditStore) Get() (*credit.Credit, error) {
 
 func (s *CreditStore) GetDB() (*model.Credit, error) {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	var creditModel model.Credit
 	err := query.ShouldGet(&creditModel)
 	return &creditModel, err

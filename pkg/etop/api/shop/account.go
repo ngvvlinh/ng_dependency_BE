@@ -20,7 +20,6 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/tools/pkg/acl"
 )
@@ -285,21 +284,6 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerification(ctx context.Co
 
 	result := &pbcm.UpdatedResponse{
 		Updated: 1,
-	}
-	return result, nil
-}
-
-func (s *AccountService) GetBalanceShop(ctx context.Context, q *pbcm.Empty) (*api.GetBalanceShopResponse, error) {
-	shopID := s.SS.Shop().ID
-	cmd := &model.GetBalanceShopCommand{
-		ShopID: shopID,
-	}
-
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
-	result := &api.GetBalanceShopResponse{
-		Amount: cmd.Result.Amount,
 	}
 	return result, nil
 }

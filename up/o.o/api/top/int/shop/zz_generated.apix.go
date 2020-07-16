@@ -166,19 +166,6 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			return
 		}
 		return msg, fn, nil
-	case "/shop.Account/GetBalanceShop":
-		msg := &common.Empty{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.GetBalanceShop(ctx, msg)
-			return
-		}
-		return msg, fn, nil
 	case "/shop.Account/GetExternalAccountAhamove":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -4238,19 +4225,6 @@ func (s *SummaryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *SummaryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/shop.Summary/CalcBalanceShop":
-		msg := &common.Empty{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.CalcBalanceShop(ctx, msg)
-			return
-		}
-		return msg, fn, nil
 	case "/shop.Summary/CalcBalanceUser":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

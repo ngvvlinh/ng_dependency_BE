@@ -168,7 +168,6 @@ const (
 	ShopShipNowCancel  permission.ActionType = "shop/shipnow:cancel"
 	ShopShipNowConfirm permission.ActionType = "shop/shipnow:confirm"
 
-	ShopBalanceView   permission.ActionType = "shop/balance:view"
 	ShopAccountDelete permission.ActionType = "shop/account:delete"
 
 	UserBalanceView permission.ActionType = "shop/user/balance:view"
@@ -754,7 +753,6 @@ var _acl = map[string]*permission.Decl{
 	// permission: admin
 
 	"shop.Account/SetDefaultAddress": {Type: Shop, Actions: actions(ShopSettingsShopInfoUpdate)},
-	"shop.Account/GetBalanceShop":    {Type: Shop, Actions: actions(ShopBalanceView)},
 
 	"shop.Account/CreateExternalAccountAhamove":                   {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 	"shop.Account/GetExternalAccountAhamove":                      {Type: Shop},
@@ -900,7 +898,6 @@ var _acl = map[string]*permission.Decl{
 	"shop.Summary/SummarizeFulfillments": {Type: Shop, Actions: actions(ShopDashboardView)},
 	"shop.Summary/SummarizePOS":          {Type: Shop, Actions: actions(ShopDashboardView)},
 	"shop.Summary/SummarizeTopShip":      {Type: Shop},
-	"shop.Summary/CalcBalanceShop":       {Type: Shop, AuthPartner: Opt, Actions: actions(ShopDashboardView)},
 	"shop.Summary/CalcBalanceUser":       {Type: Shop, AuthPartner: Opt, Actions: actions(UserBalanceView)},
 
 	"shop.Export/GetExports":    {Type: Shop},

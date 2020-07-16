@@ -88,6 +88,7 @@ func convert_creditmodel_Credit_credit_Credit(arg *creditmodel.Credit, out *cred
 	out.Status = arg.Status       // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.DeletedAt = arg.DeletedAt // simple assign
 	out.PaidAt = arg.PaidAt       // simple assign
 }
 
@@ -122,6 +123,7 @@ func convert_credit_Credit_creditmodel_Credit(arg *credit.Credit, out *creditmod
 	out.Status = arg.Status       // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.DeletedAt = arg.DeletedAt // simple assign
 	out.PaidAt = arg.PaidAt       // simple assign
 }
 
@@ -156,6 +158,7 @@ func apply_credit_CreateCreditArgs_credit_Credit(arg *credit.CreateCreditArgs, o
 	out.Status = 0              // zero value
 	out.CreatedAt = time.Time{} // zero value
 	out.UpdatedAt = time.Time{} // zero value
+	out.DeletedAt = time.Time{} // zero value
 	out.PaidAt = arg.PaidAt     // simple assign
 }
 

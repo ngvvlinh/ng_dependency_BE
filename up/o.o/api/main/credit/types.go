@@ -15,8 +15,9 @@ type Credit struct {
 	ShopID    dot.ID
 	Type      credit_type.CreditType
 	Status    status3.Status
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
 	PaidAt    time.Time
 }
 

@@ -650,6 +650,7 @@ type MoneyTransactionShippingExternal struct {
 	Note           string                                  `json:"note"`
 	InvoiceNumber  string                                  `json:"invoice_number"`
 	BankAccount    *etop.BankAccount                       `json:"bank_account"`
+	ConnectionID   dot.ID                                  `json:"connection_id"`
 }
 
 func (m *MoneyTransactionShippingExternal) String() string { return jsonx.MustMarshalToString(m) }

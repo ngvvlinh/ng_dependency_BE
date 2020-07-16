@@ -77,20 +77,6 @@ func (s *SummaryService) SummarizePOS(ctx context.Context, q *api.SummarizePOSRe
 	return result, nil
 }
 
-func (s *SummaryService) CalcBalanceShop(ctx context.Context, q *pbcm.Empty) (*api.CalcBalanceShopResponse, error) {
-	query := &model.GetBalanceShopCommand{
-		ShopID: s.SS.Shop().ID,
-	}
-
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return nil, err
-	}
-	result := &api.CalcBalanceShopResponse{
-		Balance: query.Result.Amount,
-	}
-	return result, nil
-}
-
 func (s *SummaryService) CalcBalanceUser(ctx context.Context, q *pbcm.Empty) (*api.CalcBalanceUserResponse, error) {
 	shop := s.SS.Shop()
 	queryActual := &model.GetActualUserBalanceCommand{

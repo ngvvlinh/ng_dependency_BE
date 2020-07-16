@@ -1446,17 +1446,28 @@ func CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBa
 	}
 
 	var totalCODAmount, totalShippingFee, totalCredit sql.NullInt64
-	if err := x.SQL("SELECT SUM(total_cod_amount) from fulfillment").In("shop_id", shopIDs).Where("status != -1 AND status != 0 AND shipping_status != -2 AND etop_payment_status != 1").Scan(&totalCODAmount); err != nil {
+	if err := x.SQL("SELECT SUM(total_cod_amount) from fulfillment").
+		In("shop_id", shopIDs).
+		Where("status not in (-1, 0) AND etop_payment_status != 1").
+		Where("shipping_status != -2").
+		Where("connection_method = ?", connection_type.ConnectionMethodBuiltin).
+		Scan(&totalCODAmount); err != nil {
 		return err
 	}
-	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").In("shop_id", shopIDs).Where("status != -1 AND status != 0 AND etop_payment_status != 1").
+	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
+		In("shop_id", shopIDs).
+		Where("status not in (-1, 0) AND etop_payment_status != 1").
+		Where("connection_method = ?", connection_type.ConnectionMethodBuiltin).
 		Scan(&totalShippingFee); err != nil {
 		return err
 	}
-	if err := x.SQL("SELECT SUM(amount) from credit").In("shop_id", shopIDs).Where("status = 1 AND paid_at is not NULL").
+	if err := x.SQL("SELECT SUM(amount) from credit").
+		In("shop_id", shopIDs).
+		Where("status = 1 AND paid_at is not NULL").
 		Scan(&totalCredit); err != nil {
 		return err
 	}
+
 	cmd.Result.Amount = int(totalCODAmount.Int64 - totalShippingFee.Int64 + totalCredit.Int64)
 	return nil
 }
@@ -1486,17 +1497,28 @@ func CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceC
 	}
 
 	var totalCODAmount, totalShippingFee, totalCredit sql.NullInt64
-	if err := x.SQL("SELECT SUM(total_cod_amount) from fulfillment").In("shop_id", shopIDs).Where("status not in (0,-1) AND shipping_status = 1 AND etop_payment_status != 1").Scan(&totalCODAmount); err != nil {
+	if err := x.SQL("SELECT SUM(total_cod_amount) from fulfillment").
+		In("shop_id", shopIDs).
+		Where("status not in (0,-1) AND etop_payment_status != 1").
+		Where("shipping_status = 1").
+		Where("connection_method = ?", connection_type.ConnectionMethodBuiltin).
+		Scan(&totalCODAmount); err != nil {
 		return err
 	}
-	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").In("shop_id", shopIDs).Where("status not in (0,-1) AND etop_payment_status != 1").
+	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
+		In("shop_id", shopIDs).
+		Where("status not in (0,-1) AND etop_payment_status != 1").
+		Where("connection_method = ?", connection_type.ConnectionMethodBuiltin).
 		Scan(&totalShippingFee); err != nil {
 		return err
 	}
-	if err := x.SQL("SELECT SUM(amount) from credit").In("shop_id", shopIDs).Where("status = 1 AND paid_at is not NULL").
+	if err := x.SQL("SELECT SUM(amount) from credit").
+		In("shop_id", shopIDs).
+		Where("status = 1 AND paid_at is not NULL").
 		Scan(&totalCredit); err != nil {
 		return err
 	}
+
 	cmd.Result.Amount = int(totalCODAmount.Int64 - totalShippingFee.Int64 + totalCredit.Int64)
 	return nil
 }

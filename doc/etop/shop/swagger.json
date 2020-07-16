@@ -69,33 +69,6 @@
         }
       }
     },
-    "/api/shop.Account/GetBalanceShop": {
-      "post": {
-        "tags": [
-          "Account"
-        ],
-        "summary": "GetBalanceShop",
-        "operationId": "shop.Account-GetBalanceShop",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/paGetBalanceShopResponse"
-            }
-          }
-        }
-      }
-    },
     "/api/shop.Account/GetExternalAccountAhamove": {
       "post": {
         "tags": [
@@ -5344,33 +5317,6 @@
         }
       }
     },
-    "/api/shop.Summary/CalcBalanceShop": {
-      "post": {
-        "tags": [
-          "Summary"
-        ],
-        "summary": "CalcBalanceShop",
-        "operationId": "shop.Summary-CalcBalanceShop",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/paCalcBalanceShopResponse"
-            }
-          }
-        }
-      }
-    },
     "/api/shop.Summary/CalcBalanceUser": {
       "post": {
         "tags": [
@@ -7449,14 +7395,6 @@
         }
       }
     },
-    "paCalcBalanceShopResponse": {
-      "type": "object",
-      "properties": {
-        "balance": {
-          "type": "integer"
-        }
-      }
-    },
     "paCalcBalanceUserResponse": {
       "type": "object",
       "properties": {
@@ -9062,14 +9000,6 @@
           "items": {
             "$ref": "#/definitions/paAuthorizedPartnerResponse"
           }
-        }
-      }
-    },
-    "paGetBalanceShopResponse": {
-      "type": "object",
-      "properties": {
-        "amount": {
-          "type": "integer"
         }
       }
     },

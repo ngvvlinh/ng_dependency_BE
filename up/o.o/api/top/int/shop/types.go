@@ -1173,12 +1173,6 @@ type GetFulfillmentHistoryRequest struct {
 
 func (m *GetFulfillmentHistoryRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type GetBalanceShopResponse struct {
-	Amount int `json:"amount"`
-}
-
-func (m *GetBalanceShopResponse) String() string { return jsonx.MustMarshalToString(m) }
-
 type GetMoneyTransactionsRequest struct {
 	Paging  *common.Paging   `json:"paging"`
 	Filters []*common.Filter `json:"filters"`
@@ -1296,12 +1290,6 @@ type CalcBalanceUserResponse struct {
 }
 
 func (m *CalcBalanceUserResponse) String() string { return jsonx.MustMarshalToString(m) }
-
-type CalcBalanceShopResponse struct {
-	Balance int `json:"balance"`
-}
-
-func (m *CalcBalanceShopResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type RequestExportRequest struct {
 	ExportType string           `json:"export_type"`

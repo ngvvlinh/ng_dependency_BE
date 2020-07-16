@@ -32,6 +32,7 @@ func PbMoneyTxShippingExternalFtLine(m *moneytx.MoneyTransactionShippingExternal
 		Note:           m.Note,
 		InvoiceNumber:  m.InvoiceNumber,
 		BankAccount:    Convert_core_BankAccount_To_api_BankAccount(m.BankAccount),
+		ConnectionID:   m.ConnectionID,
 	}
 	return res
 }

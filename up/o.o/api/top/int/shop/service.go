@@ -51,7 +51,6 @@ type AccountService interface {
 	UpdateShop(context.Context, *UpdateShopRequest) (*UpdateShopResponse, error)
 	DeleteShop(context.Context, *cm.IDRequest) (*cm.Empty, error)
 	SetDefaultAddress(context.Context, *etop.SetDefaultAddressRequest) (*cm.UpdatedResponse, error)
-	GetBalanceShop(context.Context, *cm.Empty) (*GetBalanceShopResponse, error)
 
 	CreateExternalAccountAhamove(context.Context, *cm.Empty) (*ExternalAccountAhamove, error)
 	GetExternalAccountAhamove(context.Context, *cm.Empty) (*ExternalAccountAhamove, error)
@@ -238,7 +237,6 @@ type SummaryService interface {
 	SummarizeFulfillments(context.Context, *SummarizeFulfillmentsRequest) (*SummarizeFulfillmentsResponse, error)
 	SummarizeTopShip(context.Context, *SummarizeTopShipRequest) (*SummarizeTopShipResponse, error)
 	SummarizePOS(context.Context, *SummarizePOSRequest) (*SummarizePOSResponse, error)
-	CalcBalanceShop(context.Context, *cm.Empty) (*CalcBalanceShopResponse, error)
 	CalcBalanceUser(context.Context, *cm.Empty) (*CalcBalanceUserResponse, error)
 }
 
