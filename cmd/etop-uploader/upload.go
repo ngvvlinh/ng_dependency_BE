@@ -19,7 +19,7 @@ import (
 
 const (
 	minSize = 100
-	maxSize = 1024 * 1024 // 1MB
+	maxSize = 3 * 1024 * 1024 // 3MB
 	minWH   = 200
 	maxWH   = 2500
 )
