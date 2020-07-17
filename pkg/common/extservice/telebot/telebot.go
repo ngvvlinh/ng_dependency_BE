@@ -85,12 +85,14 @@ func NewChannel(ctx context.Context, name, token string, chatID int64) (*Channel
 }
 
 func (c *Channel) ListenAndSend(ctx context.Context) {
-	select {
-	case <-ctx.Done():
-		return
+	for {
+		select {
+		case <-ctx.Done():
+			return
 
-	case msg := <-c.ch:
-		c.DoSendMessage(msg)
+		case msg := <-c.ch:
+			c.DoSendMessage(msg)
+		}
 	}
 }
 
