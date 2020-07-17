@@ -127,6 +127,7 @@ import (
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/handlers"
+	"o.o/backend/pkg/etop/logic/money-transaction/jtexpressimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	"o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
@@ -827,14 +828,27 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		MoneyTxAggr: moneytxCommandBus,
 	}
 	ghtkimportImport := ghtkimport.Import{
-		MoneyTxAggr: moneytxCommandBus,
+		MoneyTxAggr:   moneytxCommandBus,
+		ShippingAggr:  shippingCommandBus,
+		ShippingQuery: shippingQueryBus,
 	}
 	vtpostimportImport := vtpostimport.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}
+	vtPostImporter := &vtpostimport.VTPostImporter{}
+	ghtkImporter := &ghtkimport.GHTKImporter{
+		ShippingAggr:  shippingCommandBus,
+		ShippingQuery: shippingQueryBus,
+	}
+	ghnImporter := &ghnimport.GHNImporter{}
+	jtImporter := &jtexpressimport.JTImporter{}
 	handlersImportService := handlers.ImportService{
-		MoneyTxAggr:     moneytxCommandBus,
-		ConnectionQuery: connectioningQueryBus,
+		MoneyTxAggr:       moneytxCommandBus,
+		ConnectionQuery:   connectioningQueryBus,
+		VTPostImporter:    vtPostImporter,
+		GHTKImporter:      ghtkImporter,
+		GHNImporter:       ghnImporter,
+		JTExpressImporter: jtImporter,
 	}
 	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, session)
 	uploadConfig := cfg.Upload

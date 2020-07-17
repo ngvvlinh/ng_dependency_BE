@@ -418,7 +418,7 @@ func (a *MoneyTxAggregate) preprocessConfirmMoneyTxExternal(ctx context.Context,
 		ffmCodes[i] = line.ExternalCode
 	}
 	ffmQuery := &shipping.ListFulfillmentsByShippingCodesQuery{
-		IDs: ffmCodes,
+		Codes: ffmCodes,
 	}
 	if err := a.shippingQuery.Dispatch(ctx, ffmQuery); err != nil {
 		return nil, err

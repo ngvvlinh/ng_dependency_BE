@@ -324,7 +324,7 @@ func (h QueryServiceHandler) HandleListFulfillmentsByMoneyTx(ctx context.Context
 }
 
 type ListFulfillmentsByShippingCodesQuery struct {
-	IDs []string
+	Codes []string
 
 	Result []*Fulfillment `json:"-"`
 }
@@ -713,9 +713,9 @@ func (q *ListFulfillmentsByMoneyTxQuery) SetListFullfillmentsByMoneyTxArgs(args 
 	q.MoneyTxShippingExternalID = args.MoneyTxShippingExternalID
 }
 
-func (q *ListFulfillmentsByShippingCodesQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []string) {
+func (q *ListFulfillmentsByShippingCodesQuery) GetArgs(ctx context.Context) (_ context.Context, Codes []string) {
 	return ctx,
-		q.IDs
+		q.Codes
 }
 
 func (q *ListFulfillmentsForMoneyTxQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFulfillmentForMoneyTxArgs) {

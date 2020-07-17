@@ -12,12 +12,10 @@ import (
 
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/main/moneytx"
+	"o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
-	shipmodel "o.o/backend/com/main/shipping/model"
-	shipmodelx "o.o/backend/com/main/shipping/modelx"
-	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
@@ -25,7 +23,6 @@ import (
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/integration/shipping/ghtk"
-	"o.o/capi/dot"
 )
 
 /*
@@ -52,7 +49,9 @@ import (
 */
 
 type Import struct {
-	MoneyTxAggr moneytx.CommandBus
+	MoneyTxAggr   moneytx.CommandBus
+	ShippingAggr  shipping.CommandBus
+	ShippingQuery shipping.QueryBus
 }
 
 func (im *Import) HandleImportMoneyTransactions(c *httpx.Context) error {
@@ -132,12 +131,12 @@ func (im *Import) HandleImportMoneyTransactions(c *httpx.Context) error {
 		return cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ %v", wl.X(c.Context()).CSEmail).WithMeta("reason", "no rows")
 	}
 	ctx := bus.Ctx()
-	fulfillments, err := UpdateShippingFeeFulfillmentsFromImportFile(ctx, shippingLines, shippingProvider)
+	fulfillments, err := im.updateShippingFeeFulfillmentsFromImportFile(ctx, shippingLines)
 	if err != nil {
 		return err
 	}
 	// update Fulfillments shipping fee (insurance, return, discount, change address)
-	if err := updateFulfillments(ctx, fulfillments); err != nil {
+	if err := im.updateShippingFeeFulfillments(ctx, fulfillments); err != nil {
 		return err
 	}
 
@@ -255,23 +254,34 @@ func checkHeaderIndex(headerIndexMap map[string]int) error {
 	return nil
 }
 
-func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*GHTKMoneyTransactionShippingExternalLine, shippingProvider shipping_provider.ShippingProvider) ([]*shipmodel.Fulfillment, error) {
-	if shippingProvider != shipping_provider.GHTK {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đơn vị vận chuyển phải là GHTK.").WithMeta("shipping_provider", shippingProvider.String())
+func (i *Import) updateShippingFeeFulfillments(ctx context.Context, ffms []*FulfillmentUpdate) error {
+	for _, ffm := range ffms {
+		cmd := &shipping.UpdateFulfillmentShippingFeesCommand{
+			FulfillmentID:            ffm.ID,
+			ProviderShippingFeeLines: ffm.ProviderShippingFeeLines,
+		}
+		if err := i.ShippingAggr.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
 	}
+	return nil
+}
+
+func (i *Import) updateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*GHTKMoneyTransactionShippingExternalLine) ([]*FulfillmentUpdate, error) {
 	ffmShippingCodes := make([]string, len(lines))
 	for i, line := range lines {
 		ffmShippingCodes[i] = line.ExternalCode
 	}
-	cmd := &shipmodelx.GetFulfillmentsQuery{
-		ShippingCodes: ffmShippingCodes,
+	query := &shipping.ListFulfillmentsByShippingCodesQuery{
+		Codes: ffmShippingCodes,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := i.ShippingQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	updatesMap := make(map[string]*shipmodel.Fulfillment, len(cmd.Result.Fulfillments))
-	ffmsByShippingCode := make(map[string]*shipmodel.Fulfillment, len(cmd.Result.Fulfillments))
-	for _, ffm := range cmd.Result.Fulfillments {
+
+	updatesMap := make(map[string]*FulfillmentUpdate, len(query.Result))
+	ffmsByShippingCode := make(map[string]*shipping.Fulfillment, len(query.Result))
+	for _, ffm := range query.Result {
 		// ignore ffms that finished
 		if (ffm.Status != status5.Z && ffm.Status != status5.S) ||
 			!ffm.CODEtopTransferedAt.IsZero() {
@@ -279,7 +289,7 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 		}
 
 		feeLines := ffm.ProviderShippingFeeLines
-		var newFeeLines []*shippingsharemodel.ShippingFeeLine
+		var newFeeLines []*shipping.ShippingFeeLine
 		for _, feeLine := range feeLines {
 			if feeLine.ShippingFeeType == shipping_fee_type.Main {
 				// keep the shipping fee type main (phí dịch vụ)
@@ -287,11 +297,9 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 				break
 			}
 		}
-		updatesMap[ffm.ShippingCode] = &shipmodel.Fulfillment{
+		updatesMap[ffm.ShippingCode] = &FulfillmentUpdate{
 			ID:                       ffm.ID,
-			ShippingFeeShopLines:     newFeeLines,
 			ProviderShippingFeeLines: newFeeLines,
-			ShippingFeeShop:          calcTotalFee(newFeeLines),
 		}
 		ffmsByShippingCode[ffm.ShippingCode] = ffm
 	}
@@ -302,17 +310,15 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 			continue
 		}
 		if line.InsuranceFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingsharemodel.ShippingFeeLine{
-				ShippingFeeType:      shipping_fee_type.Insurance,
-				Cost:                 line.InsuranceFee,
-				ExternalShippingCode: line.ExternalCode,
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+				ShippingFeeType: shipping_fee_type.Insurance,
+				Cost:            line.InsuranceFee,
 			})
 		}
 		if line.ReturnFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingsharemodel.ShippingFeeLine{
-				ShippingFeeType:      shipping_fee_type.Return,
-				Cost:                 line.ReturnFee,
-				ExternalShippingCode: line.ExternalCode,
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+				ShippingFeeType: shipping_fee_type.Return,
+				Cost:            line.ReturnFee,
 			})
 		}
 		if line.Discount != 0 {
@@ -320,46 +326,23 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 			if cost > 0 {
 				cost = -cost
 			}
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingsharemodel.ShippingFeeLine{
-				Cost:                 cost,
-				ShippingFeeType:      shipping_fee_type.Discount,
-				ExternalShippingCode: line.ExternalCode,
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+				Cost:            cost,
+				ShippingFeeType: shipping_fee_type.Discount,
 			})
 		}
 		if line.ChangeAddressFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingsharemodel.ShippingFeeLine{
-				ShippingFeeType:      shipping_fee_type.AddressChange,
-				Cost:                 line.ChangeAddressFee,
-				ExternalShippingCode: line.ExternalCode,
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+				ShippingFeeType: shipping_fee_type.AddressChange,
+				Cost:            line.ChangeAddressFee,
 			})
 		}
-		update.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
-		totalFee := calcTotalFee(update.ShippingFeeShopLines)
-		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(totalFee, update)
 
 		updatesMap[line.ExternalCode] = update
 	}
-	fulfillments := make([]*shipmodel.Fulfillment, 0, len(updatesMap))
+	fulfillments := make([]*FulfillmentUpdate, 0, len(updatesMap))
 	for _, ffm := range updatesMap {
 		fulfillments = append(fulfillments, ffm)
 	}
 	return fulfillments, nil
-}
-
-func calcTotalFee(lines []*shippingsharemodel.ShippingFeeLine) int {
-	res := 0
-	for _, line := range lines {
-		res += line.Cost
-	}
-	return res
-}
-
-func updateFulfillments(ctx context.Context, fulfillments []*shipmodel.Fulfillment) error {
-	cmd := &shipmodelx.UpdateFulfillmentsCommand{
-		Fulfillments: fulfillments,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return cm.Errorf(cm.Internal, err, "Không thể cập nhật ffm")
-	}
-	return nil
 }

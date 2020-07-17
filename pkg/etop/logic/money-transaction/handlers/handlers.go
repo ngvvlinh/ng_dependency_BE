@@ -27,15 +27,15 @@ import (
 type ImportService struct {
 	MoneyTxAggr     moneytx.CommandBus
 	ConnectionQuery connectioning.QueryBus
+
+	VTPostImporter    *vtpostimport.VTPostImporter
+	GHTKImporter      *ghtkimport.GHTKImporter
+	GHNImporter       *ghnimport.GHNImporter
+	JTExpressImporter *jtexpressimport.JTImporter
 }
 
 var (
-	JTExpressImporter         *jtexpressimport.JTImporter
 	JTExpressNameNormContains = []string{"jt", "j t", "jtexpress"}
-
-	VTPostImporter *vtpostimport.VTPostImporter
-	GHTKImporter   *ghtkimport.GHTKImporter
-	GHNImporter    *ghnimport.GHNImporter
 )
 
 func (s *ImportService) HandleImportMoneyTxs(c *httpx.Context) error {
@@ -125,18 +125,18 @@ func (s *ImportService) getCarrierImporter(ctx context.Context, connectionID dot
 
 	switch connectionID {
 	case connectioning.DefaultTopshipGHNConnectionID:
-		return GHNImporter, shipping_provider.GHN, nil
+		return s.GHNImporter, shipping_provider.GHN, nil
 	case connectioning.DefaultTopshipGHTKConnectionID:
-		return GHTKImporter, shipping_provider.GHTK, nil
+		return s.GHTKImporter, shipping_provider.GHTK, nil
 	case connectioning.DefaultTopshipVTPostConnectionID:
-		return VTPostImporter, shipping_provider.VTPost, nil
+		return s.VTPostImporter, shipping_provider.VTPost, nil
 	default:
 		// continue
 	}
 
 	nameNorm := validate.NormalizeSearchSimple(query.Result.Name)
 	if checkJTExpress(nameNorm) {
-		return JTExpressImporter, shipping_provider.Partner, nil
+		return s.JTExpressImporter, shipping_provider.Partner, nil
 	}
 	return nil, 0, cm.Errorf(cm.InvalidArgument, nil, "Connection ID does not valid")
 }

@@ -65,7 +65,7 @@ type QueryService interface {
 
 	ListFulfillmentExtendedsByMoneyTxShippingID(ctx context.Context, shopID dot.ID, moneyTxShippingID dot.ID) ([]*FulfillmentExtended, error)
 
-	ListFulfillmentsByShippingCodes(ctx context.Context, IDs []string) ([]*Fulfillment, error)
+	ListFulfillmentsByShippingCodes(ctx context.Context, Codes []string) ([]*Fulfillment, error)
 }
 
 //-- Commands --//

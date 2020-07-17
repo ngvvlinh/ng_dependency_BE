@@ -434,6 +434,8 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 		if err := scheme.Convert(args.ProviderShippingFeeLines, &providerShippingFeeLines); err != nil {
 			return err
 		}
+		// Khi cước phí ffm ko có bảng giá riêng
+		// => phí ship tính với shop được tính từ phí NVC
 		if !ffm.EtopPriceRule && providerShippingFeeLines != nil {
 			lines = shippingsharemodel.GetShippingFeeShopLines(providerShippingFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
 		} else {
