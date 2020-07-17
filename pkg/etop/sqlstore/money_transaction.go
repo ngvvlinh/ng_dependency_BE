@@ -1450,14 +1450,14 @@ func CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBa
 		In("shop_id", shopIDs).
 		Where("status not in (-1, 0) AND etop_payment_status != 1").
 		Where("shipping_status != -2").
-		Where("connection_method = ?", connection_type.ConnectionMethodBuiltin).
+		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
 		Scan(&totalCODAmount); err != nil {
 		return err
 	}
 	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
 		In("shop_id", shopIDs).
 		Where("status not in (-1, 0) AND etop_payment_status != 1").
-		Where("connection_method = ?", connection_type.ConnectionMethodBuiltin).
+		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
 		Scan(&totalShippingFee); err != nil {
 		return err
 	}
@@ -1501,14 +1501,14 @@ func CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceC
 		In("shop_id", shopIDs).
 		Where("status not in (0,-1) AND etop_payment_status != 1").
 		Where("shipping_status = 1").
-		Where("connection_method = ?", connection_type.ConnectionMethodBuiltin).
+		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
 		Scan(&totalCODAmount); err != nil {
 		return err
 	}
 	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
 		In("shop_id", shopIDs).
 		Where("status not in (0,-1) AND etop_payment_status != 1").
-		Where("connection_method = ?", connection_type.ConnectionMethodBuiltin).
+		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
 		Scan(&totalShippingFee); err != nil {
 		return err
 	}
