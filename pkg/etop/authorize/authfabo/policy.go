@@ -9,4 +9,7 @@ const Policy = authcommon.CommonPolicy + `
 	p, facebook/message:create, admin, owner, salesman
 	p, facebook/fbuser:view, admin, owner, salesman
 	p, facebook/fbuser:create, admin, owner, salesman
+	p, facebook/fanpage:create, owner
+	p, facebook/fanpage:delete, owner
+	p, facebook/fanpage:view, owner, salesman
 `

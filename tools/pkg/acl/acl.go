@@ -237,6 +237,9 @@ const (
 	FbMessageView   permission.ActionType = "facebook/message:view"
 	FbUserCreate    permission.ActionType = "facebook/fbuser:create" // Liên kết fb_user với customer
 	FbUserView      permission.ActionType = "facebook/fbuser:view"
+	FbFanpageCreate permission.ActionType = "facebook/fanpage:create"
+	FbFanpageDelete permission.ActionType = "facebook/fanpage:delete"
+	FbFanpageView   permission.ActionType = "facebook/fanpage:view"
 
 	// Admin Credit
 	AdminCreditCreate  permission.ActionType = "admin/credit:create"
@@ -1133,13 +1136,13 @@ var _acl = map[string]*permission.Decl{
 	"shop.WebServer/GetWsPagesByIDs": {Type: Shop, Actions: actions(WsPageView)},
 
 	// -- Fabo --
-	"fabo.Page/ConnectPages":                                 {Type: Shop},
-	"fabo.Page/RemovePages":                                  {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.Page/ListPages":                                    {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/ListCustomerConversations":    {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.Page/ConnectPages":                                 {Type: Shop, Actions: actions(FbFanpageCreate)},
+	"fabo.Page/RemovePages":                                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbFanpageDelete)},
+	"fabo.Page/ListPages":                                    {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbFanpageView)},
+	"fabo.CustomerConversation/ListCustomerConversations":    {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},
 	"fabo.CustomerConversation/ListMessages":                 {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageView)},
-	"fabo.CustomerConversation/ListCommentsByExternalPostID": {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/UpdateReadStatus":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/ListCommentsByExternalPostID": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView)},
+	"fabo.CustomerConversation/UpdateReadStatus":             {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},
 	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageCreate)},
 	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentCreate)},
 	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true},
