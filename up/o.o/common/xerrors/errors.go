@@ -939,7 +939,8 @@ type TwError interface {
 }
 
 type twError struct {
-	err *APIError
+	err  *APIError
+	meta map[string]string
 }
 
 func (t twError) Code() Code {
@@ -951,7 +952,7 @@ func (t twError) Msg() string {
 }
 
 func (t twError) Meta(key string) string {
-	meta := t.err.Meta
+	meta := t.meta
 	if meta != nil {
 		return meta[key]
 	}
@@ -959,12 +960,12 @@ func (t twError) Meta(key string) string {
 }
 
 func (t twError) WithMeta(key string, val string) ErrorInterface {
-	_ = t.err.WithMeta(key, val)
+	t.meta[key] = val
 	return t
 }
 
 func (t twError) MetaMap() map[string]string {
-	return t.err.Meta
+	return t.meta
 }
 
 func (t twError) Error() string {
@@ -1005,19 +1006,26 @@ func TwirpError(err error) TwError {
 		xerr = newError(true, true, Internal, "", err)
 	}
 
-	if xerr.Meta == nil {
-		xerr.Meta = map[string]string{}
+	// FIXED: fatal error: concurrent map iteration and map write
+	//
+	// This clones the meta map from the inner error. We don't reuse the map to
+	// prevent concurrency access and make the function TwirpError thread-safe.
+	//
+	// TODO(vu): Remove the TwError and convert to ErrorJSON directly.
+	meta := map[string]string{}
+	for k, v := range xerr.Meta {
+		meta[k] = v
 	}
 	if xerr.Err != nil {
-		xerr.Meta["cause"] = xerr.Err.Error()
+		meta["cause"] = xerr.Err.Error()
 	}
 	if xerr.Original != "" {
-		xerr.Meta["orig"] = xerr.Original
+		meta["orig"] = xerr.Original
 	}
 	if xerr.XCode != 0 {
-		xerr.Meta["xcode"] = xerr.XCode.String()
+		meta["xcode"] = xerr.XCode.String()
 	}
-	return twError{xerr}
+	return twError{xerr, meta}
 }
 
 type ErrorJSON struct {
