@@ -86,7 +86,7 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreatePost(ctx, msg)
+			resp, err = inner.CreatePost(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -99,7 +99,7 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListCommentsByExternalPostID(ctx, msg)
+			resp, err = inner.ListCommentsByExternalPostID(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -112,7 +112,7 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListCustomerConversations(ctx, msg)
+			resp, err = inner.ListCustomerConversations(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -125,7 +125,7 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListMessages(ctx, msg)
+			resp, err = inner.ListMessages(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -138,7 +138,7 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			if err != nil {
 				return
 			}
-			resp, err = inner.SendComment(ctx, msg)
+			resp, err = inner.SendComment(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -151,7 +151,7 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			if err != nil {
 				return
 			}
-			resp, err = inner.SendMessage(ctx, msg)
+			resp, err = inner.SendMessage(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -164,7 +164,7 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateReadStatus(ctx, msg)
+			resp, err = inner.UpdateReadStatus(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -230,7 +230,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateFbUserCustomer(ctx, msg)
+			resp, err = inner.CreateFbUserCustomer(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -243,7 +243,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetFbUser(ctx, msg)
+			resp, err = inner.GetFbUser(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -256,7 +256,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListCustomersWithFbUsers(ctx, msg)
+			resp, err = inner.ListCustomersWithFbUsers(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -269,7 +269,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListFbUsers(ctx, msg)
+			resp, err = inner.ListFbUsers(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -335,7 +335,7 @@ func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.ConnectPages(ctx, msg)
+			resp, err = inner.ConnectPages(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -348,7 +348,7 @@ func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListPages(ctx, msg)
+			resp, err = inner.ListPages(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -361,7 +361,7 @@ func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.RemovePages(ctx, msg)
+			resp, err = inner.RemovePages(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

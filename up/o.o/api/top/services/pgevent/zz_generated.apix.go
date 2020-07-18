@@ -85,7 +85,7 @@ func (s *EventServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 			if err != nil {
 				return
 			}
-			resp, err = inner.GenerateEvents(ctx, msg)
+			resp, err = inner.GenerateEvents(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -151,7 +151,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

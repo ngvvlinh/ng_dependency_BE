@@ -99,7 +99,7 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateInvitation(ctx, msg)
+			resp, err = inner.CreateInvitation(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -112,7 +112,7 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteInvitation(ctx, msg)
+			resp, err = inner.DeleteInvitation(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -125,7 +125,7 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetInvitations(ctx, msg)
+			resp, err = inner.GetInvitations(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -138,7 +138,7 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetRelationships(ctx, msg)
+			resp, err = inner.GetRelationships(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -151,7 +151,7 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 			if err != nil {
 				return
 			}
-			resp, err = inner.RemoveUser(ctx, msg)
+			resp, err = inner.RemoveUser(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -164,7 +164,7 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdatePermission(ctx, msg)
+			resp, err = inner.UpdatePermission(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -177,7 +177,7 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateRelationship(ctx, msg)
+			resp, err = inner.UpdateRelationship(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -243,7 +243,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetPublicPartnerInfo(ctx, msg)
+			resp, err = inner.GetPublicPartnerInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -256,7 +256,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetPublicPartners(ctx, msg)
+			resp, err = inner.GetPublicPartners(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -269,7 +269,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateURLSlug(ctx, msg)
+			resp, err = inner.UpdateURLSlug(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -335,7 +335,7 @@ func (s *AddressServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateAddress(ctx, msg)
+			resp, err = inner.CreateAddress(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -348,7 +348,7 @@ func (s *AddressServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetAddresses(ctx, msg)
+			resp, err = inner.GetAddresses(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -361,7 +361,7 @@ func (s *AddressServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.RemoveAddress(ctx, msg)
+			resp, err = inner.RemoveAddress(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -374,7 +374,7 @@ func (s *AddressServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateAddress(ctx, msg)
+			resp, err = inner.UpdateAddress(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -440,7 +440,7 @@ func (s *BankServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetBanks(ctx, msg)
+			resp, err = inner.GetBanks(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -453,7 +453,7 @@ func (s *BankServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetBranchesByBankProvince(ctx, msg)
+			resp, err = inner.GetBranchesByBankProvince(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -466,7 +466,7 @@ func (s *BankServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetProvincesByBank(ctx, msg)
+			resp, err = inner.GetProvincesByBank(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -532,7 +532,7 @@ func (s *EcomServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.SessionInfo(ctx, msg)
+			resp, err = inner.SessionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -598,7 +598,7 @@ func (s *LocationServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetDistricts(ctx, msg)
+			resp, err = inner.GetDistricts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -611,7 +611,7 @@ func (s *LocationServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetDistrictsByProvince(ctx, msg)
+			resp, err = inner.GetDistrictsByProvince(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -624,7 +624,7 @@ func (s *LocationServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetProvinces(ctx, msg)
+			resp, err = inner.GetProvinces(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -637,7 +637,7 @@ func (s *LocationServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetWards(ctx, msg)
+			resp, err = inner.GetWards(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -650,7 +650,7 @@ func (s *LocationServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetWardsByDistrict(ctx, msg)
+			resp, err = inner.GetWardsByDistrict(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -663,7 +663,7 @@ func (s *LocationServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.ParseLocation(ctx, msg)
+			resp, err = inner.ParseLocation(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -729,7 +729,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -795,7 +795,7 @@ func (s *UserRelationshipServiceServer) parseRoute(path string, hooks httprpc.Ho
 			if err != nil {
 				return
 			}
-			resp, err = inner.AcceptInvitation(ctx, msg)
+			resp, err = inner.AcceptInvitation(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -808,7 +808,7 @@ func (s *UserRelationshipServiceServer) parseRoute(path string, hooks httprpc.Ho
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetInvitationByToken(ctx, msg)
+			resp, err = inner.GetInvitationByToken(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -821,7 +821,7 @@ func (s *UserRelationshipServiceServer) parseRoute(path string, hooks httprpc.Ho
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetInvitations(ctx, msg)
+			resp, err = inner.GetInvitations(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -834,7 +834,7 @@ func (s *UserRelationshipServiceServer) parseRoute(path string, hooks httprpc.Ho
 			if err != nil {
 				return
 			}
-			resp, err = inner.LeaveAccount(ctx, msg)
+			resp, err = inner.LeaveAccount(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -847,7 +847,7 @@ func (s *UserRelationshipServiceServer) parseRoute(path string, hooks httprpc.Ho
 			if err != nil {
 				return
 			}
-			resp, err = inner.RejectInvitation(ctx, msg)
+			resp, err = inner.RejectInvitation(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -913,7 +913,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.ChangePassword(ctx, msg)
+			resp, err = inner.ChangePassword(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -926,7 +926,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.ChangePasswordUsingToken(ctx, msg)
+			resp, err = inner.ChangePasswordUsingToken(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -939,7 +939,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.CheckUserRegistration(ctx, msg)
+			resp, err = inner.CheckUserRegistration(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -952,7 +952,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.InitSession(ctx, msg)
+			resp, err = inner.InitSession(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -965,7 +965,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.Login(ctx, msg)
+			resp, err = inner.Login(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -978,7 +978,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.Register(ctx, msg)
+			resp, err = inner.Register(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -991,7 +991,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.RegisterUsingToken(ctx, msg)
+			resp, err = inner.RegisterUsingToken(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1004,7 +1004,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.ResetPassword(ctx, msg)
+			resp, err = inner.ResetPassword(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1017,7 +1017,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.SendEmailVerification(ctx, msg)
+			resp, err = inner.SendEmailVerification(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1030,7 +1030,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.SendEmailVerificationUsingOTP(ctx, msg)
+			resp, err = inner.SendEmailVerificationUsingOTP(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1043,7 +1043,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.SendPhoneVerification(ctx, msg)
+			resp, err = inner.SendPhoneVerification(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1056,7 +1056,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.SendSTokenEmail(ctx, msg)
+			resp, err = inner.SendSTokenEmail(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1069,7 +1069,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.SessionInfo(ctx, msg)
+			resp, err = inner.SessionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1082,7 +1082,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.SwitchAccount(ctx, msg)
+			resp, err = inner.SwitchAccount(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1095,7 +1095,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdatePermission(ctx, msg)
+			resp, err = inner.UpdatePermission(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1108,7 +1108,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateReferenceSale(ctx, msg)
+			resp, err = inner.UpdateReferenceSale(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1121,7 +1121,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateReferenceUser(ctx, msg)
+			resp, err = inner.UpdateReferenceUser(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1134,7 +1134,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateUserEmail(ctx, msg)
+			resp, err = inner.UpdateUserEmail(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1147,7 +1147,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateUserPhone(ctx, msg)
+			resp, err = inner.UpdateUserPhone(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1160,7 +1160,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpgradeAccessToken(ctx, msg)
+			resp, err = inner.UpgradeAccessToken(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1173,7 +1173,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VerifyEmailUsingOTP(ctx, msg)
+			resp, err = inner.VerifyEmailUsingOTP(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1186,7 +1186,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VerifyEmailUsingToken(ctx, msg)
+			resp, err = inner.VerifyEmailUsingToken(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1199,7 +1199,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VerifyPhoneResetPasswordUsingToken(ctx, msg)
+			resp, err = inner.VerifyPhoneResetPasswordUsingToken(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1212,7 +1212,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VerifyPhoneUsingToken(ctx, msg)
+			resp, err = inner.VerifyPhoneUsingToken(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

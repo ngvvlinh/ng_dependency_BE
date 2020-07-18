@@ -85,7 +85,7 @@ func (s *IntegrationServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.GrantAccess(ctx, msg)
+			resp, err = inner.GrantAccess(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -98,7 +98,7 @@ func (s *IntegrationServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.Init(ctx, msg)
+			resp, err = inner.Init(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -111,7 +111,7 @@ func (s *IntegrationServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.LoginUsingToken(ctx, msg)
+			resp, err = inner.LoginUsingToken(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -124,7 +124,7 @@ func (s *IntegrationServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.LoginUsingTokenWL(ctx, msg)
+			resp, err = inner.LoginUsingTokenWL(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -137,7 +137,7 @@ func (s *IntegrationServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.Register(ctx, msg)
+			resp, err = inner.Register(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -150,7 +150,7 @@ func (s *IntegrationServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.RequestLogin(ctx, msg)
+			resp, err = inner.RequestLogin(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -163,7 +163,7 @@ func (s *IntegrationServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.SessionInfo(ctx, msg)
+			resp, err = inner.SessionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -229,7 +229,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

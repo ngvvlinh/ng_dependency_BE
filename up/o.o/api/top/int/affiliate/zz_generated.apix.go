@@ -85,7 +85,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteAffiliate(ctx, msg)
+			resp, err = inner.DeleteAffiliate(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -98,7 +98,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.RegisterAffiliate(ctx, msg)
+			resp, err = inner.RegisterAffiliate(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -111,7 +111,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateAffiliate(ctx, msg)
+			resp, err = inner.UpdateAffiliate(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -124,7 +124,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateAffiliateBankAccount(ctx, msg)
+			resp, err = inner.UpdateAffiliateBankAccount(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -190,7 +190,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

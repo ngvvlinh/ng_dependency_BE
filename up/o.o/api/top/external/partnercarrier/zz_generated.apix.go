@@ -87,7 +87,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.CurrentAccount(ctx, msg)
+			resp, err = inner.CurrentAccount(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -100,7 +100,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetLocationList(ctx, msg)
+			resp, err = inner.GetLocationList(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -166,7 +166,7 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string, hooks httprpc.
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateConnection(ctx, msg)
+			resp, err = inner.CreateConnection(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -179,7 +179,7 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string, hooks httprpc.
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteConnection(ctx, msg)
+			resp, err = inner.DeleteConnection(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -192,7 +192,7 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string, hooks httprpc.
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetConnections(ctx, msg)
+			resp, err = inner.GetConnections(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -205,7 +205,7 @@ func (s *ShipmentConnectionServiceServer) parseRoute(path string, hooks httprpc.
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateConnection(ctx, msg)
+			resp, err = inner.UpdateConnection(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -271,7 +271,7 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateFulfillment(ctx, msg)
+			resp, err = inner.UpdateFulfillment(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

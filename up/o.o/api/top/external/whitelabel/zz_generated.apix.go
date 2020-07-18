@@ -82,7 +82,7 @@ func (s *ImportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.Brands(ctx, msg)
+			resp, err = inner.Brands(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -95,7 +95,7 @@ func (s *ImportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.Categories(ctx, msg)
+			resp, err = inner.Categories(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -108,7 +108,7 @@ func (s *ImportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.Collections(ctx, msg)
+			resp, err = inner.Collections(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -121,7 +121,7 @@ func (s *ImportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.Customers(ctx, msg)
+			resp, err = inner.Customers(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -134,7 +134,7 @@ func (s *ImportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.ProductCollections(ctx, msg)
+			resp, err = inner.ProductCollections(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -147,7 +147,7 @@ func (s *ImportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.Products(ctx, msg)
+			resp, err = inner.Products(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -160,7 +160,7 @@ func (s *ImportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.Variants(ctx, msg)
+			resp, err = inner.Variants(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

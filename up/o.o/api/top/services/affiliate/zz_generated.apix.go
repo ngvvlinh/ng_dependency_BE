@@ -89,7 +89,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.AffiliateGetProducts(ctx, msg)
+			resp, err = inner.AffiliateGetProducts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -102,7 +102,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateOrUpdateAffiliateCommissionSetting(ctx, msg)
+			resp, err = inner.CreateOrUpdateAffiliateCommissionSetting(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -115,7 +115,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateReferralCode(ctx, msg)
+			resp, err = inner.CreateReferralCode(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -128,7 +128,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetCommissions(ctx, msg)
+			resp, err = inner.GetCommissions(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -141,7 +141,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetProductPromotionByProductID(ctx, msg)
+			resp, err = inner.GetProductPromotionByProductID(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -154,7 +154,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetReferralCodes(ctx, msg)
+			resp, err = inner.GetReferralCodes(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -167,7 +167,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetReferrals(ctx, msg)
+			resp, err = inner.GetReferrals(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -180,7 +180,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetTransactions(ctx, msg)
+			resp, err = inner.GetTransactions(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -193,7 +193,7 @@ func (s *AffiliateServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.NotifyNewShopPurchase(ctx, msg)
+			resp, err = inner.NotifyNewShopPurchase(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -259,7 +259,7 @@ func (s *ShopServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.CheckReferralCodeValid(ctx, msg)
+			resp, err = inner.CheckReferralCodeValid(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -272,7 +272,7 @@ func (s *ShopServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetProductPromotion(ctx, msg)
+			resp, err = inner.GetProductPromotion(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -285,7 +285,7 @@ func (s *ShopServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.ShopGetProducts(ctx, msg)
+			resp, err = inner.ShopGetProducts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -351,7 +351,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateOrUpdateTradingCommissionSetting(ctx, msg)
+			resp, err = inner.CreateOrUpdateTradingCommissionSetting(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -364,7 +364,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateTradingProductPromotion(ctx, msg)
+			resp, err = inner.CreateTradingProductPromotion(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -377,7 +377,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetTradingProductPromotionByProductIDs(ctx, msg)
+			resp, err = inner.GetTradingProductPromotionByProductIDs(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -390,7 +390,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetTradingProductPromotions(ctx, msg)
+			resp, err = inner.GetTradingProductPromotions(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -403,7 +403,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.TradingGetProducts(ctx, msg)
+			resp, err = inner.TradingGetProducts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -416,7 +416,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateTradingProductPromotion(ctx, msg)
+			resp, err = inner.UpdateTradingProductPromotion(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -482,7 +482,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateReferral(ctx, msg)
+			resp, err = inner.UpdateReferral(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

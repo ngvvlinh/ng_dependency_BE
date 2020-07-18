@@ -77,7 +77,7 @@ func (s *{{$s.Name}}ServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		if err != nil {
 			return
 		}
-		resp, err = inner.{{.Name}}(ctx, msg)
+		resp, err = inner.{{.Name}}(newCtx, msg)
 		return
 	}
 	return msg, fn, nil

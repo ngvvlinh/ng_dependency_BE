@@ -82,7 +82,7 @@ func (s *CalcServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.Calc(ctx, msg)
+			resp, err = inner.Calc(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -95,7 +95,7 @@ func (s *CalcServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.Get(ctx, msg)
+			resp, err = inner.Get(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

@@ -87,7 +87,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -153,7 +153,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateUser(ctx, msg)
+			resp, err = inner.CreateUser(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -166,7 +166,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.LoginAsAccount(ctx, msg)
+			resp, err = inner.LoginAsAccount(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -179,7 +179,7 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.ResetPassword(ctx, msg)
+			resp, err = inner.ResetPassword(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -245,7 +245,7 @@ func (s *WebhookServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.RegisterWebhook(ctx, msg)
+			resp, err = inner.RegisterWebhook(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -258,7 +258,7 @@ func (s *WebhookServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.UnregisterWebhook(ctx, msg)
+			resp, err = inner.UnregisterWebhook(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

@@ -112,7 +112,7 @@ func (s *CustomerAddressServiceServer) parseRoute(path string, hooks httprpc.Hoo
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateAddress(ctx, msg)
+			resp, err = inner.CreateAddress(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -125,7 +125,7 @@ func (s *CustomerAddressServiceServer) parseRoute(path string, hooks httprpc.Hoo
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteAddress(ctx, msg)
+			resp, err = inner.DeleteAddress(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -138,7 +138,7 @@ func (s *CustomerAddressServiceServer) parseRoute(path string, hooks httprpc.Hoo
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetAddress(ctx, msg)
+			resp, err = inner.GetAddress(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -151,7 +151,7 @@ func (s *CustomerAddressServiceServer) parseRoute(path string, hooks httprpc.Hoo
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListAddresses(ctx, msg)
+			resp, err = inner.ListAddresses(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -164,7 +164,7 @@ func (s *CustomerAddressServiceServer) parseRoute(path string, hooks httprpc.Hoo
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateAddress(ctx, msg)
+			resp, err = inner.UpdateAddress(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -230,7 +230,7 @@ func (s *CustomerGroupRelationshipServiceServer) parseRoute(path string, hooks h
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateRelationship(ctx, msg)
+			resp, err = inner.CreateRelationship(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -243,7 +243,7 @@ func (s *CustomerGroupRelationshipServiceServer) parseRoute(path string, hooks h
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteRelationship(ctx, msg)
+			resp, err = inner.DeleteRelationship(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -256,7 +256,7 @@ func (s *CustomerGroupRelationshipServiceServer) parseRoute(path string, hooks h
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListRelationships(ctx, msg)
+			resp, err = inner.ListRelationships(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -322,7 +322,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateGroup(ctx, msg)
+			resp, err = inner.CreateGroup(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -335,7 +335,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteGroup(ctx, msg)
+			resp, err = inner.DeleteGroup(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -348,7 +348,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetGroup(ctx, msg)
+			resp, err = inner.GetGroup(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -361,7 +361,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListGroups(ctx, msg)
+			resp, err = inner.ListGroups(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -374,7 +374,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateGroup(ctx, msg)
+			resp, err = inner.UpdateGroup(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -440,7 +440,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateCustomer(ctx, msg)
+			resp, err = inner.CreateCustomer(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -453,7 +453,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteCustomer(ctx, msg)
+			resp, err = inner.DeleteCustomer(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -466,7 +466,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetCustomer(ctx, msg)
+			resp, err = inner.GetCustomer(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -479,7 +479,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListCustomers(ctx, msg)
+			resp, err = inner.ListCustomers(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -492,7 +492,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateCustomer(ctx, msg)
+			resp, err = inner.UpdateCustomer(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -558,7 +558,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetFulfillment(ctx, msg)
+			resp, err = inner.GetFulfillment(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -571,7 +571,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListFulfillments(ctx, msg)
+			resp, err = inner.ListFulfillments(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -637,7 +637,7 @@ func (s *HistoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetChanges(ctx, msg)
+			resp, err = inner.GetChanges(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -703,7 +703,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListInventoryLevels(ctx, msg)
+			resp, err = inner.ListInventoryLevels(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -769,7 +769,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.CurrentAccount(ctx, msg)
+			resp, err = inner.CurrentAccount(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -782,7 +782,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetLocationList(ctx, msg)
+			resp, err = inner.GetLocationList(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -795,7 +795,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -861,7 +861,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 			if err != nil {
 				return
 			}
-			resp, err = inner.CancelOrder(ctx, msg)
+			resp, err = inner.CancelOrder(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -874,7 +874,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 			if err != nil {
 				return
 			}
-			resp, err = inner.ConfirmOrder(ctx, msg)
+			resp, err = inner.ConfirmOrder(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -887,7 +887,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateOrder(ctx, msg)
+			resp, err = inner.CreateOrder(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -900,7 +900,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetOrder(ctx, msg)
+			resp, err = inner.GetOrder(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -913,7 +913,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListOrders(ctx, msg)
+			resp, err = inner.ListOrders(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -979,7 +979,7 @@ func (s *ProductCollectionRelationshipServiceServer) parseRoute(path string, hoo
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateRelationship(ctx, msg)
+			resp, err = inner.CreateRelationship(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -992,7 +992,7 @@ func (s *ProductCollectionRelationshipServiceServer) parseRoute(path string, hoo
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteRelationship(ctx, msg)
+			resp, err = inner.DeleteRelationship(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1005,7 +1005,7 @@ func (s *ProductCollectionRelationshipServiceServer) parseRoute(path string, hoo
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListRelationships(ctx, msg)
+			resp, err = inner.ListRelationships(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1071,7 +1071,7 @@ func (s *ProductCollectionServiceServer) parseRoute(path string, hooks httprpc.H
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateCollection(ctx, msg)
+			resp, err = inner.CreateCollection(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1084,7 +1084,7 @@ func (s *ProductCollectionServiceServer) parseRoute(path string, hooks httprpc.H
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteCollection(ctx, msg)
+			resp, err = inner.DeleteCollection(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1097,7 +1097,7 @@ func (s *ProductCollectionServiceServer) parseRoute(path string, hooks httprpc.H
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetCollection(ctx, msg)
+			resp, err = inner.GetCollection(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1110,7 +1110,7 @@ func (s *ProductCollectionServiceServer) parseRoute(path string, hooks httprpc.H
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListCollections(ctx, msg)
+			resp, err = inner.ListCollections(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1123,7 +1123,7 @@ func (s *ProductCollectionServiceServer) parseRoute(path string, hooks httprpc.H
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateCollection(ctx, msg)
+			resp, err = inner.UpdateCollection(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1189,7 +1189,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateProduct(ctx, msg)
+			resp, err = inner.CreateProduct(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1202,7 +1202,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteProduct(ctx, msg)
+			resp, err = inner.DeleteProduct(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1215,7 +1215,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetProduct(ctx, msg)
+			resp, err = inner.GetProduct(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1228,7 +1228,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListProducts(ctx, msg)
+			resp, err = inner.ListProducts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1241,7 +1241,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateProduct(ctx, msg)
+			resp, err = inner.UpdateProduct(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1307,7 +1307,7 @@ func (s *ShippingServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.CancelOrder(ctx, msg)
+			resp, err = inner.CancelOrder(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1320,7 +1320,7 @@ func (s *ShippingServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateAndConfirmOrder(ctx, msg)
+			resp, err = inner.CreateAndConfirmOrder(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1333,7 +1333,7 @@ func (s *ShippingServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetFulfillment(ctx, msg)
+			resp, err = inner.GetFulfillment(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1346,7 +1346,7 @@ func (s *ShippingServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetOrder(ctx, msg)
+			resp, err = inner.GetOrder(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1359,7 +1359,7 @@ func (s *ShippingServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetShippingServices(ctx, msg)
+			resp, err = inner.GetShippingServices(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1425,7 +1425,7 @@ func (s *VariantServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateVariant(ctx, msg)
+			resp, err = inner.CreateVariant(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1438,7 +1438,7 @@ func (s *VariantServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteVariant(ctx, msg)
+			resp, err = inner.DeleteVariant(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1451,7 +1451,7 @@ func (s *VariantServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetVariant(ctx, msg)
+			resp, err = inner.GetVariant(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1464,7 +1464,7 @@ func (s *VariantServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.ListVariants(ctx, msg)
+			resp, err = inner.ListVariants(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1477,7 +1477,7 @@ func (s *VariantServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateVariant(ctx, msg)
+			resp, err = inner.UpdateVariant(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1543,7 +1543,7 @@ func (s *WebhookServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateWebhook(ctx, msg)
+			resp, err = inner.CreateWebhook(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1556,7 +1556,7 @@ func (s *WebhookServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.DeleteWebhook(ctx, msg)
+			resp, err = inner.DeleteWebhook(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1569,7 +1569,7 @@ func (s *WebhookServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetWebhooks(ctx, msg)
+			resp, err = inner.GetWebhooks(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

@@ -85,7 +85,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -151,7 +151,7 @@ func (s *WebhookServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.ResetState(ctx, msg)
+			resp, err = inner.ResetState(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

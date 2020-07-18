@@ -89,7 +89,7 @@ func (s *CrmServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *ht
 			if err != nil {
 				return
 			}
-			resp, err = inner.RefreshFulfillmentFromCarrier(ctx, msg)
+			resp, err = inner.RefreshFulfillmentFromCarrier(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -102,7 +102,7 @@ func (s *CrmServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *ht
 			if err != nil {
 				return
 			}
-			resp, err = inner.SendNotification(ctx, msg)
+			resp, err = inner.SendNotification(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -168,7 +168,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			if err != nil {
 				return
 			}
-			resp, err = inner.VersionInfo(ctx, msg)
+			resp, err = inner.VersionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -234,7 +234,7 @@ func (s *VhtServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *ht
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateOrUpdateCallHistoryByCallID(ctx, msg)
+			resp, err = inner.CreateOrUpdateCallHistoryByCallID(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -247,7 +247,7 @@ func (s *VhtServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *ht
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateOrUpdateCallHistoryBySDKCallID(ctx, msg)
+			resp, err = inner.CreateOrUpdateCallHistoryBySDKCallID(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -260,7 +260,7 @@ func (s *VhtServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *ht
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetCallHistories(ctx, msg)
+			resp, err = inner.GetCallHistories(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -326,7 +326,7 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateOrUpdateContact(ctx, msg)
+			resp, err = inner.CreateOrUpdateContact(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -339,7 +339,7 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateOrUpdateLead(ctx, msg)
+			resp, err = inner.CreateOrUpdateLead(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -352,7 +352,7 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateTicket(ctx, msg)
+			resp, err = inner.CreateTicket(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -365,7 +365,7 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetCategories(ctx, msg)
+			resp, err = inner.GetCategories(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -378,7 +378,7 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetContacts(ctx, msg)
+			resp, err = inner.GetContacts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -391,7 +391,7 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetTicketStatusCount(ctx, msg)
+			resp, err = inner.GetTicketStatusCount(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -404,7 +404,7 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetTickets(ctx, msg)
+			resp, err = inner.GetTickets(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -417,7 +417,7 @@ func (s *VtigerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateTicket(ctx, msg)
+			resp, err = inner.UpdateTicket(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
