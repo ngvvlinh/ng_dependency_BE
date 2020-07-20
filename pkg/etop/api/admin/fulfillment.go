@@ -87,10 +87,11 @@ func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *pbcm.IDReque
 func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *admin.GetFulfillmentsRequest) (*types.FulfillmentsResponse, error) {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &shipmodelx.GetFulfillmentExtendedsQuery{
-		OrderID: q.OrderId,
-		Status:  q.Status,
-		Paging:  paging,
-		Filters: cmapi.ToFilters(q.Filters),
+		OrderID:       q.OrderId,
+		Status:        q.Status,
+		ConnectionIDs: q.ConnectionIDs,
+		Paging:        paging,
+		Filters:       cmapi.ToFilters(q.Filters),
 	}
 	if q.ShopId != 0 {
 		query.ShopIDs = []dot.ID{q.ShopId}

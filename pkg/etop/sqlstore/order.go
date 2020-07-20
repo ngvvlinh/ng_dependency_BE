@@ -879,6 +879,9 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 	if !query.DateFrom.IsZero() {
 		s = s.Where("f.created_at BETWEEN ? AND ?", query.DateFrom, query.DateTo)
 	}
+	if len(query.ConnectionIDs) > 0 {
+		s = s.In("f.connection_id", query.ConnectionIDs)
+	}
 
 	if query.IDs != nil && len(query.IDs) > 0 {
 		s = s.In("f.id", query.IDs)

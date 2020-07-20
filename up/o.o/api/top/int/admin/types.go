@@ -30,11 +30,12 @@ type GetOrdersRequest struct {
 func (m *GetOrdersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetFulfillmentsRequest struct {
-	Paging  *common.Paging     `json:"paging"`
-	ShopId  dot.ID             `json:"shop_id"`
-	OrderId dot.ID             `json:"order_id"`
-	Status  status3.NullStatus `json:"status"`
-	Filters []*common.Filter   `json:"filters"`
+	Paging        *common.Paging     `json:"paging"`
+	ShopId        dot.ID             `json:"shop_id"`
+	OrderId       dot.ID             `json:"order_id"`
+	Status        status3.NullStatus `json:"status"`
+	ConnectionIDs []dot.ID           `json:"connection_ids"`
+	Filters       []*common.Filter   `json:"filters"`
 }
 
 func (m *GetFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }

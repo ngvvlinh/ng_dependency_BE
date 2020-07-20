@@ -49,12 +49,13 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *shop.GetFul
 
 	paging := cmapi.CMPaging(q.Paging)
 	query := &shipmodelx.GetFulfillmentExtendedsQuery{
-		ShopIDs:   shopIDs,
-		PartnerID: s.SS.CtxPartner().GetID(),
-		OrderID:   q.OrderId,
-		Status:    q.Status,
-		Paging:    paging,
-		Filters:   cmapi.ToFilters(q.Filters),
+		ShopIDs:       shopIDs,
+		PartnerID:     s.SS.CtxPartner().GetID(),
+		OrderID:       q.OrderId,
+		Status:        q.Status,
+		ConnectionIDs: q.ConnectionIDs,
+		Paging:        paging,
+		Filters:       cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil, err

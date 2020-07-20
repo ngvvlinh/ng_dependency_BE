@@ -9172,6 +9172,13 @@
     "paGetFulfillmentsRequest": {
       "type": "object",
       "properties": {
+        "connection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
         "filters": {
           "type": "array",
           "items": {

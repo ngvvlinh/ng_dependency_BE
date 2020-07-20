@@ -1149,11 +1149,12 @@ type GetProductSourceCategoriesRequest struct {
 func (m *GetProductSourceCategoriesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetFulfillmentsRequest struct {
-	Paging  *common.Paging     `json:"paging"`
-	Filters []*common.Filter   `json:"filters"`
-	Mixed   *etop.MixedAccount `json:"mixed"`
-	OrderId dot.ID             `json:"order_id"`
-	Status  status3.NullStatus `json:"status"`
+	Paging        *common.Paging     `json:"paging"`
+	Filters       []*common.Filter   `json:"filters"`
+	Mixed         *etop.MixedAccount `json:"mixed"`
+	OrderId       dot.ID             `json:"order_id"`
+	Status        status3.NullStatus `json:"status"`
+	ConnectionIDs []dot.ID           `json:"connection_ids"`
 }
 
 func (m *GetFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }

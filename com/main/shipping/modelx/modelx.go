@@ -24,6 +24,7 @@ type GetFulfillmentExtendedsQuery struct {
 	ShippingCodes []string
 	DateFrom      time.Time
 	DateTo        time.Time
+	ConnectionIDs []dot.ID
 
 	Paging  *cm.Paging
 	Filters []cm.Filter

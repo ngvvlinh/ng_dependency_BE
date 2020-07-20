@@ -8,8 +8,9 @@ import (
 	"o.o/api/main/location"
 	shippingcore "o.o/api/main/shipping"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/ghn_note_code"
-	"o.o/api/top/types/etc/shipping"
+	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status4"
 	addressconvert "o.o/backend/com/main/address/convert"
@@ -108,7 +109,7 @@ func (ctrl *CarrierManager) createSingleFulfillment(ctx context.Context, order *
 			SyncStatus: status4.S,
 			SyncStates: &shippingsharemodel.FulfillmentSyncStates{
 				TrySyncAt:         time.Now(),
-				NextShippingState: shipping.Created,
+				NextShippingState: shippingstate.Created,
 			},
 		}
 		cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: updateFfm}
@@ -129,7 +130,7 @@ func (ctrl *CarrierManager) createSingleFulfillment(ctx context.Context, order *
 				TrySyncAt: time.Now(),
 				Error:     model.ToError(_err),
 
-				NextShippingState: shipping.Created,
+				NextShippingState: shippingstate.Created,
 			},
 		}
 		cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: updateFfm2}
@@ -214,6 +215,8 @@ func (ctrl *CarrierManager) createSingleFulfillment(ctx context.Context, order *
 		ffmToUpdate.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
 	}
 
+	ffmToUpdate.ConnectionID = shippingcore.GetConnectionID(0, ffm.ShippingProvider)
+	ffmToUpdate.ConnectionMethod = connection_type.ConnectionMethodBuiltin
 	updateCmd := &shipmodelx.UpdateFulfillmentCommand{
 		Fulfillment: ffmToUpdate,
 	}
