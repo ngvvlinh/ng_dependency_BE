@@ -101,6 +101,12 @@ func (c *Client) CreateShopByAffiliateAccount(ctx context.Context, req *CreateSh
 	return &resp, nil
 }
 
+// Use API add staff is mean manage your store.
+// Doc: https://api.ghn.vn/home/docs/detail?id=54
+func (c *Client) AffiliateCreateWithShop(ctx context.Context, req *AffiliateCreateWithShopRequest) error {
+	return c.sendRequest(ctx, "/v2/shop/affiliateCreateWithShop", c.shopID, req, nil)
+}
+
 func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error) {
 	var resp CreateOrderResponse
 	err := c.sendRequest(ctx, "/v2/shipping-order/create", c.shopID, req, &resp)

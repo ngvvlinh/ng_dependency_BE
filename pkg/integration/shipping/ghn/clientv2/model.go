@@ -116,10 +116,6 @@ type ErrorResponse struct {
 	ErrorData map[string]string `json:"-"`
 }
 
-func URL(baseUrl, path string) string {
-	return baseUrl + path
-}
-
 func (e *ErrorResponse) Error() (s string) {
 	defer func() {
 		s = strs.TrimLastPunctuation(s)
@@ -137,6 +133,10 @@ func (e *ErrorResponse) Error() (s string) {
 	}
 	b.WriteString(")")
 	return b.String()
+}
+
+func URL(baseUrl, path string) string {
+	return baseUrl + path
 }
 
 func (o *OrderFee) ToFeeLines() []*shippingsharemodel.ShippingFeeLine {
@@ -212,6 +212,14 @@ type CreateShopAffiliateRequest struct {
 type CreateShopAffiliateResponse struct {
 	ShopID   Int `json:"shop_id"`
 	ClientID Int `json:"client_id"`
+}
+
+// API Add Staff to Store by OTP (Affiliate)
+
+type AffiliateCreateWithShopRequest struct {
+	Phone  string `json:"phone"`
+	OTP    string `json:"otp"`
+	ShopID int    `json:"shop_id"`
 }
 
 // Get shops

@@ -24,9 +24,14 @@ import (
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/clientv2"
+	"o.o/common/xerrors"
 )
 
 var _ carriertypes.ShipmentCarrier = &GHNDriver{}
+
+const (
+	ClientHaveExisted = "CLIENT_HAVE_EXISTED"
+)
 
 type GHNDriver struct {
 	client     *ghnclient.Client
@@ -405,17 +410,12 @@ func (d *GHNDriver) GetMaxValueFreeInsuranceFee() int {
 func (d *GHNDriver) SignIn(
 	ctx context.Context, args *carriertypes.SignInArgs,
 ) (*carriertypes.AccountResponse, error) {
-	if args.OTP == "" {
-		// This function get all shops that depends on phone (args) to reduce creating new shop.
-		// And compare shop.created_client with affiliateID to finish do more request
-		// if response not nil which mean having an old shop, otherwise need to create new shop
-		response, err := d.checkAndGetOldShop(ctx, args)
-		if err != nil || response != nil {
-			return response, err
-		}
+	otp := args.OTP
+	phone := args.Identifier
 
+	if otp == "" {
 		sendOTPShopAffiliateRequest := &ghnclient.SendOTPShopAffiliateRequest{
-			Phone: args.Identifier,
+			Phone: phone,
 		}
 		if _, err := d.client.SendOTPShopToAffiliateAccount(ctx, sendOTPShopAffiliateRequest); err != nil {
 			return nil, err
@@ -425,9 +425,45 @@ func (d *GHNDriver) SignIn(
 		}, nil
 	}
 
+	// This function get all shops that depends on phone (args) to reduce creating new shop.
+	// And compare shop.created_client with affiliateID to finish do more request
+	// if response not nil which mean having an old shop, otherwise need to create new shop
+	response, err := d.checkAndGetOldShop(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	if response != nil {
+		shopID, _err := strconv.Atoi(response.ShopID)
+		if _err != nil {
+			return nil, _err
+		}
+		// call APIAffiliateCreateWithShop to verify shopID exists in account (phone = args.Identifier)
+		affiliateCreateWithShopReq := &ghnclient.AffiliateCreateWithShopRequest{
+			Phone:  phone,
+			OTP:    otp,
+			ShopID: shopID,
+		}
+		err := d.client.AffiliateCreateWithShop(ctx, affiliateCreateWithShopReq)
+		switch cm.ErrorCode(err) {
+		case cm.ExternalServiceError:
+			// Error "CLIENT_HAVE_EXISTED" mean shopID exists in account
+			_err := err.(*xerrors.APIError)
+			externalServiceError := _err.Err.(*ghnclient.ErrorResponse)
+			if externalServiceError.CodeMessage == ClientHaveExisted {
+				return response, nil
+			}
+			return nil, err
+		case cm.NoError:
+			return response, nil
+		default:
+
+			return nil, err
+		}
+	}
+
 	createShopAffiliateRequest := &ghnclient.CreateShopAffiliateRequest{
-		Phone: args.Identifier,
-		OTP:   args.OTP,
+		Phone: phone,
+		OTP:   otp,
 	}
 	resp, err := d.client.CreateShopByAffiliateAccount(ctx, createShopAffiliateRequest)
 	if err != nil {

@@ -134,7 +134,7 @@ func init() {
 	mapCustomCodes[BadRoute] = &CustomCode{NotFound, "bad_route", ""}
 	mapCustomCodes[Malformed] = &CustomCode{InvalidArgument, "malformed", ""}
 	mapCustomCodes[ValidationFailed] = &CustomCode{InvalidArgument, "validation_failed", "Dữ liệu không hợp lệ."}
-	mapCustomCodes[ExternalServiceError] = &CustomCode{Unknown, "external_service", "Đã xảy ra lỗi khi kết nối với hệ thống bên ngoài"}
+	mapCustomCodes[ExternalServiceError] = &CustomCode{ExternalServiceError, "external_service", "Đã xảy ra lỗi khi kết nối với hệ thống bên ngoài"}
 	mapCustomCodes[WrongPassword] = &CustomCode{Unauthenticated, "wrong_password", "Mật khẩu không hợp lệ"}
 	mapCustomCodes[SkipSync] = &CustomCode{FailedPrecondition, "skip_sync", "skip_sync"}
 	mapCustomCodes[STokenRequired] = &CustomCode{PermissionDenied, "stoken_required", "stoken_required"}
