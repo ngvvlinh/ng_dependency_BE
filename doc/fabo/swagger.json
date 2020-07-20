@@ -312,6 +312,33 @@
         }
       }
     },
+    "/api/fabo.Page/CheckPermissions": {
+      "post": {
+        "tags": [
+          "Page"
+        ],
+        "summary": "CheckPermissions",
+        "operationId": "fabo.Page-CheckPermissions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvCheckPagePermissionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvCheckPagePermissionsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.Page/ConnectPages": {
       "post": {
         "tags": [
@@ -402,6 +429,25 @@
         "P",
         "N"
       ]
+    },
+    "cvCheckPagePermissionsRequest": {
+      "type": "object",
+      "properties": {
+        "external_page_id": {
+          "type": "string"
+        }
+      }
+    },
+    "cvCheckPagePermissionsResponse": {
+      "type": "object",
+      "properties": {
+        "missing_roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
     "cvCommentAttachment": {
       "type": "object",

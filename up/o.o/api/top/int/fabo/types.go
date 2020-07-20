@@ -532,3 +532,19 @@ type CreatePostResponse struct {
 func (m *CreatePostResponse) String() string {
 	return jsonx.MustMarshalToString(m)
 }
+
+type CheckPagePermissionsRequest struct {
+	ExternalPageID string `json:"external_page_id"`
+}
+
+func (c *CheckPagePermissionsRequest) String() string {
+	return jsonx.MustMarshalToString(c)
+}
+
+type CheckPagePermissionsResponse struct {
+	MissingRoles []string `json:"missing_roles"`
+}
+
+func (c *CheckPagePermissionsResponse) String() string {
+	return jsonx.MustMarshalToString(c)
+}

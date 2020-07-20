@@ -282,6 +282,39 @@ func verifyScopes(appScopes map[string]string, scopes []string) error {
 	return nil
 }
 
+func (s *PageService) CheckPermissions(ctx context.Context, req *fabo.CheckPagePermissionsRequest) (*fabo.CheckPagePermissionsResponse, error) {
+	getAccessTokenQuery := &fbpaging.GetPageAccessTokenQuery{
+		ExternalID: req.ExternalPageID,
+	}
+	if err := s.FBExternalPageQuery.Dispatch(ctx, getAccessTokenQuery); err != nil {
+		return nil, err
+	}
+
+	pageToken, err := s.FBClient.CallAPICheckAccessToken(getAccessTokenQuery.Result)
+	if err != nil {
+		return nil, err
+	}
+
+	missingRoles := getMissingPermissions(pageToken.Data.Scopes)
+	return &fabo.CheckPagePermissionsResponse{MissingRoles: missingRoles}, nil
+}
+
+func getMissingPermissions(pagePerms []string) []string {
+	mapPagePerms := make(map[string]struct{})
+	for _, perm := range pagePerms {
+		mapPagePerms[perm] = struct{}{}
+	}
+
+	var missingRoles []string
+	for perm, _ := range appScopes {
+		if _, ok := mapPagePerms[perm]; !ok {
+			missingRoles = append(missingRoles, perm)
+		}
+	}
+
+	return missingRoles
+}
+
 func getPermissionsGranted(permissionsData model.AccountsPermissions) []string {
 	var permissions []string
 	for _, permission := range permissionsData.Data {

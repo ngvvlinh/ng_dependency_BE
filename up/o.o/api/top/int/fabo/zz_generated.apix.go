@@ -326,6 +326,19 @@ func (s *PageServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/fabo.Page/CheckPermissions":
+		msg := &CheckPagePermissionsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CheckPermissions(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/fabo.Page/ConnectPages":
 		msg := &ConnectPagesRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

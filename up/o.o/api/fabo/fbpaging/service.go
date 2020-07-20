@@ -29,6 +29,7 @@ type QueryService interface {
 
 	GetFbExternalPageInternalByID(_ context.Context, ID dot.ID) (*FbExternalPageInternal, error)
 	GetFbExternalPageInternalByExternalID(_ context.Context, externalID string) (*FbExternalPageInternal, error)
+	GetPageAccessToken(_ context.Context, externalID string) (string, error)
 	GetFbExternalPageInternalActiveByExternalID(_ context.Context, externalID string) (*FbExternalPageInternal, error)
 
 	ListFbExternalPagesByIDs(_ context.Context, IDs []dot.ID) ([]*FbExternalPage, error)

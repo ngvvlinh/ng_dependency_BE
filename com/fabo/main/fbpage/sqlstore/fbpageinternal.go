@@ -128,3 +128,13 @@ func (s *FbExternalPageInternalStore) GetFbExternalPageInternal() (*fbpaging.FbE
 	}
 	return result, err
 }
+
+func (s *FbExternalPageInternalStore) GetAccessToken() (string, error) {
+	query := s.query().Where(s.preds)
+	var fbExternalPageInternal model.FbExternalPageInternal
+	err := query.ShouldGet(&fbExternalPageInternal)
+	if err != nil {
+		return "", err
+	}
+	return fbExternalPageInternal.Token, err
+}

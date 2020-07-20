@@ -121,3 +121,7 @@ func (q *FbPageQuery) GetFbExternalPageInternalActiveByExternalID(
 func (q *FbPageQuery) ListFbPagesByShop(ctx context.Context, shopIDs []dot.ID) ([]*fbpaging.FbExternalPage, error) {
 	return q.fbPageStore(ctx).ShopIDs(shopIDs...).ListFbPages()
 }
+
+func (q *FbPageQuery) GetPageAccessToken(ctx context.Context, externalID string) (string, error) {
+	return q.fbPageInternalStore(ctx).ExternalID(externalID).GetAccessToken()
+}

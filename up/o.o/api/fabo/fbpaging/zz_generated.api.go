@@ -172,6 +172,17 @@ func (h QueryServiceHandler) HandleGetFbExternalPageInternalByID(ctx context.Con
 	return err
 }
 
+type GetPageAccessTokenQuery struct {
+	ExternalID string
+
+	Result string `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetPageAccessToken(ctx context.Context, msg *GetPageAccessTokenQuery) (err error) {
+	msg.Result, err = h.inner.GetPageAccessToken(msg.GetArgs(ctx))
+	return err
+}
+
 type ListFbExternalPagesQuery struct {
 	ShopID  dot.ID
 	Paging  meta.Paging
@@ -244,6 +255,7 @@ func (q *GetFbExternalPageByIDQuery) query()                       {}
 func (q *GetFbExternalPageInternalActiveByExternalIDQuery) query() {}
 func (q *GetFbExternalPageInternalByExternalIDQuery) query()       {}
 func (q *GetFbExternalPageInternalByIDQuery) query()               {}
+func (q *GetPageAccessTokenQuery) query()                          {}
 func (q *ListFbExternalPagesQuery) query()                         {}
 func (q *ListFbExternalPagesActiveByExternalIDsQuery) query()      {}
 func (q *ListFbExternalPagesByExternalIDsQuery) query()            {}
@@ -376,6 +388,11 @@ func (q *GetFbExternalPageInternalByIDQuery) GetArgs(ctx context.Context) (_ con
 		q.ID
 }
 
+func (q *GetPageAccessTokenQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
+	return ctx,
+		q.ExternalID
+}
+
 func (q *ListFbExternalPagesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbExternalPagesArgs) {
 	return ctx,
 		&ListFbExternalPagesArgs{
@@ -450,6 +467,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetFbExternalPageInternalActiveByExternalID)
 	b.AddHandler(h.HandleGetFbExternalPageInternalByExternalID)
 	b.AddHandler(h.HandleGetFbExternalPageInternalByID)
+	b.AddHandler(h.HandleGetPageAccessToken)
 	b.AddHandler(h.HandleListFbExternalPages)
 	b.AddHandler(h.HandleListFbExternalPagesActiveByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalPagesByExternalIDs)
