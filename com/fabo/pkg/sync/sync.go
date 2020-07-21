@@ -178,74 +178,37 @@ func (s *Synchronizer) getTaskArguments(taskID dot.ID) (taskArguments *TaskArgum
 }
 
 func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error) {
-	fbPageCombineds, err := listAllFbPagesActive(s.db)
-	if err != nil {
-		return err
-	}
+	ticker := time.NewTicker(60 * time.Minute)
+	defer ticker.Stop()
 
-	//now := time.Now()
-	for _, fbPageCombined := range fbPageCombineds {
-		// Task get post of specific page
-		//updatedAt := fbPageCombined.FbExternalPage.UpdatedAt
-		//externalPageID := fbPageCombined.FbExternalPage.ExternalID
-		//
-		//timeDiff := now.Sub(updatedAt).Seconds()
-		//var createTaskGetPosts bool
-		//
-		//if timeStart, ok := s.mapExternalPageAndTimeStart[externalPageID]; !ok {
-		//	createTaskGetPosts = true
-		//} else {
-		//	timeStartDiff := now.Sub(timeStart).Seconds()
-		//
-		//	// less than 10 mins sync every 30s
-		//	if timeDiff <= 10*60 && timeStartDiff >= 30 {
-		//		createTaskGetPosts = true
-		//	}
-		//
-		//	// between 10mins and 30mins sync every 1min
-		//	if 10*60 < timeDiff && timeDiff <= 30*60 && timeStartDiff >= 60 {
-		//		createTaskGetPosts = true
-		//	}
-		//
-		//	// between 30mins and 1hour sync every 2mins
-		//	if 30*60 < timeDiff && timeDiff <= 60*60 && timeStartDiff >= 2*60 {
-		//		createTaskGetPosts = true
-		//	}
-		//
-		//	// greater than 1hour sync every 5mins
-		//	if 60*60 < timeDiff && timeStartDiff > 5*60 {
-		//		createTaskGetPosts = true
-		//	}
-		//
-		//}
-		//
-		//if createTaskGetPosts {
-		//	s.mu.Lock()
-		//	s.mapExternalPageAndTimeStart[externalPageID] = now
-		//	s.mu.Unlock()
-		// Task get post
-		s.addTaskGetPosts(fbPageCombined)
+	for ; true; <-ticker.C {
+		fbPageCombineds, err := listAllFbPagesActive(s.db)
+		if err != nil {
+			return err
+		}
 
-		// Task get conversation
-		s.addTask(&TaskArguments{
-			actionType:     GetConversations,
-			accessToken:    fbPageCombined.FbExternalPageInternal.Token,
-			shopID:         fbPageCombined.FbExternalPage.ShopID,
-			pageID:         fbPageCombined.FbExternalPage.ID,
-			externalPageID: fbPageCombined.FbExternalPage.ExternalID,
-			fbPagingRequest: &model.FacebookPagingRequest{
-				Limit: dot.Int(fbclient.DefaultLimitGetConversations),
-				TimePagination: &model.TimePaginationRequest{
-					Since: time.Now().AddDate(0, 0, -s.timeLimit),
+		//now := time.Now()
+		for _, fbPageCombined := range fbPageCombineds {
+			// Task get post
+			s.addTaskGetPosts(fbPageCombined)
+
+			// Task get conversation
+			s.addTask(&TaskArguments{
+				actionType:     GetConversations,
+				accessToken:    fbPageCombined.FbExternalPageInternal.Token,
+				shopID:         fbPageCombined.FbExternalPage.ShopID,
+				pageID:         fbPageCombined.FbExternalPage.ID,
+				externalPageID: fbPageCombined.FbExternalPage.ExternalID,
+				fbPagingRequest: &model.FacebookPagingRequest{
+					Limit: dot.Int(fbclient.DefaultLimitGetConversations),
+					TimePagination: &model.TimePaginationRequest{
+						Since: time.Now().AddDate(0, 0, -s.timeLimit),
+					},
 				},
-			},
-		})
-		//}
+			})
+		}
 	}
-
-	s.scheduler.AddAfter(cm.NewID(), 60*time.Minute, s.addJobs)
-
-	return
+	return nil
 }
 
 func (s *Synchronizer) addTaskGetPosts(fbPageCombined *fbpaging.FbExternalPageCombined) dot.ID {
@@ -703,7 +666,7 @@ func (s *Synchronizer) HandleTaskGetPosts(
 	fmt.Println("GetPosts")
 
 	// Call api (facebook) listPublishedPosts from facebook
-	fbExternalPostsResp, err := s.fbClient.CallAPIListPublishedPosts(accessToken, externalPageID, fbPagingReq)
+	fbExternalPostsResp, err := s.fbClient.CallAPIListFeeds(accessToken, externalPageID, fbPagingReq)
 	if err != nil {
 		return err
 	}

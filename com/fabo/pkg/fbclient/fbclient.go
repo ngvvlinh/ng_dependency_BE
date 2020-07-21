@@ -252,6 +252,46 @@ func (f *FbClient) CallAPICheckAccessToken(accessToken string) (*model.UserToken
 	return &tok, nil
 }
 
+func (f *FbClient) CallAPIListFeeds(accessToken, pageID string, pagination *model.FacebookPagingRequest) (*model.PublishedPostsResponse, error) {
+	URL, err := url.Parse(fmt.Sprintf("%s/me/feed", f.apiInfo.Url()))
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := url.ParseQuery(URL.RawQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	query.Add(AccessToken, accessToken)
+	query.Add(Fields, "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments}")
+	query.Add(DateFormat, UnixDateFormat)
+
+	URL.RawQuery = query.Encode()
+	resp, err := http.Get(pagination.AddQueryParams(URL.String(), true, DefaultLimitGetPosts))
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := f.facebookErrorService.HandleErrorFacebookAPI(body, URL.String()); err != nil {
+		return nil, err
+	}
+
+	var publishedPostsResponse model.PublishedPostsResponse
+
+	if err := json.Unmarshal(body, &publishedPostsResponse); err != nil {
+		return nil, err
+	}
+
+	return &publishedPostsResponse, nil
+}
+
 func (f *FbClient) CallAPIListPublishedPosts(accessToken, pageID string, pagination *model.FacebookPagingRequest) (*model.PublishedPostsResponse, error) {
 	URL, err := url.Parse(fmt.Sprintf("%s/me/published_posts", f.apiInfo.Url()))
 	if err != nil {
