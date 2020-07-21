@@ -670,12 +670,13 @@ func Build(ctx context.Context, cfg config.Config, eventBus bus.Bus, healthServe
 		IdentityAggr: commandBus,
 	}
 	affiliateServers := affiliate.NewServers(affiliateMiscService, affiliateAccountService)
-	affiliateAggregate := affiliate2.NewAggregate(mainDB, identityQueryBus, catalogQueryBus, orderingQueryBus)
+	affiliateDB := databases.Affiliate
+	affiliateAggregate := affiliate2.NewAggregate(affiliateDB, identityQueryBus, catalogQueryBus, orderingQueryBus)
 	affiliateCommandBus := affiliate2.AggregateMessageBus(affiliateAggregate)
 	apiUserService := &api2.UserService{
 		AffiliateAggr: affiliateCommandBus,
 	}
-	affiliateQueryService := affiliate2.NewQuery(mainDB)
+	affiliateQueryService := affiliate2.NewQuery(affiliateDB)
 	affiliateQueryBus := affiliate2.QueryServiceMessageBus(affiliateQueryService)
 	apiTradingService := &api2.TradingService{
 		AffiliateAggr:  affiliateCommandBus,

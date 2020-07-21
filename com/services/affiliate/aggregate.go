@@ -51,7 +51,7 @@ type Aggregate struct {
 	db *cmsql.Database
 }
 
-func NewAggregate(db com.MainDB, idenQuery identity.QueryBus, catalogQuery catalog.QueryBus, orderQuery ordering.QueryBus) *Aggregate {
+func NewAggregate(db com.AffiliateDB, idenQuery identity.QueryBus, catalogQuery catalog.QueryBus, orderQuery ordering.QueryBus) *Aggregate {
 	return &Aggregate{
 		commissionSetting:       sqlstore.NewCommissionSettingStore(db),
 		supplyCommissionSetting: sqlstore.NewSupplyCommissionSettingStore(db),
