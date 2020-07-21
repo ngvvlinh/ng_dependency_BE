@@ -636,7 +636,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 			if shippingFeeShop != ffm.ShippingFeeShop {
 				// Giá thay đổi
 				// check money_transaction_shipping
-				if ffm.MoneyTransactionID != 0 {
+				if ffm.MoneyTransactionID != 0 || ffm.MoneyTransactionShippingExternalID != 0 {
 					// Đơn đã nằm trong phiên
 					// Giá cước đơn thay đổi
 					// Không cập nhật + bắn noti telegram để follow
