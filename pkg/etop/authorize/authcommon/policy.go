@@ -167,6 +167,8 @@ const adminPolicy = `
 	# account
 	p, admin/admin_user:create, admin
 	p, admin/admin_user:update, admin
+	p, admin/admin_user:view, admin
+	p, admin/admin_user:delete, admin
 	# credit
 	p, admin/credit:view, admin, ad_accountant
 	p, admin/credit:update, admin, ad_accountant

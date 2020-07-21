@@ -262,6 +262,8 @@ const (
 	// Admin Account
 	AdminAdminUserCreate permission.ActionType = "admin/admin_user:create"
 	AdminAdminUserUpdate permission.ActionType = "admin/admin_user:update"
+	AdminAdminUserView   permission.ActionType = "admin/admin_user:view"
+	AdminAdminUserDelete permission.ActionType = "admin/admin_user:delete"
 	AdminPartnerCreate   permission.ActionType = "admin/partner:create"
 
 	// Admin MoneyTransaction
@@ -614,6 +616,8 @@ var _acl = map[string]*permission.Decl{
 	"admin.Account/GenerateAPIKey":  {Type: EtopAdmin},
 	"admin.Account/CreateAdminUser": {Type: EtopAdmin, Actions: actions(AdminAdminUserCreate)},
 	"admin.Account/UpdateAdminUser": {Type: EtopAdmin, Actions: actions(AdminAdminUserUpdate)},
+	"admin.Account/GetAdminUsers":   {Type: EtopAdmin, Actions: actions(AdminAdminUserView)},
+	"admin.Account/DeleteAdminUser": {Type: EtopAdmin, Actions: actions(AdminAdminUserDelete)},
 
 	"admin.Category/CreateCategory":         {Type: EtopAdmin},
 	"admin.Category/GetCategories":          {Type: EtopAdmin},

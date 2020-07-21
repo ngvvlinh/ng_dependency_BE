@@ -765,3 +765,46 @@ type UpdateAdminUserResponse struct {
 }
 
 func (m *UpdateAdminUserResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type AdminUserFilter struct {
+	Roles filter.Strings `json:"roles"`
+}
+
+type GetAdminUsersRequest struct {
+	Filter AdminUserFilter `json:"filter"`
+}
+
+func (g *GetAdminUsersRequest) String() string {
+	return jsonx.MustMarshalToString(g)
+}
+
+type AdminAccountResponse struct {
+	UserId   dot.ID   `json:"user_id"`
+	FullName string   `json:"full_name"`
+	Email    string   `json:"email"`
+	Roles    []string `json:"roles"`
+}
+
+type GetAdminUserResponse struct {
+	Admins []*AdminAccountResponse `json:"admins"`
+}
+
+func (g *GetAdminUserResponse) String() string {
+	return jsonx.MustMarshalToString(g)
+}
+
+type DeleteAdminUserRequest struct {
+	UserID dot.ID `json:"user_id"`
+}
+
+func (d *DeleteAdminUserRequest) String() string {
+	return jsonx.MustMarshalToString(d)
+}
+
+type DeleteAdminUserResponse struct {
+	Updated int `json:"updated"`
+}
+
+func (d *DeleteAdminUserResponse) String() string {
+	return jsonx.MustMarshalToString(d)
+}

@@ -22,7 +22,9 @@ type AccountService interface {
 	CreatePartner(context.Context, *CreatePartnerRequest) (*etop.Partner, error)
 	GenerateAPIKey(context.Context, *GenerateAPIKeyRequest) (*GenerateAPIKeyResponse, error)
 	CreateAdminUser(context.Context, *CreateAdminUserRequest) (*CreateAdminUserResponse, error)
-	UpdateAdminUser(ctx context.Context, request *UpdateAdminUserRequest) (*UpdateAdminUserResponse, error)
+	UpdateAdminUser(context.Context, *UpdateAdminUserRequest) (*UpdateAdminUserResponse, error)
+	GetAdminUsers(context.Context, *GetAdminUsersRequest) (*GetAdminUserResponse, error)
+	DeleteAdminUser(context.Context, *DeleteAdminUserRequest) (*DeleteAdminUserResponse, error)
 }
 
 // +apix:path=/admin.Order

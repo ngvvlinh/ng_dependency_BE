@@ -69,6 +69,33 @@
         }
       }
     },
+    "/api/admin.Account/DeleteAdminUser": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "DeleteAdminUser",
+        "operationId": "admin.Account-DeleteAdminUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuDeleteAdminUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuDeleteAdminUserResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Account/GenerateAPIKey": {
       "post": {
         "tags": [
@@ -91,6 +118,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/xuGenerateAPIKeyResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Account/GetAdminUsers": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "GetAdminUsers",
+        "operationId": "admin.Account-GetAdminUsers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetAdminUsersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetAdminUserResponse"
             }
           }
         }
@@ -3612,6 +3666,10 @@
     "kfFullTextSearch": {
       "type": "string"
     },
+    "kfStrings": {
+      "description": "Filter by string value\n",
+      "type": "string"
+    },
     "ktCursorPageInfo": {
       "type": "object",
       "properties": {
@@ -6464,6 +6522,35 @@
         }
       }
     },
+    "xuAdminAccountResponse": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuAdminUserFilter": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "$ref": "#/definitions/kfStrings"
+        }
+      }
+    },
     "xuAvailableLocation": {
       "type": "object",
       "properties": {
@@ -6875,6 +6962,23 @@
         }
       }
     },
+    "xuDeleteAdminUserRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuDeleteAdminUserResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
     "xuFilterShopRequest": {
       "type": "object",
       "properties": {
@@ -6901,6 +7005,25 @@
         },
         "api_key": {
           "type": "string"
+        }
+      }
+    },
+    "xuGetAdminUserResponse": {
+      "type": "object",
+      "properties": {
+        "admins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuAdminAccountResponse"
+          }
+        }
+      }
+    },
+    "xuGetAdminUsersRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/xuAdminUserFilter"
         }
       }
     },

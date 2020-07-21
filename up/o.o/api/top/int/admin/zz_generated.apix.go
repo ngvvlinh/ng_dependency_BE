@@ -125,6 +125,19 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			return
 		}
 		return msg, fn, nil
+	case "/admin.Account/DeleteAdminUser":
+		msg := &DeleteAdminUserRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteAdminUser(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.Account/GenerateAPIKey":
 		msg := &GenerateAPIKeyRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -135,6 +148,19 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 				return
 			}
 			resp, err = inner.GenerateAPIKey(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Account/GetAdminUsers":
+		msg := &GetAdminUsersRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetAdminUsers(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

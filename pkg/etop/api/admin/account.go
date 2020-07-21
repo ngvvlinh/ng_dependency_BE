@@ -15,6 +15,7 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/capi/dot"
 )
 
 const EtopAccountId = 101
@@ -160,4 +161,35 @@ func (s *AccountService) UpdateAdminUser(ctx context.Context, q *admin.UpdateAdm
 		Roles:  updatedUserAccount.Roles,
 		Status: updatedUserAccount.Status,
 	}, nil
+}
+
+func (s *AccountService) GetAdminUsers(ctx context.Context, req *admin.GetAdminUsersRequest) (*admin.GetAdminUserResponse, error) {
+	getAdminAccQuery := &identitymodelx.GetAccountUserExtendedsQuery{
+		AccountIDs: []dot.ID{EtopAccountId},
+	}
+	if err := sqlstore.GetAccountUserExtendeds(ctx, getAdminAccQuery); err != nil {
+		return nil, err
+	}
+
+	res := &admin.GetAdminUserResponse{}
+	for _, v := range getAdminAccQuery.Result.AccountUsers {
+		res.Admins = append(res.Admins, &admin.AdminAccountResponse{
+			UserId:   v.User.ID,
+			FullName: v.User.FullName,
+			Email:    v.User.Email,
+			Roles:    v.AccountUser.Roles,
+		})
+	}
+	return res, nil
+}
+
+func (s *AccountService) DeleteAdminUser(ctx context.Context, req *admin.DeleteAdminUserRequest) (*admin.DeleteAdminUserResponse, error) {
+	deleteAccCmd := &identitymodelx.DeleteAccountUserCommand{
+		AccountID: EtopAccountId,
+		UserID:    req.UserID,
+	}
+	if err := sqlstore.DeleteAccountUser(ctx, deleteAccCmd); err != nil {
+		return nil, err
+	}
+	return &admin.DeleteAdminUserResponse{Updated: deleteAccCmd.Result.Updated}, nil
 }
