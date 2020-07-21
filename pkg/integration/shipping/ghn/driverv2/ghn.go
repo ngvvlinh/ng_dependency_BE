@@ -445,18 +445,15 @@ func (d *GHNDriver) SignIn(
 		}
 		err := d.client.AffiliateCreateWithShop(ctx, affiliateCreateWithShopReq)
 		switch cm.ErrorCode(err) {
-		case cm.ExternalServiceError:
+		case cm.NoError:
+			return response, nil
+		default:
 			// Error "CLIENT_HAVE_EXISTED" mean shopID exists in account
 			_err := err.(*xerrors.APIError)
 			externalServiceError := _err.Err.(*ghnclient.ErrorResponse)
 			if externalServiceError.CodeMessage == ClientHaveExisted {
 				return response, nil
 			}
-			return nil, err
-		case cm.NoError:
-			return response, nil
-		default:
-
 			return nil, err
 		}
 	}

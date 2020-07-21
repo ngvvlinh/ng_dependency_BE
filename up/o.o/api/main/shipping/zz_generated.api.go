@@ -118,6 +118,19 @@ func (h AggregateHandler) HandleShopUpdateFulfillmentInfo(ctx context.Context, m
 	return err
 }
 
+type UpdateFulfillmentCODCommand struct {
+	FulfillmentID  dot.ID
+	ShippingCode   string
+	TotalCODAmount dot.NullInt
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentCOD(ctx context.Context, msg *UpdateFulfillmentCODCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFulfillmentCOD(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateFulfillmentExternalShippingInfoCommand struct {
 	FulfillmentID             dot.ID
 	ShippingState             shipping.State
@@ -354,6 +367,7 @@ func (q *CancelFulfillmentCommand) command()                        {}
 func (q *CreateFulfillmentsCommand) command()                       {}
 func (q *RemoveFulfillmentsMoneyTxIDCommand) command()              {}
 func (q *ShopUpdateFulfillmentInfoCommand) command()                {}
+func (q *UpdateFulfillmentCODCommand) command()                     {}
 func (q *UpdateFulfillmentExternalShippingInfoCommand) command()    {}
 func (q *UpdateFulfillmentInfoCommand) command()                    {}
 func (q *UpdateFulfillmentShippingFeesCommand) command()            {}
@@ -483,6 +497,21 @@ func (q *ShopUpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoArgs(args *Up
 	q.GrossWeight = args.GrossWeight
 	q.TryOn = args.TryOn
 	q.ShippingNote = args.ShippingNote
+}
+
+func (q *UpdateFulfillmentCODCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentCODArgs) {
+	return ctx,
+		&UpdateFulfillmentCODArgs{
+			FulfillmentID:  q.FulfillmentID,
+			ShippingCode:   q.ShippingCode,
+			TotalCODAmount: q.TotalCODAmount,
+		}
+}
+
+func (q *UpdateFulfillmentCODCommand) SetUpdateFulfillmentCODArgs(args *UpdateFulfillmentCODArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingCode = args.ShippingCode
+	q.TotalCODAmount = args.TotalCODAmount
 }
 
 func (q *UpdateFulfillmentExternalShippingInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFfmExternalShippingInfoArgs) {
@@ -750,6 +779,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateFulfillments)
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleShopUpdateFulfillmentInfo)
+	b.AddHandler(h.HandleUpdateFulfillmentCOD)
 	b.AddHandler(h.HandleUpdateFulfillmentExternalShippingInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)

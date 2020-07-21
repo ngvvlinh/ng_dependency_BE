@@ -136,11 +136,11 @@ func (s *ShipmentService) UpdateFulfillmentCOD(ctx context.Context, q *api.Updat
 }
 
 func (s *ShipmentService) updateFulfillmentCOD(ctx context.Context, q *api.UpdateFulfillmentCODRequest) (*pbcm.UpdatedResponse, error) {
-	updateFulfillmentShippingFeesCmd := &shipping.UpdateFulfillmentShippingFeesCommand{
+	updateFulfillmentCODCmd := &shipping.UpdateFulfillmentCODCommand{
 		FulfillmentID:  q.FulfillmentID,
 		TotalCODAmount: dot.Int(q.CODAmount),
 	}
-	if err := s.ShippingAggregate.Dispatch(ctx, updateFulfillmentShippingFeesCmd); err != nil {
+	if err := s.ShippingAggregate.Dispatch(ctx, updateFulfillmentCODCmd); err != nil {
 		return nil, err
 	}
 	return &pbcm.UpdatedResponse{

@@ -471,6 +471,40 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 	return 1, nil
 }
 
+func (a *Aggregate) UpdateFulfillmentCOD(ctx context.Context, args *shipping.UpdateFulfillmentCODArgs) (updated int, _ error) {
+	if args.FulfillmentID == 0 && args.ShippingCode == "" {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
+	}
+	ffm, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).GetFfmDB()
+	if err != nil {
+		return 0, err
+	}
+	if ffm.MoneyTransactionID != 0 || ffm.MoneyTransactionShippingExternalID != 0 {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Đơn đã nằm trong phiên, không được chỉnh sửa")
+	}
+
+	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		ffm.ConnectionID = shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
+
+		ffm.TotalCODAmount = args.TotalCODAmount.Int
+
+		// case shipment: update ffm from carrier
+		if ffm.ConnectionID != 0 {
+			if err := a.shimentManager.UpdateFulfillmentCOD(ctx, ffm); err != nil {
+				return err
+			}
+		}
+
+		if _, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).UpdateFulfillmentCOD(args.TotalCODAmount.Int); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return 0, err
+	}
+	return 1, nil
+}
+
 func (a *Aggregate) UpdateFulfillmentsMoneyTxID(ctx context.Context, args *shipping.UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
 	if len(args.FulfillmentIDs) == 0 {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs").WithMetap("function", "UpdateFulfillmentsMoneyTxID")
