@@ -8,6 +8,7 @@ package carrier
 import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
+	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/backend/pkg/common/redis"
@@ -22,7 +23,8 @@ func MockManager(mockBus capi.Bus, eventBus capi.EventBus, redisStore redis.Stor
 	commandBus := connectioning.NewCommandBus(mockBus)
 	shipmentserviceQueryBus := shipmentservice.NewQueryBus(mockBus)
 	shipmentpriceQueryBus := shipmentprice.NewQueryBus(mockBus)
-	shipmentManager, err := NewShipmentManager(eventBus, queryBus, connectioningQueryBus, commandBus, redisStore, shipmentserviceQueryBus, shipmentpriceQueryBus, cfg)
+	pricelistpromotionQueryBus := pricelistpromotion.NewQueryBus(mockBus)
+	shipmentManager, err := NewShipmentManager(eventBus, queryBus, connectioningQueryBus, commandBus, redisStore, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, cfg)
 	if err != nil {
 		return nil, err
 	}

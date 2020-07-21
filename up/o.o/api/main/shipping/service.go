@@ -26,6 +26,8 @@ type Aggregate interface {
 
 	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesArgs) (updated int, err error)
 
+	UpdateFulfillmentCODAmount(context.Context, *UpdateFulfillmentCODAmountArgs) error
+
 	UpdateFulfillmentsMoneyTxID(context.Context, *UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error)
 
 	UpdateFulfillmentsCODTransferedAt(context.Context, *UpdateFulfillmentsCODTransferedAtArgs) error
@@ -144,8 +146,18 @@ type UpdateFulfillmentShippingFeesArgs struct {
 	ShippingCode             string
 	ProviderShippingFeeLines []*ShippingFeeLine
 	ShippingFeeLines         []*ShippingFeeLine
-	TotalCODAmount           dot.NullInt
-	UpdatedBy                dot.ID
+	// @deprecated TotalCODAmount
+	TotalCODAmount dot.NullInt
+	UpdatedBy      dot.ID
+}
+
+type UpdateFulfillmentCODAmountArgs struct {
+	FulfillmentID     dot.ID
+	ShippingCode      string
+	TotalCODAmount    dot.NullInt
+	IsPartialDelivery dot.NullBool
+	AdminNote         string
+	UpdatedBy         dot.ID
 }
 
 type ShopUpdateFulfillmentCODArgs struct {

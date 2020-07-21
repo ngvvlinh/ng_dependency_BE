@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
+	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/backend/pkg/common/redis"
@@ -25,6 +26,7 @@ func MockManager(
 		connectioning.NewCommandBus,
 		shipmentservice.NewQueryBus,
 		shipmentprice.NewQueryBus,
+		pricelistpromotion.NewQueryBus,
 		NewShipmentManager,
 	))
 }

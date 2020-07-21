@@ -132,6 +132,22 @@ func (h AggregateHandler) HandleShopUpdateFulfillmentInfo(ctx context.Context, m
 	return err
 }
 
+type UpdateFulfillmentCODAmountCommand struct {
+	FulfillmentID     dot.ID
+	ShippingCode      string
+	TotalCODAmount    dot.NullInt
+	IsPartialDelivery dot.NullBool
+	AdminNote         string
+	UpdatedBy         dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentCODAmount(ctx context.Context, msg *UpdateFulfillmentCODAmountCommand) (err error) {
+	return h.inner.UpdateFulfillmentCODAmount(msg.GetArgs(ctx))
+}
+
 type UpdateFulfillmentExternalShippingInfoCommand struct {
 	FulfillmentID             dot.ID
 	ShippingState             shipping.State
@@ -369,6 +385,7 @@ func (q *CreateFulfillmentsCommand) command()                       {}
 func (q *RemoveFulfillmentsMoneyTxIDCommand) command()              {}
 func (q *ShopUpdateFulfillmentCODCommand) command()                 {}
 func (q *ShopUpdateFulfillmentInfoCommand) command()                {}
+func (q *UpdateFulfillmentCODAmountCommand) command()               {}
 func (q *UpdateFulfillmentExternalShippingInfoCommand) command()    {}
 func (q *UpdateFulfillmentInfoCommand) command()                    {}
 func (q *UpdateFulfillmentShippingFeesCommand) command()            {}
@@ -515,6 +532,27 @@ func (q *ShopUpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoArgs(args *Up
 	q.GrossWeight = args.GrossWeight
 	q.TryOn = args.TryOn
 	q.ShippingNote = args.ShippingNote
+}
+
+func (q *UpdateFulfillmentCODAmountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentCODAmountArgs) {
+	return ctx,
+		&UpdateFulfillmentCODAmountArgs{
+			FulfillmentID:     q.FulfillmentID,
+			ShippingCode:      q.ShippingCode,
+			TotalCODAmount:    q.TotalCODAmount,
+			IsPartialDelivery: q.IsPartialDelivery,
+			AdminNote:         q.AdminNote,
+			UpdatedBy:         q.UpdatedBy,
+		}
+}
+
+func (q *UpdateFulfillmentCODAmountCommand) SetUpdateFulfillmentCODAmountArgs(args *UpdateFulfillmentCODAmountArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingCode = args.ShippingCode
+	q.TotalCODAmount = args.TotalCODAmount
+	q.IsPartialDelivery = args.IsPartialDelivery
+	q.AdminNote = args.AdminNote
+	q.UpdatedBy = args.UpdatedBy
 }
 
 func (q *UpdateFulfillmentExternalShippingInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFfmExternalShippingInfoArgs) {
@@ -783,6 +821,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleShopUpdateFulfillmentCOD)
 	b.AddHandler(h.HandleShopUpdateFulfillmentInfo)
+	b.AddHandler(h.HandleUpdateFulfillmentCODAmount)
 	b.AddHandler(h.HandleUpdateFulfillmentExternalShippingInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)

@@ -152,18 +152,3 @@ type UpdateFulfillmentsShippingStateCommand struct {
 		Updated int
 	}
 }
-
-type AdminUpdateFulfillmentCommand struct {
-	FulfillmentID            dot.ID
-	FullName                 string
-	Phone                    string
-	TotalCODAmount           dot.NullInt
-	IsPartialDelivery        bool
-	AdminNote                string
-	ActualCompensationAmount int
-	ShippingState            shipping.NullState
-
-	Result struct {
-		Updated int
-	}
-}

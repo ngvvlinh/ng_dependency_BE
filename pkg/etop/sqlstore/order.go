@@ -10,7 +10,6 @@ import (
 
 	"o.o/api/main/location"
 	"o.o/api/main/shipnow"
-	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -61,7 +60,6 @@ func init() {
 		UpdateOrderPaymentStatus,
 		GetUnCompleteFulfillments,
 		UpdateFulfillmentsWithoutTransaction,
-		AdminUpdateFulfillment,
 		UpdateOrderShippingInfo,
 	)
 }
@@ -1322,82 +1320,6 @@ func canUpdateFulfillment(ffm *shipmodel.Fulfillment) (bool, error) {
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã thuộc phiên chuyển tiền nhà vận chuyển").WithMetap("money_transaction_shipping_external_id", ffm.MoneyTransactionShippingExternalID)
 	}
 	return true, nil
-}
-
-func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulfillmentCommand) error {
-	if cmd.FulfillmentID == 0 {
-		return cm.Error(cm.InvalidArgument, "Thiếu ID đơn vận chuyển", nil)
-	}
-	if cmd.AdminNote == "" {
-		return cm.Error(cm.InvalidArgument, "Ghi chú chỉnh sửa không được để trống", nil)
-	}
-	query := &shipmodelx.GetFulfillmentExtendedQuery{
-		FulfillmentID: cmd.FulfillmentID,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	if ok, err := canUpdateOrder(query.Result.Order); err != nil || !ok {
-		return err
-	}
-	ffm := query.Result.Fulfillment
-	if ok, err := canUpdateFulfillment(ffm); err != nil || !ok {
-		return err
-	}
-	updateFfm := &shipmodel.Fulfillment{
-		ID:        ffm.ID,
-		AdminNote: cmd.AdminNote,
-	}
-
-	if cmd.ActualCompensationAmount != 0 {
-		if ffm.ShippingState != shipping.Undeliverable &&
-			cmd.ShippingState.Apply(shipping.Unknown) != shipping.Undeliverable {
-			return cm.Error(cm.FailedPrecondition, "Chỉ cập nhật ActualCompensationAmount khi đơn vận chuyển không giao được hàng.", nil)
-		} else {
-			updateFfm.ActualCompensationAmount = cmd.ActualCompensationAmount
-		}
-	}
-	if cmd.ShippingState.Valid {
-		state := cmd.ShippingState.Apply(shipping.Unknown)
-		if ffm.ShippingState != shipping.Undeliverable && state != shipping.Undeliverable {
-			return cm.Error(cm.PermissionDenied, "Chỉ được cập nhật sang trạng thái không giao được hàng", nil)
-		}
-		updateFfm.ShippingState = state
-	}
-
-	updateFfmMap := M{}
-	updateOrderMap := M{}
-	if cmd.TotalCODAmount.Valid {
-		updateFfmMap["total_cod_amount"] = cmd.TotalCODAmount
-		if cmd.IsPartialDelivery {
-			updateFfmMap["is_partial_delivery"] = true
-		} else {
-			updateOrderMap["shop_cod"] = cmd.TotalCODAmount
-		}
-	}
-
-	updateFfm.AddressTo = ffm.AddressTo.UpdateAddress(cmd.Phone, cmd.FullName)
-
-	return inTransaction(func(s Qx) error {
-		if err := s.Table("fulfillment").Where("id = ?", ffm.ID).
-			Where("status = 0 OR status = 2 OR status IS NULL").ShouldUpdate(updateFfm); err != nil {
-			return err
-		}
-		if len(updateFfmMap) > 0 {
-			if _, err := s.Table("fulfillment").Where("id = ?", ffm.ID).
-				Where("status = 0 OR status = 2 OR status IS NULL").UpdateMap(updateFfmMap); err != nil {
-				return err
-			}
-		}
-		if len(updateOrderMap) > 0 {
-			if _, err := s.Table("order").Where("id = ?", ffm.OrderID).
-				Where("status = 0 OR status = 2 OR status IS NULL").UpdateMap(updateOrderMap); err != nil {
-				return err
-			}
-		}
-		cmd.Result.Updated = 1
-		return nil
-	})
 }
 
 func GenerateVtpostShippingCode() (string, error) {

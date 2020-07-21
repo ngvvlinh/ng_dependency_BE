@@ -65,6 +65,7 @@ import (
 	pm9 "o.o/backend/com/main/refund/pm"
 	query11 "o.o/backend/com/main/refund/query"
 	"o.o/backend/com/main/shipmentpricing/pricelist"
+	"o.o/backend/com/main/shipmentpricing/pricelistpromotion"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice"
 	"o.o/backend/com/main/shipmentpricing/shopshipmentpricelist"
@@ -316,8 +317,10 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	shopshipmentpricelistQueryBus := shopshipmentpricelist.QueryServiceMessageBus(shopshipmentpricelistQueryService)
 	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, store, locationQueryBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
+	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, locationQueryBus, queryBus)
+	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
 	carrierConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
-	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, carrierConfig)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, carrierConfig)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
@@ -509,6 +512,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	pricelistCommandBus := pricelist.AggregateMessageBus(pricelistAggregate)
 	shopshipmentpricelistAggregate := shopshipmentpricelist.NewAggregate(mainDB, pricelistQueryBus)
 	shopshipmentpricelistCommandBus := shopshipmentpricelist.AggregateMessageBus(shopshipmentpricelistAggregate)
+	pricelistpromotionAggregate := pricelistpromotion.NewAggregate(mainDB)
+	pricelistpromotionCommandBus := pricelistpromotion.AggregateMessageBus(pricelistpromotionAggregate)
 	shipmentPriceService := admin.ShipmentPriceService{
 		Session:                    session,
 		ShipmentManager:            shipmentManager,
@@ -520,6 +525,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		ShipmentPriceListQuery:     pricelistQueryBus,
 		ShopShipmentPriceListQuery: shopshipmentpricelistQueryBus,
 		ShopShipmentPriceListAggr:  shopshipmentpricelistCommandBus,
+		PriceListPromotionQuery:    pricelistpromotionQueryBus,
+		PriceListPromotionAggr:     pricelistpromotionCommandBus,
 	}
 	locationAggregate := location.NewAggregate(mainDB)
 	locationCommandBus := location.AggregateMessageBus(locationAggregate)

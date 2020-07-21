@@ -2,6 +2,7 @@ package convertpb
 
 import (
 	"o.o/api/main/shipmentpricing/pricelist"
+	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
@@ -359,6 +360,58 @@ func PbShopShipmentPriceLists(items []*shopshipmentpricelist.ShopShipmentPriceLi
 	result := make([]*admin.ShopShipmentPriceList, len(items))
 	for i, item := range items {
 		result[i] = PbShopShipmentPriceList(item)
+	}
+	return result
+}
+
+func Convert_core_PriceListPromotion_To_api_PriceListPromotion(in *pricelistpromotion.ShipmentPriceListPromotion) *admin.ShipmentPriceListPromotion {
+	if in == nil {
+		return nil
+	}
+	return &admin.ShipmentPriceListPromotion{
+		ID:            in.ID,
+		PriceListID:   in.PriceListID,
+		Name:          in.Name,
+		Description:   in.Description,
+		Status:        in.Status,
+		DateFrom:      in.DateFrom,
+		DateTo:        in.DateTo,
+		AppliedRules:  Convert_core_PriceListPromotionAppliedRules_To_api_PriceListPromotionAppliedRules(in.AppliedRules),
+		CreatedAt:     in.CreatedAt,
+		UpdatedAt:     in.UpdatedAt,
+		ConnectionID:  in.ConnectionID,
+		PriorityPoint: in.PriorityPoint,
+	}
+}
+
+func Convert_core_PriceListPromotionAppliedRules_To_api_PriceListPromotionAppliedRules(in *pricelistpromotion.AppliedRules) *admin.PriceListPromotionAppliedRules {
+	if in == nil {
+		return nil
+	}
+	return &admin.PriceListPromotionAppliedRules{
+		FromCustomRegionIDs: in.FromCustomRegionIDs,
+		ShopCreatedDate:     in.ShopCreatedDate,
+		UserCreatedDate:     in.UserCreatedDate,
+		UsingPriceListIDs:   in.UsingPriceListIDs,
+	}
+}
+
+func Convert_api_PriceListPromotionAppliedRules_To_core_PriceListPromotionAppliedRules(in *admin.PriceListPromotionAppliedRules) *pricelistpromotion.AppliedRules {
+	if in == nil {
+		return nil
+	}
+	return &pricelistpromotion.AppliedRules{
+		FromCustomRegionIDs: in.FromCustomRegionIDs,
+		ShopCreatedDate:     in.ShopCreatedDate,
+		UserCreatedDate:     in.UserCreatedDate,
+		UsingPriceListIDs:   in.UsingPriceListIDs,
+	}
+}
+
+func Convert_core_PriceListPromotions_To_api_PriceListPromotions(items []*pricelistpromotion.ShipmentPriceListPromotion) []*admin.ShipmentPriceListPromotion {
+	result := make([]*admin.ShipmentPriceListPromotion, len(items))
+	for i, item := range items {
+		result[i] = Convert_core_PriceListPromotion_To_api_PriceListPromotion(item)
 	}
 	return result
 }

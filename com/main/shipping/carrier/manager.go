@@ -12,6 +12,7 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
 	"o.o/api/main/ordering"
+	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/main/shipping"
@@ -62,20 +63,22 @@ var (
 const (
 	DefaultTTl            = 2 * 60 * 60
 	SecretKey             = "connectionsecretkey"
-	VersionCaching        = "0.1.9"
+	VersionCaching        = "1.1"
 	PrefixMakeupPriceCode = "###"
 )
 
 type ShipmentManager struct {
-	LocationQS             location.QueryBus
-	ConnectionQS           connectioning.QueryBus
-	connectionAggr         connectioning.CommandBus
-	Env                    string
-	redisStore             redis.Store
-	cipherx                *cipherx.Cipherx
-	shipmentServiceQS      shipmentservice.QueryBus
-	shipmentPriceQS        shipmentprice.QueryBus
-	shippingQS             shipping.QueryBus
+	LocationQS           location.QueryBus
+	ConnectionQS         connectioning.QueryBus
+	connectionAggr       connectioning.CommandBus
+	Env                  string
+	redisStore           redis.Store
+	cipherx              *cipherx.Cipherx
+	shipmentServiceQS    shipmentservice.QueryBus
+	shipmentPriceQS      shipmentprice.QueryBus
+	shippingQS           shipping.QueryBus
+	priceListPromotionQS pricelistpromotion.QueryBus
+
 	FlagApplyShipmentPrice bool
 	eventBus               capi.EventBus
 }
@@ -97,19 +100,21 @@ func NewShipmentManager(
 	redisS redis.Store,
 	shipmentServiceQS shipmentservice.QueryBus,
 	shipmentPriceQS shipmentprice.QueryBus,
+	priceListPromotionQS pricelistpromotion.QueryBus,
 	cfg Config,
 ) (*ShipmentManager, error) {
 	_cipherx, _ := cipherx.NewCipherx(SecretKey)
 	sm := &ShipmentManager{
-		eventBus:          eventBus,
-		LocationQS:        locationQS,
-		ConnectionQS:      connectionQS,
-		connectionAggr:    connectionAggr,
-		Env:               cmenv.PartnerEnv(),
-		redisStore:        redisS,
-		cipherx:           _cipherx,
-		shipmentServiceQS: shipmentServiceQS,
-		shipmentPriceQS:   shipmentPriceQS,
+		eventBus:             eventBus,
+		LocationQS:           locationQS,
+		ConnectionQS:         connectionQS,
+		connectionAggr:       connectionAggr,
+		Env:                  cmenv.PartnerEnv(),
+		redisStore:           redisS,
+		cipherx:              _cipherx,
+		shipmentServiceQS:    shipmentServiceQS,
+		shipmentPriceQS:      shipmentPriceQS,
+		priceListPromotionQS: priceListPromotionQS,
 	}
 	for _, endpoint := range cfg.Endpoints {
 		err := sm.setWebhookEndpoint(endpoint.Provider, endpoint.Endpoint)
@@ -357,6 +362,9 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	// update shipping service name
 	ffmToUpdate.ShippingServiceName = providerService.Name
 
+	if providerService.ShipmentPriceInfo != nil {
+		ffmToUpdate.ShipmentPriceListID = providerService.ShipmentPriceInfo.ShipmentPriceListID
+	}
 	if isMakeupPrice {
 		ffmToUpdate.ApplyEtopPrice(makeupPriceMain)
 		ffmToUpdate.ShippingFeeShopLines = providerService.ShippingFeeLines
@@ -971,6 +979,7 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 	if args.IncludeInsurance {
 		addFeeTypes = append(addFeeTypes, shipping_fee_type.Insurance)
 	}
+
 	query := &shipmentprice.CalculateShippingFeesQuery{
 		AccountID:           args.AccountID,
 		ShipmentPriceListID: args.ShipmentPriceListID,
@@ -983,6 +992,17 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 		CODAmount:           args.CODAmount,
 		AdditionalFeeTypes:  addFeeTypes,
 	}
+
+	// get pricelist promotion
+	queryPromotion := &GetPriceListPromotionArgs{
+		ShopID:           args.AccountID,
+		FromProvinceCode: args.FromProvinceCode,
+		ConnectionID:     service.ConnectionInfo.ID,
+	}
+	if promotionPriceListID, err := m.getPromotionPriceListID(ctx, queryPromotion); err == nil {
+		query.PromotionPriceListID = promotionPriceListID
+	}
+
 	if err := m.shipmentPriceQS.Dispatch(ctx, query); err != nil {
 		return err
 	}
@@ -994,11 +1014,25 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 	service.ShippingFeeLines = feeLines
 	service.ShippingFeeMain = shippingsharemodel.GetMainFee(feeLines)
 	service.ShipmentPriceInfo = &shippingsharemodel.ShipmentPriceInfo{
-		ID:        calcShippingFeesRes.ShipmentPriceID,
-		OriginFee: originFee,
-		MakeupFee: calcShippingFeesRes.TotalFee,
+		ID:                  calcShippingFeesRes.ShipmentPriceID,
+		ShipmentPriceListID: calcShippingFeesRes.ShipmentPriceListID,
+		OriginFee:           originFee,
+		MakeupFee:           calcShippingFeesRes.TotalFee,
 	}
 	return nil
+}
+
+func (m *ShipmentManager) getPromotionPriceListID(ctx context.Context, args *GetPriceListPromotionArgs) (priceListID dot.ID, _ error) {
+	query := &pricelistpromotion.GetValidPriceListPromotionQuery{
+		ShopID:           args.ShopID,
+		FromProvinceCode: args.FromProvinceCode,
+		ConnectionID:     args.ConnectionID,
+	}
+	if err := m.priceListPromotionQS.Dispatch(ctx, query); err != nil {
+		return 0, err
+	}
+
+	return query.Result.PriceListID, nil
 }
 
 type CalcMakeupShippingFeesByFfmArgs struct {
@@ -1043,17 +1077,18 @@ func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, args 
 		addFeeTypes = append(addFeeTypes, shipping_fee_type.Return)
 	}
 	query := &shipmentprice.CalculateShippingFeesQuery{
-		AccountID:          ffm.ShopID,
-		FromDistrictCode:   ffm.AddressFrom.DistrictCode,
-		FromProvinceCode:   ffm.AddressFrom.ProvinceCode,
-		ToDistrictCode:     ffm.AddressTo.DistrictCode,
-		ToProvinceCode:     ffm.AddressTo.ProvinceCode,
-		ShipmentServiceID:  shipmentService.ID,
-		ConnectionID:       connectionID,
-		Weight:             cm.CoalesceInt(args.Weight, ffm.TotalWeight),
-		BasketValue:        ffm.BasketValue,
-		CODAmount:          ffm.TotalCODAmount,
-		AdditionalFeeTypes: addFeeTypes,
+		AccountID:           ffm.ShopID,
+		ShipmentPriceListID: ffm.ShipmentPriceListID,
+		FromDistrictCode:    ffm.AddressFrom.DistrictCode,
+		FromProvinceCode:    ffm.AddressFrom.ProvinceCode,
+		ToDistrictCode:      ffm.AddressTo.DistrictCode,
+		ToProvinceCode:      ffm.AddressTo.ProvinceCode,
+		ShipmentServiceID:   shipmentService.ID,
+		ConnectionID:        connectionID,
+		Weight:              cm.CoalesceInt(args.Weight, ffm.TotalWeight),
+		BasketValue:         ffm.BasketValue,
+		CODAmount:           ffm.TotalCODAmount,
+		AdditionalFeeTypes:  addFeeTypes,
 	}
 	if err := m.shipmentPriceQS.Dispatch(ctx, query); err != nil {
 		return nil, err

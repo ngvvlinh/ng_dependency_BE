@@ -194,19 +194,6 @@ type UnblockUserRequest struct {
 
 func (m *UnblockUserRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type UpdateFulfillmentRequest struct {
-	Id                       dot.ID             `json:"id"`
-	FullName                 string             `json:"full_name"`
-	Phone                    string             `json:"phone"`
-	TotalCodAmount           dot.NullInt        `json:"total_cod_amount"`
-	IsPartialDelivery        bool               `json:"is_partial_delivery"`
-	AdminNote                string             `json:"admin_note"`
-	ActualCompensationAmount int                `json:"actual_compensation_amount"`
-	ShippingState            shipping.NullState `json:"shipping_state"`
-}
-
-func (m *UpdateFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
-
 type UpdateFulfillmentInfoRequest struct {
 	ID           dot.ID         `json:"id"`
 	ShippingCode string         `json:"shipping_code"`
@@ -322,6 +309,7 @@ type UpdateFulfillmentShippingStateRequest struct {
 	ShippingCode             string         `json:"shipping_code"`
 	ShippingState            shipping.State `json:"shipping_state"`
 	ActualCompensationAmount dot.NullInt    `json:"actual_compensation_amount"`
+	AdminNote                string         `json:"admin_note"`
 }
 
 func (m *UpdateFulfillmentShippingStateRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -330,10 +318,21 @@ type UpdateFulfillmentShippingFeesRequest struct {
 	ID               dot.ID                   `json:"id"`
 	ShippingCode     string                   `json:"shipping_code"`
 	ShippingFeeLines []*types.ShippingFeeLine `json:"shipping_fee_lines"`
-	TotalCODAmount   dot.NullInt              `json:"total_cod_amount"`
+	// @deprecated TotalCODAmount
+	TotalCODAmount dot.NullInt `json:"total_cod_amount"`
 }
 
 func (m *UpdateFulfillmentShippingFeesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateFulfillmentCODAmountRequest struct {
+	ID                dot.ID       `json:"id"`
+	ShippingCode      string       `json:"shipping_code"`
+	TotalCODAmount    dot.NullInt  `json:"total_cod_amount"`
+	IsPartialDelivery dot.NullBool `json:"is_partial_delivery"`
+	AdminNote         string       `json:"admin_note"`
+}
+
+func (m *UpdateFulfillmentCODAmountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AddShippingFeeRequest struct {
 	ID              dot.ID                            `json:"id"`
@@ -727,6 +726,79 @@ type UpdateShopShipmentPriceListRequest struct {
 }
 
 func (m *UpdateShopShipmentPriceListRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShipmentPriceListPromotion struct {
+	ID            dot.ID                          `json:"id"`
+	PriceListID   dot.ID                          `json:"price_list_id"`
+	Name          string                          `json:"name"`
+	Description   string                          `json:"description"`
+	Status        status3.Status                  `json:"status"`
+	DateFrom      time.Time                       `json:"date_from"`
+	DateTo        time.Time                       `json:"date_to"`
+	AppliedRules  *PriceListPromotionAppliedRules `json:"applied_rules"`
+	CreatedAt     time.Time                       `json:"created_at"`
+	UpdatedAt     time.Time                       `json:"updated_at"`
+	ConnectionID  dot.ID                          `json:"connection_id"`
+	PriorityPoint int                             `json:"priority_point"`
+}
+
+func (m *ShipmentPriceListPromotion) String() string { return jsonx.MustMarshalToString(m) }
+
+type PriceListPromotionAppliedRules struct {
+	// apply cho những đơn có điểm lấy hàng nằm trong vùng tự định nghĩa này
+	FromCustomRegionIDs []dot.ID `json:"from_custom_region_ids"`
+	// apply cho những shop có ngày tạo trong khoảng này
+	ShopCreatedDate filter.Date `json:"shop_created_date"`
+	// apply cho những user có ngày tạo trong khoảng này
+	UserCreatedDate filter.Date `json:"user_created_date"`
+	// apply cho những shop đang xài bảng giá này
+	UsingPriceListIDs []dot.ID `json:"using_price_list_ids"`
+}
+
+func (m *PriceListPromotionAppliedRules) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetShipmentPriceListPromotionsRequest struct {
+	ShipmentPriceListID dot.ID `json:"shipment_price_list_id"`
+	ConnectionID        dot.ID `json:"connection_id"`
+}
+
+func (m *GetShipmentPriceListPromotionsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetShipmentPriceListPromotionsResponse struct {
+	ShipmentPriceListPromotions []*ShipmentPriceListPromotion `json:"shipment_price_list_promotions"`
+}
+
+func (m *GetShipmentPriceListPromotionsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateShipmentPriceListPromotionRequest struct {
+	PriceListID   dot.ID                          `json:"price_list_id"`
+	Name          string                          `json:"name"`
+	Description   string                          `json:"description"`
+	ConnectionID  dot.ID                          `json:"connection_id"`
+	DateFrom      time.Time                       `json:"date_from"`
+	DateTo        time.Time                       `json:"date_to"`
+	AppliedRules  *PriceListPromotionAppliedRules `json:"applied_rules"`
+	PriorityPoint int                             `json:"priority_point"`
+}
+
+func (m *CreateShipmentPriceListPromotionRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type UpdateShipmentPriceListPromotionRequest struct {
+	ID            dot.ID                          `json:"id"`
+	Name          string                          `json:"name"`
+	Description   string                          `json:"description"`
+	DateFrom      time.Time                       `json:"date_from"`
+	DateTo        time.Time                       `json:"date_to"`
+	AppliedRules  *PriceListPromotionAppliedRules `json:"applied_rules"`
+	PriorityPoint int                             `json:"priority_point"`
+	Status        status3.NullStatus              `json:"status"`
+}
+
+func (m *UpdateShipmentPriceListPromotionRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type UserResponse struct {
 	Users  []*etop.User           `json:"users"`

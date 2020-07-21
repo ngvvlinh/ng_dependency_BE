@@ -38,19 +38,10 @@ type OrderService interface {
 type FulfillmentService interface {
 	GetFulfillment(context.Context, *cm.IDRequest) (*types.Fulfillment, error)
 	GetFulfillments(context.Context, *GetFulfillmentsRequest) (*types.FulfillmentsResponse, error)
-
-	// UpdateFulfillment
-	//
-	// `shipping_state`
-	//
-	// Only update from any state to `undeliverable`
-	// Or update from `undeliverable`to any state
-	UpdateFulfillment(context.Context, *UpdateFulfillmentRequest) (*cm.UpdatedResponse, error)
 	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoRequest) (*cm.UpdatedResponse, error)
-
 	UpdateFulfillmentShippingState(context.Context, *UpdateFulfillmentShippingStateRequest) (*cm.UpdatedResponse, error)
 	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesRequest) (*cm.UpdatedResponse, error)
-
+	UpdateFulfillmentCODAmount(context.Context, *UpdateFulfillmentCODAmountRequest) (*cm.UpdatedResponse, error)
 	AddShippingFee(context.Context, *AddShippingFeeRequest) (*cm.UpdatedResponse, error)
 }
 
@@ -150,6 +141,12 @@ type ShipmentPriceService interface {
 	CreateShopShipmentPriceList(context.Context, *CreateShopShipmentPriceList) (*ShopShipmentPriceList, error)
 	UpdateShopShipmentPriceList(context.Context, *UpdateShopShipmentPriceListRequest) (*cm.UpdatedResponse, error)
 	DeleteShopShipmentPriceList(context.Context, *GetShopShipmentPriceListRequest) (*cm.DeletedResponse, error)
+
+	GetShipmentPriceListPromotions(context.Context, *GetShipmentPriceListPromotionsRequest) (*GetShipmentPriceListPromotionsResponse, error)
+	GetShipmentPriceListPromotion(context.Context, *cm.IDRequest) (*ShipmentPriceListPromotion, error)
+	CreateShipmentPriceListPromotion(context.Context, *CreateShipmentPriceListPromotionRequest) (*ShipmentPriceListPromotion, error)
+	UpdateShipmentPriceListPromotion(context.Context, *UpdateShipmentPriceListPromotionRequest) (*cm.UpdatedResponse, error)
+	DeleteShipmentPriceListPromotion(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/admin.Location

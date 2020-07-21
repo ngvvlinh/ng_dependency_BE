@@ -132,7 +132,8 @@ type Fulfillment struct {
 	// EtopAdjustedShippingFeeMain: eTop điều chỉnh cước phí chính
 	EtopAdjustedShippingFeeMain int
 	// EtopPriceRule: true khi áp dụng bảng giá eTop, với giá `EtopAdjustedShippingFeeMain`
-	EtopPriceRule bool
+	EtopPriceRule       bool
+	ShipmentPriceListID dot.ID
 }
 
 type FulfillmentSyncStates struct {

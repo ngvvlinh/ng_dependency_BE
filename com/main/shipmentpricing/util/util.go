@@ -1,6 +1,6 @@
 package util
 
 const (
-	VersionCaching = "1.0.4"
+	VersionCaching = "1.1"
 	DefaultTTL     = 24 * 60 * 60
 )

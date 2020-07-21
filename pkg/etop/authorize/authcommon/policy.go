@@ -212,6 +212,11 @@ const adminPolicy = `
 	p, admin/shipment_price_list:update, admin, ad_salelead
 	p, admin/shipment_price_list:delete, admin, ad_salelead
 	p, admin/shipment_price_list:view, admin, ad_salelead
+	# shipment price list promotion
+	p, admin/shipment_price_list_promotion:create, admin, ad_salelead
+	p, admin/shipment_price_list_promotion:update, admin, ad_salelead
+	p, admin/shipment_price_list_promotion:delete, admin, ad_salelead
+	p, admin/shipment_price_list_promotion:view, admin, ad_salelead
 	# shipment price
 	p, admin/shipment_price:create, admin, ad_salelead
 	p, admin/shipment_price:update, admin, ad_salelead

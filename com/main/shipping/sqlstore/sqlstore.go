@@ -300,16 +300,17 @@ func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateF
 	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
 }
 
-type UpdateFulfillmentCODArgs struct {
-	CODAmount int
-	UpdatedBy dot.ID
-}
-
-func (s *FulfillmentStore) UpdateFulfillmentCOD(args UpdateFulfillmentCODArgs) (updated int, _ error) {
+func (s *FulfillmentStore) UpdateFulfillmentCOD(args *shipping.UpdateFulfillmentCODAmountArgs) (int, error) {
 	query := s.query().Where(s.preds)
 	update := map[string]interface{}{
-		"total_cod_amount": args.CODAmount,
+		"total_cod_amount": args.TotalCODAmount.Int,
 		"updated_by":       args.UpdatedBy,
+	}
+	if args.IsPartialDelivery.Valid {
+		update["is_partial_delivery"] = args.IsPartialDelivery.Bool
+	}
+	if args.AdminNote != "" {
+		update["admin_note"] = args.AdminNote
 	}
 	return query.Table("fulfillment").UpdateMap(update)
 }

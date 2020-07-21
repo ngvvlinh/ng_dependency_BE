@@ -299,6 +299,12 @@ const (
 	AdminShipmentPriceListDelete permission.ActionType = "admin/shipment_price_list:delete"
 	AdminShipmentPriceListView   permission.ActionType = "admin/shipment_price_list:view"
 
+	// Admin ShipmentPrice List Promotion
+	AdminShipmentPriceListPromotionCreate permission.ActionType = "admin/shipment_price_list_promotion:create"
+	AdminShipmentPriceListPromotionUpdate permission.ActionType = "admin/shipment_price_list_promotion:update"
+	AdminShipmentPriceListPromotionDelete permission.ActionType = "admin/shipment_price_list_promotion:delete"
+	AdminShipmentPriceListPromotionView   permission.ActionType = "admin/shipment_price_list_promotion:view"
+
 	// Admin ShipmentPrice
 	AdminShipmentPriceCreate permission.ActionType = "admin/shipment_price:create"
 	AdminShipmentPriceUpdate permission.ActionType = "admin/shipment_price:update"
@@ -643,6 +649,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.Fulfillment/GetFulfillments":                {Type: EtopAdmin, Actions: actions(AdminFulfillmentView)},
 	"admin.Fulfillment/UpdateFulfillment":              {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)}, // deprecated
 	"admin.Fulfillment/UpdateFulfillmentInfo":          {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
+	"admin.Fulfillment/UpdateFulfillmentCODAmount":     {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
 	"admin.Fulfillment/UpdateFulfillmentShippingState": {Type: EtopAdmin, Actions: actions(AdminFulfillmentImportantInfoUpdate)},
 	"admin.Fulfillment/UpdateFulfillmentShippingFees":  {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
 	"admin.Fulfillment/AddShippingFee":                 {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
@@ -700,6 +707,12 @@ var _acl = map[string]*permission.Decl{
 	"admin.ShipmentPrice/UpdateShipmentPriceList":     {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListUpdate)},
 	"admin.ShipmentPrice/SetDefaultShipmentPriceList": {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListUpdate)},
 	"admin.ShipmentPrice/DeleteShipmentPriceList":     {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListDelete)},
+
+	"admin.ShipmentPrice/GetShipmentPriceListPromotions":   {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListPromotionView)},
+	"admin.ShipmentPrice/GetShipmentPriceListPromotion":    {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListPromotionView)},
+	"admin.ShipmentPrice/CreateShipmentPriceListPromotion": {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListPromotionCreate)},
+	"admin.ShipmentPrice/UpdateShipmentPriceListPromotion": {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListPromotionUpdate)},
+	"admin.ShipmentPrice/DeleteShipmentPriceListPromotion": {Type: EtopAdmin, Actions: actions(AdminShipmentPriceListPromotionDelete)},
 
 	"admin.ShipmentPrice/GetShipmentPrice":                  {Type: EtopAdmin, Actions: actions(AdminShipmentPriceView)},
 	"admin.ShipmentPrice/GetShipmentPrices":                 {Type: EtopAdmin, Actions: actions(AdminShipmentPriceView)},

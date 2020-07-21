@@ -97,3 +97,9 @@ func (a *GetShippingServicesArgs) ToShipmentServiceArgs(arbitraryID, accountID d
 		Coupon:           a.Coupon,
 	}
 }
+
+type GetPriceListPromotionArgs struct {
+	ShopID           dot.ID
+	FromProvinceCode string
+	ConnectionID     dot.ID
+}

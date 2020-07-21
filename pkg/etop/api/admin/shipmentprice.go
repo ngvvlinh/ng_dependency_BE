@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/shipmentpricing/pricelist"
+	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
@@ -29,6 +30,8 @@ type ShipmentPriceService struct {
 	ShipmentPriceListQuery     pricelist.QueryBus
 	ShopShipmentPriceListQuery shopshipmentpricelist.QueryBus
 	ShopShipmentPriceListAggr  shopshipmentpricelist.CommandBus
+	PriceListPromotionQuery    pricelistpromotion.QueryBus
+	PriceListPromotionAggr     pricelistpromotion.CommandBus
 }
 
 func (s *ShipmentPriceService) Clone() admin.ShipmentPriceService {
@@ -417,3 +420,72 @@ func (s *ShipmentPriceService) GetShippingServices(ctx context.Context, r *admin
 	}
 	return result, nil
 }
+
+//-- Shipment Price List Promotion --//
+
+func (s *ShipmentPriceService) GetShipmentPriceListPromotions(ctx context.Context, r *admin.GetShipmentPriceListPromotionsRequest) (*admin.GetShipmentPriceListPromotionsResponse, error) {
+	query := &pricelistpromotion.ListPriceListPromotionQuery{}
+	if err := s.PriceListPromotionQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	var res = &admin.GetShipmentPriceListPromotionsResponse{
+		ShipmentPriceListPromotions: convertpb.Convert_core_PriceListPromotions_To_api_PriceListPromotions(query.Result),
+	}
+	return res, nil
+}
+
+func (s *ShipmentPriceService) GetShipmentPriceListPromotion(ctx context.Context, r *pbcm.IDRequest) (*admin.ShipmentPriceListPromotion, error) {
+	query := &pricelistpromotion.GetPriceListPromotionQuery{
+		ID: r.Id,
+	}
+	if err := s.PriceListPromotionQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	return convertpb.Convert_core_PriceListPromotion_To_api_PriceListPromotion(query.Result), nil
+}
+
+func (s *ShipmentPriceService) CreateShipmentPriceListPromotion(ctx context.Context, r *admin.CreateShipmentPriceListPromotionRequest) (*admin.ShipmentPriceListPromotion, error) {
+	cmd := &pricelistpromotion.CreatePriceListPromotionCommand{
+		PriceListID:   r.PriceListID,
+		Name:          r.Name,
+		Description:   r.Description,
+		ConnectionID:  r.ConnectionID,
+		DateFrom:      r.DateFrom,
+		DateTo:        r.DateTo,
+		AppliedRules:  convertpb.Convert_api_PriceListPromotionAppliedRules_To_core_PriceListPromotionAppliedRules(r.AppliedRules),
+		PriorityPoint: r.PriorityPoint,
+	}
+	if err := s.PriceListPromotionAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return convertpb.Convert_core_PriceListPromotion_To_api_PriceListPromotion(cmd.Result), nil
+}
+
+func (s *ShipmentPriceService) UpdateShipmentPriceListPromotion(ctx context.Context, r *admin.UpdateShipmentPriceListPromotionRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &pricelistpromotion.UpdatePriceListPromotionCommand{
+		ID:            r.ID,
+		Name:          r.Name,
+		Description:   r.Description,
+		DateFrom:      r.DateFrom,
+		DateTo:        r.DateTo,
+		AppliedRules:  convertpb.Convert_api_PriceListPromotionAppliedRules_To_core_PriceListPromotionAppliedRules(r.AppliedRules),
+		PriorityPoint: r.PriorityPoint,
+		Status:        r.Status,
+	}
+	if err := s.PriceListPromotionAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func (s *ShipmentPriceService) DeleteShipmentPriceListPromotion(ctx context.Context, r *pbcm.IDRequest) (*pbcm.DeletedResponse, error) {
+	cmd := &pricelistpromotion.DeletePriceListPromotionCommand{
+		ID: r.Id,
+	}
+	if err := s.PriceListPromotionAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.DeletedResponse{Deleted: 1}, nil
+}
+
+// -- End Shipment Price List Promotion --//

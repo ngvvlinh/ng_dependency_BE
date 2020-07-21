@@ -70,6 +70,7 @@ import (
 	query11 "o.o/backend/com/main/refund/query"
 	"o.o/backend/com/main/shipmentpricing/pricelist"
 	pm17 "o.o/backend/com/main/shipmentpricing/pricelist/pm"
+	"o.o/backend/com/main/shipmentpricing/pricelistpromotion"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice"
 	"o.o/backend/com/main/shipmentpricing/shopshipmentpricelist"
@@ -357,8 +358,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shopshipmentpricelistQueryBus := shopshipmentpricelist.QueryServiceMessageBus(shopshipmentpricelistQueryService)
 	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, store, queryBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
+	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, queryBus, identityQueryBus)
+	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
 	carrierConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
-	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, carrierConfig)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, carrierConfig)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
@@ -598,6 +601,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	pricelistCommandBus := pricelist.AggregateMessageBus(pricelistAggregate)
 	shopshipmentpricelistAggregate := shopshipmentpricelist.NewAggregate(mainDB, pricelistQueryBus)
 	shopshipmentpricelistCommandBus := shopshipmentpricelist.AggregateMessageBus(shopshipmentpricelistAggregate)
+	pricelistpromotionAggregate := pricelistpromotion.NewAggregate(mainDB)
+	pricelistpromotionCommandBus := pricelistpromotion.AggregateMessageBus(pricelistpromotionAggregate)
 	shipmentPriceService := admin.ShipmentPriceService{
 		Session:                    session,
 		ShipmentManager:            shipmentManager,
@@ -609,6 +614,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ShipmentPriceListQuery:     pricelistQueryBus,
 		ShopShipmentPriceListQuery: shopshipmentpricelistQueryBus,
 		ShopShipmentPriceListAggr:  shopshipmentpricelistCommandBus,
+		PriceListPromotionQuery:    pricelistpromotionQueryBus,
+		PriceListPromotionAggr:     pricelistpromotionCommandBus,
 	}
 	locationAggregate := location.NewAggregate(mainDB)
 	locationCommandBus := location.AggregateMessageBus(locationAggregate)

@@ -94,22 +94,23 @@ func (h AggregateHandler) HandleUpdateShipmentPricesPriorityPoint(ctx context.Co
 }
 
 type CalculateShippingFeesQuery struct {
-	AccountID           dot.ID
-	FromProvince        string
-	FromProvinceCode    string
-	FromDistrict        string
-	FromDistrictCode    string
-	ToProvince          string
-	ToProvinceCode      string
-	ToDistrict          string
-	ToDistrictCode      string
-	ShipmentServiceID   dot.ID
-	ConnectionID        dot.ID
-	ShipmentPriceListID dot.ID
-	Weight              int
-	BasketValue         int
-	CODAmount           int
-	AdditionalFeeTypes  []shipping_fee_type.ShippingFeeType
+	AccountID            dot.ID
+	FromProvince         string
+	FromProvinceCode     string
+	FromDistrict         string
+	FromDistrictCode     string
+	ToProvince           string
+	ToProvinceCode       string
+	ToDistrict           string
+	ToDistrictCode       string
+	ShipmentServiceID    dot.ID
+	ConnectionID         dot.ID
+	ShipmentPriceListID  dot.ID
+	PromotionPriceListID dot.ID
+	Weight               int
+	BasketValue          int
+	CODAmount            int
+	AdditionalFeeTypes   []shipping_fee_type.ShippingFeeType
 
 	Result *CalculateShippingFeesResponse `json:"-"`
 }
@@ -240,22 +241,23 @@ func (q *UpdateShipmentPricesPriorityPointCommand) SetUpdateShipmentPricesPriori
 func (q *CalculateShippingFeesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *CalculateShippingFeesArgs) {
 	return ctx,
 		&CalculateShippingFeesArgs{
-			AccountID:           q.AccountID,
-			FromProvince:        q.FromProvince,
-			FromProvinceCode:    q.FromProvinceCode,
-			FromDistrict:        q.FromDistrict,
-			FromDistrictCode:    q.FromDistrictCode,
-			ToProvince:          q.ToProvince,
-			ToProvinceCode:      q.ToProvinceCode,
-			ToDistrict:          q.ToDistrict,
-			ToDistrictCode:      q.ToDistrictCode,
-			ShipmentServiceID:   q.ShipmentServiceID,
-			ConnectionID:        q.ConnectionID,
-			ShipmentPriceListID: q.ShipmentPriceListID,
-			Weight:              q.Weight,
-			BasketValue:         q.BasketValue,
-			CODAmount:           q.CODAmount,
-			AdditionalFeeTypes:  q.AdditionalFeeTypes,
+			AccountID:            q.AccountID,
+			FromProvince:         q.FromProvince,
+			FromProvinceCode:     q.FromProvinceCode,
+			FromDistrict:         q.FromDistrict,
+			FromDistrictCode:     q.FromDistrictCode,
+			ToProvince:           q.ToProvince,
+			ToProvinceCode:       q.ToProvinceCode,
+			ToDistrict:           q.ToDistrict,
+			ToDistrictCode:       q.ToDistrictCode,
+			ShipmentServiceID:    q.ShipmentServiceID,
+			ConnectionID:         q.ConnectionID,
+			ShipmentPriceListID:  q.ShipmentPriceListID,
+			PromotionPriceListID: q.PromotionPriceListID,
+			Weight:               q.Weight,
+			BasketValue:          q.BasketValue,
+			CODAmount:            q.CODAmount,
+			AdditionalFeeTypes:   q.AdditionalFeeTypes,
 		}
 }
 
@@ -272,6 +274,7 @@ func (q *CalculateShippingFeesQuery) SetCalculateShippingFeesArgs(args *Calculat
 	q.ShipmentServiceID = args.ShipmentServiceID
 	q.ConnectionID = args.ConnectionID
 	q.ShipmentPriceListID = args.ShipmentPriceListID
+	q.PromotionPriceListID = args.PromotionPriceListID
 	q.Weight = args.Weight
 	q.BasketValue = args.BasketValue
 	q.CODAmount = args.CODAmount

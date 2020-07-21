@@ -55,6 +55,13 @@ func (q *QueryService) GetShipmentPrice(ctx context.Context, ID dot.ID) (*shipme
 	return q.shipmentPriceStore(ctx).ID(ID).GetShipmentPrice()
 }
 
+type getActiveShipmentPricesArgs struct {
+	AccountID           dot.ID
+	ConnectionID        dot.ID
+	ShipmentServiceID   dot.ID
+	ShipmentPriceListID dot.ID
+}
+
 /*
 	func: GetActiveShipmentPrices
 
@@ -64,7 +71,7 @@ func (q *QueryService) GetShipmentPrice(ctx context.Context, ID dot.ID) (*shipme
 		- Nếu shop ko có bảng giá riêng, sử dụng bảng giá mặc định (GetActiveShipmentPriceListQuery)
 */
 
-func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args *shipmentprice.CalculateShippingFeesArgs) ([]*shipmentprice.ShipmentPrice, error) {
+func (q *QueryService) GetActiveShipmentPrices(ctx context.Context, args getActiveShipmentPricesArgs) ([]*shipmentprice.ShipmentPrice, error) {
 	shipmentServiceID, shipmentPriceListID := args.ShipmentServiceID, args.ShipmentPriceListID
 	var res []*shipmentprice.ShipmentPrice
 
@@ -373,15 +380,64 @@ func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipment
 	}
 	from, to := fromQuery.Result, toQuery.Result
 
-	pricings, err := q.GetActiveShipmentPrices(ctx, args)
+	calcShippingFeeArgs := calculateShippingFeesArgs{
+		From:                from,
+		To:                  to,
+		AccountID:           args.AccountID,
+		ConnectionID:        args.ConnectionID,
+		ShipmentServiceID:   args.ShipmentServiceID,
+		ShipmentPriceListID: args.ShipmentPriceListID,
+		Weight:              args.Weight,
+		BasketValue:         args.BasketValue,
+		CODAmount:           args.CODAmount,
+		AdditionalFeeTypes:  args.AdditionalFeeTypes,
+	}
+	// Trường hợp có bảng giá khuyến mãi (PromotionPriceListID)
+	// Gán ShipmentPriceListID = PromotionPriceListID
+	// Nếu tính được giá => trả về kết quả
+	// Nếu không tính được giá => tính như bình thường
+	if args.PromotionPriceListID != 0 {
+		calcShippingFeeArgs.ShipmentPriceListID = args.PromotionPriceListID
+		if resp, err := q.calcShippingFees(ctx, calcShippingFeeArgs); err == nil {
+			return resp, nil
+		}
+		// Gán lại ShipmentPriceListID để tính lại giá
+		calcShippingFeeArgs.ShipmentPriceListID = args.ShipmentPriceListID
+	}
+
+	return q.calcShippingFees(ctx, calcShippingFeeArgs)
+}
+
+type calculateShippingFeesArgs struct {
+	From                *location.LocationQueryResult
+	To                  *location.LocationQueryResult
+	AccountID           dot.ID
+	ConnectionID        dot.ID
+	ShipmentServiceID   dot.ID
+	ShipmentPriceListID dot.ID
+	Weight              int
+	BasketValue         int
+	CODAmount           int
+	AdditionalFeeTypes  []shipping_fee_type.ShippingFeeType
+}
+
+func (q *QueryService) calcShippingFees(ctx context.Context, args calculateShippingFeesArgs) (*shipmentprice.CalculateShippingFeesResponse, error) {
+	getActiveShipmentPricesArgs := getActiveShipmentPricesArgs{
+		AccountID:           args.AccountID,
+		ConnectionID:        args.ConnectionID,
+		ShipmentServiceID:   args.ShipmentServiceID,
+		ShipmentPriceListID: args.ShipmentPriceListID,
+	}
+	pricings, err := q.GetActiveShipmentPrices(ctx, getActiveShipmentPricesArgs)
 	if err != nil {
 		return nil, err
 	}
+
 	if len(pricings) == 0 {
 		return nil, cm.Errorf(cm.NotFound, nil, "Chưa cấu hình giá cho connection này (conn_id = %v)", args.ConnectionID)
 	}
 
-	matchingPricings, err := q.GetMatchingPricings(ctx, pricings, from.Province, to.Province, to.District)
+	matchingPricings, err := q.GetMatchingPricings(ctx, pricings, args.From.Province, args.To.Province, args.To.District)
 	if len(matchingPricings) == 0 || err != nil {
 		// Không thay đổi mã lỗi (yêu cầu: ko sử dụng mã not_found)
 		// not_found chỉ sử dụng khi không có cấu hình giá nào trong bảng giá
@@ -421,8 +477,9 @@ func (q *QueryService) CalculateShippingFees(ctx context.Context, args *shipment
 	}
 
 	return &shipmentprice.CalculateShippingFeesResponse{
-		ShipmentPriceID: pricing.ID,
-		TotalFee:        totalFee,
-		FeeLines:        feeLines,
+		ShipmentPriceID:     pricing.ID,
+		ShipmentPriceListID: pricing.ShipmentPriceListID,
+		TotalFee:            totalFee,
+		FeeLines:            feeLines,
 	}, nil
 }

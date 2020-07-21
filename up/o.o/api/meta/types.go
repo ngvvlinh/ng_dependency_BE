@@ -2,7 +2,6 @@ package meta
 
 import (
 	uuid "github.com/satori/go.uuid"
-
 	cmutil "o.o/capi/util"
 	"o.o/common/xerrors"
 )

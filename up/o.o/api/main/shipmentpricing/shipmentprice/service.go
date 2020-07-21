@@ -62,28 +62,30 @@ type ListShipmentPricesArgs struct {
 }
 
 type CalculateShippingFeesArgs struct {
-	AccountID           dot.ID
-	FromProvince        string
-	FromProvinceCode    string
-	FromDistrict        string
-	FromDistrictCode    string
-	ToProvince          string
-	ToProvinceCode      string
-	ToDistrict          string
-	ToDistrictCode      string
-	ShipmentServiceID   dot.ID
-	ConnectionID        dot.ID
-	ShipmentPriceListID dot.ID
-	Weight              int
-	BasketValue         int
-	CODAmount           int
-	AdditionalFeeTypes  []shipping_fee_type.ShippingFeeType
+	AccountID            dot.ID
+	FromProvince         string
+	FromProvinceCode     string
+	FromDistrict         string
+	FromDistrictCode     string
+	ToProvince           string
+	ToProvinceCode       string
+	ToDistrict           string
+	ToDistrictCode       string
+	ShipmentServiceID    dot.ID
+	ConnectionID         dot.ID
+	ShipmentPriceListID  dot.ID
+	PromotionPriceListID dot.ID
+	Weight               int
+	BasketValue          int
+	CODAmount            int
+	AdditionalFeeTypes   []shipping_fee_type.ShippingFeeType
 }
 
 type CalculateShippingFeesResponse struct {
-	ShipmentPriceID dot.ID
-	TotalFee        int
-	FeeLines        []*ShippingFee
+	ShipmentPriceID     dot.ID
+	ShipmentPriceListID dot.ID
+	TotalFee            int
+	FeeLines            []*ShippingFee
 }
 
 type ShippingFee struct {

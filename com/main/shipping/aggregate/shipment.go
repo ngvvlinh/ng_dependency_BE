@@ -270,7 +270,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		ShopConfirm:       status3.P, // Always set shop_confirm to 1
 		ConfirmStatus:     0,
 		TotalItems:        totalItems,
-		TotalWeight:       cm.CoalesceInt(args.GrossWeight, args.ChargeableWeight, order.TotalWeight),
+		TotalWeight:       cm.CoalesceInt(args.ChargeableWeight, args.GrossWeight, order.TotalWeight),
 		BasketValue:       basketValue,
 		TotalDiscount:     0,
 		TotalAmount:       totalAmount,
@@ -456,9 +456,9 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 		}
 
 		if args.TotalCODAmount.Valid {
-			if _, err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillmentCOD(sqlstore.UpdateFulfillmentCODArgs{
-				CODAmount: args.TotalCODAmount.Int,
-				UpdatedBy: args.UpdatedBy,
+			if _, err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillmentCOD(&shipping.UpdateFulfillmentCODAmountArgs{
+				TotalCODAmount: args.TotalCODAmount,
+				UpdatedBy:      args.UpdatedBy,
 			}); err != nil {
 				return err
 			}
@@ -477,6 +477,36 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 		return 0, err
 	}
 	return 1, nil
+}
+
+func (a *Aggregate) UpdateFulfillmentCODAmount(ctx context.Context, args *shipping.UpdateFulfillmentCODAmountArgs) error {
+	if args.FulfillmentID == 0 && args.ShippingCode == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
+	}
+	ffm, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).GetFulfillment()
+	if err != nil {
+		return err
+	}
+	if err := canUpdateFulfillment(ffm); err != nil {
+		return err
+	}
+	if !args.TotalCODAmount.Valid {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing total COD amount")
+	}
+
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if _, err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillmentCOD(args); err != nil {
+			return err
+		}
+		eventChanged := &shipping.FulfillmentUpdatedEvent{
+			FulfillmentID:     ffm.ID,
+			MoneyTxShippingID: ffm.MoneyTransactionID,
+		}
+		if err := a.eventBus.Publish(ctx, eventChanged); err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 func (a *Aggregate) ShopUpdateFulfillmentCOD(ctx context.Context, args *shipping.ShopUpdateFulfillmentCODArgs) (updated int, _ error) {
@@ -506,9 +536,9 @@ func (a *Aggregate) ShopUpdateFulfillmentCOD(ctx context.Context, args *shipping
 			}
 		}
 
-		update := sqlstore.UpdateFulfillmentCODArgs{
-			CODAmount: args.TotalCODAmount.Int,
-			UpdatedBy: args.UpdatedBy,
+		update := &shipping.UpdateFulfillmentCODAmountArgs{
+			TotalCODAmount: args.TotalCODAmount,
+			UpdatedBy:      args.UpdatedBy,
 		}
 		if _, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).UpdateFulfillmentCOD(update); err != nil {
 			return err
@@ -627,7 +657,7 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 			ShippingCancelledAt:       args.ShippingCancelledAt,
 		}
 		if args.Weight != 0 {
-			update.TotalWeight = args.Weight
+			update.ChargeableWeight = args.Weight
 			update.GrossWeight = args.Weight
 		}
 		if args.ExternalShippingLogs != nil {
@@ -728,7 +758,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 		AdditionalFeeTypes: nil,
 	}
 
-	if args.NewWeight != ffm.TotalWeight {
+	if args.NewWeight != ffm.ChargeableWeight {
 		feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 		if err != nil {
 			return err

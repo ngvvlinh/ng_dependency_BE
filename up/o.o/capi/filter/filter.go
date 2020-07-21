@@ -34,6 +34,10 @@ type date struct {
 	To   dot.Time `json:"to"`
 }
 
+func (d Date) IsValid() bool {
+	return d.To.ToTime().Sub(d.From.ToTime()) >= 0
+}
+
 func (d Date) IsZero() bool {
 	return d.From.IsZero() && d.To.IsZero()
 }

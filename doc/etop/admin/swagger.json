@@ -582,21 +582,20 @@
         }
       }
     },
-    "/api/admin.Fulfillment/UpdateFulfillment": {
+    "/api/admin.Fulfillment/UpdateFulfillmentCODAmount": {
       "post": {
-        "description": "UpdateFulfillment\n\n`shipping_state`\n\nOnly update from any state to `undeliverable`\nOr update from `undeliverable`to any state\n",
         "tags": [
           "Fulfillment"
         ],
-        "summary": "UpdateFulfillment",
-        "operationId": "admin.Fulfillment-UpdateFulfillment",
+        "summary": "UpdateFulfillmentCODAmount",
+        "operationId": "admin.Fulfillment-UpdateFulfillmentCODAmount",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xuUpdateFulfillmentRequest"
+              "$ref": "#/definitions/xuUpdateFulfillmentCODAmountRequest"
             }
           }
         ],
@@ -1474,6 +1473,33 @@
         }
       }
     },
+    "/api/admin.ShipmentPrice/CreateShipmentPriceListPromotion": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "CreateShipmentPriceListPromotion",
+        "operationId": "admin.ShipmentPrice-CreateShipmentPriceListPromotion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateShipmentPriceListPromotionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentPriceListPromotion"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.ShipmentPrice/CreateShipmentService": {
       "post": {
         "tags": [
@@ -1562,6 +1588,33 @@
         ],
         "summary": "DeleteShipmentPriceList",
         "operationId": "admin.ShipmentPrice-DeleteShipmentPriceList",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/DeleteShipmentPriceListPromotion": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "DeleteShipmentPriceListPromotion",
+        "operationId": "admin.ShipmentPrice-DeleteShipmentPriceListPromotion",
         "parameters": [
           {
             "name": "body",
@@ -1685,6 +1738,60 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/xuShipmentPriceList"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentPriceListPromotion": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentPriceListPromotion",
+        "operationId": "admin.ShipmentPrice-GetShipmentPriceListPromotion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuShipmentPriceListPromotion"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/GetShipmentPriceListPromotions": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "GetShipmentPriceListPromotions",
+        "operationId": "admin.ShipmentPrice-GetShipmentPriceListPromotions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetShipmentPriceListPromotionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetShipmentPriceListPromotionsResponse"
             }
           }
         }
@@ -1947,6 +2054,33 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/xuUpdateShipmentPriceListRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.ShipmentPrice/UpdateShipmentPriceListPromotion": {
+      "post": {
+        "tags": [
+          "ShipmentPrice"
+        ],
+        "summary": "UpdateShipmentPriceListPromotion",
+        "operationId": "admin.ShipmentPrice-UpdateShipmentPriceListPromotion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShipmentPriceListPromotionRequest"
             }
           }
         ],
@@ -6794,6 +6928,39 @@
         }
       }
     },
+    "xuCreateShipmentPriceListPromotionRequest": {
+      "type": "object",
+      "properties": {
+        "applied_rules": {
+          "$ref": "#/definitions/xuPriceListPromotionAppliedRules"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "priority_point": {
+          "type": "integer"
+        }
+      }
+    },
     "xuCreateShipmentPriceListRequest": {
       "type": "object",
       "properties": {
@@ -7182,6 +7349,30 @@
         }
       }
     },
+    "xuGetShipmentPriceListPromotionsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetShipmentPriceListPromotionsResponse": {
+      "type": "object",
+      "properties": {
+        "shipment_price_list_promotions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xuShipmentPriceListPromotion"
+          }
+        }
+      }
+    },
     "xuGetShipmentPriceListsRequest": {
       "type": "object",
       "properties": {
@@ -7417,6 +7608,47 @@
         }
       }
     },
+    "xuPriceListPromotionAppliedRules": {
+      "type": "object",
+      "properties": {
+        "from_custom_region_ids": {
+          "description": "apply cho những đơn có điểm lấy hàng nằm trong vùng tự định nghĩa này\n",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "shop_created_date": {
+          "allOf": [
+            {
+              "description": "apply cho những shop có ngày tạo trong khoảng này\n\nFilter by date value\n\nObject:\n\n    - {\"from\":\"2020-01-01T00:00:00Z\",\"to\":\"2020-02-01T00:00:00Z\"}\n\nString:\n\n    - \"2020-01-01T00:00:00Z,2010-02-01T00:00:00Z\":\n    - \"2020-01-01T00:00:00Z,\":\n    - \",2020-01-01T00:00:00Z\":\n"
+            },
+            {
+              "$ref": "#/definitions/kfDate"
+            }
+          ]
+        },
+        "user_created_date": {
+          "allOf": [
+            {
+              "description": "apply cho những user có ngày tạo trong khoảng này\n\nFilter by date value\n\nObject:\n\n    - {\"from\":\"2020-01-01T00:00:00Z\",\"to\":\"2020-02-01T00:00:00Z\"}\n\nString:\n\n    - \"2020-01-01T00:00:00Z,2010-02-01T00:00:00Z\":\n    - \"2020-01-01T00:00:00Z,\":\n    - \",2020-01-01T00:00:00Z\":\n"
+            },
+            {
+              "$ref": "#/definitions/kfDate"
+            }
+          ]
+        },
+        "using_price_list_ids": {
+          "description": "apply cho những shop đang xài bảng giá này\n",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
     "xuPricingDetail": {
       "type": "object",
       "properties": {
@@ -7574,6 +7806,54 @@
         }
       }
     },
+    "xuShipmentPriceListPromotion": {
+      "type": "object",
+      "properties": {
+        "applied_rules": {
+          "$ref": "#/definitions/xuPriceListPromotionAppliedRules"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price_list_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "priority_point": {
+          "type": "integer"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "xuShipmentService": {
       "type": "object",
       "properties": {
@@ -7708,6 +7988,27 @@
         }
       }
     },
+    "xuUpdateFulfillmentCODAmountRequest": {
+      "type": "object",
+      "properties": {
+        "admin_note": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_partial_delivery": {
+          "type": "boolean"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "total_cod_amount": {
+          "type": "integer"
+        }
+      }
+    },
     "xuUpdateFulfillmentInfoRequest": {
       "type": "object",
       "properties": {
@@ -7729,36 +8030,6 @@
         }
       }
     },
-    "xuUpdateFulfillmentRequest": {
-      "type": "object",
-      "properties": {
-        "actual_compensation_amount": {
-          "type": "integer"
-        },
-        "admin_note": {
-          "type": "string"
-        },
-        "full_name": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "is_partial_delivery": {
-          "type": "boolean"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "shipping_state": {
-          "$ref": "#/definitions/sfState"
-        },
-        "total_cod_amount": {
-          "type": "integer"
-        }
-      }
-    },
     "xuUpdateFulfillmentShippingFeesRequest": {
       "type": "object",
       "properties": {
@@ -7776,6 +8047,7 @@
           }
         },
         "total_cod_amount": {
+          "description": "**Deprecated:** TotalCODAmount\n",
           "type": "integer"
         }
       }
@@ -7785,6 +8057,9 @@
       "properties": {
         "actual_compensation_amount": {
           "type": "integer"
+        },
+        "admin_note": {
+          "type": "string"
         },
         "id": {
           "type": "string",
@@ -7870,6 +8145,38 @@
         },
         "note": {
           "type": "string"
+        }
+      }
+    },
+    "xuUpdateShipmentPriceListPromotionRequest": {
+      "type": "object",
+      "properties": {
+        "applied_rules": {
+          "$ref": "#/definitions/xuPriceListPromotionAppliedRules"
+        },
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "priority_point": {
+          "type": "integer"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
         }
       }
     },

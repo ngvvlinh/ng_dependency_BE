@@ -531,8 +531,8 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			return
 		}
 		return msg, fn, nil
-	case "/admin.Fulfillment/UpdateFulfillment":
-		msg := &UpdateFulfillmentRequest{}
+	case "/admin.Fulfillment/UpdateFulfillmentCODAmount":
+		msg := &UpdateFulfillmentCODAmountRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
@@ -540,7 +540,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateFulfillment(newCtx, msg)
+			resp, err = inner.UpdateFulfillmentCODAmount(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1278,6 +1278,19 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			return
 		}
 		return msg, fn, nil
+	case "/admin.ShipmentPrice/CreateShipmentPriceListPromotion":
+		msg := &CreateShipmentPriceListPromotionRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateShipmentPriceListPromotion(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.ShipmentPrice/CreateShipmentService":
 		msg := &CreateShipmentServiceRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -1330,6 +1343,19 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 			return
 		}
 		return msg, fn, nil
+	case "/admin.ShipmentPrice/DeleteShipmentPriceListPromotion":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteShipmentPriceListPromotion(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.ShipmentPrice/DeleteShipmentService":
 		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -1379,6 +1405,32 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 				return
 			}
 			resp, err = inner.GetShipmentPriceList(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentPriceListPromotion":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShipmentPriceListPromotion(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/GetShipmentPriceListPromotions":
+		msg := &GetShipmentPriceListPromotionsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShipmentPriceListPromotions(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1509,6 +1561,19 @@ func (s *ShipmentPriceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 				return
 			}
 			resp, err = inner.UpdateShipmentPriceList(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.ShipmentPrice/UpdateShipmentPriceListPromotion":
+		msg := &UpdateShipmentPriceListPromotionRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateShipmentPriceListPromotion(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

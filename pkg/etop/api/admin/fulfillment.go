@@ -36,26 +36,6 @@ func (s *FulfillmentService) Clone() admin.FulfillmentService {
 	return &res
 }
 
-func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *admin.UpdateFulfillmentRequest) (*pbcm.UpdatedResponse, error) {
-	cmd := &shipmodelx.AdminUpdateFulfillmentCommand{
-		FulfillmentID:            q.Id,
-		FullName:                 q.FullName,
-		Phone:                    q.Phone,
-		TotalCODAmount:           q.TotalCodAmount,
-		IsPartialDelivery:        q.IsPartialDelivery,
-		AdminNote:                q.AdminNote,
-		ActualCompensationAmount: q.ActualCompensationAmount,
-		ShippingState:            q.ShippingState,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
-	result := &pbcm.UpdatedResponse{
-		Updated: cmd.Result.Updated,
-	}
-	return result, nil
-}
-
 func (s *FulfillmentService) UpdateFulfillmentInfo(ctx context.Context, q *admin.UpdateFulfillmentInfoRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipping.UpdateFulfillmentInfoCommand{
 		FulfillmentID: q.ID,
@@ -67,10 +47,24 @@ func (s *FulfillmentService) UpdateFulfillmentInfo(ctx context.Context, q *admin
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := &pbcm.UpdatedResponse{
+	return &pbcm.UpdatedResponse{
 		Updated: cmd.Result,
+	}, nil
+}
+
+func (s *FulfillmentService) UpdateFulfillmentCODAmount(ctx context.Context, q *admin.UpdateFulfillmentCODAmountRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &shipping.UpdateFulfillmentCODAmountCommand{
+		FulfillmentID:     q.ID,
+		ShippingCode:      q.ShippingCode,
+		TotalCODAmount:    q.TotalCODAmount,
+		IsPartialDelivery: q.IsPartialDelivery,
+		AdminNote:         q.AdminNote,
+		UpdatedBy:         s.SS.Claim().UserID,
 	}
-	return result, nil
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }
 
 func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *pbcm.IDRequest) (*types.Fulfillment, error) {
