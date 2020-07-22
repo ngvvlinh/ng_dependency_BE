@@ -283,20 +283,27 @@ func verifyScopes(appScopes map[string]string, scopes []string) error {
 }
 
 func (s *PageService) CheckPermissions(ctx context.Context, req *fabo.CheckPagePermissionsRequest) (*fabo.CheckPagePermissionsResponse, error) {
-	getAccessTokenQuery := &fbpaging.GetPageAccessTokenQuery{
-		ExternalID: req.ExternalPageID,
-	}
-	if err := s.FBExternalPageQuery.Dispatch(ctx, getAccessTokenQuery); err != nil {
-		return nil, err
+	pageMissingRoles := &fabo.CheckPagePermissionsResponse{
+		PageMissingRoles: map[string][]string{},
 	}
 
-	pageToken, err := s.FBClient.CallAPICheckAccessToken(getAccessTokenQuery.Result)
-	if err != nil {
-		return nil, err
-	}
+	for _, pageID := range req.ExternalPageIDS {
+		getAccessTokenQuery := &fbpaging.GetPageAccessTokenQuery{
+			ExternalID: pageID,
+		}
+		if err := s.FBExternalPageQuery.Dispatch(ctx, getAccessTokenQuery); err != nil {
+			return nil, err
+		}
 
-	missingRoles := getMissingPermissions(pageToken.Data.Scopes)
-	return &fabo.CheckPagePermissionsResponse{MissingRoles: missingRoles}, nil
+		pageToken, err := s.FBClient.CallAPICheckAccessToken(getAccessTokenQuery.Result)
+		if err != nil {
+			return nil, err
+		}
+
+		missingRoles := getMissingPermissions(pageToken.Data.Scopes)
+		pageMissingRoles.PageMissingRoles[pageID] = missingRoles
+	}
+	return pageMissingRoles, nil
 }
 
 func getMissingPermissions(pagePerms []string) []string {
@@ -305,7 +312,7 @@ func getMissingPermissions(pagePerms []string) []string {
 		mapPagePerms[perm] = struct{}{}
 	}
 
-	var missingRoles []string
+	missingRoles := []string{}
 	for perm, _ := range appScopes {
 		if _, ok := mapPagePerms[perm]; !ok {
 			missingRoles = append(missingRoles, perm)

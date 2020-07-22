@@ -534,7 +534,7 @@ func (m *CreatePostResponse) String() string {
 }
 
 type CheckPagePermissionsRequest struct {
-	ExternalPageID string `json:"external_page_id"`
+	ExternalPageIDS []string `json:"external_page_ids"`
 }
 
 func (c *CheckPagePermissionsRequest) String() string {
@@ -542,7 +542,7 @@ func (c *CheckPagePermissionsRequest) String() string {
 }
 
 type CheckPagePermissionsResponse struct {
-	MissingRoles []string `json:"missing_roles"`
+	PageMissingRoles map[string][]string `json:"page_missing_roles"`
 }
 
 func (c *CheckPagePermissionsResponse) String() string {

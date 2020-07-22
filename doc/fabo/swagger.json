@@ -433,18 +433,24 @@
     "cvCheckPagePermissionsRequest": {
       "type": "object",
       "properties": {
-        "external_page_id": {
-          "type": "string"
+        "external_page_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
     "cvCheckPagePermissionsResponse": {
       "type": "object",
       "properties": {
-        "missing_roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        "page_missing_roles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
