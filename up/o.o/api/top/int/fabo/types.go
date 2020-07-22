@@ -112,6 +112,10 @@ type ConnectPagesRequest struct {
 	AccessToken string `json:"access_token"`
 }
 
+func (m *ConnectPagesRequest) Censor() {
+	m.AccessToken = "..."
+}
+
 func (m *ConnectPagesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConnectPagesResponse struct {

@@ -14,6 +14,10 @@ type LoginShopConnectionRequest struct {
 	Password     string `json:"password"`
 }
 
+func (m *LoginShopConnectionRequest) Censor() {
+	m.Password = "..."
+}
+
 func (m *LoginShopConnectionRequest) Reset() {
 	*m = LoginShopConnectionRequest{}
 }
@@ -54,6 +58,10 @@ type RegisterShopConnectionRequest struct {
 	Province     string `json:"province"`
 	District     string `json:"district"`
 	Address      string `json:"address"`
+}
+
+func (m *RegisterShopConnectionRequest) Censor() {
+	m.Password = "..."
 }
 
 func (m *RegisterShopConnectionRequest) Reset() {
