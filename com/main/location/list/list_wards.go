@@ -89790,4 +89790,11 @@ var Wards = []*types.Ward{
 		VTPostID:     1815,
 		HaravanCode:  "09535",
 		GhnCode:      "190805",
-	}}
+	},
+	{
+		Code:         "999991",
+		DistrictCode: "755",
+		Name:         "Côn Đảo",
+		GhnCode:      "541305",
+	},
+}
