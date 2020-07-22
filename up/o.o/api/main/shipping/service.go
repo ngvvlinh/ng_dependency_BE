@@ -26,8 +26,6 @@ type Aggregate interface {
 
 	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesArgs) (updated int, err error)
 
-	UpdateFulfillmentCOD(context.Context, *UpdateFulfillmentCODArgs) (updated int, err error)
-
 	UpdateFulfillmentsMoneyTxID(context.Context, *UpdateFulfillmentsMoneyTxIDArgs) (updated int, _ error)
 
 	UpdateFulfillmentsCODTransferedAt(context.Context, *UpdateFulfillmentsCODTransferedAtArgs) error
@@ -37,6 +35,8 @@ type Aggregate interface {
 	UpdateFulfillmentsStatus(context.Context, *UpdateFulfillmentsStatusArgs) error
 
 	ShopUpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoArgs) (updated int, _ error)
+
+	ShopUpdateFulfillmentCOD(context.Context, *ShopUpdateFulfillmentCODArgs) (updated int, err error)
 
 	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoByAdminArgs) (updated int, _ error)
 
@@ -148,10 +148,11 @@ type UpdateFulfillmentShippingFeesArgs struct {
 	UpdatedBy                dot.ID
 }
 
-type UpdateFulfillmentCODArgs struct {
+type ShopUpdateFulfillmentCODArgs struct {
 	FulfillmentID  dot.ID
 	ShippingCode   string
 	TotalCODAmount dot.NullInt
+	UpdatedBy      dot.ID
 }
 
 type UpdateFulfillmentsMoneyTxIDArgs struct {

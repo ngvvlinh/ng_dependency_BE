@@ -449,11 +449,19 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 			ProviderShippingFeeLines: providerShippingFeeLines,
 			ShippingFeeShopLines:     lines,
 			ShippingFeeShop:          shipping.CalcShopShippingFee(totalShippingFeeShop, ffm),
-			TotalCODAmount:           args.TotalCODAmount.Apply(ffm.TotalCODAmount),
 			UpdatedBy:                args.UpdatedBy,
 		}
-		if err := a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update); err != nil {
+		if err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillmentDB(update); err != nil {
 			return err
+		}
+
+		if args.TotalCODAmount.Valid {
+			if _, err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillmentCOD(sqlstore.UpdateFulfillmentCODArgs{
+				CODAmount: args.TotalCODAmount.Int,
+				UpdatedBy: args.UpdatedBy,
+			}); err != nil {
+				return err
+			}
 		}
 
 		eventChanged := &shipping.FulfillmentUpdatedEvent{
@@ -471,9 +479,12 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 	return 1, nil
 }
 
-func (a *Aggregate) UpdateFulfillmentCOD(ctx context.Context, args *shipping.UpdateFulfillmentCODArgs) (updated int, _ error) {
+func (a *Aggregate) ShopUpdateFulfillmentCOD(ctx context.Context, args *shipping.ShopUpdateFulfillmentCODArgs) (updated int, _ error) {
 	if args.FulfillmentID == 0 && args.ShippingCode == "" {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
+	}
+	if !args.TotalCODAmount.Valid {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing COD Amount")
 	}
 	ffm, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).GetFfmDB()
 	if err != nil {
@@ -495,7 +506,11 @@ func (a *Aggregate) UpdateFulfillmentCOD(ctx context.Context, args *shipping.Upd
 			}
 		}
 
-		if _, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).UpdateFulfillmentCOD(args.TotalCODAmount.Int); err != nil {
+		update := sqlstore.UpdateFulfillmentCODArgs{
+			CODAmount: args.TotalCODAmount.Int,
+			UpdatedBy: args.UpdatedBy,
+		}
+		if _, err := a.ffmStore(ctx).OptionalID(args.FulfillmentID).OptionalShippingCode(args.ShippingCode).UpdateFulfillmentCOD(update); err != nil {
 			return err
 		}
 		return nil
