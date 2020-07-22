@@ -35,6 +35,7 @@ var envValues = map[string]EnvType{
 
 var isDev = false
 var notProd = true
+var serviceName string
 var env EnvType
 var envHooks []func(env EnvType) error
 
@@ -45,10 +46,21 @@ func SetHook(fn func(env EnvType) error) {
 	envHooks = append(envHooks, fn)
 }
 
-func SetEnvironment(e string) EnvType {
+func ServiceName() string {
+	if serviceName == "" {
+		return "unknown service"
+	}
+	return serviceName
+}
+
+func SetEnvironment(name, e string) EnvType {
 	if env != 0 {
 		panic("Already initialize environment")
 	}
+	if serviceName != "" {
+		panic("already initialized")
+	}
+	serviceName = name
 
 	env = envValues[e]
 	switch env {

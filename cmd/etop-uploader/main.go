@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -39,10 +38,9 @@ type ImageConfig struct {
 var imageConfigs = map[Purpose]*ImageConfig{}
 
 var (
-	ll            = l.New()
-	cfg           config.Config
-	healthservice = health.New()
-	tokenStore    auth.Validator
+	ll         = l.New()
+	cfg        config.Config
+	tokenStore auth.Validator
 )
 
 func main() {
@@ -65,7 +63,7 @@ func main() {
 		},
 	}
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment("uploader", cfg.Env)
 	wl.Init(cmenv.Env(), wl.EtopServer)
 
 	_, err = os.Stat(cfg.UploadDirImg)
@@ -112,8 +110,8 @@ func main() {
 
 	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
-	healthservice.RegisterHTTPHandler(mux)
-	healthservice.MarkReady()
+	healthService := health.New(redisStore)
+	healthService.RegisterHTTPHandler(mux)
 
 	rt.Use(httpx.RecoverAndLog(false))
 	rt.ServeFiles("/img/*filepath", http.Dir(cfg.UploadDirImg))
@@ -135,8 +133,8 @@ func main() {
 		ll.Sync()
 	}()
 
-	ll.SendMessage(fmt.Sprintf("–––\n✨ etop-uploader started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
-	defer ll.SendMessage("👻 etop-uploader stopped 👻\n–––")
+	defer healthService.Shutdown()
+	healthService.MarkReady()
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()

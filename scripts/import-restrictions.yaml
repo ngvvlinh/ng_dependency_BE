@@ -18,20 +18,20 @@
   - o.o/backend/pkg/etop/authorize/tokens
   - o.o/backend/pkg/etop/authorize/middleware
 
-- baseImportPath: "./cmd/supporting/crm-sync-service"
-  allowedImports:
-  - o.o/backend/cmd/supporting/crm-sync-service
-  - o.o/backend/com/supporting/crm
-  - o.o/backend/pb/common
-  - o.o/backend/pb/services/crmservice
-  - o.o/backend/pkg/common
-  - o.o/backend/pkg/etop/authorize/middleware
-  - o.o/backend/pkg/etop/authorize/tokens
-  - o.o/backend/pkg/integration/vht/client
-  - o.o/backend/pkg/integration/vtiger/client
-  - o.o/backend/pkg/services/crm-service
-  - o.o/backend/zexp/api
-  - o.o/common
+#- baseImportPath: "./cmd/supporting/crm-sync-service"
+#  allowedImports:
+#  - o.o/backend/cmd/supporting/crm-sync-service
+#  - o.o/backend/com/supporting/crm
+#  - o.o/backend/pb/common
+#  - o.o/backend/pb/services/crmservice
+#  - o.o/backend/pkg/common
+#  - o.o/backend/pkg/etop/authorize/middleware
+#  - o.o/backend/pkg/etop/authorize/tokens
+#  - o.o/backend/pkg/integration/vht/client
+#  - o.o/backend/pkg/integration/vtiger/client
+#  - o.o/backend/pkg/services/crm-service
+#  - o.o/backend/zexp/api
+#  - o.o/common
 
 - baseImportPath: "./pkg/common"
   ignoredSubTrees:

@@ -14,39 +14,30 @@ import (
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/redis"
 	etlutil "o.o/backend/zexp/etl/util"
 	"o.o/common/l"
 )
 
-var (
-	ll  = l.New()
-	cfg config.Config
-	ctx context.Context
-
-	ctxCancel     context.CancelFunc
-	healthservice = health.New()
-
-	resetDB bool
-)
+var ll = l.New()
 
 func main() {
 	cc.InitFlags()
-	flag.BoolVar(&resetDB, "reset-db", false, "drop all tables (only dev)")
+	resetDB := flag.Bool("reset-db", false, "drop all tables (only dev)")
 	cc.ParseFlags()
 
-	var err error
-	cfg, err = config.Load()
+	cfg, err := config.Load()
 	if err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment("etop-etl", cfg.Env)
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 
-	ctx, ctxCancel = context.WithCancel(context.Background())
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)
 		signal.Notify(osSignal, syscall.SIGINT, syscall.SIGTERM)
@@ -64,16 +55,16 @@ func main() {
 	}
 
 	cfg.TelegramBot.MustRegister(ctx)
-
-	util := etlutil.New(cfg.MapDB, resetDB)
+	util := etlutil.New(cfg.MapDB, *resetDB)
 	util.HandleETL(ctx)
 
-	ll.SendMessage("–––\n✨ etop-etl started ✨\n" + cm.CommitMessage())
-	defer ll.SendMessage("👹 etop-etl stopped 👹\n–––")
-	healthservice.MarkReady()
+	redisStore := redis.Connect(cfg.Redis)
+	healthService := health.New(redisStore)
+	healthService.MarkReady()
+	defer healthService.Shutdown()
 
 	mux := http.NewServeMux()
-	healthservice.RegisterHTTPHandler(mux)
+	healthService.RegisterHTTPHandler(mux)
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
 		Handler: mux,

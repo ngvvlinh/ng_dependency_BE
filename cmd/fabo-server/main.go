@@ -10,9 +10,7 @@ import (
 	"o.o/backend/cmd/fabo-server/config"
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/lifecycle"
@@ -33,7 +31,7 @@ func main() {
 	// load config
 	cfg, err := config.Load()
 	ll.Must(err, "can not load config")
-	cmenv.SetEnvironment(cfg.SharedConfig.Env)
+	cmenv.SetEnvironment("fabo-server", cfg.SharedConfig.Env)
 	if cmenv.IsDev() {
 		cfg.SMS.Telegram = true
 		cfg.SMS.Enabled = true
@@ -44,15 +42,12 @@ func main() {
 	sqltrace.Init()
 	wl.Init(cmenv.Env(), wl.FaboServer)
 	auth.Init(authfabo.Policy)
-	eventBus := bus.New()
-	healthService := health.New()
 
 	// TODO(vu): refactor
 	model.GetShippingServiceRegistry().Initialize()
 
 	// lifecycle
 	sdCtx, ctxCancel := lifecycle.WithCancel(context.Background())
-	defer sdCtx.Wait()
 	lifecycle.ListenForSignal(ctxCancel, 30*time.Second)
 	cfg.TelegramBot.MustRegister(sdCtx)
 
@@ -65,7 +60,7 @@ func main() {
 	}
 
 	// build servers
-	output, cancel, err := build.Build(sdCtx, cfg, eventBus, healthService, consumer)
+	output, cancel, err := build.Build(sdCtx, cfg, consumer)
 	ll.Must(err, "can not build server")
 
 	// start forwarder
@@ -77,8 +72,8 @@ func main() {
 	cancelHTTP := lifecycle.StartHTTP(ctxCancel, output.Servers...)
 	sdCtx.Register(cancelHTTP)
 	sdCtx.Register(cancel)
-	sdCtx.Register(func() { ll.SendMessagef("🎃 fabo-server on %v stopped 🎃", cmenv.Env()) })
-	healthService.MarkReady()
 
-	ll.SendMessagef("✨ fabo-server on %v started ✨\n%v", cmenv.Env(), cm.CommitMessage())
+	defer output.Health.Shutdown()
+	defer sdCtx.Wait()
+	output.Health.MarkReady()
 }

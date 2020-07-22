@@ -30,7 +30,7 @@ func main() {
 	if cfg, err = config.Load(false); err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
-	cmenv.SetEnvironment(cfg.SharedConfig.Env)
+	cmenv.SetEnvironment("script", cfg.SharedConfig.Env)
 
 	postgres := cfg.Databases.Postgres
 	postgres.Port = 25434

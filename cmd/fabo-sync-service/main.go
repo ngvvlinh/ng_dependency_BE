@@ -27,32 +27,22 @@ import (
 	"o.o/common/l"
 )
 
-var (
-	ll  = l.New()
-	ctx context.Context
-	cfg config.Config
-
-	ctxCancel     context.CancelFunc
-	healthservice = health.New()
-)
+var ll = l.New()
 
 func main() {
 	cc.InitFlags()
 	cc.ParseFlags()
 
-	var err error
-	cfg, err = config.Load()
-	if err != nil {
-		ll.Fatal("Unable to load config", l.Error(err))
-	}
+	cfg, err := config.Load()
+	ll.Must(err, "can not load config")
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment("fabo-sync-service", cfg.Env)
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 
-	ctx, ctxCancel = context.WithCancel(context.Background())
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)
 		signal.Notify(osSignal, syscall.SIGINT, syscall.SIGTERM)
@@ -74,15 +64,12 @@ func main() {
 	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
 
 	db, err := cmsql.Connect(cfg.Postgres)
-	if err != nil {
-		ll.Fatal("Unable to connect to Postgres", l.Error(err))
-	}
+	ll.Must(err, "can not connect to Postgres")
+
 	eventBus := bus.New()
 
 	fbClient := fbclient.New(cfg.FacebookApp)
-	if err := fbClient.Ping(); err != nil {
-		ll.Fatal("Error while connection Facebook", l.Error(err))
-	}
+	ll.Must(fbClient.Ping(), "can not connect to Facebook")
 
 	fbRedis := faboRedis.NewFaboRedis(redisStore)
 
@@ -116,7 +103,8 @@ func main() {
 	mux := http.NewServeMux()
 	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
-	healthservice.RegisterHTTPHandler(mux)
+	healthService := health.New(redisStore)
+	healthService.RegisterHTTPHandler(mux)
 
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
@@ -132,11 +120,9 @@ func main() {
 		ll.Sync()
 	}()
 
-	healthservice.MarkReady()
+	defer healthService.Shutdown()
+	healthService.MarkReady()
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()
-	ll.Info("Waiting for all requests to finish")
-
-	ll.Info("Gracefully stopped!")
 }

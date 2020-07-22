@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,31 +23,25 @@ import (
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/mq"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/common/l"
 )
 
-var (
-	ll  = l.New()
-	cfg config.Config
-	ctx context.Context
-
-	ctxCancel     context.CancelFunc
-	healthservice = health.New()
-)
+var ll = l.New()
 
 func main() {
 	cc.InitFlags()
 	cc.ParseFlags()
 
 	var err error
-	cfg, err = config.Load()
+	cfg, err := config.Load()
 	if err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment("notifier", cfg.Env)
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite)
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
@@ -56,7 +49,7 @@ func main() {
 	}
 	wl.Init(cmenv.Env(), wl.EtopServer)
 
-	ctx, ctxCancel = context.WithCancel(context.Background())
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)
 		signal.Notify(osSignal, syscall.SIGINT, syscall.SIGTERM)
@@ -123,10 +116,12 @@ func main() {
 		Handler: mux,
 	}
 
+	redisStore := redis.Connect(cfg.Redis)
+
 	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
-	healthservice.RegisterHTTPHandler(mux)
-	healthservice.MarkReady()
+	healthService := health.New(redisStore)
+	healthService.RegisterHTTPHandler(mux)
 	go func() {
 		defer ctxCancel()
 		err := svr.ListenAndServe()
@@ -136,8 +131,8 @@ func main() {
 		ll.Sync()
 	}()
 
-	ll.SendMessage(fmt.Sprintf("–––\n✨ etop-notification started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
-	defer ll.SendMessage("👹 etop-notification stopped 👹\n–––")
+	healthService.MarkReady()
+	defer healthService.Shutdown()
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()

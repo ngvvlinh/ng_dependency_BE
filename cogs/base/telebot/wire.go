@@ -10,6 +10,7 @@ func DefaultConfig() cc.TelegramBot {
 			"import":  0,
 			"sms":     0,
 			"high":    0,
+			"deploy":  0,
 		},
 	}
 }

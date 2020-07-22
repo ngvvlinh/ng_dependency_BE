@@ -43,7 +43,6 @@ import (
 	"o.o/backend/com/shopping/tradering"
 	"o.o/backend/com/summary"
 	"o.o/backend/pkg/common/apifw/captcha"
-	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/etop/api"
@@ -68,8 +67,6 @@ import (
 func Build(
 	ctx context.Context,
 	cfg config.Config,
-	eventBus bus.Bus,
-	healthServer *health.Service,
 	consumer mq.KafkaConsumer,
 ) (Output, func(), error) {
 	panic(wire.Build(

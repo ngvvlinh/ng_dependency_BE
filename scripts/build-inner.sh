@@ -49,7 +49,6 @@ etop)
     build ./cmd/etop-event-handler    $BUILD_EVENT_HANDLER
     build ./cmd/etop-uploader         $BUILD_UPLOADER
     build ./cmd/pgevent-forwarder     $BUILD_PGEVENT_FORWARDER
-    build ./cmd/shipping-sync-service $BUILD_SYNC_SERVICE
     build ./cmd/etop-notifier         $BUILD_NOTIFIER
     build ./cmd/etop-etl              $BUILD_ETL
     build ./cmd/fabo-sync-service     $BUILD_FABO_SYNC_SERVICE

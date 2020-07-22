@@ -53,6 +53,7 @@ import (
 type Output struct {
 	Servers     []lifecycle.HTTPServer
 	EventStream *eventstream.EventStream
+	Health      *health.Service
 
 	// handlers
 	Handler   *handler.Handler

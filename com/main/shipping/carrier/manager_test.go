@@ -6,6 +6,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/assert"
+
 	"o.o/api/main/connectioning"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/backend/com/main/shipping/sharemodel"
@@ -22,7 +23,7 @@ var (
 func TestShipmentManager(t *testing.T) {
 	ctx := bus.Ctx()
 	if cmenv.Env() == 0 {
-		cmenv.SetEnvironment(cmenv.EnvDev.String())
+		cmenv.SetEnvironment("test", cmenv.EnvDev.String())
 	}
 	mockBus, eventBus := bus.New(), bus.New()
 	mockBus.MockHandler(func(query *connectioning.GetConnectionByIDQuery) error {

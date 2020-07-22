@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -46,32 +45,24 @@ import (
 	"o.o/common/l"
 )
 
-var (
-	ll  = l.New()
-	cfg config.Config
-	ctx context.Context
-
-	ctxCancel     context.CancelFunc
-	healthservice = health.New()
-)
+var ll = l.New()
 
 func main() {
 	cc.InitFlags()
 	cc.ParseFlags()
 
-	var err error
-	cfg, err = config.Load()
+	cfg, err := config.Load()
 	if err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment("event-handler", cfg.Env)
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 
-	ctx, ctxCancel = context.WithCancel(context.Background())
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)
 		signal.Notify(osSignal, syscall.SIGINT, syscall.SIGTERM)
@@ -186,8 +177,9 @@ func main() {
 
 	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
-	healthservice.RegisterHTTPHandler(mux)
-	healthservice.MarkReady()
+	healthService := health.New(redisStore)
+	healthService.RegisterHTTPHandler(mux)
+
 	go func() {
 		defer ctxCancel()
 		err := svr.ListenAndServe()
@@ -197,8 +189,8 @@ func main() {
 		ll.Sync()
 	}()
 
-	ll.SendMessage(fmt.Sprintf("–––\n✨ etop-handler started on %v✨\n%v", cmenv.Env(), cm.CommitMessage()))
-	defer ll.SendMessage("👹 etop-handler stopped 👹\n–––")
+	defer healthService.Shutdown()
+	healthService.MarkReady()
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()

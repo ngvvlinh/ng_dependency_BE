@@ -26,7 +26,7 @@ func main() {
 	// load config
 	cfg, err := config.Load()
 	ll.Must(err, "can not load config")
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment("calc1", cfg.Env)
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}

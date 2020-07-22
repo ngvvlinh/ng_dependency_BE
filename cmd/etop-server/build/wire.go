@@ -48,7 +48,6 @@ import (
 	"o.o/backend/com/summary"
 	"o.o/backend/com/web/webserver"
 	"o.o/backend/pkg/common/apifw/captcha"
-	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
@@ -81,8 +80,6 @@ import (
 func Build(
 	ctx context.Context,
 	cfg config.Config,
-	eventBus bus.Bus,
-	healthServer *health.Service,
 	partnerAuthURL partner.AuthURL,
 ) (Output, func(), error) {
 	panic(wire.Build(

@@ -27,12 +27,7 @@ import (
 )
 
 var (
-	ll  = l.New()
-	cfg config.Config
-	ctx context.Context
-
-	ctxCancel     context.CancelFunc
-	healthservice = health.New()
+	ll = l.New()
 
 	flPrintTopics = flag.Bool("print-topics", false, "Print all topics then exit")
 )
@@ -41,19 +36,16 @@ func main() {
 	cc.InitFlags()
 	cc.ParseFlags()
 
-	var err error
-	cfg, err = config.Load()
-	if err != nil {
-		ll.Fatal("Error while loading config", l.Error(err))
-	}
+	cfg, err := config.Load()
+	ll.Must(err, "can not load config", l.Error(err))
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment("pgevent-forwarder", cfg.Env)
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 
-	ctx, ctxCancel = context.WithCancel(context.Background())
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)
 		signal.Notify(osSignal, syscall.SIGINT, syscall.SIGTERM)
@@ -66,14 +58,10 @@ func main() {
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 
-	if err := cfg.Postgres.RegisterCloudSQL(); err != nil {
-		ll.Fatal("Error while registering cloudsql", l.Error(err))
-	}
+	ll.Must(cfg.Postgres.RegisterCloudSQL(), "can not register cloudsql", l.Error(err))
 
 	producer, err := mq.NewKafkaProducer(ctx, cfg.Kafka.Brokers)
-	if err != nil {
-		ll.Fatal("Error while connecting to Kafka", l.Error(err))
-	}
+	ll.Must(err, "can not connect to Kafka", l.Error(err))
 
 	topics := []eventhandler.TopicDef{}
 	topics = append(topics, etophandler.Topics()...)
@@ -84,9 +72,8 @@ func main() {
 	}
 
 	sMain, err := pgevent.NewService(ctx, model.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
-	if err != nil {
-		ll.Fatal("Error while listening to Postgres")
-	}
+	ll.Must(err, "Error while listening to Postgres")
+
 	pgeventapi.Init(&sMain)
 
 	sNotifier, err := pgevent.NewService(ctx, model.DBNotifier, cfg.PostgresNotifier, producer, cfg.Kafka.TopicPrefix, topics)
@@ -113,17 +100,17 @@ func main() {
 		}
 		ll.Sync()
 	}()
-	healthservice.RegisterHTTPHandler(mux)
-	healthservice.MarkReady()
+	healthService := health.New(nil)
+	healthService.RegisterHTTPHandler(mux)
+	defer healthService.Shutdown()
+	healthService.MarkReady()
 
 	ll.Info("Start forwarding events from Postgres to Kafka")
 	pgevent.StartForwardings(ctx, []pgevent.Service{sMain, sNotifier})
-	// s.StartForwarding(ctx)
+
 	// Wait for OS signal or any error from services
 	<-ctx.Done()
 	_ = svr.Shutdown(context.Background())
-
-	ll.Info("Gracefully stopped!")
 }
 
 func printAllTopics(topics []eventhandler.TopicDef) {

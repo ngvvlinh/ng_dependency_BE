@@ -14,6 +14,7 @@ type Database struct {
 type Config struct {
 	MapDB       map[string]Database `yaml:"databases"`
 	HTTP        cc.HTTP             `yaml:"http"`
+	Redis       cc.Redis            `yaml:"redis"`
 	TelegramBot cc.TelegramBot      `yaml:"telegram_bot"`
 	Env         string              `yaml:"env"`
 }
@@ -63,7 +64,8 @@ func Default() Config {
 			Host: "",
 			Port: 8081,
 		},
-		Env: "dev",
+		Redis: cc.DefaultRedis(),
+		Env:   "dev",
 	}
 	return cfg
 }

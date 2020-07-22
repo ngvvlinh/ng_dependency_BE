@@ -22,31 +22,21 @@ import (
 	"o.o/common/l"
 )
 
-var (
-	ll  = l.New()
-	cfg config.Config
-	ctx context.Context
-
-	ctxCancel     context.CancelFunc
-	healthservice = health.New()
-)
+var ll = l.New()
 
 func main() {
 	cc.InitFlags()
 	flag.Parse()
 
-	var err error
-	cfg, err = config.Load()
-	if err != nil {
-		ll.Fatal("error while loading config", l.Error(err))
-	}
+	cfg, err := config.Load()
+	ll.Must(err, "can not load config")
 
-	cmenv.SetEnvironment(cfg.Env)
+	cmenv.SetEnvironment("etop-etl", cfg.Env)
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
 
-	ctx, ctxCancel = context.WithCancel(context.Background())
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	go func() {
 		osSignal := make(chan os.Signal, 1)
 		signal.Notify(osSignal, syscall.SIGINT, syscall.SIGTERM)
@@ -81,8 +71,10 @@ func main() {
 		Handler: mux,
 	}
 	metrics.RegisterHTTPHandler(mux)
-	healthservice.RegisterHTTPHandler(mux)
-	healthservice.MarkReady()
+	healthService := health.New(nil)
+	healthService.RegisterHTTPHandler(mux)
+	defer healthService.Shutdown()
+	healthService.MarkReady()
 	go func() {
 		defer ctxCancel()
 		err := svr.ListenAndServe()
@@ -94,6 +86,4 @@ func main() {
 
 	<-ctx.Done()
 	_ = svr.Shutdown(context.Background())
-	ll.Info("Waiting for all requests to finish")
-	ll.Info("Gracefully stopped!")
 }

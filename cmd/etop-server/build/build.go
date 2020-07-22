@@ -58,6 +58,7 @@ var ll = l.New()
 
 type Output struct {
 	Servers []lifecycle.HTTPServer
+	Health  *health.Service
 
 	// pm
 	_identityPM       *identitypm.ProcessManager
