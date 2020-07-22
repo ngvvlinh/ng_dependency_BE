@@ -127,6 +127,12 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 	}
 
 	if externalPost == nil {
+		// Case post not exists in db and action on this comment is remove,
+		// don't do anything prevent for create invalid conversation.
+		if feedChange.IsRemove() {
+			return nil
+		}
+
 		post, err := wh.fbClient.CallAPIGetPost(postID, accessToken)
 		if err != nil {
 			return err
@@ -144,6 +150,10 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 	}
 
 	if externalCmt == nil {
+		if feedChange.IsRemove() {
+			return nil
+		}
+
 		var createCmtCmd []*fbmessaging.CreateFbExternalCommentArgs
 		comment, err := wh.fbClient.CallAPICommentByID(accessToken, commentID)
 		if err != nil {

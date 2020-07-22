@@ -130,6 +130,14 @@ func (v FeedChange) IsOnParentPost() bool {
 	return v.Value.Item == "status"
 }
 
+func (v FeedChange) IsRemove() bool {
+	return v.Value.Verb == FeedRemove
+}
+
+func (v FeedChange) IsDelete() bool {
+	return v.Value.Verb == FeedDelete
+}
+
 type FeedVerb string
 
 // add, block, edit, edited, delete, follow, hide, mute, remove, unblock, unhide, update
