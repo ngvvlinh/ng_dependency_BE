@@ -13532,6 +13532,9 @@
         "include_insurance": {
           "type": "boolean"
         },
+        "insurance_value": {
+          "type": "integer"
+        },
         "lines": {
           "type": "array",
           "items": {

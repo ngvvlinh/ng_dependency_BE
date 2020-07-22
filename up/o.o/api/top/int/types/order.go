@@ -411,6 +411,8 @@ type Fulfillment struct {
 	AdminNote                          string                 `json:"admin_note"`
 	UpdatedBy                          dot.ID                 `json:"updated_by"`
 
+	InsuranceValue int `json:"insurance_value"`
+
 	ConnectionID  dot.ID `json:"connection_id"`
 	ShopCarrierID dot.ID `json:"shop_carrier_id"`
 }

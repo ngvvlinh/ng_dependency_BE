@@ -725,6 +725,7 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 		XShippingSubState:                  m.ExternalShippingSubState,
 		ActualCompensationAmount:           m.ActualCompensationAmount,
 		ConnectionID:                       m.ConnectionID,
+		InsuranceValue:                     m.InsuranceValue,
 		UpdatedBy:                          m.UpdatedBy,
 		ShopCarrierID:                      m.ShopCarrierID,
 	}
