@@ -255,6 +255,14 @@ func (s *FulfillmentStore) UpdateFulfillmentDB(ffm *model.Fulfillment) error {
 	return s.query().Where(s.preds).ShouldUpdate(ffm)
 }
 
+func (s *FulfillmentStore) UpdateFfmDB(ffm *model.Fulfillment) error {
+	if len(s.preds) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
+	}
+	_, err := s.query().Where(s.preds).Update(ffm)
+	return err
+}
+
 func (s *FulfillmentStore) UpdateFulfillment(ffm *shipping.Fulfillment) error {
 	var ffmDB model.Fulfillment
 	if err := scheme.Convert(ffm, &ffmDB); err != nil {

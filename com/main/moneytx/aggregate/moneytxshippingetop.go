@@ -170,6 +170,7 @@ func (a *MoneyTxAggregate) ConfirmMoneyTxShippingEtop(ctx context.Context, args 
 	}
 
 	var totalCOD, totalAmount, totalOrders int
+	var isContainMoneyTxManual bool
 	moneyTxShippingIDs := make([]dot.ID, len(moneyTxShippings))
 	for i, mtxs := range moneyTxShippings {
 		if mtxs.Status != status3.Z {
@@ -179,6 +180,9 @@ func (a *MoneyTxAggregate) ConfirmMoneyTxShippingEtop(ctx context.Context, args 
 		totalCOD += mtxs.TotalCOD
 		totalAmount += mtxs.TotalAmount
 		totalOrders += mtxs.TotalOrders
+		if mtxs.Type == "manual" {
+			isContainMoneyTxManual = true
+		}
 	}
 
 	query := &shipping.ListFulfillmentsByMoneyTxQuery{
@@ -226,8 +230,10 @@ func (a *MoneyTxAggregate) ConfirmMoneyTxShippingEtop(ctx context.Context, args 
 			TotalCOD:              dot.Int(totalCOD),
 			TotalAmount:           dot.Int(totalAmount),
 			TotalOrders:           dot.Int(totalOrders),
-			TotalFee:              dot.Int(totalCOD - totalAmount),
 			TotalMoneyTransaction: dot.Int(len(moneyTxShippings)),
+		}
+		if !isContainMoneyTxManual {
+			mtxseUpdateStatistic.TotalFee = dot.Int(totalCOD - totalAmount)
 		}
 		if err := a.moneyTxShippingEtopStore(ctx).UpdateMoneyTxShippingEtopStatistics(mtxseUpdateStatistic); err != nil {
 			return err
@@ -330,12 +336,20 @@ func (a *MoneyTxAggregate) prepareMoneyTxShippingEtop(ctx context.Context, money
 		return nil, err
 	}
 	ffms := query.Result
+
+	// Tuan hotfix: 23/07/2020
+	totalAmountManual := 0
+
 	for _, mtxs := range moneyTxShippings {
 		if mtxs.Status != status3.Z {
 			return nil, cm.Errorf(cm.FailedPrecondition, nil, "MoneyTxShipping does not valid (id = %v)", mtxs.ID)
 		}
 		if mtxs.MoneyTransactionShippingEtopID != 0 && mtxs.MoneyTransactionShippingEtopID != moneyTxShippingEtopID {
 			return nil, cm.Errorf(cm.FailedPrecondition, nil, "MoneyTxShipping belongs to another MoneyTxShippingEtop. (money_tx_shipping_id = %v, money_tx_shipping_etop_id = %v", mtxs.ID, mtxs.MoneyTransactionShippingEtopID)
+		}
+		// Tuan hotfix: 23/07/2020
+		if mtxs.Type == "manual" {
+			totalAmountManual += mtxs.TotalAmount
 		}
 	}
 
@@ -353,6 +367,10 @@ func (a *MoneyTxAggregate) prepareMoneyTxShippingEtop(ctx context.Context, money
 	if statistics.TotalCOD != totalCOD {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Total COD does not match")
 	}
+
+	// Tuan hotfix: 23/07/2020
+	statistics.TotalAmount += totalAmountManual
+
 	if statistics.TotalAmount != totalAmount {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Total Amount does not match")
 	}

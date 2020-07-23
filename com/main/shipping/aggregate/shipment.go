@@ -550,7 +550,7 @@ func (a *Aggregate) UpdateFulfillmentsCODTransferedAt(ctx context.Context, args 
 	update := &shipmodel.Fulfillment{
 		CODEtopTransferedAt: args.CODTransferedAt,
 	}
-	return query.UpdateFulfillmentDB(update)
+	return query.UpdateFfmDB(update)
 }
 
 func (a *Aggregate) RemoveFulfillmentsMoneyTxID(ctx context.Context, args *shipping.RemoveFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
