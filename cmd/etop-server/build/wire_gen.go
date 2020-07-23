@@ -124,6 +124,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
+	"o.o/backend/pkg/etop/logic/hotfix"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/handlers"
@@ -853,7 +854,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		GHNImporter:       ghnImporter,
 		JTExpressImporter: jtImporter,
 	}
-	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, session)
+	hotFixMoneyTxService := hotfix.New(mainDB)
+	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, hotFixMoneyTxService, session)
 	uploadConfig := cfg.Upload
 	uploader, err := _uploader.NewUploader(uploadConfig)
 	if err != nil {

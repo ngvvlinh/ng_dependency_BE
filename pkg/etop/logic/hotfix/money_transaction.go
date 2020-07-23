@@ -19,11 +19,12 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 )
 
-var db *cmsql.Database
+type HotFixMoneyTxService struct {
+	db *cmsql.Database
+}
 
-func New(database com.MainDB) error {
-	db = database
-	return nil
+func New(database com.MainDB) *HotFixMoneyTxService {
+	return &HotFixMoneyTxService{db: database}
 }
 
 type Line struct {
@@ -34,7 +35,7 @@ type Line struct {
 	Note      string
 }
 
-func HandleImportMoneyTransactionManual(c *httpx.Context) error {
+func (s *HotFixMoneyTxService) HandleImportMoneyTransactionManual(c *httpx.Context) error {
 	form, err := c.MultipartForm()
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Invalid request")
@@ -82,7 +83,7 @@ func HandleImportMoneyTransactionManual(c *httpx.Context) error {
 		lines = append(lines, line)
 	}
 
-	_err := db.InTransaction(bus.Ctx(), func(s cmsql.QueryInterface) error {
+	_err := s.db.InTransaction(bus.Ctx(), func(s cmsql.QueryInterface) error {
 		for _, line := range lines {
 			if err := createMoneyTransactionShipping(s, line); err != nil {
 				return err

@@ -54,6 +54,7 @@ import (
 	shop_min "o.o/backend/pkg/etop/api/shop/_min"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/eventstream"
+	hotfixmoneytx "o.o/backend/pkg/etop/logic/hotfix"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
 	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
 	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
@@ -94,6 +95,7 @@ func Build(
 		_base.WireSet,
 		shipment_fabo.WireSet,
 		database_min.WireSet,
+		hotfixmoneytx.WireSet,
 		sms_min.WireSet,
 		config_server.WireSet,
 		_uploader.WireSet,

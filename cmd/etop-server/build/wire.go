@@ -67,6 +67,7 @@ import (
 	"o.o/backend/pkg/etop/apix/webhook"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/eventstream"
+	hotfixmoneytx "o.o/backend/pkg/etop/logic/hotfix"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
 	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
 	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
@@ -111,6 +112,7 @@ func Build(
 		payment_all.WireSet,
 		shipment_all.WireSet,
 		database_all.WireSet,
+		hotfixmoneytx.WireSet,
 		sms_all.WireSet,
 		config_server.WireSet,
 		_producer.WireSet,
