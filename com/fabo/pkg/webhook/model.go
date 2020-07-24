@@ -32,19 +32,14 @@ func (msg *WebhookMessages) MessageType() WebhookMessageType {
 }
 
 func (msg *WebhookMessages) IsOwnerPageComment() bool {
-	if msg.MessageType() == WebhookFeed {
-		return false
-	}
-
 	for _, entry := range msg.Entry {
 		pageId := entry.ID
 		for _, change := range entry.Changes {
-			if change.Value.From.ID == pageId {
+			if change.Value.From.ID == pageId && change.IsComment() {
 				return true
 			}
 		}
 	}
-
 	return false
 }
 

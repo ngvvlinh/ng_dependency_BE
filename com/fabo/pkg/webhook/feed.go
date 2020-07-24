@@ -99,7 +99,7 @@ func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedCha
 				FbExternalPosts: []*fbmessaging.CreateFbExternalPostArgs{createExternalPostCmd},
 			})
 		} else {
-			return wh.updateFeedPostMessage(ctx, postID, feedChange.Value.Message)
+			return wh.updateFeedPostMessage(ctx, childPostID, feedChange.Value.Message)
 		}
 
 	case feedChange.IsOnParentPost():
