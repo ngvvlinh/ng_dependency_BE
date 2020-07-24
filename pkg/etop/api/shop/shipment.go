@@ -108,8 +108,8 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *api.CreateF
 func (s *ShipmentService) UpdateFulfillmentInfo(ctx context.Context, q *api.UpdateFulfillmentInfoRequest) (res *pbcm.UpdatedResponse, _ error) {
 	updateFulfillmentInfo := &shipping.ShopUpdateFulfillmentInfoCommand{
 		FulfillmentID:    q.FulfillmentID,
-		AddressTo:        convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.PickupAddress),
-		AddressFrom:      convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ShippingAddress),
+		AddressTo:        convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ShippingAddress),
+		AddressFrom:      convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.PickupAddress),
 		IncludeInsurance: q.IncludeInsurance,
 		InsuranceValue:   q.InsuranceValue,
 		GrossWeight:      q.GrossWeight,
