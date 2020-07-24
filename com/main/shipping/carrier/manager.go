@@ -38,7 +38,6 @@ import (
 	"o.o/backend/pkg/common/cipherx"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/etop/logic/etop_shipping_price"
 	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/model"
 	directclient "o.o/backend/pkg/integration/shipping/direct/client"
@@ -90,8 +89,6 @@ type ConfigEndpoint struct {
 	Endpoint string
 }
 
-type FlagApplyShipmentPrice bool
-
 func NewShipmentManager(
 	eventBus capi.EventBus,
 	locationQS location.QueryBus,
@@ -100,21 +97,19 @@ func NewShipmentManager(
 	redisS redis.Store,
 	shipmentServiceQS shipmentservice.QueryBus,
 	shipmentPriceQS shipmentprice.QueryBus,
-	flagApplyShipmentPrice FlagApplyShipmentPrice,
 	cfg Config,
 ) (*ShipmentManager, error) {
 	_cipherx, _ := cipherx.NewCipherx(SecretKey)
 	sm := &ShipmentManager{
-		eventBus:               eventBus,
-		LocationQS:             locationQS,
-		ConnectionQS:           connectionQS,
-		connectionAggr:         connectionAggr,
-		Env:                    cmenv.PartnerEnv(),
-		redisStore:             redisS,
-		cipherx:                _cipherx,
-		shipmentServiceQS:      shipmentServiceQS,
-		shipmentPriceQS:        shipmentPriceQS,
-		FlagApplyShipmentPrice: bool(flagApplyShipmentPrice),
+		eventBus:          eventBus,
+		LocationQS:        locationQS,
+		ConnectionQS:      connectionQS,
+		connectionAggr:    connectionAggr,
+		Env:               cmenv.PartnerEnv(),
+		redisStore:        redisS,
+		cipherx:           _cipherx,
+		shipmentServiceQS: shipmentServiceQS,
+		shipmentPriceQS:   shipmentPriceQS,
 	}
 	for _, endpoint := range cfg.Endpoints {
 		err := sm.setWebhookEndpoint(endpoint.Provider, endpoint.Endpoint)
@@ -337,52 +332,21 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	}
 
 	isMakeupPrice := false
-	makeupPrice := 0
+	makeupPriceMain := 0
 	var providerService *shippingsharemodel.AvailableShippingService
-	if m.FlagApplyShipmentPrice {
-		// áp dụng bảng giá TopShip/setting giá
-		providerService, err = CheckShippingService(ffm, allServices)
-		if err != nil {
-			return err
-		}
-
-		// Check service with markup fee
-		providerServiceID := providerService.ProviderServiceID
-		if strings.HasPrefix(providerServiceID, PrefixMakeupPriceCode) {
-			isMakeupPrice = true
-			makeupPrice = providerService.ShippingFeeMain
-			providerServiceID = providerServiceID[len(PrefixMakeupPriceCode):]
-		}
-		providerService.ProviderServiceID = providerServiceID
-	} else {
-		// backward-compatible
-		// Kiểm tra gói ETOP
-		var etopService *shippingsharemodel.AvailableShippingService
-		sType, isEtopService := etop_shipping_price.ParseEtopServiceCode(ffm.ProviderServiceID)
-		if isEtopService {
-			// ETOP serivce
-			// => Get cheapest provider service
-			etopService, err = GetEtopServiceFromSeviceCode(ffm.ProviderServiceID, ffm.ShippingServiceFee, allServices)
-			if err != nil {
-				return err
-			}
-
-			providerService = shipping_provider.GetCheapestService(allServices, sType)
-			if providerService == nil {
-				return cm.Error(cm.InvalidArgument, "Không có gói vận chuyển phù hợp.", nil)
-			}
-			isMakeupPrice = true
-			makeupPrice = etopService.ShippingFeeMain
-		} else {
-			// Provider service
-			// => Check price
-			// => Get this service
-			providerService, err = CheckShippingService(ffm, allServices)
-			if err != nil {
-				return err
-			}
-		}
+	providerService, err = CheckShippingService(ffm, allServices)
+	if err != nil {
+		return err
 	}
+
+	// Check service with makeup fee
+	providerServiceID := providerService.ProviderServiceID
+	if strings.HasPrefix(providerServiceID, PrefixMakeupPriceCode) {
+		isMakeupPrice = true
+		makeupPriceMain = providerService.ShippingFeeMain
+		providerServiceID = providerServiceID[len(PrefixMakeupPriceCode):]
+	}
+	providerService.ProviderServiceID = providerServiceID
 
 	_args := args.ToShipmentServiceArgs(ffm.ConnectionID, ffm.ShopID)
 	ffmToUpdate, err := driver.CreateFulfillment(ctx, ffm, _args, providerService)
@@ -394,12 +358,10 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	ffmToUpdate.ShippingServiceName = providerService.Name
 
 	if isMakeupPrice {
-		ffmToUpdate.ApplyEtopPrice(makeupPrice)
-		if m.FlagApplyShipmentPrice {
-			ffmToUpdate.ShippingFeeShopLines = providerService.ShippingFeeLines
-		} else {
-			ffmToUpdate.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, dot.Int(ffmToUpdate.EtopAdjustedShippingFeeMain))
-		}
+		ffmToUpdate.ApplyEtopPrice(makeupPriceMain)
+		ffmToUpdate.ShippingFeeShopLines = providerService.ShippingFeeLines
+	} else {
+		ffmToUpdate.ShippingFeeShopLines = shippingsharemodel.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, false, dot.Int(0))
 	}
 	ffmToUpdate.ExternalAffiliateID = driver.GetAffiliateID()
 	ffmToUpdate.ChargeableWeight = weight
@@ -782,12 +744,6 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 	}
 
 	_args := args.ToShipmentServiceArgs(connID, accountID)
-	if !m.FlagApplyShipmentPrice {
-		if conn.ConnectionMethod == connection_type.ConnectionMethodBuiltin {
-			_args.IncludeTopshipServices = true
-		}
-	}
-
 	services, err = driver.GetShippingServices(ctx, _args)
 	if err != nil {
 		// ll.Error("Get service error", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
@@ -802,7 +758,7 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 			Name:     conn.Name,
 			ImageURL: conn.ImageURL,
 		}
-		if !m.FlagApplyShipmentPrice || conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
+		if conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
 			// không áp dụng bảng giá
 			res = append(res, s)
 			continue

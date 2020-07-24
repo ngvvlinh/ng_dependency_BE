@@ -95,7 +95,5 @@ func (a *GetShippingServicesArgs) ToShipmentServiceArgs(arbitraryID, accountID d
 		BasketValue:      a.BasketValue,
 		CODAmount:        a.CODAmount,
 		Coupon:           a.Coupon,
-
-		IncludeTopshipServices: false, // fill it
 	}
 }

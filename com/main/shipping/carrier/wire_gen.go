@@ -16,13 +16,13 @@ import (
 
 // Injectors from wire.build.go:
 
-func MockManager(mockBus capi.Bus, eventBus capi.EventBus, redisStore redis.Store, flag FlagApplyShipmentPrice, cfg Config) (*ShipmentManager, error) {
+func MockManager(mockBus capi.Bus, eventBus capi.EventBus, redisStore redis.Store, cfg Config) (*ShipmentManager, error) {
 	queryBus := location.NewQueryBus(mockBus)
 	connectioningQueryBus := connectioning.NewQueryBus(mockBus)
 	commandBus := connectioning.NewCommandBus(mockBus)
 	shipmentserviceQueryBus := shipmentservice.NewQueryBus(mockBus)
 	shipmentpriceQueryBus := shipmentprice.NewQueryBus(mockBus)
-	shipmentManager, err := NewShipmentManager(eventBus, queryBus, connectioningQueryBus, commandBus, redisStore, shipmentserviceQueryBus, shipmentpriceQueryBus, flag, cfg)
+	shipmentManager, err := NewShipmentManager(eventBus, queryBus, connectioningQueryBus, commandBus, redisStore, shipmentserviceQueryBus, shipmentpriceQueryBus, cfg)
 	if err != nil {
 		return nil, err
 	}

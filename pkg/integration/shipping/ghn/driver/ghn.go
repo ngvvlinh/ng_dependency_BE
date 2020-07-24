@@ -19,7 +19,6 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/randgenerator"
-	"o.o/backend/pkg/etop/logic/etop_shipping_price"
 	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghn"
@@ -215,29 +214,7 @@ func (d *GHNDriver) GetShippingServices(ctx context.Context, args *carriertypes.
 		},
 	}
 
-	carrierServices, err := d.CalcShippingFee(ctx, cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	if !args.IncludeTopshipServices {
-		return carrierServices, nil
-	}
-
-	// get ETOP services
-	etopServiceArgs := &etop_shipping_price.GetEtopShippingServicesArgs{
-		ArbitraryID:  args.AccountID,
-		Carrier:      shipping_provider.GHN,
-		FromProvince: fromProvince,
-		ToProvince:   toProvince,
-		ToDistrict:   toDistrict,
-		Weight:       args.ChargeableWeight,
-	}
-	etopServices := etop_shipping_price.GetEtopShippingServices(etopServiceArgs)
-	etopServices, _ = etop_shipping_price.FillInfoEtopServices(carrierServices, etopServices)
-
-	allServices := append(carrierServices, etopServices...)
-	return allServices, nil
+	return d.CalcShippingFee(ctx, cmd)
 }
 
 func (d *GHNDriver) GetServiceName(code string) (serviceName string, ok bool) {

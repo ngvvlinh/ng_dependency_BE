@@ -56,8 +56,6 @@ type GetShippingServicesArgs struct {
 	BasketValue      int
 	CODAmount        int
 	Coupon           string
-
-	IncludeTopshipServices bool
 }
 
 func (args *GetShippingServicesArgs) GetInsuranceAmount(maxValueFreeInsurance int) int {

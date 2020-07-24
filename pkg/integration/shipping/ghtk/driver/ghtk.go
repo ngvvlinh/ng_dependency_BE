@@ -18,7 +18,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/randgenerator"
-	"o.o/backend/pkg/etop/logic/etop_shipping_price"
 	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghtk"
@@ -218,30 +217,7 @@ func (d *GHTKDriver) GetShippingServices(ctx context.Context, args *carriertypes
 			District:        toDistrict.Name,
 		},
 	}
-	carrierServices, err := d.CalcShippingFee(ctx, cmd)
-	if err != nil {
-		return nil, err
-	}
-
-	if !args.IncludeTopshipServices {
-		return carrierServices, nil
-	}
-
-	// get ETOP services
-	etopServiceArgs := &etop_shipping_price.GetEtopShippingServicesArgs{
-		ArbitraryID:  args.AccountID,
-		Carrier:      shipping_provider.GHTK,
-		FromProvince: fromProvince,
-		ToProvince:   toProvince,
-		ToDistrict:   toDistrict,
-		Weight:       args.ChargeableWeight,
-	}
-	etopServices := etop_shipping_price.GetEtopShippingServices(etopServiceArgs)
-	etopServices, _ = etop_shipping_price.FillInfoEtopServices(carrierServices, etopServices)
-
-	allServices := append(carrierServices, etopServices...)
-	return allServices, nil
-
+	return d.CalcShippingFee(ctx, cmd)
 }
 
 func (d *GHTKDriver) CalcShippingFee(ctx context.Context, args *CalcShippingFeeArgs) ([]*shippingsharemodel.AvailableShippingService, error) {

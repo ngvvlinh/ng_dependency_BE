@@ -102,7 +102,6 @@ func Build(
 			"WhiteLabel",
 			"SharedConfig",
 			"AhamoveWebhook",
-			"FlagApplyShipmentPrice",
 			"FlagEnableNewLinkInvitation",
 			"FlagFaboOrderAutoConfirmPaymentStatus",
 		),

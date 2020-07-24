@@ -710,8 +710,8 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 		return _err
 	}()
 
-	if !a.shimentManager.FlagApplyShipmentPrice || !ffm.EtopPriceRule {
-		update.ShippingFeeShopLines = shipping.GetShippingFeeShopLines(providerFeeLines, ffm.EtopPriceRule, dot.Int(ffm.EtopAdjustedShippingFeeMain))
+	if !ffm.EtopPriceRule {
+		update.ShippingFeeShopLines = shipping.GetShippingFeeShopLines(providerFeeLines, false, dot.Int(0))
 		return nil
 	}
 

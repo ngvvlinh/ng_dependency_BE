@@ -60,7 +60,7 @@ func TestShipmentManager(t *testing.T) {
 			},
 		},
 	}
-	shipmentManager, err := MockManager(mockBus, eventBus, nil, false, cfg)
+	shipmentManager, err := MockManager(mockBus, eventBus, nil, cfg)
 	if err != nil {
 		panic(err)
 	}

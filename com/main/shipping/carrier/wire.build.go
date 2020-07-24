@@ -17,7 +17,6 @@ func MockManager(
 	mockBus capi.Bus,
 	eventBus capi.EventBus,
 	redisStore redis.Store,
-	flag FlagApplyShipmentPrice,
 	cfg Config,
 ) (*ShipmentManager, error) {
 	panic(wire.Build(
