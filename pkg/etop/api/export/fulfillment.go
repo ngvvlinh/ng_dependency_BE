@@ -155,7 +155,7 @@ func buildTableFulfillment(csvWriter *csv.Writer,
 	firstHeaders = append(firstHeaders, "")
 	w.AddColumn("Ngày tạo", func() string { return FirstLine(line, FormatDate(ffm.CreatedAt)) })
 	firstHeaders = append(firstHeaders, "")
-	w.AddColumn("Bảo hiểm", func() string { return FirstLine(line, LabelBool(ffm.IncludeInsurance)) })
+	w.AddColumn("Bảo hiểm", func() string { return FirstLine(line, LabelBool(ffm.IncludeInsurance.Apply(false))) })
 	firstHeaders = append(firstHeaders, "")
 	w.AddColumn("Lý do huỷ", func() string { return FirstLine(line, ffm.CancelReason) })
 
@@ -262,7 +262,7 @@ func buildTableFulfillment(csvWriter *csv.Writer,
 	})
 	firstHeaders = append(firstHeaders, "")
 	w.AddColumn("Giá trị bảo hiểm", func() string {
-		if !ffm.IncludeInsurance {
+		if !ffm.IncludeInsurance.Apply(false) {
 			return ""
 		}
 		return FirstLine(line, FormatInt(ffm.BasketValue))

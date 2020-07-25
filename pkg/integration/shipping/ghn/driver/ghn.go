@@ -155,7 +155,7 @@ func (d *GHNDriver) CreateFulfillment(
 		},
 		ExpectedPickAt:     service.ExpectedPickAt,
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
-		InsuranceValue:     insuranceValue,
+		InsuranceValue:     dot.Int(insuranceValue),
 	}
 	// Calc expected delivery at
 	// add some rules

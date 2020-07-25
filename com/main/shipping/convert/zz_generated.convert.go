@@ -465,8 +465,8 @@ func apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping
 	out.ShippingServiceName = out.ShippingServiceName                               // no change
 	out.ShippingNote = arg.ShippingNote.Apply(out.ShippingNote)                     // apply change
 	out.TryOn = arg.TryOn                                                           // simple assign
-	out.IncludeInsurance = arg.IncludeInsurance.Apply(out.IncludeInsurance)         // apply change
-	out.InsuranceValue = arg.InsuranceValue.Apply(out.InsuranceValue)               // apply change
+	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
+	out.InsuranceValue = arg.InsuranceValue                                         // simple assign
 	out.Coupon = out.Coupon                                                         // no change
 	out.CreatedAt = out.CreatedAt                                                   // no change
 	out.UpdatedAt = out.UpdatedAt                                                   // no change

@@ -24,6 +24,7 @@ import (
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/clientv2"
+	"o.o/capi/dot"
 	"o.o/common/xerrors"
 )
 
@@ -169,7 +170,7 @@ func (d *GHNDriver) CreateFulfillment(
 		},
 		ExpectedPickAt:     service.ExpectedPickAt,
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
-		InsuranceValue:     insuranceValue,
+		InsuranceValue:     dot.Int(insuranceValue),
 	}
 	// Calc expected delivery at
 	// add some rules
@@ -215,6 +216,7 @@ func (d *GHNDriver) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fu
 	fromDistrict, fromWard := fromQuery.Result.District, fromQuery.Result.Ward
 	toDistrict, toWard := toQuery.Result.District, toQuery.Result.Ward
 
+	insuranceValue := ffm.InsuranceValue.Apply(0)
 	cmd := &ghnclient.UpdateOrderRequest{
 		OrderCode:      ffm.ShippingCode,
 		FromName:       ffm.AddressFrom.GetFullName(),
@@ -228,7 +230,7 @@ func (d *GHNDriver) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fu
 		ToWardCode:     toWard.GhnCode,
 		ToDistrictID:   toDistrict.GhnId,
 		Weight:         ffm.GrossWeight,
-		InsuranceValue: &ffm.InsuranceValue,
+		InsuranceValue: &insuranceValue,
 		Note:           note,
 		RequiredNote:   ghnNoteCode.String(),
 	}

@@ -9,6 +9,7 @@ import (
 	conversion "o.o/backend/pkg/common/conversion"
 	fulfillmentmodel "o.o/backend/zexp/etl/main/fulfillment/model"
 	orderconvert "o.o/backend/zexp/etl/main/order/convert"
+	dot "o.o/capi/dot"
 )
 
 /*
@@ -121,8 +122,8 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.ShippingCode = arg.ShippingCode                                             // simple assign
 	out.ShippingNote = arg.ShippingNote                                             // simple assign
 	out.TryOn = arg.TryOn                                                           // simple assign
-	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
-	out.InsuranceValue = 0                                                          // zero value
+	out.IncludeInsurance = dot.NullBool{}                                           // types do not match
+	out.InsuranceValue = dot.NullInt{}                                              // zero value
 	out.ShippingType = 0                                                            // zero value
 	out.ConnectionID = arg.ConnectionID                                             // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod                                     // simple assign
@@ -251,7 +252,7 @@ func convert_shippingmodel_Fulfillment_fulfillmentmodel_Fulfillment(arg *shippin
 	out.ShippingCode = arg.ShippingCode                                             // simple assign
 	out.ShippingNote = arg.ShippingNote                                             // simple assign
 	out.TryOn = arg.TryOn                                                           // simple assign
-	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
+	out.IncludeInsurance = false                                                    // types do not match
 	out.ConnectionID = arg.ConnectionID                                             // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod                                     // simple assign
 	out.ShippingServiceName = arg.ShippingServiceName                               // simple assign

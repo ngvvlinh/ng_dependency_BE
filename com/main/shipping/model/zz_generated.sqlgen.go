@@ -515,15 +515,15 @@ func (m *Fulfillment) Migration(db *cmsql.Database) {
 		},
 		"include_insurance": {
 			ColumnName:       "include_insurance",
-			ColumnType:       "bool",
-			ColumnDBType:     "bool",
+			ColumnType:       "dot.NullBool",
+			ColumnDBType:     "struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
 		"insurance_value": {
 			ColumnName:       "insurance_value",
-			ColumnType:       "int",
-			ColumnDBType:     "int",
+			ColumnType:       "dot.NullInt",
+			ColumnDBType:     "struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -885,8 +885,8 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ShippingCode),
 		core.String(m.ShippingNote),
 		m.TryOn,
-		core.Bool(m.IncludeInsurance),
-		core.Int(m.InsuranceValue),
+		m.IncludeInsurance,
+		m.InsuranceValue,
 		m.ShippingType,
 		m.ConnectionID,
 		m.ConnectionMethod,
@@ -997,8 +997,8 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ShippingCode),
 		(*core.String)(&m.ShippingNote),
 		&m.TryOn,
-		(*core.Bool)(&m.IncludeInsurance),
-		(*core.Int)(&m.InsuranceValue),
+		&m.IncludeInsurance,
+		&m.InsuranceValue,
 		&m.ShippingType,
 		&m.ConnectionID,
 		&m.ConnectionMethod,
@@ -1637,7 +1637,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.TryOn)
 	}
-	if m.IncludeInsurance {
+	if m.IncludeInsurance.Valid {
 		flag = true
 		w.WriteName("include_insurance")
 		w.WriteByte('=')
@@ -1645,7 +1645,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.IncludeInsurance)
 	}
-	if m.InsuranceValue != 0 {
+	if m.InsuranceValue.Valid {
 		flag = true
 		w.WriteName("insurance_value")
 		w.WriteByte('=')

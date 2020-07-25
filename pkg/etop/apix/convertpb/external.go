@@ -443,7 +443,7 @@ func PbFulfillment(m *shipmodel.Fulfillment) *exttypes.Fulfillment {
 		ShippingCode:             dot.String(m.ShippingCode),
 		ShippingNote:             dot.String(m.ShippingNote),
 		TryOn:                    m.TryOn,
-		IncludeInsurance:         dot.Bool(m.IncludeInsurance),
+		IncludeInsurance:         m.IncludeInsurance,
 		ConfirmStatus:            m.ConfirmStatus.Wrap(),
 		ShippingState:            m.ShippingState.Wrap(),
 		ShippingStatus:           m.ShippingStatus.Wrap(),

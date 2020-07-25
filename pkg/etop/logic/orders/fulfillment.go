@@ -500,7 +500,7 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *identitymodel.Shop,
 		ShippingCode:                       "", // after calling GHN
 		ShippingNote:                       order.ShippingNote,
 		TryOn:                              order.GetTryOn(),
-		IncludeInsurance:                   order.ShopShipping.IncludeInsurance,
+		IncludeInsurance:                   dot.Bool(order.ShopShipping.IncludeInsurance),
 
 		// After calling GHN
 		ExternalShippingName:        "",

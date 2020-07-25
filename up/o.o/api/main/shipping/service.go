@@ -181,7 +181,7 @@ type UpdateFulfillmentInfoArgs struct {
 	AddressFrom      *ordertypes.Address
 	IncludeInsurance dot.NullBool
 	InsuranceValue   dot.NullInt
-	GrossWeight      dot.NullInt
+	GrossWeight      int
 	TryOn            try_on.TryOnCode
 	ShippingNote     dot.NullString
 }

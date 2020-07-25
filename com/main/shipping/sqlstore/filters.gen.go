@@ -1136,44 +1136,6 @@ func (ft *FulfillmentFilters) ByTryOnPtr(TryOn *try_on.TryOnCode) *sq.ColumnFilt
 	}
 }
 
-func (ft *FulfillmentFilters) ByIncludeInsurance(IncludeInsurance bool) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "include_insurance",
-		Value:  IncludeInsurance,
-		IsNil:  bool(!IncludeInsurance),
-	}
-}
-
-func (ft *FulfillmentFilters) ByIncludeInsurancePtr(IncludeInsurance *bool) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "include_insurance",
-		Value:  IncludeInsurance,
-		IsNil:  IncludeInsurance == nil,
-		IsZero: IncludeInsurance != nil && bool(!(*IncludeInsurance)),
-	}
-}
-
-func (ft *FulfillmentFilters) ByInsuranceValue(InsuranceValue int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "insurance_value",
-		Value:  InsuranceValue,
-		IsNil:  InsuranceValue == 0,
-	}
-}
-
-func (ft *FulfillmentFilters) ByInsuranceValuePtr(InsuranceValue *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "insurance_value",
-		Value:  InsuranceValue,
-		IsNil:  InsuranceValue == nil,
-		IsZero: InsuranceValue != nil && (*InsuranceValue) == 0,
-	}
-}
-
 func (ft *FulfillmentFilters) ByShippingType(ShippingType orderingtypes.ShippingType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

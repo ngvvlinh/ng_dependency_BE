@@ -171,7 +171,7 @@ func (d VTPostDriver) CreateFulfillment(
 		},
 		ExpectedPickAt:     service.ExpectedPickAt,
 		ExpectedDeliveryAt: service.ExpectedDeliveryAt,
-		InsuranceValue:     insuranceValue,
+		InsuranceValue:     dot.Int(insuranceValue),
 	}
 
 	// recalculate shipping fee

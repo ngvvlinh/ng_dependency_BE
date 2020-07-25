@@ -292,8 +292,8 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		ShippingServiceName: args.ShippingServiceName,
 		ShippingNote:        args.ShippingNote,
 		TryOn:               tryOn,
-		IncludeInsurance:    args.IncludeInsurance,
-		InsuranceValue:      args.InsuranceValue,
+		IncludeInsurance:    dot.Bool(args.IncludeInsurance),
+		InsuranceValue:      dot.Int(args.InsuranceValue),
 		ConnectionID:        args.ConnectionID,
 		ConnectionMethod:    connectionMethod,
 		ShopCarrierID:       args.ShopCarrierID,
@@ -790,6 +790,10 @@ func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.Up
 }
 
 func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shipping.UpdateFulfillmentInfoArgs) (updated int, _ error) {
+	if args.GrossWeight <= 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "gross_weight phải lớn hơn 0")
+	}
+
 	ffm, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFulfillment()
 	if err != nil {
 		return 0, err
@@ -818,20 +822,22 @@ func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shippin
 		ffm.ConnectionID = shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 
 		ffmUpdate := &shipmodel.Fulfillment{
-			ShopID:       ffm.ShopID,
-			ConnectionID: ffm.ConnectionID,
-			ShippingCode: ffm.ShippingCode,
-			AddressFrom:  addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressFrom, nil),
-			AddressTo:    addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressTo, nil),
-			TryOn:        args.TryOn.Apply(ffm.TryOn),
-			GrossWeight:  args.GrossWeight.Apply(0),
-			ShippingNote: args.ShippingNote.Apply(""),
+			ShopID:           ffm.ShopID,
+			ConnectionID:     ffm.ConnectionID,
+			ShippingCode:     ffm.ShippingCode,
+			AddressFrom:      addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressFrom, nil),
+			AddressTo:        addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressTo, nil),
+			TryOn:            args.TryOn.Apply(ffm.TryOn),
+			GrossWeight:      ffm.GrossWeight,
+			ChargeableWeight: ffm.GrossWeight,
+			ShippingNote:     args.ShippingNote.Apply(""),
 		}
 
 		// set new insuranceValue
 		if args.IncludeInsurance.Valid {
+			ffmUpdate.IncludeInsurance = args.IncludeInsurance
 			if args.IncludeInsurance.Bool {
-				ffmUpdate.InsuranceValue = args.InsuranceValue.Apply(0)
+				ffmUpdate.InsuranceValue = args.InsuranceValue
 			}
 		}
 

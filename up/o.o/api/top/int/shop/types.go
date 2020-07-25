@@ -2739,7 +2739,7 @@ type UpdateFulfillmentInfoRequest struct {
 	ShippingAddress  *types.OrderAddress `json:"shipping_address"`
 	IncludeInsurance dot.NullBool        `json:"include_insurance"`
 	InsuranceValue   dot.NullInt         `json:"insurance_value"`
-	GrossWeight      dot.NullInt         `json:"gross_weight"`
+	GrossWeight      int                 `json:"gross_weight"`
 	TryOn            try_on.TryOnCode    `json:"try_on"`
 	ShippingNote     dot.NullString      `json:"shipping_note"`
 }

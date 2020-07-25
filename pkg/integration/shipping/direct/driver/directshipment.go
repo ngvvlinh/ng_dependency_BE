@@ -14,6 +14,7 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	directclient "o.o/backend/pkg/integration/shipping/direct/client"
+	"o.o/capi/dot"
 )
 
 var (
@@ -110,7 +111,7 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 		TotalCODAmount:      ffm.TotalCODAmount,
 		CODAmount:           ffm.TotalCODAmount,
 		ShippingNote:        note,
-		IncludeInsurance:    ffm.IncludeInsurance,
+		IncludeInsurance:    ffm.IncludeInsurance.Apply(false),
 		ShippingServiceCode: service.ProviderServiceID,
 		ShippingFee:         service.ServiceFee,
 	}
@@ -152,7 +153,7 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 		ExpectedDeliveryAt:       service.ExpectedDeliveryAt,
 		ProviderShippingFeeLines: toShippingFeeLines(resp.ShippingFeeLines),
 		ShippingFeeShopLines:     toShippingFeeLines(resp.ShippingFeeLines),
-		InsuranceValue:           args.BasketValue,
+		InsuranceValue:           dot.Int(args.BasketValue),
 	}
 	return updateFfm, nil
 }

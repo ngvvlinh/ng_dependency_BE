@@ -91,8 +91,8 @@ type Fulfillment struct {
 	ShippingServiceName string
 	ShippingNote        string
 	TryOn               try_on.TryOnCode
-	IncludeInsurance    bool
-	InsuranceValue      int
+	IncludeInsurance    dot.NullBool
+	InsuranceValue      dot.NullInt
 
 	Coupon string
 

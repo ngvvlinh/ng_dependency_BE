@@ -28,8 +28,8 @@ func Fulfillment(in *shippingmodel.Fulfillment, out *shipping.Fulfillment) {
 	out.ValueInfo = shippingtypes.ValueInfo{
 		BasketValue:      in.BasketValue,
 		CODAmount:        in.TotalCODAmount,
-		IncludeInsurance: in.IncludeInsurance,
-		InsuranceValue:   in.InsuranceValue,
+		IncludeInsurance: in.IncludeInsurance.Apply(false),
+		InsuranceValue:   in.InsuranceValue.Apply(0),
 	}
 	return
 }
