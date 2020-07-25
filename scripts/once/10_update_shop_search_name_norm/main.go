@@ -33,10 +33,6 @@ func main() {
 	cmenv.SetEnvironment("script", cfg.SharedConfig.Env)
 
 	postgres := cfg.Databases.Postgres
-	postgres.Port = 25434
-	postgres.Username = "etop"
-	postgres.Database = "etopv1_2"
-	postgres.Password = "ZMp42845Rd5Lwbvj"
 
 	errCount, maxGoroutines := 0, 8
 	ch := make(chan dot.ID, maxGoroutines)

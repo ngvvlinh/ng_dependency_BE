@@ -23,10 +23,6 @@ func main() {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
 	postgres := cfg.Databases.Postgres
-	postgres.Port = 25434
-	postgres.Username = "etop"
-	postgres.Database = "etopv1_2"
-	postgres.Password = "ZMp42845Rd5Lwbvj"
 
 	if db, err = cmsql.Connect(postgres); err != nil {
 		ll.Fatal("Error while connection database", l.Error(err))
