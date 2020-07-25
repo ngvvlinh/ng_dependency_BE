@@ -177,24 +177,25 @@ const adminPolicy = `
 	p, admin/credit:confirm, admin, ad_accountant
 	p, admin/credit:delete, admin, ad_accountant
 	# fulfillment
-	p, admin/fulfillment:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice
-	p, admin/fulfillment:list, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice
-	p, admin/fulfillment:create, admin, ad_accountant, ad_customerservice
-	p, admin/fulfillment:update, admin, ad_accountant, ad_customerservice
-	p, admin/fulfillment_info:update, admin, ad_accountant, ad_customerservice
-	p, admin/fulfillment_shipping_state:update, admin, ad_accountant, ad_customerservice
-	p, admin/fulfillment_shipping_fees:update, admin, ad_accountant, ad_customerservice
-	p, admin/fulfillment_shipping_fees:create, admin, ad_accountant, ad_customerservice
+	p, admin/fulfillment:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
+	p, admin/fulfillment:list, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
+	p, admin/fulfillment:create, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
+	p, admin/fulfillment:update, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
+	p, admin/fulfillment_important_info:update, admin, ad_customerservice_lead
+	p, admin/fulfillment_info:update, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
+	p, admin/fulfillment_shipping_state:update, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
+	p, admin/fulfillment_shipping_fees:update, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
+	p, admin/fulfillment_shipping_fees:create, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	# money transaction
-	p, admin/money_transaction:view, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/money_transaction:update, admin, ad_accountant
 	p, admin/money_transaction:confirm, admin, ad_accountant
-	p, admin/money_transaction_shipping_etop:view, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction_shipping_etop:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/money_transaction_shipping_etop:create, admin, ad_accountant
 	p, admin/money_transaction_shipping_etop:update, admin, ad_accountant
 	p, admin/money_transaction_shipping_etop:confirm, admin, ad_accountant
 	p, admin/money_transaction_shipping_etop:delete, admin, ad_accountant
-	p, admin/money_transaction_shipping_external:view, admin, ad_accountant, ad_customerservice
+	p, admin/money_transaction_shipping_external:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/money_transaction_shipping_external:create, admin, ad_accountant
 	p, admin/money_transaction_shipping_external:update, admin, ad_accountant
 	p, admin/money_transaction_shipping_external:confirm, admin, ad_accountant
