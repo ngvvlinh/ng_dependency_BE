@@ -47,8 +47,9 @@ func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedCha
 		if wh.faboRedis.IsExist(actionKey) {
 			return nil
 		}
-		wh.faboRedis.SetKey(actionKey, true)
-		defer wh.faboRedis.DelKey(actionKey)
+		if err := wh.faboRedis.SetWithTTL(actionKey, true, 2); err != nil {
+			return err
+		}
 	}
 
 	externalPost, err := wh.getExternalPost(ctx, postID)
@@ -56,56 +57,17 @@ func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedCha
 		return err
 	}
 
+	post, err := wh.fbClient.CallAPIGetPost(postID, accessToken)
+	if err != nil {
+		return err
+	}
+
 	// if post does not exist in db, create it
 	if externalPost == nil {
-		post, err := wh.fbClient.CallAPIGetPost(postID, accessToken)
-		if err != nil {
-			return err
-		}
-
-		if err := wh.createParentAndChildPosts(extPageID, createdTime, ctx, post); err != nil {
-			return err
-		}
+		return wh.createParentAndChildPosts(extPageID, createdTime, ctx, post)
 	}
 
-	if !feedChange.IsEdited() {
-		return nil
-	}
-
-	switch {
-	case feedChange.IsOnChildPost():
-		// At this step, the parent of this post always exists in db. Check
-		// if the child post does not exist, create it.
-		childPostID := fmt.Sprintf("%v_%v", extPageID, feedChange.Value.PhotoID)
-		childPost, err := wh.getExternalPost(ctx, childPostID)
-		if err != nil {
-			return err
-		}
-
-		if childPost == nil {
-			createExternalPostCmd := &fbmessaging.CreateFbExternalPostArgs{
-				ID:                  cm.NewID(),
-				ExternalPageID:      extPageID,
-				ExternalID:          childPostID,
-				ExternalParentID:    postID,
-				ExternalFrom:        externalPost.ExternalFrom,
-				ExternalPicture:     feedChange.Value.Link,
-				ExternalIcon:        externalPost.ExternalIcon,
-				ExternalMessage:     feedChange.Value.Message,
-				ExternalCreatedTime: externalPost.CreatedAt,
-				ExternalUpdatedTime: externalPost.UpdatedAt,
-			}
-			return wh.fbmessagingAggr.Dispatch(ctx, &fbmessaging.CreateFbExternalPostsCommand{
-				FbExternalPosts: []*fbmessaging.CreateFbExternalPostArgs{createExternalPostCmd},
-			})
-		} else {
-			return wh.updateFeedPostMessage(ctx, childPostID, feedChange.Value.Message)
-		}
-
-	case feedChange.IsOnParentPost():
-		return wh.updateFeedPostMessage(ctx, postID, feedChange.Value.Message)
-	}
-	return nil
+	return wh.updateParentAndChildPost(ctx, extPageID, post)
 }
 
 func (wh *Webhook) updateFeedPostMessage(ctx context.Context, postID string, message string) error {
@@ -116,6 +78,39 @@ func (wh *Webhook) updateFeedPostMessage(ctx context.Context, postID string, mes
 	if err := wh.fbmessagingAggr.Dispatch(ctx, cmdUpdate); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (wh *Webhook) updateParentAndChildPost(ctx context.Context, extPageID string, extPost *model.Post) error {
+	createdTime := time.Unix(int64(extPost.CreatedTime), 0)
+	parentPost := convertModelPostToCreatePostArgs(extPageID, createdTime, extPost)
+	childPosts := buildAllChildPost(parentPost)
+	allPosts := append(childPosts, parentPost)
+
+	for _, post := range allPosts {
+		err := wh.updateFeedPostMessage(ctx, post.ExternalID, post.ExternalMessage)
+		if err != nil {
+			if cm.ErrorCode(err) == cm.NotFound {
+				createPostCmd := &fbmessaging.SaveFbExternalPostCommand{
+					ExternalPageID:      post.ExternalPageID,
+					ExternalID:          post.ExternalID,
+					ExternalFrom:        post.ExternalFrom,
+					ExternalPicture:     post.ExternalPicture,
+					ExternalIcon:        post.ExternalIcon,
+					ExternalMessage:     post.ExternalMessage,
+					ExternalAttachments: post.ExternalAttachments,
+					ExternalCreatedTime: post.ExternalCreatedTime,
+					ExternalParentID:    parentPost.ExternalID,
+				}
+				if err := wh.fbmessagingAggr.Dispatch(ctx, createPostCmd); err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
+		}
+	}
+
 	return nil
 }
 
@@ -203,7 +198,7 @@ func (wh *Webhook) getExternalComment(ctx context.Context, commentID string) (*f
 
 func (wh *Webhook) createParentAndChildPosts(externalPageID string, createdTime time.Time, ctx context.Context, post *model.Post) error {
 	parentPost := convertModelPostToCreatePostArgs(externalPageID, createdTime, post)
-	saveExternalPostCmd := &fbmessaging.SaveFbExternalPostCommand{
+	createParentCmd := &fbmessaging.SaveFbExternalPostCommand{
 		ExternalPageID:      parentPost.ExternalPageID,
 		ExternalID:          parentPost.ExternalID,
 		ExternalPicture:     parentPost.ExternalPicture,
@@ -212,12 +207,11 @@ func (wh *Webhook) createParentAndChildPosts(externalPageID string, createdTime 
 		ExternalCreatedTime: parentPost.ExternalCreatedTime,
 		ExternalAttachments: parentPost.ExternalAttachments,
 		ExternalFrom:        parentPost.ExternalFrom,
-		ExternalParent:      nil,
+		ExternalParentID:    "",
 	}
-	if err := wh.fbmessagingAggr.Dispatch(ctx, saveExternalPostCmd); err != nil {
+	if err := wh.fbmessagingAggr.Dispatch(ctx, createParentCmd); err != nil {
 		return err
 	}
-
 	createChildPostCmd := &fbmessaging.CreateFbExternalPostsCommand{
 		FbExternalPosts: buildAllChildPost(parentPost),
 	}

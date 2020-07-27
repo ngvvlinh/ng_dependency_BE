@@ -93,6 +93,10 @@ func (r *FaboRedis) SetKey(key string, val interface{}) error {
 	return r.redisStore.Set(key, val)
 }
 
+func (r *FaboRedis) SetWithTTL(key string, val interface{}, ttl int) error {
+	return r.redisStore.SetWithTTL(key, val, ttl)
+}
+
 func (r *FaboRedis) IsExist(key string) bool {
 	return r.redisStore.IsExist(key)
 }

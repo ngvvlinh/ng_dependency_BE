@@ -149,7 +149,7 @@ type SaveFbExternalPostCommand struct {
 	ExternalMessage     string
 	ExternalAttachments []*PostAttachment `compare:"ignore"`
 	ExternalCreatedTime time.Time
-	ExternalParent      *FbExternalPost
+	ExternalParentID    string
 
 	Result *FbExternalPost `json:"-"`
 }
@@ -175,12 +175,12 @@ type UpdateFbPostMessageCommand struct {
 	ExternalPostID string
 	Message        string
 
-	Result int `json:"-"`
+	Result struct {
+	} `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateFbPostMessage(ctx context.Context, msg *UpdateFbPostMessageCommand) (err error) {
-	msg.Result, err = h.inner.UpdateFbPostMessage(msg.GetArgs(ctx))
-	return err
+	return h.inner.UpdateFbPostMessage(msg.GetArgs(ctx))
 }
 
 type UpdateIsReadCustomerConversationCommand struct {
@@ -650,7 +650,7 @@ func (q *SaveFbExternalPostCommand) GetArgs(ctx context.Context) (_ context.Cont
 			ExternalMessage:     q.ExternalMessage,
 			ExternalAttachments: q.ExternalAttachments,
 			ExternalCreatedTime: q.ExternalCreatedTime,
-			ExternalParent:      q.ExternalParent,
+			ExternalParentID:    q.ExternalParentID,
 		}
 }
 
@@ -663,7 +663,7 @@ func (q *SaveFbExternalPostCommand) SetFbSavePostArgs(args *FbSavePostArgs) {
 	q.ExternalMessage = args.ExternalMessage
 	q.ExternalAttachments = args.ExternalAttachments
 	q.ExternalCreatedTime = args.ExternalCreatedTime
-	q.ExternalParent = args.ExternalParent
+	q.ExternalParentID = args.ExternalParentID
 }
 
 func (q *UpdateFbCommentMessageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdateCommentMessageArgs) {

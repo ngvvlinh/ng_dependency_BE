@@ -153,9 +153,9 @@ func (s *FbExternalPostStore) ListFbExternalPosts() (result []*fbmessaging.FbExt
 	return
 }
 
-func (s *FbExternalPostStore) UpdatePostMessage(message string) (int, error) {
+func (s *FbExternalPostStore) UpdatePostMessage(message string) error {
 	query := s.query().Where(s.preds)
-	return query.Table("fb_external_post").UpdateMap(map[string]interface{}{
+	return query.Table("fb_external_post").ShouldUpdateMap(map[string]interface{}{
 		"external_message": message,
 	})
 }

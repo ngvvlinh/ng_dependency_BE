@@ -586,7 +586,7 @@ func (a *FbExternalMessagingAggregate) SaveFbExternalPost(
 		ExternalMessage:     post.ExternalMessage,
 		ExternalAttachments: post.ExternalAttachments,
 		ExternalCreatedTime: post.ExternalCreatedTime,
-		ExternalParent:      post.ExternalParent,
+		ExternalParentID:    post.ExternalParentID,
 	}
 	if err := a.fbExternalPostStore(ctx).CreateFbExternalPost(extPost); err != nil {
 		return nil, err
@@ -596,7 +596,7 @@ func (a *FbExternalMessagingAggregate) SaveFbExternalPost(
 
 func (a *FbExternalMessagingAggregate) UpdateFbPostMessage(
 	ctx context.Context, feedMessage *fbmessaging.FbUpdatePostMessageArgs,
-) (int, error) {
+) error {
 	return a.fbExternalPostStore(ctx).ExternalID(feedMessage.ExternalPostID).UpdatePostMessage(feedMessage.Message)
 }
 

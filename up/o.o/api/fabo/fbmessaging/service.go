@@ -33,7 +33,7 @@ type Aggregate interface {
 
 	CreateFbExternalPost(context.Context, *FbCreatePostArgs) (*FbExternalPost, error)
 	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
-	UpdateFbPostMessage(context.Context, *FbUpdatePostMessageArgs) (int, error)
+	UpdateFbPostMessage(context.Context, *FbUpdatePostMessageArgs) error
 	UpdateFbCommentMessage(context.Context, *FbUpdateCommentMessageArgs) (int, error)
 }
 
@@ -246,7 +246,7 @@ type FbSavePostArgs struct {
 	ExternalMessage     string
 	ExternalAttachments []*PostAttachment `compare:"ignore"`
 	ExternalCreatedTime time.Time
-	ExternalParent      *FbExternalPost
+	ExternalParentID    string
 }
 
 type FbUpdatePostMessageArgs struct {
