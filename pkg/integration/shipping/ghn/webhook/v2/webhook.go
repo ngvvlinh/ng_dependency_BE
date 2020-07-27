@@ -188,25 +188,18 @@ func (wh *Webhook) validateAndUpdateFulfillmentCOD(ctx context.Context, msg ghnc
 }
 
 func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg ghnclient.CallbackOrder) (ffm *shipmodel.Fulfillment, err error) {
-	clientOrderCode := msg.ClientOrderCode
-	if clientOrderCode == "" {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "ClientOrderCode is empty")
-	}
-	ffmID, err := dot.ParseID(clientOrderCode.String())
-	if err != nil {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "ClientOrderCode is invalid: %v", msg.ClientOrderCode)
-	}
-	if ffmID == 0 {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "ClientOrderCode is zero")
+	orderCode := msg.OrderCode
+	if orderCode == "" {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "OrderCode is empty")
 	}
 
 	query := &modelx.GetFulfillmentQuery{
 		ShippingProvider: shipping_provider.GHN,
-		FulfillmentID:    ffmID,
+		ShippingCode:     orderCode.String(),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil, cm.MapError(err).
-			Wrapf(cm.NotFound, "ClientOrderCode not found: %v", ffmID).
+			Wrapf(cm.NotFound, "OrderCode not found: %v", orderCode).
 			DefaultInternal()
 	}
 	return query.Result, nil
