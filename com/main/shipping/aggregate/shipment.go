@@ -828,8 +828,8 @@ func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shippin
 			AddressFrom:      addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressFrom, nil),
 			AddressTo:        addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressTo, nil),
 			TryOn:            args.TryOn.Apply(ffm.TryOn),
-			GrossWeight:      ffm.GrossWeight,
-			ChargeableWeight: ffm.GrossWeight,
+			GrossWeight:      args.GrossWeight,
+			ChargeableWeight: args.GrossWeight,
 			ShippingNote:     args.ShippingNote.Apply(""),
 		}
 

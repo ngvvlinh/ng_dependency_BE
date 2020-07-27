@@ -765,7 +765,7 @@ func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *identitymodel
 			SelfUrl:                            shipment.SelfUrl,
 			Lines:                              shipment.Lines,
 			TotalItems:                         shipment.TotalItems,
-			TotalWeight:                        shipment.TotalWeight,
+			TotalWeight:                        shipment.ChargeableWeight,
 			BasketValue:                        shipment.BasketValue,
 			TotalCodAmount:                     shipment.TotalCodAmount,
 			CodAmount:                          shipment.CodAmount,
