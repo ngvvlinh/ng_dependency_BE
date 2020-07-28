@@ -790,8 +790,8 @@ func (a *Aggregate) UpdateFulfillmentInfo(ctx context.Context, args *shipping.Up
 }
 
 func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shipping.UpdateFulfillmentInfoArgs) (updated int, _ error) {
-	if args.GrossWeight <= 0 {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "gross_weight phải lớn hơn 0")
+	if args.GrossWeight.Valid && args.GrossWeight.Int <= 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "gross_weight không hợp lệ")
 	}
 
 	ffm, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFulfillment()
@@ -828,8 +828,8 @@ func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shippin
 			AddressFrom:      addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressFrom, nil),
 			AddressTo:        addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressTo, nil),
 			TryOn:            args.TryOn.Apply(ffm.TryOn),
-			GrossWeight:      args.GrossWeight,
-			ChargeableWeight: args.GrossWeight,
+			GrossWeight:      args.GrossWeight.Apply(ffm.GrossWeight),
+			ChargeableWeight: args.GrossWeight.Apply(ffm.ChargeableWeight),
 			ShippingNote:     args.ShippingNote.Apply(""),
 		}
 
