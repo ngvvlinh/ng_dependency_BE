@@ -170,15 +170,13 @@ const adminPolicy = `
 	p, admin/admin_user:view, admin
 	p, admin/admin_user:delete, admin
 	# credit
-	p, admin/credit:view, admin, ad_accountant
+	p, admin/credit:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/credit:update, admin, ad_accountant
-	p, admin/credit:list, admin, ad_accountant
 	p, admin/credit:create, admin, ad_accountant
 	p, admin/credit:confirm, admin, ad_accountant
 	p, admin/credit:delete, admin, ad_accountant
 	# fulfillment
 	p, admin/fulfillment:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
-	p, admin/fulfillment:list, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
 	p, admin/fulfillment:create, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/fulfillment:update, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/fulfillment_important_info:update, admin, ad_customerservice_lead
@@ -198,20 +196,17 @@ const adminPolicy = `
 	p, admin/money_transaction_shipping_external:delete, admin, ad_accountant
 	p, admin/money_transaction_shipping_external_lines:remove, admin, ad_accountant
 	# order
-	p, admin/order:view, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
-	p, admin/order:list, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
-	p, admin/order_by_id:list, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant
+	p, admin/order:view, admin, ad_salelead, ad_sale, ad_customerservice, ad_accountant, ad_customerservice_lead
 	# shop shipment price
 	p, admin/shop_shipment_price_list:update, admin, ad_salelead, ad_sale
 	p, admin/shop_shipment_price_list:create, admin, ad_salelead, ad_sale
 	p, admin/shop_shipment_price_list:delete, admin, ad_salelead, ad_sale
 	p, admin/shop_shipment_price_list:view, admin, ad_salelead, ad_sale
-	p, admin/shop_shipment_price_list:list, admin, ad_salelead, ad_sale
 	# shipment price services
-	p, admin/shop_shipment_price_shipment_service:view, admin, ad_salelead
-	p, admin/shop_shipment_price_shipment_service:create, admin, ad_salelead
-	p, admin/shop_shipment_price_shipment_service:delete, admin, ad_salelead
-	p, admin/shop_shipment_price_shipment_service:update, admin, ad_salelead
+	p, admin/shipment_service:view, admin, ad_salelead
+	p, admin/shipment_service:create, admin, ad_salelead
+	p, admin/shipment_service:delete, admin, ad_salelead
+	p, admin/shipment_service:update, admin, ad_salelead
 	# shipment price list
 	p, admin/shipment_price_list:create, admin, ad_salelead
 	p, admin/shipment_price_list:update, admin, ad_salelead
@@ -224,23 +219,18 @@ const adminPolicy = `
 	p, admin/shipment_price:view, admin, ad_salelead
 	# admin shop
 	p, admin/shop:view, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
-	p, admin/shop:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
-	p, admin/shop_by_id:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
 	# admin user
 	p, admin/user:view, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
-	p, admin/user:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
-	p, admin/user_by_id:list, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
 	p, admin/user:block, admin, ad_customerservice, ad_salelead, ad_sale
 	# admin subscription
 	p, admin/subscription_product:create, admin
-	p, admin/subscription_product:list, admin
+	p, admin/subscription_product:view, admin
 	p, admin/subscription_product:delete, admin
 	p, admin/subscription_plan:create, admin
 	p, admin/subscription_plan:update, admin
 	p, admin/subscription_plan:view, admin
 	p, admin/subscription_plan:delete, admin
 	p, admin/subscription:view, admin
-	p, admin/subscription:list, admin
 	p, admin/subscription:create, admin
 	p, admin/subscription:update, admin
 	p, admin/subscription:cancel, admin
@@ -255,13 +245,18 @@ const adminPolicy = `
 	# admin partner
 	p, admin/partner:create, admin
 	# admin connection
-	p, admin/connection:view, admin, ad_sale, ad_salelead
+	p, admin/connection:view, admin, ad_sale, ad_salelead, ad_customerservice, ad_accountant, ad_customerservice_lead
 	p, admin/connection:confirm, admin
 	p, admin/connection:disable, admin
 	p, admin/connection_builtin:create, admin
 	p, admin/connection_shop_builtin:create, admin, ad_sale, ad_salelead
 	p, admin/connection_shop_builtin:update, admin
 	p, admin/connection_service:view, admin, ad_sale, ad_salelead
+	# admin custom region
+	p, admin/custom_region:create, admin, ad_salelead
+	p, admin/custom_region:update, admin, ad_salelead
+	p, admin/custom_region:delete, admin, ad_salelead
+	p, admin/custom_region:view, admin, ad_salelead
 `
 
 const CommonPolicy = shopPolicy + adminPolicy
