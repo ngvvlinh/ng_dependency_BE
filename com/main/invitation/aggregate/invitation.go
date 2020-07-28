@@ -69,6 +69,7 @@ func NewInvitationAggregate(
 		identityQuery: identityQ,
 		smsClient:     smsClient,
 		emailClient:   emailClient,
+		flagNewLink:   flagNewLink,
 	}
 }
 
