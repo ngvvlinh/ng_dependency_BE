@@ -10,6 +10,7 @@ import (
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/credit/convert"
+	"o.o/backend/com/main/credit/model"
 	"o.o/backend/com/main/credit/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -98,6 +99,10 @@ func (a CreditAggregate) ConfirmCredit(ctx context.Context, args *credit.Confirm
 	if err != nil {
 		return nil, err
 	}
+	shopCreditAmount, err := a.CreditStore(ctx).ShopID(creditValue.ShopID).SumCredit()
+	if err != nil {
+		return nil, err
+	}
 	if creditValue.Status == status3.P {
 		return nil, cm.Error(cm.FailedPrecondition, "This credit has already confirmed", nil)
 	}
@@ -107,10 +112,16 @@ func (a CreditAggregate) ConfirmCredit(ctx context.Context, args *credit.Confirm
 	if creditValue.PaidAt.IsZero() || creditValue.PaidAt.Equal(zeroTime) {
 		return nil, cm.Error(cm.FailedPrecondition, "Missing paid at", nil)
 	}
-	creditValue.Status = status3.P
-	if err = query.UpdateCreditAll(creditValue); err != nil {
+	if shopCreditAmount+creditValue.Amount < 0 {
+		return nil, cm.Error(cm.InvalidArgument, "Shop balance is not enough", nil)
+	}
+	var updateModel = &model.Credit{
+		Status: status3.P,
+	}
+	if err = query.UpdateCreditDB(updateModel); err != nil {
 		return nil, err
 	}
+	creditValue.Status = status3.P
 	getShopQuery := &identity.GetShopByIDQuery{
 		ID: creditValue.ShopID,
 	}

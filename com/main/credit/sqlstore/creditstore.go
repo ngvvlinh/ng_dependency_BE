@@ -68,17 +68,22 @@ func (s *CreditStore) ShopID(id dot.ID) *CreditStore {
 	return s
 }
 
-func (s *CreditStore) UpdateCreditAllDB(args *model.Credit) error {
-	query := s.query().Where(s.preds)
-	return query.UpdateAll().ShouldUpdate(args)
+func (s *CreditStore) Status(status status3.Status) *CreditStore {
+	s.preds = append(s.preds, s.ft.ByStatus(status))
+	return s
 }
 
-func (s *CreditStore) UpdateCreditAll(args *credit.Credit) error {
+func (s *CreditStore) UpdateCreditDB(args *model.Credit) error {
+	query := s.query().Where(s.preds)
+	return query.ShouldUpdate(args)
+}
+
+func (s *CreditStore) UpdateCredit(args *credit.Credit) error {
 	creditCore := &model.Credit{}
 	if err := scheme.Convert(args, creditCore); err != nil {
 		return err
 	}
-	return s.UpdateCreditAllDB(creditCore)
+	return s.UpdateCreditDB(creditCore)
 }
 
 func (s *CreditStore) Create(credit *credit.Credit) error {
