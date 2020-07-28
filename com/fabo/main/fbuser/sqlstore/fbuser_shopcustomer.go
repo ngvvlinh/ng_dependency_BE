@@ -2,10 +2,12 @@ package sqlstore
 
 import (
 	"context"
+	"strings"
 
 	"o.o/api/fabo/fbusering"
 	"o.o/api/meta"
 	"o.o/backend/com/fabo/main/fbuser/model"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
@@ -116,7 +118,20 @@ func (s *FbExternalUserShopCustomerStore) CreateFbExternalUserShopCustomer(FbExt
 		return err
 	}
 	_, err := s.query().Insert(fbExternalUserDB)
-	return err
+	return checkError(err)
+}
+
+func checkError(e error) error {
+	if e != nil {
+		errMsg := e.Error()
+		switch {
+		case strings.Contains(errMsg, "fb_external_user_shop_custome_shop_id_customer_id_fb_extern_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "Lỗi liên kết khách hàng và tài khoản Facebook")
+		case strings.Contains(errMsg, "fb_external_user_shop_customer_shop_id_fb_external_user_id_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "Lỗi liên kết khách hàng và tài khoản Facebook")
+		}
+	}
+	return e
 }
 
 func (s *FbExternalUserShopCustomerStore) DeleteFbExternalUserShopCustomer() error {
