@@ -101,12 +101,12 @@ func (s *ShopVariantStore) OptionalShopID(id dot.ID) *ShopVariantStore {
 	return s
 }
 
-type ListVariantsForImportArgs struct {
-	Codes     []string
-	AttrNorms []interface{}
+func (s *ShopVariantStore) AttributeNorm(attr string) *ShopVariantStore {
+	s.preds = append(s.preds, s.FtShopVariant.ByAttrNormKv(attr))
+	return s
 }
 
-func (s *ShopVariantStore) FilterForImport(args ListVariantsForImportArgs) *ShopVariantStore {
+func (s *ShopVariantStore) FilterForImport(args ListShopVariantsForImportArgs) *ShopVariantStore {
 	pred := sq.Or{
 		sq.In("code", args.Codes),
 		sq.Ins([]string{"product_id", "attr_norm_kv"}, args.AttrNorms),

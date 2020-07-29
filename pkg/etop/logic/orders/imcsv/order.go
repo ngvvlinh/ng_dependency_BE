@@ -86,7 +86,7 @@ func (im *Import) verifyOrders(ctx context.Context, shop *identitymodel.Shop, id
 
 		existingVariants, err := im.shopVariantStore(ctx).
 			ShopID(shop.ID).
-			FilterForImport(catalogsqlstore.ListVariantsForImportArgs{
+			FilterForImport(catalogsqlstore.ListShopVariantsForImportArgs{
 				Codes: variantCodes,
 			}).
 			ListShopVariantsWithProduct()

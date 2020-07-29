@@ -360,7 +360,7 @@ func checkProductOrVariantError(e error, code string) error {
 		case strings.Contains(errMsg, "shop_variant_shop_id_code_code_norm_idx"):
 			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã phiên bản sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
 		case strings.Contains(errMsg, "shop_product_shop_id_code_code_norm_idx"):
-			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã phiên bản sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
+			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
 		}
 	}
 	return e

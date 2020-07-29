@@ -216,6 +216,17 @@ func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateS
 	if err != nil {
 		return nil, err
 	}
+
+	_, attrNorm := model.NormalizeAttributes(variant.Attributes)
+	_, err = a.shopVariant(ctx).ProductIDs(args.ProductID).ShopID(args.ShopID).AttributeNorm(attrNorm).GetShopVariantDB()
+	switch cm.ErrorCode(err) {
+	case cm.NotFound:
+		// do nothing
+	case cm.NoError:
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phiên bản có cùng thuộc tính đã tồn tại")
+	default:
+		return nil, err
+	}
 	if variant.Code != "" {
 		ss := strings.Split(variant.Code, "-")
 		if len(ss) == 2 {
@@ -295,6 +306,21 @@ func (a *Aggregate) UpdateShopVariantInfo(ctx context.Context, args *catalog.Upd
 	if err != nil {
 		return nil, err
 	}
+	if args.Attributes != nil {
+		_, attrNorm := model.NormalizeAttributes(variant.Attributes)
+		variantCheckAttribute, err := a.shopVariant(ctx).ProductIDs(variant.ProductID).ShopID(args.ShopID).AttributeNorm(attrNorm).GetShopVariantDB()
+		switch cm.ErrorCode(err) {
+		case cm.NotFound:
+			// do nothing
+		case cm.NoError:
+			if variantCheckAttribute.VariantID != variant.VariantID {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Phiên bản có cùng thuộc tính đã tồn tại")
+			}
+		default:
+			return nil, err
+		}
+	}
+
 	variantModel := &model.ShopVariant{}
 	if err := scheme.Convert(variant, variantModel); err != nil {
 		return nil, err

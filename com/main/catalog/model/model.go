@@ -1,6 +1,7 @@
 package model
 
 import (
+	"sort"
 	"strings"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 	"o.o/capi/dot"
 )
 
-// Normalize attributes, do not sort them. Empty attributes is '_'.
+// Normalize attributes. Empty attributes is '_'.
 func NormalizeAttributes(attrs []*types.Attribute) ([]*types.Attribute, string) {
 	if len(attrs) == 0 {
 		return nil, "_"
@@ -20,8 +21,8 @@ func NormalizeAttributes(attrs []*types.Attribute) ([]*types.Attribute, string) 
 	if len(attrs) > maxAttrs {
 		attrs = attrs[:maxAttrs]
 	}
-
 	normAttrs := make([]*types.Attribute, 0, len(attrs))
+	normAttrKv := make([]*types.Attribute, 0, len(attrs))
 	var b strings.Builder
 	b.Grow(256)
 	for _, attr := range attrs {
@@ -37,13 +38,20 @@ func NormalizeAttributes(attrs []*types.Attribute) ([]*types.Attribute, string) 
 		}
 
 		normAttrs = append(normAttrs, &types.Attribute{Name: attr.Name, Value: attr.Value})
+		normAttrKv = append(normAttrKv, &types.Attribute{Name: nameNorm, Value: valueNorm})
+	}
+	sort.Slice(normAttrKv, func(i, j int) bool {
+		return normAttrKv[i].Name > normAttrKv[j].Name
+	})
+	for _, v := range normAttrKv {
 		if b.Len() > 0 {
 			b.WriteByte(' ')
 		}
-		b.WriteString(nameNorm)
+		b.WriteString(v.Name)
 		b.WriteByte('=')
-		b.WriteString(valueNorm)
+		b.WriteString(v.Value)
 	}
+
 	s := b.String()
 	if s == "" {
 		s = "_"

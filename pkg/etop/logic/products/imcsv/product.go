@@ -44,8 +44,9 @@ func (im *Import) loadAndCreateProducts(
 ) (stocktakeId dot.ID, msgs []string, _errs []error, _cellErrs []error, _err error) {
 	var categories *Categories
 	// var collections map[string]*catalogmodel.ShopCollection
-	var products map[string]*catalog.ShopProduct
-	var variantByCode, variantByAttr map[string]*catalogmodel.ShopVariant
+	var products []*catalogmodel.ShopProduct
+	var productByCode map[string]*catalog.ShopProduct
+	var variantByCode, variantByKey map[string]*catalogmodel.ShopVariant
 	chErr := make(chan error)
 	go func() {
 		var err error
@@ -67,15 +68,19 @@ func (im *Import) loadAndCreateProducts(
 	}()
 	go func() {
 		var err error
+		var productsMap = make(map[dot.ID]*catalogmodel.ShopProduct)
 		{
 			productKeys := make([]string, len(rowProducts))
 			for i, p := range rowProducts {
 				productKeys[i] = p.GetProductKey()
 			}
-			products, err = im.loadProducts(ctx, codeMode, shop.ID, productKeys)
+			products, productByCode, err = im.loadProducts(ctx, codeMode, shop.ID, productKeys)
 			if err != nil {
 				err = cm.Error(cm.Internal, "", err).
 					WithMeta("step", "product")
+			}
+			for _, v := range products {
+				productsMap[v.ProductID] = v
 			}
 			chErr <- err
 		}
@@ -85,12 +90,12 @@ func (im *Import) loadAndCreateProducts(
 			for i, p := range rowProducts {
 				codes[i] = p.VariantCode
 
-				product := products[p.GetProductKey()]
+				product := productByCode[p.GetProductKey()] // TODO: use key by code mode (code/name)
 				if product != nil {
 					attrNorms = append(attrNorms, product.ProductID, p.GetVariantAttrNorm())
 				}
 			}
-			variantByCode, variantByAttr, err = im.loadVariants(ctx, codeMode, shop.ID, codes, attrNorms)
+			variantByCode, err = im.loadVariants(ctx, codeMode, shop.ID, codes, attrNorms, productsMap)
 			if err != nil {
 				err = cm.Error(cm.Internal, "", err).
 					WithMeta("step", "variant")
@@ -107,11 +112,28 @@ func (im *Import) loadAndCreateProducts(
 		return
 	}
 
+	{
+		productByID := make(map[dot.ID]*catalogmodel.ShopProduct)
+		variantByKey = make(map[string]*catalogmodel.ShopVariant)
+		for _, p := range products {
+			productByID[p.ProductID] = p
+		}
+		for _, v := range variantByCode {
+			p := productByID[v.ProductID]
+			if p == nil {
+				_err = cm.Errorf(cm.FailedPrecondition, nil, "product with id %v does not exist (variant %v %v)", v.ProductID, v.Code, v.Name)
+				return
+			}
+			key := keyVariantWithProduct(p, v)
+			variantByKey[key] = v
+		}
+	}
+
 	// Validate product name for creating new product
 	{
 		_productCodes := make(map[string]struct{})
 		for _, rowProduct := range rowProducts {
-			if p := products[rowProduct.ProductCode]; p == nil {
+			if p := productByCode[rowProduct.GetProductKey()]; p == nil {
 				if rowProduct.ProductName == "" {
 					if _, ok := _productCodes[rowProduct.ProductCode]; ok {
 						// do not duplicate the error
@@ -133,8 +155,10 @@ func (im *Import) loadAndCreateProducts(
 
 	// validate variant ed_code and variant attribute uniqueness
 	{
+		var productIDAttributesFileImport = make(map[string]bool)
 		for _, rowProduct := range rowProducts {
-			if rowProduct.VariantCode != "" && variantByCode[rowProduct.VariantCode] != nil {
+			key := rowProduct.GetVariantKeyWithProduct()
+			if rowProduct.VariantCode != "" && variantByCode[key] != nil {
 				err := imcsv.CellError(idx.indexer, rowProduct.RowIndex, idx.variantCode, `Mã phiên bản sản phẩm "%v" đã tồn tại. Vui lòng sử dụng mã khác hoặc xoá phiên bản này.`, rowProduct.VariantCode)
 				_cellErrs = append(_cellErrs, err)
 				if len(_cellErrs) >= MaxCellErrors {
@@ -142,13 +166,27 @@ func (im *Import) loadAndCreateProducts(
 				}
 			}
 
-			if v := variantByAttr[rowProduct.GetVariantAttrNorm()]; v != nil {
+			// check duplicate attributes between file import and database
+			if v := variantByKey[key]; v != nil {
 				err := imcsv.CellError(idx.indexer, rowProduct.RowIndex, idx.attributes, `Một phiên bản của sản phẩm "%v" với thuộc tính "%v" đã tồn tại. Vui lòng sử dụng thuộc tính khác hoặc xoá phiên bản này.`, rowProduct.GetProductCodeOrName(), v.Attributes.ShortLabel())
 				_cellErrs = append(_cellErrs, err)
 				if len(_cellErrs) >= MaxCellErrors {
 					return
 				}
 			}
+
+			// check duplicate attributes in file import
+			if productIDAttributesFileImport[key] {
+				err := imcsv.CellErrorWithCode(idx.indexer, cm.Unknown, nil, rowProduct.RowIndex, -1,
+					`Phiên bản %v có cùng thuộc tính bị trùng trong file import. Vui lòng kiểm tra lại file import.`, rowProduct.GetProductCodeOrName()).
+					WithMeta("variant_code", rowProduct.VariantCode)
+				_errs = append(_errs, err)
+				if len(_cellErrs) >= MaxCellErrors {
+					return
+				}
+				continue
+			}
+			productIDAttributesFileImport[key] = true
 		}
 		if len(_cellErrs) > 0 {
 			return
@@ -231,9 +269,8 @@ func (im *Import) loadAndCreateProducts(
 		}
 
 		variantReq := rowToCreateVariant(rowProduct, now)
-		if p := products[rowProduct.GetProductKey()]; p != nil {
+		if p := productByCode[rowProduct.GetProductKey()]; p != nil {
 			variantReq.ProductId = p.ProductID
-
 		} else {
 			productReq := rowToCreateProduct(rowProduct, now)
 			resp, err := productService.CreateProduct(ctx, productReq)
@@ -298,7 +335,7 @@ func (im *Import) loadAndCreateProducts(
 		}
 
 		// Fake the product, so subsequent create variant requests reuse the created product
-		products[rowProduct.GetProductKey()] = &catalog.ShopProduct{
+		productByCode[rowProduct.GetProductKey()] = &catalog.ShopProduct{
 			ProductID: variantReq.ProductId,
 		}
 
@@ -440,7 +477,7 @@ func buildCategoryHierarchy(mapCategory map[dot.ID]*catalogmodel.ShopCategory, c
 // 	return mapCollection, nil
 // }
 
-func (im *Import) loadProducts(ctx context.Context, codeMode CodeMode, shopID dot.ID, keys []string) (map[string]*catalog.ShopProduct, error) {
+func (im *Import) loadProducts(ctx context.Context, codeMode CodeMode, shopID dot.ID, keys []string) ([]*catalogmodel.ShopProduct, map[string]*catalog.ShopProduct, error) {
 	s := im.shopProductStore(ctx).ShopID(shopID)
 	useCode := codeMode == CodeModeUseCode
 	if useCode {
@@ -452,7 +489,7 @@ func (im *Import) loadProducts(ctx context.Context, codeMode CodeMode, shopID do
 	}
 	products, err := s.WithPaging(maxPaging).ListShopProductsDB()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	mapProducts := make(map[string]*catalog.ShopProduct)
@@ -466,7 +503,7 @@ func (im *Import) loadProducts(ctx context.Context, codeMode CodeMode, shopID do
 			mapProducts[p.NameNormUa] = product
 		}
 	}
-	return mapProducts, nil
+	return products, mapProducts, nil
 }
 
 // different to loadProducts, we query variants with both ed_code and
@@ -477,11 +514,8 @@ func (im *Import) loadVariants(
 	shopID dot.ID,
 	codes []string,
 	attrNorms []interface{},
-) (
-	variantByCode map[string]*catalogmodel.ShopVariant,
-	variantByAttr map[string]*catalogmodel.ShopVariant,
-	_ error,
-) {
+	productsMap map[dot.ID]*catalogmodel.ShopProduct,
+) (variantByCode map[string]*catalogmodel.ShopVariant, _ error) {
 	s := im.shopVariantStore(ctx).ShopID(shopID)
 	args := catalogsqlstore.ListShopVariantsForImportArgs{
 		Codes:     codes,
@@ -491,18 +525,17 @@ func (im *Import) loadVariants(
 	if useCode {
 		args.Codes = codes
 	}
-	variants, err := s.WithPaging(maxPaging).ListShopVariantsDB()
+	variants, err := s.WithPaging(maxPaging).FilterForImport(args).ListShopVariantsDB()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	variantByCode = make(map[string]*catalogmodel.ShopVariant)
-	variantByAttr = make(map[string]*catalogmodel.ShopVariant)
+
 	for _, v := range variants {
 		if useCode && v.Code != "" {
-			variantByCode[v.Code] = v
+			variantByCode[keyVariantWithProduct(productsMap[v.ProductID], v)] = v
 		}
-		variantByAttr[v.AttrNormKv] = v
 	}
 	return
 }

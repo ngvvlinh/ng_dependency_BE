@@ -244,6 +244,20 @@ func (m *RowProduct) Validate(schema imcsv.Schema, idx indexes, mode Mode) (errs
 	return errs
 }
 
+// keyProduct returns ProductCode or fallback to normalize(ProductName). It
+// returns a key for grouping variants into a product. All rows must provide all
+// codes or leave them all empty so this function can rely.
+func keyProduct(m *catalogmodel.ShopProduct) string {
+	if m.Code != "" {
+		return m.Code
+	}
+	if m.NameNormUa != "" {
+		return m.NameNormUa
+	}
+	m.NameNormUa = validate.NormalizeUnaccent(m.Name)
+	return m.NameNormUa
+}
+
 // GetProductKey returns ProductCode or fallback to normalize(ProductName). It
 // returns a key for grouping variants into a product. All rows must provide all
 // codes or leave them all empty so this function can rely.
@@ -256,6 +270,14 @@ func (m *RowProduct) GetProductKey() string {
 	}
 	m.nameNormUa = validate.NormalizeUnaccent(m.ProductName)
 	return m.nameNormUa
+}
+
+func keyVariantWithProduct(p *catalogmodel.ShopProduct, v *catalogmodel.ShopVariant) string {
+	return keyProduct(p) + ":" + v.AttrNormKv
+}
+
+func (m *RowProduct) GetVariantKeyWithProduct() string {
+	return m.GetProductKey() + ":" + m.GetVariantAttrNorm()
 }
 
 func (m *RowProduct) GetProductCodeOrName() string {
