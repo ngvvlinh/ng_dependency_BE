@@ -951,7 +951,13 @@ func parseLocation(locationBus location.QueryBus, rowOrder *RowOrder) (*location
 			strs.TrimMax(rowOrder.ShippingProvince, 200),
 		)
 	}
-
-	// Ward is optional, we don't check it
+	if loc.Ward == nil {
+		return nil, fmt.Errorf(
+			"Địa chỉ không hợp lệ: %v, %v, %v (không tìm thấy phường/xã).",
+			strs.TrimMax(rowOrder.ShippingWard, 200),
+			strs.TrimMax(rowOrder.ShippingDistrict, 200),
+			strs.TrimMax(rowOrder.ShippingProvince, 200),
+		)
+	}
 	return loc, nil
 }
