@@ -9,6 +9,7 @@ import (
 	time "time"
 
 	fb_customer_conversation_type "o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
 	meta "o.o/api/meta"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -150,6 +151,7 @@ type SaveFbExternalPostCommand struct {
 	ExternalAttachments []*PostAttachment `compare:"ignore"`
 	ExternalCreatedTime time.Time
 	ExternalParentID    string
+	FeedType            fb_feed_type.FbFeedType
 
 	Result *FbExternalPost `json:"-"`
 }
@@ -651,6 +653,7 @@ func (q *SaveFbExternalPostCommand) GetArgs(ctx context.Context) (_ context.Cont
 			ExternalAttachments: q.ExternalAttachments,
 			ExternalCreatedTime: q.ExternalCreatedTime,
 			ExternalParentID:    q.ExternalParentID,
+			FeedType:            q.FeedType,
 		}
 }
 
@@ -664,6 +667,7 @@ func (q *SaveFbExternalPostCommand) SetFbSavePostArgs(args *FbSavePostArgs) {
 	q.ExternalAttachments = args.ExternalAttachments
 	q.ExternalCreatedTime = args.ExternalCreatedTime
 	q.ExternalParentID = args.ExternalParentID
+	q.FeedType = args.FeedType
 }
 
 func (q *UpdateFbCommentMessageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdateCommentMessageArgs) {

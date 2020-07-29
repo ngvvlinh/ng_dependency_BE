@@ -1,6 +1,10 @@
 package webhook
 
-import fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
+import (
+	"strings"
+
+	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
+)
 
 type WebhookMessageType string
 
@@ -8,6 +12,14 @@ const (
 	WebhookFeed           WebhookMessageType = "feed"
 	WebhookMessage        WebhookMessageType = "message"
 	WebhookInvalidMessage WebhookMessageType = "invalid"
+
+	FeedComment  = "comment"
+	FeedEvent    = "event"
+	FeedReaction = "reaction"
+	FeedPhoto    = "photo"
+	FeedStatus   = "status"
+
+	EventPermalinkPrefix = "https://www.facebook.com/events/"
 )
 
 // Model for Message
@@ -101,12 +113,20 @@ type FeedChange struct {
 	Value ChangeValue `json:"value"`
 }
 
+func (v FeedChange) IsEventComment() bool {
+	return strings.HasPrefix(v.Value.Post.PermalinkUrl, EventPermalinkPrefix)
+}
+
 func (v FeedChange) IsComment() bool {
-	return v.Value.Item == "comment"
+	return v.Value.Item == FeedComment
+}
+
+func (v FeedChange) IsEvent() bool {
+	return v.Value.Item == FeedEvent
 }
 
 func (v FeedChange) IsAdminPost(externalPageID string) bool {
-	return !v.IsComment() && v.Value.Item != "reaction" && v.Value.From.ID == externalPageID
+	return !v.IsComment() && v.Value.Item != FeedReaction && v.Value.From.ID == externalPageID
 }
 
 func (v FeedChange) IsCreated() bool {
@@ -118,11 +138,11 @@ func (v FeedChange) IsEdited() bool {
 }
 
 func (v FeedChange) IsOnChildPost() bool {
-	return v.Value.Item == "photo"
+	return v.Value.Item == FeedPhoto
 }
 
 func (v FeedChange) IsOnParentPost() bool {
-	return v.Value.Item == "status"
+	return v.Value.Item == FeedStatus
 }
 
 func (v FeedChange) IsRemove() bool {

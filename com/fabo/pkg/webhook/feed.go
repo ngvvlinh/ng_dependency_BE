@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 )
@@ -25,6 +26,8 @@ func (wh *Webhook) handleFeed(ctx context.Context, feed WebhookMessages) error {
 
 		for _, change := range entry.Changes {
 			switch {
+			case change.IsEvent():
+				return wh.handleFeedEvent(ctx, externalPageID, change, createdTime, accessToken)
 			case change.IsAdminPost(externalPageID):
 				return wh.handleFeedPost(ctx, externalPageID, change, createdTime, accessToken)
 			case change.IsComment():
@@ -33,6 +36,17 @@ func (wh *Webhook) handleFeed(ctx context.Context, feed WebhookMessages) error {
 		}
 	}
 	return nil
+}
+
+func (wh *Webhook) handleFeedEvent(ctx context.Context, extPageID string, feedChange FeedChange, createdTime time.Time, accessToken string) error {
+	saveEvent := &fbmessaging.SaveFbExternalPostCommand{
+		ExternalPageID:      extPageID,
+		ExternalID:          feedChange.Value.PostID,
+		ExternalCreatedTime: createdTime,
+		FeedType:            fb_feed_type.Event,
+	}
+	err := wh.fbmessagingAggr.Dispatch(ctx, saveEvent)
+	return err
 }
 
 func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedChange FeedChange, createdTime time.Time, accessToken string) error {
@@ -57,7 +71,7 @@ func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedCha
 		return err
 	}
 
-	post, err := wh.fbClient.CallAPIGetPost(postID, accessToken)
+	post, err := wh.fbClient.CallAPIGetPost(accessToken, postID)
 	if err != nil {
 		return err
 	}
@@ -115,6 +129,10 @@ func (wh *Webhook) updateParentAndChildPost(ctx context.Context, extPageID strin
 }
 
 func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feedChange FeedChange, createdTime time.Time, accessToken string) error {
+	if feedChange.IsEventComment() {
+		return nil
+	}
+
 	postID := feedChange.Value.PostID
 	externalPost, err := wh.getExternalPost(ctx, postID)
 	if err != nil {
@@ -128,7 +146,7 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 			return nil
 		}
 
-		post, err := wh.fbClient.CallAPIGetPost(postID, accessToken)
+		post, err := wh.fbClient.CallAPIGetPost(accessToken, postID)
 		if err != nil {
 			return err
 		}
@@ -208,6 +226,7 @@ func (wh *Webhook) createParentAndChildPosts(externalPageID string, createdTime 
 		ExternalAttachments: parentPost.ExternalAttachments,
 		ExternalFrom:        parentPost.ExternalFrom,
 		ExternalParentID:    "",
+		FeedType:            fb_feed_type.Post,
 	}
 	if err := wh.fbmessagingAggr.Dispatch(ctx, createParentCmd); err != nil {
 		return err

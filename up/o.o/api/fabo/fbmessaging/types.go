@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/capi/dot"
 )
 
@@ -141,6 +142,7 @@ type FbExternalPost struct {
 	CreatedAt           time.Time `compare:"ignore"`
 	UpdatedAt           time.Time `compare:"ignore"`
 	ExternalParent      *FbExternalPost
+	FeedType            fb_feed_type.FbFeedType
 }
 
 type FbCustomerConversation struct {

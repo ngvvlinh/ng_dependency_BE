@@ -998,6 +998,7 @@ func convert_fbmessagingmodel_FbExternalPost_fbmessaging_FbExternalPost(arg *fbm
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 	out.ExternalParent = nil                          // zero value
+	out.FeedType = arg.FeedType                       // simple assign
 }
 
 func Convert_fbmessagingmodel_FbExternalPosts_fbmessaging_FbExternalPosts(args []*fbmessagingmodel.FbExternalPost) (outs []*fbmessaging.FbExternalPost) {
@@ -1038,6 +1039,7 @@ func convert_fbmessaging_FbExternalPost_fbmessagingmodel_FbExternalPost(arg *fbm
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 	out.DeletedAt = time.Time{}                       // zero value
+	out.FeedType = arg.FeedType                       // simple assign
 }
 
 func Convert_fbmessaging_FbExternalPosts_fbmessagingmodel_FbExternalPosts(args []*fbmessaging.FbExternalPost) (outs []*fbmessagingmodel.FbExternalPost) {
@@ -1077,6 +1079,7 @@ func apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg *
 	out.CreatedAt = time.Time{}                       // zero value
 	out.UpdatedAt = time.Time{}                       // zero value
 	out.ExternalParent = nil                          // zero value
+	out.FeedType = arg.FeedType                       // simple assign
 }
 
 //-- convert o.o/api/fabo/fbmessaging.FbMessageAttachment --//

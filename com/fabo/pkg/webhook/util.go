@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/top/types/etc/webhook_type"
 	fblog "o.o/backend/com/fabo/main/fblog/model"
@@ -105,6 +106,7 @@ func buildAllChildPost(post *fbmessaging.CreateFbExternalPostArgs) []*fbmessagin
 				ExternalMessage:     subAtt.Description,
 				ExternalCreatedTime: post.ExternalCreatedTime,
 				ExternalUpdatedTime: post.ExternalUpdatedTime,
+				FeedType:            fb_feed_type.Post,
 			}
 			res = append(res, childPost)
 		}

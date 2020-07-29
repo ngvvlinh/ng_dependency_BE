@@ -5,12 +5,11 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
-
-	"o.o/capi/filter"
-
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/meta"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 // +gen:api
@@ -104,6 +103,7 @@ type CreateFbExternalPostArgs struct {
 	ExternalAttachments []*PostAttachment
 	ExternalCreatedTime time.Time
 	ExternalUpdatedTime time.Time
+	FeedType            fb_feed_type.FbFeedType
 }
 
 type CreateFbExternalPostsArgs struct {
@@ -247,6 +247,7 @@ type FbSavePostArgs struct {
 	ExternalAttachments []*PostAttachment `compare:"ignore"`
 	ExternalCreatedTime time.Time
 	ExternalParentID    string
+	FeedType            fb_feed_type.FbFeedType
 }
 
 type FbUpdatePostMessageArgs struct {

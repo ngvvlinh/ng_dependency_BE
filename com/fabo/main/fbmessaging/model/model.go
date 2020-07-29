@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
+	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/capi/dot"
 )
 
@@ -145,6 +146,7 @@ type FbExternalPost struct {
 	CreatedAt           time.Time `sq:"create"`
 	UpdatedAt           time.Time `sq:"update"`
 	DeletedAt           time.Time
+	FeedType            fb_feed_type.FbFeedType
 }
 
 type Attachment struct {

@@ -8,6 +8,7 @@ import (
 	time "time"
 
 	fb_comment_source "o.o/api/fabo/fbmessaging/fb_comment_source"
+	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
@@ -1328,5 +1329,24 @@ func (ft *FbExternalPostFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.Column
 		Value:  DeletedAt,
 		IsNil:  DeletedAt == nil,
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+func (ft *FbExternalPostFilters) ByFeedType(FeedType fb_feed_type.FbFeedType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "feed_type",
+		Value:  FeedType,
+		IsNil:  FeedType == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByFeedTypePtr(FeedType *fb_feed_type.FbFeedType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "feed_type",
+		Value:  FeedType,
+		IsNil:  FeedType == nil,
+		IsZero: FeedType != nil && (*FeedType) == 0,
 	}
 }
