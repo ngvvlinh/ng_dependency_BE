@@ -3,6 +3,7 @@ package shipnow_all
 import (
 	"github.com/google/wire"
 
+	carriertypes "o.o/api/main/shipnow/carrier/types"
 	"o.o/backend/cmd/etop-server/config"
 	_shipnow "o.o/backend/cogs/shipnow"
 	_ahamove "o.o/backend/cogs/shipnow/ahamove"
@@ -31,6 +32,7 @@ func AllSupportedShipnowCarriers(
 ) []*shipnowcarrier.Carrier {
 	return []*shipnowcarrier.Carrier{
 		{
+			Code:                  carriertypes.Ahamove,
 			ShipnowCarrier:        ahamoveCarrier,
 			ShipnowCarrierAccount: ahamoveCarrierAccount,
 		},

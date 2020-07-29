@@ -201,6 +201,7 @@ func (ctrl *ShipnowManager) GetExternalShippingServices(ctx context.Context, cmd
 	for _, driver := range ctrl.drivers {
 		driver := driver // closure
 		go func() {
+			defer cm.RecoverAndLog()
 			var services []*shipnowtypes.ShipnowService
 			var err error
 			defer func() { sendServices(ch, services, err) }()
