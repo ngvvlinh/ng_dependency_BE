@@ -35,10 +35,6 @@ func AddressAggregateMessageBus(q *AddressAggregate) addressing.CommandBus {
 }
 
 func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.CreateAddressArgs) (*addressing.ShopTraderAddress, error) {
-	err := ValidateCreateShopTraderAddress(args)
-	if err != nil {
-		return nil, err
-	}
 	if args.Phone == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng cung cấp số điện thoại", nil)
 	}
@@ -53,7 +49,11 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	}
 
 	addr := &addressing.ShopTraderAddress{}
-	if err = scheme.Convert(args, addr); err != nil {
+	if err := scheme.Convert(args, addr); err != nil {
+		return nil, err
+	}
+	err := ValidateCreateShopTraderAddress(addr)
+	if err != nil {
 		return nil, err
 	}
 	err = q.store(ctx).CreateAddress(addr)
@@ -77,6 +77,10 @@ func (q *AddressAggregate) UpdateAddress(ctx context.Context, ID dot.ID, ShopID 
 	if err = scheme.Convert(args, addr); err != nil {
 		return nil, err
 	}
+	err = ValidateCreateShopTraderAddress(addr)
+	if err != nil {
+		return nil, err
+	}
 	addrDB := &model.ShopTraderAddress{}
 	if err = scheme.Convert(addr, addrDB); err != nil {
 		return nil, err
@@ -90,12 +94,15 @@ func (q *AddressAggregate) DeleteAddress(ctx context.Context, ID dot.ID, ShopID 
 	return deleted, err
 }
 
-func ValidateCreateShopTraderAddress(args *addressing.CreateAddressArgs) error {
+func ValidateCreateShopTraderAddress(args *addressing.ShopTraderAddress) error {
 	if args.FullName == "" {
 		return EditErrorMsg("Tên")
 	}
 	if args.DistrictCode == "" {
 		return EditErrorMsg("Quận/Huyện")
+	}
+	if args.WardCode == "" {
+		return EditErrorMsg("Phường/Xã")
 	}
 	if args.Address1 == "" {
 		return EditErrorMsg("Địa chỉ cụ thể")
