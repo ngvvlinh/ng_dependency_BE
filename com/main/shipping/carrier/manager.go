@@ -956,7 +956,7 @@ func checkShipmentServiceBlacklist(args *GetShippingServicesArgs, bl *shipmentse
 	case location_type.ShippingLocationDeliver:
 		provinceCode = args.ToProvinceCode
 		districtCode = args.ToDistrictCode
-		wardCode = args.FromWardCode
+		wardCode = args.ToWardCode
 	default:
 		return cm.Errorf(cm.Internal, nil, "shipping_location_type không hợp lệ").WithMetap("blacklist", bl)
 	}
