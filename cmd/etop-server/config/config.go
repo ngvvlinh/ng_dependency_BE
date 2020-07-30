@@ -26,14 +26,6 @@ import (
 	"o.o/backend/pkg/integration/sms"
 )
 
-const (
-	ChannelWebhook         = "webhook"
-	ChannelImport          = "import"
-	ChannelSMS             = "sms"
-	ChannelDataWarehouse   = "etl"
-	ChannelShipmentCarrier = "shipment_carrier"
-)
-
 // Config ...
 type Config struct {
 	SharedConfig config_server.SharedConfig `yaml:",inline"`

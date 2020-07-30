@@ -6,6 +6,7 @@ import (
 
 	"go.uber.org/atomic"
 
+	"o.o/api/meta"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/redis"
@@ -15,7 +16,7 @@ import (
 const DefaultRoute = "/healthcheck"
 
 var ll = l.New()
-var llDeploy = ll.WithChannel("deploy")
+var llDeploy = ll.WithChannel(meta.ChannelDeploy)
 
 // New returns new health.Service
 func New(redis redis.Store) *Service {

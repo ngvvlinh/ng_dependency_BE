@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"o.o/api/meta"
 	"o.o/backend/pkg/common/validate"
 	"o.o/common/l"
 )
@@ -37,6 +38,6 @@ func (c *Client) SendSMS(ctx context.Context, phone string, content string) (str
 	if tempPhone == "" {
 		return "", nil
 	}
-	ll.WithChannel("sms").SendMessage(fmt.Sprintf("Send SMS to %v:\n%v", phone, content))
+	ll.WithChannel(meta.ChannelSMS).SendMessage(fmt.Sprintf("Send SMS to %v:\n%v", phone, content))
 	return content + " " + phone, nil
 }

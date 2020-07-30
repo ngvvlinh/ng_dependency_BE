@@ -70,14 +70,14 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	orderData := msg.Data
 	statusCode := orderData.OrderStatus
 	var ffm *shipmodel.Fulfillment
-
+	var err error
 	defer func() {
 		// save to database etop_log
-		wh.saveLogsWebhook(msg, ffm, _err)
+		wh.saveLogsWebhook(msg, _err, ffm)
 	}()
 
 	ctx := c.Req.Context()
-	ffm, err := wh.validateDataAndGetFfm(ctx, msg)
+	ffm, err = wh.validateDataAndGetFfm(ctx, msg)
 	if err != nil {
 		return err
 	}
@@ -175,7 +175,7 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg vtpostclient.C
 	return
 }
 
-func (wh *Webhook) saveLogsWebhook(msg vtpostclient.CallbackOrder, ffm *shipmodel.Fulfillment, err error) {
+func (wh *Webhook) saveLogsWebhook(msg vtpostclient.CallbackOrder, err error, ffm *shipmodel.Fulfillment) {
 	orderData := msg.Data
 	data, _ := jsonx.Marshal(orderData)
 	statusCode := orderData.OrderStatus
@@ -191,6 +191,7 @@ func (wh *Webhook) saveLogsWebhook(msg vtpostclient.CallbackOrder, ffm *shipmode
 	}
 	if ffm != nil {
 		webhookData.ShippingState = vtpostStatus.ToModel(ffm.ShippingState).String()
+		webhookData.ConnectionID = ffm.ConnectionID
 	}
 	if _, err := wh.dbLogs.Insert(webhookData); err != nil {
 		ll.Error("Insert db etop_log error", l.Error(err))

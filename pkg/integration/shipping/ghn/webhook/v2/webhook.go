@@ -9,6 +9,7 @@ import (
 
 	"o.o/api/main/identity"
 	shippingcore "o.o/api/main/shipping"
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	logmodel "o.o/backend/com/etc/logging/webhook/model"
@@ -71,13 +72,14 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		return cm.Errorf(cm.InvalidArgument, err, "GHN: can not decode JSON callback")
 	}
 	var ffm *shipmodel.Fulfillment
+	var err error
 	defer func() {
 		// save to database etop_log
-		wh.saveLogsWebhook(msg, _err)
+		wh.saveLogsWebhook(msg, _err, ffm)
 	}()
 
 	ctx := c.Req.Context()
-	ffm, err := wh.validateDataAndGetFfm(ctx, msg)
+	ffm, err = wh.validateDataAndGetFfm(ctx, msg)
 	if err != nil {
 		return err
 	}
@@ -181,7 +183,7 @@ func (wh *Webhook) validateAndUpdateFulfillmentCOD(ctx context.Context, msg ghnc
 			}
 		default:
 			str := "–––\n👹 GHN: đơn %v có thay đổi COD. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- COD hiện tại: %v \n- COD mới: %v\n–––"
-			ll.SendMessage(fmt.Sprintf(str, ffm.ShippingCode, ffm.ShippingFeeShop, ffm.TotalCODAmount, msg.CODAmount))
+			ll.WithChannel(meta.ChannelShipmentCarrier).SendMessage(fmt.Sprintf(str, ffm.ShippingCode, ffm.TotalCODAmount, msg.CODAmount))
 		}
 	}
 	return nil
@@ -205,7 +207,7 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg ghnclient.Call
 	return query.Result, nil
 }
 
-func (wh *Webhook) saveLogsWebhook(msg ghnclient.CallbackOrder, err error) {
+func (wh *Webhook) saveLogsWebhook(msg ghnclient.CallbackOrder, err error, ffm *shipmodel.Fulfillment) {
 	buf := new(bytes.Buffer)
 	enc := json.NewEncoder(buf)
 	enc.SetEscapeHTML(false)
@@ -217,6 +219,9 @@ func (wh *Webhook) saveLogsWebhook(msg ghnclient.CallbackOrder, err error) {
 		ExternalShippingState: msg.Status.String(),
 		ShippingState:         shippingState.String(),
 		Error:                 model.ToError(err),
+	}
+	if ffm != nil {
+		webhookData.ConnectionID = ffm.ConnectionID
 	}
 	if err := enc.Encode(msg); err == nil {
 		webhookData.Data = buf.Bytes()

@@ -6,6 +6,17 @@ import (
 	"o.o/common/xerrors"
 )
 
+const (
+	ChannelDefault         = "default"
+	ChannelWebhook         = "webhook"
+	ChannelImport          = "import"
+	ChannelSMS             = "sms"
+	ChannelDataWarehouse   = "etl"
+	ChannelShipmentCarrier = "shipment_carrier"
+	ChannelHigh            = "high"
+	ChannelDeploy          = "deploy"
+)
+
 type EventMeta struct {
 	ID string
 }

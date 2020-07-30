@@ -66,13 +66,15 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	statusID := int(msg.StatusID)
 	stateID := ghtkclient.StateID(statusID)
 
+	var ffm *shipmodel.Fulfillment
+	var err error
 	defer func() {
 		// save to database etop_log
-		wh.saveLogsWebhook(msg, _err)
+		wh.saveLogsWebhook(msg, _err, ffm)
 	}()
 
 	ctx := c.Req.Context()
-	ffm, err := wh.validateDataAndGetFfm(ctx, msg)
+	ffm, err = wh.validateDataAndGetFfm(ctx, msg)
 	if err != nil {
 		return err
 	}
@@ -149,7 +151,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	return nil
 }
 
-func (wh *Webhook) saveLogsWebhook(msg ghtkclient.CallbackOrder, err error) {
+func (wh *Webhook) saveLogsWebhook(msg ghtkclient.CallbackOrder, err error, ffm *shipmodel.Fulfillment) {
 	statusID := int(msg.StatusID)
 	stateID := ghtkclient.StateID(statusID)
 	shippingState := stateID.ToModel().String()
@@ -165,6 +167,9 @@ func (wh *Webhook) saveLogsWebhook(msg ghtkclient.CallbackOrder, err error) {
 		ExternalShippingSubState: ghtkclient.SubStateMapping[stateID],
 		ShippingState:            shippingState,
 		Error:                    model.ToError(err),
+	}
+	if ffm != nil {
+		webhookData.ConnectionID = ffm.ConnectionID
 	}
 	if err := enc.Encode(msg); err == nil {
 		webhookData.Data = buf.Bytes()

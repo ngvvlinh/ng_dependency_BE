@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShippingProviderWebhooks []*ShippingProviderWebhook
 
 const __sqlShippingProviderWebhook_Table = "shipping_provider_webhook"
-const __sqlShippingProviderWebhook_ListCols = "\"id\",\"shipping_provider\",\"data\",\"shipping_code\",\"shipping_state\",\"external_shipping_state\",\"external_shipping_sub_state\",\"created_at\",\"updated_at\",\"error\""
-const __sqlShippingProviderWebhook_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shipping_provider\" = EXCLUDED.\"shipping_provider\",\"data\" = EXCLUDED.\"data\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"external_shipping_state\" = EXCLUDED.\"external_shipping_state\",\"external_shipping_sub_state\" = EXCLUDED.\"external_shipping_sub_state\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"error\" = EXCLUDED.\"error\""
+const __sqlShippingProviderWebhook_ListCols = "\"id\",\"shipping_provider\",\"data\",\"shipping_code\",\"shipping_state\",\"external_shipping_state\",\"external_shipping_sub_state\",\"created_at\",\"updated_at\",\"error\",\"connection_id\""
+const __sqlShippingProviderWebhook_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shipping_provider\" = EXCLUDED.\"shipping_provider\",\"data\" = EXCLUDED.\"data\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"external_shipping_state\" = EXCLUDED.\"external_shipping_state\",\"external_shipping_sub_state\" = EXCLUDED.\"external_shipping_sub_state\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"error\" = EXCLUDED.\"error\",\"connection_id\" = EXCLUDED.\"connection_id\""
 const __sqlShippingProviderWebhook_Insert = "INSERT INTO \"shipping_provider_webhook\" (" + __sqlShippingProviderWebhook_ListCols + ") VALUES"
 const __sqlShippingProviderWebhook_Select = "SELECT " + __sqlShippingProviderWebhook_ListCols + " FROM \"shipping_provider_webhook\""
 const __sqlShippingProviderWebhook_Select_history = "SELECT " + __sqlShippingProviderWebhook_ListCols + " FROM history.\"shipping_provider_webhook\""
@@ -128,6 +128,13 @@ func (m *ShippingProviderWebhook) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"connection_id": {
+			ColumnName:       "connection_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "shipping_provider_webhook", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -151,6 +158,7 @@ func (m *ShippingProviderWebhook) SQLArgs(opts core.Opts, create bool) []interfa
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.JSON{m.Error},
+		m.ConnectionID,
 	}
 }
 
@@ -166,6 +174,7 @@ func (m *ShippingProviderWebhook) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		core.JSON{&m.Error},
+		&m.ConnectionID,
 	}
 }
 
@@ -203,7 +212,7 @@ func (_ *ShippingProviderWebhooks) SQLSelect(w SQLWriter) error {
 func (m *ShippingProviderWebhook) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShippingProviderWebhook_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -213,7 +222,7 @@ func (ms ShippingProviderWebhooks) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShippingProviderWebhook_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(10)
+		w.WriteMarkers(11)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -324,6 +333,14 @@ func (m *ShippingProviderWebhook) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.Error})
 	}
+	if m.ConnectionID != 0 {
+		flag = true
+		w.WriteName("connection_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ConnectionID)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -334,7 +351,7 @@ func (m *ShippingProviderWebhook) SQLUpdate(w SQLWriter) error {
 func (m *ShippingProviderWebhook) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShippingProviderWebhook_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -384,17 +401,20 @@ func (m ShippingProviderWebhookHistory) UpdatedAt() core.Interface {
 	return core.Interface{m["updated_at"]}
 }
 func (m ShippingProviderWebhookHistory) Error() core.Interface { return core.Interface{m["error"]} }
+func (m ShippingProviderWebhookHistory) ConnectionID() core.Interface {
+	return core.Interface{m["connection_id"]}
+}
 
 func (m *ShippingProviderWebhookHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShippingProviderWebhookHistory, 10)
+	res := make(ShippingProviderWebhookHistory, 11)
 	res["id"] = data[0]
 	res["shipping_provider"] = data[1]
 	res["data"] = data[2]
@@ -405,14 +425,15 @@ func (m *ShippingProviderWebhookHistory) SQLScan(opts core.Opts, row *sql.Row) e
 	res["created_at"] = data[7]
 	res["updated_at"] = data[8]
 	res["error"] = data[9]
+	res["connection_id"] = data[10]
 	*m = res
 	return nil
 }
 
 func (ms *ShippingProviderWebhookHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShippingProviderWebhookHistories, 0, 128)
@@ -431,6 +452,7 @@ func (ms *ShippingProviderWebhookHistories) SQLScan(opts core.Opts, rows *sql.Ro
 		m["created_at"] = data[7]
 		m["updated_at"] = data[8]
 		m["error"] = data[9]
+		m["connection_id"] = data[10]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

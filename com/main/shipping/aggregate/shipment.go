@@ -725,7 +725,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 					}
 					connection, _ := a.shimentManager.GetConnectionByID(ctx, connectionID)
 					str := "–––\n👹 %v: đơn %v có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- Giá hiện tại: %v \n- Giá mới: %v\n–––"
-					ll.SendMessage(fmt.Sprintf(str, connection.Name, ffm.ShippingCode, ffm.ShippingFeeShop, shippingFeeShop))
+					ll.WithChannel(meta.ChannelShipmentCarrier).SendMessage(fmt.Sprintf(str, connection.Name, ffm.ShippingCode, ffm.ShippingFeeShop, shippingFeeShop))
 					// shop shipping fee does not change
 					update.ShippingFeeShopLines = nil
 					update.ShippingFeeShop = 0

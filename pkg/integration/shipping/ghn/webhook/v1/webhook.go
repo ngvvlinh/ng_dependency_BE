@@ -65,13 +65,14 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		return cm.Errorf(cm.InvalidArgument, err, "GHN: can not decode JSON callback")
 	}
 	var ffm *shipmodel.Fulfillment
+	var err error
 	defer func() {
 		// save to database etop_log
 		wh.saveLogsWebhook(msg, ffm, _err)
 	}()
 
 	ctx := c.Req.Context()
-	ffm, err := wh.validateDataAndGetFfm(ctx, msg)
+	ffm, err = wh.validateDataAndGetFfm(ctx, msg)
 	if err != nil {
 		return err
 	}
@@ -183,6 +184,7 @@ func (wh *Webhook) saveLogsWebhook(msg ghnclient.CallbackOrder, ffm *shipmodel.F
 	if ffm != nil {
 		shippingState := state.ToModel(ffm.ShippingState, isReturnOrder)
 		webhookData.ShippingState = shippingState.String()
+		webhookData.ConnectionID = ffm.ConnectionID
 	}
 	if err := enc.Encode(msg); err == nil {
 		webhookData.Data = buf.Bytes()
