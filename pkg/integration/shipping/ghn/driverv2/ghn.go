@@ -121,7 +121,7 @@ func (d *GHNDriver) CreateFulfillment(
 		Coupon:          args.Coupon,
 		ServiceID:       serviceID,
 		// người bán trả tiền ship (hardcode)
-		PaymentTypeID: ghn_payment_type.BUYER.Enum(),
+		PaymentTypeID: ghn_payment_type.SELLER.Enum(),
 		Note:          note,
 		RequiredNote:  ghnNoteCode.String(),
 	}
