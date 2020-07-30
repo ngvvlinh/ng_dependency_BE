@@ -317,7 +317,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	shopshipmentpricelistQueryBus := shopshipmentpricelist.QueryServiceMessageBus(shopshipmentpricelistQueryService)
 	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, store, locationQueryBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
-	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, locationQueryBus, queryBus)
+	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, locationQueryBus, queryBus, shopshipmentpricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
 	carrierConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, carrierConfig)
@@ -512,7 +512,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	pricelistCommandBus := pricelist.AggregateMessageBus(pricelistAggregate)
 	shopshipmentpricelistAggregate := shopshipmentpricelist.NewAggregate(mainDB, pricelistQueryBus)
 	shopshipmentpricelistCommandBus := shopshipmentpricelist.AggregateMessageBus(shopshipmentpricelistAggregate)
-	pricelistpromotionAggregate := pricelistpromotion.NewAggregate(mainDB)
+	pricelistpromotionAggregate := pricelistpromotion.NewAggregate(mainDB, pricelistQueryBus)
 	pricelistpromotionCommandBus := pricelistpromotion.AggregateMessageBus(pricelistpromotionAggregate)
 	shipmentPriceService := admin.ShipmentPriceService{
 		Session:                    session,

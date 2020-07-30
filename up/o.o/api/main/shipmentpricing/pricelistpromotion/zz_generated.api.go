@@ -64,6 +64,8 @@ type UpdatePriceListPromotionCommand struct {
 	AppliedRules  *AppliedRules
 	PriorityPoint int
 	Status        status3.NullStatus
+	ConnectionID  dot.ID
+	PriceListID   dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -161,6 +163,8 @@ func (q *UpdatePriceListPromotionCommand) GetArgs(ctx context.Context) (_ contex
 			AppliedRules:  q.AppliedRules,
 			PriorityPoint: q.PriorityPoint,
 			Status:        q.Status,
+			ConnectionID:  q.ConnectionID,
+			PriceListID:   q.PriceListID,
 		}
 }
 
@@ -173,6 +177,8 @@ func (q *UpdatePriceListPromotionCommand) SetUpdatePriceListPromotionArgs(args *
 	q.AppliedRules = args.AppliedRules
 	q.PriorityPoint = args.PriorityPoint
 	q.Status = args.Status
+	q.ConnectionID = args.ConnectionID
+	q.PriceListID = args.PriceListID
 }
 
 func (q *GetPriceListPromotionQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {

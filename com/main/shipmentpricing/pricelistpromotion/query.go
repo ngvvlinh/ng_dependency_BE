@@ -8,6 +8,7 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	"o.o/api/main/shipmentpricing/pricelistpromotion"
+	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion/sqlstore"
@@ -24,14 +25,16 @@ type QueryService struct {
 	priceListPromotionStore sqlstore.PriceListStorePromotionFactory
 	locationQS              location.QueryBus
 	identityQS              identity.QueryBus
+	shopPriceListQS         shopshipmentpricelist.QueryBus
 }
 
-func NewQueryService(db com.MainDB, redisStore redis.Store, locationQuery location.QueryBus, identityQuery identity.QueryBus) *QueryService {
+func NewQueryService(db com.MainDB, redisStore redis.Store, locationQuery location.QueryBus, identityQuery identity.QueryBus, shopPriceListQS shopshipmentpricelist.QueryBus) *QueryService {
 	return &QueryService{
 		priceListPromotionStore: sqlstore.NewPriceListStorePromotion(db),
 		redisStore:              redisStore,
 		locationQS:              locationQuery,
 		identityQS:              identityQuery,
+		shopPriceListQS:         shopPriceListQS,
 	}
 }
 
@@ -79,8 +82,8 @@ func (q *QueryService) getMatchingPromotion(ctx context.Context, promotions []*p
 	}
 
 	argCheck := &CheckMatchingPromotionArgs{
-		FromCustomRegionID: fromCustomRegionIDs,
-		ConnectionID:       args.ConnectionID,
+		FromCustomRegionIDs: fromCustomRegionIDs,
+		ConnectionID:        args.ConnectionID,
 	}
 	if args.ShopID != 0 {
 		queryShop := &identity.GetShopByIDQuery{
@@ -107,12 +110,15 @@ func (q *QueryService) getMatchingPromotion(ctx context.Context, promotions []*p
 }
 
 type CheckMatchingPromotionArgs struct {
-	FromCustomRegionID []dot.ID
-	Shop               *identity.Shop
-	ConnectionID       dot.ID
+	FromCustomRegionIDs []dot.ID
+	Shop                *identity.Shop
+	ConnectionID        dot.ID
 }
 
 func (q *QueryService) isMatchingPromotion(ctx context.Context, promotion *pricelistpromotion.ShipmentPriceListPromotion, args *CheckMatchingPromotionArgs) bool {
+	if promotion.Status != status3.P {
+		return false
+	}
 	if promotion.AppliedRules == nil {
 		return false
 	}
@@ -124,7 +130,7 @@ func (q *QueryService) isMatchingPromotion(ctx context.Context, promotion *price
 	// Kiểm tra vùng tự định nghĩa điểm lấy hàng
 	if len(rules.FromCustomRegionIDs) > 0 {
 		checkRegion := false
-		for _, fromRegionID := range args.FromCustomRegionID {
+		for _, fromRegionID := range args.FromCustomRegionIDs {
 			if cm.IDsContain(rules.FromCustomRegionIDs, fromRegionID) {
 				checkRegion = true
 				break
@@ -170,5 +176,22 @@ func (q *QueryService) isMatchingPromotion(ctx context.Context, promotion *price
 			return false
 		}
 	}
-	return true
+
+	// check price list
+	if len(rules.UsingPriceListIDs) == 0 {
+		return true
+	}
+	queryShopPriceList := &shopshipmentpricelist.ListShopShipmentPriceListsQuery{
+		ShopID: args.Shop.ID,
+	}
+	if err := q.shopPriceListQS.Dispatch(ctx, queryShopPriceList); err != nil {
+		return false
+	}
+	for _, shopPL := range queryShopPriceList.Result.ShopShipmentPriceLists {
+		priceListID := shopPL.ShipmentPriceListID
+		if cm.IDsContain(rules.UsingPriceListIDs, priceListID) {
+			return true
+		}
+	}
+	return false
 }

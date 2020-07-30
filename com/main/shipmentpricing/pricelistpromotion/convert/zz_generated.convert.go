@@ -83,10 +83,10 @@ func Convert_pricelistpromotionmodel_AppliedRules_pricelistpromotion_AppliedRule
 }
 
 func convert_pricelistpromotionmodel_AppliedRules_pricelistpromotion_AppliedRules(arg *pricelistpromotionmodel.AppliedRules, out *pricelistpromotion.AppliedRules) {
-	out.FromCustomRegionIDs = nil                 // zero value
-	out.ShopCreatedDate = arg.ShopCreatedDate     // simple assign
-	out.UserCreatedDate = arg.UserCreatedDate     // simple assign
-	out.UsingPriceListIDs = arg.UsingPriceListIDs // simple assign
+	out.FromCustomRegionIDs = arg.FromCustomRegionIDs // simple assign
+	out.ShopCreatedDate = arg.ShopCreatedDate         // simple assign
+	out.UserCreatedDate = arg.UserCreatedDate         // simple assign
+	out.UsingPriceListIDs = arg.UsingPriceListIDs     // simple assign
 }
 
 func Convert_pricelistpromotionmodel_AppliedRuleses_pricelistpromotion_AppliedRuleses(args []*pricelistpromotionmodel.AppliedRules) (outs []*pricelistpromotion.AppliedRules) {
@@ -113,10 +113,10 @@ func Convert_pricelistpromotion_AppliedRules_pricelistpromotionmodel_AppliedRule
 }
 
 func convert_pricelistpromotion_AppliedRules_pricelistpromotionmodel_AppliedRules(arg *pricelistpromotion.AppliedRules, out *pricelistpromotionmodel.AppliedRules) {
-	out.CustomRegionIDs = nil                     // zero value
-	out.ShopCreatedDate = arg.ShopCreatedDate     // simple assign
-	out.UserCreatedDate = arg.UserCreatedDate     // simple assign
-	out.UsingPriceListIDs = arg.UsingPriceListIDs // simple assign
+	out.FromCustomRegionIDs = arg.FromCustomRegionIDs // simple assign
+	out.ShopCreatedDate = arg.ShopCreatedDate         // simple assign
+	out.UserCreatedDate = arg.UserCreatedDate         // simple assign
+	out.UsingPriceListIDs = arg.UsingPriceListIDs     // simple assign
 }
 
 func Convert_pricelistpromotion_AppliedRuleses_pricelistpromotionmodel_AppliedRuleses(args []*pricelistpromotion.AppliedRules) (outs []*pricelistpromotionmodel.AppliedRules) {
@@ -254,7 +254,7 @@ func Apply_pricelistpromotion_UpdatePriceListPromotionArgs_pricelistpromotion_Sh
 
 func apply_pricelistpromotion_UpdatePriceListPromotionArgs_pricelistpromotion_ShipmentPriceListPromotion(arg *pricelistpromotion.UpdatePriceListPromotionArgs, out *pricelistpromotion.ShipmentPriceListPromotion) {
 	out.ID = arg.ID                           // simple assign
-	out.PriceListID = out.PriceListID         // no change
+	out.PriceListID = arg.PriceListID         // simple assign
 	out.Name = arg.Name                       // simple assign
 	out.Description = arg.Description         // simple assign
 	out.Status = arg.Status.Apply(out.Status) // apply change
@@ -265,6 +265,6 @@ func apply_pricelistpromotion_UpdatePriceListPromotionArgs_pricelistpromotion_Sh
 	out.UpdatedAt = out.UpdatedAt             // no change
 	out.DeletedAt = out.DeletedAt             // no change
 	out.WLPartnerID = out.WLPartnerID         // no change
-	out.ConnectionID = out.ConnectionID       // no change
+	out.ConnectionID = arg.ConnectionID       // simple assign
 	out.PriorityPoint = arg.PriorityPoint     // simple assign
 }

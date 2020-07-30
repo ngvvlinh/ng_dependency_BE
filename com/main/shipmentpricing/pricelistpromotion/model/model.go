@@ -27,8 +27,8 @@ type ShipmentPriceListPromotion struct {
 }
 
 type AppliedRules struct {
-	CustomRegionIDs   []dot.ID    `json:"custom_region_ids"`
-	ShopCreatedDate   filter.Date `json:"shop_created_date"`
-	UserCreatedDate   filter.Date `json:"user_created_date"`
-	UsingPriceListIDs []dot.ID    `json:"using_price_list_ids"`
+	FromCustomRegionIDs []dot.ID    `json:"custom_region_ids"`
+	ShopCreatedDate     filter.Date `json:"shop_created_date"`
+	UserCreatedDate     filter.Date `json:"user_created_date"`
+	UsingPriceListIDs   []dot.ID    `json:"using_price_list_ids"`
 }

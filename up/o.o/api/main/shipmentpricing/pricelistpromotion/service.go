@@ -48,6 +48,8 @@ type UpdatePriceListPromotionArgs struct {
 	AppliedRules  *AppliedRules
 	PriorityPoint int
 	Status        status3.NullStatus
+	ConnectionID  dot.ID
+	PriceListID   dot.ID
 }
 
 type ListPriceListPromotionArgs struct {

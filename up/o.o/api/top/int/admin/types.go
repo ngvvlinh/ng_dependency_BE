@@ -771,14 +771,14 @@ type GetShipmentPriceListPromotionsResponse struct {
 func (m *GetShipmentPriceListPromotionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateShipmentPriceListPromotionRequest struct {
-	PriceListID   dot.ID                          `json:"price_list_id"`
-	Name          string                          `json:"name"`
-	Description   string                          `json:"description"`
-	ConnectionID  dot.ID                          `json:"connection_id"`
-	DateFrom      time.Time                       `json:"date_from"`
-	DateTo        time.Time                       `json:"date_to"`
-	AppliedRules  *PriceListPromotionAppliedRules `json:"applied_rules"`
-	PriorityPoint int                             `json:"priority_point"`
+	ShipmentPriceListID dot.ID                          `json:"shipment_price_list_id"`
+	Name                string                          `json:"name"`
+	Description         string                          `json:"description"`
+	ConnectionID        dot.ID                          `json:"connection_id"`
+	DateFrom            time.Time                       `json:"date_from"`
+	DateTo              time.Time                       `json:"date_to"`
+	AppliedRules        *PriceListPromotionAppliedRules `json:"applied_rules"`
+	PriorityPoint       int                             `json:"priority_point"`
 }
 
 func (m *CreateShipmentPriceListPromotionRequest) String() string {
@@ -786,14 +786,16 @@ func (m *CreateShipmentPriceListPromotionRequest) String() string {
 }
 
 type UpdateShipmentPriceListPromotionRequest struct {
-	ID            dot.ID                          `json:"id"`
-	Name          string                          `json:"name"`
-	Description   string                          `json:"description"`
-	DateFrom      time.Time                       `json:"date_from"`
-	DateTo        time.Time                       `json:"date_to"`
-	AppliedRules  *PriceListPromotionAppliedRules `json:"applied_rules"`
-	PriorityPoint int                             `json:"priority_point"`
-	Status        status3.NullStatus              `json:"status"`
+	ID                  dot.ID                          `json:"id"`
+	Name                string                          `json:"name"`
+	Description         string                          `json:"description"`
+	DateFrom            time.Time                       `json:"date_from"`
+	DateTo              time.Time                       `json:"date_to"`
+	AppliedRules        *PriceListPromotionAppliedRules `json:"applied_rules"`
+	PriorityPoint       int                             `json:"priority_point"`
+	Status              status3.NullStatus              `json:"status"`
+	ConnectionID        dot.ID                          `json:"connection_id"`
+	ShipmentPriceListID dot.ID                          `json:"shipment_price_list_id"`
 }
 
 func (m *UpdateShipmentPriceListPromotionRequest) String() string {

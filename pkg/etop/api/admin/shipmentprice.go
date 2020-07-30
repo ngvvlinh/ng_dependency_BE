@@ -446,7 +446,7 @@ func (s *ShipmentPriceService) GetShipmentPriceListPromotion(ctx context.Context
 
 func (s *ShipmentPriceService) CreateShipmentPriceListPromotion(ctx context.Context, r *admin.CreateShipmentPriceListPromotionRequest) (*admin.ShipmentPriceListPromotion, error) {
 	cmd := &pricelistpromotion.CreatePriceListPromotionCommand{
-		PriceListID:   r.PriceListID,
+		PriceListID:   r.ShipmentPriceListID,
 		Name:          r.Name,
 		Description:   r.Description,
 		ConnectionID:  r.ConnectionID,
@@ -471,6 +471,8 @@ func (s *ShipmentPriceService) UpdateShipmentPriceListPromotion(ctx context.Cont
 		AppliedRules:  convertpb.Convert_api_PriceListPromotionAppliedRules_To_core_PriceListPromotionAppliedRules(r.AppliedRules),
 		PriorityPoint: r.PriorityPoint,
 		Status:        r.Status,
+		ConnectionID:  r.ConnectionID,
+		PriceListID:   r.ShipmentPriceListID,
 	}
 	if err := s.PriceListPromotionAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

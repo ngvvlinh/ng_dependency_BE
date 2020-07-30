@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/shipmentpricing/pricelist"
 	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
@@ -22,12 +23,14 @@ var scheme = conversion.Build(convert.RegisterConversions)
 type Aggregate struct {
 	db                      *cmsql.Database
 	priceListPromotionStore sqlstore.PriceListStorePromotionFactory
+	priceListQS             pricelist.QueryBus
 }
 
-func NewAggregate(db com.MainDB) *Aggregate {
+func NewAggregate(db com.MainDB, priceListQS pricelist.QueryBus) *Aggregate {
 	return &Aggregate{
 		db:                      db,
 		priceListPromotionStore: sqlstore.NewPriceListStorePromotion(db),
+		priceListQS:             priceListQS,
 	}
 }
 
@@ -49,6 +52,9 @@ func (a *Aggregate) CreatePriceListPromotion(ctx context.Context, args *pricelis
 	if args.DateFrom.After(args.DateTo) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Date does not valid")
 	}
+	if err := a.validatePriceList(ctx, args.PriceListID, args.ConnectionID); err != nil {
+		return nil, err
+	}
 
 	var promotion pricelistpromotion.ShipmentPriceListPromotion
 	if err := scheme.Convert(args, &promotion); err != nil {
@@ -64,6 +70,13 @@ func (a *Aggregate) UpdatePriceListPromotion(ctx context.Context, args *pricelis
 	if args.DateTo.Sub(args.DateFrom) < 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Date does not valid")
 	}
+	if err := a.validatePriceList(ctx, args.PriceListID, args.ConnectionID); err != nil {
+		return err
+	}
+	if args.ConnectionID != 0 && args.PriceListID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Please provide connection_id with shipment_price_list_id")
+	}
+
 	var promotion pricelistpromotion.ShipmentPriceListPromotion
 	if err := scheme.Convert(args, &promotion); err != nil {
 		return err
@@ -107,4 +120,20 @@ func checkValidPromotion(promotion *pricelistpromotion.ShipmentPriceListPromotio
 func (a *Aggregate) DeletePriceListPromotion(ctx context.Context, id dot.ID) error {
 	_, err := a.priceListPromotionStore(ctx).ID(id).SoftDelete()
 	return err
+}
+
+func (a *Aggregate) validatePriceList(ctx context.Context, priceListID, connectionID dot.ID) error {
+	if priceListID == 0 {
+		return nil
+	}
+	query := &pricelist.GetShipmentPriceListQuery{
+		ID: priceListID,
+	}
+	if err := a.priceListQS.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	if query.Result.ConnectionID != connectionID {
+		return cm.Errorf(cm.InvalidArgument, nil, "Connection ID does not valid")
+	}
+	return nil
 }
