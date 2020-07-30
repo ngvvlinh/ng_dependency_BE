@@ -163,3 +163,8 @@ type AccountRelationshipService interface {
 type EcomService interface {
 	SessionInfo(context.Context, *cm.Empty) (*EcomSessionInfoResponse, error)
 }
+
+// +apix:path=/etop.Ticket
+type TicketService interface {
+	GetTicketLabels(context.Context, *GetTicketLabelsRequest) (*GetTicketLabelsResponse, error)
+}

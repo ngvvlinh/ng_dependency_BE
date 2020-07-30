@@ -773,6 +773,33 @@
         }
       }
     },
+    "/api/etop.Ticket/GetTicketLabels": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "GetTicketLabels",
+        "operationId": "etop.Ticket-GetTicketLabels",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baGetTicketLabelsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baGetTicketLabelsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/ChangePassword": {
       "post": {
         "description": "Change the user password\n",
@@ -2300,6 +2327,25 @@
         }
       }
     },
+    "baGetTicketLabelsRequest": {
+      "type": "object",
+      "properties": {
+        "tree": {
+          "type": "boolean"
+        }
+      }
+    },
+    "baGetTicketLabelsResponse": {
+      "type": "object",
+      "properties": {
+        "ticket_labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flTicketLabel"
+          }
+        }
+      }
+    },
     "baGetUserByPhoneRequest": {
       "type": "object",
       "required": [
@@ -3526,6 +3572,34 @@
         "etop_app_android"
       ]
     },
+    "flTicketLabel": {
+      "type": "object",
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flTicketLabel"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "jiAuthenticationMethod": {
       "type": "string",
       "enum": [
@@ -3693,6 +3767,9 @@
     },
     {
       "name": "Misc"
+    },
+    {
+      "name": "Ticket"
     },
     {
       "name": "User"

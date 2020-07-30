@@ -3,6 +3,7 @@ package shipping_provider
 import (
 	"context"
 
+	"o.o/api/supporting/ticket"
 	"o.o/api/top/types/etc/shipping_provider"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
@@ -24,6 +25,11 @@ type CarrierDriver interface {
 	ParseServiceCode(code string) (serviceName string, ok bool)
 
 	GetMaxValueFreeInsuranceFee() int
+}
+
+type CarrierTicketDriver interface {
+	CreateTicket(context.Context, *ticket.Ticket) (*ticket.Ticket, error)
+	CreateComment(context.Context, *ticket.TicketComment) (*ticket.TicketComment, error)
 }
 
 type GetShippingServicesArgs struct {

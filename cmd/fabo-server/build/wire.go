@@ -35,6 +35,7 @@ import (
 	"o.o/backend/com/shopping/carrying"
 	"o.o/backend/com/shopping/customering"
 	"o.o/backend/com/summary"
+	"o.o/backend/com/supporting/ticket"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
@@ -121,6 +122,7 @@ func Build(
 		wire.Bind(new(eventstream.Publisher), new(*eventstream.EventStream)),
 		sqlstore.WireSet,
 		captcha.WireSet,
+		ticket.WireSet, // TODO(vu): remove
 
 		// fabo
 		handler.WireSet,

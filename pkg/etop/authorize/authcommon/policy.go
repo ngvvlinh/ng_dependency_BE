@@ -169,6 +169,15 @@ const adminPolicy = `
 	p, admin/admin_user:update, admin
 	p, admin/admin_user:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
 	p, admin/admin_user:delete, admin
+	# ticket
+	p, admin/admin_ticket:assign, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
+	p, admin/admin_ticket:create, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
+	p, admin/admin_ticket:update, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
+	p, admin/admin_ticket:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
+	p, admin/admin_lead_ticket:update, admin, ad_salelead, ad_customerservice_lead
+	# ticket_label
+	p, admin/admin_ticket_label:create, admin, ad_salelead, ad_customerservice_lead
+	p, admin/admin_ticket_label:update, admin, ad_salelead, ad_customerservice_lead
 	# credit
 	p, admin/credit:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/credit:update, admin, ad_accountant

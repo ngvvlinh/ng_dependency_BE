@@ -40,6 +40,24 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
+	s.Register((*identitymodel.Account)(nil), (*identity.Account)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_Account_identity_Account(arg.(*identitymodel.Account), out.(*identity.Account))
+		return nil
+	})
+	s.Register(([]*identitymodel.Account)(nil), (*[]*identity.Account)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_Accounts_identity_Accounts(arg.([]*identitymodel.Account))
+		*out.(*[]*identity.Account) = out0
+		return nil
+	})
+	s.Register((*identity.Account)(nil), (*identitymodel.Account)(nil), func(arg, out interface{}) error {
+		Convert_identity_Account_identitymodel_Account(arg.(*identity.Account), out.(*identitymodel.Account))
+		return nil
+	})
+	s.Register(([]*identity.Account)(nil), (*[]*identitymodel.Account)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_Accounts_identitymodel_Accounts(arg.([]*identity.Account))
+		*out.(*[]*identitymodel.Account) = out0
+		return nil
+	})
 	s.Register((*identitymodel.AccountUser)(nil), (*identity.AccountUser)(nil), func(arg, out interface{}) error {
 		Convert_identitymodel_AccountUser_identity_AccountUser(arg.(*identitymodel.AccountUser), out.(*identity.AccountUser))
 		return nil
@@ -364,6 +382,74 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*sharemodel.FeeLine) = out0
 		return nil
 	})
+}
+
+//-- convert o.o/api/main/identity.Account --//
+
+func Convert_identitymodel_Account_identity_Account(arg *identitymodel.Account, out *identity.Account) *identity.Account {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.Account{}
+	}
+	convert_identitymodel_Account_identity_Account(arg, out)
+	return out
+}
+
+func convert_identitymodel_Account_identity_Account(arg *identitymodel.Account, out *identity.Account) {
+	out.ID = arg.ID             // simple assign
+	out.OwnerID = arg.OwnerID   // simple assign
+	out.Name = arg.Name         // simple assign
+	out.Type = arg.Type         // simple assign
+	out.ImageURL = arg.ImageURL // simple assign
+	out.URLSlug = arg.URLSlug   // simple assign
+	out.Rid = arg.Rid           // simple assign
+}
+
+func Convert_identitymodel_Accounts_identity_Accounts(args []*identitymodel.Account) (outs []*identity.Account) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.Account, len(args))
+	outs = make([]*identity.Account, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_Account_identity_Account(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_Account_identitymodel_Account(arg *identity.Account, out *identitymodel.Account) *identitymodel.Account {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.Account{}
+	}
+	convert_identity_Account_identitymodel_Account(arg, out)
+	return out
+}
+
+func convert_identity_Account_identitymodel_Account(arg *identity.Account, out *identitymodel.Account) {
+	out.ID = arg.ID             // simple assign
+	out.OwnerID = arg.OwnerID   // simple assign
+	out.Name = arg.Name         // simple assign
+	out.Type = arg.Type         // simple assign
+	out.ImageURL = arg.ImageURL // simple assign
+	out.URLSlug = arg.URLSlug   // simple assign
+	out.Rid = arg.Rid           // simple assign
+}
+
+func Convert_identity_Accounts_identitymodel_Accounts(args []*identity.Account) (outs []*identitymodel.Account) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.Account, len(args))
+	outs = make([]*identitymodel.Account, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_Account_identitymodel_Account(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert o.o/api/main/identity.AccountUser --//

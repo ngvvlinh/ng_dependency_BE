@@ -226,6 +226,17 @@ func (h AggregateHandler) HandleUpdateVerifiedExternalAccountAhamove(ctx context
 	return err
 }
 
+type GetAccountByIDQuery struct {
+	ID dot.ID
+
+	Result *Account `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAccountByID(ctx context.Context, msg *GetAccountByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetAccountByID(msg.GetArgs(ctx))
+	return err
+}
+
 type GetAffiliateByIDQuery struct {
 	ID dot.ID
 
@@ -501,6 +512,7 @@ func (q *UpdateUserReferenceSaleIDCommand) command()                {}
 func (q *UpdateUserReferenceUserIDCommand) command()                {}
 func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()     {}
 
+func (q *GetAccountByIDQuery) query()                        {}
 func (q *GetAffiliateByIDQuery) query()                      {}
 func (q *GetAffiliateWithPermissionQuery) query()            {}
 func (q *GetAffiliatesByIDsQuery) query()                    {}
@@ -735,6 +747,11 @@ func (q *UpdateVerifiedExternalAccountAhamoveCommand) GetArgs(ctx context.Contex
 func (q *UpdateVerifiedExternalAccountAhamoveCommand) SetUpdateVerifiedExternalAccountAhamoveArgs(args *UpdateVerifiedExternalAccountAhamoveArgs) {
 	q.OwnerID = args.OwnerID
 	q.Phone = args.Phone
+}
+
+func (q *GetAccountByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
 }
 
 func (q *GetAffiliateByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -1003,6 +1020,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetAccountByID)
 	b.AddHandler(h.HandleGetAffiliateByID)
 	b.AddHandler(h.HandleGetAffiliateWithPermission)
 	b.AddHandler(h.HandleGetAffiliatesByIDs)

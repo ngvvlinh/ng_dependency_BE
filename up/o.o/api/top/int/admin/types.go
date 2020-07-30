@@ -4,6 +4,7 @@ import (
 	"time"
 
 	etop "o.o/api/top/int/etop"
+	shoptypes "o.o/api/top/int/shop/types"
 	"o.o/api/top/int/types"
 	common "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/additional_fee_base_value"
@@ -17,10 +18,208 @@ import (
 	shipping "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	status3 "o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/ticket/ticket_ref_type"
+	"o.o/api/top/types/etc/ticket/ticket_source"
+	"o.o/api/top/types/etc/ticket/ticket_state"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
+
+type GetTicketCommentsResponse struct {
+	TicketComments []*shoptypes.TicketComment `json:"ticket_comments"`
+	Paging         *common.PageInfo           `json:"paging"`
+}
+
+func (m *GetTicketCommentsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketCommentsRequest struct {
+	Filter *FilterGetTicketComment `json:"filter"`
+	Paging *common.Paging          `json:"paging"`
+}
+
+func (m *GetTicketCommentsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterGetTicketComment struct {
+	IDs       []dot.ID `json:"ids"`
+	Title     string   `json:"title"`
+	CreatedBy dot.ID   `json:"created_by"`
+	ParentID  dot.ID   `json:"parent_id"`
+	AccountID dot.ID   `json:"account_id"`
+	TicketID  dot.ID   `json:"ticket_id"`
+}
+
+func (m *FilterGetTicketComment) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateTicketCommentRequest struct {
+	AccountID dot.ID `json:"account_id"`
+	ID        dot.ID `json:"id"`
+	Message   string `json:"message"`
+	ImageUrl  string `json:"image_url"`
+}
+
+func (m *UpdateTicketCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateTicketCommentRequest struct {
+	AccountID dot.ID `json:"account_id"`
+	TicketID  dot.ID `json:"ticket_id"`
+	Message   string `json:"message"`
+	ImageUrl  string `json:"image_url"`
+	ParentID  dot.ID `json:"parent_id"`
+}
+
+func (m *CreateTicketCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ConfirmTicketRequest struct {
+	TicketID dot.ID `json:"ticket_id"`
+	Note     string `json:"note"`
+}
+
+func (m *ConfirmTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ReopenTicketRequest struct {
+	TicketID dot.ID `json:"ticket_id"`
+	Note     string `json:"note"`
+}
+
+func (m *ReopenTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CloseTicketRequest struct {
+	TicketID dot.ID `json:"ticket_id"`
+	Note     string `json:"note"`
+	// @required
+	State ticket_state.TicketState `json:"state"`
+}
+
+func (m *CloseTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UnassignTicketRequest struct {
+	AssignedUserIDs []dot.ID `json:"assigned_user_ids"`
+	TicketID        dot.ID   `json:"ticket_id"`
+}
+
+func (m *UnassignTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type AssignTicketRequest struct {
+	AssignedUserIDs []dot.ID `json:"assigned_user_ids"`
+	TicketID        dot.ID   `json:"ticket_id"`
+}
+
+func (m *AssignTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateTicketRequest struct {
+	LabelIDs []dot.ID `json:"label_ids"`
+
+	Title       string `json:"title"`
+	Description string `json:"description"`
+
+	// user note
+	Note string `json:"note"`
+
+	RefID     dot.ID                        `json:"ref_id"`
+	RefType   ticket_ref_type.TicketRefType `json:"ref_type"`
+	RefCode   string                        `json:"ref_code"`
+	Source    ticket_source.TicketSource    `json:"source"`
+	AccountID dot.ID                        `json:"account_id"`
+}
+
+func (m *CreateTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterShopGetTicket struct {
+	IDs            []dot.ID                      `json:"ids"`
+	CreatedBy      dot.ID                        `json:"created_by"`
+	ClosedBy       dot.ID                        `json:"closed_by"`
+	AccountID      dot.ID                        `json:"account_id"`
+	LabelIDs       []dot.ID                      `json:"label_ids"`
+	Title          filter.FullTextSearch         `json:"title"`
+	AssignedUserID []dot.ID                      `json:"assigned_user_id"`
+	Code           string                        `json:"code"`
+	State          ticket_state.TicketState      `json:"state"`
+	RefID          dot.ID                        `json:"ref_id"`
+	RefType        ticket_ref_type.TicketRefType `json:"ref_type"`
+	RefCode        string                        `json:"ref_code"`
+}
+
+func (m *FilterShopGetTicket) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketsResponse struct {
+	Paging  *common.PageInfo    `json:"paging"`
+	Tickets []*shoptypes.Ticket `json:"tickets"`
+}
+
+func (m *GetTicketsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketRequest struct {
+	ID        dot.ID `json:"id"`
+	AccountID dot.ID `json:"account_id"`
+}
+
+func (m *GetTicketRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type GetTicketsRequest struct {
+	Paging *common.Paging       `json:"paging"`
+	Filter *FilterShopGetTicket `json:"filter"`
+}
+
+func (m *GetTicketsRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type GetTicketResponse struct {
+	Tickets []*shoptypes.Ticket `json:"tickets"`
+}
+
+func (m *GetTicketResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteTicketLabelRequest struct {
+	ID          dot.ID `json:"id"`
+	DeleteChild bool   `json:"delete_child"`
+}
+
+func (m *DeleteTicketLabelRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type CreateTicketLabelRequest struct {
+	ParentID dot.ID `json:"parent_id"`
+	Name     string `json:"name"`
+	Color    string `json:"color"`
+	Code     string `json:"code"`
+}
+
+func (m *CreateTicketLabelRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type UpdateTicketLabelRequest struct {
+	ID       dot.ID         `json:"id"`
+	Name     dot.NullString `json:"name"`
+	Color    string         `json:"color"`
+	Code     dot.NullString `json:"code"`
+	ParentID dot.NullID     `json:"parent_id"`
+}
+
+func (m *UpdateTicketLabelRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteTicketLabelResponse struct {
+	Count int `json:"deleted"`
+}
+
+func (m *DeleteTicketLabelResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketLabelsResponse struct {
+	TicketLabels []*shoptypes.TicketLabel `json:"ticket_labels"`
+}
+
+func (m *GetTicketLabelsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketLabelIDRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *GetTicketLabelIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetOrdersRequest struct {
 	Paging  *common.Paging   `json:"paging"`

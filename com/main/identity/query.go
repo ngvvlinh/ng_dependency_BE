@@ -273,3 +273,10 @@ func (q *QueryService) buildCommonGetUserQuery(ctx context.Context, name, phone,
 	}
 	return query
 }
+
+func (q *QueryService) GetAccountByID(ctx context.Context, ID dot.ID) (*identity.Account, error) {
+	if ID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
+	}
+	return q.accountStore(ctx).ByID(ID).GetAccount()
+}

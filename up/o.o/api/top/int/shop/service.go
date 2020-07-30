@@ -4,6 +4,7 @@ import (
 	"context"
 
 	etop "o.o/api/top/int/etop"
+	shoptypes "o.o/api/top/int/shop/types"
 	"o.o/api/top/int/types"
 	cm "o.o/api/top/types/common"
 )
@@ -421,4 +422,15 @@ type WebServerService interface {
 type SubscriptionService interface {
 	GetSubscription(context.Context, *types.SubscriptionIDRequest) (*types.Subscription, error)
 	GetSubscriptions(context.Context, *types.GetSubscriptionsRequest) (*types.GetSubscriptionsResponse, error)
+}
+
+// +apix:path=/shop.Ticket
+type TicketService interface {
+	CreateTicket(context.Context, *CreateTicketRequest) (*shoptypes.Ticket, error)
+	GetTickets(context.Context, *GetTicketsRequest) (*GetTicketsResponse, error)
+	GetTicket(context.Context, *GetTicketRequest) (*shoptypes.Ticket, error)
+
+	CreateTicketComment(context.Context, *CreateTicketCommentRequest) (*shoptypes.TicketComment, error)
+	UpdateTicketComment(context.Context, *UpdateTicketCommentRequest) (*shoptypes.TicketComment, error)
+	GetTicketComments(context.Context, *GetTicketCommentsRequest) (*GetTicketCommentsResponse, error)
 }

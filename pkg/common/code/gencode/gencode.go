@@ -242,6 +242,19 @@ func GenerateOrderCode(shopCode string, t time.Time) string {
 	return code + CalcChecksumCharStr(Alphabet32Checksum, code, 1)
 }
 
+func GenerateCodeWithChar(char string, t time.Time) string {
+	if char == "" {
+		panic("empty char code")
+	}
+
+	codeLength := 4
+	prefix := GetOrderPrefixByDate(t)
+
+	lastPart := GenerateCode(Alphabet32, codeLength)
+	code := char + "-" + prefix + "." + lastPart
+	return code + CalcChecksumCharStr(Alphabet32Checksum, code, 1)
+}
+
 func GenerateCodeWithType(char string, shopCode string, t time.Time) string {
 	if shopCode == "" {
 		panic("empty shop code")

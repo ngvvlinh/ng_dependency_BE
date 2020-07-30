@@ -54,6 +54,10 @@ type Aggregate interface {
 }
 
 type QueryService interface {
+
+	// -- Account -- //
+	GetAccountByID(ctx context.Context, ID dot.ID) (*Account, error)
+
 	// -- Shop -- //
 
 	GetShopByID(ctx context.Context, ID dot.ID) (*Shop, error)
@@ -105,6 +109,17 @@ type QueryService interface {
 	GetAllAccountsByUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
 
 	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
+}
+
+type Account struct {
+	ID       dot.ID
+	OwnerID  dot.ID
+	Name     string
+	Type     account_type.AccountType
+	ImageURL string
+	URLSlug  string
+
+	Rid dot.ID
 }
 
 type BlockUserArgs struct {

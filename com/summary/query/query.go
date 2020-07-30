@@ -541,7 +541,7 @@ func buildTopSellTable(args []*sqlstore.TopSellItem) *summary.SummaryTable {
 		Label: "ID sản phẩm",
 	})
 	summaryTable.Cols = append(summaryTable.Cols, summary.SummaryColRow{
-		Spec:  "img_urls:",
+		Spec:  "image_urls:",
 		Label: "hình ảnh sản phẩm",
 	})
 	summaryTable.Cols = append(summaryTable.Cols, summary.SummaryColRow{

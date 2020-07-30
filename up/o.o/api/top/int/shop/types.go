@@ -6,6 +6,7 @@ import (
 	catalogtypes "o.o/api/main/catalog/types"
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/top/int/etop"
+	shoptypes "o.o/api/top/int/shop/types"
 	"o.o/api/top/int/types"
 	"o.o/api/top/int/types/spreadsheet"
 	"o.o/api/top/types/common"
@@ -28,6 +29,9 @@ import (
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/stocktake_type"
+	"o.o/api/top/types/etc/ticket/ticket_ref_type"
+	"o.o/api/top/types/etc/ticket/ticket_source"
+	"o.o/api/top/types/etc/ticket/ticket_state"
 	"o.o/api/top/types/etc/try_on"
 	"o.o/api/top/types/etc/ws_banner_show_style"
 	"o.o/api/top/types/etc/ws_list_product_show_style"
@@ -35,6 +39,100 @@ import (
 	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
+
+type GetTicketCommentsResponse struct {
+	TicketComments []*shoptypes.TicketComment `json:"tickets"`
+	Paging         *common.PageInfo           `json:"paging"`
+}
+
+func (m *GetTicketCommentsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketCommentsRequest struct {
+	TicketID dot.ID                  `json:"ticket_id"`
+	Filter   *FilterGetTicketComment `json:"filter"`
+	Paging   *common.Paging          `json:"paging"`
+}
+
+func (m *GetTicketCommentsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterGetTicketComment struct {
+	IDs       []dot.ID `json:"ids"`
+	Title     string   `json:"title"`
+	CreatedBy dot.ID   `json:"created_by"`
+	ParentID  dot.ID   `json:"parent_id"`
+}
+
+func (m *FilterGetTicketComment) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateTicketCommentRequest struct {
+	ID       dot.ID `json:"id"`
+	Message  string `json:"message"`
+	ImageUrl string `json:"image_url"`
+}
+
+func (m *UpdateTicketCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateTicketCommentRequest struct {
+	TicketID dot.ID `json:"ticket_id"`
+	Message  string `json:"message"`
+	ImageUrl string `json:"image_url"`
+	ParentID dot.ID `json:"parent_id"`
+}
+
+func (m *CreateTicketCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterShopGetTicket struct {
+	IDs       []dot.ID                      `json:"ids"`
+	CreatedBy dot.ID                        `json:"created_by"`
+	ClosedBy  dot.ID                        `json:"closed_by"`
+	AccountID dot.ID                        `json:"account_id"`
+	LabelIDs  []dot.ID                      `json:"label_ids"`
+	RefID     dot.ID                        `json:"ref_id"`
+	RefType   ticket_ref_type.TicketRefType `json:"ref_type"`
+	RefCode   string                        `json:"ref_code"`
+	State     ticket_state.TicketState      `json:"state"`
+	Title     filter.FullTextSearch         `json:"title"`
+	Code      string                        `json:"code"`
+}
+
+func (m *FilterShopGetTicket) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *GetTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketsRequest struct {
+	Paging *common.Paging       `json:"paging"`
+	Filter *FilterShopGetTicket `json:"filter"`
+}
+
+func (m *GetTicketsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketsResponse struct {
+	Paging  *common.PageInfo    `json:"paging"`
+	Tickets []*shoptypes.Ticket `json:"tickets"`
+}
+
+func (m *GetTicketsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateTicketRequest struct {
+	LabelIDs []dot.ID `json:"label_ids"`
+
+	Title       string `json:"title"`
+	Description string `json:"description"`
+
+	// user note
+	Note string `json:"note"`
+
+	RefID   dot.ID                        `json:"ref_id"`
+	RefType ticket_ref_type.TicketRefType `json:"ref_type"`
+	RefCode string                        `json:"ref_code"`
+	Source  ticket_source.TicketSource    `json:"source"`
+}
+
+func (m *CreateTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetWsCategoriesByIDsResponse struct {
 	WsCategories []*WsCategory `json:"ws_categorys"`

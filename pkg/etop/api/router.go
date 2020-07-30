@@ -27,6 +27,7 @@ func NewServers(
 	addressService *AddressService,
 	accountRelationshipService *AccountRelationshipService,
 	userRelationshipService *UserRelationshipService,
+	ticketService *TicketService,
 	ecomService *EcomService,
 
 	rd redis.Store,
@@ -72,6 +73,7 @@ func NewServers(
 	}
 
 	servers := httprpc.MustNewServers(
+		ticketService.Clone,
 		accountRelationshipService.Clone,
 		accountService.Clone,
 		addressService.Clone,

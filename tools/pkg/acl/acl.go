@@ -262,6 +262,20 @@ const (
 	AdminAdminUserDelete permission.ActionType = "admin/admin_user:delete"
 	AdminPartnerCreate   permission.ActionType = "admin/partner:create"
 
+	// Admin ticket
+	AdminLeadTicketAssign permission.ActionType = "admin/admin_ticket:assign"
+	AdminTicketCreate     permission.ActionType = "admin/admin_ticket:create"
+	AdminTicketUpdate     permission.ActionType = "admin/admin_ticket:update"
+	LeadAdminTicketReopen permission.ActionType = "admin/admin_lead_ticket:update"
+	AdminTicketView       permission.ActionType = "admin/admin_ticket:view"
+
+	AdminTicketCommentCreate permission.ActionType = "admin/admin_ticket:create"
+	AdminTicketCommentUpdate permission.ActionType = "admin/admin_ticket:update"
+	AdminTicketCommentView   permission.ActionType = "admin/admin_ticket:view"
+
+	AdminTicketLabelCreate permission.ActionType = "admin/admin_ticket_label:create"
+	AdminTicketLabelUpdate permission.ActionType = "admin/admin_ticket_label:update"
+
 	// Admin MoneyTransaction
 	AdminMoneyTransactionView    permission.ActionType = "admin/money_transaction:view"
 	AdminMoneyTransactionUpdate  permission.ActionType = "admin/money_transaction:update"
@@ -998,6 +1012,31 @@ var _acl = map[string]*permission.Decl{
 
 	//-- exporter --//
 	"exporter.Misc/VersionInfo": {Type: Secret},
+
+	// -- ticket -- //
+
+	"shop.Ticket/CreateTicket":        {Type: Shop},
+	"shop.Ticket/GetTickets":          {Type: Shop},
+	"shop.Ticket/GetTicket":           {Type: Shop},
+	"shop.Ticket/CreateTicketComment": {Type: Shop}, //
+	"shop.Ticket/UpdateTicketComment": {Type: Shop}, //
+
+	"admin.Ticket/CreateTicket":  {Type: EtopAdmin, Actions: actions(AdminTicketCreate)},
+	"admin.Ticket/GetTickets":    {Type: EtopAdmin, Actions: actions(AdminTicketView)},
+	"admin.Ticket/GetTicket":     {Type: EtopAdmin, Actions: actions(AdminTicketView)},
+	"admin.Ticket/AssignTicket":  {Type: EtopAdmin, Actions: actions(AdminLeadTicketAssign)},
+	"admin.Ticket/ConfirmTicket": {Type: EtopAdmin, Actions: actions(AdminTicketUpdate)},
+	"admin.Ticket/CloseTicket":   {Type: EtopAdmin, Actions: actions(AdminTicketUpdate)},
+	"admin.Ticket/ReopenTicket":  {Type: EtopAdmin, Actions: actions(LeadAdminTicketReopen)},
+
+	"admin.Ticket/CreateTicketComment": {Type: EtopAdmin, Actions: actions(AdminTicketCommentCreate)},
+	"admin.Ticket/UpdateTicketComment": {Type: EtopAdmin, Actions: actions(AdminTicketCommentUpdate)},
+	"admin.Ticket/GetTicketComments":   {Type: EtopAdmin, Actions: actions(AdminTicketCommentView)},
+
+	"admin.Ticket/CreateTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelCreate)},
+	"admin.Ticket/UpdateTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelUpdate)},
+	"admin.Ticket/DeleteTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelUpdate)},
+	"etop.Ticket/GetTicketLabels":    {Type: Public},
 
 	//-- crm-service --//
 	"crm.User/GetUserInfo":                         {Type: Shop},

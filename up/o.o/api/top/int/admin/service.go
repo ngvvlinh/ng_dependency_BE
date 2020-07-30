@@ -4,6 +4,7 @@ import (
 	"context"
 
 	etop "o.o/api/top/int/etop"
+	shoptypes "o.o/api/top/int/shop/types"
 	"o.o/api/top/int/types"
 	cm "o.o/api/top/types/common"
 )
@@ -183,4 +184,27 @@ type SubscriptionService interface {
 	CreateSubscriptionBill(context.Context, *types.CreateSubscriptionBillRequest) (*types.SubscriptionBill, error)
 	ManualPaymentSubscriptionBill(context.Context, *types.ManualPaymentSubscriptionBillRequest) (*cm.UpdatedResponse, error)
 	DeleteSubscriptionBill(context.Context, *types.SubscriptionIDRequest) (*cm.DeletedResponse, error)
+}
+
+// +apix:path=/admin.Ticket
+type TicketService interface {
+	// ticket
+	CreateTicket(context.Context, *CreateTicketRequest) (*shoptypes.Ticket, error)
+	GetTickets(context.Context, *GetTicketsRequest) (*GetTicketsResponse, error)
+	GetTicket(context.Context, *GetTicketRequest) (*shoptypes.Ticket, error)
+	AssignTicket(context.Context, *AssignTicketRequest) (*shoptypes.Ticket, error)
+	UnassignTicket(context.Context, *AssignTicketRequest) (*shoptypes.Ticket, error)
+	ConfirmTicket(context.Context, *ConfirmTicketRequest) (*shoptypes.Ticket, error)
+	CloseTicket(context.Context, *CloseTicketRequest) (*shoptypes.Ticket, error)
+	ReopenTicket(context.Context, *ReopenTicketRequest) (*shoptypes.Ticket, error)
+
+	// ticket comment
+	CreateTicketComment(context.Context, *CreateTicketCommentRequest) (*shoptypes.TicketComment, error)
+	UpdateTicketComment(context.Context, *UpdateTicketCommentRequest) (*shoptypes.TicketComment, error)
+	GetTicketComments(context.Context, *GetTicketCommentsRequest) (*GetTicketCommentsResponse, error)
+
+	// ticket label
+	CreateTicketLabel(context.Context, *CreateTicketLabelRequest) (*shoptypes.TicketLabel, error)
+	UpdateTicketLabel(context.Context, *UpdateTicketLabelRequest) (*shoptypes.TicketLabel, error)
+	DeleteTicketLabel(context.Context, *DeleteTicketLabelRequest) (*DeleteTicketLabelResponse, error)
 }

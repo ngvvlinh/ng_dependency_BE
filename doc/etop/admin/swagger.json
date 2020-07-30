@@ -2796,6 +2796,387 @@
         }
       }
     },
+    "/api/admin.Ticket/AssignTicket": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "AssignTicket",
+        "operationId": "admin.Ticket-AssignTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuAssignTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicket"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/CloseTicket": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "CloseTicket",
+        "operationId": "admin.Ticket-CloseTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCloseTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicket"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/ConfirmTicket": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "ConfirmTicket",
+        "operationId": "admin.Ticket-ConfirmTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuConfirmTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicket"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/CreateTicket": {
+      "post": {
+        "description": "ticket\n",
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "CreateTicket",
+        "operationId": "admin.Ticket-CreateTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicket"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/CreateTicketComment": {
+      "post": {
+        "description": "ticket comment\n",
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "CreateTicketComment",
+        "operationId": "admin.Ticket-CreateTicketComment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateTicketCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicketComment"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/CreateTicketLabel": {
+      "post": {
+        "description": "ticket label\n",
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "CreateTicketLabel",
+        "operationId": "admin.Ticket-CreateTicketLabel",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuCreateTicketLabelRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicketLabel"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/DeleteTicketLabel": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "DeleteTicketLabel",
+        "operationId": "admin.Ticket-DeleteTicketLabel",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuDeleteTicketLabelRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuDeleteTicketLabelResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/GetTicket": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "GetTicket",
+        "operationId": "admin.Ticket-GetTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicket"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/GetTicketComments": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "GetTicketComments",
+        "operationId": "admin.Ticket-GetTicketComments",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetTicketCommentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetTicketCommentsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/GetTickets": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "GetTickets",
+        "operationId": "admin.Ticket-GetTickets",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetTicketsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetTicketsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/ReopenTicket": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "ReopenTicket",
+        "operationId": "admin.Ticket-ReopenTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuReopenTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicket"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/UnassignTicket": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "UnassignTicket",
+        "operationId": "admin.Ticket-UnassignTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuAssignTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicket"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/UpdateTicketComment": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "UpdateTicketComment",
+        "operationId": "admin.Ticket-UpdateTicketComment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateTicketCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicketComment"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/UpdateTicketLabel": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "UpdateTicketLabel",
+        "operationId": "admin.Ticket-UpdateTicketLabel",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateTicketLabelRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flTicketLabel"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.User/BlockUser": {
       "post": {
         "tags": [
@@ -3831,11 +4212,202 @@
         }
       }
     },
+    "dqTicketState": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "new",
+        "received",
+        "processing",
+        "success",
+        "fail",
+        "ignore",
+        "cancel"
+      ]
+    },
     "fdFilterType": {
       "type": "string",
       "enum": [
         "include",
         "exclude"
+      ]
+    },
+    "flTicket": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "admin_note": {
+          "type": "string"
+        },
+        "assigned_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "label_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "ref_code": {
+          "type": "string"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "$ref": "#/definitions/ovTicketRefType"
+        },
+        "source": {
+          "$ref": "#/definitions/fpTicketSource"
+        },
+        "state": {
+          "$ref": "#/definitions/dqTicketState"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_by": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "flTicketComment": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ticket_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "flTicketLabel": {
+      "type": "object",
+      "properties": {
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flTicketLabel"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "fpTicketSource": {
+      "type": "string",
+      "enum": [
+        "pos_web",
+        "pos_app",
+        "shipment_app",
+        "admin",
+        "system"
       ]
     },
     "jjAccountType": {
@@ -4047,6 +4619,15 @@
         "other",
         "shipping",
         "tax"
+      ]
+    },
+    "ovTicketRefType": {
+      "type": "string",
+      "enum": [
+        "order_trading",
+        "ffm",
+        "money_transaction",
+        "other"
       ]
     },
     "pjGHNNoteCode": {
@@ -6766,6 +7347,22 @@
         }
       }
     },
+    "xuAssignTicketRequest": {
+      "type": "object",
+      "properties": {
+        "assigned_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "ticket_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "xuAvailableLocation": {
       "type": "object",
       "properties": {
@@ -6837,6 +7434,24 @@
         }
       }
     },
+    "xuCloseTicketRequest": {
+      "type": "object",
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/definitions/dqTicketState"
+        },
+        "ticket_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "xuConfirmCreditRequest": {
       "type": "object",
       "properties": {
@@ -6887,6 +7502,18 @@
         },
         "total_orders": {
           "type": "integer"
+        }
+      }
+    },
+    "xuConfirmTicketRequest": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "ticket_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -7181,6 +7808,86 @@
         }
       }
     },
+    "xuCreateTicketCommentRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ticket_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuCreateTicketLabelRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuCreateTicketRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "description": {
+          "type": "string"
+        },
+        "label_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "note": {
+          "description": "user note\n",
+          "type": "string"
+        },
+        "ref_code": {
+          "type": "string"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "$ref": "#/definitions/ovTicketRefType"
+        },
+        "source": {
+          "$ref": "#/definitions/fpTicketSource"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
     "xuCustomRegion": {
       "type": "object",
       "properties": {
@@ -7224,6 +7931,114 @@
       "properties": {
         "updated": {
           "type": "integer"
+        }
+      }
+    },
+    "xuDeleteTicketLabelRequest": {
+      "type": "object",
+      "properties": {
+        "delete_child": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuDeleteTicketLabelResponse": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "integer"
+        }
+      }
+    },
+    "xuFilterGetTicketComment": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ticket_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        }
+      }
+    },
+    "xuFilterShopGetTicket": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "assigned_user_id": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "closed_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "label_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "ref_code": {
+          "type": "string"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "$ref": "#/definitions/ovTicketRefType"
+        },
+        "state": {
+          "$ref": "#/definitions/dqTicketState"
+        },
+        "title": {
+          "$ref": "#/definitions/kfFullTextSearch"
         }
       }
     },
@@ -7657,6 +8472,69 @@
         }
       }
     },
+    "xuGetTicketCommentsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/xuFilterGetTicketComment"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "xuGetTicketCommentsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "ticket_comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flTicketComment"
+          }
+        }
+      }
+    },
+    "xuGetTicketRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetTicketsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/xuFilterShopGetTicket"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "xuGetTicketsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "tickets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flTicket"
+          }
+        }
+      }
+    },
     "xuGetUsersRequest": {
       "type": "object",
       "properties": {
@@ -7782,6 +8660,18 @@
           }
         },
         "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuReopenTicketRequest": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "ticket_id": {
           "type": "string",
           "format": "int64"
         }
@@ -8479,6 +9369,47 @@
         }
       }
     },
+    "xuUpdateTicketCommentRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "xuUpdateTicketLabelRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "xuUpdateUserRefRequest": {
       "type": "object",
       "properties": {
@@ -8597,6 +9528,9 @@
     },
     {
       "name": "Subscription"
+    },
+    {
+      "name": "Ticket"
     },
     {
       "name": "User"

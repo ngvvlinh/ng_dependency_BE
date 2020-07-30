@@ -1,6 +1,7 @@
 package etop
 
 import (
+	shoptypes "o.o/api/top/int/shop/types"
 	common "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_type"
 	address_type "o.o/api/top/types/etc/address_type"
@@ -13,6 +14,18 @@ import (
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
+
+type GetTicketLabelsResponse struct {
+	TicketLabels []*shoptypes.TicketLabel `json:"ticket_labels"`
+}
+
+func (m *GetTicketLabelsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketLabelsRequest struct {
+	Tree bool `json:"tree"`
+}
+
+func (m *GetTicketLabelsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Authorization struct {
 	UserId  dot.ID   `json:"user_id"`

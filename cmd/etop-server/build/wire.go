@@ -47,6 +47,7 @@ import (
 	"o.o/backend/com/shopping/tradering"
 	"o.o/backend/com/subscripting"
 	"o.o/backend/com/summary"
+	"o.o/backend/com/supporting/ticket"
 	"o.o/backend/com/web/webserver"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/bus"
@@ -179,6 +180,7 @@ func Build(
 		sqlstore.WireSet,
 		captcha.WireSet,
 		credit.WireSet,
+		ticket.WireSet,
 
 		BuildServers,
 		BuildMainServer,
