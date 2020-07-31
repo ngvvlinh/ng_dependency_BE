@@ -53,12 +53,14 @@ func main() {
 		}
 	}
 
-	for _, externalAttachment := range fbExternalPost.ExternalAttachments {
-		if externalAttachment.Type == "photo" || externalAttachment.Type == "cover_photo" {
-			externalAttachment.Media = &model.MediaPostAttachment{
-				Image: &model.ImageMediaPostAttachment{
-					Src: fbExternalPost.ExternalPicture,
-				},
+	for _, fbExternalPost := range mapFbExternalPost {
+		for _, externalAttachment := range fbExternalPost.ExternalAttachments {
+			if externalAttachment.Type == "photo" || externalAttachment.Type == "cover_photo" {
+				externalAttachment.Media = &model.MediaPostAttachment{
+					Image: &model.ImageMediaPostAttachment{
+						Src: fbExternalPost.ExternalPicture,
+					},
+				}
 			}
 		}
 	}
