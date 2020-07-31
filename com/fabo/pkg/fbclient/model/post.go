@@ -1,9 +1,5 @@
 package model
 
-type PublishedPostsByIDsResponse struct {
-	Data map[string]*Post
-}
-
 type PublishedPostsResponse struct {
 	Data   []*Post                 `json:"data"`
 	Paging *FacebookPagingResponse `json:"paging"`
@@ -41,17 +37,18 @@ type DataAttachment struct {
 	Media          *MediaPostAttachment `json:"media"`
 	MediaType      string               `json:"media_type"`
 	Type           string               `json:"type"`
+	Title          string               `json:"title"`
 	SubAttachments *SubAttachments      `json:"subattachments"`
 }
 
 type MediaPostAttachment struct {
-	Image *ImageMediaPostAttachment
+	Image *ImageMediaPostAttachment `json:"image"`
 }
 
 type ImageMediaPostAttachment struct {
-	Height int
-	Width  int
-	Src    string
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+	Src    string `json:"src"`
 }
 
 type SubAttachments struct {
@@ -62,8 +59,8 @@ type DataSubAttachment struct {
 	Description string                   `json:"description"`
 	Media       *MediaDataSubAttachment  `json:"media"`
 	Target      *TargetDataSubAttachment `json:"target"`
-	Type        string
-	URL         string
+	Type        string                   `json:"type"`
+	URL         string                   `json:"url"`
 }
 
 type MediaDataSubAttachment struct {

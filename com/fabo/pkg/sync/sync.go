@@ -700,7 +700,7 @@ func (s *Synchronizer) HandleTaskGetPosts(
 	}
 
 	// Finish task when data is empty
-	if len(fbExternalPostsResp.Data) == 0 ||
+	if fbExternalPostsResp == nil || len(fbExternalPostsResp.Data) == 0 ||
 		fbExternalPostsResp.Paging.CompareFacebookPagingRequest(fbPagingReq) {
 		return nil
 	}

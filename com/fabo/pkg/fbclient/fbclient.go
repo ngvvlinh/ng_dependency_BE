@@ -185,30 +185,10 @@ func (f *FbClient) CallAPIListFeeds(accessToken, pageID string, pagination *mode
 	return &publishedPostsResponse, nil
 }
 
-func (f *FbClient) CallAPIListPublishedPosts(accessToken, pageID string, pagination *model.FacebookPagingRequest) (*model.PublishedPostsResponse, error) {
-	params := &ListPublishedPostsParams{
-		AccessToken: accessToken,
-		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments}",
-		DateFormat:  UnixDateFormat,
-	}
-
-	if pagination != nil {
-		pagination.ApplyQueryParams(true, DefaultLimitGetPosts, params)
-	}
-
-	path := "/me/published_posts"
-	var publishedPostsResponse model.PublishedPostsResponse
-	if err := f.sendGetRequest(path, params, &publishedPostsResponse); err != nil {
-		return nil, err
-	}
-
-	return &publishedPostsResponse, nil
-}
-
 func (f *FbClient) CallAPIGetPost(accessToken, postID string) (*model.Post, error) {
 	params := &GetPostParams{
 		AccessToken: accessToken,
-		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,type,subattachments}",
+		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments}",
 		DateFormat:  UnixDateFormat,
 	}
 

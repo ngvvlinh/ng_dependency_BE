@@ -1,9 +1,5 @@
 package model
 
-type CommentSummariesResponse struct {
-	MapCommentSummary map[string]*CommentSummary
-}
-
 type CommentSummary struct {
 	Data    []interface{}          `json:"data"`
 	Summary *SummaryCommentSummary `json:"summary"`
