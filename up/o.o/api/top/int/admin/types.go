@@ -853,10 +853,12 @@ func (g *GetAdminUsersRequest) String() string {
 }
 
 type AdminAccountResponse struct {
-	UserId   dot.ID   `json:"user_id"`
-	FullName string   `json:"full_name"`
-	Email    string   `json:"email"`
-	Roles    []string `json:"roles"`
+	UserId    dot.ID    `json:"user_id"`
+	FullName  string    `json:"full_name"`
+	Email     string    `json:"email"`
+	Roles     []string  `json:"roles"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type GetAdminUserResponse struct {

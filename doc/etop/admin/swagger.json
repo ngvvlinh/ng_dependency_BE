@@ -6662,6 +6662,10 @@
     "xuAdminAccountResponse": {
       "type": "object",
       "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "email": {
           "type": "string"
         },
@@ -6673,6 +6677,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         },
         "user_id": {
           "type": "string",

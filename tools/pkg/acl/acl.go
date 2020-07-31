@@ -249,10 +249,11 @@ const (
 	AdminCreditDelete  permission.ActionType = "admin/credit:delete"
 
 	// Admin Fulfillment
-	AdminFulfillmentView                permission.ActionType = "admin/fulfillment:view"
-	AdminFulfillmentCreate              permission.ActionType = "admin/fulfillment:create"
-	AdminFulfillmentImportantInfoUpdate permission.ActionType = "admin/fulfillment_important_info:update"
-	AdminFulfillmentUpdate              permission.ActionType = "admin/fulfillment:update"
+	AdminFulfillmentView               permission.ActionType = "admin/fulfillment:view"
+	AdminFulfillmentCreate             permission.ActionType = "admin/fulfillment:create"
+	AdminFulfillmentStateUpdate        permission.ActionType = "admin/fulfillment_state:update"
+	AdminFulfillmentUpdate             permission.ActionType = "admin/fulfillment:update"
+	AdminFulfillmentShippingFeesUpdate permission.ActionType = "admin/fulfillment_shipping_fees:update"
 
 	// Admin Account
 	AdminAdminUserCreate permission.ActionType = "admin/admin_user:create"
@@ -650,9 +651,9 @@ var _acl = map[string]*permission.Decl{
 	"admin.Fulfillment/UpdateFulfillment":              {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)}, // deprecated
 	"admin.Fulfillment/UpdateFulfillmentInfo":          {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
 	"admin.Fulfillment/UpdateFulfillmentCODAmount":     {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
-	"admin.Fulfillment/UpdateFulfillmentShippingState": {Type: EtopAdmin, Actions: actions(AdminFulfillmentImportantInfoUpdate)},
-	"admin.Fulfillment/UpdateFulfillmentShippingFees":  {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
 	"admin.Fulfillment/AddShippingFee":                 {Type: EtopAdmin, Actions: actions(AdminFulfillmentUpdate)},
+	"admin.Fulfillment/UpdateFulfillmentShippingState": {Type: EtopAdmin, Actions: actions(AdminFulfillmentStateUpdate)},
+	"admin.Fulfillment/UpdateFulfillmentShippingFees":  {Type: EtopAdmin, Actions: actions(AdminFulfillmentShippingFeesUpdate)},
 
 	"admin.MoneyTransaction/GetMoneyTransaction":     {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionView)},
 	"admin.MoneyTransaction/GetMoneyTransactions":    {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionView)},

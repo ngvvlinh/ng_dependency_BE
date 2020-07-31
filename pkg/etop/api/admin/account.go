@@ -65,7 +65,7 @@ func (s *AccountService) GenerateAPIKey(ctx context.Context, q *admin.GenerateAP
 func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdminUserRequest) (*admin.CreateAdminUserResponse, error) {
 	for _, role := range q.Roles {
 		if !authorization.IsContainsRole(authorization.InternalRoles, authorization.Role(role)) {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, fmt.Sprintf("invalid role %v", role))
+			return nil, cm.Errorf(cm.InvalidArgument, nil, fmt.Sprintf("Role không hợp lệ: %v", role))
 		}
 	}
 
@@ -73,6 +73,9 @@ func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdm
 		Email: q.Email,
 	}
 	if err := sqlstore.GetUserByEmail(ctx, query); err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return nil, cm.Errorf(cm.NotFound, nil, "Email không tồn tại trong hệ thống.")
+		}
 		return nil, err
 	}
 
@@ -85,7 +88,7 @@ func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdm
 	err := sqlstore.GetAccountUser(ctx, getAccountUserQuery)
 	if err == nil {
 		// this case mean `account_user` with `user_id` and `account_id` already exists.
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "this user already admin of etop")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Tài khoản này đã là admin của etop")
 	}
 
 	// Oke let create
@@ -174,10 +177,12 @@ func (s *AccountService) GetAdminUsers(ctx context.Context, req *admin.GetAdminU
 	res := &admin.GetAdminUserResponse{}
 	for _, v := range getAdminAccQuery.Result.AccountUsers {
 		res.Admins = append(res.Admins, &admin.AdminAccountResponse{
-			UserId:   v.User.ID,
-			FullName: v.User.FullName,
-			Email:    v.User.Email,
-			Roles:    v.AccountUser.Roles,
+			UserId:    v.User.ID,
+			FullName:  v.User.FullName,
+			Email:     v.User.Email,
+			Roles:     v.AccountUser.Roles,
+			CreatedAt: v.AccountUser.CreatedAt,
+			UpdatedAt: v.AccountUser.UpdatedAt,
 		})
 	}
 	return res, nil

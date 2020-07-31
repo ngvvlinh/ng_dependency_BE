@@ -172,7 +172,17 @@ func GetAccountUserExtendeds(ctx context.Context, query *identitymodelx.GetAccou
 
 	{
 		s2 := s.Clone()
-		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{"id": "u.id", "updated_at": "au.updated_at"})
+		if query.Paging == nil || len(query.Paging.Sort) == 0 {
+			query.Paging = &cm.Paging{
+				Sort: []string{"created_at"},
+			}
+		}
+
+		s2, err := sqlstore.LimitSort(s2, sqlstore.ConvertPaging(query.Paging), Ms{
+			"id":         "u.id",
+			"updated_at": "au.updated_at",
+			"created_at": "au.created_at",
+		})
 		if err != nil {
 			return err
 		}
