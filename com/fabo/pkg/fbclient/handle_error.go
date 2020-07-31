@@ -55,9 +55,10 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL, xBus
 		}
 	}()
 
+	apiErrMsg := fmt.Sprintf("Facebook API error: %v", facebookError.Message.String)
 	if facebookError.Code.Valid {
 		if 200 <= facebookError.Code.Int && facebookError.Code.Int <= 299 {
-			_err := cm.Errorf(cm.FacebookPermissionDenied, nil, "Facebook API error").
+			_err := cm.Errorf(cm.FacebookPermissionDenied, nil, apiErrMsg).
 				WithMeta("code", fmt.Sprintf("%v", facebookError.Code.Int)).
 				WithMeta("sub_code", fmt.Sprintf("%d", facebookError.ErrorSubcode.Int)).
 				WithMeta("url", currentURL)
@@ -70,7 +71,7 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL, xBus
 			}
 			return _err
 		}
-		_err := cm.Errorf(cm.FacebookError, nil, "Facebook API error").
+		_err := cm.Errorf(cm.FacebookError, nil, apiErrMsg).
 			WithMeta("code", fmt.Sprintf("%v", facebookError.Code.Int)).
 			WithMeta("sub_code", fmt.Sprintf("%d", facebookError.ErrorSubcode.Int)).
 			WithMeta("url", currentURL)
@@ -83,7 +84,7 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL, xBus
 		}
 	}
 	if facebookError.ErrorSubcode.Valid {
-		_err := cm.Errorf(cm.FacebookError, nil, "Facebook API error").
+		_err := cm.Errorf(cm.FacebookError, nil, apiErrMsg).
 			WithMeta("code", fmt.Sprintf("%d", facebookError.Code.Int)).
 			WithMeta("sub_code", fmt.Sprintf("%v", facebookError.ErrorSubcode.Int)).
 			WithMeta("url", currentURL)
@@ -98,7 +99,7 @@ func handleErrorFacebookAPI(facebookError *model.FacebookError, currentURL, xBus
 	}
 	if facebookError.Type.Valid {
 		if facebookError.Type.String == "OAuthException" {
-			_err := cm.Errorf(cm.FacebookError, nil, "Facebook API error").
+			_err := cm.Errorf(cm.FacebookError, nil, apiErrMsg).
 				WithMeta("code", "OAuthException").
 				WithMeta("sub_code", fmt.Sprintf("%d", facebookError.ErrorSubcode.Int)).
 				WithMeta("url", currentURL)
@@ -296,6 +297,8 @@ const (
 	UnconfirmedUser    = SubCode(464)
 	InvalidAccessToken = SubCode(467)
 	InvalidSession     = SubCode(492)
+	ObjectNotExist     = SubCode(33)
+	MessageSentOutside = SubCode(2018278)
 )
 
 var mapErrorSubCodeMessage = map[SubCode]map[string]string{

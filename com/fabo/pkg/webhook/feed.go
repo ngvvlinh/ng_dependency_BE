@@ -62,19 +62,9 @@ func (wh *Webhook) handleFeedEvent(ctx context.Context, extPageID string, feedCh
 
 func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedChange FeedChange, createdTime time.Time, accessToken string) error {
 	postID := feedChange.Value.PostID
-	{
-		// Sometimes facebook may send many requests for one feed. E.g: If a
-		// user posts a post containing 4 images, facebook may calls more than 5
-		// requests at the same time. In this case, we can build full post and
-		// all child posts from one request, so just hold one and ignore the
-		// rest.
-		actionKey := fmt.Sprintf("FEED_%v_%v_%v", extPageID, postID, feedChange.Value.From.ID)
-		if wh.faboRedis.IsExist(actionKey) {
-			return nil
-		}
-		if err := wh.faboRedis.SetWithTTL(actionKey, true, 2); err != nil {
-			return err
-		}
+	fromID := feedChange.Value.From.ID
+	if err := wh.lockFeedPost(extPageID, postID, fromID); err != nil {
+		return err
 	}
 
 	externalPost, err := wh.getExternalPost(ctx, postID)
@@ -97,6 +87,22 @@ func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedCha
 	}
 
 	return wh.updateParentAndChildPost(ctx, extPageID, post)
+}
+
+func (wh *Webhook) lockFeedPost(pageID, postID, fromID string) error {
+	// Sometimes facebook may send many requests for one feed. E.g: If a
+	// user posts a post containing 4 images, facebook may calls more than 5
+	// requests at the same time. In this case, we can build full post and
+	// all child posts from one request, so just hold one and ignore the
+	// rest.
+	actionKey := fmt.Sprintf("FEED_%v_%v_%v", pageID, postID, fromID)
+	if wh.faboRedis.IsExist(actionKey) {
+		return nil
+	}
+	if err := wh.faboRedis.SetWithTTL(actionKey, true, 2); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (wh *Webhook) updateFeedPostMessage(ctx context.Context, postID string, message string) error {

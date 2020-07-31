@@ -3,6 +3,7 @@ package fabo
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/fabo/convertpb"
 	"o.o/backend/pkg/fabo/faboinfo"
+	"o.o/common/xerrors"
 )
 
 type CustomerConversationService struct {
@@ -414,7 +416,7 @@ func (s *CustomerConversationService) SendComment(
 		PageID:          externalPageID,
 	})
 	if err != nil {
-		return nil, err
+		return nil, convertApiError(err)
 	}
 
 	// Get comment
@@ -597,7 +599,7 @@ func (s *CustomerConversationService) SendMessage(
 		PageID:          request.ExternalPageID,
 	})
 	if err != nil {
-		return nil, err
+		return nil, convertApiError(err)
 	}
 
 	newMessage, err := s.FBClient.CallAPIGetMessage(&fbclient.GetMessageRequest{
@@ -655,4 +657,37 @@ func (s *CustomerConversationService) getImageURLs(ctx context.Context, external
 	}
 
 	return mapExternalUserIDAndImageURL, nil
+}
+
+// TODO(nakhoa17): make function more clear
+func convertApiError(err error) error {
+	apiErr, ok := err.(*xerrors.APIError)
+	if !ok {
+		return err
+	}
+
+	metaError := apiErr.Meta
+	subCode, ok := metaError["sub_code"]
+	if !ok {
+		return err
+	}
+
+	intSubCode, _err := strconv.Atoi(subCode)
+	if _err != nil {
+		return err
+	}
+
+	switch intSubCode {
+	case int(fbclient.ObjectNotExist):
+		return cm.Errorf(cm.FacebookError, nil, "Cuộc hội thoại này không tồn tại, hoặc đã bị xóa.").
+			WithMetaM(metaError)
+	case int(fbclient.MessageSentOutside):
+		return cm.Errorf(cm.FacebookError, nil, "Người nhận chưa reply trong vòng 24 giờ nên không thể gửi thêm tin nhắn").
+			WithMetaM(metaError)
+	case int(fbclient.Expired):
+		return cm.Errorf(cm.FacebookError, nil, "Token truy cập facebook trang của bạn đã hết hạn.").
+			WithMetaM(metaError)
+	default:
+		return err
+	}
 }
