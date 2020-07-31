@@ -87,6 +87,20 @@ func (h AggregateHandler) HandleRejectInvitation(ctx context.Context, msg *Rejec
 	return err
 }
 
+type ResendInvitationCommand struct {
+	AccountID dot.ID
+	ResendBy  dot.ID
+	Email     string
+	Phone     string
+
+	Result *Invitation `json:"-"`
+}
+
+func (h AggregateHandler) HandleResendInvitation(ctx context.Context, msg *ResendInvitationCommand) (err error) {
+	msg.Result, err = h.inner.ResendInvitation(msg.GetArgs(ctx))
+	return err
+}
+
 type GetInvitationQuery struct {
 	ID dot.ID
 
@@ -154,6 +168,7 @@ func (q *AcceptInvitationCommand) command() {}
 func (q *CreateInvitationCommand) command() {}
 func (q *DeleteInvitationCommand) command() {}
 func (q *RejectInvitationCommand) command() {}
+func (q *ResendInvitationCommand) command() {}
 
 func (q *GetInvitationQuery) query()                  {}
 func (q *GetInvitationByTokenQuery) query()           {}
@@ -209,6 +224,23 @@ func (q *RejectInvitationCommand) GetArgs(ctx context.Context) (_ context.Contex
 	return ctx,
 		q.UserID,
 		q.Token
+}
+
+func (q *ResendInvitationCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ResendInvitationArgs) {
+	return ctx,
+		&ResendInvitationArgs{
+			AccountID: q.AccountID,
+			ResendBy:  q.ResendBy,
+			Email:     q.Email,
+			Phone:     q.Phone,
+		}
+}
+
+func (q *ResendInvitationCommand) SetResendInvitationArgs(args *ResendInvitationArgs) {
+	q.AccountID = args.AccountID
+	q.ResendBy = args.ResendBy
+	q.Email = args.Email
+	q.Phone = args.Phone
 }
 
 func (q *GetInvitationQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -276,6 +308,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateInvitation)
 	b.AddHandler(h.HandleDeleteInvitation)
 	b.AddHandler(h.HandleRejectInvitation)
+	b.AddHandler(h.HandleResendInvitation)
 	return CommandBus{b}
 }
 

@@ -233,6 +233,33 @@
         }
       }
     },
+    "/api/etop.AccountRelationship/ResendInvitation": {
+      "post": {
+        "tags": [
+          "AccountRelationship"
+        ],
+        "summary": "ResendInvitation",
+        "operationId": "etop.AccountRelationship-ResendInvitation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baResendInvitationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baInvitation"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.AccountRelationship/UpdatePermission": {
       "post": {
         "tags": [
@@ -2204,6 +2231,9 @@
           "type": "string",
           "format": "int64"
         },
+        "invitation_url": {
+          "type": "string"
+        },
         "invited_by": {
           "type": "string",
           "format": "int64"
@@ -2561,6 +2591,21 @@
         "user_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "baResendInvitationRequest": {
+      "type": "object",
+      "required": [
+        "email",
+        "phone"
+      ],
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
         }
       }
     },

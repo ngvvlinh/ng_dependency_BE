@@ -143,7 +143,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	commandBus := identity.AggregateMessageBus(identityAggregate)
 	queryService := identity.NewQueryService(mainDB)
 	queryBus := identity.QueryServiceMessageBus(queryService)
-	invitationQuery := query.NewInvitationQuery(mainDB)
+	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
+	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
 	busBus := bus.New()
 	generator := auth.NewGenerator(store)
@@ -187,7 +188,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	customerQuery := query2.NewCustomerQuery(mainDB)
 	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
 	secretToken := cfg.Secret
-	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
 	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, client, emailClient, secretToken, flagEnableNewLinkInvitation)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := aggregate3.NewAuthorizationAggregate()

@@ -12,7 +12,6 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
-	authorizationconvert "o.o/backend/com/main/authorization/convert"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/com/main/invitation/convert"
 	"o.o/backend/com/main/invitation/model"
@@ -81,40 +80,10 @@ func InvitationAggregateMessageBus(a *InvitationAggregate) invitation.CommandBus
 func (a *InvitationAggregate) CreateInvitation(
 	ctx context.Context, args *invitation.CreateInvitationArgs,
 ) (*invitation.Invitation, error) {
-	var emailNorm validate.NormalizedEmail
-	if args.Email != "" {
-		var ok bool
-		emailNorm, ok = validate.NormalizeEmail(args.Email)
-		if !ok {
-			return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
-		}
-		args.Email = emailNorm.String()
-	}
-
 	if !a.checkRoles(args.Roles) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "role không hợp lệ")
 	}
-	if err := a.havePermissionToInvite(ctx, args); err != nil {
-		return nil, err
-	}
-	userIsInvited, err := a.checkUserBelongsToShop(ctx, args.Email, args.Phone, args.AccountID)
-	if err != nil {
-		return nil, err
-	}
-
-	// check have invitation that was sent to email
-	query := a.store(ctx).AccountID(args.AccountID).NotExpires().AcceptedAt(nil).RejectedAt(nil)
-	if userIsInvited != nil {
-		query = query.PhoneOrEmail(userIsInvited.Phone, userIsInvited.Email)
-	} else {
-		if args.Phone != "" {
-			query = query.Phone(args.Phone)
-		}
-		if args.Email != "" {
-			query = query.Email(args.Email)
-		}
-	}
-	_, err = query.GetInvitation()
+	_, userIsInvited, err := a.getInvitationByEmailOrPhone(ctx, args.Email, args.Phone, args.AccountID)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 	// no-op
@@ -145,96 +114,156 @@ func (a *InvitationAggregate) CreateInvitation(
 	invitationItem.ExpiresAt = expiresAt
 	invitationItem.Token = token
 
-	getUserQuery := &identitymodelx.GetUserByIDQuery{
-		UserID: invitationItem.InvitedBy,
-	}
-	if err := bus.Dispatch(ctx, getUserQuery); err != nil {
-		return nil, err
-	}
-
-	getAccountQuery := &identitymodelx.GetShopQuery{
-		ShopID: invitationItem.AccountID,
-	}
-	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
-		return nil, err
-	}
-
-	var invitationUrl string
-	if args.Email != "" || (args.Phone != "" && !a.flagNewLink) {
-		invitationUrl = wl.X(ctx).InviteUserURLByEmail
-	} else {
-		// format url: https://example.com/i/p000000
-		invitationUrl = wl.X(ctx).InviteUserURLByPhone + "/p" + args.Phone
-	}
-
-	URL, err := url.Parse(invitationUrl)
+	URL, err := GetInvitationURL(ctx, invitationItem, a.flagNewLink)
 	if err != nil {
-		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
+		return nil, err
 	}
-	urlQuery := URL.Query()
-	if args.Email != "" || (args.Phone != "" && !a.flagNewLink) {
-		urlQuery.Set("t", token)
-	}
-	URL.RawQuery = urlQuery.Encode()
-
-	fullName := "bạn"
-	if args.FullName != "" {
-		fullName = args.FullName
-	}
-	shopRoles := strings.Join(authorization.ParseRoleLabels(invitationItem.Roles), ", ")
-	shopName := getAccountQuery.Result.Name
-	invitedUsername := getUserQuery.Result.FullName
+	invitationItem.InvitationURL = URL.String()
 
 	if err := a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
 		// create invitation
 		if err := a.store(ctx).CreateInvitation(invitationItem); err != nil {
 			return err
 		}
-
-		var b strings.Builder
-		if args.Email != "" {
-			if err := templatemessages.EmailInvitationTpl.Execute(&b, map[string]interface{}{
-				"FullName":        fullName,
-				"URL":             URL.String(),
-				"ShopRoles":       shopRoles,
-				"ShopName":        shopName,
-				"InvitedUsername": invitedUsername,
-				"WlName":          wl.X(ctx).Name,
-			}); err != nil {
-				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
-			}
-			cmd := &email.SendEmailCommand{
-				FromName:    wl.X(ctx).CompanyName + " (no-reply)",
-				ToAddresses: []string{string(emailNorm)},
-				Subject:     "Invitation",
-				Content:     b.String(),
-			}
-			if err := a.emailClient.SendMail(ctx, cmd); err != nil {
-				return err
-			}
-		} else {
-			if err := templatemessages.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
-				"InvitedUsername": invitedUsername,
-				"URL":             URL.String(),
-				"ShopRoles":       shopRoles,
-				"ShopName":        shopName,
-			}); err != nil {
-				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
-			}
-			cmd := &sms.SendSMSCommand{
-				Phone:   args.Phone,
-				Content: b.String(),
-			}
-			if err := a.smsClient.SendSMS(ctx, cmd); err != nil {
-				return err
-			}
-		}
-		return nil
+		err := a.sendInvitation(ctx, invitationItem)
+		return err
 	}); err != nil {
 		return nil, err
 	}
 
 	return invitationItem, nil
+}
+
+func (a *InvitationAggregate) getInvitationByEmailOrPhone(ctx context.Context, email string, phone string, accountID dot.ID) (*invitation.Invitation, *identity.User, error) {
+	var emailNorm validate.NormalizedEmail
+	var phoneNorm validate.NormalizedPhone
+	if email != "" {
+		var ok bool
+		emailNorm, ok = validate.NormalizeEmail(email)
+		if !ok {
+			return nil, nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
+		}
+		email = emailNorm.String()
+	}
+
+	if phone != "" {
+		var ok bool
+		phoneNorm, ok = validate.NormalizePhone(phone)
+		if !ok {
+			return nil, nil, cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
+		}
+		phone = phoneNorm.String()
+	}
+
+	userIsInvited, err := a.checkUserBelongsToShop(ctx, email, phone, accountID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// check have invitation that was sent to email
+	query := a.store(ctx).AccountID(accountID).NotExpires().AcceptedAt(nil).RejectedAt(nil)
+	if userIsInvited != nil {
+		query = query.PhoneOrEmail(userIsInvited.Phone, userIsInvited.Email)
+	} else {
+		if phone != "" {
+			query = query.Phone(phone)
+		}
+		if email != "" {
+			query = query.Email(email)
+		}
+	}
+	result, err := query.GetInvitation()
+	return result, userIsInvited, err
+}
+
+func (a *InvitationAggregate) ResendInvitation(ctx context.Context, args *invitation.ResendInvitationArgs) (*invitation.Invitation, error) {
+	invitationCore, _, err := a.getInvitationByEmailOrPhone(ctx, args.Email, args.Phone, args.AccountID)
+	switch cm.ErrorCode(err) {
+	case cm.NotFound:
+		if args.Phone != "" {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại %s chưa được gửi lời mời.", args.Phone)
+		}
+		if args.Email != "" {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email %s chưa được gửi lời mời.", args.Email)
+		}
+	case cm.NoError:
+		// no-op
+	default:
+		return nil, err
+	}
+
+	URL, err := GetInvitationURL(ctx, invitationCore, a.flagNewLink)
+	if err != nil {
+		return nil, err
+	}
+	invitationCore.InvitationURL = URL.String()
+	err = a.sendInvitation(ctx, invitationCore)
+	if err != nil {
+		return nil, err
+	}
+	return invitationCore, nil
+}
+
+func (a *InvitationAggregate) sendInvitation(ctx context.Context, args *invitation.Invitation) error {
+	getUserQuery := &identitymodelx.GetUserByIDQuery{
+		UserID: args.InvitedBy,
+	}
+	if err := bus.Dispatch(ctx, getUserQuery); err != nil {
+		return err
+	}
+
+	getAccountQuery := &identitymodelx.GetShopQuery{
+		ShopID: args.AccountID,
+	}
+	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
+		return err
+	}
+	fullName := "bạn"
+	if args.FullName != "" {
+		fullName = args.FullName
+	}
+	shopRoles := strings.Join(authorization.ParseRoleLabels(args.Roles), ", ")
+	shopName := getAccountQuery.Result.Name
+	invitedUsername := getUserQuery.Result.FullName
+	var b strings.Builder
+	if args.Email != "" {
+		if err := templatemessages.EmailInvitationTpl.Execute(&b, map[string]interface{}{
+			"FullName":        fullName,
+			"URL":             args.InvitationURL,
+			"ShopRoles":       shopRoles,
+			"ShopName":        shopName,
+			"InvitedUsername": invitedUsername,
+			"WlName":          wl.X(ctx).Name,
+		}); err != nil {
+			return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
+		}
+		cmd := &email.SendEmailCommand{
+			FromName:    wl.X(ctx).CompanyName + " (no-reply)",
+			ToAddresses: []string{args.Email},
+			Subject:     "Invitation",
+			Content:     b.String(),
+		}
+		if err := a.emailClient.SendMail(ctx, cmd); err != nil {
+			return err
+		}
+	} else {
+		if err := templatemessages.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
+			"InvitedUsername": invitedUsername,
+			"URL":             args.InvitationURL,
+			"ShopRoles":       shopRoles,
+			"ShopName":        shopName,
+		}); err != nil {
+			return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
+		}
+		cmd := &sms.SendSMSCommand{
+			Phone:   args.Phone,
+			Content: b.String(),
+		}
+		if err := a.smsClient.SendSMS(ctx, cmd); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (a *InvitationAggregate) checkStatusInvitation(invitation *model.Invitation) error {
@@ -280,23 +309,6 @@ func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email,
 	default:
 		return userIsInvited, err
 	}
-}
-
-func (a *InvitationAggregate) havePermissionToInvite(ctx context.Context, args *invitation.CreateInvitationArgs) error {
-	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
-		UserID:    args.InvitedBy,
-		AccountID: args.AccountID,
-	}
-	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
-		return err
-	}
-	customerRoles := authorizationconvert.ConvertStringsToRoles(getAccountUserQuery.Result.Roles)
-	if !authorization.IsContainsRole(customerRoles, authorization.RoleShopOwner) &&
-		!authorization.IsContainsRole(customerRoles, authorization.RoleStaffManagement) &&
-		!authorization.IsContainsRole(customerRoles, authorization.RoleAdmin) {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Người dùng hiện tại không có quyền mời người khác vào shop")
-	}
-	return nil
 }
 
 func (a *InvitationAggregate) checkRoles(roles []authorization.Role) bool {
@@ -419,4 +431,25 @@ func (a *InvitationAggregate) DeleteInvitation(
 		return 0, err
 	}
 	return updated, err
+}
+
+func GetInvitationURL(ctx context.Context, args *invitation.Invitation, flag FlagEnableNewLinkInvitation) (*url.URL, error) {
+	var invitationUrl string
+	if args.Email != "" || (args.Phone != "" && !flag) {
+		invitationUrl = wl.X(ctx).InviteUserURLByEmail
+	} else {
+		// format url: https://example.com/i/p000000
+		invitationUrl = wl.X(ctx).InviteUserURLByPhone + "/p" + args.Phone
+	}
+
+	URL, err := url.Parse(invitationUrl)
+	if err != nil {
+		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
+	}
+	urlQuery := URL.Query()
+	if args.Email != "" || (args.Phone != "" && !flag) {
+		urlQuery.Set("t", args.Token)
+	}
+	URL.RawQuery = urlQuery.Encode()
+	return URL, nil
 }

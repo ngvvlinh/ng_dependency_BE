@@ -155,6 +155,19 @@ func (s *AccountRelationshipServiceServer) parseRoute(path string, hooks httprpc
 			return
 		}
 		return msg, fn, nil
+	case "/etop.AccountRelationship/ResendInvitation":
+		msg := &ResendInvitationRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ResendInvitation(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/etop.AccountRelationship/UpdatePermission":
 		msg := &UpdateAccountUserPermissionRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

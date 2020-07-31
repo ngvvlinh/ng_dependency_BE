@@ -971,21 +971,22 @@ func PbInvitation(m *invitation.Invitation) *etop.Invitation {
 		roles = append(roles, string(role))
 	}
 	return &etop.Invitation{
-		Id:         m.ID,
-		ShopId:     m.AccountID,
-		Email:      m.Email,
-		Phone:      m.Phone,
-		FullName:   m.FullName,
-		ShortName:  m.ShortName,
-		Roles:      roles,
-		Token:      m.Token,
-		Status:     m.Status,
-		InvitedBy:  m.InvitedBy,
-		AcceptedAt: cmapi.PbTime(m.AcceptedAt),
-		DeclinedAt: cmapi.PbTime(m.RejectedAt),
-		ExpiresAt:  cmapi.PbTime(m.ExpiresAt),
-		CreatedAt:  cmapi.PbTime(m.CreatedAt),
-		UpdatedAt:  cmapi.PbTime(m.UpdatedAt),
+		Id:            m.ID,
+		ShopId:        m.AccountID,
+		Email:         m.Email,
+		Phone:         m.Phone,
+		FullName:      m.FullName,
+		ShortName:     m.ShortName,
+		Roles:         roles,
+		Token:         m.Token,
+		Status:        m.Status,
+		InvitedBy:     m.InvitedBy,
+		AcceptedAt:    cmapi.PbTime(m.AcceptedAt),
+		DeclinedAt:    cmapi.PbTime(m.RejectedAt),
+		ExpiresAt:     cmapi.PbTime(m.ExpiresAt),
+		CreatedAt:     cmapi.PbTime(m.CreatedAt),
+		UpdatedAt:     cmapi.PbTime(m.UpdatedAt),
+		InvitationURL: m.InvitationURL,
 	}
 }
 

@@ -15,6 +15,7 @@ import (
 
 type Aggregate interface {
 	CreateInvitation(ctx context.Context, _ *CreateInvitationArgs) (*Invitation, error)
+	ResendInvitation(ctx context.Context, _ *ResendInvitationArgs) (*Invitation, error)
 	AcceptInvitation(ctx context.Context, userID dot.ID, token string) (updated int, _ error)
 	RejectInvitation(ctx context.Context, userID dot.ID, token string) (updated int, _ error)
 	DeleteInvitation(ctx context.Context, userID, accountID dot.ID, token string) (updated int, _ error)
@@ -57,4 +58,11 @@ type CreateInvitationArgs struct {
 	Status    status3.Status
 	InvitedBy dot.ID
 	CreatedBy time.Time
+}
+
+type ResendInvitationArgs struct {
+	AccountID dot.ID
+	ResendBy  dot.ID
+	Email     string
+	Phone     string
 }

@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"o.o/api/main/authorization"
 	"o.o/api/main/invitation"
@@ -32,6 +34,37 @@ type AccountRelationshipService struct {
 func (s *AccountRelationshipService) Clone() api.AccountRelationshipService {
 	res := *s
 	return &res
+}
+
+func (s *AccountRelationshipService) ResendInvitation(ctx context.Context, q *api.ResendInvitationRequest) (*api.Invitation, error) {
+	key := fmt.Sprintf("resend-invitation:%v-%v-%v-%v",
+		s.SS.Shop().ID, s.SS.Claim().UserID, q.Email, q.Phone)
+	resp, _, err := idempgroup.DoAndWrap(
+		ctx, key, 10*time.Minute, "Resend invitation",
+		func() (interface{}, error) { return s.resendInvitation(ctx, q) })
+	if err != nil {
+		return nil, err
+	}
+	result := convertpb.PbInvitation(resp.(*invitation.Invitation))
+	return result, nil
+}
+
+func (s *AccountRelationshipService) resendInvitation(ctx context.Context, q *api.ResendInvitationRequest) (*invitation.Invitation, error) {
+	if q.Email == "" && q.Phone == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "email and phone must not be null")
+	}
+
+	cmd := &invitation.ResendInvitationCommand{
+		AccountID: s.SS.Shop().ID,
+		ResendBy:  s.SS.Claim().UserID,
+		Email:     q.Email,
+		Phone:     q.Phone,
+	}
+	if err := s.InvitationAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	return cmd.Result, nil
 }
 
 func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *api.CreateInvitationRequest) (*api.Invitation, error) {

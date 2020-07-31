@@ -84,6 +84,7 @@ func convert_invitationmodel_Invitation_invitation_Invitation(arg *invitationmod
 	out.ExpiresAt = arg.ExpiresAt   // simple assign
 	out.CreatedAt = arg.CreatedAt   // simple assign
 	out.UpdatedAt = arg.UpdatedAt   // simple assign
+	out.InvitationURL = ""          // zero value
 }
 
 func Convert_invitationmodel_Invitations_invitation_Invitations(args []*invitationmodel.Invitation) (outs []*invitation.Invitation) {
@@ -169,4 +170,5 @@ func apply_invitation_CreateInvitationArgs_invitation_Invitation(arg *invitation
 	out.ExpiresAt = time.Time{}   // zero value
 	out.CreatedAt = time.Time{}   // zero value
 	out.UpdatedAt = time.Time{}   // zero value
+	out.InvitationURL = ""        // zero value
 }

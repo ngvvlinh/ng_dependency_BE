@@ -18,22 +18,23 @@ type Config struct {
 }
 
 type Invitation struct {
-	ID         dot.ID
-	AccountID  dot.ID
-	Email      string
-	Phone      string
-	FullName   string
-	ShortName  string
-	Position   string
-	Roles      []authorization.Role
-	Token      string
-	Status     status3.Status
-	InvitedBy  dot.ID
-	AcceptedAt time.Time
-	RejectedAt time.Time
-	ExpiresAt  time.Time
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
+	ID            dot.ID
+	AccountID     dot.ID
+	Email         string
+	Phone         string
+	FullName      string
+	ShortName     string
+	Position      string
+	Roles         []authorization.Role
+	Token         string
+	Status        status3.Status
+	InvitedBy     dot.ID
+	AcceptedAt    time.Time
+	RejectedAt    time.Time
+	ExpiresAt     time.Time
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	InvitationURL string
 }
 
 type Claims struct {

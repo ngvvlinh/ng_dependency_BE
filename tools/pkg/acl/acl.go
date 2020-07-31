@@ -1099,6 +1099,7 @@ var _acl = map[string]*permission.Decl{
 
 	// Authorization:
 	"etop.AccountRelationship/CreateInvitation":   {Type: Shop, Actions: actions(RelationshipInvitationCreate)},
+	"etop.AccountRelationship/ResendInvitation":   {Type: Shop, Actions: actions(RelationshipInvitationCreate)},
 	"etop.AccountRelationship/GetInvitations":     {Type: Shop, Actions: actions(RelationshipInvitationView)},
 	"etop.AccountRelationship/DeleteInvitation":   {Type: Shop, Actions: actions(RelationshipInvitationDelete)},
 	"etop.AccountRelationship/UpdatePermission":   {Type: Shop, Actions: actions(RelationshipPermissionUpdate)},

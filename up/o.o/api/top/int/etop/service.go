@@ -144,6 +144,7 @@ type UserRelationshipService interface {
 // +wrapper:endpoint-prefix=AccountRelationship
 type AccountRelationshipService interface {
 	CreateInvitation(context.Context, *CreateInvitationRequest) (*Invitation, error)
+	ResendInvitation(context.Context, *ResendInvitationRequest) (*Invitation, error)
 	GetInvitations(context.Context, *GetInvitationsRequest) (*InvitationsResponse, error)
 	DeleteInvitation(context.Context, *DeleteInvitationRequest) (*cm.UpdatedResponse, error)
 	UpdatePermission(context.Context, *UpdateAccountUserPermissionRequest) (*Relationship, error)

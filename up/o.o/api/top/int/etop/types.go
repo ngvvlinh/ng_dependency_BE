@@ -62,6 +62,7 @@ type Invitation struct {
 	ExpiresAt     dot.Time       `json:"expires_at"`
 	CreatedAt     dot.Time       `json:"created_at"`
 	UpdatedAt     dot.Time       `json:"updated_at"`
+	InvitationURL string         `json:"invitation_url"`
 }
 
 func (m *Invitation) String() string { return jsonx.MustMarshalToString(m) }
@@ -122,6 +123,15 @@ type CreateInvitationRequest struct {
 }
 
 func (m *CreateInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ResendInvitationRequest struct {
+	// @Required
+	Email string `json:"email"`
+	// @Required
+	Phone string `json:"phone"`
+}
+
+func (m *ResendInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AcceptInvitationRequest struct {
 	Token string `json:"token"`

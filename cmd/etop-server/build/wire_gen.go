@@ -185,7 +185,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shipnowManager := shipnowcarrier.NewManager(mainDB, queryBus, shipnowQueryBus, v)
 	identityAggregate := identity.NewAggregate(mainDB, shipnowManager)
 	commandBus := identity.AggregateMessageBus(identityAggregate)
-	invitationQuery := query.NewInvitationQuery(mainDB)
+	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
+	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
 	busBus := bus.New()
 	generator := auth.NewGenerator(store)
@@ -228,7 +229,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	customerQuery := query2.NewCustomerQuery(mainDB)
 	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
 	secretToken := cfg.Secret
-	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
 	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, identityQueryBus, busBus, smsClient, emailClient, secretToken, flagEnableNewLinkInvitation)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := aggregate3.NewAuthorizationAggregate()
