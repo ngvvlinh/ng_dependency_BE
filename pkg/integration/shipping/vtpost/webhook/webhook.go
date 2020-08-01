@@ -7,7 +7,8 @@ import (
 	"o.o/api/main/identity"
 	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
-	logmodel "o.o/backend/com/etc/logging/webhook/model"
+	"o.o/backend/com/etc/logging/shippingwebhook"
+	logmodel "o.o/backend/com/etc/logging/shippingwebhook/model"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipping/carrier"
 	shippingconvert "o.o/backend/com/main/shipping/convert"
@@ -36,22 +37,27 @@ var ll = l.New()
 var EndStatesCode = []string{"501", "503", "504", "201", "107"}
 
 type Webhook struct {
-	db              *cmsql.Database
-	dbLogs          *cmsql.Database
-	carrier         *vtpost.Carrier
-	shipmentManager *carrier.ShipmentManager
-	identityQS      identity.QueryBus
-	shippingAggr    shippingcore.CommandBus
+	db                     *cmsql.Database
+	carrier                *vtpost.Carrier
+	shipmentManager        *carrier.ShipmentManager
+	identityQS             identity.QueryBus
+	shippingAggr           shippingcore.CommandBus
+	shipmentWebhookLogAggr *shippingwebhook.Aggregate
 }
 
-func New(db com.MainDB, dbLogs com.LogDB, carrier *vtpost.Carrier, shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus, shippingA shippingcore.CommandBus) *Webhook {
+func New(db com.MainDB,
+	carrier *vtpost.Carrier,
+	shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus,
+	shippingA shippingcore.CommandBus,
+	shipmentWebhookLogAggr *shippingwebhook.Aggregate,
+) *Webhook {
 	wh := &Webhook{
-		db:              db,
-		dbLogs:          dbLogs,
-		carrier:         carrier,
-		shipmentManager: shipmentM,
-		identityQS:      identityQ,
-		shippingAggr:    shippingA,
+		db:                     db,
+		carrier:                carrier,
+		shipmentManager:        shipmentM,
+		identityQS:             identityQ,
+		shippingAggr:           shippingA,
+		shipmentWebhookLogAggr: shipmentWebhookLogAggr,
 	}
 	return wh
 }
@@ -71,12 +77,12 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	statusCode := orderData.OrderStatus
 	var ffm *shipmodel.Fulfillment
 	var err error
+	ctx := c.Req.Context()
 	defer func() {
 		// save to database etop_log
-		wh.saveLogsWebhook(msg, _err, ffm)
+		wh.saveLogsWebhook(ctx, msg, _err, ffm)
 	}()
 
-	ctx := c.Req.Context()
 	ffm, err = wh.validateDataAndGetFfm(ctx, msg)
 	if err != nil {
 		return err
@@ -175,7 +181,7 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg vtpostclient.C
 	return
 }
 
-func (wh *Webhook) saveLogsWebhook(msg vtpostclient.CallbackOrder, err error, ffm *shipmodel.Fulfillment) {
+func (wh *Webhook) saveLogsWebhook(ctx context.Context, msg vtpostclient.CallbackOrder, err error, ffm *shipmodel.Fulfillment) {
 	orderData := msg.Data
 	data, _ := jsonx.Marshal(orderData)
 	statusCode := orderData.OrderStatus
@@ -193,7 +199,7 @@ func (wh *Webhook) saveLogsWebhook(msg vtpostclient.CallbackOrder, err error, ff
 		webhookData.ShippingState = vtpostStatus.ToModel(ffm.ShippingState).String()
 		webhookData.ConnectionID = ffm.ConnectionID
 	}
-	if _, err := wh.dbLogs.Insert(webhookData); err != nil {
+	if err := wh.shipmentWebhookLogAggr.CreateShippingWebhookLog(ctx, webhookData); err != nil {
 		ll.Error("Insert db etop_log error", l.Error(err))
 	}
 }

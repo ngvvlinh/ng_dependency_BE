@@ -12,12 +12,14 @@ import (
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
-	"o.o/backend/com/etc/logging/webhook/model"
+	"o.o/backend/com/etc/logging/shippingwebhook"
+	"o.o/backend/com/etc/logging/shippingwebhook/model"
 	com "o.o/backend/com/main"
 	shipnowmodel "o.o/backend/com/main/shipnow/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/sql/cmsql"
+	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipnow/ahamove"
 	"o.o/backend/pkg/integration/shipnow/ahamove/client"
 	"o.o/backend/pkg/integration/shipping"
@@ -29,24 +31,29 @@ var ll = l.New()
 var PaymentStates = []shipnow_state.State{shipnow_state.StateDelivering, shipnow_state.StateDelivered, shipnow_state.StateReturning, shipnow_state.StateReturned}
 
 type Webhook struct {
-	db           *cmsql.Database
-	dbLogs       *cmsql.Database
-	carrier      *ahamove.Carrier
-	shipnowQuery shipnow.QueryBus
-	shipnow      shipnow.CommandBus
-	order        ordering.CommandBus
-	orderQuery   ordering.QueryBus
+	db                     *cmsql.Database
+	carrier                *ahamove.Carrier
+	shipnowQuery           shipnow.QueryBus
+	shipnow                shipnow.CommandBus
+	order                  ordering.CommandBus
+	orderQuery             ordering.QueryBus
+	shipmentWebhookLogAggr *shippingwebhook.Aggregate
 }
 
-func New(db com.MainDB, dbLogs com.LogDB, carrier *ahamove.Carrier, shipnowQS shipnow.QueryBus, shipnowAggr shipnow.CommandBus, orderAggr ordering.CommandBus, orderQS ordering.QueryBus) *Webhook {
+func New(db com.MainDB,
+	carrier *ahamove.Carrier,
+	shipnowQS shipnow.QueryBus, shipnowAggr shipnow.CommandBus,
+	orderAggr ordering.CommandBus, orderQS ordering.QueryBus,
+	shipmentWebhookLogAggr *shippingwebhook.Aggregate,
+) *Webhook {
 	wh := &Webhook{
-		db:           db,
-		dbLogs:       dbLogs,
-		carrier:      carrier,
-		shipnowQuery: shipnowQS,
-		shipnow:      shipnowAggr,
-		order:        orderAggr,
-		orderQuery:   orderQS,
+		db:                     db,
+		carrier:                carrier,
+		shipnowQuery:           shipnowQS,
+		shipnow:                shipnowAggr,
+		order:                  orderAggr,
+		orderQuery:             orderQS,
+		shipmentWebhookLogAggr: shipmentWebhookLogAggr,
 	}
 	return wh
 }
@@ -55,36 +62,19 @@ func (wh *Webhook) Register(rt *httpx.Router) {
 	rt.POST("/webhook/ahamove/callback/:id", wh.Callback)
 }
 
-func (wh *Webhook) Callback(c *httpx.Context) error {
-	// t0 := time.Now()
+func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	var msg client.Order
 	if err := c.DecodeJson(&msg); err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Can not decode JSON callback")
 	}
 	ll.Logger.Info("ahamove order webhook", l.Object("msg", msg))
-	status := client.OrderState(msg.Status)
-	shippingState := status.ToCoreState().String()
-	{
-		// save to database etop_log
-		buf := new(bytes.Buffer)
-		enc := json.NewEncoder(buf)
-		enc.SetEscapeHTML(false)
-		webhookData := &model.ShippingProviderWebhook{
-			ID:                    cm.NewID(),
-			ShippingProvider:      shipnowmodel.Ahamove.String(),
-			ShippingCode:          msg.ID,
-			ExternalShippingState: msg.Status,
-			ShippingState:         shippingState,
-		}
-		if err := enc.Encode(msg); err == nil {
-			webhookData.Data = buf.Bytes()
-		}
-		if _, err := wh.dbLogs.Insert(webhookData); err != nil {
-			ll.Error("Insert db etop_log error", l.Error(err))
-		}
-	}
-
 	ctx := c.Req.Context()
+
+	defer func() {
+		// save to database etop_log
+		wh.saveLogsWebhook(ctx, msg, _err)
+	}()
+
 	// 1JFU54-1
 	code := strings.Split(msg.ID, "-")[0]
 	query := &shipnow.GetShipnowFulfillmentByShippingCodeQuery{
@@ -224,4 +214,27 @@ func (wh *Webhook) ProcessOrder(ctx context.Context, point *client.DeliveryPoint
 		}
 		return nil
 	})
+}
+
+func (wh *Webhook) saveLogsWebhook(ctx context.Context, msg client.Order, err error) {
+	buf := new(bytes.Buffer)
+	enc := json.NewEncoder(buf)
+	enc.SetEscapeHTML(false)
+
+	status := client.OrderState(msg.Status)
+	shippingState := status.ToCoreState().String()
+	webhookData := &model.ShippingProviderWebhook{
+		ID:                    cm.NewID(),
+		ShippingProvider:      shipnowmodel.Ahamove.String(),
+		ShippingCode:          msg.ID,
+		ExternalShippingState: msg.Status,
+		ShippingState:         shippingState,
+		Error:                 etopmodel.ToError(err),
+	}
+	if err := enc.Encode(msg); err == nil {
+		webhookData.Data = buf.Bytes()
+	}
+	if err := wh.shipmentWebhookLogAggr.CreateShippingWebhookLog(ctx, webhookData); err != nil {
+		ll.Error("Insert db etop_log error", l.Error(err))
+	}
 }

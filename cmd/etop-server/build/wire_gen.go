@@ -24,6 +24,7 @@ import (
 	"o.o/backend/cogs/sms/_all"
 	"o.o/backend/cogs/uploader"
 	aggregate21 "o.o/backend/com/etc/logging/payment/aggregate"
+	"o.o/backend/com/etc/logging/shippingwebhook"
 	"o.o/backend/com/etc/logging/smslog/aggregate"
 	"o.o/backend/com/external/payment/manager"
 	aggregate19 "o.o/backend/com/external/payment/payment/aggregate"
@@ -824,11 +825,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ConnectionQuery: connectioningQueryBus,
 		ConnectionAggr:  connectioningCommandBus,
 	}
+	shippingwebhookAggregate := shippingwebhook.NewAggregate(logDB)
 	partnercarrierShipmentService := &partnercarrier.ShipmentService{
-		Session:         session,
-		ConnectionQuery: connectioningQueryBus,
-		ShippingAggr:    shippingCommandBus,
-		ShippingQuery:   shippingQueryBus,
+		Session:                session,
+		ConnectionQuery:        connectioningQueryBus,
+		ShippingAggr:           shippingCommandBus,
+		ShippingQuery:          shippingQueryBus,
+		ShipmentWebhookLogAggr: shippingwebhookAggregate,
 	}
 	partnercarrierServers, cleanup6 := partnercarrier.NewServers(store, partnercarrierMiscService, shipmentConnectionService, partnercarrierShipmentService)
 	importService := partnerimport.New(mainDB, catalogCommandBus)
@@ -891,22 +894,22 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	webhookConfig := shipment_allConfig.GHNWebhook
 	ghnConfig := shipment_allConfig.GHN
 	ghnCarrier := ghn.New(ghnConfig, queryBus)
-	v1Webhook := v1.New(mainDB, logDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
-	v2Webhook := v2.New(mainDB, logDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
+	v1Webhook := v1.New(mainDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
+	v2Webhook := v2.New(mainDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
 	ghnWebhookServer := _all.NewGHNWebhookServer(webhookConfig, shipmentManager, ghnCarrier, identityQueryBus, shippingCommandBus, v1Webhook, v2Webhook)
 	_ghtkWebhookConfig := shipment_allConfig.GHTKWebhook
 	ghtkConfig := shipment_allConfig.GHTK
 	ghtkCarrier := ghtk.New(ghtkConfig, queryBus)
-	webhookWebhook := webhook2.New(mainDB, logDB, ghtkCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
+	webhookWebhook := webhook2.New(mainDB, ghtkCarrier, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
 	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, ghtkCarrier, identityQueryBus, shippingCommandBus, webhookWebhook)
 	_vtpostWebhookConfig := shipment_allConfig.VTPostWebhook
 	vtpostConfig := shipment_allConfig.VTPost
 	vtpostCarrier := vtpost.New(vtpostConfig, queryBus)
-	webhook5 := webhook3.New(mainDB, logDB, vtpostCarrier, shipmentManager, identityQueryBus, shippingCommandBus)
+	webhook5 := webhook3.New(mainDB, vtpostCarrier, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
 	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, identityQueryBus, shippingCommandBus, webhook5)
 	serverWebhookConfig := cfg.AhamoveWebhook
 	ahamoveVerificationFileServer := server2.NewAhamoveVerificationFileServer(ctx, identityQueryBus)
-	webhook6 := webhook4.New(mainDB, logDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus)
+	webhook6 := webhook4.New(mainDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, shippingwebhookAggregate)
 	ahamoveWebhookServer := server2.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, identityQueryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook6)
 	v6 := BuildServers(mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
 	processManager := pm.New(busBus, identityQueryBus, invitationQueryBus)

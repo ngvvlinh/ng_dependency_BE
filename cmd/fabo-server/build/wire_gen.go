@@ -19,6 +19,7 @@ import (
 	"o.o/backend/cogs/shipment/vtpost"
 	"o.o/backend/cogs/sms/_min"
 	"o.o/backend/cogs/uploader"
+	"o.o/backend/com/etc/logging/shippingwebhook"
 	"o.o/backend/com/etc/logging/smslog/aggregate"
 	"o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
@@ -636,17 +637,18 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	webhookConfig := shipment_allConfig.GHNWebhook
 	ghnConfig := shipment_allConfig.GHN
 	ghnCarrier := ghn.New(ghnConfig, locationQueryBus)
-	v2Webhook := v2.New(mainDB, logDB, ghnCarrier, shipmentManager, queryBus, shippingCommandBus)
+	shippingwebhookAggregate := shippingwebhook.NewAggregate(logDB)
+	v2Webhook := v2.New(mainDB, ghnCarrier, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate)
 	ghnWebhookServer := v2_2.NewGHNWebhookServer(webhookConfig, shipmentManager, ghnCarrier, queryBus, shippingCommandBus, v2Webhook)
 	_ghtkWebhookConfig := shipment_allConfig.GHTKWebhook
 	ghtkConfig := shipment_allConfig.GHTK
 	ghtkCarrier := ghtk.New(ghtkConfig, locationQueryBus)
-	webhookWebhook := webhook.New(mainDB, logDB, ghtkCarrier, shipmentManager, queryBus, shippingCommandBus)
+	webhookWebhook := webhook.New(mainDB, ghtkCarrier, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate)
 	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, ghtkCarrier, queryBus, shippingCommandBus, webhookWebhook)
 	_vtpostWebhookConfig := shipment_allConfig.VTPostWebhook
 	vtpostConfig := shipment_allConfig.VTPost
 	vtpostCarrier := vtpost.New(vtpostConfig, locationQueryBus)
-	webhook4 := webhook2.New(mainDB, logDB, vtpostCarrier, shipmentManager, queryBus, shippingCommandBus)
+	webhook4 := webhook2.New(mainDB, vtpostCarrier, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate)
 	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, queryBus, shippingCommandBus, webhook4)
 	configWebhookConfig := cfg.Webhook
 	faboRedis := redis2.NewFaboRedis(store)
