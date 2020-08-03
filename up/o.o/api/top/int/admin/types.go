@@ -320,6 +320,7 @@ type UpdateFulfillmentShippingFeesRequest struct {
 	ShippingFeeLines []*types.ShippingFeeLine `json:"shipping_fee_lines"`
 	// @deprecated TotalCODAmount
 	TotalCODAmount dot.NullInt `json:"total_cod_amount"`
+	AdminNote      string      `json:"admin_note"`
 }
 
 func (m *UpdateFulfillmentShippingFeesRequest) String() string { return jsonx.MustMarshalToString(m) }

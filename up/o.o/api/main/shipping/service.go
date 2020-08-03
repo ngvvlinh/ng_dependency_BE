@@ -139,6 +139,7 @@ type UpdateFulfillmentShippingStateArgs struct {
 	ShippingState            shippingstate.State
 	ActualCompensationAmount dot.NullInt
 	UpdatedBy                dot.ID
+	AdminNote                string
 }
 
 type UpdateFulfillmentShippingFeesArgs struct {
@@ -149,6 +150,7 @@ type UpdateFulfillmentShippingFeesArgs struct {
 	// @deprecated TotalCODAmount
 	TotalCODAmount dot.NullInt
 	UpdatedBy      dot.ID
+	AdminNote      string
 }
 
 type UpdateFulfillmentCODAmountArgs struct {

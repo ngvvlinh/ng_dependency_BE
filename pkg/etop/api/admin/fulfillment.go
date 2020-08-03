@@ -107,6 +107,7 @@ func (s *FulfillmentService) UpdateFulfillmentShippingState(ctx context.Context,
 		ShippingState:            r.ShippingState,
 		ActualCompensationAmount: r.ActualCompensationAmount,
 		UpdatedBy:                s.SS.Claim().UserID,
+		AdminNote:                r.AdminNote,
 	}
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -124,6 +125,7 @@ func (s *FulfillmentService) UpdateFulfillmentShippingFees(ctx context.Context, 
 		ShippingFeeLines: convertpb.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
 		TotalCODAmount:   r.TotalCODAmount,
 		UpdatedBy:        s.SS.Claim().UserID,
+		AdminNote:        r.AdminNote,
 	}
 	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

@@ -450,6 +450,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 			ShippingFeeShopLines:     lines,
 			ShippingFeeShop:          shipping.CalcShopShippingFee(totalShippingFeeShop, ffm),
 			UpdatedBy:                args.UpdatedBy,
+			AdminNote:                args.AdminNote,
 		}
 		if err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillmentDB(update); err != nil {
 			return err

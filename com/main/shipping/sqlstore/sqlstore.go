@@ -290,12 +290,16 @@ func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateF
 			"updated_by":                 args.UpdatedBy,
 			"actual_compensation_amount": args.ActualCompensationAmount.Apply(codAmount),
 		}
+		if args.AdminNote != "" {
+			update["admin_note"] = args.AdminNote
+		}
 		return s.query().Table("fulfillment").Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
 	}
 
 	update := &model.Fulfillment{
 		ShippingState: args.ShippingState,
 		UpdatedBy:     args.UpdatedBy,
+		AdminNote:     args.AdminNote,
 	}
 	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
 }

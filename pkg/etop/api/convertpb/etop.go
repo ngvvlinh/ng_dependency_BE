@@ -284,6 +284,7 @@ func PbShop(m *identitymodel.Shop) *etop.Shop {
 		Email:       m.Email,
 		OwnerId:     m.OwnerID,
 		TryOn:       m.TryOn,
+		Code:        m.Code,
 	}
 }
 

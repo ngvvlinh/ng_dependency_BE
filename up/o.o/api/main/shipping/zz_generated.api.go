@@ -201,6 +201,7 @@ type UpdateFulfillmentShippingFeesCommand struct {
 	ShippingFeeLines         []*ShippingFeeLine
 	TotalCODAmount           dot.NullInt
 	UpdatedBy                dot.ID
+	AdminNote                string
 
 	Result int `json:"-"`
 }
@@ -231,6 +232,7 @@ type UpdateFulfillmentShippingStateCommand struct {
 	ShippingState            shipping.State
 	ActualCompensationAmount dot.NullInt
 	UpdatedBy                dot.ID
+	AdminNote                string
 
 	Result int `json:"-"`
 }
@@ -634,6 +636,7 @@ func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ c
 			ShippingFeeLines:         q.ShippingFeeLines,
 			TotalCODAmount:           q.TotalCODAmount,
 			UpdatedBy:                q.UpdatedBy,
+			AdminNote:                q.AdminNote,
 		}
 }
 
@@ -644,6 +647,7 @@ func (q *UpdateFulfillmentShippingFeesCommand) SetUpdateFulfillmentShippingFeesA
 	q.ShippingFeeLines = args.ShippingFeeLines
 	q.TotalCODAmount = args.TotalCODAmount
 	q.UpdatedBy = args.UpdatedBy
+	q.AdminNote = args.AdminNote
 }
 
 func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesFromWebhookArgs) {
@@ -672,6 +676,7 @@ func (q *UpdateFulfillmentShippingStateCommand) GetArgs(ctx context.Context) (_ 
 			ShippingState:            q.ShippingState,
 			ActualCompensationAmount: q.ActualCompensationAmount,
 			UpdatedBy:                q.UpdatedBy,
+			AdminNote:                q.AdminNote,
 		}
 }
 
@@ -682,6 +687,7 @@ func (q *UpdateFulfillmentShippingStateCommand) SetUpdateFulfillmentShippingStat
 	q.ShippingState = args.ShippingState
 	q.ActualCompensationAmount = args.ActualCompensationAmount
 	q.UpdatedBy = args.UpdatedBy
+	q.AdminNote = args.AdminNote
 }
 
 func (q *UpdateFulfillmentsCODTransferedAtCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsCODTransferedAtArgs) {
