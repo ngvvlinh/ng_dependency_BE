@@ -179,7 +179,7 @@ const adminPolicy = `
 	p, admin/fulfillment:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
 	p, admin/fulfillment:create, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/fulfillment:update, admin, ad_customerservice, ad_customerservice_lead
-	p, admin/fulfillment_state:update, admin, ad_customerservice_lead
+	p, admin/fulfillment_state:update, admin, ad_customerservice_lead, ad_accountant
 	p, admin/fulfillment_shipping_fees:update, admin, ad_accountant
 	# money transaction
 	p, admin/money_transaction:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
@@ -224,7 +224,7 @@ const adminPolicy = `
 	p, admin/shipment_price:delete, admin, ad_salelead
 	p, admin/shipment_price:view, admin, ad_salelead
 	# admin shop
-	p, admin/shop:view, admin, ad_customerservice, ad_salelead, ad_sale, ad_accountant
+	p, admin/shop:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant
 	# admin user
 	p, admin/user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant
 	p, admin/user:block, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale
