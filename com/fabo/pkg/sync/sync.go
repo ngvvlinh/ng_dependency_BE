@@ -335,7 +335,12 @@ func (s *Synchronizer) handleTaskGetMessages(
 	conversationID := taskArgs.getMessagesArgs.conversationID
 	externalConversationID := taskArgs.getMessagesArgs.externalConversationID
 
-	fbMessagesResp, err := s.fbClient.CallAPIListMessages(accessToken, externalConversationID, fbPagingReq)
+	fbMessagesResp, err := s.fbClient.CallAPIListMessages(&fbclient.ListMessagesRequest{
+		AccessToken:    accessToken,
+		ConversationID: externalConversationID,
+		PageID:         externalPageID,
+		Pagination:     fbPagingReq,
+	})
 	if err != nil {
 		return err
 	}
@@ -388,7 +393,11 @@ func (s *Synchronizer) handleTaskGetMessages(
 
 	for psid, avatar := range mapPSIDAndAvatar {
 		if avatar == "" {
-			profile, err := s.fbClient.CallAPIGetProfileByPSID(accessToken, psid)
+			profile, err := s.fbClient.CallAPIGetProfileByPSID(&fbclient.GetProfileRequest{
+				AccessToken: accessToken,
+				PSID:        psid,
+				PageID:      externalPageID,
+			})
 			if err != nil {
 				return err
 			}
@@ -468,7 +477,11 @@ func (s *Synchronizer) handleTaskGetConversations(
 	fmt.Println("GetConversations")
 
 	// Call api list conversations that depends on externalPageID
-	fbConversationsResp, err := s.fbClient.CallAPIListConversations(accessToken, externalPageID, fbPagingReq)
+	fbConversationsResp, err := s.fbClient.CallAPIListConversations(&fbclient.ListConversationsRequest{
+		AccessToken: accessToken,
+		PageID:      externalPageID,
+		Pagination:  fbPagingReq,
+	})
 	if err != nil {
 		// TODO: Ngoc classify error type
 		return err
@@ -568,7 +581,12 @@ func (s *Synchronizer) handleTaskGetComments(
 	//postID := taskArgs.getCommentsArgs.postID
 
 	// Call api list comments that depends on (externalPostID)
-	fbExternalCommentsResp, err := s.fbClient.CallAPIListComments(accessToken, externalPostID, fbPagingReq)
+	fbExternalCommentsResp, err := s.fbClient.CallAPIListComments(&fbclient.ListCommentsRequest{
+		AccessToken: accessToken,
+		PostID:      externalPostID,
+		PageID:      externalPageID,
+		Pagination:  fbPagingReq,
+	})
 	if err != nil {
 		return err
 	}
@@ -646,7 +664,11 @@ func (s *Synchronizer) handleTaskGetChildPost(
 	externalPostID := taskArgs.getChildPostArgs.externalPostID
 
 	// Call api get (child) post that depends on postID
-	fbExternalPostResp, err := s.fbClient.CallAPIGetPost(accessToken, externalChildPostID)
+	fbExternalPostResp, err := s.fbClient.CallAPIGetPost(&fbclient.GetPostRequest{
+		AccessToken: accessToken,
+		PostID:      externalChildPostID,
+		PageID:      externalPageID,
+	})
 	if err != nil {
 		return err
 	}
@@ -702,7 +724,11 @@ func (s *Synchronizer) HandleTaskGetPosts(
 	fmt.Println("GetPosts")
 
 	// Call api (facebook) listPublishedPosts from facebook
-	fbExternalPostsResp, err := s.fbClient.CallAPIListFeeds(accessToken, externalPageID, fbPagingReq)
+	fbExternalPostsResp, err := s.fbClient.CallAPIListFeeds(&fbclient.ListFeedsRequest{
+		AccessToken: accessToken,
+		PageID:      externalPageID,
+		Pagination:  fbPagingReq,
+	})
 	if err != nil {
 		return err
 	}

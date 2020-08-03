@@ -16,6 +16,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpreq"
 	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/metrics"
 )
 
 var encoder = schema.NewEncoder()
@@ -35,6 +36,7 @@ type AppConfig struct {
 	ID          string `yaml:"id"`
 	Secret      string `yaml:"secret"`
 	AccessToken string `yaml:"access_token"`
+	Source      string `yaml:"source"`
 }
 
 func (c *AppConfig) MustLoadEnv(prefix ...string) {
@@ -72,6 +74,7 @@ func New(_appInfo AppConfig) *FbClient {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
+
 	rcfg := httpreq.RestyConfig{Client: client}
 	return &FbClient{
 		appInfo: _appInfo,
@@ -93,7 +96,7 @@ func (f *FbClient) Ping() error {
 
 	path := "/oauth/access_token"
 	var tok model.Token
-	if err := f.sendGetRequest(path, params, &tok); err != nil {
+	if err := f.sendGetRequest(path, "", params, &tok); err != nil {
 		return err
 	}
 
@@ -109,7 +112,7 @@ func (f *FbClient) CallAPIGetMe(accessToken string) (*model.Me, error) {
 
 	path := "/me"
 	var me model.Me
-	if err := f.sendGetRequest(path, params, &me); err != nil {
+	if err := f.sendGetRequest(path, "", params, &me); err != nil {
 		return nil, err
 	}
 
@@ -126,7 +129,7 @@ func (f *FbClient) CallAPIGetAccounts(accessToken string) (*model.AccountsRespon
 
 	path := "/me"
 	var accounts model.AccountsResponse
-	if err := f.sendGetRequest(path, params, &accounts); err != nil {
+	if err := f.sendGetRequest(path, "", params, &accounts); err != nil {
 		return nil, err
 	}
 
@@ -143,7 +146,7 @@ func (f *FbClient) CallAPIGetLongLivedAccessToken(accessToken string) (*model.To
 
 	path := "/oauth/access_token"
 	var tok model.Token
-	if err := f.sendGetRequest(path, params, &tok); err != nil {
+	if err := f.sendGetRequest(path, "", params, &tok); err != nil {
 		return nil, err
 	}
 
@@ -158,57 +161,59 @@ func (f *FbClient) CallAPICheckAccessToken(accessToken string) (*model.UserToken
 
 	path := "/debug_token"
 	var tok model.UserToken
-	if err := f.sendGetRequest(path, params, &tok); err != nil {
+	if err := f.sendGetRequest(path, "", params, &tok); err != nil {
 		return nil, err
 	}
 
 	return &tok, nil
 }
 
-func (f *FbClient) CallAPIListFeeds(accessToken, pageID string, pagination *model.FacebookPagingRequest) (*model.PublishedPostsResponse, error) {
+func (f *FbClient) CallAPIListFeeds(req *ListFeedsRequest) (*model.PublishedPostsResponse, error) {
 	params := &ListFeedsParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments}",
 		DateFormat:  UnixDateFormat,
 	}
 
-	if pagination != nil {
-		pagination.ApplyQueryParams(true, DefaultLimitGetPosts, params)
+	if req.Pagination != nil {
+		req.Pagination.ApplyQueryParams(true, DefaultLimitGetPosts, params)
 	}
 
 	path := "/me/feed"
 	var publishedPostsResponse model.PublishedPostsResponse
-	if err := f.sendGetRequest(path, params, &publishedPostsResponse); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &publishedPostsResponse); err != nil {
 		return nil, err
 	}
 
 	return &publishedPostsResponse, nil
 }
 
-func (f *FbClient) CallAPIGetPost(accessToken, postID string) (*model.Post, error) {
+func (f *FbClient) CallAPIGetPost(req *GetPostRequest) (*model.Post, error) {
 	params := &GetPostParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments}",
 		DateFormat:  UnixDateFormat,
 	}
 
-	path := fmt.Sprintf("/%s", postID)
+	path := fmt.Sprintf("/%s", req.PostID)
 	var post model.Post
-	if err := f.sendGetRequest(path, params, &post); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &post); err != nil {
 		return nil, err
 	}
 
 	return &post, nil
 }
 
-func (f *FbClient) CallAPIListComments(accessToken, postID string, pagination *model.FacebookPagingRequest) (*model.CommentsResponse, error) {
+func (f *FbClient) CallAPIListComments(req *ListCommentsRequest) (*model.CommentsResponse, error) {
+	pagination := req.Pagination
+
 	limit := DefaultLimitGetComments
 	if pagination != nil && pagination.Limit.Valid {
 		limit = pagination.Limit.Int
 	}
 
 	params := &ListCommentsParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      fmt.Sprintf("comments.filter(stream).limit(%d){message,attachment,id,created_time,comment_count,parent,from{id,name,email,first_name,last_name,picture},is_hidden}", limit),
 		DateFormat:  UnixDateFormat,
 	}
@@ -217,46 +222,25 @@ func (f *FbClient) CallAPIListComments(accessToken, postID string, pagination *m
 		pagination.ApplyQueryParams(false, DefaultLimitGetPosts, params)
 	}
 
-	path := fmt.Sprintf("/%s", postID)
+	path := fmt.Sprintf("/%s", req.PostID)
 	var commentsResponse model.CommentsResponse
-	if err := f.sendGetRequest(path, params, &commentsResponse); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &commentsResponse); err != nil {
 		return nil, err
 	}
 
 	return &commentsResponse, nil
 }
 
-func (f *FbClient) CallAPIListCommentsByPostIDs(accessToken string, postIDs []string) (*model.CommentsByPostIDsResponse, error) {
-	if len(postIDs) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "postIDs must no be empty")
-	}
+func (f *FbClient) CallAPIListConversations(req *ListConversationsRequest) (*model.ConversationsResponse, error) {
+	pagination := req.Pagination
 
-	params := &ListCommentByPostIDsParams{
-		AccessToken: accessToken,
-		IDs:         strings.Join(postIDs, ","),
-		Filter:      "stream",
-		Limit:       fmt.Sprintf("%d", DefaultLimitGetComments),
-		Fields:      "message,id,from{id,name,email,first_name,last_name,picture},attachment,comment_count,parent,created_time",
-		DateFormat:  UnixDateFormat,
-	}
-
-	path := "/comments"
-	var commentsByPostIDsResponse model.CommentsByPostIDsResponse
-	if err := f.sendGetRequest(path, params, &commentsByPostIDsResponse); err != nil {
-		return nil, err
-	}
-
-	return &commentsByPostIDsResponse, nil
-}
-
-func (f *FbClient) CallAPIListConversations(accessToken, pageID string, pagination *model.FacebookPagingRequest) (*model.ConversationsResponse, error) {
 	defaultPaging := DefaultLimitGetConversations
 	if pagination != nil && pagination.Limit.Valid {
 		defaultPaging = pagination.Limit.Int
 	}
 
 	params := &ListConversationsParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      fmt.Sprintf("conversations.limit(%d){id,message_count,updated_time,link,senders}", defaultPaging),
 		DateFormat:  UnixDateFormat,
 	}
@@ -265,43 +249,45 @@ func (f *FbClient) CallAPIListConversations(accessToken, pageID string, paginati
 		pagination.ApplyQueryParams(false, defaultPaging, params)
 	}
 
-	path := fmt.Sprintf("/%s", pageID)
+	path := fmt.Sprintf("/%s", req.PageID)
 	var conversationsResponse model.ConversationsResponse
-	if err := f.sendGetRequest(path, params, &conversationsResponse); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &conversationsResponse); err != nil {
 		return nil, err
 	}
 
 	return &conversationsResponse, nil
 }
 
-func (f *FbClient) CallAPIGetConversationByUserID(accessToken, pageID, userID string) (*model.Conversations, error) {
-	if userID == "" {
+func (f *FbClient) CallAPIGetConversationByUserID(req *GetConversationByUserIDRequest) (*model.Conversations, error) {
+	if req.UserID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "user_id must not be null")
 	}
 
 	params := &GetConversationByUserIDParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      "id,message_count,updated_time,link,senders",
 		DateFormat:  UnixDateFormat,
-		UserID:      userID,
+		UserID:      req.UserID,
 	}
-	path := fmt.Sprintf("/%s/conversations", pageID)
+	path := fmt.Sprintf("/%s/conversations", req.PageID)
 	var conversations model.Conversations
-	if err := f.sendGetRequest(path, params, &conversations); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &conversations); err != nil {
 		return nil, err
 	}
 
 	return &conversations, nil
 }
 
-func (f *FbClient) CallAPIListMessages(accessToken, conversationID string, pagination *model.FacebookPagingRequest) (*model.MessagesResponse, error) {
+func (f *FbClient) CallAPIListMessages(req *ListMessagesRequest) (*model.MessagesResponse, error) {
+	pagination := req.Pagination
+
 	defaultPaging := DefaultLimitGetMessages
 	if pagination != nil && pagination.Limit.Valid {
 		defaultPaging = pagination.Limit.Int
 	}
 
 	params := &ListMessagesParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      fmt.Sprintf("messages.limit(%d){id,from,to,message,sticker,created_time,attachments{id,image_data,mime_type,name,size,video_data,file_url}}", defaultPaging),
 		DateFormat:  UnixDateFormat,
 	}
@@ -310,142 +296,146 @@ func (f *FbClient) CallAPIListMessages(accessToken, conversationID string, pagin
 		pagination.ApplyQueryParams(false, DefaultLimitGetMessages, params)
 	}
 
-	path := fmt.Sprintf("/%s", conversationID)
+	path := fmt.Sprintf("/%s", req.ConversationID)
 	var messagesResponse model.MessagesResponse
-	if err := f.sendGetRequest(path, params, &messagesResponse); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &messagesResponse); err != nil {
 		return nil, err
 	}
 
 	return &messagesResponse, nil
 }
 
-func (f *FbClient) CallAPIGetMessage(accessToken, messageID string) (*model.MessageData, error) {
+func (f *FbClient) CallAPIGetMessage(req *GetMessageRequest) (*model.MessageData, error) {
 	params := &GetMessageParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      fmt.Sprintf("id,from,to,message,sticker,created_time,attachments{id,image_data,mime_type,name,size,video_data,file_url}"),
 		DateFormat:  UnixDateFormat,
 	}
 
-	path := fmt.Sprintf("/%s", messageID)
+	path := fmt.Sprintf("/%s", req.MessageID)
 	var message model.MessageData
-	if err := f.sendGetRequest(path, params, &message); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &message); err != nil {
 		return nil, err
 	}
 
 	return &message, nil
 }
 
-func (f *FbClient) CallAPICreateSubscribedApps(accessToken string, fields []string) (*model.SubscribedAppResponse, error) {
+func (f *FbClient) CallAPICreateSubscribedApps(req *CreateSubscribedAppsRequest) (*model.SubscribedAppResponse, error) {
 	params := &CreateSubscribedAppsParams{
-		AccessToken:      accessToken,
-		SubscribedFields: strings.Join(fields, ","),
+		AccessToken:      req.AccessToken,
+		SubscribedFields: strings.Join(req.Fields, ","),
 	}
 
 	path := "/me/subscribed_apps"
 	var subscribedAddResponse model.SubscribedAppResponse
-	if err := f.sendPostRequest(path, params, &subscribedAddResponse); err != nil {
+	if err := f.sendPostRequest(path, req.PageID, params, &subscribedAddResponse); err != nil {
 		return nil, err
 	}
 
 	return &subscribedAddResponse, nil
 }
 
-func (f *FbClient) CallAPISendMessage(accessToken string, sendMessageRequest *model.SendMessageRequest) (*model.SendMessageResponse, error) {
-	recipient, err := json.Marshal(sendMessageRequest.Recipient)
+func (f *FbClient) CallAPISendMessage(req *SendMessageRequest) (*model.SendMessageResponse, error) {
+	recipient, err := json.Marshal(req.SendMessageArgs.Recipient)
 	if err != nil {
 		return nil, err
 	}
-	message, err := json.Marshal(sendMessageRequest.Message)
+	message, err := json.Marshal(req.SendMessageArgs.Message)
 	if err != nil {
 		return nil, err
 	}
 
 	params := &SendMessageParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Recipient:   string(recipient),
 		Message:     string(message),
 	}
 
 	path := "/me/messages"
 	var sendMessageResponse model.SendMessageResponse
-	if err := f.sendPostRequest(path, params, &sendMessageResponse); err != nil {
+	if err := f.sendPostRequest(path, req.PageID, params, &sendMessageResponse); err != nil {
 		return nil, err
 	}
 
 	return &sendMessageResponse, nil
 }
 
-func (f *FbClient) CallAPISendComment(accessToken string, sendCommentRequest *model.SendCommentRequest) (*model.SendCommentResponse, error) {
+func (f *FbClient) CallAPISendComment(req *SendCommentRequest) (*model.SendCommentResponse, error) {
+	sendCommentArgs := req.SendCommentArgs
 	params := &SendCommentParams{
-		AccessToken:   accessToken,
-		Message:       sendCommentRequest.Message,
-		AttachmentURL: sendCommentRequest.AttachmentURL,
+		AccessToken:   req.AccessToken,
+		Message:       sendCommentArgs.Message,
+		AttachmentURL: sendCommentArgs.AttachmentURL,
 	}
 
-	path := fmt.Sprintf("/%s/comments", sendCommentRequest.ID)
+	path := fmt.Sprintf("/%s/comments", sendCommentArgs.ID)
 	var sendCommentResponse model.SendCommentResponse
-	if err := f.sendPostRequest(path, params, &sendCommentResponse); err != nil {
+	if err := f.sendPostRequest(path, req.PageID, params, &sendCommentResponse); err != nil {
 		return nil, err
 	}
 
 	return &sendCommentResponse, nil
 }
 
-func (f *FbClient) CallAPICreatePost(accessToken string, pageID string, request *model.CreatePostRequest) (*model.CreatePostResponse, error) {
+func (f *FbClient) CallAPICreatePost(req *CreatePostRequest) (*model.CreatePostResponse, error) {
+	content := req.Content
 	params := &CreatePostParams{
-		AccessToken: accessToken,
-		Message:     request.Message,
+		AccessToken: req.AccessToken,
+		Message:     content.Message,
 	}
 
-	path := fmt.Sprintf("/%s/feed", pageID)
+	path := fmt.Sprintf("/%s/feed", req.PageID)
 	var response *model.CreatePostResponse
-	if err := f.sendPostRequest(path, params, &response); err != nil {
+	if err := f.sendPostRequest(path, req.PageID, params, &response); err != nil {
 		return nil, err
 	}
 
 	return response, nil
 }
 
-func (f *FbClient) CallAPICommentByID(accessToken, commentID string) (*model.Comment, error) {
+func (f *FbClient) CallAPICommentByID(req *GetCommentByIDRequest) (*model.Comment, error) {
 	params := &GetCommentByIDParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      "message,attachment,id,created_time,comment_count,parent,from{id,name,email,first_name,last_name,picture},is_hidden",
 		DateFormat:  UnixDateFormat,
 	}
 
-	path := fmt.Sprintf("/%s", commentID)
+	path := fmt.Sprintf("/%s", req.CommentID)
 	var comment model.Comment
-	if err := f.sendGetRequest(path, params, &comment); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &comment); err != nil {
 		return nil, err
 	}
 
 	return &comment, nil
 }
 
-func (f *FbClient) CallAPIGetProfileByPSID(accessToken, PSID string) (*model.Profile, error) {
+func (f *FbClient) CallAPIGetProfileByPSID(req *GetProfileRequest) (*model.Profile, error) {
 	params := &GetProfileByPISDParams{
-		AccessToken: accessToken,
+		AccessToken: req.AccessToken,
 		Fields:      "id,name,first_name,last_name,profile_pic",
 	}
 
-	path := fmt.Sprintf("/%s", PSID)
+	path := fmt.Sprintf("/%s", req.PSID)
 	var profile model.Profile
-	if err := f.sendGetRequest(path, params, &profile); err != nil {
+	if err := f.sendGetRequest(path, req.PageID, params, &profile); err != nil {
 		return nil, err
 	}
 
 	return &profile, nil
 }
 
-func (f *FbClient) sendGetRequest(path string, params, resp interface{}) error {
-	return f.sendRequest(GET, path, params, resp)
+func (f *FbClient) sendGetRequest(path, pageID string, params, resp interface{}) error {
+	return f.sendRequest(GET, path, pageID, params, resp)
 }
 
-func (f *FbClient) sendPostRequest(path string, params, resp interface{}) error {
-	return f.sendRequest(POST, path, params, resp)
+func (f *FbClient) sendPostRequest(path, pageID string, params, resp interface{}) error {
+	return f.sendRequest(POST, path, pageID, params, resp)
 }
 
-func (f *FbClient) sendRequest(method RequestMethod, path string, params, resp interface{}) error {
+func (f *FbClient) sendRequest(method RequestMethod, path, pageID string, params, resp interface{}) error {
+	t0 := time.Now()
+
 	queryString := url.Values{}
 	if params != nil {
 		err := encoder.Encode(params, queryString)
@@ -475,6 +465,8 @@ func (f *FbClient) sendRequest(method RequestMethod, path string, params, resp i
 
 	status := res.StatusCode()
 
+	d := time.Now().Sub(t0)
+	metrics.FaboEgressRequest(req.RawRequest.URL, status, d, f.appInfo.Source, pageID)
 	switch {
 	case status >= 200 && status < 300:
 		if err := json.Unmarshal(res.Body(), resp); err != nil {
@@ -485,6 +477,7 @@ func (f *FbClient) sendRequest(method RequestMethod, path string, params, resp i
 			return err
 		}
 	}
+
 	return nil
 }
 

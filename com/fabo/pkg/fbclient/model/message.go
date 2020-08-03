@@ -60,7 +60,7 @@ type SubscribedAppResponse struct {
 	Success bool `json:"success"`
 }
 
-type SendMessageRequest struct {
+type SendMessageArgs struct {
 	Recipient *RecipientSendMessageRequest `json:"recipient"`
 	Message   *MessageSendMessageRequest   `json:"message"`
 }
@@ -89,7 +89,7 @@ type SendMessageResponse struct {
 	MessageID   string `json:"message_id"`
 }
 
-type SendCommentRequest struct {
+type SendCommentArgs struct {
 	ID            string `json:"id"`
 	Message       string `json:"message"`
 	AttachmentURL string `json:"attachment_url"`

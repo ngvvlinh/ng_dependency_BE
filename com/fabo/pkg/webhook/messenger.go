@@ -61,7 +61,11 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	}
 
 	// Get message
-	messageResp, err := wh.fbClient.CallAPIGetMessage(accessToken, mid)
+	messageResp, err := wh.fbClient.CallAPIGetMessage(&fbclient.GetMessageRequest{
+		AccessToken: accessToken,
+		MessageID:   mid,
+		PageID:      externalPageID,
+	})
 	if err != nil {
 		return err
 	}
@@ -105,7 +109,11 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		case cm.NotFound:
 			// if conversation not found then get externalConversation through call api
 			// and create new externalConversation
-			conversations, err := wh.fbClient.CallAPIGetConversationByUserID(accessToken, externalPageID, PSID)
+			conversations, err := wh.fbClient.CallAPIGetConversationByUserID(&fbclient.GetConversationByUserIDRequest{
+				AccessToken: accessToken,
+				PageID:      externalPageID,
+				UserID:      PSID,
+			})
 			if err != nil {
 				return err
 			}

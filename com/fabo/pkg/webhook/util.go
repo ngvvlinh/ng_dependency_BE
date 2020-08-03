@@ -193,7 +193,11 @@ func (wh *Webhook) getProfileByPSID(accessToken, pageID, PSID string) (profile *
 	profile, err = wh.faboRedis.LoadProfilePSID(pageID, PSID)
 	switch err {
 	case redis.ErrNil:
-		profile, err = wh.fbClient.CallAPIGetProfileByPSID(accessToken, PSID)
+		profile, err = wh.fbClient.CallAPIGetProfileByPSID(&fbclient.GetProfileRequest{
+			AccessToken: accessToken,
+			PSID:        PSID,
+			PageID:      pageID,
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -330,7 +334,11 @@ func (wh *Webhook) getProfile(accessToken, externalPageID, PSID string) (*fbclie
 	switch err {
 	// If profile not in redis then call api getProfileByPSID
 	case redis.ErrNil:
-		_profile, _err := wh.fbClient.CallAPIGetProfileByPSID(accessToken, PSID)
+		_profile, _err := wh.fbClient.CallAPIGetProfileByPSID(&fbclient.GetProfileRequest{
+			AccessToken: accessToken,
+			PSID:        PSID,
+			PageID:      externalPageID,
+		})
 		if _err != nil {
 			return nil, _err
 		}

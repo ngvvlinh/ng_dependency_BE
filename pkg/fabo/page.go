@@ -129,13 +129,17 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		var wg sync.WaitGroup
 		wg.Add(len(accounts.Accounts.Data))
 		for _, account := range accounts.Accounts.Data {
-			go func(accessToken string) {
+			go func(accessToken, externalPageID string) {
 				defer wg.Done()
 				// TODO: Ngoc handle err
-				if _, err := s.FBClient.CallAPICreateSubscribedApps(accessToken, []string{fbclient.MessagesField, fbclient.MessageEchoesField, fbclient.FeedField}); err != nil {
+				if _, err := s.FBClient.CallAPICreateSubscribedApps(&fbclient.CreateSubscribedAppsRequest{
+					AccessToken: accessToken,
+					Fields:      []string{fbclient.MessagesField, fbclient.MessageEchoesField, fbclient.FeedField},
+					PageID:      externalPageID,
+				}); err != nil {
 					return
 				}
-			}(account.AccessToken)
+			}(account.AccessToken, account.Id)
 		}
 		wg.Wait()
 	}

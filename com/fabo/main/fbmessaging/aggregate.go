@@ -562,7 +562,11 @@ func (a *FbExternalMessagingAggregate) CreateFbExternalPost(ctx context.Context,
 	createPostRequest := &fbclientmodel.CreatePostRequest{
 		Message: args.Message,
 	}
-	post, err := a.fbClient.CallAPICreatePost(args.AccessToken, args.ExternalPageID, createPostRequest)
+	post, err := a.fbClient.CallAPICreatePost(&fbclient.CreatePostRequest{
+		AccessToken: args.AccessToken,
+		PageID:      args.ExternalPageID,
+		Content:     createPostRequest,
+	})
 	if err != nil {
 		return nil, err
 	}

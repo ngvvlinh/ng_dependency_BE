@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
+	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cmenv"
@@ -81,7 +82,11 @@ func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedCha
 		return err
 	}
 
-	post, err := wh.fbClient.CallAPIGetPost(accessToken, postID)
+	post, err := wh.fbClient.CallAPIGetPost(&fbclient.GetPostRequest{
+		AccessToken: accessToken,
+		PostID:      postID,
+		PageID:      extPageID,
+	})
 	if err != nil {
 		return err
 	}
@@ -156,7 +161,11 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 			return nil
 		}
 
-		post, err := wh.fbClient.CallAPIGetPost(accessToken, postID)
+		post, err := wh.fbClient.CallAPIGetPost(&fbclient.GetPostRequest{
+			AccessToken: accessToken,
+			PostID:      postID,
+			PageID:      extPageID,
+		})
 		if err != nil {
 			return err
 		}
@@ -178,7 +187,11 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 		}
 
 		var createCmtCmd []*fbmessaging.CreateFbExternalCommentArgs
-		comment, err := wh.fbClient.CallAPICommentByID(accessToken, commentID)
+		comment, err := wh.fbClient.CallAPICommentByID(&fbclient.GetCommentByIDRequest{
+			AccessToken: accessToken,
+			CommentID:   commentID,
+			PageID:      extPageID,
+		})
 		if err != nil {
 			return err
 		}

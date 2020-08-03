@@ -1,5 +1,7 @@
 package fbclient
 
+import "o.o/backend/com/fabo/pkg/fbclient/model"
+
 type Pagination struct {
 	Limit  string `url:"limit,omitempty"`
 	Before string `url:"before,omitempty"`
@@ -38,6 +40,12 @@ type DebugTokenParams struct {
 	InputToken  string `url:"input_token"`
 }
 
+type ListFeedsRequest struct {
+	AccessToken string
+	PageID      string
+	Pagination  *model.FacebookPagingRequest
+}
+
 type ListFeedsParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
@@ -54,10 +62,23 @@ type ListPublishedPostsParams struct {
 	Pagination
 }
 
+type GetPostRequest struct {
+	AccessToken string
+	PostID      string
+	PageID      string
+}
+
 type GetPostParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
 	DateFormat  string `url:"date_format"`
+}
+
+type ListCommentsRequest struct {
+	AccessToken string
+	PostID      string
+	PageID      string
+	Pagination  *model.FacebookPagingRequest
 }
 
 type ListCommentsParams struct {
@@ -77,6 +98,12 @@ type ListCommentByPostIDsParams struct {
 	DateFormat  string `url:"date_format"`
 }
 
+type ListConversationsRequest struct {
+	AccessToken string
+	PageID      string
+	Pagination  *model.FacebookPagingRequest
+}
+
 type ListConversationsParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
@@ -85,11 +112,24 @@ type ListConversationsParams struct {
 	Pagination
 }
 
+type GetConversationByUserIDRequest struct {
+	AccessToken string
+	PageID      string
+	UserID      string
+}
+
 type GetConversationByUserIDParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
 	DateFormat  string `url:"date_format"`
 	UserID      string `url:"user_id"`
+}
+
+type ListMessagesRequest struct {
+	AccessToken    string
+	ConversationID string
+	PageID         string
+	Pagination     *model.FacebookPagingRequest
 }
 
 type ListMessagesParams struct {
@@ -100,10 +140,22 @@ type ListMessagesParams struct {
 	Pagination
 }
 
+type GetMessageRequest struct {
+	AccessToken string
+	MessageID   string
+	PageID      string
+}
+
 type GetMessageParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
 	DateFormat  string `url:"date_format"`
+}
+
+type GetCommentByIDRequest struct {
+	AccessToken string
+	CommentID   string
+	PageID      string
 }
 
 type GetCommentByIDParams struct {
@@ -112,9 +164,21 @@ type GetCommentByIDParams struct {
 	DateFormat  string `url:"date_format"`
 }
 
+type CreateSubscribedAppsRequest struct {
+	AccessToken string
+	Fields      []string
+	PageID      string
+}
+
 type CreateSubscribedAppsParams struct {
 	AccessToken      string `url:"access_token"`
 	SubscribedFields string `url:"subscribed_fields"`
+}
+
+type SendMessageRequest struct {
+	AccessToken     string
+	SendMessageArgs *model.SendMessageArgs
+	PageID          string
 }
 
 type SendMessageParams struct {
@@ -123,10 +187,22 @@ type SendMessageParams struct {
 	Message     string `url:"message"`
 }
 
+type SendCommentRequest struct {
+	AccessToken     string
+	SendCommentArgs *model.SendCommentArgs
+	PageID          string
+}
+
 type SendCommentParams struct {
 	AccessToken   string `url:"access_token"`
 	Message       string `url:"message,omitempty"`
 	AttachmentURL string `url:"attachment_url,omitempty"`
+}
+
+type CreatePostRequest struct {
+	AccessToken string
+	PageID      string
+	Content     *model.CreatePostRequest
 }
 
 type CreatePostParams struct {
@@ -134,9 +210,22 @@ type CreatePostParams struct {
 	Message     string `url:"message"`
 }
 
+type GetProfileRequest struct {
+	AccessToken string
+	PSID        string
+	PageID      string
+}
+
 type GetProfileByPISDParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
+}
+
+type FbRequest struct {
+	Path   string
+	Params interface{}
+	Resp   interface{}
+	PageID string
 }
 
 // key is businessID

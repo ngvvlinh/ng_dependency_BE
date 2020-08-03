@@ -403,12 +403,16 @@ func (s *CustomerConversationService) SendComment(
 	}
 
 	// Send comment
-	sendCommentRequest := &fbclientmodel.SendCommentRequest{
+	sendCommentRequest := &fbclientmodel.SendCommentArgs{
 		ID:            request.ExternalID,
 		Message:       request.Message,
 		AttachmentURL: request.AttachmentURL,
 	}
-	sendCommentResponse, err := s.FBClient.CallAPISendComment(accessToken, sendCommentRequest)
+	sendCommentResponse, err := s.FBClient.CallAPISendComment(&fbclient.SendCommentRequest{
+		AccessToken:     accessToken,
+		SendCommentArgs: sendCommentRequest,
+		PageID:          externalPageID,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -422,7 +426,11 @@ func (s *CustomerConversationService) SendComment(
 		// {post_id}_{comment_id}
 		commentID = fmt.Sprintf("%s_%s", postIDParts[1], sendCommentResponse.ID)
 	}
-	newComment, err := s.FBClient.CallAPICommentByID(accessToken, commentID)
+	newComment, err := s.FBClient.CallAPICommentByID(&fbclient.GetCommentByIDRequest{
+		AccessToken: accessToken,
+		CommentID:   commentID,
+		PageID:      externalPageID,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -562,7 +570,7 @@ func (s *CustomerConversationService) SendMessage(
 	}
 	PSID := getFbExternalConversationQuery.Result.PSID
 
-	sendMessageRequest := &fbclientmodel.SendMessageRequest{
+	sendMessageRequest := &fbclientmodel.SendMessageArgs{
 		Recipient: &fbclientmodel.RecipientSendMessageRequest{
 			ID: PSID,
 		},
@@ -583,12 +591,20 @@ func (s *CustomerConversationService) SendMessage(
 		}
 	}
 
-	sendMessageResp, err := s.FBClient.CallAPISendMessage(accessToken, sendMessageRequest)
+	sendMessageResp, err := s.FBClient.CallAPISendMessage(&fbclient.SendMessageRequest{
+		AccessToken:     accessToken,
+		SendMessageArgs: sendMessageRequest,
+		PageID:          request.ExternalPageID,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	newMessage, err := s.FBClient.CallAPIGetMessage(accessToken, sendMessageResp.MessageID)
+	newMessage, err := s.FBClient.CallAPIGetMessage(&fbclient.GetMessageRequest{
+		AccessToken: accessToken,
+		MessageID:   sendMessageResp.MessageID,
+		PageID:      request.ExternalPageID,
+	})
 	if err != nil {
 		return nil, err
 	}
