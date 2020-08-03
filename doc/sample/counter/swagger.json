@@ -1,0 +1,115 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/counter.Counter/Counter": {
+      "post": {
+        "tags": [
+          "Counter"
+        ],
+        "summary": "Counter",
+        "operationId": "counter.Counter-Counter",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/moCounterRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/moCounterResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/counter.Counter/Get": {
+      "post": {
+        "tags": [
+          "Counter"
+        ],
+        "summary": "Get",
+        "operationId": "counter.Counter-Get",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/moGetRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/moGetResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "moCounterRequest": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer"
+        }
+      }
+    },
+    "moCounterResponse": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "integer"
+        }
+      }
+    },
+    "moGetRequest": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "moGetResponse": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Counter"
+    }
+  ]
+}
