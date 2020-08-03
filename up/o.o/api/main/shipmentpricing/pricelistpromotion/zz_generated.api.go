@@ -8,6 +8,7 @@ import (
 	context "context"
 	time "time"
 
+	meta "o.o/api/meta"
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -99,14 +100,16 @@ func (h QueryServiceHandler) HandleGetValidPriceListPromotion(ctx context.Contex
 	return err
 }
 
-type ListPriceListPromotionQuery struct {
+type ListPriceListPromotionsQuery struct {
 	ConnectionID dot.ID
+	PriceListID  dot.ID
+	Paging       meta.Paging
 
 	Result []*ShipmentPriceListPromotion `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleListPriceListPromotion(ctx context.Context, msg *ListPriceListPromotionQuery) (err error) {
-	msg.Result, err = h.inner.ListPriceListPromotion(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleListPriceListPromotions(ctx context.Context, msg *ListPriceListPromotionsQuery) (err error) {
+	msg.Result, err = h.inner.ListPriceListPromotions(msg.GetArgs(ctx))
 	return err
 }
 
@@ -118,7 +121,7 @@ func (q *UpdatePriceListPromotionCommand) command() {}
 
 func (q *GetPriceListPromotionQuery) query()      {}
 func (q *GetValidPriceListPromotionQuery) query() {}
-func (q *ListPriceListPromotionQuery) query()     {}
+func (q *ListPriceListPromotionsQuery) query()    {}
 
 // implement conversion
 
@@ -201,15 +204,19 @@ func (q *GetValidPriceListPromotionQuery) SetGetValidPriceListPromotionArgs(args
 	q.ConnectionID = args.ConnectionID
 }
 
-func (q *ListPriceListPromotionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListPriceListPromotionArgs) {
+func (q *ListPriceListPromotionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListPriceListPromotionArgs) {
 	return ctx,
 		&ListPriceListPromotionArgs{
 			ConnectionID: q.ConnectionID,
+			PriceListID:  q.PriceListID,
+			Paging:       q.Paging,
 		}
 }
 
-func (q *ListPriceListPromotionQuery) SetListPriceListPromotionArgs(args *ListPriceListPromotionArgs) {
+func (q *ListPriceListPromotionsQuery) SetListPriceListPromotionArgs(args *ListPriceListPromotionArgs) {
 	q.ConnectionID = args.ConnectionID
+	q.PriceListID = args.PriceListID
+	q.Paging = args.Paging
 }
 
 // implement dispatching
@@ -244,6 +251,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetPriceListPromotion)
 	b.AddHandler(h.HandleGetValidPriceListPromotion)
-	b.AddHandler(h.HandleListPriceListPromotion)
+	b.AddHandler(h.HandleListPriceListPromotions)
 	return QueryBus{b}
 }

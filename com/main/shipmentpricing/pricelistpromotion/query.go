@@ -47,9 +47,9 @@ func (q *QueryService) GetPriceListPromotion(ctx context.Context, id dot.ID) (*p
 	return q.priceListPromotionStore(ctx).ID(id).GetShipmentPriceListPromotion()
 }
 
-func (q *QueryService) ListPriceListPromotion(ctx context.Context,
+func (q *QueryService) ListPriceListPromotions(ctx context.Context,
 	args *pricelistpromotion.ListPriceListPromotionArgs) ([]*pricelistpromotion.ShipmentPriceListPromotion, error) {
-	query := q.priceListPromotionStore(ctx).OptionalConnectionID(args.ConnectionID)
+	query := q.priceListPromotionStore(ctx).OptionalConnectionID(args.ConnectionID).OptionalPriceListID(args.PriceListID).WithPaging(args.Paging)
 	return query.ListShipmentPriceListPromotions()
 }
 

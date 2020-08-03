@@ -758,8 +758,9 @@ type PriceListPromotionAppliedRules struct {
 func (m *PriceListPromotionAppliedRules) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShipmentPriceListPromotionsRequest struct {
-	ShipmentPriceListID dot.ID `json:"shipment_price_list_id"`
-	ConnectionID        dot.ID `json:"connection_id"`
+	ShipmentPriceListID dot.ID         `json:"shipment_price_list_id"`
+	ConnectionID        dot.ID         `json:"connection_id"`
+	Paging              *common.Paging `json:"paging"`
 }
 
 func (m *GetShipmentPriceListPromotionsRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 )
@@ -21,7 +22,7 @@ type Aggregate interface {
 type QueryService interface {
 	GetPriceListPromotion(ctx context.Context, ID dot.ID) (*ShipmentPriceListPromotion, error)
 
-	ListPriceListPromotion(context.Context, *ListPriceListPromotionArgs) ([]*ShipmentPriceListPromotion, error)
+	ListPriceListPromotions(context.Context, *ListPriceListPromotionArgs) ([]*ShipmentPriceListPromotion, error)
 
 	GetValidPriceListPromotion(context.Context, *GetValidPriceListPromotionArgs) (*ShipmentPriceListPromotion, error)
 }
@@ -54,6 +55,8 @@ type UpdatePriceListPromotionArgs struct {
 
 type ListPriceListPromotionArgs struct {
 	ConnectionID dot.ID
+	PriceListID  dot.ID
+	Paging       meta.Paging
 }
 
 type GetValidPriceListPromotionArgs struct {

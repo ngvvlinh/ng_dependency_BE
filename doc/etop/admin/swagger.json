@@ -7364,6 +7364,9 @@
           "type": "string",
           "format": "int64"
         },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        },
         "shipment_price_list_id": {
           "type": "string",
           "format": "int64"

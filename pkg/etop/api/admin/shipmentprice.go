@@ -424,7 +424,12 @@ func (s *ShipmentPriceService) GetShippingServices(ctx context.Context, r *admin
 //-- Shipment Price List Promotion --//
 
 func (s *ShipmentPriceService) GetShipmentPriceListPromotions(ctx context.Context, r *admin.GetShipmentPriceListPromotionsRequest) (*admin.GetShipmentPriceListPromotionsResponse, error) {
-	query := &pricelistpromotion.ListPriceListPromotionQuery{}
+	paging := cmapi.CMPaging(r.Paging)
+	query := &pricelistpromotion.ListPriceListPromotionsQuery{
+		ConnectionID: r.ConnectionID,
+		PriceListID:  r.ShipmentPriceListID,
+		Paging:       *paging,
+	}
 	if err := s.PriceListPromotionQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}

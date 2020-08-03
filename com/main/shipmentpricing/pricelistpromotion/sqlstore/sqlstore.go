@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"o.o/api/main/shipmentpricing/pricelistpromotion"
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion/convert"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion/model"
@@ -21,9 +22,15 @@ type PriceListPromotionStore struct {
 	ft    ShipmentPriceListPromotionFilters
 	query func() cmsql.QueryInterface
 	preds []interface{}
-	ctx   context.Context
+	sqlstore.Paging
 
+	ctx            context.Context
 	includeDeleted sqlstore.IncludeDeleted
+}
+
+var SortShipmentPricePromotion = map[string]string{
+	"created_at":     "created_at",
+	"priority_point": "priority_point",
 }
 
 type PriceListStorePromotionFactory func(ctx context.Context) *PriceListPromotionStore
@@ -50,6 +57,11 @@ func (ft *ShipmentPriceListPromotionFilters) NotBelongWLPartner() sq.WriterTo {
 	return ft.Filter("$.wl_partner_id IS NULL")
 }
 
+func (s *PriceListPromotionStore) WithPaging(paging meta.Paging) *PriceListPromotionStore {
+	s.Paging.WithPaging(paging)
+	return s
+}
+
 func (s *PriceListPromotionStore) ID(id dot.ID) *PriceListPromotionStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
@@ -57,6 +69,11 @@ func (s *PriceListPromotionStore) ID(id dot.ID) *PriceListPromotionStore {
 
 func (s *PriceListPromotionStore) OptionalConnectionID(connID dot.ID) *PriceListPromotionStore {
 	s.preds = append(s.preds, s.ft.ByConnectionID(connID).Optional())
+	return s
+}
+
+func (s *PriceListPromotionStore) OptionalPriceListID(priceListID dot.ID) *PriceListPromotionStore {
+	s.preds = append(s.preds, s.ft.ByPriceListID(priceListID).Optional())
 	return s
 }
 
@@ -97,8 +114,15 @@ func (s *PriceListPromotionStore) GetShipmentPriceListPromotion() (*pricelistpro
 }
 
 func (s *PriceListPromotionStore) ListShipmentPriceListPromotionDBs() (res []*model.ShipmentPriceListPromotion, err error) {
-	query := s.query().Where(s.preds).OrderBy("created_at DESC")
+	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
+	}
+	query, err = sqlstore.LimitSort(query, &s.Paging, SortShipmentPricePromotion)
+	if err != nil {
+		return nil, err
+	}
 	query = s.ByWhiteLabelPartner(s.ctx, query)
 	err = query.Find((*model.ShipmentPriceListPromotions)(&res))
 	return
