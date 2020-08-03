@@ -40,7 +40,7 @@ func (c *CalcService) Calc(ctx context.Context, req *api.Request) (*api.Response
 		return nil, err
 	}
 
-	fNum2, err := strconv.ParseFloat(num1, 64)
+	fNum2, err := strconv.ParseFloat(num2, 64)
 	if err != nil {
 		return nil, err
 	}
