@@ -48,7 +48,7 @@ func (c *CounterService) Counter(ctx context.Context, req *api.CounterRequest) (
 	}
 
 	return &api.CounterResponse{
-		Value: req.Value,
+		Value: counter.ValueOne + req.Value,
 	}, nil
 }
 

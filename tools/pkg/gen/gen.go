@@ -91,6 +91,11 @@ func ProjectPath() string {
 	return projectPath
 }
 
+// GoPath is absolute path to $GOPATH
+func GoPath() string {
+	return gopath
+}
+
 // RootTree is absolute path to o.o/..
 func RootTree() string {
 	return rootTree

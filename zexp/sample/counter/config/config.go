@@ -14,10 +14,11 @@ type Config struct {
 func Default() Config {
 	cfg := Config{
 		HTTP: cc.HTTP{
-			Host: "",
+			Host: "127.0.0.1",
 			Port: 8080,
 		},
-		Env: cmenv.EnvDev.String(),
+		Env:      cmenv.EnvDev.String(),
+		Postgres: cc.DefaultPostgres(),
 	}
 	return cfg
 }

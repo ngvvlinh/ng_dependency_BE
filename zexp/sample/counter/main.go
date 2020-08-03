@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	health "o.o/backend/pkg/common/apifw/health"
 	cmservice "o.o/backend/pkg/common/apifw/service"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
@@ -39,6 +40,9 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello-world", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "hello world")
+	})
+	mux.HandleFunc(health.DefaultRoute, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "OK")
 	})
 	mux.Handle("/", http.RedirectHandler("/doc/sample/counter", http.StatusTemporaryRedirect))
 	mux.Handle("/doc", http.RedirectHandler("/doc/sample/counter", http.StatusTemporaryRedirect))

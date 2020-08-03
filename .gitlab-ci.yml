@@ -35,7 +35,8 @@ build:
   - time scripts/ci/verify-lint.sh
   - time scripts/ci/verify-generate.sh
   - time go run ./scripts/init_testdb/main.go -drop
-  - time scripts/ci/test-all.sh
+  - time scripts/ci/test-all.sh simple
+  - time scripts/ci/test-all.sh e2e
   - touch artifacts/BUILD_SUCCESS
   after_script:
   - scripts/ci/report-gerrit.sh
