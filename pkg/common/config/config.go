@@ -73,7 +73,7 @@ func LoadWithDefault(v, def interface{}) (err error) {
 		return errors.New("must provide only -config-file or -config-yaml")
 	}
 	if flConfigFile != "" {
-		err := LoadFromFile(flConfigFile, v)
+		err = LoadFromFile(flConfigFile, v)
 		if err != nil {
 			ll.S.Errorf("can not load config from file: %v (%v)", flConfigFile, err)
 		}

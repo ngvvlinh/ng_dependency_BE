@@ -16,6 +16,7 @@ import (
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/storage"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/eventstream"
@@ -27,27 +28,22 @@ import (
 )
 
 type Service struct {
-	idempgroup *idemp.RedisGroup
-	config     Config
-	publisher  eventstream.Publisher
+	idempgroup    *idemp.RedisGroup
+	config        ConfigDirs
+	publisher     eventstream.Publisher
+	storageBucket storage.Bucket
 }
 
-func New(rd redis.Store, p eventstream.Publisher, cfg Config) (*Service, func()) {
+func New(rd redis.Store, p eventstream.Publisher, cfg ConfigDirs, bucket storage.Bucket) (*Service, func()) {
 	idempgroup := idemp.NewRedisGroup(rd, "export", 60)
-
-	if cfg.DirExport == "" || cfg.URLPrefix == "" {
-		panic("must provide export dir and url prefix ")
-	}
-
-	var err error
-	cfg.DirExport, err = verifyDir(cfg.DirExport)
-	if err != nil {
-		ll.Panic("invalid export config", l.Error(err))
+	if err := cfg.Export.Validate(); err != nil {
+		ll.Panic("invalid config for export", l.Error(err))
 	}
 	return &Service{
-		idempgroup: idempgroup,
-		config:     cfg,
-		publisher:  p,
+		idempgroup:    idempgroup,
+		config:        cfg,
+		publisher:     p,
+		storageBucket: bucket,
 	}, idempgroup.Shutdown
 }
 

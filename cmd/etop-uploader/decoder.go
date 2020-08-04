@@ -45,13 +45,13 @@ func readMultipartForm(c *httpx.Context) (result UploadedImages, err error) {
 	}
 	images := make([]UploadedImage, len(files))
 	for i, file := range files {
-		multipartFile, err := file.Open()
-		if err != nil {
-			return result, cm.Error(cm.InvalidArgument, "Invalid ", err)
+		multipartFile, err2 := file.Open()
+		if err2 != nil {
+			return result, cm.Error(cm.InvalidArgument, "Invalid ", err2)
 		}
-		format, data, err := verifyImage(file.Filename, int(file.Size), multipartFile)
-		if err != nil {
-			return result, cm.Error(cm.InvalidArgument, "Invalid ", err)
+		format, data, err2 := verifyImage(file.Filename, int(file.Size), multipartFile)
+		if err2 != nil {
+			return result, cm.Error(cm.InvalidArgument, "Invalid ", err2)
 		}
 
 		images[i] = UploadedImage{

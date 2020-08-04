@@ -50,6 +50,7 @@ var (
 var (
 	Error       = xerrors.Error
 	Errorf      = xerrors.Errorf
+	Wrap        = xerrors.Wrap
 	Trace       = xerrors.Trace
 	ErrorTracef = xerrors.ErrorTracef
 	NSErrorf    = xerrors.NSErrorf

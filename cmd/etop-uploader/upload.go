@@ -2,20 +2,23 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"image"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
-	"os"
 	"path/filepath"
 
+	"o.o/backend/cmd/etop-uploader/config"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/common/l"
 	"o.o/common/xerrors"
 )
+
+type Purpose = config.Purpose
 
 const (
 	minSize = 100
@@ -23,17 +26,6 @@ const (
 	minWH   = 200
 	maxWH   = 2500
 )
-
-func getImageConfig(purpose Purpose) (*ImageConfig, error) {
-	if purpose == "" {
-		purpose = PurposeDefault
-	}
-	config := imageConfigs[purpose]
-	if config == nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Invalid image purpose")
-	}
-	return config, nil
-}
 
 func NewUploadError(code xerrors.Code, msg, filename string) *xerrors.APIError {
 	return cm.Error(code, msg, nil).
@@ -60,9 +52,9 @@ func UploadHandler(c *httpx.Context) error {
 		return err
 	}
 
-	imgConfig, err := getImageConfig(uploadedImages.Purpose)
-	if err != nil {
-		return err
+	imgConfig, ok := cfg.Dirs.Get(uploadedImages.Purpose)
+	if !ok {
+		return cm.Errorf(cm.Internal, nil, "invalid purpose")
 	}
 	path := imgConfig.Path
 	urlPrefix := imgConfig.URLPrefix
@@ -76,23 +68,26 @@ func UploadHandler(c *httpx.Context) error {
 		subFolder := genName[:3]
 
 		dirPath := filepath.Join(path, subFolder)
-		if err := ensureDir(dirPath); err != nil {
-			return err
-		}
+		filePath := filepath.Join(dirPath, genName)
+
 		if !func() bool {
-			dst, err := os.Create(filepath.Join(dirPath, genName))
-			if err != nil {
-				ll.Error("error creating file", l.Error(err))
+
+			// NOTE(vu): we use context.Background() here, instead of
+			// c.Context(), to make the uploading task independent to the
+			// incoming http request
+			dst, err2 := bucket.OpenForWrite(context.Background(), filePath)
+			if err2 != nil {
+				ll.Error("error creating file", l.Error(err2))
 				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename).
-					Log("can not upload", l.Error(err))
+					Log("can not upload", l.Error(err2))
 				return false
 			}
 			defer func() { _ = dst.Close() }()
 
-			if _, err = io.Copy(dst, bytes.NewReader(uploadedImage.Source)); err != nil {
-				ll.Error("error writing file", l.Error(err))
+			if _, err2 = io.Copy(dst, bytes.NewReader(uploadedImage.Source)); err2 != nil {
+				ll.Error("error writing file", l.Error(err2))
 				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), uploadedImage.Filename).
-					Log("can not upload", l.Error(err))
+					Log("can not upload", l.Error(err2))
 				return false
 			}
 			return true
@@ -148,10 +143,6 @@ func verifyImage(filename string, size int, src io.Reader) (format string, data 
 		format = "jpg"
 	}
 	return format, data, nil
-}
-
-func ensureDir(dir string) error {
-	return os.MkdirAll(dir, 0755)
 }
 
 func convertAPIErrorsToTwErrors(errs []*xerrors.APIError) []*xerrors.ErrorJSON {

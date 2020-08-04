@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -18,29 +19,17 @@ import (
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/storage"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/common/l"
 )
 
-type Purpose string
-
-const (
-	PurposeDefault             Purpose = "default"
-	PurposeAhamoveVerification Purpose = "ahamove_verification"
-)
-
-type ImageConfig struct {
-	Path      string
-	URLPrefix string
-}
-
-var imageConfigs = map[Purpose]*ImageConfig{}
-
 var (
 	ll         = l.New()
 	cfg        config.Config
 	tokenStore auth.Validator
+	bucket     storage.Bucket
 )
 
 func main() {
@@ -50,31 +39,20 @@ func main() {
 	var err error
 	cfg, err = config.Load()
 	if err != nil {
-		ll.Fatal("Unable to load config", l.Error(err))
+		ll.Fatal("error loading config", l.Error(err))
 	}
-	imageConfigs = map[Purpose]*ImageConfig{
-		PurposeDefault: {
-			Path:      cfg.UploadDirImg,
-			URLPrefix: cfg.URLPrefix,
-		},
-		PurposeAhamoveVerification: {
-			Path:      cfg.UploadDirAhamoveVerification,
-			URLPrefix: cfg.URLPrefixAhamoveVerification,
-		},
+	for _, purpose := range config.SupportedPurposes() {
+		dirCfg, ok := cfg.Dirs[purpose]
+		if !ok {
+			ll.Fatal("no dir config", l.String("purpose", string(purpose)))
+		}
+		if err = dirCfg.Validate(); err != nil {
+			ll.Fatal("invalid dir config", l.String("purpose", string(purpose)), l.Error(err))
+		}
 	}
 
 	cmenv.SetEnvironment("uploader", cfg.Env)
 	wl.Init(cmenv.Env(), wl.EtopServer)
-
-	_, err = os.Stat(cfg.UploadDirImg)
-	if err != nil {
-		ll.Fatal("Unable to open", l.String("upload_dir", cfg.UploadDirImg), l.Error(err))
-	}
-
-	_, err = os.Stat(cfg.UploadDirAhamoveVerification)
-	if err != nil {
-		ll.Fatal("Unable to open", l.String("upload_dir_ahamove_verification", cfg.UploadDirAhamoveVerification), l.Error(err))
-	}
 
 	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
@@ -100,6 +78,10 @@ func main() {
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 	cfg.TelegramBot.MustRegister(ctx)
+	bucket, err = cfg.StorageDriver.Build(ctx)
+	if err != nil {
+		ll.Fatal("can not load driver", l.Error(err))
+	}
 
 	redisStore := redis.ConnectWithStr(cfg.Redis.ConnectionString())
 	tokenStore = auth.NewGenerator(redisStore)
@@ -114,10 +96,20 @@ func main() {
 	healthService.RegisterHTTPHandler(mux)
 
 	rt.Use(httpx.RecoverAndLog(false))
-	rt.ServeFiles("/img/*filepath", http.Dir(cfg.UploadDirImg))
-	rt.ServeFiles("/ahamove/user_verification/*filepath", http.Dir(cfg.UploadDirAhamoveVerification))
+	rt.POST("/upload", UploadHandler)
 
-	rt.POST("/upload", UploadHandler, authMiddleware)
+	// TODO(vu): support serving files from driver
+	fileDriver := cfg.StorageDriver.File
+	if fileDriver != nil {
+		for _, purpose := range config.SupportedPurposes() {
+			dirCfg := cfg.Dirs[purpose]
+			if cfg.StorageDriver.File != nil && dirCfg.URLPath != "" {
+				dirPath := filepath.Join(fileDriver.RootPath, dirCfg.Path)
+				routePath := dirCfg.URLPath + "/*filepath"
+				rt.ServeFiles(routePath, http.Dir(dirPath))
+			}
+		}
+	}
 
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
@@ -126,9 +118,9 @@ func main() {
 	go func() {
 		defer ctxCancel()
 		ll.S.Infof("HTTP server listening at %v", cfg.HTTP.Address())
-		err := svr.ListenAndServe()
-		if err != http.ErrServerClosed {
-			ll.Error("HTTP server", l.Error(err))
+		err2 := svr.ListenAndServe()
+		if err2 != http.ErrServerClosed {
+			ll.Error("HTTP server", l.Error(err2))
 		}
 		ll.Sync()
 	}()

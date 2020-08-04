@@ -1,21 +1,17 @@
 package upload
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
+	"bytes"
+	"context"
+	"io"
 	"path/filepath"
 
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/storage"
 	"o.o/common/l"
 )
 
 var ll = l.New()
-
-type Config struct {
-	DirImportShopOrder   string `yaml:"dir_import_shop_order"`
-	DirImportShopProduct string `yaml:"dir_import_shop_product"`
-}
 
 type StoreFileCommand struct {
 	UploadType string
@@ -24,27 +20,12 @@ type StoreFileCommand struct {
 }
 
 type Uploader struct {
-	dirs map[string]string
+	driver storage.Bucket
+	dirs   map[string]string
 }
 
-func NewUploader(dirs map[string]string) (*Uploader, error) {
-	uploadDirs := make(map[string]string)
-	for typ, dirPath := range dirs {
-		fi, err := os.Stat(dirPath)
-		if err != nil {
-			return nil, fmt.Errorf("upload dir %v: %v", typ, err)
-		}
-		if !fi.IsDir() {
-			return nil, fmt.Errorf("upload dir %v: `%v` is not a directory", typ, err)
-		}
-
-		absPath, err := filepath.Abs(dirPath)
-		if err != nil {
-			panic(err)
-		}
-		uploadDirs[typ] = absPath
-	}
-	return &Uploader{dirs: uploadDirs}, nil
+func NewUploader(driver storage.Bucket, dirs map[string]string) (*Uploader, error) {
+	return &Uploader{driver: driver, dirs: dirs}, nil
 }
 
 func (u *Uploader) ExpectDir(uploadType string) {
@@ -53,21 +34,32 @@ func (u *Uploader) ExpectDir(uploadType string) {
 	}
 }
 
-func (u *Uploader) StoreFile(cmd *StoreFileCommand) error {
+func (u *Uploader) StoreFile(cmd *StoreFileCommand) (_err error) {
 	if cmd.UploadType == "" || cmd.FileName == "" || len(cmd.Data) == 0 {
 		return cm.Error(cm.Internal, "Invalid arg", nil)
 	}
 
 	dir := u.dirs[cmd.UploadType]
 	if dir == "" {
-		return cm.Error(cm.Internal, "Can not upload file", nil).
+		return cm.Errorf(cm.Internal, nil, "Can not upload file").
 			WithMetaf("reason", "no directory of type %v", cmd.UploadType)
 	}
 
 	filePath := filepath.Join(dir, cmd.FileName)
-	err := ioutil.WriteFile(filePath, cmd.Data, os.ModePerm)
+	dst, err := u.driver.OpenForWrite(context.Background(), filePath)
 	if err != nil {
-		return cm.Error(cm.Internal, "", err)
+		return cm.Errorf(cm.Internal, err, "Can not upload file")
+	}
+	defer func() {
+		err2 := dst.Close()
+		if _err == nil {
+			_err = err2
+		}
+	}()
+
+	_, err = io.Copy(dst, bytes.NewReader(cmd.Data))
+	if err != nil {
+		return err
 	}
 	ll.Info("Stored file", l.String("path", filePath))
 	return nil

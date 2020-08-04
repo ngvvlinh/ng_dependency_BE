@@ -10,6 +10,7 @@ replace (
 )
 
 require (
+	cloud.google.com/go/storage v1.6.0
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.17.0
 	github.com/PuerkitoBio/goquery v1.5.1
@@ -61,7 +62,7 @@ require (
 	golang.org/x/sys v0.0.0-20200803210538-64077c9b5642 // indirect
 	golang.org/x/text v0.3.3
 	golang.org/x/tools v0.0.0-20200519205726-57a9e4404bf7
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	google.golang.org/api v0.21.0
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/resty.v1 v1.12.0

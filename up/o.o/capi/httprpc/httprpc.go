@@ -54,8 +54,8 @@ type twerrJSON struct {
 func marshalErrorToJSON(twerr xerrors.ErrorInterface) []byte {
 	// make sure that msg is not too large
 	msg := twerr.Msg()
-	if len(msg) > 1e6 {
-		msg = msg[:1e6]
+	if len(msg) > 1000000 {
+		msg = msg[:1000000]
 	}
 
 	tj := twerrJSON{

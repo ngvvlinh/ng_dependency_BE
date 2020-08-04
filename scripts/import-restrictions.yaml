@@ -17,6 +17,9 @@
   - o.o/backend/pkg/common
   - o.o/backend/pkg/etop/authorize/tokens
   - o.o/backend/pkg/etop/authorize/middleware
+  - o.o/backend/cogs/base
+  - o.o/backend/cogs/storage
+  - o.o/backend/pkg/etop/upload
 
 #- baseImportPath: "./cmd/supporting/crm-sync-service"
 #  allowedImports:
@@ -60,6 +63,7 @@
   allowedImports:
   - o.o/backend/com
   - o.o/backend/pkg
+  - o.o/backend/cogs
 
 - baseImportPath: "./pkg"
   ignoredSubTrees:

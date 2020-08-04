@@ -17,6 +17,7 @@ import (
 	server_shop "o.o/backend/cogs/server/shop"
 	shipment_fabo "o.o/backend/cogs/shipment/_fabo"
 	sms_min "o.o/backend/cogs/sms/_min"
+	storage_all "o.o/backend/cogs/storage/_all"
 	_uploader "o.o/backend/cogs/uploader"
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
@@ -81,9 +82,10 @@ func Build(
 			"kafka",
 			"shipment",
 			"redis",
-			"export",
 			"captcha",
-			"upload",
+			"ExportDirs",
+			"UploadDirs",
+			"StorageDriver",
 			"FacebookApp",
 			"SharedConfig",
 			"Webhook",
@@ -104,6 +106,7 @@ func Build(
 		shop_min.WireSet,
 		shop.WireSet,
 		admin_min.WireSet,
+		storage_all.WireSet,
 
 		email.WireSet,
 		logicorder.WireSet,

@@ -21,6 +21,7 @@ import (
 	shipment_all "o.o/backend/cogs/shipment/_all"
 	shipnow_all "o.o/backend/cogs/shipnow/_all"
 	sms_all "o.o/backend/cogs/sms/_all"
+	storage_all "o.o/backend/cogs/storage/_all"
 	_uploader "o.o/backend/cogs/uploader"
 	paymentmanager "o.o/backend/com/external/payment/manager"
 	"o.o/backend/com/main/address"
@@ -96,9 +97,10 @@ func Build(
 			"ahamove",
 			"vtpay",
 			"redis",
-			"export",
 			"captcha",
-			"upload",
+			"ExportDirs",
+			"UploadDirs",
+			"StorageDriver",
 			"WhiteLabel",
 			"SharedConfig",
 			"AhamoveWebhook",
@@ -111,6 +113,7 @@ func Build(
 		payment_all.WireSet,
 		shipment_all.WireSet,
 		database_all.WireSet,
+		storage_all.WireSet,
 		hotfixmoneytx.WireSet,
 		sms_all.WireSet,
 		config_server.WireSet,

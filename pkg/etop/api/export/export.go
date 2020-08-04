@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -18,6 +17,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/backend/pkg/common/storage"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/eventstream"
 	"o.o/backend/pkg/etop/model"
@@ -33,9 +33,8 @@ const PathShopFulfillments = "shop/fulfillments"
 const PathShopOrders = "shop/orders"
 const BaseRowsErrors = 10
 
-type Config struct {
-	URLPrefix string `yaml:"url_prefix"`
-	DirExport string `yaml:"dir_export"`
+type ConfigDirs struct {
+	Export storage.DirConfig `yaml:"export"`
 }
 
 type ExportOption struct {
@@ -53,25 +52,6 @@ type rowsInterface interface {
 type ExportFunction func(ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
 	result chan<- *shop.ExportStatusItem,
 	total int, rows rowsInterface, opts core.Opts) (_err error)
-
-func verifyDir(dir string) (absPath string, err error) {
-	if absPath, err = filepath.Abs(dir); err != nil {
-		ll.S.Panicf("invalid directory: %v", err)
-	}
-
-	info, err := os.Stat(absPath)
-	if err != nil {
-		return
-	}
-	if !info.IsDir() {
-		err = cm.Errorf(cm.InvalidArgument, nil, "must be a directory: %v", absPath)
-	}
-	return
-}
-
-func ensureDir(dir string) error {
-	return os.MkdirAll(dir, 0755)
-}
 
 func (s *Service) exportAndReportProgress(
 	cleanup func(),
@@ -131,12 +111,8 @@ func (s *Service) exportAndReportProgress(
 	midPath, zipFilename := filepath.Split(exportResult.StoredFile)
 
 	// create .zip file on disk
-	dirPath := filepath.Join(s.config.DirExport, midPath)
-	if err := ensureDir(dirPath); err != nil {
-		return err
-	}
-	zipFilePath := filepath.Join(s.config.DirExport, midPath, zipFilename)
-	zipFile, err := os.OpenFile(zipFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	zipFilePath := filepath.Join(s.config.Export.Path, midPath, zipFilename)
+	zipFile, err := s.storageBucket.OpenForWrite(context.Background(), zipFilePath)
 	if err != nil {
 		return err
 	}
@@ -145,27 +121,23 @@ func (s *Service) exportAndReportProgress(
 	zipWriter := zip.NewWriter(zipFile)
 	defer func() {
 		// close the zip file, record the error
-		if err := zipWriter.Close(); _err == nil && err != nil {
-			_err = err
+		if err2 := zipWriter.Close(); _err == nil && err2 != nil {
+			_err = err2
 		}
-		if err := zipFile.Close(); _err == nil && err != nil {
-			_err = err
+		if err2 := zipFile.Close(); _err == nil && err2 != nil {
+			_err = err2
 		}
 
 		// update response
 		exportResult.ID = exportID
 		if _err == nil {
-			exportResult.DownloadURL = s.config.URLPrefix + "/" + exportResult.StoredFile
+			exportResult.DownloadURL = s.config.Export.URLPrefix + "/" + exportResult.StoredFile
 
 		} else {
 			exportResult.FileName = ""
 			exportResult.StoredFile = ""
 
-			// remove the file if there is any error
-			removeError := os.Remove(zipFilePath)
-			if removeError != nil {
-				ll.Error("error removing file", l.String("path", zipFilePath), l.Error(err))
-			}
+			// TODO(vu): remove the file if there is any error
 		}
 	}()
 
@@ -187,8 +159,8 @@ func (s *Service) exportAndReportProgress(
 	var statusItem *shop.ExportStatusItem
 	for statusItem = range result {
 		buf := &bytes.Buffer{}
-		if err := jsonx.MarshalTo(buf, statusItem); err != nil {
-			panic(err)
+		if err2 := jsonx.MarshalTo(buf, statusItem); err2 != nil {
+			panic(err2)
 		}
 		event := eventstream.Event{
 			Type:      "export/progress",

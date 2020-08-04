@@ -1,9 +1,12 @@
 package _uploader
 
 import (
+	"context"
+
 	"github.com/google/wire"
 
-	"o.o/backend/pkg/etop/model"
+	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/storage"
 	"o.o/backend/pkg/etop/upload"
 )
 
@@ -11,16 +14,37 @@ var WireSet = wire.NewSet(
 	NewUploader,
 )
 
-func DefaultConfig() upload.Config {
-	return upload.Config{
-		DirImportShopOrder:   "/tmp",
-		DirImportShopProduct: "/tmp",
+const (
+	PurposeImportShopOrder   = storage.Purpose("import_shop_order")
+	PurposeImportShopProduct = storage.Purpose("import_shop_product")
+)
+
+func SupportedPurposes() []storage.Purpose {
+	return []storage.Purpose{
+		PurposeImportShopOrder,
+		PurposeImportShopProduct,
 	}
 }
 
-func NewUploader(cfg upload.Config) (*upload.Uploader, error) {
-	return upload.NewUploader(map[string]string{
-		model.ImportTypeShopOrder.String():   cfg.DirImportShopOrder,
-		model.ImportTypeShopProduct.String(): cfg.DirImportShopProduct,
-	})
+func DefaultConfig() storage.DirConfigs {
+	cfg := storage.DirConfigs{}
+	cfg[PurposeImportShopOrder] = storage.DirConfig{
+		Path: "import_shop_order",
+	}
+	cfg[PurposeImportShopProduct] = storage.DirConfig{
+		Path: "import_shop_product",
+	}
+	return cfg
+}
+
+func NewUploader(ctx context.Context, cfgDirs storage.DirConfigs, driver storage.Bucket) (*upload.Uploader, error) {
+	mapDirs := map[string]string{}
+	for _, purpose := range SupportedPurposes() {
+		cfg := cfgDirs[purpose]
+		if err := cfg.Validate(); err != nil {
+			return nil, cm.Errorf(cm.Internal, err, "invalid config for purpose `%v`", purpose)
+		}
+		mapDirs[string(purpose)] = cfg.Path
+	}
+	return upload.NewUploader(driver, mapDirs)
 }

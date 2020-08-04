@@ -9,16 +9,17 @@ import (
 	config_server "o.o/backend/cogs/config/_server"
 	database_all "o.o/backend/cogs/database/_all"
 	shipment_all "o.o/backend/cogs/shipment/_all"
+	storage_all "o.o/backend/cogs/storage/_all"
 	_uploader "o.o/backend/cogs/uploader"
 	"o.o/backend/com/main/invitation/aggregate"
 	ecomconfig "o.o/backend/com/web/ecom/config"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/storage"
 	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/apix/partner"
 	orderS "o.o/backend/pkg/etop/logic/orders"
-	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/pkg/integration/email"
 	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
 	ahamoveclient "o.o/backend/pkg/integration/shipnow/ahamove/client"
@@ -34,9 +35,12 @@ type Config struct {
 
 	Redis cc.Redis `yaml:"redis"`
 
-	Kafka       cc.Kafka         `yaml:"kafka"`
-	Upload      upload.Config    `yaml:"upload"`
-	Export      export.Config    `yaml:"export"`
+	Kafka cc.Kafka `yaml:"kafka"`
+
+	UploadDirs    storage.DirConfigs       `yaml:"upload_dirs"`
+	ExportDirs    export.ConfigDirs        `yaml:"export_dirs"`
+	StorageDriver storage_all.DriverConfig `yaml:"storage_driver"`
+
 	TelegramBot cc.TelegramBot   `yaml:"telegram_bot"`
 	SMTP        email.SMTPConfig `yaml:"smtp"`
 	Email       cc.EmailConfig   `yaml:"email"`
@@ -76,10 +80,14 @@ func Default() Config {
 			Brokers:     nil,
 			TopicPrefix: "etop",
 		},
-		Upload: _uploader.DefaultConfig(),
-		Export: export.Config{
-			DirExport: "/tmp",
-			URLPrefix: "http://localhost:8080",
+		UploadDirs:    _uploader.DefaultConfig(),
+		StorageDriver: storage_all.DefaultDriver(),
+		ExportDirs: export.ConfigDirs{
+			Export: storage.DirConfig{
+				Path:      "export/dl",
+				URLPath:   "/export/dl",
+				URLPrefix: "http://localhost:8080/export/dl",
+			},
 		},
 		TelegramBot:    _telebot.DefaultConfig(),
 		Shipment:       shipment_all.DefaultConfig(),

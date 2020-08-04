@@ -258,6 +258,13 @@ func ErrorTracef(code Code, err error, message string, args ...interface{}) *API
 	return newError(true, true, code, message, err)
 }
 
+func Wrap(err error) *APIError {
+	if err == nil {
+		return nil
+	}
+	return newError(false, true, Internal, "%v", err)
+}
+
 func Trace(err error) *APIError {
 	if xerr, ok := err.(*APIError); ok {
 		xerr.Trace = true

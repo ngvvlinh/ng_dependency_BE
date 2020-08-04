@@ -22,6 +22,7 @@ import (
 	"o.o/backend/cogs/shipment/vtpost"
 	"o.o/backend/cogs/shipnow/_all"
 	"o.o/backend/cogs/sms/_all"
+	"o.o/backend/cogs/storage/_all"
 	"o.o/backend/cogs/uploader"
 	aggregate21 "o.o/backend/com/etc/logging/payment/aggregate"
 	"o.o/backend/com/etc/logging/shippingwebhook"
@@ -409,8 +410,14 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SummaryOld:   summarySummary,
 	}
 	eventStream := eventstream.New(ctx)
-	exportConfig := cfg.Export
-	exportService, cleanup2 := export.New(store, eventStream, exportConfig)
+	configDirs := cfg.ExportDirs
+	driverConfig := cfg.StorageDriver
+	bucket, err := storage_all.Build(ctx, driverConfig)
+	if err != nil {
+		cleanup()
+		return Output{}, nil, err
+	}
+	exportService, cleanup2 := export.New(store, eventStream, configDirs, bucket)
 	shopExportService := &shop.ExportService{
 		Session:     session,
 		ExportInner: exportService,
@@ -865,8 +872,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	hotFixMoneyTxService := hotfix.New(mainDB)
 	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, hotFixMoneyTxService, session)
-	uploadConfig := cfg.Upload
-	uploader, err := _uploader.NewUploader(uploadConfig)
+	dirConfigs := cfg.UploadDirs
+	uploader, err := _uploader.NewUploader(ctx, dirConfigs, bucket)
 	if err != nil {
 		cleanup6()
 		cleanup5()

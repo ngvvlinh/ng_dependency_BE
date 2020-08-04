@@ -9,7 +9,8 @@ import (
 )
 
 func TestGenericConfig(t *testing.T) {
-	input := `
+	t.Run("unmarshal", func(t *testing.T) {
+		input := `
 alice:
     name: Alice B.
     age: 20
@@ -18,26 +19,27 @@ bob:
     university:
       name: overflow
 `
-	var alice struct {
-		Name string `yaml:"name"`
-		Age  int    `yaml:"age"`
-	}
-	var bob struct {
-		Name       string `yaml:"name"`
-		University struct {
+		var alice struct {
 			Name string `yaml:"name"`
-		} `yaml:"university"`
-	}
+			Age  int    `yaml:"age"`
+		}
+		var bob struct {
+			Name       string `yaml:"name"`
+			University struct {
+				Name string `yaml:"name"`
+			} `yaml:"university"`
+		}
 
-	var gc GenericConfig
-	gc.Register("alice", &alice)
-	gc.Register("bob", &bob)
+		var gc GenericConfig
+		gc.Register("alice", &alice, nil)
+		gc.Register("bob", &bob, nil)
 
-	err := yaml.Unmarshal([]byte(input), &gc)
-	require.NoError(t, err)
+		err := yaml.Unmarshal([]byte(input), &gc)
+		require.NoError(t, err)
 
-	assert.Equal(t, "Alice B.", alice.Name)
-	assert.Equal(t, 20, alice.Age)
-	assert.Equal(t, "Bobby C.", bob.Name)
-	assert.Equal(t, "overflow", bob.University.Name)
+		assert.Equal(t, "Alice B.", alice.Name)
+		assert.Equal(t, 20, alice.Age)
+		assert.Equal(t, "Bobby C.", bob.Name)
+		assert.Equal(t, "overflow", bob.University.Name)
+	})
 }
