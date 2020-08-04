@@ -96,7 +96,7 @@ func LoadFromFile(configPath string, v interface{}) (err error) {
 }
 
 func LoadFromYaml(input []byte, v interface{}) (err error) {
-	return yaml.Unmarshal(input, v)
+	return yaml.UnmarshalStrict(input, v)
 }
 
 func EnvPrefix(prefix []string, def string) string {
