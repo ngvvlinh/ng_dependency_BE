@@ -34,20 +34,20 @@ type GHNAccountCfg struct {
 }
 
 const (
-	StateReadyToPick        State = "ready_to_pick"       // -> picking
-	StateCancel             State = "cancel"              // -> cancel
+	StateReadyToPick        State = "ready_to_pick"       // -> created
+	StateCancel             State = "cancel"              // -> cancelled
 	StatePicking            State = "picking"             // -> picking
 	StatePicked             State = "picked"              // -> holding
 	StateStoring            State = "storing"             // -> holding
-	StateTransporting       State = "transporting"        // -> delivering
+	StateTransporting       State = "transporting"        // -> holding
 	StateDelivering         State = "delivering"          // -> delivering
 	StateDeliveryFail       State = "delivery_fail"       // -> delivering
 	StateDelivered          State = "delivered"           // -> delivered
-	StateWaitingToReturn    State = "waiting_to_return"   // -> delivering
-	StateReturn             State = "return"              // -> delivering
-	StateReturnTransporting State = "return_transporting" // -> delivering
-	StateReturning          State = "returning"           // -> delivering
-	StateReturnFail         State = "return_fail"         // -> delivering
+	StateWaitingToReturn    State = "waiting_to_return"   // -> returning
+	StateReturn             State = "return"              // -> returning
+	StateReturnTransporting State = "return_transporting" // -> returning
+	StateReturning          State = "returning"           // -> returning
+	StateReturnFail         State = "return_fail"         // -> returning
 	StateReturned           State = "returned"            // -> returned
 	StateDamage             State = "damage"              // -> undeliverable
 	StateLost               State = "lost"                // -> undeliverable
@@ -61,25 +61,13 @@ func (s State) ToModel() typesshipping.State {
 		return typesshipping.Cancelled
 	case StatePicking:
 		return typesshipping.Picking
-	case StatePicked:
+	case StatePicked, StateStoring, StateTransporting:
 		return typesshipping.Holding
-	case StateStoring:
-		return typesshipping.Holding
-	case StateTransporting:
+	case StateDelivering, StateDeliveryFail:
 		return typesshipping.Delivering
-	case StateDelivering:
-		return typesshipping.Delivering
-	case StateDeliveryFail:
-		return typesshipping.Returning
-	case StateWaitingToReturn:
-		return typesshipping.Returning
-	case StateReturn:
-		return typesshipping.Returning
-	case StateReturnTransporting:
-		return typesshipping.Returning
-	case StateReturning:
-		return typesshipping.Returning
-	case StateReturnFail:
+	case StateWaitingToReturn,
+		StateReturn, StateReturnTransporting,
+		StateReturning, StateReturnFail:
 		return typesshipping.Returning
 	case StateReturned:
 		return typesshipping.Returned
