@@ -7849,12 +7849,12 @@
         "name": {
           "type": "string"
         },
-        "price_list_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "priority_point": {
           "type": "integer"
+        },
+        "shipment_price_list_id": {
+          "type": "string",
+          "format": "int64"
         },
         "status": {
           "$ref": "#/definitions/blStatus"

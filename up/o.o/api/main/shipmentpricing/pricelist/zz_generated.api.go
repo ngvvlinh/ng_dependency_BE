@@ -74,14 +74,14 @@ func (h AggregateHandler) HandleUpdateShipmentPriceList(ctx context.Context, msg
 	return h.inner.UpdateShipmentPriceList(msg.GetArgs(ctx))
 }
 
-type GetActiveShipmentPriceListQuery struct {
+type GetDefaulShipmentPriceListQuery struct {
 	ConnectionID dot.ID
 
 	Result *ShipmentPriceList `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetActiveShipmentPriceList(ctx context.Context, msg *GetActiveShipmentPriceListQuery) (err error) {
-	msg.Result, err = h.inner.GetActiveShipmentPriceList(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetDefaulShipmentPriceList(ctx context.Context, msg *GetDefaulShipmentPriceListQuery) (err error) {
+	msg.Result, err = h.inner.GetDefaulShipmentPriceList(msg.GetArgs(ctx))
 	return err
 }
 
@@ -115,7 +115,7 @@ func (q *DeleteShipmentPriceListCommand) command()     {}
 func (q *SetDefaultShipmentPriceListCommand) command() {}
 func (q *UpdateShipmentPriceListCommand) command()     {}
 
-func (q *GetActiveShipmentPriceListQuery) query() {}
+func (q *GetDefaulShipmentPriceListQuery) query() {}
 func (q *GetShipmentPriceListQuery) query()       {}
 func (q *ListShipmentPriceListsQuery) query()     {}
 
@@ -164,7 +164,7 @@ func (q *UpdateShipmentPriceListCommand) SetUpdateShipmentPriceListArgs(args *Up
 	q.Description = args.Description
 }
 
-func (q *GetActiveShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Context, ConnectionID dot.ID) {
+func (q *GetDefaulShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Context, ConnectionID dot.ID) {
 	return ctx,
 		q.ConnectionID
 }
@@ -218,7 +218,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
-	b.AddHandler(h.HandleGetActiveShipmentPriceList)
+	b.AddHandler(h.HandleGetDefaulShipmentPriceList)
 	b.AddHandler(h.HandleGetShipmentPriceList)
 	b.AddHandler(h.HandleListShipmentPriceLists)
 	return QueryBus{b}

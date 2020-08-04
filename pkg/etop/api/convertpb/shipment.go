@@ -369,18 +369,18 @@ func Convert_core_PriceListPromotion_To_api_PriceListPromotion(in *pricelistprom
 		return nil
 	}
 	return &admin.ShipmentPriceListPromotion{
-		ID:            in.ID,
-		PriceListID:   in.PriceListID,
-		Name:          in.Name,
-		Description:   in.Description,
-		Status:        in.Status,
-		DateFrom:      in.DateFrom,
-		DateTo:        in.DateTo,
-		AppliedRules:  Convert_core_PriceListPromotionAppliedRules_To_api_PriceListPromotionAppliedRules(in.AppliedRules),
-		CreatedAt:     in.CreatedAt,
-		UpdatedAt:     in.UpdatedAt,
-		ConnectionID:  in.ConnectionID,
-		PriorityPoint: in.PriorityPoint,
+		ID:                  in.ID,
+		ShipmentPriceListID: in.PriceListID,
+		Name:                in.Name,
+		Description:         in.Description,
+		Status:              in.Status,
+		DateFrom:            in.DateFrom,
+		DateTo:              in.DateTo,
+		AppliedRules:        Convert_core_PriceListPromotionAppliedRules_To_api_PriceListPromotionAppliedRules(in.AppliedRules),
+		CreatedAt:           in.CreatedAt,
+		UpdatedAt:           in.UpdatedAt,
+		ConnectionID:        in.ConnectionID,
+		PriorityPoint:       in.PriorityPoint,
 	}
 }
 

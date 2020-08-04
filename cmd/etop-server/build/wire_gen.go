@@ -359,7 +359,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shopshipmentpricelistQueryBus := shopshipmentpricelist.QueryServiceMessageBus(shopshipmentpricelistQueryService)
 	shipmentpriceQueryService := shipmentprice.NewQueryService(mainDB, store, queryBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
-	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, queryBus, identityQueryBus, shopshipmentpricelistQueryBus)
+	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, queryBus, identityQueryBus, shopshipmentpricelistQueryBus, pricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
 	carrierConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, carrierConfig)

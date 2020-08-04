@@ -729,18 +729,18 @@ type UpdateShopShipmentPriceListRequest struct {
 func (m *UpdateShopShipmentPriceListRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShipmentPriceListPromotion struct {
-	ID            dot.ID                          `json:"id"`
-	PriceListID   dot.ID                          `json:"price_list_id"`
-	Name          string                          `json:"name"`
-	Description   string                          `json:"description"`
-	Status        status3.Status                  `json:"status"`
-	DateFrom      time.Time                       `json:"date_from"`
-	DateTo        time.Time                       `json:"date_to"`
-	AppliedRules  *PriceListPromotionAppliedRules `json:"applied_rules"`
-	CreatedAt     time.Time                       `json:"created_at"`
-	UpdatedAt     time.Time                       `json:"updated_at"`
-	ConnectionID  dot.ID                          `json:"connection_id"`
-	PriorityPoint int                             `json:"priority_point"`
+	ID                  dot.ID                          `json:"id"`
+	ShipmentPriceListID dot.ID                          `json:"shipment_price_list_id"`
+	Name                string                          `json:"name"`
+	Description         string                          `json:"description"`
+	Status              status3.Status                  `json:"status"`
+	DateFrom            time.Time                       `json:"date_from"`
+	DateTo              time.Time                       `json:"date_to"`
+	AppliedRules        *PriceListPromotionAppliedRules `json:"applied_rules"`
+	CreatedAt           time.Time                       `json:"created_at"`
+	UpdatedAt           time.Time                       `json:"updated_at"`
+	ConnectionID        dot.ID                          `json:"connection_id"`
+	PriorityPoint       int                             `json:"priority_point"`
 }
 
 func (m *ShipmentPriceListPromotion) String() string { return jsonx.MustMarshalToString(m) }

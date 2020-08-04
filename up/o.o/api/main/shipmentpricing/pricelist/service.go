@@ -21,7 +21,7 @@ type Aggregate interface {
 type QueryService interface {
 	GetShipmentPriceList(ctx context.Context, ID dot.ID) (*ShipmentPriceList, error)
 
-	GetActiveShipmentPriceList(ctx context.Context, ConnectionID dot.ID) (*ShipmentPriceList, error)
+	GetDefaulShipmentPriceList(ctx context.Context, ConnectionID dot.ID) (*ShipmentPriceList, error)
 
 	ListShipmentPriceLists(context.Context, *ListShipmentPriceListsArgs) ([]*ShipmentPriceList, error)
 }

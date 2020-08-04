@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
+	"o.o/api/main/shipmentpricing/pricelist"
 	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
 	"o.o/api/top/types/etc/status3"
@@ -26,15 +27,22 @@ type QueryService struct {
 	locationQS              location.QueryBus
 	identityQS              identity.QueryBus
 	shopPriceListQS         shopshipmentpricelist.QueryBus
+	priceListQS             pricelist.QueryBus
 }
 
-func NewQueryService(db com.MainDB, redisStore redis.Store, locationQuery location.QueryBus, identityQuery identity.QueryBus, shopPriceListQS shopshipmentpricelist.QueryBus) *QueryService {
+func NewQueryService(db com.MainDB, redisStore redis.Store,
+	locationQuery location.QueryBus,
+	identityQuery identity.QueryBus,
+	shopPriceListQS shopshipmentpricelist.QueryBus,
+	priceListQS pricelist.QueryBus,
+) *QueryService {
 	return &QueryService{
 		priceListPromotionStore: sqlstore.NewPriceListStorePromotion(db),
 		redisStore:              redisStore,
 		locationQS:              locationQuery,
 		identityQS:              identityQuery,
 		shopPriceListQS:         shopPriceListQS,
+		priceListQS:             priceListQS,
 	}
 }
 
@@ -144,8 +152,18 @@ func (q *QueryService) isMatchingPromotion(ctx context.Context, promotion *price
 	if args.Shop == nil {
 		return true
 	}
-	shop := args.Shop
+
 	// Kiểm tra ngày tạo shop || user
+	if !q.checkShopOrUserCreatedAt(ctx, promotion.AppliedRules, args) {
+		return false
+	}
+
+	// Kiểm tra bảng giá đang sử dụng
+	return q.checkUsingPriceList(ctx, promotion, args)
+}
+
+func (q *QueryService) checkShopOrUserCreatedAt(ctx context.Context, rules *pricelistpromotion.AppliedRules, args *CheckMatchingPromotionArgs) bool {
+	shop := args.Shop
 	if !rules.ShopCreatedDate.From.IsZero() {
 		fromDate := rules.ShopCreatedDate.From.ToTime()
 		toDate := rules.ShopCreatedDate.To.ToTime()
@@ -176,18 +194,41 @@ func (q *QueryService) isMatchingPromotion(ctx context.Context, promotion *price
 			return false
 		}
 	}
+	return true
+}
 
-	// check price list
+// checkUsingPriceList: Kiểm bảng giá đang sử dụng
+// - Nếu là bảng giá thường: shop phải có bảng giá đó mới được apply
+// - Nếu là bảng giá mặc định: shop có bảng giá mặc định hoặc shop chưa được gán bảng giá đều được apply bảng giá KM này
+func (q *QueryService) checkUsingPriceList(ctx context.Context, promotion *pricelistpromotion.ShipmentPriceListPromotion, args *CheckMatchingPromotionArgs) bool {
+	rules := promotion.AppliedRules
 	if len(rules.UsingPriceListIDs) == 0 {
 		return true
 	}
-	queryShopPriceList := &shopshipmentpricelist.ListShopShipmentPriceListsQuery{
-		ShopID: args.Shop.ID,
+
+	shopPriceListQuery := &shopshipmentpricelist.ListShopShipmentPriceListsQuery{
+		ShopID:       args.Shop.ID,
+		ConnectionID: args.ConnectionID,
 	}
-	if err := q.shopPriceListQS.Dispatch(ctx, queryShopPriceList); err != nil {
+	if err := q.shopPriceListQS.Dispatch(ctx, shopPriceListQuery); err != nil {
 		return false
 	}
-	for _, shopPL := range queryShopPriceList.Result.ShopShipmentPriceLists {
+	shopPriceLists := shopPriceListQuery.Result.ShopShipmentPriceLists
+	if len(shopPriceLists) == 0 {
+		// shop chưa được gắn với bảng giá NVC
+		// Kiểm tra xem bảng giá mặc định có nằm trong UsingPriceListIDs không
+		defaultPriceListQuery := &pricelist.GetDefaulShipmentPriceListQuery{
+			ConnectionID: args.ConnectionID,
+		}
+		if err := q.priceListQS.Dispatch(ctx, defaultPriceListQuery); err != nil {
+			return false
+		}
+		if cm.IDsContain(rules.UsingPriceListIDs, defaultPriceListQuery.Result.ID) {
+			return true
+		}
+	}
+
+	for _, shopPL := range shopPriceLists {
 		priceListID := shopPL.ShipmentPriceListID
 		if cm.IDsContain(rules.UsingPriceListIDs, priceListID) {
 			return true

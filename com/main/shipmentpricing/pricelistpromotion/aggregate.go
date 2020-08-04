@@ -60,6 +60,10 @@ func (a *Aggregate) CreatePriceListPromotion(ctx context.Context, args *pricelis
 	if err := scheme.Convert(args, &promotion); err != nil {
 		return nil, err
 	}
+	if err := checkValidPromotion(&promotion); err != nil {
+		return nil, err
+	}
+
 	return a.priceListPromotionStore(ctx).CreateShipmentPriceListPromotion(&promotion)
 }
 
