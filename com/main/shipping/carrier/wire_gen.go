@@ -15,7 +15,7 @@ import (
 	"o.o/capi"
 )
 
-// Injectors from wire.build.go:
+// Injectors from wire_build.go:
 
 func MockManager(mockBus capi.Bus, eventBus capi.EventBus, redisStore redis.Store, cfg Config) (*ShipmentManager, error) {
 	queryBus := location.NewQueryBus(mockBus)

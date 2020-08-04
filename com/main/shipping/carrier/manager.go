@@ -55,10 +55,7 @@ import (
 	"o.o/common/l"
 )
 
-var (
-	ll                 = l.New()
-	GHNWebhookEndpoint string
-)
+var ll = l.New()
 
 const (
 	DefaultTTl            = 2 * 60 * 60
@@ -68,19 +65,19 @@ const (
 )
 
 type ShipmentManager struct {
-	LocationQS           location.QueryBus
-	ConnectionQS         connectioning.QueryBus
+	locationQS           location.QueryBus
+	connectionQS         connectioning.QueryBus
 	connectionAggr       connectioning.CommandBus
-	Env                  string
+	env                  string
 	redisStore           redis.Store
 	cipherx              *cipherx.Cipherx
 	shipmentServiceQS    shipmentservice.QueryBus
 	shipmentPriceQS      shipmentprice.QueryBus
 	shippingQS           shipping.QueryBus
 	priceListPromotionQS pricelistpromotion.QueryBus
+	ghnWebhookEndpoint   string
 
-	FlagApplyShipmentPrice bool
-	eventBus               capi.EventBus
+	eventBus capi.EventBus
 }
 
 type Config struct {
@@ -106,10 +103,10 @@ func NewShipmentManager(
 	_cipherx, _ := cipherx.NewCipherx(SecretKey)
 	sm := &ShipmentManager{
 		eventBus:             eventBus,
-		LocationQS:           locationQS,
-		ConnectionQS:         connectionQS,
+		locationQS:           locationQS,
+		connectionQS:         connectionQS,
 		connectionAggr:       connectionAggr,
-		Env:                  cmenv.PartnerEnv(),
+		env:                  cmenv.PartnerEnv(),
 		redisStore:           redisS,
 		cipherx:              _cipherx,
 		shipmentServiceQS:    shipmentServiceQS,
@@ -134,7 +131,7 @@ func (m *ShipmentManager) setWebhookEndpoint(connectionProvider connection_type.
 	}
 	switch connectionProvider {
 	case connection_type.ConnectionProviderGHN:
-		GHNWebhookEndpoint = endpoint
+		m.ghnWebhookEndpoint = endpoint
 	default:
 		return cm.Errorf(cm.InvalidArgument, nil, "SetWebhookEndpoint: Do not support this provider (%v)", connectionProvider)
 	}
@@ -144,7 +141,7 @@ func (m *ShipmentManager) setWebhookEndpoint(connectionProvider connection_type.
 func (m *ShipmentManager) GetWebhookEndpoint(connectionProvider connection_type.ConnectionProvider) (string, error) {
 	switch connectionProvider {
 	case connection_type.ConnectionProviderGHN:
-		return GHNWebhookEndpoint, nil
+		return m.ghnWebhookEndpoint, nil
 	default:
 		return "", cm.Errorf(cm.InvalidArgument, nil, "GetWebhookEndpoint: Do not support this provider (%v)", connectionProvider)
 	}
@@ -197,7 +194,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 			if affiliateID, err := strconv.Atoi(etopAffiliateAccount.UserID); err == nil {
 				cfg.AffiliateID = affiliateID
 			}
-			driver := ghndriverv2.New(m.Env, cfg, m.LocationQS)
+			driver := ghndriverv2.New(m.env, cfg, m.locationQS)
 			return driver, nil
 		default:
 			cfg := ghnclient.GHNAccountCfg{
@@ -213,7 +210,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 			if err != nil {
 				return nil, err
 			}
-			driver := ghndriver.New(m.Env, cfg, m.LocationQS, webhookEndpoint)
+			driver := ghndriver.New(m.env, cfg, m.locationQS, webhookEndpoint)
 			return driver, nil
 		}
 
@@ -225,11 +222,11 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 			cfg.AffiliateID = etopAffiliateAccount.UserID
 			cfg.B2CToken = etopAffiliateAccount.Token
 		}
-		driver := ghtkdriver.New(m.Env, cfg, m.LocationQS)
+		driver := ghtkdriver.New(m.env, cfg, m.locationQS)
 		return driver, nil
 
 	case connection_type.ConnectionProviderVTP:
-		driver := vtpostdriver.New(m.Env, shopConnection.Token, m.LocationQS)
+		driver := vtpostdriver.New(m.env, shopConnection.Token, m.locationQS)
 		return driver, nil
 
 	case connection_type.ConnectionProviderPartner:
@@ -240,7 +237,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 		if etopAffiliateAccount != nil {
 			cfg.AffiliateID = etopAffiliateAccount.UserID
 		}
-		return directdriver.New(m.LocationQS, cfg)
+		return directdriver.New(m.locationQS, cfg)
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection không hợp lệ")
 	}
@@ -394,7 +391,7 @@ func (m *ShipmentManager) VerifyDistrictCode(addr *addressmodel.Address) (*locat
 	}
 
 	query := &location.GetLocationQuery{DistrictCode: addr.DistrictCode}
-	if err := m.LocationQS.Dispatch(context.TODO(), query); err != nil {
+	if err := m.locationQS.Dispatch(context.TODO(), query); err != nil {
 		return nil, nil, err
 	}
 	district := query.Result.District
@@ -454,7 +451,7 @@ func (m *ShipmentManager) GetAllShopConnections(ctx context.Context, shopID dot.
 		IncludeGlobal: true,
 		ConnectionIDs: connectionIDs,
 	}
-	if err := m.ConnectionQS.Dispatch(ctx, query); err != nil {
+	if err := m.connectionQS.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	return query.Result, nil
@@ -531,7 +528,7 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 				Token:       token,
 				AffiliateID: clientID,
 			}
-			driver := ghndriverv2.New(m.Env, cfg, m.LocationQS)
+			driver := ghndriverv2.New(m.env, cfg, m.locationQS)
 			return driver, nil
 		default:
 			cfg := ghnclient.GHNAccountCfg{
@@ -542,7 +539,7 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 			if err != nil {
 				return nil, err
 			}
-			driver := ghndriver.New(m.Env, cfg, m.LocationQS, webhookEndpoint)
+			driver := ghndriver.New(m.env, cfg, m.locationQS, webhookEndpoint)
 			return driver, nil
 		}
 	case connection_type.ConnectionProviderGHTK:
@@ -550,14 +547,14 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 			AccountID: userID,
 			Token:     token,
 		}
-		driver := ghtkdriver.New(m.Env, cfg, m.LocationQS)
+		driver := ghtkdriver.New(m.env, cfg, m.locationQS)
 		return driver, nil
 	case connection_type.ConnectionProviderPartner:
 		cfg := directclient.PartnerAccountCfg{
 			Connection: conn,
 			Token:      token,
 		}
-		return directdriver.New(m.LocationQS, cfg)
+		return directdriver.New(m.locationQS, cfg)
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection không hỗ trợ affiliate account (connType = %v, connName = %v)", conn.ConnectionProvider, conn.Name)
 	}
@@ -609,7 +606,7 @@ func (m *ShipmentManager) GetConnectionByID(ctx context.Context, connID dot.ID) 
 		query := &connectioning.GetConnectionByIDQuery{
 			ID: connID,
 		}
-		if err := m.ConnectionQS.Dispatch(ctx, query); err != nil {
+		if err := m.connectionQS.Dispatch(ctx, query); err != nil {
 			return nil, cm.MapError(err).Wrap(cm.NotFound, "Connection not found").Throw()
 		}
 		connection = *query.Result
@@ -628,7 +625,7 @@ func (m *ShipmentManager) GetConnectionByCode(ctx context.Context, connCode stri
 		query := &connectioning.GetConnectionByCodeQuery{
 			Code: connCode,
 		}
-		if err := m.ConnectionQS.Dispatch(ctx, query); err != nil {
+		if err := m.connectionQS.Dispatch(ctx, query); err != nil {
 			return nil, cm.MapError(err).Wrap(cm.NotFound, "Connection not found").Throw()
 		}
 		connection = *query.Result
@@ -650,7 +647,7 @@ func (m *ShipmentManager) getShopConnection(ctx context.Context, connID dot.ID, 
 		ConnectionID: connID,
 		ShopID:       shopID,
 	}
-	if err := m.ConnectionQS.Dispatch(ctx, query2); err != nil {
+	if err := m.connectionQS.Dispatch(ctx, query2); err != nil {
 		return nil, err
 	}
 	shopConnection = *query2.Result
@@ -903,7 +900,7 @@ func (m *ShipmentManager) checkShipmentServiceAvailableLocation(ctx context.Cont
 		query := &location.ListCustomRegionsByCodeQuery{
 			ProvinceCode: provinceCode,
 		}
-		if err := m.LocationQS.Dispatch(ctx, query); err != nil {
+		if err := m.locationQS.Dispatch(ctx, query); err != nil {
 			return err
 		}
 		isContain := false

@@ -147,10 +147,10 @@ func (m *ShipmentManager) PrepareDataGetShippingServices(ctx context.Context, q 
 		DistrictCode: q.ToDistrictCode,
 		WardCode:     q.ToWardCode,
 	}
-	if err := m.LocationQS.Dispatch(ctx, fromQuery); err != nil {
+	if err := m.locationQS.Dispatch(ctx, fromQuery); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ gửi không hợp lệ: %v", err)
 	}
-	if err := m.LocationQS.Dispatch(ctx, toQuery); err != nil {
+	if err := m.locationQS.Dispatch(ctx, toQuery); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ nhận không hợp lệ: %v", err)
 	}
 
