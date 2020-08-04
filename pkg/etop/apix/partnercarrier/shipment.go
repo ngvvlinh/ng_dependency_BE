@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"o.o/api/main/connectioning"
 	"o.o/api/main/shipping"
 	shippingcore "o.o/api/main/shipping"
 	"o.o/api/top/external/partnercarrier"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	logmodel "o.o/backend/com/etc/logging/shippingwebhook/model"
@@ -70,32 +72,62 @@ func (s *ShipmentService) UpdateFulfillment(ctx context.Context, r *partnercarri
 	}
 	ffm = ffmQuery.Result
 
-	if r.ShippingState.Valid || r.Note.Valid || r.Weight != 0 {
-		cmd := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
-			FulfillmentID:        ffm.ID,
-			ShippingState:        r.ShippingState.Enum,
-			ExternalShippingNote: r.Note,
-			Weight:               r.Weight.Int(),
-		}
-
-		if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
-			return nil, err
-		}
+	// update shippingFeeLines
+	cmd := &shippingcore.UpdateFulfillmentShippingFeesFromWebhookCommand{
+		FulfillmentID:    ffm.ID,
+		NewWeight:        cm.CoalesceInt(r.Weight.Int(), ffm.ChargeableWeight, ffm.GrossWeight),
+		NewState:         r.ShippingState.Apply(ffm.ShippingState),
+		ProviderFeeLines: partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
+	}
+	if err := s.ShippingAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
 	}
 
-	if r.ShippingFeeLines != nil || r.CODAmount.Valid {
-		// update shippingFeeLines
-		cmd2 := &shippingcore.UpdateFulfillmentShippingFeesCommand{
-			FulfillmentID:            ffm.ID,
-			ProviderShippingFeeLines: partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(r.ShippingFeeLines),
-			TotalCODAmount:           r.CODAmount,
-		}
-		if err := s.ShippingAggr.Dispatch(ctx, cmd2); err != nil {
-			return nil, err
-		}
+	// update COD Amount
+	if err := s.updateFulfillmentCODAmount(ctx, r, ffm); err != nil {
+		return nil, err
+	}
+
+	// update info
+	cmd2 := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
+		FulfillmentID:        ffm.ID,
+		ShippingState:        r.ShippingState.Enum,
+		ExternalShippingNote: r.Note,
+		Weight:               r.Weight.Int(),
+	}
+	if err := s.ShippingAggr.Dispatch(ctx, cmd2); err != nil {
+		return nil, err
 	}
 
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func (s *ShipmentService) updateFulfillmentCODAmount(ctx context.Context, args *partnercarrier.UpdateFulfillmentRequest, ffm *shipping.Fulfillment) error {
+	if !args.CODAmount.Valid {
+		return nil
+	}
+	if args.CODAmount.Int != ffm.TotalCODAmount {
+		switch ffm.ConnectionMethod {
+		case connection_type.ConnectionMethodDirect:
+			update := &shippingcore.UpdateFulfillmentCODAmountCommand{
+				FulfillmentID:  ffm.ID,
+				TotalCODAmount: args.CODAmount,
+			}
+			if err := s.ShippingAggr.Dispatch(ctx, update); err != nil {
+				return err
+			}
+		default:
+			str := "–––\n👹 %v: đơn %v có thay đổi COD. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- COD hiện tại: %v \n- COD mới: %v\n–––"
+			queryConn := &connectioning.GetConnectionByIDQuery{
+				ID: ffm.ConnectionID,
+			}
+			if err := s.ConnectionQuery.Dispatch(ctx, queryConn); err != nil {
+				return err
+			}
+			ll.SendMessage(fmt.Sprintf(str, queryConn.Result.Name, ffm.ShippingCode, ffm.CODAmount, args.CODAmount.Int))
+		}
+	}
+	return nil
 }
 
 func (s *ShipmentService) saveLogsFfmUpdate(ctx context.Context, data *partnercarrier.UpdateFulfillmentRequest, ffm *shipping.Fulfillment, err error) {

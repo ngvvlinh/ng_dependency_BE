@@ -657,8 +657,10 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 			ShippingCancelledAt:       args.ShippingCancelledAt,
 		}
 		if args.Weight != 0 {
-			update.ChargeableWeight = args.Weight
+			// Deprecated total_weight
+			update.TotalWeight = args.Weight
 			update.GrossWeight = args.Weight
+			update.ChargeableWeight = args.Weight
 		}
 		if args.ExternalShippingLogs != nil {
 			logs := shippingconvert.Convert_shipping_ExternalShippingLogs_shippingmodel_ExternalShippingLogs(args.ExternalShippingLogs)
@@ -691,9 +693,6 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 // Kiểm tra nếu có thay đổi về khối lượng, sẽ tính lại giá theo bảng giá hiện tại của TOPSHIP. Nếu không có giá TOPSHIP sẽ giữ nguyên giá từ NVC => cập nhật lại giá mới hoặc thông báo qua telegram nếu đơn đã nằm trong phiên thanh toán với shop
 func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context, args *shipping.UpdateFulfillmentShippingFeesFromWebhookArgs) (_err error) {
 	providerFeeLines := args.ProviderFeeLines
-	if providerFeeLines == nil || len(providerFeeLines) == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing providerFeeLines")
-	}
 	ffm, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFulfillment()
 	if err != nil {
 		return err
