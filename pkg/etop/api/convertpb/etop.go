@@ -385,6 +385,8 @@ func Convert_core_ShopExtended_To_api_ShopExtended(m *identity.ShopExtended) *et
 		SurveyInfo:                    Convert_core_SurveyInfos_To_api_SurveyInfors(m.SurveyInfo),
 		ShippingServiceSelectStrategy: Convert_core_ShippingServiceSelectStrategy_To_api_ShippingServiceSelectStrategy(m.ShippingServiceSelectStrategy),
 		Code:                          m.Code,
+		CreatedAt:                     cmapi.PbTime(m.CreatedAt),
+		UpdatedAt:                     cmapi.PbTime(m.UpdatedAt),
 
 		// deprecated: 2018.07.24+14
 		ProductSourceId: m.ID,
@@ -419,6 +421,8 @@ func Convert_core_User_To_api_User(in *identity.User) *etop.User {
 		PhoneVerifiedAt: cmapi.PbTime(in.PhoneVerifiedAt),
 		Source:          in.Source,
 		IsBlocked:       isBlocked,
+		BlockReason:     in.BlockReason,
+		BlockedAt:       cmapi.PbTime(in.BlockedAt),
 	}
 }
 

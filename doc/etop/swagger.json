@@ -2718,11 +2718,18 @@
         "bank_account": {
           "$ref": "#/definitions/baBankAccount"
         },
+        "block_reason": {
+          "type": "string"
+        },
         "code": {
           "type": "string"
         },
         "company_info": {
           "$ref": "#/definitions/baCompanyInfo"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
         },
         "email": {
           "type": "string"
@@ -2751,6 +2758,9 @@
           "type": "string"
         },
         "inventory_overstock": {
+          "type": "boolean"
+        },
+        "is_blocked": {
           "type": "boolean"
         },
         "is_test": {
@@ -2799,6 +2809,10 @@
         },
         "try_on": {
           "$ref": "#/definitions/csTryOnCode"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         },
         "user": {
           "$ref": "#/definitions/baUser"
@@ -3122,6 +3136,13 @@
         "updated_at"
       ],
       "properties": {
+        "block_reason": {
+          "type": "string"
+        },
+        "blocked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"

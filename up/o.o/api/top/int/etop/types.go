@@ -203,6 +203,8 @@ type User struct {
 	Source                  user_source.UserSource `json:"source"`
 	TotalShop               int                    `json:"total_shop"`
 	IsBlocked               bool                   `json:"is_blocked"`
+	BlockReason             string                 `json:"block_reason"`
+	BlockedAt               dot.Time               `json:"blocked_at"`
 }
 
 func (m *User) String() string { return jsonx.MustMarshalToString(m) }
@@ -284,6 +286,8 @@ type Shop struct {
 	ProductSourceId    dot.ID         `json:"product_source_id"`
 	ShipToAddressId    dot.ID         `json:"ship_to_address_id"`
 	ShipFromAddressId  dot.ID         `json:"ship_from_address_id"`
+	IsBlocked          bool           `json:"is_blocked"`
+	BlockReason        string         `json:"block_reason"`
 	// @deprecated use try_on instead
 	GhnNoteCode ghn_note_code.GHNNoteCode `json:"ghn_note_code,omitempty"`
 	TryOn       try_on.TryOnCode          `json:"try_on"`
@@ -295,6 +299,9 @@ type Shop struct {
 	SurveyInfo                    []*SurveyInfo                        `json:"survey_info"`
 	ShippingServiceSelectStrategy []*ShippingServiceSelectStrategyItem `json:"shipping_service_select_strategy"`
 	Code                          string                               `json:"code"`
+
+	CreatedAt dot.Time `json:"created_at"`
+	UpdatedAt dot.Time `json:"updated_at"`
 }
 
 func (m *Shop) String() string { return jsonx.MustMarshalToString(m) }

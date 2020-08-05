@@ -383,6 +383,13 @@
         "updated_at"
       ],
       "properties": {
+        "block_reason": {
+          "type": "string"
+        },
+        "blocked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"

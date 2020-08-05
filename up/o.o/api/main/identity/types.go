@@ -107,6 +107,7 @@ type User struct {
 	BlockedAt   time.Time
 	BlockedBy   dot.ID
 	BlockReason string
+	IsBlocked   bool
 }
 
 type ExternalAccountAhamove struct {

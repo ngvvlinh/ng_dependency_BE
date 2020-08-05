@@ -1011,6 +1011,7 @@ func convert_identitymodel_User_identity_User(arg *identitymodel.User, out *iden
 	out.BlockedAt = arg.BlockedAt                             // simple assign
 	out.BlockedBy = arg.BlockedBy                             // simple assign
 	out.BlockReason = arg.BlockReason                         // simple assign
+	out.IsBlocked = false                                     // zero value
 }
 
 func Convert_identitymodel_Users_identity_Users(args []*identitymodel.User) (outs []*identity.User) {
