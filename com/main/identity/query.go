@@ -172,7 +172,12 @@ func (q *QueryService) GetUsers(ctx context.Context, args *identity.ListUsersArg
 		query = query.ByEmail(email)
 	}
 	if !args.CreatedAt.IsZero() {
-		query = query.ByCreatedAt(args.CreatedAt.From.ToTime(), args.CreatedAt.To.ToTime())
+		if !args.CreatedAt.From.IsZero() {
+			query = query.ByCreatedAtFrom(args.CreatedAt.From.ToTime())
+		}
+		if !args.CreatedAt.To.IsZero() {
+			query = query.ByCreatedAtTo(args.CreatedAt.To.ToTime())
+		}
 	}
 	users, err := query.WithPaging(args.Paging).ListUsers()
 	if err != nil {

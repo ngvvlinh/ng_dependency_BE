@@ -67,23 +67,28 @@ func (s *UserService) GetUsers(ctx context.Context, q *admin.GetUsersRequest) (*
 		return nil, err
 	}
 	Users := query.Result
-	var UserIDs []dot.ID
-	for _, user := range query.Result.ListUsers {
-		UserIDs = append(UserIDs, user.ID)
+	if len(Users.ListUsers) > 0 {
+		var UserIDs []dot.ID
+		for _, user := range query.Result.ListUsers {
+			UserIDs = append(UserIDs, user.ID)
+		}
+		queryAccount := &identity.GetAllAccountsByUsersQuery{
+			UserIDs: UserIDs,
+			Type:    account_type.Shop.Wrap(),
+		}
+		if err := s.IdentityQuery.Dispatch(ctx, queryAccount); err != nil {
+			return nil, err
+		}
+		result := &admin.UserResponse{
+			Paging: cmapi.PbCursorPageInfo(paging, &Users.Paging),
+			Users:  convertpb.PbUsers(Users.ListUsers),
+		}
+		populateShopCount(result.Users, queryAccount.Result)
+		return result, nil
 	}
-	queryAccount := &identity.GetAllAccountsByUsersQuery{
-		UserIDs: UserIDs,
-		Type:    account_type.Shop.Wrap(),
-	}
-	if err := s.IdentityQuery.Dispatch(ctx, queryAccount); err != nil {
-		return nil, err
-	}
-	result := &admin.UserResponse{
+	return &admin.UserResponse{
 		Paging: cmapi.PbCursorPageInfo(paging, &Users.Paging),
-		Users:  convertpb.PbUsers(Users.ListUsers),
-	}
-	populateShopCount(result.Users, queryAccount.Result)
-	return result, nil
+	}, nil
 }
 
 func (s *UserService) GetUser(ctx context.Context, q *pbcm.IDRequest) (*etop.User, error) {

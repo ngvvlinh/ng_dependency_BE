@@ -51,6 +51,15 @@ func (s *UserStore) ByCreatedAt(from time.Time, to time.Time) *UserStore {
 	return s
 }
 
+func (s *UserStore) ByCreatedAtFrom(from time.Time) *UserStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at > ?", from))
+	return s
+}
+func (s *UserStore) ByCreatedAtTo(to time.Time) *UserStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at <= ?", to))
+	return s
+}
+
 func (s *UserStore) ByPhone(phone string) *UserStore {
 	s.preds = append(s.preds, s.ft.ByPhone(phone))
 	return s
