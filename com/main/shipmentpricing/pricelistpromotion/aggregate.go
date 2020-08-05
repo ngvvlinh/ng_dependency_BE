@@ -2,11 +2,9 @@ package pricelistpromotion
 
 import (
 	"context"
-	"time"
 
 	"o.o/api/main/shipmentpricing/pricelist"
 	"o.o/api/main/shipmentpricing/pricelistpromotion"
-	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion/convert"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion/sqlstore"
@@ -90,10 +88,6 @@ func (a *Aggregate) UpdatePriceListPromotion(ctx context.Context, args *pricelis
 		if err := a.priceListPromotionStore(ctx).UpdateShipmentPriceListPromotion(&promotion); err != nil {
 			return err
 		}
-		if !args.Status.Valid || args.Status.Enum != status3.P {
-			return nil
-		}
-
 		_promotion, err := a.priceListPromotionStore(ctx).ID(args.ID).GetShipmentPriceListPromotion()
 		if err != nil {
 			return err
@@ -103,9 +97,7 @@ func (a *Aggregate) UpdatePriceListPromotion(ctx context.Context, args *pricelis
 }
 
 func checkValidPromotion(promotion *pricelistpromotion.ShipmentPriceListPromotion) error {
-	now := time.Now()
-	if promotion.DateTo.Sub(promotion.DateFrom) < 0 ||
-		now.After(promotion.DateTo) {
+	if promotion.DateTo.Sub(promotion.DateFrom) < 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Date does not valid.")
 	}
 

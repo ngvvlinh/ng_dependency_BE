@@ -44,5 +44,8 @@ func (q *QueryService) ListShipmentPriceLists(ctx context.Context,
 	if args.IsDefault.Valid {
 		query = query.IsDefault(args.IsDefault.Bool)
 	}
+	if len(args.IDs) > 0 {
+		query = query.IDs(args.IDs...)
+	}
 	return query.ListShipmentPriceLists()
 }

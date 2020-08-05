@@ -75,9 +75,9 @@ func (q *QueryService) GetValidPriceListPromotion(ctx context.Context, args *pri
 }
 
 func (q *QueryService) getMatchingPromotion(ctx context.Context, promotions []*pricelistpromotion.ShipmentPriceListPromotion, args *pricelistpromotion.GetValidPriceListPromotionArgs) (*pricelistpromotion.ShipmentPriceListPromotion, error) {
-	var res = []*pricelistpromotion.ShipmentPriceListPromotion{}
+	var res []*pricelistpromotion.ShipmentPriceListPromotion
 
-	fromCustomRegionIDs := []dot.ID{}
+	var fromCustomRegionIDs []dot.ID
 	if args.FromProvinceCode != "" {
 		queryFrom := &location.ListCustomRegionsByCodeQuery{
 			ProvinceCode: args.FromProvinceCode,
@@ -200,6 +200,7 @@ func (q *QueryService) checkShopOrUserCreatedAt(ctx context.Context, rules *pric
 // checkUsingPriceList: Kiểm bảng giá đang sử dụng
 // - Nếu là bảng giá thường: shop phải có bảng giá đó mới được apply
 // - Nếu là bảng giá mặc định: shop có bảng giá mặc định hoặc shop chưa được gán bảng giá đều được apply bảng giá KM này
+// Note: Bảng giá khuyến mãi của GHN có thể áp dụng cho các shop đang sử dụng bảng giá của NVC khác
 func (q *QueryService) checkUsingPriceList(ctx context.Context, promotion *pricelistpromotion.ShipmentPriceListPromotion, args *CheckMatchingPromotionArgs) bool {
 	rules := promotion.AppliedRules
 	if len(rules.UsingPriceListIDs) == 0 {
@@ -207,30 +208,40 @@ func (q *QueryService) checkUsingPriceList(ctx context.Context, promotion *price
 	}
 
 	shopPriceListQuery := &shopshipmentpricelist.ListShopShipmentPriceListsQuery{
-		ShopID:       args.Shop.ID,
-		ConnectionID: args.ConnectionID,
+		ShopID: args.Shop.ID,
 	}
 	if err := q.shopPriceListQS.Dispatch(ctx, shopPriceListQuery); err != nil {
 		return false
 	}
 	shopPriceLists := shopPriceListQuery.Result.ShopShipmentPriceLists
-	if len(shopPriceLists) == 0 {
-		// shop chưa được gắn với bảng giá NVC
-		// Kiểm tra xem bảng giá mặc định có nằm trong UsingPriceListIDs không
-		defaultPriceListQuery := &pricelist.GetDefaulShipmentPriceListQuery{
-			ConnectionID: args.ConnectionID,
-		}
-		if err := q.priceListQS.Dispatch(ctx, defaultPriceListQuery); err != nil {
-			return false
-		}
-		if cm.IDsContain(rules.UsingPriceListIDs, defaultPriceListQuery.Result.ID) {
+	var mapConnectionShopPriceList = make(map[dot.ID]*shopshipmentpricelist.ShopShipmentPriceList)
+	for _, shopPL := range shopPriceLists {
+		priceListID := shopPL.ShipmentPriceListID
+		mapConnectionShopPriceList[shopPL.ConnectionID] = shopPL
+		if cm.IDsContain(rules.UsingPriceListIDs, priceListID) {
 			return true
 		}
 	}
 
-	for _, shopPL := range shopPriceLists {
-		priceListID := shopPL.ShipmentPriceListID
-		if cm.IDsContain(rules.UsingPriceListIDs, priceListID) {
+	// Kiểm tra xem bảng giá mặc định có nằm trong UsingPriceListIDs không
+	defaultPriceListQuery := &pricelist.ListShipmentPriceListsQuery{
+		IsDefault: dot.Bool(true),
+		IDs:       rules.UsingPriceListIDs,
+	}
+	if err := q.priceListQS.Dispatch(ctx, defaultPriceListQuery); err != nil {
+		return false
+	}
+	defaultPriceLists := defaultPriceListQuery.Result
+	if len(defaultPriceLists) == 0 {
+		return false
+	}
+	for _, defaultPL := range defaultPriceLists {
+		// trường hợp có bảng giá mặc định (tính theo NVC defaultPL.ConnectionID)
+		shopPL, ok := mapConnectionShopPriceList[defaultPL.ConnectionID]
+		if !ok || shopPL.ShipmentPriceListID == defaultPL.ID {
+			// shop chưa được gán bảng giá nào
+			// hoặc shop đã được gán vào bảng giá mặc định
+			// => apply
 			return true
 		}
 	}

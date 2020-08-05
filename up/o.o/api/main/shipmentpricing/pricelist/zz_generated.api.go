@@ -97,6 +97,7 @@ func (h QueryServiceHandler) HandleGetShipmentPriceList(ctx context.Context, msg
 }
 
 type ListShipmentPriceListsQuery struct {
+	IDs          []dot.ID
 	ConnectionID dot.ID
 	IsDefault    dot.NullBool
 
@@ -177,12 +178,14 @@ func (q *GetShipmentPriceListQuery) GetArgs(ctx context.Context) (_ context.Cont
 func (q *ListShipmentPriceListsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShipmentPriceListsArgs) {
 	return ctx,
 		&ListShipmentPriceListsArgs{
+			IDs:          q.IDs,
 			ConnectionID: q.ConnectionID,
 			IsDefault:    q.IsDefault,
 		}
 }
 
 func (q *ListShipmentPriceListsQuery) SetListShipmentPriceListsArgs(args *ListShipmentPriceListsArgs) {
+	q.IDs = args.IDs
 	q.ConnectionID = args.ConnectionID
 	q.IsDefault = args.IsDefault
 }

@@ -35,6 +35,7 @@ type CreateShipmentPriceListArg struct {
 }
 
 type ListShipmentPriceListsArgs struct {
+	IDs          []dot.ID
 	ConnectionID dot.ID
 	IsDefault    dot.NullBool
 }

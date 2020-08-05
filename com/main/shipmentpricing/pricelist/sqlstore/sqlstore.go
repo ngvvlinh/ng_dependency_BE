@@ -54,6 +54,11 @@ func (s *ShipmentPriceListStore) ID(id dot.ID) *ShipmentPriceListStore {
 	return s
 }
 
+func (s *ShipmentPriceListStore) IDs(ids ...dot.ID) *ShipmentPriceListStore {
+	s.preds = append(s.preds, sq.In("id", ids))
+	return s
+}
+
 func (s *ShipmentPriceListStore) IsDefault(isDefault bool) *ShipmentPriceListStore {
 	s.preds = append(s.preds, s.ft.ByIsDefaultPtr(&isDefault))
 	return s
