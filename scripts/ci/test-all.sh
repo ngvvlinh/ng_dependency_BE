@@ -31,20 +31,20 @@ exec_coverage() {
 
 if [[ -z "$1" ]]; then
   # run test simple
-  packages="$(go list o.o/... | grep -v '/tests/')"
+  packages="$(go list o.o/... | grep -v '/tests')"
   if [[ -z "$cover" ]]; then
     go test -v -race ${packages}
   else
     exec_coverage
   fi
   # run test e2e
-  packages="$(go list o.o/... | grep '/tests/')"
+  packages="$(go list o.o/... | grep '/tests')"
 
   go test -v -race ${packages}
 else
   # only run simple
   if [[ -n "$1" && $1 = "simple" ]]; then
-    packages="$(go list o.o/... | grep -v '/tests/')"
+    packages="$(go list o.o/... | grep -v '/tests')"
     if [[ -z "$cover" ]]; then
       go test -v -race ${packages}
     else
@@ -56,7 +56,7 @@ else
   # #   . arguments run test-all.sh = e2e
 
   if [[ -n "$1" && $1 = "e2e" ]]; then
-    packages="$(go list o.o/... | grep '/tests/')"
+    packages="$(go list o.o/... | grep '/tests')"
 
     go test -v -race ${packages}
   fi
