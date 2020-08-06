@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
@@ -13,6 +14,7 @@ import (
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/top/types/etc/webhook_type"
 	fblog "o.o/backend/com/fabo/main/fblog/model"
+	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
@@ -341,4 +343,15 @@ func (wh *Webhook) getProfile(accessToken, externalPageID, PSID string) (*fbclie
 	default:
 		return nil, err
 	}
+}
+
+func (wh *Webhook) IsTestPage(ctx context.Context, externalPageID string) (bool, error) {
+	getExternalPageQuery := &fbpaging.GetFbExternalPageByExternalIDQuery{
+		ExternalID: externalPageID,
+	}
+	if err := wh.fbPageQuery.Dispatch(ctx, getExternalPageQuery); err != nil {
+		return false, err
+	}
+
+	return strings.HasPrefix(getExternalPageQuery.Result.ExternalName, fbclient.PrefixFanPageNameTest), nil
 }

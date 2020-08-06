@@ -43,6 +43,8 @@ const (
 	Message       = "message"
 
 	XBusinessUseCaseUsage = "x-business-use-case-usage"
+
+	PrefixFanPageNameTest = "Fabotest Page"
 )
 
 type FacebookRole int

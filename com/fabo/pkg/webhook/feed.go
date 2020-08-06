@@ -9,6 +9,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/cmenv"
 )
 
 // Facebook feed is any action on page (create or update a post, make comment,
@@ -18,6 +19,15 @@ func (wh *Webhook) handleFeed(ctx context.Context, feed WebhookMessages) error {
 		// first we need check page is active then get token of page
 		externalPageID := entry.ID
 		createdTime := time.Unix(int64(entry.Time), 0)
+
+		isTestPage, _err := wh.IsTestPage(ctx, externalPageID)
+		if _err != nil {
+			return _err
+		}
+		// ignore test page
+		if cmenv.IsProd() && isTestPage {
+			return nil
+		}
 
 		accessToken, err := wh.getPageAccessToken(ctx, externalPageID)
 		if err != nil {

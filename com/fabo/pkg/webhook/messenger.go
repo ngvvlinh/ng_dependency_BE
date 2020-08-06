@@ -9,6 +9,7 @@ import (
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/redis"
 	"o.o/common/xerrors"
 )
@@ -45,6 +46,15 @@ func (wh *Webhook) handleMessenger(ctx context.Context, webhookMessages WebhookM
 
 // TODO(ngoc): refactor
 func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PSID, mid string) error {
+	isTestPage, _err := wh.IsTestPage(ctx, externalPageID)
+	if _err != nil {
+		return _err
+	}
+	// ignore test page
+	if cmenv.IsProd() && isTestPage {
+		return nil
+	}
+
 	accessToken, err := wh.getPageAccessToken(ctx, externalPageID)
 	if err != nil {
 		return err

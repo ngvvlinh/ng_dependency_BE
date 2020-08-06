@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -192,6 +194,12 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 
 		//now := time.Now()
 		for _, fbPageCombined := range fbPageCombineds {
+			// ignore Page test
+
+			isTestPage := strings.HasPrefix(fbPageCombined.FbExternalPage.ExternalName, fbclient.PrefixFanPageNameTest)
+			if cmenv.IsProd() && isTestPage {
+				continue
+			}
 			if !s.rd.IsLockCallAPIPage(fbPageCombined.FbExternalPage.ExternalID) {
 				// Task get post
 				s.addTaskGetPosts(fbPageCombined)
