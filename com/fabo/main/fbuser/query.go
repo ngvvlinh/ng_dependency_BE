@@ -2,12 +2,15 @@ package fbuser
 
 import (
 	"context"
+	"fmt"
 
 	"o.o/api/fabo/fbusering"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbuser/sqlstore"
+	"o.o/backend/com/fabo/pkg/fbclient"
 	com "o.o/backend/com/main"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -22,14 +25,17 @@ type FbUserQuery struct {
 	fbUserInternalStore             sqlstore.FbExternalUserInternalFactory
 	fbExternalUserShopCustomerStore sqlstore.FbExternalUserShopCustomerStoreFactory
 	customerQuery                   customering.QueryBus
+	defaultAvatarLink               string
 }
 
 func NewFbUserQuery(database com.MainDB, customerQ customering.QueryBus) *FbUserQuery {
+	_defaultAvatarLink := fmt.Sprintf("%s/%s", cm.MainSiteBaseURL(), "dl/fabo/default_avatar.png")
 	return &FbUserQuery{
 		db:                              database,
 		fbUserStore:                     sqlstore.NewFbExternalUserStore(database),
 		fbExternalUserShopCustomerStore: sqlstore.NewFbExternalUserShopCustomerStore(database),
 		customerQuery:                   customerQ,
+		defaultAvatarLink:               _defaultAvatarLink,
 	}
 }
 
@@ -53,6 +59,8 @@ func (q *FbUserQuery) GetFbExternalUserByExternalID(
 	if err != nil {
 		return nil, err
 	}
+	replaceDefaultAvatar(fbUser, q.defaultAvatarLink)
+
 	return fbUser, nil
 }
 
@@ -63,7 +71,13 @@ func (q *FbUserQuery) ListFbExternalUsersByExternalIDs(
 	if externalPageID.Valid {
 		query = query.ExternalPageID(externalPageID.String)
 	}
-	return query.ListFbExternalUsers()
+	fbUsers, err := query.ListFbExternalUsers()
+	if err != nil {
+		return nil, err
+	}
+	replaceDefaultAvatars(fbUsers, q.defaultAvatarLink)
+
+	return fbUsers, nil
 }
 
 func (q *FbUserQuery) ListFbExternalUsers(ctx context.Context, args *fbusering.ListFbExternalUsersArgs) ([]*fbusering.FbExternalUserWithCustomer, error) {
@@ -71,7 +85,7 @@ func (q *FbUserQuery) ListFbExternalUsers(ctx context.Context, args *fbusering.L
 	if args.CustomerID.Valid {
 		query = query.ShopCustomerID(args.CustomerID.ID)
 	}
-	fbUserCustomer, err := query.ListFbExternalUser()
+	fbUserCustomer, err := query.ListFbExternalUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -79,11 +93,13 @@ func (q *FbUserQuery) ListFbExternalUsers(ctx context.Context, args *fbusering.L
 	for _, v := range fbUserCustomer {
 		fbUserIDs = append(fbUserIDs, v.FbExternalUserID)
 	}
-	result, err := q.fbUserStore(ctx).ExternalIDs(fbUserIDs).ListFbExternalUsers()
+	fbUsers, err := q.fbUserStore(ctx).ExternalIDs(fbUserIDs).ListFbExternalUsers()
 	if err != nil {
 		return nil, err
 	}
-	return q.populateFbExternalUsersWithCustomerInfo(ctx, args.ShopID, result)
+	replaceDefaultAvatars(fbUsers, q.defaultAvatarLink)
+
+	return q.populateFbExternalUsersWithCustomerInfo(ctx, args.ShopID, fbUsers)
 }
 
 func (q *FbUserQuery) GetFbExternalUserWithCustomerByExternalID(ctx context.Context, shopID dot.ID, externalID string) (*fbusering.FbExternalUserWithCustomer, error) {
@@ -91,11 +107,13 @@ func (q *FbUserQuery) GetFbExternalUserWithCustomerByExternalID(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
+	replaceDefaultAvatar(fbExternalUser, q.defaultAvatarLink)
+
 	var result = &fbusering.FbExternalUserWithCustomer{
 		FbExternalUser: fbExternalUser,
 	}
 
-	fbExternalUserShopCustomer, err := q.fbExternalUserShopCustomerStore(ctx).ShopID(shopID).FbExternalUserID(externalID).ListFbExternalUser()
+	fbExternalUserShopCustomer, err := q.fbExternalUserShopCustomerStore(ctx).ShopID(shopID).FbExternalUserID(externalID).ListFbExternalUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +134,7 @@ func (q *FbUserQuery) GetFbExternalUserWithCustomerByExternalID(ctx context.Cont
 }
 
 func (q *FbUserQuery) ListFbExternalUserWithCustomer(ctx context.Context, args fbusering.ListFbExternalUserWithCustomerRequest) ([]*fbusering.FbExternalUserWithCustomer, error) {
-	fbUsersCustomers, err := q.fbExternalUserShopCustomerStore(ctx).WithPaging(args.Paging).Filters(args.Filters).ListFbExternalUser()
+	fbUsersCustomers, err := q.fbExternalUserShopCustomerStore(ctx).WithPaging(args.Paging).Filters(args.Filters).ListFbExternalUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -128,11 +146,13 @@ func (q *FbUserQuery) ListFbExternalUserWithCustomer(ctx context.Context, args f
 	if err != nil {
 		return nil, err
 	}
+	replaceDefaultAvatars(fbUsers, q.defaultAvatarLink)
+
 	return q.populateFbExternalUsersWithCustomerInfo(ctx, args.ShopID, fbUsers)
 }
 
 func (q *FbUserQuery) ListFbExternalUserWithCustomerByExternalIDs(ctx context.Context, shopID dot.ID, externalID []string) ([]*fbusering.FbExternalUserWithCustomer, error) {
-	fbUsersCustomers, err := q.fbExternalUserShopCustomerStore(ctx).FbExternalUserIDs(externalID).ListFbExternalUser()
+	fbUsersCustomers, err := q.fbExternalUserShopCustomerStore(ctx).FbExternalUserIDs(externalID).ListFbExternalUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -144,6 +164,8 @@ func (q *FbUserQuery) ListFbExternalUserWithCustomerByExternalIDs(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
+	replaceDefaultAvatars(fbUsers, q.defaultAvatarLink)
+
 	return q.populateFbExternalUsersWithCustomerInfo(ctx, shopID, fbUsers)
 }
 
@@ -158,7 +180,7 @@ func (q *FbUserQuery) populateFbExternalUsersWithCustomerInfo(ctx context.Contex
 		fbUserIDS = append(fbUserIDS, v.ExternalID)
 	}
 
-	fbUserWithCustomer, err := q.fbExternalUserShopCustomerStore(ctx).FbExternalUserIDs(fbUserIDS).ListFbExternalUser()
+	fbUserWithCustomer, err := q.fbExternalUserShopCustomerStore(ctx).FbExternalUserIDs(fbUserIDS).ListFbExternalUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +234,7 @@ func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, ar
 			ShopCustomer: v,
 		})
 	}
-	FbUserCustomers, err := q.fbExternalUserShopCustomerStore(ctx).ShopCustomerIDs(customerIDs).ShopID(args.ShopID).ListFbExternalUser()
+	FbUserCustomers, err := q.fbExternalUserShopCustomerStore(ctx).ShopCustomerIDs(customerIDs).ShopID(args.ShopID).ListFbExternalUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -226,6 +248,8 @@ func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, ar
 	if err != nil {
 		return nil, err
 	}
+	replaceDefaultAvatars(fbUsers, q.defaultAvatarLink)
+
 	var mapFbUsers = make(map[string]*fbusering.FbExternalUser)
 	for _, v := range fbUsers {
 		mapFbUsers[v.ExternalID] = v
@@ -241,4 +265,17 @@ func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, ar
 		Customers: listCustomerFbUser,
 		Paging:    query.Result.Paging,
 	}, nil
+}
+
+func replaceDefaultAvatars(fbExternalUsers []*fbusering.FbExternalUser, linkAvatar string) {
+	for _, fbExternalUser := range fbExternalUsers {
+		replaceDefaultAvatar(fbExternalUser, linkAvatar)
+	}
+}
+
+func replaceDefaultAvatar(fbExternalUser *fbusering.FbExternalUser, linkAvatar string) {
+	if fbExternalUser != nil && fbExternalUser.ExternalInfo != nil &&
+		fbExternalUser.ExternalInfo.ImageURL == fbclient.DefaultFaboImage {
+		fbExternalUser.ExternalInfo.ImageURL = linkAvatar
+	}
 }

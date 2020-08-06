@@ -211,9 +211,10 @@ type CreatePostParams struct {
 }
 
 type GetProfileRequest struct {
-	AccessToken string
-	PSID        string
-	PageID      string
+	AccessToken    string
+	PSID           string
+	PageID         string
+	ProfileDefault *model.Profile
 }
 
 type GetProfileByPISDParams struct {

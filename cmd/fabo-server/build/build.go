@@ -7,6 +7,7 @@ import (
 	"o.o/backend/cmd/fabo-server/config"
 	config_server "o.o/backend/cogs/config/_server"
 	server_admin "o.o/backend/cogs/server/admin"
+	server_fabo "o.o/backend/cogs/server/fabo"
 	server_shop "o.o/backend/cogs/server/shop"
 	ghnv2 "o.o/backend/cogs/shipment/ghn/v2"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
@@ -137,6 +138,7 @@ func BuildMainServer(
 	shopImport server_shop.ImportHandler,
 	eventStream server_shop.EventStreamHandler,
 	downloadHandler server_shop.DownloadHandler,
+	faboImageHandler server_fabo.FaboImageHandler,
 ) MainServer {
 	mux := http.NewServeMux()
 	l.RegisterHTTPHandler(mux)
@@ -162,6 +164,7 @@ func BuildMainServer(
 	mux.Handle(shopImport.PathPrefix(), mwares(shopImport))
 	mux.Handle(eventStream.PathPrefix(), eventStream)
 	mux.Handle(downloadHandler.PathPrefix(), downloadHandler)
+	mux.Handle(faboImageHandler.PathPrefix(), faboImageHandler)
 
 	h := middleware.CORS(mux)
 	svr := &http.Server{

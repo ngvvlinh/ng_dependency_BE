@@ -14,6 +14,7 @@ import (
 	_core "o.o/backend/cogs/core"
 	database_min "o.o/backend/cogs/database/_min"
 	server_admin "o.o/backend/cogs/server/admin"
+	server_fabo "o.o/backend/cogs/server/fabo"
 	server_shop "o.o/backend/cogs/server/shop"
 	shipment_fabo "o.o/backend/cogs/shipment/_fabo"
 	sms_min "o.o/backend/cogs/sms/_min"
@@ -103,6 +104,7 @@ func Build(
 		_core.WireSet,
 		server_shop.WireSet,
 		server_admin.WireSet,
+		server_fabo.WireSet,
 		shop_min.WireSet,
 		shop.WireSet,
 		admin_min.WireSet,

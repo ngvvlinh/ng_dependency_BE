@@ -64,6 +64,7 @@
   - o.o/backend/com
   - o.o/backend/pkg
   - o.o/backend/cogs
+  - o.o/backend/res/dl/fabo
 
 - baseImportPath: "./pkg"
   ignoredSubTrees:

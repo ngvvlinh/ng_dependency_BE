@@ -48,6 +48,7 @@ func (c *AppConfig) MustLoadEnv(prefix ...string) {
 		p + "_ID":           &c.ID,
 		p + "_SECRET":       &c.Secret,
 		p + "_ACCESS_TOKEN": &c.AccessToken,
+		p + "_SOURCE":       &c.Source,
 	}.MustLoad()
 }
 
@@ -411,6 +412,9 @@ func (f *FbClient) CallAPICommentByID(req *GetCommentByIDRequest) (*model.Commen
 }
 
 func (f *FbClient) CallAPIGetProfileByPSID(req *GetProfileRequest) (*model.Profile, error) {
+	if req.ProfileDefault == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Profile mustn't be null")
+	}
 	params := &GetProfileByPISDParams{
 		AccessToken: req.AccessToken,
 		Fields:      "id,name,first_name,last_name,profile_pic",
@@ -418,11 +422,19 @@ func (f *FbClient) CallAPIGetProfileByPSID(req *GetProfileRequest) (*model.Profi
 
 	path := fmt.Sprintf("/%s", req.PSID)
 	var profile model.Profile
-	if err := f.sendGetRequest(path, req.PageID, params, &profile); err != nil {
-		return nil, err
+	if err := f.sendGetRequest(path, req.PageID, params, &profile); err == nil {
+		return &profile, nil
 	}
 
-	return &profile, nil
+	linkImage := fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", req.PSID)
+	resp, err := http.Get(linkImage)
+	if err != nil || (resp != nil && resp.StatusCode != 200) {
+		req.ProfileDefault.ProfilePic = DefaultFaboImage
+	} else {
+		req.ProfileDefault.ProfilePic = linkImage
+	}
+
+	return req.ProfileDefault, nil
 }
 
 func (f *FbClient) sendGetRequest(path, pageID string, params, resp interface{}) error {

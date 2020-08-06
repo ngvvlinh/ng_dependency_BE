@@ -23,6 +23,7 @@ import (
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -203,7 +204,6 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 			if !s.rd.IsLockCallAPIPage(fbPageCombined.FbExternalPage.ExternalID) {
 				// Task get post
 				s.addTaskGetPosts(fbPageCombined)
-
 			}
 
 			if !s.rd.IsLockCallAPIMessenger(fbPageCombined.FbExternalPage.ExternalID) {
@@ -354,7 +354,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 	isFinished := false
 
 	var messagesData []*model.MessageData
-	mapPSIDAndAvatar := make(map[string]string)
+	mapPSIDAndProfile := make(map[string]*model.Profile)
 	var fbExternalMessagesArgs []*fbmessaging.CreateFbExternalMessageArgs
 	for _, fbMessage := range fbMessagesResp.Messages.MessagesData {
 		if time.Now().Sub(fbMessage.CreatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
@@ -362,49 +362,40 @@ func (s *Synchronizer) handleTaskGetMessages(
 			continue
 		}
 		messagesData = append(messagesData, fbMessage)
-		if fbMessage.From != nil && fbMessage.From.ID != externalPageID {
-			mapPSIDAndAvatar[fbMessage.From.ID] = ""
+		if fbMessage.From != nil && fbMessage.From.ID != "" && fbMessage.From.ID != externalPageID {
+			mapPSIDAndProfile[fbMessage.From.ID] = &model.Profile{
+				ID:   fbMessage.From.ID,
+				Name: fbMessage.From.Name,
+			}
 		}
 
 		if fbMessage.To != nil {
 			for _, fbMessageTo := range fbMessage.To.Data {
-				if fbMessageTo.ID != externalPageID {
-					mapPSIDAndAvatar[fbMessageTo.ID] = ""
+				if fbMessageTo.ID != "" && fbMessageTo.ID != externalPageID {
+					mapPSIDAndProfile[fbMessageTo.ID] = &model.Profile{
+						ID:   fbMessageTo.ID,
+						Name: fbMessageTo.Name,
+					}
 				}
 			}
 		}
 	}
 
 	var PSIDs []string
-	for psid := range mapPSIDAndAvatar {
+	for psid := range mapPSIDAndProfile {
 		PSIDs = append(PSIDs, psid)
 	}
 
-	listFbExternalUserByExternalIDsQuery := &fbusering.ListFbExternalUsersByExternalIDsQuery{
-		ExternalIDs:    PSIDs,
-		ExternalPageID: dot.String(externalPageID),
-	}
-	if err := s.fbUseringQuery.Dispatch(ctx, listFbExternalUserByExternalIDsQuery); err != nil {
-		return err
-	}
-	for _, fbExternalUser := range listFbExternalUserByExternalIDsQuery.Result {
-		mapPSIDAndAvatar[fbExternalUser.ExternalID] = fbExternalUser.ExternalInfo.ImageURL
-	}
-
-	for psid, avatar := range mapPSIDAndAvatar {
-		if avatar == "" {
-			profile, err := s.fbClient.CallAPIGetProfileByPSID(&fbclient.GetProfileRequest{
-				AccessToken: accessToken,
-				PSID:        psid,
-				PageID:      externalPageID,
-			})
+	for psid, profile := range mapPSIDAndProfile {
+		if profile.ProfilePic == "" {
+			_profile, err := s.getProfile(accessToken, externalPageID, psid, profile)
 			if err != nil {
 				return err
 			}
-			mapPSIDAndAvatar[psid] = profile.ProfilePic
+			mapPSIDAndProfile[psid] = _profile
 		}
 	}
-	mapPSIDAndAvatar[externalPageID] = fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", externalPageID)
+	mapPSIDAndProfile[externalPageID] = &model.Profile{ProfilePic: fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", externalPageID)}
 
 	for _, messageData := range messagesData {
 		var externalAttachments []*fbmessaging.FbMessageAttachment
@@ -416,7 +407,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 			id := messageData.From.ID
 			messageData.From.Picture = &model.Picture{
 				Data: model.PictureData{
-					Url: mapPSIDAndAvatar[id],
+					Url: mapPSIDAndProfile[id].ProfilePic,
 				},
 			}
 		}
@@ -425,7 +416,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 				id := messageTo.ID
 				messageTo.Picture = &model.Picture{
 					Data: model.PictureData{
-						Url: mapPSIDAndAvatar[id],
+						Url: mapPSIDAndProfile[id].ProfilePic,
 					},
 				}
 			}
@@ -817,6 +808,32 @@ func (s *Synchronizer) HandleTaskGetPosts(
 	}
 
 	return nil
+}
+
+func (s *Synchronizer) getProfile(accessToken, externalPageID, PSID string, profileDefault *model.Profile) (*model.Profile, error) {
+	profile, err := s.rd.LoadProfilePSID(externalPageID, PSID)
+	switch err {
+	// If profile not in redis then call api getProfileByPSID
+	case redis.ErrNil:
+		_profile, _err := s.fbClient.CallAPIGetProfileByPSID(&fbclient.GetProfileRequest{
+			AccessToken:    accessToken,
+			PSID:           PSID,
+			PageID:         externalPageID,
+			ProfileDefault: profileDefault,
+		})
+		if _err != nil {
+			return nil, _err
+		}
+		if _err := s.rd.SaveProfilePSID(externalPageID, PSID, _profile); _err != nil {
+			return nil, _err
+		}
+		return _profile, nil
+	case nil:
+		return profile, nil
+	default:
+		ll.SendMessagef("%v %v %v", externalPageID, PSID, err.Error())
+		return nil, err
+	}
 }
 
 func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds, error) {

@@ -98,7 +98,7 @@ func (s *FbExternalUserShopCustomerStore) ListFbExternalUserDB() ([]*model.FbExt
 	return fbExternalUserShopCustomers, err
 }
 
-func (s *FbExternalUserShopCustomerStore) ListFbExternalUser() ([]*fbusering.FbExternalUserShopCustomer, error) {
+func (s *FbExternalUserShopCustomerStore) ListFbExternalUsers() ([]*fbusering.FbExternalUserShopCustomer, error) {
 	fbExternalUser, err := s.ListFbExternalUserDB()
 	if err != nil {
 		return nil, err

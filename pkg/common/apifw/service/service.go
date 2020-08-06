@@ -9,6 +9,7 @@ import (
 	"o.o/backend/doc"
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/res/dl/fabo"
 	"o.o/backend/res/dl/imports"
 	"o.o/common/l"
 )
@@ -16,6 +17,7 @@ import (
 const (
 	MIMEExcel = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	MIMEOctet = "application/octet-stream"
+	MINEPNG   = "image/png"
 )
 
 var ll = l.New()
@@ -23,6 +25,7 @@ var idempgroup = idemp.NewGroup()
 
 var mimeMap = map[string]string{
 	".xlsx": MIMEExcel,
+	".png":  MINEPNG,
 }
 
 func GetMIME(filename string) string {
@@ -64,6 +67,21 @@ func ServeAssets(path string, contentType string) http.Handler {
 	}
 
 	data, err := imports.Asset(path)
+	if err != nil {
+		panic(err)
+	}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", contentType)
+		_, _ = w.Write(data)
+	})
+}
+
+func ServeFaboAssets(path, contentType string) http.Handler {
+	if contentType == "" {
+		contentType = GetMIME(path)
+	}
+
+	data, err := fabo.Asset(path)
 	if err != nil {
 		panic(err)
 	}

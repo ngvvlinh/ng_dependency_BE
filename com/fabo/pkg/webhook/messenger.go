@@ -93,6 +93,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		return err
 	}
 
+	var profileDefault *fbclientmodel.Profile
 	// Get externalConversationID (externalPageID, externalUserID) from redis
 	externalConversationID, err := wh.faboRedis.LoadExternalConversationID(externalPageID, externalUserID)
 	switch err {
@@ -105,7 +106,12 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		_err := wh.fbmessagingQuery.Dispatch(ctx, getExternalConversationQuery)
 		switch cm.ErrorCode(_err) {
 		case cm.NoError:
-			externalConversationID = getExternalConversationQuery.Result.ExternalID
+			externalConversation := getExternalConversationQuery.Result
+			externalConversationID = externalConversation.ExternalID
+			profileDefault = &fbclientmodel.Profile{
+				ID:   externalConversation.ExternalUserID,
+				Name: externalConversation.ExternalUserName,
+			}
 		case cm.NotFound:
 			// if conversation not found then get externalConversation through call api
 			// and create new externalConversation
@@ -148,6 +154,11 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			}); err != nil {
 				return err
 			}
+
+			profileDefault = &fbclientmodel.Profile{
+				ID:   externalUserID,
+				Name: externalUserName,
+			}
 		default:
 			return _err
 		}
@@ -156,12 +167,26 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			return _err
 		}
 	case nil:
+		getExternalConversationQuery := &fbmessaging.GetFbExternalConversationByExternalIDAndExternalPageIDQuery{
+			ExternalPageID: externalPageID,
+			ExternalID:     externalConversationID,
+		}
+		if _err := wh.fbmessagingQuery.Dispatch(ctx, getExternalConversationQuery); _err != nil {
+			return _err
+		}
+
+		externalConversation := getExternalConversationQuery.Result
+		profileDefault = &fbclientmodel.Profile{
+			ID:   externalUserID,
+			Name: externalConversation.ExternalUserName,
+		}
+
 	// no-op
 	default:
 		return err
 	}
 
-	profile, err := wh.getProfile(accessToken, externalPageID, PSID)
+	profile, err := wh.getProfile(accessToken, externalPageID, PSID, profileDefault)
 	if err != nil {
 		return err
 	}

@@ -12,6 +12,7 @@ import (
 	"o.o/backend/cogs/config/_server"
 	"o.o/backend/cogs/database/_min"
 	"o.o/backend/cogs/server/admin"
+	fabo2 "o.o/backend/cogs/server/fabo"
 	"o.o/backend/cogs/server/shop"
 	"o.o/backend/cogs/shipment/_fabo"
 	v2_2 "o.o/backend/cogs/shipment/ghn/v2"
@@ -640,7 +641,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
-	mainServer := BuildMainServer(service, intHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler)
+	faboImageHandler := fabo2.BuildFaboImageHandler()
+	mainServer := BuildMainServer(service, intHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler, faboImageHandler)
 	webhookConfig := shipment_allConfig.GHNWebhook
 	ghnConfig := shipment_allConfig.GHN
 	ghnCarrier := ghn.New(ghnConfig, locationQueryBus)

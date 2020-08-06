@@ -45,6 +45,8 @@ const (
 	XBusinessUseCaseUsage = "x-business-use-case-usage"
 
 	PrefixFanPageNameTest = "Fabotest Page"
+
+	DefaultFaboImage = "default"
 )
 
 type FacebookRole int

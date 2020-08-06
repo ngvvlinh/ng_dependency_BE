@@ -202,29 +202,6 @@ func convertModelCommentToCreateCommentArgs(pageId string, postID string, create
 	return res
 }
 
-func (wh *Webhook) getProfileByPSID(accessToken, pageID, PSID string) (profile *fbclientmodel.Profile, err error) {
-	profile, err = wh.faboRedis.LoadProfilePSID(pageID, PSID)
-	switch err {
-	case redis.ErrNil:
-		profile, err = wh.fbClient.CallAPIGetProfileByPSID(&fbclient.GetProfileRequest{
-			AccessToken: accessToken,
-			PSID:        PSID,
-			PageID:      pageID,
-		})
-		if err != nil {
-			return nil, err
-		}
-		if err := wh.faboRedis.SaveProfilePSID(pageID, PSID, profile); err != nil {
-			return nil, err
-		}
-	case nil:
-	// no-op
-	default:
-		return nil, err
-	}
-	return profile, nil
-}
-
 func (wh *Webhook) forwardWebhook(c *httpx.Context, message WebhookMessages) {
 	callbackURLs, err := wh.webhookCallbackService.GetWebhookCallbackURLs(webhook_type.Fabo.String())
 	if err != nil {
@@ -342,15 +319,16 @@ func (wh *Webhook) saveLogsWebhook(msg WebhookMessages, err error) {
 	}
 }
 
-func (wh *Webhook) getProfile(accessToken, externalPageID, PSID string) (*fbclientmodel.Profile, error) {
+func (wh *Webhook) getProfile(accessToken, externalPageID, PSID string, profileDefault *fbclientmodel.Profile) (*fbclientmodel.Profile, error) {
 	profile, err := wh.faboRedis.LoadProfilePSID(externalPageID, PSID)
 	switch err {
 	// If profile not in redis then call api getProfileByPSID
 	case redis.ErrNil:
 		_profile, _err := wh.fbClient.CallAPIGetProfileByPSID(&fbclient.GetProfileRequest{
-			AccessToken: accessToken,
-			PSID:        PSID,
-			PageID:      externalPageID,
+			AccessToken:    accessToken,
+			PSID:           PSID,
+			PageID:         externalPageID,
+			ProfileDefault: profileDefault,
 		})
 		if _err != nil {
 			return nil, _err
