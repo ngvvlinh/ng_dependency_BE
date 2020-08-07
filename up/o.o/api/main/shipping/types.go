@@ -253,6 +253,9 @@ func GetTotalShippingFee(items []*ShippingFeeLine) int {
 }
 
 func GetShippingFeeShopLines(items []*ShippingFeeLine, etopPriceRule bool, mainFee dot.NullInt) []*ShippingFeeLine {
+	if items == nil {
+		return nil
+	}
 	res := make([]*ShippingFeeLine, 0, len(items))
 	for _, item := range items {
 		if item == nil {
