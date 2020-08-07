@@ -28,6 +28,9 @@ func (wh *Webhook) handleFeed(ctx context.Context, feed WebhookMessages) error {
 
 		isTestPage, _err := wh.IsTestPage(ctx, externalPageID)
 		if _err != nil {
+			if cm.ErrorCode(_err) == cm.NotFound {
+				return nil
+			}
 			return _err
 		}
 		// ignore test page
@@ -37,6 +40,9 @@ func (wh *Webhook) handleFeed(ctx context.Context, feed WebhookMessages) error {
 
 		accessToken, err := wh.getPageAccessToken(ctx, externalPageID)
 		if err != nil {
+			if cm.ErrorCode(err) == cm.NotFound {
+				return nil
+			}
 			return err
 		}
 

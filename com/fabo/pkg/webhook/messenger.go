@@ -48,6 +48,9 @@ func (wh *Webhook) handleMessenger(ctx context.Context, webhookMessages WebhookM
 func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PSID, mid string) error {
 	isTestPage, _err := wh.IsTestPage(ctx, externalPageID)
 	if _err != nil {
+		if cm.ErrorCode(_err) == cm.NotFound {
+			return nil
+		}
 		return _err
 	}
 	// ignore test page
@@ -57,6 +60,9 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 
 	accessToken, err := wh.getPageAccessToken(ctx, externalPageID)
 	if err != nil {
+		if cm.ErrorCode(_err) == cm.NotFound {
+			return nil
+		}
 		return err
 	}
 
