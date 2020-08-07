@@ -152,12 +152,13 @@ func (h AggregateHandler) HandleDisableConnection(ctx context.Context, msg *Disa
 }
 
 type UpdateConnectionCommand struct {
-	ID           dot.ID
-	PartnerID    dot.ID
-	Name         string
-	ImageURL     string
-	Services     []*ConnectionService
-	DriverConfig *ConnectionDriverConfig
+	ID              dot.ID
+	PartnerID       dot.ID
+	Name            string
+	ImageURL        string
+	Services        []*ConnectionService
+	DriverConfig    *ConnectionDriverConfig
+	IgnoreWLPartner bool
 
 	Result *Connection `json:"-"`
 }
@@ -473,12 +474,13 @@ func (q *DisableConnectionCommand) GetArgs(ctx context.Context) (_ context.Conte
 func (q *UpdateConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateConnectionArgs) {
 	return ctx,
 		&UpdateConnectionArgs{
-			ID:           q.ID,
-			PartnerID:    q.PartnerID,
-			Name:         q.Name,
-			ImageURL:     q.ImageURL,
-			Services:     q.Services,
-			DriverConfig: q.DriverConfig,
+			ID:              q.ID,
+			PartnerID:       q.PartnerID,
+			Name:            q.Name,
+			ImageURL:        q.ImageURL,
+			Services:        q.Services,
+			DriverConfig:    q.DriverConfig,
+			IgnoreWLPartner: q.IgnoreWLPartner,
 		}
 }
 
@@ -489,6 +491,7 @@ func (q *UpdateConnectionCommand) SetUpdateConnectionArgs(args *UpdateConnection
 	q.ImageURL = args.ImageURL
 	q.Services = args.Services
 	q.DriverConfig = args.DriverConfig
+	q.IgnoreWLPartner = args.IgnoreWLPartner
 }
 
 func (q *UpdateConnectionAffiliateAccountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateConnectionAffiliateAccountArgs) {

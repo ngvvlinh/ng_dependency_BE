@@ -77,7 +77,6 @@ func (s *ShipmentPriceListStore) ConnectionID(connID dot.ID) *ShipmentPriceListS
 func (s *ShipmentPriceListStore) GetShipmentPriceListDB() (*model.ShipmentPriceList, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
 	var priceList model.ShipmentPriceList
 	err := query.ShouldGet(&priceList)
 	return &priceList, err
@@ -95,16 +94,20 @@ func (s *ShipmentPriceListStore) GetShipmentPriceList() (*pricelist.ShipmentPric
 	return &res, nil
 }
 
-func (s *ShipmentPriceListStore) ListShipmentPriceListDBs() (res []*model.ShipmentPriceList, err error) {
+func (s *ShipmentPriceListStore) ListShipmentPriceListsDB() (res []*model.ShipmentPriceList, err error) {
 	query := s.query().Where(s.preds).OrderBy("created_at DESC")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
+	if wl.X(s.ctx).IsWLPartnerPOS() {
+		query = query.Where(s.ft.NotBelongWLPartner())
+	} else {
+		query = s.ByWhiteLabelPartner(s.ctx, query)
+	}
 	err = query.Find((*model.ShipmentPriceLists)(&res))
 	return
 }
 
 func (s *ShipmentPriceListStore) ListShipmentPriceLists() (res []*pricelist.ShipmentPriceList, _ error) {
-	priceLists, err := s.ListShipmentPriceListDBs()
+	priceLists, err := s.ListShipmentPriceListsDB()
 	if err != nil {
 		return nil, err
 	}

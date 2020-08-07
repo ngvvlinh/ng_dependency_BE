@@ -119,6 +119,10 @@ func (a *ConnectionAggregate) UpdateConnection(ctx context.Context, args *connec
 		if err := scheme.Convert(args, &update); err != nil {
 			return err
 		}
+		query := a.connectionStore(ctx)
+		if args.IgnoreWLPartner {
+			query = query.IgnoreWLPartner()
+		}
 		res, err = a.connectionStore(ctx).UpdateConnection(&update)
 		if err != nil {
 			return err
@@ -229,7 +233,7 @@ func (a *ConnectionAggregate) UpdateConnectionFromOrigin(ctx context.Context, co
 		return nil
 	}
 
-	childConns, err := a.connectionStore(ctx).OriginConnectionID(connectionID).OptionalConnectionMethod(connection_type.ConnectionMethodBuiltin).ListConnections(status3.NullStatus{})
+	childConns, err := a.connectionStore(ctx).OriginConnectionID(connectionID).IgnoreWLPartner().ListConnections(status3.NullStatus{})
 	if err != nil {
 		return err
 	}
@@ -238,9 +242,10 @@ func (a *ConnectionAggregate) UpdateConnectionFromOrigin(ctx context.Context, co
 	// thay đổi thông tin của các conn đó theo thông tin của connection gốc
 	for _, _conn := range childConns {
 		update := &connectioning.UpdateConnectionArgs{
-			ID:           _conn.ID,
-			ImageURL:     conn.ImageURL,
-			DriverConfig: conn.DriverConfig,
+			ID:              _conn.ID,
+			ImageURL:        conn.ImageURL,
+			DriverConfig:    conn.DriverConfig,
+			IgnoreWLPartner: true,
 		}
 		if _, err := a.UpdateConnection(ctx, update); err != nil {
 			return err

@@ -123,7 +123,12 @@ func (s *PriceListPromotionStore) ListShipmentPriceListPromotionDBs() (res []*mo
 	if err != nil {
 		return nil, err
 	}
-	query = s.ByWhiteLabelPartner(s.ctx, query)
+
+	if wl.X(s.ctx).IsWLPartnerPOS() {
+		query = query.Where(s.ft.NotBelongWLPartner())
+	} else {
+		query = s.ByWhiteLabelPartner(s.ctx, query)
+	}
 	err = query.Find((*model.ShipmentPriceListPromotions)(&res))
 	return
 }

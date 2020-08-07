@@ -14,9 +14,16 @@ const (
 )
 
 func getShipmentServiceRedisKey(ctx context.Context, serviceID string, connID dot.ID) string {
+	// cache riêng từng wl_partner_id
+	// riêng trường hợp wl partner POS, sử dụng chung cache với TopShip
+	wlPartnerID := dot.ID(0)
+	wlPartner := wl.X(ctx)
+	if !wlPartner.IsWLPartnerPOS() {
+		wlPartnerID = wlPartner.ID
+	}
 	return ShipmentServiceRedisKey +
 		":" + util.VersionCaching +
-		":wl" + wl.X(ctx).ID.String() +
+		":wl" + wlPartnerID.String() +
 		":sid" + serviceID +
 		":conn" + connID.String()
 }

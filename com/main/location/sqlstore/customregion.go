@@ -62,7 +62,6 @@ func (s *CustomRegionStore) ProvinceCode(pCode string) *CustomRegionStore {
 func (s *CustomRegionStore) GetCustomRegionDB() (*model.CustomRegion, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
 	query = query.OrderBy("created_at DESC")
 	var region model.CustomRegion
 	err := query.ShouldGet(&region)
@@ -84,7 +83,11 @@ func (s *CustomRegionStore) GetCustomRegion() (*location.CustomRegion, error) {
 func (s *CustomRegionStore) ListCustomRegionDBs() (res []*model.CustomRegion, err error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
+	if wl.X(s.ctx).IsWLPartnerPOS() {
+		query = query.Where(s.ft.NotBelongWLPartner())
+	} else {
+		query = s.ByWhiteLabelPartner(s.ctx, query)
+	}
 	err = query.Find((*model.CustomRegions)(&res))
 	return
 }

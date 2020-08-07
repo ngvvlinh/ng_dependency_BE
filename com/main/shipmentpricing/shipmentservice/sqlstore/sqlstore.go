@@ -86,7 +86,6 @@ func (s *ShipmentServiceStore) OptionalConnectionID(connID dot.ID) *ShipmentServ
 func (s *ShipmentServiceStore) GetShipmentServiceDB() (*model.ShipmentService, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
 	query = query.OrderBy("created_at DESC")
 	var service model.ShipmentService
 	err := query.ShouldGet(&service)
@@ -108,7 +107,11 @@ func (s *ShipmentServiceStore) GetShipmentService() (*shipmentservice.ShipmentSe
 func (s *ShipmentServiceStore) ListShipmentServiceDBs() (res []*model.ShipmentService, err error) {
 	query := s.query().Where(s.preds).OrderBy("created_at DESC")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
+	if wl.X(s.ctx).IsWLPartnerPOS() {
+		query = query.Where(s.ft.NotBelongWLPartner())
+	} else {
+		query = s.ByWhiteLabelPartner(s.ctx, query)
+	}
 	err = query.Find((*model.ShipmentServices)(&res))
 	return
 }

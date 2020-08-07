@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/wl_type"
 )
 
 type WL struct {
@@ -20,6 +21,10 @@ func (w *WL) Clone() *WL {
 
 func (w *WL) IsWhiteLabel() bool {
 	return w.ID != 0
+}
+
+func (w *WL) IsWLPartnerPOS() bool {
+	return w.IsWhiteLabel() && w.WLType == wl_type.POS
 }
 
 type Config struct {
@@ -48,6 +53,8 @@ type Config struct {
 	Templates *Templates
 
 	DatabaseName string
+
+	WLType wl_type.WhiteLabelType
 }
 
 type Driver interface {

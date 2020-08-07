@@ -3,6 +3,7 @@ package drivers
 import (
 	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/wl_type"
 	"o.o/backend/pkg/common/apifw/whitelabel"
 	"o.o/backend/pkg/common/cmenv"
 )
@@ -44,6 +45,7 @@ func ITopX(env cmenv.EnvType) *whitelabel.WL {
 					`IMGroup Thong bao: Ma xac thuc OTP cua quy khach la {{.Code}}. Moi thac mac xin quy khach vui long LH: 1900636040`),
 				NewAccountViaPartnerSmsTpl: nil, // not support
 			},
+			WLType: wl_type.POS,
 		},
 		Driver: &itopxDriver{},
 	}

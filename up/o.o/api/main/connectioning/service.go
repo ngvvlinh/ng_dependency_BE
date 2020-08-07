@@ -83,12 +83,13 @@ type CreateConnectionArgs struct {
 
 // +convert:update=Connection(PartnerID)
 type UpdateConnectionArgs struct {
-	ID           dot.ID
-	PartnerID    dot.ID
-	Name         string
-	ImageURL     string
-	Services     []*ConnectionService
-	DriverConfig *ConnectionDriverConfig
+	ID              dot.ID
+	PartnerID       dot.ID
+	Name            string
+	ImageURL        string
+	Services        []*ConnectionService
+	DriverConfig    *ConnectionDriverConfig
+	IgnoreWLPartner bool
 }
 
 type DeleteConnectionArgs struct {

@@ -141,7 +141,7 @@ func scanFbExternalPosts(fromID dot.ID) (fbExternalPosts model.FbExternalPosts, 
 	err = db.
 		Where(`
 			id > ? and
-			jsonb_array_length(external_attachments) > 0 and 
+			jsonb_array_length(external_attachments) > 0 and
 			(external_attachments @> '[{"type":"photo"}]' or
 			external_attachments @> '[{"type":"cover_photo"}]') and
 			external_attachments @> '[{"media":null}]' and

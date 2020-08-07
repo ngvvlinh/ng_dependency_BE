@@ -102,7 +102,6 @@ func (s *ShopPriceListStore) ByWhiteLabelPartner(ctx context.Context, query cmsq
 func (s *ShopPriceListStore) GetShopPriceListDB() (*model.ShopShipmentPriceList, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
 	var priceList model.ShopShipmentPriceList
 	err := query.ShouldGet(&priceList)
 	return &priceList, err

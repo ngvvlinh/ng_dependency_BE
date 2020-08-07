@@ -22,7 +22,8 @@ type ConnectionStore struct {
 	preds []interface{}
 	ctx   context.Context
 
-	includeDeleted sqlstore.IncludeDeleted
+	includeDeleted  sqlstore.IncludeDeleted
+	ignoreWLPartner bool
 }
 
 type ConnectionStoreFactory func(ctx context.Context) *ConnectionStore
@@ -85,6 +86,11 @@ func (s *ConnectionStore) Status(status status3.Status) *ConnectionStore {
 	return s
 }
 
+func (s *ConnectionStore) IgnoreWLPartner() *ConnectionStore {
+	s.ignoreWLPartner = true
+	return s
+}
+
 func (s *ConnectionStore) SoftDelete() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
@@ -98,7 +104,6 @@ func (s *ConnectionStore) SoftDelete() (int, error) {
 func (s *ConnectionStore) GetConnectionDB() (*model.Connection, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
 	var conn model.Connection
 	err := query.ShouldGet(&conn)
 	return &conn, err
@@ -119,8 +124,16 @@ func (s *ConnectionStore) GetConnection() (*connectioning.Connection, error) {
 func (s *ConnectionStore) ListConnectionsDB() (res []*model.Connection, err error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query = s.ByWhiteLabelPartner(s.ctx, query)
 
+	if s.ignoreWLPartner {
+		err = query.Find((*model.Connections)(&res))
+		return
+	}
+	if wl.X(s.ctx).IsWLPartnerPOS() {
+		query = query.Where(s.ft.NotBelongWLPartner())
+	} else {
+		query = s.ByWhiteLabelPartner(s.ctx, query)
+	}
 	err = query.Find((*model.Connections)(&res))
 	return
 }
@@ -159,7 +172,9 @@ func (s *ConnectionStore) UpdateConnection(conn *connectioning.Connection) (*con
 		return nil, err
 	}
 	query := s.query().Where(s.ft.ByID(conn.ID))
-	query = s.ByWhiteLabelPartner(s.ctx, query)
+	if !s.ignoreWLPartner {
+		query = s.ByWhiteLabelPartner(s.ctx, query)
+	}
 	if err := query.ShouldUpdate(&connDB); err != nil {
 		return nil, err
 	}
