@@ -572,9 +572,9 @@ type ShipmentServiceInfo struct {
 func (m *ShipmentServiceInfo) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShipmentPriceInfo struct {
-	ID        dot.ID `json:"id"`
-	OriginFee int    `json:"origin_fee"`
-	MakeupFee int    `json:"makeup_fee"`
+	ShipmentPriceID dot.ID `json:"shipment_price_id"`
+	OriginFee       int    `json:"origin_fee"`
+	MakeupFee       int    `json:"makeup_fee"`
 }
 
 func (m *ShipmentPriceInfo) String() string { return jsonx.MustMarshalToString(m) }

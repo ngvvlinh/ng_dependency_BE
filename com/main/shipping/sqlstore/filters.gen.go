@@ -1820,25 +1820,6 @@ func (ft *FulfillmentFilters) ByCouponPtr(Coupon *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FulfillmentFilters) ByShipmentPriceListID(ShipmentPriceListID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "shipment_price_list_id",
-		Value:  ShipmentPriceListID,
-		IsNil:  ShipmentPriceListID == 0,
-	}
-}
-
-func (ft *FulfillmentFilters) ByShipmentPriceListIDPtr(ShipmentPriceListID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "shipment_price_list_id",
-		Value:  ShipmentPriceListID,
-		IsNil:  ShipmentPriceListID == nil,
-		IsZero: ShipmentPriceListID != nil && (*ShipmentPriceListID) == 0,
-	}
-}
-
 func (ft *FulfillmentFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

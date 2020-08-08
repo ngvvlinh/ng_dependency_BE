@@ -167,8 +167,8 @@ type Fulfillment struct {
 	DeliveryRoute       string
 	ExternalAffiliateID string
 
-	Coupon              string
-	ShipmentPriceListID dot.ID
+	Coupon            string
+	ShipmentPriceInfo *shippingsharemodel.ShipmentPriceInfo
 
 	Rid dot.ID
 }

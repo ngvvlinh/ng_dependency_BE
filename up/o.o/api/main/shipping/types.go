@@ -132,8 +132,8 @@ type Fulfillment struct {
 	// EtopAdjustedShippingFeeMain: eTop điều chỉnh cước phí chính
 	EtopAdjustedShippingFeeMain int
 	// EtopPriceRule: true khi áp dụng bảng giá eTop, với giá `EtopAdjustedShippingFeeMain`
-	EtopPriceRule       bool
-	ShipmentPriceListID dot.ID
+	EtopPriceRule     bool
+	ShipmentPriceInfo *ShipmentPriceInfo
 }
 
 type FulfillmentSyncStates struct {
@@ -231,6 +231,13 @@ type SingleFulfillmentCreatingEvent struct {
 	FromAddress  *ordertypes.Address
 	ShippingFee  int
 	ConnectionID dot.ID
+}
+
+type ShipmentPriceInfo struct {
+	ShipmentPriceID     dot.ID
+	ShipmentPriceListID dot.ID
+	OriginFee           int
+	MakeupFee           int
 }
 
 func CalcShopShippingFee(externalFee int, ffm *Fulfillment) int {

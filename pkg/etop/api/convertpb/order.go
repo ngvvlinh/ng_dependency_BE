@@ -898,9 +898,9 @@ func PbShipmentPriceInfo(item *shippingsharemodel.ShipmentPriceInfo) *types.Ship
 		return nil
 	}
 	return &types.ShipmentPriceInfo{
-		ID:        item.ID,
-		OriginFee: item.OriginFee,
-		MakeupFee: item.MakeupFee,
+		ShipmentPriceID: item.ShipmentPriceID,
+		OriginFee:       item.OriginFee,
+		MakeupFee:       item.MakeupFee,
 	}
 }
 

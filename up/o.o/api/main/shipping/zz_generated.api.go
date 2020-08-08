@@ -202,6 +202,7 @@ type UpdateFulfillmentShippingFeesCommand struct {
 	TotalCODAmount           dot.NullInt
 	UpdatedBy                dot.ID
 	AdminNote                string
+	ShipmentPriceInfo        *ShipmentPriceInfo
 
 	Result int `json:"-"`
 }
@@ -637,6 +638,7 @@ func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ c
 			TotalCODAmount:           q.TotalCODAmount,
 			UpdatedBy:                q.UpdatedBy,
 			AdminNote:                q.AdminNote,
+			ShipmentPriceInfo:        q.ShipmentPriceInfo,
 		}
 }
 
@@ -648,6 +650,7 @@ func (q *UpdateFulfillmentShippingFeesCommand) SetUpdateFulfillmentShippingFeesA
 	q.TotalCODAmount = args.TotalCODAmount
 	q.UpdatedBy = args.UpdatedBy
 	q.AdminNote = args.AdminNote
+	q.ShipmentPriceInfo = args.ShipmentPriceInfo
 }
 
 func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesFromWebhookArgs) {

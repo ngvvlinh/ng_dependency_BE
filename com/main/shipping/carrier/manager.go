@@ -360,7 +360,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	ffmToUpdate.ShippingServiceName = providerService.Name
 
 	if providerService.ShipmentPriceInfo != nil {
-		ffmToUpdate.ShipmentPriceListID = providerService.ShipmentPriceInfo.ShipmentPriceListID
+		ffmToUpdate.ShipmentPriceInfo = providerService.ShipmentPriceInfo
 	}
 	if isMakeupPrice {
 		ffmToUpdate.ApplyEtopPrice(makeupPriceMain)
@@ -1011,7 +1011,7 @@ func (m *ShipmentManager) makeupPriceByShipmentPrice(ctx context.Context, servic
 	service.ShippingFeeLines = feeLines
 	service.ShippingFeeMain = shippingsharemodel.GetMainFee(feeLines)
 	service.ShipmentPriceInfo = &shippingsharemodel.ShipmentPriceInfo{
-		ID:                  calcShippingFeesRes.ShipmentPriceID,
+		ShipmentPriceID:     calcShippingFeesRes.ShipmentPriceID,
 		ShipmentPriceListID: calcShippingFeesRes.ShipmentPriceListID,
 		OriginFee:           originFee,
 		MakeupFee:           calcShippingFeesRes.TotalFee,
@@ -1039,7 +1039,13 @@ type CalcMakeupShippingFeesByFfmArgs struct {
 	AdditionalFeeTypes []shipping_fee_type.ShippingFeeType
 }
 
-func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, args *CalcMakeupShippingFeesByFfmArgs) ([]*shipping.ShippingFeeLine, error) {
+type CalcMakeupShippingFeesByFfmResponse struct {
+	ShipmentPriceID     dot.ID
+	ShipmentPriceListID dot.ID
+	ShippingFeeLines    []*shipping.ShippingFeeLine
+}
+
+func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, args *CalcMakeupShippingFeesByFfmArgs) (*CalcMakeupShippingFeesByFfmResponse, error) {
 	ffm := args.Fulfillment
 	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
@@ -1073,9 +1079,13 @@ func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, args 
 	if shipping.IsStateReturn(args.State) && !shipping_fee_type.Contain(addFeeTypes, shipping_fee_type.Return) {
 		addFeeTypes = append(addFeeTypes, shipping_fee_type.Return)
 	}
+	shipmentPriceListID := dot.ID(0)
+	if ffm.ShipmentPriceInfo != nil {
+		shipmentPriceListID = ffm.ShipmentPriceInfo.ShipmentPriceListID
+	}
 	query := &shipmentprice.CalculateShippingFeesQuery{
 		AccountID:           ffm.ShopID,
-		ShipmentPriceListID: ffm.ShipmentPriceListID,
+		ShipmentPriceListID: shipmentPriceListID,
 		FromDistrictCode:    ffm.AddressFrom.DistrictCode,
 		FromProvinceCode:    ffm.AddressFrom.ProvinceCode,
 		ToDistrictCode:      ffm.AddressTo.DistrictCode,
@@ -1090,6 +1100,10 @@ func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, args 
 	if err := m.shipmentPriceQS.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	res := shipmentpriceconvert.Convert_shipmentprice_ShippingFees_To_shipping_ShippingFeeLines(query.Result.FeeLines)
+	res := &CalcMakeupShippingFeesByFfmResponse{
+		ShipmentPriceID:     query.Result.ShipmentPriceID,
+		ShipmentPriceListID: query.Result.ShipmentPriceListID,
+		ShippingFeeLines:    shipmentpriceconvert.Convert_shipmentprice_ShippingFees_To_shipping_ShippingFeeLines(query.Result.FeeLines),
+	}
 	return res, nil
 }

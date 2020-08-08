@@ -163,7 +163,7 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.DeliveryRoute = arg.DeliveryRoute                                           // simple assign
 	out.ExternalAffiliateID = ""                                                    // zero value
 	out.Coupon = ""                                                                 // zero value
-	out.ShipmentPriceListID = 0                                                     // zero value
+	out.ShipmentPriceInfo = nil                                                     // zero value
 	out.Rid = arg.Rid                                                               // simple assign
 }
 

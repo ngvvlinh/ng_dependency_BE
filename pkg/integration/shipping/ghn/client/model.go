@@ -201,6 +201,9 @@ func (s *ShippingOrderCost) CalcAndConvertShippingFee() *shippingsharemodel.Ship
 }
 
 func CalcAndConvertShippingFeeLines(items []*ShippingOrderCost) []*shippingsharemodel.ShippingFeeLine {
+	if items == nil {
+		return nil
+	}
 	res := make([]*shippingsharemodel.ShippingFeeLine, len(items))
 	for i, item := range items {
 		res[i] = item.CalcAndConvertShippingFee()

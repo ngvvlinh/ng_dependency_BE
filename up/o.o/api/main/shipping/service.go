@@ -148,9 +148,10 @@ type UpdateFulfillmentShippingFeesArgs struct {
 	ProviderShippingFeeLines []*ShippingFeeLine
 	ShippingFeeLines         []*ShippingFeeLine
 	// @deprecated TotalCODAmount
-	TotalCODAmount dot.NullInt
-	UpdatedBy      dot.ID
-	AdminNote      string
+	TotalCODAmount    dot.NullInt
+	UpdatedBy         dot.ID
+	AdminNote         string
+	ShipmentPriceInfo *ShipmentPriceInfo
 }
 
 type UpdateFulfillmentCODAmountArgs struct {

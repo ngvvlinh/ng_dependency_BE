@@ -107,6 +107,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*sharemodel.FulfillmentSyncStates) = out0
 		return nil
 	})
+	s.Register((*sharemodel.ShipmentPriceInfo)(nil), (*shipping.ShipmentPriceInfo)(nil), func(arg, out interface{}) error {
+		Convert_sharemodel_ShipmentPriceInfo_shipping_ShipmentPriceInfo(arg.(*sharemodel.ShipmentPriceInfo), out.(*shipping.ShipmentPriceInfo))
+		return nil
+	})
+	s.Register(([]*sharemodel.ShipmentPriceInfo)(nil), (*[]*shipping.ShipmentPriceInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_sharemodel_ShipmentPriceInfoes_shipping_ShipmentPriceInfoes(arg.([]*sharemodel.ShipmentPriceInfo))
+		*out.(*[]*shipping.ShipmentPriceInfo) = out0
+		return nil
+	})
+	s.Register((*shipping.ShipmentPriceInfo)(nil), (*sharemodel.ShipmentPriceInfo)(nil), func(arg, out interface{}) error {
+		Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(arg.(*shipping.ShipmentPriceInfo), out.(*sharemodel.ShipmentPriceInfo))
+		return nil
+	})
+	s.Register(([]*shipping.ShipmentPriceInfo)(nil), (*[]*sharemodel.ShipmentPriceInfo)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shipping_ShipmentPriceInfoes_sharemodel_ShipmentPriceInfoes(arg.([]*shipping.ShipmentPriceInfo))
+		*out.(*[]*sharemodel.ShipmentPriceInfo) = out0
+		return nil
+	})
 	s.Register((*sharemodel.ShippingFeeLine)(nil), (*shipping.ShippingFeeLine)(nil), func(arg, out interface{}) error {
 		Convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(arg.(*sharemodel.ShippingFeeLine), out.(*shipping.ShippingFeeLine))
 		return nil
@@ -270,7 +288,7 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.AddressFrom = addressconvert.Convert_addressmodel_Address_orderingtypes_Address(arg.AddressFrom, nil)
 	out.EtopAdjustedShippingFeeMain = arg.EtopAdjustedShippingFeeMain // simple assign
 	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
-	out.ShipmentPriceListID = arg.ShipmentPriceListID                 // simple assign
+	out.ShipmentPriceInfo = Convert_sharemodel_ShipmentPriceInfo_shipping_ShipmentPriceInfo(arg.ShipmentPriceInfo, nil)
 }
 
 func Convert_shippingmodel_Fulfillments_shipping_Fulfillments(args []*shippingmodel.Fulfillment) (outs []*shipping.Fulfillment) {
@@ -392,19 +410,19 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.SyncStates = Convert_shipping_FulfillmentSyncStates_sharemodel_FulfillmentSyncStates(arg.SyncStates, nil)
 	out.LastSyncAt = time.Time{} // zero value
 	out.ExternalShippingLogs = Convert_shipping_ExternalShippingLogs_shippingmodel_ExternalShippingLogs(arg.ExternalShippingLogs)
-	out.AdminNote = ""                                // zero value
-	out.IsPartialDelivery = false                     // zero value
-	out.CreatedBy = 0                                 // zero value
-	out.GrossWeight = 0                               // zero value
-	out.ChargeableWeight = 0                          // zero value
-	out.Length = 0                                    // zero value
-	out.Width = 0                                     // zero value
-	out.Height = 0                                    // zero value
-	out.DeliveryRoute = ""                            // zero value
-	out.ExternalAffiliateID = ""                      // zero value
-	out.Coupon = arg.Coupon                           // simple assign
-	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
-	out.Rid = 0                                       // zero value
+	out.AdminNote = ""            // zero value
+	out.IsPartialDelivery = false // zero value
+	out.CreatedBy = 0             // zero value
+	out.GrossWeight = 0           // zero value
+	out.ChargeableWeight = 0      // zero value
+	out.Length = 0                // zero value
+	out.Width = 0                 // zero value
+	out.Height = 0                // zero value
+	out.DeliveryRoute = ""        // zero value
+	out.ExternalAffiliateID = ""  // zero value
+	out.Coupon = arg.Coupon       // simple assign
+	out.ShipmentPriceInfo = Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(arg.ShipmentPriceInfo, nil)
+	out.Rid = 0 // zero value
 }
 
 func Convert_shipping_Fulfillments_shippingmodel_Fulfillments(args []*shipping.Fulfillment) (outs []*shippingmodel.Fulfillment) {
@@ -500,7 +518,7 @@ func apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping
 	out.AddressFrom = arg.AddressFrom                                               // simple assign
 	out.EtopAdjustedShippingFeeMain = out.EtopAdjustedShippingFeeMain               // no change
 	out.EtopPriceRule = out.EtopPriceRule                                           // no change
-	out.ShipmentPriceListID = out.ShipmentPriceListID                               // no change
+	out.ShipmentPriceInfo = out.ShipmentPriceInfo                                   // no change
 }
 
 //-- convert o.o/api/main/shipping.FulfillmentExtended --//
@@ -622,6 +640,68 @@ func Convert_shipping_FulfillmentSyncStateses_sharemodel_FulfillmentSyncStateses
 	outs = make([]*sharemodel.FulfillmentSyncStates, len(args))
 	for i := range tmps {
 		outs[i] = Convert_shipping_FulfillmentSyncStates_sharemodel_FulfillmentSyncStates(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/main/shipping.ShipmentPriceInfo --//
+
+func Convert_sharemodel_ShipmentPriceInfo_shipping_ShipmentPriceInfo(arg *sharemodel.ShipmentPriceInfo, out *shipping.ShipmentPriceInfo) *shipping.ShipmentPriceInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shipping.ShipmentPriceInfo{}
+	}
+	convert_sharemodel_ShipmentPriceInfo_shipping_ShipmentPriceInfo(arg, out)
+	return out
+}
+
+func convert_sharemodel_ShipmentPriceInfo_shipping_ShipmentPriceInfo(arg *sharemodel.ShipmentPriceInfo, out *shipping.ShipmentPriceInfo) {
+	out.ShipmentPriceID = arg.ShipmentPriceID         // simple assign
+	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
+	out.OriginFee = arg.OriginFee                     // simple assign
+	out.MakeupFee = arg.MakeupFee                     // simple assign
+}
+
+func Convert_sharemodel_ShipmentPriceInfoes_shipping_ShipmentPriceInfoes(args []*sharemodel.ShipmentPriceInfo) (outs []*shipping.ShipmentPriceInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shipping.ShipmentPriceInfo, len(args))
+	outs = make([]*shipping.ShipmentPriceInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_sharemodel_ShipmentPriceInfo_shipping_ShipmentPriceInfo(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(arg *shipping.ShipmentPriceInfo, out *sharemodel.ShipmentPriceInfo) *sharemodel.ShipmentPriceInfo {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &sharemodel.ShipmentPriceInfo{}
+	}
+	convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(arg, out)
+	return out
+}
+
+func convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(arg *shipping.ShipmentPriceInfo, out *sharemodel.ShipmentPriceInfo) {
+	out.ShipmentPriceID = arg.ShipmentPriceID         // simple assign
+	out.ShipmentPriceListID = arg.ShipmentPriceListID // simple assign
+	out.OriginFee = arg.OriginFee                     // simple assign
+	out.MakeupFee = arg.MakeupFee                     // simple assign
+}
+
+func Convert_shipping_ShipmentPriceInfoes_sharemodel_ShipmentPriceInfoes(args []*shipping.ShipmentPriceInfo) (outs []*sharemodel.ShipmentPriceInfo) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]sharemodel.ShipmentPriceInfo, len(args))
+	outs = make([]*sharemodel.ShipmentPriceInfo, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(args[i], &tmps[i])
 	}
 	return outs
 }

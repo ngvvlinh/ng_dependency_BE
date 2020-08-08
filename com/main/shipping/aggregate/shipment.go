@@ -382,11 +382,11 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 				Fulfillment: ffm,
 				State:       args.ShippingState,
 			}
-			feeLines, err := a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
+			calcFeeResp, err := a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 			if err != nil {
 				return err
 			}
-			returnFeeLine := shipping.GetShippingFeeLine(feeLines, shipping_fee_type.Return)
+			returnFeeLine := shipping.GetShippingFeeLine(calcFeeResp.ShippingFeeLines, shipping_fee_type.Return)
 			shippingFeeShopLines := shipping.ApplyShippingFeeLine(ffm.ShippingFeeShopLines, returnFeeLine)
 
 			update := &shipping.UpdateFulfillmentShippingFeesArgs{
@@ -394,6 +394,10 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 				ShippingCode:     ffm.ShippingCode,
 				ShippingFeeLines: shippingFeeShopLines,
 				UpdatedBy:        args.UpdatedBy,
+				ShipmentPriceInfo: &shipping.ShipmentPriceInfo{
+					ShipmentPriceID:     calcFeeResp.ShipmentPriceID,
+					ShipmentPriceListID: calcFeeResp.ShipmentPriceListID,
+				},
 			}
 			if _, err := a.UpdateFulfillmentShippingFees(ctx, update); err != nil {
 				return err
@@ -451,6 +455,9 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 			ShippingFeeShop:          shipping.CalcShopShippingFee(totalShippingFeeShop, ffm),
 			UpdatedBy:                args.UpdatedBy,
 			AdminNote:                args.AdminNote,
+		}
+		if args.ShipmentPriceInfo != nil {
+			update.ShipmentPriceInfo = shippingconvert.Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(args.ShipmentPriceInfo, nil)
 		}
 		if err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillmentDB(update); err != nil {
 			return err
@@ -703,11 +710,12 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 		ID:                       ffm.ID,
 		ProviderShippingFeeLines: args.ProviderFeeLines,
 	}
+	var calcFeeResp *carrier.CalcMakeupShippingFeesByFfmResponse
 	defer func() error {
 
 		update.ExternalShippingFee = shipping.GetTotalShippingFee(args.ProviderFeeLines)
 
-		// always update shipping fee even if error occurred
+		// always update provider shipping fee even if error occurred
 		if update.ShippingFeeShopLines != nil {
 			totalFee := shipping.GetTotalShippingFee(update.ShippingFeeShopLines)
 			shippingFeeShop := shipping.CalcShopShippingFee(totalFee, ffm)
@@ -730,6 +738,13 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 					update.ShippingFeeShopLines = nil
 					update.ShippingFeeShop = 0
 				}
+			}
+		}
+
+		if update.ShippingFeeShopLines != nil && calcFeeResp != nil {
+			update.ShipmentPriceInfo = &shipping.ShipmentPriceInfo{
+				ShipmentPriceID:     calcFeeResp.ShipmentPriceID,
+				ShipmentPriceListID: calcFeeResp.ShipmentPriceListID,
 			}
 		}
 
@@ -759,10 +774,11 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	}
 
 	if args.NewWeight != ffm.ChargeableWeight {
-		feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
+		calcFeeResp, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 		if err != nil {
 			return err
 		}
+		feeLines = calcFeeResp.ShippingFeeLines
 		mainFeeLine := shipping.GetShippingFeeLine(feeLines, shipping_fee_type.Main)
 		shippingFeeShopLines = shipping.ApplyShippingFeeLine(shippingFeeShopLines, mainFeeLine)
 
@@ -773,10 +789,11 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 
 	if shipping.IsStateReturn(args.NewState) {
 		if feeLines == nil {
-			feeLines, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
+			calcFeeResp, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 			if err != nil {
 				return err
 			}
+			feeLines = calcFeeResp.ShippingFeeLines
 		}
 		returnFeeLine := shipping.GetShippingFeeLine(feeLines, shipping_fee_type.Return)
 		shippingFeeShopLines = shipping.ApplyShippingFeeLine(shippingFeeShopLines, returnFeeLine)
@@ -920,11 +937,11 @@ func (a *Aggregate) AddFulfillmentShippingFee(ctx context.Context, args *shippin
 			Fulfillment:        ffm,
 			AdditionalFeeTypes: []shipping_fee_type.ShippingFeeType{args.ShippingFeeType},
 		}
-		feeLines, err := a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
+		calcFeeResp, err := a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 		if err != nil {
 			return err
 		}
-		feeLine := shipping.GetShippingFeeLine(feeLines, args.ShippingFeeType)
+		feeLine := shipping.GetShippingFeeLine(calcFeeResp.ShippingFeeLines, args.ShippingFeeType)
 		if feeLine == nil || feeLine.Cost == 0 {
 			return nil
 		}
@@ -933,6 +950,10 @@ func (a *Aggregate) AddFulfillmentShippingFee(ctx context.Context, args *shippin
 			ShippingCode:     ffm.ShippingCode,
 			ShippingFeeLines: append(ffm.ShippingFeeShopLines, feeLine),
 			UpdatedBy:        args.UpdatedBy,
+			ShipmentPriceInfo: &shipping.ShipmentPriceInfo{
+				ShipmentPriceID:     calcFeeResp.ShipmentPriceID,
+				ShipmentPriceListID: calcFeeResp.ShipmentPriceListID,
+			},
 		}
 		if _, err := a.UpdateFulfillmentShippingFees(ctx, update); err != nil {
 			return err

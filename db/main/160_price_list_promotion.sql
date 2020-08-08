@@ -18,7 +18,7 @@ CREATE TABLE shipment_price_list_promotion (
 SELECT init_history('shipment_price_list_promotion', '{id,connection_id}');
 
 ALTER TABLE fulfillment
-    ADD COLUMN shipment_price_list_id INT8 REFERENCES shipment_price_list(id);
+    ADD COLUMN shipment_price_info JSONB;
 
 ALTER TABLE history.fulfillment
-    ADD COLUMN shipment_price_list_id INT8;
+    ADD COLUMN shipment_price_info JSONB;

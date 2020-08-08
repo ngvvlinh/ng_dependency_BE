@@ -5655,15 +5655,15 @@
     "qdShipmentPriceInfo": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
         "makeup_fee": {
           "type": "integer"
         },
         "origin_fee": {
           "type": "integer"
+        },
+        "shipment_price_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
