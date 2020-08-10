@@ -32,7 +32,7 @@ import (
 	"o.o/common/l"
 )
 
-var ll = l.New()
+var ll = l.New().WithChannel(meta.ChannelShipmentCarrier)
 
 type MainDB *cmsql.Database // TODO(vu): call the right service
 
@@ -109,7 +109,8 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ProviderFeeLines: updateFfm.ProviderShippingFeeLines,
 		}
 		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, updateFeeLinesArgs); err != nil {
-			ll.S.Errorf("Lỗi cập nhật cước phí GHN: %v", err.Error())
+			msg := "–––\n👹 GHN: đơn %v có thay đổi cước phí. Không thể cập nhật. Vui lòng kiểm tra lại. 👹\n- Weight: %v\n- State: %v\n- Lỗi: %v\n–––"
+			ll.SendMessage(fmt.Sprintf(msg, ffm.ShippingCode, updateFeeLinesArgs.Weight, updateFeeLinesArgs.State, err.Error()))
 		}
 
 		// update info
@@ -128,6 +129,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			LastSyncAt:                updateFfm.LastSyncAt,
 			ShippingCreatedAt:         updateFfm.ShippingCreatedAt,
 			ShippingPickingAt:         updateFfm.ShippingPickingAt,
+			ShippingHoldingAt:         updateFfm.ShippingHoldingAt,
 			ShippingDeliveringAt:      updateFfm.ShippingDeliveringAt,
 			ShippingDeliveredAt:       updateFfm.ShippingDeliveredAt,
 			ShippingReturningAt:       updateFfm.ShippingReturningAt,
@@ -140,9 +142,12 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		}
 
 		// updateCOD
-		if err := wh.validateAndUpdateFulfillmentCOD(ctx, msg, ffm); err != nil {
-			return err
+		updateCODAmountArgs := &shipping.UpdateFfmCODAmountArgs{
+			NewCODAmount: msg.CODAmount.Int(),
+			Ffm:          ffm,
+			CarrierName:  shipping_provider.GHN.String(),
 		}
+		shipping.ValidateAndUpdateFulfillmentCOD(ctx, wh.shippingAggr, updateCODAmountArgs)
 
 		// đối soát GHN direct
 		if err := wh.updateFulfillmentsCODTransferedAt(ctx, msg, ffm); err != nil {
@@ -168,25 +173,6 @@ func (wh *Webhook) updateFulfillmentsCODTransferedAt(ctx context.Context, msg gh
 		}
 		if err := wh.shippingAggr.Dispatch(ctx, updateCODTransferDateCmd); err != nil {
 			return err
-		}
-	}
-	return nil
-}
-
-func (wh *Webhook) validateAndUpdateFulfillmentCOD(ctx context.Context, msg ghnclient.CallbackOrder, ffm *shipmodel.Fulfillment) error {
-	if msg.CODAmount.Int() != ffm.TotalCODAmount {
-		switch ffm.ConnectionMethod {
-		case connection_type.ConnectionMethodDirect:
-			updateFulfillmentShippingFeesCmd := &shippingcore.UpdateFulfillmentShippingFeesCommand{
-				FulfillmentID:  ffm.ID,
-				TotalCODAmount: dot.Int(msg.CODAmount.Int()),
-			}
-			if err := wh.shippingAggr.Dispatch(ctx, updateFulfillmentShippingFeesCmd); err != nil {
-				return err
-			}
-		default:
-			str := "–––\n👹 GHN: đơn %v có thay đổi COD. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- COD hiện tại: %v \n- COD mới: %v\n–––"
-			ll.WithChannel(meta.ChannelShipmentCarrier).SendMessage(fmt.Sprintf(str, ffm.ShippingCode, ffm.TotalCODAmount, msg.CODAmount))
 		}
 	}
 	return nil

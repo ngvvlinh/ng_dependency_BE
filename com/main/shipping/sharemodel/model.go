@@ -167,8 +167,8 @@ type ShipmentServiceInfo struct {
 type ShipmentPriceInfo struct {
 	ShipmentPriceID     dot.ID `json:"shipment_price_id"`
 	ShipmentPriceListID dot.ID `json:"shipment_price_list_id"`
-	OriginFee           int    `json:"origin_fee"`
-	MakeupFee           int    `json:"makeup_fee"`
+	OriginFee           int    `json:"origin_fee,omitempty"`
+	MakeupFee           int    `json:"makeup_fee,omitempty"`
 }
 
 func (service *AvailableShippingService) ApplyFeeMain(feeMain int) {

@@ -20,6 +20,7 @@ import (
 	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/sqlstore"
+	directwebhook "o.o/backend/pkg/integration/shipping/direct/webhook"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	"o.o/backend/pkg/integration/shipping/ghtk"
 	"o.o/backend/pkg/integration/shipping/vtpost"
@@ -42,6 +43,7 @@ var WireSet = wire.NewSet(
 	vtpostimport.WireSet,
 	jtexpressimport.WireSet,
 	imhandlers.WireSet,
+	directwebhook.WireSet,
 	SupportedCarrierDrivers,
 	SupportedShippingCarrierConfig,
 )

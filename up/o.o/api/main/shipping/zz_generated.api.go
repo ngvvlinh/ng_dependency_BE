@@ -168,6 +168,7 @@ type UpdateFulfillmentExternalShippingInfoCommand struct {
 	LastSyncAt                time.Time
 	ShippingCreatedAt         time.Time
 	ShippingPickingAt         time.Time
+	ShippingHoldingAt         time.Time
 	ShippingDeliveringAt      time.Time
 	ShippingDeliveredAt       time.Time
 	ShippingReturningAt       time.Time
@@ -584,6 +585,7 @@ func (q *UpdateFulfillmentExternalShippingInfoCommand) GetArgs(ctx context.Conte
 			LastSyncAt:                q.LastSyncAt,
 			ShippingCreatedAt:         q.ShippingCreatedAt,
 			ShippingPickingAt:         q.ShippingPickingAt,
+			ShippingHoldingAt:         q.ShippingHoldingAt,
 			ShippingDeliveringAt:      q.ShippingDeliveringAt,
 			ShippingDeliveredAt:       q.ShippingDeliveredAt,
 			ShippingReturningAt:       q.ShippingReturningAt,
@@ -609,6 +611,7 @@ func (q *UpdateFulfillmentExternalShippingInfoCommand) SetUpdateFfmExternalShipp
 	q.LastSyncAt = args.LastSyncAt
 	q.ShippingCreatedAt = args.ShippingCreatedAt
 	q.ShippingPickingAt = args.ShippingPickingAt
+	q.ShippingHoldingAt = args.ShippingHoldingAt
 	q.ShippingDeliveringAt = args.ShippingDeliveringAt
 	q.ShippingDeliveredAt = args.ShippingDeliveredAt
 	q.ShippingReturningAt = args.ShippingReturningAt

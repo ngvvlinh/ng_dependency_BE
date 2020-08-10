@@ -664,6 +664,7 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 			LastSyncAt:                args.LastSyncAt,
 			ShippingCreatedAt:         args.ShippingCreatedAt,
 			ShippingPickingAt:         args.ShippingPickingAt,
+			ShippingHoldingAt:         args.ShippingHoldingAt,
 			ShippingDeliveringAt:      args.ShippingDeliveringAt,
 			ShippingDeliveredAt:       args.ShippingDeliveredAt,
 			ShippingReturningAt:       args.ShippingReturningAt,

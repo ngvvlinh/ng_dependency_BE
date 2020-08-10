@@ -9,6 +9,8 @@ import (
 	"o.o/api/main/location"
 	"o.o/api/main/shipnow"
 	shippingcore "o.o/api/main/shipping"
+	"o.o/api/meta"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
@@ -20,7 +22,10 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/capi/dot"
+	"o.o/common/l"
 )
+
+var ll = l.New().WithChannel(meta.ChannelShipmentCarrier)
 
 func CalcPickTime(shippingProvider shipping_provider.ShippingProvider, t time.Time) time.Time {
 	// VTPOST: thời gian lấy hàng dự kiến tạo trước 16h
@@ -251,4 +256,36 @@ func UpdateShippingFeeLines(ctx context.Context, shippingAggr shippingcore.Comma
 		ProviderFeeLines: providerFeeLinesCore,
 	}
 	return shippingAggr.Dispatch(ctx, cmd)
+}
+
+type UpdateFfmCODAmountArgs struct {
+	NewCODAmount int
+	Ffm          *shipmodel.Fulfillment
+	CarrierName  string
+}
+
+// ValidateAndUpdateFulfillmentCOD
+//
+// Cập nhật COD Amount (chỉ sử dụng khi nhận webhook)
+// Nếu phát sinh lỗi, bắn ra telegram để thông báo, không trả về lỗi
+func ValidateAndUpdateFulfillmentCOD(ctx context.Context, shippingAggr shippingcore.CommandBus, args *UpdateFfmCODAmountArgs) {
+	newCODAmount := args.NewCODAmount
+	ffm := args.Ffm
+	if newCODAmount != ffm.TotalCODAmount {
+		switch ffm.ConnectionMethod {
+		case connection_type.ConnectionMethodDirect:
+			updateFulfillmentShippingFeesCmd := &shippingcore.UpdateFulfillmentShippingFeesCommand{
+				FulfillmentID:  ffm.ID,
+				TotalCODAmount: dot.Int(newCODAmount),
+			}
+			if err := shippingAggr.Dispatch(ctx, updateFulfillmentShippingFeesCmd); err != nil {
+				ll.SendMessage("–––\n👹 %v: đơn %v cập nhật thay đổi COD thất bại. 👹 \n Lỗi: %v \n––", args.CarrierName, ffm.ShippingCode, err.Error())
+				return
+			}
+		default:
+			str := "–––\n👹 %v: đơn %v có thay đổi COD. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- COD hiện tại: %v \n- COD mới: %v\n–––"
+			ll.SendMessage(fmt.Sprintf(str, args.CarrierName, ffm.ShippingCode, ffm.TotalCODAmount, newCODAmount))
+		}
+	}
+	return
 }

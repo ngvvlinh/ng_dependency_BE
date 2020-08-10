@@ -124,6 +124,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			LastSyncAt:                updateFfm.LastSyncAt,
 			ShippingCreatedAt:         updateFfm.ShippingCreatedAt,
 			ShippingPickingAt:         updateFfm.ShippingPickingAt,
+			ShippingHoldingAt:         updateFfm.ShippingHoldingAt,
 			ShippingDeliveringAt:      updateFfm.ShippingDeliveringAt,
 			ShippingDeliveredAt:       updateFfm.ShippingDeliveredAt,
 			ShippingReturningAt:       updateFfm.ShippingReturningAt,

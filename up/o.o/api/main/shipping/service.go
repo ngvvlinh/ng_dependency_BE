@@ -228,6 +228,7 @@ type UpdateFfmExternalShippingInfoArgs struct {
 	LastSyncAt                time.Time
 	ShippingCreatedAt         time.Time
 	ShippingPickingAt         time.Time
+	ShippingHoldingAt         time.Time
 	ShippingDeliveringAt      time.Time
 	ShippingDeliveredAt       time.Time
 	ShippingReturningAt       time.Time

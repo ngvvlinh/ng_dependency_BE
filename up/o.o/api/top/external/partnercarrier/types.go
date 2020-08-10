@@ -93,13 +93,9 @@ func Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(in *ShippingFeeLine) *s
 	}
 }
 
-func Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(items []*ShippingFeeLine) []*shippingcore.ShippingFeeLine {
-	if items == nil {
-		return nil
+func Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(items []*ShippingFeeLine) (res []*shippingcore.ShippingFeeLine) {
+	for _, item := range items {
+		res = append(res, Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(item))
 	}
-	result := make([]*shippingcore.ShippingFeeLine, len(items))
-	for i, item := range items {
-		result[i] = Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(item)
-	}
-	return result
+	return
 }

@@ -41,7 +41,7 @@ const (
 	StateStoring            State = "storing"             // -> holding
 	StateTransporting       State = "transporting"        // -> holding
 	StateDelivering         State = "delivering"          // -> delivering
-	StateDeliveryFail       State = "delivery_fail"       // -> delivering
+	StateDeliveryFail       State = "delivery_fail"       // -> holding
 	StateDelivered          State = "delivered"           // -> delivered
 	StateWaitingToReturn    State = "waiting_to_return"   // -> returning
 	StateReturn             State = "return"              // -> returning

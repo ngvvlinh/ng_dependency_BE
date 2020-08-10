@@ -2,10 +2,12 @@ package webhook
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"o.o/api/main/identity"
 	shippingcore "o.o/api/main/shipping"
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	logmodel "o.o/backend/com/etc/logging/shippingwebhook/model"
@@ -33,7 +35,7 @@ type (
 	Int    = httpreq.Int
 )
 
-var ll = l.New()
+var ll = l.New().WithChannel(meta.ChannelShipmentCarrier)
 var EndStatesCode = []string{"501", "503", "504", "201", "107"}
 
 type Webhook struct {
@@ -111,7 +113,8 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ProviderFeeLines: updateFfm.ProviderShippingFeeLines,
 		}
 		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, updateFeeLinesArgs); err != nil {
-			ll.S.Errorf("Lỗi cập nhật cước phí VTPost: %v", err.Error())
+			msg := "–––\n👹 VTPOST: đơn %v có thay đổi cước phí. Không thể cập nhật. Vui lòng kiểm tra lại. 👹 \nLỗi: %v\n–––"
+			ll.SendMessage(fmt.Sprintf(msg, ffm.ShippingCode, err.Error()))
 		}
 
 		note := orderData.Note
@@ -131,6 +134,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			LastSyncAt:                updateFfm.LastSyncAt,
 			ShippingCreatedAt:         updateFfm.ShippingCreatedAt,
 			ShippingPickingAt:         updateFfm.ShippingPickingAt,
+			ShippingHoldingAt:         updateFfm.ShippingHoldingAt,
 			ShippingDeliveringAt:      updateFfm.ShippingDeliveringAt,
 			ShippingDeliveredAt:       updateFfm.ShippingDeliveredAt,
 			ShippingReturningAt:       updateFfm.ShippingReturningAt,

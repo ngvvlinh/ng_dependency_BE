@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 
 	"o.o/api/main/identity"
 	shippingcore "o.o/api/main/shipping"
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	logmodel "o.o/backend/com/etc/logging/shippingwebhook/model"
@@ -30,7 +32,7 @@ import (
 	"o.o/common/l"
 )
 
-var ll = l.New()
+var ll = l.New().WithChannel(meta.ChannelShipmentCarrier)
 
 type Webhook struct {
 	db                     *cmsql.Database
@@ -116,7 +118,8 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ProviderFeeLines: updateFfm.ProviderShippingFeeLines,
 		}
 		if err := shipping.UpdateShippingFeeLines(ctx, wh.shippingAggr, updateFeeLinesArgs); err != nil {
-			ll.S.Errorf("Lỗi cập nhật cước phí GHTK: %v", err.Error())
+			msg := "–––\n👹 GHTK: đơn %v có thay đổi cước phí. Không thể cập nhật. Vui lòng kiểm tra lại. 👹 \nLỗi: %v\n–––"
+			ll.SendMessage(fmt.Sprintf(msg, ffm.ShippingCode, err.Error()))
 		}
 
 		note, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")
@@ -136,6 +139,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			LastSyncAt:                updateFfm.LastSyncAt,
 			ShippingCreatedAt:         updateFfm.ShippingCreatedAt,
 			ShippingPickingAt:         updateFfm.ShippingPickingAt,
+			ShippingHoldingAt:         updateFfm.ShippingHoldingAt,
 			ShippingDeliveringAt:      updateFfm.ShippingDeliveringAt,
 			ShippingDeliveredAt:       updateFfm.ShippingDeliveredAt,
 			ShippingReturningAt:       updateFfm.ShippingReturningAt,
