@@ -723,6 +723,9 @@ func (m *ShipmentManager) validateConnection(ctx context.Context, conn *connecti
 		return true
 	}
 	topshipProvidersAllowed := wlPartner.Shipment.Topship
+	if len(topshipProvidersAllowed) == 0 {
+		return true
+	}
 	for _, provider := range topshipProvidersAllowed {
 		if provider == conn.ConnectionProvider {
 			return true

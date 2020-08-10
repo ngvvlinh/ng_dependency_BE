@@ -37,7 +37,7 @@ func ITopX(env cmenv.EnvType) *whitelabel.WL {
 			CSEmail:              "support@imgroup.vn",
 			Shipment: &whitelabel.ShipmentConfig{
 				Topship: []connection_type.ConnectionProvider{
-					connection_type.ConnectionProviderGHN,
+					// connection_type.ConnectionProviderGHN,
 				},
 			},
 			Templates: &whitelabel.Templates{
