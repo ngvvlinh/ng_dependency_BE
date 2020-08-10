@@ -12,6 +12,7 @@ import (
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
+	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -91,6 +92,7 @@ type Fulfillment struct {
 	ShippingServiceName string
 	ShippingNote        string
 	TryOn               try_on.TryOnCode
+	ShippingPaymentType shipping_payment_type.ShippingPaymentType
 	IncludeInsurance    dot.NullBool
 	InsuranceValue      dot.NullInt
 

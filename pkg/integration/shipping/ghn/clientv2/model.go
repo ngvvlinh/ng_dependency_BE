@@ -452,6 +452,7 @@ type UpdateOrderRequest struct {
 	InsuranceValue *int   `json:"insurance_value,omitempty"`
 	Note           string `json:"note,omitempty"`
 	RequiredNote   string `json:"required_note,omitempty"`
+	PaymentTypeID  int    `json:"payment_type_id,omitempty"`
 }
 
 // UpdateCOD

@@ -13,6 +13,7 @@ import (
 	"o.o/api/top/types/etc/connection_type"
 	shipstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
+	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
@@ -237,6 +238,10 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 			}
 		}
 		connectionMethod = conn.ConnectionMethod
+
+		if connectionMethod == connection_type.ConnectionMethodBuiltin && args.ShippingPaymentType != shipping_payment_type.Seller {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Hình thức thanh toán phí giao hàng không hợp lệ.")
+		}
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phương thức vận chuyển không hợp lệ. Chỉ hỗ trợ: manual và shipment.")
 	}
@@ -305,6 +310,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		ShippingState:       shipstate.Default,
 		ShippingType:        args.ShippingType,
 		Coupon:              args.Coupon,
+		ShippingPaymentType: args.ShippingPaymentType,
 	}
 	if conn != nil {
 		// backward compatible
@@ -846,6 +852,10 @@ func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shippin
 		return 0, err
 	}
 
+	if ffm.ConnectionMethod == connection_type.ConnectionMethodBuiltin && args.ShippingPaymentType != shipping_payment_type.Seller {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Hình thức thanh toán phí giao hàng không hợp lệ.")
+	}
+
 	if _, _, err = a.getAndVerifyAddress(ctx, args.AddressFrom); err != nil {
 		return 0, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
 	}
@@ -869,15 +879,16 @@ func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shippin
 		ffm.ConnectionID = shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 
 		ffmUpdate := &shipmodel.Fulfillment{
-			ShopID:           ffm.ShopID,
-			ConnectionID:     ffm.ConnectionID,
-			ShippingCode:     ffm.ShippingCode,
-			AddressFrom:      addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressFrom, nil),
-			AddressTo:        addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressTo, nil),
-			TryOn:            args.TryOn.Apply(ffm.TryOn),
-			GrossWeight:      args.GrossWeight.Apply(ffm.GrossWeight),
-			ChargeableWeight: args.GrossWeight.Apply(ffm.ChargeableWeight),
-			ShippingNote:     args.ShippingNote.Apply(""),
+			ShopID:              ffm.ShopID,
+			ConnectionID:        ffm.ConnectionID,
+			ShippingCode:        ffm.ShippingCode,
+			AddressFrom:         addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressFrom, nil),
+			AddressTo:           addressconvert.Convert_orderingtypes_Address_addressmodel_Address(args.AddressTo, nil),
+			TryOn:               args.TryOn.Apply(ffm.TryOn),
+			GrossWeight:         args.GrossWeight.Apply(ffm.GrossWeight),
+			ChargeableWeight:    args.GrossWeight.Apply(ffm.ChargeableWeight),
+			ShippingNote:        args.ShippingNote.Apply(""),
+			ShippingPaymentType: args.ShippingPaymentType.Apply(ffm.ShippingPaymentType),
 		}
 
 		// set new insuranceValue

@@ -7016,6 +7016,13 @@
         }
       }
     },
+    "hbStocktakeType": {
+      "type": "string",
+      "enum": [
+        "balance",
+        "discard"
+      ]
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -7938,6 +7945,9 @@
         "shipping_note": {
           "type": "string"
         },
+        "shipping_payment_type": {
+          "$ref": "#/definitions/sdShippingPaymentType"
+        },
         "shipping_service_code": {
           "type": "string"
         },
@@ -8314,7 +8324,7 @@
           "type": "integer"
         },
         "type": {
-          "$ref": "#/definitions/vmStocktakeType"
+          "$ref": "#/definitions/hbStocktakeType"
         }
       }
     },
@@ -11882,6 +11892,9 @@
         "shipping_note": {
           "type": "string"
         },
+        "shipping_payment_type": {
+          "$ref": "#/definitions/sdShippingPaymentType"
+        },
         "try_on": {
           "$ref": "#/definitions/csTryOnCode"
         }
@@ -13624,6 +13637,9 @@
         "shipping_note": {
           "type": "string"
         },
+        "shipping_payment_type": {
+          "$ref": "#/definitions/sdShippingPaymentType"
+        },
         "shipping_provider": {
           "allOf": [
             {
@@ -15014,7 +15030,7 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/sdState"
+          "$ref": "#/definitions/qeState"
         },
         "shipping_status": {
           "$ref": "#/definitions/bnStatus"
@@ -15767,6 +15783,22 @@
         }
       }
     },
+    "qeState": {
+      "type": "string",
+      "enum": [
+        "default",
+        "created",
+        "assigning",
+        "picking",
+        "delivering",
+        "delivered",
+        "returning",
+        "returned",
+        "unknown",
+        "undeliverable",
+        "cancelled"
+      ]
+    },
     "rjInventoryVoucherType": {
       "type": "string",
       "enum": [
@@ -15794,20 +15826,12 @@
         "confirm"
       ]
     },
-    "sdState": {
+    "sdShippingPaymentType": {
       "type": "string",
       "enum": [
-        "default",
-        "created",
-        "assigning",
-        "picking",
-        "delivering",
-        "delivered",
-        "returning",
-        "returned",
-        "unknown",
-        "undeliverable",
-        "cancelled"
+        "none",
+        "seller",
+        "buyer"
       ]
     },
     "sfState": {
@@ -15848,13 +15872,6 @@
         "unknown",
         "manual",
         "auto"
-      ]
-    },
-    "vmStocktakeType": {
-      "type": "string",
-      "enum": [
-        "balance",
-        "discard"
       ]
     },
     "xjSource": {

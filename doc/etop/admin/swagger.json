@@ -4154,7 +4154,7 @@
           "type": "string"
         },
         "type": {
-          "$ref": "#/definitions/qeProductSubscriptionType"
+          "$ref": "#/definitions/vmProductSubscriptionType"
         }
       }
     },
@@ -4498,6 +4498,9 @@
         },
         "shipping_note": {
           "type": "string"
+        },
+        "shipping_payment_type": {
+          "$ref": "#/definitions/sdShippingPaymentType"
         },
         "shipping_provider": {
           "allOf": [
@@ -5781,7 +5784,7 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/sdState"
+          "$ref": "#/definitions/qeState"
         },
         "shipping_status": {
           "$ref": "#/definitions/bnStatus"
@@ -6136,7 +6139,7 @@
           "$ref": "#/definitions/blStatus"
         },
         "type": {
-          "$ref": "#/definitions/qeProductSubscriptionType"
+          "$ref": "#/definitions/vmProductSubscriptionType"
         },
         "updated_at": {
           "type": "string",
@@ -6528,14 +6531,7 @@
         }
       }
     },
-    "qeProductSubscriptionType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "ecomify"
-      ]
-    },
-    "sdState": {
+    "qeState": {
       "type": "string",
       "enum": [
         "default",
@@ -6549,6 +6545,14 @@
         "unknown",
         "undeliverable",
         "cancelled"
+      ]
+    },
+    "sdShippingPaymentType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "seller",
+        "buyer"
       ]
     },
     "sfState": {
@@ -6582,6 +6586,13 @@
       "enum": [
         "pick",
         "deliver"
+      ]
+    },
+    "vmProductSubscriptionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ecomify"
       ]
     },
     "wdNotifierEntity": {

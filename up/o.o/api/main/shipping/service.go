@@ -9,6 +9,7 @@ import (
 	"o.o/api/main/shipping/types"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
+	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -98,6 +99,8 @@ type CreateFulfillmentsArgs struct {
 	types.ValueInfo
 
 	TryOn try_on.TryOnCode
+
+	ShippingPaymentType shipping_payment_type.ShippingPaymentType
 
 	ShippingNote string
 
@@ -191,14 +194,15 @@ type UpdateFulfillmentsStatusArgs struct {
 
 // +convert:update=Fulfillment(ID,ShopID)
 type UpdateFulfillmentInfoArgs struct {
-	FulfillmentID    dot.ID
-	AddressTo        *ordertypes.Address
-	AddressFrom      *ordertypes.Address
-	IncludeInsurance dot.NullBool
-	InsuranceValue   dot.NullInt
-	GrossWeight      dot.NullInt
-	TryOn            try_on.TryOnCode
-	ShippingNote     dot.NullString
+	FulfillmentID       dot.ID
+	AddressTo           *ordertypes.Address
+	AddressFrom         *ordertypes.Address
+	IncludeInsurance    dot.NullBool
+	InsuranceValue      dot.NullInt
+	GrossWeight         dot.NullInt
+	TryOn               try_on.TryOnCode
+	ShippingPaymentType shipping_payment_type.ShippingPaymentType
+	ShippingNote        dot.NullString
 }
 
 type UpdateFulfillmentsCODTransferedAtArgs struct {

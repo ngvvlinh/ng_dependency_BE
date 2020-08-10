@@ -10,6 +10,7 @@ import (
 	api "o.o/api/top/int/shop"
 	inttypes "o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/shipping_payment_type"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/bus"
@@ -81,12 +82,13 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *api.CreateF
 			IncludeInsurance: q.IncludeInsurance,
 			InsuranceValue:   q.InsuranceValue,
 		},
-		TryOn:         q.TryOn,
-		ShippingNote:  q.ShippingNote,
-		ShippingType:  q.ShippingType,
-		ConnectionID:  q.ConnectionID,
-		ShopCarrierID: q.ShopCarrierID,
-		Coupon:        q.Coupon,
+		TryOn:               q.TryOn,
+		ShippingPaymentType: q.ShippingPaymentType.Apply(shipping_payment_type.Seller),
+		ShippingNote:        q.ShippingNote,
+		ShippingType:        q.ShippingType,
+		ConnectionID:        q.ConnectionID,
+		ShopCarrierID:       q.ShopCarrierID,
+		Coupon:              q.Coupon,
 	}
 	if err := s.ShippingAggregate.Dispatch(ctx, args); err != nil {
 		return nil, err
@@ -107,14 +109,15 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *api.CreateF
 
 func (s *ShipmentService) UpdateFulfillmentInfo(ctx context.Context, q *api.UpdateFulfillmentInfoRequest) (res *pbcm.UpdatedResponse, _ error) {
 	updateFulfillmentInfo := &shipping.ShopUpdateFulfillmentInfoCommand{
-		FulfillmentID:    q.FulfillmentID,
-		AddressTo:        convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ShippingAddress),
-		AddressFrom:      convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.PickupAddress),
-		IncludeInsurance: q.IncludeInsurance,
-		InsuranceValue:   q.InsuranceValue,
-		GrossWeight:      q.GrossWeight,
-		TryOn:            q.TryOn,
-		ShippingNote:     q.ShippingNote,
+		FulfillmentID:       q.FulfillmentID,
+		AddressTo:           convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.ShippingAddress),
+		AddressFrom:         convertpb.Convert_api_OrderAddress_To_core_OrderAddress(q.PickupAddress),
+		IncludeInsurance:    q.IncludeInsurance,
+		InsuranceValue:      q.InsuranceValue,
+		GrossWeight:         q.GrossWeight,
+		TryOn:               q.TryOn,
+		ShippingPaymentType: q.ShippingPaymentType.Apply(shipping_payment_type.Seller),
+		ShippingNote:        q.ShippingNote,
 	}
 	if err := s.ShippingAggregate.Dispatch(ctx, updateFulfillmentInfo); err != nil {
 		return nil, err

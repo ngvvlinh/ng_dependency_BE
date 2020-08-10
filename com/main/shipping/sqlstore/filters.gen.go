@@ -10,6 +10,7 @@ import (
 	orderingtypes "o.o/api/main/ordering/types"
 	connection_type "o.o/api/top/types/etc/connection_type"
 	shipping "o.o/api/top/types/etc/shipping"
+	shipping_payment_type "o.o/api/top/types/etc/shipping_payment_type"
 	shipping_provider "o.o/api/top/types/etc/shipping_provider"
 	status3 "o.o/api/top/types/etc/status3"
 	status4 "o.o/api/top/types/etc/status4"
@@ -1152,6 +1153,25 @@ func (ft *FulfillmentFilters) ByShippingTypePtr(ShippingType *orderingtypes.Ship
 		Value:  ShippingType,
 		IsNil:  ShippingType == nil,
 		IsZero: ShippingType != nil && (*ShippingType) == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByShippingPaymentType(ShippingPaymentType shipping_payment_type.ShippingPaymentType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_payment_type",
+		Value:  ShippingPaymentType,
+		IsNil:  ShippingPaymentType == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByShippingPaymentTypePtr(ShippingPaymentType *shipping_payment_type.ShippingPaymentType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_payment_type",
+		Value:  ShippingPaymentType,
+		IsNil:  ShippingPaymentType == nil,
+		IsZero: ShippingPaymentType != nil && (*ShippingPaymentType) == 0,
 	}
 }
 

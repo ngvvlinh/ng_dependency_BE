@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"o.o/api/main/location"
-	"o.o/api/top/types/etc/ghn_payment_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status4"
@@ -121,7 +120,7 @@ func (d *GHNDriver) CreateFulfillment(
 		Coupon:          args.Coupon,
 		ServiceID:       serviceID,
 		// người bán trả tiền ship (hardcode)
-		PaymentTypeID: ghn_payment_type.SELLER.Enum(),
+		PaymentTypeID: ffm.ShippingPaymentType.Enum(),
 		Note:          note,
 		RequiredNote:  ghnNoteCode.String(),
 	}
@@ -233,6 +232,7 @@ func (d *GHNDriver) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fu
 		InsuranceValue: &insuranceValue,
 		Note:           note,
 		RequiredNote:   ghnNoteCode.String(),
+		PaymentTypeID:  ffm.ShippingPaymentType.Enum(),
 	}
 	if err := d.client.UpdateOrder(ctx, cmd); err != nil {
 		return err

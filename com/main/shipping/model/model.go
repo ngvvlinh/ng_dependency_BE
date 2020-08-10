@@ -8,6 +8,7 @@ import (
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -112,6 +113,7 @@ type Fulfillment struct {
 	IncludeInsurance    dot.NullBool
 	InsuranceValue      dot.NullInt
 	ShippingType        ordertypes.ShippingType
+	ShippingPaymentType shipping_payment_type.ShippingPaymentType
 	ConnectionID        dot.ID
 	ConnectionMethod    connection_type.ConnectionMethod
 	ShopCarrierID       dot.ID

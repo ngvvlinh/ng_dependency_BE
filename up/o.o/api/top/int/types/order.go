@@ -15,6 +15,7 @@ import (
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
+	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -353,30 +354,31 @@ type Fulfillment struct {
 	CancelledAt      dot.Time `json:"cancelled_at"`
 	CancelReason     string   `json:"cancel_reason"`
 	// deprecated: use carrier instead
-	ShippingProvider     shipping_provider.ShippingProvider `json:"shipping_provider"`
-	Carrier              shipping_provider.ShippingProvider `json:"carrier"`
-	ShippingServiceName  string                             `json:"shipping_service_name"`
-	ShippingServiceFee   int                                `json:"shipping_service_fee"`
-	ShippingServiceCode  string                             `json:"shipping_service_code"`
-	ShippingCode         string                             `json:"shipping_code"`
-	ShippingNote         string                             `json:"shipping_note"`
-	TryOn                try_on.TryOnCode                   `json:"try_on"`
-	IncludeInsurance     bool                               `json:"include_insurance"`
-	ShConfirm            status3.Status                     `json:"sh_confirm"`
-	ShippingState        shipping.State                     `json:"shipping_state"`
-	Status               status5.Status                     `json:"status"`
-	ShippingStatus       status5.Status                     `json:"shipping_status"`
-	EtopPaymentStatus    status4.Status                     `json:"etop_payment_status"`
-	ShippingFeeCustomer  int                                `json:"shipping_fee_customer"`
-	ShippingFeeShop      int                                `json:"shipping_fee_shop"`
-	XShippingFee         int                                `json:"x_shipping_fee"`
-	XShippingId          string                             `json:"x_shipping_id"`
-	XShippingCode        string                             `json:"x_shipping_code"`
-	XShippingCreatedAt   dot.Time                           `json:"x_shipping_created_at"`
-	XShippingUpdatedAt   dot.Time                           `json:"x_shipping_updated_at"`
-	XShippingCancelledAt dot.Time                           `json:"x_shipping_cancelled_at"`
-	XShippingDeliveredAt dot.Time                           `json:"x_shipping_delivered_at"`
-	XShippingReturnedAt  dot.Time                           `json:"x_shipping_returned_at"`
+	ShippingProvider     shipping_provider.ShippingProvider        `json:"shipping_provider"`
+	Carrier              shipping_provider.ShippingProvider        `json:"carrier"`
+	ShippingServiceName  string                                    `json:"shipping_service_name"`
+	ShippingServiceFee   int                                       `json:"shipping_service_fee"`
+	ShippingServiceCode  string                                    `json:"shipping_service_code"`
+	ShippingCode         string                                    `json:"shipping_code"`
+	ShippingNote         string                                    `json:"shipping_note"`
+	TryOn                try_on.TryOnCode                          `json:"try_on"`
+	ShippingPaymentType  shipping_payment_type.ShippingPaymentType `json:"shipping_payment_type"`
+	IncludeInsurance     bool                                      `json:"include_insurance"`
+	ShConfirm            status3.Status                            `json:"sh_confirm"`
+	ShippingState        shipping.State                            `json:"shipping_state"`
+	Status               status5.Status                            `json:"status"`
+	ShippingStatus       status5.Status                            `json:"shipping_status"`
+	EtopPaymentStatus    status4.Status                            `json:"etop_payment_status"`
+	ShippingFeeCustomer  int                                       `json:"shipping_fee_customer"`
+	ShippingFeeShop      int                                       `json:"shipping_fee_shop"`
+	XShippingFee         int                                       `json:"x_shipping_fee"`
+	XShippingId          string                                    `json:"x_shipping_id"`
+	XShippingCode        string                                    `json:"x_shipping_code"`
+	XShippingCreatedAt   dot.Time                                  `json:"x_shipping_created_at"`
+	XShippingUpdatedAt   dot.Time                                  `json:"x_shipping_updated_at"`
+	XShippingCancelledAt dot.Time                                  `json:"x_shipping_cancelled_at"`
+	XShippingDeliveredAt dot.Time                                  `json:"x_shipping_delivered_at"`
+	XShippingReturnedAt  dot.Time                                  `json:"x_shipping_returned_at"`
 	// @deprecated use estimated_delivery_at
 	ExpectedDeliveryAt dot.Time `json:"expected_delivery_at"`
 	// @deprecated use estimated_pickup_at

@@ -23,6 +23,7 @@ import (
 	"o.o/api/top/types/etc/receipt_type"
 	"o.o/api/top/types/etc/ref_action"
 	"o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
@@ -2673,25 +2674,26 @@ type GetVariantRequest struct {
 func (m *GetVariantRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateFulfillmentsRequest struct {
-	OrderID             dot.ID                  `json:"order_id"`
-	ShippingType        ordertypes.ShippingType `json:"shipping_type"`
-	ShippingServiceCode string                  `json:"shipping_service_code"`
-	ShippingServiceFee  int                     `json:"shipping_service_fee"`
-	ShippingServiceName string                  `json:"shipping_service_name"`
-	ShippingNote        string                  `json:"shipping_note"`
-	PickupAddress       *types.OrderAddress     `json:"pickup_address"`
-	ReturnAddress       *types.OrderAddress     `json:"return_address"`
-	ShippingAddress     *types.OrderAddress     `json:"shipping_address"`
-	TryOn               try_on.TryOnCode        `json:"try_on"`
-	ChargeableWeight    int                     `json:"chargeable_weight"`
-	GrossWeight         int                     `json:"gross_weight"`
-	Height              int                     `json:"height"`
-	Width               int                     `json:"width"`
-	Length              int                     `json:"length"`
-	CODAmount           int                     `json:"cod_amount"`
-	IncludeInsurance    bool                    `json:"include_insurance"`
-	InsuranceValue      dot.NullInt             `json:"insurance_value"`
-	Coupon              string                  `json:"coupon"`
+	OrderID             dot.ID                                        `json:"order_id"`
+	ShippingType        ordertypes.ShippingType                       `json:"shipping_type"`
+	ShippingServiceCode string                                        `json:"shipping_service_code"`
+	ShippingServiceFee  int                                           `json:"shipping_service_fee"`
+	ShippingServiceName string                                        `json:"shipping_service_name"`
+	ShippingNote        string                                        `json:"shipping_note"`
+	PickupAddress       *types.OrderAddress                           `json:"pickup_address"`
+	ReturnAddress       *types.OrderAddress                           `json:"return_address"`
+	ShippingAddress     *types.OrderAddress                           `json:"shipping_address"`
+	TryOn               try_on.TryOnCode                              `json:"try_on"`
+	ShippingPaymentType shipping_payment_type.NullShippingPaymentType `json:"shipping_payment_type"`
+	ChargeableWeight    int                                           `json:"chargeable_weight"`
+	GrossWeight         int                                           `json:"gross_weight"`
+	Height              int                                           `json:"height"`
+	Width               int                                           `json:"width"`
+	Length              int                                           `json:"length"`
+	CODAmount           int                                           `json:"cod_amount"`
+	IncludeInsurance    bool                                          `json:"include_insurance"`
+	InsuranceValue      dot.NullInt                                   `json:"insurance_value"`
+	Coupon              string                                        `json:"coupon"`
 
 	ConnectionID  dot.ID `json:"connection_id"`
 	ShopCarrierID dot.ID `json:"shop_carrier_id"`
@@ -2734,14 +2736,15 @@ func (m *CancelFulfillmentRequest) Reset() {
 func (m *CancelFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentInfoRequest struct {
-	FulfillmentID    dot.ID              `json:"fulfillment_id"`
-	PickupAddress    *types.OrderAddress `json:"pickup_address"`
-	ShippingAddress  *types.OrderAddress `json:"shipping_address"`
-	IncludeInsurance dot.NullBool        `json:"include_insurance"`
-	InsuranceValue   dot.NullInt         `json:"insurance_value"`
-	GrossWeight      dot.NullInt         `json:"gross_weight"`
-	TryOn            try_on.TryOnCode    `json:"try_on"`
-	ShippingNote     dot.NullString      `json:"shipping_note"`
+	FulfillmentID       dot.ID                                        `json:"fulfillment_id"`
+	PickupAddress       *types.OrderAddress                           `json:"pickup_address"`
+	ShippingAddress     *types.OrderAddress                           `json:"shipping_address"`
+	IncludeInsurance    dot.NullBool                                  `json:"include_insurance"`
+	InsuranceValue      dot.NullInt                                   `json:"insurance_value"`
+	GrossWeight         dot.NullInt                                   `json:"gross_weight"`
+	TryOn               try_on.TryOnCode                              `json:"try_on"`
+	ShippingNote        dot.NullString                                `json:"shipping_note"`
+	ShippingPaymentType shipping_payment_type.NullShippingPaymentType `json:"shipping_payment_type"`
 }
 
 func (m *UpdateFulfillmentInfoRequest) Reset() { *m = UpdateFulfillmentInfoRequest{} }

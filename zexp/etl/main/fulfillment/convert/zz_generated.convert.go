@@ -125,6 +125,7 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.IncludeInsurance = dot.NullBool{}                                           // types do not match
 	out.InsuranceValue = dot.NullInt{}                                              // zero value
 	out.ShippingType = 0                                                            // zero value
+	out.ShippingPaymentType = 0                                                     // zero value
 	out.ConnectionID = arg.ConnectionID                                             // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod                                     // simple assign
 	out.ShopCarrierID = 0                                                           // zero value

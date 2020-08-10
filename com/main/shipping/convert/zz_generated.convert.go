@@ -255,6 +255,7 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.ShippingServiceName = arg.ShippingServiceName                               // simple assign
 	out.ShippingNote = arg.ShippingNote                                             // simple assign
 	out.TryOn = arg.TryOn                                                           // simple assign
+	out.ShippingPaymentType = arg.ShippingPaymentType                               // simple assign
 	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
 	out.InsuranceValue = arg.InsuranceValue                                         // simple assign
 	out.Coupon = arg.Coupon                                                         // simple assign
@@ -383,6 +384,7 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
 	out.InsuranceValue = arg.InsuranceValue                                         // simple assign
 	out.ShippingType = arg.ShippingType                                             // simple assign
+	out.ShippingPaymentType = arg.ShippingPaymentType                               // simple assign
 	out.ConnectionID = arg.ConnectionID                                             // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod                                     // simple assign
 	out.ShopCarrierID = arg.ShopCarrierID                                           // simple assign
@@ -485,6 +487,7 @@ func apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping
 	out.ShippingServiceName = out.ShippingServiceName                               // no change
 	out.ShippingNote = arg.ShippingNote.Apply(out.ShippingNote)                     // apply change
 	out.TryOn = arg.TryOn                                                           // simple assign
+	out.ShippingPaymentType = arg.ShippingPaymentType                               // simple assign
 	out.IncludeInsurance = arg.IncludeInsurance                                     // simple assign
 	out.InsuranceValue = arg.InsuranceValue                                         // simple assign
 	out.Coupon = out.Coupon                                                         // no change

@@ -13,6 +13,7 @@ import (
 	shippingtypes "o.o/api/main/shipping/types"
 	shipping "o.o/api/top/types/etc/shipping"
 	shipping_fee_type "o.o/api/top/types/etc/shipping_fee_type"
+	shipping_payment_type "o.o/api/top/types/etc/shipping_payment_type"
 	shipping_provider "o.o/api/top/types/etc/shipping_provider"
 	status3 "o.o/api/top/types/etc/status3"
 	status4 "o.o/api/top/types/etc/status4"
@@ -74,6 +75,7 @@ type CreateFulfillmentsCommand struct {
 	WeightInfo          shippingtypes.WeightInfo
 	ValueInfo           shippingtypes.ValueInfo
 	TryOn               try_on.TryOnCode
+	ShippingPaymentType shipping_payment_type.ShippingPaymentType
 	ShippingNote        string
 	ConnectionID        dot.ID
 	ShopCarrierID       dot.ID
@@ -115,14 +117,15 @@ func (h AggregateHandler) HandleShopUpdateFulfillmentCOD(ctx context.Context, ms
 }
 
 type ShopUpdateFulfillmentInfoCommand struct {
-	FulfillmentID    dot.ID
-	AddressTo        *orderingtypes.Address
-	AddressFrom      *orderingtypes.Address
-	IncludeInsurance dot.NullBool
-	InsuranceValue   dot.NullInt
-	GrossWeight      dot.NullInt
-	TryOn            try_on.TryOnCode
-	ShippingNote     dot.NullString
+	FulfillmentID       dot.ID
+	AddressTo           *orderingtypes.Address
+	AddressFrom         *orderingtypes.Address
+	IncludeInsurance    dot.NullBool
+	InsuranceValue      dot.NullInt
+	GrossWeight         dot.NullInt
+	TryOn               try_on.TryOnCode
+	ShippingPaymentType shipping_payment_type.ShippingPaymentType
+	ShippingNote        dot.NullString
 
 	Result int `json:"-"`
 }
@@ -454,6 +457,7 @@ func (q *CreateFulfillmentsCommand) GetArgs(ctx context.Context) (_ context.Cont
 			WeightInfo:          q.WeightInfo,
 			ValueInfo:           q.ValueInfo,
 			TryOn:               q.TryOn,
+			ShippingPaymentType: q.ShippingPaymentType,
 			ShippingNote:        q.ShippingNote,
 			ConnectionID:        q.ConnectionID,
 			ShopCarrierID:       q.ShopCarrierID,
@@ -474,6 +478,7 @@ func (q *CreateFulfillmentsCommand) SetCreateFulfillmentsArgs(args *CreateFulfil
 	q.WeightInfo = args.WeightInfo
 	q.ValueInfo = args.ValueInfo
 	q.TryOn = args.TryOn
+	q.ShippingPaymentType = args.ShippingPaymentType
 	q.ShippingNote = args.ShippingNote
 	q.ConnectionID = args.ConnectionID
 	q.ShopCarrierID = args.ShopCarrierID
@@ -515,14 +520,15 @@ func (q *ShopUpdateFulfillmentCODCommand) SetShopUpdateFulfillmentCODArgs(args *
 func (q *ShopUpdateFulfillmentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentInfoArgs) {
 	return ctx,
 		&UpdateFulfillmentInfoArgs{
-			FulfillmentID:    q.FulfillmentID,
-			AddressTo:        q.AddressTo,
-			AddressFrom:      q.AddressFrom,
-			IncludeInsurance: q.IncludeInsurance,
-			InsuranceValue:   q.InsuranceValue,
-			GrossWeight:      q.GrossWeight,
-			TryOn:            q.TryOn,
-			ShippingNote:     q.ShippingNote,
+			FulfillmentID:       q.FulfillmentID,
+			AddressTo:           q.AddressTo,
+			AddressFrom:         q.AddressFrom,
+			IncludeInsurance:    q.IncludeInsurance,
+			InsuranceValue:      q.InsuranceValue,
+			GrossWeight:         q.GrossWeight,
+			TryOn:               q.TryOn,
+			ShippingPaymentType: q.ShippingPaymentType,
+			ShippingNote:        q.ShippingNote,
 		}
 }
 
@@ -534,6 +540,7 @@ func (q *ShopUpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoArgs(args *Up
 	q.InsuranceValue = args.InsuranceValue
 	q.GrossWeight = args.GrossWeight
 	q.TryOn = args.TryOn
+	q.ShippingPaymentType = args.ShippingPaymentType
 	q.ShippingNote = args.ShippingNote
 }
 
