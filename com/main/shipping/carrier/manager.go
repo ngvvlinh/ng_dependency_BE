@@ -323,7 +323,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		Width:            ffm.Width,
 		Height:           ffm.Height,
 		IncludeInsurance: ffm.IncludeInsurance.Apply(false),
-		InsuranceValue:   ffm.InsuranceValue.Apply(0),
+		InsuranceValue:   ffm.InsuranceValue,
 		BasketValue:      ffm.BasketValue,
 		CODAmount:        ffm.TotalCODAmount,
 		Coupon:           ffm.Coupon,

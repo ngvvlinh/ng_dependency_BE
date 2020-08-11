@@ -65,7 +65,7 @@ type GetShippingServicesArgs struct {
 	Width            int
 	Height           int
 	IncludeInsurance bool
-	InsuranceValue   int
+	InsuranceValue   dot.NullInt
 	BasketValue      int
 	CODAmount        int
 

@@ -2690,7 +2690,7 @@ type CreateFulfillmentsRequest struct {
 	Length              int                     `json:"length"`
 	CODAmount           int                     `json:"cod_amount"`
 	IncludeInsurance    bool                    `json:"include_insurance"`
-	InsuranceValue      int                     `json:"insurance_value"`
+	InsuranceValue      dot.NullInt             `json:"insurance_value"`
 	Coupon              string                  `json:"coupon"`
 
 	ConnectionID  dot.ID `json:"connection_id"`

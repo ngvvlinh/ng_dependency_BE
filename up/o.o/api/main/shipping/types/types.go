@@ -7,6 +7,7 @@ import (
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/try_on"
+	"o.o/capi/dot"
 )
 
 type ShippingInfo struct {
@@ -48,7 +49,7 @@ type ValueInfo struct {
 	BasketValue      int
 	CODAmount        int
 	IncludeInsurance bool
-	InsuranceValue   int
+	InsuranceValue   dot.NullInt
 }
 
 type FeeLine struct {

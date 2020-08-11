@@ -486,7 +486,7 @@ type GetExternalShippingServicesRequest struct {
 	Coupon           string       `json:"coupon"`
 	BasketValue      int          `json:"basket_value"`
 	IncludeInsurance dot.NullBool `json:"include_insurance"`
-	InsuranceValue   int          `json:"insurance_value"`
+	InsuranceValue   dot.NullInt  `json:"insurance_value"`
 }
 
 func (m *GetExternalShippingServicesRequest) ToGetShippingServicesRequest() *GetShippingServicesRequest {
@@ -1024,7 +1024,7 @@ type GetShippingServicesRequest struct {
 	TotalCodAmount   int          `json:"total_cod_amount"`
 	BasketValue      int          `json:"basket_value"`
 	IncludeInsurance dot.NullBool `json:"include_insurance"`
-	InsuranceValue   int          `json:"insurance_value"`
+	InsuranceValue   dot.NullInt  `json:"insurance_value"`
 	Coupon           string       `json:"coupon"`
 }
 

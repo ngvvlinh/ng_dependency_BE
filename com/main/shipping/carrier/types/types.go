@@ -5,7 +5,6 @@ import (
 
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
-	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
 )
 
@@ -52,7 +51,7 @@ type GetShippingServicesArgs struct {
 	Width            int
 	Height           int
 	IncludeInsurance bool
-	InsuranceValue   int
+	InsuranceValue   dot.NullInt
 	BasketValue      int
 	CODAmount        int
 	Coupon           string
@@ -60,7 +59,7 @@ type GetShippingServicesArgs struct {
 
 func (args *GetShippingServicesArgs) GetInsuranceAmount(maxValueFreeInsurance int) int {
 	if args.IncludeInsurance {
-		return cm.CoalesceInt(args.InsuranceValue, args.BasketValue)
+		return args.InsuranceValue.Apply(args.BasketValue)
 	}
 	if args.BasketValue <= maxValueFreeInsurance {
 		return args.BasketValue

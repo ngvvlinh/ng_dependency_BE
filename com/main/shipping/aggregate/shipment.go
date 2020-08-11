@@ -293,7 +293,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		ShippingNote:        args.ShippingNote,
 		TryOn:               tryOn,
 		IncludeInsurance:    dot.Bool(args.IncludeInsurance),
-		InsuranceValue:      dot.Int(args.InsuranceValue),
+		InsuranceValue:      args.InsuranceValue,
 		ConnectionID:        args.ConnectionID,
 		ConnectionMethod:    connectionMethod,
 		ShopCarrierID:       args.ShopCarrierID,
