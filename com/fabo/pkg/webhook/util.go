@@ -219,7 +219,7 @@ func (wh *Webhook) forwardWebhook(c *httpx.Context, message WebhookMessages) {
 	}
 
 	client := http.Client{
-		Timeout: 3 * time.Second,
+		Timeout: 60 * time.Second,
 	}
 	for _, callbackURL := range callbackURLs {
 		callbackURL, header := callbackURL, c.Req.Header // closure
