@@ -3,6 +3,7 @@ package sqlstore
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
@@ -44,6 +45,11 @@ func (s *FbCustomerConversationStore) WithPaging(paging meta.Paging) *FbCustomer
 
 func (s *FbCustomerConversationStore) ID(id dot.ID) *FbCustomerConversationStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *FbCustomerConversationStore) ExternalID(externalID string) *FbCustomerConversationStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
 	return s
 }
 
@@ -174,4 +180,11 @@ func (s *FbCustomerConversationStore) ListFbCustomerConversations() (result []*f
 func (s *FbCustomerConversationStore) IncludeDeleted() *FbCustomerConversationStore {
 	s.includeDeleted = true
 	return s
+}
+
+func (s *FbCustomerConversationStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_customer_conversation").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
 }

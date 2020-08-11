@@ -16,8 +16,13 @@ import (
 // Facebook feed is any action on page (create or update a post, make comment,
 // any reaction ....)
 func (wh *Webhook) handleFeed(ctx context.Context, feed WebhookMessages) error {
+	// Ignore Create or Update action from page owner.
+	// But keep other actions like Remove, Delete ...
+	if feed.IsCreateOrEditCommentFromPageOwner() {
+		return nil
+	}
+
 	for _, entry := range feed.Entry {
-		// first we need check page is active then get token of page
 		externalPageID := entry.ID
 		createdTime := time.Unix(int64(entry.Time), 0)
 
@@ -67,6 +72,10 @@ func (wh *Webhook) handleFeedPost(ctx context.Context, extPageID string, feedCha
 		return err
 	}
 
+	if feedChange.IsRemove() {
+		return wh.handleRemovePost(ctx, extPageID, postID)
+	}
+
 	externalPost, err := wh.getExternalPost(ctx, postID)
 	if err != nil {
 		return err
@@ -105,22 +114,32 @@ func (wh *Webhook) lockFeedPost(pageID, postID, fromID string) error {
 	return nil
 }
 
+func (wh *Webhook) handleRemovePost(ctx context.Context, pageID, postID string) error {
+	removeCmd := &fbmessaging.RemovePostCommand{
+		ExternalPostID: postID,
+		ExternalPageID: pageID,
+	}
+	return wh.fbmessagingAggr.Dispatch(ctx, removeCmd)
+}
+
 func (wh *Webhook) updateFeedPostMessage(ctx context.Context, postID string, message string) error {
 	cmdUpdate := &fbmessaging.UpdateFbPostMessageCommand{
 		ExternalPostID: postID,
 		Message:        message,
 	}
-	if err := wh.fbmessagingAggr.Dispatch(ctx, cmdUpdate); err != nil {
-		return err
-	}
-	return nil
+	return wh.fbmessagingAggr.Dispatch(ctx, cmdUpdate)
 }
 
 func (wh *Webhook) updateParentAndChildPost(ctx context.Context, extPageID string, extPost *model.Post) error {
 	createdTime := time.Unix(int64(extPost.CreatedTime), 0)
 	parentPost := convertModelPostToCreatePostArgs(extPageID, createdTime, extPost)
-	childPosts := buildAllChildPost(parentPost)
-	allPosts := append(childPosts, parentPost)
+	allPosts := []*fbmessaging.CreateFbExternalPostArgs{parentPost}
+
+	// If all attachments is not from other build all child posts.
+	if extPost.IsResourceFromCurrentPage() {
+		childPosts := buildAllChildPost(parentPost)
+		allPosts = append(childPosts, parentPost)
+	}
 
 	for _, post := range allPosts {
 		err := wh.updateFeedPostMessage(ctx, post.ExternalID, post.ExternalMessage)
@@ -155,18 +174,17 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 	}
 
 	postID := feedChange.Value.PostID
+	commentID := feedChange.Value.CommentID
+	if feedChange.IsRemove() {
+		return wh.handleRemoveComment(ctx, commentID)
+	}
+
 	externalPost, err := wh.getExternalPost(ctx, postID)
 	if err != nil {
 		return err
 	}
 
 	if externalPost == nil {
-		// Case post not exists in db and action on this comment is remove,
-		// don't do anything prevent for create invalid conversation.
-		if feedChange.IsRemove() {
-			return nil
-		}
-
 		post, err := wh.fbClient.CallAPIGetPost(&fbclient.GetPostRequest{
 			AccessToken: accessToken,
 			PostID:      postID,
@@ -181,17 +199,12 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 		}
 	}
 
-	commentID := feedChange.Value.CommentID
 	externalCmt, err := wh.getExternalComment(ctx, commentID)
 	if err != nil {
 		return err
 	}
 
 	if externalCmt == nil {
-		if feedChange.IsRemove() {
-			return nil
-		}
-
 		var createCmtCmd []*fbmessaging.CreateFbExternalCommentArgs
 		comment, err := wh.fbClient.CallAPICommentByID(&fbclient.GetCommentByIDRequest{
 			AccessToken: accessToken,
@@ -221,6 +234,13 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 		}
 	}
 	return nil
+}
+
+func (wh *Webhook) handleRemoveComment(ctx context.Context, commentID string) error {
+	removeCommentArgs := &fbmessaging.RemoveCommentCommand{
+		ExternalCommentID: commentID,
+	}
+	return wh.fbmessagingAggr.Dispatch(ctx, removeCommentArgs)
 }
 
 func (wh *Webhook) getExternalPost(ctx context.Context, extPostID string) (*fbmessaging.FbExternalPost, error) {
@@ -260,11 +280,15 @@ func (wh *Webhook) createParentAndChildPosts(externalPageID string, createdTime 
 	if err := wh.fbmessagingAggr.Dispatch(ctx, createParentCmd); err != nil {
 		return err
 	}
-	createChildPostCmd := &fbmessaging.CreateFbExternalPostsCommand{
-		FbExternalPosts: buildAllChildPost(parentPost),
-	}
-	if err := wh.fbmessagingAggr.Dispatch(ctx, createChildPostCmd); err != nil {
-		return err
+
+	// If all attachments is not from other build all child posts.
+	if post.IsResourceFromCurrentPage() {
+		createChildPostCmd := &fbmessaging.CreateFbExternalPostsCommand{
+			FbExternalPosts: buildAllChildPost(parentPost),
+		}
+		if err := wh.fbmessagingAggr.Dispatch(ctx, createChildPostCmd); err != nil {
+			return err
+		}
 	}
 	return nil
 }

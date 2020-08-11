@@ -3,6 +3,7 @@ package sqlstore
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/meta"
@@ -58,6 +59,16 @@ func (s *FbExternalCommentStore) ExternalID(externalID string) *FbExternalCommen
 
 func (s *FbExternalCommentStore) ExternalIDs(externalIDs []string) *FbExternalCommentStore {
 	s.preds = append(s.preds, sq.In("external_id", externalIDs))
+	return s
+}
+
+func (s *FbExternalCommentStore) ExternalParentIDIsNull() *FbExternalCommentStore {
+	s.preds = append(s.preds, sq.NewExpr("external_parent_id is NULL"))
+	return s
+}
+
+func (s *FbExternalCommentStore) ExternalParentID(externalID string) *FbExternalCommentStore {
+	s.preds = append(s.preds, s.ft.ByExternalParentID(externalID))
 	return s
 }
 
@@ -223,11 +234,37 @@ func (s *FbExternalCommentStore) GetLatestCustomerExternalComment(
 	return &result, nil
 }
 
+func (s *FbExternalCommentStore) GetLatestUpdatedActiveComment() (*fbmessaging.FbExternalComment, error) {
+	var fbExternalComment model.FbExternalComment
+
+	if err := s.query().
+		Where(s.preds).
+		Where(sq.NewExpr("deleted_at is NULL")).
+		OrderBy("updated_at desc").
+		Limit(1).
+		ShouldGet(&fbExternalComment); err != nil {
+		return nil, err
+	}
+
+	result := fbmessaging.FbExternalComment{}
+	if err := scheme.Convert(&fbExternalComment, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
 func (s *FbExternalCommentStore) UpdateMessage(
 	message string,
 ) (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Table("fb_external_comment").UpdateMap(map[string]interface{}{
 		"external_message": message,
+	})
+}
+
+func (s *FbExternalCommentStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_external_comment").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
 	})
 }

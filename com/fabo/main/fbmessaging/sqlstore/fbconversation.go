@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/meta"
@@ -134,22 +135,29 @@ func (s *FbExternalConversationStore) ListFbExternalConversationsDB() ([]*model.
 		return nil, err
 	}
 
-	var fbCustomerConversations model.FbExternalConversations
-	err = query.Find(&fbCustomerConversations)
+	var fbExternalConversations model.FbExternalConversations
+	err = query.Find(&fbExternalConversations)
 	if err != nil {
 		return nil, err
 	}
-	s.Paging.Apply(fbCustomerConversations)
-	return fbCustomerConversations, nil
+	s.Paging.Apply(fbExternalConversations)
+	return fbExternalConversations, nil
 }
 
 func (s *FbExternalConversationStore) ListFbExternalConversations() (result []*fbmessaging.FbExternalConversation, err error) {
-	fbCustomerConversations, err := s.ListFbExternalConversationsDB()
+	fbExternalConversations, err := s.ListFbExternalConversationsDB()
 	if err != nil {
 		return nil, err
 	}
-	if err = scheme.Convert(fbCustomerConversations, &result); err != nil {
+	if err = scheme.Convert(fbExternalConversations, &result); err != nil {
 		return nil, err
 	}
 	return
+}
+
+func (s *FbExternalConversationStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_external_conversation").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
 }

@@ -299,6 +299,7 @@ const (
 	InvalidSession     = SubCode(492)
 	ObjectNotExist     = SubCode(33)
 	MessageSentOutside = SubCode(2018278)
+	PersonNotAvailable = SubCode(1545041)
 )
 
 var mapErrorSubCodeMessage = map[SubCode]map[string]string{

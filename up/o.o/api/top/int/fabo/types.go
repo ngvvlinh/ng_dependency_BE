@@ -492,8 +492,9 @@ type MessageSendMessageRequest struct {
 }
 
 type SendCommentRequest struct {
+	ExternalUserID string `json:"external_user_id"`
 	ExternalPageID string `json:"external_page_id"`
-	ExternalID     string `json:"external_id"` // post_id, comment_id
+	ExternalID     string `json:"external_id"` // post_id, comment_id -- deprecated
 	ExternalPostID string `json:"external_post_id"`
 	Message        string `json:"message"`
 	AttachmentURL  string `json:"attachment_url"`
@@ -503,9 +504,10 @@ func (m *SendCommentRequest) Validate() error {
 	if m.ExternalPageID == "" {
 		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_page_id")
 	}
-	if m.ExternalID == "" {
-		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_id")
-	}
+	// TODO(nakhoa): un comment bellow section
+	//if m.ExternalUserID == "" {
+	//	return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_user_id")
+	//}
 	if m.ExternalPostID == "" {
 		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_post_id")
 	}

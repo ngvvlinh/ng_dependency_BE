@@ -36,6 +36,17 @@ type CustomerConversationService struct {
 	FBUserQuery      fbusering.QueryBus
 }
 
+type APIType string
+
+const (
+	APIComment         APIType = "comment"
+	APIMessage         APIType = "message"
+	CanNotCommentMsg           = "Không thể reply trên cuộc hội thoại này, có thể bài post hoặc comment này trên facebook đã bị xóa."
+	SendMessageOutSide         = "Người nhận chưa reply trong vòng 24 giờ nên không thể gửi thêm tin nhắn"
+	PersonNotAvailable         = "Có thể user này đã block page của bạn."
+	ExpiredToken               = "Token truy cập facebook trang của bạn đã hết hạn."
+)
+
 func (s *CustomerConversationService) Clone() fabo.CustomerConversationService {
 	res := *s
 	return &res
@@ -374,18 +385,44 @@ func (s *CustomerConversationService) SendComment(
 		return nil, err
 	}
 
-	externalID := request.ExternalID
+	extCommentID := request.ExternalID
+	requestExtUserID := request.ExternalUserID
 	externalPostID := request.ExternalPostID
 	externalPageID := request.ExternalPageID
 
-	// Get comment depends on externalID
-	getFbExternalCommentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
-		ExternalID: externalID,
+	// Get post depends on externalPostID
+	getFbExternalPostByExternalIDQuery := &fbmessaging.GetFbExternalPostByExternalIDQuery{
+		ExternalID: externalPostID,
 	}
-	if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalCommentQuery); err != nil {
+	if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalPostByExternalIDQuery); err != nil {
 		return nil, err
 	}
-	comment := getFbExternalCommentQuery.Result
+	if !getFbExternalPostByExternalIDQuery.Result.DeletedAt.IsZero() {
+		return nil, cm.Error(cm.NotFound, CanNotCommentMsg, nil)
+	}
+
+	var comment *fbmessaging.FbExternalComment
+	if requestExtUserID != "" {
+		getFbExternalCommentQuery := &fbmessaging.GetLatestUpdateActiveCommentQuery{
+			ExtPostID: externalPostID,
+			ExtUserID: requestExtUserID,
+		}
+		if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalCommentQuery); err != nil {
+			return nil, err
+		}
+		comment = getFbExternalCommentQuery.Result
+	} else { // backward compatible
+		getFbExternalCommentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+			ExternalID: extCommentID,
+		}
+		if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalCommentQuery); err != nil {
+			return nil, err
+		}
+		comment = getFbExternalCommentQuery.Result
+	}
+	if !comment.DeletedAt.IsZero() {
+		return nil, cm.Error(cm.NotFound, CanNotCommentMsg, nil)
+	}
 
 	// Get token depends on externalPageID
 	getFbExternalPageInternalActiveQuery := &fbpaging.GetFbExternalPageInternalActiveByExternalIDQuery{
@@ -396,17 +433,8 @@ func (s *CustomerConversationService) SendComment(
 	}
 	accessToken := getFbExternalPageInternalActiveQuery.Result.Token
 
-	// Get post depends on externalPostID
-	getFbExternalPostByExternalIDQuery := &fbmessaging.GetFbExternalPostByExternalIDQuery{
-		ExternalID: externalPostID,
-	}
-	if err := s.FBMessagingQuery.Dispatch(ctx, getFbExternalPostByExternalIDQuery); err != nil {
-		return nil, err
-	}
-
-	// Send comment
 	sendCommentRequest := &fbclientmodel.SendCommentArgs{
-		ID:            request.ExternalID,
+		ID:            comment.ExternalID,
 		Message:       request.Message,
 		AttachmentURL: request.AttachmentURL,
 	}
@@ -416,7 +444,7 @@ func (s *CustomerConversationService) SendComment(
 		PageID:          externalPageID,
 	})
 	if err != nil {
-		return nil, convertApiError(err)
+		return nil, s.handleAndConvertFacebookApiError(ctx, APIComment, comment.ExternalID, err)
 	}
 
 	// Get comment
@@ -434,7 +462,7 @@ func (s *CustomerConversationService) SendComment(
 		PageID:      externalPageID,
 	})
 	if err != nil {
-		return nil, err
+		return nil, s.handleAndConvertFacebookApiError(ctx, APIComment, commentID, err)
 	}
 
 	var externalParent *fbmessaging.FbObjectParent
@@ -599,7 +627,7 @@ func (s *CustomerConversationService) SendMessage(
 		PageID:          request.ExternalPageID,
 	})
 	if err != nil {
-		return nil, convertApiError(err)
+		return nil, s.handleAndConvertFacebookApiError(ctx, APIMessage, PSID, err)
 	}
 
 	newMessage, err := s.FBClient.CallAPIGetMessage(&fbclient.GetMessageRequest{
@@ -659,8 +687,7 @@ func (s *CustomerConversationService) getImageURLs(ctx context.Context, external
 	return mapExternalUserIDAndImageURL, nil
 }
 
-// TODO(nakhoa17): make function more clear
-func convertApiError(err error) error {
+func (s *CustomerConversationService) handleAndConvertFacebookApiError(ctx context.Context, _type APIType, extID string, err error) error {
 	apiErr, ok := err.(*xerrors.APIError)
 	if !ok {
 		return err
@@ -679,13 +706,20 @@ func convertApiError(err error) error {
 
 	switch intSubCode {
 	case int(fbclient.ObjectNotExist):
-		return cm.Errorf(cm.FacebookError, nil, "Cuộc hội thoại này không tồn tại, hoặc đã bị xóa.").
+		removeCommentArgs := &fbmessaging.RemoveCommentCommand{
+			ExternalCommentID: extID,
+		}
+		_ = s.FBMessagingAggr.Dispatch(ctx, removeCommentArgs)
+		return cm.Errorf(cm.FacebookError, nil, CanNotCommentMsg).
 			WithMetaM(metaError)
 	case int(fbclient.MessageSentOutside):
-		return cm.Errorf(cm.FacebookError, nil, "Người nhận chưa reply trong vòng 24 giờ nên không thể gửi thêm tin nhắn").
+		return cm.Errorf(cm.FacebookError, nil, SendMessageOutSide).
+			WithMetaM(metaError)
+	case int(fbclient.PersonNotAvailable):
+		return cm.Errorf(cm.FacebookError, nil, PersonNotAvailable).
 			WithMetaM(metaError)
 	case int(fbclient.Expired):
-		return cm.Errorf(cm.FacebookError, nil, "Token truy cập facebook trang của bạn đã hết hạn.").
+		return cm.Errorf(cm.FacebookError, nil, ExpiredToken).
 			WithMetaM(metaError)
 	default:
 		return err

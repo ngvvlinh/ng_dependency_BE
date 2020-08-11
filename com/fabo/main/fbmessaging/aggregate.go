@@ -610,3 +610,59 @@ func (a *FbExternalMessagingAggregate) UpdateFbCommentMessage(
 ) (int, error) {
 	return a.fbExternalCommentStore(ctx).ExternalID(updateArgs.ExternalCommentID).UpdateMessage(updateArgs.Message)
 }
+
+func (a *FbExternalMessagingAggregate) RemovePost(
+	ctx context.Context, removeArgs *fbmessaging.RemovePostArgs,
+) error {
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		_, err := a.fbExternalPostStore(ctx).ExternalID(removeArgs.ExternalPostID).SoftDelete()
+		if err != nil {
+			// If post not found, create new post with deleted_at
+			if cm.ErrorCode(err) == cm.NotFound {
+				extPost := &fbmessaging.FbExternalPost{
+					ID:             cm.NewID(),
+					ExternalPageID: removeArgs.ExternalPageID,
+					ExternalID:     removeArgs.ExternalPostID,
+					DeletedAt:      time.Now(),
+				}
+				return a.fbExternalPostStore(ctx).CreateFbExternalPost(extPost)
+			}
+			return err
+		}
+
+		// Remove all child posts that belong to.
+		if _, err := a.fbExternalPostStore(ctx).
+			ExternalParentID(removeArgs.ExternalPostID).
+			SoftDelete(); err != nil {
+			return err
+		}
+
+		// Remove all comments that belong to.
+		if _, err := a.fbExternalCommentStore(ctx).
+			ExternalPostID(removeArgs.ExternalPostID).
+			SoftDelete(); err != nil {
+			return err
+		}
+
+		// Remove all customer conversations that belong to.
+		if _, err := a.fbCustomerConversationStore(ctx).
+			ExternalID(removeArgs.ExternalPostID).
+			SoftDelete(); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (a *FbExternalMessagingAggregate) RemoveComment(ctx context.Context, removeArgs *fbmessaging.RemoveCommentArgs) error {
+	return a.db.InTransaction(ctx, func(queryInterface cmsql.QueryInterface) error {
+		if _, err := a.fbExternalCommentStore(ctx).
+			ExternalID(removeArgs.ExternalCommentID).
+			ExternalParentID(removeArgs.ExternalCommentID).
+			SoftDelete(); err != nil {
+			return err
+		}
+		return nil
+	})
+}

@@ -121,9 +121,6 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	case WebhookMessage:
 		return wh.handleMessenger(ctx, webhookMessages)
 	case WebhookFeed:
-		if webhookMessages.IsOwnerPageComment() {
-			return nil
-		}
 		return wh.handleFeed(ctx, webhookMessages)
 	case WebhookInvalidMessage:
 		return nil

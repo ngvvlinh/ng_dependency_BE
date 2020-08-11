@@ -54,6 +54,11 @@ func (s *FbExternalPostStore) ExternalID(externalID string) *FbExternalPostStore
 	return s
 }
 
+func (s *FbExternalPostStore) ExternalParentID(externalParentID string) *FbExternalPostStore {
+	s.preds = append(s.preds, s.ft.ByExternalParentID(externalParentID))
+	return s
+}
+
 func (s *FbExternalPostStore) ExternalCreatedTime(created time.Time) *FbExternalPostStore {
 	s.preds = append(s.preds, s.ft.ByExternalCreatedTime(created))
 	return s
@@ -157,5 +162,12 @@ func (s *FbExternalPostStore) UpdatePostMessage(message string) error {
 	query := s.query().Where(s.preds)
 	return query.Table("fb_external_post").ShouldUpdateMap(map[string]interface{}{
 		"external_message": message,
+	})
+}
+
+func (s *FbExternalPostStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_external_post").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
 	})
 }

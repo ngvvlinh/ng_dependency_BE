@@ -1520,6 +1520,9 @@
         "external_post_id": {
           "type": "string"
         },
+        "external_user_id": {
+          "type": "string"
+        },
         "message": {
           "type": "string"
         }

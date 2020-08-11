@@ -34,6 +34,9 @@ type Aggregate interface {
 	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
 	UpdateFbPostMessage(context.Context, *FbUpdatePostMessageArgs) error
 	UpdateFbCommentMessage(context.Context, *FbUpdateCommentMessageArgs) (int, error)
+
+	RemovePost(context.Context, *RemovePostArgs) error
+	RemoveComment(context.Context, *RemoveCommentArgs) error
 }
 
 type QueryService interface {
@@ -52,6 +55,7 @@ type QueryService interface {
 	GetFbExternalMessageByID(_ context.Context, ID dot.ID) (*FbExternalMessage, error)
 	GetFbExternalCommentByID(_ context.Context, ID dot.ID) (*FbExternalComment, error)
 	GetFbExternalCommentByExternalID(_ context.Context, externalID string) (*FbExternalComment, error)
+	GetLatestUpdateActiveComment(_ context.Context, extPostID string, extUserID string) (*FbExternalComment, error)
 	GetFbExternalConversationByID(_ context.Context, ID dot.ID) (*FbExternalConversation, error)
 	ListFbExternalPostsByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalPost, error)
 	ListFbExternalPostsByIDs(_ context.Context, IDs filter.IDs) ([]*FbExternalPost, error)
@@ -258,4 +262,13 @@ type FbUpdatePostMessageArgs struct {
 type FbUpdateCommentMessageArgs struct {
 	ExternalCommentID string
 	Message           string
+}
+
+type RemovePostArgs struct {
+	ExternalPostID string
+	ExternalPageID string
+}
+
+type RemoveCommentArgs struct {
+	ExternalCommentID string
 }

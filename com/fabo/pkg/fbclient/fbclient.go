@@ -192,7 +192,7 @@ func (f *FbClient) CallAPIListFeeds(req *ListFeedsRequest) (*model.PublishedPost
 func (f *FbClient) CallAPIGetPost(req *GetPostRequest) (*model.Post, error) {
 	params := &GetPostParams{
 		AccessToken: req.AccessToken,
-		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments}",
+		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{target,media_type,media,type,subattachments}",
 		DateFormat:  UnixDateFormat,
 	}
 

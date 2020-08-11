@@ -365,3 +365,12 @@ func (q *FbMessagingQuery) ListFbCustomerConversationStates(
 ) ([]*fbmessaging.FbCustomerConversationState, error) {
 	return q.fbExternalConversationStateStore(ctx).IDs(IDs...).ListFbCustomerConversationStates()
 }
+
+func (q *FbMessagingQuery) GetLatestUpdateActiveComment(
+	ctx context.Context, extPostID, extUserID string,
+) (*fbmessaging.FbExternalComment, error) {
+	return q.fbExternalCommentStore(ctx).
+		ExternalUserID(extUserID).
+		ExternalPostID(extPostID).
+		GetLatestUpdatedActiveComment()
+}

@@ -43,10 +43,13 @@ func (msg *WebhookMessages) MessageType() WebhookMessageType {
 	return WebhookInvalidMessage
 }
 
-func (msg *WebhookMessages) IsOwnerPageComment() bool {
+func (msg *WebhookMessages) IsCreateOrEditCommentFromPageOwner() bool {
 	for _, entry := range msg.Entry {
 		pageId := entry.ID
 		for _, change := range entry.Changes {
+			if change.IsRemove() {
+				return false
+			}
 			if change.Value.From.ID == pageId && change.IsComment() {
 				return true
 			}

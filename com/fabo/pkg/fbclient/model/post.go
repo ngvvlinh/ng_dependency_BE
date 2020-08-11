@@ -1,5 +1,10 @@
 package model
 
+import (
+	"fmt"
+	"strings"
+)
+
 type PublishedPostsResponse struct {
 	Data   []*Post                 `json:"data"`
 	Paging *FacebookPagingResponse `json:"paging"`
@@ -25,6 +30,32 @@ type Post struct {
 	UpdatedTime  FacebookTime `json:"updated_time"`
 }
 
+// IsResourceFromCurrentPage check current post is share or not.
+func (p *Post) IsResourceFromCurrentPage() bool {
+	splited := strings.Split(p.ID, "_")
+	if len(splited) < 2 {
+		return false
+	}
+	currentPageID := splited[0]
+
+	if p.Attachments == nil {
+		return false
+	}
+
+	if p.Attachments.Data == nil || len(p.Attachments.Data) == 0 {
+		return false
+	}
+
+	data := p.Attachments.Data[0]
+	if data.Target != nil {
+		prefixUrl := fmt.Sprintf("https://www.facebook.com/%v/posts", currentPageID)
+		if strings.HasPrefix(data.Target.Url, prefixUrl) {
+			return true
+		}
+	}
+	return false
+}
+
 type Shares struct {
 	Count int `json:"count"`
 }
@@ -38,7 +69,13 @@ type DataAttachment struct {
 	MediaType      string               `json:"media_type"`
 	Type           string               `json:"type"`
 	Title          string               `json:"title"`
+	Target         *DataTarget          `json:"target"`
 	SubAttachments *SubAttachments      `json:"subattachments"`
+}
+
+type DataTarget struct {
+	ID  string `json:"id"`
+	Url string `json:"url"`
 }
 
 type MediaPostAttachment struct {

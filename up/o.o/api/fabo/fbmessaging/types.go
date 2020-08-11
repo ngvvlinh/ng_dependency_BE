@@ -92,6 +92,7 @@ type FbExternalComment struct {
 	Source               fb_comment_source.FbCommentSource
 	CreatedAt            time.Time `compare:"ignore"`
 	UpdatedAt            time.Time `compare:"ignore"`
+	DeletedAt            time.Time
 }
 
 type FbObjectParent struct {
@@ -141,6 +142,7 @@ type FbExternalPost struct {
 	ExternalCreatedTime time.Time
 	CreatedAt           time.Time `compare:"ignore"`
 	UpdatedAt           time.Time `compare:"ignore"`
+	DeletedAt           time.Time `compare:"ignore"`
 	ExternalParent      *FbExternalPost
 	FeedType            fb_feed_type.FbFeedType
 }

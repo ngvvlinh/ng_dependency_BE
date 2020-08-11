@@ -685,6 +685,7 @@ func convert_fbmessagingmodel_FbExternalComment_fbmessaging_FbExternalComment(ar
 	out.Source = arg.Source                           // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
+	out.DeletedAt = arg.DeletedAt                     // simple assign
 }
 
 func Convert_fbmessagingmodel_FbExternalComments_fbmessaging_FbExternalComments(args []*fbmessagingmodel.FbExternalComment) (outs []*fbmessaging.FbExternalComment) {
@@ -727,7 +728,7 @@ func convert_fbmessaging_FbExternalComment_fbmessagingmodel_FbExternalComment(ar
 	out.Source = arg.Source                           // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
-	out.DeletedAt = time.Time{}                       // zero value
+	out.DeletedAt = arg.DeletedAt                     // simple assign
 }
 
 func Convert_fbmessaging_FbExternalComments_fbmessagingmodel_FbExternalComments(args []*fbmessaging.FbExternalComment) (outs []*fbmessagingmodel.FbExternalComment) {
@@ -763,6 +764,7 @@ func apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment
 	out.Source = arg.Source                             // simple assign
 	out.CreatedAt = time.Time{}                         // zero value
 	out.UpdatedAt = time.Time{}                         // zero value
+	out.DeletedAt = time.Time{}                         // zero value
 }
 
 //-- convert o.o/api/fabo/fbmessaging.FbExternalConversation --//
@@ -992,6 +994,7 @@ func convert_fbmessagingmodel_FbExternalPost_fbmessaging_FbExternalPost(arg *fbm
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
+	out.DeletedAt = arg.DeletedAt                     // simple assign
 	out.ExternalParent = nil                          // zero value
 	out.FeedType = arg.FeedType                       // simple assign
 }
@@ -1033,7 +1036,7 @@ func convert_fbmessaging_FbExternalPost_fbmessagingmodel_FbExternalPost(arg *fbm
 	out.ExternalUpdatedTime = time.Time{}             // zero value
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
-	out.DeletedAt = time.Time{}                       // zero value
+	out.DeletedAt = arg.DeletedAt                     // simple assign
 	out.FeedType = arg.FeedType                       // simple assign
 }
 
@@ -1073,6 +1076,7 @@ func apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg *
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.CreatedAt = time.Time{}                       // zero value
 	out.UpdatedAt = time.Time{}                       // zero value
+	out.DeletedAt = time.Time{}                       // zero value
 	out.ExternalParent = nil                          // zero value
 	out.FeedType = arg.FeedType                       // simple assign
 }

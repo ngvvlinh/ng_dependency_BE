@@ -141,6 +141,29 @@ func (h AggregateHandler) HandleCreateOrUpdateFbExternalPosts(ctx context.Contex
 	return err
 }
 
+type RemoveCommentCommand struct {
+	ExternalCommentID string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveComment(ctx context.Context, msg *RemoveCommentCommand) (err error) {
+	return h.inner.RemoveComment(msg.GetArgs(ctx))
+}
+
+type RemovePostCommand struct {
+	ExternalPostID string
+	ExternalPageID string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemovePost(ctx context.Context, msg *RemovePostCommand) (err error) {
+	return h.inner.RemovePost(msg.GetArgs(ctx))
+}
+
 type SaveFbExternalPostCommand struct {
 	ExternalPageID      string
 	ExternalID          string
@@ -338,6 +361,18 @@ func (h QueryServiceHandler) HandleGetLatestFbExternalComment(ctx context.Contex
 	return err
 }
 
+type GetLatestUpdateActiveCommentQuery struct {
+	ExtPostID string
+	ExtUserID string
+
+	Result *FbExternalComment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetLatestUpdateActiveComment(ctx context.Context, msg *GetLatestUpdateActiveCommentQuery) (err error) {
+	msg.Result, err = h.inner.GetLatestUpdateActiveComment(msg.GetArgs(ctx))
+	return err
+}
+
 type ListFbCustomerConversationStatesQuery struct {
 	IDs []dot.ID
 
@@ -495,6 +530,8 @@ func (q *CreateOrUpdateFbExternalCommentsCommand) command()      {}
 func (q *CreateOrUpdateFbExternalConversationsCommand) command() {}
 func (q *CreateOrUpdateFbExternalMessagesCommand) command()      {}
 func (q *CreateOrUpdateFbExternalPostsCommand) command()         {}
+func (q *RemoveCommentCommand) command()                         {}
+func (q *RemovePostCommand) command()                            {}
 func (q *SaveFbExternalPostCommand) command()                    {}
 func (q *UpdateFbCommentMessageCommand) command()                {}
 func (q *UpdateFbPostMessageCommand) command()                   {}
@@ -512,6 +549,7 @@ func (q *GetFbExternalMessageByIDQuery) query()                                 
 func (q *GetFbExternalPostByExternalIDQuery) query()                              {}
 func (q *GetLatestCustomerExternalCommentQuery) query()                           {}
 func (q *GetLatestFbExternalCommentQuery) query()                                 {}
+func (q *GetLatestUpdateActiveCommentQuery) query()                               {}
 func (q *ListFbCustomerConversationStatesQuery) query()                           {}
 func (q *ListFbCustomerConversationsQuery) query()                                {}
 func (q *ListFbCustomerConversationsByExternalIDsQuery) query()                   {}
@@ -639,6 +677,30 @@ func (q *CreateOrUpdateFbExternalPostsCommand) GetArgs(ctx context.Context) (_ c
 
 func (q *CreateOrUpdateFbExternalPostsCommand) SetCreateOrUpdateFbExternalPostsArgs(args *CreateOrUpdateFbExternalPostsArgs) {
 	q.FbExternalPosts = args.FbExternalPosts
+}
+
+func (q *RemoveCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveCommentArgs) {
+	return ctx,
+		&RemoveCommentArgs{
+			ExternalCommentID: q.ExternalCommentID,
+		}
+}
+
+func (q *RemoveCommentCommand) SetRemoveCommentArgs(args *RemoveCommentArgs) {
+	q.ExternalCommentID = args.ExternalCommentID
+}
+
+func (q *RemovePostCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemovePostArgs) {
+	return ctx,
+		&RemovePostArgs{
+			ExternalPostID: q.ExternalPostID,
+			ExternalPageID: q.ExternalPageID,
+		}
+}
+
+func (q *RemovePostCommand) SetRemovePostArgs(args *RemovePostArgs) {
+	q.ExternalPostID = args.ExternalPostID
+	q.ExternalPageID = args.ExternalPageID
 }
 
 func (q *SaveFbExternalPostCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbSavePostArgs) {
@@ -769,6 +831,12 @@ func (q *GetLatestFbExternalCommentQuery) GetArgs(ctx context.Context) (_ contex
 		q.ExternalPageID,
 		q.ExternalPostID,
 		q.ExternalUserID
+}
+
+func (q *GetLatestUpdateActiveCommentQuery) GetArgs(ctx context.Context) (_ context.Context, extPostID string, extUserID string) {
+	return ctx,
+		q.ExtPostID,
+		q.ExtUserID
 }
 
 func (q *ListFbCustomerConversationStatesQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {
@@ -903,6 +971,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalConversations)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalMessages)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalPosts)
+	b.AddHandler(h.HandleRemoveComment)
+	b.AddHandler(h.HandleRemovePost)
 	b.AddHandler(h.HandleSaveFbExternalPost)
 	b.AddHandler(h.HandleUpdateFbCommentMessage)
 	b.AddHandler(h.HandleUpdateFbPostMessage)
@@ -934,6 +1004,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetFbExternalPostByExternalID)
 	b.AddHandler(h.HandleGetLatestCustomerExternalComment)
 	b.AddHandler(h.HandleGetLatestFbExternalComment)
+	b.AddHandler(h.HandleGetLatestUpdateActiveComment)
 	b.AddHandler(h.HandleListFbCustomerConversationStates)
 	b.AddHandler(h.HandleListFbCustomerConversations)
 	b.AddHandler(h.HandleListFbCustomerConversationsByExternalIDs)
