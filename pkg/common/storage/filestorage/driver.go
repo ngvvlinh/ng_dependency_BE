@@ -35,11 +35,15 @@ func Connect(cfg Config) (*Driver, error) {
 	if cmenv.IsDev() && os.IsNotExist(err) {
 		ll.Info("directory does not exist, auto create directory", l.String("path", absPath))
 		err = os.MkdirAll(absPath, 0755)
+		if err != nil {
+			return nil, err
+		}
+		stat, err = os.Stat(absPath)
 	}
 	if err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "%v", err)
 	}
-	if stat != nil && !stat.IsDir() {
+	if !stat.IsDir() {
 		return nil, cm.Errorf(cm.Internal, nil, "%v is not a directory", absPath)
 	}
 	if !isRegularDir(stat.Mode()) {
