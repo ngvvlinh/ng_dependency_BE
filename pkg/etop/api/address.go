@@ -6,7 +6,9 @@ import (
 	api "o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
 	addressmodelx "o.o/backend/com/main/address/modelx"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 )
@@ -21,6 +23,10 @@ func (s *AddressService) Clone() api.AddressService {
 }
 
 func (s *AddressService) CreateAddress(ctx context.Context, q *api.CreateAddressRequest) (*api.Address, error) {
+	if _, ok := validate.NormalizePhone(q.Phone); !ok {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+	}
+
 	address, err := convertpb.PbCreateAddressToModel(s.SS.Claim().AccountID, q)
 	if err != nil {
 		return nil, err
