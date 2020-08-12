@@ -1014,6 +1014,25 @@ func (ft *FbExternalMessageFilters) ByExternalStickerPtr(ExternalSticker *string
 	}
 }
 
+func (ft *FbExternalMessageFilters) ByExternalFromID(ExternalFromID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_from_id",
+		Value:  ExternalFromID,
+		IsNil:  ExternalFromID == "",
+	}
+}
+
+func (ft *FbExternalMessageFilters) ByExternalFromIDPtr(ExternalFromID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_from_id",
+		Value:  ExternalFromID,
+		IsNil:  ExternalFromID == nil,
+		IsZero: ExternalFromID != nil && (*ExternalFromID) == "",
+	}
+}
+
 func (ft *FbExternalMessageFilters) ByExternalCreatedTime(ExternalCreatedTime time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

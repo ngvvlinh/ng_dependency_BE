@@ -16,6 +16,7 @@ import (
 /*
 Custom conversions:
     ConvertCreateFbExternalCommentArgsToFbExternalComment    // in use
+    ConvertFbExternalMessage                                 // in use
 
 Ignored functions: (none)
 */
@@ -907,14 +908,7 @@ func Convert_fbmessagingmodel_FbExternalMessages_fbmessaging_FbExternalMessages(
 }
 
 func Convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(arg *fbmessaging.FbExternalMessage, out *fbmessagingmodel.FbExternalMessage) *fbmessagingmodel.FbExternalMessage {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &fbmessagingmodel.FbExternalMessage{}
-	}
-	convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(arg, out)
-	return out
+	return ConvertFbExternalMessage(arg, out)
 }
 
 func convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(arg *fbmessaging.FbExternalMessage, out *fbmessagingmodel.FbExternalMessage) {
@@ -926,6 +920,7 @@ func convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(ar
 	out.ExternalSticker = arg.ExternalSticker               // simple assign
 	out.ExternalTo = Convert_fbmessaging_FbObjectToes_fbmessagingmodel_FbObjectToes(arg.ExternalTo)
 	out.ExternalFrom = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.ExternalFrom, nil)
+	out.ExternalFromID = "" // zero value
 	out.ExternalAttachments = Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(arg.ExternalAttachments)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign

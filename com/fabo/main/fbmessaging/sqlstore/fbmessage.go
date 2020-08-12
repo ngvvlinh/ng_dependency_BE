@@ -147,19 +147,10 @@ func (s *FbExternalMessageStore) ListLatestExternalMessages(externalConversation
 
 	rows, err := s.query().
 		SQL(fmt.Sprintf(`
-			select a.id
-			from fb_external_message as a
-			where 
-				external_conversation_id in ('%s')
-				and 
-				id =
-				(
-					select id
-					from fb_external_message as b
-					where b.external_conversation_id = a.external_conversation_id
-					order by b.external_created_time desc, id asc
-					limit 1
-				)
+			select distinct on (external_conversation_id) id
+			from fb_external_message
+			where external_conversation_id in ('%s')
+			order by external_conversation_id, external_created_time desc
 		`, strings.Join(externalConversationIDs, "','"))).
 		Query()
 	if err != nil {
@@ -200,21 +191,12 @@ func (s *FbExternalMessageStore) ListLatestCustomerExternalMessages(externalConv
 
 	rows, err := s.query().
 		SQL(fmt.Sprintf(`
-			select a.id
-			from fb_external_message as a
+			select distinct on (external_conversation_id) id
+			from fb_external_message
 			where 
-				external_conversation_id in ('%s')
-				and 
-				id =
-				(
-					select id
-					from fb_external_message as b
-					where b.external_conversation_id = a.external_conversation_id AND 
-						b.external_from IS NOT NULL AND 
-						b.external_from->>'id' <> b.external_page_id
-					order by b.external_created_time desc, id asc
-					limit 1
-				)
+				external_conversation_id in ('%s') AND 
+				external_from_id <> external_page_id
+			order by external_conversation_id, external_created_time desc
 		`, strings.Join(externalConversationIDs, "','"))).
 		Query()
 	if err != nil {

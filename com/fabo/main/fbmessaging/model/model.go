@@ -18,6 +18,7 @@ type FbExternalMessage struct {
 	ExternalSticker        string
 	ExternalTo             []*FbObjectTo
 	ExternalFrom           *FbObjectFrom
+	ExternalFromID         string
 	ExternalAttachments    []*FbMessageAttachment
 	ExternalCreatedTime    time.Time `paging:"external_created_time"`
 	CreatedAt              time.Time `sq:"create"`
