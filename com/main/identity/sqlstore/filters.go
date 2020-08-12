@@ -21,7 +21,7 @@ var filterShopExtendedWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,
 	Bools:    nil,
 	Dates:    []string{"created_at"},
-	Equals:   []string{"code", "phone", "email", "money_transaction_rrule"},
+	Equals:   []string{"owner_id", "code", "phone", "email", "money_transaction_rrule"},
 	Nullable: []string{"bank_account"},
 	Numbers:  nil,
 	Status:   nil,
