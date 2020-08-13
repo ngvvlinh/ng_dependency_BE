@@ -8,10 +8,10 @@ import (
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipnow"
 	"o.o/api/main/shipnow/carrier"
-	shipnowcarrier "o.o/api/main/shipnow/carrier"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	etopconvert "o.o/backend/com/main/etop/convert"
+	shipnowcarrier "o.o/backend/com/main/shipnow/carrier"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi"
@@ -24,7 +24,7 @@ type ProcessManager struct {
 	shipnow      shipnow.CommandBus
 
 	order          ordering.CommandBus
-	carrierManager carrier.Manager
+	shipnowManager *shipnowcarrier.ShipnowManager
 }
 
 func New(
@@ -33,13 +33,14 @@ func New(
 	shipnowAggrBus shipnow.CommandBus,
 	orderAggrBus ordering.CommandBus,
 	carrierManager carrier.Manager,
+	shipnowCarrierManager *shipnowcarrier.ShipnowManager,
 ) *ProcessManager {
 	p := &ProcessManager{
 		eventBus:       eventBus,
 		shipnowQuery:   shipnowQuery,
 		shipnow:        shipnowAggrBus,
 		order:          orderAggrBus,
-		carrierManager: carrierManager,
+		shipnowManager: shipnowCarrierManager,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -56,9 +57,9 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shipnow.ShipnowOrderReservationEvent) error {
 	// Call orderAggr for ReserveOrdersForFfm
 	cmd := &ordering.ReserveOrdersForFfmCommand{
-		OrderIDs:   event.OrderIds,
+		OrderIDs:   event.OrderIDs,
 		Fulfill:    ordertypes.ShippingTypeShipnow,
-		FulfillIDs: []dot.ID{event.ShipnowFulfillmentId},
+		FulfillIDs: []dot.ID{event.ShipnowFulfillmentID},
 	}
 	if err := m.order.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -69,16 +70,16 @@ func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shi
 func (m *ProcessManager) ShipnowOrderChanged(ctx context.Context, event *shipnow.ShipnowOrderChangedEvent) error {
 	// release old orderIDs and reserve new orderIDs
 	cmd := &ordering.ReleaseOrdersForFfmCommand{
-		OrderIDs: event.OldOrderIds,
+		OrderIDs: event.OldOrderIDs,
 	}
 	if err := m.order.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 
 	cmd2 := &ordering.ReserveOrdersForFfmCommand{
-		OrderIDs:   event.OrderIds,
+		OrderIDs:   event.OrderIDs,
 		Fulfill:    ordertypes.ShippingTypeShipnow,
-		FulfillIDs: []dot.ID{event.ShipnowFulfillmentId},
+		FulfillIDs: []dot.ID{event.ShipnowFulfillmentID},
 	}
 	if err := m.order.Dispatch(ctx, cmd2); err != nil {
 		return err
@@ -89,29 +90,30 @@ func (m *ProcessManager) ShipnowOrderChanged(ctx context.Context, event *shipnow
 func (m *ProcessManager) ShipnowCancelled(ctx context.Context, event *shipnow.ShipnowCancelledEvent) error {
 	// release orderIDs
 	cmd := &ordering.ReleaseOrdersForFfmCommand{
-		OrderIDs: event.OrderIds,
+		OrderIDs: event.OrderIDs,
 	}
 	if err := m.order.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 
 	query := &shipnow.GetShipnowFulfillmentQuery{
-		Id: event.ShipnowFulfillmentId,
+		ID: event.ShipnowFulfillmentID,
 	}
 	if err := m.shipnowQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	ffm := query.Result.ShipnowFulfillment
 	if ffm.ShippingCode != "" {
-		cmd2 := &shipnowcarrier.CancelExternalShipnowCommand{
-			ShopID:               ffm.ShopId,
-			ShipnowFulfillmentID: ffm.Id,
+		cmd2 := &carrier.CancelExternalShipnowCommand{
+			ShopID:               ffm.ShopID,
+			ShipnowFulfillmentID: ffm.ID,
 			ExternalShipnowID:    ffm.ShippingCode,
 			CarrierServiceCode:   ffm.ShippingServiceCode,
 			CancelReason:         event.CancelReason,
 			Carrier:              ffm.Carrier,
+			ConnectionID:         ffm.ConnectionID,
 		}
-		if err := m.carrierManager.CancelExternalShipping(ctx, cmd2); err != nil {
+		if err := m.shipnowManager.CancelExternalShipping(ctx, cmd2); err != nil {
 			return err
 		}
 	}
@@ -121,7 +123,7 @@ func (m *ProcessManager) ShipnowCancelled(ctx context.Context, event *shipnow.Sh
 
 func (m *ProcessManager) ValidateConfirmed(ctx context.Context, event *shipnow.ShipnowValidateConfirmedEvent) error {
 	cmd := &ordering.ValidateOrdersForShippingCommand{
-		OrderIDs: event.OrderIds,
+		OrderIDs: event.OrderIDs,
 	}
 	if err := m.order.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -129,7 +131,7 @@ func (m *ProcessManager) ValidateConfirmed(ctx context.Context, event *shipnow.S
 
 	// update order confirm status
 	cmd2 := &ordering.UpdateOrdersConfirmStatusCommand{
-		IDs:           event.OrderIds,
+		IDs:           event.OrderIDs,
 		ShopConfirm:   status3.P,
 		ConfirmStatus: status3.P,
 	}
@@ -141,7 +143,7 @@ func (m *ProcessManager) ValidateConfirmed(ctx context.Context, event *shipnow.S
 
 func (m *ProcessManager) ShipnowExternalCreated(ctx context.Context, event *shipnow.ShipnowExternalCreatedEvent) (_err error) {
 	query := &shipnow.GetShipnowFulfillmentQuery{
-		Id: event.ShipnowFulfillmentId,
+		ID: event.ShipnowFulfillmentID,
 	}
 	if err := m.shipnowQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -150,7 +152,7 @@ func (m *ProcessManager) ShipnowExternalCreated(ctx context.Context, event *ship
 	{
 		// update sync status
 		update := &shipnow.UpdateShipnowFulfillmentStateCommand{
-			Id:         ffm.Id,
+			Id:         ffm.ID,
 			SyncStatus: status4.S,
 			SyncStates: &shipnow.SyncStates{
 				TrySyncAt: time.Now(),
@@ -166,7 +168,7 @@ func (m *ProcessManager) ShipnowExternalCreated(ctx context.Context, event *ship
 			return
 		}
 		update := &shipnow.UpdateShipnowFulfillmentStateCommand{
-			Id:         ffm.Id,
+			Id:         ffm.ID,
 			SyncStatus: status4.N,
 			SyncStates: &shipnow.SyncStates{
 				TrySyncAt: time.Now(),
@@ -177,20 +179,20 @@ func (m *ProcessManager) ShipnowExternalCreated(ctx context.Context, event *ship
 		_ = m.shipnow.Dispatch(ctx, update)
 	}()
 
-	cmd := &shipnowcarrier.CreateExternalShipnowCommand{
-		ShopID:               ffm.ShopId,
-		ShipnowFulfillmentID: ffm.Id,
+	cmd := &carrier.CreateExternalShipnowCommand{
+		ShopID:               ffm.ShopID,
+		ShipnowFulfillmentID: ffm.ID,
 		PickupAddress:        ffm.PickupAddress,
 		DeliveryPoints:       ffm.DeliveryPoints,
 		ShippingNote:         ffm.ShippingNote,
 	}
-	xShipnow, err := m.carrierManager.CreateExternalShipping(ctx, cmd)
+	xShipnow, err := m.shipnowManager.CreateExternalShipnow(ctx, cmd)
 	if err != nil {
 		return err
 	}
 
 	cmd2 := &shipnow.UpdateShipnowFulfillmentCarrierInfoCommand{
-		Id:                         ffm.Id,
+		ID:                         ffm.ID,
 		ShippingCode:               xShipnow.ID,
 		ShippingState:              xShipnow.State,
 		TotalFee:                   xShipnow.TotalFee,

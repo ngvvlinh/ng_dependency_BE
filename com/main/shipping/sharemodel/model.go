@@ -3,7 +3,7 @@ package sharemodel
 import (
 	"time"
 
-	shippingcore "o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
@@ -25,7 +25,6 @@ var ShippingStateMap = map[shipping.State]string{
 	shipping.Unknown:       "Không xác định",
 }
 
-// +convert:type=shipping.ShippingFeeLine
 type ShippingFeeLine struct {
 	ShippingFeeType          shipping_fee_type.ShippingFeeType `json:"shipping_fee_type"`
 	Cost                     int                               `json:"cost"`
@@ -55,7 +54,7 @@ func GetShippingFeeShopLine(item ShippingFeeLine, etopPriceRule bool, mainFee do
 	if item.ShippingFeeType == shipping_fee_type.Main && etopPriceRule {
 		item.Cost = mainFee.Apply(item.Cost)
 	}
-	if contains(shippingcore.ShippingFeeShopTypes, item.ShippingFeeType) {
+	if contains(shippingtypes.ShippingFeeShopTypes, item.ShippingFeeType) {
 		return &item
 	}
 	return nil

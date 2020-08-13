@@ -86,6 +86,7 @@ func convert_shipnowfulfillmentmodel_DeliveryPoint_shipnowmodel_DeliveryPoint(ar
 	out.CODAmount = arg.CODAmount               // simple assign
 	out.TryOn = arg.TryOn                       // simple assign
 	out.ShippingNote = arg.ShippingNote         // simple assign
+	out.ShippingState = 0                       // zero value
 }
 
 func Convert_shipnowfulfillmentmodel_DeliveryPoints_shipnowmodel_DeliveryPoints(args []*shipnowfulfillmentmodel.DeliveryPoint) (outs []*shipnowmodel.DeliveryPoint) {
@@ -158,7 +159,7 @@ func convert_shipnowfulfillmentmodel_ShipnowFulfillment_shipnowmodel_ShipnowFulf
 	out.PartnerID = arg.PartnerID                                   // simple assign
 	out.OrderIDs = arg.OrderIDs                                     // simple assign
 	out.PickupAddress = arg.PickupAddress                           // simple assign
-	out.Carrier = shipnowmodel.Carrier(arg.Carrier)                 // simple conversion
+	out.Carrier = 0                                                 // types do not match
 	out.ShippingServiceCode = arg.ShippingServiceCode               // simple assign
 	out.ShippingServiceFee = arg.ShippingServiceFee                 // simple assign
 	out.ShippingServiceName = arg.ShippingServiceName               // simple assign
@@ -193,6 +194,9 @@ func convert_shipnowfulfillmentmodel_ShipnowFulfillment_shipnowmodel_ShipnowFulf
 	out.ShippingSharedLink = arg.ShippingSharedLink       // simple assign
 	out.AddressToProvinceCode = arg.AddressToProvinceCode // simple assign
 	out.AddressToDistrictCode = arg.AddressToDistrictCode // simple assign
+	out.ConnectionID = 0                                  // zero value
+	out.ConnectionMethod = 0                              // zero value
+	out.ExternalID = ""                                   // zero value
 	out.Rid = arg.Rid                                     // simple assign
 }
 
@@ -225,7 +229,7 @@ func convert_shipnowmodel_ShipnowFulfillment_shipnowfulfillmentmodel_ShipnowFulf
 	out.PartnerID = arg.PartnerID                                   // simple assign
 	out.OrderIDs = arg.OrderIDs                                     // simple assign
 	out.PickupAddress = arg.PickupAddress                           // simple assign
-	out.Carrier = shipnowfulfillmentmodel.Carrier(arg.Carrier)      // simple conversion
+	out.Carrier = ""                                                // types do not match
 	out.ShippingServiceCode = arg.ShippingServiceCode               // simple assign
 	out.ShippingServiceFee = arg.ShippingServiceFee                 // simple assign
 	out.ShippingServiceName = arg.ShippingServiceName               // simple assign

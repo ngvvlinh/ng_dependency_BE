@@ -8,6 +8,7 @@ import (
 )
 
 // +gen:convert: o.o/backend/com/main/shipping/model -> o.o/api/main/shipping, o.o/api/main/shipping/types
+// +gen:convert: o.o/backend/com/main/shipping/sharemodel -> o.o/api/main/shipping/types
 // +gen:convert: o.o/backend/com/main/shipping/sharemodel -> o.o/api/main/shipping
 // +gen:convert: o.o/backend/com/main/shipping/modely -> o.o/api/main/shipping
 // +gen:convert: o.o/api/main/shipping

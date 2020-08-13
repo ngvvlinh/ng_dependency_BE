@@ -2283,7 +2283,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/sdShippingPaymentType"
+          "$ref": "#/definitions/qeShippingPaymentType"
         },
         "shipping_provider": {
           "allOf": [
@@ -3066,7 +3066,7 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/qeState"
+          "$ref": "#/definitions/sdState"
         },
         "shipping_status": {
           "$ref": "#/definitions/bnStatus"
@@ -3413,7 +3413,15 @@
         }
       }
     },
-    "qeState": {
+    "qeShippingPaymentType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "seller",
+        "buyer"
+      ]
+    },
+    "sdState": {
       "type": "string",
       "enum": [
         "default",
@@ -3427,14 +3435,6 @@
         "unknown",
         "undeliverable",
         "cancelled"
-      ]
-    },
-    "sdShippingPaymentType": {
-      "type": "string",
-      "enum": [
-        "none",
-        "seller",
-        "buyer"
       ]
     },
     "sfState": {

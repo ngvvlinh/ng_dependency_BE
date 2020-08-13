@@ -22,8 +22,6 @@ import (
 type Aggregate interface {
 	CreateShipnowFulfillment(context.Context, *CreateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 
-	CreateShipnowFulfillmentV2(context.Context, *CreateShipnowFulfillmentV2Args) (*ShipnowFulfillment, error)
-
 	ConfirmShipnowFulfillment(context.Context, *ConfirmShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 
 	CancelShipnowFulfillment(context.Context, *CancelShipnowFulfillmentArgs) (*meta.Empty, error)
@@ -44,25 +42,16 @@ type QueryService interface {
 }
 
 type CreateShipnowFulfillmentArgs struct {
-	OrderIds            []dot.ID
-	Carrier             carriertypes.Carrier
-	ShopId              dot.ID
-	ShippingServiceCode string
-	ShippingServiceFee  int
-	ShippingNote        string
-	RequestPickupAt     time.Time
-	PickupAddress       *types.Address
-}
-
-type CreateShipnowFulfillmentV2Args struct {
 	DeliveryPoints      []*OrderShippingInfo
-	Carrier             carriertypes.Carrier
+	Carrier             carriertypes.ShipnowCarrier
 	ShopID              dot.ID
 	ShippingServiceCode string
 	ShippingServiceFee  int
 	ShippingNote        string
 	RequestPickupAt     time.Time
 	PickupAddress       *types.Address
+	ConnectionID        dot.ID
+	ExternalID          string
 }
 
 type OrderShippingInfo struct {
@@ -75,21 +64,22 @@ type OrderShippingInfo struct {
 }
 
 type ConfirmShipnowFulfillmentArgs struct {
-	Id     dot.ID
-	ShopId dot.ID
+	ID     dot.ID
+	ShopID dot.ID
 }
 
 type CancelShipnowFulfillmentArgs struct {
-	Id           dot.ID
-	ShopId       dot.ID
+	ID           dot.ID
+	ShippingCode string
+	ShopID       dot.ID
 	CancelReason string
 }
 
 type UpdateShipnowFulfillmentArgs struct {
-	Id                  dot.ID
-	OrderIds            []dot.ID
-	Carrier             carriertypes.Carrier
-	ShopId              dot.ID
+	ID                  dot.ID
+	DeliveryPoints      []*OrderShippingInfo
+	Carrier             carriertypes.ShipnowCarrier
+	ShopID              dot.ID
 	ShippingServiceCode string
 	ShippingServiceFee  int
 	ShippingNote        string
@@ -98,12 +88,12 @@ type UpdateShipnowFulfillmentArgs struct {
 }
 
 type UpdateShipnowFulfillmentCarrierInfoArgs struct {
-	Id                         dot.ID
+	ID                         dot.ID
 	ShippingCode               string
 	ShippingState              shipnow_state.State
 	TotalFee                   int
-	FeeLines                   []*shippingtypes.FeeLine
-	CarrierFeeLines            []*shippingtypes.FeeLine
+	FeeLines                   []*shippingtypes.ShippingFeeLine
+	CarrierFeeLines            []*shippingtypes.ShippingFeeLine
 	ShippingCreatedAt          time.Time
 	EtopPaymentStatus          status4.Status
 	ShippingStatus             status5.Status
@@ -117,6 +107,7 @@ type UpdateShipnowFulfillmentCarrierInfoArgs struct {
 	CancelReason               string
 	ShippingSharedLink         string
 	ShippingServiceDescription string
+	DeliveryPoints             []*DeliveryPoint
 }
 
 type UpdateShipnowFulfillmentStateArgs struct {
@@ -134,8 +125,10 @@ type GetShipnowServicesCommandResult struct {
 }
 
 type GetShipnowFulfillmentQueryArgs struct {
-	Id     dot.ID
-	ShopId dot.ID
+	ID           dot.ID
+	ShippingCode string
+
+	ShopID dot.ID
 }
 
 type GetShipnowFulfillmentsQueryArgs struct {

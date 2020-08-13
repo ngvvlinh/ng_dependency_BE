@@ -41,6 +41,17 @@ type ShippingService interface {
 	GetFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.Fulfillment, error)
 }
 
+// +apix:path=/shop.Shipnow
+type ShipnowService interface {
+	GetShipnowServices(context.Context, *types.GetShipnowServicesRequest) (*types.GetShipnowServicesResponse, error)
+
+	CreateShipnowFulfillment(context.Context, *types.CreateShipnowFulfillmentRequest) (*types.ShipnowFulfillment, error)
+
+	CancelShipnowFulfillment(context.Context, *types.CancelShipnowFulfillmentRequest) (*cm.UpdatedResponse, error)
+
+	GetShipnowFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.ShipnowFulfillment, error)
+}
+
 // +apix:path=/shop.Order
 // +wrapper:endpoint-prefix=Order
 type OrderService interface {

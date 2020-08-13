@@ -35,6 +35,9 @@ const (
 
 	// +enum=manual
 	ConnectionSubtypeManual ConnectionSubtype = 2
+
+	// +enum=shipnow
+	ConnectionSubtypeShipnow ConnectionSubtype = 3
 )
 
 // +enum
@@ -84,4 +87,7 @@ const (
 
 	// +enum=partner
 	ConnectionProviderPartner ConnectionProvider = 4
+
+	// +enum=ahamove
+	ConnectionProviderAhamove ConnectionProvider = 5
 )

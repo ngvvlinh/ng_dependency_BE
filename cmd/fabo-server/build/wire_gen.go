@@ -36,6 +36,7 @@ import (
 	"o.o/backend/com/main/catalog/pm"
 	query3 "o.o/backend/com/main/catalog/query"
 	aggregate6 "o.o/backend/com/main/connectioning/aggregate"
+	"o.o/backend/com/main/connectioning/manager"
 	query7 "o.o/backend/com/main/connectioning/query"
 	"o.o/backend/com/main/identity"
 	pm2 "o.o/backend/com/main/identity/pm"
@@ -124,8 +125,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		return Output{}, nil, err
 	}
 	mainDB := databases.Main
-	manager := SupportedShipnowManager()
-	identityAggregate := identity.NewAggregate(mainDB, manager)
+	carrierManager := SupportedShipnowManager()
+	identityAggregate := identity.NewAggregate(mainDB, carrierManager)
 	commandBus := identity.AggregateMessageBus(identityAggregate)
 	queryService := identity.NewQueryService(mainDB)
 	queryBus := identity.QueryServiceMessageBus(queryService)
@@ -279,7 +280,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	sqlstoreStore := sqlstore.New(mainDB, notifierDB, locationQueryBus, busBus)
 	shipment_allConfig := cfg.Shipment
 	v3 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, locationQueryBus)
-	carrierManager := shipping_provider.NewCtrl(busBus, locationQueryBus, v3)
+	shipping_providerCarrierManager := shipping_provider.NewCtrl(busBus, locationQueryBus, v3)
 	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	mapShipmentServices := shipment_all.SupportedShipmentServices()
 	connectionQuery := query7.NewConnectionQuery(mainDB, mapShipmentServices)
@@ -298,12 +299,13 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
 	typesConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	driver := shipment_all.SupportedCarrierDriver()
-	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, driver)
+	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, connectioningQueryBus, connectioningCommandBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, driver, connectionManager)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
 	}
-	orderLogic := orderS.New(carrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, locationQueryBus, busBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
+	orderLogic := orderS.New(shipping_providerCarrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, locationQueryBus, busBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
 	orderService := &order.OrderService{
 		Session:       session,
 		OrderAggr:     orderingCommandBus,
@@ -318,7 +320,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:         session,
 		ShipmentManager: shipmentManager,
 		ShippingQuery:   shippingQueryBus,
-		ShippingCtrl:    carrierManager,
+		ShippingCtrl:    shipping_providerCarrierManager,
 	}
 	historyService := &history.HistoryService{
 		Session: session,

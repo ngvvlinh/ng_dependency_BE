@@ -11,10 +11,10 @@ import (
 )
 
 type ShipnowCarrier interface {
-	Code() shipnowcarriertypes.Carrier
+	Code() shipnowcarriertypes.ShipnowCarrier
 	CreateExternalShipnow(context.Context, *carrier.CreateExternalShipnowCommand, *shipnowtypes.ShipnowService) (*carrier.ExternalShipnow, error)
 	CancelExternalShipnow(context.Context, *carrier.CancelExternalShipnowCommand) error
-	GetShippingServices(context.Context, GetShippingServiceArgs) ([]*shipnowtypes.ShipnowService, error)
+	GetShipnowServices(context.Context, GetShipnowServiceArgs) ([]*shipnowtypes.ShipnowService, error)
 	GetServiceName(code string) (serviceName string, ok bool)
 	ParseServiceCode(code string) (serviceID string, err error)
 }
@@ -25,7 +25,7 @@ type ShipnowCarrierAccount interface {
 	VerifyExternalAccount(context.Context, *VerifyExternalAccountArgs) (*carrier.VerifyExternalAccountResult, error)
 }
 
-type GetShippingServiceArgs struct {
+type GetShipnowServiceArgs struct {
 	ShopID        dot.ID
 	PickupAddress *ordertypes.Address
 

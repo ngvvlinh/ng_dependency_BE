@@ -809,25 +809,14 @@ type ValueInfo struct {
 
 func (m *ValueInfo) String() string { return jsonx.MustMarshalToString(m) }
 
-type CreateShipnowFulfillmentRequest struct {
-	OrderIds            []dot.ID      `json:"order_ids"`
-	Carrier             string        `json:"carrier"`
-	ShippingServiceCode string        `json:"shipping_service_code"`
-	ShippingServiceFee  int           `json:"shipping_service_fee"`
-	ShippingNote        string        `json:"shipping_note"`
-	RequestPickupAt     dot.Time      `json:"request_pickup_at"`
-	PickupAddress       *OrderAddress `json:"pickup_address"`
-}
-
-func (m *CreateShipnowFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
-
 type CreateShipnowFulfillmentV2Request struct {
-	DeliveryPoints      []*ShipnowDeliveryPoint     `json:"delivery_points"`
-	Carrier             shipnowcarriertypes.Carrier `json:"carrier"`
-	ShippingServiceCode string                      `json:"shipping_service_code"`
-	ShippingServiceFee  int                         `json:"shipping_service_fee"`
-	ShippingNote        string                      `json:"shipping_note"`
-	PickupAddress       *OrderAddress               `json:"pickup_address"`
+	DeliveryPoints      []*ShipnowDeliveryPoint            `json:"delivery_points"`
+	Carrier             shipnowcarriertypes.ShipnowCarrier `json:"carrier"`
+	ShippingServiceCode string                             `json:"shipping_service_code"`
+	ShippingServiceFee  int                                `json:"shipping_service_fee"`
+	ShippingNote        string                             `json:"shipping_note"`
+	PickupAddress       *OrderAddress                      `json:"pickup_address"`
+	ConnectionID        dot.ID                             `json:"connection_id"`
 }
 
 func (m *CreateShipnowFulfillmentV2Request) Reset()         { *m = CreateShipnowFulfillmentV2Request{} }
@@ -846,14 +835,14 @@ func (m *ShipnowDeliveryPoint) Reset()         { *m = ShipnowDeliveryPoint{} }
 func (m *ShipnowDeliveryPoint) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateShipnowFulfillmentRequest struct {
-	Id                  dot.ID        `json:"id"`
-	OrderIds            []dot.ID      `json:"order_ids"`
-	Carrier             string        `json:"carrier"`
-	ShippingServiceCode string        `json:"shipping_service_code"`
-	ShippingServiceFee  int           `json:"shipping_service_fee"`
-	ShippingNote        string        `json:"shipping_note"`
-	RequestPickupAt     dot.Time      `json:"request_pickup_at"`
-	PickupAddress       *OrderAddress `json:"pickup_address"`
+	Id                  dot.ID                  `json:"id"`
+	DeliveryPoints      []*ShipnowDeliveryPoint `json:"delivery_points"`
+	Carrier             string                  `json:"carrier"`
+	ShippingServiceCode string                  `json:"shipping_service_code"`
+	ShippingServiceFee  int                     `json:"shipping_service_fee"`
+	ShippingNote        string                  `json:"shipping_note"`
+	RequestPickupAt     dot.Time                `json:"request_pickup_at"`
+	PickupAddress       *OrderAddress           `json:"pickup_address"`
 }
 
 func (m *UpdateShipnowFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -881,12 +870,12 @@ type DeliveryPointRequest struct {
 func (m *DeliveryPointRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetShipnowServicesResponse struct {
-	Services []*ShippnowService `json:"services"`
+	Services []*ShipnowService `json:"services"`
 }
 
 func (m *GetShipnowServicesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
-type ShippnowService struct {
+type ShipnowService struct {
 	Carrier     string `json:"carrier"`
 	Name        string `json:"name"`
 	Code        string `json:"code"`
@@ -894,7 +883,7 @@ type ShippnowService struct {
 	Description string `json:"description"`
 }
 
-func (m *ShippnowService) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ShipnowService) String() string { return jsonx.MustMarshalToString(m) }
 
 type XFulfillment struct {
 	Shipnow  *ShipnowFulfillment `json:"shipnow"`

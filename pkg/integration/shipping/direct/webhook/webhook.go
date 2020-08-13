@@ -79,7 +79,7 @@ func (wh *Webhook) Callback(ctx context.Context, args *partnercarrier.UpdateFulf
 		updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
 
 		// update shipping fee lines
-		providerFeeLines := partnercarrier.Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(args.ShippingFeeLines)
+		providerFeeLines := partnercarrier.Convert_apix_ShippingFeeLines_To_core_ShippingFeeLines(args.ShippingFeeLines)
 		updateFeeLinesCmd := &shippingcore.UpdateFulfillmentShippingFeesFromWebhookCommand{
 			FulfillmentID:    ffm.ID,
 			NewWeight:        cm.CoalesceInt(args.Weight.Int(), ffm.ChargeableWeight),

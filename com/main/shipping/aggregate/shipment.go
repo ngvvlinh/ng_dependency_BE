@@ -9,6 +9,7 @@ import (
 	"o.o/api/main/ordering"
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	shipstate "o.o/api/top/types/etc/shipping"
@@ -392,8 +393,8 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 			if err != nil {
 				return err
 			}
-			returnFeeLine := shipping.GetShippingFeeLine(calcFeeResp.ShippingFeeLines, shipping_fee_type.Return)
-			shippingFeeShopLines := shipping.ApplyShippingFeeLine(ffm.ShippingFeeShopLines, returnFeeLine)
+			returnFeeLine := shippingtypes.GetShippingFeeLine(calcFeeResp.ShippingFeeLines, shipping_fee_type.Return)
+			shippingFeeShopLines := shippingtypes.ApplyShippingFeeLine(ffm.ShippingFeeShopLines, returnFeeLine)
 
 			update := &shipping.UpdateFulfillmentShippingFeesArgs{
 				FulfillmentID:    ffm.ID,
@@ -463,7 +464,8 @@ func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shi
 			AdminNote:                args.AdminNote,
 		}
 		if args.ShipmentPriceInfo != nil {
-			update.ShipmentPriceInfo = shippingconvert.Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(args.ShipmentPriceInfo, nil)
+			update.ShipmentPriceInfo = shippingconvert.
+				Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(args.ShipmentPriceInfo, nil)
 		}
 		if err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillmentDB(update); err != nil {
 			return err
@@ -720,11 +722,11 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	var calcFeeResp *carrier.CalcMakeupShippingFeesByFfmResponse
 	defer func() error {
 
-		update.ExternalShippingFee = shipping.GetTotalShippingFee(args.ProviderFeeLines)
+		update.ExternalShippingFee = shippingtypes.GetTotalShippingFee(args.ProviderFeeLines)
 
 		// always update provider shipping fee even if error occurred
 		if update.ShippingFeeShopLines != nil {
-			totalFee := shipping.GetTotalShippingFee(update.ShippingFeeShopLines)
+			totalFee := shippingtypes.GetTotalShippingFee(update.ShippingFeeShopLines)
 			shippingFeeShop := shipping.CalcShopShippingFee(totalFee, ffm)
 			update.ShippingFeeShop = shippingFeeShop
 			if shippingFeeShop != ffm.ShippingFeeShop {
@@ -738,7 +740,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 					if connectionID == 0 {
 						return cm.Errorf(cm.FailedPrecondition, nil, "ConnectionID can not be empty")
 					}
-					connection, _ := a.shimentManager.GetConnectionByID(ctx, connectionID)
+					connection, _ := a.shimentManager.ConnectionManager.GetConnectionByID(ctx, connectionID)
 					str := "–––\n👹 %v: đơn %v có thay đổi về giá nhưng đã nằm trong phiên thanh toán. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- Giá hiện tại: %v \n- Giá mới: %v\n–––"
 					ll.WithChannel(meta.ChannelShipmentCarrier).SendMessage(fmt.Sprintf(str, connection.Name, ffm.ShippingCode, ffm.ShippingFeeShop, shippingFeeShop))
 					// shop shipping fee does not change
@@ -763,7 +765,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	}()
 
 	if !ffm.EtopPriceRule {
-		update.ShippingFeeShopLines = shipping.GetShippingFeeShopLines(providerFeeLines, false, dot.Int(0))
+		update.ShippingFeeShopLines = shippingtypes.GetShippingFeeShopLines(providerFeeLines, false, dot.Int(0))
 		return nil
 	}
 
@@ -771,7 +773,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 	// Các trường hợp cần tính lại cước phí đơn
 	//   - Thay đổi khối lượng
 	//   - Đơn trả hàng => tính phí trả hàng
-	var feeLines []*shipping.ShippingFeeLine
+	var feeLines []*shippingtypes.ShippingFeeLine
 	shippingFeeShopLines := ffm.ShippingFeeShopLines
 	calcShippingFeesArgs := &carrier.CalcMakeupShippingFeesByFfmArgs{
 		Fulfillment:        ffm,
@@ -786,8 +788,8 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 			return err
 		}
 		feeLines = calcFeeResp.ShippingFeeLines
-		mainFeeLine := shipping.GetShippingFeeLine(feeLines, shipping_fee_type.Main)
-		shippingFeeShopLines = shipping.ApplyShippingFeeLine(shippingFeeShopLines, mainFeeLine)
+		mainFeeLine := shippingtypes.GetShippingFeeLine(feeLines, shipping_fee_type.Main)
+		shippingFeeShopLines = shippingtypes.ApplyShippingFeeLine(shippingFeeShopLines, mainFeeLine)
 
 		// Remove field EtopAdjustedShippingFeeMain if not use
 		update.ShippingFeeShopLines = shippingFeeShopLines
@@ -802,8 +804,8 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 			}
 			feeLines = calcFeeResp.ShippingFeeLines
 		}
-		returnFeeLine := shipping.GetShippingFeeLine(feeLines, shipping_fee_type.Return)
-		shippingFeeShopLines = shipping.ApplyShippingFeeLine(shippingFeeShopLines, returnFeeLine)
+		returnFeeLine := shippingtypes.GetShippingFeeLine(feeLines, shipping_fee_type.Return)
+		shippingFeeShopLines = shippingtypes.ApplyShippingFeeLine(shippingFeeShopLines, returnFeeLine)
 		update.ShippingFeeShopLines = shippingFeeShopLines
 	}
 
@@ -961,7 +963,7 @@ func (a *Aggregate) AddFulfillmentShippingFee(ctx context.Context, args *shippin
 		if err != nil {
 			return err
 		}
-		feeLine := shipping.GetShippingFeeLine(calcFeeResp.ShippingFeeLines, args.ShippingFeeType)
+		feeLine := shippingtypes.GetShippingFeeLine(calcFeeResp.ShippingFeeLines, args.ShippingFeeType)
 		if feeLine == nil || feeLine.Cost == 0 {
 			return nil
 		}

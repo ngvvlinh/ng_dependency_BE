@@ -20,7 +20,7 @@ func TestQueryService(t *testing.T) {
 	shipnowQueryBus := QueryServiceMessageBus(shipnowQuery)
 	ctx := context.Background()
 
-	query := &shipnow.GetShipnowFulfillmentQuery{Id: 100}
+	query := &shipnow.GetShipnowFulfillmentQuery{ID: 100}
 	err = shipnowQueryBus.Dispatch(ctx, query)
 	require.Error(t, err)
 

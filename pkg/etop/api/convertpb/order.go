@@ -1261,7 +1261,7 @@ func Convert_core_FulfillmentSyncStates_To_api_FulfillmentSyncStates(s *shipping
 	}
 }
 
-func Convert_core_ShippingFeeLine_To_api_ShippingFeeLine(line *shipping.ShippingFeeLine) *types.ShippingFeeLine {
+func Convert_core_ShippingFeeLine_To_api_ShippingFeeLine(line *shiptypes.ShippingFeeLine) *types.ShippingFeeLine {
 	if line == nil {
 		return nil
 	}
@@ -1271,7 +1271,7 @@ func Convert_core_ShippingFeeLine_To_api_ShippingFeeLine(line *shipping.Shipping
 	}
 }
 
-func Convert_core_ShippingFeeLines_To_api_ShippingFeeLines(items []*shipping.ShippingFeeLine) []*types.ShippingFeeLine {
+func Convert_core_ShippingFeeLines_To_api_ShippingFeeLines(items []*shiptypes.ShippingFeeLine) []*types.ShippingFeeLine {
 	result := make([]*types.ShippingFeeLine, len(items))
 	for i, item := range items {
 		result[i] = Convert_core_ShippingFeeLine_To_api_ShippingFeeLine(item)
@@ -1279,21 +1279,21 @@ func Convert_core_ShippingFeeLines_To_api_ShippingFeeLines(items []*shipping.Shi
 	return result
 }
 
-func Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(in *types.ShippingFeeLine) *shipping.ShippingFeeLine {
+func Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(in *types.ShippingFeeLine) *shiptypes.ShippingFeeLine {
 	if in == nil {
 		return nil
 	}
-	return &shipping.ShippingFeeLine{
+	return &shiptypes.ShippingFeeLine{
 		ShippingFeeType: in.ShippingFeeType,
 		Cost:            in.Cost,
 	}
 }
 
-func Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(items []*types.ShippingFeeLine) []*shipping.ShippingFeeLine {
+func Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(items []*types.ShippingFeeLine) []*shiptypes.ShippingFeeLine {
 	if items == nil {
 		return nil
 	}
-	result := make([]*shipping.ShippingFeeLine, len(items))
+	result := make([]*shiptypes.ShippingFeeLine, len(items))
 	for i, item := range items {
 		result[i] = Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(item)
 	}

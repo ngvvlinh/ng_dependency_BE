@@ -71,6 +71,11 @@ func (s *ConnectionStore) OptionalConnectionType(_type connection_type.Connectio
 	return s
 }
 
+func (s *ConnectionStore) OptionalConnectionSubtype(_type connection_type.ConnectionSubtype) *ConnectionStore {
+	s.preds = append(s.preds, s.ft.ByConnectionSubtype(_type).Optional())
+	return s
+}
+
 func (s *ConnectionStore) OptionalConnectionProvider(provider connection_type.ConnectionProvider) *ConnectionStore {
 	s.preds = append(s.preds, s.ft.ByConnectionProvider(provider).Optional())
 	return s

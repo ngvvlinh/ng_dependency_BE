@@ -8,6 +8,7 @@ import (
 	shipnowtypes "o.o/api/main/shipnow/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -18,12 +19,12 @@ import (
 // +gen:event:topic=event/shipnow
 
 type ShipnowFulfillment struct {
-	Id                         dot.ID
-	ShopId                     dot.ID
-	PartnerId                  dot.ID
+	ID                         dot.ID
+	ShopID                     dot.ID
+	PartnerID                  dot.ID
 	PickupAddress              *types.Address
 	DeliveryPoints             []*DeliveryPoint
-	Carrier                    v1.Carrier
+	Carrier                    v1.ShipnowCarrier
 	ShippingServiceCode        string
 	ShippingServiceFee         int
 	ShippingServiceName        string
@@ -37,18 +38,25 @@ type ShipnowFulfillment struct {
 	ShippingCode         string
 	ShippingState        shipnow_state.State
 	ConfirmStatus        status3.Status
-	OrderIds             []dot.ID
+	OrderIDs             []dot.ID
 	ShippingCreatedAt    time.Time
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
 	EtopPaymentStatus    status4.Status
-	CodEtopTransferedAt  time.Time
+	CODEtopTransferedAt  time.Time
 	ShippingPickingAt    time.Time
 	ShippingDeliveringAt time.Time
 	ShippingDeliveredAt  time.Time
 	ShippingCancelledAt  time.Time
 	ShippingSharedLink   string
 	CancelReason         string
+	ConnectionID         dot.ID
+	ConnectionMethod     connection_type.ConnectionMethod
+
+	FeeLines        []*shippingtypes.ShippingFeeLine
+	CarrierFeeLines []*shippingtypes.ShippingFeeLine
+	ExternalID      string
+	TotalFee        int
 }
 
 type DeliveryPoint = shipnowtypes.DeliveryPoint
@@ -62,24 +70,24 @@ type SyncStates struct {
 type ShipnowOrderReservationEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId dot.ID
-	OrderIds             []dot.ID
+	ShipnowFulfillmentID dot.ID
+	OrderIDs             []dot.ID
 }
 
 type ShipnowOrderChangedEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId dot.ID
-	OldOrderIds          []dot.ID
-	OrderIds             []dot.ID
+	ShipnowFulfillmentID dot.ID
+	OldOrderIDs          []dot.ID
+	OrderIDs             []dot.ID
 }
 
 type ShipnowCancelledEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId dot.ID
-	OrderIds             []dot.ID
-	ExternalShipnowId    string
+	ShipnowFulfillmentID dot.ID
+	OrderIDs             []dot.ID
+	ExternalShipnowID    string
 	CarrierServiceCode   string
 	CancelReason         string
 }
@@ -87,14 +95,14 @@ type ShipnowCancelledEvent struct {
 type ShipnowValidateConfirmedEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId dot.ID
-	OrderIds             []dot.ID
+	ShipnowFulfillmentID dot.ID
+	OrderIDs             []dot.ID
 }
 
 type ShipnowExternalCreatedEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId dot.ID
+	ShipnowFulfillmentID dot.ID
 }
 
 func ShipnowStatus(state shipnow_state.State, paymentStatus status4.Status) status5.Status {

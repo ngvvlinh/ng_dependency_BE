@@ -3871,19 +3871,6 @@ func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			return
 		}
 		return msg, fn, nil
-	case "/shop.Shipnow/CreateShipnowFulfillment":
-		msg := &inttypes.CreateShipnowFulfillmentRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.CreateShipnowFulfillment(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
 	case "/shop.Shipnow/CreateShipnowFulfillmentV2":
 		msg := &inttypes.CreateShipnowFulfillmentV2Request{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

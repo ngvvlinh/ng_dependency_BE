@@ -2136,6 +2136,202 @@ func (s wrapProductCollectionRelationshipService) ListRelationships(ctx context.
 	return resp, nil
 }
 
+func WrapShipnowService(s func() *ShipnowService) func() api.ShipnowService {
+	return func() api.ShipnowService { return wrapShipnowService{s: s} }
+}
+
+type wrapShipnowService struct {
+	s func() *ShipnowService
+}
+
+type CancelShipnowFulfillmentEndpoint struct {
+	*externaltypes.CancelShipnowFulfillmentRequest
+	Result  *cm.UpdatedResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *externaltypes.CancelShipnowFulfillmentRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/CancelShipnowFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:   true,
+		RequireAPIKey: true,
+		RequireShop:   true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CancelShipnowFulfillmentEndpoint{CancelShipnowFulfillmentRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CancelShipnowFulfillment(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateShipnowFulfillmentEndpoint struct {
+	*externaltypes.CreateShipnowFulfillmentRequest
+	Result  *externaltypes.ShipnowFulfillment
+	Context claims.ShopClaim
+}
+
+func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *externaltypes.CreateShipnowFulfillmentRequest) (resp *externaltypes.ShipnowFulfillment, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/CreateShipnowFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:   true,
+		RequireAPIKey: true,
+		RequireShop:   true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateShipnowFulfillmentEndpoint{CreateShipnowFulfillmentRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().CreateShipnowFulfillment(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetShipnowFulfillmentEndpoint struct {
+	*externaltypes.FulfillmentIDRequest
+	Result  *externaltypes.ShipnowFulfillment
+	Context claims.ShopClaim
+}
+
+func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *externaltypes.FulfillmentIDRequest) (resp *externaltypes.ShipnowFulfillment, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/GetShipnowFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:   true,
+		RequireAPIKey: true,
+		RequireShop:   true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShipnowFulfillmentEndpoint{FulfillmentIDRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetShipnowFulfillment(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetShipnowServicesEndpoint struct {
+	*externaltypes.GetShipnowServicesRequest
+	Result  *externaltypes.GetShipnowServicesResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *externaltypes.GetShipnowServicesRequest) (resp *externaltypes.GetShipnowServicesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/GetShipnowServices"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		RequireAuth:   true,
+		RequireAPIKey: true,
+		RequireShop:   true,
+	}
+	ctx, err = middleware.StartSession(ctx, sessionQuery)
+	if err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShipnowServicesEndpoint{GetShipnowServicesRequest: req}
+	if session != nil {
+		query.Context.Claim = session.Claim
+	}
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s().GetShipnowServices(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapShippingService(s func() *ShippingService) func() api.ShippingService {
 	return func() api.ShippingService { return wrapShippingService{s: s} }
 }

@@ -11,6 +11,7 @@ import (
 	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
+	"o.o/backend/com/main/connectioning/manager"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi"
 )
@@ -24,7 +25,8 @@ func MockManager(mockBus capi.Bus, eventBus capi.EventBus, redisStore redis.Stor
 	shipmentserviceQueryBus := shipmentservice.NewQueryBus(mockBus)
 	shipmentpriceQueryBus := shipmentprice.NewQueryBus(mockBus)
 	pricelistpromotionQueryBus := pricelistpromotion.NewQueryBus(mockBus)
-	shipmentManager, err := NewShipmentManager(eventBus, queryBus, connectioningQueryBus, commandBus, redisStore, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, cfg)
+	connectionManager := manager.NewConnectionManager(redisStore, connectioningQueryBus)
+	shipmentManager, err := NewShipmentManager(eventBus, queryBus, connectioningQueryBus, commandBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, cfg, connectionManager)
 	if err != nil {
 		return nil, err
 	}

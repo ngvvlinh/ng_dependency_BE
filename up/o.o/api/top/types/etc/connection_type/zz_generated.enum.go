@@ -153,6 +153,7 @@ var enumConnectionProviderName = map[int]string{
 	2: "ghtk",
 	3: "vtpost",
 	4: "partner",
+	5: "ahamove",
 }
 
 var enumConnectionProviderValue = map[string]int{
@@ -161,6 +162,7 @@ var enumConnectionProviderValue = map[string]int{
 	"ghtk":    2,
 	"vtpost":  3,
 	"partner": 4,
+	"ahamove": 5,
 }
 
 func ParseConnectionProvider(s string) (ConnectionProvider, bool) {
@@ -287,12 +289,14 @@ var enumConnectionSubtypeName = map[int]string{
 	0: "unknown",
 	1: "shipment",
 	2: "manual",
+	3: "shipnow",
 }
 
 var enumConnectionSubtypeValue = map[string]int{
 	"unknown":  0,
 	"shipment": 1,
 	"manual":   2,
+	"shipnow":  3,
 }
 
 func ParseConnectionSubtype(s string) (ConnectionSubtype, bool) {

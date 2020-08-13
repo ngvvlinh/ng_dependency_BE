@@ -201,8 +201,8 @@ func (h AggregateHandler) HandleUpdateFulfillmentInfo(ctx context.Context, msg *
 type UpdateFulfillmentShippingFeesCommand struct {
 	FulfillmentID            dot.ID
 	ShippingCode             string
-	ProviderShippingFeeLines []*ShippingFeeLine
-	ShippingFeeLines         []*ShippingFeeLine
+	ProviderShippingFeeLines []*shippingtypes.ShippingFeeLine
+	ShippingFeeLines         []*shippingtypes.ShippingFeeLine
 	TotalCODAmount           dot.NullInt
 	UpdatedBy                dot.ID
 	AdminNote                string
@@ -220,7 +220,7 @@ type UpdateFulfillmentShippingFeesFromWebhookCommand struct {
 	FulfillmentID    dot.ID
 	NewWeight        int
 	NewState         shipping.State
-	ProviderFeeLines []*ShippingFeeLine
+	ProviderFeeLines []*shippingtypes.ShippingFeeLine
 
 	Result struct {
 	} `json:"-"`

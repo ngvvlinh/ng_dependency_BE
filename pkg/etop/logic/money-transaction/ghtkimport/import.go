@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/status5"
 	cm "o.o/backend/pkg/common"
@@ -57,7 +58,7 @@ func (i *GHTKImporter) ValidateAndReadFile(ctx context.Context, fileType string,
 
 type FulfillmentUpdate struct {
 	ID                       dot.ID
-	ProviderShippingFeeLines []*shipping.ShippingFeeLine
+	ProviderShippingFeeLines []*shippingtypes.ShippingFeeLine
 }
 
 func (i *GHTKImporter) updateShippingFeeFulfillments(ctx context.Context, ffms []*FulfillmentUpdate) error {
@@ -95,7 +96,7 @@ func (i *GHTKImporter) updateShippingFeeFulfillmentsFromImportFile(ctx context.C
 		}
 
 		feeLines := ffm.ProviderShippingFeeLines
-		var newFeeLines []*shipping.ShippingFeeLine
+		var newFeeLines []*shippingtypes.ShippingFeeLine
 		for _, feeLine := range feeLines {
 			if feeLine.ShippingFeeType == shipping_fee_type.Main {
 				// keep the shipping fee type main (phí dịch vụ)
@@ -116,13 +117,13 @@ func (i *GHTKImporter) updateShippingFeeFulfillmentsFromImportFile(ctx context.C
 			continue
 		}
 		if line.InsuranceFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingtypes.ShippingFeeLine{
 				ShippingFeeType: shipping_fee_type.Insurance,
 				Cost:            line.InsuranceFee,
 			})
 		}
 		if line.ReturnFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingtypes.ShippingFeeLine{
 				ShippingFeeType: shipping_fee_type.Return,
 				Cost:            line.ReturnFee,
 			})
@@ -132,13 +133,13 @@ func (i *GHTKImporter) updateShippingFeeFulfillmentsFromImportFile(ctx context.C
 			if cost > 0 {
 				cost = -cost
 			}
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingtypes.ShippingFeeLine{
 				Cost:            cost,
 				ShippingFeeType: shipping_fee_type.Discount,
 			})
 		}
 		if line.ChangeAddressFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingtypes.ShippingFeeLine{
 				ShippingFeeType: shipping_fee_type.AddressChange,
 				Cost:            line.ChangeAddressFee,
 			})

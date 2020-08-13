@@ -15,6 +15,7 @@ import (
 	"o.o/api/top/types/etc/status5"
 	"o.o/backend/com/main/shipnow/convert"
 	"o.o/backend/com/main/shipnow/model"
+	shippingconvert "o.o/backend/com/main/shipping/convert"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
@@ -69,6 +70,21 @@ func (s *ShipnowStore) ShopIDs(ids ...dot.ID) *ShipnowStore {
 
 func (s *ShipnowStore) ShippingCode(code string) *ShipnowStore {
 	s.preds = append(s.preds, s.ft.ByShippingCode(code))
+	return s
+}
+
+func (s *ShipnowStore) OptionalShippingCode(code string) *ShipnowStore {
+	s.preds = append(s.preds, s.ft.ByShippingCode(code).Optional())
+	return s
+}
+
+func (s *ShipnowStore) OptionalID(id dot.ID) *ShipnowStore {
+	s.preds = append(s.preds, s.ft.ByID(id).Optional())
+	return s
+}
+
+func (s *ShipnowStore) OptionalExternalID(externalID string) *ShipnowStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID).Optional())
 	return s
 }
 
@@ -127,7 +143,7 @@ func (s *ShipnowStore) Create(shipnowFfm *shipnow.ShipnowFulfillment) error {
 type UpdateInfoArgs struct {
 	ID                  dot.ID
 	PickupAddress       *ordertypes.Address
-	Carrier             carriertypes.Carrier
+	Carrier             carriertypes.ShipnowCarrier
 	ShippingServiceCode string
 	ShippingServiceFee  int
 	ShippingNote        string
@@ -142,7 +158,7 @@ func (s *ShipnowStore) UpdateInfo(args UpdateInfoArgs) (*shipnow.ShipnowFulfillm
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
 	update := &shipnow.ShipnowFulfillment{
-		Id:                  args.ID,
+		ID:                  args.ID,
 		PickupAddress:       args.PickupAddress,
 		DeliveryPoints:      args.DeliveryPoints,
 		Carrier:             args.Carrier,
@@ -214,8 +230,8 @@ func (s *ShipnowStore) UpdateCancelled(args UpdateCancelArgs) (*shipnow.ShipnowF
 
 type UpdateCarrierInfoArgs struct {
 	ID                  dot.ID
-	FeeLines            []*shippingtypes.FeeLine
-	CarrierFeeLines     []*shippingtypes.FeeLine
+	FeeLines            []*shippingtypes.ShippingFeeLine
+	CarrierFeeLines     []*shippingtypes.ShippingFeeLine
 	TotalFee            int
 	ShippingCode        string
 	ShippingCreatedAt   time.Time
@@ -233,6 +249,7 @@ type UpdateCarrierInfoArgs struct {
 	ShippingServiceDescription string
 	CancelReason               string
 	ShippingSharedLink         string
+	DeliveryPoints             []*shipnow.DeliveryPoint
 }
 
 func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.ShipnowFulfillment, error) {
@@ -241,8 +258,8 @@ func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.S
 		ShippingStatus:      args.ShippingStatus,
 		ShippingCreatedAt:   args.ShippingCreatedAt,
 		ShippingCode:        args.ShippingCode,
-		FeeLines:            convert.FeelinesToModel(args.FeeLines),
-		CarrierFeeLines:     convert.FeelinesToModel(args.CarrierFeeLines),
+		FeeLines:            shippingconvert.Convert_shippingtypes_ShippingFeeLines_sharemodel_ShippingFeeLines(args.FeeLines),
+		CarrierFeeLines:     shippingconvert.Convert_shippingtypes_ShippingFeeLines_sharemodel_ShippingFeeLines(args.CarrierFeeLines),
 		TotalFee:            args.TotalFee,
 		EtopPaymentStatus:   args.EtopPaymentStatus,
 		CODEtopTransferedAt: args.CODEtopTransferedAt,
@@ -256,6 +273,7 @@ func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.S
 		ShippingServiceDescription: args.ShippingServiceDescription,
 		CancelReason:               args.CancelReason,
 		ShippingSharedLink:         args.ShippingSharedLink,
+		DeliveryPoints:             convert.Convert_shipnowtypes_DeliveryPoints_shipnowmodel_DeliveryPoints(args.DeliveryPoints),
 	}
 	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(updateFfm); err != nil {
 		return nil, err

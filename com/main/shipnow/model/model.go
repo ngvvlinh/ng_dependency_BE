@@ -5,6 +5,8 @@ package model
 import (
 	"time"
 
+	carriertypes "o.o/api/main/shipnow/carrier/types"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -35,7 +37,7 @@ type ShipnowFulfillment struct {
 
 	PickupAddress *ordermodel.OrderAddress
 
-	Carrier Carrier
+	Carrier carriertypes.ShipnowCarrier
 
 	ShippingServiceCode        string
 	ShippingServiceFee         int
@@ -61,7 +63,7 @@ type ShipnowFulfillment struct {
 	ShippingCode         string
 	FeeLines             []*shippingsharemodel.ShippingFeeLine
 	CarrierFeeLines      []*shippingsharemodel.ShippingFeeLine
-	TotalFee             int
+	TotalFee             int // actual_shipping_service_fee
 	ShippingCreatedAt    time.Time
 	ShippingPickingAt    time.Time
 	ShippingDeliveringAt time.Time
@@ -78,7 +80,10 @@ type ShipnowFulfillment struct {
 	AddressToProvinceCode string
 	AddressToDistrictCode string
 
-	Rid dot.ID
+	ConnectionID     dot.ID
+	ConnectionMethod connection_type.ConnectionMethod
+	ExternalID       string
+	Rid              dot.ID
 }
 
 func (m *ShipnowFulfillment) Validate() error {
@@ -96,15 +101,16 @@ type DeliveryPoint struct {
 	ShippingAddress *ordermodel.OrderAddress `json:"shipping_address"`
 	Items           []*ordermodel.OrderLine  `json:"items"`
 
-	OrderID          dot.ID           `json:"order_id"`
-	OrderCode        string           `json:"order_code"`
-	GrossWeight      int              `json:"gross_weight"`
-	ChargeableWeight int              `json:"chargeable_weight"`
-	Length           int              `json:"lenght"`
-	Width            int              `json:"width"`
-	Height           int              `json:"height"`
-	BasketValue      int              `json:"basket_value"`
-	CODAmount        int              `json:"cod_amount"`
-	TryOn            try_on.TryOnCode `json:"try_on"`
-	ShippingNote     string           `json:"shipping_note"`
+	OrderID          dot.ID              `json:"order_id"`
+	OrderCode        string              `json:"order_code"`
+	GrossWeight      int                 `json:"gross_weight"`
+	ChargeableWeight int                 `json:"chargeable_weight"`
+	Length           int                 `json:"lenght"`
+	Width            int                 `json:"width"`
+	Height           int                 `json:"height"`
+	BasketValue      int                 `json:"basket_value"`
+	CODAmount        int                 `json:"cod_amount"`
+	TryOn            try_on.TryOnCode    `json:"try_on"`
+	ShippingNote     string              `json:"shipping_note"`
+	ShippingState    shipnow_state.State `json:"shipping_state"`
 }

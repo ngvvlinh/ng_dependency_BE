@@ -125,21 +125,21 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*sharemodel.ShipmentPriceInfo) = out0
 		return nil
 	})
-	s.Register((*sharemodel.ShippingFeeLine)(nil), (*shipping.ShippingFeeLine)(nil), func(arg, out interface{}) error {
-		Convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(arg.(*sharemodel.ShippingFeeLine), out.(*shipping.ShippingFeeLine))
+	s.Register((*sharemodel.ShippingFeeLine)(nil), (*shippingtypes.ShippingFeeLine)(nil), func(arg, out interface{}) error {
+		Convert_sharemodel_ShippingFeeLine_shippingtypes_ShippingFeeLine(arg.(*sharemodel.ShippingFeeLine), out.(*shippingtypes.ShippingFeeLine))
 		return nil
 	})
-	s.Register(([]*sharemodel.ShippingFeeLine)(nil), (*[]*shipping.ShippingFeeLine)(nil), func(arg, out interface{}) error {
-		out0 := Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(arg.([]*sharemodel.ShippingFeeLine))
-		*out.(*[]*shipping.ShippingFeeLine) = out0
+	s.Register(([]*sharemodel.ShippingFeeLine)(nil), (*[]*shippingtypes.ShippingFeeLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_sharemodel_ShippingFeeLines_shippingtypes_ShippingFeeLines(arg.([]*sharemodel.ShippingFeeLine))
+		*out.(*[]*shippingtypes.ShippingFeeLine) = out0
 		return nil
 	})
-	s.Register((*shipping.ShippingFeeLine)(nil), (*sharemodel.ShippingFeeLine)(nil), func(arg, out interface{}) error {
-		Convert_shipping_ShippingFeeLine_sharemodel_ShippingFeeLine(arg.(*shipping.ShippingFeeLine), out.(*sharemodel.ShippingFeeLine))
+	s.Register((*shippingtypes.ShippingFeeLine)(nil), (*sharemodel.ShippingFeeLine)(nil), func(arg, out interface{}) error {
+		Convert_shippingtypes_ShippingFeeLine_sharemodel_ShippingFeeLine(arg.(*shippingtypes.ShippingFeeLine), out.(*sharemodel.ShippingFeeLine))
 		return nil
 	})
-	s.Register(([]*shipping.ShippingFeeLine)(nil), (*[]*sharemodel.ShippingFeeLine)(nil), func(arg, out interface{}) error {
-		out0 := Convert_shipping_ShippingFeeLines_sharemodel_ShippingFeeLines(arg.([]*shipping.ShippingFeeLine))
+	s.Register(([]*shippingtypes.ShippingFeeLine)(nil), (*[]*sharemodel.ShippingFeeLine)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shippingtypes_ShippingFeeLines_sharemodel_ShippingFeeLines(arg.([]*shippingtypes.ShippingFeeLine))
 		*out.(*[]*sharemodel.ShippingFeeLine) = out0
 		return nil
 	})
@@ -231,8 +231,8 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.ShippingStatus = arg.ShippingStatus       // simple assign
 	out.EtopPaymentStatus = arg.EtopPaymentStatus // simple assign
 	out.ShippingFeeShop = arg.ShippingFeeShop     // simple assign
-	out.ProviderShippingFeeLines = Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(arg.ProviderShippingFeeLines)
-	out.ShippingFeeShopLines = Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(arg.ShippingFeeShopLines)
+	out.ProviderShippingFeeLines = Convert_sharemodel_ShippingFeeLines_shippingtypes_ShippingFeeLines(arg.ProviderShippingFeeLines)
+	out.ShippingFeeShopLines = Convert_sharemodel_ShippingFeeLines_shippingtypes_ShippingFeeLines(arg.ShippingFeeShopLines)
 	out.TotalItems = arg.TotalItems                                                 // simple assign
 	out.TotalWeight = arg.TotalWeight                                               // simple assign
 	out.TotalDiscount = arg.TotalDiscount                                           // simple assign
@@ -332,10 +332,10 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.ActualCompensationAmount = arg.ActualCompensationAmount // simple assign
 	out.ShippingFeeCustomer = arg.ShippingFeeCustomer           // simple assign
 	out.ShippingFeeShop = arg.ShippingFeeShop                   // simple assign
-	out.ShippingFeeShopLines = Convert_shipping_ShippingFeeLines_sharemodel_ShippingFeeLines(arg.ShippingFeeShopLines)
+	out.ShippingFeeShopLines = Convert_shippingtypes_ShippingFeeLines_sharemodel_ShippingFeeLines(arg.ShippingFeeShopLines)
 	out.ShippingServiceFee = 0                        // zero value
 	out.ExternalShippingFee = arg.ExternalShippingFee // simple assign
-	out.ProviderShippingFeeLines = Convert_shipping_ShippingFeeLines_sharemodel_ShippingFeeLines(arg.ProviderShippingFeeLines)
+	out.ProviderShippingFeeLines = Convert_shippingtypes_ShippingFeeLines_sharemodel_ShippingFeeLines(arg.ProviderShippingFeeLines)
 	out.EtopDiscount = arg.EtopDiscount                               // simple assign
 	out.EtopFeeAdjustment = arg.EtopFeeAdjustment                     // simple assign
 	out.ShippingFeeMain = 0                                           // zero value
@@ -709,20 +709,20 @@ func Convert_shipping_ShipmentPriceInfoes_sharemodel_ShipmentPriceInfoes(args []
 	return outs
 }
 
-//-- convert o.o/api/main/shipping.ShippingFeeLine --//
+//-- convert o.o/api/main/shipping/types.ShippingFeeLine --//
 
-func Convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(arg *sharemodel.ShippingFeeLine, out *shipping.ShippingFeeLine) *shipping.ShippingFeeLine {
+func Convert_sharemodel_ShippingFeeLine_shippingtypes_ShippingFeeLine(arg *sharemodel.ShippingFeeLine, out *shippingtypes.ShippingFeeLine) *shippingtypes.ShippingFeeLine {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &shipping.ShippingFeeLine{}
+		out = &shippingtypes.ShippingFeeLine{}
 	}
-	convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(arg, out)
+	convert_sharemodel_ShippingFeeLine_shippingtypes_ShippingFeeLine(arg, out)
 	return out
 }
 
-func convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(arg *sharemodel.ShippingFeeLine, out *shipping.ShippingFeeLine) {
+func convert_sharemodel_ShippingFeeLine_shippingtypes_ShippingFeeLine(arg *sharemodel.ShippingFeeLine, out *shippingtypes.ShippingFeeLine) {
 	out.ShippingFeeType = arg.ShippingFeeType         // simple assign
 	out.Cost = arg.Cost                               // simple assign
 	out.ExternalServiceID = arg.ExternalServiceID     // simple assign
@@ -730,30 +730,30 @@ func convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(arg *sharemodel
 	out.ExternalServiceType = arg.ExternalServiceType // simple assign
 }
 
-func Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(args []*sharemodel.ShippingFeeLine) (outs []*shipping.ShippingFeeLine) {
+func Convert_sharemodel_ShippingFeeLines_shippingtypes_ShippingFeeLines(args []*sharemodel.ShippingFeeLine) (outs []*shippingtypes.ShippingFeeLine) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]shipping.ShippingFeeLine, len(args))
-	outs = make([]*shipping.ShippingFeeLine, len(args))
+	tmps := make([]shippingtypes.ShippingFeeLine, len(args))
+	outs = make([]*shippingtypes.ShippingFeeLine, len(args))
 	for i := range tmps {
-		outs[i] = Convert_sharemodel_ShippingFeeLine_shipping_ShippingFeeLine(args[i], &tmps[i])
+		outs[i] = Convert_sharemodel_ShippingFeeLine_shippingtypes_ShippingFeeLine(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_shipping_ShippingFeeLine_sharemodel_ShippingFeeLine(arg *shipping.ShippingFeeLine, out *sharemodel.ShippingFeeLine) *sharemodel.ShippingFeeLine {
+func Convert_shippingtypes_ShippingFeeLine_sharemodel_ShippingFeeLine(arg *shippingtypes.ShippingFeeLine, out *sharemodel.ShippingFeeLine) *sharemodel.ShippingFeeLine {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &sharemodel.ShippingFeeLine{}
 	}
-	convert_shipping_ShippingFeeLine_sharemodel_ShippingFeeLine(arg, out)
+	convert_shippingtypes_ShippingFeeLine_sharemodel_ShippingFeeLine(arg, out)
 	return out
 }
 
-func convert_shipping_ShippingFeeLine_sharemodel_ShippingFeeLine(arg *shipping.ShippingFeeLine, out *sharemodel.ShippingFeeLine) {
+func convert_shippingtypes_ShippingFeeLine_sharemodel_ShippingFeeLine(arg *shippingtypes.ShippingFeeLine, out *sharemodel.ShippingFeeLine) {
 	out.ShippingFeeType = arg.ShippingFeeType         // simple assign
 	out.Cost = arg.Cost                               // simple assign
 	out.ExternalServiceID = arg.ExternalServiceID     // simple assign
@@ -764,14 +764,14 @@ func convert_shipping_ShippingFeeLine_sharemodel_ShippingFeeLine(arg *shipping.S
 	out.ExternalShippingCode = ""                     // zero value
 }
 
-func Convert_shipping_ShippingFeeLines_sharemodel_ShippingFeeLines(args []*shipping.ShippingFeeLine) (outs []*sharemodel.ShippingFeeLine) {
+func Convert_shippingtypes_ShippingFeeLines_sharemodel_ShippingFeeLines(args []*shippingtypes.ShippingFeeLine) (outs []*sharemodel.ShippingFeeLine) {
 	if args == nil {
 		return nil
 	}
 	tmps := make([]sharemodel.ShippingFeeLine, len(args))
 	outs = make([]*sharemodel.ShippingFeeLine, len(args))
 	for i := range tmps {
-		outs[i] = Convert_shipping_ShippingFeeLine_sharemodel_ShippingFeeLine(args[i], &tmps[i])
+		outs[i] = Convert_shippingtypes_ShippingFeeLine_sharemodel_ShippingFeeLine(args[i], &tmps[i])
 	}
 	return outs
 }

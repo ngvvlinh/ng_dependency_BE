@@ -1,17 +1,17 @@
 package types
 
 // +enum
-type Carrier int
+type ShipnowCarrier int
 
-type NullCarrier struct {
-	Enum  Carrier
+type NullShipnowCarrier struct {
+	Enum  ShipnowCarrier
 	Valid bool
 }
 
 const (
 	// +enum=default
-	Default Carrier = 0
+	Default ShipnowCarrier = 0
 
 	// +enum=ahamove
-	Ahamove Carrier = 1
+	Ahamove ShipnowCarrier = 1
 )

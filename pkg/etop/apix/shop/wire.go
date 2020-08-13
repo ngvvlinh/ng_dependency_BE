@@ -9,6 +9,7 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(WebhookService), "*"),
 	wire.Struct(new(HistoryService), "*"),
 	wire.Struct(new(ShippingService), "*"),
+	wire.Struct(new(ShipnowService), "*"),
 	wire.Struct(new(OrderService), "*"),
 	wire.Struct(new(FulfillmentService), "*"),
 	wire.Struct(new(CustomerService), "*"),

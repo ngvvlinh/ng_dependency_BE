@@ -15,9 +15,9 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 		return nil
 	}
 	return &types.ShipnowFulfillment{
-		Id:                         in.Id,
-		ShopId:                     in.ShopId,
-		PartnerId:                  in.PartnerId,
+		Id:                         in.ID,
+		ShopId:                     in.ShopID,
+		PartnerId:                  in.PartnerID,
 		PickupAddress:              Convert_core_OrderAddress_To_api_OrderAddress(in.PickupAddress),
 		DeliveryPoints:             Convert_core_DeliveryPoints_To_api_DeliveryPoints(in.DeliveryPoints),
 		Carrier:                    in.Carrier.String(),
@@ -35,11 +35,11 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 		ShippingStatus:             in.ShippingStatus,
 		ShippingState:              in.ShippingState,
 		ConfirmStatus:              in.ConfirmStatus,
-		OrderIds:                   in.OrderIds,
+		OrderIds:                   in.OrderIDs,
 		ShippingCreatedAt:          cmapi.PbTime(in.ShippingCreatedAt),
 		ShippingCode:               in.ShippingCode,
 		EtopPaymentStatus:          in.EtopPaymentStatus,
-		CodEtopTransferedAt:        cmapi.PbTime(in.CodEtopTransferedAt),
+		CodEtopTransferedAt:        cmapi.PbTime(in.CODEtopTransferedAt),
 		ShippingPickingAt:          cmapi.PbTime(in.ShippingPickingAt),
 		ShippingDeliveringAt:       cmapi.PbTime(in.ShippingDeliveringAt),
 		ShippingDeliveredAt:        cmapi.PbTime(in.ShippingDeliveredAt),
@@ -265,11 +265,11 @@ func Convert_core_Coordinates_To_api_Coordinates(in *ordertypes.Coordinates) *et
 	}
 }
 
-func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowService) *types.ShippnowService {
+func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowService) *types.ShipnowService {
 	if in == nil {
 		return nil
 	}
-	return &types.ShippnowService{
+	return &types.ShipnowService{
 		Carrier:     in.Carrier.String(),
 		Name:        in.Name,
 		Code:        in.Code,
@@ -278,7 +278,7 @@ func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowS
 	}
 }
 
-func Convert_core_ShipnowServices_To_api_ShipnowServices(ins []*shipnowtypes.ShipnowService) (outs []*types.ShippnowService) {
+func Convert_core_ShipnowServices_To_api_ShipnowServices(ins []*shipnowtypes.ShipnowService) (outs []*types.ShipnowService) {
 	for _, in := range ins {
 		outs = append(outs, Convert_core_ShipnowService_To_api_ShipnowService(in))
 	}

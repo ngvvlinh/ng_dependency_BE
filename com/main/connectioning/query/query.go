@@ -46,7 +46,7 @@ func (q *ConnectionQuery) GetConnectionByCode(ctx context.Context, code string) 
 }
 
 func (q *ConnectionQuery) ListConnections(ctx context.Context, args *connectioning.ListConnectionsArgs) ([]*connectioning.Connection, error) {
-	query := q.connectionStore(ctx).OptionalPartnerID(args.PartnerID).OptionalConnectionType(args.ConnectionType).OptionalConnectionMethod(args.ConnectionMethod).OptionalConnectionProvider(args.ConnectionProvider)
+	query := q.connectionStore(ctx).OptionalPartnerID(args.PartnerID).OptionalConnectionType(args.ConnectionType).OptionalConnectionSubtype(args.ConnectionSubtype).OptionalConnectionMethod(args.ConnectionMethod).OptionalConnectionProvider(args.ConnectionProvider)
 	return query.ListConnections(args.Status)
 }
 

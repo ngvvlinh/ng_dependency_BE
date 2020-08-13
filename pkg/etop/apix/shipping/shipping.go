@@ -107,7 +107,7 @@ func (s *Shipping) buildCodeForShippingServices(ctx context.Context, services []
 		if srv.ConnectionInfo == nil {
 			continue
 		}
-		connection, err := s.ShipmentManager.GetConnectionByID(ctx, srv.ConnectionInfo.ID)
+		connection, err := s.ShipmentManager.ConnectionManager.GetConnectionByID(ctx, srv.ConnectionInfo.ID)
 		if err != nil {
 			return err
 		}
@@ -121,7 +121,7 @@ func (s *Shipping) parseServiceCode(ctx context.Context, serviceCode string) (co
 		return nil, "", cm.Errorf(cm.InvalidArgument, nil, "Shipping service code is invalid")
 	}
 	connCode, code := serviceCode[:4], serviceCode[4:]
-	conn, err := s.ShipmentManager.GetConnectionByCode(ctx, connCode)
+	conn, err := s.ShipmentManager.ConnectionManager.GetConnectionByCode(ctx, connCode)
 	if err != nil {
 		return nil, "", err
 	}

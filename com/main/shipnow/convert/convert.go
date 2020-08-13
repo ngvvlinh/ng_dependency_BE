@@ -3,7 +3,6 @@ package convert
 import (
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipnow"
-	carrier "o.o/api/main/shipnow/carrier/types"
 	shipnowtypes "o.o/api/main/shipnow/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/types/etc/try_on"
@@ -14,45 +13,18 @@ import (
 	"o.o/capi/dot"
 )
 
-func CarrierToModel(in carrier.Carrier) shipnowmodel.Carrier {
-	res := shipnowmodel.Carrier(in.String())
-	return res
-}
+// +gen:convert: o.o/backend/com/main/shipnow/model -> o.o/api/main/shipnow
+// +gen:convert: o.o/api/main/shipnow
 
 func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFulfillment) {
-	out = &shipnowmodel.ShipnowFulfillment{
-		ID:                         in.Id,
-		ShopID:                     in.ShopId,
-		PartnerID:                  in.PartnerId,
-		OrderIDs:                   in.OrderIds,
-		PickupAddress:              orderconvert.AddressDB(in.PickupAddress),
-		Carrier:                    CarrierToModel(in.Carrier),
-		ShippingServiceCode:        in.ShippingServiceCode,
-		ShippingServiceFee:         in.ShippingServiceFee,
-		ChargeableWeight:           in.ChargeableWeight,
-		BasketValue:                in.ValueInfo.BasketValue,
-		CODAmount:                  in.ValueInfo.CODAmount,
-		ShippingNote:               in.ShippingNote,
-		RequestPickupAt:            in.RequestPickupAt,
-		DeliveryPoints:             DeliveryPointsToModel(in.DeliveryPoints),
-		ConfirmStatus:              in.ConfirmStatus,
-		Status:                     in.Status,
-		ShippingState:              in.ShippingState,
-		ShippingCode:               in.ShippingCode,
-		ShippingCreatedAt:          in.ShippingCreatedAt,
-		ShippingPickingAt:          in.ShippingPickingAt,
-		ShippingDeliveringAt:       in.ShippingDeliveringAt,
-		ShippingDeliveredAt:        in.ShippingDeliveredAt,
-		ShippingCancelledAt:        in.ShippingCancelledAt,
-		CreatedAt:                  in.CreatedAt,
-		UpdatedAt:                  in.UpdatedAt,
-		CODEtopTransferedAt:        in.CodEtopTransferedAt,
-		EtopPaymentStatus:          in.EtopPaymentStatus,
-		ShippingServiceName:        in.ShippingServiceName,
-		ShippingSharedLink:         in.ShippingSharedLink,
-		CancelReason:               in.CancelReason,
-		ShippingServiceDescription: in.ShippingServiceDescription,
+	if out == nil {
+		out = &shipnowmodel.ShipnowFulfillment{}
 	}
+	convert_shipnow_ShipnowFulfillment_shipnowmodel_ShipnowFulfillment(in, out)
+	out.GrossWeight = in.GrossWeight
+	out.ChargeableWeight = in.ChargeableWeight
+	out.BasketValue = in.ValueInfo.BasketValue
+	out.CODAmount = in.ValueInfo.CODAmount
 	if len(in.DeliveryPoints) > 0 {
 		out.AddressToDistrictCode = in.DeliveryPoints[0].ShippingAddress.DistrictCode
 		out.AddressToProvinceCode = in.DeliveryPoints[0].ShippingAddress.ProvinceCode
@@ -69,48 +41,21 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 }
 
 func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillment) {
-	_carrier, _ := carrier.ParseCarrier(in.Carrier.String())
-	out = &shipnow.ShipnowFulfillment{
-		Id:                  in.ID,
-		ShopId:              in.ShopID,
-		PartnerId:           in.PartnerID,
-		PickupAddress:       orderconvert.Address(in.PickupAddress),
-		DeliveryPoints:      DeliveryPoints(in.DeliveryPoints),
-		Carrier:             _carrier,
-		ShippingServiceCode: in.ShippingServiceCode,
-		ShippingServiceFee:  in.ShippingServiceFee,
-		WeightInfo: shippingtypes.WeightInfo{
-			GrossWeight:      in.GrossWeight,
-			ChargeableWeight: in.ChargeableWeight,
-			Length:           0,
-			Width:            0,
-			Height:           0,
-		},
-		ValueInfo: shippingtypes.ValueInfo{
-			BasketValue:      in.BasketValue,
-			CODAmount:        in.CODAmount,
-			IncludeInsurance: false,
-		},
-		ShippingNote:               in.ShippingNote,
-		RequestPickupAt:            in.RequestPickupAt,
-		ConfirmStatus:              in.ConfirmStatus,
-		Status:                     in.Status,
-		ShippingState:              in.ShippingState,
-		ShippingCode:               in.ShippingCode,
-		OrderIds:                   in.OrderIDs,
-		ShippingCreatedAt:          in.ShippingCreatedAt,
-		CreatedAt:                  in.CreatedAt,
-		UpdatedAt:                  in.UpdatedAt,
-		ShippingPickingAt:          in.ShippingPickingAt,
-		ShippingDeliveringAt:       in.ShippingDeliveringAt,
-		ShippingDeliveredAt:        in.ShippingDeliveredAt,
-		ShippingCancelledAt:        in.ShippingCancelledAt,
-		CodEtopTransferedAt:        in.CODEtopTransferedAt,
-		EtopPaymentStatus:          in.EtopPaymentStatus,
-		ShippingServiceName:        in.ShippingServiceName,
-		ShippingSharedLink:         in.ShippingSharedLink,
-		CancelReason:               in.CancelReason,
-		ShippingServiceDescription: in.ShippingServiceDescription,
+	if out == nil {
+		out = &shipnow.ShipnowFulfillment{}
+	}
+	convert_shipnowmodel_ShipnowFulfillment_shipnow_ShipnowFulfillment(in, out)
+	out.WeightInfo = shippingtypes.WeightInfo{
+		GrossWeight:      in.GrossWeight,
+		ChargeableWeight: in.ChargeableWeight,
+		Length:           0,
+		Width:            0,
+		Height:           0,
+	}
+	out.ValueInfo = shippingtypes.ValueInfo{
+		BasketValue:      in.BasketValue,
+		CODAmount:        in.CODAmount,
+		IncludeInsurance: false,
 	}
 	return out
 }
@@ -144,7 +89,8 @@ func DeliveryPoint(in *shipnowmodel.DeliveryPoint) (outs *shipnowtypes.DeliveryP
 			CODAmount:        in.CODAmount,
 			IncludeInsurance: false,
 		},
-		TryOn: 0,
+		TryOn:         0,
+		ShippingState: in.ShippingState,
 	}
 }
 
@@ -173,6 +119,7 @@ func DeliveryPointToModel(in *shipnowtypes.DeliveryPoint) (out *shipnowmodel.Del
 		ShippingNote:     in.ShippingNote,
 		OrderID:          in.OrderId,
 		OrderCode:        in.OrderCode,
+		ShippingState:    in.ShippingState,
 	}
 }
 
@@ -239,37 +186,6 @@ func GetValueInfo(orders []*ordering.Order) shippingtypes.ValueInfo {
 	return shippingtypes.ValueInfo{
 		BasketValue: basketValue,
 		CODAmount:   codAmount,
-	}
-}
-
-func FeelineToModel(in *shippingtypes.FeeLine) (out *shippingsharemodel.ShippingFeeLine) {
-	if in == nil {
-		return nil
-	}
-	return &shippingsharemodel.ShippingFeeLine{
-		ShippingFeeType:     in.ShippingFeeType,
-		Cost:                in.Cost,
-		ExternalServiceName: in.ExternalServiceName,
-		ExternalServiceType: in.ExternalServiceType,
-	}
-}
-
-func FeelinesToModel(ins []*shippingtypes.FeeLine) (outs []*shippingsharemodel.ShippingFeeLine) {
-	for _, in := range ins {
-		outs = append(outs, FeelineToModel(in))
-	}
-	return
-}
-
-func Feeline(in *shippingsharemodel.ShippingFeeLine) (out *shippingtypes.FeeLine) {
-	if in == nil {
-		return nil
-	}
-	return &shippingtypes.FeeLine{
-		ShippingFeeType:     in.ShippingFeeType,
-		Cost:                in.Cost,
-		ExternalServiceName: in.ExternalServiceName,
-		ExternalServiceType: in.ExternalServiceType,
 	}
 }
 

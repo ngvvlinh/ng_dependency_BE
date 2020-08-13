@@ -248,7 +248,7 @@ type UpdateShippingFeeLinesArgs struct {
 }
 
 func UpdateShippingFeeLines(ctx context.Context, shippingAggr shippingcore.CommandBus, args *UpdateShippingFeeLinesArgs) error {
-	providerFeeLinesCore := shippingconvert.Convert_sharemodel_ShippingFeeLines_shipping_ShippingFeeLines(args.ProviderFeeLines)
+	providerFeeLinesCore := shippingconvert.Convert_sharemodel_ShippingFeeLines_shippingtypes_ShippingFeeLines(args.ProviderFeeLines)
 	cmd := &shippingcore.UpdateFulfillmentShippingFeesFromWebhookCommand{
 		FulfillmentID:    args.FfmID,
 		NewWeight:        args.Weight,

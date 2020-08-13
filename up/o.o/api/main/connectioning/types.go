@@ -11,10 +11,13 @@ import (
 
 // +gen:event:topic=event/connection
 
-var (
+const (
 	DefaultTopshipGHTKConnectionID   = dot.ID(1000804010396750738)
 	DefaultTopshipGHNConnectionID    = dot.ID(1000803215822389663)
 	DefaultTopshipVTPostConnectionID = dot.ID(1000804104889339180)
+
+	// shipnow
+	DefaultTopShipAhamoveConnectionID = dot.ID(1000343411864064400)
 )
 
 type Connection struct {

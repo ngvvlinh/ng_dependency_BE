@@ -2,6 +2,7 @@ package shipping
 
 import (
 	"o.o/api/main/location"
+	"o.o/api/main/shipnow"
 	"o.o/api/main/shipping"
 	"o.o/api/top/external/types"
 	com "o.o/backend/com/main"
@@ -22,6 +23,8 @@ type Shipping struct {
 	ShippingAggr     shipping.CommandBus
 	ShippingQuery    shipping.QueryBus
 	OrderLogic       *orderS.OrderLogic
+	ShipnowAggr      shipnow.CommandBus
+	ShipnowQuery     shipnow.QueryBus
 }
 
 func New(
@@ -31,6 +34,8 @@ func New(
 	shippingA shipping.CommandBus,
 	shippingQ shipping.QueryBus,
 	orderLogic *orderS.OrderLogic,
+	shipnowA shipnow.CommandBus,
+	shipnowQ shipnow.QueryBus,
 ) *Shipping {
 	s := &Shipping{
 		LocationBus:      locationBus,
@@ -40,6 +45,8 @@ func New(
 		ShippingAggr:     shippingA,
 		ShippingQuery:    shippingQ,
 		OrderLogic:       orderLogic,
+		ShipnowAggr:      shipnowA,
+		ShipnowQuery:     shipnowQ,
 	}
 	locationList = buildLocationList(locationBus)
 	return s

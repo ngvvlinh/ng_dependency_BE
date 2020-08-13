@@ -13,6 +13,7 @@ type Config struct {
 	Env    string `yaml:"env"`
 	Name   string `yaml:"name"`
 	ApiKey string `yaml:"api_key"`
+	Token  string `yaml:"token"`
 }
 
 type (

@@ -2,8 +2,6 @@ package carrier
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -15,6 +13,7 @@ import (
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/filter_type"
@@ -25,6 +24,7 @@ import (
 	"o.o/api/top/types/etc/status4"
 	addressconvert "o.o/backend/com/main/address/convert"
 	addressmodel "o.o/backend/com/main/address/model"
+	connectionmanager "o.o/backend/com/main/connectioning/manager"
 	locationutil "o.o/backend/com/main/location/util"
 	shipmentpriceconvert "o.o/backend/com/main/shipmentpricing/shipmentprice/convert"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
@@ -35,9 +35,7 @@ import (
 	"o.o/backend/pkg/common/apifw/syncgroup"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/cipherx"
 	"o.o/backend/pkg/common/cmenv"
-	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi"
@@ -48,9 +46,6 @@ import (
 var ll = l.New()
 
 const (
-	DefaultTTl            = 2 * 60 * 60
-	SecretKey             = "connectionsecretkey"
-	VersionCaching        = "1.1"
 	PrefixMakeupPriceCode = "###"
 )
 
@@ -59,12 +54,12 @@ type ShipmentManager struct {
 	connectionQS         connectioning.QueryBus
 	connectionAggr       connectioning.CommandBus
 	env                  string
-	redisStore           redis.Store
-	cipherx              *cipherx.Cipherx
 	shipmentServiceQS    shipmentservice.QueryBus
 	shipmentPriceQS      shipmentprice.QueryBus
 	shippingQS           shipping.QueryBus
 	priceListPromotionQS pricelistpromotion.QueryBus
+	ghnWebhookEndpoint   string
+	ConnectionManager    *connectionmanager.ConnectionManager
 
 	webhookEndpoints carriertypes.ConfigEndpoints
 	carrierDriver    carriertypes.Driver
@@ -77,25 +72,23 @@ func NewShipmentManager(
 	locationQS location.QueryBus,
 	connectionQS connectioning.QueryBus,
 	connectionAggr connectioning.CommandBus,
-	redisS redis.Store,
 	shipmentServiceQS shipmentservice.QueryBus,
 	shipmentPriceQS shipmentprice.QueryBus,
 	priceListPromotionQS pricelistpromotion.QueryBus,
 	cfg carriertypes.Config,
 	carrierDriver carriertypes.Driver,
+	connectionManager *connectionmanager.ConnectionManager,
 ) (*ShipmentManager, error) {
-	_cipherx, _ := cipherx.NewCipherx(SecretKey)
 	sm := &ShipmentManager{
 		eventBus:             eventBus,
 		locationQS:           locationQS,
 		connectionQS:         connectionQS,
 		connectionAggr:       connectionAggr,
 		env:                  cmenv.PartnerEnv(),
-		redisStore:           redisS,
-		cipherx:              _cipherx,
 		shipmentServiceQS:    shipmentServiceQS,
 		shipmentPriceQS:      shipmentPriceQS,
 		priceListPromotionQS: priceListPromotionQS,
+		ConnectionManager:    connectionManager,
 		webhookEndpoints:     cfg.Endpoints,
 		carrierDriver:        carrierDriver,
 	}
@@ -103,7 +96,7 @@ func NewShipmentManager(
 }
 
 func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID dot.ID, shopID dot.ID) (carriertypes.ShipmentCarrier, error) {
-	connection, err := m.GetConnectionByID(ctx, connectionID)
+	connection, err := m.ConnectionManager.GetConnectionByID(ctx, connectionID)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +105,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 		// ignore shopID
 		_shopID = 0
 	}
-	shopConnection, err := m.getShopConnection(ctx, connectionID, _shopID)
+	shopConnection, err := m.ConnectionManager.GetShopConnection(ctx, connectionID, _shopID)
 	if err != nil {
 		return nil, err
 	}
@@ -372,7 +365,7 @@ func (m *ShipmentManager) SignUp(ctx context.Context, args *ConnectionSignUpArgs
 }
 
 func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, connectionID dot.ID) (carriertypes.ShipmentCarrier, error) {
-	conn, err := m.GetConnectionByID(ctx, connectionID)
+	conn, err := m.ConnectionManager.GetConnectionByID(ctx, connectionID)
 	if err != nil {
 		return nil, err
 	}
@@ -422,116 +415,6 @@ func (m *ShipmentManager) UpdateFulfillmentCOD(ctx context.Context, ffm *shipmod
 	return driver.UpdateFulfillmentCOD(ctx, ffm)
 }
 
-func (m *ShipmentManager) GetConnectionByID(ctx context.Context, connID dot.ID) (*connectioning.Connection, error) {
-	connKey := GetRedisConnectionKeyByID(connID)
-	var connection connectioning.Connection
-	err := m.loadRedis(connKey, &connection)
-	if err != nil {
-		query := &connectioning.GetConnectionByIDQuery{
-			ID: connID,
-		}
-		if err := m.connectionQS.Dispatch(ctx, query); err != nil {
-			return nil, cm.MapError(err).Wrap(cm.NotFound, "Connection not found").Throw()
-		}
-		connection = *query.Result
-		connKeyCode := getRedisConnectionKeyByCode(connection.Code)
-		m.setRedis(connKey, connection)
-		m.setRedis(connKeyCode, connection)
-	}
-	return &connection, nil
-}
-
-func (m *ShipmentManager) GetConnectionByCode(ctx context.Context, connCode string) (*connectioning.Connection, error) {
-	connKey := getRedisConnectionKeyByCode(connCode)
-	var connection connectioning.Connection
-	err := m.loadRedis(connKey, &connection)
-	if err != nil {
-		query := &connectioning.GetConnectionByCodeQuery{
-			Code: connCode,
-		}
-		if err := m.connectionQS.Dispatch(ctx, query); err != nil {
-			return nil, cm.MapError(err).Wrap(cm.NotFound, "Connection not found").Throw()
-		}
-		connection = *query.Result
-		connKeyID := GetRedisConnectionKeyByID(connection.ID)
-		m.setRedis(connKey, connection)
-		m.setRedis(connKeyID, connection)
-	}
-	return &connection, nil
-}
-
-func (m *ShipmentManager) getShopConnection(ctx context.Context, connID dot.ID, shopID dot.ID) (*connectioning.ShopConnection, error) {
-	shopConnKey := GetRedisShopConnectionKey(connID, shopID)
-	var shopConnection connectioning.ShopConnection
-	err := m.loadRedis(shopConnKey, &shopConnection)
-	if err == nil {
-		return &shopConnection, nil
-	}
-	query2 := &connectioning.GetShopConnectionByIDQuery{
-		ConnectionID: connID,
-		ShopID:       shopID,
-	}
-	if err := m.connectionQS.Dispatch(ctx, query2); err != nil {
-		return nil, err
-	}
-	shopConnection = *query2.Result
-	m.setRedis(shopConnKey, shopConnection)
-	return &shopConnection, nil
-}
-
-func GetRedisShopConnectionKey(connID dot.ID, shopID dot.ID) string {
-	return fmt.Sprintf("shopConn:%v:%v%v", VersionCaching, shopID.String(), connID.String())
-}
-
-func GetRedisConnectionKeyByID(connID dot.ID) string {
-	return fmt.Sprintf("conn:id:%v:%v", VersionCaching, connID.String())
-}
-
-func getRedisConnectionKeyByCode(code string) string {
-	return fmt.Sprintf("conn:code:%v:%v", VersionCaching, code)
-}
-
-func (m *ShipmentManager) loadRedis(key string, v interface{}) error {
-	if m.redisStore == nil {
-		return cm.Errorf(cm.Internal, nil, "Redis service nil")
-	}
-	value, err := m.redisStore.GetString(key)
-	if err != nil {
-		return err
-	}
-
-	data, err := m.cipherx.Decrypt([]byte(value))
-	if err != nil {
-		ll.Error("Fail to decrypt from redis", l.Error(err))
-		return err
-	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		ll.Error("Fail to unmarshal from redis", l.Error(err))
-		return err
-	}
-	return nil
-}
-
-func (m *ShipmentManager) setRedis(key string, data interface{}) {
-	if m.redisStore == nil {
-		return
-	}
-	xData, err := json.Marshal(data)
-	if err != nil {
-		return
-	}
-	dataEncrypt, err := m.cipherx.Encrypt(xData)
-	if err != nil {
-		return
-	}
-	value := string(dataEncrypt)
-	if err := m.redisStore.SetStringWithTTL(key, value, DefaultTTl); err != nil {
-		ll.Error("Can not store to redis", l.Error(err))
-	}
-	return
-}
-
 // validateConnection
 //
 // Check if this connection is allowed in whitelabel partner
@@ -560,7 +443,7 @@ func (m *ShipmentManager) validateConnection(ctx context.Context, conn *connecti
 
 func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context, args *GetShippingServicesArgs, connID dot.ID) ([]*shippingsharemodel.AvailableShippingService, error) {
 	accountID := args.AccountID
-	conn, err := m.GetConnectionByID(ctx, connID)
+	conn, err := m.ConnectionManager.GetConnectionByID(ctx, connID)
 	if err != nil {
 		return nil, err
 	}
@@ -869,7 +752,7 @@ type CalcMakeupShippingFeesByFfmArgs struct {
 type CalcMakeupShippingFeesByFfmResponse struct {
 	ShipmentPriceID     dot.ID
 	ShipmentPriceListID dot.ID
-	ShippingFeeLines    []*shipping.ShippingFeeLine
+	ShippingFeeLines    []*shippingtypes.ShippingFeeLine
 }
 
 func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, args *CalcMakeupShippingFeesByFfmArgs) (*CalcMakeupShippingFeesByFfmResponse, error) {

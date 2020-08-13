@@ -1177,6 +1177,114 @@
         }
       }
     },
+    "/v1/shop.Shipnow/CancelShipnowFulfillment": {
+      "post": {
+        "tags": [
+          "Shipnow"
+        ],
+        "summary": "CancelShipnowFulfillment",
+        "operationId": "shop.Shipnow-CancelShipnowFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCancelShipnowFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Shipnow/CreateShipnowFulfillment": {
+      "post": {
+        "tags": [
+          "Shipnow"
+        ],
+        "summary": "CreateShipnowFulfillment",
+        "operationId": "shop.Shipnow-CreateShipnowFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateShipnowFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShipnowFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Shipnow/GetShipnowFulfillment": {
+      "post": {
+        "tags": [
+          "Shipnow"
+        ],
+        "summary": "GetShipnowFulfillment",
+        "operationId": "shop.Shipnow-GetShipnowFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrFulfillmentIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShipnowFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Shipnow/GetShipnowServices": {
+      "post": {
+        "tags": [
+          "Shipnow"
+        ],
+        "summary": "GetShipnowServices",
+        "operationId": "shop.Shipnow-GetShipnowServices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetShipnowServicesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrGetShipnowServicesResponse"
+            }
+          }
+        }
+      }
+    },
     "/v1/shop.Shipping/CancelOrder": {
       "post": {
         "tags": [
@@ -1711,6 +1819,14 @@
         }
       }
     },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
     "ktVersionInfoResponse": {
       "type": "object",
       "properties": {
@@ -1785,6 +1901,24 @@
         "id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "mrCancelShipnowFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_code": {
+          "type": "string"
         }
       }
     },
@@ -2197,6 +2331,32 @@
         },
         "unit": {
           "type": "string"
+        }
+      }
+    },
+    "mrCreateShipnowFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShipnowDeliveryPoint"
+          }
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/mrShipnowAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
         }
       }
     },
@@ -2731,6 +2891,31 @@
         "id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "mrGetShipnowServicesRequest": {
+      "type": "object",
+      "properties": {
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShipnowDeliveryPointShortVersion"
+          }
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/mrShipnowAddressShortVersion"
+        }
+      }
+    },
+    "mrGetShipnowServicesResponse": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShipnowService"
+          }
         }
       }
     },
@@ -3509,6 +3694,240 @@
         }
       }
     },
+    "mrShipnowAddress": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "allOf": [
+            {
+              "description": "Vui lòng cung cấp lat. , long. để lấy được giá chính xác nhất\n"
+            },
+            {
+              "$ref": "#/definitions/mrCoordinates"
+            }
+          ]
+        },
+        "district": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        }
+      }
+    },
+    "mrShipnowAddressShortVersion": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "coordinates": {
+          "allOf": [
+            {
+              "description": "Vui lòng cung cấp lat. , long. để lấy được giá chính xác nhất\n"
+            },
+            {
+              "$ref": "#/definitions/mrCoordinates"
+            }
+          ]
+        },
+        "district": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        }
+      }
+    },
+    "mrShipnowDeliveryPoint": {
+      "type": "object",
+      "required": [
+        "gross_weight",
+        "cod_amount"
+      ],
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrOrderLine"
+          }
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/mrShipnowAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "allOf": [
+            {
+              "description": "Map với trạng thái của đơn hàng\n"
+            },
+            {
+              "$ref": "#/definitions/sdState"
+            }
+          ]
+        }
+      }
+    },
+    "mrShipnowDeliveryPointShortVersion": {
+      "type": "object",
+      "properties": {
+        "cod_amount": {
+          "type": "integer"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/mrShipnowAddressShortVersion"
+        }
+      }
+    },
+    "mrShipnowFulfillment": {
+      "type": "object",
+      "properties": {
+        "actual_shipping_service_fee": {
+          "type": "integer"
+        },
+        "basket_value": {
+          "type": "integer"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "carrier_info": {
+          "$ref": "#/definitions/mrCarrierInfo"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "confirm_status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShipnowDeliveryPoint"
+          }
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/mrShipnowAddress"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_description": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_shared_link": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/sdState"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mrShipnowService": {
+      "type": "object",
+      "properties": {
+        "carrier_info": {
+          "$ref": "#/definitions/mrCarrierInfo"
+        },
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "fee": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "mrShippingService": {
       "type": "object",
       "properties": {
@@ -4039,6 +4458,22 @@
         "confirm"
       ]
     },
+    "sdState": {
+      "type": "string",
+      "enum": [
+        "default",
+        "created",
+        "assigning",
+        "picking",
+        "delivering",
+        "delivered",
+        "returning",
+        "returned",
+        "unknown",
+        "undeliverable",
+        "cancelled"
+      ]
+    },
     "sfState": {
       "type": "string",
       "enum": [
@@ -4107,6 +4542,9 @@
     },
     {
       "name": "ProductCollectionRelationship"
+    },
+    {
+      "name": "Shipnow"
     },
     {
       "name": "Shipping"

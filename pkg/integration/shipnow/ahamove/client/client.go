@@ -30,6 +30,7 @@ type Client struct {
 	baseUrl          string
 	verifyAccountUrl string
 	apiKey           string
+	token            string
 	rclient          *httpreq.Resty
 	env              string
 }
@@ -56,6 +57,7 @@ func New(cfg Config) *Client {
 		apiKey:  cfg.ApiKey,
 		rclient: httpreq.NewResty(rcfg),
 		env:     cfg.Env,
+		token:   cfg.Token,
 	}
 	switch cfg.Env {
 	case cmenv.PartnerEnvTest:
@@ -239,6 +241,11 @@ func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{
 		if err != nil {
 			return cm.Error(cm.Internal, "", err)
 		}
+	}
+
+	tokens := queryString["token"]
+	if len(tokens) == 0 || tokens[0] == "" {
+		queryString["token"] = []string{c.token}
 	}
 	res, err := c.rclient.R().
 		SetQueryString(queryString.Encode()).

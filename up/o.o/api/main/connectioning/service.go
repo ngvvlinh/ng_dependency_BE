@@ -132,6 +132,7 @@ type ListConnectionsArgs struct {
 	PartnerID          dot.ID
 	Status             status3.NullStatus
 	ConnectionType     connection_type.ConnectionType
+	ConnectionSubtype  connection_type.ConnectionSubtype
 	ConnectionMethod   connection_type.ConnectionMethod
 	ConnectionProvider connection_type.ConnectionProvider
 }

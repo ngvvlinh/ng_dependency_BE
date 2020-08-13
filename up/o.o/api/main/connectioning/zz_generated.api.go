@@ -255,6 +255,7 @@ type ListConnectionsQuery struct {
 	PartnerID          dot.ID
 	Status             status3.NullStatus
 	ConnectionType     connection_type.ConnectionType
+	ConnectionSubtype  connection_type.ConnectionSubtype
 	ConnectionMethod   connection_type.ConnectionMethod
 	ConnectionProvider connection_type.ConnectionProvider
 
@@ -558,6 +559,7 @@ func (q *ListConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, 
 			PartnerID:          q.PartnerID,
 			Status:             q.Status,
 			ConnectionType:     q.ConnectionType,
+			ConnectionSubtype:  q.ConnectionSubtype,
 			ConnectionMethod:   q.ConnectionMethod,
 			ConnectionProvider: q.ConnectionProvider,
 		}
@@ -567,6 +569,7 @@ func (q *ListConnectionsQuery) SetListConnectionsArgs(args *ListConnectionsArgs)
 	q.PartnerID = args.PartnerID
 	q.Status = args.Status
 	q.ConnectionType = args.ConnectionType
+	q.ConnectionSubtype = args.ConnectionSubtype
 	q.ConnectionMethod = args.ConnectionMethod
 	q.ConnectionProvider = args.ConnectionProvider
 }

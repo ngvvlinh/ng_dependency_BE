@@ -45,6 +45,8 @@ func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Serv
 		return NewProductCollectionServiceServer(builder, hooks...), true
 	case func() ProductService:
 		return NewProductServiceServer(builder, hooks...), true
+	case func() ShipnowService:
+		return NewShipnowServiceServer(builder, hooks...), true
 	case func() ShippingService:
 		return NewShippingServiceServer(builder, hooks...), true
 	case func() VariantService:
@@ -1242,6 +1244,111 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 				return
 			}
 			resp, err = inner.UpdateProduct(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type ShipnowServiceServer struct {
+	hooks   httprpc.HooksBuilder
+	builder func() ShipnowService
+}
+
+func NewShipnowServiceServer(builder func() ShipnowService, hooks ...httprpc.HooksBuilder) httprpc.Server {
+	return &ShipnowServiceServer{
+		hooks:   httprpc.ChainHooks(hooks...),
+		builder: builder,
+	}
+}
+
+const ShipnowServicePathPrefix = "/shop.Shipnow/"
+
+func (s *ShipnowServiceServer) PathPrefix() string {
+	return ShipnowServicePathPrefix
+}
+
+func (s *ShipnowServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
+func (s *ShipnowServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	hooks := httprpc.WrapHooks(s.hooks)
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.BeforeRequest(ctx, *info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
+}
+
+func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Shipnow/CancelShipnowFulfillment":
+		msg := &externaltypes.CancelShipnowFulfillmentRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CancelShipnowFulfillment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Shipnow/CreateShipnowFulfillment":
+		msg := &externaltypes.CreateShipnowFulfillmentRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateShipnowFulfillment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Shipnow/GetShipnowFulfillment":
+		msg := &externaltypes.FulfillmentIDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShipnowFulfillment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Shipnow/GetShipnowServices":
+		msg := &externaltypes.GetShipnowServicesRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetShipnowServices(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

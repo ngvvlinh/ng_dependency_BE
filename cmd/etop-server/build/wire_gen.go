@@ -27,7 +27,7 @@ import (
 	aggregate21 "o.o/backend/com/etc/logging/payment/aggregate"
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	"o.o/backend/com/etc/logging/smslog/aggregate"
-	"o.o/backend/com/external/payment/manager"
+	manager2 "o.o/backend/com/external/payment/manager"
 	aggregate19 "o.o/backend/com/external/payment/payment/aggregate"
 	vtpay2 "o.o/backend/com/external/payment/vtpay"
 	aggregate20 "o.o/backend/com/external/payment/vtpay/gateway/aggregate"
@@ -38,6 +38,7 @@ import (
 	pm4 "o.o/backend/com/main/catalog/pm"
 	query3 "o.o/backend/com/main/catalog/query"
 	aggregate7 "o.o/backend/com/main/connectioning/aggregate"
+	"o.o/backend/com/main/connectioning/manager"
 	pm16 "o.o/backend/com/main/connectioning/pm"
 	query13 "o.o/backend/com/main/connectioning/query"
 	"o.o/backend/com/main/credit"
@@ -77,6 +78,7 @@ import (
 	"o.o/backend/com/main/shipmentpricing/shipmentservice"
 	"o.o/backend/com/main/shipmentpricing/shopshipmentpricelist"
 	"o.o/backend/com/main/shipnow"
+	carrier2 "o.o/backend/com/main/shipnow/carrier"
 	pm12 "o.o/backend/com/main/shipnow/pm"
 	"o.o/backend/com/main/shipnowcarrier"
 	aggregate14 "o.o/backend/com/main/shipping/aggregate"
@@ -120,7 +122,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/account"
 	"o.o/backend/pkg/etop/api/shop/authorize"
 	"o.o/backend/pkg/etop/api/shop/brand"
-	carrier2 "o.o/backend/pkg/etop/api/shop/carrier"
+	carrier3 "o.o/backend/pkg/etop/api/shop/carrier"
 	"o.o/backend/pkg/etop/api/shop/category"
 	"o.o/backend/pkg/etop/api/shop/collection"
 	"o.o/backend/pkg/etop/api/shop/connection"
@@ -402,7 +404,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
 	typesConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	driver := shipment_all.SupportedCarrierDriver()
-	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, connectioningQueryBus, connectioningCommandBus, store, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, driver)
+	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, connectioningQueryBus, connectioningCommandBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, driver, connectionManager)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
@@ -424,7 +427,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ShippingQuery:   shippingQueryBus,
 		ShippingCtrl:    carrierManager,
 	}
-	shipnowAggregate := shipnow.NewAggregate(busBus, mainDB, queryBus, identityQueryBus, addressQueryBus, orderingQueryBus, shipnowManager)
+	carrierShipnowManager := carrier2.NewShipnowManager(queryBus, connectioningQueryBus, store, connectionManager, identityQueryBus, shipnowQueryBus)
+	shipnowAggregate := shipnow.NewAggregate(busBus, mainDB, queryBus, identityQueryBus, addressQueryBus, connectioningQueryBus, orderingQueryBus, carrierShipnowManager)
 	shipnowCommandBus := shipnow.AggregateMessageBus(shipnowAggregate)
 	shipnowService := &shipnow2.ShipnowService{
 		Session:      session,
@@ -479,8 +483,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	config2 := cfg.VTPay
 	provider := vtpay.New(config2)
 	v5 := payment_all.AllSupportedPaymentProviders(provider)
-	paymentManager := manager.NewManager(v5, orderingQueryBus)
-	managerCommandBus := manager.ManagerMesssageBus(paymentManager)
+	paymentManager := manager2.NewManager(v5, orderingQueryBus)
+	managerCommandBus := manager2.ManagerMesssageBus(paymentManager)
 	paymentService := &payment.PaymentService{
 		Session:     session,
 		PaymentAggr: managerCommandBus,
@@ -511,7 +515,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	carrierAggregate := aggregate10.NewCarrierAggregate(busBus, mainDB)
 	carryingCommandBus := aggregate10.CarrierAggregateMessageBus(carrierAggregate)
-	carrierService := &carrier2.CarrierService{
+	carrierService := &carrier3.CarrierService{
 		Session:      session,
 		CarrierAggr:  carryingCommandBus,
 		CarrierQuery: carryingQueryBus,
@@ -753,7 +757,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	apiServers := api2.NewServers(secretToken, apiUserService, apiTradingService, apiShopService, affiliateService)
 	intHandlers := server_max.BuildIntHandlers(servers, shopServers, adminServers, sadminServers, integrationServers, affiliateServers, apiServers)
-	shippingShipping := shipping.New(queryBus, mainDB, shipmentManager, shippingCommandBus, shippingQueryBus, orderLogic)
+	shippingShipping := shipping.New(queryBus, mainDB, shipmentManager, shippingCommandBus, shippingQueryBus, orderLogic, shipnowCommandBus, shipnowQueryBus)
 	partnerMiscService := &partner.MiscService{
 		Shipping: shippingShipping,
 	}
@@ -861,7 +865,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	xshopProductCollectionRelationshipService := &xshop.ProductCollectionRelationshipService{
 		Shopping: shoppingShopping,
 	}
-	xshopServers, cleanup5 := xshop.NewServers(store, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService)
+	xshopShipnowService := &xshop.ShipnowService{
+		Shipping: shippingShipping,
+	}
+	xshopServers, cleanup5 := xshop.NewServers(store, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService, xshopShipnowService)
 	partnercarrierMiscService := &partnercarrier.MiscService{
 		Session:  session,
 		Shipping: shippingShipping,
@@ -971,7 +978,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager8 := pm9.New(busBus, purchaserefundCommandBus, purchaserefundQueryBus, receiptingQueryBus)
 	processManager9 := pm10.New(busBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, identityQueryBus)
 	processManager10 := pm11.New(busBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
-	processManager11 := pm12.New(busBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, shipnowManager)
+	processManager11 := pm12.New(busBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, shipnowManager, carrierShipnowManager)
 	processManager12 := pm13.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus)
 	processManager13 := pm14.New(busBus, affiliateCommandBus)
 	traderAgg := aggregate22.NewTraderAgg(mainDB)

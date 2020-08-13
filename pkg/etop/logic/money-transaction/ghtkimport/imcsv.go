@@ -13,6 +13,7 @@ import (
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
@@ -289,7 +290,7 @@ func (i *Import) updateShippingFeeFulfillmentsFromImportFile(ctx context.Context
 		}
 
 		feeLines := ffm.ProviderShippingFeeLines
-		var newFeeLines []*shipping.ShippingFeeLine
+		var newFeeLines []*shippingtypes.ShippingFeeLine
 		for _, feeLine := range feeLines {
 			if feeLine.ShippingFeeType == shipping_fee_type.Main {
 				// keep the shipping fee type main (phí dịch vụ)
@@ -310,13 +311,13 @@ func (i *Import) updateShippingFeeFulfillmentsFromImportFile(ctx context.Context
 			continue
 		}
 		if line.InsuranceFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingtypes.ShippingFeeLine{
 				ShippingFeeType: shipping_fee_type.Insurance,
 				Cost:            line.InsuranceFee,
 			})
 		}
 		if line.ReturnFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingtypes.ShippingFeeLine{
 				ShippingFeeType: shipping_fee_type.Return,
 				Cost:            line.ReturnFee,
 			})
@@ -326,13 +327,13 @@ func (i *Import) updateShippingFeeFulfillmentsFromImportFile(ctx context.Context
 			if cost > 0 {
 				cost = -cost
 			}
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingtypes.ShippingFeeLine{
 				Cost:            cost,
 				ShippingFeeType: shipping_fee_type.Discount,
 			})
 		}
 		if line.ChangeAddressFee != 0 {
-			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shipping.ShippingFeeLine{
+			update.ProviderShippingFeeLines = append(update.ProviderShippingFeeLines, &shippingtypes.ShippingFeeLine{
 				ShippingFeeType: shipping_fee_type.AddressChange,
 				Cost:            line.ChangeAddressFee,
 			})

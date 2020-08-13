@@ -6,12 +6,13 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
+	connectionmanager "o.o/backend/com/main/connectioning/manager"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
-	"o.o/backend/com/main/shipping/carrier"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
@@ -159,13 +160,13 @@ func (m *ProcessManager) MoneyTxShippingExternalsConfirming(ctx context.Context,
 		if ffm.ShippingState != shippingstate.Returned && ffm.ShippingState != shippingstate.Returning {
 			continue
 		}
-		returnedFee := shipping.GetShippingFee(ffm.ShippingFeeShopLines, shipping_fee_type.Return)
+		returnedFee := shippingtypes.GetShippingFee(ffm.ShippingFeeShopLines, shipping_fee_type.Return)
 		newReturnedFee := CalcVtpostShippingFeeReturned(ffm)
 		if newReturnedFee == 0 || newReturnedFee == returnedFee {
 			continue
 		}
-		providerShippingFeeLines := shipping.UpdateShippingFees(ffm.ProviderShippingFeeLines, newReturnedFee, shipping_fee_type.Return)
-		shippingFeeShopLines := shipping.UpdateShippingFees(ffm.ShippingFeeShopLines, newReturnedFee, shipping_fee_type.Return)
+		providerShippingFeeLines := shippingtypes.UpdateShippingFees(ffm.ProviderShippingFeeLines, newReturnedFee, shipping_fee_type.Return)
+		shippingFeeShopLines := shippingtypes.UpdateShippingFees(ffm.ShippingFeeShopLines, newReturnedFee, shipping_fee_type.Return)
 		update := &shipping.UpdateFulfillmentShippingFeesCommand{
 			FulfillmentID:            ffm.ID,
 			ProviderShippingFeeLines: providerShippingFeeLines,
@@ -188,8 +189,8 @@ func CalcVtpostShippingFeeReturned(ffm *shipping.Fulfillment) int {
 		return 0
 	}
 
-	returnedFee := shipping.GetShippingFee(ffm.ShippingFeeShopLines, shipping_fee_type.Return)
-	totalFee := shipping.GetTotalShippingFee(ffm.ShippingFeeShopLines)
+	returnedFee := shippingtypes.GetShippingFee(ffm.ShippingFeeShopLines, shipping_fee_type.Return)
+	totalFee := shippingtypes.GetTotalShippingFee(ffm.ShippingFeeShopLines)
 	newReturnedFee := (totalFee - returnedFee) / 2
 	return newReturnedFee
 }
@@ -214,7 +215,7 @@ func (m *ProcessManager) ConnectionUpdated(ctx context.Context, event *connectio
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing connection ID").WithMetap("event", "ConnectionUpdatedEvent")
 	}
 	// Delete cache connection in carrier manager
-	key := carrier.GetRedisConnectionKeyByID(event.ConnectionID)
+	key := connectionmanager.GetRedisConnectionKeyByID(event.ConnectionID)
 	return m.redisStore.Del(key)
 }
 
@@ -223,7 +224,7 @@ func (m *ProcessManager) ShopConnectionUpdated(ctx context.Context, event *conne
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing connection ID").WithMetap("event", "ShopConnectionUpdatedEvent")
 	}
 	// Delete cache connection in carrier manager
-	key := carrier.GetRedisShopConnectionKey(event.ConnectionID, event.ShopID)
+	key := connectionmanager.GetRedisShopConnectionKey(event.ConnectionID, event.ShopID)
 	return m.redisStore.Del(key)
 }
 

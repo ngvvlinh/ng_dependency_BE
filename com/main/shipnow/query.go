@@ -6,6 +6,7 @@ import (
 	"o.o/api/main/shipnow"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/shipnow/sqlstore"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 )
 
@@ -27,9 +28,12 @@ func QueryServiceMessageBus(q *QueryService) shipnow.QueryBus {
 }
 
 func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow.GetShipnowFulfillmentQueryArgs) (*shipnow.GetShipnowFulfillmentQueryResult, error) {
-	s := q.store(ctx).ID(query.Id)
-	if query.ShopId != 0 {
-		s = s.ShopID(query.ShopId)
+	if query.ID == 0 && query.ShippingCode == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp id hoặc shipping_code")
+	}
+	s := q.store(ctx).OptionalID(query.ID).OptionalShippingCode(query.ShippingCode)
+	if query.ShopID != 0 {
+		s = s.ShopID(query.ShopID)
 	}
 	ffm, err := s.GetShipnow()
 	if err != nil {

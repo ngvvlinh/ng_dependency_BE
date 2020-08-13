@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/k0kubun/pp"
+
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipnow"
 	"o.o/api/top/types/etc/shipnow_state"
@@ -132,8 +134,25 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 	shipnowTimestamp := shipping.CalcShipnowTimeBaseOnState(ffm, shippingState, t0)
 	paymentStatus := ffm.EtopPaymentStatus
 
+	deliveryPoints := ffm.DeliveryPoints
+	for i, point := range orderMsg.Path {
+		if i == 0 {
+			// ignore first path: pickup address
+			continue
+		}
+		dStatus := client.DeliveryStatus(point.Status)
+		orderState := dStatus.ToCoreState(shippingState)
+		for _, _point := range deliveryPoints {
+			if _point.OrderCode == point.TrackingNumber {
+				_point.ShippingState = orderState
+				break
+			}
+		}
+	}
+	pp.Println("delivery points :: ", deliveryPoints)
+
 	update := &shipnow.UpdateShipnowFulfillmentCarrierInfoCommand{
-		Id:                   ffm.Id,
+		ID:                   ffm.ID,
 		ShippingState:        shippingState,
 		ShippingStatus:       shippingState.ToStatus5(),
 		TotalFee:             int(orderMsg.TotalFee),
@@ -144,6 +163,7 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 		FeeLines:             nil, // update if needed
 		CarrierFeeLines:      nil, // update if needed
 		CancelReason:         orderMsg.CancelComment,
+		DeliveryPoints:       deliveryPoints,
 	}
 	if IsPaymentState(shippingState) && ffm.EtopPaymentStatus != status4.P {
 		// EtopPaymentStatus: Ahamove khong doi soat, thanh toán ngay khi lấy hàng

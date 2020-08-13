@@ -21,7 +21,7 @@ const MinShopBalance = -200000
 var _ carrier.Manager = &ShipnowManager{}
 
 type Carrier struct {
-	Code carriertypes.Carrier
+	Code carriertypes.ShipnowCarrier
 	ShipnowCarrier
 	ShipnowCarrierAccount
 }
@@ -42,7 +42,7 @@ func NewManager(db com.MainDB, locationBus location.QueryBus, shipnowQuery shipn
 	}
 }
 
-func (ctrl *ShipnowManager) CreateExternalShipping(ctx context.Context, cmd *carrier.CreateExternalShipnowCommand) (*carrier.ExternalShipnow, error) {
+func (ctrl *ShipnowManager) CreateExternalShipnow(ctx context.Context, cmd *carrier.CreateExternalShipnowCommand) (*carrier.ExternalShipnow, error) {
 	// check balance of shop
 	// if balance < MinShopBalance => can not create order
 	// TODO: plus balance with current order'store value
@@ -76,8 +76,8 @@ func (ctrl *ShipnowManager) CancelExternalShipping(ctx context.Context, cmd *car
 
 func (ctrl *ShipnowManager) createSingleFulfillment(ctx context.Context, cmd *carrier.CreateExternalShipnowCommand) (externalShipnow *carrier.ExternalShipnow, _err error) {
 	query := &shipnow.GetShipnowFulfillmentQuery{
-		Id:     cmd.ShipnowFulfillmentID,
-		ShopId: cmd.ShopID,
+		ID:     cmd.ShipnowFulfillmentID,
+		ShopID: cmd.ShopID,
 	}
 	if err := ctrl.shipnowQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -93,12 +93,12 @@ func (ctrl *ShipnowManager) createSingleFulfillment(ctx context.Context, cmd *ca
 		return nil, nil
 	}
 
-	args := GetShippingServiceArgs{
+	args := GetShipnowServiceArgs{
 		ShopID:         cmd.ShopID,
 		PickupAddress:  ffm.PickupAddress,
 		DeliveryPoints: ffm.DeliveryPoints,
 	}
-	services, err := shipnowCarrier.GetShippingServices(ctx, args)
+	services, err := shipnowCarrier.GetShipnowServices(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (ctrl *ShipnowManager) createSingleFulfillment(ctx context.Context, cmd *ca
 	return externalShipnow, nil
 }
 
-func (ctrl *ShipnowManager) GetShipnowCarrierDriver(c carriertypes.Carrier) (*Carrier, error) {
+func (ctrl *ShipnowManager) GetShipnowCarrierDriver(c carriertypes.ShipnowCarrier) (*Carrier, error) {
 	for _, d := range ctrl.drivers {
 		if d.Code == c {
 			return d, nil
@@ -188,8 +188,8 @@ func (ctrl *ShipnowManager) ValidateShipnowAddress(ffm *shipnow.ShipnowFulfillme
 	return nil
 }
 
-func (ctrl *ShipnowManager) GetExternalShippingServices(ctx context.Context, cmd *carrier.GetExternalShipnowServicesCommand) ([]*shipnowtypes.ShipnowService, error) {
-	args := GetShippingServiceArgs{
+func (ctrl *ShipnowManager) GetExternalShipnowServices(ctx context.Context, cmd *carrier.GetExternalShipnowServicesCommand) ([]*shipnowtypes.ShipnowService, error) {
+	args := GetShipnowServiceArgs{
 		ShopID:         cmd.ShopID,
 		PickupAddress:  cmd.PickupAddress,
 		DeliveryPoints: cmd.DeliveryPoints,
@@ -205,7 +205,7 @@ func (ctrl *ShipnowManager) GetExternalShippingServices(ctx context.Context, cmd
 			var services []*shipnowtypes.ShipnowService
 			var err error
 			defer func() { sendServices(ch, services, err) }()
-			services, err = driver.GetShippingServices(ctx, args)
+			services, err = driver.GetShipnowServices(ctx, args)
 		}()
 	}
 
@@ -259,16 +259,4 @@ func (ctrl *ShipnowManager) VerifyExternalAccount(ctx context.Context, cmd *carr
 		OwnerID: cmd.OwnerID,
 	}
 	return shipnowCarrier.VerifyExternalAccount(ctx, args)
-}
-
-func (ctrl *ShipnowManager) GetExternalServiceName(ctx context.Context, cmd *carrier.GetExternalServiceNameCommand) (string, error) {
-	shipnowCarrier, err := ctrl.GetShipnowCarrierDriver(cmd.Carrier)
-	if err != nil {
-		return "", err
-	}
-	serviceName, ok := shipnowCarrier.GetServiceName(cmd.Code)
-	if !ok {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "Mã dịch vụ không hợp lệ")
-	}
-	return serviceName, nil
 }

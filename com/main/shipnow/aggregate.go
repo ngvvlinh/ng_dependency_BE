@@ -2,15 +2,17 @@ package shipnow
 
 import (
 	"context"
-	"time"
+	"strings"
 
 	"o.o/api/main/address"
+	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	"o.o/api/main/ordering"
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipnow"
 	"o.o/api/main/shipnow/carrier"
+	carriertypes "o.o/api/main/shipnow/carrier/types"
 	shipnowtypes "o.o/api/main/shipnow/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/meta"
@@ -18,41 +20,52 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
 	com "o.o/backend/com/main"
+	shipnowcarrier "o.o/backend/com/main/shipnow/carrier"
 	"o.o/backend/com/main/shipnow/convert"
 	"o.o/backend/com/main/shipnow/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi"
 	"o.o/capi/dot"
+	"o.o/common/xerrors"
 )
 
 var _ shipnow.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	location      location.QueryBus
-	identityQuery identity.QueryBus
-	addressQuery  address.QueryBus
-	order         ordering.QueryBus
+	location        location.QueryBus
+	identityQuery   identity.QueryBus
+	addressQuery    address.QueryBus
+	order           ordering.QueryBus
+	connectionQuery connectioning.QueryBus
 
 	db             *cmsql.Database
 	store          sqlstore.ShipnowStoreFactory
 	eventBus       capi.EventBus
-	carrierManager carrier.Manager
+	shipnowManager *shipnowcarrier.ShipnowManager
 }
 
-func NewAggregate(eventBus capi.EventBus, db com.MainDB, location location.QueryBus, identityQuery identity.QueryBus, addressQuery address.QueryBus, order ordering.QueryBus, carrierManager carrier.Manager) *Aggregate {
+func NewAggregate(eventBus capi.EventBus,
+	db com.MainDB, location location.QueryBus,
+	identityQuery identity.QueryBus,
+	addressQuery address.QueryBus,
+	connectionQS connectioning.QueryBus,
+	order ordering.QueryBus,
+	shipnowManager *shipnowcarrier.ShipnowManager,
+) *Aggregate {
 	return &Aggregate{
 		db:       db,
 		store:    sqlstore.NewShipnowStore(db),
 		eventBus: eventBus,
 
-		location:      location,
-		identityQuery: identityQuery,
-		addressQuery:  addressQuery,
-		order:         order,
-
-		carrierManager: carrierManager,
+		location:        location,
+		identityQuery:   identityQuery,
+		addressQuery:    addressQuery,
+		connectionQuery: connectionQS,
+		order:           order,
+		shipnowManager:  shipnowManager,
 	}
 }
 
@@ -61,52 +74,7 @@ func AggregateMessageBus(a *Aggregate) shipnow.CommandBus {
 	return shipnow.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
-func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _ error) {
-	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		ffmID := cm.NewID()
-		// ShipnowOrderReservationEvent
-		event := &shipnow.ShipnowOrderReservationEvent{
-			EventMeta:            meta.NewEvent(),
-			OrderIds:             cmd.OrderIds,
-			ShipnowFulfillmentId: ffmID,
-		}
-		if err := a.eventBus.Publish(ctx, event); err != nil {
-			return err
-		}
-
-		pickupAddress, err := a.PreparePickupAddress(ctx, cmd.ShopId, cmd.PickupAddress)
-		if err != nil {
-			return err
-		}
-
-		points, weightInfo, valueInfo, err := a.PrepareDeliveryPoints(ctx, cmd.OrderIds)
-		if err != nil {
-			return err
-		}
-		shipnowFfm := &shipnow.ShipnowFulfillment{
-			Id:                  ffmID,
-			ShopId:              cmd.ShopId,
-			PickupAddress:       pickupAddress,
-			DeliveryPoints:      points,
-			Carrier:             cmd.Carrier,
-			ShippingServiceCode: cmd.ShippingServiceCode,
-			ShippingServiceFee:  cmd.ShippingServiceFee,
-			WeightInfo:          weightInfo,
-			ValueInfo:           valueInfo,
-			ShippingNote:        cmd.ShippingNote,
-			RequestPickupAt:     time.Time{},
-		}
-
-		if err := a.store(ctx).Create(shipnowFfm); err != nil {
-			return err
-		}
-		_result = shipnowFfm
-		return nil
-	})
-	return _result, err
-}
-
-func (a *Aggregate) CreateShipnowFulfillmentV2(ctx context.Context, args *shipnow.CreateShipnowFulfillmentV2Args) (_result *shipnow.ShipnowFulfillment, _ error) {
+func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, args *shipnow.CreateShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _ error) {
 	orderIDs := make([]dot.ID, len(args.DeliveryPoints))
 	for i, point := range args.DeliveryPoints {
 		if cm.IDsContain(orderIDs, point.OrderID) {
@@ -114,13 +82,39 @@ func (a *Aggregate) CreateShipnowFulfillmentV2(ctx context.Context, args *shipno
 		}
 		orderIDs[i] = point.OrderID
 	}
+
+	var conn *connectioning.Connection
+	if args.ConnectionID == 0 {
+		if args.Carrier == 0 {
+		}
+		switch args.Carrier {
+		case carriertypes.Default:
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn nhà vận chuyển")
+		case carriertypes.Ahamove:
+			args.ConnectionID = connectioning.DefaultTopShipAhamoveConnectionID
+		default:
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Nhà vận chuyển không hợp lệ")
+		}
+	}
+	queryConn := &connectioning.GetConnectionByIDQuery{
+		ID: args.ConnectionID,
+	}
+	if err := a.connectionQuery.Dispatch(ctx, queryConn); err != nil {
+		return nil, err
+	}
+	conn = queryConn.Result
+
+	if args.ExternalID != "" && !validate.ExternalCode(args.ExternalID) {
+		return nil, cm.Error(cm.InvalidArgument, "Mã đơn external_id không hợp lệ", nil)
+	}
+
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		ffmID := cm.NewID()
 		// ShipnowOrderReservationEvent
 		event := &shipnow.ShipnowOrderReservationEvent{
 			EventMeta:            meta.NewEvent(),
-			OrderIds:             orderIDs,
-			ShipnowFulfillmentId: ffmID,
+			OrderIDs:             orderIDs,
+			ShipnowFulfillmentID: ffmID,
 		}
 		if err := a.eventBus.Publish(ctx, event); err != nil {
 			return err
@@ -134,8 +128,8 @@ func (a *Aggregate) CreateShipnowFulfillmentV2(ctx context.Context, args *shipno
 			return err
 		}
 		shipnowFfm := &shipnow.ShipnowFulfillment{
-			Id:                  ffmID,
-			ShopId:              args.ShopID,
+			ID:                  ffmID,
+			ShopID:              args.ShopID,
 			PickupAddress:       pickupAddress,
 			DeliveryPoints:      points,
 			Carrier:             args.Carrier,
@@ -144,9 +138,20 @@ func (a *Aggregate) CreateShipnowFulfillmentV2(ctx context.Context, args *shipno
 			WeightInfo:          weightInfo,
 			ValueInfo:           valueInfo,
 			ShippingNote:        args.ShippingNote,
+			ConnectionID:        conn.ID,
+			ConnectionMethod:    conn.ConnectionMethod,
+			ExternalID:          args.ExternalID,
 		}
 
 		if err := a.store(ctx).Create(shipnowFfm); err != nil {
+			if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
+				msg := xerr.Err.Error()
+				switch {
+				case strings.Contains(msg, "shipnow_fulfillment_partner_external_id_idx"), strings.Contains(msg, "shipnow_fulfillment_shop_external_id_idx"):
+					newErr := cm.Errorf(cm.AlreadyExists, nil, "Mã đơn external_id đã tồn tại. Vui lòng kiểm tra lại").WithMeta("duplicated", "external_id")
+					return newErr
+				}
+			}
 			return err
 		}
 		_result = shipnowFfm
@@ -155,9 +160,9 @@ func (a *Aggregate) CreateShipnowFulfillmentV2(ctx context.Context, args *shipno
 	return _result, err
 }
 
-func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.UpdateShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _ error) {
+func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, args *shipnow.UpdateShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _ error) {
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		ffm, err := a.store(ctx).ID(cmd.Id).ShopID(cmd.ShopId).GetShipnow()
+		ffm, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetShipnow()
 		if err != nil {
 			return err
 		}
@@ -165,28 +170,36 @@ func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.U
 			return cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật đơn giao hàng này.")
 		}
 
-		updateArgs := sqlstore.UpdateInfoArgs{
-			ID:                  cmd.Id,
-			PickupAddress:       cmd.PickupAddress,
-			Carrier:             cmd.Carrier,
-			ShippingServiceCode: cmd.ShippingServiceCode,
-			ShippingServiceFee:  cmd.ShippingServiceFee,
-			ShippingNote:        cmd.ShippingNote,
-			RequestPickupAt:     cmd.RequestPickupAt,
+		orderIDs := make([]dot.ID, len(args.DeliveryPoints))
+		for i, point := range args.DeliveryPoints {
+			if cm.IDsContain(orderIDs, point.OrderID) {
+				return cm.Errorf(cm.InvalidArgument, nil, "Một đơn hàng không được chọn nhiều lần.")
+			}
+			orderIDs[i] = point.OrderID
 		}
 
-		if len(cmd.OrderIds) > 0 {
+		updateArgs := sqlstore.UpdateInfoArgs{
+			ID:                  args.ID,
+			PickupAddress:       args.PickupAddress,
+			Carrier:             args.Carrier,
+			ShippingServiceCode: args.ShippingServiceCode,
+			ShippingServiceFee:  args.ShippingServiceFee,
+			ShippingNote:        args.ShippingNote,
+			RequestPickupAt:     args.RequestPickupAt,
+		}
+
+		if len(orderIDs) > 0 {
 			// ShipnowOrderChangedEvent
 			event := &shipnow.ShipnowOrderChangedEvent{
 				EventMeta:            meta.NewEvent(),
-				ShipnowFulfillmentId: ffm.Id,
-				OldOrderIds:          ffm.OrderIds,
-				OrderIds:             cmd.OrderIds,
+				ShipnowFulfillmentID: ffm.ID,
+				OldOrderIDs:          ffm.OrderIDs,
+				OrderIDs:             orderIDs,
 			}
 			if err := a.eventBus.Publish(ctx, event); err != nil {
 				return nil
 			}
-			points, weightInfo, valueInfo, err := a.PrepareDeliveryPoints(ctx, cmd.OrderIds)
+			points, weightInfo, valueInfo, err := a.PrepareDeliveryPointsV2(ctx, args.DeliveryPoints)
 			if err != nil {
 				return err
 			}
@@ -206,8 +219,17 @@ func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.U
 }
 
 func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.CancelShipnowFulfillmentArgs) (*meta.Empty, error) {
+	if cmd.ShopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu shop_id")
+	}
+	if cmd.ID == 0 && cmd.ShippingCode == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp id hoặc shipping_code")
+	}
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		ffm, err := a.store(ctx).ID(cmd.Id).ShopID(cmd.ShopId).GetShipnow()
+		ffm, err := a.store(ctx).ShopID(cmd.ShopID).
+			OptionalID(cmd.ID).
+			OptionalShippingCode(cmd.ShippingCode).
+			GetShipnow()
 		if err != nil {
 			return err
 		}
@@ -229,8 +251,8 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 
 		event := &shipnow.ShipnowCancelledEvent{
 			EventMeta:            meta.NewEvent(),
-			ShipnowFulfillmentId: ffm.Id,
-			OrderIds:             ffm.OrderIds,
+			ShipnowFulfillmentID: ffm.ID,
+			OrderIDs:             ffm.OrderIDs,
 			CancelReason:         cmd.CancelReason,
 		}
 		if err := a.eventBus.Publish(ctx, event); err != nil {
@@ -238,7 +260,7 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		}
 
 		updateArgs := sqlstore.UpdateCancelArgs{
-			ID:            ffm.Id,
+			ID:            ffm.ID,
 			ShippingState: shipnow_state.StateCancelled,
 			Status:        status5.N,
 			ConfirmStatus: status3.N,
@@ -255,7 +277,7 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 
 func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.ConfirmShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _err error) {
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		ffm, err := a.store(ctx).ID(cmd.Id).ShopID(cmd.ShopId).GetShipnow()
+		ffm, err := a.store(ctx).ID(cmd.ID).ShopID(cmd.ShopID).GetShipnow()
 		if err != nil {
 			return err
 		}
@@ -265,22 +287,22 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 
 		event := &shipnow.ShipnowValidateConfirmedEvent{
 			EventMeta:            meta.NewEvent(),
-			ShipnowFulfillmentId: ffm.Id,
-			OrderIds:             ffm.OrderIds,
+			ShipnowFulfillmentID: ffm.ID,
+			OrderIDs:             ffm.OrderIDs,
 		}
 		if err := a.eventBus.Publish(ctx, event); err != nil {
 			return err
 		}
 
 		event2 := &shipnow.ShipnowExternalCreatedEvent{
-			ShipnowFulfillmentId: ffm.Id,
+			ShipnowFulfillmentID: ffm.ID,
 		}
 		if err := a.eventBus.Publish(ctx, event2); err != nil {
 			return err
 		}
 
 		update := sqlstore.UpdateStateArgs{
-			ID:             cmd.Id,
+			ID:             cmd.ID,
 			ConfirmStatus:  status3.P,
 			ShippingStatus: status5.S,
 			Status:         status5.S,
@@ -297,7 +319,7 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 
 func (a *Aggregate) PreparePickupAddress(ctx context.Context, shopID dot.ID, pickupAddress *ordertypes.Address) (*ordertypes.Address, error) {
 	if pickupAddress != nil {
-		return pickupAddress, nil
+		return a.ValidateAddress(ctx, pickupAddress)
 	}
 	query := &identity.GetShopByIDQuery{ID: shopID}
 	if err := a.identityQuery.Dispatch(ctx, query); err != nil {
@@ -371,6 +393,10 @@ func (a *Aggregate) PrepareDeliveryPointsV2(ctx context.Context, points []*shipn
 		if point.ShippingAddress == nil {
 			_err = cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp địa chỉ giao hàng")
 		}
+		point.ShippingAddress, _err = a.ValidateAddress(ctx, point.ShippingAddress)
+		if _err != nil {
+			return
+		}
 		order := mapOrders[point.OrderID]
 		p := &shipnowtypes.DeliveryPoint{
 			ShippingAddress: point.ShippingAddress,
@@ -413,7 +439,7 @@ func ValidateConfirmFulfillment(ffm *shipnow.ShipnowFulfillment) error {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể xác nhận đơn giao hàng này")
 	}
 
-	if len(ffm.DeliveryPoints) == 0 || len(ffm.OrderIds) == 0 {
+	if len(ffm.DeliveryPoints) == 0 || len(ffm.OrderIDs) == 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Số điểm giao hàng không hợp lệ")
 	}
 	return nil
@@ -421,7 +447,7 @@ func ValidateConfirmFulfillment(ffm *shipnow.ShipnowFulfillment) error {
 
 func (a *Aggregate) UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, args *shipnow.UpdateShipnowFulfillmentCarrierInfoArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateArgs := sqlstore.UpdateCarrierInfoArgs{
-		ID:                  args.Id,
+		ID:                  args.ID,
 		FeeLines:            args.FeeLines,
 		CarrierFeeLines:     args.CarrierFeeLines,
 		ShippingCode:        args.ShippingCode,
@@ -440,8 +466,9 @@ func (a *Aggregate) UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, arg
 		ShippingServiceDescription: args.ShippingServiceDescription,
 		CancelReason:               args.CancelReason,
 		ShippingSharedLink:         args.ShippingSharedLink,
+		DeliveryPoints:             args.DeliveryPoints,
 	}
-	updateArgs.TotalFee = shippingtypes.TotalFee(args.FeeLines)
+	updateArgs.TotalFee = shippingtypes.GetTotalShippingFee(args.FeeLines)
 	ffm, err := a.store(ctx).UpdateCarrierInfo(updateArgs)
 	return ffm, err
 }
@@ -467,7 +494,7 @@ func (a *Aggregate) GetShipnowServices(ctx context.Context, args *shipnow.GetShi
 
 	pickupAddress, err := a.PreparePickupAddress(ctx, args.ShopId, args.PickupAddress)
 	if err != nil {
-		return nil, err
+		return nil, cm.Errorf(cm.ErrorCode(err), err, "Địa chỉ lấy hàng không hợp lệ: %v", err.Error())
 	}
 
 	var points = args.DeliveryPoints
@@ -477,6 +504,12 @@ func (a *Aggregate) GetShipnowServices(ctx context.Context, args *shipnow.GetShi
 			return nil, err
 		}
 	}
+	for _, p := range points {
+		p.ShippingAddress, err = a.ValidateAddress(ctx, p.ShippingAddress)
+		if err != nil {
+			return nil, cm.Errorf(cm.ErrorCode(err), err, "Địa chỉ giao hàng không hợp lệ: %v", err.Error())
+		}
+	}
 
 	cmd := &carrier.GetExternalShipnowServicesCommand{
 		ShopID:         args.ShopId,
@@ -484,8 +517,39 @@ func (a *Aggregate) GetShipnowServices(ctx context.Context, args *shipnow.GetShi
 		DeliveryPoints: points,
 	}
 
-	services, err := a.carrierManager.GetExternalShippingServices(ctx, cmd)
+	services, err := a.shipnowManager.GetExternalShipnowServices(ctx, cmd)
 	return &shipnow.GetShipnowServicesResult{
 		Services: services,
 	}, nil
+}
+
+func (a *Aggregate) ValidateAddress(ctx context.Context, addr *ordertypes.Address) (*ordertypes.Address, error) {
+	if addr == nil {
+		return nil, nil
+	}
+	locationQuery := &location.FindOrGetLocationQuery{
+		ProvinceCode: addr.ProvinceCode,
+		DistrictCode: addr.DistrictCode,
+		WardCode:     addr.WardCode,
+		Province:     addr.Province,
+		District:     addr.District,
+		Ward:         addr.Ward,
+	}
+	if err := a.location.Dispatch(ctx, locationQuery); err != nil {
+		return nil, err
+	}
+	loc := locationQuery.Result
+	if loc.Province == nil || loc.District == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "cần cung cấp thông tin tỉnh/thành phố và quận/huyện")
+	}
+
+	addr.Province = loc.Province.Name
+	addr.ProvinceCode = loc.Province.Code
+	addr.District = loc.District.Name
+	addr.DistrictCode = loc.District.Code
+	if loc.Ward != nil {
+		addr.Ward = loc.Ward.Name
+		addr.WardCode = loc.Ward.Code
+	}
+	return addr, nil
 }

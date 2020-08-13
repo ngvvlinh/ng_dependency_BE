@@ -7,11 +7,12 @@ package sqlstore
 import (
 	time "time"
 
+	carriertypes "o.o/api/main/shipnow/carrier/types"
+	connection_type "o.o/api/top/types/etc/connection_type"
 	shipnow_state "o.o/api/top/types/etc/shipnow_state"
 	status3 "o.o/api/top/types/etc/status3"
 	status4 "o.o/api/top/types/etc/status4"
 	status5 "o.o/api/top/types/etc/status5"
-	shipnowmodel "o.o/backend/com/main/shipnow/model"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
@@ -87,22 +88,22 @@ func (ft *ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.Colum
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier shipnowmodel.Carrier) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier carriertypes.ShipnowCarrier) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "carrier",
 		Value:  Carrier,
-		IsNil:  Carrier == "",
+		IsNil:  Carrier == 0,
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *shipnowmodel.Carrier) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *carriertypes.ShipnowCarrier) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "carrier",
 		Value:  Carrier,
 		IsNil:  Carrier == nil,
-		IsZero: Carrier != nil && (*Carrier) == "",
+		IsZero: Carrier != nil && (*Carrier) == 0,
 	}
 }
 
@@ -673,6 +674,63 @@ func (ft *ShipnowFulfillmentFilters) ByAddressToDistrictCodePtr(AddressToDistric
 		Value:  AddressToDistrictCode,
 		IsNil:  AddressToDistrictCode == nil,
 		IsZero: AddressToDistrictCode != nil && (*AddressToDistrictCode) == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == 0,
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == nil,
+		IsZero: ConnectionID != nil && (*ConnectionID) == 0,
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByConnectionMethod(ConnectionMethod connection_type.ConnectionMethod) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_method",
+		Value:  ConnectionMethod,
+		IsNil:  ConnectionMethod == 0,
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByConnectionMethodPtr(ConnectionMethod *connection_type.ConnectionMethod) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_method",
+		Value:  ConnectionMethod,
+		IsNil:  ConnectionMethod == nil,
+		IsZero: ConnectionMethod != nil && (*ConnectionMethod) == 0,
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
 	}
 }
 

@@ -36,6 +36,7 @@ func NewServers(
 	productService *ProductService,
 	productCollectionService *ProductCollectionService,
 	productCollectionRelationshipService *ProductCollectionRelationshipService,
+	shipnowService *ShipnowService,
 ) (Servers, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempShopAPI, 0)
 	servers := []httprpc.Server{
@@ -54,6 +55,7 @@ func NewServers(
 		service.NewProductServiceServer(WrapProductService(productService.Clone)),
 		service.NewProductCollectionServiceServer(WrapProductCollectionService(productCollectionService.Clone)),
 		service.NewProductCollectionRelationshipServiceServer(WrapProductCollectionRelationshipService(productCollectionRelationshipService.Clone)),
+		service.NewShipnowServiceServer(WrapShipnowService(shipnowService.Clone)),
 	}
 	return servers, idempgroup.Shutdown
 }

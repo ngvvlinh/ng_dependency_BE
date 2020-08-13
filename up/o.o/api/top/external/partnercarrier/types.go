@@ -3,7 +3,7 @@ package partnercarrier
 import (
 	"time"
 
-	shippingcore "o.o/api/main/shipping"
+	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/int/types"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
@@ -83,19 +83,19 @@ type ShippingFeeLine struct {
 
 func (m *ShippingFeeLine) String() string { return jsonx.MustMarshalToString(m) }
 
-func Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(in *ShippingFeeLine) *shippingcore.ShippingFeeLine {
+func Convert_apix_ShippingFeeLine_To_core_ShippingFeeLine(in *ShippingFeeLine) *shippingtypes.ShippingFeeLine {
 	if in == nil {
 		return nil
 	}
-	return &shippingcore.ShippingFeeLine{
+	return &shippingtypes.ShippingFeeLine{
 		ShippingFeeType: in.ShippingFeeType,
 		Cost:            in.Cost.Int(),
 	}
 }
 
-func Convert_api_ShippingFeeLines_To_core_ShippingFeeLines(items []*ShippingFeeLine) (res []*shippingcore.ShippingFeeLine) {
+func Convert_apix_ShippingFeeLines_To_core_ShippingFeeLines(items []*ShippingFeeLine) (res []*shippingtypes.ShippingFeeLine) {
 	for _, item := range items {
-		res = append(res, Convert_api_ShippingFeeLine_To_core_ShippingFeeLine(item))
+		res = append(res, Convert_apix_ShippingFeeLine_To_core_ShippingFeeLine(item))
 	}
 	return
 }

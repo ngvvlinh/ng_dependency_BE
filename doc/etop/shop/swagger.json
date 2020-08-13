@@ -4911,34 +4911,6 @@
         }
       }
     },
-    "/api/shop.Shipnow/CreateShipnowFulfillment": {
-      "post": {
-        "description": "@Deprcated: backward-compatible\n",
-        "tags": [
-          "Shipnow"
-        ],
-        "summary": "CreateShipnowFulfillment",
-        "operationId": "shop.Shipnow-CreateShipnowFulfillment",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/qdCreateShipnowFulfillmentRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/qdShipnowFulfillment"
-            }
-          }
-        }
-      }
-    },
     "/api/shop.Shipnow/CreateShipnowFulfillmentV2": {
       "post": {
         "tags": [
@@ -6959,7 +6931,8 @@
         "ghn",
         "ghtk",
         "vtpost",
-        "partner"
+        "partner",
+        "ahamove"
       ]
     },
     "cdConnectionSubtype": {
@@ -6967,7 +6940,8 @@
       "enum": [
         "unknown",
         "shipment",
-        "manual"
+        "manual",
+        "shipnow"
       ]
     },
     "cdConnectionType": {
@@ -7942,7 +7916,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/sdShippingPaymentType"
+          "$ref": "#/definitions/qeShippingPaymentType"
         },
         "shipping_service_code": {
           "type": "string"
@@ -11889,7 +11863,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/sdShippingPaymentType"
+          "$ref": "#/definitions/qeShippingPaymentType"
         },
         "try_on": {
           "$ref": "#/definitions/csTryOnCode"
@@ -13240,42 +13214,15 @@
         }
       }
     },
-    "qdCreateShipnowFulfillmentRequest": {
-      "type": "object",
-      "properties": {
-        "carrier": {
-          "type": "string"
-        },
-        "order_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "pickup_address": {
-          "$ref": "#/definitions/qdOrderAddress"
-        },
-        "request_pickup_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "shipping_note": {
-          "type": "string"
-        },
-        "shipping_service_code": {
-          "type": "string"
-        },
-        "shipping_service_fee": {
-          "type": "integer"
-        }
-      }
-    },
     "qdCreateShipnowFulfillmentV2Request": {
       "type": "object",
       "properties": {
         "carrier": {
-          "$ref": "#/definitions/soCarrier"
+          "$ref": "#/definitions/soShipnowCarrier"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
         },
         "delivery_points": {
           "type": "array",
@@ -13634,7 +13581,7 @@
           "type": "string"
         },
         "shipping_payment_type": {
-          "$ref": "#/definitions/sdShippingPaymentType"
+          "$ref": "#/definitions/qeShippingPaymentType"
         },
         "shipping_provider": {
           "allOf": [
@@ -13934,7 +13881,7 @@
         "services": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/qdShippnowService"
+            "$ref": "#/definitions/qdShipnowService"
           }
         }
       }
@@ -15026,7 +14973,7 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/qeState"
+          "$ref": "#/definitions/sdState"
         },
         "shipping_status": {
           "$ref": "#/definitions/bnStatus"
@@ -15064,18 +15011,7 @@
         }
       }
     },
-    "qdShippingFeeLine": {
-      "type": "object",
-      "properties": {
-        "cost": {
-          "type": "integer"
-        },
-        "shipping_fee_type": {
-          "$ref": "#/definitions/bjShippingFeeType"
-        }
-      }
-    },
-    "qdShippnowService": {
+    "qdShipnowService": {
       "type": "object",
       "properties": {
         "carrier": {
@@ -15092,6 +15028,17 @@
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "qdShippingFeeLine": {
+      "type": "object",
+      "properties": {
+        "cost": {
+          "type": "integer"
+        },
+        "shipping_fee_type": {
+          "$ref": "#/definitions/bjShippingFeeType"
         }
       }
     },
@@ -15423,16 +15370,15 @@
         "carrier": {
           "type": "string"
         },
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShipnowDeliveryPoint"
+          }
+        },
         "id": {
           "type": "string",
           "format": "int64"
-        },
-        "order_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
         },
         "pickup_address": {
           "$ref": "#/definitions/qdOrderAddress"
@@ -15779,20 +15725,12 @@
         }
       }
     },
-    "qeState": {
+    "qeShippingPaymentType": {
       "type": "string",
       "enum": [
-        "default",
-        "created",
-        "assigning",
-        "picking",
-        "delivering",
-        "delivered",
-        "returning",
-        "returned",
-        "unknown",
-        "undeliverable",
-        "cancelled"
+        "none",
+        "seller",
+        "buyer"
       ]
     },
     "rjInventoryVoucherType": {
@@ -15822,12 +15760,20 @@
         "confirm"
       ]
     },
-    "sdShippingPaymentType": {
+    "sdState": {
       "type": "string",
       "enum": [
-        "none",
-        "seller",
-        "buyer"
+        "default",
+        "created",
+        "assigning",
+        "picking",
+        "delivering",
+        "delivered",
+        "returning",
+        "returned",
+        "unknown",
+        "undeliverable",
+        "cancelled"
       ]
     },
     "sfState": {
@@ -15848,7 +15794,7 @@
         "undeliverable"
       ]
     },
-    "soCarrier": {
+    "soShipnowCarrier": {
       "type": "string",
       "enum": [
         "default",

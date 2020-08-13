@@ -7,6 +7,7 @@ import (
 
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipping/types"
+	shippingtypes "o.o/api/main/shipping/types"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_payment_type"
@@ -148,8 +149,8 @@ type UpdateFulfillmentShippingStateArgs struct {
 type UpdateFulfillmentShippingFeesArgs struct {
 	FulfillmentID            dot.ID
 	ShippingCode             string
-	ProviderShippingFeeLines []*ShippingFeeLine
-	ShippingFeeLines         []*ShippingFeeLine
+	ProviderShippingFeeLines []*shippingtypes.ShippingFeeLine
+	ShippingFeeLines         []*shippingtypes.ShippingFeeLine
 	// @deprecated TotalCODAmount
 	TotalCODAmount    dot.NullInt
 	UpdatedBy         dot.ID
@@ -240,7 +241,7 @@ type UpdateFulfillmentShippingFeesFromWebhookArgs struct {
 	FulfillmentID    dot.ID
 	NewWeight        int
 	NewState         shippingstate.State
-	ProviderFeeLines []*ShippingFeeLine
+	ProviderFeeLines []*shippingtypes.ShippingFeeLine
 }
 
 type AddFulfillmentShippingFeeArgs struct {

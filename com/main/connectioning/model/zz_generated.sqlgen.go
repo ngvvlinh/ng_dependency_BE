@@ -133,7 +133,7 @@ func (m *Connection) Migration(db *cmsql.Database) {
 			ColumnType:       "connection_type.ConnectionSubtype",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "shipment", "manual"},
+			ColumnEnumValues: []string{"unknown", "shipment", "manual", "shipnow"},
 		},
 		"connection_method": {
 			ColumnName:       "connection_method",
@@ -147,7 +147,7 @@ func (m *Connection) Migration(db *cmsql.Database) {
 			ColumnType:       "connection_type.ConnectionProvider",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "ghn", "ghtk", "vtpost", "partner"},
+			ColumnEnumValues: []string{"unknown", "ghn", "ghtk", "vtpost", "partner", "ahamove"},
 		},
 		"etop_affiliate_account": {
 			ColumnName:       "etop_affiliate_account",

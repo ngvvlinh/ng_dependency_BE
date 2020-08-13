@@ -39,7 +39,7 @@ func New(ahamoveClient *client.Client, locationBus location.QueryBus, identityBu
 	return c
 }
 
-func (c *Carrier) Code() carriertypes.Carrier {
+func (c *Carrier) Code() carriertypes.ShipnowCarrier {
 	return carriertypes.Ahamove
 }
 
@@ -60,23 +60,23 @@ func (c *Carrier) InitClient(ctx context.Context) error {
 }
 
 func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.CreateExternalShipnowCommand, service *shipnowtypes.ShipnowService) (xshipnow *carrier.ExternalShipnow, _err error) {
-	queryShop := &identity.GetShopByIDQuery{
-		ID: cmd.ShopID,
-	}
-	if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
-		return nil, err
-	}
-	userID := queryShop.Result.OwnerID
-	if ok, err := isXAccountAhamoveVerified(ctx, c.IdentityQuery, userID); err != nil {
-		return nil, err
-	} else if !ok {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng gửi yêu cầu xác thực tài khoản Ahamove trước khi tạo đơn.")
-	}
-
-	token, err := getToken(ctx, c.IdentityQuery, userID)
-	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
-	}
+	// queryShop := &identity.GetShopByIDQuery{
+	// 	ID: cmd.ShopID,
+	// }
+	// if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
+	// 	return nil, err
+	// }
+	// userID := queryShop.Result.OwnerID
+	// if ok, err := isXAccountAhamoveVerified(ctx, c.IdentityQuery, userID); err != nil {
+	// 	return nil, err
+	// } else if !ok {
+	// 	return nil, cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng gửi yêu cầu xác thực tài khoản Ahamove trước khi tạo đơn.")
+	// }
+	//
+	// token, err := getToken(ctx, c.IdentityQuery, userID)
+	// if err != nil {
+	// 	return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
+	// }
 
 	deliveryPoints, err := c.PrepareDeliveryPoints(ctx, cmd.PickupAddress, cmd.DeliveryPoints)
 	if err != nil {
@@ -89,7 +89,6 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 	}
 	request := &client.CreateOrderRequest{
 		ServiceID:      serviceID,
-		Token:          token,
 		OrderTime:      0,
 		IdleUntil:      0,
 		DeliveryPoints: deliveryPoints,
@@ -100,7 +99,7 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 		return nil, err
 	}
 
-	feelines := []*shippingtypes.FeeLine{
+	feelines := []*shippingtypes.ShippingFeeLine{
 		{
 			ShippingFeeType:     shipping_fee_type.Main,
 			Cost:                int(response.Order.TotalFee),
@@ -124,47 +123,44 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 }
 
 func (c *Carrier) CancelExternalShipnow(ctx context.Context, cmd *carrier.CancelExternalShipnowCommand) error {
-	queryShop := &identity.GetShopByIDQuery{
-		ID: cmd.ShopID,
-	}
-	if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
-		return err
-	}
-	userID := queryShop.Result.OwnerID
-
-	token, err := getToken(ctx, c.IdentityQuery, userID)
-	if err != nil {
-		return cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
-	}
+	// queryShop := &identity.GetShopByIDQuery{
+	// 	ID: cmd.ShopID,
+	// }
+	// if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
+	// 	return err
+	// }
+	// userID := queryShop.Result.OwnerID
+	//
+	// token, err := getToken(ctx, c.IdentityQuery, userID)
+	// if err != nil {
+	// 	return cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
+	// }
 
 	request := &client.CancelOrderRequest{
-		Token:   token,
 		OrderId: cmd.ExternalShipnowID,
 		Comment: cmd.CancelReason,
 	}
 	return c.client.CancelOrder(ctx, request)
 }
 
-func (c *Carrier) GetShippingServices(ctx context.Context, args shipnowcarrier.GetShippingServiceArgs) ([]*shipnowtypes.ShipnowService, error) {
-	queryShop := &identity.GetShopByIDQuery{
-		ID: args.ShopID,
-	}
-	if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
-		return nil, err
-	}
-	userID := queryShop.Result.OwnerID
-
-	token, err := getToken(ctx, c.IdentityQuery, userID)
-	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
-	}
-
+func (c *Carrier) GetShipnowServices(ctx context.Context, args shipnowcarrier.GetShipnowServiceArgs) ([]*shipnowtypes.ShipnowService, error) {
+	// queryShop := &identity.GetShopByIDQuery{
+	// 	ID: args.ShopID,
+	// }
+	// if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
+	// 	return nil, err
+	// }
+	// userID := queryShop.Result.OwnerID
+	//
+	// token, err := getToken(ctx, c.IdentityQuery, userID)
+	// if err != nil {
+	// 	return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
+	// }
 	deliveryPoints, err := c.PrepareDeliveryPoints(ctx, args.PickupAddress, args.DeliveryPoints)
 	if err != nil {
 		return nil, err
 	}
 	request := &client.CalcShippingFeeRequest{
-		Token:          token,
 		OrderTime:      0,
 		IdleUntil:      0,
 		DeliveryPoints: deliveryPoints,
