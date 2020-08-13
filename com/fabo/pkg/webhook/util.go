@@ -97,6 +97,18 @@ func buildAllChildPost(post *fbmessaging.CreateFbExternalPostArgs) []*fbmessagin
 		var res []*fbmessaging.CreateFbExternalPostArgs
 		for _, subAtt := range subAttachments {
 			childPostID := fmt.Sprintf("%v_%v", post.ExternalPageID, subAtt.Target.ID)
+			var externalAttachments []*fbmessaging.PostAttachment
+			externalAttachments = append(externalAttachments, &fbmessaging.PostAttachment{
+				MediaType: subAtt.Type,
+				Media: &fbmessaging.MediaPostAttachment{
+					Image: &fbmessaging.ImageMediaPostAttachment{
+						Height: subAtt.Media.Height,
+						Width:  subAtt.Media.Width,
+						Src:    subAtt.Media.Src,
+					},
+				},
+				Type: subAtt.Type,
+			})
 			childPost := &fbmessaging.CreateFbExternalPostArgs{
 				ID:                  cm.NewID(),
 				ExternalPageID:      post.ExternalPageID,
@@ -106,6 +118,7 @@ func buildAllChildPost(post *fbmessaging.CreateFbExternalPostArgs) []*fbmessagin
 				ExternalPicture:     subAtt.Media.Src,
 				ExternalIcon:        post.ExternalIcon,
 				ExternalMessage:     subAtt.Description,
+				ExternalAttachments: externalAttachments,
 				ExternalCreatedTime: post.ExternalCreatedTime,
 				ExternalUpdatedTime: post.ExternalUpdatedTime,
 				FeedType:            fb_feed_type.Post,
