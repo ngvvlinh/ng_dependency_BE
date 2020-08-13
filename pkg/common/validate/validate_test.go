@@ -220,6 +220,12 @@ func TestNormalize(t *testing.T) {
 			}, {
 				"Trim tab character",
 				"\t0932167545", "0932167545", true,
+			}, {
+				"with name accented",
+				"0703275682-Huyền", "", false,
+			}, {
+				"with name",
+				"0703275682-Huyen", "", false,
 			},
 		}
 
@@ -365,15 +371,15 @@ func TestParsePhoneInput(t *testing.T) {
 		}, {
 			"Ext 1",
 			"011 234 5678 (ext: 16)",
-			"0112345678", "", true,
+			"0112345678ext16", "", true,
 		}, {
 			"Ext 2",
 			"11 234 5678 ext 16",
-			"0112345678", "", true,
+			"0112345678ext16", "", true,
 		}, {
 			"Ext 3",
 			"11 234 5678 (16)",
-			"0112345678", "", true,
+			"011234567816", "", true,
 		}, {
 			"2 numbers",
 			"11 234 5678 - 011 234 5679",
@@ -389,11 +395,11 @@ func TestParsePhoneInput(t *testing.T) {
 		}, {
 			"2 numbers with ext and hyphen",
 			"11 234 5678 ext 16 - 011 234 5679 ext 2",
-			"0112345678", "0112345679", true,
+			"0112345678ext16", "0112345679ext2", true,
 		}, {
 			"2 numbers with ext and comma",
 			"11-234-5678 ext 16, 011-234-5679",
-			"0112345678", "0112345679", true,
+			"0112345678ext16", "0112345679", true,
 		}, {
 			"Single number with hyphen",
 			"1900-6035",

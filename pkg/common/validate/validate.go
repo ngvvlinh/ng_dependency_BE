@@ -273,6 +273,11 @@ func NormalizePhone(s string) (res NormalizedPhone, ok bool) {
 
 	s = parseSinglePhoneNumber(s)
 
+	// check phone number match regex
+	if !phoneRegexp.MatchString(s) {
+		return "", false
+	}
+
 	// số điện thoại bàn có thể là 11 hoặc 12 số
 	// chỉ kiểm tra là số điện thoại di động nếu có đầu số là 09
 	return NormalizedPhone(s), len(s) >= 10 && len(s) <= 12
@@ -502,7 +507,7 @@ func ParsePhoneInput(inputPhone string) (string, string, bool) {
 }
 
 func parseSinglePhoneNumber(input string) string {
-	input = strings.TrimSpace(input)
+	input = NormalizeSearchSimple(input)
 	if strings.HasPrefix(input, "+84") {
 		input = "0" + input[3:]
 	} else if strings.HasPrefix(input, "84") {
@@ -514,6 +519,10 @@ loop:
 	for i := range input {
 		c := input[i]
 		if c >= '0' && c <= '9' {
+			p = append(p, c)
+			continue
+		}
+		if (c >= 65 && c <= 90) || (c >= 97 && c <= 122) {
 			p = append(p, c)
 			continue
 		}
