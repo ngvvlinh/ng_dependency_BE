@@ -59,7 +59,12 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 	ffm *shipmodel.Fulfillment,
 	args *carriertypes.GetShippingServicesArgs,
 	service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
-	note := carriertypes.GetShippingProviderNote(ffm)
+
+	note := ffm.ShippingNote
+	// J&T yêu cầu limit 200 kí tự.
+	if len(note) > 200 {
+		note = note[:200]
+	}
 
 	fromQuery := &location.GetLocationQuery{
 		DistrictCode: ffm.AddressFrom.DistrictCode,
