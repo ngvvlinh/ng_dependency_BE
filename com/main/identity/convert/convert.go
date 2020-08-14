@@ -47,6 +47,7 @@ func User(in *identitymodel.User) (out *identity.User) {
 		CreatedAt:       in.CreatedAt,
 		UpdatedAt:       in.UpdatedAt,
 		Source:          in.Source,
+		BlockReason:     in.BlockReason,
 	}
 	return
 }
