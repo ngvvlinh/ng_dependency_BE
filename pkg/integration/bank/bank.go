@@ -1,6 +1,8 @@
 package bank
 
 import (
+	"fmt"
+
 	"o.o/backend/pkg/common/validate"
 	"o.o/common/l"
 )
@@ -114,6 +116,32 @@ func GetProvinceByBank(query *BankQuery) []*Province {
 	return res
 }
 
+func GetBankProvinces(bankQuery *BankQuery, getAll bool) []*Province {
+	var res []*Province
+	bankCode, bankName := bankQuery.Code, bankQuery.Name
+
+	if getAll {
+		return Provinces
+	}
+
+	if bankCode != "" {
+		if result, ok := provinceIndexBankCode[bankCode]; ok {
+			return result
+		}
+	} else if bankName != "" {
+		norm := validate.NormalizeSearchSimple(bankName)
+		nameBank, exist := bankIndexNamN[norm]
+		if !exist {
+			return res
+		}
+		if result, ok := provinceIndexBankCode[nameBank.MaNganHang]; ok {
+			return result
+		}
+	}
+
+	return res
+}
+
 func GetBranchByBankProvince(bankQuery *BankQuery, provinceQuery *ProvinceQuery) []*Branch {
 	var res []*Branch
 	bankCode, bankName := bankQuery.Code, bankQuery.Name
@@ -125,7 +153,6 @@ func GetBranchByBankProvince(bankQuery *BankQuery, provinceQuery *ProvinceQuery)
 	if provinceCode == "" && provinceName == "" {
 		return res
 	}
-
 	var bank *Bank
 	var province *Province
 	if bankCode != "" {
@@ -147,4 +174,49 @@ func GetBranchByBankProvince(bankQuery *BankQuery, provinceQuery *ProvinceQuery)
 	}
 	index := bank.MaNganHang + "_" + province.MaTinh
 	return branchIndexBankCodeProvinceCode[index]
+}
+
+func GetBankBranches(bankQuery *BankQuery, getAll bool) []*Branch {
+	var res []*Branch
+	bankCode, bankName := bankQuery.Code, bankQuery.Name
+
+	if getAll {
+		return Branches
+	}
+
+	if bankCode != "" {
+		if bank, exist := bankIndexCode[bankCode]; exist {
+			if provinces, ok := provinceIndexBankCode[bank.MaNganHang]; ok {
+				res = append(res, GetBankBranchesFromProvinces(provinces)...)
+			}
+		}
+	} else if bankName != "" {
+		norm := validate.NormalizeSearchSimple(bankName)
+		bank, ok := bankIndexNamN[norm]
+		if !ok {
+			return res
+		}
+		provinces, ok := provinceIndexBankCode[bank.MaNganHang]
+		if !ok {
+			return res
+		}
+
+		res = append(res, GetBankBranchesFromProvinces(provinces)...)
+	}
+
+	return res
+}
+
+func GetBankBranchesFromProvinces(provinces []*Province) (res []*Branch) {
+	if len(provinces) == 0 {
+		return res
+	}
+	for _, province := range provinces {
+		key := fmt.Sprintf("%s_%s", province.MaNganHang, province.MaTinh)
+		if data, ok := branchIndexBankCodeProvinceCode[key]; ok {
+			res = append(res, data...)
+		}
+	}
+
+	return res
 }

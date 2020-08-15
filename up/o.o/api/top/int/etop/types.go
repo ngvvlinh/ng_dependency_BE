@@ -1226,3 +1226,31 @@ type EcomSessionInfoResponse struct {
 }
 
 func (m *EcomSessionInfoResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetBankProvincesRequest struct {
+	All      bool   `json:"all"`
+	BankCode string `json:"bank_code"`
+	BankName string `json:"bank_name"`
+}
+
+func (m *GetBankProvincesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetBankProvinceResponse struct {
+	Provinces []*BankProvince `json:"provinces"`
+}
+
+func (m *GetBankProvinceResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetBankBranchesRequest struct {
+	All      bool   `json:"all"`
+	BankCode string `json:"bank_code"`
+	BankName string `json:"bank_name"`
+}
+
+func (m *GetBankBranchesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetBankBranchesResponse struct {
+	Branches []*BankBranch `json:"branches"`
+}
+
+func (m *GetBankBranchesResponse) String() string { return jsonx.MustMarshalToString(m) }

@@ -444,6 +444,32 @@ func (s *BankServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *BankServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/etop.Bank/GetBankBranches":
+		msg := &GetBankBranchesRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetBankBranches(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/etop.Bank/GetBankProvinces":
+		msg := &GetBankProvincesRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetBankProvinces(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/etop.Bank/GetBanks":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

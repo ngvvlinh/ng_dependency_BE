@@ -39,6 +39,19 @@ func (s *BankService) GetProvincesByBank(ctx context.Context, q *api.GetProvince
 	return result, nil
 }
 
+func (s *BankService) GetBankProvinces(ctx context.Context, q *api.GetBankProvincesRequest) (*api.GetBankProvinceResponse, error) {
+	query := &bank.BankQuery{
+		Code: q.BankCode,
+		Name: q.BankName,
+	}
+
+	provinces := bank.GetBankProvinces(query, q.All)
+
+	return &api.GetBankProvinceResponse{
+		Provinces: convertpb.PbBankProvinces(provinces),
+	}, nil
+}
+
 func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *api.GetBranchesByBankProvinceResquest) (*api.GetBranchesByBankProvinceResponse, error) {
 	bankQuery := &bank.BankQuery{
 		Code: q.BankCode,
@@ -54,4 +67,16 @@ func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *api.GetB
 		Branches: convertpb.PbBankBranches(branches),
 	}
 	return result, nil
+}
+
+func (s *BankService) GetBankBranches(ctx context.Context, q *api.GetBankBranchesRequest) (*api.GetBankBranchesResponse, error) {
+	bankQuery := &bank.BankQuery{
+		Code: q.BankCode,
+		Name: q.BankName,
+	}
+	branches := bank.GetBankBranches(bankQuery, q.All)
+
+	return &api.GetBankBranchesResponse{
+		Branches: convertpb.PbBankBranches(branches),
+	}, nil
 }

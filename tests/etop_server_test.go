@@ -72,7 +72,7 @@ func runTest(m *testing.M) int {
 
 	db = cmsql.MustConnect(cfg.Databases.Postgres)
 
-	pathDBMigration := filepath.Join(gen.ProjectPath(), "/tests/main/shop/issue_2832/")
+	pathDBMigration := filepath.Join(gen.ProjectPath(), "/tests/main/shop/")
 
 	contents = append(contents, e2e.LoadContentPath(pathDBMigration)...)
 

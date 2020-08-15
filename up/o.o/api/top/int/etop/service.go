@@ -118,6 +118,10 @@ type BankService interface {
 	GetProvincesByBank(context.Context, *GetProvincesByBankResquest) (*GetBankProvincesResponse, error)
 
 	GetBranchesByBankProvince(context.Context, *GetBranchesByBankProvinceResquest) (*GetBranchesByBankProvinceResponse, error)
+
+	GetBankProvinces(context.Context, *GetBankProvincesRequest) (*GetBankProvinceResponse, error)
+
+	GetBankBranches(context.Context, *GetBankBranchesRequest) (*GetBankBranchesResponse, error)
 }
 
 // +apix:path=/etop.Address

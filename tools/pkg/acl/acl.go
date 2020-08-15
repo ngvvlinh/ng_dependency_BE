@@ -427,6 +427,8 @@ var _acl = map[string]*permission.Decl{
 	"etop.Location/ParseLocation":          {Type: Protected},
 
 	"etop.Bank/GetBanks":                  {Type: CurUsr},
+	"etop.Bank/GetBankProvinces":          {Type: CurUsr},
+	"etop.Bank/GetBankBranches":           {Type: CurUsr},
 	"etop.Bank/GetProvincesByBank":        {Type: CurUsr},
 	"etop.Bank/GetBranchesByBankProvince": {Type: CurUsr},
 

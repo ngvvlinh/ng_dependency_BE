@@ -422,6 +422,60 @@
         }
       }
     },
+    "/api/etop.Bank/GetBankBranches": {
+      "post": {
+        "tags": [
+          "Bank"
+        ],
+        "summary": "GetBankBranches",
+        "operationId": "etop.Bank-GetBankBranches",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baGetBankBranchesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baGetBankBranchesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.Bank/GetBankProvinces": {
+      "post": {
+        "tags": [
+          "Bank"
+        ],
+        "summary": "GetBankProvinces",
+        "operationId": "etop.Bank-GetBankProvinces",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baGetBankProvincesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baGetBankProvinceResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.Bank/GetBanks": {
       "post": {
         "tags": [
@@ -2063,6 +2117,56 @@
           "items": {
             "$ref": "#/definitions/baAddress"
           }
+        }
+      }
+    },
+    "baGetBankBranchesRequest": {
+      "type": "object",
+      "properties": {
+        "all": {
+          "type": "boolean"
+        },
+        "bank_code": {
+          "type": "string"
+        },
+        "bank_name": {
+          "type": "string"
+        }
+      }
+    },
+    "baGetBankBranchesResponse": {
+      "type": "object",
+      "properties": {
+        "branches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baBankBranch"
+          }
+        }
+      }
+    },
+    "baGetBankProvinceResponse": {
+      "type": "object",
+      "properties": {
+        "provinces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baBankProvince"
+          }
+        }
+      }
+    },
+    "baGetBankProvincesRequest": {
+      "type": "object",
+      "properties": {
+        "all": {
+          "type": "boolean"
+        },
+        "bank_code": {
+          "type": "string"
+        },
+        "bank_name": {
+          "type": "string"
         }
       }
     },
