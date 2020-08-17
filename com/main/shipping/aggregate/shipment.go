@@ -239,8 +239,8 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		}
 		connectionMethod = conn.ConnectionMethod
 
-		if connectionMethod == connection_type.ConnectionMethodBuiltin && args.ShippingPaymentType != shipping_payment_type.Seller {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Hình thức thanh toán phí giao hàng không hợp lệ.")
+		if err := checkValidShippingPaymentType(connectionMethod, args.ShippingPaymentType); err != nil {
+			return nil, err
 		}
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Phương thức vận chuyển không hợp lệ. Chỉ hỗ trợ: manual và shipment.")
@@ -310,7 +310,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		ShippingState:       shipstate.Default,
 		ShippingType:        args.ShippingType,
 		Coupon:              args.Coupon,
-		ShippingPaymentType: args.ShippingPaymentType,
+		ShippingPaymentType: args.ShippingPaymentType.Apply(shipping_payment_type.Seller),
 	}
 	if conn != nil {
 		// backward compatible
@@ -853,8 +853,8 @@ func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shippin
 		return 0, err
 	}
 
-	if ffm.ConnectionMethod == connection_type.ConnectionMethodBuiltin && args.ShippingPaymentType != shipping_payment_type.Seller {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "Hình thức thanh toán phí giao hàng không hợp lệ.")
+	if err := checkValidShippingPaymentType(ffm.ConnectionMethod, args.ShippingPaymentType); err != nil {
+		return 0, err
 	}
 
 	if _, _, err = a.getAndVerifyAddress(ctx, args.AddressFrom); err != nil {
@@ -919,6 +919,14 @@ func (a *Aggregate) ShopUpdateFulfillmentInfo(ctx context.Context, args *shippin
 func canUpdateFulfillment(ffm *shipping.Fulfillment) error {
 	if !ffm.CODEtopTransferedAt.IsZero() {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã đối soát").WithMetap("money_transaction_id", ffm.MoneyTransactionID)
+	}
+	return nil
+}
+
+func checkValidShippingPaymentType(connectionMethod connection_type.ConnectionMethod, shippingPaymentType shipping_payment_type.NullShippingPaymentType) error {
+	if connectionMethod == connection_type.ConnectionMethodBuiltin &&
+		shippingPaymentType.Apply(shipping_payment_type.Seller) != shipping_payment_type.Seller {
+		return cm.Errorf(cm.InvalidArgument, nil, "Hình thức thanh toán phí giao hàng không hợp lệ.")
 	}
 	return nil
 }

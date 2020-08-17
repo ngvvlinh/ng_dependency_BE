@@ -100,7 +100,7 @@ type CreateFulfillmentsArgs struct {
 
 	TryOn try_on.TryOnCode
 
-	ShippingPaymentType shipping_payment_type.ShippingPaymentType
+	ShippingPaymentType shipping_payment_type.NullShippingPaymentType
 
 	ShippingNote string
 
@@ -201,7 +201,7 @@ type UpdateFulfillmentInfoArgs struct {
 	InsuranceValue      dot.NullInt
 	GrossWeight         dot.NullInt
 	TryOn               try_on.TryOnCode
-	ShippingPaymentType shipping_payment_type.ShippingPaymentType
+	ShippingPaymentType shipping_payment_type.NullShippingPaymentType
 	ShippingNote        dot.NullString
 }
 

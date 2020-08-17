@@ -10,7 +10,6 @@ import (
 	api "o.o/api/top/int/shop"
 	inttypes "o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
-	"o.o/api/top/types/etc/shipping_payment_type"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/bus"
@@ -83,7 +82,7 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *api.CreateF
 			InsuranceValue:   q.InsuranceValue,
 		},
 		TryOn:               q.TryOn,
-		ShippingPaymentType: q.ShippingPaymentType.Apply(shipping_payment_type.Seller),
+		ShippingPaymentType: q.ShippingPaymentType,
 		ShippingNote:        q.ShippingNote,
 		ShippingType:        q.ShippingType,
 		ConnectionID:        q.ConnectionID,
@@ -116,7 +115,7 @@ func (s *ShipmentService) UpdateFulfillmentInfo(ctx context.Context, q *api.Upda
 		InsuranceValue:      q.InsuranceValue,
 		GrossWeight:         q.GrossWeight,
 		TryOn:               q.TryOn,
-		ShippingPaymentType: q.ShippingPaymentType.Apply(shipping_payment_type.Seller),
+		ShippingPaymentType: q.ShippingPaymentType,
 		ShippingNote:        q.ShippingNote,
 	}
 	if err := s.ShippingAggregate.Dispatch(ctx, updateFulfillmentInfo); err != nil {

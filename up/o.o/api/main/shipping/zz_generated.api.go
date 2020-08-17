@@ -75,7 +75,7 @@ type CreateFulfillmentsCommand struct {
 	WeightInfo          shippingtypes.WeightInfo
 	ValueInfo           shippingtypes.ValueInfo
 	TryOn               try_on.TryOnCode
-	ShippingPaymentType shipping_payment_type.ShippingPaymentType
+	ShippingPaymentType shipping_payment_type.NullShippingPaymentType
 	ShippingNote        string
 	ConnectionID        dot.ID
 	ShopCarrierID       dot.ID
@@ -124,7 +124,7 @@ type ShopUpdateFulfillmentInfoCommand struct {
 	InsuranceValue      dot.NullInt
 	GrossWeight         dot.NullInt
 	TryOn               try_on.TryOnCode
-	ShippingPaymentType shipping_payment_type.ShippingPaymentType
+	ShippingPaymentType shipping_payment_type.NullShippingPaymentType
 	ShippingNote        dot.NullString
 
 	Result int `json:"-"`
