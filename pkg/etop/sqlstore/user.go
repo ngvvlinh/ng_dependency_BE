@@ -14,6 +14,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/authorize/login"
 	"o.o/backend/pkg/etop/model"
@@ -269,7 +270,17 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 		userInternal.Hashpwd = login.EncodePassword(cmd.Password)
 	}
 
-	_, err := s.Insert(user, userInternal)
+	objs := []core.IInsert{user, userInternal}
+	if cmd.RefAff != "" || cmd.RefSale != "" {
+		userRef := &identitymodel.UserRefSaff{
+			UserID:  userID,
+			RefAff:  cmd.RefAff,
+			RefSale: cmd.RefSale,
+		}
+		objs = append(objs, userRef)
+	}
+
+	_, err := s.Insert(objs...)
 	if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
 		msg := xerr.Err.Error()
 		for errKey, errMsg := range mapUserError {

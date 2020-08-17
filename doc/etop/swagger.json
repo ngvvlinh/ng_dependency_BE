@@ -775,6 +775,33 @@
         }
       }
     },
+    "/api/etop.User/ChangeRefAff": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "ChangeRefAff",
+        "operationId": "etop.User-ChangeRefAff",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baChangeUserRefAffRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/CheckUserRegistration": {
       "post": {
         "tags": [
@@ -1787,6 +1814,14 @@
         }
       }
     },
+    "baChangeUserRefAffRequest": {
+      "type": "object",
+      "properties": {
+        "ref_aff": {
+          "type": "string"
+        }
+      }
+    },
     "baCompanyInfo": {
       "type": "object",
       "properties": {
@@ -1966,6 +2001,12 @@
           "type": "string"
         },
         "phone": {
+          "type": "string"
+        },
+        "ref_aff": {
+          "type": "string"
+        },
+        "ref_sale": {
           "type": "string"
         },
         "register_token": {

@@ -943,6 +943,19 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			return
 		}
 		return msg, fn, nil
+	case "/etop.User/ChangeRefAff":
+		msg := &ChangeUserRefAffRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ChangeRefAff(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/etop.User/CheckUserRegistration":
 		msg := &GetUserByPhoneRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

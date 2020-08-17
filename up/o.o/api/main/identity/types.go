@@ -205,3 +205,9 @@ type AccountUser struct {
 
 	Rid dot.ID
 }
+
+type UserRefSaff struct {
+	UserID  dot.ID
+	RefAff  string
+	RefSale string
+}

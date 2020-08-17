@@ -409,6 +409,12 @@
         "phone": {
           "type": "string"
         },
+        "ref_aff": {
+          "type": "string"
+        },
+        "ref_sale": {
+          "type": "string"
+        },
         "register_token": {
           "description": "This field must be set if the user uses generated password to register.\nAutomatically set phone_verified if it's sent within a specific time.\n",
           "type": "string"

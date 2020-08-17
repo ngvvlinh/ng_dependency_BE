@@ -74,6 +74,7 @@ func (s *AccountUserStore) DeleteAccountUser(args DeleteAccountUserArgs) error {
 	}
 	return nil
 }
+
 func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, error) {
 	query := s.query().Where(s.preds)
 

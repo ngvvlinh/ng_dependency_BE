@@ -351,6 +351,9 @@ type CreateUserRequest struct {
 	Source        user_source.UserSource `json:"source"`
 
 	AutoAcceptInvitation bool `json:"auto_accept_invitation"`
+
+	RefSale string `json:"ref_sale"`
+	RefAff  string `json:"ref_aff"`
 }
 
 func (m *CreateUserRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -386,6 +389,12 @@ type ChangePasswordRequest struct {
 }
 
 func (m *ChangePasswordRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ChangeUserRefAffRequest struct {
+	RefAff string `json:"ref_aff"`
+}
+
+func (c *ChangeUserRefAffRequest) String() string { return jsonx.MustMarshalToString(c) }
 
 // Exactly one of email or phone must be provided.
 type ChangePasswordUsingTokenRequest struct {

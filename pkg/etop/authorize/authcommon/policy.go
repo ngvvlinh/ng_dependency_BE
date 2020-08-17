@@ -228,6 +228,7 @@ const adminPolicy = `
 	# admin user
 	p, admin/user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant
 	p, admin/user:block, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale
+	p, admin/user_ref:update, admin, ad_salelead
 	# admin subscription
 	p, admin/subscription_product:create, admin
 	p, admin/subscription_product:view, admin

@@ -2930,6 +2930,33 @@
           }
         }
       }
+    },
+    "/api/admin.User/UpdateUserRef": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "UpdateUserRef",
+        "operationId": "admin.User-UpdateUserRef",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateUserRefRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -6704,6 +6731,9 @@
         "full_name": {
           "type": "string"
         },
+        "phone": {
+          "type": "string"
+        },
         "roles": {
           "type": "array",
           "items": {
@@ -8434,6 +8464,21 @@
         }
       }
     },
+    "xuUpdateUserRefRequest": {
+      "type": "object",
+      "properties": {
+        "ref_aff": {
+          "type": "string"
+        },
+        "ref_sale": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "xuUserResponse": {
       "type": "object",
       "properties": {
@@ -8461,6 +8506,12 @@
           "type": "string"
         },
         "phone": {
+          "type": "string"
+        },
+        "ref_aff": {
+          "type": "string"
+        },
+        "ref_sale": {
           "type": "string"
         }
       }

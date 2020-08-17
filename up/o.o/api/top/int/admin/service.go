@@ -82,6 +82,8 @@ type UserService interface {
 
 	BlockUser(context.Context, *BlockUserRequest) (*etop.User, error)
 	UnblockUser(context.Context, *UnblockUserRequest) (*etop.User, error)
+
+	UpdateUserRef(context.Context, *UpdateUserRefRequest) (*cm.Empty, error)
 }
 
 // +apix:path=/admin.Credit

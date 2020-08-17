@@ -25,6 +25,7 @@ type QueryService struct {
 	shopStore        sqlstore.ShopStoreFactory
 	accountUserStore sqlstore.AccountUserStoreFactory
 	xAccountAhamove  sqlstore.XAccountAhamoveStoreFactory
+	userRefSaffStore sqlstore.UserRefSaffStoreFactory
 }
 
 func NewQueryService(db com.MainDB) *QueryService {
@@ -36,6 +37,7 @@ func NewQueryService(db com.MainDB) *QueryService {
 		affiliateStore:   sqlstore.NewAffiliateStore(db),
 		accountUserStore: sqlstore.NewAccountUserStore(db),
 		xAccountAhamove:  sqlstore.NewXAccountAhamoveStore(db),
+		userRefSaffStore: sqlstore.NewUserRefSaffStore(db),
 	}
 }
 
@@ -179,6 +181,31 @@ func (q *QueryService) GetUsers(ctx context.Context, args *identity.ListUsersArg
 			query = query.ByCreatedAtTo(args.CreatedAt.To.ToTime())
 		}
 	}
+
+	if args.RefAff != "" {
+		refSales, err := q.userRefSaffStore(ctx).ByRefAff(args.RefAff).ListUserRefSaff()
+		if err != nil {
+			return nil, err
+		}
+		var userIDs []dot.ID
+		for _, user := range refSales {
+			userIDs = append(userIDs, user.UserID)
+		}
+		query = query.ByIDs(userIDs)
+	}
+
+	if args.RefSale != "" {
+		refAffs, err := q.userRefSaffStore(ctx).ByRefAff(args.RefAff).ListUserRefSaff()
+		if err != nil {
+			return nil, err
+		}
+		var userIDs []dot.ID
+		for _, user := range refAffs {
+			userIDs = append(userIDs, user.UserID)
+		}
+		query = query.ByIDs(userIDs)
+	}
+
 	users, err := query.WithPaging(args.Paging).ListUsers()
 	if err != nil {
 		return nil, err

@@ -316,8 +316,9 @@ const (
 	AdminShopView permission.ActionType = "admin/shop:view"
 
 	// Admin User
-	AdminUserView  permission.ActionType = "admin/user:view"
-	AdminUserBlock permission.ActionType = "admin/user:block"
+	AdminUserView      permission.ActionType = "admin/user:view"
+	AdminUserBlock     permission.ActionType = "admin/user:block"
+	AdminUpdateUserRef permission.ActionType = "admin/user_ref:update"
 
 	// AdminSubscription
 	AdminSubscriptionProductCreate permission.ActionType = "admin/subscription_product:create"
@@ -386,6 +387,7 @@ var _acl = map[string]*permission.Decl{
 	"etop.User/ResetPassword":            {Type: Public, Captcha: "custom"},
 	"etop.User/ChangePasswordUsingToken": {Type: Public},
 	"etop.User/ChangePassword":           {Type: CurUsr},
+	"etop.User/ChangeRefAff":             {Type: CurUsr},
 	"etop.User/InitSession":              {Type: Public},
 	"etop.User/CheckUserRegistration":    {Type: Public, Captcha: "1"},
 	"etop.User/SessionInfo":              {Type: CurUsr},
@@ -645,6 +647,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.User/GetUsersByIDs": {Type: EtopAdmin, Actions: actions(AdminUserView)},
 	"admin.User/BlockUser":     {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
 	"admin.User/UnblockUser":   {Type: EtopAdmin, Actions: actions(AdminUserBlock)},
+	"admin.User/UpdateUserRef": {Type: EtopAdmin, Actions: actions(AdminUpdateUserRef)},
 
 	"admin.Fulfillment/GetFulfillment":                 {Type: EtopAdmin, Actions: actions(AdminFulfillmentView)},
 	"admin.Fulfillment/GetFulfillments":                {Type: EtopAdmin, Actions: actions(AdminFulfillmentView)},

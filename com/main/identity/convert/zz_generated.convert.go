@@ -219,6 +219,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*identitymodel.User) = out0
 		return nil
 	})
+	s.Register((*identitymodel.UserRefSaff)(nil), (*identity.UserRefSaff)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_UserRefSaff_identity_UserRefSaff(arg.(*identitymodel.UserRefSaff), out.(*identity.UserRefSaff))
+		return nil
+	})
+	s.Register(([]*identitymodel.UserRefSaff)(nil), (*[]*identity.UserRefSaff)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_UserRefSaffs_identity_UserRefSaffs(arg.([]*identitymodel.UserRefSaff))
+		*out.(*[]*identity.UserRefSaff) = out0
+		return nil
+	})
+	s.Register((*identity.UserRefSaff)(nil), (*identitymodel.UserRefSaff)(nil), func(arg, out interface{}) error {
+		Convert_identity_UserRefSaff_identitymodel_UserRefSaff(arg.(*identity.UserRefSaff), out.(*identitymodel.UserRefSaff))
+		return nil
+	})
+	s.Register(([]*identity.UserRefSaff)(nil), (*[]*identitymodel.UserRefSaff)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_UserRefSaffs_identitymodel_UserRefSaffs(arg.([]*identity.UserRefSaff))
+		*out.(*[]*identitymodel.UserRefSaff) = out0
+		return nil
+	})
 	s.Register((*sharemodel.BankAccount)(nil), (*identitytypes.BankAccount)(nil), func(arg, out interface{}) error {
 		Convert_sharemodel_BankAccount_identitytypes_BankAccount(arg.(*sharemodel.BankAccount), out.(*identitytypes.BankAccount))
 		return nil
@@ -1069,6 +1087,66 @@ func Convert_identity_Users_identitymodel_Users(args []*identity.User) (outs []*
 	outs = make([]*identitymodel.User, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identity_User_identitymodel_User(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/main/identity.UserRefSaff --//
+
+func Convert_identitymodel_UserRefSaff_identity_UserRefSaff(arg *identitymodel.UserRefSaff, out *identity.UserRefSaff) *identity.UserRefSaff {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.UserRefSaff{}
+	}
+	convert_identitymodel_UserRefSaff_identity_UserRefSaff(arg, out)
+	return out
+}
+
+func convert_identitymodel_UserRefSaff_identity_UserRefSaff(arg *identitymodel.UserRefSaff, out *identity.UserRefSaff) {
+	out.UserID = arg.UserID   // simple assign
+	out.RefAff = arg.RefAff   // simple assign
+	out.RefSale = arg.RefSale // simple assign
+}
+
+func Convert_identitymodel_UserRefSaffs_identity_UserRefSaffs(args []*identitymodel.UserRefSaff) (outs []*identity.UserRefSaff) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.UserRefSaff, len(args))
+	outs = make([]*identity.UserRefSaff, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_UserRefSaff_identity_UserRefSaff(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_UserRefSaff_identitymodel_UserRefSaff(arg *identity.UserRefSaff, out *identitymodel.UserRefSaff) *identitymodel.UserRefSaff {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.UserRefSaff{}
+	}
+	convert_identity_UserRefSaff_identitymodel_UserRefSaff(arg, out)
+	return out
+}
+
+func convert_identity_UserRefSaff_identitymodel_UserRefSaff(arg *identity.UserRefSaff, out *identitymodel.UserRefSaff) {
+	out.UserID = arg.UserID   // simple assign
+	out.RefAff = arg.RefAff   // simple assign
+	out.RefSale = arg.RefSale // simple assign
+}
+
+func Convert_identity_UserRefSaffs_identitymodel_UserRefSaffs(args []*identity.UserRefSaff) (outs []*identitymodel.UserRefSaff) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.UserRefSaff, len(args))
+	outs = make([]*identitymodel.UserRefSaff, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_UserRefSaff_identitymodel_UserRefSaff(args[i], &tmps[i])
 	}
 	return outs
 }

@@ -180,6 +180,7 @@ func (s *AccountService) GetAdminUsers(ctx context.Context, req *admin.GetAdminU
 			UserId:    v.User.ID,
 			FullName:  v.User.FullName,
 			Email:     v.User.Email,
+			Phone:     v.User.Phone,
 			Roles:     v.AccountUser.Roles,
 			CreatedAt: v.AccountUser.CreatedAt,
 			UpdatedAt: v.AccountUser.UpdatedAt,

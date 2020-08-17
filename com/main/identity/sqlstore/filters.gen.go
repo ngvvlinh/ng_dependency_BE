@@ -2929,3 +2929,74 @@ func (ft *UserInternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFi
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
 	}
 }
+
+type UserRefSaffFilters struct{ prefix string }
+
+func NewUserRefSaffFilters(prefix string) UserRefSaffFilters {
+	return UserRefSaffFilters{prefix}
+}
+
+func (ft *UserRefSaffFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft UserRefSaffFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *UserRefSaffFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "user_id",
+		Value:  UserID,
+		IsNil:  UserID == 0,
+	}
+}
+
+func (ft *UserRefSaffFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "user_id",
+		Value:  UserID,
+		IsNil:  UserID == nil,
+		IsZero: UserID != nil && (*UserID) == 0,
+	}
+}
+
+func (ft *UserRefSaffFilters) ByRefAff(RefAff string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_aff",
+		Value:  RefAff,
+		IsNil:  RefAff == "",
+	}
+}
+
+func (ft *UserRefSaffFilters) ByRefAffPtr(RefAff *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_aff",
+		Value:  RefAff,
+		IsNil:  RefAff == nil,
+		IsZero: RefAff != nil && (*RefAff) == "",
+	}
+}
+
+func (ft *UserRefSaffFilters) ByRefSale(RefSale string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_sale",
+		Value:  RefSale,
+		IsNil:  RefSale == "",
+	}
+}
+
+func (ft *UserRefSaffFilters) ByRefSalePtr(RefSale *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_sale",
+		Value:  RefSale,
+		IsNil:  RefSale == nil,
+		IsZero: RefSale != nil && (*RefSale) == "",
+	}
+}

@@ -177,6 +177,19 @@ func (h AggregateHandler) HandleUpdateUserPhone(ctx context.Context, msg *Update
 	return h.inner.UpdateUserPhone(msg.GetArgs(ctx))
 }
 
+type UpdateUserRefCommand struct {
+	UserID  dot.ID
+	RefAff  string
+	RefSale string
+
+	Result *UserRefSaff `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateUserRef(ctx context.Context, msg *UpdateUserRefCommand) (err error) {
+	msg.Result, err = h.inner.UpdateUserRef(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateUserReferenceSaleIDCommand struct {
 	UserID       dot.ID
 	RefSalePhone string
@@ -364,6 +377,8 @@ type GetUsersQuery struct {
 	Name      string
 	Phone     string
 	Email     string
+	RefAff    string
+	RefSale   string
 	CreatedAt filter.Date
 	Paging    meta.Paging
 
@@ -454,6 +469,7 @@ func (q *UpdateAffiliateInfoCommand) command()                      {}
 func (q *UpdateExternalAccountAhamoveVerificationCommand) command() {}
 func (q *UpdateUserEmailCommand) command()                          {}
 func (q *UpdateUserPhoneCommand) command()                          {}
+func (q *UpdateUserRefCommand) command()                            {}
 func (q *UpdateUserReferenceSaleIDCommand) command()                {}
 func (q *UpdateUserReferenceUserIDCommand) command()                {}
 func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()     {}
@@ -638,6 +654,21 @@ func (q *UpdateUserPhoneCommand) GetArgs(ctx context.Context) (_ context.Context
 		q.Phone
 }
 
+func (q *UpdateUserRefCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateUserRefArgs) {
+	return ctx,
+		&UpdateUserRefArgs{
+			UserID:  q.UserID,
+			RefAff:  q.RefAff,
+			RefSale: q.RefSale,
+		}
+}
+
+func (q *UpdateUserRefCommand) SetUpdateUserRefArgs(args *UpdateUserRefArgs) {
+	q.UserID = args.UserID
+	q.RefAff = args.RefAff
+	q.RefSale = args.RefSale
+}
+
 func (q *UpdateUserReferenceSaleIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateUserReferenceSaleIDArgs) {
 	return ctx,
 		&UpdateUserReferenceSaleIDArgs{
@@ -803,6 +834,8 @@ func (q *GetUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *List
 			Name:      q.Name,
 			Phone:     q.Phone,
 			Email:     q.Email,
+			RefAff:    q.RefAff,
+			RefSale:   q.RefSale,
 			CreatedAt: q.CreatedAt,
 			Paging:    q.Paging,
 		}
@@ -812,6 +845,8 @@ func (q *GetUsersQuery) SetListUsersArgs(args *ListUsersArgs) {
 	q.Name = args.Name
 	q.Phone = args.Phone
 	q.Email = args.Email
+	q.RefAff = args.RefAff
+	q.RefSale = args.RefSale
 	q.CreatedAt = args.CreatedAt
 	q.Paging = args.Paging
 }
@@ -888,6 +923,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerification)
 	b.AddHandler(h.HandleUpdateUserEmail)
 	b.AddHandler(h.HandleUpdateUserPhone)
+	b.AddHandler(h.HandleUpdateUserRef)
 	b.AddHandler(h.HandleUpdateUserReferenceSaleID)
 	b.AddHandler(h.HandleUpdateUserReferenceUserID)
 	b.AddHandler(h.HandleUpdateVerifiedExternalAccountAhamove)

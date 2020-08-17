@@ -2139,6 +2139,19 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			return
 		}
 		return msg, fn, nil
+	case "/admin.User/UpdateUserRef":
+		msg := &UpdateUserRefRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.BeforeServing(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateUserRef(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	default:
 		msg := fmt.Sprintf("no handler for path %q", path)
 		return nil, nil, httprpc.BadRouteError(msg, "POST", path)

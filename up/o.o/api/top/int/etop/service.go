@@ -58,6 +58,7 @@ type UserService interface {
 	// Change the user password
 	ChangePassword(context.Context, *ChangePasswordRequest) (*cm.Empty, error)
 
+	ChangeRefAff(ctx context.Context, request *ChangeUserRefAffRequest) (*cm.Empty, error)
 	// ChangePasswordUsingToken
 	//
 	// Reset password by providing the token sent to email or phone

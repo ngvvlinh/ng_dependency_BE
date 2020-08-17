@@ -45,6 +45,8 @@ type Aggregate interface {
 	BlockUser(context.Context, *BlockUserArgs) (*User, error)
 
 	UnblockUser(ctx context.Context, userID dot.ID) (*User, error)
+
+	UpdateUserRef(context.Context, *UpdateUserRefArgs) (*UserRefSaff, error)
 }
 
 type QueryService interface {
@@ -118,6 +120,8 @@ type ListUsersArgs struct {
 	Name      string
 	Phone     string
 	Email     string
+	RefAff    string
+	RefSale   string
 	CreatedAt filter.Date
 	Paging    meta.Paging
 }
@@ -237,4 +241,10 @@ type ListShopQuery struct {
 type ListShopExtendedsResponse struct {
 	Shops  []*ShopExtended
 	Paging meta.PageInfo
+}
+
+type UpdateUserRefArgs struct {
+	UserID  dot.ID
+	RefAff  string
+	RefSale string
 }

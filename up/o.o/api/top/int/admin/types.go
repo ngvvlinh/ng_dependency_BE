@@ -127,6 +127,8 @@ type UsersFilter struct {
 	Phone     string      `json:"phone"`
 	Email     string      `json:"email"`
 	CreatedAt filter.Date `json:"created_at"`
+	RefAff    string      `json:"ref_aff"`
+	RefSale   string      `json:"ref_sale"`
 }
 
 func (m *UsersFilter) String() string { return jsonx.MustMarshalToString(m) }
@@ -193,6 +195,14 @@ type UnblockUserRequest struct {
 }
 
 func (m *UnblockUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateUserRefRequest struct {
+	UserID  dot.ID `json:"user_id"`
+	RefAff  string `json:"ref_aff"`
+	RefSale string `json:"ref_sale"`
+}
+
+func (m *UpdateUserRefRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentInfoRequest struct {
 	ID           dot.ID         `json:"id"`
@@ -859,6 +869,7 @@ type AdminAccountResponse struct {
 	FullName  string    `json:"full_name"`
 	Email     string    `json:"email"`
 	Roles     []string  `json:"roles"`
+	Phone     string    `json:"phone"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

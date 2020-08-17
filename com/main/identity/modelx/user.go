@@ -55,9 +55,14 @@ type CreateUserCommand struct {
 	AgreeEmailInfo bool
 	IsTest         bool
 	Source         user_source.UserSource
-	Result         struct {
+
+	RefSale string
+	RefAff  string
+
+	Result struct {
 		User         *identitymodel.User
 		UserInternal *identitymodel.UserInternal
+		UserRefSaff  *identitymodel.UserRefSaff
 	}
 }
 

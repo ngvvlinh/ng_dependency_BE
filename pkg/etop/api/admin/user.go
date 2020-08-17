@@ -61,7 +61,10 @@ func (s *UserService) GetUsers(ctx context.Context, q *admin.GetUsersRequest) (*
 		Phone:     q.Filters.Phone,
 		Email:     q.Filters.Email,
 		CreatedAt: q.Filters.CreatedAt,
-		Paging:    *paging,
+		RefSale:   q.Filters.RefSale,
+		RefAff:    q.Filters.RefAff,
+
+		Paging: *paging,
 	}
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -145,4 +148,17 @@ func (s *UserService) GetUsersByIDs(ctx context.Context, q *pbcm.IDsRequest) (*a
 	}
 	populateShopCount(result.Users, queryAccount.Result)
 	return result, nil
+}
+
+func (s *UserService) UpdateUserRef(ctx context.Context, r *admin.UpdateUserRefRequest) (*pbcm.Empty, error) {
+	cmdUpdate := &identity.UpdateUserRefCommand{
+		UserID:  r.UserID,
+		RefAff:  r.RefAff,
+		RefSale: r.RefSale,
+	}
+	err := s.IdentityAggr.Dispatch(ctx, cmdUpdate)
+	if err != nil {
+		return nil, err
+	}
+	return &pbcm.Empty{}, nil
 }

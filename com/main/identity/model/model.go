@@ -503,3 +503,10 @@ type UserInternal struct {
 
 	UpdatedAt time.Time `sq:"update"`
 }
+
+// +sqlgen
+type UserRefSaff struct {
+	UserID  dot.ID
+	RefAff  string
+	RefSale string
+}

@@ -691,6 +691,8 @@ func createUser(ctx context.Context, r *etop.CreateUserRequest) (*identitymodel.
 		AgreeTOS:       r.AgreeTos,
 		AgreeEmailInfo: r.AgreeEmailInfo.Bool,
 		Source:         r.Source,
+		RefSale:        r.RefSale,
+		RefAff:         r.RefAff,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -2100,4 +2102,15 @@ func (s *UserService) verifyPhone(ctx context.Context, usage string, user *ident
 		return err
 	}
 	return nil
+}
+
+func (s *UserService) ChangeRefAff(ctx context.Context, request *api.ChangeUserRefAffRequest) (*pbcm.Empty, error) {
+	cmdUpdate := &identity.UpdateUserRefCommand{
+		UserID: s.SS.User().ID,
+		RefAff: request.RefAff,
+	}
+	if err := s.IdentityAggr.Dispatch(ctx, cmdUpdate); err != nil {
+		return nil, err
+	}
+	return &pbcm.Empty{}, nil
 }

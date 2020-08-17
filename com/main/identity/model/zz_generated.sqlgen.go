@@ -6579,3 +6579,257 @@ func (ms *UserInternalHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	*ms = res
 	return nil
 }
+
+type UserRefSaffs []*UserRefSaff
+
+const __sqlUserRefSaff_Table = "user_ref_saff"
+const __sqlUserRefSaff_ListCols = "\"user_id\",\"ref_aff\",\"ref_sale\""
+const __sqlUserRefSaff_ListColsOnConflict = "\"user_id\" = EXCLUDED.\"user_id\",\"ref_aff\" = EXCLUDED.\"ref_aff\",\"ref_sale\" = EXCLUDED.\"ref_sale\""
+const __sqlUserRefSaff_Insert = "INSERT INTO \"user_ref_saff\" (" + __sqlUserRefSaff_ListCols + ") VALUES"
+const __sqlUserRefSaff_Select = "SELECT " + __sqlUserRefSaff_ListCols + " FROM \"user_ref_saff\""
+const __sqlUserRefSaff_Select_history = "SELECT " + __sqlUserRefSaff_ListCols + " FROM history.\"user_ref_saff\""
+const __sqlUserRefSaff_UpdateAll = "UPDATE \"user_ref_saff\" SET (" + __sqlUserRefSaff_ListCols + ")"
+const __sqlUserRefSaff_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_ref_saff_pkey DO UPDATE SET"
+
+func (m *UserRefSaff) SQLTableName() string  { return "user_ref_saff" }
+func (m *UserRefSaffs) SQLTableName() string { return "user_ref_saff" }
+func (m *UserRefSaff) SQLListCols() string   { return __sqlUserRefSaff_ListCols }
+
+func (m *UserRefSaff) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserRefSaff_ListCols + " FROM \"user_ref_saff\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *UserRefSaff) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "user_ref_saff"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"user_id": {
+			ColumnName:       "user_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ref_aff": {
+			ColumnName:       "ref_aff",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ref_sale": {
+			ColumnName:       "ref_sale",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "user_ref_saff", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserRefSaff)(nil))
+}
+
+func (m *UserRefSaff) SQLArgs(opts core.Opts, create bool) []interface{} {
+	return []interface{}{
+		m.UserID,
+		core.String(m.RefAff),
+		core.String(m.RefSale),
+	}
+}
+
+func (m *UserRefSaff) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		&m.UserID,
+		(*core.String)(&m.RefAff),
+		(*core.String)(&m.RefSale),
+	}
+}
+
+func (m *UserRefSaff) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *UserRefSaffs) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(UserRefSaffs, 0, 128)
+	for rows.Next() {
+		m := new(UserRefSaff)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *UserRefSaff) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserRefSaff_Select)
+	return nil
+}
+
+func (_ *UserRefSaffs) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserRefSaff_Select)
+	return nil
+}
+
+func (m *UserRefSaff) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserRefSaff_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(3)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms UserRefSaffs) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserRefSaff_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(3)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserRefSaff) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserRefSaff_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserRefSaff_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserRefSaffs) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserRefSaff_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserRefSaff_ListColsOnConflict)
+	return nil
+}
+
+func (m *UserRefSaff) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("user_ref_saff")
+	w.WriteRawString(" SET ")
+	if m.UserID != 0 {
+		flag = true
+		w.WriteName("user_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.UserID)
+	}
+	if m.RefAff != "" {
+		flag = true
+		w.WriteName("ref_aff")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.RefAff)
+	}
+	if m.RefSale != "" {
+		flag = true
+		w.WriteName("ref_sale")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.RefSale)
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *UserRefSaff) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserRefSaff_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(3)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type UserRefSaffHistory map[string]interface{}
+type UserRefSaffHistories []map[string]interface{}
+
+func (m *UserRefSaffHistory) SQLTableName() string  { return "history.\"user_ref_saff\"" }
+func (m UserRefSaffHistories) SQLTableName() string { return "history.\"user_ref_saff\"" }
+
+func (m *UserRefSaffHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserRefSaff_Select_history)
+	return nil
+}
+
+func (m UserRefSaffHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserRefSaff_Select_history)
+	return nil
+}
+
+func (m UserRefSaffHistory) UserID() core.Interface  { return core.Interface{m["user_id"]} }
+func (m UserRefSaffHistory) RefAff() core.Interface  { return core.Interface{m["ref_aff"]} }
+func (m UserRefSaffHistory) RefSale() core.Interface { return core.Interface{m["ref_sale"]} }
+
+func (m *UserRefSaffHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 3)
+	args := make([]interface{}, 3)
+	for i := 0; i < 3; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(UserRefSaffHistory, 3)
+	res["user_id"] = data[0]
+	res["ref_aff"] = data[1]
+	res["ref_sale"] = data[2]
+	*m = res
+	return nil
+}
+
+func (ms *UserRefSaffHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 3)
+	args := make([]interface{}, 3)
+	for i := 0; i < 3; i++ {
+		args[i] = &data[i]
+	}
+	res := make(UserRefSaffHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(UserRefSaffHistory)
+		m["user_id"] = data[0]
+		m["ref_aff"] = data[1]
+		m["ref_sale"] = data[2]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}

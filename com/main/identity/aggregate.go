@@ -31,6 +31,7 @@ type Aggregate struct {
 	accountStore          sqlstore.AccountStoreFactory
 	accountUserStore      sqlstore.AccountUserStoreFactory
 	xAccountAhamove       sqlstore.XAccountAhamoveStoreFactory
+	userRefSaffStore      sqlstore.UserRefSaffStoreFactory
 	shipnowCarrierManager carrier.Manager
 }
 
@@ -44,6 +45,7 @@ func NewAggregate(db com.MainDB, carrierManager carrier.Manager) *Aggregate {
 		affiliateStore:        sqlstore.NewAffiliateStore(db),
 		accountStore:          sqlstore.NewAccountStore(db),
 		accountUserStore:      sqlstore.NewAccountUserStore(db),
+		userRefSaffStore:      sqlstore.NewUserRefSaffStore(db),
 		shipnowCarrierManager: carrierManager,
 	}
 }
@@ -440,4 +442,29 @@ func (a *Aggregate) UnblockUser(ctx context.Context, userID dot.ID) (*identity.U
 		return nil, err
 	}
 	return convert.User(user), nil
+}
+
+func (a *Aggregate) UpdateUserRef(ctx context.Context, args *identity.UpdateUserRefArgs) (*identity.UserRefSaff, error) {
+	_, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	userRef := &identity.UserRefSaff{
+		UserID:  args.UserID,
+		RefAff:  args.RefAff,
+		RefSale: args.RefSale,
+	}
+	err = a.userRefSaffStore(ctx).ByUserID(args.UserID).Update(userRef)
+	if err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			if _err := a.userRefSaffStore(ctx).CreateUserRefSaff(userRef); _err != nil {
+				return nil, _err
+			}
+			return userRef, nil
+		}
+		return nil, err
+	}
+
+	return userRef, nil
 }
