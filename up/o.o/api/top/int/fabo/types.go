@@ -504,7 +504,7 @@ func (m *SendCommentRequest) Validate() error {
 	if m.ExternalPageID == "" {
 		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_page_id")
 	}
-	// TODO(nakhoa): un comment bellow section
+	// TODO(nakhoa): uncomment following section
 	//if m.ExternalUserID == "" {
 	//	return xerrors.Errorf(xerrors.FailedPrecondition, nil, "missing external_user_id")
 	//}

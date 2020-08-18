@@ -67,3 +67,12 @@ func convertSchema(schema spec.Schema, definitions Definitions) spec.Schema {
 func fillSchemaDesc(schema *spec.Schema, desc ItemDescription) {
 	schema.Description = desc.FormattedDescription
 }
+
+func coalesce(ss ...string) string {
+	for _, s := range ss {
+		if s != "" {
+			return s
+		}
+	}
+	return ""
+}

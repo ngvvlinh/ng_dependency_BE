@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "etop API",
+    "title": "eTop API",
     "version": "v1"
   },
   "paths": {
@@ -5751,7 +5751,6 @@
     },
     "/api/shop.WebServer/CreateOrUpdateWsCategory": {
       "post": {
-        "description": "ws_category\n",
         "tags": [
           "WebServer"
         ],
@@ -5779,7 +5778,6 @@
     },
     "/api/shop.WebServer/CreateOrUpdateWsProduct": {
       "post": {
-        "description": "ws_product\n",
         "tags": [
           "WebServer"
         ],
@@ -5807,7 +5805,6 @@
     },
     "/api/shop.WebServer/CreateWsPage": {
       "post": {
-        "description": "ws_page\n",
         "tags": [
           "WebServer"
         ],
@@ -5835,7 +5832,6 @@
     },
     "/api/shop.WebServer/CreateWsWebsite": {
       "post": {
-        "description": "ws_website\n",
         "tags": [
           "WebServer"
         ],

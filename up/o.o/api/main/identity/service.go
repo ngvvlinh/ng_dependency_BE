@@ -14,6 +14,7 @@ import (
 
 type Aggregate interface {
 	// -- User -- //
+
 	UpdateUserReferenceUserID(context.Context, *UpdateUserReferenceUserIDArgs) error
 
 	UpdateUserReferenceSaleID(context.Context, *UpdateUserReferenceSaleIDArgs) error
@@ -24,6 +25,7 @@ type Aggregate interface {
 
 	// -- External Account Ahamove -- //
 	// TODO: move External Account Ahamove to its own module
+
 	CreateExternalAccountAhamove(context.Context, *CreateExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
 
 	RequestVerifyExternalAccountAhamove(context.Context, *RequestVerifyExternalAccountAhamoveArgs) (*RequestVerifyExternalAccountAhamoveResult, error)
@@ -33,6 +35,7 @@ type Aggregate interface {
 	UpdateExternalAccountAhamoveVerification(context.Context, *UpdateExternalAccountAhamoveVerificationArgs) (*ExternalAccountAhamove, error)
 
 	// -- Affiliate -- //
+
 	CreateAffiliate(context.Context, *CreateAffiliateArgs) (*Affiliate, error)
 
 	UpdateAffiliateInfo(context.Context, *UpdateAffiliateInfoArgs) (*Affiliate, error)
@@ -42,6 +45,7 @@ type Aggregate interface {
 	DeleteAffiliate(context.Context, *DeleteAffiliateArgs) error
 
 	// -- Block, Unblock User -- //
+
 	BlockUser(context.Context, *BlockUserArgs) (*User, error)
 
 	UnblockUser(ctx context.Context, userID dot.ID) (*User, error)
@@ -51,6 +55,7 @@ type Aggregate interface {
 
 type QueryService interface {
 	// -- Shop -- //
+
 	GetShopByID(ctx context.Context, ID dot.ID) (*Shop, error)
 
 	ListShopsByIDs(ctx context.Context, IDs []dot.ID) ([]*Shop, error)
@@ -58,6 +63,7 @@ type QueryService interface {
 	ListShopExtendeds(context.Context, *ListShopQuery) (*ListShopExtendedsResponse, error)
 
 	// -- User -- //
+
 	GetUserByID(context.Context, *GetUserByIDQueryArgs) (*User, error)
 
 	GetUsersByAccount(ctx context.Context, accountID dot.ID) ([]*AccountUser, error)
@@ -71,11 +77,13 @@ type QueryService interface {
 	GetUserByPhoneOrEmail(context.Context, *GetUserByPhoneOrEmailArgs) (*User, error)
 
 	// -- ExternalAccountAhamove -- //
+
 	GetExternalAccountAhamove(context.Context, *GetExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
 
 	GetExternalAccountAhamoveByExternalID(context.Context, *GetExternalAccountAhamoveByExternalIDQueryArgs) (*ExternalAccountAhamove, error)
 
 	// -- Affiliate -- //
+
 	GetAffiliateByID(ctx context.Context, ID dot.ID) (*Affiliate, error)
 
 	GetAffiliateWithPermission(ctx context.Context, AffiliateID dot.ID, UserID dot.ID) (*GetAffiliateWithPermissionResult, error)

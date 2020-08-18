@@ -8,7 +8,7 @@ import (
 )
 
 // +gen:apix
-// +gen:swagger:doc-path=sample/counter
+// +gen:swagger:doc-path=zext/sample/counter
 
 // +apix:path=/counter.Counter
 type CounterService interface {

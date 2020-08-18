@@ -11,7 +11,7 @@ import (
 )
 
 // +gen:apix
-// +gen:swagger:doc-path=sample/calc3
+// +gen:swagger:doc-path=zext/sample/calc3
 
 // +apix:path=/calc.Calc
 type CalcService interface {

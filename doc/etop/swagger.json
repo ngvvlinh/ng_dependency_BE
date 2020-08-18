@@ -12,7 +12,7 @@
   "swagger": "2.0",
   "info": {
     "description": "API Documentation:\n\n### eTop\n\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/etop/shop](/doc/etop/shop) API for shops\n- [/doc/etop/affiliate](/doc/etop/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/etop/integration](/doc/etop/integration) API for shop to integrate with external partners\n- [/doc/etop/admin](/doc/etop/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/ext/carrier](/doc/ext/partnercarrier) External API for partners\n- [/doc/etop/sadmin](/doc/etop/sadmin) Special API for super admins\n\n### Fabo\n\n- [/doc/fabo](/doc/fabo) Fabo",
-    "title": "etop API",
+    "title": "eTop API",
     "version": "v1"
   },
   "paths": {
@@ -721,7 +721,7 @@
     },
     "/api/etop.User/ChangePassword": {
       "post": {
-        "description": "ChangePassword\n\nChange the user password\n",
+        "description": "Change the user password\n",
         "tags": [
           "User"
         ],
@@ -749,7 +749,7 @@
     },
     "/api/etop.User/ChangePasswordUsingToken": {
       "post": {
-        "description": "ChangePasswordUsingToken\n\nReset password by providing the token sent to email or phone\n",
+        "description": "Reset password by providing the token sent to email or phone\n",
         "tags": [
           "User"
         ],
@@ -858,7 +858,7 @@
     },
     "/api/etop.User/Login": {
       "post": {
-        "description": "Login\n\nLog the user in and generate access token.\n",
+        "description": "Log the user in and generate access token.\n",
         "tags": [
           "User"
         ],
@@ -886,7 +886,7 @@
     },
     "/api/etop.User/Register": {
       "post": {
-        "description": "Register\n\nRegister a new user or after a user has login using generated password.\n",
+        "description": "Register a new user or after a user has login using generated password.\n",
         "tags": [
           "User"
         ],
@@ -941,7 +941,7 @@
     },
     "/api/etop.User/ResetPassword": {
       "post": {
-        "description": "ResetPassword\n\nSend email or sms to allow the user reset their password.\n",
+        "description": "Send email or sms to allow the user reset their password.\n",
         "tags": [
           "User"
         ],
@@ -1077,7 +1077,7 @@
     },
     "/api/etop.User/SessionInfo": {
       "post": {
-        "description": "SessionInfo\n\nReturn current session info.\n",
+        "description": "Return current session info.\n",
         "tags": [
           "User"
         ],
@@ -1105,7 +1105,7 @@
     },
     "/api/etop.User/SwitchAccount": {
       "post": {
-        "description": "SwitchAccount\n\nResponse error if the user does not have permission to the requested account.\n",
+        "description": "Response error if the user does not have permission to the requested account.\n",
         "tags": [
           "User"
         ],

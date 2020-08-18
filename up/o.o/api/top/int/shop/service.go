@@ -383,7 +383,9 @@ type PurchaseRefundService interface {
 
 // +apix:path=/shop.WebServer
 type WebServerService interface {
+
 	// ws_website
+
 	CreateWsWebsite(context.Context, *CreateWsWebsiteRequest) (*WsWebsite, error)
 	UpdateWsWebsite(context.Context, *UpdateWsWebsiteRequest) (*WsWebsite, error)
 
@@ -392,6 +394,7 @@ type WebServerService interface {
 	GetWsWebsitesByIDs(context.Context, *GetWsWebsitesByIDsRequest) (*GetWsWebsitesByIDsResponse, error)
 
 	// ws_product
+
 	CreateOrUpdateWsProduct(context.Context, *CreateOrUpdateWsProductRequest) (*WsProduct, error)
 
 	GetWsProduct(context.Context, *GetWsProductRequest) (*WsProduct, error)
@@ -399,6 +402,7 @@ type WebServerService interface {
 	GetWsProductsByIDs(context.Context, *GetWsProductsByIDsRequest) (*GetWsProductsByIDsResponse, error)
 
 	// ws_category
+
 	CreateOrUpdateWsCategory(context.Context, *CreateOrUpdateWsCategoryRequest) (*WsCategory, error)
 
 	GetWsCategory(context.Context, *GetWsCategoryRequest) (*WsCategory, error)
@@ -406,6 +410,7 @@ type WebServerService interface {
 	GetWsCategoriesByIDs(context.Context, *GetWsCategoriesByIDsRequest) (*GetWsCategoriesByIDsResponse, error)
 
 	// ws_page
+
 	CreateWsPage(context.Context, *CreateWsPageRequest) (*WsPage, error)
 	UpdateWsPage(context.Context, *UpdateWsPageRequest) (*WsPage, error)
 	DeleteWsPage(context.Context, *DeteleWsPageRequest) (*DeteleWsPageResponse, error)

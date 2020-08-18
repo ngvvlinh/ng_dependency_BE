@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "etop API",
+    "title": "eTop API",
     "version": "v1"
   },
   "paths": {
@@ -28,7 +28,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mdCreateEquationRequest"
+              "$ref": "#/definitions/mcRequest"
             }
           }
         ],
@@ -36,7 +36,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/mdEquation"
+              "$ref": "#/definitions/mcEquation"
             }
           }
         }
@@ -55,7 +55,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mdGetRequest"
+              "$ref": "#/definitions/mcGetRequest"
             }
           }
         ],
@@ -63,7 +63,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/mdEquation"
+              "$ref": "#/definitions/mcEquation"
             }
           }
         }
@@ -82,7 +82,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mdListEquationRequest"
+              "$ref": "#/definitions/mcListEquationRequest"
             }
           }
         ],
@@ -90,7 +90,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/mdEquations"
+              "$ref": "#/definitions/mcEquations"
             }
           }
         }
@@ -109,7 +109,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/mdUpdateEquationRequest"
+              "$ref": "#/definitions/mcUpdateEquationRequest"
             }
           }
         ],
@@ -117,7 +117,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/mdEquation"
+              "$ref": "#/definitions/mcEquation"
             }
           }
         }
@@ -142,30 +142,7 @@
         }
       }
     },
-    "mdCreateEquationRequest": {
-      "type": "object",
-      "properties": {
-        "a": {
-          "description": "the first param\n",
-          "type": "string"
-        },
-        "b": {
-          "description": "the second param\n",
-          "type": "string"
-        },
-        "op": {
-          "allOf": [
-            {
-              "description": "(+, -, * /)\n"
-            },
-            {
-              "$ref": "#/definitions/mdEquationOperator"
-            }
-          ]
-        }
-      }
-    },
-    "mdEquation": {
+    "mcEquation": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -188,7 +165,7 @@
         }
       }
     },
-    "mdEquationOperator": {
+    "mcEquationOperator": {
       "type": "string",
       "enum": [
         "add",
@@ -197,18 +174,18 @@
         "mul"
       ]
     },
-    "mdEquations": {
+    "mcEquations": {
       "type": "object",
       "properties": {
         "equations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/mdEquation"
+            "$ref": "#/definitions/mcEquation"
           }
         }
       }
     },
-    "mdGetRequest": {
+    "mcGetRequest": {
       "type": "object",
       "properties": {
         "id": {
@@ -217,7 +194,7 @@
         }
       }
     },
-    "mdListEquationRequest": {
+    "mcListEquationRequest": {
       "type": "object",
       "properties": {
         "filters": {
@@ -228,7 +205,30 @@
         }
       }
     },
-    "mdUpdateEquationRequest": {
+    "mcRequest": {
+      "type": "object",
+      "properties": {
+        "a": {
+          "description": "the first param\n",
+          "type": "string"
+        },
+        "b": {
+          "description": "the second param\n",
+          "type": "string"
+        },
+        "op": {
+          "allOf": [
+            {
+              "description": "we only support \"add\" at the only operator\n"
+            },
+            {
+              "$ref": "#/definitions/mcEquationOperator"
+            }
+          ]
+        }
+      }
+    },
+    "mcUpdateEquationRequest": {
       "type": "object",
       "properties": {
         "a": {
@@ -250,7 +250,7 @@
               "description": "the operator (+, -, *, /)\n"
             },
             {
-              "$ref": "#/definitions/mdEquationOperator"
+              "$ref": "#/definitions/mcEquationOperator"
             }
           ]
         }

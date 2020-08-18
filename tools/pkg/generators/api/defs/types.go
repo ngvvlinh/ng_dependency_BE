@@ -19,15 +19,19 @@ type Service struct {
 	APIPath   string
 	APIPathID string
 	Methods   []*Method
+
+	Interface *types.TypeName
 }
 
 type Method struct {
 	Service  *Service
 	Name     string
+	APIPath  string
 	Comment  string
-	Method   *types.Func
 	Request  *Message
 	Response *Message
+
+	Method *types.Func
 }
 
 type Message struct {

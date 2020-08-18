@@ -40,8 +40,8 @@ func Services(ng generator.Engine, pkg *packages.Package, kinds []defs.Kind) (se
 						return nil, generator.Errorf(err, "service %v: %v", obj.Name(), err)
 					}
 
-					apiPath := directives.GetArg("apix:path")
-					apiPathID := strings.Replace(strings.TrimPrefix(apiPath, "/"), "/", "-", -1)
+					apiPath := strings.TrimPrefix(directives.GetArg("apix:path"), "/")
+					apiPathID := strings.Replace(apiPath, "/", "-", -1)
 					service := &defs.Service{
 						Kind:      kind,
 						Name:      strings.TrimSuffix(obj.Name(), string(kind)),
@@ -49,6 +49,7 @@ func Services(ng generator.Engine, pkg *packages.Package, kinds []defs.Kind) (se
 						APIPath:   apiPath,
 						APIPathID: apiPathID,
 						Methods:   methods,
+						Interface: obj,
 					}
 					services = append(services, service)
 					for _, m := range methods {
@@ -88,6 +89,12 @@ func parseService(ng generator.Engine, iface *types.Interface) ([]*defs.Method, 
 }
 
 func parseMethod(ng generator.Engine, method *types.Func) (_ *defs.Method, err error) {
+	apiPath := ng.GetDirectives(method).GetArg("apix:path")
+	if apiPath == "" {
+		apiPath = method.Name()
+	}
+	apiPath = strings.TrimPrefix(apiPath, "/")
+
 	mtyp := method.Type()
 	styp := mtyp.(*types.Signature)
 	params := styp.Params()
@@ -98,6 +105,7 @@ func parseMethod(ng generator.Engine, method *types.Func) (_ *defs.Method, err e
 	}
 	return &defs.Method{
 		Name:     method.Name(),
+		APIPath:  apiPath,
 		Comment:  ng.GetComment(method).Text(),
 		Method:   method,
 		Request:  requests,

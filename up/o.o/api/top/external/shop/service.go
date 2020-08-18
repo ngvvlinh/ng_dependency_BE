@@ -46,7 +46,6 @@ type ShippingService interface {
 type OrderService interface {
 	CreateOrder(context.Context, *types.CreateOrderRequest) (*types.Order, error)
 
-	// TODO:
 	ConfirmOrder(context.Context, *types.ConfirmOrderRequest) (*cm.Empty, error)
 
 	CancelOrder(context.Context, *types.CancelOrderRequest) (*types.OrderAndFulfillments, error)

@@ -50,7 +50,7 @@ func main() {
 	docPath := "sample/counter"
 	swaggerPath := "/doc/" + docPath + "/swagger.json"
 	mux.Handle("/doc/"+docPath, servedoc.RedocHandler())
-	mux.Handle(swaggerPath, servedoc.SwaggerHandler(docPath+"/swagger.json"))
+	mux.Handle(swaggerPath, servedoc.SwaggerHandler("zext/"+docPath+"/swagger.json"))
 
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {

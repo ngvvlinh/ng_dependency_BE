@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "etop API",
+    "title": "eTop API",
     "version": "v1"
   },
   "paths": {
@@ -98,7 +98,7 @@
     },
     "/api/integration.Integration/LoginUsingTokenWL": {
       "post": {
-        "description": "LoginUsingTokenWL\n\nDo all stuff to grant access shop of whitelabel partner\n",
+        "description": "Do all stuff to grant access shop of whitelabel partner\n",
         "tags": [
           "Integration"
         ],
@@ -153,7 +153,7 @@
     },
     "/api/integration.Integration/RequestLogin": {
       "post": {
-        "description": "RequestLogin\n\nCheck if the requested phone or email exists and take corresponding action.\n",
+        "description": "Check if the requested phone or email exists and take corresponding action.\n",
         "tags": [
           "Integration"
         ],

@@ -34,6 +34,8 @@ type plugin struct {
 
 type Opts struct {
 	apix.Opts
+	Title       string
+	Version     string
 	Description string
 }
 
@@ -67,7 +69,11 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, _ g
 	if err != nil {
 		return err
 	}
-	opts := Opts{Description: description}
+	opts := Opts{
+		Title:       pkgDirectives.GetArg("gen:swagger:title"),
+		Version:     pkgDirectives.GetArg("gen:swagger:version"),
+		Description: description,
+	}
 	opts.BasePath = basePath
 
 	services, err := parse.Services(ng, pkg, []defs.Kind{defs.KindService})
@@ -104,8 +110,9 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 	definitions := map[string]spec.Schema{}
 	pathItems := map[string]spec.PathItem{}
 	for _, service := range services {
+
 		for _, method := range service.Methods {
-			desc, err := parseItemDescription(ng, method.Method)
+			desc, err := parseItemDescription(ng, method.Name, method.Method)
 			if err != nil {
 				return nil, err
 			}
@@ -113,15 +120,15 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 			requestRef := getReference(ng, definitions, sign.Params().At(1).Type())
 			responseRef := getReference(ng, definitions, sign.Results().At(0).Type())
 
-			apiPath := opts.BasePath + service.APIPath + "/" + method.Name
+			apiPath := opts.BasePath + "/" + service.APIPath + "/" + method.APIPath
 			pathItem := spec.PathItem{
 				PathItemProps: spec.PathItemProps{
 					Post: &spec.Operation{
 						OperationProps: spec.OperationProps{
 							Description: desc.FormattedDescription,
 							Deprecated:  desc.Deprecated,
-							Summary:     method.Name,
-							Tags:        []string{service.Name},
+							Summary:     desc.Summary,
+							Tags:        []string{getTagForService(ng, service)},
 							ID:          getOperationID(method),
 							Parameters: []spec.Parameter{
 								{
@@ -156,8 +163,8 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 	paths := &spec.Paths{Paths: pathItems}
 	info := &spec.Info{
 		InfoProps: spec.InfoProps{
-			Version:     "v1",
-			Title:       "etop API",
+			Version:     coalesce(opts.Version, "v1"),
+			Title:       coalesce(opts.Title, "eTop API"),
 			Description: opts.Description,
 		},
 	}
@@ -165,7 +172,7 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 	for _, s := range services {
 		tags = append(tags, spec.Tag{
 			TagProps: spec.TagProps{
-				Name: s.Name,
+				Name: getTagForService(ng, s),
 			},
 		})
 	}
@@ -322,7 +329,7 @@ func parseSchema(ng generator.Engine, path string, definitions Definitions, typ 
 		}
 
 		named := inner.(*types.Named)
-		desc, err := parseItemDescription(ng, named.Obj())
+		desc, err := parseItemDescription(ng, "", named.Obj())
 		if err != nil {
 			panic(fmt.Sprintf("parse comment on %v: %v", typ, err))
 		}
@@ -363,7 +370,7 @@ func parseSchema(ng generator.Engine, path string, definitions Definitions, typ 
 					continue
 				}
 				fieldSchema := parseSchema(ng, path+"."+field.Name(), definitions, field.Type())
-				fieldDesc, err2 := parseItemDescription(ng, field)
+				fieldDesc, err2 := parseItemDescription(ng, "", field)
 				if err2 != nil {
 					panic(fmt.Sprintf("parse comment on field %v of struct %v: %v", field.Name(), typ, err2))
 				}
@@ -497,13 +504,21 @@ type ItemDescription struct {
 
 var reDeprecated = regexp.MustCompile(`(?i)((?:^|\n)@?(deprecated|required|default|todo):?)(?:([^\n]+))?\n`)
 
-func parseItemDescription(ng generator.Engine, pos generator.Positioner) (ItemDescription, error) {
+// parseItemDescription parse summary and description. Leave summary empty to
+// skip summary.
+func parseItemDescription(ng generator.Engine, summary string, pos generator.Positioner) (ItemDescription, error) {
 	cmt := ng.GetComment(pos)
 	doc := cmt.Text()
+
+	var parsedSummary string
+	if summary != "" { // only parse summary if requested
+		parsedSummary, doc = parseSummary(doc)
+	}
 	desc, err := parseItemDescriptionText(doc)
 	if err != nil {
 		return desc, generator.Errorf(err, "%v: %v", pos, err)
 	}
+	desc.Summary = coalesce(parsedSummary, summary)
 	return desc, nil
 }
 
@@ -573,4 +588,40 @@ func parseSchemaDirectives(ng generator.Engine, typ *types.Named) (*spec.Schema,
 			Format:   swaggerFormat,
 		},
 	}, nil
+}
+
+func parseSummary(doc string) (summary, body string) {
+	if strings.HasPrefix(doc, "@") {
+		return "", doc
+	}
+	lines := strings.SplitN(doc, "\n\n", 2)
+	firstLine := strings.TrimSpace(lines[0])
+	if firstLine == "" {
+		return "", doc
+	}
+
+	// must start with uppercase
+	if firstLine[0] < 'A' || firstLine[0] > 'Z' {
+		return "", doc
+	}
+
+	// must be single line, no period
+	if strings.Contains(firstLine, "\n") ||
+		strings.Contains(firstLine, ". ") ||
+		strings.HasSuffix(firstLine, ".") {
+		return "", doc
+	}
+
+	if len(lines) > 1 {
+		body = lines[1]
+	}
+	return firstLine, body
+}
+
+func getTagForService(ng generator.Engine, s *defs.Service) string {
+	tag := ng.GetDirectives(s.Interface).GetArg("swagger:tag")
+	if tag == "" {
+		tag = s.Name
+	}
+	return tag
 }

@@ -546,6 +546,11 @@ var _acl = map[string]*permission.Decl{
 	"ext/shop.Shipping/GetOrder":              {Type: Shop, Auth: APIKey},
 	"ext/shop.Shipping/GetFulfillment":        {Type: Shop, Auth: APIKey},
 
+	"ext/shop.Shipnow/GetShipnowServices":       {Type: Shop, Auth: APIKey},
+	"ext/shop.Shipnow/CreateShipnowFulfillment": {Type: Shop, Auth: APIKey},
+	"ext/shop.Shipnow/CancelShipnowFulfillment": {Type: Shop, Auth: APIKey},
+	"ext/shop.Shipnow/GetShipnowFulfillment":    {Type: Shop, Auth: APIKey},
+
 	"ext/shop.Order/CreateOrder":  {Type: Shop, Auth: APIKey},
 	"ext/shop.Order/ConfirmOrder": {Type: Shop, Auth: APIKey},
 	"ext/shop.Order/CancelOrder":  {Type: Shop, Auth: APIKey},

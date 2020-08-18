@@ -11,24 +11,24 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "eTop API",
+    "title": "etop API",
     "version": "v1"
   },
   "paths": {
-    "/api/handler.Misc/VersionInfo": {
+    "/test/sample-service/helloWorld": {
       "post": {
         "tags": [
-          "Misc"
+          "Sample"
         ],
-        "summary": "VersionInfo",
-        "operationId": "handler.Misc-VersionInfo",
+        "summary": "HelloWorld",
+        "operationId": "sample-service-HelloWorld",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/ioEmpty"
             }
           }
         ],
@@ -36,26 +36,26 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ktVersionInfoResponse"
+              "$ref": "#/definitions/ioResponse"
             }
           }
         }
       }
     },
-    "/api/handler.Webhook/ResetState": {
+    "/test/sample-service/legacy/something": {
       "post": {
         "tags": [
-          "Webhook"
+          "Sample"
         ],
-        "summary": "ResetState",
-        "operationId": "handler.Webhook-ResetState",
+        "summary": "DoSomething",
+        "operationId": "sample-service-DoSomething",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/obResetStateRequest"
+              "$ref": "#/definitions/ioRequest"
             }
           }
         ],
@@ -63,7 +63,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/ioEmpty"
             }
           }
         }
@@ -71,50 +71,32 @@
     }
   },
   "definitions": {
-    "ktEmpty": {
+    "ioEmpty": {
       "type": "object"
     },
-    "ktVersionInfoResponse": {
+    "ioRequest": {
       "type": "object",
       "properties": {
-        "meta": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+        "code": {
+          "type": "integer"
         },
-        "service": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "version": {
+        "something": {
           "type": "string"
         }
       }
     },
-    "obResetStateRequest": {
+    "ioResponse": {
       "type": "object",
       "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "webhook_id": {
-          "type": "string",
-          "format": "int64"
+        "message": {
+          "type": "string"
         }
       }
     }
   },
   "tags": [
     {
-      "name": "Misc"
-    },
-    {
-      "name": "Webhook"
+      "name": "Sample"
     }
   ]
 }

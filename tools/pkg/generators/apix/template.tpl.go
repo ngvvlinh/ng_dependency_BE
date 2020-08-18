@@ -32,7 +32,7 @@ func New{{.Name}}ServiceServer(builder func() {{.Name}}Service, hooks ... httprp
 	}
 }
 
-const {{.Name}}ServicePathPrefix = "{{.APIPath}}/"
+const {{.Name}}ServicePathPrefix = "/{{.APIPath}}/"
 
 func (s *{{$s.Name}}ServiceServer) PathPrefix() string {
 	return {{.Name}}ServicePathPrefix
@@ -68,7 +68,7 @@ func (s *{{$s.Name}}ServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 func (s *{{$s.Name}}ServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 {{range $m := .Methods -}}
-	case "{{$s.APIPath}}/{{.Name}}":
+	case "/{{$s.APIPath}}/{{.APIPath}}":
 	msg := {{(index .Request.Items 0).Type|new}}
 	fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 		inner := s.builder()
