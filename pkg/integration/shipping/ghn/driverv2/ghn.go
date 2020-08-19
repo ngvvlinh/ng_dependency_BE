@@ -93,6 +93,15 @@ func (d *GHNDriver) CreateFulfillment(
 	toDistrict, toWard := toQuery.Result.District, toQuery.Result.Ward
 	maxValueFreeInsuranceFee := d.GetMaxValueFreeInsuranceFee()
 
+	var orderItems []*ghnclient.OrderItem
+	for _, line := range ffm.Lines {
+		orderItems = append(orderItems, &ghnclient.OrderItem{
+			Name:     line.ProductName,
+			Code:     line.Code,
+			Quantity: line.Quantity,
+		})
+	}
+
 	serviceID, err := d.parseServiceID(service.ProviderServiceID)
 	if err != nil {
 		return nil, err
@@ -123,6 +132,7 @@ func (d *GHNDriver) CreateFulfillment(
 		PaymentTypeID: ffm.ShippingPaymentType.Enum(),
 		Note:          note,
 		RequiredNote:  ghnNoteCode.String(),
+		Items:         orderItems,
 	}
 
 	if ffm.AddressReturn != nil {

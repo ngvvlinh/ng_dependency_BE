@@ -382,35 +382,42 @@ type GetLeadTimeResponse struct {
 // Create order
 
 type CreateOrderRequest struct {
-	FromName         string `json:"from_name"`
-	FromPhone        string `json:"from_phone"`
-	FromAddress      string `json:"from_address"`
-	FromWardCode     string `json:"from_ward_code"`
-	FromDistrictID   int    `json:"from_district_id"`
-	ToName           string `json:"to_name"`
-	ToPhone          string `json:"to_phone"`
-	ToAddress        string `json:"to_address"`
-	ToWardCode       string `json:"to_ward_code"`
-	ToDistrictID     int    `json:"to_district_id"`
-	ReturnPhone      string `json:"return_phone"`
-	ReturnAddress    string `json:"return_address"`
-	ReturnDistrictID int    `json:"return_district_id"`
-	ReturnWardCode   string `json:"return_ward_code"`
-	ClientOrderCode  string `json:"client_order_code"`
-	CODAmount        int    `json:"cod_amount"`
-	Content          string `json:"content"`
-	Weight           int    `json:"weight"`
-	Length           int    `json:"length"`
-	Width            int    `json:"width"`
-	Height           int    `json:"height"`
-	PickStationID    int    `json:"pick_station_id"`
-	InsuranceValue   int    `json:"insurance_value"`
-	Coupon           string `json:"coupon"`
-	ServiceTypeID    int    `json:"service_type_id"`
-	ServiceID        int    `json:"service_id"`
-	PaymentTypeID    int    `json:"payment_type_id"`
-	Note             string `json:"note"`
-	RequiredNote     string `json:"required_note"`
+	FromName         string       `json:"from_name"`
+	FromPhone        string       `json:"from_phone"`
+	FromAddress      string       `json:"from_address"`
+	FromWardCode     string       `json:"from_ward_code"`
+	FromDistrictID   int          `json:"from_district_id"`
+	ToName           string       `json:"to_name"`
+	ToPhone          string       `json:"to_phone"`
+	ToAddress        string       `json:"to_address"`
+	ToWardCode       string       `json:"to_ward_code"`
+	ToDistrictID     int          `json:"to_district_id"`
+	ReturnPhone      string       `json:"return_phone"`
+	ReturnAddress    string       `json:"return_address"`
+	ReturnDistrictID int          `json:"return_district_id"`
+	ReturnWardCode   string       `json:"return_ward_code"`
+	ClientOrderCode  string       `json:"client_order_code"`
+	CODAmount        int          `json:"cod_amount"`
+	Content          string       `json:"content"`
+	Weight           int          `json:"weight"`
+	Length           int          `json:"length"`
+	Width            int          `json:"width"`
+	Height           int          `json:"height"`
+	PickStationID    int          `json:"pick_station_id"`
+	InsuranceValue   int          `json:"insurance_value"`
+	Coupon           string       `json:"coupon"`
+	ServiceTypeID    int          `json:"service_type_id"`
+	ServiceID        int          `json:"service_id"`
+	PaymentTypeID    int          `json:"payment_type_id"`
+	Note             string       `json:"note"`
+	RequiredNote     string       `json:"required_note"`
+	Items            []*OrderItem `json:"items"`
+}
+
+type OrderItem struct {
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Quantity int    `json:"quantity"`
 }
 
 type CreateOrderResponse struct {
