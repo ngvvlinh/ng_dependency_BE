@@ -1,13 +1,21 @@
-// +build !production
+// +build !release
 
 package istest
 
-import "flag"
+import (
+	"os"
+	"strings"
+)
 
 var isTest bool
 
 func init() {
-	isTest = flag.Lookup("test.v") != nil
+	for _, arg := range os.Args {
+		if strings.HasPrefix(arg, "-test.") {
+			isTest = true
+			break
+		}
+	}
 }
 
 // IsTest ...

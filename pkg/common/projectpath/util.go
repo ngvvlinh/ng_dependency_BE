@@ -5,11 +5,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"o.o/backend/pkg/common/testing/istest"
 )
 
 var (
 	mainPath string
-	goPath   string
+
+	// gopath is only available during testing
+	goPath string
 )
 
 func GetPath() string {
@@ -17,18 +21,26 @@ func GetPath() string {
 }
 
 func GetGoPath() string {
+	if !istest.IsTest() {
+		panic("gopath is only available during testing")
+	}
 	return goPath
 }
 
 func init() {
 	var err error
-	goPath, err = loadGoPath()
-	if err != nil {
-		panic(fmt.Sprintf("can not load gopath: %v", err))
-	}
 	mainPath, err = loadPath()
 	if err != nil {
 		panic(fmt.Sprintf("can not load path: %v", err))
+	}
+
+	// gopath is only available during testing
+	if !istest.IsTest() {
+		return
+	}
+	goPath, err = loadGoPath()
+	if err != nil {
+		panic(fmt.Sprintf("can not load gopath: %v", err))
 	}
 }
 
