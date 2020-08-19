@@ -657,9 +657,9 @@ func (a *FbExternalMessagingAggregate) RemovePost(
 
 func (a *FbExternalMessagingAggregate) RemoveComment(ctx context.Context, removeArgs *fbmessaging.RemoveCommentArgs) error {
 	return a.db.InTransaction(ctx, func(queryInterface cmsql.QueryInterface) error {
+		commentID := removeArgs.ExternalCommentID
 		if _, err := a.fbExternalCommentStore(ctx).
-			ExternalID(removeArgs.ExternalCommentID).
-			ExternalParentID(removeArgs.ExternalCommentID).
+			ExternalIDOrExternalParentID(commentID, commentID).
 			SoftDelete(); err != nil {
 			return err
 		}

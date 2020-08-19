@@ -62,6 +62,11 @@ func (s *FbExternalCommentStore) ExternalIDs(externalIDs []string) *FbExternalCo
 	return s
 }
 
+func (s *FbExternalCommentStore) ExternalIDOrExternalParentID(externalID, externalParentID string) *FbExternalCommentStore {
+	s.preds = append(s.preds, sq.NewExpr("external_id = ? OR external_parent_id = ?", externalID, externalParentID))
+	return s
+}
+
 func (s *FbExternalCommentStore) ExternalParentIDIsNull() *FbExternalCommentStore {
 	s.preds = append(s.preds, sq.NewExpr("external_parent_id is NULL"))
 	return s
