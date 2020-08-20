@@ -61,7 +61,10 @@ func (q *QueryService) ListShopsByIDs(ctx context.Context, ids []dot.ID) ([]*ide
 func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.ListShopQuery) (*identity.ListShopExtendedsResponse, error) {
 	query := q.shopStore(ctx).Filters(args.Filters).WithPaging(args.Paging)
 	if args.Name != "" {
-		query.FullTextSearchName(args.Name)
+		query = query.FullTextSearchName(args.Name)
+	}
+	if args.ShopIDs != nil && len(args.ShopIDs) > 0 {
+		query = query.ByShopIDs(args.ShopIDs...)
 	}
 	shops, err := query.ListShopExtendeds()
 	if err != nil {

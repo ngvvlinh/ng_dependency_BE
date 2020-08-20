@@ -425,6 +425,7 @@ type ListShopExtendedsQuery struct {
 	Paging  meta.Paging
 	Filters meta.Filters
 	Name    filter.FullTextSearch
+	ShopIDs []dot.ID
 
 	Result *ListShopExtendedsResponse `json:"-"`
 }
@@ -875,6 +876,7 @@ func (q *ListShopExtendedsQuery) GetArgs(ctx context.Context) (_ context.Context
 			Paging:  q.Paging,
 			Filters: q.Filters,
 			Name:    q.Name,
+			ShopIDs: q.ShopIDs,
 		}
 }
 
@@ -882,6 +884,7 @@ func (q *ListShopExtendedsQuery) SetListShopQuery(args *ListShopQuery) {
 	q.Paging = args.Paging
 	q.Filters = args.Filters
 	q.Name = args.Name
+	q.ShopIDs = args.ShopIDs
 }
 
 func (q *ListShopsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {

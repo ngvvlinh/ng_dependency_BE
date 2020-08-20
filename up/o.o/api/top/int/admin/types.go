@@ -109,7 +109,8 @@ type DeleteMoneyTransactionRequest struct {
 func (m *DeleteMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type FilterShopRequest struct {
-	Name filter.FullTextSearch `json:"name"`
+	Name    filter.FullTextSearch `json:"name"`
+	ShopIDs []dot.ID              `json:"shop_ids"`
 }
 
 func (m *FilterShopRequest) String() string { return jsonx.MustMarshalToString(m) }

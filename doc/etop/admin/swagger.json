@@ -7224,6 +7224,13 @@
       "properties": {
         "name": {
           "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "shop_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },

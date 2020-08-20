@@ -236,6 +236,7 @@ type ListShopQuery struct {
 	Paging  meta.Paging
 	Filters meta.Filters
 	Name    filter.FullTextSearch
+	ShopIDs []dot.ID
 }
 
 type ListShopExtendedsResponse struct {

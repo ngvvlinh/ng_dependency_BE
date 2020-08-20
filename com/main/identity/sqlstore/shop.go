@@ -189,3 +189,8 @@ func (s *ShopStore) FullTextSearchName(name filter.FullTextSearch) *ShopStore {
 	s.preds = append(s.preds, s.shopFt.Filter(`ss.name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
 	return s
 }
+
+func (s *ShopStore) ByShopIDs(ids ...dot.ID) *ShopStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.shopFt.prefix, "id", ids))
+	return s
+}
