@@ -1672,6 +1672,22 @@
         }
       }
     },
+    "bjState": {
+      "type": "string",
+      "enum": [
+        "default",
+        "created",
+        "assigning",
+        "picking",
+        "delivering",
+        "delivered",
+        "returning",
+        "returned",
+        "unknown",
+        "undeliverable",
+        "cancelled"
+      ]
+    },
     "blStatus": {
       "type": "string",
       "enum": [
@@ -3797,7 +3813,7 @@
               "description": "Map với trạng thái của đơn hàng\n"
             },
             {
-              "$ref": "#/definitions/sdState"
+              "$ref": "#/definitions/bjState"
             }
           ]
         }
@@ -3890,7 +3906,7 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/sdState"
+          "$ref": "#/definitions/bjState"
         },
         "shipping_status": {
           "$ref": "#/definitions/bnStatus"
@@ -4456,22 +4472,6 @@
         "unknown",
         "create",
         "confirm"
-      ]
-    },
-    "sdState": {
-      "type": "string",
-      "enum": [
-        "default",
-        "created",
-        "assigning",
-        "picking",
-        "delivering",
-        "delivered",
-        "returning",
-        "returned",
-        "unknown",
-        "undeliverable",
-        "cancelled"
       ]
     },
     "sfState": {

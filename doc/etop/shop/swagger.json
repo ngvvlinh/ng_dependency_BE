@@ -6859,20 +6859,20 @@
         }
       }
     },
-    "bjShippingFeeType": {
+    "bjState": {
       "type": "string",
       "enum": [
+        "default",
+        "created",
+        "assigning",
+        "picking",
+        "delivering",
+        "delivered",
+        "returning",
+        "returned",
         "unknown",
-        "main",
-        "return",
-        "adjustment",
-        "insurance",
-        "tax",
-        "other",
-        "cods",
-        "address_change",
-        "discount",
-        "redelivery"
+        "undeliverable",
+        "cancelled"
       ]
     },
     "blStatus": {
@@ -14973,7 +14973,7 @@
           "type": "string"
         },
         "shipping_state": {
-          "$ref": "#/definitions/sdState"
+          "$ref": "#/definitions/bjState"
         },
         "shipping_status": {
           "$ref": "#/definitions/bnStatus"
@@ -15038,7 +15038,7 @@
           "type": "integer"
         },
         "shipping_fee_type": {
-          "$ref": "#/definitions/bjShippingFeeType"
+          "$ref": "#/definitions/sdShippingFeeType"
         }
       }
     },
@@ -15760,20 +15760,20 @@
         "confirm"
       ]
     },
-    "sdState": {
+    "sdShippingFeeType": {
       "type": "string",
       "enum": [
-        "default",
-        "created",
-        "assigning",
-        "picking",
-        "delivering",
-        "delivered",
-        "returning",
-        "returned",
         "unknown",
-        "undeliverable",
-        "cancelled"
+        "main",
+        "return",
+        "adjustment",
+        "insurance",
+        "tax",
+        "other",
+        "cods",
+        "address_change",
+        "discount",
+        "redelivery"
       ]
     },
     "sfState": {

@@ -206,22 +206,6 @@
     }
   },
   "definitions": {
-    "bjShippingFeeType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "main",
-        "return",
-        "adjustment",
-        "insurance",
-        "tax",
-        "other",
-        "cods",
-        "address_change",
-        "discount",
-        "redelivery"
-      ]
-    },
     "blStatus": {
       "type": "string",
       "enum": [
@@ -371,6 +355,22 @@
         }
       }
     },
+    "sdShippingFeeType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "main",
+        "return",
+        "adjustment",
+        "insurance",
+        "tax",
+        "other",
+        "cods",
+        "address_change",
+        "discount",
+        "redelivery"
+      ]
+    },
     "sfState": {
       "type": "string",
       "enum": [
@@ -486,7 +486,7 @@
           "type": "integer"
         },
         "shipping_fee_type": {
-          "$ref": "#/definitions/bjShippingFeeType"
+          "$ref": "#/definitions/sdShippingFeeType"
         }
       }
     },

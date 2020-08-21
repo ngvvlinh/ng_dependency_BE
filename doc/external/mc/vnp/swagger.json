@@ -1,0 +1,600 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "# Cấu trúc API\n\n## Cấu hình\n\nKhi đề cập đến các API trong phần này, chúng tôi sẽ không kèm theo **BASE_URL**\nvà bạn mặc định hiểu là khi truy vấn sẽ gắn thêm chuỗi **BASE_URL** phía trước\nđường dẫn cụ thể của API. Ví dụ `/v1/vnposts/ping` sẽ là\n`https://api-development.movecrop.com/v1/vnposts/ping`. Bạn cũng cần một\n**TOKEN** hợp lệ để truy cập các API.\n\n```bash\nexport BASE_URL=https://api-development.movecrop.com\nexport TOKEN=MzRiOWY1Mj...\n```\n\n## Request \u0026 Authorization\n\nMột lời gọi API tiêu biểu như sau:\n\n```bash\ncurl $BASE_URL/v1/vnposts/ping \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Basic $TOKEN\" \\\n  -d '{}'\n```\n\nTất cả request sử dụng giao thức **HTTPS**, phương thức **POST** và truyền giá\ntrị bằng body sử dụng định dạng dữ liệu `application/json`. Các header bắt buộc:\n\n| Header | Nội dung | Mô tả |\n| --- | --- | --- |\n| Content-Type | application/json | |\n| Authorization | Basic MzRiOWY1Mj... | base64encode(apikey:apisecret) |\n\n## HTTP Code\n\n| Status | Mô tả |\n| --- | --- |\n| 200 | OK - Request đã được xử lý thành công.\n| 400 | Bad Request -  Request không đúng cấu trúc hoặc thiếu dữ liệu yêu cầu. Hãy kiểm tra lại request.\n| 401 | Unauthorized - Token của bạn không đúng hoặc đã hết hiệu lực.\n| 403 | Forbidden - Bạn không có quyền truy cập đối tượng này. \n| 404 | Not Found - API Path không tồn tại, hoặc đối tượng được request không tồn tại.\n| 405 | Method Not Allowed - Luôn sử dụng **POST** trong tất cả API của chúng tôi.\n| 500 | Internal Server Error - Hệ thống đang gặp sự cố. Hãy thử lại sau hoặc liên hệ với chúng tôi.",
+    "title": "MoveCrop - VNPost",
+    "version": "v1"
+  },
+  "paths": {
+    "/v1/vnposts/cancelordervnpost": {
+      "post": {
+        "description": "Huỷ đơn giao Siêu Tốc.\n",
+        "tags": [
+          "Giao Siêu Tốc"
+        ],
+        "summary": "Cancel Order",
+        "operationId": "vnposts-CancelShipnowFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCancelShipnowFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vnposts/createordervnpost": {
+      "post": {
+        "description": "Tạo đơn giao Siêu Tốc.\n",
+        "tags": [
+          "Giao Siêu Tốc"
+        ],
+        "summary": "Create Order",
+        "operationId": "vnposts-CreateShipnowFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateShipnowFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShipnowFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vnposts/getordervnpost": {
+      "post": {
+        "description": "Lấy thông tin đơn giao Siêu Tốc.\n",
+        "tags": [
+          "Giao Siêu Tốc"
+        ],
+        "summary": "Get Order",
+        "operationId": "vnposts-GetShipnowFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrFulfillmentIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrShipnowFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vnposts/getservicesvnpost": {
+      "post": {
+        "description": "Lấy danh sách các dịch vụ Siêu Tốc.\n",
+        "tags": [
+          "Giao Siêu Tốc"
+        ],
+        "summary": "Get Services",
+        "operationId": "vnposts-GetShipnowServices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetShipnowServicesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrGetShipnowServicesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vnposts/ping": {
+      "post": {
+        "description": "Kiểm tra token là hợp lệ và server đang hoạt động.\n",
+        "tags": [
+          "Giao Siêu Tốc"
+        ],
+        "summary": "Ping",
+        "operationId": "vnposts-Ping",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "bjState": {
+      "type": "string",
+      "enum": [
+        "default",
+        "created",
+        "assigning",
+        "picking",
+        "delivering",
+        "delivered",
+        "returning",
+        "returned",
+        "unknown",
+        "undeliverable",
+        "cancelled"
+      ]
+    },
+    "blStatus": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "N"
+      ]
+    },
+    "bnStatus": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "S",
+        "N",
+        "NS"
+      ]
+    },
+    "dkAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
+    "mrCancelShipnowFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_code": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCarrierInfo": {
+      "type": "object",
+      "properties": {
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
+    "mrCreateShipnowFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShipnowDeliveryPoint"
+          }
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/mrShipnowAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        }
+      }
+    },
+    "mrFulfillmentIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_code": {
+          "type": "string"
+        }
+      }
+    },
+    "mrGetShipnowServicesRequest": {
+      "type": "object",
+      "properties": {
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShipnowDeliveryPointShortVersion"
+          }
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/mrShipnowAddressShortVersion"
+        }
+      }
+    },
+    "mrGetShipnowServicesResponse": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShipnowService"
+          }
+        }
+      }
+    },
+    "mrOrderLine": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "payment_price": {
+          "description": "payment_price = retail_price - discount_per_item\n",
+          "type": "integer"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrShipnowAddress": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "allOf": [
+            {
+              "description": "Vui lòng cung cấp lat. , long. để lấy được giá chính xác nhất\n"
+            },
+            {
+              "$ref": "#/definitions/mrCoordinates"
+            }
+          ]
+        },
+        "district": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        }
+      }
+    },
+    "mrShipnowAddressShortVersion": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "coordinates": {
+          "allOf": [
+            {
+              "description": "Vui lòng cung cấp lat. , long. để lấy được giá chính xác nhất\n"
+            },
+            {
+              "$ref": "#/definitions/mrCoordinates"
+            }
+          ]
+        },
+        "district": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        }
+      }
+    },
+    "mrShipnowDeliveryPoint": {
+      "type": "object",
+      "required": [
+        "gross_weight",
+        "cod_amount"
+      ],
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrOrderLine"
+          }
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/mrShipnowAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "allOf": [
+            {
+              "description": "Map với trạng thái của đơn hàng\n"
+            },
+            {
+              "$ref": "#/definitions/bjState"
+            }
+          ]
+        }
+      }
+    },
+    "mrShipnowDeliveryPointShortVersion": {
+      "type": "object",
+      "properties": {
+        "cod_amount": {
+          "type": "integer"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/mrShipnowAddressShortVersion"
+        }
+      }
+    },
+    "mrShipnowFulfillment": {
+      "type": "object",
+      "properties": {
+        "actual_shipping_service_fee": {
+          "type": "integer"
+        },
+        "basket_value": {
+          "type": "integer"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "carrier_info": {
+          "$ref": "#/definitions/mrCarrierInfo"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "confirm_status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShipnowDeliveryPoint"
+          }
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/mrShipnowAddress"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_description": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_shared_link": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/bjState"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mrShipnowService": {
+      "type": "object",
+      "properties": {
+        "carrier_info": {
+          "$ref": "#/definitions/mrCarrierInfo"
+        },
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "fee": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Giao Siêu Tốc"
+    }
+  ]
+}
