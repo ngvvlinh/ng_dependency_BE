@@ -110,6 +110,12 @@ type User struct {
 	IsBlocked   bool
 }
 
+type UserFtRefSaff struct {
+	*User
+	RefAff  string
+	RefSale string
+}
+
 type ExternalAccountAhamove struct {
 	ID                  dot.ID
 	Phone               string

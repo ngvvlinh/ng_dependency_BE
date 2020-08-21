@@ -430,6 +430,14 @@ type UserExtended struct {
 	UserInternal *UserInternal
 }
 
+// +convert:type=identity.User
+// +sqlgen:      User as u
+// +sqlgen:left-join: UserRefSaff as urs on u.id = urs.user_id
+type UserFtRefSaff struct {
+	*User
+	*UserRefSaff
+}
+
 // Permission ...
 type Permission struct {
 	Roles       []string

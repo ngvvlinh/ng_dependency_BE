@@ -205,6 +205,9 @@ type User struct {
 	IsBlocked               bool                   `json:"is_blocked"`
 	BlockReason             string                 `json:"block_reason"`
 	BlockedAt               dot.Time               `json:"blocked_at"`
+
+	RefSale string `json:"ref_sale"`
+	RefAff  string `json:"ref_aff"`
 }
 
 func (m *User) String() string { return jsonx.MustMarshalToString(m) }

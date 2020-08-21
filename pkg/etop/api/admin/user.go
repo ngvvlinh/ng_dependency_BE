@@ -56,7 +56,7 @@ func (s *UserService) GetUsers(ctx context.Context, q *admin.GetUsersRequest) (*
 	if q.Filters == nil {
 		q.Filters = &admin.UsersFilter{}
 	}
-	query := &identity.GetUsersQuery{
+	query := &identity.GetUserFtRefSaffsQuery{
 		Name:      q.Filters.Name,
 		Phone:     q.Filters.Phone,
 		Email:     q.Filters.Email,
@@ -84,7 +84,7 @@ func (s *UserService) GetUsers(ctx context.Context, q *admin.GetUsersRequest) (*
 		}
 		result := &admin.UserResponse{
 			Paging: cmapi.PbCursorPageInfo(paging, &Users.Paging),
-			Users:  convertpb.PbUsers(Users.ListUsers),
+			Users:  convertpb.PbUserFtRefSaffs(Users.ListUsers),
 		}
 		populateShopCount(result.Users, queryAccount.Result)
 		return result, nil
@@ -95,7 +95,7 @@ func (s *UserService) GetUsers(ctx context.Context, q *admin.GetUsersRequest) (*
 }
 
 func (s *UserService) GetUser(ctx context.Context, q *pbcm.IDRequest) (*etop.User, error) {
-	query := &identity.GetUserByIDQuery{
+	query := &identity.GetUserFtRefSaffByIDQuery{
 		UserID: q.Id,
 	}
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
@@ -108,7 +108,7 @@ func (s *UserService) GetUser(ctx context.Context, q *pbcm.IDRequest) (*etop.Use
 	if err := s.IdentityQuery.Dispatch(ctx, queryAccount); err != nil {
 		return nil, err
 	}
-	result := convertpb.Convert_core_User_To_api_User(query.Result)
+	result := convertpb.Convert_core_UserFtRefSaff_To_api_User(query.Result)
 	populateShopCount([]*etop.User{result}, queryAccount.Result)
 	return result, nil
 }

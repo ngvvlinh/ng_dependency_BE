@@ -66,6 +66,8 @@ type QueryService interface {
 
 	GetUserByID(context.Context, *GetUserByIDQueryArgs) (*User, error)
 
+	GetUserFtRefSaffByID(context.Context, *GetUserByIDQueryArgs) (*UserFtRefSaff, error)
+
 	GetUsersByAccount(ctx context.Context, accountID dot.ID) ([]*AccountUser, error)
 
 	GetUserByPhone(ctx context.Context, phone string) (*User, error)
@@ -98,6 +100,8 @@ type QueryService interface {
 
 	GetUsers(context.Context, *ListUsersArgs) (*UsersResponse, error)
 
+	GetUserFtRefSaffs(context.Context, *ListUserFtRefSaffsArgs) (*UserFtRefSaffsResponse, error)
+
 	GetAllAccountsByUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
 
 	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
@@ -128,6 +132,14 @@ type ListUsersArgs struct {
 	Name      string
 	Phone     string
 	Email     string
+	CreatedAt filter.Date
+	Paging    meta.Paging
+}
+
+type ListUserFtRefSaffsArgs struct {
+	Name      string
+	Phone     string
+	Email     string
 	RefAff    string
 	RefSale   string
 	CreatedAt filter.Date
@@ -136,6 +148,11 @@ type ListUsersArgs struct {
 
 type UsersResponse struct {
 	ListUsers []*User
+	Paging    meta.PageInfo
+}
+
+type UserFtRefSaffsResponse struct {
+	ListUsers []*UserFtRefSaff
 	Paging    meta.PageInfo
 }
 

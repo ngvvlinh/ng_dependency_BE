@@ -13,6 +13,37 @@ import (
 // +gen:convert: o.o/api/main/identity
 // +gen:convert: o.o/backend/com/main/identity/sharemodel -> o.o/api/top/int/types
 
+func UserFtRefSaff(in *identitymodel.UserFtRefSaff) *identity.UserFtRefSaff {
+	if in == nil {
+		return nil
+	}
+	out := &identity.UserFtRefSaff{
+		User: &identity.User{
+			ID:                      in.ID,
+			FullName:                in.FullName,
+			ShortName:               in.ShortName,
+			Email:                   in.Email,
+			Phone:                   in.Phone,
+			Status:                  in.Status,
+			EmailVerifiedAt:         in.EmailVerifiedAt,
+			PhoneVerifiedAt:         in.PhoneVerifiedAt,
+			EmailVerificationSentAt: in.EmailVerificationSentAt,
+			PhoneVerificationSentAt: in.PhoneVerificationSentAt,
+			IsTest:                  in.IsTest,
+			CreatedAt:               in.CreatedAt,
+			UpdatedAt:               in.UpdatedAt,
+			WLPartnerID:             in.WLPartnerID,
+			Source:                  in.Source,
+			BlockedAt:               in.BlockedAt,
+			BlockedBy:               in.BlockedBy,
+			BlockReason:             in.BlockReason,
+		},
+		RefSale: in.RefSale,
+		RefAff:  in.RefAff,
+	}
+	return out
+}
+
 func ShopDB(in *identity.Shop) *identitymodel.Shop {
 	if in == nil {
 		return nil

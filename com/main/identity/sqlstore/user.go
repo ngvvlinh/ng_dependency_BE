@@ -93,6 +93,22 @@ func (s *UserStore) GetUserDB(ctx context.Context) (*identitymodel.User, error) 
 	return &user, err
 }
 
+func (s *UserStore) GetUserFtRefSaffDB(ctx context.Context) (*identitymodel.UserFtRefSaff, error) {
+	var user identitymodel.UserFtRefSaff
+	query := s.query().Where(s.preds)
+	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(ctx))
+	err := query.ShouldGet(&user)
+	return &user, err
+}
+
+func (s *UserStore) GetUserFtRefSaff(ctx context.Context) (*identity.UserFtRefSaff, error) {
+	user, err := s.GetUserFtRefSaffDB(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return convert.UserFtRefSaff(user), err
+}
+
 func (s *UserStore) UpdateUserEmail(email string) (int, error) {
 	return s.query().Where(s.preds).Table("user").UpdateMap(
 		map[string]interface{}{
@@ -210,4 +226,30 @@ func (s *UserStore) FilterByWhiteLabelPartner(query cmsql.Query, wlPartnerID dot
 		return query.Where(s.ft.ByWLPartnerID(wlPartnerID))
 	}
 	return query.Where(s.ft.NotBelongWLPartner())
+}
+
+func (s *UserStore) ListUserFtRefSaffDBs() ([]*identitymodel.UserFtRefSaff, error) {
+	query := s.query().Where(s.preds)
+	// default sort by created_at
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
+	}
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortUser)
+	if err != nil {
+		return nil, err
+	}
+	var users identitymodel.UserFtRefSaffs
+	err = query.Find(&users)
+	return users, err
+}
+
+func (s *UserStore) ListUserFtRefSaffs() (users []*identity.UserFtRefSaff, err error) {
+	usersDBs, err := s.ListUserFtRefSaffDBs()
+	if err != nil {
+		return nil, err
+	}
+	for _, userDB := range usersDBs {
+		users = append(users, convert.UserFtRefSaff(userDB))
+	}
+	return users, err
 }

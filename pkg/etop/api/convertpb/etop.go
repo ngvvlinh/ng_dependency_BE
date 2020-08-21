@@ -150,6 +150,14 @@ func PbUsers(ms []*identity.User) []*etop.User {
 	return res
 }
 
+func PbUserFtRefSaffs(ms []*identity.UserFtRefSaff) []*etop.User {
+	res := make([]*etop.User, len(ms))
+	for i, m := range ms {
+		res[i] = Convert_core_UserFtRefSaff_To_api_User(m)
+	}
+	return res
+}
+
 func PbAccountType(t account_type.AccountType) account_type.AccountType {
 	return t
 }
@@ -423,6 +431,33 @@ func Convert_core_User_To_api_User(in *identity.User) *etop.User {
 		IsBlocked:       isBlocked,
 		BlockReason:     in.BlockReason,
 		BlockedAt:       cmapi.PbTime(in.BlockedAt),
+	}
+}
+
+func Convert_core_UserFtRefSaff_To_api_User(in *identity.UserFtRefSaff) *etop.User {
+	if in == nil {
+		return nil
+	}
+	isBlocked := false
+	if in.Status == status3.N {
+		isBlocked = true
+	}
+	return &etop.User{
+		Id:              in.ID,
+		FullName:        in.FullName,
+		ShortName:       in.ShortName,
+		Phone:           in.Phone,
+		Email:           in.Email,
+		CreatedAt:       cmapi.PbTime(in.CreatedAt),
+		UpdatedAt:       cmapi.PbTime(in.UpdatedAt),
+		EmailVerifiedAt: cmapi.PbTime(in.EmailVerifiedAt),
+		PhoneVerifiedAt: cmapi.PbTime(in.PhoneVerifiedAt),
+		Source:          in.Source,
+		IsBlocked:       isBlocked,
+		BlockReason:     in.BlockReason,
+		BlockedAt:       cmapi.PbTime(in.BlockedAt),
+		RefAff:          in.RefAff,
+		RefSale:         in.RefSale,
 	}
 }
 

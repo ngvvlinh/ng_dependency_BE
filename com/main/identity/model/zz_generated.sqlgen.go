@@ -6325,6 +6325,79 @@ func (ms *UserAuthHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	return nil
 }
 
+type UserFtRefSaffs []*UserFtRefSaff
+
+func (m *UserFtRefSaff) SQLTableName() string  { return "user" }
+func (m *UserFtRefSaffs) SQLTableName() string { return "user" }
+
+func (m *UserFtRefSaff) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *UserFtRefSaffs) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(UserFtRefSaffs, 0, 128)
+	for rows.Next() {
+		m := new(UserFtRefSaff)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (m *UserFtRefSaff) SQLSelect(w SQLWriter) error {
+	(*UserFtRefSaff)(nil).__sqlSelect(w)
+	w.WriteByte(' ')
+	(*UserFtRefSaff)(nil).__sqlJoin(w)
+	return nil
+}
+
+func (m *UserFtRefSaffs) SQLSelect(w SQLWriter) error {
+	return (*UserFtRefSaff)(nil).SQLSelect(w)
+}
+
+func (m *UserFtRefSaff) SQLJoin(w SQLWriter) error {
+	m.__sqlJoin(w)
+	return nil
+}
+
+func (m *UserFtRefSaffs) SQLJoin(w SQLWriter) error {
+	return (*UserFtRefSaff)(nil).SQLJoin(w)
+}
+
+func (m *UserFtRefSaff) __sqlSelect(w SQLWriter) {
+	w.WriteRawString("SELECT ")
+	core.WriteCols(w, "u", (*User)(nil).SQLListCols())
+	w.WriteByte(',')
+	core.WriteCols(w, "urs", (*UserRefSaff)(nil).SQLListCols())
+}
+
+func (m *UserFtRefSaff) __sqlJoin(w SQLWriter) {
+	w.WriteRawString("FROM ")
+	w.WriteName("user")
+	w.WriteRawString(" AS ")
+	w.WriteName("u")
+	w.WriteRawString(" LEFT JOIN ")
+	w.WriteName((*UserRefSaff)(nil).SQLTableName())
+	w.WriteRawString(" AS urs ON")
+	w.WriteQueryString(" u.id = urs.user_id")
+}
+
+func (m *UserFtRefSaff) SQLScanArgs(opts core.Opts) []interface{} {
+	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
+	m.User = new(User)
+	args = append(args, m.User.SQLScanArgs(opts)...)
+	m.UserRefSaff = new(UserRefSaff)
+	args = append(args, m.UserRefSaff.SQLScanArgs(opts)...)
+	return args
+}
+
 type UserInternals []*UserInternal
 
 const __sqlUserInternal_Table = "user_internal"

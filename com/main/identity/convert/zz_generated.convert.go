@@ -26,6 +26,7 @@ Custom conversions:
     Shop               // in use
     ShopDB             // in use
     User               // in use
+    UserFtRefSaff      // not use, no conversions between params
     XAccountAhamove    // in use
 
 Ignored functions:
@@ -217,6 +218,24 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*identity.User)(nil), (*[]*identitymodel.User)(nil), func(arg, out interface{}) error {
 		out0 := Convert_identity_Users_identitymodel_Users(arg.([]*identity.User))
 		*out.(*[]*identitymodel.User) = out0
+		return nil
+	})
+	s.Register((*identitymodel.UserFtRefSaff)(nil), (*identity.User)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_UserFtRefSaff_identity_User(arg.(*identitymodel.UserFtRefSaff), out.(*identity.User))
+		return nil
+	})
+	s.Register(([]*identitymodel.UserFtRefSaff)(nil), (*[]*identity.User)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_UserFtRefSaffs_identity_Users(arg.([]*identitymodel.UserFtRefSaff))
+		*out.(*[]*identity.User) = out0
+		return nil
+	})
+	s.Register((*identity.User)(nil), (*identitymodel.UserFtRefSaff)(nil), func(arg, out interface{}) error {
+		Convert_identity_User_identitymodel_UserFtRefSaff(arg.(*identity.User), out.(*identitymodel.UserFtRefSaff))
+		return nil
+	})
+	s.Register(([]*identity.User)(nil), (*[]*identitymodel.UserFtRefSaff)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_Users_identitymodel_UserFtRefSaffs(arg.([]*identity.User))
+		*out.(*[]*identitymodel.UserFtRefSaff) = out0
 		return nil
 	})
 	s.Register((*identitymodel.UserRefSaff)(nil), (*identity.UserRefSaff)(nil), func(arg, out interface{}) error {
@@ -1087,6 +1106,81 @@ func Convert_identity_Users_identitymodel_Users(args []*identity.User) (outs []*
 	outs = make([]*identitymodel.User, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identity_User_identitymodel_User(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identitymodel_UserFtRefSaff_identity_User(arg *identitymodel.UserFtRefSaff, out *identity.User) *identity.User {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.User{}
+	}
+	convert_identitymodel_UserFtRefSaff_identity_User(arg, out)
+	return out
+}
+
+func convert_identitymodel_UserFtRefSaff_identity_User(arg *identitymodel.UserFtRefSaff, out *identity.User) {
+	out.ID = 0                                // zero value
+	out.FullName = ""                         // zero value
+	out.ShortName = ""                        // zero value
+	out.Email = ""                            // zero value
+	out.Phone = ""                            // zero value
+	out.Status = 0                            // zero value
+	out.EmailVerifiedAt = time.Time{}         // zero value
+	out.PhoneVerifiedAt = time.Time{}         // zero value
+	out.EmailVerificationSentAt = time.Time{} // zero value
+	out.PhoneVerificationSentAt = time.Time{} // zero value
+	out.IsTest = 0                            // zero value
+	out.CreatedAt = time.Time{}               // zero value
+	out.UpdatedAt = time.Time{}               // zero value
+	out.RefUserID = 0                         // zero value
+	out.RefSaleID = 0                         // zero value
+	out.WLPartnerID = 0                       // zero value
+	out.Source = 0                            // zero value
+	out.BlockedAt = time.Time{}               // zero value
+	out.BlockedBy = 0                         // zero value
+	out.BlockReason = ""                      // zero value
+	out.IsBlocked = false                     // zero value
+}
+
+func Convert_identitymodel_UserFtRefSaffs_identity_Users(args []*identitymodel.UserFtRefSaff) (outs []*identity.User) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.User, len(args))
+	outs = make([]*identity.User, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_UserFtRefSaff_identity_User(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_User_identitymodel_UserFtRefSaff(arg *identity.User, out *identitymodel.UserFtRefSaff) *identitymodel.UserFtRefSaff {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.UserFtRefSaff{}
+	}
+	convert_identity_User_identitymodel_UserFtRefSaff(arg, out)
+	return out
+}
+
+func convert_identity_User_identitymodel_UserFtRefSaff(arg *identity.User, out *identitymodel.UserFtRefSaff) {
+	out.User = nil        // zero value
+	out.UserRefSaff = nil // zero value
+}
+
+func Convert_identity_Users_identitymodel_UserFtRefSaffs(args []*identity.User) (outs []*identitymodel.UserFtRefSaff) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.UserFtRefSaff, len(args))
+	outs = make([]*identitymodel.UserFtRefSaff, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_User_identitymodel_UserFtRefSaff(args[i], &tmps[i])
 	}
 	return outs
 }

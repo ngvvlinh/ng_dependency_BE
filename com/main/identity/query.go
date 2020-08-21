@@ -13,6 +13,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 var _ identity.QueryService = &QueryService{}
@@ -79,6 +80,7 @@ func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.Lis
 func (q *QueryService) GetUserByID(ctx context.Context, args *identity.GetUserByIDQueryArgs) (*identity.User, error) {
 	return q.userStore(ctx).ByID(args.UserID).GetUser(ctx)
 }
+
 func (q *QueryService) GetUsersByIDs(ctx context.Context, ids []dot.ID) ([]*identity.User, error) {
 	return q.userStore(ctx).ByIDs(ids).ListUsers()
 }
@@ -162,63 +164,6 @@ func (q *QueryService) GetPartnerByID(ctx context.Context, args *identity.GetPar
 	return q.partnerStore(ctx).ByID(args.ID).GetPartner()
 }
 
-func (q *QueryService) GetUsers(ctx context.Context, args *identity.ListUsersArgs) (*identity.UsersResponse, error) {
-	query := q.userStore(ctx)
-
-	if args.Name != "" {
-		query = query.ByNameNorm(validate.NormalizeSearch(args.Name))
-	}
-	if args.Phone != "" {
-		_, phone, _ := validate.NormalizeEmailOrPhone(args.Phone)
-		query = query.ByPhone(phone)
-	}
-	if args.Email != "" {
-		email, _, _ := validate.NormalizeEmailOrPhone(args.Email)
-		query = query.ByEmail(email)
-	}
-	if !args.CreatedAt.IsZero() {
-		if !args.CreatedAt.From.IsZero() {
-			query = query.ByCreatedAtFrom(args.CreatedAt.From.ToTime())
-		}
-		if !args.CreatedAt.To.IsZero() {
-			query = query.ByCreatedAtTo(args.CreatedAt.To.ToTime())
-		}
-	}
-
-	if args.RefAff != "" {
-		refSales, err := q.userRefSaffStore(ctx).ByRefAff(args.RefAff).ListUserRefSaff()
-		if err != nil {
-			return nil, err
-		}
-		var userIDs []dot.ID
-		for _, user := range refSales {
-			userIDs = append(userIDs, user.UserID)
-		}
-		query = query.ByIDs(userIDs)
-	}
-
-	if args.RefSale != "" {
-		refAffs, err := q.userRefSaffStore(ctx).ByRefAff(args.RefAff).ListUserRefSaff()
-		if err != nil {
-			return nil, err
-		}
-		var userIDs []dot.ID
-		for _, user := range refAffs {
-			userIDs = append(userIDs, user.UserID)
-		}
-		query = query.ByIDs(userIDs)
-	}
-
-	users, err := query.WithPaging(args.Paging).ListUsers()
-	if err != nil {
-		return nil, err
-	}
-	return &identity.UsersResponse{
-		ListUsers: users,
-		Paging:    query.GetPaging(),
-	}, nil
-}
-
 func (q *QueryService) GetAllAccountsByUsers(ctx context.Context, args *identity.GetAllAccountUsersArg) ([]*identity.AccountUser, error) {
 	if len(args.UserIDs) == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing UserIDs", nil)
@@ -250,4 +195,81 @@ func (q *QueryService) GetAllAccountsByUsers(ctx context.Context, args *identity
 func (q *QueryService) GetUsersByAccount(ctx context.Context, accountID dot.ID) ([]*identity.AccountUser, error) {
 	accountUsers, err := q.accountUserStore(ctx).ByAccountID(accountID).ListAccountUserDBs()
 	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(accountUsers), err
+}
+
+func (q *QueryService) GetUserFtRefSaffByID(ctx context.Context, args *identity.GetUserByIDQueryArgs) (*identity.UserFtRefSaff, error) {
+	return q.userStore(ctx).ByID(args.UserID).GetUserFtRefSaff(ctx)
+}
+
+func (q *QueryService) GetUsers(ctx context.Context, args *identity.ListUsersArgs) (*identity.UsersResponse, error) {
+	query := q.buildCommonGetUserQuery(ctx, args.Name, args.Phone, args.Email, args.CreatedAt)
+	users, err := query.WithPaging(args.Paging).ListUsers()
+	if err != nil {
+		return nil, err
+	}
+	return &identity.UsersResponse{
+		ListUsers: users,
+		Paging:    query.GetPaging(),
+	}, nil
+}
+
+func (q *QueryService) GetUserFtRefSaffs(ctx context.Context, args *identity.ListUserFtRefSaffsArgs) (*identity.UserFtRefSaffsResponse, error) {
+	query := q.buildCommonGetUserQuery(ctx, args.Name, args.Phone, args.Email, args.CreatedAt)
+
+	if args.RefAff != "" {
+		refAffs, err := q.userRefSaffStore(ctx).ByRefAff(args.RefAff).ListUserRefSaff()
+		if err != nil {
+			return nil, err
+		}
+		var userIDs []dot.ID
+		for _, user := range refAffs {
+			userIDs = append(userIDs, user.UserID)
+		}
+		query = query.ByIDs(userIDs)
+	}
+
+	if args.RefSale != "" {
+		refSales, err := q.userRefSaffStore(ctx).ByRefSale(args.RefSale).ListUserRefSaff()
+		if err != nil {
+			return nil, err
+		}
+		var userIDs []dot.ID
+		for _, user := range refSales {
+			userIDs = append(userIDs, user.UserID)
+		}
+		query = query.ByIDs(userIDs)
+	}
+
+	users, err := query.WithPaging(args.Paging).ListUserFtRefSaffs()
+	if err != nil {
+		return nil, err
+	}
+	return &identity.UserFtRefSaffsResponse{
+		ListUsers: users,
+		Paging:    query.GetPaging(),
+	}, nil
+}
+
+func (q *QueryService) buildCommonGetUserQuery(ctx context.Context, name, phone, email string, createdAt filter.Date) *sqlstore.UserStore {
+	query := q.userStore(ctx)
+	if name != "" {
+		query = query.ByNameNorm(validate.NormalizeSearch(name))
+	}
+	if phone != "" {
+		_, phone, _ := validate.NormalizeEmailOrPhone(phone)
+		query = query.ByPhone(phone)
+	}
+	if email != "" {
+		email, _, _ := validate.NormalizeEmailOrPhone(email)
+		query = query.ByEmail(email)
+	}
+	if !createdAt.IsZero() {
+		if !createdAt.From.IsZero() {
+			query = query.ByCreatedAtFrom(createdAt.From.ToTime())
+		}
+		if !createdAt.To.IsZero() {
+			query = query.ByCreatedAtTo(createdAt.To.ToTime())
+		}
+	}
+	return query
 }

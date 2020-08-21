@@ -373,12 +373,38 @@ func (h QueryServiceHandler) HandleGetUserByPhoneOrEmail(ctx context.Context, ms
 	return err
 }
 
-type GetUsersQuery struct {
+type GetUserFtRefSaffByIDQuery struct {
+	UserID dot.ID
+
+	Result *UserFtRefSaff `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetUserFtRefSaffByID(ctx context.Context, msg *GetUserFtRefSaffByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetUserFtRefSaffByID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetUserFtRefSaffsQuery struct {
 	Name      string
 	Phone     string
 	Email     string
 	RefAff    string
 	RefSale   string
+	CreatedAt filter.Date
+	Paging    meta.Paging
+
+	Result *UserFtRefSaffsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetUserFtRefSaffs(ctx context.Context, msg *GetUserFtRefSaffsQuery) (err error) {
+	msg.Result, err = h.inner.GetUserFtRefSaffs(msg.GetArgs(ctx))
+	return err
+}
+
+type GetUsersQuery struct {
+	Name      string
+	Phone     string
+	Email     string
 	CreatedAt filter.Date
 	Paging    meta.Paging
 
@@ -488,6 +514,8 @@ func (q *GetUserByEmailQuery) query()                        {}
 func (q *GetUserByIDQuery) query()                           {}
 func (q *GetUserByPhoneQuery) query()                        {}
 func (q *GetUserByPhoneOrEmailQuery) query()                 {}
+func (q *GetUserFtRefSaffByIDQuery) query()                  {}
+func (q *GetUserFtRefSaffsQuery) query()                     {}
 func (q *GetUsersQuery) query()                              {}
 func (q *GetUsersByAccountQuery) query()                     {}
 func (q *GetUsersByIDsQuery) query()                         {}
@@ -829,9 +857,20 @@ func (q *GetUserByPhoneOrEmailQuery) SetGetUserByPhoneOrEmailArgs(args *GetUserB
 	q.Email = args.Email
 }
 
-func (q *GetUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUsersArgs) {
+func (q *GetUserFtRefSaffByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetUserByIDQueryArgs) {
 	return ctx,
-		&ListUsersArgs{
+		&GetUserByIDQueryArgs{
+			UserID: q.UserID,
+		}
+}
+
+func (q *GetUserFtRefSaffByIDQuery) SetGetUserByIDQueryArgs(args *GetUserByIDQueryArgs) {
+	q.UserID = args.UserID
+}
+
+func (q *GetUserFtRefSaffsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUserFtRefSaffsArgs) {
+	return ctx,
+		&ListUserFtRefSaffsArgs{
 			Name:      q.Name,
 			Phone:     q.Phone,
 			Email:     q.Email,
@@ -842,12 +881,31 @@ func (q *GetUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *List
 		}
 }
 
-func (q *GetUsersQuery) SetListUsersArgs(args *ListUsersArgs) {
+func (q *GetUserFtRefSaffsQuery) SetListUserFtRefSaffsArgs(args *ListUserFtRefSaffsArgs) {
 	q.Name = args.Name
 	q.Phone = args.Phone
 	q.Email = args.Email
 	q.RefAff = args.RefAff
 	q.RefSale = args.RefSale
+	q.CreatedAt = args.CreatedAt
+	q.Paging = args.Paging
+}
+
+func (q *GetUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUsersArgs) {
+	return ctx,
+		&ListUsersArgs{
+			Name:      q.Name,
+			Phone:     q.Phone,
+			Email:     q.Email,
+			CreatedAt: q.CreatedAt,
+			Paging:    q.Paging,
+		}
+}
+
+func (q *GetUsersQuery) SetListUsersArgs(args *ListUsersArgs) {
+	q.Name = args.Name
+	q.Phone = args.Phone
+	q.Email = args.Email
 	q.CreatedAt = args.CreatedAt
 	q.Paging = args.Paging
 }
@@ -958,6 +1016,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUserByID)
 	b.AddHandler(h.HandleGetUserByPhone)
 	b.AddHandler(h.HandleGetUserByPhoneOrEmail)
+	b.AddHandler(h.HandleGetUserFtRefSaffByID)
+	b.AddHandler(h.HandleGetUserFtRefSaffs)
 	b.AddHandler(h.HandleGetUsers)
 	b.AddHandler(h.HandleGetUsersByAccount)
 	b.AddHandler(h.HandleGetUsersByIDs)
