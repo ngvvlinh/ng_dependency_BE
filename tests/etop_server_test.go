@@ -168,6 +168,7 @@ func TestLoginAndRegistration(t *testing.T) {
 
 		require.NoError(t, err)
 	})
+
 	t.Run("registration user wrong password", func(t *testing.T) {
 		req := M{
 			"agree_email_info":       true,
@@ -209,6 +210,7 @@ func TestLoginAndRegistration(t *testing.T) {
 		require.NotNil(t, resp)
 		assert.NotNil(t, resp["user"])
 	})
+
 	t.Run("user login with wrong phone number", func(t *testing.T) {
 		// login with wrong phone number
 		req := M{}
@@ -282,10 +284,10 @@ func TestLoginAndRegistration(t *testing.T) {
 	})
 
 	var accessToken string
-	t.Run("user login with admin account", func(t *testing.T) {
+	t.Run("user login with shop account", func(t *testing.T) {
 		// login with phone number
 		req := M{}
-		req["phone"] = "0101010101"
+		req["phone"] = "0987654321"
 		req["recaptcha_token"] = recaptchaToken
 
 		_, err := httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
@@ -296,7 +298,7 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, resp["exists"], true)
 
 		req = M{}
-		req["login"] = "0101010101"
+		req["login"] = "0987654321"
 		req["password"] = "123456789"
 		req["account_type"] = "shop"
 		_, err = httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
@@ -311,8 +313,8 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, resp["expires_in"], float64(604800))
 		require.NotNil(t, resp["user"])
 		user := resp["user"].(map[string]interface{})
-		assert.Equal(t, user["email"], "admin@etop.vn")
-		assert.Equal(t, user["phone"], "0101010101")
+		assert.Equal(t, user["email"], "test@etop.vn")
+		assert.Equal(t, user["phone"], "0987654321")
 
 		require.NotNil(t, resp["available_accounts"])
 
@@ -321,11 +323,11 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Len(t, availableAccounts, 1)
 		account := availableAccounts[0].(map[string]interface{})
 
-		assert.Equal(t, account["id"], "101")
+		assert.Equal(t, account["id"], "1137360087033143265")
 		accessToken = account["access_token"].(string)
 	})
 
-	t.Run("get address with admin account", func(t *testing.T) {
+	t.Run("get address with shop account", func(t *testing.T) {
 		req := M{}
 		var respListAddresses map[string]interface{}
 		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListAddresses).
@@ -340,7 +342,7 @@ func TestLoginAndRegistration(t *testing.T) {
 	})
 
 	var addressId string
-	t.Run("create address with admin account", func(t *testing.T) {
+	t.Run("create address with shop account", func(t *testing.T) {
 		req := M{}
 
 		req["type"] = "shipfrom"
@@ -387,7 +389,7 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, respCreateAddress["full_name"], "xxxx")
 	})
 
-	t.Run("update address (only full name) info with admin account", func(t *testing.T) {
+	t.Run("update address (only full name) info with shop account", func(t *testing.T) {
 		req := M{}
 		req["id"] = addressId
 		req["type"] = "shipfrom"
@@ -416,7 +418,8 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, respUpdateAddress["district_code"], "774")
 		assert.Equal(t, respUpdateAddress["type"], "shipfrom")
 	})
-	t.Run("update address info with admin account", func(t *testing.T) {
+
+	t.Run("update address info with shop account", func(t *testing.T) {
 		req := M{}
 		req["id"] = addressId
 		req["type"] = "shipfrom"
@@ -446,7 +449,8 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, respUpdateAddress["district_code"], "774")
 		assert.Equal(t, respUpdateAddress["type"], "shipfrom")
 	})
-	t.Run("get address with admin account", func(t *testing.T) {
+
+	t.Run("get address with shop account", func(t *testing.T) {
 		req := M{}
 		var respListAddresses map[string]interface{}
 		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListAddresses).
@@ -460,7 +464,7 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Len(t, addresses, 1)
 	})
 
-	t.Run("delete address with admin account", func(t *testing.T) {
+	t.Run("delete address with shop account", func(t *testing.T) {
 		req := M{}
 		req["id"] = addressId
 		var respRemoveAddress map[string]interface{}
@@ -470,7 +474,8 @@ func TestLoginAndRegistration(t *testing.T) {
 		require.Nil(t, err)
 		require.NotNil(t, respRemoveAddress)
 	})
-	t.Run("get address with admin account", func(t *testing.T) {
+
+	t.Run("get address with shop account", func(t *testing.T) {
 		req := M{}
 		var respListAddresses map[string]interface{}
 		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListAddresses).
