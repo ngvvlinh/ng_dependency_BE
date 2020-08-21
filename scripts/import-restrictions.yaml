@@ -12,9 +12,9 @@
   - o.o/backend/pkg/etop/authorize/middleware
   - o.o/backend/pkg/etop/model
 
-- baseImportPath: "./cmd/uploader"
+- baseImportPath: "./cmd/etop-uploader"
   allowedImports:
-  - o.o/backend/cmd/uploader
+  - o.o/backend/cmd/etop-uploader
   - o.o/backend/cogs/base
   - o.o/backend/cogs/storage
   - o.o/backend/pkg/common

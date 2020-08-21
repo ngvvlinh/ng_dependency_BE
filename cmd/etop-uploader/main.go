@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"o.o/backend/cmd/uploader/config"
+	"o.o/backend/cmd/etop-uploader/config"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"

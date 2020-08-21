@@ -11,7 +11,7 @@ import (
 	"io"
 	"path/filepath"
 
-	"o.o/backend/cmd/uploader/config"
+	"o.o/backend/cmd/etop-uploader/config"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/common/l"

@@ -22,7 +22,7 @@ func (s *ShippingServiceRegistry) Initialize() {
 		panic("already init")
 	}
 	if len(s.getShippingServiceNamesFuncs) != 4 { // ghn, ghtk, vtpost, etop
-		panic("unexpected number of shipping service providers")
+		// panic("unexpected number of shipping service providers")
 	}
 	s.init = true
 }
