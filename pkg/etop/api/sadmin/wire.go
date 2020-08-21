@@ -1,3 +1,5 @@
+// +build wireinject
+
 package sadmin
 
 import "github.com/google/wire"

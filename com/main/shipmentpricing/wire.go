@@ -1,7 +1,10 @@
+// +build wireinject
+
 package shipmentpricing
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/main/shipmentpricing/pricelist"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"

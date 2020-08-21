@@ -1,17 +1,13 @@
 package sqlstore
 
 import (
-	"time"
-
 	"o.o/api/main/location"
 	notisqlstore "o.o/backend/com/eventhandler/notifier/sqlstore"
 	com "o.o/backend/com/main"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	servicelocation "o.o/backend/com/main/location"
-	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
-	"o.o/backend/pkg/common/sql/sq"
 	"o.o/capi"
 	"o.o/common/l"
 )
@@ -59,38 +55,6 @@ func initDBNotifier(db *cmsql.Database) {
 	xNotifier = db
 	deviceStore = notisqlstore.NewDeviceStore(xNotifier)
 	notificationStore = notisqlstore.NewNotificationStore(xNotifier)
-}
-
-type filterDeletable interface {
-	Prefix() string
-	ByDeletedAt(time.Time) *sq.ColumnFilter
-}
-
-type includeDeleted bool
-
-func (d includeDeleted) filterDeleted(f filterDeletable) sq.WriterTo {
-	if d {
-		return nil
-	}
-	s := "deleted_at IS NULL"
-	p := f.Prefix()
-	if p != "" {
-		s = p + "." + s
-	}
-	return sq.NewExpr(s)
-}
-
-type multiplelity bool
-
-func (m multiplelity) ensureMultiplelity(countable interface{ Count() (int, error) }) error {
-	n, err := countable.Count()
-	if err != nil {
-		return err
-	}
-	if !m && (n > 1) {
-		return cm.Errorf(cm.Internal, nil, "unexpected number of changes")
-	}
-	return nil
 }
 
 func inTransaction(callback func(cmsql.QueryInterface) error) (err error) {

@@ -16,11 +16,11 @@ import (
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/headers"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/authorize/authkey"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/authorize/permission"
 	"o.o/backend/pkg/etop/authorize/tokens"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -267,7 +267,7 @@ func StartSessionPartner(ctx context.Context, require bool, claim *claims.Claim,
 		return true
 	}
 	if require {
-		if !model.IsPartnerID(claim.AccountID) {
+		if !idutil.IsPartnerID(claim.AccountID) {
 			return false
 		}
 		query := &identitymodelx.GetPartner{
@@ -288,7 +288,7 @@ func StartSessionShop(ctx context.Context, require bool, claim *claims.Claim, ac
 		return true
 	}
 	if require {
-		if !model.IsShopID(claim.AccountID) {
+		if !idutil.IsShopID(claim.AccountID) {
 			return false
 		}
 
@@ -327,7 +327,7 @@ func StartSessionAffiliate(ctx context.Context, require bool, claim *claims.Clai
 		return true
 	}
 	if require {
-		if !model.IsAffiliateID(claim.AccountID) {
+		if !idutil.IsAffiliateID(claim.AccountID) {
 			return false
 		}
 
@@ -359,11 +359,11 @@ func StartSessionAffiliate(ctx context.Context, require bool, claim *claims.Clai
 
 func StartSessionEtopAdmin(ctx context.Context, require bool, claim *claims.Claim, _permission *identitymodel.Permission) bool {
 	if require {
-		if !model.IsEtopAccountID(claim.AccountID) {
+		if !idutil.IsEtopAccountID(claim.AccountID) {
 			return false
 		}
 		query := &identitymodelx.GetAccountRolesQuery{
-			AccountID: model.EtopAccountID,
+			AccountID: idutil.EtopAccountID,
 			UserID:    claim.UserID,
 		}
 		if err := bus.Dispatch(ctx, query); err != nil {

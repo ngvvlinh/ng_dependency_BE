@@ -1,3 +1,5 @@
+// +build wireinject
+
 package middleware
 
 import "github.com/google/wire"

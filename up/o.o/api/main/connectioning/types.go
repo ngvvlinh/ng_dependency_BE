@@ -64,6 +64,27 @@ type EtopAffiliateAccount struct {
 	ShopID string // GHN(v3): shop_id
 }
 
+func (a *EtopAffiliateAccount) GetUserID() string {
+	if a != nil {
+		return a.UserID
+	}
+	return ""
+}
+
+func (a *EtopAffiliateAccount) GetToken() string {
+	if a != nil {
+		return a.Token
+	}
+	return ""
+}
+
+func (a *EtopAffiliateAccount) GetShopID() string {
+	if a != nil {
+		return a.ShopID
+	}
+	return ""
+}
+
 type ShopConnection struct {
 	ShopID         dot.ID
 	ConnectionID   dot.ID

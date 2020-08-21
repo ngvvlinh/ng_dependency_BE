@@ -10,9 +10,9 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 )
 
@@ -35,7 +35,7 @@ func (s *UserService) CreateUser(ctx context.Context, r *sadmin.SAdminCreateUser
 
 		}
 		roleCmd := &identitymodelx.UpdateRoleCommand{
-			AccountID: model.EtopAccountID,
+			AccountID: idutil.EtopAccountID,
 			UserID:    resp.User.Id,
 			Permission: identitymodel.Permission{
 				Roles:       r.Permission.GetRoles(),

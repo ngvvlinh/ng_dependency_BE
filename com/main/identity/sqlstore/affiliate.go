@@ -15,6 +15,7 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -90,7 +91,7 @@ func (s *AffiliateStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Af
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing OwnerID")
 	}
 
-	id := model.NewAffiliateID()
+	id := idutil.NewAffiliateID()
 	account := &identitymodel.Account{
 		ID:       id,
 		OwnerID:  args.OwnerID,

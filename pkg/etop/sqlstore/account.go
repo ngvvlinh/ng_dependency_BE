@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/main/authorization"
 	"o.o/api/main/identity"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/try_on"
@@ -18,6 +19,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -58,7 +60,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 		return cm.Error(cm.Internal, "invalid owner_id", nil)
 	}
 
-	id := model.NewShopID()
+	id := idutil.NewShopID()
 	return x.InTransaction(ctx, func(s cmsql.QueryInterface) error {
 		account := &identitymodel.Account{
 			ID:       id,
@@ -427,7 +429,7 @@ func GetAccountAuth(ctx context.Context, query *identitymodelx.GetAccountAuthQue
 	case account_type.Partner,
 		account_type.Carrier:
 		switch cm.GetTag(query.AccountID) {
-		case model.TagPartner, model.TagCarrier:
+		case account_tag.TagPartner, account_tag.TagCarrier:
 		default:
 			return cm.Errorf(cm.NotFound, nil, "")
 		}
@@ -442,7 +444,7 @@ func GetAccountAuth(ctx context.Context, query *identitymodelx.GetAccountAuthQue
 		return nil
 
 	case account_type.Shop:
-		if cm.GetTag(query.AccountID) != model.TagShop {
+		if cm.GetTag(query.AccountID) != account_tag.TagShop {
 			return cm.Errorf(cm.NotFound, nil, "")
 		}
 

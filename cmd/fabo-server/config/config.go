@@ -46,8 +46,6 @@ type Config struct {
 
 	Invitation invitation.Config
 
-	WhiteLabel cc.WhiteLabel `yaml:"white_label"`
-
 	FlagEnableNewLinkInvitation           aggregate.FlagEnableNewLinkInvitation        `yaml:"flag_enable_new_link_invitation"`
 	FlagFaboOrderAutoConfirmPaymentStatus orderS.FlagFaboOrderAutoConfirmPaymentStatus `yaml:"flag_fabo_auto_confirm_payment_status"`
 
@@ -126,8 +124,6 @@ func Load() (cfg Config, err error) {
 
 	// TODO(vu): remove this
 	cfg.Shipment.GHN.MustLoadEnv()
-	cfg.Shipment.GHTK.MustLoadEnv()
-	cfg.Shipment.VTPost.MustLoadEnv()
 
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
 	cc.EnvMap{

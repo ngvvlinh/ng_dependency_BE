@@ -1,3 +1,5 @@
+// +build wireinject
+
 package captcha
 
 import "github.com/google/wire"

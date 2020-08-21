@@ -14,6 +14,7 @@ import (
 
 	apishop "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/status4"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/catalog/convert"
@@ -153,7 +154,7 @@ func (im *Import) handleShopImportProductsFromFile(ctx context.Context, c *httpx
 	}
 
 	// We only store file if the file is valid.
-	importID := cm.NewIDWithTag(model.TagImport)
+	importID := cm.NewIDWithTag(account_tag.TagImport)
 	uploadCmd, err := uploadFile(im.uploader, importID, rawData)
 	if err != nil {
 		return nil, err

@@ -5,7 +5,7 @@ import (
 
 	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/sql/cmsql"
-	"o.o/backend/pkg/etop/model"
+	callbackmodel "o.o/backend/pkg/etc/xmodel/callback/model"
 )
 
 type ChangesStore struct {
@@ -18,6 +18,6 @@ func NewChangesStore(db com.WebhookDB) *ChangesStore {
 	}
 }
 
-func (cs *ChangesStore) Insert(ctx context.Context, data *model.Callback) error {
+func (cs *ChangesStore) Insert(ctx context.Context, data *callbackmodel.Callback) error {
 	return cs.db.ShouldInsert(data)
 }

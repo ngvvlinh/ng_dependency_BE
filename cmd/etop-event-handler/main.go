@@ -40,7 +40,7 @@ import (
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
-	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etc/dbdecl"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/common/l"
 )
@@ -138,7 +138,7 @@ func main() {
 		topics := []eventhandler.TopicDef{}
 		topics = append(topics, etophandler.Topics()...)
 		topics = append(topics, fabohandler.Topics()...)
-		sMain, err := pgevent.NewService(ctx, model.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
+		sMain, err := pgevent.NewService(ctx, dbdecl.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
 		if err != nil {
 			ll.Fatal("Error while listening to Postgres")
 		}
@@ -149,7 +149,7 @@ func main() {
 		identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 
 		pgeventapi.Init(&sMain)
-		faboHandler := fabohandler.New(db, consumer, producer, cfg.Kafka.TopicPrefix, fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery)
+		faboHandler := fabohandler.New(db, producer, cfg.Kafka.TopicPrefix, fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery)
 		etopHandler := etophandler.New(db, webhookSender, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus)
 		etopHandler.RegisterTo(intctlHandler)
 

@@ -22,7 +22,7 @@ import (
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/mq"
-	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etc/dbdecl"
 	"o.o/common/l"
 )
 
@@ -71,12 +71,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	sMain, err := pgevent.NewService(ctx, model.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
+	sMain, err := pgevent.NewService(ctx, dbdecl.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
 	ll.Must(err, "Error while listening to Postgres")
 
 	pgeventapi.Init(&sMain)
 
-	sNotifier, err := pgevent.NewService(ctx, model.DBNotifier, cfg.PostgresNotifier, producer, cfg.Kafka.TopicPrefix, topics)
+	sNotifier, err := pgevent.NewService(ctx, dbdecl.DBNotifier, cfg.PostgresNotifier, producer, cfg.Kafka.TopicPrefix, topics)
 	if err != nil {
 		ll.Fatal("Error while listening to Postgres")
 	}

@@ -22,18 +22,15 @@ var ll = l.New()
 const tenYears = 365 * 10 * 24 * time.Hour
 
 type Publisher struct {
-	consumer  mq.KafkaConsumer
 	publisher eventstream.Publisher
 }
 
 func New(
-	consumer mq.KafkaConsumer,
 	publisherEvent eventstream.Publisher,
 ) *Publisher {
 	h := &Publisher{
-		consumer: consumer,
+		publisher: publisherEvent,
 	}
-	h.publisher = publisherEvent
 	return h
 }
 

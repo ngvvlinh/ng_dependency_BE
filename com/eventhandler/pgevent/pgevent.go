@@ -13,7 +13,7 @@ import (
 	"o.o/backend/com/eventhandler"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
-	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etc/dbdecl"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
@@ -62,13 +62,13 @@ type Service struct {
 	pglistener *pq.Listener
 	producer   *mq.KafkaProducer
 	prefix     string
-	dbName     model.DBName
+	dbName     dbdecl.DBName
 	topics     map[string]eventhandler.TopicDef
 }
 
 func NewService(
 	ctx context.Context,
-	dbName model.DBName,
+	dbName dbdecl.DBName,
 	pgcfg cmsql.ConfigPostgres,
 	producer *mq.KafkaProducer,
 	prefix string,

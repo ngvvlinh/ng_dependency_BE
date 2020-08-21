@@ -1,7 +1,10 @@
+// +build wireinject
+
 package fbuser
 
 import (
 	"github.com/google/wire"
+
 	"o.o/backend/com/fabo/main/fbuser/pm"
 )
 

@@ -28,6 +28,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/etc/typeutil"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 	"o.o/capi/util"
@@ -623,7 +624,7 @@ func UpdateOrder(ctx context.Context, cmd *ordermodelx.UpdateOrderCommand) error
 		OrderNote:       cmd.OrderNote,
 		ShippingNote:    cmd.ShippingNote,
 		ShopShipping:    cmd.ShopShipping,
-		GhnNoteCode:     model.GHNNoteCodeFromTryOn(cmd.TryOn),
+		GhnNoteCode:     typeutil.GHNNoteCodeFromTryOn(cmd.TryOn),
 		TryOn:           cmd.TryOn,
 		TotalWeight:     cmd.TotalWeight,
 		FeeLines:        cmd.FeeLines,

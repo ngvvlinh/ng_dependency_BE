@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/ghn_note_code"
 	"o.o/api/top/types/etc/status3"
@@ -16,7 +17,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/backend/pkg/common/validate"
-	etopmodel "o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etc/typeutil"
 	"o.o/capi/dot"
 )
 
@@ -112,9 +113,9 @@ func (s *Shop) GetAccount() *Account {
 func (s *Partner) GetAccount() *Account {
 	var _type account_type.AccountType
 	switch cm.GetTag(s.ID) {
-	case etopmodel.TagPartner:
+	case account_tag.TagPartner:
 		_type = account_type.Partner
-	case etopmodel.TagCarrier:
+	case account_tag.TagCarrier:
 		_type = account_type.Carrier
 	default:
 		panic("account type does not valid")
@@ -220,7 +221,7 @@ func (s *Shop) GetTryOn() try_on.TryOnCode {
 	if s.TryOn != 0 {
 		return s.TryOn
 	}
-	return etopmodel.TryOnFromGHNNoteCode(s.GhnNoteCode)
+	return typeutil.TryOnFromGHNNoteCode(s.GhnNoteCode)
 }
 
 // +sqlgen:           Shop    as s
@@ -476,8 +477,8 @@ type AccountUserExtended struct {
 }
 
 func (m *AccountUserExtended) GetUserName() (fullName, shortName string) {
-	fullName = etopmodel.CoalesceString2(m.AccountUser.FullName, m.User.FullName)
-	shortName = etopmodel.CoalesceString2(m.AccountUser.ShortName, m.User.ShortName)
+	fullName = CoalesceString2(m.AccountUser.FullName, m.User.FullName)
+	shortName = CoalesceString2(m.AccountUser.ShortName, m.User.ShortName)
 	return
 }
 
@@ -502,6 +503,13 @@ type UserInternal struct {
 	Hashpwd string
 
 	UpdatedAt time.Time `sq:"update"`
+}
+
+func CoalesceString2(s1, s2 string) string {
+	if s1 != "" {
+		return s1
+	}
+	return s2
 }
 
 // +sqlgen

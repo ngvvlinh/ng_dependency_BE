@@ -6,7 +6,7 @@ import (
 	"o.o/backend/com/eventhandler"
 	"o.o/backend/com/eventhandler/fabo/types"
 	"o.o/backend/pkg/common/mq"
-	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etc/dbdecl"
 )
 
 type HandlerFunc func(context.Context, *types.FaboEvent) (mq.Code, error)
@@ -16,22 +16,22 @@ func Topics() []eventhandler.TopicDef {
 		{
 			Name:       "fb_external_conversation_fabo",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "fb_external_message_fabo",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "fb_external_comment_fabo",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "fb_customer_conversation_fabo",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 	}
 }

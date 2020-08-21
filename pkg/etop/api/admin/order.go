@@ -6,12 +6,12 @@ import (
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/account_tag"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/model"
 )
 
 type OrderService struct {
@@ -35,7 +35,7 @@ func (s *OrderService) GetOrder(ctx context.Context, q *pbcm.IDRequest) (*types.
 	result := convertpb.PbOrder(
 		query.Result.Order,
 		query.Result.Fulfillments,
-		model.TagEtop,
+		account_tag.TagEtop,
 	)
 	return result, nil
 }
@@ -51,7 +51,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *admin.GetOrdersRequest)
 	}
 	result := &types.OrdersResponse{
 		Paging: cmapi.PbPageInfo(paging),
-		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
+		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, account_tag.TagEtop, query.Result.Shops),
 	}
 	return result, nil
 }
@@ -64,7 +64,7 @@ func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *pbcm.IDsRequest) (
 		return nil, err
 	}
 	result := &types.OrdersResponse{
-		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
+		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, account_tag.TagEtop, query.Result.Shops),
 	}
 	return result, nil
 }

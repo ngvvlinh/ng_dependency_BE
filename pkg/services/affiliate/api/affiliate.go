@@ -8,12 +8,13 @@ import (
 	"o.o/api/meta"
 	"o.o/api/services/affiliate"
 	apiaffiliate "o.o/api/top/services/affiliate"
+	"o.o/api/top/types/etc/account_tag"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
-	pbshop "o.o/backend/pkg/etop/api/shop"
-	modeletop "o.o/backend/pkg/etop/model"
+	product2 "o.o/backend/pkg/etop/api/shop/product"
 	"o.o/capi/dot"
 )
 
@@ -58,7 +59,7 @@ func (s *AffiliateService) GetCommissions(ctx context.Context, q *GetCommissions
 				IncludeFulfillment: false,
 			}
 			if err := bus.Dispatch(ctx, orderQ); err == nil {
-				pbCommission.Order = convertpb.PbOrder(orderQ.Result.Order, nil, modeletop.TagEtop)
+				pbCommission.Order = convertpb.PbOrder(orderQ.Result.Order, nil, account_tag.TagEtop)
 			}
 
 			shopQ := &identity.GetShopByIDQuery{
@@ -108,7 +109,7 @@ func (s *AffiliateService) GetProductPromotionByProductID(ctx context.Context, q
 func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *AffiliateGetProductsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
-		ShopID:  modeletop.EtopTradingAccountID,
+		ShopID:  idutil.EtopTradingAccountID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
@@ -121,9 +122,9 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 		productIds = append(productIds, product.ProductID)
 	}
 
-	tradingCommissionMap := GetSupplyCommissionSettingByProductIdsMap(ctx, s.AffiliateQuery, modeletop.EtopTradingAccountID, productIds)
+	tradingCommissionMap := GetSupplyCommissionSettingByProductIdsMap(ctx, s.AffiliateQuery, idutil.EtopTradingAccountID, productIds)
 	affCommissionMap := GetShopCommissionSettingsByProducts(ctx, s.AffiliateQuery, q.Context.Affiliate.ID, productIds)
-	shopPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, s.AffiliateQuery, modeletop.EtopTradingAccountID, productIds)
+	shopPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, s.AffiliateQuery, idutil.EtopTradingAccountID, productIds)
 
 	var products []*apiaffiliate.AffiliateProductResponse
 	for _, product := range query.Result.Products {
@@ -149,7 +150,7 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 		}
 
 		products = append(products, &apiaffiliate.AffiliateProductResponse{
-			Product:                    pbshop.PbShopProductWithVariants(product),
+			Product:                    product2.PbShopProductWithVariants(product),
 			ShopCommissionSetting:      pbTradingCommissionSetting,
 			AffiliateCommissionSetting: pbAffCommissionSetting,
 			Promotion:                  pbShopPromotion,

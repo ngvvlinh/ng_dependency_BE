@@ -1,3 +1,5 @@
+// +build wireinject
+
 package shopshipmentpricelist
 
 import "github.com/google/wire"

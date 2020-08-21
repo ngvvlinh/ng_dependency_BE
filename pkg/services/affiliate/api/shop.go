@@ -9,9 +9,10 @@ import (
 	apiaffiliate "o.o/api/top/services/affiliate"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
-	pbshop "o.o/backend/pkg/etop/api/shop"
-	modeletop "o.o/backend/pkg/etop/model"
+	product2 "o.o/backend/pkg/etop/api/shop/product"
+	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/capi/dot"
 )
 
@@ -25,7 +26,7 @@ func (s *ShopService) Clone() *ShopService { res := *s; return &res }
 
 func (s *ShopService) GetProductPromotion(ctx context.Context, q *GetProductPromotionEndpoint) error {
 	promotionQuery := &affiliate.GetShopProductPromotionQuery{
-		ShopID:    modeletop.EtopTradingAccountID,
+		ShopID:    idutil.EtopTradingAccountID,
 		ProductID: q.ProductId,
 	}
 	if err := s.AffiliateQuery.Dispatch(ctx, promotionQuery); err != nil {
@@ -48,7 +49,7 @@ func (s *ShopService) GetProductPromotion(ctx context.Context, q *GetProductProm
 func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
-		ShopID:  modeletop.EtopTradingAccountID,
+		ShopID:  idutil.EtopTradingAccountID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 		Name:    q.Filter.Name,
@@ -61,7 +62,7 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 	for _, product := range query.Result.Products {
 		productIds = append(productIds, product.ProductID)
 	}
-	productPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, s.AffiliateQuery, modeletop.EtopTradingAccountID, productIds)
+	productPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, s.AffiliateQuery, idutil.EtopTradingAccountID, productIds)
 	var products []*apiaffiliate.ShopProductResponse
 	for _, product := range query.Result.Products {
 		productPromotion := productPromotionMap[product.ProductID]
@@ -69,8 +70,8 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 		if productPromotion != nil {
 			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
 		}
-		productResult := pbshop.PbShopProductWithVariants(product)
-		productResult, err := pbshop.PopulateTradingProductWithInventoryCount(ctx, s.InventoryQuery, productResult)
+		productResult := product2.PbShopProductWithVariants(product)
+		productResult, err := trading.PopulateTradingProductWithInventoryCount(ctx, s.InventoryQuery, productResult)
 		if err != nil {
 			return err
 		}
@@ -99,7 +100,7 @@ func (s *ShopService) CheckReferralCodeValid(ctx context.Context, q *CheckReferr
 	}
 
 	promotionQuery := &affiliate.GetShopProductPromotionQuery{
-		ShopID:    modeletop.EtopTradingAccountID,
+		ShopID:    idutil.EtopTradingAccountID,
 		ProductID: q.ProductId,
 	}
 	_ = s.AffiliateQuery.Dispatch(ctx, promotionQuery)

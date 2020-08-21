@@ -14,6 +14,7 @@ import (
 	"o.o/backend/com/main/shipping/carrier"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/api/admin/convert"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 )
@@ -46,7 +47,7 @@ func (s *ShipmentPriceService) GetShipmentService(ctx context.Context, r *pbcm.I
 	if err := s.ShipmentServiceQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShipmentService(query.Result)
+	result := convert.PbShipmentService(query.Result)
 	return result, nil
 }
 
@@ -58,7 +59,7 @@ func (s *ShipmentPriceService) GetShipmentServices(ctx context.Context, r *admin
 		return nil, err
 	}
 	result := &admin.GetShipmentServicesResponse{
-		ShipmentServices: convertpb.PbShipmentServices(query.Result),
+		ShipmentServices: convert.PbShipmentServices(query.Result),
 	}
 	return result, nil
 }
@@ -71,14 +72,14 @@ func (s *ShipmentPriceService) CreateShipmentService(ctx context.Context, r *adm
 		ServiceIDs:         r.ServiceIDs,
 		Description:        r.Description,
 		ImageURL:           r.ImageURL,
-		AvailableLocations: convertpb.AvailableLocations(r.AvailableLocations),
-		BlacklistLocations: convertpb.BlacklistLocations(r.BlacklistLocations),
-		OtherCondition:     convertpb.OtherCondition(r.OtherCondition),
+		AvailableLocations: convert.AvailableLocations(r.AvailableLocations),
+		BlacklistLocations: convert.BlacklistLocations(r.BlacklistLocations),
+		OtherCondition:     convert.OtherCondition(r.OtherCondition),
 	}
 	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShipmentService(cmd.Result)
+	result := convert.PbShipmentService(cmd.Result)
 	return result, nil
 }
 
@@ -92,7 +93,7 @@ func (s *ShipmentPriceService) UpdateShipmentService(ctx context.Context, r *adm
 		Description:    r.Description,
 		ImageURL:       r.ImageURL,
 		Status:         r.Status,
-		OtherCondition: convertpb.OtherCondition(r.OtherCondition),
+		OtherCondition: convert.OtherCondition(r.OtherCondition),
 	}
 	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -115,7 +116,7 @@ func (s *ShipmentPriceService) DeleteShipmentService(ctx context.Context, r *pbc
 func (s *ShipmentPriceService) UpdateShipmentServicesAvailableLocations(ctx context.Context, r *admin.UpdateShipmentServicesAvailableLocationsRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipmentservice.UpdateShipmentServicesLocationConfigCommand{
 		IDs:                r.IDs,
-		AvailableLocations: convertpb.AvailableLocations(r.AvailableLocations),
+		AvailableLocations: convert.AvailableLocations(r.AvailableLocations),
 	}
 	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -127,7 +128,7 @@ func (s *ShipmentPriceService) UpdateShipmentServicesAvailableLocations(ctx cont
 func (s *ShipmentPriceService) UpdateShipmentServicesBlacklistLocations(ctx context.Context, r *admin.UpdateShipmentServicesBlacklistLocationsRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &shipmentservice.UpdateShipmentServicesLocationConfigCommand{
 		IDs:                r.IDs,
-		BlacklistLocations: convertpb.BlacklistLocations(r.BlacklistLocations),
+		BlacklistLocations: convert.BlacklistLocations(r.BlacklistLocations),
 	}
 	if err := s.ShipmentServiceAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -147,7 +148,7 @@ func (s *ShipmentPriceService) GetShipmentPriceList(ctx context.Context, r *pbcm
 	if err := s.ShipmentPriceListQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShipmentPriceList(query.Result)
+	result := convert.PbShipmentPriceList(query.Result)
 	return result, nil
 }
 
@@ -160,7 +161,7 @@ func (s *ShipmentPriceService) GetShipmentPriceLists(ctx context.Context, r *adm
 		return nil, err
 	}
 	result := &admin.GetShipmentPriceListsResponse{
-		ShipmentPriceLists: convertpb.PbShipmentPriceLists(query.Result),
+		ShipmentPriceLists: convert.PbShipmentPriceLists(query.Result),
 	}
 	return result, nil
 }
@@ -175,7 +176,7 @@ func (s *ShipmentPriceService) CreateShipmentPriceList(ctx context.Context, r *a
 	if err := s.ShipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShipmentPriceList(cmd.Result)
+	result := convert.PbShipmentPriceList(cmd.Result)
 	return result, nil
 }
 
@@ -226,7 +227,7 @@ func (s *ShipmentPriceService) GetShipmentPrice(ctx context.Context, r *pbcm.IDR
 	if err := s.ShipmentPriceQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShipmentPrice(query.Result)
+	result := convert.PbShipmentPrice(query.Result)
 	return result, nil
 }
 
@@ -239,7 +240,7 @@ func (s *ShipmentPriceService) GetShipmentPrices(ctx context.Context, r *admin.G
 		return nil, err
 	}
 	result := &admin.GetShipmentPricesResponse{
-		ShipmentPrices: convertpb.PbShipmentPrices(query.Result),
+		ShipmentPrices: convert.PbShipmentPrices(query.Result),
 	}
 	return result, nil
 }
@@ -255,13 +256,13 @@ func (s *ShipmentPriceService) CreateShipmentPrice(ctx context.Context, r *admin
 		ProvinceTypes:       r.ProvinceTypes,
 		UrbanTypes:          r.UrbanTypes,
 		PriorityPoint:       r.PriorityPoint,
-		Details:             convertpb.PricingDetails(r.Details),
-		AdditionalFees:      convertpb.Convert_api_AdditionalFees_To_core_AdditionalFees(r.AdditionalFees),
+		Details:             convert.PricingDetails(r.Details),
+		AdditionalFees:      convert.Convert_api_AdditionalFees_To_core_AdditionalFees(r.AdditionalFees),
 	}
 	if err := s.ShipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShipmentPrice(cmd.Result)
+	result := convert.PbShipmentPrice(cmd.Result)
 	return result, nil
 }
 
@@ -277,14 +278,14 @@ func (s *ShipmentPriceService) UpdateShipmentPrice(ctx context.Context, r *admin
 		ProvinceTypes:       r.ProvinceTypes,
 		UrbanTypes:          r.UrbanTypes,
 		PriorityPoint:       r.PriorityPoint,
-		Details:             convertpb.PricingDetails(r.Details),
-		AdditionalFees:      convertpb.Convert_api_AdditionalFees_To_core_AdditionalFees(r.AdditionalFees),
+		Details:             convert.PricingDetails(r.Details),
+		AdditionalFees:      convert.Convert_api_AdditionalFees_To_core_AdditionalFees(r.AdditionalFees),
 		Status:              r.Status,
 	}
 	if err := s.ShipmentPriceAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShipmentPrice(cmd.Result)
+	result := convert.PbShipmentPrice(cmd.Result)
 	return result, nil
 }
 
@@ -333,7 +334,7 @@ func (s *ShipmentPriceService) GetShopShipmentPriceLists(ctx context.Context, r 
 		return nil, err
 	}
 	result := &admin.GetShopShipmentPriceListsResponse{
-		PriceLists: convertpb.PbShopShipmentPriceLists(query.Result.ShopShipmentPriceLists),
+		PriceLists: convert.PbShopShipmentPriceLists(query.Result.ShopShipmentPriceLists),
 		Paging:     cmapi.PbMetaPageInfo(query.Result.Paging),
 	}
 	return result, nil
@@ -346,7 +347,7 @@ func (s *ShipmentPriceService) GetShopShipmentPriceList(ctx context.Context, r *
 	if err := s.ShopShipmentPriceListQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShopShipmentPriceList(query.Result)
+	result := convert.PbShopShipmentPriceList(query.Result)
 	return result, nil
 }
 
@@ -361,7 +362,7 @@ func (s *ShipmentPriceService) CreateShopShipmentPriceList(ctx context.Context, 
 	if err := s.ShopShipmentPriceListAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbShopShipmentPriceList(cmd.Result)
+	result := convert.PbShopShipmentPriceList(cmd.Result)
 	return result, nil
 }
 
@@ -434,7 +435,7 @@ func (s *ShipmentPriceService) GetShipmentPriceListPromotions(ctx context.Contex
 		return nil, err
 	}
 	var res = &admin.GetShipmentPriceListPromotionsResponse{
-		ShipmentPriceListPromotions: convertpb.Convert_core_PriceListPromotions_To_api_PriceListPromotions(query.Result),
+		ShipmentPriceListPromotions: convert.Convert_core_PriceListPromotions_To_api_PriceListPromotions(query.Result),
 	}
 	return res, nil
 }
@@ -446,7 +447,7 @@ func (s *ShipmentPriceService) GetShipmentPriceListPromotion(ctx context.Context
 	if err := s.PriceListPromotionQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	return convertpb.Convert_core_PriceListPromotion_To_api_PriceListPromotion(query.Result), nil
+	return convert.Convert_core_PriceListPromotion_To_api_PriceListPromotion(query.Result), nil
 }
 
 func (s *ShipmentPriceService) CreateShipmentPriceListPromotion(ctx context.Context, r *admin.CreateShipmentPriceListPromotionRequest) (*admin.ShipmentPriceListPromotion, error) {
@@ -457,13 +458,13 @@ func (s *ShipmentPriceService) CreateShipmentPriceListPromotion(ctx context.Cont
 		ConnectionID:  r.ConnectionID,
 		DateFrom:      r.DateFrom,
 		DateTo:        r.DateTo,
-		AppliedRules:  convertpb.Convert_api_PriceListPromotionAppliedRules_To_core_PriceListPromotionAppliedRules(r.AppliedRules),
+		AppliedRules:  convert.Convert_api_PriceListPromotionAppliedRules_To_core_PriceListPromotionAppliedRules(r.AppliedRules),
 		PriorityPoint: r.PriorityPoint,
 	}
 	if err := s.PriceListPromotionAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return convertpb.Convert_core_PriceListPromotion_To_api_PriceListPromotion(cmd.Result), nil
+	return convert.Convert_core_PriceListPromotion_To_api_PriceListPromotion(cmd.Result), nil
 }
 
 func (s *ShipmentPriceService) UpdateShipmentPriceListPromotion(ctx context.Context, r *admin.UpdateShipmentPriceListPromotionRequest) (*pbcm.UpdatedResponse, error) {
@@ -473,7 +474,7 @@ func (s *ShipmentPriceService) UpdateShipmentPriceListPromotion(ctx context.Cont
 		Description:   r.Description,
 		DateFrom:      r.DateFrom,
 		DateTo:        r.DateTo,
-		AppliedRules:  convertpb.Convert_api_PriceListPromotionAppliedRules_To_core_PriceListPromotionAppliedRules(r.AppliedRules),
+		AppliedRules:  convert.Convert_api_PriceListPromotionAppliedRules_To_core_PriceListPromotionAppliedRules(r.AppliedRules),
 		PriorityPoint: r.PriorityPoint,
 		Status:        r.Status,
 		ConnectionID:  r.ConnectionID,

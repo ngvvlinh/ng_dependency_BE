@@ -3,7 +3,7 @@ package handler
 import (
 	"o.o/backend/com/eventhandler"
 	"o.o/backend/pkg/common/mq"
-	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etc/dbdecl"
 )
 
 func Topics() []eventhandler.TopicDef {
@@ -11,66 +11,66 @@ func Topics() []eventhandler.TopicDef {
 		{
 			Name:       "fulfillment",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "order",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "money_transaction_shipping",
 			Partitions: 8,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "notification",
 			Partitions: 64,
-			DBName:     model.DBNotifier,
+			DBName:     dbdecl.DBNotifier,
 		},
 		{
 			Name:       "shop_product",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "shop_collection",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		}, {
 			Name:       "shop_product_collection",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "shop_variant",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "shop_customer",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "shop_customer_group",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "shop_customer_group_customer",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "inventory_variant",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 		{
 			Name:       "shop_trader_address",
 			Partitions: 64,
-			DBName:     model.DBMain,
+			DBName:     dbdecl.DBMain,
 		},
 	}
 }

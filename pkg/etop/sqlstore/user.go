@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/status3"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
@@ -246,7 +247,7 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 	}
 
 	now := time.Now()
-	userID := cm.NewIDWithTag(model.TagUser)
+	userID := cm.NewIDWithTag(account_tag.TagUser)
 	user := &identitymodel.User{
 		ID:          userID,
 		UserInner:   cmd.UserInner,

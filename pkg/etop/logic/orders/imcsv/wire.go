@@ -1,3 +1,5 @@
+// +build wireinject
+
 package imcsv
 
 import "github.com/google/wire"

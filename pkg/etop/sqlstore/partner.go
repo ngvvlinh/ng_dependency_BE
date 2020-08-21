@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/account_type"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
@@ -12,8 +13,8 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sq/core"
+	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/etop/authorize/authkey"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
@@ -35,7 +36,7 @@ type PartnerStore struct {
 	ft    identitysqlstore.PartnerFilters
 	preds []interface{}
 
-	includeDeleted
+	includeDeleted sqlstore.IncludeDeleted
 }
 
 func Partner(ctx context.Context) *PartnerStore {
@@ -59,13 +60,13 @@ func (s *PartnerStore) IncludeDeleted() *PartnerStore {
 
 func (s *PartnerStore) Get() (*identitymodel.Partner, error) {
 	var item identitymodel.Partner
-	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).ShouldGet(&item)
+	err := x.Where(s.preds...).Where(s.includeDeleted.FilterDeleted(&s.ft)).ShouldGet(&item)
 	return &item, err
 }
 
 func (s *PartnerStore) List() ([]*identitymodel.Partner, error) {
 	var items identitymodel.Partners
-	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).Find(&items)
+	err := x.Where(s.preds...).Where(s.includeDeleted.FilterDeleted(&s.ft)).Find(&items)
 	return items, err
 }
 
@@ -76,7 +77,7 @@ func CreatePartner(ctx context.Context, cmd *identitymodelx.CreatePartnerCommand
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing OwnerID")
 	}
 
-	partner.ID = cm.NewIDWithTag(model.TagPartner)
+	partner.ID = cm.NewIDWithTag(account_tag.TagPartner)
 	if err := partner.BeforeInsert(); err != nil {
 		return err
 	}

@@ -20,6 +20,9 @@ import (
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/validate"
 	apishop "o.o/backend/pkg/etop/api/shop"
+	"o.o/backend/pkg/etop/api/shop/inventory"
+	"o.o/backend/pkg/etop/api/shop/product"
+	"o.o/backend/pkg/etop/api/shop/stocktake"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
@@ -256,9 +259,9 @@ func (im *Import) loadAndCreateProducts(
 	createStockTakeReq := &topintshop.CreateStocktakeRequest{
 		Note: "Tạo phiếu quản lý tồn kho theo file import",
 	}
-	productService := apishop.ProductServiceImpl.Clone().(*apishop.ProductService)
+	productService := apishop.ProductServiceImpl.Clone().(*product.ProductService)
 	productService.Session = ss
-	inventoryService := apishop.InventoryServiceImpl.Clone().(*apishop.InventoryService)
+	inventoryService := apishop.InventoryServiceImpl.Clone().(*inventory.InventoryService)
 	inventoryService.Session = ss
 
 	var stocktakeLines []*topintshop.StocktakeLine
@@ -386,7 +389,7 @@ func (im *Import) loadAndCreateProducts(
 	createStockTakeReq.Lines = stocktakeLines
 	stocktakeId = 0
 	if len(stocktakeLines) > 0 {
-		stocktakeService := apishop.StocktakeServiceImpl.Clone().(*apishop.StocktakeService)
+		stocktakeService := apishop.StocktakeServiceImpl.Clone().(*stocktake.StocktakeService)
 		stocktakeService.Session = ss
 		resp, err := stocktakeService.CreateStocktake(ctx, createStockTakeReq)
 		if err != nil {

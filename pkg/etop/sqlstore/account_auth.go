@@ -5,6 +5,7 @@ import (
 
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitysqlstore "o.o/backend/com/main/identity/sqlstore"
+	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
 
@@ -13,7 +14,7 @@ type AccountAuthStore struct {
 	ft    identitysqlstore.AccountAuthFilters
 	preds []interface{}
 
-	includeDeleted
+	includeDeleted sqlstore.IncludeDeleted
 }
 
 func AccountAuth(ctx context.Context) *AccountAuthStore {
@@ -37,7 +38,7 @@ func (s *AccountAuthStore) IncludeDeleted() *AccountAuthStore {
 
 func (s *AccountAuthStore) Get() (*identitymodel.AccountAuth, error) {
 	var item identitymodel.AccountAuth
-	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).ShouldGet(&item)
+	err := x.Where(s.preds...).Where(s.includeDeleted.FilterDeleted(&s.ft)).ShouldGet(&item)
 	return &item, err
 }
 

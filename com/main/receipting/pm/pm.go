@@ -25,7 +25,7 @@ import (
 	"o.o/backend/com/main/shipping/modely"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
@@ -233,7 +233,7 @@ func (m *ProcessManager) createPayment(
 	// Tạo mới phiếu thanh toán phí vận chuyển
 	cmd := &receipting.CreateReceiptCommand{
 		ShopID:      shopID,
-		TraderID:    model.TopShipID,
+		TraderID:    idutil.TopShipID,
 		Title:       "Thanh toán phí vận chuyển Topship",
 		Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
 		Type:        receipt_type.Payment,

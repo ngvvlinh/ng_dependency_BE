@@ -10,13 +10,13 @@ import (
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/account_tag"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -74,7 +74,7 @@ func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *pbcm.IDReque
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbFulfillment(query.Result.Fulfillment, model.TagEtop, query.Result.Shop, query.Result.Order)
+	result := convertpb.PbFulfillment(query.Result.Fulfillment, account_tag.TagEtop, query.Result.Shop, query.Result.Order)
 	return result, nil
 }
 
@@ -94,7 +94,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *admin.GetFu
 		return nil, err
 	}
 	result := &types.FulfillmentsResponse{
-		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagEtop),
+		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, account_tag.TagEtop),
 		Paging:       cmapi.PbPageInfo(paging),
 	}
 	return result, nil

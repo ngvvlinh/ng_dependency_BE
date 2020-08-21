@@ -57,8 +57,8 @@ import (
 	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/api/integration"
 	"o.o/backend/pkg/etop/api/sadmin"
-	"o.o/backend/pkg/etop/api/shop"
 	shop_all "o.o/backend/pkg/etop/api/shop/_all"
+	shop_wire "o.o/backend/pkg/etop/api/shop/_wire"
 	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
 	"o.o/backend/pkg/etop/apix/partnerimport"
@@ -126,7 +126,7 @@ func Build(
 		server_admin.WireSet,
 		admin_all.WireSet,
 		shop_all.WireSet,
-		shop.WireSet,
+		shop_wire.WireSet,
 
 		email.WireSet,
 		affiliate.WireSet,

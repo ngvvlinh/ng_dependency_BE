@@ -12,7 +12,7 @@ import (
 	"o.o/backend/com/eventhandler/webhook/types"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/etop/model"
+	callbackmodel "o.o/backend/pkg/etc/xmodel/callback/model"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/l"
@@ -71,7 +71,7 @@ type WebhookStates struct {
 }
 
 type SingleSender struct {
-	webhook *model.Webhook
+	webhook *callbackmodel.Webhook
 
 	lastItems *types.MessageCollector
 	items     *types.MessageCollector
@@ -81,7 +81,7 @@ type SingleSender struct {
 	reset chan struct{}
 }
 
-func NewSingleSender(wh *model.Webhook) *SingleSender {
+func NewSingleSender(wh *callbackmodel.Webhook) *SingleSender {
 	return &SingleSender{
 		webhook: wh,
 		stop:    make(chan struct{}),
@@ -107,7 +107,7 @@ func LoadWebhookStates(redisStore redis.Store, id dot.ID) WebhookStates {
 	return current
 }
 
-func NewSingleSenders(webhooks []*model.Webhook) []*SingleSender {
+func NewSingleSenders(webhooks []*callbackmodel.Webhook) []*SingleSender {
 	ssenders := make([]*SingleSender, len(webhooks))
 	for i, item := range webhooks {
 		ss := NewSingleSender(item)
@@ -144,7 +144,7 @@ func (s *SingleSender) storeToDatabase(callbackID dot.ID, mc *types.MessageColle
 	changesData = changesData[len(jsonOpen)-1 : len(changesData)-1]
 	statesData, _ := jsonx.Marshal(states)
 
-	data := &model.Callback{
+	data := &callbackmodel.Callback{
 		ID:        callbackID,
 		WebhookID: s.webhook.ID,
 		AccountID: s.webhook.AccountID,
@@ -225,7 +225,7 @@ func (s *SingleSender) ResetState() {
 	}
 }
 
-func calcNextStates(webhook *model.Webhook, current WebhookStates, states *WebhookStatesError, err error) WebhookStates {
+func calcNextStates(webhook *callbackmodel.Webhook, current WebhookStates, states *WebhookStatesError, err error) WebhookStates {
 	if err == nil {
 		// nothing was sent
 		if states == nil {
@@ -320,7 +320,7 @@ func (s *SingleSender) Send() (*WebhookStatesError, error) {
 	return states, err
 }
 
-func sendWebhookSingleRequest(ctx context.Context, wh *model.Webhook, data []byte) (status int, respData []byte, _ error) {
+func sendWebhookSingleRequest(ctx context.Context, wh *callbackmodel.Webhook, data []byte) (status int, respData []byte, _ error) {
 	res, err := client.Post(wh.URL, "application/json", bytes.NewReader(data))
 	if err != nil {
 		return 0, nil, err

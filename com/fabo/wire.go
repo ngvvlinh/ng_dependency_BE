@@ -1,3 +1,5 @@
+// +build wireinject
+
 package fabo
 
 import (
@@ -9,10 +11,7 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/fabo/pkg/redis"
 	"o.o/backend/com/fabo/pkg/webhook"
-	"o.o/backend/pkg/common/sql/cmsql"
 )
-
-type FaboDB *cmsql.Database
 
 var WireSet = wire.NewSet(
 	webhook.New,

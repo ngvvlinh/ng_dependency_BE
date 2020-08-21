@@ -1,3 +1,5 @@
+// +build wireinject
+
 package email
 
 import "github.com/google/wire"

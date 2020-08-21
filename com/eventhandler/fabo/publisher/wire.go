@@ -1,3 +1,5 @@
+// +build wireinject
+
 package publisher
 
 import "github.com/google/wire"

@@ -6,12 +6,9 @@ import (
 	shipnowcarrier "o.o/api/main/shipnow/carrier"
 	"o.o/backend/cmd/fabo-server/config"
 	config_server "o.o/backend/cogs/config/_server"
-	server_admin "o.o/backend/cogs/server/admin"
 	server_fabo "o.o/backend/cogs/server/fabo"
 	server_shop "o.o/backend/cogs/server/shop"
 	ghnv2 "o.o/backend/cogs/shipment/ghn/v2"
-	_ghtk "o.o/backend/cogs/shipment/ghtk"
-	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
 	"o.o/backend/com/fabo/main/fbmessaging"
@@ -20,13 +17,7 @@ import (
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
-	inventorypm "o.o/backend/com/main/inventory/pm"
-	invitationpm "o.o/backend/com/main/invitation/pm"
-	ledgerpm "o.o/backend/com/main/ledgering/pm"
-	moneytxpm "o.o/backend/com/main/moneytx/pm"
 	orderingpm "o.o/backend/com/main/ordering/pm"
-	receiptpm "o.o/backend/com/main/receipting/pm"
-	refundpm "o.o/backend/com/main/refund/pm"
 	shippingpm "o.o/backend/com/main/shipping/pm"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
@@ -37,8 +28,6 @@ import (
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/sql/sqltrace"
 	"o.o/backend/pkg/etop/api"
-	"o.o/backend/pkg/etop/api/admin"
-	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -67,22 +56,10 @@ type Output struct {
 	// pm
 	_catalogPM     *catalogpm.ProcessManager
 	_identityPM    *identitypm.ProcessManager
-	_inventoryPM   *inventorypm.ProcessManager
-	_invitationPM  *invitationpm.ProcessManager
-	_ledgerPM      *ledgerpm.ProcessManager
-	_moneytxPM     *moneytxpm.ProcessManager
 	_orderPM       *orderingpm.ProcessManager
-	_receiptPM     *receiptpm.ProcessManager
-	_refundPM      *refundpm.ProcessManager
 	_shippingPM    *shippingpm.ProcessManager
 	_fbuserPM      *fbuserpm.ProcessManager
 	_fbMessagingPM *fbmessaging.ProcessManager
-
-	// _affiliatePM      *affiliatepm.ProcessManager
-	// _purchaseOrderPM  *purchaseorderpm.ProcessManager
-	// _purchaseRefundPM *purchaserefundpm.ProcessManager
-	// _shipnowPM  *shipnowpm.ProcessManager
-	// _traderPM         *traderpm.ProcessManager
 
 	// inject
 	_s *sqlstore.Store
@@ -93,15 +70,11 @@ type Output struct {
 func BuildServers(
 	mainServer MainServer,
 	ghnServer ghnv2.GHNWebhookServer,
-	ghtkServer _ghtk.GHTKWebhookServer,
-	vtpostServer _vtpost.VTPostWebhookServer,
 	fbWebhook FBWebhookServer,
 ) []lifecycle.HTTPServer {
 	svrs := []lifecycle.HTTPServer{
 		{"Main   ", mainServer},
 		{"GHN    ", ghnServer},
-		{"GHTK   ", ghtkServer},
-		{"VTPOST ", vtpostServer},
 		{"Webhook", fbWebhook},
 	}
 	return svrs
@@ -112,8 +85,6 @@ type IntHandlers []httprpc.Server
 func BuildIntHandlers(
 	rootServers api.Servers,
 	shopServers shop.Servers,
-	adminServers admin.Servers,
-	sadminServers sadmin.Servers,
 	faboServers fabo.Servers,
 ) (hs IntHandlers) {
 	logging := middlewares.NewLogging()
@@ -121,9 +92,7 @@ func BuildIntHandlers(
 
 	hs = append(hs, rootServers...)
 	hs = append(hs, shopServers...)
-	hs = append(hs, adminServers...)
 	hs = append(hs, faboServers...)
-	hs = append(hs, sadminServers...)
 	hs = httprpc.WithHooks(hs, ssHooks, logging)
 	return hs
 }
@@ -134,7 +103,6 @@ func BuildMainServer(
 	healthService *health.Service,
 	intHandlers IntHandlers,
 	cfg config_server.SharedConfig,
-	adminImport server_admin.ImportServer,
 	shopImport server_shop.ImportHandler,
 	eventStream server_shop.EventStreamHandler,
 	downloadHandler server_shop.DownloadHandler,
@@ -160,7 +128,6 @@ func BuildMainServer(
 		mux.Handle(h.PathPrefix(), mwares(h))
 	}
 
-	mux.Handle(adminImport.PathPrefix(), mwares(adminImport))
 	mux.Handle(shopImport.PathPrefix(), mwares(shopImport))
 	mux.Handle(eventStream.PathPrefix(), eventStream)
 	mux.Handle(downloadHandler.PathPrefix(), downloadHandler)

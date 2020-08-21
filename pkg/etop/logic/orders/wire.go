@@ -1,3 +1,5 @@
+// +build wireinject
+
 package orderS
 
 import "github.com/google/wire"

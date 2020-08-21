@@ -3,10 +3,48 @@ package types
 import (
 	"context"
 
+	"o.o/api/main/connectioning"
+	"o.o/api/main/location"
+	"o.o/api/top/types/etc/connection_type"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/capi/dot"
 )
+
+type Config struct {
+	Endpoints []ConfigEndpoint
+}
+
+type ConfigEndpoint struct {
+	Provider connection_type.ConnectionProvider
+	Endpoint string
+}
+
+type ConfigEndpoints []ConfigEndpoint
+
+func (es ConfigEndpoints) GetByCarrier(carrier connection_type.ConnectionProvider) (string, bool) {
+	for _, e := range es {
+		if e.Provider == carrier {
+			return e.Endpoint, true
+		}
+	}
+	return "", false
+}
+
+type Driver interface {
+	GetShipmentDriver(
+		env string, locationQS location.QueryBus,
+		connection *connectioning.Connection,
+		shopConnection *connectioning.ShopConnection,
+		endpoints ConfigEndpoints,
+	) (ShipmentCarrier, error)
+
+	GetAffiliateShipmentDriver(
+		env string, locationQS location.QueryBus,
+		connection *connectioning.Connection,
+		endpoints ConfigEndpoints,
+	) (ShipmentCarrier, error)
+}
 
 type ShipmentCarrier interface {
 	Ping(context.Context) error

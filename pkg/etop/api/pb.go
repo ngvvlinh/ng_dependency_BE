@@ -2,9 +2,9 @@ package api
 
 import (
 	"o.o/api/top/int/etop"
+	"o.o/api/top/types/etc/account_tag"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/authorize/claims"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
@@ -23,7 +23,7 @@ func MixAccount(claim claims.Claim, m *etop.MixedAccount) ([]dot.ID, error) {
 	case m.AllShops:
 		ids := make([]dot.ID, 0, len(claim.AccountIDs))
 		for id, typ := range claim.AccountIDs {
-			if typ == model.TagShop {
+			if typ == account_tag.TagShop {
 				ids = append(ids, id)
 			}
 		}

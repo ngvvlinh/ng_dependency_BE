@@ -6,6 +6,7 @@ rules:
   - o.o/backend/com
   - o.o/backend/pb
   - o.o/backend/pkg/common
+  - o.o/backend/pkg/etc
   - o.o/backend/pkg/etop-handler/intctl
   - o.o/backend/pkg/etop-handler/webhook/sender
   - o.o/backend/pkg/etop/api

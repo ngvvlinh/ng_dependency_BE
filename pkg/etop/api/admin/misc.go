@@ -6,12 +6,12 @@ import (
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/account_tag"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/authorize/login"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
@@ -44,7 +44,7 @@ func (s *MiscService) AdminLoginAsAccount(ctx context.Context, q *admin.LoginAsA
 	}
 
 	switch cm.GetTag(q.AccountId) {
-	case model.TagShop:
+	case account_tag.TagShop:
 	default:
 		return nil, cm.Error(cm.InvalidArgument, "Must be shop account", nil)
 	}

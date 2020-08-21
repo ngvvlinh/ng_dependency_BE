@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	cmservice "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/apifw/servedoc"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/lifecycle"
@@ -41,8 +41,8 @@ func main() {
 
 	docPath := "sample/calc"
 	swaggerPath := "/doc/" + docPath + "/swagger.json"
-	mux.Handle("/doc/"+docPath, cmservice.RedocHandler())
-	mux.Handle(swaggerPath, cmservice.SwaggerHandler(docPath+"/swagger.json"))
+	mux.Handle("/doc/"+docPath, servedoc.RedocHandler())
+	mux.Handle(swaggerPath, servedoc.SwaggerHandler(docPath+"/swagger.json"))
 
 	// connect db
 	db, err := cmsql.Connect(cfg.Postgres)
@@ -59,7 +59,7 @@ func main() {
 	}
 
 	mux.Handle(ser.PathPrefix(), ser)
-	mux.Handle("/doc/sample/calc/", cmservice.RedocHandler())
+	mux.Handle("/doc/sample/calc/", servedoc.RedocHandler())
 
 	s := &http.Server{
 		Addr:    cfg.HTTP.Address(),

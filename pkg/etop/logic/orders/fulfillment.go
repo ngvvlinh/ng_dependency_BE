@@ -13,6 +13,7 @@ import (
 	"o.o/api/shopping/customering"
 	apishop "o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/inventory_auto"
 	"o.o/api/top/types/etc/shipping"
 	typeshippingprovider "o.o/api/top/types/etc/shipping_provider"
@@ -153,7 +154,7 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	resp = convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
+	resp = convertpb.PbOrder(query.Result.Order, nil, account_tag.TagShop)
 	resp.ShopName = shop.Name
 	if autoCreateFfm {
 		req := &apishop.OrderIDRequest{
@@ -204,7 +205,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 			return
 		}
 
-		resp.Order = convertpb.PbOrder(order, fulfillments, model.TagShop)
+		resp.Order = convertpb.PbOrder(order, fulfillments, account_tag.TagShop)
 		resp.Order.ShopName = "" // TODO: remove this line
 	}()
 

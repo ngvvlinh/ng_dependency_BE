@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
@@ -19,6 +20,7 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/randgenerator"
+	"o.o/backend/pkg/etc/typeutil"
 	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghn"
@@ -36,6 +38,30 @@ const (
 type GHNDriver struct {
 	client     *ghnclient.Client
 	locationQS location.QueryBus
+}
+
+func Connect(
+	env string, locationQS location.QueryBus,
+	conn *connectioning.Connection,
+	shopConn *connectioning.ShopConnection,
+) (carriertypes.ShipmentCarrier, error) {
+	clientID, err := strconv.Atoi(conn.EtopAffiliateAccount.GetUserID())
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "AffiliateAccount: UserID is invalid")
+	}
+
+	shopID, err := strconv.Atoi(conn.EtopAffiliateAccount.GetShopID())
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "AffiliateAcount: ShopID is invalid")
+	}
+	cfg := ghnclient.GHNAccountCfg{
+		ClientID:    clientID,
+		ShopID:      shopID,
+		Token:       conn.EtopAffiliateAccount.GetToken(),
+		AffiliateID: clientID,
+	}
+	driver := New(env, cfg, locationQS)
+	return driver, nil
 }
 
 func New(
@@ -76,7 +102,7 @@ func (d *GHNDriver) CreateFulfillment(
 		// harcode
 		noteCode = try_on.None
 	}
-	ghnNoteCode := etopmodel.GHNNoteCodeFromTryOn(noteCode)
+	ghnNoteCode := typeutil.GHNNoteCodeFromTryOn(noteCode)
 
 	fromQuery := &location.GetLocationQuery{
 		DistrictCode: args.FromDistrictCode,
@@ -209,7 +235,7 @@ func (d *GHNDriver) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fu
 		// harcode
 		noteCode = try_on.None
 	}
-	ghnNoteCode := etopmodel.GHNNoteCodeFromTryOn(noteCode)
+	ghnNoteCode := typeutil.GHNNoteCodeFromTryOn(noteCode)
 
 	fromQuery := &location.GetLocationQuery{
 		DistrictCode: addressFrom.DistrictCode,

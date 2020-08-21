@@ -6,6 +6,7 @@ import (
 
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -20,7 +21,7 @@ type ExportAttemptStore struct {
 	ft    ExportAttemptFilters
 	preds []interface{}
 
-	includeDeleted
+	includeDeleted sqlstore.IncludeDeleted
 }
 
 func ExportAttempt(ctx context.Context) *ExportAttemptStore {
@@ -45,7 +46,7 @@ func (s *ExportAttemptStore) NotYetExpired() *ExportAttemptStore {
 func (s *ExportAttemptStore) List() ([]*model.ExportAttempt, error) {
 	var items model.ExportAttempts
 	err := x.NewQuery().WithContext(s.ctx).
-		Where(s.preds...).Where(s.filterDeleted(&s.ft)).
+		Where(s.preds...).Where(s.includeDeleted.FilterDeleted(&s.ft)).
 		OrderBy("created_at DESC").Limit(100).
 		Find(&items)
 	return items, err

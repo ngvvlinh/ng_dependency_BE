@@ -1,3 +1,5 @@
+// +build wireinject
+
 package sms
 
 import "github.com/google/wire"

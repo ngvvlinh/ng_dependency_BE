@@ -6,31 +6,35 @@ import (
 	"o.o/api/top/external/types"
 	"o.o/backend/com/eventhandler/handler/intctl"
 	"o.o/backend/com/eventhandler/webhook/sender"
+	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/common/sql/cmsql"
+	callbackmodel "o.o/backend/pkg/etc/xmodel/callback/model"
+	callbackstore "o.o/backend/pkg/etc/xmodel/callback/sqlstore"
 	"o.o/backend/pkg/etop/apix/convertpb"
-	"o.o/backend/pkg/etop/model"
-	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
 type Producer mq.Producer
 
 type Service struct {
+	db         *cmsql.Database
 	producer   mq.Producer
 	redisStore redis.Store
 }
 
-func New(p Producer, r redis.Store) *Service {
+func New(db com.MainDB, p Producer, r redis.Store) *Service {
 	return &Service{
+		db:         db,
 		producer:   p,
 		redisStore: r,
 	}
 }
 
 func (s *Service) CreateWebhook(ctx context.Context, accountID dot.ID, r *types.CreateWebhookRequest) (*types.Webhook, error) {
-	n, err := sqlstore.Webhook(ctx).AccountID(accountID).Count()
+	n, err := callbackstore.Webhook(ctx, s.db).AccountID(accountID).Count()
 	if err != nil {
 		return nil, err
 	}
@@ -39,12 +43,12 @@ func (s *Service) CreateWebhook(ctx context.Context, accountID dot.ID, r *types.
 	}
 
 	item := convertpb.CreateWebhookRequestToModel(r, accountID)
-	err = sqlstore.Webhook(ctx).Create(item)
+	err = callbackstore.Webhook(ctx, s.db).Create(item)
 	if err != nil {
 		return nil, err
 	}
 
-	item, err = sqlstore.Webhook(ctx).ID(item.ID).AccountID(accountID).Get()
+	item, err = callbackstore.Webhook(ctx, s.db).ID(item.ID).AccountID(accountID).Get()
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +69,12 @@ func (s *Service) DeleteWebhook(ctx context.Context, accountID dot.ID, r *types.
 	// always send events after deleting webhooks
 	defer s.producer.SendJSON(0, intctl.NewKey(intctl.ChannelReloadWebhook), event)
 
-	err := sqlstore.Webhook(ctx).ID(r.Id).SoftDelete()
+	err := callbackstore.Webhook(ctx, s.db).ID(r.Id).SoftDelete()
 	if err != nil {
 		return nil, err
 	}
 
-	items, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
+	items, err := callbackstore.Webhook(ctx, s.db).AccountID(accountID).List()
 	if err != nil {
 		return nil, err
 	}
@@ -81,14 +85,14 @@ func (s *Service) DeleteWebhook(ctx context.Context, accountID dot.ID, r *types.
 }
 
 func (s *Service) GetWebhooks(ctx context.Context, accountID dot.ID) (*types.WebhooksResponse, error) {
-	items, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
+	items, err := callbackstore.Webhook(ctx, s.db).AccountID(accountID).List()
 	resp := &types.WebhooksResponse{
 		Webhooks: convertpb.PbWebhooks(items, s.loadWebhookStates(items)),
 	}
 	return resp, err
 }
 
-func (s *Service) loadWebhookStates(webhooks []*model.Webhook) []sender.WebhookStates {
+func (s *Service) loadWebhookStates(webhooks []*callbackmodel.Webhook) []sender.WebhookStates {
 	res := make([]sender.WebhookStates, len(webhooks))
 	for i, item := range webhooks {
 		res[i] = sender.LoadWebhookStates(s.redisStore, item.ID)

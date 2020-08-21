@@ -10,9 +10,10 @@ import (
 	apiaffiliate "o.o/api/top/services/affiliate"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
-	pbshop "o.o/backend/pkg/etop/api/shop"
-	modeletop "o.o/backend/pkg/etop/model"
+	product2 "o.o/backend/pkg/etop/api/shop/product"
+	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/capi/dot"
 )
 
@@ -26,12 +27,12 @@ type TradingService struct {
 func (s *TradingService) Clone() *TradingService { res := *s; return &res }
 
 func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetProductsEndpoint) error {
-	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+	if q.Context.Shop.ID != idutil.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
-		ShopID:  modeletop.EtopTradingAccountID,
+		ShopID:  idutil.EtopTradingAccountID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
@@ -44,8 +45,8 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 		productIds = append(productIds, product.ProductID)
 	}
 
-	supplyCommissionSettingMap := GetSupplyCommissionSettingByProductIdsMap(ctx, s.AffiliateQuery, modeletop.EtopTradingAccountID, productIds)
-	productPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, s.AffiliateQuery, modeletop.EtopTradingAccountID, productIds)
+	supplyCommissionSettingMap := GetSupplyCommissionSettingByProductIdsMap(ctx, s.AffiliateQuery, idutil.EtopTradingAccountID, productIds)
+	productPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, s.AffiliateQuery, idutil.EtopTradingAccountID, productIds)
 	var products []*apiaffiliate.SupplyProductResponse
 	for _, product := range query.Result.Products {
 		supplyCommissionSetting := supplyCommissionSettingMap[product.ProductID]
@@ -58,8 +59,8 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 		if productPromotion != nil {
 			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
 		}
-		productResult := pbshop.PbShopProductWithVariants(product)
-		productResult, err := pbshop.PopulateTradingProductWithInventoryCount(ctx, s.InventoryQuery, productResult)
+		productResult := product2.PbShopProductWithVariants(product)
+		productResult, err := trading.PopulateTradingProductWithInventoryCount(ctx, s.InventoryQuery, productResult)
 		if err != nil {
 			return err
 		}
@@ -78,12 +79,12 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 }
 
 func (s *TradingService) GetTradingProductPromotions(ctx context.Context, q *GetTradingProductPromotionsEndpoint) error {
-	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+	if q.Context.Shop.ID != idutil.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 	paging := cmapi.CMPaging(q.Paging)
 	query := &affiliate.ListShopProductPromotionsQuery{
-		ShopID:  modeletop.EtopTradingAccountID,
+		ShopID:  idutil.EtopTradingAccountID,
 		Paging:  *paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
@@ -100,7 +101,7 @@ func (s *TradingService) GetTradingProductPromotions(ctx context.Context, q *Get
 }
 
 func (s *TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *CreateOrUpdateTradingCommissionSettingEndpoint) error {
-	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+	if q.Context.Shop.ID != idutil.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 
@@ -133,11 +134,11 @@ func (s *TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Cont
 }
 
 func (s *TradingService) GetTradingProductPromotionByProductIDs(ctx context.Context, q *GetTradingProductPromotionByProductIDsEndpoint) error {
-	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+	if q.Context.Shop.ID != idutil.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 	productPromotionsQ := &affiliate.GetShopProductPromotionByProductIDsQuery{
-		ShopID:     modeletop.EtopTradingAccountID,
+		ShopID:     idutil.EtopTradingAccountID,
 		ProductIDs: q.ProductIds,
 	}
 	if err := s.AffiliateQuery.Dispatch(ctx, productPromotionsQ); err != nil {
@@ -150,7 +151,7 @@ func (s *TradingService) GetTradingProductPromotionByProductIDs(ctx context.Cont
 }
 
 func (s *TradingService) CreateTradingProductPromotion(ctx context.Context, q *CreateTradingProductPromotionEndpoint) error {
-	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+	if q.Context.Shop.ID != idutil.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 
@@ -162,7 +163,7 @@ func (s *TradingService) CreateTradingProductPromotion(ctx context.Context, q *C
 	}
 
 	cmd := &affiliate.CreateProductPromotionCommand{
-		ShopID:      modeletop.EtopTradingAccountID,
+		ShopID:      idutil.EtopTradingAccountID,
 		ProductID:   q.ProductId,
 		Amount:      q.Amount,
 		Code:        q.Code,
@@ -179,7 +180,7 @@ func (s *TradingService) CreateTradingProductPromotion(ctx context.Context, q *C
 }
 
 func (s *TradingService) UpdateTradingProductPromotion(ctx context.Context, q *UpdateTradingProductPromotionEndpoint) error {
-	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+	if q.Context.Shop.ID != idutil.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 	cmd := &affiliate.UpdateProductPromotionCommand{

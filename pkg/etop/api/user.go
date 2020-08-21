@@ -14,6 +14,7 @@ import (
 	"o.o/api/top/int/etop"
 	api "o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/authentication_method"
 	"o.o/api/top/types/etc/status3"
@@ -31,6 +32,7 @@ import (
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
 	authservice "o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/claims"
@@ -1158,9 +1160,9 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		account := accUserX.Account
 		switch {
 		case preferAccountID == account.ID,
-			preferAccountType == model.TagShop && account.Type == account_type.Shop,
-			preferAccountType == model.TagEtop && account.Type == account_type.Etop,
-			preferAccountType == model.TagAffiliate && account.Type == account_type.Affiliate:
+			preferAccountType == account_tag.TagShop && account.Type == account_type.Shop,
+			preferAccountType == account_tag.TagEtop && account.Type == account_type.Etop,
+			preferAccountType == account_tag.TagAffiliate && account.Type == account_type.Affiliate:
 			currentAccount = availableAccounts[i]
 			currentAccountID = currentAccount.Id
 		}
@@ -1175,7 +1177,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	// Retrieve shop account
 	if currentAccount != nil {
 		switch {
-		case model.IsShopID(currentAccountID):
+		case idutil.IsShopID(currentAccountID):
 			query := &identitymodelx.GetShopExtendedQuery{ShopID: currentAccountID}
 			if err := bus.Dispatch(ctx, query); err != nil {
 				return nil, nil, cm.ErrorTracef(cm.Internal, err, "")
@@ -1183,13 +1185,13 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 			resp.Shop = convertpb.PbShopExtended(query.Result)
 			respShop = query.Result.Shop
 
-		case model.IsAffiliateID(currentAccountID):
+		case idutil.IsAffiliateID(currentAccountID):
 			query := &identity.GetAffiliateByIDQuery{ID: currentAccountID}
 			if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
 				return nil, nil, cm.ErrorTracef(cm.Internal, err, "Account affiliate not found")
 			}
 			resp.Affiliate = convertpb.Convert_core_Affiliate_To_api_Affiliate(query.Result)
-		case model.IsEtopAccountID(currentAccountID):
+		case idutil.IsEtopAccountID(currentAccountID):
 			// nothing
 		default:
 			return nil, nil, cm.ErrorTracef(cm.Internal, nil, "Invalid account")

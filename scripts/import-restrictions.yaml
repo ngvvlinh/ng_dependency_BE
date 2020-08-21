@@ -1,24 +1,25 @@
 - baseImportPath: "./cmd/pgevent-forwarder"
   allowedImports:
+  - o.o/api/top/services/pgevent
   - o.o/backend/cmd/pgevent-forwarder
+  - o.o/backend/com/eventhandler
   - o.o/backend/com/handler/pgevent
   - o.o/backend/pb/common
   - o.o/backend/pb/services/pgevent
   - o.o/backend/pkg/common
+  - o.o/backend/pkg/etc/dbdecl
   - o.o/backend/pkg/etop/authorize/claims
   - o.o/backend/pkg/etop/authorize/middleware
   - o.o/backend/pkg/etop/model
-  - o.o/api/top/services/pgevent
-  - o.o/backend/com/eventhandler
 
-- baseImportPath: "./cmd/etop-uploader"
+- baseImportPath: "./cmd/uploader"
   allowedImports:
-  - o.o/backend/cmd/etop-uploader
-  - o.o/backend/pkg/common
-  - o.o/backend/pkg/etop/authorize/tokens
-  - o.o/backend/pkg/etop/authorize/middleware
+  - o.o/backend/cmd/uploader
   - o.o/backend/cogs/base
   - o.o/backend/cogs/storage
+  - o.o/backend/pkg/common
+  - o.o/backend/pkg/etop/authorize/middleware
+  - o.o/backend/pkg/etop/authorize/tokens
   - o.o/backend/pkg/etop/upload
 
 #- baseImportPath: "./cmd/supporting/crm-sync-service"
@@ -43,6 +44,7 @@
   - "./pkg/common/apifw/wrapper"
   - "./pkg/common/apifw/cmapi"
   - "./pkg/common/apifw/whitelabel"
+  - "./pkg/common/apifw/servedoc"
   allowedImports:
   - o.o/backend/pkg/common
   - o.o/backend/pkg/integration/sms
@@ -61,9 +63,9 @@
 
 - baseImportPath: "./cogs"
   allowedImports:
+  - o.o/backend/cogs
   - o.o/backend/com
   - o.o/backend/pkg
-  - o.o/backend/cogs
   - o.o/backend/res/dl/fabo
 
 - baseImportPath: "./pkg"
@@ -76,5 +78,5 @@
   - o.o/backend/pb
   - o.o/backend/pkg
   - o.o/backend/res/dl
-  - o.o/backend/zexp/api
   - o.o/backend/tools/pkg/acl
+  - o.o/backend/zexp/api

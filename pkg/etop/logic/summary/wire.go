@@ -1,3 +1,5 @@
+// +build wireinject
+
 package summary
 
 import "github.com/google/wire"

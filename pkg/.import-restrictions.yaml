@@ -4,6 +4,7 @@ rules:
   - o.o/api
   - o.o/backend/com
   - o.o/backend/pb
+  - o.o/backend/doc
   - o.o/backend/pkg
   - o.o/backend/res/dl
   - o.o/capi

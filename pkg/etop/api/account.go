@@ -5,13 +5,13 @@ import (
 
 	api "o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/account_tag"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
@@ -113,7 +113,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *pbcm.IDsReque
 
 func isAdmin(accountIDs map[dot.ID]int) bool {
 	for _, typ := range accountIDs {
-		if typ == model.TagEtop {
+		if typ == account_tag.TagEtop {
 			return true
 		}
 	}

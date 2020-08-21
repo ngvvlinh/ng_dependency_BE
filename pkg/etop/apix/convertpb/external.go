@@ -14,6 +14,7 @@ import (
 	"o.o/api/top/int/etop"
 	"o.o/api/top/int/types"
 	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
@@ -29,8 +30,8 @@ import (
 	customermodel "o.o/backend/com/shopping/customering/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	callbackmodel "o.o/backend/pkg/etc/xmodel/callback/model"
 	"o.o/backend/pkg/etop/api/convertpb"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
@@ -57,11 +58,11 @@ func PbPartner(m *identitymodel.Partner) *exttypes.Partner {
 	}
 }
 
-func CreateWebhookRequestToModel(m *exttypes.CreateWebhookRequest, accountID dot.ID) *model.Webhook {
+func CreateWebhookRequestToModel(m *exttypes.CreateWebhookRequest, accountID dot.ID) *callbackmodel.Webhook {
 	if m == nil {
 		return nil
 	}
-	return &model.Webhook{
+	return &callbackmodel.Webhook{
 		AccountID: accountID,
 		Entities:  m.Entities,
 		Fields:    m.Fields,
@@ -70,7 +71,7 @@ func CreateWebhookRequestToModel(m *exttypes.CreateWebhookRequest, accountID dot
 	}
 }
 
-func PbWebhooks(items []*model.Webhook, states []sender.WebhookStates) []*exttypes.Webhook {
+func PbWebhooks(items []*callbackmodel.Webhook, states []sender.WebhookStates) []*exttypes.Webhook {
 	res := make([]*exttypes.Webhook, len(items))
 	for i, item := range items {
 		res[i] = PbWebhook(item, states[i])
@@ -78,7 +79,7 @@ func PbWebhooks(items []*model.Webhook, states []sender.WebhookStates) []*exttyp
 	return res
 }
 
-func PbWebhook(m *model.Webhook, s sender.WebhookStates) *exttypes.Webhook {
+func PbWebhook(m *callbackmodel.Webhook, s sender.WebhookStates) *exttypes.Webhook {
 	if m == nil {
 		return nil
 	}
@@ -129,7 +130,7 @@ func PbOrder(m *ordermodel.Order) *exttypes.Order {
 		ExternalId:                dot.String(m.ExternalOrderID),
 		ExternalCode:              dot.String(m.EdCode),
 		ExternalUrl:               dot.String(m.ExternalURL),
-		SelfUrl:                   PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
+		SelfUrl:                   PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), account_tag.TagShop)),
 		CustomerAddress:           PbOrderAddress(m.CustomerAddress),
 		ShippingAddress:           PbOrderAddress(m.ShippingAddress),
 		CreatedAt:                 cmapi.PbTime(m.CreatedAt),
@@ -190,7 +191,7 @@ func PbOrderWithoutShipping(m *ordermodel.Order) *exttypes.OrderWithoutShipping 
 		ExternalId:      dot.String(m.ExternalOrderID),
 		ExternalCode:    dot.String(m.EdCode),
 		ExternalUrl:     dot.String(m.ExternalURL),
-		SelfUrl:         PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
+		SelfUrl:         PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), account_tag.TagShop)),
 		CustomerAddress: PbOrderAddress(m.CustomerAddress),
 		ShippingAddress: PbOrderAddress(m.ShippingAddress),
 		CreatedAt:       cmapi.PbTime(m.CreatedAt),
@@ -427,7 +428,7 @@ func PbFulfillment(m *shipmodel.Fulfillment) *exttypes.Fulfillment {
 		Id:                       m.ID,
 		OrderId:                  m.OrderID,
 		ShopId:                   m.ShopID,
-		SelfUrl:                  PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), model.TagShop)),
+		SelfUrl:                  PNonZeroString(m.SelfURL(cm.MainSiteBaseURL(), account_tag.TagShop)),
 		TotalItems:               cmapi.PbPtrInt(m.TotalItems),
 		BasketValue:              cmapi.PbPtrInt(m.BasketValue),
 		CreatedAt:                cmapi.PbTime(m.CreatedAt),

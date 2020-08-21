@@ -12,6 +12,7 @@ import (
 	shiptypes "o.o/api/main/shipping/types"
 	etop "o.o/api/top/int/etop"
 	"o.o/api/top/int/types"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/gender"
 	addressmodel "o.o/backend/com/main/address/model"
 	catalogconvert "o.o/backend/com/main/catalog/convert"
@@ -26,6 +27,7 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etc/typeutil"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -495,9 +497,9 @@ func OrderShippingToModel(ctx context.Context, m *types.OrderShipping, mo *order
 
 	if m.TryOn != 0 {
 		mo.TryOn = m.TryOn
-		mo.GhnNoteCode = model.GHNNoteCodeFromTryOn(m.TryOn)
+		mo.GhnNoteCode = typeutil.GHNNoteCodeFromTryOn(m.TryOn)
 	} else if mo.GhnNoteCode != 0 {
-		mo.TryOn = model.TryOnFromGHNNoteCode(mo.GhnNoteCode)
+		mo.TryOn = typeutil.TryOnFromGHNNoteCode(mo.GhnNoteCode)
 	}
 
 	// Coalesce takes from left to right while PatchInt takes from right
@@ -736,7 +738,7 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 	if mo != nil {
 		ff.Order = PbOrder(mo, nil, accType)
 	}
-	if accType == model.TagEtop {
+	if accType == account_tag.TagEtop {
 		ff.AdminNote = m.AdminNote
 	}
 	return ff
@@ -1037,7 +1039,7 @@ func PbMoneyTransactionShippingExternalLineExtended(m *txmodel.MoneyTransactionS
 		ExternalClosedAt:                   cmapi.PbTime(m.ExternalClosedAt),
 	}
 	if m.Fulfillment != nil && m.Fulfillment.ID != 0 {
-		res.Fulfillment = PbFulfillment(m.Fulfillment, model.TagEtop, m.Shop, m.Order)
+		res.Fulfillment = PbFulfillment(m.Fulfillment, account_tag.TagEtop, m.Shop, m.Order)
 	}
 	return res
 }
@@ -1234,10 +1236,10 @@ func Convert_core_Fulfillments_To_api_XFulfillments(items []*shipping.Fulfillmen
 func FulfillmentSelfURL(ffm *shipping.Fulfillment, accType int) string {
 	baseURL := cm.MainSiteBaseURL()
 	switch accType {
-	case model.TagEtop:
+	case account_tag.TagEtop:
 		return ""
 
-	case model.TagShop:
+	case account_tag.TagShop:
 		if baseURL == "" || ffm.ShopID == 0 || ffm.ID == 0 {
 			return ""
 		}
@@ -1389,10 +1391,10 @@ func Convert_core_Order_To_api_Order(in *ordering.Order, ffms []*shipping.Fulfil
 func OrderSelfURL(orderID dot.ID, shopID dot.ID, accType int) string {
 	baseURL := cm.MainSiteBaseURL()
 	switch accType {
-	case model.TagEtop:
+	case account_tag.TagEtop:
 		return ""
 
-	case model.TagShop:
+	case account_tag.TagShop:
 		if baseURL == "" || shopID == 0 || orderID == 0 {
 			return ""
 		}

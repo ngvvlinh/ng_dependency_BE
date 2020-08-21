@@ -57,7 +57,8 @@ type AdditionalFee struct {
 	Rules             []*AdditionalFeeRule                     `json:"rules"`
 }
 
-/* Cách tính AdditionalFeeRule
+/*
+Cách tính AdditionalFeeRule
 {
 	MinValue: 300,
 	MaxValue: 500,

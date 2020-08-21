@@ -7,6 +7,7 @@ import (
 	"time"
 
 	ordertypes "o.o/api/main/ordering/types"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/fee"
 	"o.o/api/top/types/etc/ghn_note_code"
 	"o.o/api/top/types/etc/order_source"
@@ -20,6 +21,7 @@ import (
 	catalogmodel "o.o/backend/com/main/catalog/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etc/typeutil"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -131,10 +133,10 @@ type Order struct {
 
 func (m *Order) SelfURL(baseURL string, accType int) string {
 	switch accType {
-	case model.TagEtop:
+	case account_tag.TagEtop:
 		return ""
 
-	case model.TagShop:
+	case account_tag.TagShop:
 		if baseURL == "" || m.ShopID == 0 || m.ID == 0 {
 			return ""
 		}
@@ -170,12 +172,12 @@ func (m *Order) GetTryOn() try_on.TryOnCode {
 	if m.TryOn != 0 {
 		return m.TryOn
 	}
-	return model.TryOnFromGHNNoteCode(m.GhnNoteCode)
+	return typeutil.TryOnFromGHNNoteCode(m.GhnNoteCode)
 }
 
 func (m *Order) BeforeInsert() error {
 	if m.TryOn == 0 && m.GhnNoteCode != 0 {
-		m.TryOn = model.TryOnFromGHNNoteCode(m.GhnNoteCode)
+		m.TryOn = typeutil.TryOnFromGHNNoteCode(m.GhnNoteCode)
 	}
 	if m.ShopShipping != nil {
 		if err := m.ShopShipping.Validate(); err != nil {
@@ -198,7 +200,7 @@ func (m *Order) BeforeInsert() error {
 
 func (m *Order) BeforeUpdate() error {
 	if m.TryOn == 0 && m.GhnNoteCode != 0 {
-		m.TryOn = model.TryOnFromGHNNoteCode(m.GhnNoteCode)
+		m.TryOn = typeutil.TryOnFromGHNNoteCode(m.GhnNoteCode)
 	}
 	if m.ShopShipping != nil && m.ShopShipping.ShippingProvider != 0 {
 		if err := m.ShopShipping.Validate(); err != nil {

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	health "o.o/backend/pkg/common/apifw/health"
-	cmservice "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/apifw/servedoc"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/lifecycle"
@@ -49,8 +49,8 @@ func main() {
 
 	docPath := "sample/counter"
 	swaggerPath := "/doc/" + docPath + "/swagger.json"
-	mux.Handle("/doc/"+docPath, cmservice.RedocHandler())
-	mux.Handle(swaggerPath, cmservice.SwaggerHandler(docPath+"/swagger.json"))
+	mux.Handle("/doc/"+docPath, servedoc.RedocHandler())
+	mux.Handle(swaggerPath, servedoc.SwaggerHandler(docPath+"/swagger.json"))
 
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {

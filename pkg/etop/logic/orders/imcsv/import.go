@@ -15,6 +15,7 @@ import (
 
 	"o.o/api/main/location"
 	"o.o/api/top/int/types"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/ghn_note_code"
 	"o.o/api/top/types/etc/order_source"
 	"o.o/api/top/types/etc/payment_method"
@@ -35,6 +36,7 @@ import (
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etc/typeutil"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/model"
@@ -117,7 +119,7 @@ func (im *Import) handleImportOrder(ctx context.Context, c *httpx.Context, shop 
 	}
 
 	// We only store file if the file is valid.
-	importID := cm.NewIDWithTag(model.TagImport)
+	importID := cm.NewIDWithTag(account_tag.TagImport)
 	uploadCmd, err := uploadFile(im.uploader, importID, rawData)
 	if err != nil {
 		return nil, err
@@ -300,7 +302,7 @@ func (im *Import) handleImportOrder(ctx context.Context, c *httpx.Context, shop 
 
 	resp := &types.ImportOrdersResponse{
 		Data:         imp.toSpreadsheetData(idx),
-		Orders:       convertpb.PbOrders(orders, model.TagShop),
+		Orders:       convertpb.PbOrders(orders, account_tag.TagShop),
 		ImportErrors: cmapi.PbErrors(_errs),
 	}
 	// Remove failed order from the response
@@ -821,7 +823,7 @@ func parseRowToModel(locationBus location.QueryBus, idx imcsv.Indexer, mode Mode
 		ShopShipping:              nil,
 		IsOutsideEtop:             false, // will be filled later
 		GhnNoteCode:               rowOrder.GHNNoteCode,
-		TryOn:                     model.TryOnFromGHNNoteCode(rowOrder.GHNNoteCode),
+		TryOn:                     typeutil.TryOnFromGHNNoteCode(rowOrder.GHNNoteCode),
 	}
 	if rowOrder.ShopCOD != 0 {
 		order.PaymentMethod = payment_method.COD

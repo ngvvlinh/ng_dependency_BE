@@ -1,3 +1,5 @@
+// +build wireinject
+
 package sqlstore
 
 import "github.com/google/wire"

@@ -19,6 +19,7 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/randgenerator"
+	"o.o/backend/pkg/etc/typeutil"
 	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghn"
@@ -72,7 +73,7 @@ func (d *GHNDriver) CreateFulfillment(
 		// harcode
 		noteCode = try_on.None
 	}
-	ghnNoteCode := etopmodel.GHNNoteCodeFromTryOn(noteCode)
+	ghnNoteCode := typeutil.GHNNoteCodeFromTryOn(noteCode)
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}

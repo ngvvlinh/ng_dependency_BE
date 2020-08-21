@@ -38,7 +38,7 @@ import (
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
-	cmservice "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/apifw/servedoc"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/lifecycle"
@@ -151,11 +151,11 @@ func BuildMainServer(
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		for _, s := range strings.Split("etop/sadmin,etop/admin,etop/shop,etop/integration,etop/affiliate,services/crm,services/affiliate,fabo", ",") {
 			swaggerPath := "/doc/" + s + "/swagger.json"
-			mux.Handle("/doc/"+s, cmservice.RedocHandler())
-			mux.Handle(swaggerPath, cmservice.SwaggerHandler(s+"/swagger.json"))
+			mux.Handle("/doc/"+s, servedoc.RedocHandler())
+			mux.Handle(swaggerPath, servedoc.SwaggerHandler(s+"/swagger.json"))
 		}
-		mux.Handle("/doc/etop", cmservice.RedocHandler())
-		mux.Handle("/doc/etop/swagger.json", cmservice.SwaggerHandler("etop/swagger.json"))
+		mux.Handle("/doc/etop", servedoc.RedocHandler())
+		mux.Handle("/doc/etop/swagger.json", servedoc.SwaggerHandler("etop/swagger.json"))
 
 	} else {
 		ll.Warn("DOCUMENTATION IS DISABLED (config.serve_doc = false)")
@@ -165,8 +165,8 @@ func BuildMainServer(
 	// always serve partner documentation
 	mux.Handle("/doc/ext", http.RedirectHandler("/doc", http.StatusTemporaryRedirect))
 	for _, s := range strings.Split("shop,partner,partnercarrier", ",") {
-		mux.Handle("/doc/ext/"+s, cmservice.RedocHandler())
-		mux.Handle("/doc/ext/"+s+"/swagger.json", cmservice.SwaggerHandler("external/"+s+"/swagger.json"))
+		mux.Handle("/doc/ext/"+s, servedoc.RedocHandler())
+		mux.Handle("/doc/ext/"+s+"/swagger.json", servedoc.SwaggerHandler("external/"+s+"/swagger.json"))
 	}
 
 	h := middleware.CORS(mux)

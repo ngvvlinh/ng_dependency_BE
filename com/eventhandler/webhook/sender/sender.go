@@ -18,8 +18,8 @@ import (
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
-	"o.o/backend/pkg/etop/model"
-	"o.o/backend/pkg/etop/sqlstore"
+	callbackmodel "o.o/backend/pkg/etc/xmodel/callback/model"
+	callbackstore "o.o/backend/pkg/etc/xmodel/callback/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -63,7 +63,7 @@ func (s *WebhookSender) Load() error {
 		ll.Fatal("already init")
 	}
 
-	var items model.Webhooks
+	var items callbackmodel.Webhooks
 	if err := s.db.
 		Where("deleted_at IS NULL").
 		OrderBy("account_id").
@@ -83,7 +83,7 @@ func (s *WebhookSender) Load() error {
 }
 
 func (s *WebhookSender) Reload(ctx context.Context, accountID dot.ID) error {
-	webhooks, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
+	webhooks, err := callbackstore.Webhook(ctx, s.db).AccountID(accountID).List()
 	if err != nil {
 		ll.Error("webhook/reload", l.Error(err))
 		return err

@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/lib/pq"
 
@@ -23,6 +24,11 @@ import (
 	"o.o/common/xerrors"
 )
 
+type FilterDeletable interface {
+	Prefix() string
+	ByDeletedAt(time.Time) *sq.ColumnFilter
+}
+
 type IncludeDeleted bool
 
 func (includeDeleted IncludeDeleted) Check(query cmsql.Query, ft sq.WriterTo) cmsql.Query {
@@ -30,6 +36,18 @@ func (includeDeleted IncludeDeleted) Check(query cmsql.Query, ft sq.WriterTo) cm
 		return query
 	}
 	return query.Where(ft)
+}
+
+func (includeDeleted IncludeDeleted) FilterDeleted(f FilterDeletable) sq.WriterTo {
+	if includeDeleted {
+		return nil
+	}
+	s := "deleted_at IS NULL"
+	p := f.Prefix()
+	if p != "" {
+		s = p + "." + s
+	}
+	return sq.NewExpr(s)
 }
 
 type FilterWhitelist struct {

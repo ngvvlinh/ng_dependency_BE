@@ -13,6 +13,7 @@ import (
 	"o.o/api/shopping/addressing"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/int/types"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/inventory_auto"
 	"o.o/api/top/types/etc/payment_method"
@@ -288,7 +289,7 @@ func (s *OrderLogic) CreateOrder(
 		}
 		return nil, err
 	}
-	result := convertpb.PbOrder(order, nil, model.TagShop)
+	result := convertpb.PbOrder(order, nil, account_tag.TagShop)
 	result.ShopName = shop.Name
 	return result, nil
 }
@@ -683,7 +684,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, shop *identitymodel.Shop, 
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
+	result := convertpb.PbOrder(query.Result.Order, nil, account_tag.TagShop)
 	result.ShopName = shop.Name
 
 	return result, nil
@@ -1049,7 +1050,7 @@ func (s *OrderLogic) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.
 	}
 
 	resp := &types.OrderWithErrorsResponse{
-		Order:  convertpb.PbOrder(getOrderQuery.Result.Order, getOrderQuery.Result.Fulfillments, model.TagShop),
+		Order:  convertpb.PbOrder(getOrderQuery.Result.Order, getOrderQuery.Result.Fulfillments, account_tag.TagShop),
 		Errors: cmapi.PbErrors(errs),
 
 		FulfillmentErrors: cmapi.PbErrors(errs),

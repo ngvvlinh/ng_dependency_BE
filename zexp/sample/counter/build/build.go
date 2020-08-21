@@ -3,7 +3,7 @@ package build
 import (
 	"net/http"
 
-	cmservice "o.o/backend/pkg/common/apifw/service"
+	"o.o/backend/pkg/common/apifw/servedoc"
 	"o.o/backend/pkg/common/lifecycle"
 	"o.o/backend/zexp/sample/counter/config"
 	"o.o/backend/zexp/sample/counter/service"
@@ -23,11 +23,11 @@ func BuildServer(cfg config.Config, counterService service.CounterHandler) lifec
 
 	docPath := "sample/calc"
 	swaggerPath := "/doc/" + docPath + "/swagger.json"
-	mux.Handle("/doc/"+docPath, cmservice.RedocHandler())
-	mux.Handle(swaggerPath, cmservice.SwaggerHandler(docPath+"/swagger.json"))
+	mux.Handle("/doc/"+docPath, servedoc.RedocHandler())
+	mux.Handle(swaggerPath, servedoc.SwaggerHandler(docPath+"/swagger.json"))
 
 	mux.Handle(counterService.PathPrefix(), counterService)
-	mux.Handle("/doc/sample/calc/", cmservice.RedocHandler())
+	mux.Handle("/doc/sample/calc/", servedoc.RedocHandler())
 
 	s := &http.Server{
 		Addr:    cfg.HTTP.Address(),

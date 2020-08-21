@@ -1,13 +1,13 @@
 package eventhandler
 
 import (
-	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etc/dbdecl"
 )
 
 type TopicDef struct {
 	Name       string
 	Partitions int
-	DBName     model.DBName
+	DBName     dbdecl.DBName
 }
 
 func MapTopics(topics []TopicDef) map[string]TopicDef {

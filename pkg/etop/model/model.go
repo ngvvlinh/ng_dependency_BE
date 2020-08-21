@@ -1,12 +1,9 @@
 package model
 
 import (
-	"encoding/json"
-	"strings"
 	"time"
 
 	"o.o/api/top/types/etc/account_type"
-	"o.o/api/top/types/etc/ghn_note_code"
 	"o.o/api/top/types/etc/order_source"
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/shipping"
@@ -14,9 +11,7 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
-	"o.o/api/top/types/etc/try_on"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
 )
@@ -30,15 +25,10 @@ type (
 	CodeType  string
 
 	ShippingRouteType string
-
-	DBName string
 )
 
 // Type constants
 const (
-	DBMain     DBName = "main"
-	DBNotifier DBName = "notifier"
-
 	TypeShippingSourceEtop    ShippingPriceSource = "etop"
 	TypeShippingSourceCarrier ShippingPriceSource = "carrier"
 
@@ -50,19 +40,6 @@ const (
 
 	FFShop     FulfillmentEndpoint = "shop"
 	FFCustomer FulfillmentEndpoint = "customer"
-
-	// Don't change these values
-	TagUser      = 17
-	TagPartner   = 21
-	TagShop      = 33
-	TagAffiliate = 35
-	TagCarrier   = 37
-	TagEtop      = 101
-	TagImport    = 111
-
-	EtopAccountID        = TagEtop
-	EtopTradingAccountID = 1000015764575267699
-	TopShipID            = 1000030662086749358
 
 	CurrencyVND = "vnd"
 
@@ -201,32 +178,6 @@ func VerifyShippingProvider(s shipping_provider.ShippingProvider) bool {
 	return false
 }
 
-func TryOnFromGHNNoteCode(c ghn_note_code.GHNNoteCode) try_on.TryOnCode {
-	switch c {
-	case ghn_note_code.KHONGCHOXEMHANG:
-		return try_on.None
-	case ghn_note_code.CHOXEMHANGKHONGTHU:
-		return try_on.Open
-	case ghn_note_code.CHOTHUHANG:
-		return try_on.Try
-	default:
-		return 0
-	}
-}
-
-func GHNNoteCodeFromTryOn(to try_on.TryOnCode) ghn_note_code.GHNNoteCode {
-	switch to {
-	case try_on.None:
-		return ghn_note_code.KHONGCHOXEMHANG
-	case try_on.Open:
-		return ghn_note_code.CHOXEMHANGKHONGTHU
-	case try_on.Try:
-		return ghn_note_code.CHOTHUHANG
-	default:
-		return 0
-	}
-}
-
 type Unit struct {
 	ID       string  `json:"id"`
 	Code     string  `json:"code"`
@@ -301,67 +252,4 @@ type ShippingSourceSecret struct {
 
 	// Use for VTPost
 	GroupAddressID int `json:"GroupAddressID"`
-}
-
-// +sqlgen
-type Webhook struct {
-	ID        dot.ID
-	AccountID dot.ID
-	Entities  []string
-	Fields    []string
-	URL       string
-	Metadata  string
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-	DeletedAt time.Time
-}
-
-func (m *Webhook) BeforeInsert() error {
-	if m == nil {
-		return cm.Errorf(cm.InvalidArgument, nil, "empty data")
-	}
-	if m.AccountID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "missing Name")
-	}
-	if !validate.URL(m.URL) {
-		return cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ url không hợp lệ")
-	}
-	if cmenv.IsProd() && !strings.HasPrefix(m.URL, "https://") {
-		return cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ url phải là https://")
-	}
-	if len(m.Entities) == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "missing entity")
-	}
-	if len(m.Fields) > 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Thông tin fields chưa được hỗ trợ, vui lòng để trống")
-	}
-
-	mp := make(map[string]bool)
-	for _, item := range m.Entities {
-		if !validate.LowercaseID(item) {
-			return cm.Errorf(cm.InvalidArgument, nil, `invalid entity: "%v"`, item)
-		}
-		switch item {
-		case "order", "fulfillment", "product", "variant", "customer", "inventory_level", "customer_address", "customer_group", "customer_group_relationship", "product_collection", "product_collection_relationship":
-			if mp[item] {
-				return cm.Errorf(cm.InvalidArgument, nil, `duplicated entity: "%v"`, item)
-			}
-			mp[item] = true
-		default:
-			return cm.Errorf(cm.InvalidArgument, nil, `unknown entity: "%v"`, item)
-		}
-	}
-
-	m.ID = cm.NewID()
-	return nil
-}
-
-// +sqlgen
-type Callback struct {
-	ID        dot.ID
-	WebhookID dot.ID
-	AccountID dot.ID
-	CreatedAt time.Time `sq:"create"`
-	Changes   json.RawMessage
-	Result    json.RawMessage // WebhookStatesError
 }

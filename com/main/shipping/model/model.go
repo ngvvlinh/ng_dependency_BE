@@ -6,6 +6,7 @@ import (
 	"time"
 
 	ordertypes "o.o/api/main/ordering/types"
+	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_payment_type"
@@ -177,10 +178,10 @@ type Fulfillment struct {
 
 func (f *Fulfillment) SelfURL(baseURL string, accType int) string {
 	switch accType {
-	case etopmodel.TagEtop:
+	case account_tag.TagEtop:
 		return ""
 
-	case etopmodel.TagShop:
+	case account_tag.TagShop:
 		if baseURL == "" || f.ShopID == 0 || f.ID == 0 {
 			return ""
 		}

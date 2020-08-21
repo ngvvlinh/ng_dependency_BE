@@ -21,12 +21,14 @@ var _ connectioning.QueryService = &ConnectionQuery{}
 type ConnectionQuery struct {
 	connectionStore     sqlstore.ConnectionStoreFactory
 	shopConnectionStore sqlstore.ShopConnectionStoreFactory
+	mapServices         shippingservices.MapShipmentServices
 }
 
-func NewConnectionQuery(db com.MainDB) *ConnectionQuery {
+func NewConnectionQuery(db com.MainDB, mapServices shippingservices.MapShipmentServices) *ConnectionQuery {
 	return &ConnectionQuery{
 		connectionStore:     sqlstore.NewConnectionStore(db),
 		shopConnectionStore: sqlstore.NewShopConnectionStore(db),
+		mapServices:         mapServices,
 	}
 }
 
@@ -64,7 +66,7 @@ func (q *ConnectionQuery) ListConnectionServicesByID(ctx context.Context, id dot
 		if !ok {
 			return res, nil
 		}
-		services := shippingservices.GetServicesByCarrier(carrier)
+		services := q.mapServices.ByCarrier(carrier)
 		for _, s := range services {
 			res = append(res, &connectioning.ConnectionService{
 				ServiceID: s.ServiceID,

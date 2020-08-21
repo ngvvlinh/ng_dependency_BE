@@ -8,7 +8,6 @@ import (
 	"o.o/backend/com/eventhandler/pgevent"
 	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/mq"
-	"o.o/backend/pkg/common/sql/cmsql"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
 	"o.o/common/l"
 )
@@ -16,9 +15,7 @@ import (
 var ll = l.New()
 
 type Handler struct {
-	db           *cmsql.Database
 	historyStore historysqlstore.HistoryStoreFactory
-	consumer     mq.KafkaConsumer
 	producer     *mq.KafkaProducer
 	prefix       string
 
@@ -30,7 +27,6 @@ type Handler struct {
 
 func New(
 	db com.MainDB,
-	consumer mq.KafkaConsumer,
 	producer *mq.KafkaProducer,
 	prefix string,
 	fbuserQ fbusering.QueryBus,
@@ -39,9 +35,7 @@ func New(
 	indentityQuerybus identity.QueryBus,
 ) *Handler {
 	h := &Handler{
-		db:               db,
 		historyStore:     historysqlstore.NewHistoryStore(db),
-		consumer:         consumer,
 		producer:         producer,
 		prefix:           prefix + "_pgrid_",
 		fbuserQuery:      fbuserQ,
