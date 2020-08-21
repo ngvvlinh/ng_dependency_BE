@@ -257,8 +257,14 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	bankService := &api.BankService{
 		Session: session,
 	}
+	addressAggregate := address.NewAggregateAddress(busBus, mainDB, queryBus)
+	addressCommandBus := address.AddressAggregateMessageBus(addressAggregate)
+	addressQueryService := address.NewQueryAddress(mainDB, busBus)
+	addressQueryBus := address.QueryServiceMessageBus(addressQueryService)
 	addressService := &api.AddressService{
-		Session: session,
+		Session:     session,
+		AddressAggr: addressCommandBus,
+		AddressQS:   addressQueryBus,
 	}
 	invitationConfig := cfg.Invitation
 	customerQuery := query2.NewCustomerQuery(mainDB)
@@ -323,8 +329,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		InventoryAggr:  inventoryCommandBus,
 		InventoryQuery: inventoryQueryBus,
 	}
-	addressQueryService := address.NewQueryService(mainDB)
-	addressQueryBus := address.QueryServiceMessageBus(addressQueryService)
 	accountAccountService := &account.AccountService{
 		Session:       session,
 		IdentityAggr:  commandBus,
@@ -338,8 +342,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	customerAggregate := aggregate6.NewCustomerAggregate(busBus, mainDB)
 	customeringCommandBus := aggregate6.CustomerAggregateMessageBus(customerAggregate)
-	addressAggregate := aggregate6.NewAddressAggregate(mainDB)
-	addressingCommandBus := aggregate6.AddressAggregateMessageBus(addressAggregate)
+	aggregateAddressAggregate := aggregate6.NewAddressAggregate(mainDB)
+	addressingCommandBus := aggregate6.AddressAggregateMessageBus(aggregateAddressAggregate)
 	addressQuery := query2.NewAddressQuery(mainDB)
 	addressingQueryBus := query2.AddressQueryMessageBus(addressQuery)
 	orderingQueryService := ordering.NewQueryService(mainDB)

@@ -5,38 +5,49 @@ import (
 	"time"
 
 	orderv1types "o.o/api/main/ordering/types"
+	addresstype "o.o/api/top/types/etc/address_type"
 	"o.o/capi/dot"
+	"o.o/common/jsonx"
 )
 
 type Address struct {
-	ID        dot.ID
-	FullName  string
-	FirstName string
-	LastName  string
-	Phone     string
-	Position  string
-	Email     string
-
-	Country  string
-	City     string
-	Province string
-	District string
-	Ward     string
-	Zip      string
-
+	ID           dot.ID
+	FullName     string
+	FirstName    string
+	LastName     string
+	Phone        string
+	Position     string
+	Email        string
+	Country      string
+	City         string
+	Province     string
+	District     string
+	Ward         string
+	Zip          string
 	DistrictCode string
 	ProvinceCode string
 	WardCode     string
-
-	Company     string
-	Address1    string
-	Address2    string
-	Type        string
-	AccountID   dot.ID
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Coordinates *orderv1types.Coordinates
+	Company      string
+	Address1     string
+	Address2     string
+	Type         addresstype.AddressType
+	AccountID    dot.ID
+	CreatedAt    time.Time `sq:"create"`
+	UpdatedAt    time.Time `sq:"update"`
+	Coordinates  *orderv1types.Coordinates
+	Notes        *AddressNote
 }
+
+func (m *Address) String() string { return jsonx.MustMarshalToString(m) }
+
+type AddressNote struct {
+	Note       string `json:"note"`
+	OpenTime   string `json:"open_time"`
+	LunchBreak string `json:"lunch_break"`
+	Other      string `json:"other"`
+}
+
+func (m *AddressNote) String() string { return jsonx.MustMarshalToString(m) }
 
 func (a *Address) ToOrderAddress() *orderv1types.Address {
 	if a == nil {

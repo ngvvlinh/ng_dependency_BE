@@ -3,11 +3,14 @@ package convert
 import (
 	"o.o/api/main/address"
 	ordertypes "o.o/api/main/ordering/types"
+	"o.o/api/top/types/etc/address_type"
+	"o.o/backend/com/main/address/model"
 	addressmodel "o.o/backend/com/main/address/model"
 )
 
 // +gen:convert: o.o/backend/com/main/address/model -> o.o/api/main/ordering/types
 // +gen:convert: o.o/backend/com/main/address/model -> o.o/api/main/address
+// +gen:convert: o.o/api/main/address
 
 func AddressToModel(in *address.Address) (out *addressmodel.Address) {
 	if in == nil {
@@ -33,19 +36,22 @@ func AddressToModel(in *address.Address) (out *addressmodel.Address) {
 		Company:      in.Company,
 		Address1:     in.Address1,
 		Address2:     in.Address2,
-		Type:         in.Type,
+		Type:         in.Type.String(),
 		AccountID:    in.AccountID,
 		CreatedAt:    in.CreatedAt,
 		UpdatedAt:    in.UpdatedAt,
+		Notes:        Convert_address_AddressNote_addressmodel_AddressNote(in.Notes, nil),
 		Coordinates:  CoordinatesDB(in.Coordinates),
 	}
 	return
 }
 
-func Address(in *addressmodel.Address) (out *address.Address) {
+func Address(in *model.Address) (out *address.Address) {
 	if in == nil {
 		return nil
 	}
+	addressType, _ := address_type.ParseAddressType(in.Type)
+
 	out = &address.Address{
 		ID:           in.ID,
 		FullName:     in.FullName,
@@ -66,11 +72,38 @@ func Address(in *addressmodel.Address) (out *address.Address) {
 		Company:      in.Company,
 		Address1:     in.Address1,
 		Address2:     in.Address2,
-		Type:         in.Type,
+		Type:         addressType,
 		AccountID:    in.AccountID,
 		CreatedAt:    in.CreatedAt,
 		UpdatedAt:    in.UpdatedAt,
+		Notes:        Convert_addressmodel_AddressNote_address_AddressNote(in.Notes, nil),
 		Coordinates:  Coordinates(in.Coordinates),
+	}
+	return
+}
+
+func AddressNote(in *addressmodel.AddressNote) (out *address.AddressNote) {
+	if in == nil {
+		return nil
+	}
+	out = &address.AddressNote{
+		LunchBreak: in.LunchBreak,
+		Note:       in.Note,
+		OpenTime:   in.OpenTime,
+		Other:      in.Other,
+	}
+	return
+}
+
+func AddressNoteDB(in *address.AddressNote) (out *addressmodel.AddressNote) {
+	if in == nil {
+		return nil
+	}
+	out = &addressmodel.AddressNote{
+		LunchBreak: in.LunchBreak,
+		Note:       in.Note,
+		OpenTime:   in.OpenTime,
+		Other:      in.Other,
 	}
 	return
 }

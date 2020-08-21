@@ -16,6 +16,8 @@ import (
 /*
 Custom conversions:
     Address                // in use
+    AddressNote            // in use
+    AddressNoteDB          // in use
     AddressToModel         // in use
     Coordinates            // in use
     CoordinatesDB          // in use
@@ -46,6 +48,32 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*address.Address)(nil), (*[]*addressmodel.Address)(nil), func(arg, out interface{}) error {
 		out0 := Convert_address_Addresses_addressmodel_Addresses(arg.([]*address.Address))
 		*out.(*[]*addressmodel.Address) = out0
+		return nil
+	})
+	s.Register((*address.CreateAddressArgs)(nil), (*address.Address)(nil), func(arg, out interface{}) error {
+		Apply_address_CreateAddressArgs_address_Address(arg.(*address.CreateAddressArgs), out.(*address.Address))
+		return nil
+	})
+	s.Register((*address.UpdateAddressArgs)(nil), (*address.Address)(nil), func(arg, out interface{}) error {
+		Apply_address_UpdateAddressArgs_address_Address(arg.(*address.UpdateAddressArgs), out.(*address.Address))
+		return nil
+	})
+	s.Register((*addressmodel.AddressNote)(nil), (*address.AddressNote)(nil), func(arg, out interface{}) error {
+		Convert_addressmodel_AddressNote_address_AddressNote(arg.(*addressmodel.AddressNote), out.(*address.AddressNote))
+		return nil
+	})
+	s.Register(([]*addressmodel.AddressNote)(nil), (*[]*address.AddressNote)(nil), func(arg, out interface{}) error {
+		out0 := Convert_addressmodel_AddressNotes_address_AddressNotes(arg.([]*addressmodel.AddressNote))
+		*out.(*[]*address.AddressNote) = out0
+		return nil
+	})
+	s.Register((*address.AddressNote)(nil), (*addressmodel.AddressNote)(nil), func(arg, out interface{}) error {
+		Convert_address_AddressNote_addressmodel_AddressNote(arg.(*address.AddressNote), out.(*addressmodel.AddressNote))
+		return nil
+	})
+	s.Register(([]*address.AddressNote)(nil), (*[]*addressmodel.AddressNote)(nil), func(arg, out interface{}) error {
+		out0 := Convert_address_AddressNotes_addressmodel_AddressNotes(arg.([]*address.AddressNote))
+		*out.(*[]*addressmodel.AddressNote) = out0
 		return nil
 	})
 	s.Register((*addressmodel.Address)(nil), (*orderingtypes.Address)(nil), func(arg, out interface{}) error {
@@ -112,11 +140,12 @@ func convert_addressmodel_Address_address_Address(arg *addressmodel.Address, out
 	out.Company = arg.Company           // simple assign
 	out.Address1 = arg.Address1         // simple assign
 	out.Address2 = arg.Address2         // simple assign
-	out.Type = arg.Type                 // simple assign
+	out.Type = 0                        // types do not match
 	out.AccountID = arg.AccountID       // simple assign
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
 	out.Coordinates = Convert_addressmodel_Coordinates_orderingtypes_Coordinates(arg.Coordinates, nil)
+	out.Notes = Convert_addressmodel_AddressNote_address_AddressNote(arg.Notes, nil)
 }
 
 func Convert_addressmodel_Addresses_address_Addresses(args []*addressmodel.Address) (outs []*address.Address) {
@@ -155,11 +184,11 @@ func convert_address_Address_addressmodel_Address(arg *address.Address, out *add
 	out.Company = arg.Company           // simple assign
 	out.Address1 = arg.Address1         // simple assign
 	out.Address2 = arg.Address2         // simple assign
-	out.Type = arg.Type                 // simple assign
+	out.Type = ""                       // types do not match
 	out.AccountID = arg.AccountID       // simple assign
-	out.Notes = nil                     // zero value
-	out.CreatedAt = arg.CreatedAt       // simple assign
-	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.Notes = Convert_address_AddressNote_addressmodel_AddressNote(arg.Notes, nil)
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.Coordinates = Convert_orderingtypes_Coordinates_addressmodel_Coordinates(arg.Coordinates, nil)
 	out.Rid = 0 // zero value
 }
@@ -172,6 +201,132 @@ func Convert_address_Addresses_addressmodel_Addresses(args []*address.Address) (
 	outs = make([]*addressmodel.Address, len(args))
 	for i := range tmps {
 		outs[i] = Convert_address_Address_addressmodel_Address(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Apply_address_CreateAddressArgs_address_Address(arg *address.CreateAddressArgs, out *address.Address) *address.Address {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &address.Address{}
+	}
+	apply_address_CreateAddressArgs_address_Address(arg, out)
+	return out
+}
+
+func apply_address_CreateAddressArgs_address_Address(arg *address.CreateAddressArgs, out *address.Address) {
+	out.ID = 0                          // zero value
+	out.FullName = arg.FullName         // simple assign
+	out.FirstName = arg.FirstName       // simple assign
+	out.LastName = arg.LastName         // simple assign
+	out.Phone = arg.Phone               // simple assign
+	out.Position = arg.Position         // simple assign
+	out.Email = arg.Email               // simple assign
+	out.Country = arg.Country           // simple assign
+	out.City = arg.City                 // simple assign
+	out.Province = arg.Province         // simple assign
+	out.District = arg.District         // simple assign
+	out.Ward = arg.Ward                 // simple assign
+	out.Zip = arg.Zip                   // simple assign
+	out.DistrictCode = arg.DistrictCode // simple assign
+	out.ProvinceCode = arg.ProvinceCode // simple assign
+	out.WardCode = arg.WardCode         // simple assign
+	out.Company = arg.Company           // simple assign
+	out.Address1 = arg.Address1         // simple assign
+	out.Address2 = arg.Address2         // simple assign
+	out.Type = arg.Type                 // simple assign
+	out.AccountID = arg.AccountID       // simple assign
+	out.CreatedAt = time.Time{}         // zero value
+	out.UpdatedAt = time.Time{}         // zero value
+	out.Coordinates = arg.Coordinates   // simple assign
+	out.Notes = arg.Notes               // simple assign
+}
+
+func Apply_address_UpdateAddressArgs_address_Address(arg *address.UpdateAddressArgs, out *address.Address) *address.Address {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &address.Address{}
+	}
+	apply_address_UpdateAddressArgs_address_Address(arg, out)
+	return out
+}
+
+func apply_address_UpdateAddressArgs_address_Address(arg *address.UpdateAddressArgs, out *address.Address) {
+	out.ID = arg.ID                     // simple assign
+	out.FullName = arg.FullName         // simple assign
+	out.FirstName = arg.FirstName       // simple assign
+	out.LastName = arg.LastName         // simple assign
+	out.Phone = arg.Phone               // simple assign
+	out.Position = arg.Position         // simple assign
+	out.Email = arg.Email               // simple assign
+	out.Country = arg.Country           // simple assign
+	out.City = arg.City                 // simple assign
+	out.Province = arg.Province         // simple assign
+	out.District = arg.District         // simple assign
+	out.Ward = arg.Ward                 // simple assign
+	out.Zip = arg.Zip                   // simple assign
+	out.DistrictCode = arg.DistrictCode // simple assign
+	out.ProvinceCode = arg.ProvinceCode // simple assign
+	out.WardCode = arg.WardCode         // simple assign
+	out.Company = arg.Company           // simple assign
+	out.Address1 = arg.Address1         // simple assign
+	out.Address2 = arg.Address2         // simple assign
+	out.Type = arg.Type                 // simple assign
+	out.AccountID = arg.AccountID       // simple assign
+	out.CreatedAt = out.CreatedAt       // no change
+	out.UpdatedAt = out.UpdatedAt       // no change
+	out.Coordinates = arg.Coordinates   // simple assign
+	out.Notes = arg.Notes               // simple assign
+}
+
+//-- convert o.o/api/main/address.AddressNote --//
+
+func Convert_addressmodel_AddressNote_address_AddressNote(arg *addressmodel.AddressNote, out *address.AddressNote) *address.AddressNote {
+	return AddressNote(arg)
+}
+
+func convert_addressmodel_AddressNote_address_AddressNote(arg *addressmodel.AddressNote, out *address.AddressNote) {
+	out.Note = arg.Note             // simple assign
+	out.OpenTime = arg.OpenTime     // simple assign
+	out.LunchBreak = arg.LunchBreak // simple assign
+	out.Other = arg.Other           // simple assign
+}
+
+func Convert_addressmodel_AddressNotes_address_AddressNotes(args []*addressmodel.AddressNote) (outs []*address.AddressNote) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]address.AddressNote, len(args))
+	outs = make([]*address.AddressNote, len(args))
+	for i := range tmps {
+		outs[i] = Convert_addressmodel_AddressNote_address_AddressNote(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_address_AddressNote_addressmodel_AddressNote(arg *address.AddressNote, out *addressmodel.AddressNote) *addressmodel.AddressNote {
+	return AddressNoteDB(arg)
+}
+
+func convert_address_AddressNote_addressmodel_AddressNote(arg *address.AddressNote, out *addressmodel.AddressNote) {
+	out.Note = arg.Note             // simple assign
+	out.OpenTime = arg.OpenTime     // simple assign
+	out.LunchBreak = arg.LunchBreak // simple assign
+	out.Other = arg.Other           // simple assign
+}
+
+func Convert_address_AddressNotes_addressmodel_AddressNotes(args []*address.AddressNote) (outs []*addressmodel.AddressNote) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]addressmodel.AddressNote, len(args))
+	outs = make([]*addressmodel.AddressNote, len(args))
+	for i := range tmps {
+		outs[i] = Convert_address_AddressNote_addressmodel_AddressNote(args[i], &tmps[i])
 	}
 	return outs
 }

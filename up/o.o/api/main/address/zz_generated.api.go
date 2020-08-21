@@ -7,16 +7,100 @@ package address
 import (
 	context "context"
 
+	orderingtypes "o.o/api/main/ordering/types"
+	address_type "o.o/api/top/types/etc/address_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
 
+type CommandBus struct{ bus capi.Bus }
 type QueryBus struct{ bus capi.Bus }
 
-func NewQueryBus(bus capi.Bus) QueryBus { return QueryBus{bus} }
+func NewCommandBus(bus capi.Bus) CommandBus { return CommandBus{bus} }
+func NewQueryBus(bus capi.Bus) QueryBus     { return QueryBus{bus} }
 
+func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) error {
+	return b.bus.Dispatch(ctx, msg)
+}
 func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
 	return b.bus.Dispatch(ctx, msg)
+}
+
+type CreateAddressCommand struct {
+	Province     string
+	ProvinceCode string
+	District     string
+	DistrictCode string
+	Ward         string
+	WardCode     string
+	Address1     string
+	Address2     string
+	Zip          string
+	Company      string
+	City         string
+	Country      string
+	FullName     string
+	FirstName    string
+	LastName     string
+	Phone        string
+	Email        string
+	Position     string
+	Type         address_type.AddressType
+	AccountID    dot.ID
+	Notes        *AddressNote
+	Coordinates  *orderingtypes.Coordinates
+
+	Result *Address `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateAddress(ctx context.Context, msg *CreateAddressCommand) (err error) {
+	msg.Result, err = h.inner.CreateAddress(msg.GetArgs(ctx))
+	return err
+}
+
+type RemoveAddressCommand struct {
+	ID        dot.ID
+	AccountID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveAddress(ctx context.Context, msg *RemoveAddressCommand) (err error) {
+	return h.inner.RemoveAddress(msg.GetArgs(ctx))
+}
+
+type UpdateAddressCommand struct {
+	ID           dot.ID
+	Province     string
+	ProvinceCode string
+	District     string
+	DistrictCode string
+	Ward         string
+	WardCode     string
+	Address1     string
+	Address2     string
+	Zip          string
+	Company      string
+	City         string
+	Country      string
+	FullName     string
+	FirstName    string
+	LastName     string
+	Phone        string
+	Email        string
+	Position     string
+	Type         address_type.AddressType
+	AccountID    dot.ID
+	Notes        *AddressNote
+	Coordinates  *orderingtypes.Coordinates
+
+	Result *Address `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateAddress(ctx context.Context, msg *UpdateAddressCommand) (err error) {
+	msg.Result, err = h.inner.UpdateAddress(msg.GetArgs(ctx))
+	return err
 }
 
 type GetAddressByIDQuery struct {
@@ -30,11 +114,148 @@ func (h QueryServiceHandler) HandleGetAddressByID(ctx context.Context, msg *GetA
 	return err
 }
 
+type ListAddressesQuery struct {
+	ID dot.ID
+
+	Result *GetAddressResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListAddresses(ctx context.Context, msg *ListAddressesQuery) (err error) {
+	msg.Result, err = h.inner.ListAddresses(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
+func (q *CreateAddressCommand) command() {}
+func (q *RemoveAddressCommand) command() {}
+func (q *UpdateAddressCommand) command() {}
+
 func (q *GetAddressByIDQuery) query() {}
+func (q *ListAddressesQuery) query()  {}
 
 // implement conversion
+
+func (q *CreateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateAddressArgs) {
+	return ctx,
+		&CreateAddressArgs{
+			Province:     q.Province,
+			ProvinceCode: q.ProvinceCode,
+			District:     q.District,
+			DistrictCode: q.DistrictCode,
+			Ward:         q.Ward,
+			WardCode:     q.WardCode,
+			Address1:     q.Address1,
+			Address2:     q.Address2,
+			Zip:          q.Zip,
+			Company:      q.Company,
+			City:         q.City,
+			Country:      q.Country,
+			FullName:     q.FullName,
+			FirstName:    q.FirstName,
+			LastName:     q.LastName,
+			Phone:        q.Phone,
+			Email:        q.Email,
+			Position:     q.Position,
+			Type:         q.Type,
+			AccountID:    q.AccountID,
+			Notes:        q.Notes,
+			Coordinates:  q.Coordinates,
+		}
+}
+
+func (q *CreateAddressCommand) SetCreateAddressArgs(args *CreateAddressArgs) {
+	q.Province = args.Province
+	q.ProvinceCode = args.ProvinceCode
+	q.District = args.District
+	q.DistrictCode = args.DistrictCode
+	q.Ward = args.Ward
+	q.WardCode = args.WardCode
+	q.Address1 = args.Address1
+	q.Address2 = args.Address2
+	q.Zip = args.Zip
+	q.Company = args.Company
+	q.City = args.City
+	q.Country = args.Country
+	q.FullName = args.FullName
+	q.FirstName = args.FirstName
+	q.LastName = args.LastName
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.Position = args.Position
+	q.Type = args.Type
+	q.AccountID = args.AccountID
+	q.Notes = args.Notes
+	q.Coordinates = args.Coordinates
+}
+
+func (q *RemoveAddressCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteAddressArgs) {
+	return ctx,
+		&DeleteAddressArgs{
+			ID:        q.ID,
+			AccountID: q.AccountID,
+		}
+}
+
+func (q *RemoveAddressCommand) SetDeleteAddressArgs(args *DeleteAddressArgs) {
+	q.ID = args.ID
+	q.AccountID = args.AccountID
+}
+
+func (q *UpdateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAddressArgs) {
+	return ctx,
+		&UpdateAddressArgs{
+			ID:           q.ID,
+			Province:     q.Province,
+			ProvinceCode: q.ProvinceCode,
+			District:     q.District,
+			DistrictCode: q.DistrictCode,
+			Ward:         q.Ward,
+			WardCode:     q.WardCode,
+			Address1:     q.Address1,
+			Address2:     q.Address2,
+			Zip:          q.Zip,
+			Company:      q.Company,
+			City:         q.City,
+			Country:      q.Country,
+			FullName:     q.FullName,
+			FirstName:    q.FirstName,
+			LastName:     q.LastName,
+			Phone:        q.Phone,
+			Email:        q.Email,
+			Position:     q.Position,
+			Type:         q.Type,
+			AccountID:    q.AccountID,
+			Notes:        q.Notes,
+			Coordinates:  q.Coordinates,
+		}
+}
+
+func (q *UpdateAddressCommand) SetUpdateAddressArgs(args *UpdateAddressArgs) {
+	q.ID = args.ID
+	q.Province = args.Province
+	q.ProvinceCode = args.ProvinceCode
+	q.District = args.District
+	q.DistrictCode = args.DistrictCode
+	q.Ward = args.Ward
+	q.WardCode = args.WardCode
+	q.Address1 = args.Address1
+	q.Address2 = args.Address2
+	q.Zip = args.Zip
+	q.Company = args.Company
+	q.City = args.City
+	q.Country = args.Country
+	q.FullName = args.FullName
+	q.FirstName = args.FirstName
+	q.LastName = args.LastName
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.Position = args.Position
+	q.Type = args.Type
+	q.AccountID = args.AccountID
+	q.Notes = args.Notes
+	q.Coordinates = args.Coordinates
+}
 
 func (q *GetAddressByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAddressByIDQueryArgs) {
 	return ctx,
@@ -47,7 +268,28 @@ func (q *GetAddressByIDQuery) SetGetAddressByIDQueryArgs(args *GetAddressByIDQue
 	q.ID = args.ID
 }
 
+func (q *ListAddressesQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
+}
+
 // implement dispatching
+
+type AggregateHandler struct {
+	inner Aggregate
+}
+
+func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
+
+func (h AggregateHandler) RegisterHandlers(b interface {
+	capi.Bus
+	AddHandler(handler interface{})
+}) CommandBus {
+	b.AddHandler(h.HandleCreateAddress)
+	b.AddHandler(h.HandleRemoveAddress)
+	b.AddHandler(h.HandleUpdateAddress)
+	return CommandBus{b}
+}
 
 type QueryServiceHandler struct {
 	inner QueryService
@@ -62,5 +304,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetAddressByID)
+	b.AddHandler(h.HandleListAddresses)
 	return QueryBus{b}
 }

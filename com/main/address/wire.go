@@ -5,5 +5,6 @@ package address
 import "github.com/google/wire"
 
 var WireSet = wire.NewSet(
-	NewQueryService, QueryServiceMessageBus,
+	NewQueryAddress, QueryServiceMessageBus,
+	NewAggregateAddress, AddressAggregateMessageBus,
 )

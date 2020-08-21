@@ -35,6 +35,11 @@ const (
 	routerSendPhoneVerification string = "/api/etop.User/SendPhoneVerification"
 	routerUserRegistration      string = "/api/etop.User/Register"
 	routerUserLogin             string = "/api/etop.User/Login"
+
+	routerGetAddresses  string = "/api/etop.Address/GetAddresses"
+	routerCreateAddress string = "/api/etop.Address/CreateAddress"
+	routerUpdateAddress string = "/api/etop.Address/UpdateAddress"
+	routerRemoveAddress string = "/api/etop.Address/RemoveAddress"
 )
 
 func TestMain(m *testing.M) {
@@ -62,9 +67,14 @@ func runTest(m *testing.M) int {
 
 	pathDB := filepath.Join(gen.ProjectPath(), "/db/main/")
 	contents := e2e.LoadContentPath(pathDB)
+
 	cfg.Databases.Postgres.Database = "etop_dev_test"
 
 	db = cmsql.MustConnect(cfg.Databases.Postgres)
+
+	pathDBMigration := filepath.Join(gen.ProjectPath(), "/tests/main/shop/issue_2832/")
+
+	contents = append(contents, e2e.LoadContentPath(pathDBMigration)...)
 
 	err := e2e.LoadDataWithContents(db, contents)
 
@@ -157,7 +167,6 @@ func TestLoginAndRegistration(t *testing.T) {
 			Post(routerSendPhoneVerification)
 
 		require.NoError(t, err)
-		ll.Info("send message", l.Object("response", resp))
 	})
 	t.Run("registration user wrong password", func(t *testing.T) {
 		req := M{
@@ -261,13 +270,217 @@ func TestLoginAndRegistration(t *testing.T) {
 
 		require.NoError(t, err)
 		require.NotNil(t, resp)
+
 		assert.Equal(t, resp["exists"], true)
 		assert.Len(t, resp["access_token"], 43)
-		// accessToken := resp["access_token"].(string)
+
 		assert.Equal(t, resp["expires_in"], float64(604800))
 		require.NotNil(t, resp["user"])
 		user := resp["user"].(map[string]interface{})
 		assert.Equal(t, user["email"], "etop_test@gmail.com-1-test")
 		assert.Equal(t, user["phone"], "0987654321-1-test")
+	})
+
+	var accessToken string
+	t.Run("user login with admin account", func(t *testing.T) {
+		// login with phone number
+		req := M{}
+		req["phone"] = "0101010101"
+		req["recaptcha_token"] = recaptchaToken
+
+		_, err := httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
+			Post(routerCheckUserRegistration)
+
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, resp["exists"], true)
+
+		req = M{}
+		req["login"] = "0101010101"
+		req["password"] = "123456789"
+		req["account_type"] = "shop"
+		_, err = httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
+			Post(routerUserLogin)
+
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		assert.Equal(t, resp["exists"], true)
+		assert.Len(t, resp["access_token"], 43)
+
+		assert.Equal(t, resp["expires_in"], float64(604800))
+		require.NotNil(t, resp["user"])
+		user := resp["user"].(map[string]interface{})
+		assert.Equal(t, user["email"], "admin@etop.vn")
+		assert.Equal(t, user["phone"], "0101010101")
+
+		require.NotNil(t, resp["available_accounts"])
+
+		availableAccounts := resp["available_accounts"].([]interface{})
+
+		assert.Len(t, availableAccounts, 1)
+		account := availableAccounts[0].(map[string]interface{})
+
+		assert.Equal(t, account["id"], "101")
+		accessToken = account["access_token"].(string)
+	})
+
+	t.Run("get address with admin account", func(t *testing.T) {
+		req := M{}
+		var respListAddresses map[string]interface{}
+		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListAddresses).
+			Post(routerGetAddresses)
+
+		require.Nil(t, err)
+		require.NotNil(t, respListAddresses)
+
+		addresses := respListAddresses["addresses"].([]interface{})
+
+		assert.Len(t, addresses, 0)
+	})
+
+	var addressId string
+	t.Run("create address with admin account", func(t *testing.T) {
+		req := M{}
+
+		req["type"] = "shipfrom"
+		req["phone"] = "+840973218967-1-test"
+		req["ward_code"] = "27322"
+		req["district_code"] = "774"
+		req["province_code"] = "79"
+		req["ward"] = "Phường 07"
+		req["district"] = "Quận 5"
+		req["province"] = "Hồ Chí Minh"
+		req["address1"] = "Hồ Chí Minh"
+		req["full_name"] = "xxxx"
+		req["coordinates"] = map[string]interface{}{
+			"latitude":  10.234123,
+			"longitude": 20.12312321,
+		}
+		req["notes"] = map[string]interface{}{
+			"other":       "no-call",
+			"open_time":   "08:00 - 12:00",
+			"lunch_break": "",
+		}
+
+		var respCreateAddress map[string]interface{}
+		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respCreateAddress).
+			Post(routerCreateAddress)
+
+		require.Nil(t, err)
+		require.NotNil(t, respCreateAddress)
+		require.NotNil(t, respCreateAddress["notes"])
+		require.NotNil(t, respCreateAddress["coordinates"])
+
+		assert.Len(t, respCreateAddress["id"], 19)
+
+		addressId = respCreateAddress["id"].(string)
+		assert.Equal(t, respCreateAddress["province"], "Thành phố Hồ Chí Minh")
+		assert.Equal(t, respCreateAddress["province_code"], "79")
+		assert.Equal(t, respCreateAddress["ward"], "Phường 07")
+		assert.Equal(t, respCreateAddress["ward_code"], "27322")
+		assert.Equal(t, respCreateAddress["address1"], "Hồ Chí Minh")
+		assert.Equal(t, respCreateAddress["phone"], "0973218967-1-test")
+		assert.Equal(t, respCreateAddress["district"], "Quận 5")
+		assert.Equal(t, respCreateAddress["district_code"], "774")
+		assert.Equal(t, respCreateAddress["type"], "shipfrom")
+		assert.Equal(t, respCreateAddress["full_name"], "xxxx")
+	})
+
+	t.Run("update address (only full name) info with admin account", func(t *testing.T) {
+		req := M{}
+		req["id"] = addressId
+		req["type"] = "shipfrom"
+		req["full_name"] = "yyyyyyyyyyyyyyyyyyyy"
+
+		var respUpdateAddress map[string]interface{}
+		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respUpdateAddress).
+			Post(routerUpdateAddress)
+
+		require.Nil(t, err)
+		require.NotNil(t, respUpdateAddress)
+		require.NotNil(t, respUpdateAddress["notes"])
+		require.NotNil(t, respUpdateAddress["coordinates"])
+
+		assert.Equal(t, respUpdateAddress["full_name"], "yyyyyyyyyyyyyyyyyyyy")
+
+		assert.Len(t, respUpdateAddress["id"], 19)
+		assert.Equal(t, respUpdateAddress["id"], addressId)
+		assert.Equal(t, respUpdateAddress["province"], "Thành phố Hồ Chí Minh")
+		assert.Equal(t, respUpdateAddress["province_code"], "79")
+		assert.Equal(t, respUpdateAddress["ward"], "Phường 07")
+		assert.Equal(t, respUpdateAddress["ward_code"], "27322")
+		assert.Equal(t, respUpdateAddress["address1"], "Hồ Chí Minh")
+		assert.Equal(t, respUpdateAddress["phone"], "0973218967-1-test")
+		assert.Equal(t, respUpdateAddress["district"], "Quận 5")
+		assert.Equal(t, respUpdateAddress["district_code"], "774")
+		assert.Equal(t, respUpdateAddress["type"], "shipfrom")
+	})
+	t.Run("update address info with admin account", func(t *testing.T) {
+		req := M{}
+		req["id"] = addressId
+		req["type"] = "shipfrom"
+		req["phone"] = "+840973218967-2-test"
+		req["full_name"] = "zzzzzzzzzzzzzzzzzzz"
+
+		var respUpdateAddress map[string]interface{}
+		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respUpdateAddress).
+			Post(routerUpdateAddress)
+
+		require.Nil(t, err)
+		require.NotNil(t, respUpdateAddress)
+		require.NotNil(t, respUpdateAddress["notes"])
+		require.NotNil(t, respUpdateAddress["coordinates"])
+
+		assert.Equal(t, respUpdateAddress["full_name"], "zzzzzzzzzzzzzzzzzzz")
+
+		assert.Len(t, respUpdateAddress["id"], 19)
+		assert.Equal(t, respUpdateAddress["id"], addressId)
+		assert.Equal(t, respUpdateAddress["province"], "Thành phố Hồ Chí Minh")
+		assert.Equal(t, respUpdateAddress["province_code"], "79")
+		assert.Equal(t, respUpdateAddress["ward"], "Phường 07")
+		assert.Equal(t, respUpdateAddress["ward_code"], "27322")
+		assert.Equal(t, respUpdateAddress["address1"], "Hồ Chí Minh")
+		assert.Equal(t, respUpdateAddress["phone"], "0973218967-2-test")
+		assert.Equal(t, respUpdateAddress["district"], "Quận 5")
+		assert.Equal(t, respUpdateAddress["district_code"], "774")
+		assert.Equal(t, respUpdateAddress["type"], "shipfrom")
+	})
+	t.Run("get address with admin account", func(t *testing.T) {
+		req := M{}
+		var respListAddresses map[string]interface{}
+		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListAddresses).
+			Post(routerGetAddresses)
+
+		require.Nil(t, err)
+		require.NotNil(t, respListAddresses)
+
+		addresses := respListAddresses["addresses"].([]interface{})
+
+		assert.Len(t, addresses, 1)
+	})
+
+	t.Run("delete address with admin account", func(t *testing.T) {
+		req := M{}
+		req["id"] = addressId
+		var respRemoveAddress map[string]interface{}
+		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respRemoveAddress).
+			Post(routerRemoveAddress)
+
+		require.Nil(t, err)
+		require.NotNil(t, respRemoveAddress)
+	})
+	t.Run("get address with admin account", func(t *testing.T) {
+		req := M{}
+		var respListAddresses map[string]interface{}
+		_, err := httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListAddresses).
+			Post(routerGetAddresses)
+
+		require.Nil(t, err)
+		require.NotNil(t, respListAddresses)
+
+		addresses := respListAddresses["addresses"].([]interface{})
+
+		assert.Len(t, addresses, 0)
 	})
 }

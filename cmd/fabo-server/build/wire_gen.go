@@ -167,8 +167,14 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	bankService := &api.BankService{
 		Session: session,
 	}
+	addressAggregate := address.NewAggregateAddress(busBus, mainDB, locationQueryBus)
+	addressCommandBus := address.AddressAggregateMessageBus(addressAggregate)
+	addressQueryService := address.NewQueryAddress(mainDB, busBus)
+	addressQueryBus := address.QueryServiceMessageBus(addressQueryService)
 	addressService := &api.AddressService{
-		Session: session,
+		Session:     session,
+		AddressAggr: addressCommandBus,
+		AddressQS:   addressQueryBus,
 	}
 	invitationConfig := cfg.Invitation
 	customerQuery := query2.NewCustomerQuery(mainDB)
@@ -220,8 +226,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		InventoryAggr:  inventoryCommandBus,
 		InventoryQuery: inventoryQueryBus,
 	}
-	addressQueryService := address.NewQueryService(mainDB)
-	addressQueryBus := address.QueryServiceMessageBus(addressQueryService)
 	accountAccountService := &account.AccountService{
 		Session:       session,
 		IdentityAggr:  commandBus,
@@ -235,8 +239,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	customerAggregate := aggregate5.NewCustomerAggregate(busBus, mainDB)
 	customeringCommandBus := aggregate5.CustomerAggregateMessageBus(customerAggregate)
-	addressAggregate := aggregate5.NewAddressAggregate(mainDB)
-	addressingCommandBus := aggregate5.AddressAggregateMessageBus(addressAggregate)
+	aggregateAddressAggregate := aggregate5.NewAddressAggregate(mainDB)
+	addressingCommandBus := aggregate5.AddressAggregateMessageBus(aggregateAddressAggregate)
 	addressQuery := query2.NewAddressQuery(mainDB)
 	addressingQueryBus := query2.AddressQueryMessageBus(addressQuery)
 	orderingQueryService := ordering.NewQueryService(mainDB)
