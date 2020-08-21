@@ -17,6 +17,7 @@ func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment) *exttypes.FbE
 		ExternalPageID:       dot.String(fbcomment.ExternalPageID),
 		ExternalUserID:       dot.String(fbcomment.ExternalUserID),
 		ExternalParentID:     dot.String(fbcomment.ExternalParentID),
+		ExternalParent:       PbFbExternalParent(fbcomment.ExternalParent),
 		ExternalParentUserID: dot.String(fbcomment.ExternalParentUserID),
 		ExternalMessage:      dot.String(fbcomment.ExternalMessage),
 		ExternalCommentCount: dot.Int(fbcomment.ExternalCommentCount),
@@ -52,6 +53,18 @@ func PbFbCommentAttachment(fbcommentattachment *fbmessaging.CommentAttachment) *
 		Title:  dot.String(fbcommentattachment.Title),
 		Type:   dot.String(fbcommentattachment.Type),
 		URL:    dot.String(fbcommentattachment.URL),
+	}
+}
+
+func PbFbExternalParent(fbExternalParent *fbmessaging.FbObjectParent) *exttypes.FbObjectParent {
+	if fbExternalParent == nil {
+		return nil
+	}
+	return &exttypes.FbObjectParent{
+		CreatedTime: fbExternalParent.CreatedTime,
+		From:        PbFbExternalFrom(fbExternalParent.From),
+		Message:     fbExternalParent.Message,
+		ID:          fbExternalParent.ID,
 	}
 }
 
@@ -113,6 +126,20 @@ func PbFbPostAttachment(attachment *fbmessaging.PostAttachment) *exttypes.PostAt
 		MediaType:      dot.String(attachment.MediaType),
 		Type:           dot.String(attachment.Type),
 		SubAttachments: PbFbSubAttachments(attachment.SubAttachments),
+		Media:          PbFbPostAttachmentMedia(attachment.Media),
+	}
+}
+
+func PbFbPostAttachmentMedia(media *fbmessaging.MediaPostAttachment) *exttypes.MediaPostAttachment {
+	if media == nil || media.Image == nil {
+		return nil
+	}
+	return &exttypes.MediaPostAttachment{
+		Image: &exttypes.ImageMediaPostAttachment{
+			Height: media.Image.Height,
+			Width:  media.Image.Width,
+			Src:    media.Image.Src,
+		},
 	}
 }
 

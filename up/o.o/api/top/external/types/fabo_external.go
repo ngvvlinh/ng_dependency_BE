@@ -68,6 +68,7 @@ type FbExternalComment struct {
 	ExternalPageID       dot.NullString     `json:"external_page_id"`
 	ExternalUserID       dot.NullString     `json:"external_user_id"`
 	ExternalParentID     dot.NullString     `json:"external_parent_id"`
+	ExternalParent       *FbObjectParent    `json:"external_parent"`
 	ExternalParentUserID dot.NullString     `json:"external_parent_user_id"`
 	ExternalMessage      dot.NullString     `json:"external_message"`
 	ExternalCommentCount dot.NullInt        `json:"external_comment_count"`
@@ -91,13 +92,37 @@ type FbObjectFrom struct {
 
 func (m *FbObjectFrom) String() string { return jsonx.MustMarshalToString(m) }
 
+type FbObjectParent struct {
+	CreatedTime time.Time     `json:"created_time"`
+	From        *FbObjectFrom `json:"from"`
+	Message     string        `json:"message"`
+	ID          string        `json:"id"`
+}
+
+func (m *FbObjectParent) String() string { return jsonx.MustMarshalToString(m) }
+
 type PostAttachment struct {
-	MediaType      dot.NullString   `json:"media_type"`
-	Type           dot.NullString   `json:"type"`
-	SubAttachments []*SubAttachment `json:"sub_attachments"`
+	MediaType      dot.NullString       `json:"media_type"`
+	Type           dot.NullString       `json:"type"`
+	SubAttachments []*SubAttachment     `json:"sub_attachments"`
+	Media          *MediaPostAttachment `json:"media"`
 }
 
 func (m *PostAttachment) String() string { return jsonx.MustMarshalToString(m) }
+
+type MediaPostAttachment struct {
+	Image *ImageMediaPostAttachment `json:"image"`
+}
+
+func (m *MediaPostAttachment) String() string { return jsonx.MustMarshalToString(m) }
+
+type ImageMediaPostAttachment struct {
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+	Src    string `json:"src"`
+}
+
+func (m *ImageMediaPostAttachment) String() string { return jsonx.MustMarshalToString(m) }
 
 type CommentAttachment struct {
 	Media  *ImageMediaDataSubAttachment `json:"media"`
@@ -163,7 +188,7 @@ type FbMessageAttachment struct {
 	Name      dot.NullString                    `json:"name"`
 	Size      dot.NullInt                       `json:"size"`
 	VideoData *FbMessageDataAttachmentVideoData `json:"video_data"`
-	FileURL   dot.NullString                    `json:"size"`
+	FileURL   dot.NullString                    `json:"file_url"`
 }
 
 func (m *FbMessageAttachment) String() string { return jsonx.MustMarshalToString(m) }
