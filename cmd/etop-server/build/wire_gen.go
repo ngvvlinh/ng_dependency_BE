@@ -93,6 +93,7 @@ import (
 	aggregate10 "o.o/backend/com/shopping/carrying/aggregate"
 	query5 "o.o/backend/com/shopping/carrying/query"
 	aggregate6 "o.o/backend/com/shopping/customering/aggregate"
+	pm18 "o.o/backend/com/shopping/customering/pm"
 	query2 "o.o/backend/com/shopping/customering/query"
 	aggregate9 "o.o/backend/com/shopping/suppliering/aggregate"
 	query6 "o.o/backend/com/shopping/suppliering/query"
@@ -166,6 +167,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
+	imcsv3 "o.o/backend/pkg/etop/logic/fulfillments/imcsv"
 	"o.o/backend/pkg/etop/logic/hotfix"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
@@ -555,7 +557,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		StocktakeQuery: stocktakingQueryBus,
 		InventoryQuery: inventoryQueryBus,
 	}
-	aggregate24 := aggregate14.NewAggregate(mainDB, busBus, queryBus, orderingQueryBus, shipmentManager, connectioningQueryBus)
+	aggregate24 := aggregate14.NewAggregate(mainDB, busBus, queryBus, orderingQueryBus, shipmentManager, connectioningQueryBus, identityQueryBus, addressQueryBus)
 	shippingCommandBus := aggregate14.AggregateMessageBus(aggregate24)
 	shipmentService := &shipment.ShipmentService{
 		Session:           session,
@@ -1018,7 +1020,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	imcsvImport, cleanup7 := imcsv.New(authorizer, queryBus, store, uploader, mainDB)
 	import2, cleanup8 := imcsv2.New(store, uploader, mainDB)
-	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, session)
+	import3, cleanup9 := imcsv3.New(store, uploader, mainDB)
+	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, import3, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
 	client3 := client2.New(config2)
@@ -1065,6 +1068,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager14 := pm15.New(busBus, traderingCommandBus)
 	processManager15 := pm16.New(busBus, connectioningCommandBus, connectioningQueryBus)
 	processManager16 := pm17.New(store, busBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
+	processManager17 := pm18.New(busBus, customeringQueryBus, customeringCommandBus, shippingQueryBus)
 	notifierDB := databases.Notifier
 	sqlstoreStore := sqlstore.New(mainDB, notifierDB, queryBus, busBus)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
@@ -1091,11 +1095,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		_traderPM:         processManager14,
 		_connectionPM:     processManager15,
 		_pricelistPM:      processManager16,
+		_customerPM:       processManager17,
 		_s:                sqlstoreStore,
 		_m:                middlewareMiddleware,
 		_c:                captchaCaptcha,
 	}
 	return output, func() {
+		cleanup9()
 		cleanup8()
 		cleanup7()
 		cleanup6()

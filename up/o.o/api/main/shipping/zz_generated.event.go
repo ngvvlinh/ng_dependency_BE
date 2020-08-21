@@ -4,8 +4,9 @@
 
 package shipping
 
-func (e *FulfillmentUpdatedEvent) GetTopic() string        { return "event/shipping" }
-func (e *FulfillmentUpdatedInfoEvent) GetTopic() string    { return "event/shipping" }
-func (e *FulfillmentsCreatedEvent) GetTopic() string       { return "event/shipping" }
-func (e *FulfillmentsCreatingEvent) GetTopic() string      { return "event/shipping" }
-func (e *SingleFulfillmentCreatingEvent) GetTopic() string { return "event/shipping" }
+func (e *FulfillmentFromImportCreatedEvent) GetTopic() string { return "event/shipping" }
+func (e *FulfillmentUpdatedEvent) GetTopic() string           { return "event/shipping" }
+func (e *FulfillmentUpdatedInfoEvent) GetTopic() string       { return "event/shipping" }
+func (e *FulfillmentsCreatedEvent) GetTopic() string          { return "event/shipping" }
+func (e *FulfillmentsCreatingEvent) GetTopic() string         { return "event/shipping" }
+func (e *SingleFulfillmentCreatingEvent) GetTopic() string    { return "event/shipping" }

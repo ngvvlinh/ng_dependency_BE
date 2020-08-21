@@ -173,6 +173,9 @@ type Fulfillment struct {
 	Coupon            string
 	ShipmentPriceInfo *shippingsharemodel.ShipmentPriceInfo
 
+	LinesContent string
+	EdCode       string
+
 	Rid dot.ID
 }
 

@@ -77,12 +77,24 @@ func (d *GHTKDriver) CreateFulfillment(
 
 	// prepare products for ghtk
 	var products []*ghtkclient.ProductRequest
-	for _, line := range ffm.Lines {
-		products = append(products, &ghtkclient.ProductRequest{
-			Name:     line.ProductName,
-			Price:    line.ListPrice,
-			Quantity: line.Quantity,
-		})
+	if len(ffm.Lines) > 0 {
+		for _, line := range ffm.Lines {
+			products = append(products, &ghtkclient.ProductRequest{
+				Name:     line.ProductName,
+				Price:    line.ListPrice,
+				Quantity: line.Quantity,
+			})
+		}
+	} else {
+		if ffm.LinesContent != "" {
+			products = []*ghtkclient.ProductRequest{
+				{
+					Name:     ffm.LinesContent,
+					Price:    ffm.BasketValue,
+					Quantity: ffm.TotalItems,
+				},
+			}
+		}
 	}
 
 	transport, err := d.parseServiceID(service.ProviderServiceID)

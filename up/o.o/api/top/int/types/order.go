@@ -260,6 +260,8 @@ type CreateOrderRequest struct {
 	ReferralMeta map[string]string         `json:"referral_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	CustomerId   dot.ID                    `json:"customer_id"`
 	PreOrder     bool                      `json:"pre_order"`
+
+	TryOn try_on.NullTryOnCode `json:"try_on"`
 }
 
 func (m *CreateOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -417,6 +419,9 @@ type Fulfillment struct {
 
 	ConnectionID  dot.ID `json:"connection_id"`
 	ShopCarrierID dot.ID `json:"shop_carrier_id"`
+
+	EdCode       string `json:"ed_code"`
+	LinesContent string `json:"lines_content"`
 }
 
 func (m *Fulfillment) String() string { return jsonx.MustMarshalToString(m) }

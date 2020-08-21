@@ -387,3 +387,85 @@ func TestGetLocation(t *testing.T) {
 		assert.EqualError(t, err, "mã quận/huyện không thống nhất")
 	})
 }
+
+func TestParseLocation(t *testing.T) {
+	tests := []struct {
+		name        string
+		rawLocation string
+		result      Location
+	}{
+		{
+			name:        "Parse empty location",
+			rawLocation: "",
+			result:      Location{},
+		},
+		{
+			name:        `Parse address that has 3 parts (province, district, ward)`,
+			rawLocation: "10 Ham Nghi Street, Ben Thanh ward, dist.1 Quận 1 Hồ Chí Minh",
+			result: Location{
+				Province: ProvinceIndexCode["79"],  // Hồ Chí Minh
+				District: DistrictIndexCode["760"], // Quận 1
+				Ward:     WardIndexCode["26743"],   // Phường Bến Thành
+			},
+		},
+		{
+			name:        "Parse address that has 2 parts (province, district)",
+			rawLocation: "911 Nguyễn Trãi, quận 5, thành phố Hồ Chí Minh",
+			result: Location{
+				Province: ProvinceIndexCode["79"],  // Hồ Chí Minh
+				District: DistrictIndexCode["774"], // Quận 5
+			},
+		},
+		{
+			name:        "Parse address that has 1 part (district)",
+			rawLocation: "78/7a Minh Khai, Bình Hưng, Nha Trang",
+			result: Location{
+				Province: ProvinceIndexCode["56"],  // Tỉnh Khánh Hoà
+				District: DistrictIndexCode["568"], // Thành Phố Nha Trang
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output := ParseLocation(tt.rawLocation)
+			assert.Equal(t, true, comparePairLocations(output, tt.result))
+		})
+	}
+}
+
+func comparePairLocations(a, b Location) bool {
+	var provinceCodeOfA, provinceCodeOfB string
+	if a.Province != nil {
+		provinceCodeOfA = a.Province.Code
+	}
+	if b.Province != nil {
+		provinceCodeOfB = b.Province.Code
+	}
+
+	if provinceCodeOfA != provinceCodeOfB {
+		return false
+	}
+
+	var districtCodeOfA, districtCodeOfB string
+	if a.District != nil {
+		districtCodeOfA = a.District.Code
+	}
+	if b.District != nil {
+		districtCodeOfB = b.District.Code
+	}
+
+	if districtCodeOfA != districtCodeOfB {
+		return false
+	}
+
+	var wardCodeOfA, wardCodeOfB string
+	if a.Ward != nil {
+		wardCodeOfA = a.Ward.Code
+	}
+	if b.Ward != nil {
+		wardCodeOfB = b.Ward.Code
+	}
+
+	return wardCodeOfA == wardCodeOfB
+}

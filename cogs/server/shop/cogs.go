@@ -10,6 +10,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/permission"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/eventstream"
+	fulfillmentcsv "o.o/backend/pkg/etop/logic/fulfillments/imcsv"
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
 	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
 	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
@@ -20,6 +21,7 @@ type ImportHandler httpx.Server
 func BuildImportHandler(
 	orderImport *imcsv.Import,
 	productImport *productimcsv.Import,
+	fulfillmentImport *fulfillmentcsv.Import,
 	ss session.Session,
 ) ImportHandler {
 	rt := httpx.New()
@@ -31,6 +33,7 @@ func BuildImportHandler(
 	rt.POST("/api/shop.Import/Orders", orderImport.HandleImportOrders)
 	rt.POST("/api/shop.Import/Products", productImport.HandleShopImportProducts)
 	rt.POST("/api/shop.Import/SampleProducts", productImport.HandleShopImportSampleProducts)
+	rt.POST("/api/shop.Import/Fulfillments", fulfillmentImport.HandleImportFulfillments)
 	return httpx.MakeServer("/api/shop.Import/", rt)
 }
 
@@ -86,6 +89,22 @@ func BuildDownloadHandler() DownloadHandler {
 		cmservice.ServeAssets(
 			productimcsv.AssetShopProductSimplifiedPath,
 			cmservice.MIMEExcel,
+		),
+	)
+	mux.Handle("/dl/imports/shop_fulfillments.v1.xlsx",
+		cmservice.ServeAssetsByContentGenerator(
+			cmservice.MIMEExcel,
+			fulfillmentcsv.AssetShopFulfillmentPath,
+			5*time.Minute,
+			fulfillmentcsv.GenerateImportFile,
+		),
+	)
+	mux.Handle("/dl/imports/shop_fulfillments.v1.simplified.xlsx",
+		cmservice.ServeAssetsByContentGenerator(
+			cmservice.MIMEExcel,
+			fulfillmentcsv.AssetShopFulfillmentSimplifiedPath,
+			5*time.Minute,
+			fulfillmentcsv.GenerateImportSimplifiedFile,
 		),
 	)
 	return httpx.MakeServer("/dl/imports/", mux)

@@ -599,6 +599,7 @@ func NormalizeSearchQueryOr(s string) string {
 
 // the old version, which only keep alphanumeric characters
 func normalizeSearchSimple(s string, space string) string {
+	s = norm.NFC.String(s)
 	b := make([]byte, 0, len(s))
 	lastSpace := true
 	for _, c := range s {

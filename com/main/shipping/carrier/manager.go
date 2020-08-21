@@ -8,7 +8,6 @@ import (
 
 	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
-	"o.o/api/main/ordering"
 	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shipmentprice"
 	"o.o/api/main/shipmentpricing/shipmentservice"
@@ -115,12 +114,12 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 	return m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, connection, shopConnection, m.webhookEndpoints)
 }
 
-func (m *ShipmentManager) CreateFulfillments(ctx context.Context, order *ordering.Order, ffms []*shipmodel.Fulfillment) error {
+func (m *ShipmentManager) CreateFulfillments(ctx context.Context, ffms []*shipmodel.Fulfillment) error {
 	var err error
 	g := syncgroup.New(len(ffms))
 	for _, ffm := range ffms {
 		ffm := ffm
-		g.Go(func() error { return m.createSingleFulfillment(ctx, order, ffm) })
+		g.Go(func() error { return m.createSingleFulfillment(ctx, ffm) })
 	}
 	errs := g.Wait()
 	if errs.IsAll() {
@@ -129,7 +128,7 @@ func (m *ShipmentManager) CreateFulfillments(ctx context.Context, order *orderin
 	return err
 }
 
-func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *ordering.Order, ffm *shipmodel.Fulfillment) (_err error) {
+func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (_err error) {
 	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
 	if err != nil {

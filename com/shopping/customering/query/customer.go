@@ -196,6 +196,12 @@ func (q *CustomerQuery) ListCustomersByIDs(
 	}, nil
 }
 
+func (q *CustomerQuery) ListCustomersByPhones(
+	ctx context.Context, shopID dot.ID, phones []string,
+) ([]*customering.ShopCustomer, error) {
+	return q.store(ctx).ShopID(shopID).Phones(phones...).ListCustomers()
+}
+
 func (q *CustomerQuery) GetCustomerGroup(ctx context.Context, args *customering.GetCustomerGroupArgs) (*customering.ShopCustomerGroup, error) {
 	customerGroup, err := q.customerGroupStore(ctx).ID(args.ID).GetShopCustomerGroup()
 	if err != nil {

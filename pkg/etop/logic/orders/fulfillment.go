@@ -26,7 +26,6 @@ import (
 	addressmodel "o.o/backend/com/main/address/model"
 	addressmodelx "o.o/backend/com/main/address/modelx"
 	identitymodel "o.o/backend/com/main/identity/model"
-	orderconvert "o.o/backend/com/main/ordering/convert"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/com/main/shipping/carrier"
@@ -246,8 +245,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 	}
 
 	ffms := append(creates, updates...)
-	orderCore := orderconvert.Order(order)
-	if err := shipmentManager.CreateFulfillments(ctx, orderCore, ffms); err != nil {
+	if err := shipmentManager.CreateFulfillments(ctx, ffms); err != nil {
 		return resp, err
 	}
 	// automatically cancel orders on sandbox for ghn and vtpost

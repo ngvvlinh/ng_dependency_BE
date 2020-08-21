@@ -9,7 +9,7 @@ import (
 
 // +sqlgen:     Fulfillment as f
 // +sqlgen:join:      Shop  as s on s.id = f.shop_id
-// +sqlgen:join:      Order as o on o.id = f.order_id
+// +sqlgen:left-join:      Order as o on o.id = f.order_id
 // +sqlgen:left-join: MoneyTransactionShipping as m on f.money_transaction_id = m.id
 type FulfillmentExtended struct {
 	*shipmodel.Fulfillment

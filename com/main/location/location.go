@@ -595,6 +595,200 @@ func findLocation(province, district, ward string) (L Location) {
 	return L
 }
 
+func ParseLocation(rawLocation string) (L Location) {
+	if rawLocation == "" {
+		return
+	}
+
+	{
+		_location := []rune(rawLocation)
+		for i := 0; i < len(_location); i++ {
+			if _location[i] == '.' || _location[i] == ',' {
+				_location[i] = ' '
+			}
+		}
+		rawLocation = string(_location)
+	}
+
+	L = parseLocation(rawLocation)
+	if L.Province == nil && L.District != nil {
+		L.Province = ProvinceIndexCode[L.District.ProvinceCode]
+	}
+
+	return
+}
+
+func parseLocation(rawLocation string) (L Location) {
+	// Start parse location from province
+	normLocation := validate.NormalizeSearchSimple(rawLocation)
+
+	var L1 Location
+	{
+		currLocation := strings.Split(normLocation, " ")
+		for i := len(currLocation) - 1; i >= 0; i-- {
+			for j := i; j < len(currLocation); j++ {
+				var tempL Location
+				province := strings.Join(currLocation[i:j+1], " ")
+
+				prov := provinceIndexNamN[province]
+
+				if prov == nil {
+					province = normalizeProvince(province)
+					prov = provinceIndexNamX[province]
+				}
+
+				if prov == nil {
+					continue
+				}
+
+				tempL.Province = prov
+				if L1.Province == nil {
+					L1 = tempL
+				}
+
+				currLocation = removeElements(i, j, currLocation)
+				for _i := len(currLocation) - 1; _i >= 0; _i-- {
+					for _j := _i; _j < len(currLocation); _j++ {
+						district := strings.Join(currLocation[_i:_j+1], " ")
+
+						districts := districtIndexNamN[district]
+
+						if len(districts) == 0 {
+							district = normalizeDistrict(district)
+							districts = districtIndexNamX[district]
+						}
+
+						if len(districts) == 0 {
+							continue
+						}
+
+						for _, district := range districts {
+							if district.ProvinceCode == prov.Code {
+								tempL.District = district
+								if L1.District == nil {
+									L1 = tempL
+								}
+								break
+							}
+						}
+
+						if tempL.District == nil {
+							continue
+						}
+
+						currLocation = removeElements(_i, _j, currLocation)
+						for _ii := len(currLocation) - 1; _ii >= 0; _ii-- {
+							for _jj := _ii; _jj < len(currLocation); _jj++ {
+								ward := strings.Join(currLocation[_ii:_jj+1], " ")
+
+								wards := wardIndexNamN[ward]
+
+								if len(wards) == 0 {
+									ward = NormalizeWard(ward)
+									wards = wardIndexNamX[ward]
+								}
+
+								if len(wards) == 0 {
+									continue
+								}
+
+								for _, ward := range wards {
+									if ward.DistrictCode == tempL.District.Code {
+										tempL.Ward = ward
+										return tempL
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if L1.Province != nil {
+		return L1
+	}
+
+	var L2 Location
+	{
+		currLocation := strings.Split(normLocation, " ")
+		for _i := len(currLocation) - 1; _i >= 0; _i-- {
+			for _j := _i; _j < len(currLocation); _j++ {
+				var tempL Location
+				district := strings.Join(currLocation[_i:_j+1], " ")
+				district = normalizeLower(district)
+
+				normName := validate.NormalizeSearchSimple(district)
+				districts := districtIndexNamN[normName]
+
+				if len(districts) == 0 {
+					normName = normalizeDistrict(normName)
+					districts = districtIndexNamX[normName]
+				}
+
+				if len(districts) == 0 {
+					continue
+				}
+
+				for _, district := range districts {
+					tempL.District = district
+					if L2.District == nil {
+						L2 = tempL
+					}
+					break
+				}
+
+				if tempL.District == nil {
+					continue
+				}
+
+				currLocation = removeElements(_i, _j, currLocation)
+				for _ii := len(currLocation) - 1; _ii >= 0; _ii-- {
+					for _jj := _ii; _jj < len(currLocation); _jj++ {
+						ward := strings.Join(currLocation[_ii:_jj+1], " ")
+						ward = normalizeLower(ward)
+
+						normName = validate.NormalizeSearchSimple(ward)
+						wards := wardIndexNamN[normName]
+
+						if len(wards) == 0 {
+							normName = NormalizeWard(normName)
+							wards = wardIndexNamX[normName]
+						}
+
+						if len(wards) == 0 {
+							continue
+						}
+
+						for _, ward := range wards {
+							if ward.DistrictCode == tempL.District.Code {
+								tempL.Ward = ward
+								return tempL
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return L2
+}
+
+func removeElements(start, end int, arrs []string) []string {
+	var result []string
+
+	for i := 0; i < len(arrs); i++ {
+		if start <= i && i <= end {
+			continue
+		}
+		result = append(result, arrs[i])
+	}
+
+	return result
+}
+
 func FindWardByDistrictCode(name string, districtCode string) *types.Ward {
 	name = normalizeLower(name)
 	wards := wardIndexName[name]

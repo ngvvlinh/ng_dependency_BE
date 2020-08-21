@@ -33,6 +33,7 @@ import (
 	shipnowpm "o.o/backend/com/main/shipnow/pm"
 	shippingpm "o.o/backend/com/main/shipping/pm"
 	affiliatepm "o.o/backend/com/services/affiliate/pm"
+	customerpm "o.o/backend/com/shopping/customering/pm"
 	traderpm "o.o/backend/com/shopping/tradering/pm"
 	"o.o/backend/com/web/ecom/webserver"
 	"o.o/backend/pkg/common/apifw/captcha"
@@ -80,7 +81,7 @@ type Output struct {
 	_traderPM         *traderpm.ProcessManager
 	_connectionPM     *connectioningpm.ProcessManager
 	_pricelistPM      *pricelistpm.ProcessManager
-
+	_customerPM       *customerpm.ProcessManager
 	// inject
 	_s *sqlstore.Store
 	_m middleware.Middleware

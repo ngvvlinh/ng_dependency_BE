@@ -165,6 +165,8 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.ExternalAffiliateID = ""                                                    // zero value
 	out.Coupon = ""                                                                 // zero value
 	out.ShipmentPriceInfo = nil                                                     // zero value
+	out.LinesContent = ""                                                           // zero value
+	out.EdCode = ""                                                                 // zero value
 	out.Rid = arg.Rid                                                               // simple assign
 }
 

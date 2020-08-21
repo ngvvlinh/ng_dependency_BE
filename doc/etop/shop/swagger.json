@@ -4776,6 +4776,33 @@
         }
       }
     },
+    "/api/shop.Shipment/CreateFulfillmentsFromImport": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "CreateFulfillmentsFromImport",
+        "operationId": "shop.Shipment-CreateFulfillmentsFromImport",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateFulfillmentsFromImportRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCreateFulfillmentsFromImportResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Shipment/GetShippingServices": {
       "post": {
         "tags": [
@@ -8205,6 +8232,82 @@
               "$ref": "#/definitions/ljCustomerType"
             }
           ]
+        }
+      }
+    },
+    "paCreateFulfillmentFromImportArgs": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "product_description": {
+          "type": "string"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "total_weight": {
+          "type": "integer"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        }
+      }
+    },
+    "paCreateFulfillmentsFromImportRequest": {
+      "type": "object",
+      "properties": {
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paCreateFulfillmentFromImportArgs"
+          }
+        }
+      }
+    },
+    "paCreateFulfillmentsFromImportResponse": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktError"
+          }
+        },
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdFulfillment"
+          }
         }
       }
     },
@@ -13756,6 +13859,9 @@
         "total_weight": {
           "description": "**Deprecated:** use shipping.gross_weight, shipping.chargeable_weight\n",
           "type": "integer"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
         }
       }
     },
@@ -14017,6 +14123,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "ed_code": {
+          "type": "string"
+        },
         "estimated_delivery_at": {
           "type": "string",
           "format": "date-time"
@@ -14062,6 +14171,9 @@
           "items": {
             "$ref": "#/definitions/qdOrderLine"
           }
+        },
+        "lines_content": {
+          "type": "string"
         },
         "money_transaction_shipping_external_id": {
           "type": "string",

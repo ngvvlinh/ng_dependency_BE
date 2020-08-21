@@ -11,8 +11,9 @@ import (
 type ImportType string
 
 const (
-	ImportTypeShopOrder   ImportType = "import_shop_order"
-	ImportTypeShopProduct ImportType = "import_shop_product"
+	ImportTypeShopOrder       ImportType = "import_shop_order"
+	ImportTypeShopProduct     ImportType = "import_shop_product"
+	ImportTypeShopFulfillment ImportType = "import_shop_fulfillment"
 )
 
 func (t ImportType) String() string { return string(t) }

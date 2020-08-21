@@ -89,6 +89,17 @@ func (h AggregateHandler) HandleCreateFulfillments(ctx context.Context, msg *Cre
 	return err
 }
 
+type CreateFulfillmentsFromImportCommand struct {
+	Fulfillments []*CreateFulfillmentFromImportArgs
+
+	Result []*CreateFullfillmentsFromImportResult `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateFulfillmentsFromImport(ctx context.Context, msg *CreateFulfillmentsFromImportCommand) (err error) {
+	msg.Result, err = h.inner.CreateFulfillmentsFromImport(msg.GetArgs(ctx))
+	return err
+}
+
 type RemoveFulfillmentsMoneyTxIDCommand struct {
 	FulfillmentIDs            []dot.ID
 	MoneyTxShippingID         dot.ID
@@ -389,6 +400,7 @@ func (h QueryServiceHandler) HandleListFulfillmentsForMoneyTx(ctx context.Contex
 func (q *AddFulfillmentShippingFeeCommand) command()                {}
 func (q *CancelFulfillmentCommand) command()                        {}
 func (q *CreateFulfillmentsCommand) command()                       {}
+func (q *CreateFulfillmentsFromImportCommand) command()             {}
 func (q *RemoveFulfillmentsMoneyTxIDCommand) command()              {}
 func (q *ShopUpdateFulfillmentCODCommand) command()                 {}
 func (q *ShopUpdateFulfillmentInfoCommand) command()                {}
@@ -484,6 +496,17 @@ func (q *CreateFulfillmentsCommand) SetCreateFulfillmentsArgs(args *CreateFulfil
 	q.ConnectionID = args.ConnectionID
 	q.ShopCarrierID = args.ShopCarrierID
 	q.Coupon = args.Coupon
+}
+
+func (q *CreateFulfillmentsFromImportCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFulfillmentsFromImportArgs) {
+	return ctx,
+		&CreateFulfillmentsFromImportArgs{
+			Fulfillments: q.Fulfillments,
+		}
+}
+
+func (q *CreateFulfillmentsFromImportCommand) SetCreateFulfillmentsFromImportArgs(args *CreateFulfillmentsFromImportArgs) {
+	q.Fulfillments = args.Fulfillments
 }
 
 func (q *RemoveFulfillmentsMoneyTxIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveFulfillmentsMoneyTxIDArgs) {
@@ -837,6 +860,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleAddFulfillmentShippingFee)
 	b.AddHandler(h.HandleCancelFulfillment)
 	b.AddHandler(h.HandleCreateFulfillments)
+	b.AddHandler(h.HandleCreateFulfillmentsFromImport)
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleShopUpdateFulfillmentCOD)
 	b.AddHandler(h.HandleShopUpdateFulfillmentInfo)

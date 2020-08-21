@@ -124,6 +124,9 @@ type Fulfillment struct {
 	// EtopPriceRule: true khi áp dụng bảng giá eTop, với giá `EtopAdjustedShippingFeeMain`
 	EtopPriceRule     bool
 	ShipmentPriceInfo *ShipmentPriceInfo
+
+	LinesContent string
+	EdCode       string
 }
 
 type FulfillmentSyncStates struct {
@@ -209,6 +212,12 @@ type SingleFulfillmentCreatingEvent struct {
 	FromAddress  *ordertypes.Address
 	ShippingFee  int
 	ConnectionID dot.ID
+}
+
+type FulfillmentFromImportCreatedEvent struct {
+	meta.EventMeta
+	ShopID        dot.ID
+	FulfillmentID dot.ID
 }
 
 type ShipmentPriceInfo struct {

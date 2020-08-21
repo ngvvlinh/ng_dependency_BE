@@ -49,6 +49,8 @@ type QueryService interface {
 
 	ListCustomersByIDs(context.Context, *ListCustomerByIDsArgs) (*CustomersResponse, error)
 
+	ListCustomersByPhones(ctx context.Context, shopID dot.ID, phones []string) ([]*ShopCustomer, error)
+
 	GetCustomerGroup(ctx context.Context, _ *GetCustomerGroupArgs) (*ShopCustomerGroup, error)
 
 	ListCustomerGroups(ctx context.Context, _ *ListCustomerGroupArgs) (*CustomerGroupsResponse, error)

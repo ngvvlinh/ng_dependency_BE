@@ -72,6 +72,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/eventstream"
+	fulfillmentcsv "o.o/backend/pkg/etop/logic/fulfillments/imcsv"
 	hotfixmoneytx "o.o/backend/pkg/etop/logic/hotfix"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
 	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
@@ -137,6 +138,7 @@ func Build(
 		moneytx.WireSet,
 		orderimcsv.WireSet,
 		productimcsv.WireSet,
+		fulfillmentcsv.WireSet,
 		eventstream.WireSet,
 		shopping.WireSet,
 		api.WireSet,

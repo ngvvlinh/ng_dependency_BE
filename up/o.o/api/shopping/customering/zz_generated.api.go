@@ -298,6 +298,18 @@ func (h QueryServiceHandler) HandleListCustomersByIDs(ctx context.Context, msg *
 	return err
 }
 
+type ListCustomersByPhonesQuery struct {
+	ShopID dot.ID
+	Phones []string
+
+	Result []*ShopCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListCustomersByPhones(ctx context.Context, msg *ListCustomersByPhonesQuery) (err error) {
+	msg.Result, err = h.inner.ListCustomersByPhones(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *AddCustomersToGroupCommand) command()      {}
@@ -321,6 +333,7 @@ func (q *ListCustomerGroupsQuery) query()          {}
 func (q *ListCustomerGroupsCustomersQuery) query() {}
 func (q *ListCustomersQuery) query()               {}
 func (q *ListCustomersByIDsQuery) query()          {}
+func (q *ListCustomersByPhonesQuery) query()       {}
 
 // implement conversion
 
@@ -614,6 +627,12 @@ func (q *ListCustomersByIDsQuery) SetListCustomerByIDsArgs(args *ListCustomerByI
 	q.IncludeDeleted = args.IncludeDeleted
 }
 
+func (q *ListCustomersByPhonesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, phones []string) {
+	return ctx,
+		q.ShopID,
+		q.Phones
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -661,5 +680,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListCustomerGroupsCustomers)
 	b.AddHandler(h.HandleListCustomers)
 	b.AddHandler(h.HandleListCustomersByIDs)
+	b.AddHandler(h.HandleListCustomersByPhones)
 	return QueryBus{b}
 }

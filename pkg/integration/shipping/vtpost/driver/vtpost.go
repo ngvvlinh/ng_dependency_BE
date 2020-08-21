@@ -88,16 +88,30 @@ func (d VTPostDriver) CreateFulfillment(
 	// prepare products for vtpost
 	var products []*vtpostclient.Product
 	var productName string
-	for _, line := range ffm.Lines {
-		if productName != "" {
-			productName += " + "
+
+	if len(ffm.Lines) > 0 {
+		for _, line := range ffm.Lines {
+			if productName != "" {
+				productName += " + "
+			}
+			productName += line.ProductName
+			products = append(products, &vtpostclient.Product{
+				ProductName:     line.ProductName,
+				ProductPrice:    line.ListPrice,
+				ProductQuantity: line.Quantity,
+			})
 		}
-		productName += line.ProductName
-		products = append(products, &vtpostclient.Product{
-			ProductName:     line.ProductName,
-			ProductPrice:    line.ListPrice,
-			ProductQuantity: line.Quantity,
-		})
+	} else {
+		if ffm.LinesContent != "" {
+			productName = ffm.LinesContent
+			products = []*vtpostclient.Product{
+				{
+					ProductName:     ffm.LinesContent,
+					ProductPrice:    ffm.BasketValue,
+					ProductQuantity: ffm.TotalItems,
+				},
+			}
+		}
 	}
 
 	orderService, err := d.parseServiceID(service.ProviderServiceID)

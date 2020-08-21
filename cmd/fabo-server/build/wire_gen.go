@@ -101,6 +101,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
+	imcsv3 "o.o/backend/pkg/etop/logic/fulfillments/imcsv"
 	"o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
 	imcsv2 "o.o/backend/pkg/etop/logic/products/imcsv"
@@ -384,7 +385,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		StocktakeQuery: stocktakingQueryBus,
 		InventoryQuery: inventoryQueryBus,
 	}
-	aggregate10 := aggregate9.NewAggregate(mainDB, busBus, locationQueryBus, orderingQueryBus, shipmentManager, connectioningQueryBus)
+	aggregate10 := aggregate9.NewAggregate(mainDB, busBus, locationQueryBus, orderingQueryBus, shipmentManager, connectioningQueryBus, queryBus, addressQueryBus)
 	shippingCommandBus := aggregate9.AggregateMessageBus(aggregate10)
 	shipmentService := &shipment.ShipmentService{
 		Session:           session,
@@ -462,7 +463,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	imcsvImport, cleanup3 := imcsv.New(authorizer, locationQueryBus, store, uploader, mainDB)
 	import2, cleanup4 := imcsv2.New(store, uploader, mainDB)
-	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, session)
+	import3, cleanup5 := imcsv3.New(store, uploader, mainDB)
+	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, import3, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
 	faboImageHandler := fabo2.BuildFaboImageHandler()
@@ -510,6 +512,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		_c:             captchaCaptcha,
 	}
 	return output, func() {
+		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()

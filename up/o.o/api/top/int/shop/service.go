@@ -203,6 +203,7 @@ type ShipmentService interface {
 	UpdateFulfillmentCOD(context.Context, *UpdateFulfillmentCODRequest) (*cm.UpdatedResponse, error)
 	UpdateFulfillmentInfo(context.Context, *UpdateFulfillmentInfoRequest) (*cm.UpdatedResponse, error)
 	CancelFulfillment(context.Context, *CancelFulfillmentRequest) (*cm.UpdatedResponse, error)
+	CreateFulfillmentsFromImport(context.Context, *CreateFulfillmentsFromImportRequest) (*CreateFulfillmentsFromImportResponse, error)
 }
 
 // +apix:path=/shop.Shipnow

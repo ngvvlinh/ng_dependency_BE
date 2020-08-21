@@ -98,12 +98,23 @@ func (d *GHNDriver) CreateFulfillment(
 	maxValueFreeInsuranceFee := d.GetMaxValueFreeInsuranceFee()
 
 	var orderItems []*ghnclient.OrderItem
-	for _, line := range ffm.Lines {
-		orderItems = append(orderItems, &ghnclient.OrderItem{
-			Name:     line.ProductName,
-			Code:     line.Code,
-			Quantity: line.Quantity,
-		})
+	if len(ffm.Lines) > 0 {
+		for _, line := range ffm.Lines {
+			orderItems = append(orderItems, &ghnclient.OrderItem{
+				Name:     line.ProductName,
+				Code:     line.Code,
+				Quantity: line.Quantity,
+			})
+		}
+	} else {
+		if ffm.LinesContent != "" {
+			orderItems = []*ghnclient.OrderItem{
+				{
+					Name:     ffm.LinesContent,
+					Quantity: ffm.TotalItems,
+				},
+			}
+		}
 	}
 
 	serviceID, err := d.parseServiceID(service.ProviderServiceID)

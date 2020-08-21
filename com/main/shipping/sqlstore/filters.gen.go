@@ -1840,6 +1840,44 @@ func (ft *FulfillmentFilters) ByCouponPtr(Coupon *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *FulfillmentFilters) ByLinesContent(LinesContent string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "lines_content",
+		Value:  LinesContent,
+		IsNil:  LinesContent == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByLinesContentPtr(LinesContent *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "lines_content",
+		Value:  LinesContent,
+		IsNil:  LinesContent == nil,
+		IsZero: LinesContent != nil && (*LinesContent) == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByEdCode(EdCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ed_code",
+		Value:  EdCode,
+		IsNil:  EdCode == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ed_code",
+		Value:  EdCode,
+		IsNil:  EdCode == nil,
+		IsZero: EdCode != nil && (*EdCode) == "",
+	}
+}
+
 func (ft *FulfillmentFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -81,12 +81,24 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 	toAddress := toQuery.Result
 
 	var lines []*directclient.ItemLine
-	for _, line := range ffm.Lines {
-		lines = append(lines, &directclient.ItemLine{
-			Name:     line.ProductName,
-			Price:    line.ListPrice,
-			Quantity: line.Quantity,
-		})
+	if len(ffm.Lines) > 0 {
+		for _, line := range ffm.Lines {
+			lines = append(lines, &directclient.ItemLine{
+				Name:     line.ProductName,
+				Price:    line.ListPrice,
+				Quantity: line.Quantity,
+			})
+		}
+	} else {
+		if ffm.LinesContent != "" {
+			lines = []*directclient.ItemLine{
+				{
+					Name:     ffm.LinesContent,
+					Price:    ffm.BasketValue,
+					Quantity: ffm.TotalItems,
+				},
+			}
+		}
 	}
 
 	cmd := &directclient.CreateFulfillmentRequest{

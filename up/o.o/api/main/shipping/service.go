@@ -24,6 +24,8 @@ import (
 type Aggregate interface {
 	CreateFulfillments(context.Context, *CreateFulfillmentsArgs) (fulfillmentID []dot.ID, _ error)
 
+	CreateFulfillmentsFromImport(context.Context, *CreateFulfillmentsFromImportArgs) ([]*CreateFullfillmentsFromImportResult, error)
+
 	UpdateFulfillmentShippingState(context.Context, *UpdateFulfillmentShippingStateArgs) (updated int, _ error)
 
 	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesArgs) (updated int, err error)
@@ -110,6 +112,49 @@ type CreateFulfillmentsArgs struct {
 	ShopCarrierID dot.ID
 
 	Coupon string
+}
+
+type CreateFulfillmentsFromImportArgs struct {
+	Fulfillments []*CreateFulfillmentFromImportArgs
+}
+
+type CreateFulfillmentFromImportArgs struct {
+	ID dot.ID
+
+	ShopID dot.ID
+
+	ConnectionID dot.ID
+
+	ShippingServiceCode string
+
+	ShippingServiceFee int
+
+	ShippingServiceName string
+
+	EdCode string
+
+	PickupAddress *ordertypes.Address
+
+	ShippingAddress *ordertypes.Address
+
+	TotalWeight int
+
+	BasketValue int
+
+	CODAmount int
+
+	ProductDescription string
+
+	IncludeInsurance bool
+
+	TryOn try_on.TryOnCode
+
+	ShippingNote string
+}
+
+type CreateFullfillmentsFromImportResult struct {
+	FulfillmentID dot.ID
+	Error         error
 }
 
 type ConfirmFulfillmentArgs struct {

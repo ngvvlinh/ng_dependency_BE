@@ -95,7 +95,7 @@ func (m *FulfillmentExtended) __sqlJoin(w SQLWriter) {
 	w.WriteName((*identitymodel.Shop)(nil).SQLTableName())
 	w.WriteRawString(" AS s ON")
 	w.WriteQueryString(" s.id = f.shop_id")
-	w.WriteRawString(" JOIN ")
+	w.WriteRawString(" LEFT JOIN ")
 	w.WriteName((*orderingmodel.Order)(nil).SQLTableName())
 	w.WriteRawString(" AS o ON")
 	w.WriteQueryString(" o.id = f.order_id")

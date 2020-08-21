@@ -65,6 +65,11 @@ func (s *FulfillmentStore) IDs(ids ...dot.ID) *FulfillmentStore {
 	return s
 }
 
+func (s *FulfillmentStore) EdCodes(edCodes []string) *FulfillmentStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "ed_code", edCodes))
+	return s
+}
+
 func (s *FulfillmentStore) ShippingCode(code string) *FulfillmentStore {
 	s.preds = append(s.preds, s.ft.ByShippingCode(code))
 	return s

@@ -923,11 +923,12 @@ var _acl = map[string]*permission.Decl{
 	"shop.Fulfillment/GetFulfillments":                   {Type: Shop, AuthPartner: Opt, Actions: actions(ShopFulfillmentView)},
 	"shop.Fulfillment/UpdateFulfillmentsShippingState":   {Type: Shop},
 
-	"shop.Shipment/GetShippingServices":   {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
-	"shop.Shipment/CreateFulfillments":    {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
-	"shop.Shipment/CancelFulfillment":     {Type: Shop, Actions: actions(ShopFulfillmentCancel)},
-	"shop.Shipment/UpdateFulfillmentInfo": {Type: Shop, Actions: actions(ShopFulfillmentUpdate)},
-	"shop.Shipment/UpdateFulfillmentCOD":  {Type: Shop, Actions: actions(ShopFulfillmentUpdate)},
+	"shop.Shipment/GetShippingServices":          {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
+	"shop.Shipment/CreateFulfillments":           {Type: Shop, Actions: actions(ShopFulfillmentCreate)},
+	"shop.Shipment/CancelFulfillment":            {Type: Shop, Actions: actions(ShopFulfillmentCancel)},
+	"shop.Shipment/UpdateFulfillmentInfo":        {Type: Shop, Actions: actions(ShopFulfillmentUpdate)},
+	"shop.Shipment/UpdateFulfillmentCOD":         {Type: Shop, Actions: actions(ShopFulfillmentUpdate)},
+	"shop.Shipment/CreateFulfillmentsFromImport": {Type: Shop},
 
 	"shop.Shipnow/GetShipnowFulfillment":      {Type: Shop, Actions: actions(ShopShipNowView)},
 	"shop.Shipnow/GetShipnowFulfillments":     {Type: Shop, Actions: actions(ShopShipNowView)},

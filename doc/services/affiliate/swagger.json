@@ -2180,6 +2180,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "ed_code": {
+          "type": "string"
+        },
         "estimated_delivery_at": {
           "type": "string",
           "format": "date-time"
@@ -2225,6 +2228,9 @@
           "items": {
             "$ref": "#/definitions/qdOrderLine"
           }
+        },
+        "lines_content": {
+          "type": "string"
         },
         "money_transaction_shipping_external_id": {
           "type": "string",

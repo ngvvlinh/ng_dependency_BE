@@ -3,8 +3,12 @@ package aggregate
 import (
 	"context"
 	"fmt"
+	"strings"
+	"sync"
 
+	"o.o/api/main/address"
 	"o.o/api/main/connectioning"
+	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	"o.o/api/main/ordering"
 	ordertypes "o.o/api/main/ordering/types"
@@ -48,17 +52,26 @@ type Aggregate struct {
 	orderQS        ordering.QueryBus
 	shimentManager *carrier.ShipmentManager
 	connectionQS   connectioning.QueryBus
+	identityQS     identity.QueryBus
+	addressQS      address.QueryBus
 	ffmStore       sqlstore.FulfillmentStoreFactory
 	eventBus       capi.EventBus
 }
 
-func NewAggregate(db com.MainDB, eventB capi.EventBus, locationQS location.QueryBus, orderQS ordering.QueryBus, shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus) *Aggregate {
+func NewAggregate(
+	db com.MainDB, eventB capi.EventBus,
+	locationQS location.QueryBus, orderQS ordering.QueryBus,
+	shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus,
+	identityQS identity.QueryBus, addressQS address.QueryBus,
+) *Aggregate {
 	return &Aggregate{
 		db:             db,
 		locationQS:     locationQS,
 		orderQS:        orderQS,
 		shimentManager: shipmentManager,
 		connectionQS:   connectionQS,
+		identityQS:     identityQS,
+		addressQS:      addressQS,
 		ffmStore:       sqlstore.NewFulfillmentStore(db),
 		eventBus:       eventB,
 	}
@@ -149,7 +162,7 @@ func (a *Aggregate) CreateFulfillments(ctx context.Context, args *shipping.Creat
 	if err != nil {
 		return nil, err
 	}
-	if err := a.shimentManager.CreateFulfillments(ctx, order, ffms); err != nil {
+	if err := a.shimentManager.CreateFulfillments(ctx, ffms); err != nil {
 		return nil, err
 	}
 
@@ -982,4 +995,249 @@ func (a *Aggregate) AddFulfillmentShippingFee(ctx context.Context, args *shippin
 		}
 		return nil
 	})
+}
+
+func (a *Aggregate) CreateFulfillmentsFromImport(
+	ctx context.Context, args *shipping.CreateFulfillmentsFromImportArgs,
+) ([]*shipping.CreateFullfillmentsFromImportResult, error) {
+	if len(args.Fulfillments) == 0 {
+		return nil, nil
+	}
+
+	result := make([]*shipping.CreateFullfillmentsFromImportResult, len(args.Fulfillments))
+
+	var wg sync.WaitGroup
+	var m sync.Mutex
+
+	validationErrors, err := a.validateFulfillmentsFromImport(ctx, args.Fulfillments)
+	if err != nil {
+		return nil, err
+	}
+
+	for idx := range validationErrors {
+		// ignore row validation fail
+		if validationErrors[idx] != nil {
+			result[idx] = &shipping.CreateFullfillmentsFromImportResult{
+				Error: validationErrors[idx],
+			}
+			continue
+		}
+		importFulfillmentArgs := args.Fulfillments[idx]
+		wg.Add(1)
+		go func(_idx int, args *shipping.CreateFulfillmentFromImportArgs) {
+			defer func() {
+				wg.Done()
+				m.Unlock()
+			}()
+
+			fulfillmentID := cm.NewID()
+			args.ID = fulfillmentID
+			err := a.createFulfillmentFromImport(ctx, args)
+			m.Lock()
+
+			result[_idx] = &shipping.CreateFullfillmentsFromImportResult{
+				FulfillmentID: fulfillmentID,
+				Error:         err,
+			}
+		}(idx, importFulfillmentArgs)
+	}
+
+	wg.Wait()
+
+	return result, nil
+}
+
+func (a *Aggregate) validateFulfillmentsFromImport(ctx context.Context, createFfmsFromImportArgs []*shipping.CreateFulfillmentFromImportArgs) (validationErrors []error, err error) {
+	shopID := createFfmsFromImportArgs[0].ShopID
+
+	// Check ed_code
+	{
+		validationErrors = make([]error, len(createFfmsFromImportArgs))
+
+		mapEdCodeAndRowIdxs := make(map[string][]int)
+		for i, createFfmFromImportArgs := range createFfmsFromImportArgs {
+			if createFfmFromImportArgs.EdCode == "" {
+				continue
+			}
+			if _, ok := mapEdCodeAndRowIdxs[createFfmFromImportArgs.EdCode]; ok {
+				mapEdCodeAndRowIdxs[createFfmFromImportArgs.EdCode] = append(mapEdCodeAndRowIdxs[createFfmFromImportArgs.EdCode], i)
+			} else {
+				mapEdCodeAndRowIdxs[createFfmFromImportArgs.EdCode] = []int{i}
+			}
+		}
+
+		var edCodes []string
+		for edCode, rowIdxs := range mapEdCodeAndRowIdxs {
+			if len(rowIdxs) == 1 {
+				edCodes = append(edCodes, edCode)
+				continue
+			}
+			for _, rowIdx := range rowIdxs {
+				validationErrors[rowIdx] = cm.Errorf(cm.InvalidArgument, nil, "Mã nội bộ đã tồn tại")
+			}
+		}
+
+		if len(edCodes) > 0 {
+			ffms, err := a.ffmStore(ctx).ShopID(shopID).StatusNotIn([]status5.Status{status5.N}...).EdCodes(edCodes).ListFfms()
+			if err != nil {
+				return nil, err
+			}
+			for _, ffm := range ffms {
+				for _, rowIdx := range mapEdCodeAndRowIdxs[ffm.EdCode] {
+					validationErrors[rowIdx] = cm.Errorf(cm.InvalidArgument, nil, "Mã nội bộ đã tồn tại trong hệ thống")
+				}
+			}
+		}
+	}
+
+	for i := range validationErrors {
+		if validationErrors[i] == nil {
+			validationErrors[i] = a.validateFulfillmentFromImport(ctx, createFfmsFromImportArgs[i])
+		}
+	}
+
+	return validationErrors, nil
+}
+
+func (a *Aggregate) createFulfillmentFromImport(ctx context.Context, args *shipping.CreateFulfillmentFromImportArgs) (err error) {
+	err = a.validateFulfillmentFromImport(ctx, args)
+	if err != nil {
+		return err
+	}
+
+	var ffm *shipmodel.Fulfillment
+	ffm, err = a.prepareFulfillmentImport(ctx, args)
+	if err != nil {
+		return err
+	}
+
+	if err = a.ffmStore(ctx).CreateFulfillmentsDB([]*shipmodel.Fulfillment{ffm}); err != nil {
+		return err
+	}
+
+	// Ignore error when create customers to reduce impact to the operation
+	fulfillmentFromImportCreatedEvent := &shipping.FulfillmentFromImportCreatedEvent{
+		EventMeta:     meta.NewEvent(),
+		ShopID:        ffm.ShopID,
+		FulfillmentID: ffm.ID,
+	}
+	_ = a.eventBus.Publish(ctx, fulfillmentFromImportCreatedEvent)
+
+	defer func() {
+		// rollback when get error
+		if err != nil {
+			cancelFulfillmentArgs := &shipping.CancelFulfillmentArgs{
+				CancelReason:  "cancel import fulfillment",
+				FulfillmentID: ffm.ID,
+			}
+			if _err := a.ffmStore(ctx).CancelFulfillment(cancelFulfillmentArgs); _err != nil {
+				panic(_err)
+			}
+		}
+	}()
+
+	if err = a.shimentManager.CreateFulfillments(ctx, []*shipmodel.Fulfillment{ffm}); err != nil {
+		return err
+	}
+
+	return
+}
+
+func (a *Aggregate) validateFulfillmentFromImport(ctx context.Context, args *shipping.CreateFulfillmentFromImportArgs) error {
+	if strings.TrimSpace(args.ShippingAddress.FullName) == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Tên người nhận không được bỏ trống.")
+	}
+	if strings.TrimSpace(args.ProductDescription) == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Mô tả sản phẩm không được bỏ trống")
+	}
+	if _, _, err := a.getAndVerifyAddress(ctx, args.ShippingAddress); err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
+	}
+	if _, _, err := a.getAndVerifyAddress(ctx, args.PickupAddress); err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ lấy hàng không hợp lệ: %v", err)
+	}
+
+	if args.BasketValue < 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Giá trị hàng hoá không hợp lệ: %v", args.BasketValue)
+	}
+	if args.TotalWeight < 50 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Khối lượng tối thiểu 50 gram", args.TotalWeight)
+	}
+	if args.CODAmount != 0 && args.CODAmount < 5000 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Thu hộ bằng 0đ hoặc từ 5000đ trở lên", args.CODAmount)
+	}
+
+	return nil
+}
+
+func (a *Aggregate) prepareFulfillmentImport(ctx context.Context, args *shipping.CreateFulfillmentFromImportArgs) (*shipmodel.Fulfillment, error) {
+	shippingType := ordertypes.ShippingTypeShipment
+	var connectionMethod connection_type.ConnectionMethod
+	var conn *connectioning.Connection
+
+	if args.ID == 0 {
+		return nil, cm.Errorf(cm.Internal, nil, "id is missing")
+	}
+
+	if args.ConnectionID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn nhà vận chuyển (connection_id)")
+	}
+	conn, err := a.shimentManager.ConnectionManager.GetConnectionByID(ctx, args.ConnectionID)
+	if err != nil {
+		return nil, err
+	}
+
+	if conn.ConnectionProvider == connection_type.ConnectionProviderGHN {
+		if args.TryOn.String() == "" {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng chọn ghi chú xem hàng!")
+		}
+	}
+	connectionMethod = conn.ConnectionMethod
+
+	tryOn := args.TryOn
+	if tryOn == 0 {
+		tryOn = try_on.None
+	}
+
+	typeFrom := etopmodel.FFShop
+	typeTo := etopmodel.FFCustomer
+
+	ffm := &shipmodel.Fulfillment{
+		ID:                  args.ID,
+		ShopID:              args.ShopID,
+		EdCode:              args.EdCode,
+		ShopConfirm:         status3.P, // Always set shop_confirm to 1
+		TotalItems:          1,         // hardcode
+		BasketValue:         args.BasketValue,
+		TotalAmount:         args.BasketValue,
+		TotalCODAmount:      args.CODAmount,
+		TypeFrom:            typeFrom,
+		TypeTo:              typeTo,
+		AddressFrom:         addressconvert.OrderAddressToModel(args.PickupAddress),
+		AddressTo:           addressconvert.OrderAddressToModel(args.ShippingAddress),
+		AddressReturn:       addressconvert.OrderAddressToModel(args.PickupAddress),
+		ProviderServiceID:   args.ShippingServiceCode,
+		ShippingServiceFee:  args.ShippingServiceFee,
+		ShippingServiceName: args.ShippingServiceName,
+		ShippingNote:        args.ShippingNote,
+		TryOn:               tryOn,
+		IncludeInsurance:    dot.Bool(args.IncludeInsurance),
+		ConnectionID:        args.ConnectionID,
+		ConnectionMethod:    connectionMethod,
+		TotalWeight:         args.TotalWeight,
+		ChargeableWeight:    args.TotalWeight,
+		GrossWeight:         args.TotalWeight,
+		ShippingState:       shipstate.Default,
+		ShippingType:        shippingType,
+		ShippingPaymentType: shipping_payment_type.Seller,
+		LinesContent:        args.ProductDescription,
+	}
+
+	if conn != nil {
+		// backward compatible
+		if shippingProvider, ok := shipping_provider.ParseShippingProvider(conn.ConnectionProvider.String()); ok {
+			ffm.ShippingProvider = shippingProvider
+		}
+	}
+	return ffm, nil
 }

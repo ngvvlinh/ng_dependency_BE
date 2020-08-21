@@ -3755,6 +3755,19 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			return
 		}
 		return msg, fn, nil
+	case "/shop.Shipment/CreateFulfillmentsFromImport":
+		msg := &CreateFulfillmentsFromImportRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateFulfillmentsFromImport(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Shipment/GetShippingServices":
 		msg := &inttypes.GetShippingServicesRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

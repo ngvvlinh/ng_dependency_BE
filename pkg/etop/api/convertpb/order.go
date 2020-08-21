@@ -731,6 +731,8 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 		InsuranceValue:                     m.InsuranceValue.Apply(0),
 		UpdatedBy:                          m.UpdatedBy,
 		ShopCarrierID:                      m.ShopCarrierID,
+		EdCode:                             m.EdCode,
+		LinesContent:                       m.LinesContent,
 	}
 	if shop != nil {
 		ff.Shop = PbShop(shop)

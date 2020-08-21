@@ -105,6 +105,11 @@ func (s *CustomerStore) Phone(phone string) *CustomerStore {
 	return s
 }
 
+func (s *CustomerStore) Phones(phones ...string) *CustomerStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "phone", phones))
+	return s
+}
+
 func (s *CustomerStore) Email(email string) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByEmail(email))
 	return s

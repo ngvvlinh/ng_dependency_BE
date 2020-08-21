@@ -2848,3 +2848,47 @@ type UpdateFulfillmentInfoRequest struct {
 func (m *UpdateFulfillmentInfoRequest) Reset() { *m = UpdateFulfillmentInfoRequest{} }
 
 func (m *UpdateFulfillmentInfoRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateFulfillmentFromImportArgs struct {
+	EdCode              string              `json:"ed_code"`
+	PickupAddress       *types.OrderAddress `json:"pickup_address"`
+	ShippingAddress     *types.OrderAddress `json:"shipping_address"`
+	ProductDescription  string              `json:"product_description"`
+	TotalWeight         int                 `json:"total_weight"` // gram
+	BasketValue         int                 `json:"basket_value"`
+	IncludeInsurance    bool                `json:"include_insurance"`
+	CODAmount           int                 `json:"cod_amount"`
+	ShippingNote        string              `json:"shipping_note"`
+	TryOn               try_on.TryOnCode    `json:"try_on"`
+	ConnectionID        dot.ID              `json:"connection_id"`
+	ShippingServiceCode string              `json:"shipping_service_code"`
+	ShippingServiceFee  int                 `json:"shipping_service_fee"`
+	ShippingServiceName string              `json:"shipping_service_name"`
+}
+
+func (m *CreateFulfillmentFromImportArgs) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *CreateFulfillmentFromImportArgs) Reset() {
+	*m = CreateFulfillmentFromImportArgs{}
+}
+
+type CreateFulfillmentsFromImportRequest struct {
+	Fulfillments []*CreateFulfillmentFromImportArgs `json:"fulfillments"`
+}
+
+func (m *CreateFulfillmentsFromImportRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *CreateFulfillmentsFromImportRequest) Reset() {
+	*m = CreateFulfillmentsFromImportRequest{}
+}
+
+type CreateFulfillmentsFromImportResponse struct {
+	Fulfillments []*types.Fulfillment `json:"fulfillments"`
+	Errors       []*common.Error      `json:"errors"`
+}
+
+func (m *CreateFulfillmentsFromImportResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *CreateFulfillmentsFromImportResponse) Reset() {
+	*m = CreateFulfillmentsFromImportResponse{}
+}

@@ -13,6 +13,7 @@ import (
 	"o.o/api/top/types/etc/account_tag"
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
+	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/api/shop"
@@ -174,4 +175,84 @@ func (s *ShipmentService) cancelFulfillment(ctx context.Context, q *api.CancelFu
 		return nil, err
 	}
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func (s *ShipmentService) CreateFulfillmentsFromImport(
+	ctx context.Context, q *api.CreateFulfillmentsFromImportRequest,
+) (*api.CreateFulfillmentsFromImportResponse, error) {
+	var createFulfillmentsFromImportArgs []*shipping.CreateFulfillmentFromImportArgs
+	shopID := s.SS.Shop().ID
+	for _, importFulfillmentArgs := range q.Fulfillments {
+		createFulfillmentsFromImportArgs = append(createFulfillmentsFromImportArgs, &shipping.CreateFulfillmentFromImportArgs{
+			ShopID:              shopID,
+			ConnectionID:        importFulfillmentArgs.ConnectionID,
+			ShippingServiceCode: importFulfillmentArgs.ShippingServiceCode,
+			ShippingServiceFee:  importFulfillmentArgs.ShippingServiceFee,
+			ShippingServiceName: importFulfillmentArgs.ShippingServiceName,
+			EdCode:              importFulfillmentArgs.EdCode,
+			PickupAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(importFulfillmentArgs.PickupAddress),
+			ShippingAddress:     convertpb.Convert_api_OrderAddress_To_core_OrderAddress(importFulfillmentArgs.ShippingAddress),
+			ProductDescription:  importFulfillmentArgs.ProductDescription,
+			TotalWeight:         importFulfillmentArgs.TotalWeight,
+			BasketValue:         importFulfillmentArgs.BasketValue,
+			IncludeInsurance:    importFulfillmentArgs.IncludeInsurance,
+			CODAmount:           importFulfillmentArgs.CODAmount,
+			ShippingNote:        importFulfillmentArgs.ShippingNote,
+			TryOn:               importFulfillmentArgs.TryOn,
+		})
+	}
+
+	cmd := &shipping.CreateFulfillmentsFromImportCommand{
+		Fulfillments: createFulfillmentsFromImportArgs,
+	}
+	if err := s.ShippingAggregate.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	var ffmIDs []dot.ID
+	{
+		for _, createFfmFromImportResult := range cmd.Result {
+			if createFfmFromImportResult.FulfillmentID != 0 {
+				ffmIDs = append(ffmIDs, createFfmFromImportResult.FulfillmentID)
+			}
+		}
+	}
+
+	var ffms []*inttypes.Fulfillment
+	if len(ffmIDs) > 0 {
+		query := &shipmodelx.GetFulfillmentExtendedsQuery{
+			ShopIDs: []dot.ID{shopID},
+			IDs:     ffmIDs,
+		}
+		if err := bus.Dispatch(ctx, query); err != nil {
+			return nil, err
+		}
+
+		ffms = convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, account_tag.TagShop)
+	}
+
+	var ffmsResp []*inttypes.Fulfillment
+	{
+		mapFfms := make(map[dot.ID]*inttypes.Fulfillment)
+		for _, ffm := range ffms {
+			mapFfms[ffm.Id] = ffm
+		}
+
+		for _, createFfmImportResult := range cmd.Result {
+			if createFfmImportResult.FulfillmentID != 0 {
+				ffmsResp = append(ffmsResp, mapFfms[createFfmImportResult.FulfillmentID])
+			} else {
+				ffmsResp = append(ffmsResp, nil)
+			}
+		}
+	}
+
+	var errors []*pbcm.Error
+	for _, resp := range cmd.Result {
+		errors = append(errors, cmapi.PbError(resp.Error))
+	}
+	return &api.CreateFulfillmentsFromImportResponse{
+		Fulfillments: ffmsResp,
+		Errors:       errors,
+	}, nil
 }

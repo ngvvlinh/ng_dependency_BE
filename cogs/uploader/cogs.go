@@ -9,14 +9,16 @@ import (
 )
 
 const (
-	PurposeImportShopOrder   = storage.Purpose("import_shop_order")
-	PurposeImportShopProduct = storage.Purpose("import_shop_product")
+	PurposeImportShopOrder       = storage.Purpose("import_shop_order")
+	PurposeImportShopProduct     = storage.Purpose("import_shop_product")
+	PurposeImportShopFulfillment = storage.Purpose("import_shop_fulfillment")
 )
 
 func SupportedPurposes() []storage.Purpose {
 	return []storage.Purpose{
 		PurposeImportShopOrder,
 		PurposeImportShopProduct,
+		PurposeImportShopFulfillment,
 	}
 }
 
@@ -27,6 +29,9 @@ func DefaultConfig() storage.DirConfigs {
 	}
 	cfg[PurposeImportShopProduct] = storage.DirConfig{
 		Path: "import_shop_product",
+	}
+	cfg[PurposeImportShopFulfillment] = storage.DirConfig{
+		Path: "import_shop_fulfillment",
 	}
 	return cfg
 }
