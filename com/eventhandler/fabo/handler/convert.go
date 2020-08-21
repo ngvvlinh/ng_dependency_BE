@@ -8,7 +8,7 @@ import (
 	"o.o/capi/dot"
 )
 
-func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment) *exttypes.FbExternalComment {
+func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment, fbParentComment *fbmessaging.FbExternalComment) *exttypes.FbExternalComment {
 	if fbcomment == nil {
 		return nil
 	}
@@ -17,7 +17,7 @@ func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment) *exttypes.FbE
 		ExternalPageID:       dot.String(fbcomment.ExternalPageID),
 		ExternalUserID:       dot.String(fbcomment.ExternalUserID),
 		ExternalParentID:     dot.String(fbcomment.ExternalParentID),
-		ExternalParent:       PbFbExternalParent(fbcomment.ExternalParent),
+		ExternalParent:       PbFbExternalComment(fbParentComment, nil),
 		ExternalParentUserID: dot.String(fbcomment.ExternalParentUserID),
 		ExternalMessage:      dot.String(fbcomment.ExternalMessage),
 		ExternalCommentCount: dot.Int(fbcomment.ExternalCommentCount),
@@ -31,13 +31,13 @@ func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment) *exttypes.FbE
 	}
 }
 
-func PbFbExternalCommentEvent(fbcomment *fbmessaging.FbExternalComment, op string) *types.PgEventComment {
+func PbFbExternalCommentEvent(fbcomment *fbmessaging.FbExternalComment, fbParentComment *fbmessaging.FbExternalComment, op string) *types.PgEventComment {
 	if fbcomment == nil {
 		return nil
 	}
 	return &types.PgEventComment{
 		Op:             op,
-		FbEventComment: PbFbExternalComment(fbcomment),
+		FbEventComment: PbFbExternalComment(fbcomment, fbParentComment),
 	}
 }
 

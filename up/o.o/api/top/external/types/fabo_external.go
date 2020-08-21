@@ -68,7 +68,7 @@ type FbExternalComment struct {
 	ExternalPageID       dot.NullString     `json:"external_page_id"`
 	ExternalUserID       dot.NullString     `json:"external_user_id"`
 	ExternalParentID     dot.NullString     `json:"external_parent_id"`
-	ExternalParent       *FbObjectParent    `json:"external_parent"`
+	ExternalParent       *FbExternalComment `json:"external_parent"`
 	ExternalParentUserID dot.NullString     `json:"external_parent_user_id"`
 	ExternalMessage      dot.NullString     `json:"external_message"`
 	ExternalCommentCount dot.NullInt        `json:"external_comment_count"`

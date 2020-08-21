@@ -52,7 +52,19 @@ func (h *Handler) HandleFbCommentEvent(ctx context.Context, event *pgevent.PgEve
 		}
 	}
 
-	result := PbFbExternalCommentEvent(fbExternalComment, event.Op.String())
+	var fbParentExternalComment *fbmessaging.FbExternalComment
+	if fbExternalComment.ExternalParent != nil && fbExternalComment.ExternalParent.ID != "" {
+		queryParentComment := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+			ExternalID: fbExternalComment.ExternalParent.ID,
+		}
+		if err := h.fbMessagingQuery.Dispatch(ctx, queryParentComment); err != nil && cm.ErrorCode(err) != cm.NotFound {
+			ll.Warn("fb_parent_comment not found", l.Int64("rid", event.RID), l.String("external_id", fbExternalComment.ExternalParent.ID))
+			return mq.CodeIgnore, nil
+		}
+		fbParentExternalComment = queryParentComment.Result
+	}
+
+	result := PbFbExternalCommentEvent(fbExternalComment, fbParentExternalComment, event.Op.String())
 	queryPage := &fbpaging.GetFbExternalPageByExternalIDQuery{
 		ExternalID: query.Result.ExternalPageID,
 	}
