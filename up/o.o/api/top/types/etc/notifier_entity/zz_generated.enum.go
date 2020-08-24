@@ -15,15 +15,19 @@ import (
 var __jsonNull = []byte("null")
 
 var enumNotifierEntityName = map[int]string{
-	0: "unknown",
-	1: "fulfillment",
-	2: "money_transaction_shipping",
+	0:  "unknown",
+	1:  "fulfillment",
+	2:  "money_transaction_shipping",
+	30: "fb_external_comment",
+	36: "fb_external_message",
 }
 
 var enumNotifierEntityValue = map[string]int{
 	"unknown":                    0,
 	"fulfillment":                1,
 	"money_transaction_shipping": 2,
+	"fb_external_comment":        30,
+	"fb_external_message":        36,
 }
 
 func ParseNotifierEntity(s string) (NotifierEntity, bool) {

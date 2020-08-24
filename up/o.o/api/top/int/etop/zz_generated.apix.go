@@ -1063,6 +1063,45 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			return
 		}
 		return msg, fn, nil
+	case "/etop.User/DisableNotifyTopic":
+		msg := &UpdateNotifyTopicRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DisableNotifyTopic(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/etop.User/EnableNotifyTopic":
+		msg := &UpdateNotifyTopicRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.EnableNotifyTopic(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/etop.User/GetNotifySetting":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetNotifySetting(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/etop.User/InitSession":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

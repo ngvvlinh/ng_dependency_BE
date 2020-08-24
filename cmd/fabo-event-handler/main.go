@@ -17,6 +17,8 @@ import (
 	"o.o/backend/com/eventhandler/handler"
 	"o.o/backend/com/eventhandler/handler/intctl"
 	"o.o/backend/com/eventhandler/pgevent"
+	webhooksender "o.o/backend/com/eventhandler/webhook/sender"
+	"o.o/backend/com/eventhandler/webhook/storage"
 	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
 	servicefbuser "o.o/backend/com/fabo/main/fbuser"
@@ -80,12 +82,19 @@ func main() {
 	}
 	sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 
+	dbWebhook, err := cmsql.Connect(cfg.PostgresWebhook)
+	if err != nil {
+		ll.Fatal("Unable to connect to Postgres (webhook)", l.Error(err))
+	}
+	changesStore := storage.NewChangesStore(dbWebhook)
+
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
 
 	customerQuery := customerquery.CustomerQueryMessageBus(customerquery.NewCustomerQuery(db))
 
 	var intctlHandler *intctl.Handler
+	var webhookSender *webhooksender.WebhookSender
 	var waiters []interface{ Wait() }
 	{
 		// intctl handlerpkg
@@ -96,8 +105,15 @@ func main() {
 
 		intctlHandler = intctl.New(consumer, cfg.Kafka.TopicPrefix)
 		waiters = append(waiters, intctlHandler)
+
+		webhookSender = webhooksender.New(db, redisStore, changesStore)
+		waiters = append(waiters, webhookSender)
+		if err := webhookSender.Load(); err != nil {
+			ll.Fatal("Error loading webhooks", l.Error(err))
+		}
 	}
 	{
+
 		producer, err := mq.NewKafkaProducer(ctx, cfg.Kafka.Brokers)
 		if err != nil {
 			ll.Fatal("Error while connecting to Kafka", l.Error(err))
@@ -108,7 +124,7 @@ func main() {
 		topics = append(topics, fabohandler.Topics()...)
 		sMain, err := pgevent.NewService(ctx, dbdecl.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
 		if err != nil {
-			ll.Fatal("Error while listening to Postgres")
+			ll.Fatal("error while listening to Postgres")
 		}
 
 		fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))

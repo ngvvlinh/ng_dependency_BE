@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	cmtype "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	notifiermodel "o.o/backend/com/eventhandler/notifier/model"
@@ -16,6 +17,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/mq"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
+	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
@@ -38,7 +40,7 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 		return mq.CodeIgnore, nil
 	}
 
-	cmds := prepareNotiFfmCommands(history, &ffm)
+	cmds := prepareNotifyFfmCommands(ctx, history, &ffm)
 	if err := CreateNotifications(ctx, cmds); err != nil {
 		return mq.CodeRetry, err
 	}
@@ -46,26 +48,29 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 	return mq.CodeOK, nil
 }
 
-func prepareNotiFfmCommands(history shipmodel.FulfillmentHistory, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
-	var res []*notifiermodel.CreateNotificationArgs
+func prepareNotifyFfmCommands(ctx context.Context, history shipmodel.FulfillmentHistory, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
 	externalShippingNote := history.ExternalShippingNote().String()
 	externalSubState := history.ExternalShippingSubState().String()
+	userIDs, err := getUserIDsWithShopID(ctx, ffm.ShopID)
+	if err != nil || userIDs == nil {
+		return nil
+	}
+
+	var res []*notifiermodel.CreateNotificationArgs
+	res = templateFfmChangedNote(userIDs, ffm)
 	if (externalShippingNote.Valid && ffm.ExternalShippingNote != "") || (externalSubState.Valid && ffm.ExternalShippingSubState != "") {
-		cmd := templateFfmChangedNote(ffm)
-		res = append(res, cmd)
+		res = append(res, templateFfmChangedNote(userIDs, ffm)...)
 	}
 	if history.ShippingFeeShop().Int().Valid {
-		cmd := templateFfmChangedFee(ffm)
-		res = append(res, cmd)
+		res = append(res, templateFfmChangedFee(userIDs, ffm)...)
 	}
 	if history.ShippingState().String().Valid {
-		cmd := templateFfmChangedStatus(ffm)
-		res = append(res, cmd)
+		res = append(res, templateFfmChangedStatus(userIDs, ffm)...)
 	}
 	return res
 }
 
-func templateFfmChangedNote(ffm *shipmodel.Fulfillment) *notifiermodel.CreateNotificationArgs {
+func templateFfmChangedNote(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
 	title, content := "", ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	subState := ffm.ExternalShippingSubState
@@ -83,31 +88,38 @@ func templateFfmChangedNote(ffm *shipmodel.Fulfillment) *notifiermodel.CreateNot
 	if subState == ghtkclient.SubStateMapping[ghtkclient.StateIDShipperDelivered] {
 		sendNotification = false
 	}
-	return &notifiermodel.CreateNotificationArgs{
-		AccountID:        ffm.ShopID,
-		Title:            title,
-		Message:          content,
-		Entity:           notifiermodel.NotiFulfillment,
-		EntityID:         ffm.ID,
-		SendNotification: sendNotification,
+	args := &buildNotifyCmdArgs{
+		UserIDs:    userIDs,
+		ShopID:     ffm.ShopID,
+		Title:      title,
+		Message:    content,
+		SendNotify: sendNotification,
+		Entity:     notifiermodel.NotiFulfillment,
+		EntityID:   ffm.ID,
+		Meta:       cmtype.Empty{},
 	}
+	return buildNotifyCmds(args)
 }
 
-func templateFfmChangedFee(ffm *shipmodel.Fulfillment) *notifiermodel.CreateNotificationArgs {
+func templateFfmChangedFee(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
 	title := fmt.Sprintf("Thay đổi phí vận chuyển - %v %v - %v", Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	content := fmt.Sprintf("Cước phí thay đổi thành %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.ShippingFeeShop, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	return &notifiermodel.CreateNotificationArgs{
-		AccountID:        ffm.ShopID,
-		Title:            title,
-		Message:          content,
-		Entity:           notifiermodel.NotiFulfillment,
-		EntityID:         ffm.ID,
-		SendNotification: true,
+
+	args := &buildNotifyCmdArgs{
+		UserIDs:    userIDs,
+		ShopID:     ffm.ShopID,
+		Title:      title,
+		Message:    content,
+		SendNotify: true,
+		Entity:     notifiermodel.NotiFulfillment,
+		EntityID:   ffm.ID,
+		Meta:       cmtype.Empty{},
 	}
+	return buildNotifyCmds(args)
 }
 
-func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateNotificationArgs {
+func templateFfmChangedStatus(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
 	content := ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	switch ffm.ShippingState {
@@ -140,14 +152,17 @@ func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateN
 	if cm.StringsContain(acceptNotifyStates, ffm.ShippingState.String()) {
 		sendNotification = true
 	}
-	return &notifiermodel.CreateNotificationArgs{
-		AccountID:        ffm.ShopID,
-		Title:            title,
-		Message:          content,
-		Entity:           notifiermodel.NotiFulfillment,
-		EntityID:         ffm.ID,
-		SendNotification: sendNotification,
+	args := &buildNotifyCmdArgs{
+		UserIDs:    userIDs,
+		ShopID:     ffm.ShopID,
+		Title:      title,
+		Message:    content,
+		SendNotify: sendNotification,
+		Entity:     notifiermodel.NotiFulfillment,
+		EntityID:   ffm.ID,
+		Meta:       cmtype.Empty{},
 	}
+	return buildNotifyCmds(args)
 }
 
 func Uppercase(provider shipping_provider.ShippingProvider) string {

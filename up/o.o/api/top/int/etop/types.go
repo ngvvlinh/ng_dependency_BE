@@ -1267,3 +1267,21 @@ type GetBankBranchesResponse struct {
 }
 
 func (m *GetBankBranchesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type NotifyTopic struct {
+	Topic  string `json:"topic"`
+	Enable bool   `json:"enable"`
+}
+
+type GetNotifySettingResponse struct {
+	UserID dot.ID         `json:"user_id"`
+	Topics []*NotifyTopic `json:"topics"`
+}
+
+func (m *GetNotifySettingResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateNotifyTopicRequest struct {
+	Topic string `json:"topic"`
+}
+
+func (m *UpdateNotifyTopicRequest) String() string { return jsonx.MustMarshalToString(m) }

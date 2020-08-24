@@ -22,6 +22,7 @@ import (
 	_uploader "o.o/backend/cogs/uploader"
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
+	"o.o/backend/com/eventhandler/notifier"
 	comfabo "o.o/backend/com/fabo"
 	"o.o/backend/com/main/address"
 	"o.o/backend/com/main/catalog"
@@ -108,6 +109,8 @@ func Build(
 		ordering.WireSet,
 		stocktaking.WireSet,
 		identity.WireSet,
+		notifier.WireSet,
+
 		address.WireSet,
 		carrying.WireSet,
 

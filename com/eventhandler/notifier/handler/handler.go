@@ -8,6 +8,7 @@ import (
 	"o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/com/eventhandler/pgevent"
 	com "o.o/backend/com/main"
+	identitystore "o.o/backend/com/main/identity/sqlstore"
 	cm "o.o/backend/pkg/common"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/mq"
@@ -17,12 +18,14 @@ import (
 )
 
 var (
-	x            *cmsql.Database
-	xNotifier    *cmsql.Database
-	ll           = l.New()
-	notiStore    *sqlstore.NotificationStore
-	deviceStore  *sqlstore.DeviceStore
-	historyStore historysqlstore.HistoryStoreFactory
+	x                    *cmsql.Database
+	xNotifier            *cmsql.Database
+	ll                   = l.New()
+	notiStore            *sqlstore.NotificationStore
+	deviceStore          *sqlstore.DeviceStore
+	historyStore         historysqlstore.HistoryStoreFactory
+	userNotiSettingStore sqlstore.UserNotiSettingStoreFactory
+	accountUserStore     identitystore.AccountUserStoreFactory
 )
 
 const ConsumerGroup = "handler/notifier"
@@ -33,6 +36,8 @@ func New(dbMain com.MainDB, dbNotifier com.NotifierDB, consumer mq.KafkaConsumer
 	notiStore = sqlstore.NewNotificationStore(dbNotifier)
 	deviceStore = sqlstore.NewDeviceStore(dbNotifier)
 	historyStore = historysqlstore.NewHistoryStore(dbMain)
+	userNotiSettingStore = sqlstore.NewUserNotiSettingStore(dbMain)
+	accountUserStore = identitystore.NewAccountUserStore(dbMain)
 
 	handlerMain = handler.New(consumer, cfg)
 	handlerNotifier = handler.New(consumer, cfg)
@@ -46,14 +51,22 @@ func TopicsAndHandlersEtop() map[string]mq.EventHandler {
 	})
 }
 
+func TopicsAndHandlersFabo() map[string]mq.EventHandler {
+	return pgevent.WrapMapHandlers(map[string]pgevent.HandlerFunc{
+		"fulfillment":         HandleFulfillmentEvent,
+		"fb_external_comment": HandleCommentEvent,
+		"fb_external_message": HandleMessageEvent,
+	})
+}
+
 func TopicsAndHandlerNotifier() map[string]mq.EventHandler {
 	return pgevent.WrapMapHandlers(map[string]pgevent.HandlerFunc{
 		"notification": HandleNotificationEvent,
 	})
 }
 
-func CreateNotifications(ctx context.Context, cmds []*notifiermodel.CreateNotificationArgs) error {
-	if len(cmds) == 0 {
+func CreateNotifications(_ context.Context, cmds []*notifiermodel.CreateNotificationArgs) error {
+	if cmds == nil || len(cmds) == 0 {
 		return nil
 	}
 	chErr := make(chan error, len(cmds))
@@ -63,7 +76,7 @@ func CreateNotifications(ctx context.Context, cmds []*notifiermodel.CreateNotifi
 				chErr <- _err
 			}()
 			defer cm.RecoverAndLog()
-			_, _err = notiStore.CreateNotification(cmd)
+			_, _err = notiStore.CreateNotification(_cmd)
 			if _err != nil {
 				ll.Debug("err", l.Error(_err))
 			}

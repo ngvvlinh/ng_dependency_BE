@@ -21,11 +21,7 @@ import (
 	"o.o/backend/com/eventhandler/pgevent"
 	webhooksender "o.o/backend/com/eventhandler/webhook/sender"
 	"o.o/backend/com/eventhandler/webhook/storage"
-	servicefbmessaging "o.o/backend/com/fabo/main/fbmessaging"
-	servicefbpage "o.o/backend/com/fabo/main/fbpage"
-	servicefbuser "o.o/backend/com/fabo/main/fbuser"
 	catalogquery "o.o/backend/com/main/catalog/query"
-	serviceidentity "o.o/backend/com/main/identity"
 	inventoryquery "o.o/backend/com/main/inventory/query"
 	servicelocation "o.o/backend/com/main/location"
 	"o.o/backend/com/main/shipnow"
@@ -144,20 +140,14 @@ func main() {
 			ll.Fatal("Error while listening to Postgres")
 		}
 
-		fbMessagingQuery := servicefbmessaging.FbMessagingQueryMessageBus(servicefbmessaging.NewFbMessagingQuery(db))
-		fbPageQuery := servicefbpage.FbPageQueryMessageBus(servicefbpage.NewFbPageQuery(db))
-		fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db, customerQuery))
-		identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 		shipnowQuery := shipnow.QueryServiceMessageBus(shipnow.NewQueryService(db))
 
 		pgeventapi.Init(&sMain)
-		faboHandler := fabohandler.New(db, producer, cfg.Kafka.TopicPrefix, fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery)
 		etopHandler := etophandler.New(db, webhookSender, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus, shipnowQuery)
 		etopHandler.RegisterTo(intctlHandler)
 
 		h := handler.New(consumer, cfg.Kafka)
 		h.StartConsuming(ctx, etophandler.Topics(), etopHandler.TopicsAndHandlers())
-		h.StartConsuming(ctx, fabohandler.Topics(), faboHandler.TopicsAndHandlers())
 		waiters = append(waiters, h)
 	}
 

@@ -449,8 +449,8 @@ func (ms *DeviceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type Notifications []*Notification
 
 const __sqlNotification_Table = "notification"
-const __sqlNotification_ListCols = "\"id\",\"title\",\"message\",\"is_read\",\"entity_id\",\"entity\",\"account_id\",\"sync_status\",\"external_service_id\",\"external_noti_id\",\"send_notification\",\"synced_at\",\"seen_at\",\"created_at\",\"updated_at\",\"meta_data\""
-const __sqlNotification_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"title\" = EXCLUDED.\"title\",\"message\" = EXCLUDED.\"message\",\"is_read\" = EXCLUDED.\"is_read\",\"entity_id\" = EXCLUDED.\"entity_id\",\"entity\" = EXCLUDED.\"entity\",\"account_id\" = EXCLUDED.\"account_id\",\"sync_status\" = EXCLUDED.\"sync_status\",\"external_service_id\" = EXCLUDED.\"external_service_id\",\"external_noti_id\" = EXCLUDED.\"external_noti_id\",\"send_notification\" = EXCLUDED.\"send_notification\",\"synced_at\" = EXCLUDED.\"synced_at\",\"seen_at\" = EXCLUDED.\"seen_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"meta_data\" = EXCLUDED.\"meta_data\""
+const __sqlNotification_ListCols = "\"id\",\"title\",\"message\",\"is_read\",\"entity_id\",\"entity\",\"account_id\",\"user_id\",\"sync_status\",\"external_service_id\",\"external_noti_id\",\"send_notification\",\"synced_at\",\"seen_at\",\"created_at\",\"updated_at\",\"meta_data\""
+const __sqlNotification_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"title\" = EXCLUDED.\"title\",\"message\" = EXCLUDED.\"message\",\"is_read\" = EXCLUDED.\"is_read\",\"entity_id\" = EXCLUDED.\"entity_id\",\"entity\" = EXCLUDED.\"entity\",\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"sync_status\" = EXCLUDED.\"sync_status\",\"external_service_id\" = EXCLUDED.\"external_service_id\",\"external_noti_id\" = EXCLUDED.\"external_noti_id\",\"send_notification\" = EXCLUDED.\"send_notification\",\"synced_at\" = EXCLUDED.\"synced_at\",\"seen_at\" = EXCLUDED.\"seen_at\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"meta_data\" = EXCLUDED.\"meta_data\""
 const __sqlNotification_Insert = "INSERT INTO \"notification\" (" + __sqlNotification_ListCols + ") VALUES"
 const __sqlNotification_Select = "SELECT " + __sqlNotification_ListCols + " FROM \"notification\""
 const __sqlNotification_Select_history = "SELECT " + __sqlNotification_ListCols + " FROM history.\"notification\""
@@ -517,10 +517,17 @@ func (m *Notification) Migration(db *cmsql.Database) {
 			ColumnType:       "notifier_entity.NotifierEntity",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "fulfillment", "money_transaction_shipping"},
+			ColumnEnumValues: []string{"unknown", "fulfillment", "money_transaction_shipping", "fb_external_comment", "fb_external_message"},
 		},
 		"account_id": {
 			ColumnName:       "account_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"user_id": {
+			ColumnName:       "user_id",
 			ColumnType:       "dot.ID",
 			ColumnDBType:     "int64",
 			ColumnTag:        "",
@@ -609,6 +616,7 @@ func (m *Notification) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.EntityID,
 		m.Entity,
 		m.AccountID,
+		m.UserID,
 		m.SyncStatus,
 		core.Int(m.ExternalServiceID),
 		core.String(m.ExternalNotiID),
@@ -630,6 +638,7 @@ func (m *Notification) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.EntityID,
 		&m.Entity,
 		&m.AccountID,
+		&m.UserID,
 		&m.SyncStatus,
 		(*core.Int)(&m.ExternalServiceID),
 		(*core.String)(&m.ExternalNotiID),
@@ -676,7 +685,7 @@ func (_ *Notifications) SQLSelect(w SQLWriter) error {
 func (m *Notification) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlNotification_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -686,7 +695,7 @@ func (ms Notifications) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlNotification_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -773,6 +782,14 @@ func (m *Notification) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.AccountID)
 	}
+	if m.UserID != 0 {
+		flag = true
+		w.WriteName("user_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.UserID)
+	}
 	if m.SyncStatus != 0 {
 		flag = true
 		w.WriteName("sync_status")
@@ -855,7 +872,7 @@ func (m *Notification) SQLUpdate(w SQLWriter) error {
 func (m *Notification) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlNotification_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -884,6 +901,7 @@ func (m NotificationHistory) IsRead() core.Interface     { return core.Interface
 func (m NotificationHistory) EntityID() core.Interface   { return core.Interface{m["entity_id"]} }
 func (m NotificationHistory) Entity() core.Interface     { return core.Interface{m["entity"]} }
 func (m NotificationHistory) AccountID() core.Interface  { return core.Interface{m["account_id"]} }
+func (m NotificationHistory) UserID() core.Interface     { return core.Interface{m["user_id"]} }
 func (m NotificationHistory) SyncStatus() core.Interface { return core.Interface{m["sync_status"]} }
 func (m NotificationHistory) ExternalServiceID() core.Interface {
 	return core.Interface{m["external_service_id"]}
@@ -901,15 +919,15 @@ func (m NotificationHistory) UpdatedAt() core.Interface { return core.Interface{
 func (m NotificationHistory) MetaData() core.Interface  { return core.Interface{m["meta_data"]} }
 
 func (m *NotificationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(NotificationHistory, 16)
+	res := make(NotificationHistory, 17)
 	res["id"] = data[0]
 	res["title"] = data[1]
 	res["message"] = data[2]
@@ -917,23 +935,24 @@ func (m *NotificationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["entity_id"] = data[4]
 	res["entity"] = data[5]
 	res["account_id"] = data[6]
-	res["sync_status"] = data[7]
-	res["external_service_id"] = data[8]
-	res["external_noti_id"] = data[9]
-	res["send_notification"] = data[10]
-	res["synced_at"] = data[11]
-	res["seen_at"] = data[12]
-	res["created_at"] = data[13]
-	res["updated_at"] = data[14]
-	res["meta_data"] = data[15]
+	res["user_id"] = data[7]
+	res["sync_status"] = data[8]
+	res["external_service_id"] = data[9]
+	res["external_noti_id"] = data[10]
+	res["send_notification"] = data[11]
+	res["synced_at"] = data[12]
+	res["seen_at"] = data[13]
+	res["created_at"] = data[14]
+	res["updated_at"] = data[15]
+	res["meta_data"] = data[16]
 	*m = res
 	return nil
 }
 
 func (ms *NotificationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	res := make(NotificationHistories, 0, 128)
@@ -949,15 +968,252 @@ func (ms *NotificationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["entity_id"] = data[4]
 		m["entity"] = data[5]
 		m["account_id"] = data[6]
-		m["sync_status"] = data[7]
-		m["external_service_id"] = data[8]
-		m["external_noti_id"] = data[9]
-		m["send_notification"] = data[10]
-		m["synced_at"] = data[11]
-		m["seen_at"] = data[12]
-		m["created_at"] = data[13]
-		m["updated_at"] = data[14]
-		m["meta_data"] = data[15]
+		m["user_id"] = data[7]
+		m["sync_status"] = data[8]
+		m["external_service_id"] = data[9]
+		m["external_noti_id"] = data[10]
+		m["send_notification"] = data[11]
+		m["synced_at"] = data[12]
+		m["seen_at"] = data[13]
+		m["created_at"] = data[14]
+		m["updated_at"] = data[15]
+		m["meta_data"] = data[16]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+type UserNotiSettings []*UserNotiSetting
+
+const __sqlUserNotiSetting_Table = "user_noti_setting"
+const __sqlUserNotiSetting_ListCols = "\"user_id\",\"disable_topics\""
+const __sqlUserNotiSetting_ListColsOnConflict = "\"user_id\" = EXCLUDED.\"user_id\",\"disable_topics\" = EXCLUDED.\"disable_topics\""
+const __sqlUserNotiSetting_Insert = "INSERT INTO \"user_noti_setting\" (" + __sqlUserNotiSetting_ListCols + ") VALUES"
+const __sqlUserNotiSetting_Select = "SELECT " + __sqlUserNotiSetting_ListCols + " FROM \"user_noti_setting\""
+const __sqlUserNotiSetting_Select_history = "SELECT " + __sqlUserNotiSetting_ListCols + " FROM history.\"user_noti_setting\""
+const __sqlUserNotiSetting_UpdateAll = "UPDATE \"user_noti_setting\" SET (" + __sqlUserNotiSetting_ListCols + ")"
+const __sqlUserNotiSetting_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT user_noti_setting_pkey DO UPDATE SET"
+
+func (m *UserNotiSetting) SQLTableName() string  { return "user_noti_setting" }
+func (m *UserNotiSettings) SQLTableName() string { return "user_noti_setting" }
+func (m *UserNotiSetting) SQLListCols() string   { return __sqlUserNotiSetting_ListCols }
+
+func (m *UserNotiSetting) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserNotiSetting_ListCols + " FROM \"user_noti_setting\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *UserNotiSetting) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "user_noti_setting"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"user_id": {
+			ColumnName:       "user_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"disable_topics": {
+			ColumnName:       "disable_topics",
+			ColumnType:       "[]string",
+			ColumnDBType:     "[]string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "user_noti_setting", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserNotiSetting)(nil))
+}
+
+func (m *UserNotiSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
+	return []interface{}{
+		m.UserID,
+		core.Array{m.DisableTopics, opts},
+	}
+}
+
+func (m *UserNotiSetting) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		&m.UserID,
+		core.Array{&m.DisableTopics, opts},
+	}
+}
+
+func (m *UserNotiSetting) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *UserNotiSettings) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(UserNotiSettings, 0, 128)
+	for rows.Next() {
+		m := new(UserNotiSetting)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *UserNotiSetting) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserNotiSetting_Select)
+	return nil
+}
+
+func (_ *UserNotiSettings) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserNotiSetting_Select)
+	return nil
+}
+
+func (m *UserNotiSetting) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserNotiSetting_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(2)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms UserNotiSettings) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserNotiSetting_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(2)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *UserNotiSetting) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlUserNotiSetting_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserNotiSetting_ListColsOnConflict)
+	return nil
+}
+
+func (ms UserNotiSettings) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlUserNotiSetting_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlUserNotiSetting_ListColsOnConflict)
+	return nil
+}
+
+func (m *UserNotiSetting) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("user_noti_setting")
+	w.WriteRawString(" SET ")
+	if m.UserID != 0 {
+		flag = true
+		w.WriteName("user_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.UserID)
+	}
+	if m.DisableTopics != nil {
+		flag = true
+		w.WriteName("disable_topics")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.DisableTopics, opts})
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *UserNotiSetting) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserNotiSetting_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(2)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type UserNotiSettingHistory map[string]interface{}
+type UserNotiSettingHistories []map[string]interface{}
+
+func (m *UserNotiSettingHistory) SQLTableName() string  { return "history.\"user_noti_setting\"" }
+func (m UserNotiSettingHistories) SQLTableName() string { return "history.\"user_noti_setting\"" }
+
+func (m *UserNotiSettingHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserNotiSetting_Select_history)
+	return nil
+}
+
+func (m UserNotiSettingHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlUserNotiSetting_Select_history)
+	return nil
+}
+
+func (m UserNotiSettingHistory) UserID() core.Interface { return core.Interface{m["user_id"]} }
+func (m UserNotiSettingHistory) DisableTopics() core.Interface {
+	return core.Interface{m["disable_topics"]}
+}
+
+func (m *UserNotiSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 2)
+	args := make([]interface{}, 2)
+	for i := 0; i < 2; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(UserNotiSettingHistory, 2)
+	res["user_id"] = data[0]
+	res["disable_topics"] = data[1]
+	*m = res
+	return nil
+}
+
+func (ms *UserNotiSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 2)
+	args := make([]interface{}, 2)
+	for i := 0; i < 2; i++ {
+		args[i] = &data[i]
+	}
+	res := make(UserNotiSettingHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(UserNotiSettingHistory)
+		m["user_id"] = data[0]
+		m["disable_topics"] = data[1]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

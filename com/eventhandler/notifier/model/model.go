@@ -15,6 +15,10 @@ type NotiEntity = notifier_entity.NotifierEntity
 const (
 	NotiFulfillment              = notifier_entity.Fulfillment
 	NotiMoneyTransactionShipping = notifier_entity.MoneyTransactionShipping
+
+	NotiFaboComment = notifier_entity.FaboComment
+	NotiFaboMessage = notifier_entity.FaboMessage
+
 	// OneSignal service ID default
 	ExternalServiceOneSignalID = 101
 )
@@ -28,6 +32,7 @@ type Notification struct {
 	EntityID          dot.ID
 	Entity            NotiEntity
 	AccountID         dot.ID
+	UserID            dot.ID
 	SyncStatus        status3.Status
 	ExternalServiceID int
 	ExternalNotiID    string
@@ -73,4 +78,14 @@ type DeviceConfig struct {
 	SubcribeAllShop bool     `json:"subcribe_all_shop"`
 	SubcribeShopIDs []dot.ID `json:"subcribe_shop_ids"`
 	Mute            bool     `json:"mute"`
+}
+
+// +sqlgen
+type UserNotiSetting struct {
+	UserID        dot.ID   `json:"user_id"`
+	DisableTopics []string `json:"disable_topics"`
+}
+
+type GetUserNotiSettingArgs struct {
+	UserID dot.ID
 }

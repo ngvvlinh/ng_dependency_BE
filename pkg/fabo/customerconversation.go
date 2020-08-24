@@ -576,6 +576,7 @@ func (s *CustomerConversationService) createPost(
 func (s *CustomerConversationService) SendMessage(
 	ctx context.Context, request *fabo.SendMessageRequest,
 ) (*fabo.FbExternalMessage, error) {
+	// TODO(khoa): check nil request.Message
 	request.Message.Text = strings.TrimSpace(request.Message.Text)
 	request.Message.URL = strings.TrimSpace(request.Message.URL)
 	if request.Message == nil || request.Message.Type == "" ||

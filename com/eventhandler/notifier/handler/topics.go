@@ -9,22 +9,12 @@ import (
 func Topics() []eventhandler.TopicDef {
 	return []eventhandler.TopicDef{
 		{
-			Name:       "fulfillment",
-			Partitions: 64,
-			DBName:     dbdecl.DBMain,
-		},
-		{
 			Name:       "notification",
 			Partitions: 64,
 			DBName:     dbdecl.DBNotifier,
 		},
 		{
-			Name:       "fb_external_conversation",
-			Partitions: 64,
-			DBName:     dbdecl.DBMain,
-		},
-		{
-			Name:       "fb_external_message",
+			Name:       "fulfillment",
 			Partitions: 64,
 			DBName:     dbdecl.DBMain,
 		},
@@ -34,7 +24,7 @@ func Topics() []eventhandler.TopicDef {
 			DBName:     dbdecl.DBMain,
 		},
 		{
-			Name:       "fb_customer_conversation",
+			Name:       "fb_external_message",
 			Partitions: 64,
 			DBName:     dbdecl.DBMain,
 		},

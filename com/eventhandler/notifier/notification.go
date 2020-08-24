@@ -16,6 +16,12 @@ func init() {
 }
 
 var onesignalClient *onesignal.Client
+var NotifyTopics = []string{
+	"fulfillment",
+	"fb_external_comment",
+	"fb_external_message",
+	"system",
+}
 
 func Init(cfg cc.OnesignalConfig) error {
 	onesignalClient = onesignal.New(cfg.AppID, cfg.ApiKey)

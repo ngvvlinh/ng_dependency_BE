@@ -32,6 +32,10 @@ func (s *NotificationStore) CreateNotification(args *model.CreateNotificationArg
 	if args.AccountID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
 	}
+
+	if args.UserID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Message")
+	}
 	if args.Title == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Title")
 	}
@@ -41,6 +45,7 @@ func (s *NotificationStore) CreateNotification(args *model.CreateNotificationArg
 	id := cm.NewID()
 	noti := &model.Notification{
 		ID:               id,
+		UserID:           args.UserID,
 		Title:            args.Title,
 		Message:          args.Message,
 		Entity:           args.Entity,
@@ -48,6 +53,7 @@ func (s *NotificationStore) CreateNotification(args *model.CreateNotificationArg
 		IsRead:           false,
 		AccountID:        args.AccountID,
 		SendNotification: args.SendNotification,
+		MetaData:         args.MetaData,
 	}
 	if err := s.db.Table("notification").ShouldInsert(noti); err != nil {
 		return nil, err

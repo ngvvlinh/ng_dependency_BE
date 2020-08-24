@@ -7216,7 +7216,9 @@
       "enum": [
         "unknown",
         "fulfillment",
-        "money_transaction_shipping"
+        "money_transaction_shipping",
+        "fb_external_comment",
+        "fb_external_message"
       ]
     },
     "xjSource": {

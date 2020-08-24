@@ -27,6 +27,7 @@ import (
 	aggregate22 "o.o/backend/com/etc/logging/payment/aggregate"
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	"o.o/backend/com/etc/logging/smslog/aggregate"
+	"o.o/backend/com/eventhandler/notifier"
 	manager2 "o.o/backend/com/external/payment/manager"
 	aggregate20 "o.o/backend/com/external/payment/payment/aggregate"
 	vtpay2 "o.o/backend/com/external/payment/vtpay"
@@ -231,6 +232,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
 	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
+	notifierQueryService := notifier.NewQueryService(mainDB)
+	notifyQueryBus := notifier.QueryServiceNotifyBus(notifierQueryService)
+	notifierAggregate := notifier.NewNotiAggregate(mainDB, shipnowManager)
+	notifyCommandBus := notifier.NewNotiAggregateMessageBus(notifierAggregate)
 	busBus := bus.New()
 	generator := auth2.NewGenerator(store)
 	tokenStore := tokens.NewTokenStore(store)
@@ -248,6 +253,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityAggr:    commandBus,
 		IdentityQuery:   identityQueryBus,
 		InvitationQuery: invitationQueryBus,
+		NotifyQuery:     notifyQueryBus,
+		NotifyAggr:      notifyCommandBus,
 		EventBus:        busBus,
 		AuthStore:       generator,
 		TokenStore:      tokenStore,

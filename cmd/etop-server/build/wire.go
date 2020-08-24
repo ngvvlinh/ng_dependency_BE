@@ -23,6 +23,7 @@ import (
 	sms_all "o.o/backend/cogs/sms/_all"
 	storage_all "o.o/backend/cogs/storage/_all"
 	_uploader "o.o/backend/cogs/uploader"
+	"o.o/backend/com/eventhandler/notifier"
 	paymentmanager "o.o/backend/com/external/payment/manager"
 	"o.o/backend/com/main/address"
 	"o.o/backend/com/main/catalog"
@@ -146,6 +147,7 @@ func Build(
 		stocktaking.WireSet,
 		refund.WireSet,
 		identity.WireSet,
+		notifier.WireSet,
 		address.WireSet,
 		paymentmanager.WireSet,
 		suppliering.WireSet,

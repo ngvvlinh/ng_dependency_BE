@@ -11,6 +11,7 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/main/invitation"
+	"o.o/api/main/notify"
 	"o.o/api/top/int/etop"
 	api "o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
@@ -79,6 +80,8 @@ type UserService struct {
 	IdentityAggr    identity.CommandBus
 	IdentityQuery   identity.QueryBus
 	InvitationQuery invitation.QueryBus
+	NotifyQuery     notify.QueryBus
+	NotifyAggr      notify.CommandBus
 	EventBus        capi.EventBus
 	AuthStore       auth.Generator
 	TokenStore      tokens.TokenStore

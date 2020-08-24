@@ -85,6 +85,12 @@ type UserService interface {
 	UpdateReferenceSale(context.Context, *UpdateReferenceSaleRequest) (*cm.UpdatedResponse, error)
 
 	CheckUserRegistration(context.Context, *GetUserByPhoneRequest) (*GetUserByPhoneResponse, error)
+
+	GetNotifySetting(ctx context.Context, empty *cm.Empty) (*GetNotifySettingResponse, error)
+
+	EnableNotifyTopic(ctx context.Context, empty *UpdateNotifyTopicRequest) (*GetNotifySettingResponse, error)
+
+	DisableNotifyTopic(ctx context.Context, empty *UpdateNotifyTopicRequest) (*GetNotifySettingResponse, error)
 }
 
 // +apix:path=/etop.Account

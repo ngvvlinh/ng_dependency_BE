@@ -11,6 +11,7 @@ import (
 
 type CreateNotificationArgs struct {
 	AccountID        dot.ID
+	UserID           dot.ID
 	Title            string
 	Message          string
 	EntityID         dot.ID
@@ -73,4 +74,8 @@ func (c *CreateNotificationRequest) ToOnesignalModel() *onesignal.CreateNotifica
 		Data:   c.Data,
 		WebURL: c.WebURL,
 	}
+}
+
+type CreateUserNotiSettingArgs struct {
+	UserID dot.ID
 }

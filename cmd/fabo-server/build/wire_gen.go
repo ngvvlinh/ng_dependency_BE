@@ -23,6 +23,7 @@ import (
 	"o.o/backend/com/etc/logging/smslog/aggregate"
 	"o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
+	"o.o/backend/com/eventhandler/notifier"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
@@ -139,6 +140,10 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
 	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
+	notifierQueryService := notifier.NewQueryService(mainDB)
+	notifyQueryBus := notifier.QueryServiceNotifyBus(notifierQueryService)
+	notifierAggregate := notifier.NewNotiAggregate(mainDB, carrierManager)
+	notifyCommandBus := notifier.NewNotiAggregateMessageBus(notifierAggregate)
 	busBus := bus.New()
 	generator := auth2.NewGenerator(store)
 	tokenStore := tokens.NewTokenStore(store)
@@ -155,6 +160,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		IdentityAggr:    commandBus,
 		IdentityQuery:   queryBus,
 		InvitationQuery: invitationQueryBus,
+		NotifyQuery:     notifyQueryBus,
+		NotifyAggr:      notifyCommandBus,
 		EventBus:        busBus,
 		AuthStore:       generator,
 		TokenStore:      tokenStore,

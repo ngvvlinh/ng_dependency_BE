@@ -8,7 +8,6 @@ import (
 	"o.o/api/top/types/etc/status3"
 	notifiermodel "o.o/backend/com/eventhandler/notifier/model"
 	"o.o/backend/com/eventhandler/pgevent"
-	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
@@ -49,17 +48,28 @@ func SendNotification(ctx context.Context, noti *notifiermodel.Notification) err
 }
 
 func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) error {
-	cmdUser := &identitymodelx.GetAccountUserQuery{
-		AccountID:       noti.AccountID,
-		FindByAccountID: true,
+	if noti.UserID == 0 {
+		userIds, err := getUserIDsWithShopID(ctx, noti.AccountID)
+		if err != nil {
+			return err
+		}
+		for _, userID := range userIds {
+			err := _sendToOneSignal(ctx, userID, noti)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
 	}
-	if err := bus.Dispatch(ctx, cmdUser); err != nil {
-		return err
-	}
+	return _sendToOneSignal(ctx, noti.UserID, noti)
+}
+
+func _sendToOneSignal(ctx context.Context, userID dot.ID, noti *notifiermodel.Notification) error {
 	args := &notifiermodel.GetDevicesArgs{
-		UserID:            cmdUser.Result.UserID,
+		UserID:            userID,
 		ExternalServiceID: notifiermodel.ExternalServiceOneSignalID,
 	}
+
 	devices, err := deviceStore.GetDevices(args)
 	if err != nil {
 		return err

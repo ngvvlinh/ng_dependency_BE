@@ -910,6 +910,87 @@
         }
       }
     },
+    "/api/etop.User/DisableNotifyTopic": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "DisableNotifyTopic",
+        "operationId": "etop.User-DisableNotifyTopic",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baUpdateNotifyTopicRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baGetNotifySettingResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.User/EnableNotifyTopic": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "EnableNotifyTopic",
+        "operationId": "etop.User-EnableNotifyTopic",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baUpdateNotifyTopicRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baGetNotifySettingResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.User/GetNotifySetting": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "GetNotifySetting",
+        "operationId": "etop.User-GetNotifySetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baGetNotifySettingResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/InitSession": {
       "post": {
         "tags": [
@@ -2291,6 +2372,21 @@
         }
       }
     },
+    "baGetNotifySettingResponse": {
+      "type": "object",
+      "properties": {
+        "topics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baNotifyTopic"
+          }
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "baGetProvincesByBankResquest": {
       "type": "object",
       "properties": {
@@ -2605,6 +2701,17 @@
         },
         "user": {
           "$ref": "#/definitions/baUser"
+        }
+      }
+    },
+    "baNotifyTopic": {
+      "type": "object",
+      "properties": {
+        "enable": {
+          "type": "boolean"
+        },
+        "topic": {
+          "type": "string"
         }
       }
     },
@@ -3143,6 +3250,14 @@
           "type": "string"
         },
         "zip": {
+          "type": "string"
+        }
+      }
+    },
+    "baUpdateNotifyTopicRequest": {
+      "type": "object",
+      "properties": {
+        "topic": {
           "type": "string"
         }
       }
