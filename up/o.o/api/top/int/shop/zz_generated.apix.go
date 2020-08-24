@@ -120,7 +120,7 @@ func (s *AccountServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -145,7 +145,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -158,7 +158,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -171,7 +171,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -184,7 +184,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -197,7 +197,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -210,7 +210,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -223,7 +223,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -236,7 +236,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -249,7 +249,7 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -290,7 +290,7 @@ func (s *AuthorizeServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.S
 func (s *AuthorizeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -315,7 +315,7 @@ func (s *AuthorizeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -328,7 +328,7 @@ func (s *AuthorizeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -341,7 +341,7 @@ func (s *AuthorizeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -382,7 +382,7 @@ func (s *BrandServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serve
 func (s *BrandServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -407,7 +407,7 @@ func (s *BrandServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -420,7 +420,7 @@ func (s *BrandServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -433,7 +433,7 @@ func (s *BrandServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -446,7 +446,7 @@ func (s *BrandServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -459,7 +459,7 @@ func (s *BrandServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -472,7 +472,7 @@ func (s *BrandServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -513,7 +513,7 @@ func (s *CarrierServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *CarrierServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -538,7 +538,7 @@ func (s *CarrierServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -551,7 +551,7 @@ func (s *CarrierServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -564,7 +564,7 @@ func (s *CarrierServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -577,7 +577,7 @@ func (s *CarrierServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -590,7 +590,7 @@ func (s *CarrierServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -603,7 +603,7 @@ func (s *CarrierServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -644,7 +644,7 @@ func (s *CategoryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Se
 func (s *CategoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -669,7 +669,7 @@ func (s *CategoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -682,7 +682,7 @@ func (s *CategoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -695,7 +695,7 @@ func (s *CategoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -708,7 +708,7 @@ func (s *CategoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -721,7 +721,7 @@ func (s *CategoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -762,7 +762,7 @@ func (s *CollectionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.
 func (s *CollectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -787,7 +787,7 @@ func (s *CollectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -800,7 +800,7 @@ func (s *CollectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -813,7 +813,7 @@ func (s *CollectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -826,7 +826,7 @@ func (s *CollectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -839,7 +839,7 @@ func (s *CollectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -880,7 +880,7 @@ func (s *ConnectionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.
 func (s *ConnectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -905,7 +905,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -918,7 +918,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -931,7 +931,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -944,7 +944,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -957,7 +957,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -970,7 +970,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -983,7 +983,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -996,7 +996,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1037,7 +1037,7 @@ func (s *CustomerGroupServiceServer) WithHooks(hooks httprpc.HooksBuilder) httpr
 func (s *CustomerGroupServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -1062,7 +1062,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1075,7 +1075,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1088,7 +1088,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1101,7 +1101,7 @@ func (s *CustomerGroupServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1142,7 +1142,7 @@ func (s *CustomerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Se
 func (s *CustomerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -1167,7 +1167,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1180,7 +1180,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1193,7 +1193,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1206,7 +1206,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1219,7 +1219,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1232,7 +1232,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1245,7 +1245,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1258,7 +1258,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1271,7 +1271,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1284,7 +1284,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1297,7 +1297,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1310,7 +1310,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1323,7 +1323,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1336,7 +1336,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1349,7 +1349,7 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1390,7 +1390,7 @@ func (s *ExportServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serv
 func (s *ExportServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -1415,7 +1415,7 @@ func (s *ExportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1428,7 +1428,7 @@ func (s *ExportServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1469,7 +1469,7 @@ func (s *FulfillmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc
 func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -1494,7 +1494,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1507,7 +1507,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1520,7 +1520,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1533,7 +1533,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1546,7 +1546,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1559,7 +1559,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1572,7 +1572,7 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1613,7 +1613,7 @@ func (s *HistoryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -1638,7 +1638,7 @@ func (s *HistoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1679,7 +1679,7 @@ func (s *InventoryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.S
 func (s *InventoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -1704,7 +1704,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1717,7 +1717,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1730,7 +1730,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1743,7 +1743,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1756,7 +1756,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1769,7 +1769,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1782,7 +1782,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1795,7 +1795,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1808,7 +1808,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1821,7 +1821,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1834,7 +1834,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1847,7 +1847,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1860,7 +1860,7 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1901,7 +1901,7 @@ func (s *LedgerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serv
 func (s *LedgerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -1926,7 +1926,7 @@ func (s *LedgerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1939,7 +1939,7 @@ func (s *LedgerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1952,7 +1952,7 @@ func (s *LedgerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1965,7 +1965,7 @@ func (s *LedgerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -1978,7 +1978,7 @@ func (s *LedgerServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2019,7 +2019,7 @@ func (s *MiscServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server
 func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -2044,7 +2044,7 @@ func (s *MiscServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2085,7 +2085,7 @@ func (s *MoneyTransactionServiceServer) WithHooks(hooks httprpc.HooksBuilder) ht
 func (s *MoneyTransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -2110,7 +2110,7 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string, hooks httprpc.Ho
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2123,7 +2123,7 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string, hooks httprpc.Ho
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2164,7 +2164,7 @@ func (s *NotificationServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprp
 func (s *NotificationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -2189,7 +2189,7 @@ func (s *NotificationServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2202,7 +2202,7 @@ func (s *NotificationServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2215,7 +2215,7 @@ func (s *NotificationServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2228,7 +2228,7 @@ func (s *NotificationServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2241,7 +2241,7 @@ func (s *NotificationServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2282,7 +2282,7 @@ func (s *OrderServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serve
 func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -2307,7 +2307,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2320,7 +2320,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2333,7 +2333,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2346,7 +2346,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2359,7 +2359,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2372,7 +2372,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2385,7 +2385,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2398,7 +2398,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2411,7 +2411,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2424,7 +2424,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2437,7 +2437,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2450,7 +2450,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2463,7 +2463,7 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2504,7 +2504,7 @@ func (s *PaymentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *PaymentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -2529,7 +2529,7 @@ func (s *PaymentServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2542,7 +2542,7 @@ func (s *PaymentServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2583,7 +2583,7 @@ func (s *ProductServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *ProductServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -2608,7 +2608,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2621,7 +2621,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2634,7 +2634,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2647,7 +2647,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2660,7 +2660,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2673,7 +2673,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2686,7 +2686,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2699,7 +2699,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2712,7 +2712,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2725,7 +2725,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2738,7 +2738,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2751,7 +2751,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2764,7 +2764,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2777,7 +2777,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2790,7 +2790,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2803,7 +2803,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2816,7 +2816,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2829,7 +2829,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2842,7 +2842,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2855,7 +2855,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2868,7 +2868,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2881,7 +2881,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2894,7 +2894,7 @@ func (s *ProductServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2935,7 +2935,7 @@ func (s *ProductSourceServiceServer) WithHooks(hooks httprpc.HooksBuilder) httpr
 func (s *ProductSourceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -2960,7 +2960,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2973,7 +2973,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2986,7 +2986,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -2999,7 +2999,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3012,7 +3012,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3025,7 +3025,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3038,7 +3038,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3051,7 +3051,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3064,7 +3064,7 @@ func (s *ProductSourceServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3105,7 +3105,7 @@ func (s *PurchaseOrderServiceServer) WithHooks(hooks httprpc.HooksBuilder) httpr
 func (s *PurchaseOrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -3130,7 +3130,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3143,7 +3143,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3156,7 +3156,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3169,7 +3169,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3182,7 +3182,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3195,7 +3195,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3208,7 +3208,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3221,7 +3221,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3234,7 +3234,7 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string, hooks httprpc.Hooks
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3275,7 +3275,7 @@ func (s *PurchaseRefundServiceServer) WithHooks(hooks httprpc.HooksBuilder) http
 func (s *PurchaseRefundServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -3300,7 +3300,7 @@ func (s *PurchaseRefundServiceServer) parseRoute(path string, hooks httprpc.Hook
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3313,7 +3313,7 @@ func (s *PurchaseRefundServiceServer) parseRoute(path string, hooks httprpc.Hook
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3326,7 +3326,7 @@ func (s *PurchaseRefundServiceServer) parseRoute(path string, hooks httprpc.Hook
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3339,7 +3339,7 @@ func (s *PurchaseRefundServiceServer) parseRoute(path string, hooks httprpc.Hook
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3352,7 +3352,7 @@ func (s *PurchaseRefundServiceServer) parseRoute(path string, hooks httprpc.Hook
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3365,7 +3365,7 @@ func (s *PurchaseRefundServiceServer) parseRoute(path string, hooks httprpc.Hook
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3378,7 +3378,7 @@ func (s *PurchaseRefundServiceServer) parseRoute(path string, hooks httprpc.Hook
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3419,7 +3419,7 @@ func (s *ReceiptServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *ReceiptServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -3444,7 +3444,7 @@ func (s *ReceiptServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3457,7 +3457,7 @@ func (s *ReceiptServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3470,7 +3470,7 @@ func (s *ReceiptServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3483,7 +3483,7 @@ func (s *ReceiptServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3496,7 +3496,7 @@ func (s *ReceiptServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3509,7 +3509,7 @@ func (s *ReceiptServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3522,7 +3522,7 @@ func (s *ReceiptServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3563,7 +3563,7 @@ func (s *RefundServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Serv
 func (s *RefundServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -3588,7 +3588,7 @@ func (s *RefundServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3601,7 +3601,7 @@ func (s *RefundServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3614,7 +3614,7 @@ func (s *RefundServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3627,7 +3627,7 @@ func (s *RefundServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3640,7 +3640,7 @@ func (s *RefundServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3653,7 +3653,7 @@ func (s *RefundServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3666,7 +3666,7 @@ func (s *RefundServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3707,7 +3707,7 @@ func (s *ShipmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Se
 func (s *ShipmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -3732,7 +3732,7 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3745,7 +3745,7 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3758,7 +3758,7 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3771,7 +3771,7 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3784,7 +3784,7 @@ func (s *ShipmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3825,7 +3825,7 @@ func (s *ShipnowServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *ShipnowServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -3850,7 +3850,7 @@ func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3863,7 +3863,7 @@ func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3876,7 +3876,7 @@ func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3889,7 +3889,7 @@ func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3902,7 +3902,7 @@ func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3915,7 +3915,7 @@ func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3928,7 +3928,7 @@ func (s *ShipnowServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -3969,7 +3969,7 @@ func (s *StocktakeServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.S
 func (s *StocktakeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -3994,7 +3994,7 @@ func (s *StocktakeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4007,7 +4007,7 @@ func (s *StocktakeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4020,7 +4020,7 @@ func (s *StocktakeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4033,7 +4033,7 @@ func (s *StocktakeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4046,7 +4046,7 @@ func (s *StocktakeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4059,7 +4059,7 @@ func (s *StocktakeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4072,7 +4072,7 @@ func (s *StocktakeServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4113,7 +4113,7 @@ func (s *SubscriptionServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprp
 func (s *SubscriptionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -4138,7 +4138,7 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4151,7 +4151,7 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4192,7 +4192,7 @@ func (s *SummaryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *SummaryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -4217,7 +4217,7 @@ func (s *SummaryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4230,7 +4230,7 @@ func (s *SummaryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4243,7 +4243,7 @@ func (s *SummaryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4256,7 +4256,7 @@ func (s *SummaryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4297,7 +4297,7 @@ func (s *SupplierServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Se
 func (s *SupplierServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -4322,7 +4322,7 @@ func (s *SupplierServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4335,7 +4335,7 @@ func (s *SupplierServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4348,7 +4348,7 @@ func (s *SupplierServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4361,7 +4361,7 @@ func (s *SupplierServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4374,7 +4374,7 @@ func (s *SupplierServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4387,7 +4387,7 @@ func (s *SupplierServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4400,7 +4400,7 @@ func (s *SupplierServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4441,7 +4441,7 @@ func (s *TradingServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Ser
 func (s *TradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -4466,7 +4466,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4479,7 +4479,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4492,7 +4492,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4505,7 +4505,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4518,7 +4518,7 @@ func (s *TradingServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4559,7 +4559,7 @@ func (s *WebServerServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.S
 func (s *WebServerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -4584,7 +4584,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4597,7 +4597,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4610,7 +4610,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4623,7 +4623,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4636,7 +4636,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4649,7 +4649,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4662,7 +4662,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4675,7 +4675,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4688,7 +4688,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4701,7 +4701,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4714,7 +4714,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4727,7 +4727,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4740,7 +4740,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4753,7 +4753,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4766,7 +4766,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4779,7 +4779,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4792,7 +4792,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4805,7 +4805,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -4818,7 +4818,7 @@ func (s *WebServerServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}

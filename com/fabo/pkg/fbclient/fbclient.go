@@ -333,7 +333,6 @@ func (f *FbClient) CallAPICreateSubscribedApps(req *CreateSubscribedAppsRequest)
 	if err := f.sendPostRequest(path, req.PageID, params, &subscribedAddResponse); err != nil {
 		return nil, err
 	}
-
 	return &subscribedAddResponse, nil
 }
 
@@ -355,10 +354,9 @@ func (f *FbClient) CallAPISendMessage(req *SendMessageRequest) (*model.SendMessa
 
 	path := "/me/messages"
 	var sendMessageResponse model.SendMessageResponse
-	if err := f.sendPostRequest(path, req.PageID, params, &sendMessageResponse); err != nil {
+	if err = f.sendPostRequest(path, req.PageID, params, &sendMessageResponse); err != nil {
 		return nil, err
 	}
-
 	return &sendMessageResponse, nil
 }
 
@@ -481,15 +479,14 @@ func (f *FbClient) sendRequest(method RequestMethod, path, pageID string, params
 	metrics.FaboEgressRequest(req.RawRequest.URL, status, d, f.appInfo.Source, pageID)
 	switch {
 	case status >= 200 && status < 300:
-		if err := json.Unmarshal(res.Body(), resp); err != nil {
+		if err = json.Unmarshal(res.Body(), resp); err != nil {
 			return cm.Errorf(cm.ExternalServiceError, err, "")
 		}
 	case status >= 400:
-		if err := f.facebookErrorService.HandleErrorFacebookAPI(res, res.Request.URL); err != nil {
+		if err = f.facebookErrorService.HandleErrorFacebookAPI(res, res.Request.URL); err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
 

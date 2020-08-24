@@ -21,7 +21,7 @@ func NewHook(perms map[string]*permission.Decl) Hook {
 
 func (h Hook) BuildHooks() httprpc.Hooks {
 	return httprpc.Hooks{
-		BeforeServing: h.BeforeServing,
+		RequestRouted: h.BeforeServing,
 	}
 }
 

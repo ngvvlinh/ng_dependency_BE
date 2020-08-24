@@ -53,7 +53,7 @@ func (s *CalcServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server
 func (s *CalcServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hooks := httprpc.WrapHooks(s.hooks)
 	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
-	ctx, err := hooks.BeforeRequest(ctx, *info)
+	ctx, err := hooks.RequestReceived(ctx, *info)
 	if err != nil {
 		httprpc.WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -78,7 +78,7 @@ func (s *CalcServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -91,7 +91,7 @@ func (s *CalcServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -104,7 +104,7 @@ func (s *CalcServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}
@@ -117,7 +117,7 @@ func (s *CalcServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.BeforeServing(ctx, *info)
+			newCtx, err = hooks.RequestRouted(ctx, *info)
 			if err != nil {
 				return
 			}

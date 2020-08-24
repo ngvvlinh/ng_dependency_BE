@@ -47,7 +47,7 @@ func NewServers(
 
 	var cookieHooks httprpc.HooksFunc = func() httprpc.Hooks {
 		return httprpc.Hooks{
-			BeforeResponse: func(ctx context.Context, info httprpc.HookInfo, respHeaders http.Header) (context.Context, error) {
+			ResponsePrepared: func(ctx context.Context, info httprpc.HookInfo, respHeaders http.Header) (context.Context, error) {
 				_ctx := bus.GetContext(ctx)
 				if _ctx == nil {
 					return ctx, nil

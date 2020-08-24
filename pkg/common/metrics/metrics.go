@@ -5,7 +5,11 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"o.o/common/l"
 )
+
+var ll = l.New()
 
 const DefaultRoute = "/==/prometrics"
 

@@ -16,11 +16,13 @@ type HookInfo struct {
 }
 
 type Hooks struct {
-	BeforeRequest  func(ctx context.Context, info HookInfo) (context.Context, error)
-	BeforeServing  func(ctx context.Context, info HookInfo) (context.Context, error)
-	BeforeResponse func(ctx context.Context, info HookInfo, respHeaders http.Header) (context.Context, error)
-	AfterResponse  func(ctx context.Context, info HookInfo)
-	ErrorServing   func(ctx context.Context, info HookInfo, err error) (context.Context, error)
+	RequestReceived  func(ctx context.Context, info HookInfo) (context.Context, error)
+	RequestRouted    func(ctx context.Context, info HookInfo) (context.Context, error)
+	ResponsePrepared func(ctx context.Context, info HookInfo, respHeaders http.Header) (context.Context, error)
+	ResponseSent     func(ctx context.Context, info HookInfo)
+	Error            func(ctx context.Context, info HookInfo, err error) (context.Context, error)
+
+	// TODO(vu): all sent
 }
 
 type HooksBuilder interface {
@@ -45,10 +47,10 @@ func (s chainHooks) BuildHooks() Hooks {
 		hooks[i] = b.BuildHooks()
 	}
 	return Hooks{
-		BeforeRequest: func(ctx context.Context, info HookInfo) (_ context.Context, err error) {
+		RequestReceived: func(ctx context.Context, info HookInfo) (_ context.Context, err error) {
 			for _, h := range hooks {
-				if h.BeforeRequest != nil {
-					ctx, err = h.BeforeRequest(ctx, info)
+				if h.RequestReceived != nil {
+					ctx, err = h.RequestReceived(ctx, info)
 					if err != nil {
 						return ctx, err
 					}
@@ -56,10 +58,10 @@ func (s chainHooks) BuildHooks() Hooks {
 			}
 			return ctx, nil
 		},
-		BeforeServing: func(ctx context.Context, info HookInfo) (_ context.Context, err error) {
+		RequestRouted: func(ctx context.Context, info HookInfo) (_ context.Context, err error) {
 			for _, h := range hooks {
-				if h.BeforeServing != nil {
-					ctx, err = h.BeforeServing(ctx, info)
+				if h.RequestRouted != nil {
+					ctx, err = h.RequestRouted(ctx, info)
 					if err != nil {
 						return ctx, err
 					}
@@ -67,10 +69,10 @@ func (s chainHooks) BuildHooks() Hooks {
 			}
 			return ctx, nil
 		},
-		BeforeResponse: func(ctx context.Context, info HookInfo, respHeaders http.Header) (_ context.Context, err error) {
+		ResponsePrepared: func(ctx context.Context, info HookInfo, respHeaders http.Header) (_ context.Context, err error) {
 			for _, h := range hooks {
-				if h.BeforeResponse != nil {
-					ctx, err = h.BeforeResponse(ctx, info, respHeaders)
+				if h.ResponsePrepared != nil {
+					ctx, err = h.ResponsePrepared(ctx, info, respHeaders)
 					if err != nil {
 						return ctx, err
 					}
@@ -78,17 +80,17 @@ func (s chainHooks) BuildHooks() Hooks {
 			}
 			return ctx, nil
 		},
-		AfterResponse: func(ctx context.Context, info HookInfo) {
+		ResponseSent: func(ctx context.Context, info HookInfo) {
 			for _, h := range hooks {
-				if h.AfterResponse != nil {
-					h.AfterResponse(ctx, info)
+				if h.ResponseSent != nil {
+					h.ResponseSent(ctx, info)
 				}
 			}
 		},
-		ErrorServing: func(ctx context.Context, info HookInfo, err error) (context.Context, error) {
+		Error: func(ctx context.Context, info HookInfo, err error) (context.Context, error) {
 			for _, h := range hooks {
-				if h.ErrorServing != nil {
-					ctx, err = h.ErrorServing(ctx, info, err)
+				if h.Error != nil {
+					ctx, err = h.Error(ctx, info, err)
 				}
 			}
 			return ctx, err
@@ -127,20 +129,20 @@ func WrapHooks(builder HooksBuilder) (res Hooks) {
 	if builder != nil {
 		hooks = builder.BuildHooks()
 	}
-	if hooks.BeforeRequest == nil {
-		hooks.BeforeRequest = func(ctx context.Context, _ HookInfo) (context.Context, error) { return ctx, nil }
+	if hooks.RequestReceived == nil {
+		hooks.RequestReceived = func(ctx context.Context, _ HookInfo) (context.Context, error) { return ctx, nil }
 	}
-	if hooks.BeforeServing == nil {
-		hooks.BeforeServing = func(ctx context.Context, _ HookInfo) (context.Context, error) { return ctx, nil }
+	if hooks.RequestRouted == nil {
+		hooks.RequestRouted = func(ctx context.Context, _ HookInfo) (context.Context, error) { return ctx, nil }
 	}
-	if hooks.BeforeResponse == nil {
-		hooks.BeforeResponse = func(ctx context.Context, _ HookInfo, _ http.Header) (context.Context, error) { return ctx, nil }
+	if hooks.ResponsePrepared == nil {
+		hooks.ResponsePrepared = func(ctx context.Context, _ HookInfo, _ http.Header) (context.Context, error) { return ctx, nil }
 	}
-	if hooks.AfterResponse == nil {
-		hooks.AfterResponse = func(ctx context.Context, _ HookInfo) {}
+	if hooks.ResponseSent == nil {
+		hooks.ResponseSent = func(ctx context.Context, _ HookInfo) {}
 	}
-	if hooks.ErrorServing == nil {
-		hooks.ErrorServing = func(ctx context.Context, _ HookInfo, err error) (context.Context, error) { return ctx, err }
+	if hooks.Error == nil {
+		hooks.Error = func(ctx context.Context, _ HookInfo, err error) (context.Context, error) { return ctx, err }
 	}
 	return hooks
 }

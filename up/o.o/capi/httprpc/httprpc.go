@@ -72,7 +72,7 @@ func marshalErrorToJSON(twerr xerrors.ErrorInterface) []byte {
 }
 
 func WriteError(ctx context.Context, resp http.ResponseWriter, hooks Hooks, info HookInfo, err error) {
-	ctx, err = hooks.ErrorServing(ctx, info, err)
+	ctx, err = hooks.Error(ctx, info, err)
 
 	twerr := xerrors.TwirpError(err)
 	statusCode := ServerHTTPStatusFromErrorCode(twerr.Code())
@@ -197,7 +197,7 @@ func ServeJSON(
 		return
 	}
 	info.Response = respContent
-	ctx, err = hooks.BeforeResponse(ctx, *info, resp.Header())
+	ctx, err = hooks.ResponsePrepared(ctx, *info, resp.Header())
 	if err != nil {
 		WriteError(ctx, resp, hooks, *info, err)
 		return
@@ -212,7 +212,7 @@ func ServeJSON(
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
 	resp.WriteHeader(http.StatusOK)
-	defer hooks.AfterResponse(ctx, *info)
+	defer hooks.ResponseSent(ctx, *info)
 	if _, err = resp.Write(respBytes); err != nil {
 		return
 	}
