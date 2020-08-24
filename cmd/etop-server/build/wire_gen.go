@@ -153,6 +153,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/supplier"
 	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/backend/pkg/etop/api/shop/ws"
+	"o.o/backend/pkg/etop/apix/mc/vnp"
 	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
 	"o.o/backend/pkg/etop/apix/partnerimport"
@@ -944,7 +945,16 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	partnercarrierServers, cleanup6 := partnercarrier.NewServers(store, partnercarrierMiscService, shipmentConnectionService, partnercarrierShipmentService)
 	importService := partnerimport.New(session, mainDB)
 	partnerimportServers := partnerimport.NewServers(importService)
-	extHandlers := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers)
+	shipnowService2 := xshop.ShipnowService{
+		Session:  session,
+		Shipping: shippingShipping,
+	}
+	vnPostService := &vnp.VNPostService{
+		Session:        session,
+		ShipnowService: shipnowService2,
+	}
+	vnpServers := vnp.NewServers(vnPostService)
+	extHandlers := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers, vnpServers)
 	ghnimportImport := ghnimport.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}

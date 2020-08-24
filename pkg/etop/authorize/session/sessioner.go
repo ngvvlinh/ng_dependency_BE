@@ -15,12 +15,14 @@ type Sessioner interface {
 }
 
 // Session is designed so that it can be cloned with a simple assign. All
-// pointer and non-pointer methods are intention.
+// pointer and non-pointer methods are intentional.
 //
 //     ss := session.New()
 //     s2 := ss            // clone
 type Session struct {
 	SS session
+
+	linkedSessions []Sessioner
 }
 
 // New returns a non-pointer Session, for embedding in other structs.
@@ -53,9 +55,35 @@ func (s Session) MustWith(opts ...Option) Session {
 
 // StartSession runs on a pointer-Session to fill its details.
 func (s *Session) StartSession(ctx context.Context, perm permission.Decl, tokenStr string) (newCtx context.Context, _ error) {
-	return s.SS.startSession(ctx, perm, tokenStr)
+	newCtx, err := s.SS.startSession(ctx, perm, tokenStr)
+	if err != nil {
+		return newCtx, err
+	}
+	linkSessions(s, s.linkedSessions)
+	return newCtx, nil
+}
+
+func linkSessions(top *Session, sessions []Sessioner) {
+	for _, childSession := range sessions {
+		child := childSession.GetSession()
+		child.SS = top.SS
+		linkSessions(top, child.linkedSessions)
+	}
 }
 
 func (s *Session) GetSession() *Session {
 	return s
+}
+
+// Link connects child sessions into a tree, linked with the top session. When
+// the top session is initialized, all its children are copied. (It only happens
+// once, as the session is only initialized once)
+func (s *Session) Link(ss ...Sessioner) {
+	if s.SS.init {
+		panic("already init")
+	}
+	if s.linkedSessions != nil {
+		panic("already linked")
+	}
+	s.linkedSessions = ss
 }
