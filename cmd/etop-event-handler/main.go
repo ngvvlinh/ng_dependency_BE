@@ -28,6 +28,7 @@ import (
 	serviceidentity "o.o/backend/com/main/identity"
 	inventoryquery "o.o/backend/com/main/inventory/query"
 	servicelocation "o.o/backend/com/main/location"
+	"o.o/backend/com/main/shipnow"
 	stocktakequery "o.o/backend/com/main/stocktaking/query"
 	customerquery "o.o/backend/com/shopping/customering/query"
 	cm "o.o/backend/pkg/common"
@@ -147,10 +148,11 @@ func main() {
 		fbPageQuery := servicefbpage.FbPageQueryMessageBus(servicefbpage.NewFbPageQuery(db))
 		fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db, customerQuery))
 		identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
+		shipnowQuery := shipnow.QueryServiceMessageBus(shipnow.NewQueryService(db))
 
 		pgeventapi.Init(&sMain)
 		faboHandler := fabohandler.New(db, producer, cfg.Kafka.TopicPrefix, fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery)
-		etopHandler := etophandler.New(db, webhookSender, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus)
+		etopHandler := etophandler.New(db, webhookSender, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationBus, shipnowQuery)
 		etopHandler.RegisterTo(intctlHandler)
 
 		h := handler.New(consumer, cfg.Kafka)

@@ -389,8 +389,8 @@ func (m *Webhook) Migration(db *cmsql.Database) {
 		},
 		"entities": {
 			ColumnName:       "entities",
-			ColumnType:       "[]string",
-			ColumnDBType:     "[]string",
+			ColumnType:       "[]entity_type.EntityType",
+			ColumnDBType:     "[]enum",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},

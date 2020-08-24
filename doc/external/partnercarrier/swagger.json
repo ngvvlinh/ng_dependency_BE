@@ -532,6 +532,10 @@
         "cod_amount": {
           "type": "integer"
         },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
         "note": {
           "type": "string"
         },

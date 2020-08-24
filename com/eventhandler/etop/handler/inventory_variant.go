@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/main/inventory"
 	"o.o/api/top/external/types"
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/backend/com/eventhandler/pgevent"
 	inventorymodel "o.o/backend/com/main/inventory/model"
 	"o.o/backend/pkg/common/mq"
@@ -49,5 +50,5 @@ func (h *Handler) HandleInventoryVariantEvent(ctx context.Context, event *pgeven
 		InventoryLevel: changed,
 	}
 	accountIDs := []dot.ID{inventoryVariant.ShopID}
-	return h.sender.CollectPb(ctx, "inventory_level", id, inventoryVariant.ShopID, accountIDs, change)
+	return h.sender.CollectPb(ctx, entity_type.InventoryLevel, id, inventoryVariant.ShopID, accountIDs, change)
 }

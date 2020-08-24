@@ -7,6 +7,12 @@ import (
 	shipnowtypes "o.o/api/main/shipnow/types"
 	typesx "o.o/api/top/external/types"
 	typesint "o.o/api/top/int/types"
+	orderconvert "o.o/backend/com/main/ordering/convert"
+	ordermodel "o.o/backend/com/main/ordering/model"
+	shipnowconvert "o.o/backend/com/main/shipnow/convert"
+	shipnowmodel "o.o/backend/com/main/shipnow/model"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/capi/dot"
 )
 
@@ -192,10 +198,10 @@ func Convert_core_ShipnowFulfillment_To_apix_ShipnowFulfillment(in *shipnow.Ship
 		ShippingStatus:             in.ShippingStatus.Wrap(),
 		ShippingCode:               dot.String(in.ShippingCode),
 		ShippingState:              in.ShippingState.Wrap(),
-		ConfirmStatus:              in.ConfirmStatus,
+		ConfirmStatus:              in.ConfirmStatus.Wrap(),
 		OrderIDs:                   in.OrderIDs,
-		CreatedAt:                  in.CreatedAt,
-		UpdatedAt:                  in.UpdatedAt,
+		CreatedAt:                  dot.Time(in.CreatedAt),
+		UpdatedAt:                  dot.Time(in.UpdatedAt),
 		ShippingSharedLink:         dot.String(in.ShippingSharedLink),
 		CancelReason:               dot.String(in.CancelReason),
 		CODAmount:                  dot.Int(in.ValueInfo.CODAmount),
@@ -209,4 +215,51 @@ func Convert_core_ShipnowFulfillment_To_apix_ShipnowFulfillment(in *shipnow.Ship
 		}
 	}
 	return res
+}
+
+func Convert_shipnowmodel_ShipnowFulfillmentHistory_To_apix_ShipnowFulfillment(in shipnowmodel.ShipnowFulfillmentHistory) *typesx.ShipnowFulfillment {
+	var deliveryPoints []*shipnowmodel.DeliveryPoint
+	var pickupAddress *ordermodel.OrderAddress
+
+	_ = in.PickupAddress().Unmarshal(&pickupAddress)
+	_ = in.DeliveryPoints().Unmarshal(&deliveryPoints)
+	return &typesx.ShipnowFulfillment{
+		ID:                         in.ID().ID().Apply(0),
+		ShopID:                     in.ShopID().ID().Apply(0),
+		PickupAddress:              convert_model_OrderAddress_To_apix_ShipnowAddress(pickupAddress),
+		DeliveryPoints:             convert_shipnowmodel_DeliveryPoints_To_apix_ShipnowDeliveryPoints(deliveryPoints),
+		ShippingServiceCode:        in.ShippingServiceCode().String(),
+		ShippingServiceFee:         in.ShippingServiceFee().Int(),
+		ActualShippingServiceFee:   in.TotalFee().Int(),
+		ShippingServiceName:        in.ShippingServiceName().String(),
+		ShippingServiceDescription: in.ShippingServiceDescription().String(),
+		GrossWeight:                in.GrossWeight().Int(),
+		ChargeableWeight:           in.ChargeableWeight().Int(),
+		BasketValue:                in.BasketValue().Int(),
+		CODAmount:                  in.CODAmount().Int(),
+		ShippingNote:               in.ShippingNote().String(),
+		Status:                     convertpb.Pb5Ptr(in.Status().Int()),
+		ShippingStatus:             convertpb.Pb5Ptr(in.ShippingStatus().Int()),
+		ShippingCode:               in.ShippingCode().String(),
+		ShippingState:              convertpb.ShipnowNullState(in.ShippingState().String()),
+		ConfirmStatus:              convertpb.Pb3Ptr(in.ConfirmStatus().Int()),
+		CreatedAt:                  cmapi.PbTime(in.CreatedAt().Time()),
+		UpdatedAt:                  cmapi.PbTime(in.UpdatedAt().Time()),
+		ShippingSharedLink:         in.ShippingSharedLink().String(),
+		CancelReason:               in.CancelReason().String(),
+		ExternalID:                 in.ExternalID().String(),
+	}
+}
+
+func convert_model_OrderAddress_To_apix_ShipnowAddress(in *ordermodel.OrderAddress) *typesx.ShipnowAddress {
+	orderAddressCore := orderconvert.Address(in)
+	return Convert_core_OrderAddress_To_apix_ShipnowAddress(orderAddressCore)
+}
+
+func convert_shipnowmodel_DeliveryPoints_To_apix_ShipnowDeliveryPoints(ins []*shipnowmodel.DeliveryPoint) []*typesx.ShipnowDeliveryPoint {
+	if ins == nil {
+		return nil
+	}
+	deliveryPointCore := shipnowconvert.DeliveryPoints(ins)
+	return Convert_core_DeliveryPoints_To_apix_ShipnowDeliveryPoints(deliveryPointCore)
 }

@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/shopping/addressing"
 	"o.o/api/top/external/types"
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/backend/com/eventhandler/pgevent"
 	customermodel "o.o/backend/com/shopping/customering/model"
 	"o.o/backend/pkg/common/mq"
@@ -49,5 +50,5 @@ func (h *Handler) HandleShopTraderAddressEvent(ctx context.Context, event *pgeve
 		CustomerAddress: changed,
 	}
 	accountIDs := []dot.ID{address.ShopID, address.PartnerID}
-	return h.sender.CollectPb(ctx, "customer_address", id, address.ShopID, accountIDs, change)
+	return h.sender.CollectPb(ctx, entity_type.CustomerAddress, id, address.ShopID, accountIDs, change)
 }

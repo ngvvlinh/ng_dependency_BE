@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/backend/com/eventhandler/webhook/types"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/redis"
@@ -116,7 +117,7 @@ func NewSingleSenders(webhooks []*callbackmodel.Webhook) []*SingleSender {
 	return ssenders
 }
 
-func (s *SingleSender) Collect(entity string, entityID dot.ID, msg []byte) {
+func (s *SingleSender) Collect(entity entity_type.EntityType, entityID dot.ID, msg []byte) {
 	s.m.Lock()
 	defer s.m.Unlock()
 

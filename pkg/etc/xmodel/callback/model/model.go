@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/top/types/etc/entity_type"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/validate"
@@ -25,7 +26,7 @@ type Callback struct {
 type Webhook struct {
 	ID        dot.ID
 	AccountID dot.ID
-	Entities  []string
+	Entities  []entity_type.EntityType
 	Fields    []string
 	URL       string
 	Metadata  string
@@ -54,13 +55,18 @@ func (m *Webhook) BeforeInsert() error {
 		return cm.Errorf(cm.InvalidArgument, nil, "Thông tin fields chưa được hỗ trợ, vui lòng để trống")
 	}
 
-	mp := make(map[string]bool)
+	mp := make(map[entity_type.EntityType]bool)
 	for _, item := range m.Entities {
-		if !validate.LowercaseID(item) {
+		if !validate.LowercaseID(item.String()) {
 			return cm.Errorf(cm.InvalidArgument, nil, `invalid entity: "%v"`, item)
 		}
 		switch item {
-		case "order", "fulfillment", "product", "variant", "customer", "inventory_level", "customer_address", "customer_group", "customer_group_relationship", "product_collection", "product_collection_relationship":
+		case entity_type.Order, entity_type.Fulfillment,
+			entity_type.Product, entity_type.Variant, entity_type.Customer,
+			entity_type.InventoryLevel, entity_type.CustomerAddress,
+			entity_type.CustomerGroup, entity_type.CustomerGroupRelationship,
+			entity_type.ProductCollection, entity_type.ProductCollectionRelationship,
+			entity_type.ShipnowFulfillment:
 			if mp[item] {
 				return cm.Errorf(cm.InvalidArgument, nil, `duplicated entity: "%v"`, item)
 			}

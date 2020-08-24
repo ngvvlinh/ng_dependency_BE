@@ -1,8 +1,6 @@
 package types
 
 import (
-	"time"
-
 	inttypes "o.o/api/top/int/types"
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/status3"
@@ -68,15 +66,35 @@ type ShipnowService struct {
 func (m *ShipnowService) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateShipnowFulfillmentRequest struct {
-	PickupAddress       *ShipnowAddress         `json:"pickup_address"`
-	DeliveryPoints      []*ShipnowDeliveryPoint `json:"delivery_points"`
-	ExternalID          string                  `json:"external_id"`
-	ShippingServiceCode string                  `json:"shipping_service_code"`
-	ShippingServiceFee  inttypes.Int            `json:"shipping_service_fee"`
-	ShippingNote        string                  `json:"shipping_note"`
+	// @required
+	PickupAddress *ShipnowAddress `json:"pickup_address"`
+	// @required
+	DeliveryPoints []*ShipnowDeliveryPointRequest `json:"delivery_points"`
+	ExternalID     string                         `json:"external_id"`
+	// @required
+	ShippingServiceCode string `json:"shipping_service_code"`
+	// @required
+	ShippingServiceFee inttypes.Int `json:"shipping_service_fee"`
+	ShippingNote       string       `json:"shipping_note"`
 }
 
 func (m *CreateShipnowFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShipnowDeliveryPointRequest struct {
+	ChargeableWeight inttypes.Int `json:"chargeable_weight"`
+	// @required
+	GrossWeight inttypes.Int `json:"gross_weight"`
+	// @required
+	CODAmount       inttypes.Int    `json:"cod_amount"`
+	ShippingNote    string          `json:"shipping_note"`
+	ShippingAddress *ShipnowAddress `json:"shipping_address"`
+	// @required
+	BasketValue inttypes.Int `json:"basket_value"`
+	// @required
+	Lines []*OrderLine `json:"lines"`
+}
+
+func (m *ShipnowDeliveryPointRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShipnowDeliveryPoint struct {
 	ChargeableWeight inttypes.Int `json:"chargeable_weight"`
@@ -113,10 +131,10 @@ type ShipnowFulfillment struct {
 	ShippingStatus             status5.NullStatus      `json:"shipping_status"`
 	ShippingCode               dot.NullString          `json:"shipping_code"`
 	ShippingState              shipnow_state.NullState `json:"shipping_state"`
-	ConfirmStatus              status3.Status          `json:"confirm_status"`
+	ConfirmStatus              status3.NullStatus      `json:"confirm_status"`
 	OrderIDs                   []dot.ID                `json:"order_ids"`
-	CreatedAt                  time.Time               `json:"created_at"`
-	UpdatedAt                  time.Time               `json:"updated_at"`
+	CreatedAt                  dot.Time                `json:"created_at"`
+	UpdatedAt                  dot.Time                `json:"updated_at"`
 	ShippingSharedLink         dot.NullString          `json:"shipping_shared_link"`
 	CancelReason               dot.NullString          `json:"cancel_reason"`
 	CarrierInfo                *CarrierInfo            `json:"carrier_info"`
@@ -124,6 +142,16 @@ type ShipnowFulfillment struct {
 }
 
 func (m *ShipnowFulfillment) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *ShipnowFulfillment) HasChanged() bool {
+	return m.Status.Valid ||
+		m.ShippingState.Valid ||
+		m.CODAmount.Valid ||
+		m.ActualShippingServiceFee.Valid ||
+		m.ShippingNote.Valid ||
+		m.ChargeableWeight.Valid ||
+		m.DeliveryPoints != nil
+}
 
 type CancelShipnowFulfillmentRequest struct {
 	ID           dot.ID `json:"id"`

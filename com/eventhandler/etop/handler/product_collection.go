@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/main/catalog"
 	"o.o/api/top/external/types"
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/backend/com/eventhandler/pgevent"
 	catalogmodel "o.o/backend/com/main/catalog/model"
 	"o.o/backend/pkg/common/mq"
@@ -49,5 +50,5 @@ func (h *Handler) HandleShopProductCollectionEvent(ctx context.Context, event *p
 		ProductCollection: changed,
 	}
 	accountIDs := []dot.ID{collection.ShopID, collection.PartnerID}
-	return h.sender.CollectPb(ctx, "product_collection", id, collection.ShopID, accountIDs, change)
+	return h.sender.CollectPb(ctx, entity_type.ProductCollection, id, collection.ShopID, accountIDs, change)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/top/external/types"
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/backend/com/eventhandler/pgevent"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	"o.o/backend/pkg/common/mq"
@@ -45,5 +46,5 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 		Order: changed,
 	}
 	accountIDs := []dot.ID{order.ShopID, order.PartnerID}
-	return h.sender.CollectPb(ctx, event.Table, id, order.ShopID, accountIDs, change)
+	return h.sender.CollectPb(ctx, entity_type.Order, id, order.ShopID, accountIDs, change)
 }

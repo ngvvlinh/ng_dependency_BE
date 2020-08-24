@@ -66,6 +66,7 @@ type GetConnectionsResponse struct {
 func (m *GetConnectionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateFulfillmentRequest struct {
+	ID               dot.ID                  `json:"id"`
 	ShippingCode     string                  `json:"shipping_code"`
 	ShippingState    shippingstate.NullState `json:"shipping_state"`
 	Note             dot.NullString          `json:"note"`

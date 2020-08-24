@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/top/external/types"
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/backend/com/eventhandler/pgevent"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	"o.o/backend/pkg/common/mq"
@@ -46,5 +47,5 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 		Fulfillment: changed,
 	}
 	accountIDs := []dot.ID{ffm.ShopID, ffm.PartnerID}
-	return h.sender.CollectPb(ctx, event.Table, id, ffm.ShopID, accountIDs, change)
+	return h.sender.CollectPb(ctx, entity_type.Fulfillment, id, ffm.ShopID, accountIDs, change)
 }

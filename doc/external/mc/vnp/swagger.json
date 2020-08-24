@@ -258,11 +258,17 @@
     },
     "mrCreateShipnowFulfillmentRequest": {
       "type": "object",
+      "required": [
+        "pickup_address",
+        "delivery_points",
+        "shipping_service_code",
+        "shipping_service_fee"
+      ],
       "properties": {
         "delivery_points": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/mrShipnowDeliveryPoint"
+            "$ref": "#/definitions/mrShipnowDeliveryPointRequest"
           }
         },
         "external_id": {
@@ -463,6 +469,41 @@
               "$ref": "#/definitions/bjState"
             }
           ]
+        }
+      }
+    },
+    "mrShipnowDeliveryPointRequest": {
+      "type": "object",
+      "required": [
+        "gross_weight",
+        "cod_amount",
+        "basket_value",
+        "lines"
+      ],
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrOrderLine"
+          }
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/mrShipnowAddress"
+        },
+        "shipping_note": {
+          "type": "string"
         }
       }
     },

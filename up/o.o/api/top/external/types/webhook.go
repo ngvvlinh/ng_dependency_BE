@@ -1,15 +1,16 @@
 package types
 
 import (
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
 
 type CreateWebhookRequest struct {
-	Entities []string `json:"entities"`
-	Fields   []string `json:"fields"`
-	Url      string   `json:"url"`
-	Metadata string   `json:"metadata"`
+	Entities []entity_type.EntityType `json:"entities"`
+	Fields   []string                 `json:"fields"`
+	Url      string                   `json:"url"`
+	Metadata string                   `json:"metadata"`
 }
 
 func (m *CreateWebhookRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -27,13 +28,13 @@ type WebhooksResponse struct {
 func (m *WebhooksResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Webhook struct {
-	Id        dot.ID         `json:"id"`
-	Entities  []string       `json:"entities"`
-	Fields    []string       `json:"fields"`
-	Url       string         `json:"url"`
-	Metadata  string         `json:"metadata"`
-	CreatedAt dot.Time       `json:"created_at"`
-	States    *WebhookStates `json:"states"`
+	Id        dot.ID                   `json:"id"`
+	Entities  []entity_type.EntityType `json:"entities"`
+	Fields    []string                 `json:"fields"`
+	Url       string                   `json:"url"`
+	Metadata  string                   `json:"metadata"`
+	CreatedAt dot.Time                 `json:"created_at"`
+	States    *WebhookStates           `json:"states"`
 }
 
 func (m *Webhook) String() string { return jsonx.MustMarshalToString(m) }
@@ -97,6 +98,7 @@ type LatestOneOf struct {
 	Product                       *ShopProduct                   `json:"product"`
 	ProductCollection             *ProductCollection             `json:"product_collection"`
 	ProductCollectionRelationship *ProductCollectionRelationship `json:"product_collection_relationship"`
+	ShipnowFulfillment            *ShipnowFulfillment            `json:"shipnow_fulfillment"`
 }
 
 func (m *LatestOneOf) String() string { return jsonx.MustMarshalToString(m) }
@@ -113,6 +115,7 @@ type ChangeOneOf struct {
 	CustomerGroupRelationship     *CustomerGroupRelationship     `json:"customer_group_relationship"`
 	ProductCollection             *ProductCollection             `json:"product_collection"`
 	ProductCollectionRelationship *ProductCollectionRelationship `json:"product_collection_relationship"`
+	ShipnowFulfillment            *ShipnowFulfillment            `json:"shipnow_fulfillment"`
 }
 
 func (m *ChangeOneOf) String() string { return jsonx.MustMarshalToString(m) }

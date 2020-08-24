@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/shopping/customering"
 	"o.o/api/top/external/types"
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/backend/com/eventhandler/pgevent"
 	customermodel "o.o/backend/com/shopping/customering/model"
 	"o.o/backend/pkg/common/mq"
@@ -71,5 +72,5 @@ func (h *Handler) HandleShopCustomerGroupCustomerEvent(ctx context.Context, even
 	}
 
 	accountIDs := []dot.ID{customerGroupQuery.Result.ShopID}
-	return h.sender.CollectPb(ctx, "customer_group_relationship", customerID+groupID, customerGroupQuery.Result.ShopID, accountIDs, change)
+	return h.sender.CollectPb(ctx, entity_type.CustomerGroupRelationship, customerID+groupID, customerGroupQuery.Result.ShopID, accountIDs, change)
 }

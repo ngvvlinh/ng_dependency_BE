@@ -72,6 +72,11 @@ func Topics() []eventhandler.TopicDef {
 			Partitions: 64,
 			DBName:     dbdecl.DBMain,
 		},
+		{
+			Name:       "shipnow_fulfillment",
+			Partitions: 64,
+			DBName:     dbdecl.DBMain,
+		},
 	}
 }
 

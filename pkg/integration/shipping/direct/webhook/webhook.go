@@ -59,7 +59,7 @@ func (wh *Webhook) Callback(ctx context.Context, args *partnercarrier.UpdateFulf
 	defer func() {
 		wh.saveLogsFfmUpdate(ctx, args, ffm, _err)
 	}()
-	ffm, conn, err = wh.validateDataAndGetFfm(ctx, args.ShippingCode, partnerID)
+	ffm, conn, err = wh.validateDataAndGetFfm(ctx, args.ID, args.ShippingCode, partnerID)
 	if err != nil {
 		return err
 	}
@@ -127,9 +127,9 @@ func (wh *Webhook) Callback(ctx context.Context, args *partnercarrier.UpdateFulf
 	})
 }
 
-func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, shippingCode string, partnerID dot.ID) (*shipmodel.Fulfillment, *connectioning.Connection, error) {
-	if shippingCode == "" {
-		return nil, nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping_code")
+func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, ffmID dot.ID, shippingCode string, partnerID dot.ID) (*shipmodel.Fulfillment, *connectioning.Connection, error) {
+	if ffmID == 0 && shippingCode == "" {
+		return nil, nil, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
 	}
 	query := &connectioning.ListConnectionsQuery{
 		PartnerID: partnerID,
@@ -148,6 +148,7 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, shippingCode strin
 	}
 
 	ffmQuery := &shippingcore.GetFulfillmentByIDOrShippingCodeQuery{
+		ID:            ffmID,
 		ShippingCode:  shippingCode,
 		ConnectionIDs: connIDs,
 	}

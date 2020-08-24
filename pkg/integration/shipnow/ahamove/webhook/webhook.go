@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/k0kubun/pp"
-
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipnow"
 	"o.o/api/top/types/etc/shipnow_state"
@@ -149,7 +147,6 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 			}
 		}
 	}
-	pp.Println("delivery points :: ", deliveryPoints)
 
 	update := &shipnow.UpdateShipnowFulfillmentCarrierInfoCommand{
 		ID:                   ffm.ID,

@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"o.o/api/top/types/etc/entity_type"
 	"o.o/backend/com/eventhandler/webhook/storage"
 	com "o.o/backend/com/main"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
@@ -163,7 +164,7 @@ func (s *WebhookSender) Wait() {
 }
 
 // TODO: entityID: handle composition primary key (e.g. product collection relationship)
-func (s *WebhookSender) CollectPb(ctx context.Context, entity string, entityID dot.ID, shopID dot.ID, accountIDs []dot.ID, pb capi.Message) (mq.Code, error) {
+func (s *WebhookSender) CollectPb(ctx context.Context, entity entity_type.EntityType, entityID dot.ID, shopID dot.ID, accountIDs []dot.ID, pb capi.Message) (mq.Code, error) {
 	var b bytes.Buffer
 	if err := jsonx.MarshalTo(&b, pb); err != nil {
 		ll.Error("error marshalling json", l.Error(err))
@@ -176,7 +177,7 @@ func (s *WebhookSender) CollectPb(ctx context.Context, entity string, entityID d
 	return mq.CodeOK, nil
 }
 
-func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID dot.ID, shopID dot.ID, accountIDs []dot.ID, msg []byte) error {
+func (s *WebhookSender) Collect(ctx context.Context, entity entity_type.EntityType, entityID dot.ID, shopID dot.ID, accountIDs []dot.ID, msg []byte) error {
 	mapAccountIDs := make(map[dot.ID]bool)
 	for _, accountID := range accountIDs {
 		mapAccountIDs[accountID] = true
@@ -233,7 +234,7 @@ func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID dot
 		whs := s.ssenders[accountID]
 		s.m.RUnlock()
 		for _, wh := range whs {
-			if cm.StringsContain(wh.webhook.Entities, entity) {
+			if entity_type.Contain(wh.webhook.Entities, entity) {
 				wh.Collect(entity, entityID, msg)
 			}
 		}

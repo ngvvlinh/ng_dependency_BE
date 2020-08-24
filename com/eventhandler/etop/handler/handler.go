@@ -6,6 +6,7 @@ import (
 	"o.o/api/main/catalog"
 	"o.o/api/main/inventory"
 	"o.o/api/main/location"
+	"o.o/api/main/shipnow"
 	"o.o/api/shopping/addressing"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/external/types"
@@ -33,6 +34,7 @@ type Handler struct {
 	inventoryQuery inventory.QueryBus
 	addressQuery   addressing.QueryBus
 	locationQuery  location.QueryBus
+	shipnowQuery   shipnow.QueryBus
 }
 
 func New(
@@ -43,6 +45,7 @@ func New(
 	inventoryQuery inventory.QueryBus,
 	addressQuery addressing.QueryBus,
 	locationQuery location.QueryBus,
+	shipnowQuery shipnow.QueryBus,
 ) *Handler {
 	h := &Handler{
 		db:             db,
@@ -53,6 +56,7 @@ func New(
 		inventoryQuery: inventoryQuery,
 		addressQuery:   addressQuery,
 		locationQuery:  locationQuery,
+		shipnowQuery:   shipnowQuery,
 	}
 	return h
 }
@@ -72,6 +76,7 @@ func (h *Handler) TopicsAndHandlers() map[string]mq.EventHandler {
 		"shop_trader_address":          h.HandleShopTraderAddressEvent,
 		"shop_collection":              h.HandleShopProductCollectionEvent,
 		"shop_product_collection":      h.HandleShopProductionCollectionRelationshipEvent,
+		"shipnow_fulfillment":          h.HandleShipnowFulfillmentEvent,
 	})
 }
 

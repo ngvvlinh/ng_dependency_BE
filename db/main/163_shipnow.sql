@@ -18,6 +18,8 @@ CREATE UNIQUE INDEX shipnow_fulfillment_shop_external_id_idx ON "shipnow_fulfill
 
 CREATE UNIQUE INDEX ON shipnow_fulfillment (connection_id, shipping_code) where status not in (-1);
 
+CREATE TRIGGER notify_pgrid AFTER INSERT ON history.shipnow_fulfillment FOR EACH ROW EXECUTE PROCEDURE public.notify_pgrid_id();
+
 -- Insert connection ahamove
 INSERT INTO code ("code", "type", "created_at") VALUES
     ('50FE', 'connection', NOW());
