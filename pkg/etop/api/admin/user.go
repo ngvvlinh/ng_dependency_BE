@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type UserService struct {
@@ -56,8 +57,14 @@ func (s *UserService) GetUsers(ctx context.Context, q *admin.GetUsersRequest) (*
 	if q.Filters == nil {
 		q.Filters = &admin.UsersFilter{}
 	}
+
+	var fullTextSearch filter.FullTextSearch = ""
+	if q.Filters != nil {
+		fullTextSearch = q.Filters.Name
+	}
+
 	query := &identity.GetUserFtRefSaffsQuery{
-		Name:      q.Filters.Name,
+		Name:      fullTextSearch,
 		Phone:     q.Filters.Phone,
 		Email:     q.Filters.Email,
 		CreatedAt: q.Filters.CreatedAt,

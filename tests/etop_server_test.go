@@ -35,11 +35,11 @@ const (
 	routerSendPhoneVerification string = "/api/etop.User/SendPhoneVerification"
 	routerUserRegistration      string = "/api/etop.User/Register"
 	routerUserLogin             string = "/api/etop.User/Login"
-
-	routerGetAddresses  string = "/api/etop.Address/GetAddresses"
-	routerCreateAddress string = "/api/etop.Address/CreateAddress"
-	routerUpdateAddress string = "/api/etop.Address/UpdateAddress"
-	routerRemoveAddress string = "/api/etop.Address/RemoveAddress"
+	routerGetAddresses          string = "/api/etop.Address/GetAddresses"
+	routerCreateAddress         string = "/api/etop.Address/CreateAddress"
+	routerUpdateAddress         string = "/api/etop.Address/UpdateAddress"
+	routerRemoveAddress         string = "/api/etop.Address/RemoveAddress"
+	routerListUsers             string = "/api/admin.User/GetUsers"
 )
 
 func TestMain(m *testing.M) {
@@ -66,15 +66,16 @@ func runTest(m *testing.M) int {
 	_, _ = db.Exec(`CREATE DATABASE etop_dev_test;`)
 
 	pathDB := filepath.Join(gen.ProjectPath(), "/db/main/")
+
+	pathDBMigration := filepath.Join(gen.ProjectPath(), "/tests/main/shop/")
+
 	contents := e2e.LoadContentPath(pathDB)
+
+	contents = append(contents, e2e.LoadContentPath(pathDBMigration)...)
 
 	cfg.Databases.Postgres.Database = "etop_dev_test"
 
 	db = cmsql.MustConnect(cfg.Databases.Postgres)
-
-	pathDBMigration := filepath.Join(gen.ProjectPath(), "/tests/main/shop/")
-
-	contents = append(contents, e2e.LoadContentPath(pathDBMigration)...)
 
 	err := e2e.LoadDataWithContents(db, contents)
 
@@ -132,7 +133,7 @@ func dropDatabase() error {
 
 func TestLoginAndRegistration(t *testing.T) {
 	var recaptchaToken = "recaptcha_token"
-	var resp map[string]interface{}
+	var resp = make(map[string]interface{})
 
 	t.Run("register with phone number", func(t *testing.T) {
 		t.Run("register", func(t *testing.T) {
@@ -286,6 +287,88 @@ func TestLoginAndRegistration(t *testing.T) {
 		user := resp["user"].(map[string]interface{})
 		assert.Equal(t, "etop_test@gmail.com-1-test", user["email"])
 		assert.Equal(t, "0987654321-1-test", user["phone"])
+	})
+
+	t.Run("get list users", func(t *testing.T) {
+		req := M{}
+		req["login"] = "admin@etop.vn"
+		req["password"] = "123456789"
+		req["account_type"] = "etop"
+
+		_, err := httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
+			Post(routerUserLogin)
+
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		assert.Equal(t, resp["expires_in"], float64(604800))
+		assert.Len(t, resp["access_token"], 43)
+
+		accessToken := resp["access_token"].(string)
+
+		require.NotNil(t, resp["user"])
+		user := resp["user"].(map[string]interface{})
+		assert.Equal(t, user["email"], "admin@etop.vn")
+		assert.Equal(t, user["phone"], "0101010101")
+		assert.Equal(t, user["id"], "1000101010101010101")
+		assert.Equal(t, user["short_name"], "System Short Name")
+		assert.Equal(t, user["full_name"], "Etop System")
+
+		// search with wrong phone number
+		req = M{}
+		req["filters"] = map[string]interface{}{
+			"phone": "axcs",
+		}
+		req["paging"] = map[string]interface{}{
+			"limit":  20,
+			"offset": 0,
+		}
+
+		var respListUsers map[string]interface{}
+
+		_, err = httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListUsers).
+			Post(routerListUsers)
+
+		require.NoError(t, err)
+		require.Nil(t, respListUsers, nil)
+
+		// search with wrong email
+		req = M{}
+		req["filters"] = map[string]interface{}{
+			"phone": "axcs",
+		}
+		req["paging"] = map[string]interface{}{
+			"limit":  20,
+			"offset": 0,
+		}
+
+		_, err = httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListUsers).
+			Post(routerListUsers)
+
+		require.NoError(t, err)
+		require.Nil(t, respListUsers)
+
+		req = M{}
+		req["filters"] = map[string]interface{}{
+			// "phone": "0101010101",
+			"name": "test",
+		}
+		req["paging"] = map[string]interface{}{
+			"limit":  20,
+			"offset": 0,
+		}
+
+		_, err = httpServerMain.NewRequest().SetBody(req).SetHeader("authorization", fmt.Sprintf("Bearer %s", accessToken)).SetResult(&respListUsers).
+			Post(routerListUsers)
+
+		require.NoError(t, err)
+		require.NotNil(t, respListUsers)
+
+		require.NotNil(t, respListUsers["users"])
+
+		users := respListUsers["users"]
+
+		assert.Len(t, users, 2)
 	})
 
 	var accessToken string

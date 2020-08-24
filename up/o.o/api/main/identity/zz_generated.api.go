@@ -328,7 +328,7 @@ func (h QueryServiceHandler) HandleGetUserFtRefSaffByID(ctx context.Context, msg
 }
 
 type GetUserFtRefSaffsQuery struct {
-	Name      string
+	Name      filter.FullTextSearch
 	Phone     string
 	Email     string
 	RefAff    string
@@ -345,7 +345,7 @@ func (h QueryServiceHandler) HandleGetUserFtRefSaffs(ctx context.Context, msg *G
 }
 
 type GetUsersQuery struct {
-	Name      string
+	Name      filter.FullTextSearch
 	Phone     string
 	Email     string
 	CreatedAt filter.Date

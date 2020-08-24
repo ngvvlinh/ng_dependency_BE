@@ -188,7 +188,10 @@ func (q *QueryService) GetUserFtRefSaffByID(ctx context.Context, args *identity.
 }
 
 func (q *QueryService) GetUsers(ctx context.Context, args *identity.ListUsersArgs) (*identity.UsersResponse, error) {
-	query := q.buildCommonGetUserQuery(ctx, args.Name, args.Phone, args.Email, args.CreatedAt)
+	query, err := q.buildCommonGetUserQuery(ctx, args.Name, args.Phone, args.Email, args.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
 	users, err := query.WithPaging(args.Paging).ListUsers()
 	if err != nil {
 		return nil, err
@@ -200,7 +203,10 @@ func (q *QueryService) GetUsers(ctx context.Context, args *identity.ListUsersArg
 }
 
 func (q *QueryService) GetUserFtRefSaffs(ctx context.Context, args *identity.ListUserFtRefSaffsArgs) (*identity.UserFtRefSaffsResponse, error) {
-	query := q.buildCommonGetUserQuery(ctx, args.Name, args.Phone, args.Email, args.CreatedAt)
+	query, err := q.buildCommonGetUserQuery(ctx, args.Name, args.Phone, args.Email, args.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
 
 	if args.RefAff != "" {
 		refAffs, err := q.userRefSaffStore(ctx).ByRefAff(args.RefAff).ListUserRefSaff()
@@ -236,18 +242,24 @@ func (q *QueryService) GetUserFtRefSaffs(ctx context.Context, args *identity.Lis
 	}, nil
 }
 
-func (q *QueryService) buildCommonGetUserQuery(ctx context.Context, name, phone, email string, createdAt filter.Date) *sqlstore.UserStore {
+func (q *QueryService) buildCommonGetUserQuery(ctx context.Context, name filter.FullTextSearch, phone, email string, createdAt filter.Date) (*sqlstore.UserStore, error) {
 	query := q.userStore(ctx)
 	if name != "" {
-		query = query.ByNameNorm(validate.NormalizeSearchQueryAnd(name))
+		query = query.ByFullNameNorm(name)
 	}
 	if phone != "" {
-		_, phone, _ := validate.NormalizeEmailOrPhone(phone)
-		query = query.ByPhone(phone)
+		phone, ok := validate.NormalizePhone(phone)
+		if !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+		}
+		query = query.ByPhone(phone.String())
 	}
 	if email != "" {
-		email, _, _ := validate.NormalizeEmailOrPhone(email)
-		query = query.ByEmail(email)
+		email, ok := validate.NormalizeEmail(email)
+		if !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ")
+		}
+		query = query.ByEmail(email.String())
 	}
 	if !createdAt.IsZero() {
 		if !createdAt.From.IsZero() {
@@ -257,7 +269,7 @@ func (q *QueryService) buildCommonGetUserQuery(ctx context.Context, name, phone,
 			query = query.ByCreatedAtTo(createdAt.To.ToTime())
 		}
 	}
-	return query
+	return query, nil
 }
 
 func (q *QueryService) GetAccountByID(ctx context.Context, ID dot.ID) (*identity.Account, error) {

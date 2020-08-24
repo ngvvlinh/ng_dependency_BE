@@ -9534,7 +9534,7 @@
           "type": "string"
         },
         "name": {
-          "type": "string"
+          "$ref": "#/definitions/kfFullTextSearch"
         },
         "phone": {
           "type": "string"

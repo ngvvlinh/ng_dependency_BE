@@ -333,12 +333,12 @@ type GetShopsRequest struct {
 func (m *GetShopsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UsersFilter struct {
-	Name      string      `json:"name"`
-	Phone     string      `json:"phone"`
-	Email     string      `json:"email"`
-	CreatedAt filter.Date `json:"created_at"`
-	RefAff    string      `json:"ref_aff"`
-	RefSale   string      `json:"ref_sale"`
+	Name      filter.FullTextSearch `json:"name"`
+	Phone     string                `json:"phone"`
+	Email     string                `json:"email"`
+	CreatedAt filter.Date           `json:"created_at"`
+	RefAff    string                `json:"ref_aff"`
+	RefSale   string                `json:"ref_sale"`
 }
 
 func (m *UsersFilter) String() string { return jsonx.MustMarshalToString(m) }

@@ -129,7 +129,7 @@ type GetUserByPhoneOrEmailArgs struct {
 }
 
 type ListUsersArgs struct {
-	Name      string
+	Name      filter.FullTextSearch
 	Phone     string
 	Email     string
 	CreatedAt filter.Date
@@ -137,7 +137,7 @@ type ListUsersArgs struct {
 }
 
 type ListUserFtRefSaffsArgs struct {
-	Name      string
+	Name      filter.FullTextSearch
 	Phone     string
 	Email     string
 	RefAff    string

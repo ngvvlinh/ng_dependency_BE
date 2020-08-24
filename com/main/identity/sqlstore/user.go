@@ -14,8 +14,10 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type UserStoreFactory func(context.Context) *UserStore
@@ -70,8 +72,13 @@ func (s *UserStore) ByEmail(email string) *UserStore {
 	return s
 }
 
-func (s *UserStore) ByNameNorm(nameNorm string) *UserStore {
-	s.preds = append(s.preds, sq.NewExpr(`"full_name_norm" @@ ?::tsquery`, nameNorm))
+func (s *UserStore) ByNameNorm(nameNorm filter.FullTextSearch) *UserStore {
+	s.preds = append(s.preds, sq.NewExpr(`"name_norm" @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(nameNorm)))
+	return s
+}
+
+func (s *UserStore) ByFullNameNorm(name filter.FullTextSearch) *UserStore {
+	s.preds = append(s.preds, s.ft.Filter(`full_name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
 	return s
 }
 
