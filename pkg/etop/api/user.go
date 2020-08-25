@@ -1168,8 +1168,13 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		}
 	}
 
+	// Make sure user included `ref_sale` and `ref_aff`
+	userFtRefSaffQuery := &identity.GetUserFtRefSaffByIDQuery{UserID: userID}
+	if err := s.IdentityQuery.Dispatch(ctx, userFtRefSaffQuery); err != nil {
+		return nil, nil, err
+	}
 	resp := &etop.LoginResponse{
-		User:              convertpb.PbUser(user),
+		User:              convertpb.Convert_core_UserFtRefSaff_To_api_User(userFtRefSaffQuery.Result),
 		Account:           currentAccount,
 		AvailableAccounts: availableAccounts,
 	}
