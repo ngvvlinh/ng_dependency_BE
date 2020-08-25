@@ -4,34 +4,34 @@ import (
 	"context"
 
 	"o.o/api/main/catalog"
-	"o.o/api/top/external/whitelabel"
+	api "o.o/api/top/external/whitelabel"
 	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/capi/dot"
 )
 
-func (s *ImportService) Categories(ctx context.Context, r *CategoriesEndpoint) error {
+func (s *ImportService) Categories(ctx context.Context, r *api.ImportCategoriesRequest) (*api.ImportCategoriesResponse, error) {
 	if len(r.Categories) > MaximumItems {
-		return cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
 	}
 
 	var ids []dot.ID
 	for _, category := range r.Categories {
 		var parentID dot.ID
 		if category.ExternalID == "" {
-			return cm.Errorf(cm.InvalidArgument, nil, "external_id should not be null")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "external_id should not be null")
 		}
 		if category.ExternalParentID != "" {
 			parentCategory, err := s.categoryStoreFactory(ctx).ExternalID(category.ExternalParentID).GetShopCategoryDB()
 			if err != nil {
-				return cm.Errorf(cm.InvalidArgument, err, "external_parent_id is invalid")
+				return nil, cm.Errorf(cm.InvalidArgument, err, "external_parent_id is invalid")
 			}
 			parentID = parentCategory.ID
 		}
 		shopCategory := &catalog.ShopCategory{
-			PartnerID:        r.Context.AuthPartnerID,
-			ShopID:           r.Context.Shop.ID,
+			PartnerID:        s.SS.Claim().AuthPartnerID,
+			ShopID:           s.SS.Shop().ID,
 			ExternalID:       category.ExternalID,
 			ExternalParentID: category.ExternalParentID,
 			ParentID:         parentID,
@@ -49,27 +49,27 @@ func (s *ImportService) Categories(ctx context.Context, r *CategoriesEndpoint) e
 			ids = append(ids, id)
 			shopCategory.ID = id
 			if _err := s.categoryStoreFactory(ctx).CreateShopCategory(shopCategory); _err != nil {
-				return _err
+				return nil, _err
 			}
 		case cm.NoError:
 			shopCategory.ID = oldCategory.ID
 			ids = append(ids, oldCategory.ID)
 			if _err := s.categoryStoreFactory(ctx).UpdateShopCategory(shopCategory); _err != nil {
-				return _err
+				return nil, _err
 			}
 		default:
-			return err
+			return nil, err
 		}
 	}
 
 	modelCategories, err := s.categoryStoreFactory(ctx).IDs(ids...).ListShopCategoriesDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var categoriesResponse []*whitelabel.Category
+	var categoriesResponse []*api.Category
 	for _, category := range modelCategories {
-		categoriesResponse = append(categoriesResponse, &whitelabel.Category{
+		categoriesResponse = append(categoriesResponse, &api.Category{
 			ID:               category.ID,
 			ShopID:           category.ShopID,
 			PartnerID:        category.PartnerID,
@@ -82,6 +82,6 @@ func (s *ImportService) Categories(ctx context.Context, r *CategoriesEndpoint) e
 			DeletedAt:        cmapi.PbTime(category.DeletedAt),
 		})
 	}
-	r.Result = &whitelabel.ImportCategoriesResponse{Categories: categoriesResponse}
-	return nil
+	result := &api.ImportCategoriesResponse{Categories: categoriesResponse}
+	return result, nil
 }

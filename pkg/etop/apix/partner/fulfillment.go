@@ -3,36 +3,37 @@ package partner
 import (
 	"context"
 
-	"o.o/api/top/types/common"
+	api "o.o/api/top/external/partner"
+	externaltypes "o.o/api/top/external/types"
+	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/etop/apix/shipping"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type FulfillmentService struct {
+	session.Session
+
 	Shipping *shipping.Shipping
 }
 
-func (s *FulfillmentService) Clone() *FulfillmentService { res := *s; return &res }
+func (s *FulfillmentService) Clone() api.FulfillmentService { res := *s; return &res }
 
-func (s *FulfillmentService) GetFulfillment(ctx context.Context, r *FulfillmentGetFulfillmentEndpoint) error {
-	resp, err := s.Shipping.GetFulfillment(ctx, r.Context.Shop.ID, r.FulfillmentIDRequest)
-	r.Result = resp
-	return err
+func (s *FulfillmentService) GetFulfillment(ctx context.Context, r *externaltypes.FulfillmentIDRequest) (*externaltypes.Fulfillment, error) {
+	resp, err := s.Shipping.GetFulfillment(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *FulfillmentService) ListFulfillments(ctx context.Context, r *FulfillmentListFulfillmentsEndpoint) error {
-	resp, err := s.Shipping.ListFulfillments(ctx, r.Context.Shop.ID, r.ListFulfillmentsRequest)
-	r.Result = resp
-	return err
+func (s *FulfillmentService) ListFulfillments(ctx context.Context, r *externaltypes.ListFulfillmentsRequest) (*externaltypes.FulfillmentsResponse, error) {
+	resp, err := s.Shipping.ListFulfillments(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *FulfillmentService) CreateFulfillment(ctx context.Context, r *FulfillmentCreateFulfillmentEndpoint) error {
-	resp, err := s.Shipping.CreateFulfillment(ctx, r.Context.Shop.ID, r.CreateFulfillmentRequest)
-	r.Result = resp
-	return err
+func (s *FulfillmentService) CreateFulfillment(ctx context.Context, r *externaltypes.CreateFulfillmentRequest) (*externaltypes.Fulfillment, error) {
+	resp, err := s.Shipping.CreateFulfillment(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *FulfillmentService) CancelFulfillment(ctx context.Context, r *FulfillmentCancelFulfillmentEndpoint) error {
+func (s *FulfillmentService) CancelFulfillment(ctx context.Context, r *externaltypes.CancelFulfillmentRequest) (*pbcm.Empty, error) {
 	err := s.Shipping.CancelFulfillment(ctx, r.FulfillmentID, r.CancelReason)
-	r.Result = &common.Empty{}
-	return err
+	return &pbcm.Empty{}, err
 }

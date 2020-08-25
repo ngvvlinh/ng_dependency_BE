@@ -3,17 +3,12 @@ package partner
 import (
 	"net/url"
 
-	service "o.o/api/top/external/partner"
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi/httprpc"
 	"o.o/common/l"
 )
-
-// +gen:wrapper=o.o/api/top/external/partner
-// +gen:wrapper:package=partner
-// +gen:wrapper:prefix=ext
 
 var (
 	idempgroup *idemp.RedisGroup
@@ -65,23 +60,23 @@ func NewServers(
 	}
 
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempPartnerAPI, 0)
-	servers := []httprpc.Server{
-		service.NewMiscServiceServer(WrapMiscService(miscService.Clone)),
-		service.NewShopServiceServer(WrapShopService(shopService.Clone)),
-		service.NewWebhookServiceServer(WrapWebhookService(webhookService.Clone)),
-		service.NewHistoryServiceServer(WrapHistoryService(historyService.Clone)),
-		service.NewShippingServiceServer(WrapShippingService(shippingService.Clone)),
-		service.NewOrderServiceServer(WrapOrderService(orderService.Clone)),
-		service.NewFulfillmentServiceServer(WrapFulfillmentService(fulfillmentService.Clone)),
-		service.NewCustomerServiceServer(WrapCustomerService(customerService.Clone)),
-		service.NewCustomerAddressServiceServer(WrapCustomerAddressService(customerAddressService.Clone)),
-		service.NewCustomerGroupServiceServer(WrapCustomerGroupService(customerGroupService.Clone)),
-		service.NewCustomerGroupRelationshipServiceServer(WrapCustomerGroupRelationshipService(customerGroupRelationshipService.Clone)),
-		service.NewInventoryServiceServer(WrapInventoryService(inventoryService.Clone)),
-		service.NewVariantServiceServer(WrapVariantService(variantService.Clone)),
-		service.NewProductServiceServer(WrapProductService(productService.Clone)),
-		service.NewProductCollectionServiceServer(WrapProductCollectionService(productCollectionService.Clone)),
-		service.NewProductCollectionRelationshipServiceServer(WrapProductCollectionRelationshipService(productCollectionRelationshipService.Clone)),
-	}
+	servers := httprpc.MustNewServers(
+		miscService.Clone,
+		shopService.Clone,
+		webhookService.Clone,
+		historyService.Clone,
+		shippingService.Clone,
+		orderService.Clone,
+		fulfillmentService.Clone,
+		customerService.Clone,
+		customerAddressService.Clone,
+		customerGroupService.Clone,
+		customerGroupRelationshipService.Clone,
+		inventoryService.Clone,
+		variantService.Clone,
+		productService.Clone,
+		productCollectionService.Clone,
+		productCollectionRelationshipService.Clone,
+	)
 	return servers, idempgroup.Shutdown
 }

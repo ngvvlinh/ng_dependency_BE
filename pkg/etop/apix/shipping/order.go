@@ -15,7 +15,6 @@ import (
 	"o.o/api/top/types/etc/inventory_auto"
 	pbsource "o.o/api/top/types/etc/order_source"
 	identitymodel "o.o/backend/com/main/identity/model"
-	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/com/main/ordering/modelx"
 	ordersqlstore "o.o/backend/com/main/ordering/sqlstore"
 	cm "o.o/backend/pkg/common"
@@ -24,27 +23,16 @@ import (
 	"o.o/backend/pkg/common/validate"
 	convertpbint "o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/apix/convertpb"
-	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
 var ll = l.New()
 
-func (s *Shipping) CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim, r *exttypes.CreateOrderRequest) (_ *exttypes.OrderWithoutShipping, _err error) {
+func (s *Shipping) CreateOrder(ctx context.Context, shop *identitymodel.Shop, partner *identitymodel.Partner, r *exttypes.CreateOrderRequest) (_ *exttypes.OrderWithoutShipping, _err error) {
 	lines, err := convertpb.OrderLinesToCreateOrderLines(r.Lines)
 	if err != nil {
 		return nil, err
-	}
-	var partner *identitymodel.Partner
-	if shopClaim.AuthPartnerID != 0 {
-		queryPartner := &identitymodelx.GetPartner{
-			PartnerID: shopClaim.AuthPartnerID,
-		}
-		if err := bus.Dispatch(ctx, queryPartner); err != nil {
-			return nil, err
-		}
-		partner = queryPartner.Result.Partner
 	}
 
 	externalCode := validate.NormalizeExternalCode(r.ExternalCode)
@@ -78,7 +66,7 @@ func (s *Shipping) CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim,
 		GhnNoteCode:     0, // will be over-written by try_on
 	}
 
-	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim.Shop, partner, req, nil, 0)
+	resp, err := s.OrderLogic.CreateOrder(ctx, shop, partner, req, nil, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -86,26 +74,25 @@ func (s *Shipping) CreateOrder(ctx context.Context, shopClaim *claims.ShopClaim,
 		OrderID:            resp.Id,
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, orderQuery); err != nil {
+	if err = bus.Dispatch(ctx, orderQuery); err != nil {
 		return nil, cm.MapError(err).
 			Map(cm.NotFound, cm.Internal, "").
 			Throw()
 	}
-
 	return convertpb.PbOrderWithoutShipping(orderQuery.Result.Order), nil
 }
 
-func (s *Shipping) ConfirmOrder(ctx context.Context, userID dot.ID, shopClaim *claims.ShopClaim, orderID dot.ID, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (_err error) {
+func (s *Shipping) ConfirmOrder(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, partner *identitymodel.Partner, orderID dot.ID, autoInventoryVoucher inventory_auto.AutoInventoryVoucher) (_err error) {
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := s.OrderLogic.CancelOrder(ctx, userID, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", _err), inventory_auto.Unknown)
+			_, err := s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partner.ID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", _err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
 		}
 	}()
-	_, err := s.OrderLogic.ConfirmOrder(ctx, userID, shopClaim.Shop, &apishop.ConfirmOrderRequest{
+	_, err := s.OrderLogic.ConfirmOrder(ctx, userID, shop, &apishop.ConfirmOrderRequest{
 		OrderId:              orderID,
 		AutoInventoryVoucher: autoInventoryVoucher,
 	})
@@ -116,7 +103,7 @@ func (s *Shipping) ConfirmOrder(ctx context.Context, userID dot.ID, shopClaim *c
 	return nil
 }
 
-func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, accountID dot.ID, shopClaim *claims.ShopClaim, r *exttypes.CreateAndConfirmOrderRequest) (_ *exttypes.OrderAndFulfillments, _err error) {
+func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, partner *identitymodel.Partner, r *exttypes.CreateAndConfirmOrderRequest) (_ *exttypes.OrderAndFulfillments, _err error) {
 	shipping := r.Shipping
 	if shipping == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping")
@@ -133,17 +120,6 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, acc
 	}
 	if shipping.TryOn == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping.try_on")
-	}
-
-	var partner *identitymodel.Partner
-	if shopClaim.AuthPartnerID != 0 {
-		queryPartner := &identitymodelx.GetPartner{
-			PartnerID: shopClaim.AuthPartnerID,
-		}
-		if err := bus.Dispatch(ctx, queryPartner); err != nil {
-			return nil, err
-		}
-		partner = queryPartner.Result.Partner
 	}
 
 	externalCode := validate.NormalizeExternalCode(r.ExternalCode)
@@ -217,7 +193,7 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, acc
 	if err := validateAddress(req.Shipping.PickupAddress); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
-	resp, err := s.OrderLogic.CreateOrder(ctx, shopClaim.Shop, partner, req, nil, 0)
+	resp, err := s.OrderLogic.CreateOrder(ctx, shop, partner, req, nil, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -226,21 +202,21 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, acc
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := s.OrderLogic.CancelOrder(ctx, userID, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
+			_, err := s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partner.ID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
 		}
 	}()
 
-	_, err = s.OrderLogic.ConfirmOrder(ctx, userID, shopClaim.Shop, &apishop.ConfirmOrderRequest{
+	_, err = s.OrderLogic.ConfirmOrder(ctx, userID, shop, &apishop.ConfirmOrderRequest{
 		OrderId: orderID,
 	})
 	if err != nil {
 		return nil, err
 	}
 	createFfmArgs := &shippingcore.CreateFulfillmentsCommand{
-		ShopID:              accountID,
+		ShopID:              shop.ID,
 		OrderID:             orderID,
 		PickupAddress:       convertpbint.Convert_api_OrderAddress_To_core_OrderAddress(req.Shipping.PickupAddress),
 		ShippingAddress:     convertpbint.Convert_api_OrderAddress_To_core_OrderAddress(req.ShippingAddress),

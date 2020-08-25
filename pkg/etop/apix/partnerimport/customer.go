@@ -3,7 +3,7 @@ package partnerimport
 import (
 	"context"
 
-	"o.o/api/top/external/whitelabel"
+	api "o.o/api/top/external/whitelabel"
 	"o.o/api/top/types/etc/customer_type"
 	"o.o/backend/com/shopping/customering/model"
 	cm "o.o/backend/pkg/common"
@@ -11,23 +11,23 @@ import (
 	"o.o/capi/dot"
 )
 
-func (s *ImportService) Customers(ctx context.Context, r *CustomersEndpoint) error {
+func (s *ImportService) Customers(ctx context.Context, r *api.ImportCustomersRequest) (*api.ImportCustomersResponse, error) {
 	if len(r.Customers) > MaximumItems {
-		return cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
 	}
 
 	var ids []dot.ID
 	for _, customer := range r.Customers {
 		if customer.ExternalID == "" {
-			return cm.Errorf(cm.InvalidArgument, nil, "id should not be null")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "id should not be null")
 		}
 		if customer.Type != customer_type.Individual && customer.Type != customer_type.Organization {
-			return cm.Errorf(cm.InvalidArgument, nil, "type is invalid")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "type is invalid")
 		}
 
 		shopCustomer := &model.ShopCustomer{
-			ShopID:       r.Context.Shop.ID,
-			PartnerID:    r.Context.AuthPartnerID,
+			ShopID:       s.SS.Shop().ID,
+			PartnerID:    s.SS.Claim().AuthPartnerID,
 			ExternalID:   customer.ExternalID,
 			ExternalCode: customer.ExternalCode,
 			Code:         customer.ExternalCode,
@@ -51,27 +51,27 @@ func (s *ImportService) Customers(ctx context.Context, r *CustomersEndpoint) err
 			ids = append(ids, id)
 			shopCustomer.ID = id
 			if _err := s.customerStoreFactory(ctx).CreateCustomer(shopCustomer); _err != nil {
-				return _err
+				return nil, _err
 			}
 		case cm.NoError:
 			shopCustomer.ID = oldShopCustomer.ID
 			ids = append(ids, oldShopCustomer.ID)
 			if _err := s.customerStoreFactory(ctx).UpdateCustomerDB(shopCustomer); _err != nil {
-				return _err
+				return nil, _err
 			}
 		default:
-			return err
+			return nil, err
 		}
 	}
 
 	modelCustomers, err := s.customerStoreFactory(ctx).IDs(ids...).ListCustomersDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var customersResponse []*whitelabel.Customer
+	var customersResponse []*api.Customer
 	for _, customer := range modelCustomers {
-		customersResponse = append(customersResponse, &whitelabel.Customer{
+		customersResponse = append(customersResponse, &api.Customer{
 			ExternalId:   customer.ExternalID,
 			ExternalCode: customer.ExternalCode,
 			ID:           customer.ID,
@@ -89,6 +89,6 @@ func (s *ImportService) Customers(ctx context.Context, r *CustomersEndpoint) err
 			DeletedAt:    cmapi.PbTime(customer.DeletedAt),
 		})
 	}
-	r.Result = &whitelabel.ImportCustomersResponse{Customers: customersResponse}
-	return nil
+	result := &api.ImportCustomersResponse{Customers: customersResponse}
+	return result, nil
 }

@@ -3,41 +3,42 @@ package xshop
 import (
 	"context"
 
+	api "o.o/api/top/external/shop"
+	externaltypes "o.o/api/top/external/types"
+	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/etop/apix/shopping"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type CustomerAddressService struct {
+	session.Session
+
 	Shopping *shopping.Shopping
 }
 
-func (s *CustomerAddressService) Clone() *CustomerAddressService { res := *s; return &res }
+func (s *CustomerAddressService) Clone() api.CustomerAddressService { res := *s; return &res }
 
-func (s *CustomerAddressService) ListAddresses(ctx context.Context, r *ListAddressesEndpoint) error {
-	resp, err := s.Shopping.ListAddresses(ctx, r.Context.Shop.ID, r.ListCustomerAddressesRequest)
-	r.Result = resp
-	return err
+func (s *CustomerAddressService) ListAddresses(ctx context.Context, r *externaltypes.ListCustomerAddressesRequest) (*externaltypes.CustomerAddressesResponse, error) {
+	resp, err := s.Shopping.ListAddresses(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerAddressService) GetAddress(ctx context.Context, r *GetAddressEndpoint) error {
-	resp, err := s.Shopping.GetAddress(ctx, r.Context.Shop.ID, r.OrderIDRequest)
-	r.Result = resp
-	return err
+func (s *CustomerAddressService) GetAddress(ctx context.Context, r *externaltypes.OrderIDRequest) (*externaltypes.CustomerAddress, error) {
+	resp, err := s.Shopping.GetAddress(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerAddressService) CreateAddress(ctx context.Context, r *CreateAddressEndpoint) error {
-	resp, err := s.Shopping.CreateAddress(ctx, r.Context.Shop.ID, 0, r.CreateCustomerAddressRequest)
-	r.Result = resp
-	return err
+func (s *CustomerAddressService) CreateAddress(ctx context.Context, r *externaltypes.CreateCustomerAddressRequest) (*externaltypes.CustomerAddress, error) {
+	resp, err := s.Shopping.CreateAddress(ctx, s.SS.Shop().ID, 0, r)
+	return resp, err
 }
 
-func (s *CustomerAddressService) UpdateAddress(ctx context.Context, r *UpdateAddressEndpoint) error {
-	resp, err := s.Shopping.UpdateAddress(ctx, r.Context.Shop.ID, r.UpdateCustomerAddressRequest)
-	r.Result = resp
-	return err
+func (s *CustomerAddressService) UpdateAddress(ctx context.Context, r *externaltypes.UpdateCustomerAddressRequest) (*externaltypes.CustomerAddress, error) {
+	resp, err := s.Shopping.UpdateAddress(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerAddressService) DeleteAddress(ctx context.Context, r *DeleteAddressEndpoint) error {
-	resp, err := s.Shopping.DeleteAddress(ctx, r.Context.Shop.ID, r.IDRequest)
-	r.Result = resp
-	return err
+func (s *CustomerAddressService) DeleteAddress(ctx context.Context, r *pbcm.IDRequest) (*pbcm.Empty, error) {
+	resp, err := s.Shopping.DeleteAddress(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }

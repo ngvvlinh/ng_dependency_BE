@@ -3,41 +3,42 @@ package xshop
 import (
 	"context"
 
+	api "o.o/api/top/external/shop"
+	externaltypes "o.o/api/top/external/types"
+	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/etop/apix/shopping"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type CustomerGroupService struct {
+	session.Session
+
 	Shopping *shopping.Shopping
 }
 
-func (s *CustomerGroupService) Clone() *CustomerGroupService { res := *s; return &res }
+func (s *CustomerGroupService) Clone() api.CustomerGroupService { res := *s; return &res }
 
-func (s *CustomerGroupService) GetGroup(ctx context.Context, r *GetGroupEndpoint) error {
-	resp, err := s.Shopping.GetGroup(ctx, r.Context.Shop.ID, r.IDRequest)
-	r.Result = resp
-	return err
+func (s *CustomerGroupService) GetGroup(ctx context.Context, r *pbcm.IDRequest) (*externaltypes.CustomerGroup, error) {
+	resp, err := s.Shopping.GetGroup(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerGroupService) ListGroups(ctx context.Context, r *ListGroupsEndpoint) error {
-	resp, err := s.Shopping.ListGroups(ctx, r.Context.Shop.ID, r.ListCustomerGroupsRequest)
-	r.Result = resp
-	return err
+func (s *CustomerGroupService) ListGroups(ctx context.Context, r *externaltypes.ListCustomerGroupsRequest) (*externaltypes.CustomerGroupsResponse, error) {
+	resp, err := s.Shopping.ListGroups(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerGroupService) CreateGroup(ctx context.Context, r *CreateGroupEndpoint) error {
-	resp, err := s.Shopping.CreateGroup(ctx, r.Context.Shop.ID, 0, r.CreateCustomerGroupRequest)
-	r.Result = resp
-	return err
+func (s *CustomerGroupService) CreateGroup(ctx context.Context, r *externaltypes.CreateCustomerGroupRequest) (*externaltypes.CustomerGroup, error) {
+	resp, err := s.Shopping.CreateGroup(ctx, s.SS.Shop().ID, 0, r)
+	return resp, err
 }
 
-func (s *CustomerGroupService) UpdateGroup(ctx context.Context, r *UpdateGroupEndpoint) error {
-	resp, err := s.Shopping.UpdateGroup(ctx, r.Context.Shop.ID, r.UpdateCustomerGroupRequest)
-	r.Result = resp
-	return err
+func (s *CustomerGroupService) UpdateGroup(ctx context.Context, r *externaltypes.UpdateCustomerGroupRequest) (*externaltypes.CustomerGroup, error) {
+	resp, err := s.Shopping.UpdateGroup(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerGroupService) DeleteGroup(ctx context.Context, r *DeleteGroupEndpoint) error {
-	resp, err := s.Shopping.DeleteGroup(ctx, r.Context.Shop.ID, r.IDRequest)
-	r.Result = resp
-	return err
+func (s *CustomerGroupService) DeleteGroup(ctx context.Context, r *pbcm.IDRequest) (*pbcm.Empty, error) {
+	resp, err := s.Shopping.DeleteGroup(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }

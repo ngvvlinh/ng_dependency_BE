@@ -5,16 +5,16 @@ import (
 
 	"o.o/api/main/catalog"
 	"o.o/api/main/catalog/types"
-	"o.o/api/top/external/whitelabel"
+	api "o.o/api/top/external/whitelabel"
 	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/capi/dot"
 )
 
-func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error {
+func (s *ImportService) Variants(ctx context.Context, r *api.ImportShopVariantsRequest) (*api.ImportShopVariantsResponse, error) {
 	if len(r.Variants) > MaximumItems {
-		return cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
 	}
 
 	var ids []dot.ID
@@ -22,14 +22,14 @@ func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error
 		var productID dot.ID
 
 		if variant.ExternalId == "" {
-			return cm.Errorf(cm.InvalidArgument, nil, "external_id should not be null")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "external_id should not be null")
 		}
 		if variant.ExternalProductId == "" {
-			return cm.Errorf(cm.InvalidArgument, nil, "external_product_id should not be null")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "external_product_id should not be null")
 		} else {
 			product, err := s.shopProductStoreFactory(ctx).ExternalID(variant.ExternalProductId).GetShopProductDB()
 			if err != nil {
-				return cm.Errorf(cm.InvalidArgument, err, "external_product_id is invalid")
+				return nil, cm.Errorf(cm.InvalidArgument, err, "external_product_id is invalid")
 			}
 			productID = product.ProductID
 		}
@@ -38,8 +38,8 @@ func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error
 			ExternalID:        variant.ExternalId,
 			ExternalCode:      variant.ExternalCode,
 			ExternalProductID: variant.ExternalProductId,
-			PartnerID:         r.Context.AuthPartnerID,
-			ShopID:            r.Context.Shop.ID,
+			PartnerID:         s.SS.Claim().AuthPartnerID,
+			ShopID:            s.SS.Shop().ID,
 			ProductID:         productID,
 			Name:              variant.Name,
 			ShortDesc:         variant.ShortDesc,
@@ -63,25 +63,25 @@ func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error
 			ids = append(ids, id)
 			shopVariant.VariantID = id
 			if _err := s.shopVariantStoreFactory(ctx).CreateShopVariantImport(shopVariant); _err != nil {
-				return _err
+				return nil, _err
 			}
 		case cm.NoError:
 			shopVariant.VariantID = oldShopVariant.VariantID
 			ids = append(ids, oldShopVariant.VariantID)
 			if _err := s.shopVariantStoreFactory(ctx).UpdateShopVariantImport(shopVariant); _err != nil {
-				return _err
+				return nil, _err
 			}
 		default:
-			return err
+			return nil, err
 		}
 	}
 
 	modelVariants, err := s.shopVariantStoreFactory(ctx).IDs(ids...).ListShopVariantsDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var variantsResponse []*whitelabel.ShopVariant
+	var variantsResponse []*api.ShopVariant
 	for _, variant := range modelVariants {
 		var attributes []*types.Attribute
 		for _, attribute := range variant.Attributes {
@@ -90,7 +90,7 @@ func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error
 				Value: attribute.Value,
 			})
 		}
-		variantsResponse = append(variantsResponse, &whitelabel.ShopVariant{
+		variantsResponse = append(variantsResponse, &api.ShopVariant{
 			ExternalId:        variant.ExternalID,
 			ExternalCode:      variant.ExternalCode,
 			ExternalProductId: variant.ExternalProductID,
@@ -114,6 +114,6 @@ func (s *ImportService) Variants(ctx context.Context, r *VariantsEndpoint) error
 			DeletedAt:         cmapi.PbTime(variant.DeletedAt),
 		})
 	}
-	r.Result = &whitelabel.ImportShopVariantsResponse{Variants: variantsResponse}
-	return nil
+	result := &api.ImportShopVariantsResponse{Variants: variantsResponse}
+	return result, nil
 }

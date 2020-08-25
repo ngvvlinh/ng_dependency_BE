@@ -3,7 +3,7 @@ package partnerimport
 import (
 	"context"
 
-	"o.o/api/top/external/whitelabel"
+	api "o.o/api/top/external/whitelabel"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/main/catalog/model"
 	cm "o.o/backend/pkg/common"
@@ -11,23 +11,23 @@ import (
 	"o.o/capi/dot"
 )
 
-func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error {
+func (s *ImportService) Products(ctx context.Context, r *api.ImportProductsRequest) (*api.ImportProductsResponse, error) {
 	if len(r.Products) > MaximumItems {
-		return cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
 	}
 
 	var ids []dot.ID
-	for _, product := range r.ImportProductsRequest.Products {
+	for _, product := range r.Products {
 		var brandID, categoryID dot.ID
 
 		if product.ExternalID == "" {
-			return cm.Errorf(cm.InvalidArgument, nil, "id should not be null")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "id should not be null")
 		}
 
 		if product.ExternalBrandID != "" {
 			brand, err := s.brandStoreFactory(ctx).ExternalID(product.ExternalBrandID).GetShopBrandDB()
 			if err != nil {
-				return cm.Errorf(cm.InvalidArgument, err, "brand_id is invalid")
+				return nil, cm.Errorf(cm.InvalidArgument, err, "brand_id is invalid")
 			}
 			brandID = brand.ID
 		}
@@ -35,14 +35,14 @@ func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error
 		if product.ExternalCategoryID != "" {
 			category, err := s.categoryStoreFactory(ctx).ExternalID(product.ExternalCategoryID).GetShopCategoryDB()
 			if err != nil {
-				return cm.Errorf(cm.InvalidArgument, err, "category_id is invalid")
+				return nil, cm.Errorf(cm.InvalidArgument, err, "category_id is invalid")
 			}
 			categoryID = category.ID
 		}
 
 		shopProduct := &model.ShopProduct{
-			ShopID:             r.Context.Shop.ID,
-			PartnerID:          r.Context.AuthPartnerID,
+			ShopID:             s.SS.Shop().ID,
+			PartnerID:          s.SS.Claim().AuthPartnerID,
 			ExternalID:         product.ExternalID,
 			ExternalCode:       product.ExternalCode,
 			ExternalBrandID:    product.ExternalBrandID,
@@ -72,27 +72,27 @@ func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error
 			ids = append(ids, id)
 			shopProduct.ProductID = id
 			if _err := s.shopProductStoreFactory(ctx).CreateShopProductImport(shopProduct); _err != nil {
-				return _err
+				return nil, _err
 			}
 		case cm.NoError:
 			shopProduct.ProductID = oldShopProduct.ProductID
 			ids = append(ids, oldShopProduct.ProductID)
 			if _err := s.shopProductStoreFactory(ctx).UpdateShopProduct(shopProduct); _err != nil {
-				return _err
+				return nil, _err
 			}
 		default:
-			return err
+			return nil, err
 		}
 	}
 
 	modelProducts, err := s.shopProductStoreFactory(ctx).IDs(ids...).ListShopProductsDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var productsResponse []*whitelabel.Product
+	var productsResponse []*api.Product
 	for _, product := range modelProducts {
-		productsResponse = append(productsResponse, &whitelabel.Product{
+		productsResponse = append(productsResponse, &api.Product{
 			Id:                 product.ProductID,
 			PartnerID:          product.PartnerID,
 			ShopID:             product.ShopID,
@@ -114,8 +114,8 @@ func (s *ImportService) Products(ctx context.Context, r *ProductsEndpoint) error
 			CategoryId:         dot.WrapID(product.CategoryID),
 		})
 	}
-	r.Result = &whitelabel.ImportProductsResponse{
+	result := &api.ImportProductsResponse{
 		Products: productsResponse,
 	}
-	return nil
+	return result, nil
 }

@@ -781,9 +781,12 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	intHandlers := server_max.BuildIntHandlers(servers, shopServers, adminServers, sadminServers, integrationServers, affiliateServers, apiServers)
 	shippingShipping := shipping.New(queryBus, mainDB, shipmentManager, shippingCommandBus, shippingQueryBus, orderLogic, shipnowCommandBus, shipnowQueryBus)
 	partnerMiscService := &partner.MiscService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
-	partnerShopService := &partner.ShopService{}
+	partnerShopService := &partner.ShopService{
+		Session: session,
+	}
 	kafka := cfg.Kafka
 	producer, err := _producer.SupportedProducers(ctx, kafka)
 	if err != nil {
@@ -794,16 +797,20 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	service2 := webhook.New(mainDB, producer, store)
 	partnerWebhookService := &partner.WebhookService{
+		Session:      session,
 		WebhookInner: service2,
 	}
 	partnerHistoryService := &partner.HistoryService{}
 	shippingService := &partner.ShippingService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
 	partnerOrderService := &partner.OrderService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
 	partnerFulfillmentService := &partner.FulfillmentService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
 	shoppingShopping := &shopping.Shopping{
@@ -817,77 +824,101 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		CatalogAggregate:  catalogCommandBus,
 	}
 	partnerCustomerService := &partner.CustomerService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	customerAddressService := &partner.CustomerAddressService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	partnerCustomerGroupService := &partner.CustomerGroupService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	customerGroupRelationshipService := &partner.CustomerGroupRelationshipService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	partnerInventoryService := &partner.InventoryService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	variantService := &partner.VariantService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	partnerProductService := &partner.ProductService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	productCollectionService := &partner.ProductCollectionService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	productCollectionRelationshipService := &partner.ProductCollectionRelationshipService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	partnerServers, cleanup4 := partner.NewServers(store, generator, partnerAuthURL, partnerMiscService, partnerShopService, partnerWebhookService, partnerHistoryService, shippingService, partnerOrderService, partnerFulfillmentService, partnerCustomerService, customerAddressService, partnerCustomerGroupService, customerGroupRelationshipService, partnerInventoryService, variantService, partnerProductService, productCollectionService, productCollectionRelationshipService)
 	xshopMiscService := &xshop.MiscService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
 	xshopWebhookService := &xshop.WebhookService{
+		Session:      session,
 		WebhookInner: service2,
 	}
 	xshopHistoryService := &xshop.HistoryService{}
 	xshopShippingService := &xshop.ShippingService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
 	xshopOrderService := &xshop.OrderService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
 	xshopFulfillmentService := &xshop.FulfillmentService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
 	xshopCustomerService := &xshop.CustomerService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopCustomerAddressService := &xshop.CustomerAddressService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopCustomerGroupService := &xshop.CustomerGroupService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopCustomerGroupRelationshipService := &xshop.CustomerGroupRelationshipService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopInventoryService := &xshop.InventoryService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopVariantService := &xshop.VariantService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopProductService := &xshop.ProductService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopProductCollectionService := &xshop.ProductCollectionService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopProductCollectionRelationshipService := &xshop.ProductCollectionRelationshipService{
+		Session:  session,
 		Shopping: shoppingShopping,
 	}
 	xshopShipnowService := &xshop.ShipnowService{
+		Session:  session,
 		Shipping: shippingShipping,
 	}
 	xshopServers, cleanup5 := xshop.NewServers(store, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService, xshopShipnowService)
@@ -911,7 +942,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		DirectWebhook:          webhookWebhook,
 	}
 	partnercarrierServers, cleanup6 := partnercarrier.NewServers(store, partnercarrierMiscService, shipmentConnectionService, partnercarrierShipmentService)
-	importService := partnerimport.New(mainDB, catalogCommandBus)
+	importService := partnerimport.New(session, mainDB)
 	partnerimportServers := partnerimport.NewServers(importService)
 	extHandlers := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers)
 	ghnimportImport := ghnimport.Import{

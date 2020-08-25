@@ -1,24 +1,20 @@
 package partnerimport
 
 import (
-	"o.o/api/main/catalog"
 	"o.o/api/top/external/whitelabel"
 	com "o.o/backend/com/main"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	customersqlstore "o.o/backend/com/shopping/customering/sqlstore"
+	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/httprpc"
 )
-
-// +gen:wrapper=o.o/api/top/external/whitelabel
-// +gen:wrapper:package=partner
-// +gen:wrapper:prefix=ext
 
 type Servers []httprpc.Server
 
 func NewServers(importService ImportService) Servers {
-	servers := []httprpc.Server{
-		whitelabel.NewImportServiceServer(WrapImportService(importService.Clone)),
-	}
+	servers := httprpc.MustNewServers(
+		importService.Clone,
+	)
 	return servers
 }
 
@@ -27,6 +23,8 @@ const (
 )
 
 type ImportService struct {
+	session.Session
+
 	shopProductStoreFactory           catalogsqlstore.ShopProductStoreFactory
 	shopCollectionStoreFactory        catalogsqlstore.ShopCollectionStoreFactory
 	shopProductCollectionStoreFactory catalogsqlstore.ShopProductCollectionStoreFactory
@@ -37,18 +35,20 @@ type ImportService struct {
 }
 
 func New(
+	ss session.Session,
 	db com.MainDB,
-	catalogAggr catalog.CommandBus,
 ) ImportService {
-	s := ImportService{}
-	s.shopProductStoreFactory = catalogsqlstore.NewShopProductStore(db)
-	s.shopCollectionStoreFactory = catalogsqlstore.NewShopCollectionStore(db)
-	s.shopProductCollectionStoreFactory = catalogsqlstore.NewShopProductCollectionStore(db)
-	s.shopVariantStoreFactory = catalogsqlstore.NewShopVariantStore(db)
-	s.brandStoreFactory = catalogsqlstore.NewShopBrandStore(db)
-	s.categoryStoreFactory = catalogsqlstore.NewShopCategoryStore(db)
-	s.customerStoreFactory = customersqlstore.NewCustomerStore(db)
+	s := ImportService{
+		Session:                           ss,
+		shopProductStoreFactory:           catalogsqlstore.NewShopProductStore(db),
+		shopCollectionStoreFactory:        catalogsqlstore.NewShopCollectionStore(db),
+		shopProductCollectionStoreFactory: catalogsqlstore.NewShopProductCollectionStore(db),
+		shopVariantStoreFactory:           catalogsqlstore.NewShopVariantStore(db),
+		brandStoreFactory:                 catalogsqlstore.NewShopBrandStore(db),
+		categoryStoreFactory:              catalogsqlstore.NewShopCategoryStore(db),
+		customerStoreFactory:              customersqlstore.NewCustomerStore(db),
+	}
 	return s
 }
 
-func (s *ImportService) Clone() *ImportService { res := *s; return &res }
+func (s *ImportService) Clone() whitelabel.ImportService { res := *s; return &res }

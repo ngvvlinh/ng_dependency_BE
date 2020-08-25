@@ -14,11 +14,8 @@ import (
 	pbsource "o.o/api/top/types/etc/order_source"
 	"o.o/api/top/types/etc/payment_method"
 	identitymodel "o.o/backend/com/main/identity/model"
-	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	convertx "o.o/backend/pkg/etop/apix/convertpb"
-	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -74,17 +71,7 @@ func (s *Shipping) buildCodeForShipnowServices(ctx context.Context, services []*
 	return nil
 }
 
-func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, shopClaim *claims.ShopClaim, r *typesx.CreateShipnowFulfillmentRequest) (_ *typesx.ShipnowFulfillment, _err error) {
-	var partner *identitymodel.Partner
-	if shopClaim.AuthPartnerID != 0 {
-		queryPartner := &identitymodelx.GetPartner{
-			PartnerID: shopClaim.AuthPartnerID,
-		}
-		if err := bus.Dispatch(ctx, queryPartner); err != nil {
-			return nil, err
-		}
-		partner = queryPartner.Result.Partner
-	}
+func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, userID dot.ID, shop *identitymodel.Shop, partner *identitymodel.Partner, r *typesx.CreateShipnowFulfillmentRequest) (_ *typesx.ShipnowFulfillment, _err error) {
 
 	conn, serviceCode, err := s.parseServiceCode(ctx, r.ShippingServiceCode)
 	if err != nil {
@@ -129,7 +116,7 @@ func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, shopClaim *clai
 			OrderNote:       point.ShippingNote,
 			ShippingNote:    point.ShippingNote,
 		}
-		respOrder, err := s.OrderLogic.CreateOrder(ctx, shopClaim.Shop, partner, args, nil, 0)
+		respOrder, err := s.OrderLogic.CreateOrder(ctx, shop, partner, args, nil, 0)
 		if err != nil {
 			return nil, err
 		}
@@ -160,7 +147,7 @@ func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, shopClaim *clai
 		if shipnowFulfillment != nil {
 			cmd := &shipnow.CancelShipnowFulfillmentCommand{
 				ID:           shipnowFulfillment.ID,
-				ShopID:       shopClaim.AccountID,
+				ShopID:       shop.ID,
 				CancelReason: fmt.Sprintf("Tạo đơn shipnow không thành công: %v", _err.Error()),
 			}
 			s.ShipnowAggr.Dispatch(ctx, cmd)
@@ -168,7 +155,7 @@ func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, shopClaim *clai
 
 		// always cancel order if cannot create shipnow ffm
 		for _, point := range deliveryPoints {
-			_, err = s.OrderLogic.CancelOrder(ctx, shopClaim.UserID, shopClaim.AccountID, shopClaim.AuthPartnerID, point.OrderID, fmt.Sprintf("Tạo đơn shipnow không thành công: %v", _err.Error()), inventory_auto.Unknown)
+			_, err = s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partner.ID, point.OrderID, fmt.Sprintf("Tạo đơn shipnow không thành công: %v", _err.Error()), inventory_auto.Unknown)
 		}
 		if err != nil {
 			ll.Error("cancelling order", l.Error(err))
@@ -179,7 +166,7 @@ func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, shopClaim *clai
 	// Create shipnow fulfillment
 	createCmd := &shipnow.CreateShipnowFulfillmentCommand{
 		DeliveryPoints:      deliveryPoints,
-		ShopID:              shopClaim.AccountID,
+		ShopID:              shop.ID,
 		ShippingServiceCode: serviceCode,
 		ShippingServiceFee:  r.ShippingServiceFee.Int(),
 		ShippingNote:        r.ShippingNote,
@@ -194,13 +181,13 @@ func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, shopClaim *clai
 	// confirm shipnow fulfillment
 	confirmCmd := &shipnow.ConfirmShipnowFulfillmentCommand{
 		ID:     shipnowFulfillment.ID,
-		ShopID: shopClaim.AccountID,
+		ShopID: shop.ID,
 	}
 	if err := s.ShipnowAggr.Dispatch(ctx, confirmCmd); err != nil {
 		return nil, err
 	}
 
-	return s.GetShipnowFulfillment(ctx, shopClaim.AccountID, &typesx.FulfillmentIDRequest{
+	return s.GetShipnowFulfillment(ctx, shop.ID, &typesx.FulfillmentIDRequest{
 		Id: confirmCmd.ID,
 	})
 }

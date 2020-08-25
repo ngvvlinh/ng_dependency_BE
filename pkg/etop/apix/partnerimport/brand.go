@@ -4,25 +4,25 @@ import (
 	"context"
 
 	"o.o/api/main/catalog"
-	"o.o/api/top/external/whitelabel"
+	api "o.o/api/top/external/whitelabel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/capi/dot"
 )
 
-func (s *ImportService) Brands(ctx context.Context, r *BrandsEndpoint) error {
+func (s *ImportService) Brands(ctx context.Context, r *api.ImportBrandsRequest) (*api.ImportBrandsResponse, error) {
 	if len(r.Brands) > MaximumItems {
-		return cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "cannot handle rather than 100 items at once")
 	}
 
 	var ids []dot.ID
 	for _, brand := range r.Brands {
 		if brand.ExternalID == "" {
-			return cm.Errorf(cm.InvalidArgument, nil, "external_id should not be null")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "external_id should not be null")
 		}
 		shopBrand := &catalog.ShopBrand{
-			PartnerID:   r.Context.AuthPartnerID,
-			ShopID:      r.Context.Shop.ID,
+			PartnerID:   s.SS.Claim().AuthPartnerID,
+			ShopID:      s.SS.Shop().ID,
 			ExternalID:  brand.ExternalID,
 			BrandName:   brand.BrandName,
 			Description: brand.Description,
@@ -38,28 +38,28 @@ func (s *ImportService) Brands(ctx context.Context, r *BrandsEndpoint) error {
 			shopBrand.ID = id
 			ids = append(ids, id)
 			if _err := s.brandStoreFactory(ctx).CreateShopBrand(shopBrand); _err != nil {
-				return err
+				return nil, err
 			}
 		case cm.NoError:
 			shopBrand.ID = oldShopBrand.ID
 			ids = append(ids, oldShopBrand.ID)
 			if _err := s.brandStoreFactory(ctx).ExternalID(brand.ExternalID).UpdateShopBrand(shopBrand); _err != nil {
-				return err
+				return nil, err
 			}
 		default:
-			return err
+			return nil, err
 		}
 
 	}
 
 	modelBrands, err := s.brandStoreFactory(ctx).IDs(ids...).ListShopBrandsDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var brandsResponse []*whitelabel.Brand
+	var brandsResponse []*api.Brand
 	for _, brand := range modelBrands {
-		brandsResponse = append(brandsResponse, &whitelabel.Brand{
+		brandsResponse = append(brandsResponse, &api.Brand{
 			ID:          brand.ID,
 			PartnerID:   brand.PartnerID,
 			ShopID:      brand.ShopID,
@@ -71,6 +71,6 @@ func (s *ImportService) Brands(ctx context.Context, r *BrandsEndpoint) error {
 			DeletedAt:   cmapi.PbTime(brand.DeletedAt),
 		})
 	}
-	r.Result = &whitelabel.ImportBrandsResponse{Brands: brandsResponse}
-	return nil
+	result := &api.ImportBrandsResponse{Brands: brandsResponse}
+	return result, nil
 }

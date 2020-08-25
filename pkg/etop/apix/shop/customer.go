@@ -3,41 +3,42 @@ package xshop
 import (
 	"context"
 
+	api "o.o/api/top/external/shop"
+	externaltypes "o.o/api/top/external/types"
+	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/etop/apix/shopping"
+	"o.o/backend/pkg/etop/authorize/session"
 )
 
 type CustomerService struct {
+	session.Session
+
 	Shopping *shopping.Shopping
 }
 
-func (s *CustomerService) Clone() *CustomerService { res := *s; return &res }
+func (s *CustomerService) Clone() api.CustomerService { res := *s; return &res }
 
-func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoint) error {
-	resp, err := s.Shopping.GetCustomer(ctx, r.Context.Shop.ID, r.GetCustomerRequest)
-	r.Result = resp
-	return err
+func (s *CustomerService) GetCustomer(ctx context.Context, r *externaltypes.GetCustomerRequest) (*externaltypes.Customer, error) {
+	resp, err := s.Shopping.GetCustomer(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerService) ListCustomers(ctx context.Context, r *ListCustomersEndpoint) error {
-	resp, err := s.Shopping.ListCustomers(ctx, r.Context.Shop.ID, r.ListCustomersRequest)
-	r.Result = resp
-	return err
+func (s *CustomerService) ListCustomers(ctx context.Context, r *externaltypes.ListCustomersRequest) (*externaltypes.CustomersResponse, error) {
+	resp, err := s.Shopping.ListCustomers(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerEndpoint) error {
-	resp, err := s.Shopping.CreateCustomer(ctx, r.Context.Shop.ID, r.Context.AuthPartnerID, r.CreateCustomerRequest)
-	r.Result = resp
-	return err
+func (s *CustomerService) CreateCustomer(ctx context.Context, r *externaltypes.CreateCustomerRequest) (*externaltypes.Customer, error) {
+	resp, err := s.Shopping.CreateCustomer(ctx, s.SS.Shop().ID, s.SS.Claim().AuthPartnerID, r)
+	return resp, err
 }
 
-func (s *CustomerService) UpdateCustomer(ctx context.Context, r *UpdateCustomerEndpoint) error {
-	resp, err := s.Shopping.UpdateCustomer(ctx, r.Context.Shop.ID, r.UpdateCustomerRequest)
-	r.Result = resp
-	return err
+func (s *CustomerService) UpdateCustomer(ctx context.Context, r *externaltypes.UpdateCustomerRequest) (*externaltypes.Customer, error) {
+	resp, err := s.Shopping.UpdateCustomer(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
 
-func (s *CustomerService) DeleteCustomer(ctx context.Context, r *DeleteCustomerEndpoint) error {
-	resp, err := s.Shopping.DeleteCustomer(ctx, r.Context.Shop.ID, r.DeleteCustomerRequest)
-	r.Result = resp
-	return err
+func (s *CustomerService) DeleteCustomer(ctx context.Context, r *externaltypes.DeleteCustomerRequest) (*pbcm.Empty, error) {
+	resp, err := s.Shopping.DeleteCustomer(ctx, s.SS.Shop().ID, r)
+	return resp, err
 }
