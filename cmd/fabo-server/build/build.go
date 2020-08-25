@@ -28,6 +28,7 @@ import (
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/sql/sqltrace"
 	"o.o/backend/pkg/etop/api"
+	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -86,6 +87,7 @@ func BuildIntHandlers(
 	rootServers api.Servers,
 	shopServers shop.Servers,
 	faboServers fabo.Servers,
+	sadminServers sadmin.Servers,
 ) (hs IntHandlers) {
 	logging := middlewares.NewLogging()
 	ssHooks := session.NewHook(acl.GetACL())
@@ -93,6 +95,7 @@ func BuildIntHandlers(
 	hs = append(hs, rootServers...)
 	hs = append(hs, shopServers...)
 	hs = append(hs, faboServers...)
+	hs = append(hs, sadminServers...)
 	hs = httprpc.WithHooks(hs, ssHooks, logging)
 	return hs
 }

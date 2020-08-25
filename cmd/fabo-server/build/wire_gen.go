@@ -73,6 +73,8 @@ import (
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/export"
+	"o.o/backend/pkg/etop/api/sadmin"
+	"o.o/backend/pkg/etop/api/sadmin/_fabo"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/api/shop/_min"
 	"o.o/backend/pkg/etop/api/shop/account"
@@ -435,7 +437,13 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FBUseringAggr:  fbuseringCommandBus,
 	}
 	faboServers := fabo.NewServers(pageService, customerConversationService, faboCustomerService, store)
-	intHandlers := BuildIntHandlers(servers, shopServers, faboServers)
+	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
+	webhookService := &sadmin.WebhookService{
+		Session:                session,
+		WebhookCallbackService: webhookCallbackService,
+	}
+	sadminServers := _fabo.NewServers(webhookService)
+	intHandlers := BuildIntHandlers(servers, shopServers, faboServers, sadminServers)
 	dirConfigs := cfg.UploadDirs
 	uploader, err := _uploader.NewUploader(ctx, dirConfigs, bucket)
 	if err != nil {

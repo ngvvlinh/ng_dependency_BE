@@ -41,6 +41,7 @@ import (
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/export"
+	sadmin_fabo "o.o/backend/pkg/etop/api/sadmin/_fabo"
 	shop_min "o.o/backend/pkg/etop/api/shop/_min"
 	shop_wire "o.o/backend/pkg/etop/api/shop/_wire"
 	"o.o/backend/pkg/etop/authorize/middleware"
@@ -117,6 +118,7 @@ func Build(
 		export.WireSet,
 		middleware.WireSet,
 		logicsummary.WireSet,
+		sadmin_fabo.WireSet,
 		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
 		wire.Bind(new(eventstream.Publisher), new(*eventstream.EventStream)),
