@@ -82,13 +82,13 @@ func (m *CreateAddressArgs) Validate() error {
 	if m.Phone == "" {
 		return EditErrorMsg("Số điện thoại")
 	}
-	if m.District == "" || m.DistrictCode == "" {
+	if m.District == "" && m.DistrictCode == "" {
 		return EditErrorMsg("Quận/Huyện")
 	}
-	if m.Ward == "" || m.WardCode == "" {
+	if m.Ward == "" && m.WardCode == "" {
 		return EditErrorMsg("Phường/Xã")
 	}
-	if m.Province == "" || m.ProvinceCode == "" {
+	if m.Province == "" && m.ProvinceCode == "" {
 		return EditErrorMsg("Tỉnh")
 	}
 	if m.AccountID == 0 {
@@ -130,17 +130,17 @@ func (m *UpdateAddressArgs) Validate() (isUpdateLocation int, err error) {
 	}
 
 	if m.District != "" || m.DistrictCode != "" || m.Ward != "" || m.WardCode != "" || m.Address1 != "" || m.ProvinceCode != "" || m.Province != "" {
-		if m.District == "" || m.DistrictCode == "" {
+		if m.District == "" && m.DistrictCode == "" {
 			return 0, EditErrorMsg("Quận/Huyện")
 		}
-		if m.Ward == "" || m.WardCode == "" {
+		if m.Ward == "" && m.WardCode == "" {
 			return 0, EditErrorMsg("Phường/Xã")
 		}
 		if m.Address1 == "" {
 			return 0, EditErrorMsg("Địa chỉ cụ thể")
 		}
 
-		if m.Province == "" || m.ProvinceCode == "" {
+		if m.Province == "" && m.ProvinceCode == "" {
 			return 0, EditErrorMsg("Tỉnh")
 		}
 		return 1, nil
