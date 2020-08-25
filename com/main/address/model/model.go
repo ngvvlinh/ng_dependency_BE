@@ -18,12 +18,13 @@ type Address struct {
 	Position  string `json:"position"`
 	Email     string `json:"email"`
 
-	Country  string `json:"country"`
-	City     string `json:"city"`
-	Province string `json:"province"`
-	District string `json:"district"`
-	Ward     string `json:"ward"` // Ward may be non-empty while WardCode is empty
-	Zip      string `json:"zip"`
+	Country   string `json:"country"`
+	City      string `json:"city"`
+	Province  string `json:"province"`
+	District  string `json:"district"`
+	Ward      string `json:"ward"` // Ward may be non-empty while WardCode is empty
+	Zip       string `json:"zip"`
+	IsDefault bool   `json:"is_default"`
 
 	DistrictCode string `json:"district_code"`
 	ProvinceCode string `json:"province_code"`

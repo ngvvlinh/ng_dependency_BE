@@ -15,6 +15,7 @@ type Aggregate interface {
 	CreateAddress(context.Context, *CreateAddressArgs) (*Address, error)
 	UpdateAddress(context.Context, *UpdateAddressArgs) (*Address, error)
 	RemoveAddress(context.Context, *DeleteAddressArgs) error
+	UpdateDefaultAddress(context.Context, *UpdateDefaulAddressArgs) error
 }
 
 type QueryService interface {
@@ -147,6 +148,28 @@ func (m *UpdateAddressArgs) Validate() (isUpdateLocation int, err error) {
 	}
 
 	return 0, nil
+}
+
+type UpdateDefaulAddressArgs struct {
+	ShopID    dot.ID
+	Type      string
+	AddressID dot.ID
+}
+
+func (m *UpdateDefaulAddressArgs) Validate() error {
+	if m.ShopID == 0 {
+		return EditErrorMsg("ShopID")
+	}
+
+	if m.AddressID == 0 {
+		return EditErrorMsg("AddressID")
+	}
+
+	if m.Type == "" {
+		return EditErrorMsg("Type")
+	}
+
+	return nil
 }
 
 func EditErrorMsg(str string) error {

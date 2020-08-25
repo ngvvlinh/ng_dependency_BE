@@ -30,6 +30,7 @@ type AccountService struct {
 	IdentityAggr  identity.CommandBus
 	IdentityQuery identity.QueryBus
 	AddressQuery  address.QueryBus
+	AddressAggr   address.CommandBus
 }
 
 func (s *AccountService) Clone() api.AccountService { res := *s; return &res }
@@ -139,17 +140,18 @@ func (s *AccountService) DeleteShop(ctx context.Context, q *pbcm.IDRequest) (*pb
 }
 
 func (s *AccountService) SetDefaultAddress(ctx context.Context, q *apietop.SetDefaultAddressRequest) (*pbcm.UpdatedResponse, error) {
-	cmd := &identitymodelx.SetDefaultAddressShopCommand{
+	cmdSetDefaultAddress := &address.UpdateDefaultAddressCommand{
 		ShopID:    s.SS.Shop().ID,
 		Type:      q.Type.String(),
 		AddressID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+
+	if err := s.AddressAggr.Dispatch(ctx, cmdSetDefaultAddress); err != nil {
 		return nil, err
 	}
 
 	result := &pbcm.UpdatedResponse{
-		Updated: cmd.Result.Updated,
+		Updated: 1,
 	}
 
 	return result, nil

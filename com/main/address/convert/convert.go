@@ -76,6 +76,7 @@ func Address(in *model.Address) (out *address.Address) {
 		AccountID:    in.AccountID,
 		CreatedAt:    in.CreatedAt,
 		UpdatedAt:    in.UpdatedAt,
+		IsDefault:    in.IsDefault,
 		Notes:        Convert_addressmodel_AddressNote_address_AddressNote(in.Notes, nil),
 		Coordinates:  Coordinates(in.Coordinates),
 	}

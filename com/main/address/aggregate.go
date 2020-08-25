@@ -11,6 +11,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	"o.o/capi"
 	"o.o/common/l"
@@ -21,6 +22,7 @@ var _ address.Aggregate = &Aggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type Aggregate struct {
+	db         *cmsql.Database
 	store      sqlstore.AddressFactory
 	eventBus   capi.EventBus
 	locationQS location.QueryBus
@@ -32,6 +34,7 @@ func NewAggregateAddress(
 	locationQS location.QueryBus,
 ) *Aggregate {
 	return &Aggregate{
+		db:         db,
 		eventBus:   bus,
 		store:      sqlstore.NewAddressStore(db),
 		locationQS: locationQS,
@@ -96,9 +99,60 @@ func (a *Aggregate) CreateAddress(ctx context.Context, args *address.CreateAddre
 		return nil, err
 	}
 
-	err := a.store(ctx).CreateAddress(addressCore)
+	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		err := a.store(ctx).CreateAddress(addressCore)
+		if err != nil {
+			return err
+		}
+		// send event update default address
+		event := &address.AddressCreatedEvent{
+			AccountID: addressCore.AccountID,
+			ID:        addressCore.ID,
+			Type:      addressCore.Type,
+		}
 
-	return addressCore, err
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return addressCore, nil
+}
+
+func (a *Aggregate) UpdateDefaultAddress(ctx context.Context, args *address.UpdateDefaulAddressArgs) error {
+	if err := args.Validate(); err != nil {
+		return err
+	}
+
+	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		addr, err := a.store(ctx).Type(args.Type).AccountID(args.ShopID).IsDefault(true).Get()
+		if err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+
+		if addr != nil && addr.ID != args.AddressID {
+			if _, err := a.store(ctx).ID(addr.ID).AccountID(args.ShopID).Type(args.Type).UpdateDefault(false); err != nil {
+				return err
+			}
+		}
+		if _, err := a.store(ctx).ID(args.AddressID).AccountID(args.ShopID).Type(args.Type).UpdateDefault(true); err != nil {
+			return err
+		}
+		if err := a.eventBus.Publish(ctx, &address.AddressDefaultUpdatedEvent{
+			ID:                args.ShopID,
+			ShipFromAddressID: args.AddressID,
+		}); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *Aggregate) UpdateAddress(ctx context.Context, args *address.UpdateAddressArgs) (*address.Address, error) {
@@ -134,5 +188,15 @@ func (a *Aggregate) RemoveAddress(ctx context.Context, q *address.DeleteAddressA
 	if err := q.Validate(); err != nil {
 		return err
 	}
+
+	addr, err := a.store(ctx).ID(q.ID).Get()
+	if err != nil {
+		return err
+	}
+
+	if addr.IsDefault == true {
+		return cm.Error(cm.InvalidArgument, "Không được xóa địa chỉ mặc định", nil)
+	}
+
 	return a.store(ctx).ID(q.ID).AccountID(q.AccountID).Delete()
 }

@@ -20,6 +20,8 @@ func (ft *AddressFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
+const tableName = "address"
+
 var ll = l.New()
 var scheme = conversion.Build(convert.RegisterConversions)
 
@@ -46,8 +48,18 @@ func (s *AddressStore) ID(id dot.ID) *AddressStore {
 	return s
 }
 
+func (s *AddressStore) Type(typeAddress string) *AddressStore {
+	s.preds = append(s.preds, s.ft.ByType(typeAddress))
+	return s
+}
+
 func (s *AddressStore) AccountID(id dot.ID) *AddressStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
+	return s
+}
+
+func (s *AddressStore) IsDefault(isDefault bool) *AddressStore {
+	s.preds = append(s.preds, s.ft.ByIsDefault(isDefault))
 	return s
 }
 
@@ -77,6 +89,16 @@ func (s *AddressStore) Update(address *address.Address) error {
 	return query.ShouldUpdate(addressDB)
 }
 
+func (s *AddressStore) UpdateDefault(isDefault bool) (*address.Address, error) {
+	if _, err := s.query().Where(s.preds).Table(tableName).UpdateMap(map[string]interface{}{
+		"is_default": isDefault,
+	}); err != nil {
+		return nil, err
+	}
+
+	return s.Get()
+}
+
 func (s *AddressStore) Delete() error {
 	query := s.query().Where(s.preds)
 	if deleted, err := query.Delete(&model.Address{}); err != nil {
@@ -92,7 +114,6 @@ func (s *AddressStore) Delete() error {
 }
 
 func (s *AddressStore) GetDB() (*model.Address, error) {
-
 	var addressModel model.Address
 	err := s.query().Where(s.preds).ShouldGet(&addressModel)
 	return &addressModel, err

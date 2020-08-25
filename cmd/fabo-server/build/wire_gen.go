@@ -239,6 +239,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		IdentityAggr:  commandBus,
 		IdentityQuery: queryBus,
 		AddressQuery:  addressQueryBus,
+		AddressAggr:   addressCommandBus,
 	}
 	collectionService := &collection.CollectionService{
 		Session:      session,
@@ -464,7 +465,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	handlerHandler := handler.New(consumer, kafka)
 	publisherPublisher := publisher.New(eventStream)
 	processManager := pm.New(busBus, catalogQueryBus, catalogCommandBus)
-	pmProcessManager := pm2.New(busBus, queryBus, invitationQueryBus)
+	pmProcessManager := pm2.New(busBus, queryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus)
 	affiliateCommandBus := _wireCommandBusValue
 	processManager2 := pm3.New(busBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus)
 	processManager3 := pm4.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus)

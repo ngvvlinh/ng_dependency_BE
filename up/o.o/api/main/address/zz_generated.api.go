@@ -103,6 +103,19 @@ func (h AggregateHandler) HandleUpdateAddress(ctx context.Context, msg *UpdateAd
 	return err
 }
 
+type UpdateDefaultAddressCommand struct {
+	ShopID    dot.ID
+	Type      string
+	AddressID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateDefaultAddress(ctx context.Context, msg *UpdateDefaultAddressCommand) (err error) {
+	return h.inner.UpdateDefaultAddress(msg.GetArgs(ctx))
+}
+
 type GetAddressByIDQuery struct {
 	ID dot.ID
 
@@ -127,9 +140,10 @@ func (h QueryServiceHandler) HandleListAddresses(ctx context.Context, msg *ListA
 
 // implement interfaces
 
-func (q *CreateAddressCommand) command() {}
-func (q *RemoveAddressCommand) command() {}
-func (q *UpdateAddressCommand) command() {}
+func (q *CreateAddressCommand) command()        {}
+func (q *RemoveAddressCommand) command()        {}
+func (q *UpdateAddressCommand) command()        {}
+func (q *UpdateDefaultAddressCommand) command() {}
 
 func (q *GetAddressByIDQuery) query() {}
 func (q *ListAddressesQuery) query()  {}
@@ -257,6 +271,21 @@ func (q *UpdateAddressCommand) SetUpdateAddressArgs(args *UpdateAddressArgs) {
 	q.Coordinates = args.Coordinates
 }
 
+func (q *UpdateDefaultAddressCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateDefaulAddressArgs) {
+	return ctx,
+		&UpdateDefaulAddressArgs{
+			ShopID:    q.ShopID,
+			Type:      q.Type,
+			AddressID: q.AddressID,
+		}
+}
+
+func (q *UpdateDefaultAddressCommand) SetUpdateDefaulAddressArgs(args *UpdateDefaulAddressArgs) {
+	q.ShopID = args.ShopID
+	q.Type = args.Type
+	q.AddressID = args.AddressID
+}
+
 func (q *GetAddressByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAddressByIDQueryArgs) {
 	return ctx,
 		&GetAddressByIDQueryArgs{
@@ -288,6 +317,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateAddress)
 	b.AddHandler(h.HandleRemoveAddress)
 	b.AddHandler(h.HandleUpdateAddress)
+	b.AddHandler(h.HandleUpdateDefaultAddress)
 	return CommandBus{b}
 }
 

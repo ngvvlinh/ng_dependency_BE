@@ -19,7 +19,10 @@ import (
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
+	"o.o/common/l"
 )
+
+var ll = l.New()
 
 var _ identity.Aggregate = &Aggregate{}
 
@@ -467,4 +470,9 @@ func (a *Aggregate) UpdateUserRef(ctx context.Context, args *identity.UpdateUser
 	}
 
 	return userRef, nil
+}
+
+func (a *Aggregate) UpdateShipFromAddressID(ctx context.Context, args *identity.UpdateShipFromAddressArgs) error {
+	_, err := a.shopStore(ctx).ByID(args.ID).UpdateShipFromAddressID(args.ShipFromAddressID)
+	return err
 }

@@ -10,6 +10,8 @@ import (
 	"o.o/common/jsonx"
 )
 
+// +gen:event:topic=event/defaultaddress
+
 type Address struct {
 	ID           dot.ID
 	FullName     string
@@ -30,6 +32,7 @@ type Address struct {
 	Company      string
 	Address1     string
 	Address2     string
+	IsDefault    bool
 	Type         addresstype.AddressType
 	AccountID    dot.ID
 	CreatedAt    time.Time `sq:"create"`
@@ -98,4 +101,15 @@ func (a *Address) GetFullAddress() string {
 		b.WriteString(a.Province)
 	}
 	return b.String()
+}
+
+type AddressCreatedEvent struct {
+	ID        dot.ID
+	AccountID dot.ID
+	Type      addresstype.AddressType
+}
+
+type AddressDefaultUpdatedEvent struct {
+	ID                dot.ID
+	ShipFromAddressID dot.ID
 }

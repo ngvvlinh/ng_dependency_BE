@@ -194,3 +194,10 @@ func (s *ShopStore) ByShopIDs(ids ...dot.ID) *ShopStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.shopFt.prefix, "id", ids))
 	return s
 }
+
+func (s *ShopStore) UpdateShipFromAddressID(shipFromAddressID dot.ID) (int, error) {
+	return s.query().Where(s.preds).Table("shop").UpdateMap(
+		map[string]interface{}{
+			"ship_from_address_id": shipFromAddressID,
+		})
+}

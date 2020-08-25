@@ -4,8 +4,10 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/address"
 	"o.o/api/main/identity"
 	"o.o/api/main/invitation"
+	"o.o/api/top/types/etc/address_type"
 	"o.o/backend/com/main/authorization/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
@@ -16,16 +18,25 @@ import (
 type ProcessManager struct {
 	identityQuery   identity.QueryBus
 	invitationQuery invitation.QueryBus
+	addressQuery    address.QueryBus
+	addressAggr     address.CommandBus
+	identityAggr    identity.CommandBus
 }
 
 func New(
 	eventBus bus.EventRegistry,
 	identityQ identity.QueryBus,
+	identityAggr identity.CommandBus,
 	invitationQ invitation.QueryBus,
+	addressQuery address.QueryBus,
+	addressAggr address.CommandBus,
 ) *ProcessManager {
 	p := &ProcessManager{
 		identityQuery:   identityQ,
 		invitationQuery: invitationQ,
+		addressQuery:    addressQuery,
+		addressAggr:     addressAggr,
+		identityAggr:    identityAggr,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -33,6 +44,8 @@ func New(
 
 func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.InvitationAccepted)
+	eventBus.AddEventListener(m.AddressCreated)
+	eventBus.AddEventListener(m.DefaultAddressUpdated)
 }
 
 func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitation.InvitationAcceptedEvent) error {
@@ -104,5 +117,82 @@ func (m *ProcessManager) createAccountUserWithRoles(
 	if err := bus.Dispatch(ctx, createAccountUserCmd); err != nil {
 		return err
 	}
+	return nil
+}
+
+/**
+ *	This handle event address was created
+ *	Update ship_from_address_id if this field of shop not exist
+ */
+func (m *ProcessManager) AddressCreated(ctx context.Context, event *address.AddressCreatedEvent) error {
+	if event == nil {
+		return nil
+	}
+	// accept only type ship from
+	if event.Type != address_type.Shipfrom {
+		return nil
+	}
+
+	cmd := &identity.GetShopByIDQuery{
+		ID: event.AccountID,
+	}
+	if err := m.identityQuery.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	if cmd.Result == nil || cmd.Result.ShipFromAddressID != 0 {
+		return nil
+	}
+
+	// get address info
+	cmdAddress := &address.GetAddressByIDQuery{
+		ID: event.ID,
+	}
+	if err := m.addressQuery.Dispatch(ctx, cmdAddress); err != nil {
+		return err
+	}
+	addressInfo := cmdAddress.Result
+
+	if addressInfo.IsDefault == true { // update ShopFromAddressID of shop
+		if err := m.identityAggr.Dispatch(ctx, &identity.UpdateShipFromAddressIDCommand{
+			ID:                addressInfo.AccountID,
+			ShipFromAddressID: addressInfo.ID,
+		}); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if err := m.addressAggr.Dispatch(ctx, &address.UpdateDefaultAddressCommand{
+		ShopID:    event.AccountID,
+		AddressID: addressInfo.ID,
+		Type:      address_type.Shipfrom.String(),
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ProcessManager) DefaultAddressUpdated(ctx context.Context, event *address.AddressDefaultUpdatedEvent) error {
+	if event.ID == 0 || event.ShipFromAddressID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Thông tin update ship_from_address_id không hợp lệ")
+	}
+
+	cmd := &identity.GetShopByIDQuery{
+		ID: event.ID,
+	}
+
+	if err := m.identityQuery.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	cmdUpdateShipFromAddressID := &identity.UpdateShipFromAddressIDCommand{
+		ID:                event.ID,
+		ShipFromAddressID: event.ShipFromAddressID,
+	}
+
+	if err := m.identityAggr.Dispatch(ctx, cmdUpdateShipFromAddressID); err != nil {
+		return err
+	}
+
 	return nil
 }

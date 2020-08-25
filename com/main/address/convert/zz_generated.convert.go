@@ -140,6 +140,7 @@ func convert_addressmodel_Address_address_Address(arg *addressmodel.Address, out
 	out.Company = arg.Company           // simple assign
 	out.Address1 = arg.Address1         // simple assign
 	out.Address2 = arg.Address2         // simple assign
+	out.IsDefault = arg.IsDefault       // simple assign
 	out.Type = 0                        // types do not match
 	out.AccountID = arg.AccountID       // simple assign
 	out.CreatedAt = arg.CreatedAt       // simple assign
@@ -178,6 +179,7 @@ func convert_address_Address_addressmodel_Address(arg *address.Address, out *add
 	out.District = arg.District         // simple assign
 	out.Ward = arg.Ward                 // simple assign
 	out.Zip = arg.Zip                   // simple assign
+	out.IsDefault = arg.IsDefault       // simple assign
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.ProvinceCode = arg.ProvinceCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign
@@ -236,6 +238,7 @@ func apply_address_CreateAddressArgs_address_Address(arg *address.CreateAddressA
 	out.Company = arg.Company           // simple assign
 	out.Address1 = arg.Address1         // simple assign
 	out.Address2 = arg.Address2         // simple assign
+	out.IsDefault = false               // zero value
 	out.Type = arg.Type                 // simple assign
 	out.AccountID = arg.AccountID       // simple assign
 	out.CreatedAt = time.Time{}         // zero value
@@ -275,6 +278,7 @@ func apply_address_UpdateAddressArgs_address_Address(arg *address.UpdateAddressA
 	out.Company = arg.Company           // simple assign
 	out.Address1 = arg.Address1         // simple assign
 	out.Address2 = arg.Address2         // simple assign
+	out.IsDefault = out.IsDefault       // no change
 	out.Type = arg.Type                 // simple assign
 	out.AccountID = arg.AccountID       // simple assign
 	out.CreatedAt = out.CreatedAt       // no change
@@ -377,6 +381,7 @@ func convert_orderingtypes_Address_addressmodel_Address(arg *orderingtypes.Addre
 	out.District = ""           // zero value
 	out.Ward = ""               // zero value
 	out.Zip = ""                // zero value
+	out.IsDefault = false       // zero value
 	out.DistrictCode = ""       // zero value
 	out.ProvinceCode = ""       // zero value
 	out.WardCode = ""           // zero value

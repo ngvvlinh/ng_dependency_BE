@@ -344,6 +344,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityAggr:  commandBus,
 		IdentityQuery: identityQueryBus,
 		AddressQuery:  addressQueryBus,
+		AddressAggr:   addressCommandBus,
 	}
 	collectionService := &collection.CollectionService{
 		Session:      session,
@@ -988,7 +989,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	webhook8 := webhook5.New(mainDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, shippingwebhookAggregate)
 	ahamoveWebhookServer := server2.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, identityQueryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook8)
 	v6 := BuildServers(mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
-	processManager := pm.New(busBus, identityQueryBus, invitationQueryBus)
+	processManager := pm.New(busBus, identityQueryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus)
 	pmProcessManager := pm2.New(busBus, catalogQueryBus, orderingQueryBus, inventoryCommandBus)
 	processManager2 := pm3.New(busBus, invitationQueryBus, invitationCommandBus)
 	processManager3 := pm4.New(busBus, catalogQueryBus, catalogCommandBus)

@@ -345,7 +345,7 @@ func TestLoginAndRegistration(t *testing.T) {
 	t.Run("create address with shop account", func(t *testing.T) {
 		req := M{}
 
-		req["type"] = "shipfrom"
+		req["type"] = "general"
 		req["phone"] = "+840973218967-1-test"
 		req["ward_code"] = "27322"
 		req["district_code"] = "774"
@@ -385,14 +385,14 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, respCreateAddress["phone"], "0973218967-1-test")
 		assert.Equal(t, respCreateAddress["district"], "Quận 5")
 		assert.Equal(t, respCreateAddress["district_code"], "774")
-		assert.Equal(t, respCreateAddress["type"], "shipfrom")
+		assert.Equal(t, respCreateAddress["type"], "general")
 		assert.Equal(t, respCreateAddress["full_name"], "xxxx")
 	})
 
 	t.Run("update address (only full name) info with shop account", func(t *testing.T) {
 		req := M{}
 		req["id"] = addressId
-		req["type"] = "shipfrom"
+		req["type"] = "general"
 		req["full_name"] = "yyyyyyyyyyyyyyyyyyyy"
 
 		var respUpdateAddress map[string]interface{}
@@ -416,13 +416,13 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, respUpdateAddress["phone"], "0973218967-1-test")
 		assert.Equal(t, respUpdateAddress["district"], "Quận 5")
 		assert.Equal(t, respUpdateAddress["district_code"], "774")
-		assert.Equal(t, respUpdateAddress["type"], "shipfrom")
+		assert.Equal(t, respUpdateAddress["type"], "general")
 	})
 
 	t.Run("update address info with shop account", func(t *testing.T) {
 		req := M{}
 		req["id"] = addressId
-		req["type"] = "shipfrom"
+		req["type"] = "general"
 		req["phone"] = "+840973218967-2-test"
 		req["full_name"] = "zzzzzzzzzzzzzzzzzzz"
 
@@ -447,7 +447,7 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, respUpdateAddress["phone"], "0973218967-2-test")
 		assert.Equal(t, respUpdateAddress["district"], "Quận 5")
 		assert.Equal(t, respUpdateAddress["district_code"], "774")
-		assert.Equal(t, respUpdateAddress["type"], "shipfrom")
+		assert.Equal(t, respUpdateAddress["type"], "general")
 	})
 
 	t.Run("get address with shop account", func(t *testing.T) {

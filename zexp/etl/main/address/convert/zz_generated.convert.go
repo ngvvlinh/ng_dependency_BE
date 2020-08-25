@@ -104,6 +104,7 @@ func convert_addressmodel1_Address_addressmodel_Address(arg *addressmodel1.Addre
 	out.District = arg.District         // simple assign
 	out.Ward = arg.Ward                 // simple assign
 	out.Zip = arg.Zip                   // simple assign
+	out.IsDefault = false               // zero value
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.ProvinceCode = arg.ProvinceCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign

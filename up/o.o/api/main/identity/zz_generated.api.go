@@ -153,6 +153,18 @@ func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerification(ctx con
 	return err
 }
 
+type UpdateShipFromAddressIDCommand struct {
+	ID                dot.ID
+	ShipFromAddressID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShipFromAddressID(ctx context.Context, msg *UpdateShipFromAddressIDCommand) (err error) {
+	return h.inner.UpdateShipFromAddressID(msg.GetArgs(ctx))
+}
+
 type UpdateUserEmailCommand struct {
 	UserID dot.ID
 	Email  string
@@ -505,6 +517,7 @@ func (q *UnblockUserCommand) command()                              {}
 func (q *UpdateAffiliateBankAccountCommand) command()               {}
 func (q *UpdateAffiliateInfoCommand) command()                      {}
 func (q *UpdateExternalAccountAhamoveVerificationCommand) command() {}
+func (q *UpdateShipFromAddressIDCommand) command()                  {}
 func (q *UpdateUserEmailCommand) command()                          {}
 func (q *UpdateUserPhoneCommand) command()                          {}
 func (q *UpdateUserRefCommand) command()                            {}
@@ -681,6 +694,19 @@ func (q *UpdateExternalAccountAhamoveVerificationCommand) SetUpdateExternalAccou
 	q.FanpageURL = args.FanpageURL
 	q.CompanyImgs = args.CompanyImgs
 	q.BusinessLicenseImgs = args.BusinessLicenseImgs
+}
+
+func (q *UpdateShipFromAddressIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipFromAddressArgs) {
+	return ctx,
+		&UpdateShipFromAddressArgs{
+			ID:                q.ID,
+			ShipFromAddressID: q.ShipFromAddressID,
+		}
+}
+
+func (q *UpdateShipFromAddressIDCommand) SetUpdateShipFromAddressArgs(args *UpdateShipFromAddressArgs) {
+	q.ID = args.ID
+	q.ShipFromAddressID = args.ShipFromAddressID
 }
 
 func (q *UpdateUserEmailCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, email string) {
@@ -999,6 +1025,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
 	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerification)
+	b.AddHandler(h.HandleUpdateShipFromAddressID)
 	b.AddHandler(h.HandleUpdateUserEmail)
 	b.AddHandler(h.HandleUpdateUserPhone)
 	b.AddHandler(h.HandleUpdateUserRef)

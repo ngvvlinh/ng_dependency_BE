@@ -272,6 +272,25 @@ func (ft *AddressFilters) ByZipPtr(Zip *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *AddressFilters) ByIsDefault(IsDefault bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "is_default",
+		Value:  IsDefault,
+		IsNil:  bool(!IsDefault),
+	}
+}
+
+func (ft *AddressFilters) ByIsDefaultPtr(IsDefault *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "is_default",
+		Value:  IsDefault,
+		IsNil:  IsDefault == nil,
+		IsZero: IsDefault != nil && bool(!(*IsDefault)),
+	}
+}
+
 func (ft *AddressFilters) ByDistrictCode(DistrictCode string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
