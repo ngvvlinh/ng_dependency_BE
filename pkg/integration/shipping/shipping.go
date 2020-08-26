@@ -13,6 +13,7 @@ import (
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/shipping"
+	shipping_state "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
 	locationutil "o.o/backend/com/main/location/util"
@@ -126,41 +127,41 @@ func CalcDeliveryTime(shippingProvider shipping_provider.ShippingProvider, toDis
 func CalcOtherTimeBaseOnState(update *shipmodel.Fulfillment, oldFfm *shipmodel.Fulfillment, t time.Time) *shipmodel.Fulfillment {
 	state := update.ShippingState
 	switch state {
-	case shipping.Created:
+	case shipping_state.Created:
 		if oldFfm.ShippingCreatedAt.IsZero() {
 			update.ShippingCreatedAt = t
 		}
-	case shipping.Picking:
+	case shipping_state.Picking:
 		if oldFfm.ShippingPickingAt.IsZero() {
 			update.ShippingPickingAt = t
 		}
-	case shipping.Holding:
+	case shipping_state.Holding:
 		if oldFfm.ShippingHoldingAt.IsZero() {
 			update.ShippingHoldingAt = t
 		}
-	case shipping.Delivering:
+	case shipping_state.Delivering:
 		if oldFfm.ShippingDeliveringAt.IsZero() {
 			update.ShippingDeliveringAt = t
 		}
-	case shipping.Delivered:
+	case shipping_state.Delivered:
 		if oldFfm.ExternalShippingDeliveredAt.IsZero() {
 			update.ExternalShippingDeliveredAt = t
 		}
 		if oldFfm.ShippingDeliveredAt.IsZero() {
 			update.ShippingDeliveredAt = t
 		}
-	case shipping.Returning:
+	case shipping_state.Returning:
 		if oldFfm.ShippingReturningAt.IsZero() {
 			update.ShippingReturningAt = t
 		}
-	case shipping.Returned:
+	case shipping_state.Returned:
 		if oldFfm.ExternalShippingReturnedAt.IsZero() {
 			update.ExternalShippingReturnedAt = t
 		}
 		if oldFfm.ShippingReturnedAt.IsZero() {
 			update.ShippingReturnedAt = t
 		}
-	case shipping.Cancelled:
+	case shipping_state.Cancelled:
 		if oldFfm.ExternalShippingCancelledAt.IsZero() {
 			update.ExternalShippingCancelledAt = t
 		}
@@ -177,7 +178,7 @@ func CanUpdateFulfillment(ffm *shipmodel.Fulfillment) bool {
 		ffm.Status == status5.S ||
 
 		// returning has status -2 (NS) and we allow updating it via webhook
-		ffm.ShippingState == shipping.Returning
+		ffm.ShippingState == shipping_state.Returning
 }
 
 func CanUpdateFulfillmentFeelines(ffm *shipmodel.Fulfillment) bool {
@@ -259,18 +260,27 @@ func UpdateShippingFeeLines(ctx context.Context, shippingAggr shippingcore.Comma
 }
 
 type UpdateFfmCODAmountArgs struct {
-	NewCODAmount int
-	Ffm          *shipmodel.Fulfillment
-	CarrierName  string
+	NewCODAmount  int
+	Ffm           *shipmodel.Fulfillment
+	CarrierName   string
+	ShippingState shipping_state.State
 }
 
 // ValidateAndUpdateFulfillmentCOD
 //
 // Cập nhật COD Amount (chỉ sử dụng khi nhận webhook)
 // Nếu phát sinh lỗi, bắn ra telegram để thông báo, không trả về lỗi
+// - Trường hợp đơn trả hàng (returning, returned):
+//      - NVC cập nhật COD = 0
+//      - TOPSHIP chỉ cập nhật trạng thái, không thay đổi COD
+//    => Trường hợp này không bắn noti telegram
 func ValidateAndUpdateFulfillmentCOD(ctx context.Context, shippingAggr shippingcore.CommandBus, args *UpdateFfmCODAmountArgs) {
 	newCODAmount := args.NewCODAmount
 	ffm := args.Ffm
+	if shippingcore.IsStateReturn(args.ShippingState) && newCODAmount == 0 {
+		// Không cập nhật
+		return
+	}
 	if newCODAmount != ffm.TotalCODAmount {
 		switch ffm.ConnectionMethod {
 		case connection_type.ConnectionMethodDirect:

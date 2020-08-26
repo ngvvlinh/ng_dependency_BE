@@ -782,7 +782,7 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 		AdditionalFeeTypes: nil,
 	}
 
-	if args.NewWeight != ffm.ChargeableWeight {
+	if args.NewWeight != 0 && args.NewWeight != ffm.ChargeableWeight {
 		calcFeeResp, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 		if err != nil {
 			return err

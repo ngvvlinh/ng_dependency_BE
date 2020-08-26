@@ -93,9 +93,10 @@ func (wh *Webhook) Callback(ctx context.Context, args *partnercarrier.UpdateFulf
 
 		if args.CODAmount.Valid {
 			updateCODAmountArgs := &shipping.UpdateFfmCODAmountArgs{
-				NewCODAmount: args.CODAmount.Int,
-				Ffm:          ffm,
-				CarrierName:  conn.Name,
+				NewCODAmount:  args.CODAmount.Int,
+				Ffm:           ffm,
+				CarrierName:   conn.Name,
+				ShippingState: args.ShippingState.Apply(0),
 			}
 			// update COD Amount
 			shipping.ValidateAndUpdateFulfillmentCOD(ctx, wh.shippingAggr, updateCODAmountArgs)

@@ -143,9 +143,10 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 
 		// updateCOD
 		updateCODAmountArgs := &shipping.UpdateFfmCODAmountArgs{
-			NewCODAmount: msg.CODAmount.Int(),
-			Ffm:          ffm,
-			CarrierName:  shipping_provider.GHN.String(),
+			NewCODAmount:  msg.CODAmount.Int(),
+			Ffm:           ffm,
+			CarrierName:   shipping_provider.GHN.String(),
+			ShippingState: updateFfm.ShippingState,
 		}
 		shipping.ValidateAndUpdateFulfillmentCOD(ctx, wh.shippingAggr, updateCODAmountArgs)
 
