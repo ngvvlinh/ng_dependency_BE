@@ -73,6 +73,7 @@ func NewServers(
 	purchaseRefundService *purchase_refund.PurchaseRefundService,
 	webServerService *ws.WebServerService,
 	subscriptionService *subscription.SubscriptionService,
+	ticketService *shop.TicketService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -114,6 +115,7 @@ func NewServers(
 		supplierService.Clone,
 		tradingService.Clone,
 		webServerService.Clone,
+		ticketService.Clone,
 	)
 	return servers
 }

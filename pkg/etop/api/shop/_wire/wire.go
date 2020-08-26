@@ -74,4 +74,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(supplier.SupplierService), "*"),
 	wire.Struct(new(trading.TradingService), "*"),
 	wire.Struct(new(ws.WebServerService), "*"),
+	wire.Struct(new(shop.TicketService), "*"),
 )

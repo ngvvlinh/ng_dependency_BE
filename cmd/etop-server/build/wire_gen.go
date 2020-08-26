@@ -28,7 +28,7 @@ import (
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	"o.o/backend/com/etc/logging/smslog/aggregate"
 	manager2 "o.o/backend/com/external/payment/manager"
-	aggregate19 "o.o/backend/com/external/payment/payment/aggregate"
+	aggregate20 "o.o/backend/com/external/payment/payment/aggregate"
 	vtpay2 "o.o/backend/com/external/payment/vtpay"
 	aggregate21 "o.o/backend/com/external/payment/vtpay/gateway/aggregate"
 	"o.o/backend/com/external/payment/vtpay/gateway/server"
@@ -54,7 +54,7 @@ import (
 	pm5 "o.o/backend/com/main/ledgering/pm"
 	query18 "o.o/backend/com/main/ledgering/query"
 	"o.o/backend/com/main/location"
-	aggregate18 "o.o/backend/com/main/moneytx/aggregate"
+	aggregate19 "o.o/backend/com/main/moneytx/aggregate"
 	pm6 "o.o/backend/com/main/moneytx/pm"
 	query16 "o.o/backend/com/main/moneytx/query"
 	"o.o/backend/com/main/ordering"
@@ -103,7 +103,7 @@ import (
 	"o.o/backend/com/subscripting/subscriptionplan"
 	"o.o/backend/com/subscripting/subscriptionproduct"
 	query17 "o.o/backend/com/summary/query"
-	aggregate20 "o.o/backend/com/supporting/ticket/aggregate"
+	aggregate18 "o.o/backend/com/supporting/ticket/aggregate"
 	query3 "o.o/backend/com/supporting/ticket/query"
 	aggregate17 "o.o/backend/com/web/webserver/aggregate"
 	query19 "o.o/backend/com/web/webserver/query"
@@ -606,7 +606,14 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:           session,
 		SubscriptionQuery: subscriptionQueryBus,
 	}
-	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService)
+	ticketAggregate := aggregate18.NewTicketAggregate(busBus, mainDB, moneytxQueryBus, shippingQueryBus, orderingQueryBus, store)
+	ticketCommandBus := aggregate18.TicketAggregateMessageBus(ticketAggregate)
+	shopTicketService := &shop.TicketService{
+		Session:     session,
+		TicketQuery: ticketQueryBus,
+		TicketAggr:  ticketCommandBus,
+	}
+	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, shopTicketService)
 	adminMiscService := admin.MiscService{
 		Session: session,
 	}
@@ -624,8 +631,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ShippingAggr:  shippingCommandBus,
 		ShippingQuery: shippingQueryBus,
 	}
-	moneyTxAggregate := aggregate18.NewMoneyTxAggregate(mainDB, shippingQueryBus, identityQueryBus, busBus)
-	moneytxCommandBus := aggregate18.MoneyTxAggregateMessageBus(moneyTxAggregate)
+	moneyTxAggregate := aggregate19.NewMoneyTxAggregate(mainDB, shippingQueryBus, identityQueryBus, busBus)
+	moneytxCommandBus := aggregate19.MoneyTxAggregateMessageBus(moneyTxAggregate)
 	adminMoneyTransactionService := admin.MoneyTransactionService{
 		Session:      session,
 		MoneyTxQuery: moneytxQueryBus,
@@ -689,8 +696,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	subscriptionplanCommandBus := subscriptionplan.SubrPlanAggregateMessageBus(subrPlanAggregate)
 	subscriptionAggregate := subscription.NewSubscriptionAggregate(mainDB)
 	subscriptionCommandBus := subscription.SubscriptionAggregateMessageBus(subscriptionAggregate)
-	aggregate25 := aggregate19.NewAggregate(mainDB)
-	paymentCommandBus := aggregate19.AggregateMessageBus(aggregate25)
+	aggregate25 := aggregate20.NewAggregate(mainDB)
+	paymentCommandBus := aggregate20.AggregateMessageBus(aggregate25)
 	subrBillAggregate := subscriptionbill.NewSubrBillAggregate(mainDB, busBus, paymentCommandBus, subscriptionQueryBus, subscriptionplanQueryBus)
 	subscriptionbillCommandBus := subscriptionbill.SubrBillAggregateMessageBus(subrBillAggregate)
 	subrBillQuery := subscriptionbill.NewSubrBillQuery(mainDB)
@@ -711,8 +718,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityQuery: identityQueryBus,
 		IdentityAggr:  commandBus,
 	}
-	ticketAggregate := aggregate20.NewTicketAggregate(busBus, mainDB, moneytxQueryBus, shippingQueryBus, orderingQueryBus, store)
-	ticketCommandBus := aggregate20.TicketAggregateMessageBus(ticketAggregate)
 	adminTicketService := admin.TicketService{
 		Session:        session,
 		TicketQuery:    ticketQueryBus,
