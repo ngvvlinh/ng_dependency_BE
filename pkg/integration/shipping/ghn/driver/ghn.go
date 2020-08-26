@@ -14,7 +14,6 @@ import (
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/try_on"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
-	carrierutil "o.o/backend/com/main/shipping/carrier/types"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
@@ -67,7 +66,8 @@ func (d *GHNDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,
 	args *carriertypes.GetShippingServicesArgs, service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
-	note := carrierutil.GetShippingProviderNote(ffm)
+	// note := carrierutil.GetShippingProviderNote(ffm)
+	note := ffm.ShippingNote
 	noteCode := ffm.TryOn
 	if noteCode == 0 {
 		// harcode

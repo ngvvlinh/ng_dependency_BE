@@ -74,7 +74,8 @@ func (d *GHNDriver) CreateFulfillment(
 	if args.ToWardCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Yêu cầu nhập phường/xã của địa chỉ nhận hàng")
 	}
-	note := carrierutil.GetShippingProviderNote(ffm)
+	// note := carrierutil.GetShippingProviderNote(ffm)
+	note := ffm.ShippingNote
 	noteCode := ffm.TryOn
 	if noteCode == 0 {
 		// harcode

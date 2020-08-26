@@ -64,7 +64,9 @@ func (d *GHTKDriver) CreateFulfillment(
 	ffm *shipmodel.Fulfillment,
 	args *carriertypes.GetShippingServicesArgs,
 	service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
-	note := carrierutil.GetShippingProviderNote(ffm)
+	// note := carrierutil.GetShippingProviderNote(ffm)
+
+	note := ffm.ShippingNote
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
