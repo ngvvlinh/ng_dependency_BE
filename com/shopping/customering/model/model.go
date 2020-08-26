@@ -76,8 +76,8 @@ type ShopTraderAddress struct {
 }
 
 // +sqlgen
-// +sqlgen:           ShopTraderAddress as a
-// +sqlgen:left-join: ShopTraderAddressSearch as b on a.id = b.id
+// +sqlgen:           ShopTraderAddress as sta
+// +sqlgen:left-join: ShopTraderAddressSearch as stas on sta.id = stas.id
 type ShopTraderAddressExtended struct {
 	ShopTraderAddress       *ShopTraderAddress
 	ShopTraderAddressSearch *ShopTraderAddressSearch

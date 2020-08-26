@@ -2209,20 +2209,20 @@ func (m *ShopTraderAddressExtendeds) SQLJoin(w SQLWriter) error {
 
 func (m *ShopTraderAddressExtended) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
-	core.WriteCols(w, "a", (*ShopTraderAddress)(nil).SQLListCols())
+	core.WriteCols(w, "sta", (*ShopTraderAddress)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, "b", (*ShopTraderAddressSearch)(nil).SQLListCols())
+	core.WriteCols(w, "stas", (*ShopTraderAddressSearch)(nil).SQLListCols())
 }
 
 func (m *ShopTraderAddressExtended) __sqlJoin(w SQLWriter) {
 	w.WriteRawString("FROM ")
 	w.WriteName("shop_trader_address")
 	w.WriteRawString(" AS ")
-	w.WriteName("a")
+	w.WriteName("sta")
 	w.WriteRawString(" LEFT JOIN ")
 	w.WriteName((*ShopTraderAddressSearch)(nil).SQLTableName())
-	w.WriteRawString(" AS b ON")
-	w.WriteQueryString(" a.id = b.id")
+	w.WriteRawString(" AS stas ON")
+	w.WriteQueryString(" sta.id = stas.id")
 }
 
 func (m *ShopTraderAddressExtended) SQLScanArgs(opts core.Opts) []interface{} {

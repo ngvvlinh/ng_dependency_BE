@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type AddressStoreFactory func(context.Context) *AddressStore
@@ -26,13 +27,19 @@ func NewAddressStore(db *cmsql.Database) AddressStoreFactory {
 }
 
 type AddressStore struct {
-	ft ShopTraderAddressFilters
-
-	query cmsql.QueryFactory
-	preds []interface{}
+	ft              ShopTraderAddressFilters
+	addressSearchFt ShopTraderAddressSearchFilters
+	query           cmsql.QueryFactory
+	preds           []interface{}
 	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
+}
+
+func (s *AddressStore) extend() *AddressStore {
+	s.ft.prefix = "sta"
+	s.addressSearchFt.prefix = "stas"
+	return s
 }
 
 func (s *AddressStore) WithPaging(paging meta.Paging) *AddressStore {
@@ -168,7 +175,7 @@ func (s *AddressStore) GetAddress() (*addressing.ShopTraderAddress, error) {
 }
 
 func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
-	query := s.query().Where(s.preds)
+	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
 	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
@@ -213,6 +220,11 @@ func (s *AddressStore) IncludeDeleted() *AddressStore {
 }
 
 func (s *AddressStore) SearchPhone(phone string) *AddressStore {
-	s.preds = append(s.preds, s.ft.Filter(`phone_norm @@ ?::tsquery`, phone))
+	s.preds = append(s.preds, s.addressSearchFt.Filter("phone_norm @@ ?::tsquery", phone))
+	return s
+}
+
+func (s *AddressStore) FullTextSearchPhone(phone filter.FullTextSearch) *AddressStore {
+	s.preds = append(s.preds, s.addressSearchFt.Filter("phone_norm @@ ?::tsquery", validate.NormalizeFullTextSearchQueryAnd(phone)))
 	return s
 }

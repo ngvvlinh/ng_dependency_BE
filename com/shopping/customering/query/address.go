@@ -8,6 +8,7 @@ import (
 	"o.o/backend/com/shopping/customering/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 var _ addressing.QueryService = &AddressQuery{}
@@ -85,8 +86,9 @@ func (q *AddressQuery) ListAddresses(ctx context.Context, args *addressing.ListA
 	if args.TraderID != 0 {
 		query = query.TraderID(args.TraderID)
 	}
+
 	if args.Phone != "" {
-		query = query.SearchPhone(args.Phone)
+		query = query.FullTextSearchPhone(filter.FullTextSearch(args.Phone))
 	}
 	addrs, err := query.WithPaging(args.Paging).ListAddresses()
 	if err != nil {
