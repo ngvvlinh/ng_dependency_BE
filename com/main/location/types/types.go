@@ -50,6 +50,7 @@ type Ward struct {
 
 	Code         string
 	DistrictCode string
+	ProvinceCode string
 }
 
 type VTPostWard struct {

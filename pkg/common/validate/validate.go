@@ -554,30 +554,37 @@ func isNumberic(c byte) bool {
 }
 
 func NormalizeUnaccent(s string) string {
+	s = norm.NFC.String(s)
 	return normalizeSearch(s, " ", false, true)
 }
 
 func NormalizeSearch(s string) string {
+	s = norm.NFC.String(s)
 	return normalizeSearch(s, " ", true, true)
 }
 
 func NormalizeSearchCharacter(s string) string {
+	s = norm.NFC.String(s)
 	return normalizeSearchCharacters(normalizeSearch(s, " ", true, true))
 }
 
 func NormalizeSearchSimple(s string) string {
+	s = norm.NFC.String(s)
 	return normalizeSearchSimple(s, " ")
 }
 
 func NormalizeSlug(s string) string {
+	s = norm.NFC.String(s)
 	return normalizeSearchSimple(s, "-")
 }
 
 func NormalizeUnderscore(s string) string {
+	s = norm.NFC.String(s)
 	return normalizeSearchSimple(s, "_")
 }
 
 func NormalizeSearchQueryAnd(s string) string {
+	s = norm.NFC.String(s)
 	return normalizeSearch(s, " & ", true, true)
 }
 
@@ -586,6 +593,7 @@ func NormalizeFullTextSearchQueryAnd(s filter.FullTextSearch) string {
 }
 
 func NormalizeSearchQueryOr(s string) string {
+	s = norm.NFC.String(s)
 	return normalizeSearch(s, " | ", true, true)
 }
 

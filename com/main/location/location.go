@@ -29,18 +29,18 @@ var (
 	provinceIndexName = make(map[string]*types.Province)
 	provinceIndexNamN = make(map[string]*types.Province)
 	provinceIndexNamX = make(map[string]*types.Province)
-	provinceIndexCode = make(map[string]*types.Province)
+	ProvinceIndexCode = make(map[string]*types.Province)
 
 	districtIndexName          = make(map[string][]*types.District)
 	districtIndexNamN          = make(map[string][]*types.District)
 	districtIndexNamX          = make(map[string][]*types.District)
-	districtIndexCode          = make(map[string]*types.District)
+	DistrictIndexCode          = make(map[string]*types.District)
 	districtsIndexProvinceCode = make(map[string][]*types.District)
 
 	wardIndexName          = make(map[string][]*types.Ward)
 	wardIndexNamN          = make(map[string][]*types.Ward)
 	wardIndexNamX          = make(map[string][]*types.Ward)
-	wardIndexCode          = make(map[string]*types.Ward)
+	WardIndexCode          = make(map[string]*types.Ward)
 	wardsIndexDistrictCode = make(map[string][]*types.Ward)
 
 	reNumber           = regexp.MustCompile(`[01-9]+`)
@@ -85,7 +85,7 @@ func init() {
 
 		name := strings.ToLower(province.Name)
 		namN := province.NameNorm
-		namX := validate.NormalizeSearchSimple(normalizeProvince(name))
+		namX := NormalizeProvince(name)
 		provinceIndexName[name] = assignProvince(provinceIndexName[name], province)
 		provinceIndexNamN[namN] = assignProvince(provinceIndexNamN[namN], province)
 		provinceIndexNamX[namX] = assignProvince(provinceIndexNamX[namX], province)
@@ -101,17 +101,17 @@ func init() {
 		for _, alias := range province.Alias {
 			name := strings.ToLower(norm.NFC.String(alias))
 			namN := validate.NormalizeSearchSimple(name)
-			namX := normalizeProvince(namN)
+			namX := NormalizeProvince(namN)
 			provinceIndexName[name] = assignProvince(provinceIndexName[name], province)
 			provinceIndexNamN[namN] = assignProvince(provinceIndexNamN[namN], province)
 			provinceIndexNamX[namX] = assignProvince(provinceIndexNamX[namX], province)
 		}
 
 		code := province.Code
-		if provinceIndexCode[code] != nil {
+		if ProvinceIndexCode[code] != nil {
 			ll.Fatal("Duplicated province code", l.String("code", code))
 		}
-		provinceIndexCode[code] = province
+		ProvinceIndexCode[code] = province
 
 		// init district list as non-nil slice
 		districtsIndexProvinceCode[code] = []*types.District{}
@@ -123,7 +123,7 @@ func init() {
 
 		name := strings.ToLower(district.Name)
 		namN := district.NameNorm
-		namX := normalizeDistrict(namN)
+		namX := NormalizeDistrict(namN)
 		districtIndexName[name] = append(districtIndexName[name], district)
 		districtIndexNamN[namN] = append(districtIndexNamN[namN], district)
 		districtIndexNamX[namX] = append(districtIndexNamX[namX], district)
@@ -151,10 +151,10 @@ func init() {
 		districtsIndexProvinceCode[provinceCode] = append(districtsIndexProvinceCode[provinceCode], district)
 
 		code := district.Code
-		if districtIndexCode[code] != nil {
+		if DistrictIndexCode[code] != nil {
 			ll.Fatal("Duplicated district code", l.String("code", code))
 		}
-		districtIndexCode[code] = district
+		DistrictIndexCode[code] = district
 		for _, codeType := range LocationCodeTypes {
 			_index := district.GetDistrictIndex(codeType)
 			if _index == "" {
@@ -168,12 +168,13 @@ func init() {
 	}
 
 	for _, ward := range list.Wards {
+		ward.ProvinceCode = DistrictIndexCode[ward.DistrictCode].ProvinceCode
 		ward.Name = norm.NFC.String(ward.Name)
 		ward.NameNorm = validate.NormalizeSearchSimple(ward.Name)
 
 		name := strings.ToLower(ward.Name)
 		namN := ward.NameNorm
-		namX := normalizeWard(namN)
+		namX := NormalizeWard(namN)
 		wardIndexName[name] = append(wardIndexName[name], ward)
 		wardIndexNamN[namN] = append(wardIndexNamN[namN], ward)
 		wardIndexNamX[namX] = append(wardIndexNamX[namX], ward)
@@ -190,7 +191,7 @@ func init() {
 		for _, alias := range ward.Alias {
 			name := strings.ToLower(norm.NFC.String(alias))
 			namN := validate.NormalizeSearchSimple(name)
-			namX := normalizeWard(namN)
+			namX := NormalizeWard(namN)
 			wardIndexName[name] = append(wardIndexName[name], ward)
 			wardIndexNamN[namN] = append(wardIndexNamN[namN], ward)
 			wardIndexNamX[namX] = append(wardIndexNamX[namX], ward)
@@ -201,10 +202,10 @@ func init() {
 		wardsIndexDistrictCode[districtCode] = append(wardsIndexDistrictCode[districtCode], ward)
 
 		code := ward.Code
-		if wardIndexCode[code] != nil {
+		if WardIndexCode[code] != nil {
 			ll.Fatal("Duplicated ward code", l.String("code", code))
 		}
-		wardIndexCode[code] = ward
+		WardIndexCode[code] = ward
 		for _, codeType := range LocationCodeTypes {
 			_index := ward.GetWardIndex(codeType)
 			if _index == "" {
@@ -215,7 +216,7 @@ func init() {
 	}
 
 	for _, code := range strings.Split(HCMUrbanCodes, ",") {
-		district := districtIndexCode[code]
+		district := DistrictIndexCode[code]
 		if district == nil {
 			ll.S.Fatal("Invalid urban district code: ", code)
 			panic("unexpected")
@@ -223,7 +224,7 @@ func init() {
 		district.UrbanType = location.Urban
 	}
 	for _, code := range strings.Split(HCMSuburban1Codes, ",") {
-		district := districtIndexCode[code]
+		district := DistrictIndexCode[code]
 		if district == nil {
 			ll.S.Fatal("Invalid suburban 1 district code: ", code)
 			panic("unexpected")
@@ -231,7 +232,7 @@ func init() {
 		district.UrbanType = location.Suburban1
 	}
 	for _, code := range strings.Split(HCMSuburban2Codes, ",") {
-		district := districtIndexCode[code]
+		district := DistrictIndexCode[code]
 		if district == nil {
 			ll.S.Fatal("Invalid suburban 2 district code: ", code)
 			panic("unexpected")
@@ -394,29 +395,24 @@ func NormalizeWard(name string) string {
 	return name
 }
 
+var PrefixProvince = []string{"tinh", "t", "thanh pho", "tp", "t p"}
+var PrefixDistrict = []string{
+	"quan", "q", "huyen dao", "hd", "h d", "huyen", "h",
+	"thanh pho", "tp", "t p", "tp", "thi xa", "tx", "t x",
+}
+var PrefixWard = []string{"phuong", "xa", "p", "x", "thi tran", "tt", "t t"}
+
 func normalizeProvince(name string) string {
-	return normalizePrefix(name,
-		"tỉnh", "thành phố",
-		"tinh", "thanh pho",
-		"tp", "t p",
-	)
+	return normalizePrefix(name, PrefixProvince...)
 }
 
 func normalizeDistrict(name string) string {
-	district := normalizePrefix(name,
-		"quan", "huyen dao", "huyen",
-		"q", "hd", "h d", "h",
-		"thanh pho", "tp", "t p", "tp",
-		"thi xa", "tx", "t x",
-	)
+	district := normalizePrefix(name, PrefixDistrict...)
 	return strings.TrimLeft(district, "0")
 }
 
 func normalizeWard(name string) string {
-	ward := normalizePrefix(name,
-		"phuong", "xa", "p", "x",
-		"thi tran", "tt", "t t", "tx", "t x",
-	)
+	ward := normalizePrefix(name, PrefixWard...)
 	s := strings.TrimLeft(ward, "0")
 	return s
 }
@@ -426,19 +422,19 @@ type Location struct {
 	District *types.District
 	Ward     *types.Ward
 
-	// In case multiple location were found and ambiguous,
-	// this field will contain all location found.
-	// For example, "Huyện Long Mỹ" and "Thị Xã Long Mỹ".
+	// In case multiple locations were found and ambiguous, this field will
+	// contain all locations found. For example, "Huyện Long Mỹ" and "Thị Xã
+	// Long Mỹ".
 	//
-	// If we can find exact ward, we will set AllDistrics to nil (no longer ambiguous).
+	// If we can find exact ward, we will set AllDistricts to nil (no longer
+	// ambiguous).
 	OtherDistricts []*types.District
 }
 
-// FindLocation tries to return location from input address.
-// First, it tries finding by exact name.
-// Then, it tries finding by normalized name.
+// FindLocation tries to return location from input address. First, it tries
+// finding by exact name. Then, it tries finding by normalized name.
 //
-// It always returns non-null Location, but
+// It always returns non-null Location, but each value may be empty
 func FindLocation(province, district, ward string) Location {
 	return findLocation(province, district, ward)
 }
@@ -577,7 +573,7 @@ func findLocation(province, district, ward string) (L Location) {
 			foundWards := make(map[string]*types.Ward)
 			provinceCode := L.Province.Code
 			for _, w := range wards {
-				district := districtIndexCode[w.DistrictCode]
+				district := DistrictIndexCode[w.DistrictCode]
 				if district.ProvinceCode == provinceCode {
 					foundWards[w.Code] = w
 					writeDebug(2, "<found in district "+district.Name+">", true)
