@@ -15,7 +15,6 @@ import (
 var __jsonNull = []byte("null")
 
 var enumTicketStateName = map[int]string{
-	0:  "unknown",
 	45: "new",
 	21: "received",
 	54: "processing",
@@ -26,7 +25,6 @@ var enumTicketStateName = map[int]string{
 }
 
 var enumTicketStateValue = map[string]int{
-	"unknown":    0,
 	"new":        45,
 	"received":   21,
 	"processing": 54,

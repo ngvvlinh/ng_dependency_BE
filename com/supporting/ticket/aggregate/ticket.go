@@ -244,15 +244,13 @@ func (a TicketAggregate) CloseTicket(ctx context.Context, args *ticket.CloseTick
 		State:     args.State,
 	}
 	switch args.State {
-	case ticket_state.Success:
-		ticketModel.Status = status5.P
-	case ticket_state.Fail:
-		ticketModel.Status = status5.NS
-	case ticket_state.Ignore, ticket_state.Cancel:
-		ticketModel.Status = status5.N
+	case ticket_state.Success,
+		ticket_state.Fail,
+		ticket_state.Ignore, ticket_state.Cancel:
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "state đóng ticket không hợp lệ")
 	}
+	ticketModel.Status = ticketModel.State.ToStatus5()
 	err = a.TicketStore(ctx).ID(args.ID).UpdateTicketDB(ticketModel)
 	if err != nil {
 		return nil, err
@@ -269,10 +267,8 @@ func (a TicketAggregate) ReopenTicket(ctx context.Context, args *ticket.ReopenTi
 		return nil, err
 	}
 	var state = ticket_state.New
-	var status = status5.Z
 	if len(ticketCore.AssignedUserIDs) > 0 {
 		state = ticket_state.Received
-		status = status5.S
 	}
 	switch ticketCore.Status {
 	case status5.N, status5.NS, status5.P:
@@ -283,7 +279,7 @@ func (a TicketAggregate) ReopenTicket(ctx context.Context, args *ticket.ReopenTi
 	var ticketModel = &model.Ticket{
 		Note:   args.Note,
 		State:  state,
-		Status: status,
+		Status: state.ToStatus5(),
 	}
 	err = a.TicketStore(ctx).ID(args.ID).UpdateTicketDB(ticketModel)
 	if err != nil {
@@ -315,17 +311,16 @@ func (a TicketAggregate) AssignTicket(ctx context.Context, args *ticket.Assigned
 	if ticketCore.Status != status5.Z && ticketCore.Status != status5.S {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Ticket đã đóng")
 	}
-	var state = ticket_state.New
-	var status = status5.Z
-	if len(assignedUserIDs) > 0 {
-		state = ticket_state.Received
-		status = status5.S
+
+	// Khi assign ticket mới tạo cho 1 người: chuyển trạng thái từ new -> received
+	// Còn lại thì giữ nguyên trạng thái cũ.
+	if ticketCore.State == ticket_state.New {
+		ticketCore.State = ticket_state.Received
 	}
-	ticketCore.State = state
 	ticketCore.UpdatedBy = args.UpdatedBy
 	ticketCore.UpdatedAt = time.Now()
 	ticketCore.AssignedUserIDs = assignedUserIDs
-	ticketCore.Status = status
+	ticketCore.Status = ticketCore.State.ToStatus5()
 	// follow requirement, we have case update status 2 -> 0. so have to use update all
 	err = a.TicketStore(ctx).ID(args.ID).UpdateTicketALL(ticketCore)
 	if err != nil {
@@ -358,16 +353,14 @@ func (a TicketAggregate) UnassignTicket(ctx context.Context, args *ticket.Unssig
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Bạn chưa được thêm vào ticket này.")
 	}
 	var state = ticket_state.New
-	var status = status5.Z
 	if len(assignedUserIDs) > 0 {
 		state = ticket_state.Received
-		status = status5.S
 	}
 	ticketCore.State = state
 	ticketCore.UpdatedBy = args.UpdatedBy
 	ticketCore.UpdatedAt = time.Now()
 	ticketCore.AssignedUserIDs = assignedUserIDs
-	ticketCore.Status = status
+	ticketCore.Status = state.ToStatus5()
 	// follow requirement, we have case update status 2 -> 0. so have to use update all
 	err = a.TicketStore(ctx).ID(args.ID).UpdateTicketALL(ticketCore)
 	if err != nil {

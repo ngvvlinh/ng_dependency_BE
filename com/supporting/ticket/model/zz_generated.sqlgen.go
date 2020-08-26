@@ -147,7 +147,7 @@ func (m *Ticket) Migration(db *cmsql.Database) {
 			ColumnType:       "ticket_state.TicketState",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "new", "received", "processing", "success", "fail", "ignore", "cancel"},
+			ColumnEnumValues: []string{"new", "received", "processing", "success", "fail", "ignore", "cancel"},
 		},
 		"status": {
 			ColumnName:       "status",

@@ -10,7 +10,10 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi"
+	"o.o/common/l"
 )
+
+var ll = l.New()
 
 type TicketQuery struct {
 	TicketStore        sqlstore.TicketStoreFactory
@@ -82,6 +85,8 @@ func (q TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsArg
 		if args.Filter.AssignedUserIDs != nil && len(args.Filter.AssignedUserIDs) > 0 {
 			query = query.AssignedUserIDs(args.Filter.AssignedUserIDs)
 		}
+		ll.Info("args.Filter.State", l.Object("args.Filter.State", args.Filter.State))
+
 		if args.Filter.State != 0 {
 			query = query.State(args.Filter.State)
 		}

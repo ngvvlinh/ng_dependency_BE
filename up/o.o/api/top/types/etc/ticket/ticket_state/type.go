@@ -1,5 +1,7 @@
 package ticket_state
 
+import "o.o/api/top/types/etc/status5"
+
 // +enum
 // +enum:sql=int
 type TicketState int
@@ -10,9 +12,6 @@ type NullTicketState struct {
 }
 
 const (
-	// +enum=unknown
-	Unknown TicketState = 0
-
 	// +enum=new
 	New TicketState = 45
 
@@ -34,3 +33,20 @@ const (
 	// +enum=cancel
 	Cancel TicketState = 68
 )
+
+func (s TicketState) ToStatus5() status5.Status {
+	switch s {
+	case New:
+		return status5.Z
+	case Received, Processing:
+		return status5.S
+	case Success:
+		return status5.P
+	case Fail:
+		return status5.NS
+	case Ignore, Cancel:
+		return status5.N
+	default:
+		return status5.Z
+	}
+}
