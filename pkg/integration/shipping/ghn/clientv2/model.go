@@ -600,9 +600,12 @@ func (s *AvailableService) ToShippingService(providerServiceID string) *shipping
 
 // Use for webhook
 type CallbackOrder struct {
-	CODAmount       Int               `json:"CODAmount"`
-	CODTransferDate Time              `json:"CODTransferDate"`
-	ClientOrderCode String            `json:"ClientOrderCode"`
+	CODAmount       Int    `json:"CODAmount"`
+	CODTransferDate Time   `json:"CODTransferDate"`
+	ClientOrderCode String `json:"ClientOrderCode"`
+	// ConvertedWeight
+	// Khối lượng quy đổi. So sánh với weight, khối lượng nào lơn hơn thì lấy khối lượng đó
+	ConvertedWeight Int               `json:"ConvertedWeight"`
 	Description     String            `json:"Description"`
 	Fee             *OrderFeeCallback `json:"Fee"`
 	Height          Int               `json:"Height"`
@@ -619,6 +622,14 @@ type CallbackOrder struct {
 	WareHouse       String            `json:"WareHouse"`
 	Weight          Int               `json:"Weight"`
 	Width           Int               `json:"Width"`
+}
+
+func (c *CallbackOrder) GetWeight() int {
+	res := c.Weight
+	if c.ConvertedWeight > res {
+		res = c.ConvertedWeight
+	}
+	return res.Int()
 }
 
 type OrderFeeCallback struct {

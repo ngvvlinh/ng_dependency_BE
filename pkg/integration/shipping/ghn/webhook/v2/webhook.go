@@ -102,9 +102,10 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
 
 		// update shipping fee lines
+		newWeight := msg.GetWeight()
 		updateFeeLinesArgs := &shipping.UpdateShippingFeeLinesArgs{
 			FfmID:            ffm.ID,
-			Weight:           msg.Weight.Int(),
+			Weight:           newWeight,
 			State:            updateFfm.ShippingState,
 			ProviderFeeLines: updateFfm.ProviderShippingFeeLines,
 		}
@@ -125,7 +126,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ExternalShippingUpdatedAt: updateFfm.ExternalShippingUpdatedAt,
 			ExternalShippingLogs:      shippingconvert.Convert_shippingmodel_ExternalShippingLogs_shipping_ExternalShippingLogs(updateFfm.ExternalShippingLogs),
 			ExternalShippingStateCode: updateFfm.ExternalShippingStateCode,
-			Weight:                    msg.Weight.Int(),
+			Weight:                    newWeight,
 			ClosedAt:                  updateFfm.ClosedAt,
 			LastSyncAt:                updateFfm.LastSyncAt,
 			ShippingCreatedAt:         updateFfm.ShippingCreatedAt,
