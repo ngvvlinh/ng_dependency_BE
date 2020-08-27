@@ -169,7 +169,9 @@ func (s *AccountService) UpdateAdminUser(ctx context.Context, q *admin.UpdateAdm
 func (s *AccountService) GetAdminUsers(ctx context.Context, req *admin.GetAdminUsersRequest) (*admin.GetAdminUserResponse, error) {
 	getAdminAccQuery := &identitymodelx.GetAccountUserExtendedsQuery{
 		AccountIDs: []dot.ID{EtopAccountId},
+		Roles:      req.Filter.Roles,
 	}
+
 	if err := sqlstore.GetAccountUserExtendeds(ctx, getAdminAccQuery); err != nil {
 		return nil, err
 	}

@@ -29,6 +29,7 @@ type GetAccountUserExtendedsQuery struct {
 	Paging  *cm.Paging
 	Filters []cm.Filter
 	Status  dot.NullInt
+	Roles   []string
 
 	IncludeDeleted bool
 

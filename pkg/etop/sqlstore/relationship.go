@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/lib/pq"
+
 	"o.o/api/main/authorization"
 	"o.o/api/top/types/etc/status3"
 	identitymodel "o.o/backend/com/main/identity/model"
@@ -163,6 +165,10 @@ func GetAccountUserExtendeds(ctx context.Context, query *identitymodelx.GetAccou
 		In("au.account_id", query.AccountIDs)
 	if !query.IncludeDeleted {
 		s = s.Where("au.deleted_at IS NULL")
+	}
+
+	if len(query.Roles) > 0 {
+		s = s.Where("au.roles && ?", pq.StringArray(query.Roles))
 	}
 
 	s, _, err := sqlstore.Filters(s, query.Filters, filterAccountUserWhitelist)
