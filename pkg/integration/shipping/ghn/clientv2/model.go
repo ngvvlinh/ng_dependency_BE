@@ -624,3 +624,8 @@ type GetShopByClientOwnerRequest struct {
 }
 
 type GetShopByClientOwnerResponse []*ShopInfo
+
+// Add client contract
+type AddClientContractRequest struct {
+	ClientID int `json:"client_id"`
+}

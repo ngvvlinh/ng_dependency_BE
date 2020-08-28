@@ -330,7 +330,7 @@ func (m *ShipmentManager) GetAllShopConnections(ctx context.Context, shopID dot.
 	return query.Result, nil
 }
 
-func (m *ShipmentManager) SignIn(ctx context.Context, args *ConnectionSignInArgs) (account *carriertypes.AccountResponse, _ error) {
+func (m *ShipmentManager) SignIn(ctx context.Context, args *ConnectionSignInArgs) (*carriertypes.AccountResponse, error) {
 	if args.ConnectionID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
 	}

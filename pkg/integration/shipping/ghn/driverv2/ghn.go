@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
@@ -36,42 +35,20 @@ const (
 )
 
 type GHNDriver struct {
-	client     *ghnclient.Client
-	locationQS location.QueryBus
-}
-
-func Connect(
-	env string, locationQS location.QueryBus,
-	conn *connectioning.Connection,
-	shopConn *connectioning.ShopConnection,
-) (carriertypes.ShipmentCarrier, error) {
-	clientID, err := strconv.Atoi(conn.EtopAffiliateAccount.GetUserID())
-	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "AffiliateAccount: UserID is invalid")
-	}
-
-	shopID, err := strconv.Atoi(conn.EtopAffiliateAccount.GetShopID())
-	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "AffiliateAcount: ShopID is invalid")
-	}
-	cfg := ghnclient.GHNAccountCfg{
-		ClientID:    clientID,
-		ShopID:      shopID,
-		Token:       conn.EtopAffiliateAccount.GetToken(),
-		AffiliateID: clientID,
-	}
-	driver := New(env, cfg, locationQS)
-	return driver, nil
+	client             *ghnclient.Client
+	locationQS         location.QueryBus
+	supportedGHNDriver SupportedGHNDriver
 }
 
 func New(
 	env string, cfg ghnclient.GHNAccountCfg,
-	locationQS location.QueryBus,
+	locationQS location.QueryBus, supportedGHNDriver SupportedGHNDriver,
 ) *GHNDriver {
 	client := ghnclient.New(env, cfg)
 	return &GHNDriver{
-		client:     client,
-		locationQS: locationQS,
+		client:             client,
+		locationQS:         locationQS,
+		supportedGHNDriver: supportedGHNDriver,
 	}
 }
 
@@ -463,9 +440,33 @@ func (d *GHNDriver) SignIn(
 		}, nil
 	}
 
-	// This function get all shops that depends on phone (args) to reduce creating new shop.
-	// And compare shop.created_client with affiliateID to finish do more request
-	// if response not nil which mean having an old shop, otherwise need to create new shop
+	accountResp, err := d.handleSignInWithOTP(ctx, args, phone, otp)
+	if err != nil {
+		return nil, err
+	}
+
+	// Add client contract
+	{
+		clientID, err := strconv.ParseInt(accountResp.UserID, 10, 64)
+		if err != nil {
+			return nil, cm.Errorf(cm.Internal, err, "Can't parse clientID %v", accountResp.UserID)
+		}
+
+		if err := d.supportedGHNDriver.AddClientContract(ctx, int(clientID)); err != nil {
+			return nil, err
+		}
+	}
+
+	return accountResp, nil
+}
+
+// This function get all shops that depends on phone (args) to reduce creating new shop.
+// And compare shop.created_client with affiliateID to finish do more request
+// if response not nil which mean having an old shop, otherwise need to create new shop
+func (d *GHNDriver) handleSignInWithOTP(
+	ctx context.Context, args *carrierutil.SignInArgs,
+	phone string, otp string,
+) (*carrierutil.AccountResponse, error) {
 	response, err := d.checkAndGetOldShop(ctx, args)
 	if err != nil {
 		return nil, err
@@ -513,6 +514,10 @@ func (d *GHNDriver) SignIn(
 		ShopID: shopID,
 		Token:  d.client.GetToken(),
 	}, nil
+}
+
+func (d *GHNDriver) AddClientContract(ctx context.Context, clientID int) error {
+	return d.client.AddClientContract(ctx, &ghnclient.AddClientContractRequest{ClientID: clientID})
 }
 
 func (d *GHNDriver) checkAndGetOldShop(ctx context.Context, args *carrierutil.SignInArgs) (*carrierutil.AccountResponse, error) {

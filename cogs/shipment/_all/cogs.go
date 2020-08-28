@@ -22,6 +22,7 @@ import (
 	ghnclientv2 "o.o/backend/pkg/integration/shipping/ghn/clientv2"
 	ghndriver "o.o/backend/pkg/integration/shipping/ghn/driver"
 	ghndriverv2 "o.o/backend/pkg/integration/shipping/ghn/driverv2"
+	"o.o/backend/pkg/integration/shipping/ghn/driverv2/etop"
 	"o.o/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 	ghtkdriver "o.o/backend/pkg/integration/shipping/ghtk/driver"
@@ -159,7 +160,8 @@ func (d CarrierDriver) GetShipmentDriver(
 			if affiliateID, err := strconv.Atoi(etopAffiliateAccount.UserID); err == nil {
 				cfg.AffiliateID = affiliateID
 			}
-			driver := ghndriverv2.New(env, cfg, locationQS)
+			supportedEtopGHNDriverV2 := etop.NewEtopSupportedGHNDriver(env, cfg)
+			driver := ghndriverv2.New(env, cfg, locationQS, supportedEtopGHNDriverV2)
 			return driver, nil
 		default:
 			cfg := ghnclient.GHNAccountCfg{
@@ -237,7 +239,8 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(env string, locationQS locatio
 				Token:       token,
 				AffiliateID: clientID,
 			}
-			driver := ghndriverv2.New(env, cfg, locationQS)
+			supportedEtopGHNDriverV2 := etop.NewEtopSupportedGHNDriver(env, cfg)
+			driver := ghndriverv2.New(env, cfg, locationQS, supportedEtopGHNDriverV2)
 			return driver, nil
 		default:
 			cfg := ghnclient.GHNAccountCfg{

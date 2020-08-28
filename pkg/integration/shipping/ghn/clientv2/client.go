@@ -267,6 +267,10 @@ func (c *Client) GetShopByClientOwner(ctx context.Context, req *GetShopByClientO
 	return &resp, err
 }
 
+func (c *Client) AddClientContract(ctx context.Context, req *AddClientContractRequest) error {
+	return c.sendRequest(ctx, "/v2/contract/add-client", c.shopID, req, nil)
+}
+
 func (c *Client) sendRequest(ctx context.Context, path string, shopID int, req, resp interface{}) error {
 	var errResp ErrorResponse
 	res, err := c.rclient.R().

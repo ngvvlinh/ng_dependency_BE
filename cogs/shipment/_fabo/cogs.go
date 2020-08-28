@@ -18,6 +18,7 @@ import (
 	ghnclientv2 "o.o/backend/pkg/integration/shipping/ghn/clientv2"
 	ghndriver "o.o/backend/pkg/integration/shipping/ghn/driver"
 	ghndriverv2 "o.o/backend/pkg/integration/shipping/ghn/driverv2"
+	"o.o/backend/pkg/integration/shipping/ghn/driverv2/fabo"
 	"o.o/backend/pkg/integration/shipping/services"
 	"o.o/common/l"
 )
@@ -112,7 +113,8 @@ func (d CarrierDriver) GetShipmentDriver(
 			if affiliateID, err := strconv.Atoi(etopAffiliateAccount.UserID); err == nil {
 				cfg.AffiliateID = affiliateID
 			}
-			driver := ghndriverv2.New(env, cfg, locationQS)
+			supportedFaboDriverV2 := fabo.NewFaboSupportedGHNDriver(env, cfg)
+			driver := ghndriverv2.New(env, cfg, locationQS, supportedFaboDriverV2)
 			return driver, nil
 		default:
 			cfg := ghnclient.GHNAccountCfg{
@@ -167,7 +169,8 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(env string, locationQS locatio
 				Token:       token,
 				AffiliateID: clientID,
 			}
-			driver := ghndriverv2.New(env, cfg, locationQS)
+			supportedFaboGHNDriverV2 := fabo.NewFaboSupportedGHNDriver(env, cfg)
+			driver := ghndriverv2.New(env, cfg, locationQS, supportedFaboGHNDriverV2)
 			return driver, nil
 		default:
 			cfg := ghnclient.GHNAccountCfg{
