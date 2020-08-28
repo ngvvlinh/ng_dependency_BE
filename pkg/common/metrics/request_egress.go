@@ -15,10 +15,10 @@ var egressRequestHistogram = registerHistogramVec(prometheus.HistogramOpts{
 	Help:        "",
 	ConstLabels: nil,
 	Buckets:     nil,
-}, "host", "path", "status_code")
+}, "host", "status_code")
 
 func EgressRequest(httpUrl *url.URL, httpStatusCode int, d time.Duration) {
-	egressRequestHistogram.WithLabelValues(httpUrl.Host, httpUrl.Path, strconv.Itoa(httpStatusCode)).Observe(d.Seconds())
+	egressRequestHistogram.WithLabelValues(httpUrl.Host, strconv.Itoa(httpStatusCode)).Observe(d.Seconds())
 }
 
 var faboEgressRequestHistogram = registerHistogramVec(prometheus.HistogramOpts{
@@ -28,8 +28,8 @@ var faboEgressRequestHistogram = registerHistogramVec(prometheus.HistogramOpts{
 	Help:        "",
 	ConstLabels: nil,
 	Buckets:     nil,
-}, "host", "path", "status_code", "source", "page_id")
+}, "host", "status_code", "source")
 
 func FaboEgressRequest(httpUrl *url.URL, httpStatusCode int, d time.Duration, source, pageID string) {
-	faboEgressRequestHistogram.WithLabelValues(httpUrl.Host, httpUrl.Path, strconv.Itoa(httpStatusCode), source, pageID).Observe(d.Seconds())
+	faboEgressRequestHistogram.WithLabelValues(httpUrl.Host, strconv.Itoa(httpStatusCode), source).Observe(d.Seconds())
 }
