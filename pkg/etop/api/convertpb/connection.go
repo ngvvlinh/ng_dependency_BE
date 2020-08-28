@@ -2,6 +2,7 @@ package convertpb
 
 import (
 	"o.o/api/main/connectioning"
+	connectiontypes "o.o/api/main/connectioning/types"
 	"o.o/api/top/int/types"
 	"o.o/backend/pkg/common/apifw/cmapi"
 )
@@ -83,4 +84,15 @@ func PbConnectionServices(items []*connectioning.ConnectionService) []*types.Con
 		result[i] = PbConnectionService(item)
 	}
 	return result
+}
+
+func Convert_core_ConnectionInfo_To_api_ConnectionInfo(in *connectiontypes.ConnectionInfo) *types.ConnectionInfo {
+	if in == nil {
+		return nil
+	}
+	return &types.ConnectionInfo{
+		ID:       in.ID,
+		Name:     in.Name,
+		ImageURL: in.ImageURL,
+	}
 }

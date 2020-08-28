@@ -132,6 +132,8 @@ type CalcShippingFeeRequest struct {
 	ServiceID      string                  `url:"service_id"`
 	// Payment method chose by user (BALANCE or CASH or MOMO)
 	PaymentMethod string `url:"payment_method"`
+	// Promo code to discount shipping fee
+	PromoCode string `url:"promo_code"`
 }
 
 type DeliveryPointRequest struct {
@@ -220,6 +222,9 @@ type CreateOrderRequest struct {
 	PaymentMethod string `url:"payment_method"`
 	// Products      []Item `url:"-"`
 	// Items         string `url:"items"`
+
+	// Promo code to discount shipping fee
+	PromoCode string `url:"promo_code"`
 }
 
 type Item struct {

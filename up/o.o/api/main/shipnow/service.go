@@ -52,6 +52,7 @@ type CreateShipnowFulfillmentArgs struct {
 	PickupAddress       *types.Address
 	ConnectionID        dot.ID
 	ExternalID          string
+	Coupon              string
 }
 
 type OrderShippingInfo struct {
@@ -85,6 +86,7 @@ type UpdateShipnowFulfillmentArgs struct {
 	ShippingNote        string
 	RequestPickupAt     time.Time
 	PickupAddress       *types.Address
+	Coupon              string
 }
 
 type UpdateShipnowFulfillmentCarrierInfoArgs struct {
@@ -155,6 +157,8 @@ type GetShipnowServicesArgs struct {
 	OrderIds       []dot.ID
 	PickupAddress  *types.Address
 	DeliveryPoints []*DeliveryPoint
+	ConnectionIDs  []dot.ID
+	Coupon         string
 }
 
 type GetShipnowServicesResult struct {

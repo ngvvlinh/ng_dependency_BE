@@ -4057,6 +4057,9 @@
         "confirm_status": {
           "$ref": "#/definitions/blStatus"
         },
+        "coupon": {
+          "type": "string"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"

@@ -237,9 +237,20 @@ func (m *ProcessManager) ShopConnectionUpdated(ctx context.Context, event *conne
 	if event.ConnectionID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing connection ID").WithMetap("event", "ShopConnectionUpdatedEvent")
 	}
-	// Delete cache connection in carrier manager
-	key := connectionmanager.GetRedisShopConnectionKey(event.ConnectionID, event.ShopID)
-	return m.redisStore.Del(key)
+	// Delete cache shop connection in carrier manager
+	availableRedisKeys := []string{}
+	key1 := connectionmanager.GetRedisShopConnectionKey(connectionmanager.GetShopConnectionArgs{ConnectionID: event.ConnectionID, ShopID: event.ShopID})
+	availableRedisKeys = append(availableRedisKeys, key1)
+
+	key2 := connectionmanager.GetRedisShopConnectionKey(connectionmanager.GetShopConnectionArgs{ConnectionID: event.ConnectionID, OwnerID: event.OwnerID})
+	if !cm.StringsContain(availableRedisKeys, key2) {
+		availableRedisKeys = append(availableRedisKeys, key2)
+	}
+
+	if err := m.redisStore.Del(availableRedisKeys...); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, event *shipping.SingleFulfillmentCreatingEvent) error {

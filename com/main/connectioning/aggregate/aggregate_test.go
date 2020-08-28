@@ -68,6 +68,7 @@ func init() {
 			, updated_at TIMESTAMPTZ
 			, deleted_at TIMESTAMPTZ
 			, external_data JSONB
+			, owner_id INT8
 		);
 	`)
 
@@ -165,10 +166,11 @@ func TestShopConnectionAggregate(t *testing.T) {
 		})
 
 		_conn := &model.Connection{
-			ID:          connID,
-			Name:        "Connection",
-			Status:      0,
-			WLPartnerID: drivers.ITopXID,
+			ID:                connID,
+			Name:              "Connection",
+			Status:            0,
+			WLPartnerID:       drivers.ITopXID,
+			ConnectionSubtype: connection_type.ConnectionSubtypeShipment,
 		}
 		_shopConn := &model.ShopConnection{
 			ShopID:       shopID,
@@ -210,7 +212,7 @@ func TestShopConnectionAggregate(t *testing.T) {
 		Convey("Confirm Missing Connection ID", func() {
 			cmd := &connectioning.ConfirmShopConnectionCommand{}
 			err := Aggr.Dispatch(ctx, cmd)
-			So(err, ShouldCMError, cm.InvalidArgument, "missing shop_id")
+			So(err, ShouldCMError, cm.InvalidArgument, "Thiếu thông tin shop ID hoặc owner ID")
 		})
 
 		Convey("Confirm Success", func() {

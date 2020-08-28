@@ -7,6 +7,7 @@ package build
 
 import (
 	"context"
+	"o.o/api/main/accountshipnow"
 	"o.o/api/services/affiliate"
 	"o.o/api/shopping/tradering"
 	"o.o/backend/cmd/fabo-server/config"
@@ -169,14 +170,14 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		ShopStore:        shopStoreInterface,
 	}
 	session := config_server.NewSession(authorizer, sessionStarter, userStoreInterface, accountUserStoreInterface, sharedConfig, store)
-	carrierManager := SupportedShipnowManager()
-	identityAggregate := identity.NewAggregate(mainDB, carrierManager)
+	identityAggregate := identity.NewAggregate(mainDB, busBus)
 	commandBus := identity.AggregateMessageBus(identityAggregate)
 	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
 	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
 	notifierQueryService := notifier.NewQueryService(mainDB)
 	notifyQueryBus := notifier.QueryServiceNotifyBus(notifierQueryService)
+	carrierManager := SupportedShipnowManager()
 	notifierAggregate := notifier.NewNotifyAggregate(mainDB, carrierManager)
 	notifyCommandBus := notifier.NewNotifyAggregateMessageBus(notifierAggregate)
 	generator := auth2.NewGenerator(store)
@@ -309,15 +310,19 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		InventoryAggr:  inventoryCommandBus,
 		InventoryQuery: inventoryQueryBus,
 	}
+	accountshipnowQueryBus := _wireAccountshipnowQueryBusValue
+	accountshipnowCommandBus := _wireCommandBusValue
 	accountAccountService := &account.AccountService{
-		Session:        session,
-		IdentityAggr:   commandBus,
-		IdentityQuery:  queryBus,
-		AddressQuery:   addressQueryBus,
-		AddressAggr:    addressCommandBus,
-		UserStore:      userStoreFactory,
-		AccountStore:   accountStoreInterface,
-		UserStoreIface: userStoreInterface,
+		Session:             session,
+		IdentityAggr:        commandBus,
+		IdentityQuery:       queryBus,
+		AddressQuery:        addressQueryBus,
+		AddressAggr:         addressCommandBus,
+		UserStore:           userStoreFactory,
+		AccountStore:        accountStoreInterface,
+		UserStoreIface:      userStoreInterface,
+		AccountshipnowQuery: accountshipnowQueryBus,
+		AccountshipnowAggr:  accountshipnowCommandBus,
 	}
 	collectionService := &collection.CollectionService{
 		Session:      session,
@@ -503,10 +508,12 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		OrderStore:        orderStoreInterface,
 	}
 	connectionService := &connection.ConnectionService{
-		Session:         session,
-		ShipmentManager: shipmentManager,
-		ConnectionQuery: connectioningQueryBus,
-		ConnectionAggr:  connectioningCommandBus,
+		Session:            session,
+		ShipmentManager:    shipmentManager,
+		ConnectionQuery:    connectioningQueryBus,
+		ConnectionAggr:     connectioningCommandBus,
+		IdentityQuery:      queryBus,
+		AccountshipnowAggr: accountshipnowCommandBus,
 	}
 	shopServers := shop_min.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, summaryService, exportExportService, notificationService, authorizeService, carrierService, stocktakeService, shipmentService, connectionService)
 	fbPageQuery := fbpage.NewFbPageQuery(mainDB)
@@ -601,7 +608,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	publisherPublisher := publisher.New(eventStream)
 	processManager := pm.New(busBus, catalogQueryBus, catalogCommandBus)
 	pmProcessManager := pm2.New(busBus, queryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus, accountUserStoreInterface)
-	affiliateCommandBus := _wireCommandBusValue
+	affiliateCommandBus := _wireAffiliateCommandBusValue
 	processManager2 := pm3.New(busBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus)
 	processManager3 := pm4.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, moneyTxStoreInterface)
 	processManager4 := pm5.New(busBus, fbuseringCommandBus)
@@ -630,6 +637,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 }
 
 var (
-	_wireQueryBusValue   = tradering.QueryBus{}
-	_wireCommandBusValue = affiliate.CommandBus{}
+	_wireQueryBusValue               = tradering.QueryBus{}
+	_wireAccountshipnowQueryBusValue = accountshipnow.QueryBus{}
+	_wireCommandBusValue             = accountshipnow.CommandBus{}
+	_wireAffiliateCommandBusValue    = affiliate.CommandBus{}
 )

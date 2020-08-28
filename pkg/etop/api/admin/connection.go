@@ -27,9 +27,16 @@ func (s *ConnectionService) Clone() admin.ConnectionService {
 
 func (s *ConnectionService) GetConnections(ctx context.Context, r *types.GetConnectionsRequest) (*types.GetConnectionsResponse, error) {
 	query := &connectioning.ListConnectionsQuery{
-		ConnectionType:   connection_type.Shipping,
-		ConnectionMethod: r.ConnectionMethod,
+		ConnectionType:    connection_type.Shipping,
+		ConnectionMethod:  r.ConnectionMethod,
+		ConnectionSubtype: r.ConnectionSubtype,
 	}
+	if r.ConnectionSubtype == connection_type.ConnectionSubtypeShipnow {
+		// TopShip only support shipnow direct
+		// shipnow builtin use for 3rd party
+		query.ConnectionMethod = connection_type.ConnectionMethodDirect
+	}
+
 	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
@@ -66,7 +73,7 @@ func (s *ConnectionService) CreateBuiltinConnection(ctx context.Context, r *type
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "UserID không được để trống")
 	}
 
-	identifier := cm.Coalesce(r.ExternalData.Email, r.ExternalData.Identifier)
+	identifier := cm.Coalesce(r.ExternalData.Identifier, r.ExternalData.Email)
 	cmd := &connectioning.CreateBuiltinConnectionCommand{
 		ID:    r.ConnectionID,
 		Name:  r.Name,

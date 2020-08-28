@@ -181,6 +181,7 @@ func convert_shipnowmodel_ShipnowFulfillment_shipnow_ShipnowFulfillment(arg *shi
 	out.CarrierFeeLines = shippingconvert.Convert_sharemodel_ShippingFeeLines_shippingtypes_ShippingFeeLines(arg.CarrierFeeLines)
 	out.ExternalID = arg.ExternalID // simple assign
 	out.TotalFee = arg.TotalFee     // simple assign
+	out.Coupon = arg.Coupon         // simple assign
 }
 
 func Convert_shipnowmodel_ShipnowFulfillments_shipnow_ShipnowFulfillments(args []*shipnowmodel.ShipnowFulfillment) (outs []*shipnow.ShipnowFulfillment) {
@@ -243,6 +244,7 @@ func convert_shipnow_ShipnowFulfillment_shipnowmodel_ShipnowFulfillment(arg *shi
 	out.ConnectionID = arg.ConnectionID                 // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod         // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
+	out.Coupon = arg.Coupon                             // simple assign
 	out.Rid = 0                                         // zero value
 }
 

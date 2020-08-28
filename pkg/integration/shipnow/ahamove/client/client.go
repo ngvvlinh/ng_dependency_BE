@@ -285,8 +285,8 @@ func handleResponse(ctx context.Context, res *httpreq.RestyResponse, result inte
 				for k, v := range metaX {
 					meta[k] = fmt.Sprint(v)
 				}
-				errJSON.Meta = meta
 			}
+			errJSON.Meta = meta
 		}
 
 		return cm.Errorf(cm.ExternalServiceError, &errJSON, "Lỗi từ ahamove: %v. Nếu cần thêm thông tin vui lòng liên hệ %v.", errJSON.Error(), wl.X(ctx).CSEmail).WithMetaM(meta)

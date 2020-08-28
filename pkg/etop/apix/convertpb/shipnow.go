@@ -207,6 +207,7 @@ func Convert_core_ShipnowFulfillment_To_apix_ShipnowFulfillment(in *shipnow.Ship
 		CODAmount:                  dot.Int(in.ValueInfo.CODAmount),
 		BasketValue:                dot.Int(in.ValueInfo.BasketValue),
 		ExternalID:                 dot.String(in.ExternalID),
+		Coupon:                     dot.String(in.Coupon),
 	}
 	if conn != nil {
 		res.CarrierInfo = &typesx.CarrierInfo{

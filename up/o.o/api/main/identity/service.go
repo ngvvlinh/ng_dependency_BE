@@ -23,17 +23,6 @@ type Aggregate interface {
 
 	UpdateUserPhone(ctx context.Context, userID dot.ID, phone string) error
 
-	// -- External Account Ahamove -- //
-	// TODO: move External Account Ahamove to its own module
-
-	CreateExternalAccountAhamove(context.Context, *CreateExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
-
-	RequestVerifyExternalAccountAhamove(context.Context, *RequestVerifyExternalAccountAhamoveArgs) (*RequestVerifyExternalAccountAhamoveResult, error)
-
-	UpdateVerifiedExternalAccountAhamove(context.Context, *UpdateVerifiedExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
-
-	UpdateExternalAccountAhamoveVerification(context.Context, *UpdateExternalAccountAhamoveVerificationArgs) (*ExternalAccountAhamove, error)
-
 	// -- Affiliate -- //
 
 	CreateAffiliate(context.Context, *CreateAffiliateArgs) (*Affiliate, error)
@@ -83,12 +72,6 @@ type QueryService interface {
 	GetUsersByIDs(ctx context.Context, IDs []dot.ID) ([]*User, error)
 
 	GetUserByPhoneOrEmail(context.Context, *GetUserByPhoneOrEmailArgs) (*User, error)
-
-	// -- ExternalAccountAhamove -- //
-
-	GetExternalAccountAhamove(context.Context, *GetExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
-
-	GetExternalAccountAhamoveByExternalID(context.Context, *GetExternalAccountAhamoveByExternalIDQueryArgs) (*ExternalAccountAhamove, error)
 
 	// -- Affiliate -- //
 
@@ -173,47 +156,7 @@ type UserFtRefSaffsResponse struct {
 	Paging    meta.PageInfo
 }
 
-type GetExternalAccountAhamoveArgs struct {
-	OwnerID dot.ID
-	Phone   string
-}
-
-type GetExternalAccountAhamoveByExternalIDQueryArgs struct {
-	ExternalID string
-}
-
 //-- commands --//
-type CreateExternalAccountAhamoveArgs struct {
-	OwnerID dot.ID // user id
-	Phone   string
-	Name    string
-	Address string
-}
-
-type RequestVerifyExternalAccountAhamoveArgs struct {
-	OwnerID dot.ID
-	Phone   string
-}
-
-type RequestVerifyExternalAccountAhamoveResult struct {
-}
-
-type UpdateVerifiedExternalAccountAhamoveArgs struct {
-	OwnerID dot.ID
-	Phone   string
-}
-
-type UpdateExternalAccountAhamoveVerificationArgs struct {
-	OwnerID             dot.ID
-	Phone               string
-	IDCardFrontImg      string
-	IDCardBackImg       string
-	PortraitImg         string
-	WebsiteURL          string
-	FanpageURL          string
-	CompanyImgs         []string
-	BusinessLicenseImgs []string
-}
 
 type UpdateUserReferenceUserIDArgs struct {
 	UserID       dot.ID

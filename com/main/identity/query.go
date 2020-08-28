@@ -25,7 +25,6 @@ type QueryService struct {
 	affiliateStore   sqlstore.AffiliateStoreFactory
 	shopStore        sqlstore.ShopStoreFactory
 	accountUserStore sqlstore.AccountUserStoreFactory
-	xAccountAhamove  sqlstore.XAccountAhamoveStoreFactory
 	userRefSaffStore sqlstore.UserRefSaffStoreFactory
 }
 
@@ -37,7 +36,6 @@ func NewQueryService(db com.MainDB) *QueryService {
 		shopStore:        sqlstore.NewShopStore(db),
 		affiliateStore:   sqlstore.NewAffiliateStore(db),
 		accountUserStore: sqlstore.NewAccountUserStore(db),
-		xAccountAhamove:  sqlstore.NewXAccountAhamoveStore(db),
 		userRefSaffStore: sqlstore.NewUserRefSaffStore(db),
 	}
 }
@@ -110,15 +108,6 @@ func (q *QueryService) GetUserByEmail(ctx context.Context, email string) (*ident
 
 func (q *QueryService) ListUsersByWLPartnerID(ctx context.Context, args *identity.ListUsersByWLPartnerID) ([]*identity.User, error) {
 	return q.userStore(ctx).ByWLPartnerID(args.ID).ListUsers()
-}
-
-func (q *QueryService) GetExternalAccountAhamove(ctx context.Context, args *identity.GetExternalAccountAhamoveArgs) (*identity.ExternalAccountAhamove, error) {
-	phone := args.Phone
-	return q.xAccountAhamove(ctx).Phone(phone).OwnerID(args.OwnerID).GetXAccountAhamove()
-}
-
-func (q *QueryService) GetExternalAccountAhamoveByExternalID(ctx context.Context, args *identity.GetExternalAccountAhamoveByExternalIDQueryArgs) (*identity.ExternalAccountAhamove, error) {
-	return q.xAccountAhamove(ctx).ExternalID(args.ExternalID).GetXAccountAhamove()
 }
 
 func (q *QueryService) GetAffiliateByID(ctx context.Context, id dot.ID) (*identity.Affiliate, error) {

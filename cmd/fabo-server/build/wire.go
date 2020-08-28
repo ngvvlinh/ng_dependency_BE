@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/wire"
 
+	"o.o/api/main/accountshipnow"
 	"o.o/api/services/affiliate"
 	"o.o/api/shopping/tradering"
 	"o.o/backend/cmd/fabo-server/config"
@@ -149,6 +150,8 @@ func Build(
 		// TODO(vu): remove
 		wire.Value(tradering.QueryBus{}),
 		wire.Value(affiliate.CommandBus{}),
+		wire.Value(accountshipnow.CommandBus{}),
+		wire.Value(accountshipnow.QueryBus{}),
 
 		BuildIntHandlers,
 		BuildMainServer,

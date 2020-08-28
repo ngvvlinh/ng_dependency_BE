@@ -62,6 +62,11 @@ type AccountService interface {
 	UpdateExternalAccountAhamoveVerificationImages(context.Context, *UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error)
 }
 
+// +apix:path=/shop.AccountShipnow
+type AccountShipnowService interface {
+	GetAccountShipnow(context.Context, *GetAccountShipnowRequest) (*ExternalAccountAhamove, error)
+}
+
 // +apix:path=/shop.Collection
 type CollectionService interface {
 	CreateCollection(context.Context, *CreateCollectionRequest) (*ShopCollection, error)
@@ -346,8 +351,8 @@ type StocktakeService interface {
 
 // +apix:path=/shop.Connection
 type ConnectionService interface {
-	GetConnections(context.Context, *cm.Empty) (*types.GetConnectionsResponse, error)
-	GetAvailableConnections(context.Context, *cm.Empty) (*types.GetConnectionsResponse, error)
+	GetConnections(context.Context, *types.GetConnectionsRequest) (*types.GetConnectionsResponse, error)
+	GetAvailableConnections(context.Context, *types.GetAvailableConnectionsRequest) (*types.GetConnectionsResponse, error)
 	GetShopConnections(context.Context, *cm.Empty) (*types.GetShopConnectionsResponse, error)
 	RegisterShopConnection(context.Context, *types.RegisterShopConnectionRequest) (*types.ShopConnection, error)
 	LoginShopConnection(context.Context, *types.LoginShopConnectionRequest) (*types.LoginShopConnectionResponse, error)

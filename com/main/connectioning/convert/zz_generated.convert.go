@@ -463,6 +463,7 @@ func Convert_connectioningmodel_ShopConnection_connectioning_ShopConnection(arg 
 }
 
 func convert_connectioningmodel_ShopConnection_connectioning_ShopConnection(arg *connectioningmodel.ShopConnection, out *connectioning.ShopConnection) {
+	out.OwnerID = arg.OwnerID               // simple assign
 	out.ShopID = arg.ShopID                 // simple assign
 	out.ConnectionID = arg.ConnectionID     // simple assign
 	out.Token = arg.Token                   // simple assign
@@ -499,6 +500,7 @@ func Convert_connectioning_ShopConnection_connectioningmodel_ShopConnection(arg 
 }
 
 func convert_connectioning_ShopConnection_connectioningmodel_ShopConnection(arg *connectioning.ShopConnection, out *connectioningmodel.ShopConnection) {
+	out.OwnerID = arg.OwnerID               // simple assign
 	out.ShopID = arg.ShopID                 // simple assign
 	out.ConnectionID = arg.ConnectionID     // simple assign
 	out.Token = arg.Token                   // simple assign
@@ -536,6 +538,7 @@ func Apply_connectioning_CreateShopConnectionArgs_connectioning_ShopConnection(a
 }
 
 func apply_connectioning_CreateShopConnectionArgs_connectioning_ShopConnection(arg *connectioning.CreateShopConnectionArgs, out *connectioning.ShopConnection) {
+	out.OwnerID = arg.OwnerID               // simple assign
 	out.ShopID = arg.ShopID                 // simple assign
 	out.ConnectionID = arg.ConnectionID     // simple assign
 	out.Token = arg.Token                   // simple assign
@@ -560,6 +563,7 @@ func Apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_Shop
 }
 
 func apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_ShopConnection(arg *connectioning.UpdateShopConnectionExternalDataArgs, out *connectioning.ShopConnection) {
+	out.OwnerID = arg.OwnerID               // simple assign
 	out.ShopID = out.ShopID                 // identifier
 	out.ConnectionID = out.ConnectionID     // identifier
 	out.Token = arg.Token                   // simple assign

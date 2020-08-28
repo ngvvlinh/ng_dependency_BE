@@ -19,16 +19,15 @@ import (
 
 /*
 Custom conversions:
-    AccountUser        // in use
-    Affiliate          // in use
-    AffiliateDB        // in use
-    BankAccount        // in use
-    BankAccountDB      // in use
-    Shop               // in use
-    ShopDB             // in use
-    User               // in use
-    UserFtRefSaff      // not use, no conversions between params
-    XAccountAhamove    // in use
+    AccountUser      // in use
+    Affiliate        // in use
+    AffiliateDB      // in use
+    BankAccount      // in use
+    BankAccountDB    // in use
+    Shop             // in use
+    ShopDB           // in use
+    User             // in use
+    UserFtRefSaff    // not use, no conversions between params
 
 Ignored functions:
     Affiliates           // params are not pointer to named types
@@ -93,24 +92,6 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*identity.Affiliate)(nil), (*[]*identitymodel.Affiliate)(nil), func(arg, out interface{}) error {
 		out0 := Convert_identity_Affiliates_identitymodel_Affiliates(arg.([]*identity.Affiliate))
 		*out.(*[]*identitymodel.Affiliate) = out0
-		return nil
-	})
-	s.Register((*identitymodel.ExternalAccountAhamove)(nil), (*identity.ExternalAccountAhamove)(nil), func(arg, out interface{}) error {
-		Convert_identitymodel_ExternalAccountAhamove_identity_ExternalAccountAhamove(arg.(*identitymodel.ExternalAccountAhamove), out.(*identity.ExternalAccountAhamove))
-		return nil
-	})
-	s.Register(([]*identitymodel.ExternalAccountAhamove)(nil), (*[]*identity.ExternalAccountAhamove)(nil), func(arg, out interface{}) error {
-		out0 := Convert_identitymodel_ExternalAccountAhamoves_identity_ExternalAccountAhamoves(arg.([]*identitymodel.ExternalAccountAhamove))
-		*out.(*[]*identity.ExternalAccountAhamove) = out0
-		return nil
-	})
-	s.Register((*identity.ExternalAccountAhamove)(nil), (*identitymodel.ExternalAccountAhamove)(nil), func(arg, out interface{}) error {
-		Convert_identity_ExternalAccountAhamove_identitymodel_ExternalAccountAhamove(arg.(*identity.ExternalAccountAhamove), out.(*identitymodel.ExternalAccountAhamove))
-		return nil
-	})
-	s.Register(([]*identity.ExternalAccountAhamove)(nil), (*[]*identitymodel.ExternalAccountAhamove)(nil), func(arg, out interface{}) error {
-		out0 := Convert_identity_ExternalAccountAhamoves_identitymodel_ExternalAccountAhamoves(arg.([]*identity.ExternalAccountAhamove))
-		*out.(*[]*identitymodel.ExternalAccountAhamove) = out0
 		return nil
 	})
 	s.Register((*identitymodel.Partner)(nil), (*identity.Partner)(nil), func(arg, out interface{}) error {
@@ -596,93 +577,6 @@ func Convert_identity_Affiliates_identitymodel_Affiliates(args []*identity.Affil
 	outs = make([]*identitymodel.Affiliate, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identity_Affiliate_identitymodel_Affiliate(args[i], &tmps[i])
-	}
-	return outs
-}
-
-//-- convert o.o/api/main/identity.ExternalAccountAhamove --//
-
-func Convert_identitymodel_ExternalAccountAhamove_identity_ExternalAccountAhamove(arg *identitymodel.ExternalAccountAhamove, out *identity.ExternalAccountAhamove) *identity.ExternalAccountAhamove {
-	return XAccountAhamove(arg)
-}
-
-func convert_identitymodel_ExternalAccountAhamove_identity_ExternalAccountAhamove(arg *identitymodel.ExternalAccountAhamove, out *identity.ExternalAccountAhamove) {
-	out.ID = arg.ID                                   // simple assign
-	out.Phone = arg.Phone                             // simple assign
-	out.Name = arg.Name                               // simple assign
-	out.ExternalID = arg.ExternalID                   // simple assign
-	out.ExternalToken = arg.ExternalToken             // simple assign
-	out.ExternalVerified = arg.ExternalVerified       // simple assign
-	out.CreatedAt = arg.CreatedAt                     // simple assign
-	out.UpdatedAt = arg.UpdatedAt                     // simple assign
-	out.ExternalCreatedAt = arg.ExternalCreatedAt     // simple assign
-	out.LastSendVerifiedAt = arg.LastSendVerifiedAt   // simple assign
-	out.ExternalTicketID = arg.ExternalTicketID       // simple assign
-	out.IDCardFrontImg = arg.IDCardFrontImg           // simple assign
-	out.IDCardBackImg = arg.IDCardBackImg             // simple assign
-	out.PortraitImg = arg.PortraitImg                 // simple assign
-	out.WebsiteURL = arg.WebsiteURL                   // simple assign
-	out.FanpageURL = arg.FanpageURL                   // simple assign
-	out.CompanyImgs = arg.CompanyImgs                 // simple assign
-	out.BusinessLicenseImgs = arg.BusinessLicenseImgs // simple assign
-	out.UploadedAt = arg.UploadedAt                   // simple assign
-}
-
-func Convert_identitymodel_ExternalAccountAhamoves_identity_ExternalAccountAhamoves(args []*identitymodel.ExternalAccountAhamove) (outs []*identity.ExternalAccountAhamove) {
-	if args == nil {
-		return nil
-	}
-	tmps := make([]identity.ExternalAccountAhamove, len(args))
-	outs = make([]*identity.ExternalAccountAhamove, len(args))
-	for i := range tmps {
-		outs[i] = Convert_identitymodel_ExternalAccountAhamove_identity_ExternalAccountAhamove(args[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_identity_ExternalAccountAhamove_identitymodel_ExternalAccountAhamove(arg *identity.ExternalAccountAhamove, out *identitymodel.ExternalAccountAhamove) *identitymodel.ExternalAccountAhamove {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &identitymodel.ExternalAccountAhamove{}
-	}
-	convert_identity_ExternalAccountAhamove_identitymodel_ExternalAccountAhamove(arg, out)
-	return out
-}
-
-func convert_identity_ExternalAccountAhamove_identitymodel_ExternalAccountAhamove(arg *identity.ExternalAccountAhamove, out *identitymodel.ExternalAccountAhamove) {
-	out.ID = arg.ID                                   // simple assign
-	out.OwnerID = 0                                   // zero value
-	out.Phone = arg.Phone                             // simple assign
-	out.Name = arg.Name                               // simple assign
-	out.ExternalID = arg.ExternalID                   // simple assign
-	out.ExternalVerified = arg.ExternalVerified       // simple assign
-	out.ExternalCreatedAt = arg.ExternalCreatedAt     // simple assign
-	out.ExternalToken = arg.ExternalToken             // simple assign
-	out.CreatedAt = arg.CreatedAt                     // simple assign
-	out.UpdatedAt = arg.UpdatedAt                     // simple assign
-	out.LastSendVerifiedAt = arg.LastSendVerifiedAt   // simple assign
-	out.ExternalTicketID = arg.ExternalTicketID       // simple assign
-	out.IDCardFrontImg = arg.IDCardFrontImg           // simple assign
-	out.IDCardBackImg = arg.IDCardBackImg             // simple assign
-	out.PortraitImg = arg.PortraitImg                 // simple assign
-	out.WebsiteURL = arg.WebsiteURL                   // simple assign
-	out.FanpageURL = arg.FanpageURL                   // simple assign
-	out.CompanyImgs = arg.CompanyImgs                 // simple assign
-	out.BusinessLicenseImgs = arg.BusinessLicenseImgs // simple assign
-	out.ExternalDataVerified = nil                    // zero value
-	out.UploadedAt = arg.UploadedAt                   // simple assign
-}
-
-func Convert_identity_ExternalAccountAhamoves_identitymodel_ExternalAccountAhamoves(args []*identity.ExternalAccountAhamove) (outs []*identitymodel.ExternalAccountAhamove) {
-	if args == nil {
-		return nil
-	}
-	tmps := make([]identitymodel.ExternalAccountAhamove, len(args))
-	outs = make([]*identitymodel.ExternalAccountAhamove, len(args))
-	for i := range tmps {
-		outs[i] = Convert_identity_ExternalAccountAhamove_identitymodel_ExternalAccountAhamove(args[i], &tmps[i])
 	}
 	return outs
 }

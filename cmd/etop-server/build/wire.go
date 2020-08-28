@@ -126,8 +126,6 @@ func Build(
 		server_vtpay.WireSet,
 		server_shop.WireSet,
 		server_admin.WireSet,
-		admin_all.WireSet,
-		shop_all.WireSet,
 		shop_wire.WireSet,
 		vnp.WireSet,
 
@@ -187,6 +185,9 @@ func Build(
 		captcha.WireSet,
 		credit.WireSet,
 		ticket.WireSet,
+
+		admin_all.WireSet,
+		shop_all.WireSet,
 
 		ProvidePolicy,
 		auth.WireSet,

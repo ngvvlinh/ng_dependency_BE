@@ -18,6 +18,7 @@ const (
 
 	// shipnow
 	DefaultTopShipAhamoveConnectionID = dot.ID(1000343411864064400)
+	DefaultDirectAhamoveConnectionID  = dot.ID(1000212023297494791)
 )
 
 type Connection struct {
@@ -89,6 +90,7 @@ func (a *EtopAffiliateAccount) GetShopID() string {
 }
 
 type ShopConnection struct {
+	OwnerID        dot.ID
 	ShopID         dot.ID
 	ConnectionID   dot.ID
 	Token          string
@@ -116,6 +118,7 @@ type ConnectionUpdatedEvent struct {
 type ShopConnectionUpdatedEvent struct {
 	meta.EventMeta
 	ShopID       dot.ID
+	OwnerID      dot.ID
 	ConnectionID dot.ID
 }
 

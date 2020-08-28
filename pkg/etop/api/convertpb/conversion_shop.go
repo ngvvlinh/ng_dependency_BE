@@ -1,7 +1,7 @@
 package convertpb
 
 import (
-	"o.o/api/main/identity"
+	"o.o/api/main/accountshipnow"
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/main/purchaseorder"
 	"o.o/api/main/receipting"
@@ -10,7 +10,7 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 )
 
-func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAccountAhamove, hideInfo bool) *shop.ExternalAccountAhamove {
+func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *accountshipnow.ExternalAccountAhamove, hideInfo bool) *shop.ExternalAccountAhamove {
 	if in == nil {
 		return nil
 	}
@@ -37,6 +37,8 @@ func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAc
 		WebsiteUrl:          in.WebsiteURL,
 		CompanyImgs:         in.CompanyImgs,
 		BusinessLicenseImgs: in.BusinessLicenseImgs,
+		OwnerID:             in.OwnerID,
+		ConnectionID:        in.ConnectionID,
 	}
 }
 

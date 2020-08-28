@@ -5,7 +5,9 @@ import (
 
 	"github.com/asaskevich/govalidator"
 
+	"o.o/api/main/accountshipnow"
 	"o.o/api/main/address"
+	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	apietop "o.o/api/top/int/etop"
 	api "o.o/api/top/int/shop"
@@ -30,8 +32,10 @@ type AccountService struct {
 	AddressAggr   address.CommandBus
 	UserStore     sqlstore.UserStoreFactory
 
-	AccountStore   sqlstore.AccountStoreInterface
-	UserStoreIface sqlstore.UserStoreInterface
+	AccountStore        sqlstore.AccountStoreInterface
+	UserStoreIface      sqlstore.UserStoreInterface
+	AccountshipnowQuery accountshipnow.QueryBus
+	AccountshipnowAggr  accountshipnow.CommandBus
 }
 
 func (s *AccountService) Clone() api.AccountService { res := *s; return &res }
@@ -168,20 +172,14 @@ func (s *AccountService) CreateExternalAccountAhamove(ctx context.Context, q *pb
 	user := query.Result
 	phone := user.Phone
 
-	queryAddress := &address.GetAddressByIDQuery{
-		ID: s.SS.Shop().AddressID,
+	cmd := &accountshipnow.CreateExternalAccountAhamoveCommand{
+		ShopID:       s.SS.Shop().ID,
+		OwnerID:      user.ID,
+		Phone:        phone,
+		Name:         user.FullName,
+		ConnectionID: connectioning.DefaultDirectAhamoveConnectionID,
 	}
-	if err := s.AddressQuery.Dispatch(ctx, queryAddress); err != nil {
-		return nil, cm.Errorf(cm.FailedPrecondition, err, "Thiếu thông tin địa chỉ cửa hàng")
-	}
-	addr := queryAddress.Result
-	cmd := &identity.CreateExternalAccountAhamoveCommand{
-		OwnerID: user.ID,
-		Phone:   phone,
-		Name:    user.FullName,
-		Address: addr.GetFullAddress(),
-	}
-	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.AccountshipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(cmd.Result, false)
@@ -198,21 +196,21 @@ func (s *AccountService) GetExternalAccountAhamove(ctx context.Context, q *pbcm.
 	user := queryUser.Result
 	phone := user.Phone
 
-	query := &identity.GetExternalAccountAhamoveQuery{
+	query := &accountshipnow.GetExternalAccountAhamoveQuery{
 		Phone:   phone,
 		OwnerID: user.ID,
 	}
-	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
+	if err := s.AccountshipnowQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 
 	account := query.Result
-	if !account.ExternalVerified && account.ExternalTicketID != "" {
-		cmd := &identity.UpdateVerifiedExternalAccountAhamoveCommand{
+	if !account.ExternalVerified {
+		cmd := &accountshipnow.UpdateVerifiedExternalAccountAhamoveCommand{
 			OwnerID: user.ID,
 			Phone:   phone,
 		}
-		if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+		if err := s.AccountshipnowAggr.Dispatch(ctx, cmd); err != nil {
 			return nil, err
 		}
 		account = cmd.Result
@@ -233,11 +231,11 @@ func (s *AccountService) RequestVerifyExternalAccountAhamove(ctx context.Context
 	user := query.Result
 	phone := user.Phone
 
-	cmd := &identity.RequestVerifyExternalAccountAhamoveCommand{
+	cmd := &accountshipnow.RequestVerifyExternalAccountAhamoveCommand{
 		OwnerID: user.ID,
 		Phone:   phone,
 	}
-	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.AccountshipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 
@@ -267,7 +265,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerification(ctx context.Co
 	user := query.Result
 	phone := user.Phone
 
-	cmd := &identity.UpdateExternalAccountAhamoveVerificationCommand{
+	cmd := &accountshipnow.UpdateExternalAccountAhamoveVerificationCommand{
 		OwnerID:             user.ID,
 		Phone:               phone,
 		IDCardFrontImg:      r.IdCardFrontImg,
@@ -278,7 +276,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerification(ctx context.Co
 		CompanyImgs:         r.CompanyImgs,
 		BusinessLicenseImgs: r.BusinessLicenseImgs,
 	}
-	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.AccountshipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 

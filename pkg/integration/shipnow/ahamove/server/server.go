@@ -9,6 +9,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 
+	"o.o/api/main/accountshipnow"
 	"o.o/api/main/identity"
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipnow"
@@ -59,7 +60,7 @@ func NewAhamoveWebhookServer(
 
 type AhamoveVerificationFileServer *httpx.Router
 
-func NewAhamoveVerificationFileServer(ctx context.Context, identityQuery identity.QueryBus) AhamoveVerificationFileServer {
+func NewAhamoveVerificationFileServer(ctx context.Context, accountshipnowQS accountshipnow.QueryBus) AhamoveVerificationFileServer {
 	// path: <UploadDirAhamoveVerification>/<originname>/<filename>.jpg
 	// filepath:
 	// user_id_front_<user.id>_<user.create_time>.jpg
@@ -80,10 +81,10 @@ func NewAhamoveVerificationFileServer(ctx context.Context, identityQuery identit
 		userID := parts[1]
 		createTime := parts[2]
 
-		query := &identity.GetExternalAccountAhamoveByExternalIDQuery{
+		query := &accountshipnow.GetExternalAccountAhamoveByExternalIDQuery{
 			ExternalID: userID,
 		}
-		if err := identityQuery.Dispatch(ctx, query); err != nil {
+		if err := accountshipnowQS.Dispatch(ctx, query); err != nil {
 			http.NotFound(w, req)
 			return
 		}

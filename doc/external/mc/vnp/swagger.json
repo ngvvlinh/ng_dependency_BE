@@ -265,6 +265,9 @@
         "shipping_service_fee"
       ],
       "properties": {
+        "coupon": {
+          "type": "string"
+        },
         "delivery_points": {
           "type": "array",
           "items": {
@@ -303,6 +306,9 @@
     "mrGetShipnowServicesRequest": {
       "type": "object",
       "properties": {
+        "coupon": {
+          "type": "string"
+        },
         "delivery_points": {
           "type": "array",
           "items": {
@@ -541,6 +547,9 @@
         },
         "confirm_status": {
           "$ref": "#/definitions/blStatus"
+        },
+        "coupon": {
+          "type": "string"
         },
         "created_at": {
           "type": "string",

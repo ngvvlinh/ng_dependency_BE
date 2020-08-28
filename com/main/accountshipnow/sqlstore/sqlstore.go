@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"o.o/api/main/identity"
-	"o.o/backend/com/main/identity/convert"
-	"o.o/backend/com/main/identity/model"
+	"o.o/api/main/accountshipnow"
+	"o.o/backend/com/main/accountshipnow/convert"
+	"o.o/backend/com/main/accountshipnow/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -50,39 +50,50 @@ func (s *XAccountAhamoveStore) OwnerID(id dot.ID) *XAccountAhamoveStore {
 	return s
 }
 
+func (s *XAccountAhamoveStore) ConnectionID(connID dot.ID) *XAccountAhamoveStore {
+	s.preds = append(s.preds, s.ft.ByConnectionID(connID))
+	return s
+}
+
 func (s *XAccountAhamoveStore) GetXAccountAhamoveDB() (*model.ExternalAccountAhamove, error) {
 	var account model.ExternalAccountAhamove
 	err := s.query().Where(s.preds).ShouldGet(&account)
 	return &account, err
 }
 
-func (s *XAccountAhamoveStore) GetXAccountAhamove() (*identity.ExternalAccountAhamove, error) {
+func (s *XAccountAhamoveStore) GetXAccountAhamove() (*accountshipnow.ExternalAccountAhamove, error) {
 	account, err := s.GetXAccountAhamoveDB()
 	if err != nil {
 		return nil, err
 	}
+
 	return convert.XAccountAhamove(account), nil
 }
 
 type CreateXAccountAhamoveArgs struct {
-	ID      dot.ID
-	OwnerID dot.ID
-	Phone   string
-	Name    string
+	ID           dot.ID
+	OwnerID      dot.ID
+	Phone        string
+	Name         string
+	ConnectionID dot.ID
 }
 
-func (s *XAccountAhamoveStore) CreateXAccountAhamove(args *CreateXAccountAhamoveArgs) (*identity.ExternalAccountAhamove, error) {
+func (s *XAccountAhamoveStore) CreateXAccountAhamove(args *CreateXAccountAhamoveArgs) (*accountshipnow.ExternalAccountAhamove, error) {
 	if args.ID == 0 {
 		args.ID = cm.NewID()
 	}
 	if args.OwnerID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "CreateXAccountAhamove: Missing owner_id")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "CreateXAccountShipnow: Missing owner_id")
+	}
+	if args.ConnectionID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "CreateXAccountShipnow: Missing connection_id")
 	}
 	account := &model.ExternalAccountAhamove{
-		ID:      args.ID,
-		OwnerID: args.OwnerID,
-		Phone:   args.Phone,
-		Name:    args.Name,
+		ID:           args.ID,
+		OwnerID:      args.OwnerID,
+		Phone:        args.Phone,
+		Name:         args.Name,
+		ConnectionID: args.ConnectionID,
 	}
 	if err := s.query().ShouldInsert(account); err != nil {
 		return nil, err
@@ -91,28 +102,20 @@ func (s *XAccountAhamoveStore) CreateXAccountAhamove(args *CreateXAccountAhamove
 	return s.ID(args.ID).GetXAccountAhamove()
 }
 
-type UpdateXAccountAhamoveInfoArgs struct {
-	ID                dot.ID
-	ExternalID        string
-	ExternalVerified  bool
-	ExternalToken     string
-	ExternalCreatedAt time.Time
-}
-
-func (s *XAccountAhamoveStore) UpdateXAccountAhamove(args *UpdateXAccountAhamoveInfoArgs) (*identity.ExternalAccountAhamove, error) {
+func (s *XAccountAhamoveStore) UpdateXAccountAhamove(args *accountshipnow.UpdateXAccountAhamoveExternalInfoArgs) error {
 	if args.ID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "UpdateXAccountAhamove: Missing ID")
+		return cm.Errorf(cm.InvalidArgument, nil, "UpdateXAccountAhamove: Missing ID")
 	}
 	account := &model.ExternalAccountAhamove{
-		ExternalID:        args.ExternalID,
-		ExternalVerified:  args.ExternalVerified,
-		ExternalCreatedAt: args.ExternalCreatedAt,
-		ExternalToken:     args.ExternalToken,
+		ExternalID:           args.ExternalID,
+		ExternalVerified:     args.ExternalVerified,
+		ExternalCreatedAt:    args.ExternalCreatedAt,
+		ExternalToken:        args.ExternalToken,
+		ExternalTicketID:     args.ExternalTicketID,
+		LastSendVerifiedAt:   args.LastSendVerifiedAt,
+		ExternalDataVerified: args.ExternalDataVerified,
 	}
-	if err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(account); err != nil {
-		return nil, err
-	}
-	return s.ID(args.ID).GetXAccountAhamove()
+	return s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(account)
 }
 
 type UpdateXAccountAhamoveVerifiedInfoArgs struct {
@@ -123,7 +126,7 @@ type UpdateXAccountAhamoveVerifiedInfoArgs struct {
 	ExternalDataVerified json.RawMessage
 }
 
-func (s *XAccountAhamoveStore) UpdateXAccountAhamoveVerifiedInfo(args *UpdateXAccountAhamoveVerifiedInfoArgs) (*identity.ExternalAccountAhamove, error) {
+func (s *XAccountAhamoveStore) UpdateXAccountAhamoveVerifiedInfo(args *UpdateXAccountAhamoveVerifiedInfoArgs) (*accountshipnow.ExternalAccountAhamove, error) {
 	account := &model.ExternalAccountAhamove{
 		ExternalTicketID:     args.ExternalTickerID,
 		LastSendVerifiedAt:   args.LastSendVerifiedAt,
@@ -147,7 +150,7 @@ type UpdateXAccountAhamoveVerificationImageArgs struct {
 	BusinessLicenseImgs []string
 }
 
-func (s *XAccountAhamoveStore) UpdateVerificationImages(args *UpdateXAccountAhamoveVerificationImageArgs) (*identity.ExternalAccountAhamove, error) {
+func (s *XAccountAhamoveStore) UpdateVerificationImages(args *UpdateXAccountAhamoveVerificationImageArgs) (*accountshipnow.ExternalAccountAhamove, error) {
 	account := &model.ExternalAccountAhamove{
 		IDCardFrontImg:      args.IDCardFrontImg,
 		IDCardBackImg:       args.IDCardBackImg,
@@ -163,4 +166,11 @@ func (s *XAccountAhamoveStore) UpdateVerificationImages(args *UpdateXAccountAham
 	}
 
 	return s.ID(args.ID).GetXAccountAhamove()
+}
+
+func (s *XAccountAhamoveStore) DeleteXAccountAhamove() error {
+	if len(s.preds) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
+	}
+	return s.query().Where(s.preds).ShouldDelete(&model.ExternalAccountAhamove{})
 }

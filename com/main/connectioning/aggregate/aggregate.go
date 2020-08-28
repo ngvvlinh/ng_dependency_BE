@@ -348,8 +348,8 @@ func (a *ConnectionAggregate) CreateShopConnection(ctx context.Context, args *co
 	if conn.ConnectionMethod == connection_type.ConnectionMethodBuiltin {
 		shopConn.IsGlobal = true
 	} else {
-		if args.ShopID == 0 || shopConn.ShopID == 0 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
+		if args.ShopID == 0 && args.OwnerID == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID or OwnerID")
 		}
 	}
 
@@ -367,6 +367,7 @@ func (a *ConnectionAggregate) UpdateShopConnectionToken(ctx context.Context, arg
 	}
 	cmd := &connectioning.CreateShopConnectionArgs{
 		ShopID:       args.ShopID,
+		OwnerID:      args.OwnerID,
 		ConnectionID: args.ConnectionID,
 		Token:        args.Token,
 		ExternalData: args.ExternalData,
@@ -386,16 +387,17 @@ func (a *ConnectionAggregate) CreateOrUpdateShopConnection(ctx context.Context, 
 		return nil, err
 	}
 	if conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
-		if args.ShopID == 0 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
+		if args.ShopID == 0 && args.OwnerID == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID or OwnerID")
 		}
 	}
 
-	shopConn, err := a.shopConnectionStore(ctx).OptionalShopID(args.ShopID).ConnectionID(args.ConnectionID).GetShopConnection()
+	shopConn, err := a.shopConnectionStore(ctx).OptionalShopID(args.ShopID).OptionalOwnerID(args.OwnerID).ConnectionID(args.ConnectionID).GetShopConnection()
 	if err == nil {
 		// Update
 		err = a.txDB.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 			update := &connectioning.UpdateShopConnectionExternalDataArgs{
+				OwnerID:        shopConn.OwnerID,
 				ShopID:         shopConn.ShopID,
 				ConnectionID:   shopConn.ConnectionID,
 				Token:          args.Token,
@@ -406,7 +408,7 @@ func (a *ConnectionAggregate) CreateOrUpdateShopConnection(ctx context.Context, 
 			if err != nil {
 				return err
 			}
-			return a.raiseShopConnectionUpdatedEvent(ctx, shopConn.ShopID, shopConn.ConnectionID)
+			return a.raiseShopConnectionUpdatedEvent(ctx, shopConn.ShopID, shopConn.OwnerID, shopConn.ConnectionID)
 		})
 		return
 	}
@@ -416,6 +418,7 @@ func (a *ConnectionAggregate) CreateOrUpdateShopConnection(ctx context.Context, 
 	}
 	// Create
 	cmd := &connectioning.CreateShopConnectionArgs{
+		OwnerID:        args.OwnerID,
 		ShopID:         args.ShopID,
 		ConnectionID:   args.ConnectionID,
 		Token:          args.Token,
@@ -426,39 +429,76 @@ func (a *ConnectionAggregate) CreateOrUpdateShopConnection(ctx context.Context, 
 
 }
 
-func (a *ConnectionAggregate) ConfirmShopConnection(ctx context.Context, shopID dot.ID, connectionID dot.ID) (updated int, err error) {
-	conn, err := a.shopConnectionStore(ctx).ShopID(shopID).ConnectionID(connectionID).GetShopConnection()
+func (a *ConnectionAggregate) ConfirmShopConnection(ctx context.Context, args *connectioning.ShopConnectionQueryArgs) (updated int, err error) {
+	shopID, ownerID, connectionID := args.ShopID, args.OwnerID, args.ConnectionID
+	if shopID == 0 && ownerID == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin shop ID hoặc owner ID")
+	}
+	shopConn, err := a.shopConnectionStore(ctx).ConnectionID(connectionID).
+		OptionalShopID(shopID).
+		OptionalOwnerID(ownerID).
+		GetShopConnection()
 	if err != nil {
 		return 0, err
 	}
-	if conn.Status != status3.Z {
+	if shopConn.Status != status3.Z {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this Shop Connection")
 	}
 	err = a.txDB.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		updated, err = a.shopConnectionStore(ctx).ShopID(shopID).ConnectionID(connectionID).ConfirmShopConnection()
+		updated, err = a.shopConnectionStore(ctx).ConnectionID(connectionID).
+			OptionalShopID(shopID).
+			OptionalOwnerID(ownerID).
+			ConfirmShopConnection()
 		if err != nil {
 			return err
 		}
-		return a.raiseShopConnectionUpdatedEvent(ctx, shopID, connectionID)
+		return a.raiseShopConnectionUpdatedEvent(ctx, shopID, ownerID, connectionID)
 	})
 	return
 }
 
-func (a *ConnectionAggregate) DeleteShopConnection(ctx context.Context, shopID dot.ID, connectionID dot.ID) (deleted int, err error) {
+func (a *ConnectionAggregate) DeleteShopConnection(ctx context.Context, args *connectioning.ShopConnectionQueryArgs) (deleted int, err error) {
+	shopID, ownerID, connectionID := args.ShopID, args.OwnerID, args.ConnectionID
+	if shopID == 0 && ownerID == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin shop ID hoặc owner ID")
+	}
+	conn, err := a.connectionStore(ctx).ID(connectionID).GetConnection()
+	if err != nil {
+		return 0, err
+	}
 	err = a.txDB.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		deleted, err = a.shopConnectionStore(ctx).ShopID(shopID).ConnectionID(connectionID).SoftDelete()
-		if err != nil {
+		switch conn.ConnectionSubtype {
+		case connection_type.ConnectionSubtypeShipment:
+			// Shop connection unique theo shop_id
+			deleted, err = a.shopConnectionStore(ctx).ConnectionID(connectionID).
+				ShopID(shopID).
+				SoftDelete()
+			if err != nil {
+				return err
+			}
+		case connection_type.ConnectionSubtypeShipnow:
+			// // Shop connection unique theo owner_id
+			deleted, err = a.shopConnectionStore(ctx).ConnectionID(connectionID).
+				OwnerID(ownerID).
+				SoftDelete()
+			if err != nil {
+				return err
+			}
+		}
+
+		if err = a.raiseShopConnectionUpdatedEvent(ctx, shopID, ownerID, connectionID); err != nil {
 			return err
 		}
-		return a.raiseShopConnectionUpdatedEvent(ctx, shopID, connectionID)
+		return nil
 	})
 	return
 }
 
-func (a *ConnectionAggregate) raiseShopConnectionUpdatedEvent(ctx context.Context, shopID, connectionID dot.ID) error {
+func (a *ConnectionAggregate) raiseShopConnectionUpdatedEvent(ctx context.Context, shopID, ownerID, connectionID dot.ID) error {
 	event := &connectioning.ShopConnectionUpdatedEvent{
 		EventMeta:    meta.NewEvent(),
 		ShopID:       shopID,
+		OwnerID:      ownerID,
 		ConnectionID: connectionID,
 	}
 	return a.eventBus.Publish(ctx, event)

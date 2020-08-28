@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/connectioning"
 	"o.o/api/main/shipnow"
 	carriertypes "o.o/api/main/shipnow/carrier/types"
 	shippingtypes "o.o/api/main/shipping/types"
@@ -14,6 +15,7 @@ import (
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/capi/dot"
 )
 
 type ShipnowService struct {
@@ -96,6 +98,7 @@ func (s *ShipnowService) CreateShipnowFulfillmentV2(ctx context.Context, q *type
 		ShippingNote:        q.ShippingNote,
 		PickupAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
 		ConnectionID:        q.ConnectionID,
+		Coupon:              q.Coupon,
 	}
 	if err := s.ShipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -154,6 +157,7 @@ func (s *ShipnowService) UpdateShipnowFulfillment(ctx context.Context, q *types.
 		ShippingNote:        q.ShippingNote,
 		RequestPickupAt:     time.Time{},
 		PickupAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
+		Coupon:              q.Coupon,
 	}
 	if err := s.ShipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -204,6 +208,15 @@ func (s *ShipnowService) GetShipnowServices(ctx context.Context, q *types.GetShi
 		OrderIds:       q.OrderIds,
 		PickupAddress:  convertpb.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
 		DeliveryPoints: points,
+		Coupon:         q.Coupon,
+	}
+	// TODO: remove
+	// hardcode: Chỉ trả về gói connection shipnow direct
+	// tức dùng trực tiếp tài khoản của shop, không dùng tài khoản của TopShip
+	if len(q.ConnectionIDs) == 0 {
+		cmd.ConnectionIDs = []dot.ID{connectioning.DefaultDirectAhamoveConnectionID}
+	} else {
+		cmd.ConnectionIDs = q.ConnectionIDs
 	}
 	if err := s.ShipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

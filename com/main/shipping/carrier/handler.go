@@ -13,7 +13,7 @@ import (
 
 /*
 	- Sign In to connection using driver.
-	- Create order Update Shop Connection.
+	- Create or Update Shop Connection.
 	- Sign in email + password or send OTP (loginShopConnectionWithOTP)
 */
 func (m *ShipmentManager) ShopConnectionSignIn(ctx context.Context, args *ShopConnectionSignInArgs) (*types.LoginShopConnectionResponse, error) {

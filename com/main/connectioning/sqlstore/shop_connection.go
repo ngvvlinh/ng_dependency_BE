@@ -48,6 +48,16 @@ func (s *ShopConnectionStore) ShopID(shopID dot.ID) *ShopConnectionStore {
 	return s
 }
 
+func (s *ShopConnectionStore) OwnerID(id dot.ID) *ShopConnectionStore {
+	s.preds = append(s.preds, s.ft.ByOwnerID(id))
+	return s
+}
+
+func (s *ShopConnectionStore) OptionalOwnerID(ownerID dot.ID) *ShopConnectionStore {
+	s.preds = append(s.preds, s.ft.ByOwnerID(ownerID).Optional())
+	return s
+}
+
 func (s *ShopConnectionStore) OptionalShopID(shopID dot.ID) *ShopConnectionStore {
 	s.preds = append(s.preds, s.ft.ByShopID(shopID).Optional())
 	return s
@@ -64,7 +74,7 @@ func (s *ShopConnectionStore) ConnectionIDs(connectionIDs ...dot.ID) *ShopConnec
 }
 
 func (s *ShopConnectionStore) IsGlobal(isGlobal bool) *ShopConnectionStore {
-	s.preds = append(s.preds, s.ft.ByIsGlobal(isGlobal))
+	s.preds = append(s.preds, s.ft.ByIsGlobalPtr(&isGlobal))
 	return s
 }
 
@@ -152,13 +162,15 @@ func (s *ShopConnectionStore) UpdateShopConnectionToken(args *connectioning.Upda
 	query := s.query().Where(s.ft.ByConnectionID(args.ConnectionID))
 	if args.ShopID != 0 {
 		query = query.Where(s.ft.ByShopID(args.ShopID))
+	} else if args.OwnerID != 0 {
+		query = query.Where(s.ft.ByOwnerID(args.OwnerID))
 	} else {
 		query = query.Where(s.ft.ByIsGlobal(true))
 	}
 	if err := query.ShouldUpdate(update); err != nil {
 		return nil, err
 	}
-	return s.OptionalShopID(args.ShopID).ConnectionID(args.ConnectionID).GetShopConnection()
+	return s.OptionalShopID(args.ShopID).OptionalOwnerID(args.OwnerID).ConnectionID(args.ConnectionID).GetShopConnection()
 }
 
 func (s *ShopConnectionStore) ConfirmShopConnection() (updated int, _ error) {

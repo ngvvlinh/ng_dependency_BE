@@ -71,6 +71,7 @@ type CreateShipnowFulfillmentCommand struct {
 	PickupAddress       *orderingtypes.Address
 	ConnectionID        dot.ID
 	ExternalID          string
+	Coupon              string
 
 	Result *ShipnowFulfillment `json:"-"`
 }
@@ -85,6 +86,8 @@ type GetShipnowServicesCommand struct {
 	OrderIds       []dot.ID
 	PickupAddress  *orderingtypes.Address
 	DeliveryPoints []*shipnowtypes.DeliveryPoint
+	ConnectionIDs  []dot.ID
+	Coupon         string
 
 	Result *GetShipnowServicesResult `json:"-"`
 }
@@ -104,6 +107,7 @@ type UpdateShipnowFulfillmentCommand struct {
 	ShippingNote        string
 	RequestPickupAt     time.Time
 	PickupAddress       *orderingtypes.Address
+	Coupon              string
 
 	Result *ShipnowFulfillment `json:"-"`
 }
@@ -256,6 +260,7 @@ func (q *CreateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ contex
 			PickupAddress:       q.PickupAddress,
 			ConnectionID:        q.ConnectionID,
 			ExternalID:          q.ExternalID,
+			Coupon:              q.Coupon,
 		}
 }
 
@@ -270,6 +275,7 @@ func (q *CreateShipnowFulfillmentCommand) SetCreateShipnowFulfillmentArgs(args *
 	q.PickupAddress = args.PickupAddress
 	q.ConnectionID = args.ConnectionID
 	q.ExternalID = args.ExternalID
+	q.Coupon = args.Coupon
 }
 
 func (q *GetShipnowServicesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowServicesArgs) {
@@ -279,6 +285,8 @@ func (q *GetShipnowServicesCommand) GetArgs(ctx context.Context) (_ context.Cont
 			OrderIds:       q.OrderIds,
 			PickupAddress:  q.PickupAddress,
 			DeliveryPoints: q.DeliveryPoints,
+			ConnectionIDs:  q.ConnectionIDs,
+			Coupon:         q.Coupon,
 		}
 }
 
@@ -287,6 +295,8 @@ func (q *GetShipnowServicesCommand) SetGetShipnowServicesArgs(args *GetShipnowSe
 	q.OrderIds = args.OrderIds
 	q.PickupAddress = args.PickupAddress
 	q.DeliveryPoints = args.DeliveryPoints
+	q.ConnectionIDs = args.ConnectionIDs
+	q.Coupon = args.Coupon
 }
 
 func (q *UpdateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentArgs) {
@@ -301,6 +311,7 @@ func (q *UpdateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ contex
 			ShippingNote:        q.ShippingNote,
 			RequestPickupAt:     q.RequestPickupAt,
 			PickupAddress:       q.PickupAddress,
+			Coupon:              q.Coupon,
 		}
 }
 
@@ -314,6 +325,7 @@ func (q *UpdateShipnowFulfillmentCommand) SetUpdateShipnowFulfillmentArgs(args *
 	q.ShippingNote = args.ShippingNote
 	q.RequestPickupAt = args.RequestPickupAt
 	q.PickupAddress = args.PickupAddress
+	q.Coupon = args.Coupon
 }
 
 func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentCarrierInfoArgs) {

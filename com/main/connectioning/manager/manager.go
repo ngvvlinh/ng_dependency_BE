@@ -16,7 +16,7 @@ import (
 const (
 	DefaultTTl     = 2 * 60 * 60
 	SecretKey      = "connectionsecretkey"
-	VersionCaching = "1.1"
+	VersionCaching = "1.2"
 )
 
 var ll = l.New()
@@ -74,27 +74,43 @@ func (m *ConnectionManager) GetConnectionByCode(ctx context.Context, connCode st
 	return &connection, nil
 }
 
-func (m *ConnectionManager) GetShopConnection(ctx context.Context, connID dot.ID, shopID dot.ID) (*connectioning.ShopConnection, error) {
-	shopConnKey := GetRedisShopConnectionKey(connID, shopID)
+type GetShopConnectionArgs struct {
+	ConnectionID dot.ID
+	ShopID       dot.ID
+	OwnerID      dot.ID
+	// IsGlobal use for builtin connection
+	// this will ignore ShopID & OwnerID
+	IsGlobal bool
+}
+
+func (m *ConnectionManager) GetShopConnection(ctx context.Context, args GetShopConnectionArgs) (*connectioning.ShopConnection, error) {
+	shopConnKey := GetRedisShopConnectionKey(args)
 	var shopConnection connectioning.ShopConnection
 	err := m.loadRedis(shopConnKey, &shopConnection)
 	if err == nil {
 		return &shopConnection, nil
 	}
-	query2 := &connectioning.GetShopConnectionByIDQuery{
-		ConnectionID: connID,
-		ShopID:       shopID,
+	query := &connectioning.GetShopConnectionQuery{
+		ConnectionID: args.ConnectionID,
+		OwnerID:      args.OwnerID,
+		ShopID:       args.ShopID,
+		IsGlobal:     args.IsGlobal,
 	}
-	if err := m.connectionQS.Dispatch(ctx, query2); err != nil {
+	if err := m.connectionQS.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	shopConnection = *query2.Result
+	shopConnection = *query.Result
 	m.setRedis(shopConnKey, shopConnection)
 	return &shopConnection, nil
 }
 
-func GetRedisShopConnectionKey(connID dot.ID, shopID dot.ID) string {
-	return fmt.Sprintf("shopConn:%v:%v%v", VersionCaching, shopID.String(), connID.String())
+func GetRedisShopConnectionKey(args GetShopConnectionArgs) string {
+	shopID, ownerID := args.ShopID, args.OwnerID
+	if args.IsGlobal {
+		shopID = 0
+		ownerID = 0
+	}
+	return fmt.Sprintf("shopConn:%v:sid:%v:uid:%v:connid:%v", VersionCaching, shopID.String(), ownerID.String(), args.ConnectionID.String())
 }
 
 func GetRedisConnectionKeyByID(connID dot.ID) string {

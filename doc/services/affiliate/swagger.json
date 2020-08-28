@@ -3014,6 +3014,13 @@
         "confirm_status": {
           "$ref": "#/definitions/blStatus"
         },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "coupon": {
+          "type": "string"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"

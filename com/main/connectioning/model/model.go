@@ -36,6 +36,7 @@ type Connection struct {
 
 // +sqlgen
 type ShopConnection struct {
+	OwnerID          dot.ID
 	ShopID           dot.ID
 	ConnectionID     dot.ID
 	Token            string

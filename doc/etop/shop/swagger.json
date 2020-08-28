@@ -260,6 +260,33 @@
         }
       }
     },
+    "/api/shop.AccountShipnow/GetAccountShipnow": {
+      "post": {
+        "tags": [
+          "AccountShipnow"
+        ],
+        "summary": "GetAccountShipnow",
+        "operationId": "shop.AccountShipnow-GetAccountShipnow",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetAccountShipnowRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paExternalAccountAhamove"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Authorize/AuthorizePartner": {
       "post": {
         "tags": [
@@ -975,7 +1002,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/qdGetAvailableConnectionsRequest"
             }
           }
         ],
@@ -1002,7 +1029,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/qdGetConnectionsRequest"
             }
           }
         ],
@@ -9411,6 +9438,10 @@
             "type": "string"
           }
         },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -9445,6 +9476,10 @@
         },
         "name": {
           "type": "string"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
         },
         "phone": {
           "type": "string"
@@ -9570,6 +9605,18 @@
         },
         "title": {
           "$ref": "#/definitions/kfFullTextSearch"
+        }
+      }
+    },
+    "paGetAccountShipnowRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identity": {
+          "type": "string"
         }
       }
     },
@@ -13885,6 +13932,9 @@
           "type": "string",
           "format": "int64"
         },
+        "coupon": {
+          "type": "string"
+        },
         "delivery_points": {
           "type": "array",
           "items": {
@@ -14402,6 +14452,25 @@
         }
       }
     },
+    "qdGetAvailableConnectionsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_subtype": {
+          "$ref": "#/definitions/cdConnectionSubtype"
+        }
+      }
+    },
+    "qdGetConnectionsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "connection_subtype": {
+          "$ref": "#/definitions/cdConnectionSubtype"
+        }
+      }
+    },
     "qdGetConnectionsResponse": {
       "type": "object",
       "properties": {
@@ -14527,6 +14596,16 @@
     "qdGetShipnowServicesRequest": {
       "type": "object",
       "properties": {
+        "connection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "coupon": {
+          "type": "string"
+        },
         "delivery_points": {
           "type": "array",
           "items": {
@@ -15566,6 +15645,13 @@
         "confirm_status": {
           "$ref": "#/definitions/blStatus"
         },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "coupon": {
+          "type": "string"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -15689,6 +15775,9 @@
         },
         "code": {
           "type": "string"
+        },
+        "connection_info": {
+          "$ref": "#/definitions/qdConnectionInfo"
         },
         "description": {
           "type": "string"
@@ -16038,6 +16127,9 @@
       "type": "object",
       "properties": {
         "carrier": {
+          "type": "string"
+        },
+        "coupon": {
           "type": "string"
         },
         "delivery_points": {
@@ -16537,6 +16629,9 @@
   "tags": [
     {
       "name": "Account"
+    },
+    {
+      "name": "AccountShipnow"
     },
     {
       "name": "Authorize"

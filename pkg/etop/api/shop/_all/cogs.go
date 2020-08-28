@@ -4,6 +4,7 @@ import (
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/api/shop/account"
+	"o.o/backend/pkg/etop/api/shop/accountshipnow"
 	"o.o/backend/pkg/etop/api/shop/authorize"
 	"o.o/backend/pkg/etop/api/shop/brand"
 	"o.o/backend/pkg/etop/api/shop/carrier"
@@ -74,6 +75,7 @@ func NewServers(
 	webServerService *ws.WebServerService,
 	subscriptionService *subscription.SubscriptionService,
 	ticketService *shop.TicketService,
+	accountshipnowService *accountshipnow.AccountShipnowService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -116,6 +118,7 @@ func NewServers(
 		tradingService.Clone,
 		webServerService.Clone,
 		ticketService.Clone,
+		accountshipnowService.Clone,
 	)
 	return servers
 }

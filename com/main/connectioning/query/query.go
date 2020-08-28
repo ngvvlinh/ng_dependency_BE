@@ -46,6 +46,12 @@ func (q *ConnectionQuery) GetConnectionByCode(ctx context.Context, code string) 
 }
 
 func (q *ConnectionQuery) ListConnections(ctx context.Context, args *connectioning.ListConnectionsArgs) ([]*connectioning.Connection, error) {
+	// backward-compatible
+	// set default subtype to shipment
+	if args.ConnectionSubtype == 0 {
+		args.ConnectionSubtype = connection_type.ConnectionSubtypeShipment
+	}
+
 	query := q.connectionStore(ctx).OptionalPartnerID(args.PartnerID).OptionalConnectionType(args.ConnectionType).OptionalConnectionSubtype(args.ConnectionSubtype).OptionalConnectionMethod(args.ConnectionMethod).OptionalConnectionProvider(args.ConnectionProvider)
 	return query.ListConnections(args.Status)
 }
@@ -81,35 +87,72 @@ func (q *ConnectionQuery) ListConnectionsByOriginConnectionID(ctx context.Contex
 	return q.connectionStore(ctx).OriginConnectionID(originConnectionID).OptionalConnectionMethod(connection_type.ConnectionMethodBuiltin).ListConnections(status3.NullStatus{Valid: false})
 }
 
-func (q *ConnectionQuery) GetShopConnectionByID(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (*connectioning.ShopConnection, error) {
-	return q.shopConnectionStore(ctx).OptionalShopID(ShopID).ConnectionID(ConnectionID).GetShopConnection()
+func (q *ConnectionQuery) GetShopConnection(ctx context.Context, args *connectioning.GetShopConnectionArgs) (*connectioning.ShopConnection, error) {
+	if args.ConnectionID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing connection_id")
+	}
+	query := q.shopConnectionStore(ctx).ConnectionID(args.ConnectionID)
+
+	if args.IsGlobal {
+		return query.IsGlobal(args.IsGlobal).GetShopConnection()
+	}
+
+	if args.ShopID == 0 && args.OwnerID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id or owner_id")
+	}
+	if args.ShopID != 0 && args.OwnerID != 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Only provide either shop_id or owner_id")
+	}
+	if args.ShopID != 0 {
+		query = query.ShopID(args.ShopID)
+	}
+	if args.OwnerID != 0 {
+		query = query.OwnerID(args.OwnerID)
+	}
+	return query.GetShopConnection()
 }
 
 func (q *ConnectionQuery) ListShopConnections(ctx context.Context, args *connectioning.ListShopConnectionsArgs) ([]*connectioning.ShopConnection, error) {
-	query := q.shopConnectionStore(ctx)
-	if args.ShopID == 0 && !args.IncludeGlobal {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "ListShopConnections failed. Invalid ShopID")
+	// connection subtype;
+	// - shipment: shop_id != null, owner_id = null
+	// - shipnow: shop_id = null, owner_id != null
+	if args.ShopID == 0 && args.OwnerID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID or OwnerID")
 	}
+	query := q.shopConnectionStore(ctx)
 	if len(args.ConnectionIDs) > 0 {
 		query = query.ConnectionIDs(args.ConnectionIDs...)
 	}
 
 	var res []*connectioning.ShopConnection
-	if args.ShopID != 0 {
+	if args.OwnerID != 0 {
 		query1 := query.Clone()
-		res1, err := query1.ShopID(args.ShopID).ListShopConnections()
+		query1 = query1.IsGlobal(false)
+		query1 = query1.OwnerID(args.OwnerID)
+		res1, err := query1.ListShopConnections()
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, res1...)
 	}
-	if args.IncludeGlobal {
+	if args.ShopID != 0 {
 		query2 := query.Clone()
-		res2, err := query2.IsGlobal(true).ListShopConnections()
+		query2 = query2.IsGlobal(false)
+		query2 = query2.ShopID(args.ShopID)
+		res2, err := query2.ListShopConnections()
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, res2...)
+	}
+
+	if args.IncludeGlobal {
+		query3 := query.Clone()
+		res3, err := query3.IsGlobal(true).ListShopConnections()
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, res3...)
 	}
 	return res, nil
 }

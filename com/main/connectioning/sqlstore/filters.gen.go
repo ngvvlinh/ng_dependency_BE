@@ -364,6 +364,25 @@ func (ft ShopConnectionFilters) Prefix() string {
 	return ft.prefix
 }
 
+func (ft *ShopConnectionFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == 0,
+	}
+}
+
+func (ft *ShopConnectionFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == nil,
+		IsZero: OwnerID != nil && (*OwnerID) == 0,
+	}
+}
+
 func (ft *ShopConnectionFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

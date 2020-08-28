@@ -7,6 +7,7 @@ import (
 
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/api/shop/account"
+	"o.o/backend/pkg/etop/api/shop/accountshipnow"
 	"o.o/backend/pkg/etop/api/shop/authorize"
 	"o.o/backend/pkg/etop/api/shop/brand"
 	"o.o/backend/pkg/etop/api/shop/carrier"
@@ -75,4 +76,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(trading.TradingService), "*"),
 	wire.Struct(new(ws.WebServerService), "*"),
 	wire.Struct(new(shop.TicketService), "*"),
+	wire.Struct(new(accountshipnow.AccountShipnowService), "*"),
 )

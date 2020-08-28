@@ -41,6 +41,7 @@ func (s *Shipping) GetShipnowServices(ctx context.Context, accountID dot.ID, r *
 		ShopId:         accountID,
 		PickupAddress:  convertx.Convert_apix_ShipnowLocationAddressShortVersion_To_core_OrderAddress(r.PickupAddress),
 		DeliveryPoints: points,
+		Coupon:         r.Coupon,
 	}
 	if err := s.ShipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -173,6 +174,7 @@ func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, userID dot.ID, 
 		PickupAddress:       convertx.Convert_apix_ShipnowAddress_To_core_OrderAddress(r.PickupAddress),
 		ConnectionID:        conn.ID,
 		ExternalID:          r.ExternalID,
+		Coupon:              r.Coupon,
 	}
 	if err := s.ShipnowAggr.Dispatch(ctx, createCmd); err != nil {
 		return nil, err

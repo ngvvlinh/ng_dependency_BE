@@ -57,6 +57,7 @@ type ShipnowFulfillment struct {
 	CarrierFeeLines []*shippingtypes.ShippingFeeLine
 	ExternalID      string
 	TotalFee        int
+	Coupon          string
 }
 
 type DeliveryPoint = shipnowtypes.DeliveryPoint

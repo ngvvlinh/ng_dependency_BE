@@ -46,6 +46,8 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 		ShippingCancelledAt:        cmapi.PbTime(in.ShippingCancelledAt),
 		ShippingSharedLink:         in.ShippingSharedLink,
 		CancelReason:               in.CancelReason,
+		ConnectionID:               in.ConnectionID,
+		Coupon:                     in.Coupon,
 	}
 }
 
@@ -270,11 +272,12 @@ func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowS
 		return nil
 	}
 	return &types.ShipnowService{
-		Carrier:     in.Carrier.String(),
-		Name:        in.Name,
-		Code:        in.Code,
-		Fee:         in.Fee,
-		Description: in.Description,
+		Carrier:        in.Carrier.String(),
+		Name:           in.Name,
+		Code:           in.Code,
+		Fee:            in.Fee,
+		Description:    in.Description,
+		ConnectionInfo: Convert_core_ConnectionInfo_To_api_ConnectionInfo(in.ConnectionInfo),
 	}
 }
 

@@ -57,20 +57,6 @@ func (h AggregateHandler) HandleCreateAffiliate(ctx context.Context, msg *Create
 	return err
 }
 
-type CreateExternalAccountAhamoveCommand struct {
-	OwnerID dot.ID
-	Phone   string
-	Name    string
-	Address string
-
-	Result *ExternalAccountAhamove `json:"-"`
-}
-
-func (h AggregateHandler) HandleCreateExternalAccountAhamove(ctx context.Context, msg *CreateExternalAccountAhamoveCommand) (err error) {
-	msg.Result, err = h.inner.CreateExternalAccountAhamove(msg.GetArgs(ctx))
-	return err
-}
-
 type DeleteAffiliateCommand struct {
 	ID      dot.ID
 	OwnerID dot.ID
@@ -81,18 +67,6 @@ type DeleteAffiliateCommand struct {
 
 func (h AggregateHandler) HandleDeleteAffiliate(ctx context.Context, msg *DeleteAffiliateCommand) (err error) {
 	return h.inner.DeleteAffiliate(msg.GetArgs(ctx))
-}
-
-type RequestVerifyExternalAccountAhamoveCommand struct {
-	OwnerID dot.ID
-	Phone   string
-
-	Result *RequestVerifyExternalAccountAhamoveResult `json:"-"`
-}
-
-func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.Context, msg *RequestVerifyExternalAccountAhamoveCommand) (err error) {
-	msg.Result, err = h.inner.RequestVerifyExternalAccountAhamove(msg.GetArgs(ctx))
-	return err
 }
 
 type UnblockUserCommand struct {
@@ -131,25 +105,6 @@ type UpdateAffiliateInfoCommand struct {
 
 func (h AggregateHandler) HandleUpdateAffiliateInfo(ctx context.Context, msg *UpdateAffiliateInfoCommand) (err error) {
 	msg.Result, err = h.inner.UpdateAffiliateInfo(msg.GetArgs(ctx))
-	return err
-}
-
-type UpdateExternalAccountAhamoveVerificationCommand struct {
-	OwnerID             dot.ID
-	Phone               string
-	IDCardFrontImg      string
-	IDCardBackImg       string
-	PortraitImg         string
-	WebsiteURL          string
-	FanpageURL          string
-	CompanyImgs         []string
-	BusinessLicenseImgs []string
-
-	Result *ExternalAccountAhamove `json:"-"`
-}
-
-func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerification(ctx context.Context, msg *UpdateExternalAccountAhamoveVerificationCommand) (err error) {
-	msg.Result, err = h.inner.UpdateExternalAccountAhamoveVerification(msg.GetArgs(ctx))
 	return err
 }
 
@@ -226,18 +181,6 @@ func (h AggregateHandler) HandleUpdateUserReferenceUserID(ctx context.Context, m
 	return h.inner.UpdateUserReferenceUserID(msg.GetArgs(ctx))
 }
 
-type UpdateVerifiedExternalAccountAhamoveCommand struct {
-	OwnerID dot.ID
-	Phone   string
-
-	Result *ExternalAccountAhamove `json:"-"`
-}
-
-func (h AggregateHandler) HandleUpdateVerifiedExternalAccountAhamove(ctx context.Context, msg *UpdateVerifiedExternalAccountAhamoveCommand) (err error) {
-	msg.Result, err = h.inner.UpdateVerifiedExternalAccountAhamove(msg.GetArgs(ctx))
-	return err
-}
-
 type GetAccountByIDQuery struct {
 	ID dot.ID
 
@@ -303,29 +246,6 @@ type GetAllAccountsByUsersQuery struct {
 
 func (h QueryServiceHandler) HandleGetAllAccountsByUsers(ctx context.Context, msg *GetAllAccountsByUsersQuery) (err error) {
 	msg.Result, err = h.inner.GetAllAccountsByUsers(msg.GetArgs(ctx))
-	return err
-}
-
-type GetExternalAccountAhamoveQuery struct {
-	OwnerID dot.ID
-	Phone   string
-
-	Result *ExternalAccountAhamove `json:"-"`
-}
-
-func (h QueryServiceHandler) HandleGetExternalAccountAhamove(ctx context.Context, msg *GetExternalAccountAhamoveQuery) (err error) {
-	msg.Result, err = h.inner.GetExternalAccountAhamove(msg.GetArgs(ctx))
-	return err
-}
-
-type GetExternalAccountAhamoveByExternalIDQuery struct {
-	ExternalID string
-
-	Result *ExternalAccountAhamove `json:"-"`
-}
-
-func (h QueryServiceHandler) HandleGetExternalAccountAhamoveByExternalID(ctx context.Context, msg *GetExternalAccountAhamoveByExternalIDQuery) (err error) {
-	msg.Result, err = h.inner.GetExternalAccountAhamoveByExternalID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -508,46 +428,40 @@ func (h QueryServiceHandler) HandleListUsersByWLPartnerID(ctx context.Context, m
 
 // implement interfaces
 
-func (q *BlockUserCommand) command()                                {}
-func (q *CreateAffiliateCommand) command()                          {}
-func (q *CreateExternalAccountAhamoveCommand) command()             {}
-func (q *DeleteAffiliateCommand) command()                          {}
-func (q *RequestVerifyExternalAccountAhamoveCommand) command()      {}
-func (q *UnblockUserCommand) command()                              {}
-func (q *UpdateAffiliateBankAccountCommand) command()               {}
-func (q *UpdateAffiliateInfoCommand) command()                      {}
-func (q *UpdateExternalAccountAhamoveVerificationCommand) command() {}
-func (q *UpdateShipFromAddressIDCommand) command()                  {}
-func (q *UpdateUserEmailCommand) command()                          {}
-func (q *UpdateUserPhoneCommand) command()                          {}
-func (q *UpdateUserRefCommand) command()                            {}
-func (q *UpdateUserReferenceSaleIDCommand) command()                {}
-func (q *UpdateUserReferenceUserIDCommand) command()                {}
-func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()     {}
+func (q *BlockUserCommand) command()                  {}
+func (q *CreateAffiliateCommand) command()            {}
+func (q *DeleteAffiliateCommand) command()            {}
+func (q *UnblockUserCommand) command()                {}
+func (q *UpdateAffiliateBankAccountCommand) command() {}
+func (q *UpdateAffiliateInfoCommand) command()        {}
+func (q *UpdateShipFromAddressIDCommand) command()    {}
+func (q *UpdateUserEmailCommand) command()            {}
+func (q *UpdateUserPhoneCommand) command()            {}
+func (q *UpdateUserRefCommand) command()              {}
+func (q *UpdateUserReferenceSaleIDCommand) command()  {}
+func (q *UpdateUserReferenceUserIDCommand) command()  {}
 
-func (q *GetAccountByIDQuery) query()                        {}
-func (q *GetAffiliateByIDQuery) query()                      {}
-func (q *GetAffiliateWithPermissionQuery) query()            {}
-func (q *GetAffiliatesByIDsQuery) query()                    {}
-func (q *GetAffiliatesByOwnerIDQuery) query()                {}
-func (q *GetAllAccountsByUsersQuery) query()                 {}
-func (q *GetExternalAccountAhamoveQuery) query()             {}
-func (q *GetExternalAccountAhamoveByExternalIDQuery) query() {}
-func (q *GetPartnerByIDQuery) query()                        {}
-func (q *GetShopByIDQuery) query()                           {}
-func (q *GetUserByEmailQuery) query()                        {}
-func (q *GetUserByIDQuery) query()                           {}
-func (q *GetUserByPhoneQuery) query()                        {}
-func (q *GetUserByPhoneOrEmailQuery) query()                 {}
-func (q *GetUserFtRefSaffByIDQuery) query()                  {}
-func (q *GetUserFtRefSaffsQuery) query()                     {}
-func (q *GetUsersQuery) query()                              {}
-func (q *GetUsersByAccountQuery) query()                     {}
-func (q *GetUsersByIDsQuery) query()                         {}
-func (q *ListPartnersForWhiteLabelQuery) query()             {}
-func (q *ListShopExtendedsQuery) query()                     {}
-func (q *ListShopsByIDsQuery) query()                        {}
-func (q *ListUsersByWLPartnerIDQuery) query()                {}
+func (q *GetAccountByIDQuery) query()             {}
+func (q *GetAffiliateByIDQuery) query()           {}
+func (q *GetAffiliateWithPermissionQuery) query() {}
+func (q *GetAffiliatesByIDsQuery) query()         {}
+func (q *GetAffiliatesByOwnerIDQuery) query()     {}
+func (q *GetAllAccountsByUsersQuery) query()      {}
+func (q *GetPartnerByIDQuery) query()             {}
+func (q *GetShopByIDQuery) query()                {}
+func (q *GetUserByEmailQuery) query()             {}
+func (q *GetUserByIDQuery) query()                {}
+func (q *GetUserByPhoneQuery) query()             {}
+func (q *GetUserByPhoneOrEmailQuery) query()      {}
+func (q *GetUserFtRefSaffByIDQuery) query()       {}
+func (q *GetUserFtRefSaffsQuery) query()          {}
+func (q *GetUsersQuery) query()                   {}
+func (q *GetUsersByAccountQuery) query()          {}
+func (q *GetUsersByIDsQuery) query()              {}
+func (q *ListPartnersForWhiteLabelQuery) query()  {}
+func (q *ListShopExtendedsQuery) query()          {}
+func (q *ListShopsByIDsQuery) query()             {}
+func (q *ListUsersByWLPartnerIDQuery) query()     {}
 
 // implement conversion
 
@@ -587,23 +501,6 @@ func (q *CreateAffiliateCommand) SetCreateAffiliateArgs(args *CreateAffiliateArg
 	q.BankAccount = args.BankAccount
 }
 
-func (q *CreateExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateExternalAccountAhamoveArgs) {
-	return ctx,
-		&CreateExternalAccountAhamoveArgs{
-			OwnerID: q.OwnerID,
-			Phone:   q.Phone,
-			Name:    q.Name,
-			Address: q.Address,
-		}
-}
-
-func (q *CreateExternalAccountAhamoveCommand) SetCreateExternalAccountAhamoveArgs(args *CreateExternalAccountAhamoveArgs) {
-	q.OwnerID = args.OwnerID
-	q.Phone = args.Phone
-	q.Name = args.Name
-	q.Address = args.Address
-}
-
 func (q *DeleteAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteAffiliateArgs) {
 	return ctx,
 		&DeleteAffiliateArgs{
@@ -615,19 +512,6 @@ func (q *DeleteAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context
 func (q *DeleteAffiliateCommand) SetDeleteAffiliateArgs(args *DeleteAffiliateArgs) {
 	q.ID = args.ID
 	q.OwnerID = args.OwnerID
-}
-
-func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RequestVerifyExternalAccountAhamoveArgs) {
-	return ctx,
-		&RequestVerifyExternalAccountAhamoveArgs{
-			OwnerID: q.OwnerID,
-			Phone:   q.Phone,
-		}
-}
-
-func (q *RequestVerifyExternalAccountAhamoveCommand) SetRequestVerifyExternalAccountAhamoveArgs(args *RequestVerifyExternalAccountAhamoveArgs) {
-	q.OwnerID = args.OwnerID
-	q.Phone = args.Phone
 }
 
 func (q *UnblockUserCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
@@ -667,33 +551,6 @@ func (q *UpdateAffiliateInfoCommand) SetUpdateAffiliateInfoArgs(args *UpdateAffi
 	q.Phone = args.Phone
 	q.Email = args.Email
 	q.Name = args.Name
-}
-
-func (q *UpdateExternalAccountAhamoveVerificationCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalAccountAhamoveVerificationArgs) {
-	return ctx,
-		&UpdateExternalAccountAhamoveVerificationArgs{
-			OwnerID:             q.OwnerID,
-			Phone:               q.Phone,
-			IDCardFrontImg:      q.IDCardFrontImg,
-			IDCardBackImg:       q.IDCardBackImg,
-			PortraitImg:         q.PortraitImg,
-			WebsiteURL:          q.WebsiteURL,
-			FanpageURL:          q.FanpageURL,
-			CompanyImgs:         q.CompanyImgs,
-			BusinessLicenseImgs: q.BusinessLicenseImgs,
-		}
-}
-
-func (q *UpdateExternalAccountAhamoveVerificationCommand) SetUpdateExternalAccountAhamoveVerificationArgs(args *UpdateExternalAccountAhamoveVerificationArgs) {
-	q.OwnerID = args.OwnerID
-	q.Phone = args.Phone
-	q.IDCardFrontImg = args.IDCardFrontImg
-	q.IDCardBackImg = args.IDCardBackImg
-	q.PortraitImg = args.PortraitImg
-	q.WebsiteURL = args.WebsiteURL
-	q.FanpageURL = args.FanpageURL
-	q.CompanyImgs = args.CompanyImgs
-	q.BusinessLicenseImgs = args.BusinessLicenseImgs
 }
 
 func (q *UpdateShipFromAddressIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipFromAddressArgs) {
@@ -762,19 +619,6 @@ func (q *UpdateUserReferenceUserIDCommand) SetUpdateUserReferenceUserIDArgs(args
 	q.RefUserPhone = args.RefUserPhone
 }
 
-func (q *UpdateVerifiedExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateVerifiedExternalAccountAhamoveArgs) {
-	return ctx,
-		&UpdateVerifiedExternalAccountAhamoveArgs{
-			OwnerID: q.OwnerID,
-			Phone:   q.Phone,
-		}
-}
-
-func (q *UpdateVerifiedExternalAccountAhamoveCommand) SetUpdateVerifiedExternalAccountAhamoveArgs(args *UpdateVerifiedExternalAccountAhamoveArgs) {
-	q.OwnerID = args.OwnerID
-	q.Phone = args.Phone
-}
-
 func (q *GetAccountByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
@@ -824,30 +668,6 @@ func (q *GetAllAccountsByUsersQuery) GetArgs(ctx context.Context) (_ context.Con
 func (q *GetAllAccountsByUsersQuery) SetGetAllAccountUsersArg(args *GetAllAccountUsersArg) {
 	q.UserIDs = args.UserIDs
 	q.Type = args.Type
-}
-
-func (q *GetExternalAccountAhamoveQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountAhamoveArgs) {
-	return ctx,
-		&GetExternalAccountAhamoveArgs{
-			OwnerID: q.OwnerID,
-			Phone:   q.Phone,
-		}
-}
-
-func (q *GetExternalAccountAhamoveQuery) SetGetExternalAccountAhamoveArgs(args *GetExternalAccountAhamoveArgs) {
-	q.OwnerID = args.OwnerID
-	q.Phone = args.Phone
-}
-
-func (q *GetExternalAccountAhamoveByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountAhamoveByExternalIDQueryArgs) {
-	return ctx,
-		&GetExternalAccountAhamoveByExternalIDQueryArgs{
-			ExternalID: q.ExternalID,
-		}
-}
-
-func (q *GetExternalAccountAhamoveByExternalIDQuery) SetGetExternalAccountAhamoveByExternalIDQueryArgs(args *GetExternalAccountAhamoveByExternalIDQueryArgs) {
-	q.ExternalID = args.ExternalID
 }
 
 func (q *GetPartnerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetPartnerByIDArgs) {
@@ -1018,20 +838,16 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleBlockUser)
 	b.AddHandler(h.HandleCreateAffiliate)
-	b.AddHandler(h.HandleCreateExternalAccountAhamove)
 	b.AddHandler(h.HandleDeleteAffiliate)
-	b.AddHandler(h.HandleRequestVerifyExternalAccountAhamove)
 	b.AddHandler(h.HandleUnblockUser)
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
-	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerification)
 	b.AddHandler(h.HandleUpdateShipFromAddressID)
 	b.AddHandler(h.HandleUpdateUserEmail)
 	b.AddHandler(h.HandleUpdateUserPhone)
 	b.AddHandler(h.HandleUpdateUserRef)
 	b.AddHandler(h.HandleUpdateUserReferenceSaleID)
 	b.AddHandler(h.HandleUpdateUserReferenceUserID)
-	b.AddHandler(h.HandleUpdateVerifiedExternalAccountAhamove)
 	return CommandBus{b}
 }
 
@@ -1053,8 +869,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetAffiliatesByIDs)
 	b.AddHandler(h.HandleGetAffiliatesByOwnerID)
 	b.AddHandler(h.HandleGetAllAccountsByUsers)
-	b.AddHandler(h.HandleGetExternalAccountAhamove)
-	b.AddHandler(h.HandleGetExternalAccountAhamoveByExternalID)
 	b.AddHandler(h.HandleGetPartnerByID)
 	b.AddHandler(h.HandleGetShopByID)
 	b.AddHandler(h.HandleGetUserByEmail)

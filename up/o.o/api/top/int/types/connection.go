@@ -117,7 +117,8 @@ func (m *ShopConnectionExternalData) Reset() {
 func (m *ShopConnectionExternalData) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetConnectionsRequest struct {
-	ConnectionMethod connection_type.ConnectionMethod `json:"connection_method"`
+	ConnectionMethod  connection_type.ConnectionMethod  `json:"connection_method"`
+	ConnectionSubtype connection_type.ConnectionSubtype `json:"connection_subtype"`
 }
 
 func (m *GetConnectionsRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -130,6 +131,14 @@ func (m *GetConnectionsResponse) Reset() {
 	*m = GetConnectionsResponse{}
 }
 func (m *GetConnectionsResponse) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type GetAvailableConnectionsRequest struct {
+	ConnectionSubtype connection_type.ConnectionSubtype `json:"connection_subtype"`
+}
+
+func (m *GetAvailableConnectionsRequest) String() string {
 	return jsonx.MustMarshalToString(m)
 }
 

@@ -83,30 +83,6 @@ func User(in *identitymodel.User) (out *identity.User) {
 	return
 }
 
-func XAccountAhamove(in *identitymodel.ExternalAccountAhamove) *identity.ExternalAccountAhamove {
-	return &identity.ExternalAccountAhamove{
-		ID:                  in.ID,
-		Phone:               in.Phone,
-		Name:                in.Name,
-		ExternalID:          in.ExternalID,
-		ExternalToken:       in.ExternalToken,
-		ExternalVerified:    in.ExternalVerified,
-		CreatedAt:           in.CreatedAt,
-		UpdatedAt:           in.UpdatedAt,
-		ExternalCreatedAt:   in.ExternalCreatedAt,
-		LastSendVerifiedAt:  in.LastSendVerifiedAt,
-		ExternalTicketID:    in.ExternalTicketID,
-		IDCardFrontImg:      in.IDCardFrontImg,
-		IDCardBackImg:       in.IDCardBackImg,
-		PortraitImg:         in.PortraitImg,
-		WebsiteURL:          in.WebsiteURL,
-		FanpageURL:          in.FanpageURL,
-		CompanyImgs:         in.CompanyImgs,
-		BusinessLicenseImgs: in.BusinessLicenseImgs,
-		UploadedAt:          in.UploadedAt,
-	}
-}
-
 func Affiliate(in *identitymodel.Affiliate) *identity.Affiliate {
 	if in == nil {
 		return nil

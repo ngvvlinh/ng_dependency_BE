@@ -637,8 +637,8 @@ func (ms *ConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type ShopConnections []*ShopConnection
 
 const __sqlShopConnection_Table = "shop_connection"
-const __sqlShopConnection_ListCols = "\"shop_id\",\"connection_id\",\"token\",\"token_expires_at\",\"status\",\"connection_states\",\"created_at\",\"updated_at\",\"deleted_at\",\"is_global\",\"external_data\""
-const __sqlShopConnection_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"connection_id\" = EXCLUDED.\"connection_id\",\"token\" = EXCLUDED.\"token\",\"token_expires_at\" = EXCLUDED.\"token_expires_at\",\"status\" = EXCLUDED.\"status\",\"connection_states\" = EXCLUDED.\"connection_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"is_global\" = EXCLUDED.\"is_global\",\"external_data\" = EXCLUDED.\"external_data\""
+const __sqlShopConnection_ListCols = "\"owner_id\",\"shop_id\",\"connection_id\",\"token\",\"token_expires_at\",\"status\",\"connection_states\",\"created_at\",\"updated_at\",\"deleted_at\",\"is_global\",\"external_data\""
+const __sqlShopConnection_ListColsOnConflict = "\"owner_id\" = EXCLUDED.\"owner_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"connection_id\" = EXCLUDED.\"connection_id\",\"token\" = EXCLUDED.\"token\",\"token_expires_at\" = EXCLUDED.\"token_expires_at\",\"status\" = EXCLUDED.\"status\",\"connection_states\" = EXCLUDED.\"connection_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"is_global\" = EXCLUDED.\"is_global\",\"external_data\" = EXCLUDED.\"external_data\""
 const __sqlShopConnection_Insert = "INSERT INTO \"shop_connection\" (" + __sqlShopConnection_ListCols + ") VALUES"
 const __sqlShopConnection_Select = "SELECT " + __sqlShopConnection_ListCols + " FROM \"shop_connection\""
 const __sqlShopConnection_Select_history = "SELECT " + __sqlShopConnection_ListCols + " FROM history.\"shop_connection\""
@@ -665,6 +665,13 @@ func (m *ShopConnection) Migration(db *cmsql.Database) {
 		mDBColumnNameAndType = val
 	}
 	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"owner_id": {
+			ColumnName:       "owner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"shop_id": {
 			ColumnName:       "shop_id",
 			ColumnType:       "dot.ID",
@@ -755,6 +762,7 @@ func init() {
 func (m *ShopConnection) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
+		m.OwnerID,
 		m.ShopID,
 		m.ConnectionID,
 		core.String(m.Token),
@@ -771,6 +779,7 @@ func (m *ShopConnection) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *ShopConnection) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
+		&m.OwnerID,
 		&m.ShopID,
 		&m.ConnectionID,
 		(*core.String)(&m.Token),
@@ -819,7 +828,7 @@ func (_ *ShopConnections) SQLSelect(w SQLWriter) error {
 func (m *ShopConnection) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopConnection_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -829,7 +838,7 @@ func (ms ShopConnections) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopConnection_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(11)
+		w.WriteMarkers(12)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -860,6 +869,14 @@ func (m *ShopConnection) SQLUpdate(w SQLWriter) error {
 	w.WriteRawString("UPDATE ")
 	w.WriteName("shop_connection")
 	w.WriteRawString(" SET ")
+	if m.OwnerID != 0 {
+		flag = true
+		w.WriteName("owner_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OwnerID)
+	}
 	if m.ShopID != 0 {
 		flag = true
 		w.WriteName("shop_id")
@@ -958,7 +975,7 @@ func (m *ShopConnection) SQLUpdate(w SQLWriter) error {
 func (m *ShopConnection) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopConnection_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -980,7 +997,8 @@ func (m ShopConnectionHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ShopConnectionHistory) ShopID() core.Interface { return core.Interface{m["shop_id"]} }
+func (m ShopConnectionHistory) OwnerID() core.Interface { return core.Interface{m["owner_id"]} }
+func (m ShopConnectionHistory) ShopID() core.Interface  { return core.Interface{m["shop_id"]} }
 func (m ShopConnectionHistory) ConnectionID() core.Interface {
 	return core.Interface{m["connection_id"]}
 }
@@ -1001,34 +1019,35 @@ func (m ShopConnectionHistory) ExternalData() core.Interface {
 }
 
 func (m *ShopConnectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopConnectionHistory, 11)
-	res["shop_id"] = data[0]
-	res["connection_id"] = data[1]
-	res["token"] = data[2]
-	res["token_expires_at"] = data[3]
-	res["status"] = data[4]
-	res["connection_states"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
-	res["deleted_at"] = data[8]
-	res["is_global"] = data[9]
-	res["external_data"] = data[10]
+	res := make(ShopConnectionHistory, 12)
+	res["owner_id"] = data[0]
+	res["shop_id"] = data[1]
+	res["connection_id"] = data[2]
+	res["token"] = data[3]
+	res["token_expires_at"] = data[4]
+	res["status"] = data[5]
+	res["connection_states"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
+	res["deleted_at"] = data[9]
+	res["is_global"] = data[10]
+	res["external_data"] = data[11]
 	*m = res
 	return nil
 }
 
 func (ms *ShopConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopConnectionHistories, 0, 128)
@@ -1037,17 +1056,18 @@ func (ms *ShopConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 			return err
 		}
 		m := make(ShopConnectionHistory)
-		m["shop_id"] = data[0]
-		m["connection_id"] = data[1]
-		m["token"] = data[2]
-		m["token_expires_at"] = data[3]
-		m["status"] = data[4]
-		m["connection_states"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
-		m["deleted_at"] = data[8]
-		m["is_global"] = data[9]
-		m["external_data"] = data[10]
+		m["owner_id"] = data[0]
+		m["shop_id"] = data[1]
+		m["connection_id"] = data[2]
+		m["token"] = data[3]
+		m["token_expires_at"] = data[4]
+		m["status"] = data[5]
+		m["connection_states"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
+		m["deleted_at"] = data[9]
+		m["is_global"] = data[10]
+		m["external_data"] = data[11]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

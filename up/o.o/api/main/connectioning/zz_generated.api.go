@@ -40,6 +40,7 @@ func (h AggregateHandler) HandleConfirmConnection(ctx context.Context, msg *Conf
 }
 
 type ConfirmShopConnectionCommand struct {
+	OwnerID      dot.ID
 	ShopID       dot.ID
 	ConnectionID dot.ID
 
@@ -87,6 +88,7 @@ func (h AggregateHandler) HandleCreateConnection(ctx context.Context, msg *Creat
 }
 
 type CreateOrUpdateShopConnectionCommand struct {
+	OwnerID        dot.ID
 	ShopID         dot.ID
 	ConnectionID   dot.ID
 	Token          string
@@ -102,6 +104,7 @@ func (h AggregateHandler) HandleCreateOrUpdateShopConnection(ctx context.Context
 }
 
 type CreateShopConnectionCommand struct {
+	OwnerID        dot.ID
 	ShopID         dot.ID
 	ConnectionID   dot.ID
 	Token          string
@@ -129,6 +132,7 @@ func (h AggregateHandler) HandleDeleteConnection(ctx context.Context, msg *Delet
 }
 
 type DeleteShopConnectionCommand struct {
+	OwnerID      dot.ID
 	ShopID       dot.ID
 	ConnectionID dot.ID
 
@@ -192,6 +196,7 @@ func (h AggregateHandler) HandleUpdateConnectionFromOrigin(ctx context.Context, 
 }
 
 type UpdateShopConnectionTokenCommand struct {
+	OwnerID        dot.ID
 	ShopID         dot.ID
 	ConnectionID   dot.ID
 	Token          string
@@ -228,15 +233,17 @@ func (h QueryServiceHandler) HandleGetConnectionByID(ctx context.Context, msg *G
 	return err
 }
 
-type GetShopConnectionByIDQuery struct {
+type GetShopConnectionQuery struct {
 	ShopID       dot.ID
+	OwnerID      dot.ID
 	ConnectionID dot.ID
+	IsGlobal     bool
 
 	Result *ShopConnection `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetShopConnectionByID(ctx context.Context, msg *GetShopConnectionByIDQuery) (err error) {
-	msg.Result, err = h.inner.GetShopConnectionByID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetShopConnection(ctx context.Context, msg *GetShopConnectionQuery) (err error) {
+	msg.Result, err = h.inner.GetShopConnection(msg.GetArgs(ctx))
 	return err
 }
 
@@ -289,6 +296,7 @@ func (h QueryServiceHandler) HandleListGlobalShopConnections(ctx context.Context
 
 type ListShopConnectionsQuery struct {
 	ShopID        dot.ID
+	OwnerID       dot.ID
 	IncludeGlobal bool
 	ConnectionIDs []dot.ID
 
@@ -340,7 +348,7 @@ func (q *UpdateShopConnectionTokenCommand) command()        {}
 
 func (q *GetConnectionByCodeQuery) query()                 {}
 func (q *GetConnectionByIDQuery) query()                   {}
-func (q *GetShopConnectionByIDQuery) query()               {}
+func (q *GetShopConnectionQuery) query()                   {}
 func (q *ListConnectionServicesByIDQuery) query()          {}
 func (q *ListConnectionsQuery) query()                     {}
 func (q *ListConnectionsByOriginConnectionIDQuery) query() {}
@@ -356,10 +364,19 @@ func (q *ConfirmConnectionCommand) GetArgs(ctx context.Context) (_ context.Conte
 		q.ID
 }
 
-func (q *ConfirmShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, ConnectionID dot.ID) {
+func (q *ConfirmShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ShopConnectionQueryArgs) {
 	return ctx,
-		q.ShopID,
-		q.ConnectionID
+		&ShopConnectionQueryArgs{
+			OwnerID:      q.OwnerID,
+			ShopID:       q.ShopID,
+			ConnectionID: q.ConnectionID,
+		}
+}
+
+func (q *ConfirmShopConnectionCommand) SetShopConnectionQueryArgs(args *ShopConnectionQueryArgs) {
+	q.OwnerID = args.OwnerID
+	q.ShopID = args.ShopID
+	q.ConnectionID = args.ConnectionID
 }
 
 func (q *CreateBuiltinConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateBuiltinConnectionArgs) {
@@ -413,6 +430,7 @@ func (q *CreateConnectionCommand) SetCreateConnectionArgs(args *CreateConnection
 func (q *CreateOrUpdateShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopConnectionArgs) {
 	return ctx,
 		&CreateShopConnectionArgs{
+			OwnerID:        q.OwnerID,
 			ShopID:         q.ShopID,
 			ConnectionID:   q.ConnectionID,
 			Token:          q.Token,
@@ -422,6 +440,7 @@ func (q *CreateOrUpdateShopConnectionCommand) GetArgs(ctx context.Context) (_ co
 }
 
 func (q *CreateOrUpdateShopConnectionCommand) SetCreateShopConnectionArgs(args *CreateShopConnectionArgs) {
+	q.OwnerID = args.OwnerID
 	q.ShopID = args.ShopID
 	q.ConnectionID = args.ConnectionID
 	q.Token = args.Token
@@ -432,6 +451,7 @@ func (q *CreateOrUpdateShopConnectionCommand) SetCreateShopConnectionArgs(args *
 func (q *CreateShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopConnectionArgs) {
 	return ctx,
 		&CreateShopConnectionArgs{
+			OwnerID:        q.OwnerID,
 			ShopID:         q.ShopID,
 			ConnectionID:   q.ConnectionID,
 			Token:          q.Token,
@@ -441,6 +461,7 @@ func (q *CreateShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Co
 }
 
 func (q *CreateShopConnectionCommand) SetCreateShopConnectionArgs(args *CreateShopConnectionArgs) {
+	q.OwnerID = args.OwnerID
 	q.ShopID = args.ShopID
 	q.ConnectionID = args.ConnectionID
 	q.Token = args.Token
@@ -461,10 +482,19 @@ func (q *DeleteConnectionCommand) SetDeleteConnectionArgs(args *DeleteConnection
 	q.PartnerID = args.PartnerID
 }
 
-func (q *DeleteShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, ConnectionID dot.ID) {
+func (q *DeleteShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ShopConnectionQueryArgs) {
 	return ctx,
-		q.ShopID,
-		q.ConnectionID
+		&ShopConnectionQueryArgs{
+			OwnerID:      q.OwnerID,
+			ShopID:       q.ShopID,
+			ConnectionID: q.ConnectionID,
+		}
+}
+
+func (q *DeleteShopConnectionCommand) SetShopConnectionQueryArgs(args *ShopConnectionQueryArgs) {
+	q.OwnerID = args.OwnerID
+	q.ShopID = args.ShopID
+	q.ConnectionID = args.ConnectionID
 }
 
 func (q *DisableConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -516,6 +546,7 @@ func (q *UpdateConnectionFromOriginCommand) GetArgs(ctx context.Context) (_ cont
 func (q *UpdateShopConnectionTokenCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopConnectionExternalDataArgs) {
 	return ctx,
 		&UpdateShopConnectionExternalDataArgs{
+			OwnerID:        q.OwnerID,
 			ShopID:         q.ShopID,
 			ConnectionID:   q.ConnectionID,
 			Token:          q.Token,
@@ -525,6 +556,7 @@ func (q *UpdateShopConnectionTokenCommand) GetArgs(ctx context.Context) (_ conte
 }
 
 func (q *UpdateShopConnectionTokenCommand) SetUpdateShopConnectionExternalDataArgs(args *UpdateShopConnectionExternalDataArgs) {
+	q.OwnerID = args.OwnerID
 	q.ShopID = args.ShopID
 	q.ConnectionID = args.ConnectionID
 	q.Token = args.Token
@@ -542,10 +574,21 @@ func (q *GetConnectionByIDQuery) GetArgs(ctx context.Context) (_ context.Context
 		q.ID
 }
 
-func (q *GetShopConnectionByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, ConnectionID dot.ID) {
+func (q *GetShopConnectionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopConnectionArgs) {
 	return ctx,
-		q.ShopID,
-		q.ConnectionID
+		&GetShopConnectionArgs{
+			ShopID:       q.ShopID,
+			OwnerID:      q.OwnerID,
+			ConnectionID: q.ConnectionID,
+			IsGlobal:     q.IsGlobal,
+		}
+}
+
+func (q *GetShopConnectionQuery) SetGetShopConnectionArgs(args *GetShopConnectionArgs) {
+	q.ShopID = args.ShopID
+	q.OwnerID = args.OwnerID
+	q.ConnectionID = args.ConnectionID
+	q.IsGlobal = args.IsGlobal
 }
 
 func (q *ListConnectionServicesByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -591,6 +634,7 @@ func (q *ListShopConnectionsQuery) GetArgs(ctx context.Context) (_ context.Conte
 	return ctx,
 		&ListShopConnectionsArgs{
 			ShopID:        q.ShopID,
+			OwnerID:       q.OwnerID,
 			IncludeGlobal: q.IncludeGlobal,
 			ConnectionIDs: q.ConnectionIDs,
 		}
@@ -598,6 +642,7 @@ func (q *ListShopConnectionsQuery) GetArgs(ctx context.Context) (_ context.Conte
 
 func (q *ListShopConnectionsQuery) SetListShopConnectionsArgs(args *ListShopConnectionsArgs) {
 	q.ShopID = args.ShopID
+	q.OwnerID = args.OwnerID
 	q.IncludeGlobal = args.IncludeGlobal
 	q.ConnectionIDs = args.ConnectionIDs
 }
@@ -654,7 +699,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetConnectionByCode)
 	b.AddHandler(h.HandleGetConnectionByID)
-	b.AddHandler(h.HandleGetShopConnectionByID)
+	b.AddHandler(h.HandleGetShopConnection)
 	b.AddHandler(h.HandleListConnectionServicesByID)
 	b.AddHandler(h.HandleListConnections)
 	b.AddHandler(h.HandleListConnectionsByOriginConnectionID)

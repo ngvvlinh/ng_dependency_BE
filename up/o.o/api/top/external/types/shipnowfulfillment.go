@@ -38,6 +38,7 @@ func (m *ShipnowAddress) String() string { return jsonx.MustMarshalToString(m) }
 type GetShipnowServicesRequest struct {
 	PickupAddress  *ShipnowAddressShortVersion         `json:"pickup_address"`
 	DeliveryPoints []*ShipnowDeliveryPointShortVersion `json:"delivery_points"`
+	Coupon         string                              `json:"coupon"`
 }
 
 func (m *GetShipnowServicesRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -76,6 +77,7 @@ type CreateShipnowFulfillmentRequest struct {
 	// @required
 	ShippingServiceFee inttypes.Int `json:"shipping_service_fee"`
 	ShippingNote       string       `json:"shipping_note"`
+	Coupon             string       `json:"coupon"`
 }
 
 func (m *CreateShipnowFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -139,6 +141,7 @@ type ShipnowFulfillment struct {
 	CancelReason               dot.NullString          `json:"cancel_reason"`
 	CarrierInfo                *CarrierInfo            `json:"carrier_info"`
 	ExternalID                 dot.NullString          `json:"external_id"`
+	Coupon                     dot.NullString          `json:"coupon"`
 }
 
 func (m *ShipnowFulfillment) String() string { return jsonx.MustMarshalToString(m) }

@@ -151,6 +151,7 @@ type UpdateInfoArgs struct {
 	DeliveryPoints      []*shipnow.DeliveryPoint
 	WeightInfo          shippingtypes.WeightInfo
 	ValueInfo           shippingtypes.ValueInfo
+	Coupon              string
 }
 
 func (s *ShipnowStore) UpdateInfo(args UpdateInfoArgs) (*shipnow.ShipnowFulfillment, error) {
@@ -168,6 +169,7 @@ func (s *ShipnowStore) UpdateInfo(args UpdateInfoArgs) (*shipnow.ShipnowFulfillm
 		ValueInfo:           args.ValueInfo,
 		ShippingNote:        args.ShippingNote,
 		RequestPickupAt:     args.RequestPickupAt,
+		Coupon:              args.Coupon,
 	}
 
 	modelShipnowFfm := convert.ShipnowToModel(update)

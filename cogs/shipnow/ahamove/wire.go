@@ -14,7 +14,6 @@ import (
 var WireSet = wire.NewSet(
 	webhook.New,
 	client.New,
-	ahamove.NewCarrierAccount,
 	ahamove.New,
 	server.NewAhamoveWebhookServer,
 	server.NewAhamoveVerificationFileServer,

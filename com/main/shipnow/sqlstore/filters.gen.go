@@ -734,6 +734,25 @@ func (ft *ShipnowFulfillmentFilters) ByExternalIDPtr(ExternalID *string) *sq.Col
 	}
 }
 
+func (ft *ShipnowFulfillmentFilters) ByCoupon(Coupon string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "coupon",
+		Value:  Coupon,
+		IsNil:  Coupon == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByCouponPtr(Coupon *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "coupon",
+		Value:  Coupon,
+		IsNil:  Coupon == nil,
+		IsZero: Coupon != nil && (*Coupon) == "",
+	}
+}
+
 func (ft *ShipnowFulfillmentFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

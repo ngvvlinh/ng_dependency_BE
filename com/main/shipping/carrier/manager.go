@@ -102,12 +102,17 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 	if err != nil {
 		return nil, err
 	}
-	_shopID := shopID
+	getShopConnectionQuery := connectionmanager.GetShopConnectionArgs{
+		ConnectionID: connectionID,
+		ShopID:       shopID,
+	}
 	if connection.ConnectionMethod == connection_type.ConnectionMethodBuiltin {
 		// ignore shopID
-		_shopID = 0
+		getShopConnectionQuery.ShopID = 0
+		getShopConnectionQuery.IsGlobal = true
 	}
-	shopConnection, err := m.ConnectionManager.GetShopConnection(ctx, connectionID, _shopID)
+
+	shopConnection, err := m.ConnectionManager.GetShopConnection(ctx, getShopConnectionQuery)
 	if err != nil {
 		return nil, err
 	}

@@ -767,6 +767,8 @@ type ShipnowFulfillment struct {
 	ShippingCancelledAt        dot.Time            `json:"shipping_cancelled_at"`
 	ShippingSharedLink         string              `json:"shipping_shared_link"`
 	CancelReason               string              `json:"cancel_reason"`
+	ConnectionID               dot.ID              `json:"connection_id"`
+	Coupon                     string              `json:"coupon"`
 }
 
 func (m *ShipnowFulfillment) String() string { return jsonx.MustMarshalToString(m) }
@@ -824,6 +826,7 @@ type CreateShipnowFulfillmentV2Request struct {
 	ShippingNote        string                             `json:"shipping_note"`
 	PickupAddress       *OrderAddress                      `json:"pickup_address"`
 	ConnectionID        dot.ID                             `json:"connection_id"`
+	Coupon              string                             `json:"coupon"`
 }
 
 func (m *CreateShipnowFulfillmentV2Request) Reset()         { *m = CreateShipnowFulfillmentV2Request{} }
@@ -850,6 +853,7 @@ type UpdateShipnowFulfillmentRequest struct {
 	ShippingNote        string                  `json:"shipping_note"`
 	RequestPickupAt     dot.Time                `json:"request_pickup_at"`
 	PickupAddress       *OrderAddress           `json:"pickup_address"`
+	Coupon              string                  `json:"coupon"`
 }
 
 func (m *UpdateShipnowFulfillmentRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -865,6 +869,8 @@ type GetShipnowServicesRequest struct {
 	OrderIds       []dot.ID                `json:"order_ids"`
 	PickupAddress  *OrderAddress           `json:"pickup_address"`
 	DeliveryPoints []*DeliveryPointRequest `json:"delivery_points"`
+	ConnectionIDs  []dot.ID                `json:"connection_ids"`
+	Coupon         string                  `json:"coupon"`
 }
 
 func (m *GetShipnowServicesRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -883,11 +889,12 @@ type GetShipnowServicesResponse struct {
 func (m *GetShipnowServicesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShipnowService struct {
-	Carrier     string `json:"carrier"`
-	Name        string `json:"name"`
-	Code        string `json:"code"`
-	Fee         int    `json:"fee"`
-	Description string `json:"description"`
+	Carrier        string          `json:"carrier"`
+	Name           string          `json:"name"`
+	Code           string          `json:"code"`
+	Fee            int             `json:"fee"`
+	Description    string          `json:"description"`
+	ConnectionInfo *ConnectionInfo `json:"connection_info"`
 }
 
 func (m *ShipnowService) String() string { return jsonx.MustMarshalToString(m) }

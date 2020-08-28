@@ -811,6 +811,8 @@ var _acl = map[string]*permission.Decl{
 	"shop.Account/UpdateExternalAccountAhamoveVerification":       {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 	"shop.Account/UpdateExternalAccountAhamoveVerificationImages": {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 
+	"shop.AccountShipnow/GetAccountShipnow": {Type: Shop, Actions: actions(ShopExternalAccountManage)},
+
 	"shop.Browse/BrowseCategories":    {Type: Shop},
 	"shop.Browse/BrowseProduct":       {Type: Shop},
 	"shop.Browse/BrowseVariant":       {Type: Shop},

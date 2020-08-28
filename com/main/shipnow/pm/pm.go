@@ -4,27 +4,37 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/accountshipnow"
+	"o.o/api/main/address"
+	"o.o/api/main/connectioning"
+	"o.o/api/main/identity"
 	"o.o/api/main/ordering"
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipnow"
 	"o.o/api/main/shipnow/carrier"
+	carriertypes "o.o/api/main/shipnow/carrier/types"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	etopconvert "o.o/backend/com/main/etop/convert"
-	shipnowcarrier "o.o/backend/com/main/shipnow/carrier"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi"
 	"o.o/capi/dot"
+	"o.o/common/jsonx"
 )
 
 type ProcessManager struct {
-	eventBus     capi.EventBus
-	shipnowQuery shipnow.QueryBus
-	shipnow      shipnow.CommandBus
-
-	order          ordering.CommandBus
-	shipnowManager *shipnowcarrier.ShipnowManager
+	eventBus            capi.EventBus
+	shipnowQuery        shipnow.QueryBus
+	shipnow             shipnow.CommandBus
+	order               ordering.CommandBus
+	shipnowManager      carrier.Manager
+	identityQuery       identity.QueryBus
+	identityAggr        identity.CommandBus
+	addressQuery        address.QueryBus
+	accountshipnowQuery accountshipnow.QueryBus
+	accountshipnowAggr  accountshipnow.CommandBus
+	connectionAggr      connectioning.CommandBus
 }
 
 func New(
@@ -33,14 +43,23 @@ func New(
 	shipnowAggrBus shipnow.CommandBus,
 	orderAggrBus ordering.CommandBus,
 	carrierManager carrier.Manager,
-	shipnowCarrierManager *shipnowcarrier.ShipnowManager,
+	identityQS identity.QueryBus,
+	addressQS address.QueryBus,
+	accountshipnowQS accountshipnow.QueryBus,
+	accountshipnowA accountshipnow.CommandBus,
+	connectionA connectioning.CommandBus,
 ) *ProcessManager {
 	p := &ProcessManager{
-		eventBus:       eventBus,
-		shipnowQuery:   shipnowQuery,
-		shipnow:        shipnowAggrBus,
-		order:          orderAggrBus,
-		shipnowManager: shipnowCarrierManager,
+		eventBus:            eventBus,
+		shipnowQuery:        shipnowQuery,
+		shipnow:             shipnowAggrBus,
+		order:               orderAggrBus,
+		shipnowManager:      carrierManager,
+		identityQuery:       identityQS,
+		addressQuery:        addressQS,
+		accountshipnowQuery: accountshipnowQS,
+		accountshipnowAggr:  accountshipnowA,
+		connectionAggr:      connectionA,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -52,6 +71,9 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.ShipnowCancelled)
 	eventBus.AddEventListener(m.ValidateConfirmed)
 	eventBus.AddEventListener(m.ShipnowExternalCreated)
+	eventBus.AddEventListener(m.ExternalAccountAhamoveCreated)
+	eventBus.AddEventListener(m.ExternalAccountAhamoveVerifyRequested)
+	eventBus.AddEventListener(m.ExternalAccountShipnowUpdateVerificationInfo)
 }
 
 func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shipnow.ShipnowOrderReservationEvent) error {
@@ -185,6 +207,7 @@ func (m *ProcessManager) ShipnowExternalCreated(ctx context.Context, event *ship
 		PickupAddress:        ffm.PickupAddress,
 		DeliveryPoints:       ffm.DeliveryPoints,
 		ShippingNote:         ffm.ShippingNote,
+		Coupon:               ffm.Coupon,
 	}
 	xShipnow, err := m.shipnowManager.CreateExternalShipnow(ctx, cmd)
 	if err != nil {
@@ -207,4 +230,137 @@ func (m *ProcessManager) ShipnowExternalCreated(ctx context.Context, event *ship
 		return nil
 	}
 	return nil
+}
+
+func (m *ProcessManager) ExternalAccountAhamoveCreated(ctx context.Context, event *accountshipnow.ExternalAccountAhamoveCreatedEvent) error {
+	query := &accountshipnow.GetExternalAccountAhamoveQuery{
+		OwnerID: event.OwnerID,
+		Phone:   event.Phone,
+	}
+	if err := m.accountshipnowQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	accountAhamove := query.Result
+
+	// Ahamove register account
+	queryShop := &identity.GetShopByIDQuery{
+		ID: event.ShopID,
+	}
+	if err := m.identityQuery.Dispatch(ctx, queryShop); err != nil {
+		return err
+	}
+	queryAddress := &address.GetAddressByIDQuery{
+		ID: queryShop.Result.AddressID,
+	}
+	if err := m.addressQuery.Dispatch(ctx, queryAddress); err != nil {
+		return err
+	}
+
+	args2 := &carrier.RegisterExternalAccountCommand{
+		Phone:        event.Phone,
+		Name:         accountAhamove.Name,
+		Address:      queryAddress.Result.GetFullAddress(),
+		Carrier:      carriertypes.Ahamove,
+		ConnectionID: event.ConnectionID,
+		OwnerID:      event.OwnerID,
+		ShopID:       event.ShopID,
+	}
+	regisResult, err := m.shipnowManager.RegisterExternalAccount(ctx, args2)
+	if err != nil {
+		return err
+	}
+
+	// create shop_connection
+	shopConnCmd := &connectioning.CreateOrUpdateShopConnectionCommand{
+		OwnerID:      event.OwnerID,
+		ConnectionID: event.ConnectionID,
+		Token:        regisResult.Token,
+		ExternalData: &connectioning.ShopConnectionExternalData{
+			Identifier: event.Phone,
+		},
+	}
+	if err := m.connectionAggr.Dispatch(ctx, shopConnCmd); err != nil {
+		return err
+	}
+
+	// Re-get external account and Update external info
+	xAccount, err := m.shipnowManager.GetExternalAccount(ctx, &carrier.GetExternalAccountCommand{
+		OwnerID:      event.OwnerID,
+		ConnectionID: event.ConnectionID,
+	})
+	if err != nil {
+		return err
+	}
+	// update another info
+	args3 := &accountshipnow.UpdateExternalAccountAhamoveExternalInfoCommand{
+		ID:                accountAhamove.ID,
+		ExternalID:        xAccount.ID,
+		ExternalCreatedAt: xAccount.CreatedAt,
+		ExternalVerified:  xAccount.Verified,
+		ExternalToken:     regisResult.Token,
+	}
+	return m.accountshipnowAggr.Dispatch(ctx, args3)
+}
+
+func (m *ProcessManager) ExternalAccountAhamoveVerifyRequested(ctx context.Context, event *accountshipnow.ExternalAccountShipnowVerifyRequestedEvent) error {
+	getXAccountArgs := &carrier.GetExternalAccountCommand{
+		OwnerID:      event.OwnerID,
+		ConnectionID: event.ConnectionID,
+		ShopID:       event.ShopID,
+	}
+	xAccount, err := m.shipnowManager.GetExternalAccount(ctx, getXAccountArgs)
+	if err != nil {
+		return err
+	}
+	if xAccount.Verified {
+		update := &accountshipnow.UpdateExternalAccountAhamoveExternalInfoCommand{
+			ID:               event.ID,
+			ExternalID:       xAccount.ID,
+			ExternalVerified: xAccount.Verified,
+		}
+		if err := m.accountshipnowAggr.Dispatch(ctx, update); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	// send verify request to Ahamove
+	cmd := &carrier.VerifyExternalAccountCommand{
+		OwnerID:      event.OwnerID,
+		ConnectionID: event.ConnectionID,
+		ShopID:       event.ShopID,
+	}
+	res, err := m.shipnowManager.VerifyExternalAccount(ctx, cmd)
+	if err != nil {
+		return err
+	}
+	// update external_ticket_id
+	externalData, _ := jsonx.Marshal(res)
+	update := &accountshipnow.UpdateExternalAccountAhamoveExternalInfoCommand{
+		ID:                   event.ID,
+		ExternalTicketID:     res.TicketID,
+		LastSendVerifiedAt:   time.Now(),
+		ExternalDataVerified: externalData,
+	}
+	return m.accountshipnowAggr.Dispatch(ctx, update)
+}
+
+func (m *ProcessManager) ExternalAccountShipnowUpdateVerificationInfo(ctx context.Context, event *accountshipnow.ExternalAccountShipnowUpdateVerificationInfoEvent) error {
+	query := &carrier.GetExternalAccountCommand{
+		OwnerID:      event.OwnerID,
+		ConnectionID: event.ConnectionID,
+	}
+	xAccount, err := m.shipnowManager.GetExternalAccount(ctx, query)
+	if err != nil {
+		return err
+	}
+	if !xAccount.Verified {
+		return nil
+	}
+
+	update := &accountshipnow.UpdateExternalAccountAhamoveExternalInfoCommand{
+		ID:               event.ID,
+		ExternalVerified: xAccount.Verified,
+	}
+	return m.accountshipnowAggr.Dispatch(ctx, update)
 }

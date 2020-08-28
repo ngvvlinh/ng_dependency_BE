@@ -83,7 +83,9 @@ type ShipnowFulfillment struct {
 	ConnectionID     dot.ID
 	ConnectionMethod connection_type.ConnectionMethod
 	ExternalID       string
-	Rid              dot.ID
+	Coupon           string
+
+	Rid dot.ID
 }
 
 func (m *ShipnowFulfillment) Validate() error {

@@ -1529,6 +1529,7 @@ func (m *Tag) String() string { return jsonx.MustMarshalToString(m) }
 
 type ExternalAccountAhamove struct {
 	Id               dot.ID `json:"id"`
+	OwnerID          dot.ID `json:"owner_id"`
 	Phone            string `json:"phone"`
 	Name             string `json:"name"`
 	ExternalVerified bool   `json:"external_verified"`
@@ -1546,6 +1547,7 @@ type ExternalAccountAhamove struct {
 	WebsiteUrl          string   `json:"website_url"`
 	CompanyImgs         []string `json:"company_imgs"`
 	BusinessLicenseImgs []string `json:"business_license_imgs"`
+	ConnectionID        dot.ID   `json:"connection_id"`
 }
 
 func (m *ExternalAccountAhamove) String() string { return jsonx.MustMarshalToString(m) }
@@ -2892,3 +2894,10 @@ func (m *CreateFulfillmentsFromImportResponse) String() string { return jsonx.Mu
 func (m *CreateFulfillmentsFromImportResponse) Reset() {
 	*m = CreateFulfillmentsFromImportResponse{}
 }
+
+type GetAccountShipnowRequest struct {
+	Identity     string `json:"identity"`
+	ConnectionID dot.ID `json:"connection_id"`
+}
+
+func (m *GetAccountShipnowRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -3,7 +3,7 @@ package account
 import (
 	"context"
 
-	"o.o/api/main/identity"
+	"o.o/api/main/accountshipnow"
 	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
@@ -30,7 +30,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx cont
 	user := query.Result
 	phone := user.Phone
 
-	cmd := &identity.UpdateExternalAccountAhamoveVerificationCommand{
+	cmd := &accountshipnow.UpdateExternalAccountAhamoveVerificationCommand{
 		OwnerID:             user.ID,
 		Phone:               phone,
 		IDCardFrontImg:      r.IdCardFrontImg,
@@ -41,7 +41,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx cont
 		CompanyImgs:         r.CompanyImgs,
 		BusinessLicenseImgs: r.BusinessLicenseImgs,
 	}
-	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+	if err := s.AccountshipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 

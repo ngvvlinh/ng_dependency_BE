@@ -141,6 +141,7 @@ func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, args *shipnow.
 			ConnectionID:        conn.ID,
 			ConnectionMethod:    conn.ConnectionMethod,
 			ExternalID:          args.ExternalID,
+			Coupon:              args.Coupon,
 		}
 
 		if err := a.store(ctx).Create(shipnowFfm); err != nil {
@@ -186,6 +187,7 @@ func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, args *shipnow.
 			ShippingServiceFee:  args.ShippingServiceFee,
 			ShippingNote:        args.ShippingNote,
 			RequestPickupAt:     args.RequestPickupAt,
+			Coupon:              args.Coupon,
 		}
 
 		if len(orderIDs) > 0 {
@@ -515,6 +517,8 @@ func (a *Aggregate) GetShipnowServices(ctx context.Context, args *shipnow.GetShi
 		ShopID:         args.ShopId,
 		PickupAddress:  pickupAddress,
 		DeliveryPoints: points,
+		ConnectionIDs:  args.ConnectionIDs,
+		Coupon:         args.Coupon,
 	}
 
 	services, err := a.shipnowManager.GetExternalShipnowServices(ctx, cmd)

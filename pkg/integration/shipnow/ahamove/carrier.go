@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"o.o/api/main/accountshipnow"
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	ordertypes "o.o/api/main/ordering/types"
@@ -16,25 +17,33 @@ import (
 	shipnowtypes "o.o/api/main/shipnow/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/types/etc/shipping_fee_type"
-	shipnowcarrier "o.o/backend/com/main/shipnowcarrier"
+	shipnowcarriertypes "o.o/backend/com/main/shipnow/carrier/types"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/integration/shipnow/ahamove/client"
-	"o.o/capi/dot"
 )
 
-var _ shipnowcarrier.ShipnowCarrier = &Carrier{}
+var _ shipnowcarriertypes.ShipnowCarrier = &Carrier{}
 
 type Carrier struct {
-	client        *client.Client
-	location      location.QueryBus
-	IdentityQuery identity.QueryBus
+	client              *client.Client
+	urlConfig           URLConfig
+	location            location.QueryBus
+	identityQuery       identity.QueryBus
+	accountshipnowQuery accountshipnow.QueryBus
 }
 
-func New(ahamoveClient *client.Client, locationBus location.QueryBus, identityBus identity.QueryBus) *Carrier {
+type URLConfig struct {
+	ThirdPartyHost       string
+	PathUserVerification string
+}
+
+func New(ahamoveClient *client.Client, urlConfig URLConfig, locationBus location.QueryBus, identityBus identity.QueryBus, accountshipnowQS accountshipnow.QueryBus) *Carrier {
 	c := &Carrier{
-		client:        ahamoveClient,
-		location:      locationBus,
-		IdentityQuery: identityBus,
+		client:              ahamoveClient,
+		urlConfig:           urlConfig,
+		location:            locationBus,
+		identityQuery:       identityBus,
+		accountshipnowQuery: accountshipnowQS,
 	}
 	return c
 }
@@ -60,24 +69,6 @@ func (c *Carrier) InitClient(ctx context.Context) error {
 }
 
 func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.CreateExternalShipnowCommand, service *shipnowtypes.ShipnowService) (xshipnow *carrier.ExternalShipnow, _err error) {
-	// queryShop := &identity.GetShopByIDQuery{
-	// 	ID: cmd.ShopID,
-	// }
-	// if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
-	// 	return nil, err
-	// }
-	// userID := queryShop.Result.OwnerID
-	// if ok, err := isXAccountAhamoveVerified(ctx, c.IdentityQuery, userID); err != nil {
-	// 	return nil, err
-	// } else if !ok {
-	// 	return nil, cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng gửi yêu cầu xác thực tài khoản Ahamove trước khi tạo đơn.")
-	// }
-	//
-	// token, err := getToken(ctx, c.IdentityQuery, userID)
-	// if err != nil {
-	// 	return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
-	// }
-
 	deliveryPoints, err := c.PrepareDeliveryPoints(ctx, cmd.PickupAddress, cmd.DeliveryPoints)
 	if err != nil {
 		return nil, err
@@ -93,6 +84,7 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 		IdleUntil:      0,
 		DeliveryPoints: deliveryPoints,
 		Remarks:        cmd.ShippingNote,
+		PromoCode:      cmd.Coupon,
 	}
 	response, err := c.client.CreateOrder(ctx, request)
 	if err != nil {
@@ -123,19 +115,6 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 }
 
 func (c *Carrier) CancelExternalShipnow(ctx context.Context, cmd *carrier.CancelExternalShipnowCommand) error {
-	// queryShop := &identity.GetShopByIDQuery{
-	// 	ID: cmd.ShopID,
-	// }
-	// if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
-	// 	return err
-	// }
-	// userID := queryShop.Result.OwnerID
-	//
-	// token, err := getToken(ctx, c.IdentityQuery, userID)
-	// if err != nil {
-	// 	return cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
-	// }
-
 	request := &client.CancelOrderRequest{
 		OrderId: cmd.ExternalShipnowID,
 		Comment: cmd.CancelReason,
@@ -143,19 +122,7 @@ func (c *Carrier) CancelExternalShipnow(ctx context.Context, cmd *carrier.Cancel
 	return c.client.CancelOrder(ctx, request)
 }
 
-func (c *Carrier) GetShipnowServices(ctx context.Context, args shipnowcarrier.GetShipnowServiceArgs) ([]*shipnowtypes.ShipnowService, error) {
-	// queryShop := &identity.GetShopByIDQuery{
-	// 	ID: args.ShopID,
-	// }
-	// if err := c.IdentityQuery.Dispatch(ctx, queryShop); err != nil {
-	// 	return nil, err
-	// }
-	// userID := queryShop.Result.OwnerID
-	//
-	// token, err := getToken(ctx, c.IdentityQuery, userID)
-	// if err != nil {
-	// 	return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
-	// }
+func (c *Carrier) GetShipnowServices(ctx context.Context, args shipnowcarriertypes.GetShipnowServiceArgs) ([]*shipnowtypes.ShipnowService, error) {
 	deliveryPoints, err := c.PrepareDeliveryPoints(ctx, args.PickupAddress, args.DeliveryPoints)
 	if err != nil {
 		return nil, err
@@ -164,8 +131,11 @@ func (c *Carrier) GetShipnowServices(ctx context.Context, args shipnowcarrier.Ge
 		OrderTime:      0,
 		IdleUntil:      0,
 		DeliveryPoints: deliveryPoints,
+		PromoCode:      args.Coupon,
 	}
-	services, err := c.calcShippingFee(ctx, args.ShopID.Int64(), request)
+
+	arbitraryID := args.ShopID.Int64() + args.ArbitraryID.Int64()
+	services, err := c.calcShippingFee(ctx, arbitraryID, request)
 	if err != nil {
 		return nil, err
 	}
@@ -289,44 +259,6 @@ func (c *Carrier) ValidateAndGetAddress(ctx context.Context, in *ordertypes.Addr
 	return query.Result, nil
 }
 
-func getToken(ctx context.Context, identityQuery identity.QueryBus, userID dot.ID) (token string, _err error) {
-	queryUser := &identity.GetUserByIDQuery{
-		UserID: userID,
-	}
-	if err := identityQuery.Dispatch(ctx, queryUser); err != nil {
-		return "", err
-	}
-	user := queryUser.Result
-
-	query := &identity.GetExternalAccountAhamoveQuery{
-		Phone:   user.Phone,
-		OwnerID: user.ID,
-	}
-	if err := identityQuery.Dispatch(ctx, query); err != nil {
-		return "", err
-	}
-	return query.Result.ExternalToken, nil
-}
-
-func isXAccountAhamoveVerified(ctx context.Context, identityQuery identity.QueryBus, userID dot.ID) (bool, error) {
-	queryUser := &identity.GetUserByIDQuery{
-		UserID: userID,
-	}
-	if err := identityQuery.Dispatch(ctx, queryUser); err != nil {
-		return false, err
-	}
-	user := queryUser.Result
-
-	query := &identity.GetExternalAccountAhamoveQuery{
-		OwnerID: user.ID,
-		Phone:   user.Phone,
-	}
-	if err := identityQuery.Dispatch(ctx, query); err != nil {
-		return false, err
-	}
-	return query.Result.ExternalVerified, nil
-}
-
 func toShipnowService(sfResp *client.CalcShippingFeeResponse, service *AhamoveShippingService, providerServiceID string) *shipnowtypes.ShipnowService {
 	if sfResp == nil {
 		return nil
@@ -338,12 +270,6 @@ func toShipnowService(sfResp *client.CalcShippingFeeResponse, service *AhamoveSh
 		Code:        providerServiceID,
 		Fee:         int(sfResp.TotalPrice),
 		Description: service.Description,
-	}
-	// BIKE/POOL: discount, total_fee, total_pay
-	// SAMEDAY: partner_discount, partner_fee, partner_pay
-	// Ahamove đang fix, sau này sẽ dùng total_fee hết
-	if strings.Contains(service.Code, string(SAMEDAY)) {
-		res.Fee = int(sfResp.PartnerFee)
 	}
 
 	// Avoid fee == 0

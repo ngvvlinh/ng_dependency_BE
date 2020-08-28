@@ -8,37 +8,15 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/main/accountshipnow"
 	"o.o/api/main/identity"
 	"o.o/api/main/shipnow/carrier"
-	shipnowcarrier "o.o/backend/com/main/shipnowcarrier"
-	cm "o.o/backend/pkg/common"
+	shipnowcarriertypes "o.o/backend/com/main/shipnow/carrier/types"
 	"o.o/backend/pkg/integration/shipnow/ahamove/client"
 	"o.o/capi/dot"
 )
 
-var _ shipnowcarrier.ShipnowCarrierAccount = &CarrierAccount{}
-
-type URLConfig struct {
-	ThirdPartyHost       string
-	PathUserVerification string
-}
-
-type CarrierAccount struct {
-	client        *client.Client
-	urlConfig     URLConfig
-	IdentityQuery identity.QueryBus
-}
-
-func NewCarrierAccount(ahamoveClient *client.Client, urlConfig URLConfig, identityBus identity.QueryBus) *CarrierAccount {
-	ca := &CarrierAccount{
-		client:        ahamoveClient,
-		urlConfig:     urlConfig,
-		IdentityQuery: identityBus,
-	}
-	return ca
-}
-
-func (c *CarrierAccount) RegisterExternalAccount(ctx context.Context, args *shipnowcarrier.RegisterExternalAccountArgs) (*carrier.RegisterExternalAccountResult, error) {
+func (c *Carrier) RegisterExternalAccount(ctx context.Context, args *shipnowcarriertypes.RegisterExternalAccountArgs) (*carrier.RegisterExternalAccountResult, error) {
 	request := &client.RegisterAccountRequest{
 		Mobile:  args.Phone,
 		Name:    args.Name,
@@ -55,15 +33,8 @@ func (c *CarrierAccount) RegisterExternalAccount(ctx context.Context, args *ship
 	return res, nil
 }
 
-func (c *CarrierAccount) GetExternalAccount(ctx context.Context, args *shipnowcarrier.GetExternalAccountArgs) (*carrier.ExternalAccount, error) {
-	token, err := getToken(ctx, c.IdentityQuery, args.OwnerID)
-	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
-	}
-
-	request := &client.GetAccountRequest{
-		Token: token,
-	}
+func (c *Carrier) GetExternalAccount(ctx context.Context, args *shipnowcarriertypes.GetExternalAccountArgs) (*carrier.ExternalAccount, error) {
+	request := &client.GetAccountRequest{}
 	account, err := c.client.GetAccount(ctx, request)
 	if err != nil {
 		return nil, err
@@ -80,19 +51,13 @@ func (c *CarrierAccount) GetExternalAccount(ctx context.Context, args *shipnowca
 	return res, nil
 }
 
-func (c *CarrierAccount) VerifyExternalAccount(ctx context.Context, args *shipnowcarrier.VerifyExternalAccountArgs) (*carrier.VerifyExternalAccountResult, error) {
-	token, err := getToken(ctx, c.IdentityQuery, args.OwnerID)
-	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
-	}
-
-	description, err := getDescriptionForVerification(ctx, c.IdentityQuery, c.urlConfig, args.OwnerID)
+func (c *Carrier) VerifyExternalAccount(ctx context.Context, args *shipnowcarriertypes.VerifyExternalAccountArgs) (*carrier.VerifyExternalAccountResult, error) {
+	description, err := c.getDescriptionForVerification(ctx, c.urlConfig, args.OwnerID)
 	if err != nil {
 		return nil, err
 	}
 
 	request := &client.VerifyAccountRequest{
-		Token:       token,
 		Description: description,
 	}
 	response, err := c.client.VerifyAccount(ctx, request)
@@ -112,7 +77,7 @@ func (c *CarrierAccount) VerifyExternalAccount(ctx context.Context, args *shipno
 
 func prepareAhamovePhotoUrl(
 	urlConfig URLConfig,
-	ahamoveAccount *identity.ExternalAccountAhamove,
+	ahamoveAccount *accountshipnow.ExternalAccountAhamove,
 	uri string, typeImg string,
 ) string {
 	ext := filepath.Ext(uri)
@@ -129,20 +94,20 @@ func prepareAhamovePhotoUrl(
 
 // description format: <user._id>, <user.name>, <photo_urls>
 // photo_url format: <topship_domain>/upload/ahamove/user_verification/user_id_front<user.id>_<user.create_time>.jpg
-func getDescriptionForVerification(ctx context.Context, identityQuery identity.QueryBus, urlConfig URLConfig, userID dot.ID) (des string, _err error) {
+func (c *Carrier) getDescriptionForVerification(ctx context.Context, urlConfig URLConfig, userID dot.ID) (des string, _err error) {
 	queryUser := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}
-	if err := identityQuery.Dispatch(ctx, queryUser); err != nil {
+	if err := c.identityQuery.Dispatch(ctx, queryUser); err != nil {
 		return "", err
 	}
 	user := queryUser.Result
 
-	query := &identity.GetExternalAccountAhamoveQuery{
+	query := &accountshipnow.GetExternalAccountAhamoveQuery{
 		Phone:   user.Phone,
 		OwnerID: user.ID,
 	}
-	if err := identityQuery.Dispatch(ctx, query); err != nil {
+	if err := c.accountshipnowQuery.Dispatch(ctx, query); err != nil {
 		return "", err
 	}
 	account := query.Result

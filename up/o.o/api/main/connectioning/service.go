@@ -37,9 +37,9 @@ type Aggregate interface {
 
 	UpdateShopConnectionToken(context.Context, *UpdateShopConnectionExternalDataArgs) (*ShopConnection, error)
 
-	ConfirmShopConnection(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (updated int, err error)
+	ConfirmShopConnection(context.Context, *ShopConnectionQueryArgs) (updated int, err error)
 
-	DeleteShopConnection(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (deleted int, _ error)
+	DeleteShopConnection(context.Context, *ShopConnectionQueryArgs) (deleted int, _ error)
 }
 
 type QueryService interface {
@@ -55,7 +55,7 @@ type QueryService interface {
 	ListConnectionsByOriginConnectionID(ctx context.Context, OriginConnectionID dot.ID) ([]*Connection, error)
 
 	// -- Shop Connection -- //
-	GetShopConnectionByID(ctx context.Context, ShopID dot.ID, ConnectionID dot.ID) (*ShopConnection, error)
+	GetShopConnection(context.Context, *GetShopConnectionArgs) (*ShopConnection, error)
 
 	ListShopConnections(context.Context, *ListShopConnectionsArgs) ([]*ShopConnection, error)
 
@@ -112,6 +112,7 @@ type UpdateConnectionAffiliateAccountArgs struct {
 
 // +convert:create=ShopConnection
 type CreateShopConnectionArgs struct {
+	OwnerID        dot.ID
 	ShopID         dot.ID
 	ConnectionID   dot.ID
 	Token          string
@@ -121,6 +122,7 @@ type CreateShopConnectionArgs struct {
 
 // +convert:update=ShopConnection(ShopID,ConnectionID)
 type UpdateShopConnectionExternalDataArgs struct {
+	OwnerID        dot.ID
 	ShopID         dot.ID
 	ConnectionID   dot.ID
 	Token          string
@@ -139,6 +141,21 @@ type ListConnectionsArgs struct {
 
 type ListShopConnectionsArgs struct {
 	ShopID        dot.ID
+	OwnerID       dot.ID
 	IncludeGlobal bool
 	ConnectionIDs []dot.ID
+}
+
+type GetShopConnectionArgs struct {
+	ShopID       dot.ID
+	OwnerID      dot.ID
+	ConnectionID dot.ID
+	// when IsGlobal = true => ignore ShopID & OwnerID
+	IsGlobal bool
+}
+
+type ShopConnectionQueryArgs struct {
+	OwnerID      dot.ID
+	ShopID       dot.ID
+	ConnectionID dot.ID
 }

@@ -25,7 +25,7 @@ INSERT INTO code ("code", "type", "created_at") VALUES
     ('50FE', 'connection', NOW());
 
 INSERT INTO "connection" ("id", "name", "status", "created_at", "updated_at", "driver", "connection_type", "connection_subtype", "connection_method", "connection_provider", "code") VALUES
-('1000343411864064400', 'TopShip - Ahamove', '1', NOW(), NOW(), 'shipping/shipnow/topship/ghn', 'shipping', 'shipnow', 'topship', 'ahamove', '50FE');
+('1000343411864064400', 'TopShip - Ahamove', '1', NOW(), NOW(), 'shipping/shipnow/builtin/ahamove', 'shipping', 'shipnow', 'builtin', 'ahamove', '50FE');
 
 INSERT INTO "shop_connection" ("connection_id", "status", "created_at", "updated_at", "is_global") VALUES
 ('1000343411864064400','1', NOW(), NOW(), 't');
