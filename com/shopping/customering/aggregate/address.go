@@ -20,12 +20,14 @@ var _ addressing.Aggregate = &AddressAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type AddressAggregate struct {
-	store sqlstore.AddressStoreFactory
+	store         sqlstore.AddressStoreFactory
+	customerStore sqlstore.CustomerStoreFactory
 }
 
 func NewAddressAggregate(db com.MainDB) *AddressAggregate {
 	return &AddressAggregate{
-		store: sqlstore.NewAddressStore(db),
+		store:         sqlstore.NewAddressStore(db),
+		customerStore: sqlstore.NewCustomerStore(db),
 	}
 }
 
@@ -38,10 +40,17 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	if args.Phone == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng cung cấp số điện thoại", nil)
 	}
-	_, ok := validate.NormalizePhone(args.Phone)
+	phoneNorm, ok := validate.NormalizePhone(args.Phone)
 	if !ok {
 		return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
 	}
+
+	args.Phone = phoneNorm.String()
+
+	if _, err := q.customerStore(ctx).ID(args.TraderID).GetCustomer(); err != nil {
+		return nil, cm.Error(cm.InvalidArgument, "Không tìm thấy user", nil)
+	}
+
 	if args.IsDefault {
 		if err := q.store(ctx).UpdateStatusAddresses(args.ShopID, args.TraderID, false); err != nil {
 			return nil, err
@@ -52,11 +61,10 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	if err := scheme.Convert(args, addr); err != nil {
 		return nil, err
 	}
-	err := ValidateCreateShopTraderAddress(addr)
-	if err != nil {
+	if err := ValidateCreateShopTraderAddress(addr); err != nil {
 		return nil, err
 	}
-	err = q.store(ctx).CreateAddress(addr)
+	err := q.store(ctx).CreateAddress(addr)
 	return addr, err
 }
 
