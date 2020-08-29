@@ -1,14 +1,14 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 
+	"o.o/api/top/types/etc/status3"
 	"o.o/backend/cmd/etop-server/config"
 	"o.o/backend/com/main/address/model"
 	shop "o.o/backend/com/main/identity/model"
+	"o.o/backend/pkg/common/bus"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
@@ -42,7 +42,7 @@ func main() {
 	{
 		ll.S.Info("Migrate is_default from address")
 		var fromShopID dot.ID
-		count, updated := 0, 0
+		count, updated, errors := 0, 0, 0
 		for {
 			shops, err := scanShopExistShipFromAddressID(fromShopID)
 			if err != nil {
@@ -84,16 +84,20 @@ func main() {
 				listAddresses = append(listAddresses, addr.ID)
 			}
 
-			numUpdated, _ := SetDefaultAddress(db, addresses)
+			numUpdated, numErrors := SetDefaultAddress(db, addresses)
 
 			updated += numUpdated
+			errors += numErrors
 		}
+
+		ll.S.Infof("Updated is_default %v/%v", updated, count)
+		ll.S.Infof("Errors is_default %v", errors)
 	}
 
 	{
 		ll.S.Info("Migrate ship_from_address_id is NULL from shop")
 		var fromID dot.ID
-		count, updated := 0, 0
+		count, updated, errors := 0, 0, 0
 
 		for {
 			addresses, err := scanAddress(fromID)
@@ -136,15 +140,15 @@ func main() {
 				}
 			}
 
-			fromID = addresses[len(addresses)-1].ID
-
 			count += len(shopIDs)
 
-			numUpdated, _ := UpdateDefaultAddress(db, addresses, mapShopInfo)
+			numUpdated, numErrors := UpdateDefaultAddress(db, addresses, mapShopInfo)
 
 			updated += numUpdated
+			errors += numErrors
 		}
 		ll.S.Infof("Updated %v/%v", updated, count)
+		ll.S.Infof("Errors %v", errors)
 	}
 }
 
@@ -172,6 +176,7 @@ func scanAddressWithoutDefault(addressIDs []dot.ID) (addresses model.Addresses, 
 func scanShop(shopIDs []dot.ID) (shops shop.Shops, err error) {
 	err = db.
 		Where("ship_from_address_id IS NULL").
+		Where("status = ?", status3.P).
 		Where("deleted_at IS NULL").
 		Where(sq.In("id", shopIDs)).
 		OrderBy("id").
@@ -180,55 +185,21 @@ func scanShop(shopIDs []dot.ID) (shops shop.Shops, err error) {
 	return
 }
 
+var sqlScanAddress = fmt.Sprintf(`
+SELECT %v FROM (
+	SELECT DISTINCT ON (account_id) * FROM address
+	WHERE (id > ? AND type = ? AND is_default = ?)
+	ORDER BY account_id ASC, created_at ASC LIMIT 500
+) t ORDER BY created_at ASC
+`, (*model.Address)(nil).SQLListCols())
+
 func scanAddress(fromID dot.ID) (addresses model.Addresses, err error) {
-	var res []*model.Address
-	sql, args, err := db.SQL(`SELECT DISTINCT ON (account_id) * FROM "address"`).
-		Where("id > ? AND type = ?", fromID.Int64(), "shipfrom").
-		Limit(500).Build()
-
+	rows, err := db.SQL(sqlScanAddress, fromID.Int64(), "shipfrom", false).Query()
 	if err != nil {
 		return nil, err
 	}
-
-	sql2 := fmt.Sprintf(
-		"SELECT * FROM (%v) AS s ORDER BY created_at ASC",
-		sql,
-	)
-	rows, err := db.Query(sql2, args...)
-	if err != nil {
-		return nil, err
-	}
-
-	columns, _ := rows.Columns()
-	count := len(columns)
-	values := make([]interface{}, count)
-	valuePtr := make([]interface{}, count)
-
-	for rows.Next() {
-		for i, _ := range columns {
-			valuePtr[i] = &values[i]
-		}
-		var temp = make(map[string]interface{})
-		rows.Scan(valuePtr...)
-
-		// get only id and account_id
-		for index, col := range columns {
-			if col != "id" && col != "account_id" {
-				continue
-			}
-			temp[col] = values[index]
-		}
-
-		address := model.Address{}
-		dataStr, _ := json.Marshal(temp)
-		err = json.Unmarshal(dataStr, &address)
-		if err != nil {
-			return nil, err
-		}
-
-		res = append(res, &address)
-	}
-	return res, err
+	err = addresses.SQLScan(db.Opts(), rows)
+	return addresses, err
 }
 
 func SetDefaultAddress(db *cmsql.Database, addresses model.Addresses) (updated, errors int) {
@@ -270,16 +241,27 @@ func UpdateDefaultAddress(db *cmsql.Database, addresses model.Addresses, mapShop
 		if _, ok := mapShopInfo[address.AccountID]; !ok {
 			continue
 		}
-		if _err := db.InTransaction(context.TODO(), func(tx cmsql.QueryInterface) error {
-			if _, _err := db.Exec(`UPDATE shop SET ship_from_address_id = $1 WHERE ship_from_address_id IS NULL AND id = $2`, address.ID, address.AccountID); _err != nil {
+
+		if err := db.InTransaction(bus.Ctx(), func(tx cmsql.QueryInterface) error {
+			if _, _err := tx.Table("shop").Where("ship_from_address_id IS NULL").Where("id = ?", address.AccountID).UpdateMap(map[string]interface{}{
+				"ship_from_address_id": address.ID,
+			}); _err != nil {
+				ll.Debug("err update ship_from_address_id", l.Error(_err))
 				return _err
 			}
-			if _, _err := db.Exec(`UPDATE address SET is_default = true WHERE id = $1`, address.ID); _err != nil {
+
+			if _, _err := tx.Table("address").Where("id = ?", address.ID).UpdateMap(map[string]interface{}{
+				"is_default": true,
+			}); _err != nil {
+				ll.Debug("err set is_default", l.Error(_err))
 				return _err
 			}
 			return nil
-		}); _err != nil {
-			return
+		}); err != nil {
+			errors++
+			ll.Debug("err", l.Error(err))
+		} else {
+			updated++
 		}
 	}
 
