@@ -15,10 +15,12 @@ import (
 
 var _ authorization.Aggregate = &AuthorizationAggregate{}
 
-type AuthorizationAggregate struct{}
+type AuthorizationAggregate struct {
+	auth *auth.Authorizer
+}
 
-func NewAuthorizationAggregate() *AuthorizationAggregate {
-	return &AuthorizationAggregate{}
+func NewAuthorizationAggregate(auth *auth.Authorizer) *AuthorizationAggregate {
+	return &AuthorizationAggregate{auth: auth}
 }
 
 func AuthorizationAggregateMessageBus(a *AuthorizationAggregate) authorization.CommandBus {
@@ -55,7 +57,7 @@ func (a *AuthorizationAggregate) UpdatePermission(
 		ShortName: updateRoleCmd.Result.ShortName,
 		Position:  updateRoleCmd.Result.Position,
 		Roles:     convert.ConvertStringsToRoles(updateRoleCmd.Result.Permission.Roles),
-		Actions:   convert.ConvertStringsToActions(auth.ListActionsByRoles(updateRoleCmd.Result.Permission.Roles)),
+		Actions:   convert.ConvertStringsToActions(a.auth.ListActionsByRoles(updateRoleCmd.Result.Permission.Roles)),
 	}
 
 	return relationship, nil
@@ -84,7 +86,7 @@ func (a *AuthorizationAggregate) UpdateRelationship(
 		ShortName: updateRelationshipCmd.Result.ShortName,
 		Position:  updateRelationshipCmd.Result.Position,
 		Roles:     convert.ConvertStringsToRoles(updateRelationshipCmd.Result.Permission.Roles),
-		Actions:   convert.ConvertStringsToActions(auth.ListActionsByRoles(updateRelationshipCmd.Result.Permission.Roles)),
+		Actions:   convert.ConvertStringsToActions(a.auth.ListActionsByRoles(updateRelationshipCmd.Result.Permission.Roles)),
 	}
 	return relationship, nil
 }

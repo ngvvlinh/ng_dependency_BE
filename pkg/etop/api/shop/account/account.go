@@ -6,7 +6,6 @@ import (
 	"github.com/asaskevich/govalidator"
 
 	"o.o/api/main/address"
-	"o.o/api/main/authorization"
 	"o.o/api/main/identity"
 	apietop "o.o/api/top/int/etop"
 	api "o.o/api/top/int/shop"
@@ -18,7 +17,6 @@ import (
 	"o.o/backend/pkg/common/validate"
 	etop "o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
-	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/tools/pkg/acl"
@@ -93,7 +91,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *api.UpdateShopReques
 		}
 	}
 
-	address, err := convertpb.AddressToModel(q.Address)
+	addr, err := convertpb.AddressToModel(q.Address)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +105,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *api.UpdateShopReques
 			WebsiteURL:                    q.WebsiteUrl,
 			ImageURL:                      q.ImageUrl,
 			Email:                         q.Email,
-			Address:                       address,
+			Address:                       addr,
 			TryOn:                         q.TryOn.Apply(0),
 			GhnNoteCode:                   q.GhnNoteCode.Apply(0),
 			CompanyInfo:                   convertpb.CompanyInfoToModel(q.CompanyInfo),
@@ -217,10 +215,7 @@ func (s *AccountService) GetExternalAccountAhamove(ctx context.Context, q *pbcm.
 		account = cmd.Result
 	}
 
-	var hideInfo bool
-	if !authorization.IsContainsActionString(auth.ListActionsByRoles(s.SS.Permission().Roles), string(acl.ShopExternalAccountManage)) {
-		hideInfo = true
-	}
+	hideInfo := s.SS.CheckRoles(string(acl.ShopExternalAccountManage))
 	result := convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(account, hideInfo)
 	return result, nil
 }

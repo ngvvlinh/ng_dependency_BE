@@ -46,6 +46,8 @@ import (
 	"o.o/backend/pkg/common/projectpath"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/sqltrace"
+	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/authetop"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/sqlstore"
 	ahamoveserver "o.o/backend/pkg/integration/shipnow/ahamove/server"
@@ -197,3 +199,5 @@ func BuildWebServer(cfg config.Config, webServerQuery webserverinternal.QueryBus
 	}
 	return svr
 }
+
+func ProvidePolicy() auth.Policy { return authetop.Policy }

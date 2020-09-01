@@ -169,7 +169,7 @@ func (s *AccountRelationshipService) GetRelationships(ctx context.Context, q *ap
 
 	var relationships []*authorization.Relationship
 	for _, accountUser := range query.Result.AccountUsers {
-		relationships = append(relationships, authorizationconvert.ConvertAccountUserToRelationship(accountUser.AccountUser))
+		relationships = append(relationships, authorizationconvert.ConvertAccountUserToRelationship(s.SS.Authorizer(), accountUser.AccountUser))
 	}
 
 	result := &api.RelationshipsResponse{Relationships: convertpb.PbRelationships(relationships)}

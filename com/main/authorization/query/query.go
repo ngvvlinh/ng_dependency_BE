@@ -8,15 +8,18 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/capi/dot"
 )
 
 var _ authorization.QueryService = &AuthorizationQuery{}
 
-type AuthorizationQuery struct{}
+type AuthorizationQuery struct {
+	auth *auth.Authorizer
+}
 
-func NewAuthorizationQuery() *AuthorizationQuery {
-	return &AuthorizationQuery{}
+func NewAuthorizationQuery(auth *auth.Authorizer) *AuthorizationQuery {
+	return &AuthorizationQuery{auth: auth}
 }
 
 func AuthorizationQueryMessageBus(a *AuthorizationQuery) authorization.QueryBus {
@@ -36,7 +39,7 @@ func (a *AuthorizationQuery) GetAuthorization(
 			Wrap(cm.NotFound, "Authorization not found").
 			Throw()
 	}
-	auth = convert.ConvertAccountUserExtendedToAuthorization(&getAccountUserQuery.Result)
+	auth = convert.ConvertAccountUserExtendedToAuthorization(a.auth, &getAccountUserQuery.Result)
 	return auth, nil
 }
 
@@ -50,7 +53,7 @@ func (a *AuthorizationQuery) GetAccountAuthorization(
 		return nil, err
 	}
 	for _, accountUser := range getAccountUsersQuery.Result.AccountUsers {
-		auths = append(auths, convert.ConvertAccountUserExtendedToAuthorization(accountUser))
+		auths = append(auths, convert.ConvertAccountUserExtendedToAuthorization(a.auth, accountUser))
 	}
 	return auths, nil
 }
@@ -66,7 +69,7 @@ func (a *AuthorizationQuery) GetRelationships(
 		return nil, err
 	}
 	for _, accountUser := range getAccountUsersQuery.Result.AccountUsers {
-		relationships = append(relationships, convert.ConvertAccountUserToRelationship(accountUser.AccountUser))
+		relationships = append(relationships, convert.ConvertAccountUserToRelationship(a.auth, accountUser.AccountUser))
 	}
 	return relationships, nil
 }

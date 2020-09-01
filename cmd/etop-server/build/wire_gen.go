@@ -109,7 +109,7 @@ import (
 	query19 "o.o/backend/com/web/webserver/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
-	"o.o/backend/pkg/common/authorization/auth"
+	auth2 "o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api"
@@ -161,6 +161,7 @@ import (
 	"o.o/backend/pkg/etop/apix/shop"
 	"o.o/backend/pkg/etop/apix/shopping"
 	"o.o/backend/pkg/etop/apix/webhook"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
@@ -202,8 +203,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	store := redis.Connect(redisRedis)
 	service := health.New(store)
 	miscService := &api.MiscService{}
+	policy := ProvidePolicy()
+	authorizer := auth.New(policy)
 	sharedConfig := cfg.SharedConfig
-	session := config_server.NewSession(sharedConfig, store)
+	session := config_server.NewSession(authorizer, sharedConfig, store)
 	database_allConfig := cfg.Databases
 	databases, err := database_all.BuildDatabases(database_allConfig)
 	if err != nil {
@@ -229,7 +232,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
 	busBus := bus.New()
-	generator := auth.NewGenerator(store)
+	generator := auth2.NewGenerator(store)
 	tokenStore := tokens.NewTokenStore(store)
 	smsConfig := cfg.SMS
 	whiteLabel := cfg.WhiteLabel
@@ -277,7 +280,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	secretToken := cfg.Secret
 	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, identityQueryBus, busBus, smsClient, emailClient, secretToken, flagEnableNewLinkInvitation)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
-	authorizationAggregate := aggregate3.NewAuthorizationAggregate()
+	authorizationAggregate := aggregate3.NewAuthorizationAggregate(authorizer)
 	authorizationCommandBus := aggregate3.AuthorizationAggregateMessageBus(authorizationAggregate)
 	accountRelationshipService := &api.AccountRelationshipService{
 		Session:           session,
@@ -470,6 +473,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	exportService, cleanup2 := export.New(store, eventStream, configDirs, bucket)
 	exportExportService := &export2.ExportService{
 		Session:     session,
+		Auth:        authorizer,
 		ExportInner: exportService,
 	}
 	notificationService := &notification.NotificationService{
@@ -996,7 +1000,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		cleanup()
 		return Output{}, nil, err
 	}
-	imcsvImport, cleanup7 := imcsv.New(queryBus, store, uploader, mainDB)
+	imcsvImport, cleanup7 := imcsv.New(authorizer, queryBus, store, uploader, mainDB)
 	import2, cleanup8 := imcsv2.New(store, uploader, mainDB)
 	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)

@@ -27,7 +27,7 @@ func ConvertStringsToActions(args []string) (outs []authorization.Action) {
 	return
 }
 
-func ConvertAccountUserExtendedToAuthorization(accountUser *identitymodel.AccountUserExtended) *authorization.Authorization {
+func ConvertAccountUserExtendedToAuthorization(aa *auth.Authorizer, accountUser *identitymodel.AccountUserExtended) *authorization.Authorization {
 	user := accountUser.User
 	roles := accountUser.AccountUser.Permission.Roles
 	au := &authorization.Authorization{
@@ -37,18 +37,18 @@ func ConvertAccountUserExtendedToAuthorization(accountUser *identitymodel.Accoun
 		Position:  accountUser.AccountUser.Position,
 		Email:     user.Email,
 		Roles:     ConvertStringsToRoles(roles),
-		Actions:   ConvertStringsToActions(auth.ListActionsByRoles(roles)),
+		Actions:   ConvertStringsToActions(aa.ListActionsByRoles(roles)),
 	}
 	return au
 }
 
-func ConvertAccountUserToRelationship(accountUser *identitymodel.AccountUser) *authorization.Relationship {
+func ConvertAccountUserToRelationship(aa *auth.Authorizer, accountUser *identitymodel.AccountUser) *authorization.Relationship {
 	var isDeleted bool
 	if !accountUser.DeletedAt.IsZero() {
 		isDeleted = true
 	}
 	roles := ConvertStringsToRoles(accountUser.Permission.Roles)
-	actions := ConvertStringsToActions(auth.ListActionsByRoles(accountUser.Permission.Roles))
+	actions := ConvertStringsToActions(aa.ListActionsByRoles(accountUser.Permission.Roles))
 	return &authorization.Relationship{
 		UserID:    accountUser.UserID,
 		AccountID: accountUser.AccountID,

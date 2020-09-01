@@ -104,12 +104,3 @@ func IsContainsRole(roles []Role, arg Role) bool {
 	}
 	return false
 }
-
-func IsContainsActionString(actions []string, arg string) bool {
-	for _, action := range actions {
-		if action == arg {
-			return true
-		}
-	}
-	return false
-}

@@ -1269,10 +1269,10 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 
 	// Add actions into permission
 	if resp.Account != nil {
-		resp.Account.UserAccount.Permission.Permissions = authservice.ListActionsByRoles(resp.Account.UserAccount.Permission.Roles)
+		resp.Account.UserAccount.Permission.Permissions = s.SS.Authorizer().ListActionsByRoles(resp.Account.UserAccount.Permission.Roles)
 	}
 	for _, account := range resp.AvailableAccounts {
-		account.UserAccount.Permission.Permissions = authservice.ListActionsByRoles(account.UserAccount.Permission.Roles)
+		account.UserAccount.Permission.Permissions = s.SS.Authorizer().ListActionsByRoles(account.UserAccount.Permission.Roles)
 	}
 
 	return resp, respShop, nil

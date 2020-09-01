@@ -4,6 +4,7 @@ import (
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
@@ -26,8 +27,9 @@ func DefaultConfig() SharedConfig {
 	}
 }
 
-func NewSession(cfg SharedConfig, redisStore redis.Store) session.Session {
+func NewSession(auth *auth.Authorizer, cfg SharedConfig, redisStore redis.Store) session.Session {
 	return session.New(
+		auth,
 		session.OptValidator(tokens.NewTokenStore(redisStore)),
 		session.OptSuperAdmin(cfg.SAdminToken),
 	)

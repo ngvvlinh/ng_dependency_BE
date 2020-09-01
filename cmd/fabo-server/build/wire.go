@@ -44,6 +44,7 @@ import (
 	sadmin_fabo "o.o/backend/pkg/etop/api/sadmin/_fabo"
 	shop_min "o.o/backend/pkg/etop/api/shop/_min"
 	shop_wire "o.o/backend/pkg/etop/api/shop/_wire"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/eventstream"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
@@ -125,6 +126,9 @@ func Build(
 		sqlstore.WireSet,
 		captcha.WireSet,
 		ticket.WireSet, // TODO(vu): remove
+
+		ProvidePolicy,
+		auth.WireSet,
 
 		// fabo
 		handler.WireSet,

@@ -3,6 +3,7 @@ package session
 import (
 	"context"
 
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/permission"
 )
 
@@ -26,8 +27,9 @@ type Session struct {
 }
 
 // New returns a non-pointer Session, for embedding in other structs.
-func New(opts ...Option) Session {
+func New(auth *auth.Authorizer, opts ...Option) Session {
 	s := Session{}
+	s.SS.auth = auth
 	return s.MustWith(opts...)
 }
 

@@ -67,7 +67,7 @@ import (
 	query3 "o.o/backend/com/supporting/ticket/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
-	"o.o/backend/pkg/common/authorization/auth"
+	auth2 "o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
@@ -96,6 +96,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/shipment"
 	"o.o/backend/pkg/etop/api/shop/stocktake"
 	summary2 "o.o/backend/pkg/etop/api/shop/summary"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
@@ -120,8 +121,10 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	store := redis.Connect(redisRedis)
 	service := health.New(store)
 	miscService := &api.MiscService{}
+	policy := ProvidePolicy()
+	authorizer := auth.New(policy)
 	sharedConfig := cfg.SharedConfig
-	session := config_server.NewSession(sharedConfig, store)
+	session := config_server.NewSession(authorizer, sharedConfig, store)
 	database_minConfig := cfg.Databases
 	databases, err := database_min.BuildDatabases(database_minConfig)
 	if err != nil {
@@ -137,7 +140,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
 	busBus := bus.New()
-	generator := auth.NewGenerator(store)
+	generator := auth2.NewGenerator(store)
 	tokenStore := tokens.NewTokenStore(store)
 	smsConfig := cfg.SMS
 	v := sms_min.SupportedSMSDrivers(smsConfig)
@@ -186,7 +189,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	secretToken := cfg.Secret
 	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, client, emailClient, secretToken, flagEnableNewLinkInvitation)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
-	authorizationAggregate := aggregate3.NewAuthorizationAggregate()
+	authorizationAggregate := aggregate3.NewAuthorizationAggregate(authorizer)
 	authorizationCommandBus := aggregate3.AuthorizationAggregateMessageBus(authorizationAggregate)
 	accountRelationshipService := &api.AccountRelationshipService{
 		Session:           session,
@@ -351,6 +354,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	exportService, cleanup2 := export.New(store, eventStream, configDirs, bucket)
 	exportExportService := &export2.ExportService{
 		Session:     session,
+		Auth:        authorizer,
 		ExportInner: exportService,
 	}
 	notificationService := &notification.NotificationService{
@@ -448,7 +452,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		cleanup()
 		return Output{}, nil, err
 	}
-	imcsvImport, cleanup3 := imcsv.New(locationQueryBus, store, uploader, mainDB)
+	imcsvImport, cleanup3 := imcsv.New(authorizer, locationQueryBus, store, uploader, mainDB)
 	import2, cleanup4 := imcsv2.New(store, uploader, mainDB)
 	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)

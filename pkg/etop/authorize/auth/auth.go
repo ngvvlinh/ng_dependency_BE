@@ -10,8 +10,9 @@ import (
 	"o.o/backend/pkg/common/authorization/casbin/adapter"
 )
 
-const (
-	model = `
+type Policy string
+
+const model = `
 	[request_definition]
 	r = action, role
 	
@@ -26,28 +27,24 @@ const (
 	
 	[matchers]
 	m = g(r.role, p.role) && r.action == p.action`
-)
 
-const (
-	EcomAuthorization = "e-authorization"
-)
+const EcomAuthorization = "e-authorization"
 
 type Roles []string
-type Authorization struct {
+
+type Authorizer struct {
 	*casbin.Enforcer
+
+	mapRoleAndActions map[string][]string
 }
 
-var authorization *Authorization
-var mapRoleAndActions map[string][]string
-
-func Init(policy string) {
-	sa := adapter.NewAdapter(policy)
+func New(policy Policy) *Authorizer {
+	sa := adapter.NewAdapter(string(policy))
 	enforcer := casbin.NewEnforcer(casbin.NewModel(model), sa)
-	authorization = &Authorization{Enforcer: enforcer}
-	mapRoleAndActions = buildMapRoleActions(policy)
-}
-
-func New() *Authorization {
+	authorization := &Authorizer{
+		Enforcer:          enforcer,
+		mapRoleAndActions: buildMapRoleActions(string(policy)),
+	}
 	return authorization
 }
 
@@ -55,7 +52,7 @@ type AuthorizationService interface {
 	Check(roles []string, action string) bool
 }
 
-func (a *Authorization) Check(roles []string, actionsArgs string, isTest int) bool {
+func (a *Authorizer) Check(roles []string, actionsArgs string, isTest int) bool {
 	actions := strings.Split(actionsArgs, "|")
 	for _, role := range roles {
 		for _, action := range actions {
@@ -67,10 +64,10 @@ func (a *Authorization) Check(roles []string, actionsArgs string, isTest int) bo
 	return false
 }
 
-func (roles Roles) Check(action string) bool {
+func (a *Authorizer) CheckSingle(roles []string, action string) bool {
 	for _, role := range roles {
-		for _, a := range mapRoleAndActions[role] {
-			if a == action {
+		for _, act := range a.mapRoleAndActions[role] {
+			if act == action {
 				return true
 			}
 		}
@@ -78,18 +75,18 @@ func (roles Roles) Check(action string) bool {
 	return false
 }
 
-func ListActionsByRolesMap(roles []string) map[string]struct{} {
+func (a *Authorizer) ListActionsByRolesMap(roles []string) map[string]struct{} {
 	m := make(map[string]struct{})
 	for _, role := range roles {
-		for _, action := range mapRoleAndActions[role] {
+		for _, action := range a.mapRoleAndActions[role] {
 			m[action] = struct{}{}
 		}
 	}
 	return m
 }
 
-func ListActionsByRoles(roles []string) (actions []string) {
-	m := ListActionsByRolesMap(roles)
+func (a *Authorizer) ListActionsByRoles(roles []string) (actions []string) {
+	m := a.ListActionsByRolesMap(roles)
 	for action := range m {
 		actions = append(actions, action)
 	}

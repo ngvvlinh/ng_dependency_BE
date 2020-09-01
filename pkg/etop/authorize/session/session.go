@@ -27,6 +27,7 @@ type session struct {
 	sadminToken string
 	validator   tokens.Validator
 
+	auth  *auth.Authorizer
 	perm  permission.Decl
 	claim claims.Claim
 
@@ -117,10 +118,9 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 		s.admin = query.Result
 	}
 
-	authorization := auth.New()
+	// verify permission
 	for _, action := range perm.Actions {
-		_action := string(action)
-		if !authorization.Check(s.permission.Roles, _action, 0) {
+		if !s.auth.Check(s.permission.Roles, string(action), 0) {
 			return ctx, cm.ErrPermissionDenied
 		}
 	}

@@ -9,22 +9,20 @@ import (
 )
 
 func TestCheckAction(t *testing.T) {
-	t.Run("Test Check()", func(t *testing.T) {
-		Init(authcommon.CommonPolicy)
-		roles := Roles{"owner"}
-		assert.True(t, roles.Check("shop/customer:view"))
-	})
-
-	t.Run("Test Check() 1", func(t *testing.T) {
-		Init(authcommon.CommonPolicy)
-		roles := Roles{"accountant"}
-		assert.False(t, roles.Check("shop/supplier:delete"))
-	})
-
-	t.Run("Test Check() 2", func(t *testing.T) {
-		Init(authcommon.CommonPolicy)
-		roles := Roles{"accountant"}
-		assert.True(t, roles.Check("shop/supplier:view"))
+	t.Run("common", func(t *testing.T) {
+		authorizer := New(authcommon.CommonPolicy)
+		t.Run("Test Check()", func(t *testing.T) {
+			roles := Roles{"owner"}
+			assert.True(t, authorizer.CheckSingle(roles, "shop/customer:view"))
+		})
+		t.Run("Test Check() 1", func(t *testing.T) {
+			roles := Roles{"accountant"}
+			assert.False(t, authorizer.CheckSingle(roles, "shop/supplier:delete"))
+		})
+		t.Run("Test Check() 2", func(t *testing.T) {
+			roles := Roles{"accountant"}
+			assert.True(t, authorizer.CheckSingle(roles, "shop/supplier:view"))
+		})
 	})
 
 	t.Run("Test Invalid Config Policy - Empty Role", func(t *testing.T) {
@@ -68,10 +66,10 @@ func TestCheckAction(t *testing.T) {
 
 	t.Run("BuildMapRoleActions", func(t *testing.T) {
 		expected := map[string][]string{
-			"admin": []string{"permission1", "permission2", "permission3", "permission4"},
-			"user":  []string{"permission1", "permission5"},
-			"owner": []string{"permission2"},
-			"loser": []string{"permission3", "permission4"},
+			"admin": {"permission1", "permission2", "permission3", "permission4"},
+			"user":  {"permission1", "permission5"},
+			"owner": {"permission2"},
+			"loser": {"permission3", "permission4"},
 		}
 		actual := buildMapRoleActions(`
 		p, permission1, admin, user
@@ -84,21 +82,21 @@ func TestCheckAction(t *testing.T) {
 	})
 
 	t.Run("ListActionsByRoles", func(t *testing.T) {
-		Init(`
+		authorizer := New(`
 		p, permission1, admin, user
 		p, permission2, admin
 		`)
 		expected := []string{"permission1", "permission2"}
-		actual := ListActionsByRoles([]string{"admin"})
+		actual := authorizer.ListActionsByRoles([]string{"admin"})
 		assert.EqualValues(t, expected, actual)
 
 		expected = []string{"permission1"}
-		actual = ListActionsByRoles([]string{"user"})
-		assert.EqualValues(t, []string{"permission1"}, ListActionsByRoles([]string{"user"}))
+		actual = authorizer.ListActionsByRoles([]string{"user"})
+		assert.EqualValues(t, []string{"permission1"}, authorizer.ListActionsByRoles([]string{"user"}))
 	})
 
 	t.Run("Test ListActionsByRoles Complicated Case", func(t *testing.T) {
-		Init(`
+		authorizer := New(`
 		p, permission0, admin, owner
 		p, permission1, admin, owner, user
 		p, permission2, admin, user
@@ -107,23 +105,23 @@ func TestCheckAction(t *testing.T) {
 		p, permission5, sa_admin
 		`)
 		expected := []string{"permission0", "permission1", "permission2"}
-		actual := ListActionsByRoles([]string{"admin"})
+		actual := authorizer.ListActionsByRoles([]string{"admin"})
 		assert.EqualValues(t, expected, actual)
 
 		expected = []string{"permission1", "permission2", "permission3"}
-		actual = ListActionsByRoles([]string{"user"})
+		actual = authorizer.ListActionsByRoles([]string{"user"})
 		assert.EqualValues(t, expected, actual)
 
 		expected = []string{"permission0", "permission1"}
-		actual = ListActionsByRoles([]string{"owner"})
+		actual = authorizer.ListActionsByRoles([]string{"owner"})
 		assert.EqualValues(t, expected, actual)
 
 		expected = []string{"permission0", "permission1", "permission2", "permission3"}
-		actual = ListActionsByRoles([]string{"admin", "user"})
+		actual = authorizer.ListActionsByRoles([]string{"admin", "user"})
 		assert.EqualValues(t, expected, actual)
 
 		expected = []string{"permission5"}
-		actual = ListActionsByRoles([]string{"sa_admin"})
+		actual = authorizer.ListActionsByRoles([]string{"sa_admin"})
 		assert.EqualValues(t, expected, actual)
 	})
 }

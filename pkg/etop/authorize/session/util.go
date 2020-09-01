@@ -4,6 +4,7 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
@@ -50,6 +51,14 @@ func (s *session) CtxPartner() *identitymodel.Partner {
 func (s *session) Affiliate() *identitymodel.Affiliate {
 	s.ensureInit()
 	return s.affiliate
+}
+
+func (s *session) Authorizer() *auth.Authorizer {
+	return s.auth
+}
+
+func (s *session) CheckRoles(action string) bool {
+	return s.auth.CheckSingle(s.Permission().Roles, action)
 }
 
 func (s *session) Permission() identitymodel.Permission {

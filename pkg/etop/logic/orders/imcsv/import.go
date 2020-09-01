@@ -48,14 +48,16 @@ import (
 )
 
 type Import struct {
+	auth             *auth.Authorizer
 	uploader         *upload.Uploader
 	locationBus      location.QueryBus
 	shopVariantStore catalogsqlstore.ShopVariantStoreFactory
 }
 
-func New(_locationBus location.QueryBus, rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
+func New(auth *auth.Authorizer, _locationBus location.QueryBus, rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	im := &Import{
+		auth:        auth,
 		uploader:    ul,
 		locationBus: _locationBus,
 	}
@@ -70,7 +72,7 @@ func (im *Import) HandleImportOrders(c *httpx.Context) error {
 	claim, shop, user, roles := c.SS.Claim(), c.SS.Shop(), c.SS.User(), c.SS.Permission().Roles
 
 	// Do not check permission for 3rd party requests
-	if !auth.New().Check(roles, string(acl.ShopOrderImport), shop.IsTest) {
+	if !im.auth.Check(roles, string(acl.ShopOrderImport), shop.IsTest) {
 		return cm.Error(cm.PermissionDenied, "", nil)
 	}
 	key := shop.ID.String()

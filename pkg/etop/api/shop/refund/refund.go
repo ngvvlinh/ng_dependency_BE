@@ -20,7 +20,6 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 	shop2 "o.o/backend/pkg/etop/api/shop"
 	inventory2 "o.o/backend/pkg/etop/api/shop/inventory"
-	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
@@ -108,12 +107,11 @@ func (s *RefundService) UpdateRefund(ctx context.Context, q *api.UpdateRefundReq
 func (s *RefundService) ConfirmRefund(ctx context.Context, q *api.ConfirmRefundRequest) (*api.Refund, error) {
 	shopID := s.SS.Shop().ID
 	userID := s.SS.Claim().UserID
-	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := refund.ConfirmRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
 		UpdatedBy:            userID,
-		AutoInventoryVoucher: inventory2.CheckRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
+		AutoInventoryVoucher: inventory2.CheckRoleAutoInventoryVoucher(s.SS.CheckRoles, q.AutoInventoryVoucher),
 	}
 	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err
@@ -129,13 +127,12 @@ func (s *RefundService) ConfirmRefund(ctx context.Context, q *api.ConfirmRefundR
 func (s *RefundService) CancelRefund(ctx context.Context, q *api.CancelRefundRequest) (*api.Refund, error) {
 	shopID := s.SS.Shop().ID
 	userID := s.SS.Claim().UserID
-	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := refund.CancelRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
 		UpdatedBy:            userID,
 		CancelReason:         q.CancelReason,
-		AutoInventoryVoucher: inventory2.CheckRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
+		AutoInventoryVoucher: inventory2.CheckRoleAutoInventoryVoucher(s.SS.CheckRoles, q.AutoInventoryVoucher),
 	}
 	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err

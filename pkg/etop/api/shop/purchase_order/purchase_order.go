@@ -10,7 +10,6 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/api/shop/inventory"
-	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/util"
 )
@@ -139,10 +138,9 @@ func (s *PurchaseOrderService) DeletePurchaseOrder(ctx context.Context, r *pbcm.
 }
 
 func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *api.ConfirmPurchaseOrderRequest) (*pbcm.UpdatedResponse, error) {
-	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := &purchaseorder.ConfirmPurchaseOrderCommand{
 		ID:                   r.Id,
-		AutoInventoryVoucher: inventory.CheckRoleAutoInventoryVoucher(roles, r.AutoInventoryVoucher),
+		AutoInventoryVoucher: inventory.CheckRoleAutoInventoryVoucher(s.SS.CheckRoles, r.AutoInventoryVoucher),
 		ShopID:               s.SS.Shop().ID,
 	}
 	if err := s.PurchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
@@ -153,14 +151,13 @@ func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *api.
 }
 
 func (s *PurchaseOrderService) CancelPurchaseOrder(ctx context.Context, r *api.CancelPurchaseOrderRequest) (*pbcm.UpdatedResponse, error) {
-	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := &purchaseorder.CancelPurchaseOrderCommand{
 		ID:                   r.Id,
 		ShopID:               s.SS.Shop().ID,
 		CancelReason:         util.CoalesceString(r.CancelReason, r.Reason),
 		UpdatedBy:            s.SS.Claim().UserID,
 		InventoryOverStock:   s.SS.Shop().InventoryOverstock.Apply(true),
-		AutoInventoryVoucher: inventory.CheckRoleAutoInventoryVoucher(roles, r.AutoInventoryVoucher),
+		AutoInventoryVoucher: inventory.CheckRoleAutoInventoryVoucher(s.SS.CheckRoles, r.AutoInventoryVoucher),
 	}
 	if err := s.PurchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

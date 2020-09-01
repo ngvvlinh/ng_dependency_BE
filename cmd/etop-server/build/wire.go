@@ -68,6 +68,7 @@ import (
 	xshop "o.o/backend/pkg/etop/apix/shop"
 	"o.o/backend/pkg/etop/apix/shopping"
 	"o.o/backend/pkg/etop/apix/webhook"
+	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/eventstream"
 	hotfixmoneytx "o.o/backend/pkg/etop/logic/hotfix"
@@ -183,6 +184,9 @@ func Build(
 		captcha.WireSet,
 		credit.WireSet,
 		ticket.WireSet,
+
+		ProvidePolicy,
+		auth.WireSet,
 
 		BuildServers,
 		BuildMainServer,

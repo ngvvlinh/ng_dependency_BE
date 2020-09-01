@@ -15,7 +15,6 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 	shop2 "o.o/backend/pkg/etop/api/shop"
 	inventory2 "o.o/backend/pkg/etop/api/shop/inventory"
-	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
@@ -111,12 +110,11 @@ func (s *PurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, q *ap
 	shopID := s.SS.Shop().ID
 	userID := s.SS.Claim().UserID
 	inventoryOverStock := s.SS.Shop().InventoryOverstock
-	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := purchaserefund.ConfirmPurchaseRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
 		UpdatedBy:            userID,
-		AutoInventoryVoucher: inventory2.CheckRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
+		AutoInventoryVoucher: inventory2.CheckRoleAutoInventoryVoucher(s.SS.CheckRoles, q.AutoInventoryVoucher),
 		InventoryOverStock:   inventoryOverStock.Apply(true),
 	}
 	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
@@ -137,14 +135,13 @@ func (s *PurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, q *ap
 func (s *PurchaseRefundService) CancelPurchaseRefund(ctx context.Context, q *api.CancelPurchaseRefundRequest) (*api.PurchaseRefund, error) {
 	shopID := s.SS.Shop().ID
 	userID := s.SS.Claim().UserID
-	roles := auth.Roles(s.SS.Permission().Roles)
 	cmd := purchaserefund.CancelPurchaseRefundCommand{
 		ShopID:               shopID,
 		ID:                   q.ID,
 		UpdatedBy:            userID,
 		CancelReason:         q.CancelReason,
 		InventoryOverStock:   s.SS.Shop().InventoryOverstock.Apply(true),
-		AutoInventoryVoucher: inventory2.CheckRoleAutoInventoryVoucher(roles, q.AutoInventoryVoucher),
+		AutoInventoryVoucher: inventory2.CheckRoleAutoInventoryVoucher(s.SS.CheckRoles, q.AutoInventoryVoucher),
 	}
 	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err

@@ -30,6 +30,8 @@ import (
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
+	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/authfabo"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/eventstream"
@@ -166,3 +168,5 @@ func BuildWebhookServer(
 func SupportedShipnowManager() shipnowcarrier.Manager {
 	return nil
 }
+
+func ProvidePolicy() auth.Policy { return authfabo.Policy }
