@@ -35,7 +35,6 @@ var WireSet = wire.NewSet(
 	jtexpressimport.WireSet,
 	imhandlers.WireSet,
 	directwebhook.WireSet,
-	SupportedCarrierDrivers,
 	SupportedShippingCarrierConfig,
 	SupportedCarrierDriver,
 	SupportedShipmentServices,

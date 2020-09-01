@@ -286,11 +286,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	orderingAggregate := ordering.NewAggregate(busBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
-	notifierDB := databases.Notifier
-	sqlstoreStore := sqlstore.New(mainDB, notifierDB, locationQueryBus, busBus)
-	shipment_allConfig := cfg.Shipment
-	v3 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, locationQueryBus)
-	shipping_providerCarrierManager := shipping_provider.NewCtrl(busBus, locationQueryBus, v3)
+	shipping_providerCarrierManager := shipping_provider.NewCtrl(busBus, locationQueryBus)
 	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	mapShipmentServices := shipment_all.SupportedShipmentServices()
 	connectionQuery := query8.NewConnectionQuery(mainDB, mapShipmentServices)
@@ -307,6 +303,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, locationQueryBus, queryBus, shopshipmentpricelistQueryBus, pricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
+	shipment_allConfig := cfg.Shipment
 	typesConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	driver := shipment_all.SupportedCarrierDriver()
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
@@ -468,7 +465,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	faboRedis := redis2.NewFaboRedis(store)
 	webhookWebhook := webhook.New(mainDB, logDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
 	fbWebhookServer := BuildWebhookServer(configWebhookConfig, webhookWebhook)
-	v4 := BuildServers(mainServer, ghnWebhookServer, fbWebhookServer)
+	v3 := BuildServers(mainServer, ghnWebhookServer, fbWebhookServer)
 	kafka := cfg.Kafka
 	handlerHandler := handler.New(consumer, kafka)
 	publisherPublisher := publisher.New(eventStream)
@@ -479,12 +476,14 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	processManager3 := pm4.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus)
 	processManager4 := pm5.New(busBus, fbuseringCommandBus)
 	fbmessagingProcessManager := fbmessaging.NewProcessManager(busBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
+	notifierDB := databases.Notifier
+	sqlstoreStore := sqlstore.New(mainDB, notifierDB, locationQueryBus, busBus)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, queryBus)
 	captchaConfig := cfg.Captcha
 	captchaCaptcha := captcha.New(captchaConfig)
 	output := Output{
-		Servers:        v4,
+		Servers:        v3,
 		EventStream:    eventStream,
 		Health:         service,
 		Handler:        handlerHandler,

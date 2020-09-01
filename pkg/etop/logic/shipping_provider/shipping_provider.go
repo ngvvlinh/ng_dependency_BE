@@ -39,13 +39,10 @@ type CarrierManager struct {
 	eventBus capi.EventBus
 }
 
-func NewCtrl(eventBus capi.EventBus, locationBus location.QueryBus, carriers []CarrierDriver) *CarrierManager {
+func NewCtrl(eventBus capi.EventBus, locationBus location.QueryBus) *CarrierManager {
 	p := &CarrierManager{
 		eventBus: eventBus,
 		location: locationBus,
-	}
-	for _, c := range carriers {
-		p.carriers = append(p.carriers, codeCarrier{code: c.Code(), driver: c})
 	}
 	return p
 }

@@ -1,7 +1,6 @@
 package shipment_all
 
 import (
-	"context"
 	"strconv"
 
 	"o.o/api/main/connectioning"
@@ -12,9 +11,6 @@ import (
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/cmenv"
-	"o.o/backend/pkg/etop/logic/shipping_provider"
-	"o.o/backend/pkg/etop/sqlstore"
 	directclient "o.o/backend/pkg/integration/shipping/direct/client"
 	directdriver "o.o/backend/pkg/integration/shipping/direct/driver"
 	"o.o/backend/pkg/integration/shipping/ghn"
@@ -59,53 +55,6 @@ func DefaultConfig() Config {
 		VTPost:        vtpost.DefaultConfig(),
 		VTPostWebhook: _vtpost.WebhookConfig{Port: 9042},
 	}
-}
-
-// TODO(vu): remove dependence on *sqlstore.Store
-func SupportedCarrierDrivers(ctx context.Context, _ *sqlstore.Store, cfg Config, locationBus location.QueryBus) []shipping_provider.CarrierDriver {
-	var ghnCarrier *ghn.Carrier
-	var ghtkCarrier *ghtk.Carrier
-	var vtpostCarrier *vtpost.Carrier
-
-	if cfg.GHN.AccountDefault.Token != "" {
-		ghnCarrier = ghn.New(cfg.GHN, locationBus)
-		if err := ghnCarrier.InitAllClients(ctx); err != nil {
-			ll.Fatal("Unable to connect to GHN", l.Error(err))
-		}
-	} else {
-		if cmenv.IsDev() {
-			ll.Warn("DEVELOPMENT. Skip connecting to GHN")
-		} else {
-			ll.Fatal("GHN: No token")
-		}
-	}
-
-	if cfg.GHTK.AccountDefault.Token != "" {
-		ghtkCarrier = ghtk.New(cfg.GHTK, locationBus)
-		if err := ghtkCarrier.InitAllClients(ctx); err != nil {
-			ll.Fatal("Unable to connect to GHTK", l.Error(err))
-		}
-	} else {
-		if cmenv.IsDev() {
-			ll.Warn("DEVELOPMENT. Skip connecting to GHTK.")
-		} else {
-			ll.Fatal("GHTK: No token")
-		}
-	}
-
-	if cfg.VTPost.AccountDefault.Username != "" {
-		vtpostCarrier = vtpost.New(cfg.VTPost, locationBus)
-		if err := vtpostCarrier.InitAllClients(ctx); err != nil {
-			ll.Fatal("Unable to connect to VTPost", l.Error(err))
-		}
-	} else {
-		if cmenv.IsDev() {
-			ll.Warn("DEVELOPMENT. Skip connecting to VTPost.")
-		} else {
-			ll.Fatal("VTPost: No token")
-		}
-	}
-	return []shipping_provider.CarrierDriver{ghnCarrier, ghtkCarrier, vtpostCarrier}
 }
 
 func SupportedShippingCarrierConfig(cfg Config) carriertypes.Config {

@@ -391,11 +391,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	orderingAggregate := ordering.NewAggregate(busBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
-	notifierDB := databases.Notifier
-	sqlstoreStore := sqlstore.New(mainDB, notifierDB, queryBus, busBus)
-	shipment_allConfig := cfg.Shipment
-	v4 := shipment_all.SupportedCarrierDrivers(ctx, sqlstoreStore, shipment_allConfig, queryBus)
-	carrierManager := shipping_provider.NewCtrl(busBus, queryBus, v4)
+	carrierManager := shipping_provider.NewCtrl(busBus, queryBus)
 	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	mapShipmentServices := shipment_all.SupportedShipmentServices()
 	connectionQuery := query14.NewConnectionQuery(mainDB, mapShipmentServices)
@@ -412,6 +408,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, queryBus, identityQueryBus, shopshipmentpricelistQueryBus, pricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
+	shipment_allConfig := cfg.Shipment
 	typesConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	driver := shipment_all.SupportedCarrierDriver()
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
@@ -492,8 +489,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	config2 := cfg.VTPay
 	provider := vtpay.New(config2)
-	v5 := payment_all.AllSupportedPaymentProviders(provider)
-	paymentManager := manager2.NewManager(v5, orderingQueryBus)
+	v4 := payment_all.AllSupportedPaymentProviders(provider)
+	paymentManager := manager2.NewManager(v4, orderingQueryBus)
 	managerCommandBus := manager2.ManagerMesssageBus(paymentManager)
 	paymentService := &payment.PaymentService{
 		Session:     session,
@@ -1034,7 +1031,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	ahamoveVerificationFileServer := server2.NewAhamoveVerificationFileServer(ctx, identityQueryBus)
 	webhook8 := webhook5.New(mainDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, shippingwebhookAggregate)
 	ahamoveWebhookServer := server2.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, identityQueryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook8)
-	v6 := BuildServers(mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
+	v5 := BuildServers(mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
 	processManager := pm.New(busBus, identityQueryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus)
 	pmProcessManager := pm2.New(busBus, catalogQueryBus, orderingQueryBus, inventoryCommandBus)
 	processManager2 := pm3.New(busBus, invitationQueryBus, invitationCommandBus)
@@ -1054,12 +1051,14 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager14 := pm15.New(busBus, traderingCommandBus)
 	processManager15 := pm16.New(busBus, connectioningCommandBus, connectioningQueryBus)
 	processManager16 := pm17.New(store, busBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
+	notifierDB := databases.Notifier
+	sqlstoreStore := sqlstore.New(mainDB, notifierDB, queryBus, busBus)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, identityQueryBus)
 	captchaConfig := cfg.Captcha
 	captchaCaptcha := captcha.New(captchaConfig)
 	output := Output{
-		Servers:           v6,
+		Servers:           v5,
 		Health:            service,
 		_identityPM:       processManager,
 		_inventoryPM:      pmProcessManager,
