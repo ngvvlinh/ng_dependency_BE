@@ -253,7 +253,7 @@ func (q *QueryService) GetUserFtRefSaffs(ctx context.Context, args *identity.Lis
 func (q *QueryService) buildCommonGetUserQuery(ctx context.Context, name, phone, email string, createdAt filter.Date) *sqlstore.UserStore {
 	query := q.userStore(ctx)
 	if name != "" {
-		query = query.ByNameNorm(validate.NormalizeSearch(name))
+		query = query.ByNameNorm(validate.NormalizeSearchQueryAnd(name))
 	}
 	if phone != "" {
 		_, phone, _ := validate.NormalizeEmailOrPhone(phone)
