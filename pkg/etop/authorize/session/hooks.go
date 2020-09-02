@@ -10,13 +10,20 @@ import (
 )
 
 type Hook struct {
-	Permissions map[string]*permission.Decl
+	perms  map[string]*permission.Decl
+	secret string
 }
 
-func NewHook(perms map[string]*permission.Decl) Hook {
-	return Hook{
-		Permissions: perms,
+func NewHook(perms map[string]*permission.Decl, opts ...HookOption) (*Hook, error) {
+	h := &Hook{
+		perms: perms,
 	}
+	for _, opt := range opts {
+		if err := opt(h); err != nil {
+			return nil, err
+		}
+	}
+	return h, nil
 }
 
 func (h Hook) BuildHooks() httprpc.Hooks {
@@ -26,9 +33,12 @@ func (h Hook) BuildHooks() httprpc.Hooks {
 }
 
 func (h Hook) BeforeServing(ctx context.Context, info httprpc.HookInfo) (context.Context, error) {
-	perm, ok := h.Permissions[info.Route]
+	perm, ok := h.perms[info.Route]
 	if !ok {
 		return ctx, cm.Errorf(cm.Internal, nil, "no permission declaration for route %v", info.Route)
+	}
+	if perm.Type == permission.Secret {
+
 	}
 	_auth, ok := info.Inner.(Sessioner)
 	if ok {

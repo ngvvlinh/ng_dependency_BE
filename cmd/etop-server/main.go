@@ -34,7 +34,7 @@ func main() {
 
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite) // TODO(vu): refactor
 	sqltrace.Init()
-	wl.Init(cmenv.Env(), wl.EtopServer)
+	wl.Init(cmenv.Env(), wl.EtopServer) // TODO(vu): refactor
 
 	// TODO(vu): refactor
 	model.GetShippingServiceRegistry().Initialize()

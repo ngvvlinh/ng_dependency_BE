@@ -200,6 +200,11 @@ func (c *Databases) MustLoadEnv(name, prefix string) {
 
 type Postgres = cmsql.ConfigPostgres
 
+func PtrDefaultPostgres() *Postgres {
+	p := DefaultPostgres()
+	return &p
+}
+
 // DefaultPostgres ...
 func DefaultPostgres() Postgres {
 	return Postgres{

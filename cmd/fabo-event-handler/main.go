@@ -132,8 +132,8 @@ func main() {
 		fbUserQuery := servicefbuser.FbUserQueryMessageBus(servicefbuser.NewFbUserQuery(db, customerQuery))
 		identityQuery := serviceidentity.QueryServiceMessageBus(serviceidentity.NewQueryService(db))
 
-		pgeventapi.Init(&sMain)
 		faboHandler := fabohandler.New(db, producer, cfg.Kafka.TopicPrefix, fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery)
+		pgeventapi.NewPgeventServer(&pgeventapi.MiscService{}, &pgeventapi.EventService{PgService: sMain})
 
 		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, "fabo-handler", kafkaCfg)
 		if err != nil {

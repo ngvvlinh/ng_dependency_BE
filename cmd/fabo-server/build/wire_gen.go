@@ -451,7 +451,12 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		WebhookCallbackService: webhookCallbackService,
 	}
 	sadminServers := _fabo.NewServers(webhookService)
-	intHandlers := BuildIntHandlers(servers, shopServers, faboServers, sadminServers)
+	intHandlers, err := BuildIntHandlers(servers, shopServers, faboServers, sadminServers)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return Output{}, nil, err
+	}
 	dirConfigs := cfg.UploadDirs
 	uploader, err := _uploader.NewUploader(ctx, dirConfigs, bucket)
 	if err != nil {

@@ -90,16 +90,19 @@ func BuildIntHandlers(
 	shopServers shop.Servers,
 	faboServers fabo.Servers,
 	sadminServers sadmin.Servers,
-) (hs IntHandlers) {
+) (hs IntHandlers, _ error) {
 	logging := middlewares.NewLogging()
-	ssHooks := session.NewHook(acl.GetACL())
+	ssHooks, err := session.NewHook(acl.GetACL())
+	if err != nil {
+		return nil, err
+	}
 
 	hs = append(hs, rootServers...)
 	hs = append(hs, shopServers...)
 	hs = append(hs, faboServers...)
 	hs = append(hs, sadminServers...)
 	hs = httprpc.WithHooks(hs, ssHooks, logging)
-	return hs
+	return
 }
 
 type MainServer *http.Server

@@ -73,13 +73,13 @@ func NewService(
 	producer *mq.KafkaProducer,
 	prefix string,
 	topics []eventhandler.TopicDef,
-) (Service, error) {
+) (*Service, error) {
 	listener := cmsql.NewListener(pgcfg, 10*time.Millisecond, 120*time.Second, cmsql.DefaultListenerProblemReport)
 	if err := cmsql.ListenTo(ctx, listener, PgChannel); err != nil {
-		return Service{}, err
+		return nil, err
 	}
 
-	return Service{
+	return &Service{
 		pglistener: listener,
 		producer:   producer,
 		prefix:     prefix + "_pgrid_",
@@ -88,7 +88,7 @@ func NewService(
 	}, nil
 }
 
-func (s Service) StartForwarding(ctx context.Context) {
+func (s *Service) StartForwarding(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -101,13 +101,13 @@ func (s Service) StartForwarding(ctx context.Context) {
 	}
 }
 
-func StartForwardings(ctx context.Context, ss []Service) {
+func StartForwardings(ctx context.Context, ss []*Service) {
 	for _, s := range ss {
 		go s.StartForwarding(ctx)
 	}
 }
 
-func (s Service) HandleNotification(noti *pq.Notification) {
+func (s *Service) HandleNotification(noti *pq.Notification) {
 	ll.Info("HandleNotification :: ", l.Object("noti", noti))
 	err := s.HandleNotificationWithError(noti)
 	if err != nil {
@@ -115,7 +115,7 @@ func (s Service) HandleNotification(noti *pq.Notification) {
 	}
 }
 
-func (s Service) HandleNotificationWithError(noti *pq.Notification) error {
+func (s *Service) HandleNotificationWithError(noti *pq.Notification) error {
 	if noti.Channel != PgChannel {
 		return fmt.Errorf("unknown channel: %v", noti.Channel)
 	}

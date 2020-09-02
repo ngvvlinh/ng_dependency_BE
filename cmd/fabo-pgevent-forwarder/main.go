@@ -72,7 +72,7 @@ func main() {
 	sMain, err := pgevent.NewService(ctx, dbdecl.DBMain, cfg.Postgres, producer, cfg.Kafka.TopicPrefix, topics)
 	ll.Must(err, "Error while listening to Postgres")
 
-	pgeventapi.Init(&sMain)
+	servers := pgeventapi.NewPgeventServer(&pgeventapi.MiscService{}, &pgeventapi.EventService{PgService: sMain})
 
 	sNotifier, err := pgevent.NewService(ctx, dbdecl.DBNotifier, cfg.PostgresNotifier, producer, cfg.Kafka.TopicPrefix, topics)
 	if err != nil {
@@ -81,7 +81,9 @@ func main() {
 
 	apiMux := http.NewServeMux()
 	apiMux.Handle("/api/", http.NotFoundHandler())
-	pgeventapi.NewPgeventServer(apiMux, cfg.Secret)
+	for _, s := range servers {
+		apiMux.Handle(s.PathPrefix(), s)
+	}
 
 	mux := http.NewServeMux()
 	mux.Handle("/api/", headers.ForwardHeaders(apiMux))
@@ -104,7 +106,7 @@ func main() {
 	healthService.MarkReady()
 
 	ll.Info("Start forwarding events from Postgres to Kafka")
-	pgevent.StartForwardings(ctx, []pgevent.Service{sMain, sNotifier})
+	pgevent.StartForwardings(ctx, []*pgevent.Service{sMain, sNotifier})
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()

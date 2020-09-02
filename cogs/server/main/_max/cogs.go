@@ -28,9 +28,12 @@ func BuildIntHandlers(
 	integrationServers integration.Servers,
 	affServer affapi.Servers,
 	saffServer serviceaffapi.Servers,
-) (hs _main.IntHandlers) {
+) (hs _main.IntHandlers, _ error) {
 	logging := middlewares.NewLogging()
-	ssHooks := session.NewHook(acl.GetACL())
+	ssHooks, err := session.NewHook(acl.GetACL())
+	if err != nil {
+		return nil, err
+	}
 
 	hs = append(hs, rootServers...)
 	hs = append(hs, shopServers...)
@@ -41,7 +44,7 @@ func BuildIntHandlers(
 
 	hs = append(hs, affServer...)
 	hs = append(hs, saffServer...)
-	return hs
+	return
 }
 
 func BuildExtHandlers(
@@ -50,9 +53,12 @@ func BuildExtHandlers(
 	carrierServers partnercarrier.Servers,
 	partnerImportServers partnerimport.Servers,
 	vnpostServers vnp.Servers,
-) (hs _main.ExtHandlers) {
+) (hs _main.ExtHandlers, _ error) {
 	logging := middlewares.NewLogging()
-	ssExtHooks := session.NewHook(acl.GetExtACL())
+	ssExtHooks, err := session.NewHook(acl.GetExtACL())
+	if err != nil {
+		return nil, err
+	}
 
 	hs = append(hs, xshopServers...)
 	hs = append(hs, carrierServers...)

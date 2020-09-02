@@ -1,19 +1,21 @@
 package api
 
 import (
-	service "o.o/api/top/services/pgevent"
 	"o.o/capi/httprpc"
+	"o.o/common/l"
 )
 
-// +gen:wrapper=o.o/api/top/services/pgevent
-// +gen:wrapper:package=pgevent
+var ll = l.New()
 
-func NewPgeventServer(m httprpc.Muxer, secret string) {
-	servers := []httprpc.Server{
-		service.NewMiscServiceServer(WrapMiscService(miscService.Clone, secret)),
-		service.NewEventServiceServer(WrapEventService(eventService.Clone, secret)),
-	}
-	for _, s := range servers {
-		m.Handle(s.PathPrefix(), s)
-	}
+type Servers []httprpc.Server
+
+func NewServers(
+	miscService *MiscService,
+	eventService *EventService,
+) Servers {
+	servers := httprpc.MustNewServers(
+		miscService.Clone,
+		eventService.Clone,
+	)
+	return servers
 }

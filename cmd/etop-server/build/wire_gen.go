@@ -792,7 +792,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityQuery:  identityQueryBus,
 	}
 	apiServers := api2.NewServers(apiUserService, apiTradingService, apiShopService, affiliateService)
-	intHandlers := server_max.BuildIntHandlers(servers, shopServers, adminServers, sadminServers, integrationServers, affiliateServers, apiServers)
+	intHandlers, err := server_max.BuildIntHandlers(servers, shopServers, adminServers, sadminServers, integrationServers, affiliateServers, apiServers)
+	if err != nil {
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return Output{}, nil, err
+	}
 	shippingShipping := shipping.New(queryBus, mainDB, shipmentManager, shippingCommandBus, shippingQueryBus, orderLogic, shipnowCommandBus, shipnowQueryBus)
 	partnerMiscService := &partner.MiscService{
 		Session:  session,
@@ -967,7 +973,16 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ShipnowService: shipnowService2,
 	}
 	vnpServers := vnp.NewServers(vnPostService)
-	extHandlers := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers, vnpServers)
+	extHandlers, err := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers, vnpServers)
+	if err != nil {
+		cleanup6()
+		cleanup5()
+		cleanup4()
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return Output{}, nil, err
+	}
 	ghnimportImport := ghnimport.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}
