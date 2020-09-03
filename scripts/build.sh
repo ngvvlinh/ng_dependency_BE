@@ -22,6 +22,7 @@ preprocess() {
     COMMIT=$(replace "$COMMIT" "<nakhoa17@gmail.com>" "@nakhoa17")
     COMMIT=$(replace "$COMMIT" "<olvrng@gmail.com>" "@vunmq")
     COMMIT=$(replace "$COMMIT" "<tuan@eye-solution.vn>" "@tuanpn")
+    COMMIT=$(replace "$COMMIT" "<tranthanh.it.95@gmail.com>" "@jeremie_belpois")
 }
 
 build_docker() {

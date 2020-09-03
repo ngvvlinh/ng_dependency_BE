@@ -69,7 +69,7 @@ func init() {
 	for _, rule := range ESPriceRules {
 		key := rule.Carrier
 		if priceRuleIndex[key] != nil {
-			ll.Warn("Etop Shipping rule: Duplicate rule", l.String("key", string(key)))
+			ll.Warn("Etop Shipping rule: Duplicate rule", l.Any("key", key))
 			continue
 		}
 		priceRuleIndex[key] = rule.Pricings

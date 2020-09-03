@@ -330,5 +330,5 @@ func CheckSumDigitUPC(s string) string {
 	if sum != 0 {
 		sum = 10 - sum
 	}
-	return s + string(sum+'0')
+	return s + string(rune(sum+'0'))
 }

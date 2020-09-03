@@ -1,6 +1,6 @@
 module o.o/backend
 
-go 1.14
+go 1.15
 
 replace (
 	github.com/google/wire => ./up/github.com/google/wire

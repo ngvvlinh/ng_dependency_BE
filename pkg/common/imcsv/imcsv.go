@@ -179,10 +179,10 @@ func cellErrorWithCode(code xerrors.Code, err error, row, col int, msg string, a
 
 func ColName(col int) string {
 	if col <= 'Z'-'A' {
-		return string('A' + col)
+		return string(rune('A' + col))
 	}
 	col = col - ('Z' - 'A' + 1)
-	return "A" + string('A'+col)
+	return "A" + string(rune('A'+col))
 }
 
 func CellName(row, col int) string {
