@@ -19,6 +19,7 @@ import (
 
 /*
 Custom conversions:
+    AccountUser        // in use
     Affiliate          // in use
     AffiliateDB        // in use
     BankAccount        // in use
@@ -455,14 +456,7 @@ func Convert_identity_Accounts_identitymodel_Accounts(args []*identity.Account) 
 //-- convert o.o/api/main/identity.AccountUser --//
 
 func Convert_identitymodel_AccountUser_identity_AccountUser(arg *identitymodel.AccountUser, out *identity.AccountUser) *identity.AccountUser {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &identity.AccountUser{}
-	}
-	convert_identitymodel_AccountUser_identity_AccountUser(arg, out)
-	return out
+	return AccountUser(arg)
 }
 
 func convert_identitymodel_AccountUser_identity_AccountUser(arg *identitymodel.AccountUser, out *identity.AccountUser) {

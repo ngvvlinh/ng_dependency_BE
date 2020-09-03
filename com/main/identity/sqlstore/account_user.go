@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/identity"
+	"o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -81,4 +83,12 @@ func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, e
 	var accountUser identitymodel.AccountUsers
 	err := query.Find(&accountUser)
 	return accountUser, err
+}
+
+func (s *AccountUserStore) ListAccountUser() ([]*identity.AccountUser, error) {
+	query := s.query().Where(s.preds)
+
+	var accountUser identitymodel.AccountUsers
+	err := query.Find(&accountUser)
+	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(accountUser), err
 }

@@ -47,6 +47,6 @@ func Load() (cfg Config, err error) {
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
 	cc.RedisMustLoadEnv(&cfg.Redis)
 	cfg.TelegramBot.MustLoadEnv()
-	cfg.Onesignal.MustLoadEnv()
+	cfg.Onesignal.MustLoadEnv("FABO_ONESIGNAL")
 	return cfg, err
 }

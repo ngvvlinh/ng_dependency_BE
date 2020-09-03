@@ -90,6 +90,19 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			return
 		}
 		return msg, fn, nil
+	case "/fabo.CustomerConversation/GetCustomerConversationByID":
+		msg := &GetCustomerConversationByIDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetCustomerConversationByID(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/fabo.CustomerConversation/ListCommentsByExternalPostID":
 		msg := &ListCommentsByExternalPostIDRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

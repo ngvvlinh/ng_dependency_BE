@@ -29,7 +29,7 @@ func HandleMoneyTransactionShippingEvent(ctx context.Context, event *pgevent.PgE
 		return mq.CodeIgnore, nil
 	}
 	cmds := prepareMtsNotiCommands(event, history, mts)
-	if err := CreateNotifications(ctx, cmds); err != nil {
+	if err := createNotifications(ctx, cmds); err != nil {
 		return mq.CodeRetry, err
 	}
 
@@ -60,6 +60,7 @@ func templateMtsCreated(mts txmodel.MoneyTransactionShipping) *notifiermodel.Cre
 		Entity:           notifiermodel.NotiMoneyTransactionShipping,
 		EntityID:         mts.ID,
 		SendNotification: true,
+		TopicType:        TopicMoneyTransactionShipping,
 	}
 }
 
@@ -73,5 +74,6 @@ func templateMtsConfirmed(mts txmodel.MoneyTransactionShipping) *notifiermodel.C
 		Entity:           notifiermodel.NotiMoneyTransactionShipping,
 		EntityID:         mts.ID,
 		SendNotification: true,
+		TopicType:        TopicMoneyTransactionShipping,
 	}
 }

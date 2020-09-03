@@ -21,6 +21,8 @@ type PageService interface {
 type CustomerConversationService interface {
 	ListCustomerConversations(context.Context, *ListCustomerConversationsRequest) (*FbCustomerConversationsResponse, error)
 
+	GetCustomerConversationByID(context.Context, *GetCustomerConversationByIDRequest) (*GetCustomerConversationByIDResponse, error)
+
 	ListMessages(context.Context, *ListMessagesRequest) (*FbMessagesResponse, error)
 
 	ListCommentsByExternalPostID(context.Context, *ListCommentsByExternalPostIDRequest) (*ListCommentsByExternalPostIDResponse, error)

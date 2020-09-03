@@ -187,3 +187,14 @@ func BankAccountDB(in *identitytypes.BankAccount) *identitysharemodel.BankAccoun
 	convert_identitytypes_BankAccount_sharemodel_BankAccount(in, out)
 	return out
 }
+
+func AccountUser(in *identitymodel.AccountUser) *identity.AccountUser {
+	if in == nil {
+		return nil
+	}
+	out := &identity.AccountUser{}
+	convert_identitymodel_AccountUser_identity_AccountUser(in, out)
+	out.Permission.Roles = in.Roles
+	out.Permission.Permissions = in.Permissions
+	return out
+}

@@ -26,6 +26,6 @@ func NewQueryService(db com.MainDB) *QueryService {
 	}
 }
 
-func (s *QueryService) GetUserNotiSetting(ctx context.Context, args *notify.GetUserNotiSettingArgs) (*notify.UserNotiSetting, error) {
+func (s *QueryService) GetUserNotifySetting(ctx context.Context, args *notify.GetUserNotiSettingArgs) (*notify.UserNotiSetting, error) {
 	return s.userNotiSettingStore(ctx).ByUserID(args.UserID).GetUserNotifySetting()
 }

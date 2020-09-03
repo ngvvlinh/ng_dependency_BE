@@ -8,7 +8,7 @@ import (
 
 var WireSet = wire.NewSet(
 	NewQueryService,
-	NewNotiAggregate,
+	NewNotifyAggregate,
 	QueryServiceNotifyBus,
-	NewNotiAggregateMessageBus,
+	NewNotifyAggregateMessageBus,
 )

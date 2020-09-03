@@ -163,6 +163,22 @@ func (s *CustomerConversationService) ListCustomerConversations(
 	return result, nil
 }
 
+func (s *CustomerConversationService) GetCustomerConversationByID(
+	ctx context.Context,
+	request *fabo.GetCustomerConversationByIDRequest,
+) (*fabo.GetCustomerConversationByIDResponse, error) {
+	query := &fbmessaging.GetFbCustomerConversationByIDQuery{
+		ID: request.ID,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+
+	return &fabo.GetCustomerConversationByIDResponse{
+		Conversation: convertpb.PbFbCustomerConversation(query.Result),
+	}, nil
+}
+
 func (s *CustomerConversationService) ListMessages(
 	ctx context.Context, request *fabo.ListMessagesRequest,
 ) (*fabo.FbMessagesResponse, error) {

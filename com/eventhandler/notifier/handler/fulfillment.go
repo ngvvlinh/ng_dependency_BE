@@ -41,7 +41,7 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 	}
 
 	cmds := prepareNotifyFfmCommands(ctx, history, &ffm)
-	if err := CreateNotifications(ctx, cmds); err != nil {
+	if err := createNotifications(ctx, cmds); err != nil {
 		return mq.CodeRetry, err
 	}
 
@@ -51,7 +51,7 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 func prepareNotifyFfmCommands(ctx context.Context, history shipmodel.FulfillmentHistory, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
 	externalShippingNote := history.ExternalShippingNote().String()
 	externalSubState := history.ExternalShippingSubState().String()
-	userIDs, err := getUserIDsWithShopID(ctx, ffm.ShopID)
+	userIDs, err := filterRecipient(ctx, ffm.ShopID, notifyTopicRolesMap[TopicFulfillment])
 	if err != nil || userIDs == nil {
 		return nil
 	}
@@ -97,6 +97,7 @@ func templateFfmChangedNote(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*not
 		Entity:     notifiermodel.NotiFulfillment,
 		EntityID:   ffm.ID,
 		Meta:       cmtype.Empty{},
+		TopicType:  TopicFulfillment,
 	}
 	return buildNotifyCmds(args)
 }
@@ -115,6 +116,7 @@ func templateFfmChangedFee(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*noti
 		Entity:     notifiermodel.NotiFulfillment,
 		EntityID:   ffm.ID,
 		Meta:       cmtype.Empty{},
+		TopicType:  TopicFulfillment,
 	}
 	return buildNotifyCmds(args)
 }
@@ -161,6 +163,7 @@ func templateFfmChangedStatus(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*n
 		Entity:     notifiermodel.NotiFulfillment,
 		EntityID:   ffm.ID,
 		Meta:       cmtype.Empty{},
+		TopicType:  TopicFulfillment,
 	}
 	return buildNotifyCmds(args)
 }

@@ -150,6 +150,33 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/GetCustomerConversationByID": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "GetCustomerConversationByID",
+        "operationId": "fabo.CustomerConversation-GetCustomerConversationByID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvGetCustomerConversationByIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvGetCustomerConversationByIDResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/ListCommentsByExternalPostID": {
       "post": {
         "tags": [
@@ -1264,6 +1291,23 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "cvGetCustomerConversationByIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "cvGetCustomerConversationByIDResponse": {
+      "type": "object",
+      "properties": {
+        "conversation": {
+          "$ref": "#/definitions/cvFbCustomerConversation"
         }
       }
     },

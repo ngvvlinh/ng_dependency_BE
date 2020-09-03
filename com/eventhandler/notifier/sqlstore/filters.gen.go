@@ -535,6 +535,25 @@ func (ft *NotificationFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFi
 	}
 }
 
+func (ft *NotificationFilters) ByTopicType(TopicType string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "topic_type",
+		Value:  TopicType,
+		IsNil:  TopicType == "",
+	}
+}
+
+func (ft *NotificationFilters) ByTopicTypePtr(TopicType *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "topic_type",
+		Value:  TopicType,
+		IsNil:  TopicType == nil,
+		IsZero: TopicType != nil && (*TopicType) == "",
+	}
+}
+
 type UserNotiSettingFilters struct{ prefix string }
 
 func NewUserNotiSettingFilters(prefix string) UserNotiSettingFilters {

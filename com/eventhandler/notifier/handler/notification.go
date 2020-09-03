@@ -37,24 +37,47 @@ func HandleNotificationEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Co
 	return mq.CodeOK, nil
 }
 
-func SendNotification(ctx context.Context, noti *notifiermodel.Notification) error {
-	if noti == nil {
+func SendNotification(ctx context.Context, notify *notifiermodel.Notification) error {
+	if notify == nil {
 		return nil
 	}
-	if err := sendToOneSignal(ctx, noti); err != nil {
+
+	disable, err := isDisableTopicNotify(ctx, notify)
+	if err != nil {
 		return err
 	}
-	return nil
+	if disable {
+		return nil
+	}
+
+	return sendToOneSignal(ctx, notify)
+}
+
+func isDisableTopicNotify(ctx context.Context, notify *notifiermodel.Notification) (bool, error) {
+	userNotifySetting, err := userNotifySettingStore(ctx).ByUserID(notify.UserID).GetUserNotifySetting()
+	if err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return false, nil
+		}
+		return false, err
+	}
+	for _, topic := range userNotifySetting.DisableTopics {
+		if topic == notify.TopicType {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) error {
 	if noti.UserID == 0 {
-		userIds, err := getUserIDsWithShopID(ctx, noti.AccountID)
+		accUsers, err := accountUserStore(ctx).ListAccountUser()
 		if err != nil {
 			return err
 		}
-		for _, userID := range userIds {
-			err := _sendToOneSignal(ctx, userID, noti)
+
+		for _, accUser := range accUsers {
+			err := _sendToOneSignal(ctx, accUser.UserID, noti)
 			if err != nil {
 				return err
 			}
@@ -64,7 +87,7 @@ func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) erro
 	return _sendToOneSignal(ctx, noti.UserID, noti)
 }
 
-func _sendToOneSignal(ctx context.Context, userID dot.ID, noti *notifiermodel.Notification) error {
+func _sendToOneSignal(ctx context.Context, userID dot.ID, notify *notifiermodel.Notification) error {
 	args := &notifiermodel.GetDevicesArgs{
 		UserID:            userID,
 		ExternalServiceID: notifiermodel.ExternalServiceOneSignalID,
@@ -77,22 +100,22 @@ func _sendToOneSignal(ctx context.Context, userID dot.ID, noti *notifiermodel.No
 	if len(devices) == 0 {
 		return nil
 	}
-	deviceIDs := FilterDevicesByConfig(devices, noti.AccountID)
+	deviceIDs := FilterDevicesByConfig(devices, notify.AccountID)
 
 	data := notifiermodel.PrepareNotiData(&notifiermodel.NotiDataAddition{
-		Entity:   noti.Entity,
-		EntityID: noti.EntityID.String(),
-		NotiID:   noti.ID.String(),
-		ShopID:   noti.AccountID.String(),
-		MetaData: noti.MetaData,
+		Entity:   notify.Entity,
+		EntityID: notify.EntityID.String(),
+		NotiID:   notify.ID.String(),
+		ShopID:   notify.AccountID.String(),
+		MetaData: notify.MetaData,
 	})
 
-	webUrl := buildNotificationURL(noti)
+	webUrl := buildNotificationURL(notify)
 	now := time.Now()
 	cmd := &notifiermodel.SendNotificationCommand{
 		Request: &notifiermodel.CreateNotificationRequest{
-			Title:             noti.Title,
-			Content:           noti.Message,
+			Title:             notify.Title,
+			Content:           notify.Message,
 			Data:              data,
 			ExternalDeviceIDs: deviceIDs,
 			WebURL:            webUrl,
@@ -102,14 +125,14 @@ func _sendToOneSignal(ctx context.Context, userID dot.ID, noti *notifiermodel.No
 		return err
 	}
 	// UpdateInfo external_noti_id and sync_status
-	updateNoti := &notifiermodel.Notification{
-		ID:                noti.ID,
+	updateNotify := &notifiermodel.Notification{
+		ID:                notify.ID,
 		SyncStatus:        status3.P,
 		ExternalNotiID:    cmd.Result.ID,
 		ExternalServiceID: notifiermodel.ExternalServiceOneSignalID,
 		SyncedAt:          now,
 	}
-	if err := notiStore.UpdateNotification(updateNoti); err != nil {
+	if err := notifyStore.UpdateNotification(updateNotify); err != nil {
 		return err
 	}
 	return nil

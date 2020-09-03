@@ -232,6 +232,12 @@ type ListCustomerConversationsRequest struct {
 
 func (m *ListCustomerConversationsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type GetCustomerConversationByIDRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *GetCustomerConversationByIDRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type CustomerConversationFilter struct {
 	// New
 	ExternalPageID filter.Strings `json:"external_page_id"`
@@ -307,6 +313,12 @@ type FbCustomerConversationsResponse struct {
 }
 
 func (m *FbCustomerConversationsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetCustomerConversationByIDResponse struct {
+	Conversation *FbCustomerConversation `json:"conversation"`
+}
+
+func (m *GetCustomerConversationByIDResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListMessagesRequest struct {
 	Paging *common.CursorPaging `json:"paging"`

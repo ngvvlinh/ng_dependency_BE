@@ -72,14 +72,14 @@ func (h AggregateHandler) HandleGetOrCreateUserNotifySetting(ctx context.Context
 	return err
 }
 
-type GetUserNotiSettingQuery struct {
+type GetUserNotifySettingQuery struct {
 	UserID dot.ID
 
 	Result *UserNotiSetting `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetUserNotiSetting(ctx context.Context, msg *GetUserNotiSettingQuery) (err error) {
-	msg.Result, err = h.inner.GetUserNotiSetting(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetUserNotifySetting(ctx context.Context, msg *GetUserNotifySettingQuery) (err error) {
+	msg.Result, err = h.inner.GetUserNotifySetting(msg.GetArgs(ctx))
 	return err
 }
 
@@ -90,7 +90,7 @@ func (q *DisableTopicCommand) command()                 {}
 func (q *EnableTopicCommand) command()                  {}
 func (q *GetOrCreateUserNotifySettingCommand) command() {}
 
-func (q *GetUserNotiSettingQuery) query() {}
+func (q *GetUserNotifySettingQuery) query() {}
 
 // implement conversion
 
@@ -146,14 +146,14 @@ func (q *GetOrCreateUserNotifySettingCommand) SetGetOrCreateUserNotifySettingArg
 	q.DisableTopics = args.DisableTopics
 }
 
-func (q *GetUserNotiSettingQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetUserNotiSettingArgs) {
+func (q *GetUserNotifySettingQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetUserNotiSettingArgs) {
 	return ctx,
 		&GetUserNotiSettingArgs{
 			UserID: q.UserID,
 		}
 }
 
-func (q *GetUserNotiSettingQuery) SetGetUserNotiSettingArgs(args *GetUserNotiSettingArgs) {
+func (q *GetUserNotifySettingQuery) SetGetUserNotiSettingArgs(args *GetUserNotiSettingArgs) {
 	q.UserID = args.UserID
 }
 
@@ -188,6 +188,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
-	b.AddHandler(h.HandleGetUserNotiSetting)
+	b.AddHandler(h.HandleGetUserNotifySetting)
 	return QueryBus{b}
 }

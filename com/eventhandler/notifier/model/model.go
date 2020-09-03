@@ -42,6 +42,7 @@ type Notification struct {
 	CreatedAt         time.Time `sq:"create"`
 	UpdatedAt         time.Time `sq:"update"`
 	MetaData          json.RawMessage
+	TopicType         string
 }
 
 // +sqlgen

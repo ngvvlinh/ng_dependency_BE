@@ -54,6 +54,7 @@ func (s *NotificationStore) CreateNotification(args *model.CreateNotificationArg
 		AccountID:        args.AccountID,
 		SendNotification: args.SendNotification,
 		MetaData:         args.MetaData,
+		TopicType:        args.TopicType,
 	}
 	if err := s.db.Table("notification").ShouldInsert(noti); err != nil {
 		return nil, err
@@ -73,6 +74,7 @@ func (s *NotificationStore) CreateNotifications(args *model.CreateNotificationsA
 		return 0, 0, cm.Errorf(cm.InvalidArgument, nil, "Missing Title")
 	}
 	if args.Message == "" {
+
 		return 0, 0, cm.Errorf(cm.InvalidArgument, nil, "Missing Message")
 	}
 

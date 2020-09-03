@@ -16,7 +16,7 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetUserNotiSetting(context.Context, *GetUserNotiSettingArgs) (*UserNotiSetting, error)
+	GetUserNotifySetting(context.Context, *GetUserNotiSettingArgs) (*UserNotiSetting, error)
 }
 
 type GetOrCreateUserNotifySettingArgs struct {

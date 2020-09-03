@@ -6,7 +6,9 @@ import (
 
 	notifiermodel "o.o/backend/com/eventhandler/notifier/model"
 	fbpage "o.o/backend/com/fabo/main/fbpage/model"
+	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 func getPage(fbExternalID string) (*fbpage.FbExternalPage, error) {
@@ -19,19 +21,6 @@ func getPage(fbExternalID string) (*fbpage.FbExternalPage, error) {
 	return &page, nil
 }
 
-func getUserIDsWithShopID(ctx context.Context, shopID dot.ID) ([]dot.ID, error) {
-	accUsers, err := accountUserStore(ctx).ByAccountID(shopID).ListAccountUserDBs()
-	if err != nil {
-		return nil, err
-	}
-
-	var userIDs []dot.ID
-	for _, accUser := range accUsers {
-		userIDs = append(userIDs, accUser.UserID)
-	}
-	return userIDs, nil
-}
-
 type buildNotifyCmdArgs struct {
 	UserIDs    []dot.ID
 	ShopID     dot.ID
@@ -41,6 +30,7 @@ type buildNotifyCmdArgs struct {
 	Entity     notifiermodel.NotiEntity
 	EntityID   dot.ID
 	Meta       interface{}
+	TopicType  string
 }
 
 func buildNotifyCmds(
@@ -58,8 +48,41 @@ func buildNotifyCmds(
 			Entity:           args.Entity,
 			SendNotification: args.SendNotify,
 			MetaData:         _meta,
+			TopicType:        args.TopicType,
 		}
 		res = append(res, cmd)
 	}
 	return res
+}
+
+func createNotifications(_ context.Context, cmds []*notifiermodel.CreateNotificationArgs) error {
+	if len(cmds) == 0 {
+		return nil
+	}
+
+	chErr := make(chan error, len(cmds))
+	for _, cmd := range cmds {
+		go func(_cmd *notifiermodel.CreateNotificationArgs) (_err error) {
+			defer func() {
+				chErr <- _err
+			}()
+			defer cm.RecoverAndLog()
+			_, _err = notifyStore.CreateNotification(_cmd)
+			if _err != nil {
+				ll.Debug("err", l.Error(_err))
+			}
+			return
+		}(cmd)
+	}
+	var created, errors int
+	for i, n := 0, len(cmds); i < n; i++ {
+		err := <-chErr
+		if err == nil {
+			created++
+		} else {
+			errors++
+		}
+	}
+	ll.S.Infof("Create notifications: success %v/%v, errors %v/%v", created, len(cmds), errors, len(cmds))
+	return nil
 }

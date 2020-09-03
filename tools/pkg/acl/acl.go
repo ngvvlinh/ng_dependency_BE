@@ -1215,6 +1215,7 @@ var _acl = map[string]*permission.Decl{
 	"fabo.Page/ListPages":                                    {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbFanpageView)},
 	"fabo.Page/CheckPermissions":                             {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbFanpageView)},
 	"fabo.CustomerConversation/ListCustomerConversations":    {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},
+	"fabo.CustomerConversation/GetCustomerConversationByID":  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},
 	"fabo.CustomerConversation/ListMessages":                 {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageView)},
 	"fabo.CustomerConversation/ListCommentsByExternalPostID": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView)},
 	"fabo.CustomerConversation/UpdateReadStatus":             {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},

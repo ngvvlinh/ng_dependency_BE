@@ -18,6 +18,7 @@ type CreateNotificationArgs struct {
 	Entity           notifier_entity.NotifierEntity
 	SendNotification bool
 	MetaData         json.RawMessage
+	TopicType        string
 }
 
 type CreateNotificationsArgs struct {
@@ -29,6 +30,7 @@ type CreateNotificationsArgs struct {
 	Entity           notifier_entity.NotifierEntity
 	SendNotification bool
 	MetaData         json.RawMessage
+	TopicType        string
 }
 
 type GetNotificationArgs struct {

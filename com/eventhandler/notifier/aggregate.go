@@ -14,21 +14,21 @@ import (
 
 var _ notify.Aggregate = &Aggregate{}
 
-func NewNotiAggregate(db com.MainDB, carrierManager carrier.Manager) *Aggregate {
+func NewNotifyAggregate(db com.MainDB, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
-		db:                   db,
-		userNotiSettingStore: sqlstore.NewUserNotiSettingStore(db),
+		db:                     db,
+		userNotifySettingStore: sqlstore.NewUserNotiSettingStore(db),
 	}
 }
 
-func NewNotiAggregateMessageBus(s *Aggregate) notify.CommandBus {
+func NewNotifyAggregateMessageBus(s *Aggregate) notify.CommandBus {
 	b := bus.New()
 	return notify.NewAggregateHandler(s).RegisterHandlers(b)
 }
 
 type Aggregate struct {
-	db                   *cmsql.Database
-	userNotiSettingStore sqlstore.UserNotiSettingStoreFactory
+	db                     *cmsql.Database
+	userNotifySettingStore sqlstore.UserNotiSettingStoreFactory
 }
 
 func (s *Aggregate) CreateUserNotifySetting(
@@ -39,7 +39,7 @@ func (s *Aggregate) CreateUserNotifySetting(
 		UserID:        args.UserID,
 		DisableTopics: args.DisableTopics,
 	}
-	err := s.userNotiSettingStore(ctx).CreateUserNotifySetting(setting)
+	err := s.userNotifySettingStore(ctx).CreateUserNotifySetting(setting)
 	if err != nil {
 		return nil, err
 	}
@@ -47,14 +47,14 @@ func (s *Aggregate) CreateUserNotifySetting(
 }
 
 func (s *Aggregate) GetOrCreateUserNotifySetting(ctx context.Context, args *notify.GetOrCreateUserNotifySettingArgs) (*notify.UserNotiSetting, error) {
-	setting, err := s.userNotiSettingStore(ctx).ByUserID(args.UserID).GetUserNotifySetting()
+	setting, err := s.userNotifySettingStore(ctx).ByUserID(args.UserID).GetUserNotifySetting()
 	if err != nil {
 		if cm.ErrorCode(err) == cm.NotFound {
 			_setting := &notify.UserNotiSetting{
 				UserID:        args.UserID,
 				DisableTopics: args.DisableTopics,
 			}
-			err = s.userNotiSettingStore(ctx).CreateUserNotifySetting(_setting)
+			err = s.userNotifySettingStore(ctx).CreateUserNotifySetting(_setting)
 			if err != nil {
 				return nil, err
 			}
@@ -76,7 +76,7 @@ func (s *Aggregate) DisableTopic(ctx context.Context, args *notify.DisableTopicA
 	}
 
 	_topics := append(setting.DisableTopics, args.Topic)
-	err = s.userNotiSettingStore(ctx).ByUserID(args.UserID).UpdateDisableTopic(_topics)
+	err = s.userNotifySettingStore(ctx).ByUserID(args.UserID).UpdateDisableTopic(_topics)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (s *Aggregate) EnableTopic(ctx context.Context, args *notify.EnableTopicArg
 	if !contains {
 		return setting, nil
 	}
-	if err = s.userNotiSettingStore(ctx).ByUserID(args.UserID).UpdateDisableTopic(newDisableTopics); err != nil {
+	if err = s.userNotifySettingStore(ctx).ByUserID(args.UserID).UpdateDisableTopic(newDisableTopics); err != nil {
 		return nil, err
 	}
 	setting.DisableTopics = newDisableTopics

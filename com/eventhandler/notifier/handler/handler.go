@@ -1,15 +1,13 @@
 package handler
 
 import (
-	"context"
-
+	"o.o/api/main/authorization"
 	handler "o.o/backend/com/eventhandler/handler"
-	notifiermodel "o.o/backend/com/eventhandler/notifier/model"
 	"o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/com/eventhandler/pgevent"
+	sqlstore2 "o.o/backend/com/fabo/main/fbmessaging/sqlstore"
 	com "o.o/backend/com/main"
 	identitystore "o.o/backend/com/main/identity/sqlstore"
-	cm "o.o/backend/pkg/common"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -18,26 +16,46 @@ import (
 )
 
 var (
-	x                    *cmsql.Database
-	xNotifier            *cmsql.Database
-	ll                   = l.New()
-	notiStore            *sqlstore.NotificationStore
-	deviceStore          *sqlstore.DeviceStore
-	historyStore         historysqlstore.HistoryStoreFactory
-	userNotiSettingStore sqlstore.UserNotiSettingStoreFactory
-	accountUserStore     identitystore.AccountUserStoreFactory
+	x                         *cmsql.Database
+	xNotifier                 *cmsql.Database
+	ll                        = l.New()
+	notifyStore               *sqlstore.NotificationStore
+	deviceStore               *sqlstore.DeviceStore
+	historyStore              historysqlstore.HistoryStoreFactory
+	userNotifySettingStore    sqlstore.UserNotiSettingStoreFactory
+	accountUserStore          identitystore.AccountUserStoreFactory
+	customerConversationStore sqlstore2.FbCustomerConversationStoreFactory
 )
+
+const (
+	TopicOrder                    = "order"
+	TopicSystem                   = "system"
+	TopicFulfillment              = "fulfilment"
+	TopicFBComment                = "fb_external_comment"
+	TopicFBMessage                = "fb_external_message"
+	TopicMoneyTransactionShipping = "money_transaction_shipping"
+)
+
+var notifyTopicRolesMap = map[string][]authorization.Role{
+	TopicOrder:                    {authorization.RoleShopOwner, authorization.RoleSalesMan},
+	TopicSystem:                   {authorization.RoleShopOwner, authorization.RoleSalesMan, authorization.RoleStaffManagement},
+	TopicFulfillment:              {authorization.RoleShopOwner, authorization.RoleSalesMan},
+	TopicFBComment:                {authorization.RoleShopOwner, authorization.RoleSalesMan},
+	TopicFBMessage:                {authorization.RoleShopOwner, authorization.RoleSalesMan},
+	TopicMoneyTransactionShipping: {authorization.RoleShopOwner},
+}
 
 const ConsumerGroup = "handler/notifier"
 
 func New(dbMain com.MainDB, dbNotifier com.NotifierDB, consumer mq.KafkaConsumer, cfg cc.Kafka) (handlerMain *handler.Handler, handlerNotifier *handler.Handler) {
 	x = dbMain
 	xNotifier = dbNotifier
-	notiStore = sqlstore.NewNotificationStore(dbNotifier)
+	notifyStore = sqlstore.NewNotificationStore(dbNotifier)
 	deviceStore = sqlstore.NewDeviceStore(dbNotifier)
 	historyStore = historysqlstore.NewHistoryStore(dbMain)
-	userNotiSettingStore = sqlstore.NewUserNotiSettingStore(dbMain)
+	userNotifySettingStore = sqlstore.NewUserNotiSettingStore(dbMain)
 	accountUserStore = identitystore.NewAccountUserStore(dbMain)
+	customerConversationStore = sqlstore2.NewFbCustomerConversationStore(dbMain)
 
 	handlerMain = handler.New(consumer, cfg)
 	handlerNotifier = handler.New(consumer, cfg)
@@ -63,35 +81,4 @@ func TopicsAndHandlerNotifier() map[string]mq.EventHandler {
 	return pgevent.WrapMapHandlers(map[string]pgevent.HandlerFunc{
 		"notification": HandleNotificationEvent,
 	})
-}
-
-func CreateNotifications(_ context.Context, cmds []*notifiermodel.CreateNotificationArgs) error {
-	if cmds == nil || len(cmds) == 0 {
-		return nil
-	}
-	chErr := make(chan error, len(cmds))
-	for _, cmd := range cmds {
-		go func(_cmd *notifiermodel.CreateNotificationArgs) (_err error) {
-			defer func() {
-				chErr <- _err
-			}()
-			defer cm.RecoverAndLog()
-			_, _err = notiStore.CreateNotification(_cmd)
-			if _err != nil {
-				ll.Debug("err", l.Error(_err))
-			}
-			return
-		}(cmd)
-	}
-	var created, errors int
-	for i, n := 0, len(cmds); i < n; i++ {
-		err := <-chErr
-		if err == nil {
-			created++
-		} else {
-			errors++
-		}
-	}
-	ll.S.Infof("Create notifications: success %v/%v, errors %v/%v", created, len(cmds), errors, len(cmds))
-	return nil
 }
