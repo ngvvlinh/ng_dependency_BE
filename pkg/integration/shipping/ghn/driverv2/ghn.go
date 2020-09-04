@@ -24,6 +24,7 @@ import (
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/clientv2"
+	ghnupdatev2 "o.o/backend/pkg/integration/shipping/ghn/update/v2"
 	"o.o/capi/dot"
 	"o.o/common/xerrors"
 )
@@ -193,8 +194,16 @@ func (d *GHNDriver) CreateFulfillment(
 	return updateFfm, nil
 }
 
-func (d *GHNDriver) RefreshFulfillment(ctx context.Context, fulfillment *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
-	return nil, cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+func (d *GHNDriver) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
+	cmd := &ghnclient.GetOrderInfoRequest{
+		OrderCode: ffm.ExternalShippingCode,
+	}
+	externalOrder, err := d.client.GetOrderInfo(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	return ghnupdatev2.CalcRefreshFulfillmentInfo(ffm, externalOrder)
 }
 
 func (d *GHNDriver) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fulfillment) error {

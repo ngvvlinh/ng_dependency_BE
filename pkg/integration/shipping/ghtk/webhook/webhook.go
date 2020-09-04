@@ -36,7 +36,6 @@ var ll = l.New().WithChannel(meta.ChannelShipmentCarrier)
 
 type Webhook struct {
 	db                     *cmsql.Database
-	carrier                *ghtk.Carrier
 	shipmentManager        *carrier.ShipmentManager
 	identityQS             identity.QueryBus
 	shippingAggr           shippingcore.CommandBus
@@ -44,14 +43,12 @@ type Webhook struct {
 }
 
 func New(db com.MainDB,
-	carrier *ghtk.Carrier,
 	shipmentManager *carrier.ShipmentManager,
 	identityQ identity.QueryBus, shippingA shippingcore.CommandBus,
 	shipmentWebhookLogAggr *shippingwebhook.Aggregate,
 ) *Webhook {
 	wh := &Webhook{
 		db:                     db,
-		carrier:                carrier,
 		shipmentManager:        shipmentManager,
 		identityQS:             identityQ,
 		shippingAggr:           shippingA,

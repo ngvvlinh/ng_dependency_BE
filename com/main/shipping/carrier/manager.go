@@ -36,7 +36,6 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
-	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi"
 	"o.o/capi/dot"
@@ -131,7 +130,8 @@ func (m *ShipmentManager) CreateFulfillments(ctx context.Context, order *orderin
 }
 
 func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *ordering.Order, ffm *shipmodel.Fulfillment) (_err error) {
-	driver, err := m.getShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
+	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
+	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "invalid connection")
 	}
@@ -142,7 +142,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		ShopID:       ffm.ShopID,
 		FromAddress:  addressconvert.Convert_addressmodel_Address_orderingtypes_Address(ffm.AddressFrom, nil),
 		ShippingFee:  ffm.ShippingServiceFee,
-		ConnectionID: ffm.ConnectionID,
+		ConnectionID: connectionID,
 	}
 	if err := m.eventBus.Publish(ctx, event); err != nil {
 		return err
@@ -201,7 +201,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 		CODAmount:        ffm.TotalCODAmount,
 		Coupon:           ffm.Coupon,
 	}
-	allServices, err := m.GetShipmentServicesAndMakeupPrice(ctx, args, ffm.ConnectionID)
+	allServices, err := m.GetShipmentServicesAndMakeupPrice(ctx, args, connectionID)
 	if err != nil {
 		return err
 	}
@@ -223,7 +223,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, order *or
 	}
 	providerService.ProviderServiceID = providerServiceID
 
-	_args := args.ToShipmentServiceArgs(ffm.ConnectionID, ffm.ShopID)
+	_args := args.ToShipmentServiceArgs(connectionID, ffm.ShopID)
 	ffmToUpdate, err := driver.CreateFulfillment(ctx, ffm, _args, providerService)
 	if err != nil {
 		return err
@@ -313,7 +313,7 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, args *GetShip
 	if len(res) == 0 {
 		return nil, cm.Errorf(cm.ExternalServiceError, nil, "Không có gói giao hàng phù hợp")
 	}
-	res = shipping_provider.CompactServices(res)
+	res = CompactServices(res)
 	return res, nil
 }
 

@@ -472,7 +472,7 @@ type UpdateOrderCODRequest struct {
 // Get detail order
 
 type GetOrderInfoRequest struct {
-	OrderCode String `json:"order_code"`
+	OrderCode string `json:"order_code"`
 }
 
 type GetOrderInfoResponse struct {

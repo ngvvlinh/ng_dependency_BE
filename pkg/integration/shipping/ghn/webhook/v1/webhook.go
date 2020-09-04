@@ -22,7 +22,6 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
-	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
 	v1 "o.o/backend/pkg/integration/shipping/ghn/update/v1"
 	"o.o/capi/dot"
@@ -35,7 +34,6 @@ type MainDB *cmsql.Database // TODO(vu): call the right service
 
 type Webhook struct {
 	db                     *cmsql.Database
-	carrier                *ghn.Carrier
 	shipmentManager        *carrier.ShipmentManager
 	identityQS             identity.QueryBus
 	shippingAggr           shippingcore.CommandBus
@@ -43,7 +41,6 @@ type Webhook struct {
 }
 
 func New(db com.MainDB,
-	carrier *ghn.Carrier,
 	shipmentM *carrier.ShipmentManager,
 	identityQ identity.QueryBus,
 	shippingA shippingcore.CommandBus,
@@ -51,7 +48,6 @@ func New(db com.MainDB,
 ) *Webhook {
 	wh := &Webhook{
 		db:                     db,
-		carrier:                carrier,
 		shipmentManager:        shipmentM,
 		identityQS:             identityQ,
 		shippingAggr:           shippingA,

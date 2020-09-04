@@ -104,13 +104,11 @@ import (
 	"o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
 	imcsv2 "o.o/backend/pkg/etop/logic/products/imcsv"
-	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
 	"o.o/backend/pkg/fabo/faboinfo"
 	"o.o/backend/pkg/integration/email"
-	"o.o/backend/pkg/integration/shipping/ghn"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook/v2"
 	"o.o/backend/pkg/integration/sms"
 )
@@ -296,7 +294,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	orderingAggregate := ordering.NewAggregate(busBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
-	shipping_providerCarrierManager := shipping_provider.NewCtrl(busBus, locationQueryBus)
 	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	mapShipmentServices := shipment_all.SupportedShipmentServices()
 	connectionQuery := query8.NewConnectionQuery(mainDB, mapShipmentServices)
@@ -322,7 +319,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		cleanup()
 		return Output{}, nil, err
 	}
-	orderLogic := orderS.New(shipping_providerCarrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, locationQueryBus, busBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
+	orderLogic := orderS.New(catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, locationQueryBus, busBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
 	orderService := &order.OrderService{
 		Session:       session,
 		OrderAggr:     orderingCommandBus,
@@ -337,7 +334,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:         session,
 		ShipmentManager: shipmentManager,
 		ShippingQuery:   shippingQueryBus,
-		ShippingCtrl:    shipping_providerCarrierManager,
 	}
 	historyService := &history.HistoryService{
 		Session: session,
@@ -472,11 +468,9 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	faboImageHandler := fabo2.BuildFaboImageHandler()
 	mainServer := BuildMainServer(service, intHandlers, sharedConfig, importHandler, eventStreamHandler, downloadHandler, faboImageHandler)
 	webhookConfig := shipment_allConfig.GHNWebhook
-	ghnConfig := shipment_allConfig.GHN
-	ghnCarrier := ghn.New(ghnConfig, locationQueryBus)
 	shippingwebhookAggregate := shippingwebhook.NewAggregate(logDB)
-	v2Webhook := v2.New(mainDB, ghnCarrier, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate)
-	ghnWebhookServer := v2_2.NewGHNWebhookServer(webhookConfig, shipmentManager, ghnCarrier, queryBus, shippingCommandBus, v2Webhook)
+	v2Webhook := v2.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate)
+	ghnWebhookServer := v2_2.NewGHNWebhookServer(webhookConfig, shipmentManager, queryBus, shippingCommandBus, v2Webhook)
 	configWebhookConfig := cfg.Webhook
 	faboRedis := redis2.NewFaboRedis(store)
 	webhookWebhook := webhook.New(mainDB, logDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)

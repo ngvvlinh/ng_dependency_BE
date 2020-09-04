@@ -40,7 +40,6 @@ var EndStatesCode = []string{"501", "503", "504", "201", "107"}
 
 type Webhook struct {
 	db                     *cmsql.Database
-	carrier                *vtpost.Carrier
 	shipmentManager        *carrier.ShipmentManager
 	identityQS             identity.QueryBus
 	shippingAggr           shippingcore.CommandBus
@@ -48,14 +47,12 @@ type Webhook struct {
 }
 
 func New(db com.MainDB,
-	carrier *vtpost.Carrier,
 	shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus,
 	shippingA shippingcore.CommandBus,
 	shipmentWebhookLogAggr *shippingwebhook.Aggregate,
 ) *Webhook {
 	wh := &Webhook{
 		db:                     db,
-		carrier:                carrier,
 		shipmentManager:        shipmentM,
 		identityQS:             identityQ,
 		shippingAggr:           shippingA,

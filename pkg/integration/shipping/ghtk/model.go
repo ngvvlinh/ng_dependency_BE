@@ -3,11 +3,9 @@ package ghtk
 import (
 	"strings"
 
-	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
-	"o.o/capi/dot"
 )
 
 type Config struct {
@@ -56,46 +54,12 @@ type Connection struct {
 	ClientCode string
 }
 
-type CalcShippingFeeCommand struct {
-	ArbitraryID dot.ID // This is provided as a seed, for stable randomization
-
-	FromDistrictCode string
-	ToDistrictCode   string
-
-	Request *ghtkclient.CalcShippingFeeRequest
-	Result  []*shippingsharemodel.AvailableShippingService
-}
-
-type CalcSingleShippingFeeCommand struct {
-	ServiceID string
-
-	FromDistrictCode string
-	ToDistrictCode   string
-
-	Request *ghtkclient.CalcShippingFeeRequest
-
-	Result *shippingsharemodel.AvailableShippingService
-}
-
-type CreateOrderCommand struct {
-	ServiceID string // Required for detecting which client
-	Request   *ghtkclient.CreateOrderRequest
-	Result    *ghtkclient.CreateOrderResponse
-}
-
 type GetOrderCommand struct {
 	ServiceID string // Required for detecting which client
 	LabelID   string // Mã đơn hàng của hệ thống GHTK
 	PartnerID string // Mã đơn hàng thuộc hệ thống của đối tác
 
 	Result *ghtkclient.GetOrderResponse
-}
-
-type CancelOrderCommand struct {
-	ServiceID string // Required for detecting which client
-	LabelID   string // Mã đơn hàng của hệ thống GHTK
-
-	Result *ghtkclient.CommonResponse
 }
 
 // GHTK code format: "S1858017.SG5.19D.299241528". Normalize it to "299241528".

@@ -1,14 +1,9 @@
 package vtpost
 
 import (
-	"time"
-
-	mdlocation "o.o/api/main/location"
-	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
-	"o.o/capi/dot"
 )
 
 type Config struct {
@@ -37,48 +32,4 @@ func DefaultConfig() Config {
 			Password: "1234@5678",
 		},
 	}
-}
-
-type Connection struct {
-	ClientCode string
-}
-
-type CalcShippingFeeAllServicesArgs struct {
-	ArbitraryID  dot.ID // This is provided as a seed, for stable randomization
-	FromProvince *mdlocation.Province
-	FromDistrict *mdlocation.District
-	ToProvince   *mdlocation.Province
-	ToDistrict   *mdlocation.District
-
-	Request *vtpostclient.CalcShippingFeeAllServicesRequest
-	Result  []*shippingsharemodel.AvailableShippingService
-}
-
-type GetShippingFeeLinesCommand struct {
-	ServiceID    string // Required for detecting which client
-	FromProvince *mdlocation.Province
-	FromDistrict *mdlocation.District
-	ToProvince   *mdlocation.Province
-	ToDistrict   *mdlocation.District
-
-	Request *vtpostclient.CalcShippingFeeRequest
-	Result  *GetShippingFeeLineResponse
-}
-
-type GetShippingFeeLineResponse struct {
-	ShippingFeeLines   []*shippingsharemodel.ShippingFeeLine
-	ExpectedPickAt     time.Time
-	ExpectedDeliveryAt time.Time
-}
-
-type CreateOrderArgs struct {
-	ServiceID string // Required for detecting which client
-	Request   *vtpostclient.CreateOrderRequest
-	Result    *vtpostclient.CreateOrderResponse
-}
-
-type CancelOrderCommand struct {
-	ServiceID string // Required for detecting which client
-	Request   *vtpostclient.CancelOrderRequest
-	Result    *vtpostclient.CommonResponse
 }

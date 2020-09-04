@@ -16,7 +16,6 @@ import (
 	"o.o/backend/pkg/common/lifecycle"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/sqltrace"
-	"o.o/backend/pkg/etop/model"
 	"o.o/common/l"
 )
 
@@ -39,9 +38,6 @@ func main() {
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite) // TODO(vu): refactor
 	sqltrace.Init()
 	wl.Init(cmenv.Env(), wl.FaboServer)
-
-	// TODO(vu): refactor
-	model.GetShippingServiceRegistry().Initialize()
 
 	// lifecycle
 	sdCtx, ctxCancel := lifecycle.WithCancel(context.Background())

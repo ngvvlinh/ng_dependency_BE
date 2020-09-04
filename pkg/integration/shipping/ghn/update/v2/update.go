@@ -47,3 +47,24 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 	}
 	return update, nil
 }
+
+func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, orderGHN *ghnclient.GetOrderInfoResponse) (*shipmodel.Fulfillment, error) {
+	if !shipping.CanUpdateFulfillment(ffm) {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update fulfillment (id = %v, shipping_code = %v)", ffm.ID, ffm.ShippingCode)
+	}
+
+	state := ghnclient.State(orderGHN.Status)
+	update := &shipmodel.Fulfillment{
+		ID:                        ffm.ID,
+		ExternalShippingUpdatedAt: time.Now(),
+		ExternalShippingState:     orderGHN.Status.String(),
+		ExternalShippingStatus:    state.ToStatus5(),
+		ShippingState:             state.ToModel(),
+		ShippingStatus:            state.ToStatus5(),
+		ExternalShippingLogs:      ffm.ExternalShippingLogs,
+		ShippingCode:              ffm.ShippingCode,
+	}
+	update.AddressTo = ffm.AddressTo.UpdateAddress(orderGHN.ToPhone.String(), orderGHN.ToName.String())
+	update.TotalCODAmount = orderGHN.CODAmount.Int()
+	return update, nil
+}

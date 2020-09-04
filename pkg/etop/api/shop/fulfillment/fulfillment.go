@@ -16,7 +16,6 @@ import (
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/logic/shipping_provider"
 )
 
 type FulfillmentService struct {
@@ -24,7 +23,6 @@ type FulfillmentService struct {
 
 	ShipmentManager *shippingcarrier.ShipmentManager
 	ShippingQuery   shipping.QueryBus
-	ShippingCtrl    *shipping_provider.CarrierManager
 }
 
 func (s *FulfillmentService) Clone() shop.FulfillmentService { res := *s; return &res }

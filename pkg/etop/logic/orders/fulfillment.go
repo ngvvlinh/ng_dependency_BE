@@ -9,13 +9,16 @@ import (
 	"o.o/api/main/location"
 	"o.o/api/main/ordering"
 	ordertypes "o.o/api/main/ordering/types"
+	shippingcore "o.o/api/main/shipping"
 	"o.o/api/shopping/addressing"
 	"o.o/api/shopping/customering"
 	apishop "o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
 	"o.o/api/top/types/etc/account_tag"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/inventory_auto"
 	"o.o/api/top/types/etc/shipping"
+	"o.o/api/top/types/etc/shipping_payment_type"
 	typeshippingprovider "o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -23,6 +26,7 @@ import (
 	addressmodel "o.o/backend/com/main/address/model"
 	addressmodelx "o.o/backend/com/main/address/modelx"
 	identitymodel "o.o/backend/com/main/identity/model"
+	orderconvert "o.o/backend/com/main/ordering/convert"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/com/main/shipping/carrier"
@@ -34,7 +38,6 @@ import (
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
-	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi"
 	"o.o/capi/dot"
@@ -46,7 +49,6 @@ type OrderLogic struct {
 type FlagFaboOrderAutoConfirmPaymentStatus bool
 
 var (
-	ctrl                                  *shipping_provider.CarrierManager
 	catalogQuery                          catalog.QueryBus
 	orderAggr                             ordering.CommandBus
 	customerAggr                          customering.CommandBus
@@ -59,7 +61,7 @@ var (
 	flagFaboOrderUpdatePaymentSatusConfig FlagFaboOrderAutoConfirmPaymentStatus
 )
 
-func New(shippingProviderCtrl *shipping_provider.CarrierManager,
+func New(
 	catalogQueryBus catalog.QueryBus,
 	orderAggregate ordering.CommandBus,
 	customerAggregate customering.CommandBus,
@@ -69,8 +71,8 @@ func New(shippingProviderCtrl *shipping_provider.CarrierManager,
 	locationQueryBus location.QueryBus,
 	eventB capi.EventBus,
 	flagFaboOrderUpdatePaymentSatus FlagFaboOrderAutoConfirmPaymentStatus,
-	shipmentCarrierCtrl *carrier.ShipmentManager) *OrderLogic {
-	ctrl = shippingProviderCtrl
+	shipmentCarrierCtrl *carrier.ShipmentManager,
+) *OrderLogic {
 	catalogQuery = catalogQueryBus
 	orderAggr = orderAggregate
 	customerAggr = customerAggregate
@@ -244,7 +246,8 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 	}
 
 	ffms := append(creates, updates...)
-	if err := ctrl.CreateExternalShipping(ctx, order, ffms); err != nil {
+	orderCore := orderconvert.Order(order)
+	if err := shipmentManager.CreateFulfillments(ctx, orderCore, ffms); err != nil {
 		return resp, err
 	}
 	// automatically cancel orders on sandbox for ghn and vtpost
@@ -344,7 +347,7 @@ func (s *OrderLogic) prepareFulfillmentFromOrder(ctx context.Context, order *ord
 	if err != nil {
 		return nil, cm.Error(cm.InvalidArgument, "Thông tin địa chỉ người nhận: "+err.Error()+" Vui lòng cập nhật và thử lại.", err)
 	}
-	if _, _, err := ctrl.VerifyDistrictCode(addressTo); err != nil {
+	if _, _, err := shipmentManager.VerifyDistrictCode(addressTo); err != nil {
 		return nil, cm.Error(cm.InvalidArgument, "Thông tin địa chỉ người nhận: "+err.Error()+" Vui lòng cập nhật và thử lại.", nil)
 	}
 
@@ -368,7 +371,7 @@ func (s *OrderLogic) prepareFulfillmentFromOrder(ctx context.Context, order *ord
 		}
 		shopAddress = addressQuery.Result
 	}
-	_, _, err = ctrl.VerifyDistrictCode(shopAddress)
+	_, _, err = shipmentManager.VerifyDistrictCode(shopAddress)
 	if err != nil {
 		return nil, cm.Error(cm.FailedPrecondition, "Thông tin địa chỉ cửa hàng trong cấu hình cửa hàng: "+err.Error()+" Vui lòng cập nhật và thử lại.", nil)
 	}
@@ -459,15 +462,12 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *identitymodel.Shop,
 		BasketValue:       basketValue,
 		TotalDiscount:     0,
 		TotalAmount:       totalAmount,
-		TotalCODAmount:    0,
+		TotalCODAmount:    order.ShopCOD,
 		OriginalCODAmount: order.ShopCOD,
-		// We only support shop cod
-		// TotalCODAmount: totalCODAmount,
 
 		ShippingFeeCustomer:      0, // only fill the first fulfillment
 		ShippingFeeShop:          0, // after calling GHN
 		ShippingFeeShopLines:     nil,
-		ShippingServiceFee:       0,
 		ExternalShippingFee:      0, // after calling GHN
 		ProviderShippingFeeLines: nil,
 		EtopDiscount:             0,
@@ -501,7 +501,6 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *identitymodel.Shop,
 		ShippingCode:                       "", // after calling GHN
 		ShippingNote:                       order.ShippingNote,
 		TryOn:                              order.GetTryOn(),
-		IncludeInsurance:                   dot.Bool(order.ShopShipping.IncludeInsurance),
 
 		// After calling GHN
 		ExternalShippingName:        "",
@@ -527,6 +526,22 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *identitymodel.Shop,
 		SyncStates:                  nil,
 		LastSyncAt:                  time.Time{},
 		ExternalShippingLogs:        nil,
+
+		// new information
+		ShippingPaymentType: shipping_payment_type.Seller,
+		ShippingType:        ordertypes.ShippingTypeShipment,
+		ConnectionID:        shippingcore.GetConnectionID(0, shippingProvider),
+		ConnectionMethod:    connection_type.ConnectionMethodBuiltin,
+	}
+
+	if order.ShopShipping != nil {
+		shopShipping := order.ShopShipping
+		fulfillment.ShippingServiceFee = shopShipping.ExternalShippingFee
+		fulfillment.ShippingServiceName = shopShipping.ExternalServiceName
+		fulfillment.ProviderServiceID = shopShipping.ProviderServiceID
+		fulfillment.IncludeInsurance = dot.Bool(shopShipping.IncludeInsurance)
+		fulfillment.GrossWeight = cm.CoalesceInt(shopShipping.GrossWeight, order.TotalWeight)
+		fulfillment.ChargeableWeight = cm.CoalesceInt(shopShipping.ChargeableWeight, order.TotalWeight)
 	}
 	return fulfillment
 }
@@ -624,13 +639,7 @@ func (s *OrderLogic) TryCancellingFulfillments(ctx context.Context, order *order
 			}()
 
 			var shippingProviderErr error
-			if ffm.ShippingType == 0 {
-				driver := ctrl.GetShippingProviderDriver(ffm.ShippingProvider)
-				if driver == nil {
-					panic("Shipping provider was not supported.")
-				}
-				shippingProviderErr = driver.CancelFulfillment(ctx, ffm, model.FfmActionCancel)
-			} else if ffm.ConnectionID != 0 {
+			if ffm.ConnectionID != 0 {
 				shippingProviderErr = shipmentManager.CancelFulfillment(ctx, ffm)
 			}
 

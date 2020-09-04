@@ -13,7 +13,7 @@ import (
 
 const (
 	DefaultTopshipGHTKConnectionID   = dot.ID(1000804010396750738)
-	DefaultTopshipGHNConnectionID    = dot.ID(1000803215822389663)
+	DefaultTopshipGHNConnectionID    = dot.ID(1000805467932228995)
 	DefaultTopshipVTPostConnectionID = dot.ID(1000804104889339180)
 
 	// shipnow

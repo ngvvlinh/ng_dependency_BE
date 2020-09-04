@@ -1,11 +1,8 @@
 package ghn
 
 import (
-	"o.o/api/main/location"
-	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
-	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
 )
 
 type Account struct {
@@ -54,54 +51,4 @@ func DefaultWebhookConfig() WebhookConfig {
 		HTTP:     cc.HTTP{Port: 9022},
 		Endpoint: "http://callback-url",
 	}
-}
-
-type RequestCreateOrderCommand struct {
-	ServiceID string // Required for detecting which client
-	Request   *ghnclient.CreateOrderRequest
-	Result    *ghnclient.CreateOrderResponse
-}
-
-type RequestFindAvailableServicesCommand struct {
-	ServiceID    string // Required for detecting which client
-	FromDistrict *location.District
-	ToDistrict   *location.District
-	Request      *ghnclient.FindAvailableServicesRequest
-	// Result  *ghnClient.FindAvailableServicesResponse
-	Result []*shippingsharemodel.AvailableShippingService
-}
-
-type RequestCalculateFeeCommand struct {
-	ServiceID string // Required for detecting which client
-	Request   *ghnclient.CalculateFeeRequest
-	Result    *ghnclient.CalculateFeeResponse
-}
-
-type CalcShippingFeeCommand struct {
-	FromDistrict *location.District
-	ToDistrict   *location.District
-	Request      *ghnclient.FindAvailableServicesRequest
-	Result       []*ghnclient.AvailableService
-}
-
-type RequestGetOrderCommand struct {
-	ServiceID string // Required for detecting which client
-	Request   *ghnclient.OrderCodeRequest
-	Result    *ghnclient.Order
-}
-
-type RequestCancelOrderCommand struct {
-	ServiceID string // Required for detecting which client
-	Request   *ghnclient.OrderCodeRequest
-}
-
-type RequestReturnOrderCommand struct {
-	ServiceID string // Required for detecting which client
-	Request   *ghnclient.OrderCodeRequest
-}
-
-type RequestGetOrderLogsCommand struct {
-	ServiceID string // Required for detecting which client
-	Request   *ghnclient.OrderLogsRequest
-	Result    *ghnclient.OrderLogsResponse
 }

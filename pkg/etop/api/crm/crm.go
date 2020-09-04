@@ -12,6 +12,7 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping_provider"
 	notimodel "o.o/backend/com/eventhandler/notifier/model"
+	"o.o/backend/com/main/shipping/carrier"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	"o.o/backend/com/main/shipping/modelx"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
@@ -20,25 +21,23 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
-	"o.o/backend/pkg/integration/shipping/ghn"
-	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
 	"o.o/capi/dot"
 )
 
 var (
-	ghnCarrier *ghn.Carrier
-	vtigerQS   vtiger.QueryBus
-	vtigerAgg  vtiger.CommandBus
-	vhtQS      vht.QueryBus
-	vhtAgg     vht.CommandBus
+	shipmentManager *carrier.ShipmentManager
+	vtigerQS        vtiger.QueryBus
+	vtigerAgg       vtiger.CommandBus
+	vhtQS           vht.QueryBus
+	vhtAgg          vht.CommandBus
 )
 
-func Init(ghn *ghn.Carrier,
+func Init(shipmentManager *carrier.ShipmentManager,
 	vtigerQuery vtiger.QueryBus,
 	vtigerAggregate vtiger.CommandBus,
 	vhtQuery vht.QueryBus,
 	vhtAggregate vht.CommandBus) {
-	ghnCarrier = ghn
+	shipmentManager = shipmentManager
 	vtigerQS = vtigerQuery
 	vtigerAgg = vtigerAggregate
 	vhtQS = vhtQuery
@@ -97,17 +96,7 @@ func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *api.R
 	var err error
 	switch ffm.ShippingProvider {
 	case shipping_provider.GHN:
-		ghnCmd := &ghn.RequestGetOrderCommand{
-			ServiceID: ffm.ProviderServiceID,
-			Request: &ghnclient.OrderCodeRequest{
-				OrderCode: ffm.ShippingCode,
-			},
-			Result: nil,
-		}
-		if err = ghnCarrier.GetOrder(ctx, ghnCmd); err != nil {
-			return nil, err
-		}
-		ffmUpdate, err = ghnCarrier.CalcRefreshFulfillmentInfo(ctx, ffm, ghnCmd.Result)
+		ffmUpdate, err = shipmentManager.RefreshFulfillment(ctx, ffm)
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "This feature is not available for this carrier (%v)", ffm.ShippingProvider)
 	}

@@ -1,7 +1,6 @@
 package shipment_all
 
 import (
-	"context"
 	"strconv"
 
 	"o.o/api/main/connectioning"
@@ -10,9 +9,6 @@ import (
 	sptypes "o.o/api/top/types/etc/shipping_provider"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/cmenv"
-	"o.o/backend/pkg/etop/logic/shipping_provider"
-	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/client"
 	ghnclientv2 "o.o/backend/pkg/integration/shipping/ghn/clientv2"
@@ -39,26 +35,6 @@ func DefaultConfig() Config {
 		GHN:        ghn.DefaultConfig(),
 		GHNWebhook: ghn.DefaultWebhookConfig(),
 	}
-}
-
-// TODO(vu): remove dependence on *sqlstore.Store
-func SupportedCarrierDrivers(ctx context.Context, _ *sqlstore.Store, cfg Config, locationBus location.QueryBus) []shipping_provider.CarrierDriver {
-	var ghnCarrier *ghn.Carrier
-
-	if cfg.GHN.AccountDefault.Token != "" {
-		ghnCarrier = ghn.New(cfg.GHN, locationBus)
-		if err := ghnCarrier.InitAllClients(ctx); err != nil {
-			ll.Fatal("Unable to connect to GHN", l.Error(err))
-		}
-	} else {
-		if cmenv.IsDev() {
-			ll.Warn("DEVELOPMENT. Skip connecting to GHN")
-		} else {
-			ll.Fatal("GHN: No token")
-		}
-	}
-
-	return []shipping_provider.CarrierDriver{ghnCarrier}
 }
 
 func SupportedShippingCarrierConfig(cfg Config) carriertypes.Config {

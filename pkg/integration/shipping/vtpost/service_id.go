@@ -1,82 +1,9 @@
 package vtpost
 
 import (
-	"math/rand"
-
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/code/gencode"
-	"o.o/backend/pkg/etop/model"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
 )
-
-type serviceIDGenerator struct {
-	rd *rand.Rand
-}
-
-func newServiceIDGenerator(seed int64) serviceIDGenerator {
-	src := rand.NewSource(seed)
-	rd := rand.New(src)
-	return serviceIDGenerator{rd}
-}
-
-// GenerateServiceID generate new service id for using with ghtk. The generated
-// id is always 8 character in length.
-func (c serviceIDGenerator) GenerateServiceID(clientCode byte, orderService vtpostclient.VTPostOrderServiceCode) (string, error) {
-	n := c.rd.Uint64()
-	v := gencode.Alphabet32.EncodeReverse(n, 8)
-	v = v[:5]
-
-	switch clientCode {
-	case 'D':
-		v[1] = 'D'
-		v[2] = blacklist(v[2], 'D')
-	default:
-		return "", cm.Errorf(cm.Internal, nil, "invalid code")
-	}
-
-	switch orderService.Name() {
-	case model.ShippingServiceNameStandard:
-		v[3] = 'S'
-		v[4] = blacklist(v[4], 'S', 'F')
-	case model.ShippingServiceNameFaster:
-		v[3] = blacklist(v[3], 'S', 'F')
-		v[4] = 'F'
-	default:
-		return "", cm.Errorf(cm.Internal, nil, "invalid code")
-	}
-
-	// Get 3 last characters of service
-	_orderService := orderService[len(orderService)-3:]
-	code := string(v) + string(_orderService)
-	return code, nil
-}
-
-func DecodeShippingServiceName(code string) (name string, ok bool) {
-	if len(code) != 8 {
-		return "", false
-	}
-	switch {
-	case code[3] == 'S':
-		return model.ShippingServiceNameStandard, true
-	case code[4] == 'F':
-		return model.ShippingServiceNameFaster, true
-	}
-	return "", false
-}
-
-func (c *Carrier) ParseServiceCode(code string) (serviceName string, ok bool) {
-	return DecodeShippingServiceName(code)
-}
-
-func blacklist(current byte, blacks ...byte) byte {
-	for _, b := range blacks {
-		if current == b {
-			// return an arbitrary character which does not collide with blacklist values
-			return 'V'
-		}
-	}
-	return current
-}
 
 func getLast3Character(code vtpostclient.VTPostOrderServiceCode) string {
 	return string(code[len(code)-3:])

@@ -1,20 +1,14 @@
 package vtpost
 
 import (
-	"context"
 	"strconv"
-	"strings"
-	"sync"
 	"time"
 
 	"o.o/api/main/location"
 	"o.o/api/top/types/etc/shipping_fee_type"
-	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
 	shipmodel "o.o/backend/com/main/shipping/model"
-	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
@@ -25,199 +19,8 @@ import (
 var ll = l.New()
 
 const (
-	SecretCode       = int64(1080)
 	VTPostCodePublic = 'D'
 )
-
-func init() {
-	model.GetShippingServiceRegistry().RegisterNameFunc(shipping_provider.VTPost, DecodeShippingServiceName)
-}
-
-func (c *Carrier) getClient(ctx context.Context, code byte) (vtpostclient.Client, error) {
-	client := c.clients[code]
-	if client != nil {
-		// TODO: move to underlying goroutine
-		changed, err := client.AutoLoginAndRefreshToken(ctx)
-		if err != nil {
-			return nil, err
-		}
-		if changed {
-			if err = CreateShippingSource(VTPostCodePublic, client); err != nil {
-				return nil, err
-			}
-		}
-		return client, nil
-	}
-
-	if cmenv.IsDev() {
-		return nil, cm.Error(cm.InvalidArgument, "DEVELOPMENT: No client for Vtpost", nil)
-	}
-	return nil, cm.Error(cm.InvalidArgument, "vtpost: invalid client code", nil)
-}
-
-func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllServicesArgs) error {
-	type Result struct {
-		Code   byte
-		Result *vtpostclient.ShippingFeeService
-		Error  error
-	}
-	var results []Result
-	var wg sync.WaitGroup
-	var m sync.Mutex
-
-	wg.Add(len(c.clients))
-	for code, client := range c.clients {
-		go func(code byte, c vtpostclient.Client) {
-			defer wg.Done()
-			req := *cmd.Request // clone the request to prevent race condition
-			resp, err := c.CalcShippingFeeAllServices(ctx, &req)
-			m.Lock()
-			for _, service := range resp {
-				result := Result{code, service, err}
-				results = append(results, result)
-			}
-			m.Unlock()
-		}(code, client)
-	}
-
-	wg.Wait()
-	if len(results) == 0 {
-		return cm.Error(cm.ExternalServiceError, "Lỗi từ vtPost: không thể lấy thông tin gói cước dịch vụ", nil).
-			WithMeta("reason", "timeout")
-	}
-	generator := newServiceIDGenerator(cmd.ArbitraryID.Int64())
-	var res []*shippingsharemodel.AvailableShippingService
-	client, err := c.getClient(ctx, VTPostCodePublic)
-	if err != nil {
-		return err
-	}
-	for _, result := range results {
-		// always generate service id, even if the result is error
-		serviceCode := vtpostclient.VTPostOrderServiceCode(result.Result.MaDVChinh)
-		providerServiceID, err := generator.GenerateServiceID(result.Code, serviceCode)
-		if err != nil {
-			continue
-		}
-		if result.Error != nil {
-			continue
-		}
-		// ignore this service
-		ignoreServices := []string{
-			vtpostclient.OrderServiceCodeV60.String(),
-		}
-		if cm.StringsContain(ignoreServices, serviceCode.String()) {
-			continue
-		}
-
-		// recall get price to get exactly shipping fee for each service
-		query := &vtpostclient.CalcShippingFeeRequest{
-			SenderProvince:   cmd.Request.SenderProvince,
-			SenderDistrict:   cmd.Request.SenderDistrict,
-			ReceiverProvince: cmd.Request.ReceiverProvince,
-			ReceiverDistrict: cmd.Request.ReceiverDistrict,
-			OrderService:     serviceCode,
-			ProductWeight:    cmd.Request.ProductWeight,
-			ProductPrice:     cmd.Request.ProductPrice,
-			MoneyCollection:  cmd.Request.MoneyCollection,
-		}
-		resp, err := client.CalcShippingFee(ctx, query)
-		if err != nil {
-			continue
-		}
-		result.Result.GiaCuoc = resp.Data.MoneyTotal
-
-		now := time.Now()
-		expectedPickTime := shipping.CalcPickTime(shipping_provider.VTPost, now)
-		thoigian := result.Result.ThoiGian // has format: "12 giờ"
-		thoigian = strings.Replace(thoigian, " giờ", "", -1)
-		hours, err := strconv.Atoi(thoigian)
-		var expectedDeliveryDuration time.Duration
-		if err != nil {
-			expectedDeliveryDuration = CalcDeliveryDuration(serviceCode, cmd.FromProvince, cmd.ToProvince, cmd.FromDistrict, cmd.ToDistrict)
-		} else {
-			expectedDeliveryDuration = time.Duration(hours) * time.Hour
-		}
-		expectedDeliveryTime := expectedPickTime.Add(expectedDeliveryDuration)
-
-		// Tính cước chính (main fee)
-		// Dùng để áp dụng bảng giá riêng vào cước chính
-		feeLines, err := resp.Data.CalcAndConvertShippingFeeLines()
-		feeMain := 0
-		if err == nil {
-			feeMain = shippingsharemodel.GetMainFee(feeLines)
-		}
-		resItem := result.Result.ToAvailableShippingService(providerServiceID, expectedPickTime, expectedDeliveryTime, feeMain)
-		res = append(res, resItem)
-	}
-	res = shipping.CalcServicesTime(shipping_provider.VTPost, cmd.FromDistrict, cmd.ToDistrict, res)
-	cmd.Result = res
-	return nil
-}
-
-func (c *Carrier) GetShippingFeeLines(ctx context.Context, cmd *GetShippingFeeLinesCommand) error {
-	clientCode, orderService, err := ParseServiceID(cmd.ServiceID)
-	if err != nil {
-		return err
-	}
-	client, err := c.getClient(ctx, clientCode)
-	if err != nil {
-		return err
-	}
-	req := *cmd.Request
-	req.OrderService = orderService
-	res, err := client.CalcShippingFee(ctx, &req)
-	if err != nil {
-		return err
-	}
-
-	now := time.Now()
-	expectedPickTime := shipping.CalcPickTime(shipping_provider.VTPost, now)
-	expectedDeliveryDuration := CalcDeliveryDuration(orderService, cmd.FromProvince, cmd.ToProvince, cmd.FromDistrict, cmd.ToDistrict)
-	expectedDeliveryTime := expectedPickTime.Add(expectedDeliveryDuration)
-	lines, err := res.Data.CalcAndConvertShippingFeeLines()
-	if err != nil {
-		return err
-	}
-
-	cmd.Result = &GetShippingFeeLineResponse{
-		ShippingFeeLines:   lines,
-		ExpectedPickAt:     expectedPickTime,
-		ExpectedDeliveryAt: expectedDeliveryTime,
-	}
-	return nil
-}
-
-func (c *Carrier) createOrder(ctx context.Context, cmd *CreateOrderArgs) error {
-	clientCode, orderService, err := ParseServiceID(cmd.ServiceID)
-	if err != nil {
-		return err
-	}
-
-	client, err := c.getClient(ctx, clientCode)
-	if err != nil {
-		return err
-	}
-
-	// detect transport from ServiceID
-	req := *cmd.Request
-	req.OrderService = orderService
-	cmd.Result, err = client.CreateOrder(ctx, &req)
-	return err
-}
-
-func (c *Carrier) cancelOrder(ctx context.Context, cmd *CancelOrderCommand) error {
-	clientCode, _, err := ParseServiceID(cmd.ServiceID)
-	if err != nil {
-		return err
-	}
-
-	client, err := c.getClient(ctx, clientCode)
-	if err != nil {
-		return err
-	}
-	cmd.Result, err = client.CancelOrder(ctx, cmd.Request)
-	return err
-}
 
 func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.CallbackOrderData) (*shipmodel.Fulfillment, error) {
 	if !shipping.CanUpdateFulfillment(ffm) {

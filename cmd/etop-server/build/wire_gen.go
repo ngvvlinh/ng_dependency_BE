@@ -175,7 +175,6 @@ import (
 	"o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
 	imcsv2 "o.o/backend/pkg/etop/logic/products/imcsv"
-	"o.o/backend/pkg/etop/logic/shipping_provider"
 	"o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/email"
@@ -186,12 +185,9 @@ import (
 	server2 "o.o/backend/pkg/integration/shipnow/ahamove/server"
 	webhook5 "o.o/backend/pkg/integration/shipnow/ahamove/webhook"
 	webhook2 "o.o/backend/pkg/integration/shipping/direct/webhook"
-	"o.o/backend/pkg/integration/shipping/ghn"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook/v1"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook/v2"
-	"o.o/backend/pkg/integration/shipping/ghtk"
 	webhook3 "o.o/backend/pkg/integration/shipping/ghtk/webhook"
-	"o.o/backend/pkg/integration/shipping/vtpost"
 	webhook4 "o.o/backend/pkg/integration/shipping/vtpost/webhook"
 	"o.o/backend/pkg/integration/sms"
 	api2 "o.o/backend/pkg/services/affiliate/api"
@@ -401,7 +397,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	orderingAggregate := ordering.NewAggregate(busBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
-	carrierManager := shipping_provider.NewCtrl(busBus, queryBus)
 	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	mapShipmentServices := shipment_all.SupportedShipmentServices()
 	connectionQuery := query14.NewConnectionQuery(mainDB, mapShipmentServices)
@@ -427,7 +422,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		cleanup()
 		return Output{}, nil, err
 	}
-	orderLogic := orderS.New(carrierManager, catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, queryBus, busBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
+	orderLogic := orderS.New(catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, queryBus, busBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
 	orderService := &order.OrderService{
 		Session:       session,
 		OrderAggr:     orderingCommandBus,
@@ -442,7 +437,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:         session,
 		ShipmentManager: shipmentManager,
 		ShippingQuery:   shippingQueryBus,
-		ShippingCtrl:    carrierManager,
 	}
 	carrierShipnowManager := carrier2.NewShipnowManager(queryBus, connectioningQueryBus, store, connectionManager, identityQueryBus, shipnowQueryBus)
 	shipnowAggregate := shipnow.NewAggregate(busBus, mainDB, queryBus, identityQueryBus, addressQueryBus, connectioningQueryBus, orderingQueryBus, carrierShipnowManager)
@@ -1038,21 +1032,15 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	mainServer := BuildMainServer(service, intHandlers, extHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler)
 	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, queryBus)
 	webhookConfig := shipment_allConfig.GHNWebhook
-	ghnConfig := shipment_allConfig.GHN
-	ghnCarrier := ghn.New(ghnConfig, queryBus)
-	v1Webhook := v1.New(mainDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
-	v2Webhook := v2.New(mainDB, ghnCarrier, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
-	ghnWebhookServer := _all.NewGHNWebhookServer(webhookConfig, shipmentManager, ghnCarrier, identityQueryBus, shippingCommandBus, v1Webhook, v2Webhook)
+	v1Webhook := v1.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
+	v2Webhook := v2.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
+	ghnWebhookServer := _all.NewGHNWebhookServer(webhookConfig, shipmentManager, identityQueryBus, shippingCommandBus, v1Webhook, v2Webhook)
 	_ghtkWebhookConfig := shipment_allConfig.GHTKWebhook
-	ghtkConfig := shipment_allConfig.GHTK
-	ghtkCarrier := ghtk.New(ghtkConfig, queryBus)
-	webhook6 := webhook3.New(mainDB, ghtkCarrier, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
-	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, ghtkCarrier, identityQueryBus, shippingCommandBus, webhook6)
+	webhook6 := webhook3.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
+	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, identityQueryBus, shippingCommandBus, webhook6)
 	_vtpostWebhookConfig := shipment_allConfig.VTPostWebhook
-	vtpostConfig := shipment_allConfig.VTPost
-	vtpostCarrier := vtpost.New(vtpostConfig, queryBus)
-	webhook7 := webhook4.New(mainDB, vtpostCarrier, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
-	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, vtpostCarrier, identityQueryBus, shippingCommandBus, webhook7)
+	webhook7 := webhook4.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate)
+	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, identityQueryBus, shippingCommandBus, webhook7)
 	serverWebhookConfig := cfg.AhamoveWebhook
 	ahamoveVerificationFileServer := server2.NewAhamoveVerificationFileServer(ctx, identityQueryBus)
 	webhook8 := webhook5.New(mainDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, shippingwebhookAggregate)

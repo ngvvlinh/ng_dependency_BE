@@ -16,7 +16,6 @@ type GHNWebhookServer *http.Server
 func NewGHNWebhookServer(
 	cfg ghn.WebhookConfig,
 	shipmentManager *shippingcarrier.ShipmentManager,
-	ghnCarrier *ghn.Carrier,
 	identityQuery identity.QueryBus,
 	shippingAggr shippingcore.CommandBus,
 	webhook *ghnwebhook.Webhook,

@@ -1,11 +1,14 @@
 package carrier
 
 import (
+	"fmt"
+
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/logic/etop_shipping_price"
 	"o.o/backend/pkg/etop/model"
+	"o.o/capi/dot"
 )
 
 func GetEtopServiceFromSeviceCode(shippingServiceCode string, shippingServiceFee int, services []*shippingsharemodel.AvailableShippingService) (etopService *shippingsharemodel.AvailableShippingService, err error) {
@@ -112,4 +115,36 @@ func getCarrierPriceFromService(s *shippingsharemodel.AvailableShippingService) 
 		return s.ServiceFee
 	}
 	return s.ShipmentPriceInfo.OriginFee
+}
+
+// CompactServices Loại bỏ các service không sử dụng
+// Trường hợp:
+// - Có gói TopShip: chỉ sử dụng gói TopShip
+// - Mỗi NVC phải có 2 dịch vụ: Nhanh và Chuẩn, ưu tiên gói TopShip
+// - Không có gói TopShip: Sử dụng gói của NVC như bình thường
+func CompactServices(services []*shippingsharemodel.AvailableShippingService) []*shippingsharemodel.AvailableShippingService {
+	var res []*shippingsharemodel.AvailableShippingService
+	carrierServicesIndex := make(map[string][]*shippingsharemodel.AvailableShippingService)
+	for _, s := range services {
+		connectionID := dot.ID(0)
+		if s.ConnectionInfo != nil {
+			connectionID = s.ConnectionInfo.ID
+		}
+		key := fmt.Sprintf("%v_%v_%v", s.Provider.String(), s.Name, connectionID)
+		carrierServicesIndex[key] = append(carrierServicesIndex[key], s)
+	}
+	for _, carrierServices := range carrierServicesIndex {
+		var ss []*shippingsharemodel.AvailableShippingService
+		for _, s := range carrierServices {
+			if s.Source == model.TypeShippingSourceEtop {
+				ss = append(ss, s)
+			}
+		}
+		if len(ss) > 0 {
+			res = append(res, ss...)
+		} else {
+			res = append(res, carrierServices...)
+		}
+	}
+	return res
 }

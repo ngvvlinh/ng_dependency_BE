@@ -8,7 +8,6 @@ import (
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	"o.o/backend/pkg/common/apifw/httpx"
 	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/integration/shipping/ghtk"
 	"o.o/backend/pkg/integration/shipping/ghtk/webhook"
 )
 
@@ -19,7 +18,6 @@ type GHTKWebhookServer *http.Server
 func NewGHTKWebhookServer(
 	_cfg WebhookConfig,
 	shipmentManager *shippingcarrier.ShipmentManager,
-	ghtkCarrier *ghtk.Carrier,
 	identityQuery identity.QueryBus,
 	shippingAggr shippingcore.CommandBus,
 	webhook *webhook.Webhook,

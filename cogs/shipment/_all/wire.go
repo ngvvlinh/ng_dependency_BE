@@ -15,9 +15,6 @@ import (
 	"o.o/backend/pkg/etop/logic/money-transaction/jtexpressimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	directwebhook "o.o/backend/pkg/integration/shipping/direct/webhook"
-	"o.o/backend/pkg/integration/shipping/ghn"
-	"o.o/backend/pkg/integration/shipping/ghtk"
-	"o.o/backend/pkg/integration/shipping/vtpost"
 )
 
 var WireSet = wire.NewSet(
@@ -26,9 +23,6 @@ var WireSet = wire.NewSet(
 	_ghtk.WireSet,
 	_vtpost.WireSet,
 	wire.FieldsOf(new(Config), "GHN", "GHNWebhook", "GHTK", "GHTKWebhook", "VTPost", "VTPostWebhook"),
-	ghn.New,
-	ghtk.New,
-	vtpost.New,
 	ghnimport.WireSet,
 	ghtkimport.WireSet,
 	vtpostimport.WireSet,
