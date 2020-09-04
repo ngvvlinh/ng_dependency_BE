@@ -31,6 +31,7 @@ import (
 	"o.o/backend/pkg/etc/dbdecl"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/middlewares"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/tools/pkg/acl"
 	"o.o/capi/httprpc"
 	"o.o/common/jsonx"
@@ -40,11 +41,12 @@ import (
 var ll = l.New()
 
 type Output struct {
-	Servers   []lifecycle.HTTPServer
-	Waiters   []Waiter
-	PgService *pgevent.Service
-	WhSender  *sender.WebhookSender
-	Health    *health.Service
+	Servers         []lifecycle.HTTPServer
+	Waiters         []Waiter
+	*sqlstore.Store // TODO(vu): remove this
+	PgService       *pgevent.Service
+	WhSender        *sender.WebhookSender
+	Health          *health.Service
 }
 
 func BuildServers(

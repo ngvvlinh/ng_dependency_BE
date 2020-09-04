@@ -20,7 +20,7 @@ type EventService struct {
 	PgService *pgevent.Service
 }
 
-func (s *EventService) Clone() *EventService {
+func (s *EventService) Clone() api.EventService {
 	res := *s
 	return &res
 }

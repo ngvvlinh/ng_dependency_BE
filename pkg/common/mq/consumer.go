@@ -173,7 +173,8 @@ func (c *kafkaConsumer) handleMessage(ctx context.Context, handler EventHandler,
 			stack := debug.Stack()
 			fmt.Printf("%s", stack)
 
-			// TODO: Send to bot
+			ll.SendMessagef("handler panic: topic=%v partition=%v key=%s value=%s", msg.Topic, msg.Partition, msg.Key, msg.Value)
+			ll.SendMessagef("handler panic: %s", stack)
 		}
 	}()
 

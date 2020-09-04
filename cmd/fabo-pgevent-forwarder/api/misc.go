@@ -3,12 +3,13 @@ package api
 import (
 	"context"
 
+	"o.o/api/top/services/pgevent"
 	pbcm "o.o/api/top/types/common"
 )
 
 type MiscService struct{}
 
-func (s *MiscService) Clone() *MiscService {
+func (s *MiscService) Clone() pgevent.MiscService {
 	res := *s
 	return &res
 }

@@ -21,6 +21,7 @@ import (
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 // Injectors from wire.go:
@@ -74,6 +75,8 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		return Output{}, nil, err
 	}
 	v2 := BuildWaiters(handler, handlerHandler)
+	notifierDB := _wireNotifierDBValue
+	sqlstoreStore := sqlstore.New(mainDB, notifierDB, locationQueryBus, busBus)
 	pgeventService, err := BuildPgEventService(ctx, cfg)
 	if err != nil {
 		return Output{}, nil, err
@@ -81,6 +84,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	output := Output{
 		Servers:   v,
 		Waiters:   v2,
+		Store:     sqlstoreStore,
 		PgService: pgeventService,
 		WhSender:  webhookSender,
 		Health:    service,
@@ -88,3 +92,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	return output, func() {
 	}, nil
 }
+
+var (
+	_wireNotifierDBValue = com.NotifierDB(nil)
+)
