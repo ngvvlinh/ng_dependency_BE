@@ -16,7 +16,6 @@ import (
 	"o.o/backend/tools/pkg/generators/sqlgen"
 	"o.o/backend/tools/pkg/generators/sqlsel"
 	"o.o/backend/tools/pkg/generators/swagger"
-	"o.o/backend/tools/pkg/generators/wrapper"
 )
 
 var flClean = flag.Bool("clean", false, "clean generated files without generating new files")
@@ -44,7 +43,6 @@ func main() {
 		sqlgen.New(),
 		sqlsel.New(),
 		swagger.New(),
-		wrapper.New(),
 	}
 
 	flag.Parse()
