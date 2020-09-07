@@ -1716,7 +1716,7 @@ func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r 
 		return nil, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
 	if s.SS.Claim().Extra[keyRequestVerifyCode] != "" && s.SS.Claim().Extra[keyRequestVerifyCode] != r.VerificationToken {
-		return nil, cm.Error(cm.InvalidArgument, "Mã xác thực không chính xác.", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Mã xác nhận không chính xác.", nil)
 	}
 	getUserByID := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: s.SS.Claim().Extra[keyRequestVerifyPhone],
