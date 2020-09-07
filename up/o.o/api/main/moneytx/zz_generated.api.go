@@ -97,6 +97,7 @@ func (h AggregateHandler) HandleConfirmMoneyTxShippingExternals(ctx context.Cont
 
 type CreateMoneyTxShippingCommand struct {
 	Shop           *identity.Shop
+	ShopID         dot.ID
 	FulfillmentIDs []dot.ID
 	TotalCOD       int
 	TotalAmount    int
@@ -495,6 +496,7 @@ func (q *CreateMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.C
 	return ctx,
 		&CreateMoneyTxShippingArgs{
 			Shop:           q.Shop,
+			ShopID:         q.ShopID,
 			FulfillmentIDs: q.FulfillmentIDs,
 			TotalCOD:       q.TotalCOD,
 			TotalAmount:    q.TotalAmount,
@@ -504,6 +506,7 @@ func (q *CreateMoneyTxShippingCommand) GetArgs(ctx context.Context) (_ context.C
 
 func (q *CreateMoneyTxShippingCommand) SetCreateMoneyTxShippingArgs(args *CreateMoneyTxShippingArgs) {
 	q.Shop = args.Shop
+	q.ShopID = args.ShopID
 	q.FulfillmentIDs = args.FulfillmentIDs
 	q.TotalCOD = args.TotalCOD
 	q.TotalAmount = args.TotalAmount

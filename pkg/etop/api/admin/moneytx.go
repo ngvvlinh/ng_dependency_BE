@@ -24,6 +24,20 @@ func (s *MoneyTransactionService) Clone() admin.MoneyTransactionService {
 	return &res
 }
 
+func (s *MoneyTransactionService) CreateMoneyTransaction(ctx context.Context, q *admin.CreateMoneyTransactionRequest) (*types.MoneyTransaction, error) {
+	cmd := &moneytx.CreateMoneyTxShippingCommand{
+		ShopID:         q.ShopID,
+		FulfillmentIDs: q.FulfillmentIDs,
+		TotalCOD:       q.TotalCOD,
+		TotalAmount:    q.TotalAmount,
+		TotalOrders:    q.TotalOrders,
+	}
+	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return convertpb.PbMoneyTxShipping(cmd.Result), nil
+}
+
 func (s *MoneyTransactionService) GetMoneyTransaction(ctx context.Context, q *pbcm.IDRequest) (*types.MoneyTransaction, error) {
 	query := &moneytx.GetMoneyTxShippingByIDQuery{
 		MoneyTxShippingID: q.Id,

@@ -277,6 +277,7 @@ const (
 	AdminTicketLabelUpdate permission.ActionType = "admin/admin_ticket_label:update"
 
 	// Admin MoneyTransaction
+	AdminMoneyTransactionCreate  permission.ActionType = "admin/money_transaction:create"
 	AdminMoneyTransactionView    permission.ActionType = "admin/money_transaction:view"
 	AdminMoneyTransactionUpdate  permission.ActionType = "admin/money_transaction:update"
 	AdminMoneyTransactionConfirm permission.ActionType = "admin/money_transaction:confirm"
@@ -690,6 +691,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.Fulfillment/UpdateFulfillmentShippingState": {Type: EtopAdmin, Actions: actions(AdminFulfillmentStateUpdate)},
 	"admin.Fulfillment/UpdateFulfillmentShippingFees":  {Type: EtopAdmin, Actions: actions(AdminFulfillmentShippingFeesUpdate)},
 
+	"admin.MoneyTransaction/CreateMoneyTransaction":  {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionCreate)},
 	"admin.MoneyTransaction/GetMoneyTransaction":     {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionView)},
 	"admin.MoneyTransaction/GetMoneyTransactions":    {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionView)},
 	"admin.MoneyTransaction/ConfirmMoneyTransaction": {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionConfirm)},

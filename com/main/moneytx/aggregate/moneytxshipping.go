@@ -60,7 +60,16 @@ func MoneyTxAggregateMessageBus(a *MoneyTxAggregate) moneytx.CommandBus {
 
 func (a *MoneyTxAggregate) CreateMoneyTxShipping(ctx context.Context, args *moneytx.CreateMoneyTxShippingArgs) (*moneytx.MoneyTransactionShipping, error) {
 	if args.Shop == nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Shop")
+		if args.ShopID == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
+		}
+		query := &identity.GetShopByIDQuery{
+			ID: args.ShopID,
+		}
+		if err := a.identityQuery.Dispatch(ctx, query); err != nil {
+			return nil, cm.Errorf(cm.InvalidArgument, err, "Shop ID không hợp lệ")
+		}
+		args.Shop = query.Result
 	}
 	if len(args.FulfillmentIDs) == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "FulfillmentIDs can not be empty")

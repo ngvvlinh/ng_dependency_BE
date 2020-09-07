@@ -874,6 +874,19 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string, hooks httprpc.Ho
 			return
 		}
 		return msg, fn, nil
+	case "/admin.MoneyTransaction/CreateMoneyTransaction":
+		msg := &CreateMoneyTransactionRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateMoneyTransaction(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.MoneyTransaction/CreateMoneyTransactionShippingEtop":
 		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

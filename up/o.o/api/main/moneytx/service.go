@@ -76,6 +76,7 @@ type GetMoneyTxByIDQueryArgs struct {
 
 type CreateMoneyTxShippingArgs struct {
 	Shop           *identity.Shop
+	ShopID         dot.ID
 	FulfillmentIDs []dot.ID
 	TotalCOD       int
 	TotalAmount    int

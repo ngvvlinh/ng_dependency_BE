@@ -48,6 +48,7 @@ type FulfillmentService interface {
 
 // +apix:path=/admin.MoneyTransaction
 type MoneyTransactionService interface {
+	CreateMoneyTransaction(context.Context, *CreateMoneyTransactionRequest) (*types.MoneyTransaction, error)
 	GetMoneyTransaction(context.Context, *cm.IDRequest) (*types.MoneyTransaction, error)
 	GetMoneyTransactions(context.Context, *GetMoneyTransactionsRequest) (*types.MoneyTransactionsResponse, error)
 	ConfirmMoneyTransaction(context.Context, *ConfirmMoneyTransactionRequest) (*cm.UpdatedResponse, error)

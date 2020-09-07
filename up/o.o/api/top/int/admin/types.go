@@ -248,6 +248,16 @@ type LoginAsAccountRequest struct {
 
 func (m *LoginAsAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type CreateMoneyTransactionRequest struct {
+	ShopID         dot.ID   `json:"shop_id"`
+	FulfillmentIDs []dot.ID `json:"fulfillment_ids"`
+	TotalCOD       int      `json:"total_cod"`
+	TotalAmount    int      `json:"total_amount"`
+	TotalOrders    int      `json:"total_orders"`
+}
+
+func (m *CreateMoneyTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetMoneyTransactionsRequest struct {
 	Ids     []dot.ID         `json:"ids"`
 	ShopId  dot.ID           `json:"shop_id"`
