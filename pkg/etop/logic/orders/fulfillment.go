@@ -33,17 +33,19 @@ import (
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
 type OrderLogic struct {
+	AddressStore sqlstore.AddressStoreInterface
+	OrderStore   sqlstore.OrderStoreInterface
 }
 type FlagFaboOrderAutoConfirmPaymentStatus bool
 
@@ -101,7 +103,7 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 		ShopID:  shop.ID,
 	}
 	resp = &types.Order{}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return resp, err
 	}
 	order := query.Result.Order
@@ -135,7 +137,7 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 			ShopConfirm:   status3.P.Wrap(),
 			PaymentStatus: paymentStatus.Wrap(),
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.OrderStore.UpdateOrdersStatus(ctx, cmd); err != nil {
 			return resp, err
 		}
 		order.ConfirmStatus = status3.P
@@ -152,7 +154,7 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 			ll.Error("RaiseOrderConfirmedEvent", l.Error(err))
 		}
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return nil, err
 	}
 	resp = convertpb.PbOrder(query.Result.Order, nil, account_tag.TagShop)
@@ -179,7 +181,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 		OrderID:            r.OrderId,
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return resp, err
 	}
 	order := query.Result.Order
@@ -225,7 +227,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 		ffmCmd := &shipmodelx.CreateFulfillmentsCommand{
 			Fulfillments: creates,
 		}
-		if err := bus.Dispatch(ctx, ffmCmd); err != nil {
+		if err := s.OrderStore.CreateFulfillments(ctx, ffmCmd); err != nil {
 			return resp, err
 		}
 	}
@@ -233,7 +235,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 		ffmCmd := &shipmodelx.UpdateFulfillmentsCommand{
 			Fulfillments: updates,
 		}
-		if err := bus.Dispatch(ctx, ffmCmd); err != nil {
+		if err := s.OrderStore.UpdateFulfillments(ctx, ffmCmd); err != nil {
 			return resp, err
 		}
 	}
@@ -271,7 +273,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 			ConfirmStatus: status3.P.Wrap(),
 			ShopConfirm:   status3.P.Wrap(),
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.OrderStore.UpdateOrdersStatus(ctx, cmd); err != nil {
 			_err = err
 		}
 		order.ConfirmStatus = status3.P
@@ -293,7 +295,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 	}
 
 	// Get order again
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return resp, err
 	}
 	order = query.Result.Order
@@ -364,7 +366,7 @@ func (s *OrderLogic) prepareFulfillmentFromOrder(ctx context.Context, order *ord
 			return nil, cm.Error(cm.InvalidArgument, "Bán hàng: Cần cung cấp thông tin địa chỉ lấy hàng trong đơn hàng hoặc tại thông tin cửa hàng. Vui lòng cập nhật.", nil)
 		}
 		addressQuery := &addressmodelx.GetAddressQuery{AddressID: shop.ShipFromAddressID}
-		if err := bus.Dispatch(ctx, addressQuery); err != nil {
+		if err := s.AddressStore.GetAddress(ctx, addressQuery); err != nil {
 			return nil, cm.Error(cm.Internal, "Lỗi khi kiểm tra thông tin địa chỉ của cửa hàng: "+err.Error(), err)
 		}
 		shopAddress = addressQuery.Result
@@ -655,7 +657,7 @@ func (s *OrderLogic) TryCancellingFulfillments(ctx context.Context, order *order
 					},
 				}
 				update2Cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: update2}
-				if err := bus.Dispatch(ctx, update2Cmd); err != nil {
+				if err := s.OrderStore.UpdateFulfillment(ctx, update2Cmd); err != nil {
 					return err
 				}
 				return shippingProviderErr
@@ -674,7 +676,7 @@ func (s *OrderLogic) TryCancellingFulfillments(ctx context.Context, order *order
 				CancelReason: order.CancelReason,
 			}
 			update2Cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: update2}
-			if err := bus.Dispatch(ctx, update2Cmd); err != nil {
+			if err := s.OrderStore.UpdateFulfillment(ctx, update2Cmd); err != nil {
 				return err
 			}
 			return nil

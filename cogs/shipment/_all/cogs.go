@@ -68,10 +68,11 @@ func SupportedShippingCarrierConfig(cfg Config) carriertypes.Config {
 }
 
 type CarrierDriver struct {
+	shippingCodeGenerator vtpostdriver.ShippingCodeGenerator
 }
 
-func SupportedCarrierDriver() carriertypes.Driver {
-	return CarrierDriver{}
+func SupportedCarrierDriver(shippingCodeGenerator vtpostdriver.ShippingCodeGenerator) carriertypes.Driver {
+	return CarrierDriver{shippingCodeGenerator: shippingCodeGenerator}
 }
 
 func (d CarrierDriver) GetShipmentDriver(
@@ -142,7 +143,7 @@ func (d CarrierDriver) GetShipmentDriver(
 		return driver, nil
 
 	case connection_type.ConnectionProviderVTP:
-		driver := vtpostdriver.New(env, shopConnection.Token, locationQS)
+		driver := vtpostdriver.New(env, shopConnection.Token, locationQS, d.shippingCodeGenerator)
 		return driver, nil
 
 	case connection_type.ConnectionProviderPartner:

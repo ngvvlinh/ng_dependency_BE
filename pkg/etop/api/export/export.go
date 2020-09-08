@@ -21,7 +21,6 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/eventstream"
 	"o.o/backend/pkg/etop/model"
-	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
@@ -67,7 +66,7 @@ func (s *Service) exportAndReportProgress(
 		exportResult.DoneAt = time.Now()
 		exportResult.ExpiresAt = exportResult.DoneAt.Add(7 * 24 * time.Hour).Truncate(24 * time.Hour)
 
-		if err := sqlstore.ExportAttempt(context.Background()).
+		if err := s.exportAttemptStore(context.Background()).
 			UpdateByID(exportResult.ID, exportResult); err != nil {
 			ll.Error("error updating import attempt", l.Error(err))
 		}

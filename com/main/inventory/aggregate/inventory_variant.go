@@ -18,11 +18,12 @@ import (
 	catalogconvert "o.o/backend/com/main/catalog/convert"
 	"o.o/backend/com/main/inventory/convert"
 	"o.o/backend/com/main/inventory/model"
-	"o.o/backend/com/main/inventory/sqlstore"
+	invstore "o.o/backend/com/main/inventory/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -31,8 +32,8 @@ var _ inventory.Aggregate = &InventoryAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions, catalogconvert.RegisterConversions)
 
 type InventoryAggregate struct {
-	InventoryStore        sqlstore.InventoryFactory
-	InventoryVoucherStore sqlstore.InventoryVoucherFactory
+	InventoryStore        invstore.InventoryFactory
+	InventoryVoucherStore invstore.InventoryVoucherFactory
 	traderQuery           tradering.QueryBus
 	EventBus              capi.EventBus
 	db                    *cmsql.Database
@@ -41,6 +42,8 @@ type InventoryAggregate struct {
 	CatalogQuery          catalog.QueryBus
 	RefundQuery           refund.QueryBus
 	PurchaseRefundQuery   purchaserefund.QueryBus
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func NewAggregateInventory(
@@ -52,10 +55,11 @@ func NewAggregateInventory(
 	refundQuery refund.QueryBus,
 	purchaserRefundQuery purchaserefund.QueryBus,
 	CatalogQ catalog.QueryBus,
+	OrderStore sqlstore.OrderStoreInterface,
 ) *InventoryAggregate {
 	return &InventoryAggregate{
-		InventoryStore:        sqlstore.NewInventoryStore(db),
-		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),
+		InventoryStore:        invstore.NewInventoryStore(db),
+		InventoryVoucherStore: invstore.NewInventoryVoucherStore(db),
 		EventBus:              eventBus,
 		traderQuery:           traderQuery,
 		db:                    db,
@@ -64,6 +68,7 @@ func NewAggregateInventory(
 		RefundQuery:           refundQuery,
 		PurchaseRefundQuery:   purchaserRefundQuery,
 		CatalogQuery:          CatalogQ,
+		OrderStore:            OrderStore,
 	}
 }
 

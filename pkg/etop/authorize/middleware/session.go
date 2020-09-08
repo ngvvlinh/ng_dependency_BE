@@ -14,13 +14,13 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/authorize/authkey"
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/authorize/permission"
 	"o.o/backend/pkg/etop/authorize/tokens"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -97,13 +97,21 @@ func getToken(ctx context.Context, q *StartSessionQuery) string {
 	return headers.GetBearerTokenFromCtx(ctx)
 }
 
-// StartSession ...
-func StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Context, _err error) {
-	token := getToken(ctx, q)
-	return StartSessionWithToken(ctx, token, q)
+type SessionStarter struct {
+	AccountStore     sqlstore.AccountStoreInterface
+	UserStore        sqlstore.UserStoreInterface
+	PartnerStore     sqlstore.PartnerStoreInterface
+	AccountUserStore sqlstore.AccountUserStoreInterface
+	ShopStore        sqlstore.ShopStoreInterface
 }
 
-func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQuery) (newCtx context.Context, _err error) {
+// StartSession ...
+func (st *SessionStarter) StartSession(ctx context.Context, q *StartSessionQuery) (newCtx context.Context, _err error) {
+	token := getToken(ctx, q)
+	return st.StartSessionWithToken(ctx, token, q)
+}
+
+func (st *SessionStarter) StartSessionWithToken(ctx context.Context, token string, q *StartSessionQuery) (newCtx context.Context, _err error) {
 	var wlPartnerID dot.ID
 	defer func() {
 		if wlPartnerID == 0 {
@@ -154,7 +162,7 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 		default:
 			ll.Panic("unexpected account type")
 		}
-		claim, account, err = VerifyAPIKey(ctx, token, expectType)
+		claim, account, err = st.VerifyAPIKey(ctx, token, expectType)
 		if err != nil {
 			return ctx, err
 		}
@@ -165,7 +173,7 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 		wlPartnerID = _acc.ID
 
 	} else if q.RequireAPIPartnerShopKey {
-		claim, account, err = VerifyAPIPartnerShopKey(ctx, token)
+		claim, account, err = st.VerifyAPIPartnerShopKey(ctx, token)
 		if err != nil {
 			return ctx, err
 		}
@@ -192,7 +200,7 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 		query := &identitymodelx.GetSignedInUserQuery{
 			UserID: claim.AdminID,
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := st.UserStore.GetSignedInUser(ctx, query); err != nil {
 			ll.Error("Invalid AdminID", l.Error(err))
 			return ctx, nil
 		}
@@ -200,12 +208,12 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 	}
 
 	session.Claim = claim
-	ok := StartSessionUser(ctx, q.RequireUser, claim, &session.User) &&
-		StartSessionPartner(ctx, q.RequirePartner, claim, account, &session.Partner) &&
-		StartSessionShop(ctx, q.RequireShop, claim, account, &session.Shop, &session.Permission) &&
-		StartSessionAffiliate(ctx, q.RequireAffiliate, claim, account, &session.Affiliate, &session.Permission) &&
-		StartSessionEtopAdmin(ctx, q.RequireEtopAdmin, claim, &session.Permission) &&
-		StartSessionAuthPartner(ctx, q.AuthPartner, claim, &session.CtxPartner)
+	ok := st.StartSessionUser(ctx, q.RequireUser, claim, &session.User) &&
+		st.StartSessionPartner(ctx, q.RequirePartner, claim, account, &session.Partner) &&
+		st.StartSessionShop(ctx, q.RequireShop, claim, account, &session.Shop, &session.Permission) &&
+		st.StartSessionAffiliate(ctx, q.RequireAffiliate, claim, account, &session.Affiliate, &session.Permission) &&
+		st.StartSessionEtopAdmin(ctx, q.RequireEtopAdmin, claim, &session.Permission) &&
+		st.StartSessionAuthPartner(ctx, q.AuthPartner, claim, &session.CtxPartner)
 	if !ok {
 		return ctx, cm.ErrPermissionDenied
 	}
@@ -216,7 +224,7 @@ func StartSessionWithToken(ctx context.Context, token string, q *StartSessionQue
 	return ctx, nil
 }
 
-func StartSessionUser(ctx context.Context, require bool, claim *claims.Claim, user **identitymodelx.SignedInUser) bool {
+func (st *SessionStarter) StartSessionUser(ctx context.Context, require bool, claim *claims.Claim, user **identitymodelx.SignedInUser) bool {
 	if require {
 		if claim.UserID == 0 {
 			return false
@@ -224,7 +232,7 @@ func StartSessionUser(ctx context.Context, require bool, claim *claims.Claim, us
 		query := &identitymodelx.GetSignedInUserQuery{
 			UserID: claim.UserID,
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := st.UserStore.GetSignedInUser(ctx, query); err != nil {
 			ll.Error("Invalid UserID", l.Error(err))
 			return false
 		}
@@ -236,7 +244,7 @@ func StartSessionUser(ctx context.Context, require bool, claim *claims.Claim, us
 	return true
 }
 
-func StartSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, claim *claims.Claim, ctxPartner **identitymodel.Partner) bool {
+func (st *SessionStarter) StartSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, claim *claims.Claim, ctxPartner **identitymodel.Partner) bool {
 	if authOpt == 0 {
 		return true
 	}
@@ -250,7 +258,7 @@ func StartSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, cl
 		query := &identitymodelx.GetPartner{
 			PartnerID: partnerID,
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := st.PartnerStore.GetPartner(ctx, query); err != nil {
 			ll.Error("Invalid PartnerID", l.Error(err))
 			return false
 		}
@@ -261,7 +269,7 @@ func StartSessionAuthPartner(ctx context.Context, authOpt permission.AuthOpt, cl
 	return true
 }
 
-func StartSessionPartner(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _partner **identitymodel.Partner) bool {
+func (st *SessionStarter) StartSessionPartner(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _partner **identitymodel.Partner) bool {
 	if partner, ok := account.(*identitymodel.Partner); ok && claim.AccountID == partner.ID {
 		*_partner = partner
 		return true
@@ -273,7 +281,7 @@ func StartSessionPartner(ctx context.Context, require bool, claim *claims.Claim,
 		query := &identitymodelx.GetPartner{
 			PartnerID: claim.AccountID,
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := st.PartnerStore.GetPartner(ctx, query); err != nil {
 			ll.Error("Invalid Name", l.Error(err))
 			return false
 		}
@@ -282,7 +290,7 @@ func StartSessionPartner(ctx context.Context, require bool, claim *claims.Claim,
 	return true
 }
 
-func StartSessionShop(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _shop **identitymodel.Shop, _permission *identitymodel.Permission) bool {
+func (st *SessionStarter) StartSessionShop(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _shop **identitymodel.Shop, _permission *identitymodel.Permission) bool {
 	if shop, ok := account.(*identitymodel.Shop); ok && claim.AccountID == shop.ID {
 		*_shop = shop
 		return true
@@ -297,7 +305,7 @@ func StartSessionShop(ctx context.Context, require bool, claim *claims.Claim, ac
 				ShopID: claim.AccountID,
 				UserID: claim.UserID,
 			}
-			if err := bus.Dispatch(ctx, query); err != nil {
+			if err := st.ShopStore.GetShopWithPermission(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
@@ -311,7 +319,7 @@ func StartSessionShop(ctx context.Context, require bool, claim *claims.Claim, ac
 			query := &identitymodelx.GetShopQuery{
 				ShopID: claim.AccountID,
 			}
-			if err := bus.Dispatch(ctx, query); err != nil {
+			if err := st.ShopStore.GetShop(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
@@ -321,7 +329,7 @@ func StartSessionShop(ctx context.Context, require bool, claim *claims.Claim, ac
 	return true
 }
 
-func StartSessionAffiliate(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _affiliate **identitymodel.Affiliate, _permission *identitymodel.Permission) bool {
+func (st *SessionStarter) StartSessionAffiliate(ctx context.Context, require bool, claim *claims.Claim, account identitymodel.AccountInterface, _affiliate **identitymodel.Affiliate, _permission *identitymodel.Permission) bool {
 	if affiliate, ok := account.(*identitymodel.Affiliate); ok && claim.AccountID == affiliate.ID {
 		*_affiliate = affiliate
 		return true
@@ -357,7 +365,7 @@ func StartSessionAffiliate(ctx context.Context, require bool, claim *claims.Clai
 	return true
 }
 
-func StartSessionEtopAdmin(ctx context.Context, require bool, claim *claims.Claim, _permission *identitymodel.Permission) bool {
+func (st *SessionStarter) StartSessionEtopAdmin(ctx context.Context, require bool, claim *claims.Claim, _permission *identitymodel.Permission) bool {
 	if require {
 		if !idutil.IsEtopAccountID(claim.AccountID) {
 			return false
@@ -366,7 +374,7 @@ func StartSessionEtopAdmin(ctx context.Context, require bool, claim *claims.Clai
 			AccountID: idutil.EtopAccountID,
 			UserID:    claim.UserID,
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := st.AccountUserStore.GetAccountUserExtended(ctx, query); err != nil {
 			ll.Error("Invalid GetAccountRolesQuery", l.Error(err))
 			return false
 		}
@@ -375,7 +383,7 @@ func StartSessionEtopAdmin(ctx context.Context, require bool, claim *claims.Clai
 	return true
 }
 
-func VerifyAPIKey(ctx context.Context, apikey string, expectType account_type.AccountType) (*claims.Claim, identitymodel.AccountInterface, error) {
+func (st *SessionStarter) VerifyAPIKey(ctx context.Context, apikey string, expectType account_type.AccountType) (*claims.Claim, identitymodel.AccountInterface, error) {
 	info, ok := authkey.ValidateAuthKeyWithType(authkey.TypeAPIKey, apikey)
 	if !ok {
 		return nil, nil, cm.Error(cm.Unauthenticated, "api_key không hợp lệ", nil)
@@ -386,7 +394,7 @@ func VerifyAPIKey(ctx context.Context, apikey string, expectType account_type.Ac
 		AccountType: expectType,
 		AccountID:   info.AccountID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.AccountStore.GetAccountAuth(ctx, query); err != nil {
 		return nil, nil, cm.MapError(err).
 			Map(cm.NotFound, cm.Unauthenticated, "api_key không hợp lệ").
 			Throw()
@@ -429,7 +437,7 @@ func VerifyAPIKey(ctx context.Context, apikey string, expectType account_type.Ac
 	panic("unexpected")
 }
 
-func VerifyAPIPartnerShopKey(ctx context.Context, apikey string) (*claims.Claim, identitymodel.AccountInterface, error) {
+func (st *SessionStarter) VerifyAPIPartnerShopKey(ctx context.Context, apikey string) (*claims.Claim, identitymodel.AccountInterface, error) {
 	_, ok := authkey.ValidateAuthKeyWithType(authkey.TypePartnerShopKey, apikey)
 	if !ok {
 		return nil, nil, cm.Error(cm.Unauthenticated, "api_key không hợp lệ", nil)
@@ -438,7 +446,7 @@ func VerifyAPIPartnerShopKey(ctx context.Context, apikey string) (*claims.Claim,
 	relationQuery := &identitymodelx.GetPartnerRelationQuery{
 		AuthKey: apikey,
 	}
-	relationError := bus.Dispatch(ctx, relationQuery)
+	relationError := st.PartnerStore.GetPartnerRelationQuery(ctx, relationQuery)
 	if relationError != nil {
 		return nil, nil, cm.MapError(relationError).
 			Map(cm.NotFound, cm.PermissionDenied, "").

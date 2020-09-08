@@ -10,10 +10,10 @@ import (
 	carriertypes "o.o/api/main/shipnow/carrier/types"
 	shipnowtypes "o.o/api/main/shipnow/types"
 	com "o.o/backend/com/main"
-	"o.o/backend/com/main/shipnow/sqlstore"
+	shipnowstore "o.o/backend/com/main/shipnow/sqlstore"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 const MinShopBalance = -200000
@@ -30,15 +30,24 @@ type ShipnowManager struct {
 	drivers      []*Carrier
 	location     location.QueryBus
 	shipnowQuery shipnow.QueryBus
-	store        sqlstore.ShipnowStoreFactory
+	store        shipnowstore.ShipnowStoreFactory
+
+	MoneyTxStore sqlstore.MoneyTxStoreInterface
 }
 
-func NewManager(db com.MainDB, locationBus location.QueryBus, shipnowQuery shipnow.QueryBus, carriers []*Carrier) *ShipnowManager {
+func NewManager(
+	db com.MainDB,
+	locationBus location.QueryBus,
+	shipnowQuery shipnow.QueryBus,
+	carriers []*Carrier,
+	MoneyTxStore sqlstore.MoneyTxStoreInterface,
+) *ShipnowManager {
 	return &ShipnowManager{
 		drivers:      carriers,
 		location:     locationBus,
 		shipnowQuery: shipnowQuery,
-		store:        sqlstore.NewShipnowStore(db),
+		store:        shipnowstore.NewShipnowStore(db),
+		MoneyTxStore: MoneyTxStore,
 	}
 }
 
@@ -51,7 +60,7 @@ func (ctrl *ShipnowManager) CreateExternalShipnow(ctx context.Context, cmd *carr
 		query := &model.GetBalanceShopCommand{
 			ShopID: cmd.ShopID,
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := ctrl.MoneyTxStore.CalcBalanceShop(ctx, query); err != nil {
 			return nil, err
 		}
 		balance := query.Result.Amount

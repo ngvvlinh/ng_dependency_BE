@@ -11,12 +11,12 @@ import (
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/try_on"
+	com "o.o/backend/com/main"
 	addressmodel "o.o/backend/com/main/address/model"
 	addressmodelx "o.o/backend/com/main/address/modelx"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etc/idutil"
@@ -24,18 +24,36 @@ import (
 	"o.o/capi/dot"
 )
 
-func init() {
-	bus.AddHandlers("sql",
-		CreateShop,
-		UpdateShop,
-		DeleteShop,
-		SetDefaultAddressShop,
-		UpdateAccountURLSlug,
-		GetAccountAuth,
-	)
+type AccountStoreInterface interface {
+	CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) error
+
+	DeleteShop(ctx context.Context, cmd *identitymodelx.DeleteShopCommand) error
+
+	GetAccountAuth(ctx context.Context, query *identitymodelx.GetAccountAuthQuery) error
+
+	UpdateAccountURLSlug(ctx context.Context, cmd *identitymodelx.UpdateAccountURLSlugCommand) error
+
+	UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) error
 }
 
-func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) error {
+type AccountStore struct {
+	db *cmsql.Database
+
+	addressStore *AddressStore
+	UserStore    UserStoreInterface
+}
+
+func NewAccountStore(db com.MainDB, userStore UserStoreInterface) *AccountStore {
+	s := &AccountStore{
+		db: db,
+
+		addressStore: NewAddressStore(db),
+		UserStore:    userStore,
+	}
+	return s
+}
+
+func (st *AccountStore) CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) error {
 	if cmd.OwnerID == 0 {
 		return cm.Error(cm.Internal, "Missing OwnerID", nil)
 	}
@@ -56,12 +74,12 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 	}
 
 	ownerQuery := &identitymodelx.GetUserByIDQuery{UserID: cmd.OwnerID}
-	if err := bus.Dispatch(ctx, ownerQuery); err != nil {
+	if err := st.UserStore.GetUserByID(ctx, ownerQuery); err != nil {
 		return cm.Error(cm.Internal, "invalid owner_id", nil)
 	}
 
 	id := idutil.NewShopID()
-	return x.InTransaction(ctx, func(s cmsql.QueryInterface) error {
+	return st.db.InTransaction(ctx, func(s cmsql.QueryInterface) error {
 		account := &identitymodel.Account{
 			ID:       id,
 			Name:     cmd.Name,
@@ -84,7 +102,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 			return err
 		}
 		if cmd.Address != nil {
-			addressID, err := updateOrCreateAddress(ctx, s, cmd.Address, account.ID, model.AddressTypeGeneral)
+			addressID, err := st.updateOrCreateAddress(ctx, s, cmd.Address, account.ID, model.AddressTypeGeneral)
 			if err != nil {
 				return err
 			}
@@ -161,7 +179,7 @@ func CreateShop(ctx context.Context, cmd *identitymodelx.CreateShopCommand) erro
 	})
 }
 
-func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) error {
+func (st *AccountStore) UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) error {
 	shop := cmd.Shop
 	if shop.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
@@ -190,16 +208,16 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 		return err
 	}
 
-	return inTransaction(func(x Qx) error {
+	return inTransaction(st.db, func(tx Qx) error {
 		if shop.Address != nil {
-			addressID, err := updateOrCreateAddress(ctx, x, shop.Address, shop.ID, model.AddressTypeGeneral)
+			addressID, err := st.updateOrCreateAddress(ctx, tx, shop.Address, shop.ID, model.AddressTypeGeneral)
 			if err != nil {
 				return err
 			}
 			shop.AddressID = addressID
 		}
 
-		if err := x.Table("shop").
+		if err := tx.Table("shop").
 			Where("id = ? AND deleted_at is NULL", shop.ID).
 			ShouldUpdate(shop); err != nil {
 			return err
@@ -212,7 +230,7 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 			updateMapValue["auto_create_ffm"] = cmd.AutoCreateFFM
 		}
 		if len(updateMapValue) != 0 {
-			if err := x.Table("shop").Where("id= ?", shop.ID).ShouldUpdateMap(updateMapValue); err != nil {
+			if err := st.db.Table("shop").Where("id= ?", shop.ID).ShouldUpdateMap(updateMapValue); err != nil {
 				return err
 			}
 		}
@@ -223,12 +241,12 @@ func UpdateShop(ctx context.Context, cmd *identitymodelx.UpdateShopCommand) erro
 			Name:     shop.Name,
 			ShopCode: shop.Code,
 		}
-		if err := updateOrCreateShopSearch(ctx, x, updateShopSearch); err != nil {
+		if err := st.updateOrCreateShopSearch(ctx, tx, updateShopSearch); err != nil {
 			return err
 		}
 
 		cmd.Result = new(identitymodel.ShopExtended)
-		if has, err := x.
+		if has, err := st.db.
 			Table("shop").
 			Where("s.id = ?", shop.ID).
 			Get(cmd.Result); err != nil || !has {
@@ -244,13 +262,13 @@ type updateOrCreateShopSearchArgs struct {
 	ShopCode string
 }
 
-func updateOrCreateShopSearch(ctx context.Context, x Qx, args *updateOrCreateShopSearchArgs) error {
+func (st *AccountStore) updateOrCreateShopSearch(ctx context.Context, x Qx, args *updateOrCreateShopSearchArgs) error {
 	if args.Name == "" {
 		return nil
 	}
 
 	var shopSearch identitymodel.ShopSearch
-	ok, err := x.
+	ok, err := st.db.
 		Table("shop_search").
 		Where("id = ?", args.ID).
 		Get(&shopSearch)
@@ -263,35 +281,32 @@ func updateOrCreateShopSearch(ctx context.Context, x Qx, args *updateOrCreateSho
 		nameNorm += " " + validate.NormalizeSearchCode(args.ShopCode)
 	}
 	if !ok {
-		shopSearch := &identitymodel.ShopSearch{
+		shopSearch = identitymodel.ShopSearch{
 			ID:       args.ID,
 			Name:     args.Name,
 			NameNorm: nameNorm,
 		}
-		if err := x.ShouldInsert(shopSearch); err != nil {
-			return err
-		}
-		return nil
+		return st.db.ShouldInsert(&shopSearch)
 	}
 
 	updateShopSearchValue := map[string]interface{}{
 		"name_norm": nameNorm,
 	}
-	if err = x.Table("shop_search").
+	if err = st.db.Table("shop_search").
 		Where("id = ?", args.ID).ShouldUpdateMap(updateShopSearchValue); err != nil {
 		return err
 	}
 	return nil
 }
 
-func DeleteShop(ctx context.Context, cmd *identitymodelx.DeleteShopCommand) error {
-	return inTransaction(func(s Qx) error {
+func (st *AccountStore) DeleteShop(ctx context.Context, cmd *identitymodelx.DeleteShopCommand) error {
+	return inTransaction(st.db, func(tx Qx) error {
 		if cmd.ID == 0 {
 			return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 		}
 		now := time.Now()
 		{
-			if updated, err := s.Table("shop").
+			if updated, err := tx.Table("shop").
 				Where("id = ? AND owner_id = ?", cmd.ID, cmd.OwnerID).
 				Update(&identitymodel.ShopDelete{
 					DeletedAt: now,
@@ -301,7 +316,7 @@ func DeleteShop(ctx context.Context, cmd *identitymodelx.DeleteShopCommand) erro
 				return cm.Error(cm.NotFound, "", nil)
 			}
 		}
-		if _, err := s.Table("account_user").
+		if _, err := tx.Table("account_user").
 			Where("account_id = ? AND user_id = ?", cmd.ID, cmd.OwnerID).
 			Update(
 				&identitymodel.AccountUserDelete{
@@ -313,11 +328,11 @@ func DeleteShop(ctx context.Context, cmd *identitymodelx.DeleteShopCommand) erro
 	})
 }
 
-func UpdateOrCreateAddress(ctx context.Context, address *addressmodel.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
-	return updateOrCreateAddress(ctx, x, address, accountID, AddressType)
+func (st *AccountStore) UpdateOrCreateAddress(ctx context.Context, address *addressmodel.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
+	return st.updateOrCreateAddress(ctx, st.db, address, accountID, AddressType)
 }
 
-func updateOrCreateAddress(ctx context.Context, x Qx, address *addressmodel.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
+func (st *AccountStore) updateOrCreateAddress(ctx context.Context, x Qx, address *addressmodel.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
 	addressObj := &addressmodel.Address{
 		Province:     address.Province,
 		ProvinceCode: address.ProvinceCode,
@@ -342,7 +357,7 @@ func updateOrCreateAddress(ctx context.Context, x Qx, address *addressmodel.Addr
 			Address: addressObj,
 		}
 
-		if err := updateAddress(ctx, x, addressCmd); err != nil {
+		if err := st.addressStore.updateAddress(ctx, x, addressCmd); err != nil {
 			return 0, err
 		}
 		return addressCmd.Result.ID, nil
@@ -353,14 +368,14 @@ func updateOrCreateAddress(ctx context.Context, x Qx, address *addressmodel.Addr
 		addressCmd := &addressmodelx.CreateAddressCommand{
 			Address: addressObj,
 		}
-		if err := createAddress(ctx, x, addressCmd); err != nil {
+		if err := st.addressStore.createAddress(ctx, x, addressCmd); err != nil {
 			return 0, err
 		}
 		return addressCmd.Result.ID, nil
 	}
 }
 
-func SetDefaultAddressShop(ctx context.Context, cmd *identitymodelx.SetDefaultAddressShopCommand) error {
+func (st *AccountStore) SetDefaultAddressShop(ctx context.Context, cmd *identitymodelx.SetDefaultAddressShopCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
@@ -372,7 +387,7 @@ func SetDefaultAddressShop(ctx context.Context, cmd *identitymodelx.SetDefaultAd
 	}
 
 	var address = new(addressmodel.Address)
-	if err := x.Table("address").Where("id = ? AND account_id = ? and type = ?", cmd.AddressID, cmd.ShopID, cmd.Type).
+	if err := st.db.Table("address").Where("id = ? AND account_id = ? and type = ?", cmd.AddressID, cmd.ShopID, cmd.Type).
 		ShouldGet(address); err != nil {
 		return err
 	}
@@ -392,14 +407,14 @@ func SetDefaultAddressShop(ctx context.Context, cmd *identitymodelx.SetDefaultAd
 	cmdUpdateShop := &identitymodelx.UpdateShopCommand{
 		Shop: shopObj,
 	}
-	if err := bus.Dispatch(ctx, cmdUpdateShop); err != nil {
+	if err := st.UpdateShop(ctx, cmdUpdateShop); err != nil {
 		return err
 	}
 	cmd.Result.Updated = 1
 	return nil
 }
 
-func UpdateAccountURLSlug(ctx context.Context, cmd *identitymodelx.UpdateAccountURLSlugCommand) error {
+func (st *AccountStore) UpdateAccountURLSlug(ctx context.Context, cmd *identitymodelx.UpdateAccountURLSlugCommand) error {
 	if cmd.AccountID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing account_id", nil)
 	}
@@ -409,19 +424,19 @@ func UpdateAccountURLSlug(ctx context.Context, cmd *identitymodelx.UpdateAccount
 		return cm.Error(cm.InvalidArgument, "Thông tin truyền vào không hợp lệ.", nil)
 	}
 
-	return x.Table("account").
+	return st.db.Table("account").
 		Where("id = ?", cmd.AccountID).
 		ShouldUpdateMap(map[string]interface{}{
 			"url_slug": cmd.URLSlug,
 		})
 }
 
-func GetAccountAuth(ctx context.Context, query *identitymodelx.GetAccountAuthQuery) error {
+func (st *AccountStore) GetAccountAuth(ctx context.Context, query *identitymodelx.GetAccountAuthQuery) error {
 	if query.AuthKey == "" || query.AccountID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing key")
 	}
 
-	s := x.Where("auth_key = ?", query.AuthKey).
+	s := st.db.Where("auth_key = ?", query.AuthKey).
 		Where("account_id = ?", query.AccountID).
 		Where("aa.status = 1 AND aa.deleted_at IS NULL")
 

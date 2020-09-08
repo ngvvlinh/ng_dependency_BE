@@ -4,37 +4,45 @@ import (
 	"context"
 	"time"
 
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/catalog/convert"
 	catalogmodel "o.o/backend/com/main/catalog/model"
 	catalogmodelx "o.o/backend/com/main/catalog/modelx"
 	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
-func init() {
-	bus.AddHandlers("sql",
-		GetShopVariant,
-		RemoveShopVariants,
-		UpdateShopVariant,
-
-		RemoveShopProducts,
-		UpdateShopProduct,
-		UpdateShopProductsTags,
-	)
-}
-
 var shopProductStore catalogsqlstore.ShopProductStoreFactory
 
-func GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuery) error {
+type ShopVariantStoreInterface interface {
+	GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuery) error
+
+	UpdateShopProductsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopProductsTagsCommand) error
+}
+
+type ShopVariantStore struct {
+	db *cmsql.Database
+}
+
+func NewShopVariantStore(
+	db com.MainDB,
+) *ShopVariantStore {
+	s := &ShopVariantStore{
+		db: db,
+	}
+	return s
+}
+
+func (st *ShopVariantStore) GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
 
 	var variantDB catalogmodel.ShopVariant
-	if err := x.Where("shop_id = ? AND variant_id = ?", query.ShopID, query.VariantID).
+	if err := st.db.Where("shop_id = ? AND variant_id = ?", query.ShopID, query.VariantID).
 		ShouldGet(&variantDB); err != nil {
 		return err
 	}
@@ -42,7 +50,7 @@ func GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuer
 	return nil
 }
 
-func updateOrInsertShopVariant(sv *catalogmodel.ShopVariant, x Qx) error {
+func updateOrInsertShopVariant(sv *catalogmodel.ShopVariant, tx Qx) error {
 	if sv.VariantID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing VariantID", nil)
 	}
@@ -51,7 +59,7 @@ func updateOrInsertShopVariant(sv *catalogmodel.ShopVariant, x Qx) error {
 	}
 
 	var shopVariant catalogmodel.ShopVariant
-	ok, err := x.Table("shop_variant").
+	ok, err := tx.Table("shop_variant").
 		Where("variant_id = ? AND shop_id = ?", sv.VariantID, sv.ShopID).
 		Get(&shopVariant)
 	if err != nil {
@@ -59,15 +67,15 @@ func updateOrInsertShopVariant(sv *catalogmodel.ShopVariant, x Qx) error {
 	}
 
 	if !ok {
-		return x.Table("shop_variant").ShouldInsert(sv)
+		return tx.Table("shop_variant").ShouldInsert(sv)
 	}
 
-	return x.Table("shop_variant").
+	return tx.Table("shop_variant").
 		Where("variant_id = ? AND shop_id = ?", sv.VariantID, sv.ShopID).
 		ShouldUpdate(sv)
 }
 
-func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantCommand) error {
+func (st *ShopVariantStore) UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -76,7 +84,7 @@ func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariant
 	}
 
 	sv := *cmd.Variant
-	if err := updateOrInsertShopVariant(&sv, x); err != nil {
+	if err := updateOrInsertShopVariant(&sv, st.db); err != nil {
 		return err
 	}
 
@@ -84,7 +92,7 @@ func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariant
 		ShopID:    cmd.ShopID,
 		VariantID: cmd.Variant.VariantID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.GetShopVariant(ctx, query); err != nil {
 		return cm.Error(cm.Internal, "", err)
 	}
 
@@ -92,12 +100,12 @@ func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariant
 	return nil
 }
 
-func RemoveShopVariants(ctx context.Context, cmd *catalogmodelx.RemoveShopVariantsCommand) error {
+func (st *ShopVariantStore) RemoveShopVariants(ctx context.Context, cmd *catalogmodelx.RemoveShopVariantsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
 
-	updated, err := x.Table("shop_variant").
+	updated, err := st.db.Table("shop_variant").
 		Where("shop_id = ?", cmd.ShopID).
 		In("variant_id", cmd.IDs).
 		UpdateMap(map[string]interface{}{
@@ -111,7 +119,7 @@ func RemoveShopVariants(ctx context.Context, cmd *catalogmodelx.RemoveShopVarian
 	return nil
 }
 
-func RemoveShopProducts(ctx context.Context, cmd *catalogmodelx.RemoveShopProductsCommand) error {
+func (st *ShopVariantStore) RemoveShopProducts(ctx context.Context, cmd *catalogmodelx.RemoveShopProductsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -120,10 +128,10 @@ func RemoveShopProducts(ctx context.Context, cmd *catalogmodelx.RemoveShopProduc
 		return cm.Error(cm.InvalidArgument, "Misssing IDs", nil)
 	}
 
-	return inTransaction(func(x Qx) error {
+	return inTransaction(st.db, func(tx Qx) error {
 		var productsCount uint64
 
-		deletedCount, err := x.Table("shop_product").
+		deletedCount, err := tx.Table("shop_product").
 			Where("shop_id = ?", cmd.ShopID).
 			In("product_id", cmd.IDs).
 			UpdateMap(map[string]interface{}{
@@ -133,7 +141,7 @@ func RemoveShopProducts(ctx context.Context, cmd *catalogmodelx.RemoveShopProduc
 			return nil
 		}
 
-		if _, err := x.Table("shop_variant").
+		if _, err := tx.Table("shop_variant").
 			Where("shop_id = ?", cmd.ShopID).
 			In("product_id", cmd.IDs).
 			UpdateMap(map[string]interface{}{
@@ -147,11 +155,11 @@ func RemoveShopProducts(ctx context.Context, cmd *catalogmodelx.RemoveShopProduc
 	})
 }
 
-func UpdateOrInsertShopProduct(sp *catalogmodel.ShopProduct) error {
-	return updateOrInsertShopProduct(sp, x)
+func (st *ShopVariantStore) UpdateOrInsertShopProduct(sp *catalogmodel.ShopProduct) error {
+	return st.updateOrInsertShopProduct(sp, st.db)
 }
 
-func updateOrInsertShopProduct(sp *catalogmodel.ShopProduct, x Qx) error {
+func (st *ShopVariantStore) updateOrInsertShopProduct(sp *catalogmodel.ShopProduct, tx Qx) error {
 	if sp.ProductID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ProductID", nil)
 	}
@@ -161,12 +169,12 @@ func updateOrInsertShopProduct(sp *catalogmodel.ShopProduct, x Qx) error {
 	}
 
 	var shopProduct = new(catalogmodel.ShopProduct)
-	if has, err := x.Table("shop_product").
+	if has, err := tx.Table("shop_product").
 		Where("product_id = ? AND shop_id = ?", sp.ProductID, sp.ShopID).
 		Get(shopProduct); err != nil {
 		return err
 	} else if has {
-		if err := x.Table("shop_product").
+		if err := tx.Table("shop_product").
 			Where("product_id = ? AND shop_id = ?", sp.ProductID, sp.ShopID).
 			ShouldUpdate(sp); err != nil {
 			return err
@@ -174,13 +182,13 @@ func updateOrInsertShopProduct(sp *catalogmodel.ShopProduct, x Qx) error {
 		return nil
 	}
 
-	if err := x.Table("shop_product").ShouldInsert(sp); err != nil {
+	if err := tx.Table("shop_product").ShouldInsert(sp); err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpdateShopProduct(ctx context.Context, cmd *catalogmodelx.UpdateShopProductCommand) error {
+func (st *ShopVariantStore) UpdateShopProduct(ctx context.Context, cmd *catalogmodelx.UpdateShopProductCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -189,7 +197,7 @@ func UpdateShopProduct(ctx context.Context, cmd *catalogmodelx.UpdateShopProduct
 	}
 
 	sp := *cmd.Product
-	if err := updateOrInsertShopProduct(&sp, x); err != nil {
+	if err := st.updateOrInsertShopProduct(&sp, st.db); err != nil {
 		return err
 	}
 	{
@@ -203,7 +211,7 @@ func UpdateShopProduct(ctx context.Context, cmd *catalogmodelx.UpdateShopProduct
 	return nil
 }
 
-func UpdateShopProductsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopProductsTagsCommand) error {
+func (st *ShopVariantStore) UpdateShopProductsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopProductsTagsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -213,7 +221,7 @@ func UpdateShopProductsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopPr
 	}
 
 	var products []*catalogmodel.ShopProduct
-	if err := x.Where("shop_id = ?", cmd.ShopID).
+	if err := st.db.Where("shop_id = ?", cmd.ShopID).
 		In("product_id", cmd.ProductIDs).
 		Find((*catalogmodel.ShopProducts)(&products)); err != nil {
 		return err
@@ -243,7 +251,7 @@ func UpdateShopProductsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopPr
 			Tags:      tags,
 		}
 
-		if err := UpdateOrInsertShopProduct(sp); err != nil {
+		if err := st.UpdateOrInsertShopProduct(sp); err != nil {
 			savedError = err
 			continue
 		}

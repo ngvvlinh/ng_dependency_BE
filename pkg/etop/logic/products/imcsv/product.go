@@ -16,7 +16,6 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/validate"
 	apishop "o.o/backend/pkg/etop/api/shop"
@@ -53,7 +52,7 @@ func (im *Import) loadAndCreateProducts(
 	chErr := make(chan error)
 	go func() {
 		var err error
-		categories, err = loadCategories(ctx, shop.ID)
+		categories, err = im.loadCategories(ctx, shop.ID)
 		if err != nil {
 			err = cm.Error(cm.Internal, "", err).
 				WithMeta("step", "category")
@@ -202,7 +201,7 @@ func (im *Import) loadAndCreateProducts(
 			var category *catalogmodel.ShopCategory
 			var err error
 			cc := normalizeCategory(rowProduct.Category)
-			category, msgs, err = ensureCategory(ctx, msgs, categories.Sort, shop, rowProduct.Category, cc)
+			category, msgs, err = im.ensureCategory(ctx, msgs, categories.Sort, shop, rowProduct.Category, cc)
 			if err != nil {
 				err = imcsv.CellErrorWithCode(idx.indexer, cm.Internal, err, rowProduct.RowIndex, -1, "Không thể tạo danh mục \"%v\": %v", rowProduct.Category, err)
 				_errs = append(_errs, err)
@@ -357,7 +356,7 @@ func (im *Import) loadAndCreateProducts(
 				ProductIDs: productIDs,
 				ShopID:     shop.ID,
 			}
-			if err := bus.Dispatch(ctx, updateProductsCategoryCmd); err != nil {
+			if err := im.ShopStore.UpdateProductsPSCategory(ctx, updateProductsCategoryCmd); err != nil {
 				err = imcsv.CellErrorWithCode(idx.indexer, cm.Internal, err, rowProduct.RowIndex, -1,
 					`Không thể thêm sản phẩm "%v" vào danh mục: %v`,
 					rowProduct.GetProductNameOrCode(), err).
@@ -414,11 +413,11 @@ func normalizeCategory(cc [3]string) (res [3]string) {
 	return res
 }
 
-func loadCategories(ctx context.Context, shopID dot.ID) (*Categories, error) {
+func (im *Import) loadCategories(ctx context.Context, shopID dot.ID) (*Categories, error) {
 	query := &catalogmodelx.GetProductSourceCategoriesQuery{
 		ShopID: shopID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := im.CategoryStore.GetProductSourceCategories(ctx, query); err != nil {
 		return nil, err
 	}
 	categories := query.Result.Categories
@@ -543,7 +542,7 @@ func (im *Import) loadVariants(
 	return
 }
 
-func ensureCategory(
+func (im *Import) ensureCategory(
 	ctx context.Context,
 	msgs []string,
 	categories map[[3]string]*catalogmodel.ShopCategory,
@@ -561,7 +560,7 @@ func ensureCategory(
 
 		var parent *catalogmodel.ShopCategory
 		var err error
-		parent, msgs, err = ensureCategory(ctx, msgs, categories, shop, namesNext, ccParent)
+		parent, msgs, err = im.ensureCategory(ctx, msgs, categories, shop, namesNext, ccParent)
 		if err != nil {
 			return nil, msgs, err
 		}
@@ -573,7 +572,7 @@ func ensureCategory(
 		if parent != nil {
 			cmd.ParentID = parent.ID
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := im.ShopStore.CreateShopCategory(ctx, cmd); err != nil {
 			return nil, msgs, err
 		}
 		msgs = append(msgs, "Đã tạo danh mục "+names[0])

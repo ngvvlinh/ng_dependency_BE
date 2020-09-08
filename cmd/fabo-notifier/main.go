@@ -78,7 +78,7 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres Notifier", l.Error(err))
 	}
-	sqlstore.New(db, dbNotifier, locationBus, nil)
+	sqlstore.New(db, locationBus, nil)
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
 	{
@@ -93,9 +93,12 @@ func main() {
 	}
 	{
 		if cfg.Onesignal.ApiKey != "" {
-			if err := notifier.Init(cfg.Onesignal); err != nil {
+			oneSignalNotifier, err := notifier.NewOneSignalNotifier(cfg.Onesignal)
+			if err != nil {
 				ll.Fatal("Unable to connect to Onesignal", l.Error(err))
 			}
+			notihandler.Init(oneSignalNotifier) // TODO(vu): remove this
+
 		} else {
 			if cmenv.IsDev() {
 				ll.Warn("DEVELOPMENT. Skip connect to Onesignal")

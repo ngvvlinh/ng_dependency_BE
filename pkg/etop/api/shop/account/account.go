@@ -13,7 +13,6 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/validate"
 	etop "o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
@@ -29,6 +28,10 @@ type AccountService struct {
 	IdentityQuery identity.QueryBus
 	AddressQuery  address.QueryBus
 	AddressAggr   address.CommandBus
+	UserStore     sqlstore.UserStoreFactory
+
+	AccountStore   sqlstore.AccountStoreInterface
+	UserStoreIface sqlstore.UserStoreInterface
 }
 
 func (s *AccountService) Clone() api.AccountService { res := *s; return &res }
@@ -58,7 +61,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *api.RegisterShopRe
 		SurveyInfo:                  convertpb.SurveyInfosToModel(q.SurveyInfo),
 		ShippingServicePickStrategy: convertpb.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.AccountStore.CreateShop(ctx, cmd); err != nil {
 		return nil, err
 	}
 
@@ -71,7 +74,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *api.RegisterShopRe
 func (s *AccountService) UpdateShop(ctx context.Context, q *api.UpdateShopRequest) (*api.UpdateShopResponse, error) {
 	shop := s.SS.Shop()
 	if q.BankAccount != nil {
-		user, err := sqlstore.User(ctx).ID(shop.OwnerID).Get()
+		user, err := s.UserStore(ctx).ID(shop.OwnerID).Get()
 		if err != nil {
 			return nil, cm.Errorf(cm.Internal, err, "Không thể gửi mã xác nhận thay đổi tài khoản ngân hàng")
 		}
@@ -116,7 +119,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *api.UpdateShopReques
 		AutoCreateFFM: q.AutoCreateFfm,
 	}
 
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.AccountStore.UpdateShop(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &api.UpdateShopResponse{
@@ -130,7 +133,7 @@ func (s *AccountService) DeleteShop(ctx context.Context, q *pbcm.IDRequest) (*pb
 		ID:      q.Id,
 		OwnerID: s.SS.Claim().UserID,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.AccountStore.DeleteShop(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.Empty{}
@@ -224,7 +227,7 @@ func (s *AccountService) RequestVerifyExternalAccountAhamove(ctx context.Context
 	query := &identitymodelx.GetUserByIDQuery{
 		UserID: s.SS.Shop().OwnerID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.UserStoreIface.GetUserByID(ctx, query); err != nil {
 		return nil, err
 	}
 	user := query.Result
@@ -258,7 +261,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerification(ctx context.Co
 	query := &identitymodelx.GetUserByIDQuery{
 		UserID: s.SS.Shop().OwnerID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.UserStoreIface.GetUserByID(ctx, query); err != nil {
 		return nil, err
 	}
 	user := query.Result

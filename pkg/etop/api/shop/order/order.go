@@ -22,12 +22,12 @@ import (
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
 	shop2 "o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/session"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
@@ -39,6 +39,8 @@ type OrderService struct {
 	OrderQuery    ordering.QueryBus
 	ReceiptQuery  receipting.QueryBus
 	OrderLogic    *logicorder.OrderLogic
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func (s *OrderService) Clone() shop.OrderService { res := *s; return &res }
@@ -50,7 +52,7 @@ func (s *OrderService) GetOrder(ctx context.Context, q *pbcm.IDRequest) (*types.
 		PartnerID:          s.SS.CtxPartner().GetID(),
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return nil, err
 	}
 
@@ -80,7 +82,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *shop.GetOrdersRequest) 
 		Paging:    paging,
 		Filters:   cmapi.ToFilters(q.Filters),
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrders(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &types.OrdersResponse{
@@ -141,7 +143,7 @@ func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *etop.IDsRequest) (
 		PartnerID: s.SS.CtxPartner().GetID(),
 		IDs:       q.Ids,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrders(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &types.OrdersResponse{
@@ -173,7 +175,7 @@ func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *shop.GetOrde
 		PartnerID: s.SS.CtxPartner().GetID(),
 		IDs:       arrOrderID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrders(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &types.OrdersResponse{
@@ -196,7 +198,7 @@ func (s *OrderService) UpdateOrdersStatus(ctx context.Context, q *shop.UpdateOrd
 		CancelReason: q.CancelReason,
 		Status:       q.Status.Wrap(),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.OrderStore.UpdateOrdersStatus(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.UpdatedResponse{Updated: cmd.Result.Updated}
@@ -251,7 +253,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *types.CreateOrderRequ
 				PartnerID:          s.SS.CtxPartner().GetID(),
 				IncludeFulfillment: true,
 			}
-			if _err := bus.Dispatch(ctx, query); _err != nil {
+			if _err := s.OrderStore.GetOrder(ctx, query); _err != nil {
 				return res, _err // keep the response
 			}
 			if query.Result.Order.Status != status5.N {
@@ -406,7 +408,7 @@ func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *shop.Upd
 		OrderID:       q.OrderId,
 		PaymentStatus: q.Status,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.OrderStore.UpdateOrderPaymentStatus(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.UpdatedResponse{
@@ -430,7 +432,7 @@ func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *shop.Upda
 		ShippingAddress: shippingAddressModel,
 		Shipping:        order.ShopShipping,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.OrderStore.UpdateOrderShippingInfo(ctx, cmd); err != nil {
 		return nil, err
 	}
 

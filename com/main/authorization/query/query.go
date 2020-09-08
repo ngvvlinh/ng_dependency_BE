@@ -9,17 +9,16 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
 var _ authorization.QueryService = &AuthorizationQuery{}
 
 type AuthorizationQuery struct {
-	auth *auth.Authorizer
-}
+	Auth *auth.Authorizer
 
-func NewAuthorizationQuery(auth *auth.Authorizer) *AuthorizationQuery {
-	return &AuthorizationQuery{auth: auth}
+	AccountUserStore sqlstore.AccountUserStoreInterface
 }
 
 func AuthorizationQueryMessageBus(a *AuthorizationQuery) authorization.QueryBus {
@@ -34,12 +33,12 @@ func (a *AuthorizationQuery) GetAuthorization(
 		UserID:    userID,
 		AccountID: accountID,
 	}
-	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
+	if err := a.AccountUserStore.GetAccountUserExtended(ctx, getAccountUserQuery); err != nil {
 		return nil, cm.MapError(err).
 			Wrap(cm.NotFound, "Authorization not found").
 			Throw()
 	}
-	auth = convert.ConvertAccountUserExtendedToAuthorization(a.auth, &getAccountUserQuery.Result)
+	auth = convert.ConvertAccountUserExtendedToAuthorization(a.Auth, &getAccountUserQuery.Result)
 	return auth, nil
 }
 
@@ -49,11 +48,11 @@ func (a *AuthorizationQuery) GetAccountAuthorization(
 	getAccountUsersQuery := &identitymodelx.GetAccountUserExtendedsQuery{
 		AccountIDs: []dot.ID{accountID},
 	}
-	if err := bus.Dispatch(ctx, getAccountUsersQuery); err != nil {
+	if err := a.AccountUserStore.GetAccountUserExtendeds(ctx, getAccountUsersQuery); err != nil {
 		return nil, err
 	}
 	for _, accountUser := range getAccountUsersQuery.Result.AccountUsers {
-		auths = append(auths, convert.ConvertAccountUserExtendedToAuthorization(a.auth, accountUser))
+		auths = append(auths, convert.ConvertAccountUserExtendedToAuthorization(a.Auth, accountUser))
 	}
 	return auths, nil
 }
@@ -65,11 +64,11 @@ func (a *AuthorizationQuery) GetRelationships(
 		AccountIDs: []dot.ID{args.AccountID},
 		Filters:    args.Filters,
 	}
-	if err := bus.Dispatch(ctx, getAccountUsersQuery); err != nil {
+	if err := a.AccountUserStore.GetAccountUserExtendeds(ctx, getAccountUsersQuery); err != nil {
 		return nil, err
 	}
 	for _, accountUser := range getAccountUsersQuery.Result.AccountUsers {
-		relationships = append(relationships, convert.ConvertAccountUserToRelationship(a.auth, accountUser.AccountUser))
+		relationships = append(relationships, convert.ConvertAccountUserToRelationship(a.Auth, accountUser.AccountUser))
 	}
 	return relationships, nil
 }

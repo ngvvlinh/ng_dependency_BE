@@ -96,7 +96,6 @@ func Build(
 			"sms",
 			"databases",
 			"invitation",
-			"secret",
 			"kafka",
 			"shipment",
 			"ahamove",

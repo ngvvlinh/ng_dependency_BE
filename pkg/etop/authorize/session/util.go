@@ -3,10 +3,8 @@ package session
 import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/claims"
-	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
 )
 
@@ -29,7 +27,7 @@ func (s *session) User() *identitymodelx.SignedInUser {
 	if s.user != nil {
 		return s.user
 	}
-	middleware.StartSessionUser(s.ctx, true, &s.claim, &s.user)
+	s.st.StartSessionUser(s.ctx, true, &s.claim, &s.user)
 	return s.user
 }
 
@@ -73,7 +71,7 @@ func (s *session) Permission() identitymodel.Permission {
 		AccountID: s.claim.AccountID,
 		UserID:    s.claim.UserID,
 	}
-	if err := bus.Dispatch(s.ctx, accQuery); err != nil {
+	if err := s.AccountUserStore.GetAccountUserExtended(s.ctx, accQuery); err != nil {
 		panic(err)
 	}
 	s.permission = accQuery.Result.AccountUser.Permission

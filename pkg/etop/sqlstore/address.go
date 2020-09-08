@@ -4,35 +4,42 @@ import (
 	"context"
 	"strings"
 
+	com "o.o/backend/com/main"
 	addressmodel "o.o/backend/com/main/address/model"
 	addressmodelx "o.o/backend/com/main/address/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 )
 
-func init() {
-	bus.AddHandlers("sql",
-		CreateAddress,
-		GetAddress,
-		UpdateAddress,
-		DeleteAddress,
-		GetAddresses,
-	)
+type AddressStoreInterface interface {
+
+	GetAddress(ctx context.Context, query *addressmodelx.GetAddressQuery) error
 }
 
-func GetAddress(ctx context.Context, query *addressmodelx.GetAddressQuery) error {
+type AddressStore struct {
+	db *cmsql.Database
+}
+
+func NewAddressStore(db com.MainDB) *AddressStore {
+	s := &AddressStore{
+		db: db,
+	}
+	return s
+}
+
+func (st *AddressStore) GetAddress(ctx context.Context, query *addressmodelx.GetAddressQuery) error {
 	if query.AddressID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
 	}
 
 	query.Result = new(addressmodel.Address)
-	return x.Table("address").
+	return st.db.Table("address").
 		Where("id = ?", query.AddressID).
 		ShouldGet(query.Result)
 }
 
-func GetAddresses(ctx context.Context, query *addressmodelx.GetAddressesQuery) error {
-	s := x.Table("address")
+func (st *AddressStore) GetAddresses(ctx context.Context, query *addressmodelx.GetAddressesQuery) error {
+	s := st.db.Table("address")
 	if query.AccountID != 0 {
 		s = s.Where("account_id = ?", query.AccountID)
 	}
@@ -42,11 +49,11 @@ func GetAddresses(ctx context.Context, query *addressmodelx.GetAddressesQuery) e
 	return nil
 }
 
-func CreateAddress(ctx context.Context, cmd *addressmodelx.CreateAddressCommand) error {
-	return createAddress(ctx, x, cmd)
+func (st *AddressStore) CreateAddress(ctx context.Context, cmd *addressmodelx.CreateAddressCommand) error {
+	return st.createAddress(ctx, st.db, cmd)
 }
 
-func createAddress(ctx context.Context, x Qx, cmd *addressmodelx.CreateAddressCommand) error {
+func (st *AddressStore) createAddress(ctx context.Context, x Qx, cmd *addressmodelx.CreateAddressCommand) error {
 	address := cmd.Address
 
 	if address.Province == "" || address.ProvinceCode == "" {
@@ -75,24 +82,24 @@ func createAddress(ctx context.Context, x Qx, cmd *addressmodelx.CreateAddressCo
 	// }
 
 	address.ID = cm.NewID()
-	if _, err := x.Table("address").Insert(address); err != nil {
+	if _, err := st.db.Table("address").Insert(address); err != nil {
 		return err
 	}
 	cmd.Result = address
 	return nil
 }
 
-func UpdateAddress(ctx context.Context, cmd *addressmodelx.UpdateAddressCommand) error {
-	return updateAddress(ctx, x, cmd)
+func (st *AddressStore) UpdateAddress(ctx context.Context, cmd *addressmodelx.UpdateAddressCommand) error {
+	return st.updateAddress(ctx, st.db, cmd)
 }
 
-func updateAddress(ctx context.Context, x Qx, cmd *addressmodelx.UpdateAddressCommand) error {
+func (st *AddressStore) updateAddress(ctx context.Context, tx Qx, cmd *addressmodelx.UpdateAddressCommand) error {
 	address := cmd.Address
 	if address.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
 	}
 
-	if err := x.Table("address").
+	if err := tx.Table("address").
 		Where("id = ?", address.ID).
 		ShouldUpdate(address); err != nil {
 		return err
@@ -101,7 +108,7 @@ func updateAddress(ctx context.Context, x Qx, cmd *addressmodelx.UpdateAddressCo
 	return nil
 }
 
-func DeleteAddress(ctx context.Context, cmd *addressmodelx.DeleteAddressCommand) error {
+func (st *AddressStore) DeleteAddress(ctx context.Context, cmd *addressmodelx.DeleteAddressCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
 	}
@@ -110,7 +117,7 @@ func DeleteAddress(ctx context.Context, cmd *addressmodelx.DeleteAddressCommand)
 		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 
-	s := x.Table("address").Where("id = ? AND account_id = ?", cmd.ID, cmd.AccountID)
+	s := st.db.Table("address").Where("id = ? AND account_id = ?", cmd.ID, cmd.AccountID)
 	if deleted, err := s.Delete(&addressmodel.Address{}); err != nil {
 		errMsg := err.Error()
 		if strings.Contains(errMsg, "shop_address_id_fkey") || strings.Contains(errMsg, "shop_ship_from_address_id_fkey") {

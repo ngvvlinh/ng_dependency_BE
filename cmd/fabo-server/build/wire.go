@@ -71,7 +71,6 @@ func Build(
 			"sms",
 			"databases",
 			"invitation",
-			"secret",
 			"kafka",
 			"shipment",
 			"redis",

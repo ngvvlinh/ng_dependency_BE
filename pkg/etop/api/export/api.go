@@ -14,7 +14,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/apifw/idemp"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/storage"
 	"o.o/backend/pkg/etop/api/convertpb"
@@ -32,18 +31,30 @@ type Service struct {
 	config        ConfigDirs
 	publisher     eventstream.Publisher
 	storageBucket storage.Bucket
+
+	exportAttemptStore sqlstore.ExportAttemptStoreFactory
+	OrderStore         sqlstore.OrderStoreInterface
 }
 
-func New(rd redis.Store, p eventstream.Publisher, cfg ConfigDirs, bucket storage.Bucket) (*Service, func()) {
+func New(
+	rd redis.Store,
+	p eventstream.Publisher,
+	cfg ConfigDirs,
+	bucket storage.Bucket,
+	exportAttemptStore sqlstore.ExportAttemptStoreFactory,
+	OrderStore sqlstore.OrderStoreInterface,
+) (*Service, func()) {
 	idempgroup := idemp.NewRedisGroup(rd, "export", 60)
 	if err := cfg.Export.Validate(); err != nil {
 		ll.Panic("invalid config for export", l.Error(err))
 	}
 	return &Service{
-		idempgroup:    idempgroup,
-		config:        cfg,
-		publisher:     p,
-		storageBucket: bucket,
+		idempgroup:         idempgroup,
+		config:             cfg,
+		publisher:          p,
+		storageBucket:      bucket,
+		exportAttemptStore: exportAttemptStore,
+		OrderStore:         OrderStore,
 	}, idempgroup.Shutdown
 }
 
@@ -143,7 +154,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 		Status:     status4.Z,
 	}
 
-	if err := sqlstore.ExportAttempt(ctx).Create(exportItem); err != nil {
+	if err := s.exportAttemptStore(ctx).Create(exportItem); err != nil {
 		return nil, err
 	}
 
@@ -165,7 +176,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 				_ = query.Result.Rows.Close()
 			}
 		}()
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := s.OrderStore.GetFulfillmentExtendeds(ctx, query); err != nil {
 			return nil, err
 		}
 		if query.Result.Total == 0 {
@@ -195,7 +206,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 				_ = query.Result.Rows.Close()
 			}
 		}()
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := s.OrderStore.GetOrderExtends(ctx, query); err != nil {
 			return nil, err
 		}
 		if query.Result.Total == 0 {
@@ -213,7 +224,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 }
 
 func (s *Service) GetExports(ctx context.Context, shopID dot.ID, r *apishop.GetExportsRequest) (*apishop.GetExportsResponse, error) {
-	exportAttempts, err := sqlstore.ExportAttempt(ctx).AccountID(shopID).NotYetExpired().List()
+	exportAttempts, err := s.exportAttemptStore(ctx).AccountID(shopID).NotYetExpired().List()
 	return &apishop.GetExportsResponse{
 		ExportItems: convertpb.PbExportAttempts(exportAttempts),
 	}, err

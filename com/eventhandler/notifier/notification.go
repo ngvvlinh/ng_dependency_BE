@@ -4,18 +4,10 @@ import (
 	"context"
 
 	"o.o/backend/com/eventhandler/notifier/model"
-	"o.o/backend/pkg/common/bus"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/extservice/onesignal"
 )
 
-func init() {
-	bus.AddHandlers("notification",
-		CreateNotification,
-	)
-}
-
-var onesignalClient *onesignal.Client
 var NotifyTopics = []string{
 	"fulfillment",
 	"fb_external_comment",
@@ -23,17 +15,23 @@ var NotifyTopics = []string{
 	"system",
 }
 
-func Init(cfg cc.OnesignalConfig) error {
-	onesignalClient = onesignal.New(cfg.AppID, cfg.ApiKey)
-	if err := onesignalClient.Ping(); err != nil {
-		return err
-	}
-	return nil
+type Notifier struct {
+	onesignalClient *onesignal.Client
 }
 
-func CreateNotification(ctx context.Context, cmd *model.SendNotificationCommand) error {
+func NewOneSignalNotifier(cfg cc.OnesignalConfig) (*Notifier, error) {
+	onesignalClient := onesignal.New(cfg.AppID, cfg.ApiKey)
+	if err := onesignalClient.Ping(); err != nil {
+		return nil, err
+	}
+	return &Notifier{
+		onesignalClient: onesignalClient,
+	}, nil
+}
+
+func (n *Notifier) CreateNotification(ctx context.Context, cmd *model.SendNotificationCommand) error {
 	var err error
 	req := cmd.Request.ToOnesignalModel()
-	cmd.Result, err = onesignalClient.CreateNotification(ctx, req)
+	cmd.Result, err = n.onesignalClient.CreateNotification(ctx, req)
 	return err
 }

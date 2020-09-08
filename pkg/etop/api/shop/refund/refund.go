@@ -16,11 +16,11 @@ import (
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	shop2 "o.o/backend/pkg/etop/api/shop"
 	inventory2 "o.o/backend/pkg/etop/api/shop/inventory"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
@@ -32,6 +32,8 @@ type RefundService struct {
 	ReceiptQuery   receipting.QueryBus
 	RefundAggr     refund.CommandBus
 	RefundQuery    refund.QueryBus
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func (s *RefundService) Clone() api.RefundService { res := *s; return &res }
@@ -158,7 +160,7 @@ func (s *RefundService) GetRefund(ctx context.Context, q *pbcm.IDRequest) (*api.
 		OrderID:            query.Result.OrderID,
 		IncludeFulfillment: false,
 	}
-	if err := bus.Dispatch(ctx, queryOrder); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, queryOrder); err != nil {
 		return nil, err
 	}
 	result := shop2.PbRefund(query.Result)
@@ -275,7 +277,7 @@ func (s *RefundService) populateRefundsWithCustomer(ctx context.Context, refunds
 	queryOrder := &ordermodelx.GetOrdersQuery{
 		IDs: orderIDs,
 	}
-	if err := bus.Dispatch(ctx, queryOrder); err != nil {
+	if err := s.OrderStore.GetOrders(ctx, queryOrder); err != nil {
 		return nil, err
 	}
 	// make a map [ OrderID ] Order
@@ -324,7 +326,7 @@ func (s *RefundService) populateRefundWithCustomer(ctx context.Context, refundAr
 		OrderID:            refundArg.OrderID,
 		IncludeFulfillment: false,
 	}
-	if err := bus.Dispatch(ctx, queryOrder); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, queryOrder); err != nil {
 		return nil, err
 	}
 	// Add customer's information to refund

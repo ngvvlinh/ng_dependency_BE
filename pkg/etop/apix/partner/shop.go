@@ -18,16 +18,18 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/validate"
 	apiconvertpb "o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
 type ShopService struct {
 	session.Session
+
+	PartnerStore sqlstore.PartnerStoreInterface
 }
 
 func (s *ShopService) Clone() api.ShopService { res := *s; return &res }
@@ -99,7 +101,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, r *api.AuthorizeShopReq
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "external_user_id is removed")
 		}
 		if r.ExtraToken != "" || r.ExternalShopID == "" {
-			return handleWLAuthorizeShopByExternalUserID(ctx, r, s.SS.Partner().ID)
+			return s.handleWLAuthorizeShopByExternalUserID(ctx, r, s.SS.Partner().ID)
 		}
 	}
 
@@ -113,7 +115,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, r *api.AuthorizeShopReq
 			AccountID:         r.ShopId,
 			ExternalAccountID: r.ExternalShopID,
 		}
-		err := bus.Dispatch(ctx, relationQuery)
+		err := s.PartnerStore.GetPartnerRelationQuery(ctx, relationQuery)
 		switch {
 		case err == nil:
 			rel := relationQuery.Result.PartnerRelation
@@ -124,7 +126,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, r *api.AuthorizeShopReq
 					PartnerID:      partner.ID,
 					ExternalUserID: r.ExternalUserID,
 				}
-				if err2 := bus.Dispatch(ctx, relationUserQuery); err2 == nil {
+				if err2 := s.PartnerStore.GetPartnerRelationQuery(ctx, relationUserQuery); err2 == nil {
 					userID := relationUserQuery.Result.SubjectID
 					if userID != 0 && userID != user.ID {
 						return nil, cm.Errorf(cm.FailedPrecondition, nil, "external_shop_id (id=%v) does not belong to external_user_id (id=%v).", r.ExternalShopID, r.ExternalUserID)
@@ -211,7 +213,7 @@ func (s *ShopService) AuthorizeShop(ctx context.Context, r *api.AuthorizeShopReq
 	return generateAuthTokenWithRequestLogin(ctx, r, s.SS.Partner().ID, 0)
 }
 
-func handleWLAuthorizeShopByExternalUserID(ctx context.Context, r *api.AuthorizeShopRequest, partnerID dot.ID) (*api.AuthorizeShopResponse, error) {
+func (s *ShopService) handleWLAuthorizeShopByExternalUserID(ctx context.Context, r *api.AuthorizeShopRequest, partnerID dot.ID) (*api.AuthorizeShopResponse, error) {
 	if !wl.X(ctx).IsWhiteLabel() {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Only whitelabel partner can use this function")
 	}
@@ -238,7 +240,7 @@ func handleWLAuthorizeShopByExternalUserID(ctx context.Context, r *api.Authorize
 		PartnerID:      wlPartner.ID,
 		ExternalUserID: r.ExternalUserID,
 	}
-	err := bus.Dispatch(ctx, relationQuery)
+	err := s.PartnerStore.GetPartnerRelationQuery(ctx, relationQuery)
 	switch cm.ErrorCode(err) {
 	case cm.NoError:
 		// generate user_key and redirect to whiteLabelData.Config.RootURL

@@ -11,11 +11,11 @@ import (
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type FulfillmentService struct {
@@ -23,6 +23,8 @@ type FulfillmentService struct {
 
 	ShipmentManager *shippingcarrier.ShipmentManager
 	ShippingQuery   shipping.QueryBus
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func (s *FulfillmentService) Clone() shop.FulfillmentService { res := *s; return &res }
@@ -33,7 +35,7 @@ func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *pbcm.IDReque
 		PartnerID:     s.SS.CtxPartner().GetID(),
 		FulfillmentID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetFulfillmentExtended(ctx, query); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbFulfillment(query.Result.Fulfillment, account_tag.TagShop, query.Result.Shop, query.Result.Order)
@@ -56,7 +58,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *shop.GetFul
 		Paging:        paging,
 		Filters:       cmapi.ToFilters(q.Filters),
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetFulfillmentExtendeds(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &inttypes.FulfillmentsResponse{
@@ -118,7 +120,7 @@ func (s *FulfillmentService) GetPublicFulfillment(ctx context.Context, q *shop.G
 	query := &shipmodelx.GetFulfillmentQuery{
 		ShippingCode: q.Code,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetFulfillment(ctx, query); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbPublicFulfillment(query.Result)
@@ -132,7 +134,7 @@ func (s *FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context
 		IDs:           q.Ids,
 		ShippingState: q.ShippingState,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.OrderStore.UpdateFulfillmentsShippingState(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.UpdatedResponse{

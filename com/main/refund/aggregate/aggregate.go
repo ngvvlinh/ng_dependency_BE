@@ -13,11 +13,12 @@ import (
 	ordermodel "o.o/backend/com/main/ordering/model"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/com/main/refund/convert"
-	"o.o/backend/com/main/refund/sqlstore"
+	refundstore "o.o/backend/com/main/refund/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 	"o.o/common/l"
@@ -29,18 +30,23 @@ var scheme = conversion.Build(convert.RegisterConversions, catalogconvert.Regist
 
 type RefundAggregate struct {
 	db       *cmsql.Database
-	store    sqlstore.RefundStoreFactory
+	store    refundstore.RefundStoreFactory
 	eventBus capi.EventBus
 	bus      bus.Bus
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func NewRefundAggregate(
 	database com.MainDB, eventBus capi.EventBus,
+	OrderStore sqlstore.OrderStoreInterface,
+
 ) *RefundAggregate {
 	return &RefundAggregate{
-		db:       database,
-		eventBus: eventBus,
-		store:    sqlstore.NewRefundStore(database),
+		db:         database,
+		eventBus:   eventBus,
+		store:      refundstore.NewRefundStore(database),
+		OrderStore: OrderStore,
 	}
 }
 
@@ -137,7 +143,7 @@ func (a *RefundAggregate) checkLineOrder(ctx context.Context, shopID dot.ID, ord
 		OrderID: orderID,
 		ShopID:  shopID,
 	}
-	err := bus.Dispatch(ctx, queryOrder)
+	err := a.OrderStore.GetOrder(ctx, queryOrder)
 	if err != nil {
 		return nil, err
 	}

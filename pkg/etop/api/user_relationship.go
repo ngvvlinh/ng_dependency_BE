@@ -12,9 +12,9 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
@@ -24,6 +24,8 @@ type UserRelationshipService struct {
 	InvitationAggr         invitation.CommandBus
 	InvitationQuery        invitation.QueryBus
 	AuthorizationAggregate authorization.CommandBus
+	ShopStore              sqlstore.ShopStoreInterface
+	UserStore              sqlstore.UserStoreInterface
 }
 
 func (s *UserRelationshipService) Clone() api.UserRelationshipService {
@@ -69,7 +71,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *a
 	getAccountQuery := &identitymodelx.GetShopQuery{
 		ShopID: query.Result.AccountID,
 	}
-	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
+	if err := s.ShopStore.GetShop(ctx, getAccountQuery); err != nil {
 		return nil, err
 	}
 	result.ShopShort = &apietop.ShopShort{
@@ -83,7 +85,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *a
 		Email: query.Result.Email,
 		Phone: query.Result.Phone,
 	}
-	err := bus.Dispatch(ctx, getUserQuery)
+	err := s.UserStore.GetUserByEmail(ctx, getUserQuery)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 	// no-op
@@ -96,7 +98,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *a
 	getInvitedByUserQuery := &identitymodelx.GetUserByIDQuery{
 		UserID: query.Result.InvitedBy,
 	}
-	if err := bus.Dispatch(ctx, getInvitedByUserQuery); err != nil {
+	if err := s.UserStore.GetUserByID(ctx, getInvitedByUserQuery); err != nil {
 		return nil, err
 	}
 	result.InvitedByUser = getInvitedByUserQuery.Result.FullName
@@ -136,7 +138,7 @@ func (s *UserRelationshipService) GetInvitations(ctx context.Context, q *api.Get
 	getAccountsQuery := &identitymodelx.GetShopsQuery{
 		ShopIDs: accountIDs,
 	}
-	if err := bus.Dispatch(ctx, getAccountsQuery); err != nil {
+	if err := s.ShopStore.GetShops(ctx, getAccountsQuery); err != nil {
 		return nil, err
 	}
 	mapShop := make(map[dot.ID]*identitymodel.Shop)

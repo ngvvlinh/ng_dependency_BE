@@ -7,11 +7,11 @@ import (
 	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	logicsummary "o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type SummaryService struct {
@@ -19,6 +19,8 @@ type SummaryService struct {
 
 	SummaryQuery summary.QueryBus
 	SummaryOld   *logicsummary.Summary
+
+	MoneyTxStore sqlstore.MoneyTxStoreInterface
 }
 
 func (s *SummaryService) Clone() api.SummaryService { res := *s; return &res }
@@ -82,14 +84,14 @@ func (s *SummaryService) CalcBalanceUser(ctx context.Context, q *pbcm.Empty) (*a
 	queryActual := &model.GetActualUserBalanceCommand{
 		UserID: shop.OwnerID,
 	}
-	if err := bus.Dispatch(ctx, queryActual); err != nil {
+	if err := s.MoneyTxStore.CalcActualUserBalance(ctx, queryActual); err != nil {
 		return nil, err
 	}
 
 	queryAvailable := &model.GetAvailableUserBalanceCommand{
 		UserID: shop.OwnerID,
 	}
-	if err := bus.Dispatch(ctx, queryAvailable); err != nil {
+	if err := s.MoneyTxStore.CalcAvailableUserBalance(ctx, queryAvailable); err != nil {
 		return nil, err
 	}
 

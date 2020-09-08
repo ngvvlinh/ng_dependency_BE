@@ -40,6 +40,9 @@ type ProcessManager struct {
 	ledgerQuery   ledgering.QueryBus
 	ledgerAggr    ledgering.CommandBus
 	identityQuery identity.QueryBus
+
+	MoneyTxStore sqlstore.MoneyTxStoreInterface
+	OrderStore   sqlstore.OrderStoreInterface
 }
 
 func New(
@@ -49,6 +52,8 @@ func New(
 	ledgerQuery ledgering.QueryBus,
 	ledgerAggregate ledgering.CommandBus,
 	identityQuery identity.QueryBus,
+	MoneyTxStore sqlstore.MoneyTxStoreInterface,
+	OrderStore sqlstore.OrderStoreInterface,
 ) *ProcessManager {
 	p := &ProcessManager{
 		eventBus:      eventBus,
@@ -57,6 +62,8 @@ func New(
 		ledgerQuery:   ledgerQuery,
 		ledgerAggr:    ledgerAggregate,
 		identityQuery: identityQuery,
+		MoneyTxStore:  MoneyTxStore,
+		OrderStore:    OrderStore,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -101,7 +108,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 		ID:     event.MoneyTxShippingID,
 		ShopID: event.ShopID,
 	}
-	if err := sqlstore.GetMoneyTransaction(ctx, getMoneyTransaction); err != nil {
+	if err := m.MoneyTxStore.GetMoneyTransaction(ctx, getMoneyTransaction); err != nil {
 		return err
 	}
 	for _, fulfillment := range getMoneyTransaction.Result.Fulfillments {
@@ -118,7 +125,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 	getOrdersQuery := &ordermodelx.GetOrdersQuery{
 		IDs: orderIDs,
 	}
-	if err := bus.Dispatch(ctx, getOrdersQuery); err != nil {
+	if err := m.OrderStore.GetOrders(ctx, getOrdersQuery); err != nil {
 		return err
 	}
 	for _, order := range getOrdersQuery.Result.Orders {
@@ -362,7 +369,7 @@ func (m *ProcessManager) MoneyTxShippingEtopConfirmed(ctx context.Context, event
 	query := &txmodelx.GetMoneyTxsByMoneyTxShippingEtopID{
 		MoneyTxShippingEtopID: event.MoneyTxShippingEtopID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := m.MoneyTxStore.GetMoneyTxsByMoneyTxShippingEtopID(ctx, query); err != nil {
 		return err
 	}
 	moneyTxs := query.Result.MoneyTransactions

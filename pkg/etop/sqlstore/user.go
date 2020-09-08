@@ -7,72 +7,87 @@ import (
 
 	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	identitysqlstore "o.o/backend/com/main/identity/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/validate"
-	"o.o/backend/pkg/etop/authorize/login"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 	"o.o/common/xerrors"
 )
 
-func init() {
-	bus.AddHandlers("sql",
-		GetUserByID,
-		GetUserByEmail,
-		GetUserByLogin,
-		CreateUser,
-		SetPassword,
-		GetSignedInUser,
-		UpdateUserVerification,
-		UpdateUserIdentifier,
-	)
+type UserStoreInterface interface {
+	CreateUser(ctx context.Context, cmd *identitymodelx.CreateUserCommand) error
+
+	GetSignedInUser(ctx context.Context, query *identitymodelx.GetSignedInUserQuery) error
+
+	GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error
+
+	GetUserByID(ctx context.Context, query *identitymodelx.GetUserByIDQuery) error
+
+	GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQuery) error
+
+	SetPassword(ctx context.Context, cmd *identitymodelx.SetPasswordCommand) error
+
+	UpdateUserVerification(ctx context.Context, cmd *identitymodelx.UpdateUserVerificationCommand) error
 }
 
 type UserStore struct {
-	ctx   context.Context
+	db    *cmsql.Database
+	query cmsql.QueryFactory
 	ft    identitysqlstore.UserFilters
 	preds []interface{}
 }
 
-func User(ctx context.Context) *UserStore {
-	return &UserStore{ctx: ctx}
+type UserStoreFactory func(ctx context.Context) *UserStore
+
+func NewUserStore(db com.MainDB) UserStoreFactory {
+	return func(ctx context.Context) *UserStore {
+		s := &UserStore{
+			db:    db,
+			query: cmsql.NewQueryFactory(ctx, db),
+		}
+		return s
+	}
 }
 
-func (s *UserStore) ID(id dot.ID) *UserStore {
-	s.preds = append(s.preds, s.ft.ByID(id))
-	return s
+func BuildUserStore(db com.MainDB) *UserStore {
+	return NewUserStore(db)(context.Background())
 }
 
-func (s *UserStore) IDs(ids ...dot.ID) *UserStore {
-	s.preds = append(s.preds, sq.In("id", ids))
-	return s
+func (st *UserStore) ID(id dot.ID) *UserStore {
+	st.preds = append(st.preds, st.ft.ByID(id))
+	return st
 }
 
-func (s *UserStore) Get() (*identitymodel.User, error) {
+func (st *UserStore) IDs(ids ...dot.ID) *UserStore {
+	st.preds = append(st.preds, sq.In("id", ids))
+	return st
+}
+
+func (st *UserStore) Get() (*identitymodel.User, error) {
 	var user identitymodel.User
-	err := x.Where(s.preds...).ShouldGet(&user)
+	err := st.query().Where(st.preds...).ShouldGet(&user)
 	return &user, err
 }
 
-func (s *UserStore) List() ([]*identitymodel.User, error) {
+func (st *UserStore) List() ([]*identitymodel.User, error) {
 	var users identitymodel.Users
-	err := x.Where(s.preds).Find(&users)
+	err := st.query().Where(st.preds).Find(&users)
 	return users, err
 }
 
-func GetSignedInUser(ctx context.Context, query *identitymodelx.GetSignedInUserQuery) error {
+func (st *UserStore) GetSignedInUser(ctx context.Context, query *identitymodelx.GetSignedInUserQuery) error {
 	userQuery := &identitymodelx.GetUserByIDQuery{
 		UserID: query.UserID,
 	}
-	if err := GetUserByID(ctx, userQuery); err != nil {
+	if err := st.GetUserByID(ctx, userQuery); err != nil {
 		return err
 	}
 	query.Result = &identitymodelx.SignedInUser{
@@ -81,20 +96,20 @@ func GetSignedInUser(ctx context.Context, query *identitymodelx.GetSignedInUserQ
 	return nil
 }
 
-func GetUserByID(ctx context.Context, query *identitymodelx.GetUserByIDQuery) error {
+func (st *UserStore) GetUserByID(ctx context.Context, query *identitymodelx.GetUserByIDQuery) error {
 	if query.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
 
 	query.Result = new(identitymodel.User)
-	s := x.Where("id = ?", query.UserID)
+	s := st.query().Where("id = ?", query.UserID)
 	s = FilterByWhiteLabelPartner(s, wl.GetWLPartnerID(ctx))
 	return s.ShouldGet(query.Result)
 }
 
-func GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error {
+func (st *UserStore) GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error {
 	count := 0
-	q := x.Table("user")
+	q := st.query().Table("user")
 	if query.Email != "" {
 		q = q.Where("email = ?", query.Email)
 		count++
@@ -111,12 +126,12 @@ func GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrP
 	return q.ShouldGet(query.Result)
 }
 
-func GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQuery) error {
+func (st *UserStore) GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQuery) error {
 	if query.UserID == 0 && query.PhoneOrEmail == "" {
 		return cm.Error(cm.InvalidArgument, "Missing required fields", nil)
 	}
 
-	s := x.Table("user")
+	s := st.query().Table("user")
 	if query.UserID != 0 {
 		s = s.Where("id = ?", query.UserID)
 	}
@@ -144,7 +159,7 @@ func GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQue
 	}
 
 	userInternal := new(identitymodel.UserInternal)
-	if err := x.Where("id = ?", user.ID).ShouldGet(userInternal); err != nil {
+	if err := st.query().Where("id = ?", user.ID).ShouldGet(userInternal); err != nil {
 		return err
 	}
 	query.Result.User = user
@@ -152,7 +167,7 @@ func GetUserByLogin(ctx context.Context, query *identitymodelx.GetUserByLoginQue
 	return nil
 }
 
-func CreateUser(ctx context.Context, cmd *identitymodelx.CreateUserCommand) error {
+func (st *UserStore) CreateUser(ctx context.Context, cmd *identitymodelx.CreateUserCommand) error {
 	if cmd.Email == "" {
 		return cm.Error(cm.InvalidArgument, "Vui lòng nhập email", nil)
 	}
@@ -203,8 +218,8 @@ func CreateUser(ctx context.Context, cmd *identitymodelx.CreateUserCommand) erro
 		}
 	}
 
-	return inTransaction(func(s Qx) error {
-		return createUser(ctx, s, cmd)
+	return inTransaction(st.db, func(tx Qx) error {
+		return st.createUser(ctx, tx, cmd)
 	})
 }
 
@@ -239,7 +254,7 @@ var mapUserError = map[string]string{
 	UserPhoneWLPartnerIDKey: MsgCreateUserDuplicatedPhone,
 }
 
-func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand) error {
+func (st *UserStore) createUser(ctx context.Context, tx Qx, cmd *identitymodelx.CreateUserCommand) error {
 	switch cmd.Status {
 	case status3.P:
 	default:
@@ -268,7 +283,7 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 		ID: userID,
 	}
 	if cmd.Password != "" {
-		userInternal.Hashpwd = login.EncodePassword(cmd.Password)
+		userInternal.Hashpwd = EncodePassword(cmd.Password)
 	}
 
 	objs := []core.IInsert{user, userInternal}
@@ -281,7 +296,7 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 		objs = append(objs, userRef)
 	}
 
-	_, err := s.Insert(objs...)
+	_, err := tx.Insert(objs...)
 	if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
 		msg := xerr.Err.Error()
 		for errKey, errMsg := range mapUserError {
@@ -295,22 +310,22 @@ func createUser(ctx context.Context, s Qx, cmd *identitymodelx.CreateUserCommand
 	return err
 }
 
-func SetPassword(ctx context.Context, cmd *identitymodelx.SetPasswordCommand) error {
+func (st *UserStore) SetPassword(ctx context.Context, cmd *identitymodelx.SetPasswordCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
 
 	userInternal := &identitymodel.UserInternal{
-		Hashpwd: login.EncodePassword(cmd.Password),
+		Hashpwd: EncodePassword(cmd.Password),
 	}
-	if err := x.Where("id = ?", cmd.UserID).
+	if err := st.query().Where("id = ?", cmd.UserID).
 		ShouldUpdate(userInternal); err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpdateUserVerification(ctx context.Context, cmd *identitymodelx.UpdateUserVerificationCommand) error {
+func (st *UserStore) UpdateUserVerification(ctx context.Context, cmd *identitymodelx.UpdateUserVerificationCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
@@ -318,7 +333,7 @@ func UpdateUserVerification(ctx context.Context, cmd *identitymodelx.UpdateUserV
 	count := 0
 	var user identitymodel.User
 
-	s := x.Where("id = ?", cmd.UserID)
+	s := st.query().Where("id = ?", cmd.UserID)
 	if !cmd.EmailVerifiedAt.IsZero() {
 		count++
 		user.EmailVerifiedAt = cmd.EmailVerifiedAt
@@ -343,7 +358,7 @@ func UpdateUserVerification(ctx context.Context, cmd *identitymodelx.UpdateUserV
 	return s.ShouldUpdate(&user)
 }
 
-func UpdateUserIdentifier(ctx context.Context, cmd *identitymodelx.UpdateUserIdentifierCommand) error {
+func (st *UserStore) UpdateUserIdentifier(ctx context.Context, cmd *identitymodelx.UpdateUserIdentifierCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
@@ -381,14 +396,14 @@ func UpdateUserIdentifier(ctx context.Context, cmd *identitymodelx.UpdateUserIde
 	var userInternal identitymodel.UserInternal
 
 	user.PhoneVerifiedAt = cmd.PhoneVerifiedAt
-	s := x.Where("id = ?", cmd.UserID)
+	s := st.query().Where("id = ?", cmd.UserID)
 	s = FilterByWhiteLabelPartner(s, wl.GetWLPartnerID(ctx))
-	if err := x.Where("id = ?", cmd.UserID).ShouldUpdate(&user, &userInternal); err != nil {
+	if err := st.query().Where("id = ?", cmd.UserID).ShouldUpdate(&user, &userInternal); err != nil {
 		return err
 	}
 
 	cmd.Result.User = &user
-	return x.Where("id = ?", cmd.UserID).ShouldGet(&user)
+	return st.query().Where("id = ?", cmd.UserID).ShouldGet(&user)
 }
 
 var userFt = identitysqlstore.UserFilters{}

@@ -41,7 +41,8 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		return Output{}, nil, err
 	}
 	changesStore := storage.NewChangesStore(webhookDB)
-	webhookSender := sender.New(mainDB, store, changesStore)
+	partnerStore := sqlstore.BuildPartnerStore(mainDB)
+	webhookSender := sender.New(mainDB, store, changesStore, partnerStore)
 	webhookService := &api.WebhookService{
 		Sender: webhookSender,
 	}
@@ -75,8 +76,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		return Output{}, nil, err
 	}
 	v2 := BuildWaiters(handler, handlerHandler)
-	notifierDB := _wireNotifierDBValue
-	sqlstoreStore := sqlstore.New(mainDB, notifierDB, locationQueryBus, busBus)
+	sqlstoreStore := sqlstore.New(mainDB, locationQueryBus, busBus)
 	pgeventService, err := BuildPgEventService(ctx, cfg)
 	if err != nil {
 		return Output{}, nil, err
@@ -92,7 +92,3 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	return output, func() {
 	}, nil
 }
-
-var (
-	_wireNotifierDBValue = com.NotifierDB(nil)
-)

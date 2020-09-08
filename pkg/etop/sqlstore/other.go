@@ -5,17 +5,30 @@ import (
 	"encoding/json"
 	"fmt"
 
+	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/common/µjson"
 	"o.o/backend/pkg/etop/model"
 	"o.o/common/jsonx"
 )
 
-func init() {
-	bus.AddHandlers("sql", GetHistory)
+type HistoryStoreInterface interface {
+
+	GetHistory(ctx context.Context, query *model.GetHistoryQuery) error
+}
+
+type HistoryStore struct {
+	db *cmsql.Database
+}
+
+func NewHistoryStore(db com.MainDB) *HistoryStore {
+	s := &HistoryStore{
+		db: db,
+	}
+	return s
 }
 
 func validateColumn(name string) bool {
@@ -34,7 +47,7 @@ func validateColumn(name string) bool {
 	return true
 }
 
-func GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
+func (st *HistoryStore) GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
 	if query.Table == "" {
 		return cm.Error(cm.InvalidArgument, "Missing table", nil)
 	}
@@ -42,7 +55,7 @@ func GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
 		return cm.Errorf(cm.InvalidArgument, nil, "Invalid table name: %v", query.Table)
 	}
 
-	s := x.
+	s := st.db.
 		Select(`row_to_json("` + query.Table + `")`).
 		From(`history."` + query.Table + `"`)
 	s, err := sqlstore.LimitSort(s, sqlstore.ConvertPaging(query.Paging), Ms{"rid": ""})
@@ -61,7 +74,7 @@ func GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
 	if err != nil {
 		return err
 	}
-	rows, err := x.DB().Query(sql, args...)
+	rows, err := st.db.DB().Query(sql, args...)
 	if err != nil {
 		return err
 	}

@@ -18,7 +18,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/randgenerator"
 	etopmodel "o.o/backend/pkg/etop/model"
-	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
@@ -35,13 +34,16 @@ var defaultDrivers = []string{
 type VTPostDriver struct {
 	client     *vtpostclient.ClientImpl
 	locationQS location.QueryBus
+	g          ShippingCodeGenerator
 }
 
-func New(env string, token string, locationQS location.QueryBus) *VTPostDriver {
+// TODO(vu): db is only needed for generating code, use an aggregate here instead
+func New(env string, token string, locationQS location.QueryBus, g ShippingCodeGenerator) *VTPostDriver {
 	client := vtpostclient.NewClientWithToken(env, token)
 	return &VTPostDriver{
 		client:     client,
 		locationQS: locationQS,
+		g:          g,
 	}
 }
 
@@ -151,7 +153,7 @@ func (d VTPostDriver) CreateFulfillment(
 		ProductDescription: productName,
 		OrderService:       orderService,
 	}
-	shippingCode, err := sqlstore.GenerateVtpostShippingCode()
+	shippingCode, err := d.g.GenerateVtpostShippingCode() // TODO(vu): move db out
 	if err != nil {
 		return nil, cm.Errorf(cm.Internal, err, "Can not generate shipping code for ffm.")
 	}

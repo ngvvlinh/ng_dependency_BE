@@ -20,9 +20,9 @@ import (
 	"o.o/backend/com/main/shipping/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
@@ -39,12 +39,15 @@ type Webhook struct {
 	identityQS             identity.QueryBus
 	shippingAggr           shippingcore.CommandBus
 	shipmentWebhookLogAggr *shippingwebhook.Aggregate
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func New(db com.MainDB,
 	shipmentManager *carrier.ShipmentManager,
 	identityQ identity.QueryBus, shippingA shippingcore.CommandBus,
 	shipmentWebhookLogAggr *shippingwebhook.Aggregate,
+	OrderStore sqlstore.OrderStoreInterface,
 ) *Webhook {
 	wh := &Webhook{
 		db:                     db,
@@ -52,6 +55,7 @@ func New(db com.MainDB,
 		identityQS:             identityQ,
 		shippingAggr:           shippingA,
 		shipmentWebhookLogAggr: shipmentWebhookLogAggr,
+		OrderStore:             OrderStore,
 	}
 	return wh
 }
@@ -198,7 +202,7 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg ghtkclient.Cal
 		ShippingProvider: shipping_provider.GHTK,
 		FulfillmentID:    ffmID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := wh.OrderStore.GetFulfillment(ctx, query); err != nil {
 		return nil, cm.MapError(err).
 			Wrapf(cm.NotFound, "Fulfillment not found: %v", ffmID).
 			DefaultInternal().WithMeta("result", "ignore")

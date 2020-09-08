@@ -1,54 +1,26 @@
 package sqlstore
 
 import (
-	"encoding/json"
-	"time"
-
 	servicelocation "o.o/backend/com/main/location"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/sql/cmsql"
 )
+
+var db *cmsql.Database
 
 func init() {
 	InitTest()
 }
 
 func InitTest() {
-	engine, err := cmsql.Connect(cc.DefaultPostgres())
+	db = cmsql.MustConnect(cc.DefaultPostgres())
+	New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
+	MustExec(db, "SELECT 1")
+}
+
+func MustExec(db *cmsql.Database, sql string) {
+	_, err := db.Exec(sql)
 	if err != nil {
 		panic(err)
 	}
-	New(engine, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
-	x = engine
-
-	MustExec("SELECT 1")
-}
-
-func MustExec(sql string) {
-	_, err := x.Exec(sql)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func jSON(v interface{}) string {
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	return string(data)
-}
-
-func toTime(s string) time.Time {
-	var t time.Time
-	err := json.Unmarshal([]byte(`"`+s+`"`), &t)
-	if err != nil {
-		panic(err)
-	}
-	return t
-}
-
-func toPTime(s string) *time.Time {
-	t := toTime(s)
-	return &t
 }

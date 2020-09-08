@@ -54,8 +54,6 @@ type InProcBus struct {
 	expects map[reflect.Type]bool
 }
 
-var globalBus = New()
-
 func New() Bus {
 	bus := &InProcBus{}
 	bus.handlers = make(map[reflect.Type]HandlerFunc)
@@ -252,55 +250,9 @@ func (b *InProcBus) ValidateTypes(types []string) (res bool) {
 			}
 		}
 		if !ok {
-			fmt.Println("Handler not found for:", t)
+			fmt.Println("Handler not found for", t)
 			res = false
 		}
 	}
 	return
-}
-
-func Global() Bus {
-	return globalBus
-}
-
-func AddHandler(implName string, handler HandlerFunc) {
-	globalBus.AddHandler(handler)
-}
-
-func AddHandlers(implName string, handlers ...HandlerFunc) {
-	for _, h := range handlers {
-		AddHandler(implName, h)
-	}
-}
-
-func MockHandler(handler HandlerFunc) {
-	globalBus.MockHandler(handler)
-}
-
-func AddEventListener(handler HandlerFunc) {
-	globalBus.AddEventListener(handler)
-}
-
-func AddWildcardListener(handler HandlerFunc) {
-	globalBus.AddWildcardListener(handler)
-}
-
-func Dispatch(ctx context.Context, msg Msg) error {
-	return globalBus.Dispatch(ctx, msg)
-}
-
-func ClearBusHandlers() {
-	globalBus = New()
-}
-
-func Expect(msg interface{}) {
-	globalBus.(*InProcBus).Expect(msg)
-}
-
-func Validate() bool {
-	return globalBus.(*InProcBus).Validate()
-}
-
-func ValidateTypes(types []string) bool {
-	return globalBus.(*InProcBus).ValidateTypes(types)
 }

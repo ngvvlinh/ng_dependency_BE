@@ -11,7 +11,6 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -22,6 +21,11 @@ const EtopAccountId = 101
 
 type AccountService struct {
 	session.Session
+
+	AccountAuthStore sqlstore.AccountAuthStoreFactory
+	UserStore        sqlstore.UserStoreFactory
+	PartnerStore     sqlstore.PartnerStoreInterface
+	AccountUserStore sqlstore.AccountUserStoreInterface
 }
 
 func (s *AccountService) Clone() admin.AccountService {
@@ -33,7 +37,7 @@ func (s *AccountService) CreatePartner(ctx context.Context, q *admin.CreatePartn
 	cmd := &identitymodelx.CreatePartnerCommand{
 		Partner: convertpb.CreatePartnerRequestToModel(q),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.PartnerStore.CreatePartner(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbPartner(cmd.Result.Partner)
@@ -41,7 +45,7 @@ func (s *AccountService) CreatePartner(ctx context.Context, q *admin.CreatePartn
 }
 
 func (s *AccountService) GenerateAPIKey(ctx context.Context, q *admin.GenerateAPIKeyRequest) (*admin.GenerateAPIKeyResponse, error) {
-	_, err := sqlstore.AccountAuth(ctx).AccountID(q.AccountId).Get()
+	_, err := s.AccountAuthStore(ctx).AccountID(q.AccountId).Get()
 	if cm.ErrorCode(err) != cm.NotFound {
 		return nil, cm.MapError(err).
 			Map(cm.OK, cm.AlreadyExists, "account already has an api_key").
@@ -54,7 +58,7 @@ func (s *AccountService) GenerateAPIKey(ctx context.Context, q *admin.GenerateAP
 		Roles:       nil,
 		Permissions: nil,
 	}
-	err = sqlstore.AccountAuth(ctx).Create(aa)
+	err = s.AccountAuthStore(ctx).Create(aa)
 	result := &admin.GenerateAPIKeyResponse{
 		AccountId: q.AccountId,
 		ApiKey:    aa.AuthKey,
@@ -72,7 +76,7 @@ func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdm
 	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Email: q.Email,
 	}
-	if err := sqlstore.GetUserByEmail(ctx, query); err != nil {
+	if err := s.UserStore(ctx).GetUserByEmail(ctx, query); err != nil {
 		if cm.ErrorCode(err) == cm.NotFound {
 			return nil, cm.Errorf(cm.NotFound, nil, "Email không tồn tại trong hệ thống.")
 		}
@@ -85,7 +89,7 @@ func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdm
 		UserID:          user.ID,
 		FindByAccountID: false,
 	}
-	err := sqlstore.GetAccountUser(ctx, getAccountUserQuery)
+	err := s.AccountUserStore.GetAccountUser(ctx, getAccountUserQuery)
 	if err == nil {
 		// this case mean `account_user` with `user_id` and `account_id` already exists.
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Tài khoản này đã là admin của etop")
@@ -103,7 +107,7 @@ func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdm
 	createAccountUserCmd := &identitymodelx.CreateAccountUserCommand{
 		AccountUser: accountUser,
 	}
-	if err := bus.Dispatch(ctx, createAccountUserCmd); err != nil {
+	if err := s.AccountUserStore.CreateAccountUser(ctx, createAccountUserCmd); err != nil {
 		return nil, err
 	}
 
@@ -127,7 +131,7 @@ func (s *AccountService) UpdateAdminUser(ctx context.Context, q *admin.UpdateAdm
 		UserID:          q.UserId,
 		FindByAccountID: false,
 	}
-	if err := sqlstore.GetAccountUser(ctx, getAccountUserQuery); err != nil {
+	if err := s.AccountUserStore.GetAccountUser(ctx, getAccountUserQuery); err != nil {
 		return nil, err
 	}
 
@@ -154,7 +158,7 @@ func (s *AccountService) UpdateAdminUser(ctx context.Context, q *admin.UpdateAdm
 	updateInternalAccountCmd := &identitymodelx.UpdateAccountUserCommand{
 		AccountUser: accountUser,
 	}
-	if err := bus.Dispatch(ctx, updateInternalAccountCmd); err != nil {
+	if err := s.AccountUserStore.UpdateAccountUser(ctx, updateInternalAccountCmd); err != nil {
 		return nil, err
 	}
 
@@ -172,7 +176,7 @@ func (s *AccountService) GetAdminUsers(ctx context.Context, req *admin.GetAdminU
 		Roles:      req.Filter.Roles,
 	}
 
-	if err := sqlstore.GetAccountUserExtendeds(ctx, getAdminAccQuery); err != nil {
+	if err := s.AccountUserStore.GetAccountUserExtendeds(ctx, getAdminAccQuery); err != nil {
 		return nil, err
 	}
 
@@ -196,7 +200,7 @@ func (s *AccountService) DeleteAdminUser(ctx context.Context, req *admin.DeleteA
 		AccountID: EtopAccountId,
 		UserID:    req.UserID,
 	}
-	if err := sqlstore.DeleteAccountUser(ctx, deleteAccCmd); err != nil {
+	if err := s.AccountUserStore.DeleteAccountUser(ctx, deleteAccCmd); err != nil {
 		return nil, err
 	}
 	return &admin.DeleteAdminUserResponse{Updated: deleteAccCmd.Result.Updated}, nil

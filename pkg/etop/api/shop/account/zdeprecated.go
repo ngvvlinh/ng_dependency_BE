@@ -7,7 +7,6 @@ import (
 	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
-	"o.o/backend/pkg/common/bus"
 )
 
 // deprecated
@@ -25,7 +24,7 @@ func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx cont
 	query := &identitymodelx.GetUserByIDQuery{
 		UserID: s.SS.Shop().OwnerID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.UserStoreIface.GetUserByID(ctx, query); err != nil {
 		return nil, err
 	}
 	user := query.Result

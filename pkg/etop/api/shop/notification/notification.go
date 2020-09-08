@@ -7,14 +7,17 @@ import (
 	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	notimodel "o.o/backend/com/eventhandler/notifier/model"
+	notistore "o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type NotificationService struct {
 	session.Session
+
+	NotificationStore *notistore.NotificationStore
+	DeviceStore       *notistore.DeviceStore
 }
 
 func (s *NotificationService) Clone() api.NotificationService { res := *s; return &res }
@@ -27,7 +30,7 @@ func (s *NotificationService) CreateDevice(ctx context.Context, q *etop.CreateDe
 		DeviceName:       q.DeviceName,
 		ExternalDeviceID: q.ExternalDeviceId,
 	}
-	device, err := sqlstore.CreateDevice(ctx, cmd)
+	device, err := s.DeviceStore.CreateDevice(cmd)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +45,7 @@ func (s *NotificationService) DeleteDevice(ctx context.Context, q *etop.DeleteDe
 		AccountID:        s.SS.Shop().ID,
 		UserID:           s.SS.Claim().UserID,
 	}
-	if err := sqlstore.DeleteDevice(ctx, device); err != nil {
+	if err := s.DeviceStore.DeleteDevice(device); err != nil {
 		return nil, err
 	}
 	result := &pbcm.DeletedResponse{
@@ -56,7 +59,7 @@ func (s *NotificationService) GetNotification(ctx context.Context, q *pbcm.IDReq
 		AccountID: s.SS.Shop().ID,
 		ID:        q.Id,
 	}
-	noti, err := sqlstore.GetNotification(ctx, query)
+	noti, err := s.NotificationStore.GetNotification(query)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +73,7 @@ func (s *NotificationService) GetNotifications(ctx context.Context, q *etop.GetN
 		Paging:    paging,
 		AccountID: s.SS.Shop().ID,
 	}
-	notis, err := sqlstore.GetNotifications(ctx, query)
+	notis, err := s.NotificationStore.GetNotifications(query)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +89,7 @@ func (s *NotificationService) UpdateNotifications(ctx context.Context, q *etop.U
 		IDs:    q.Ids,
 		IsRead: q.IsRead,
 	}
-	if err := sqlstore.UpdateNotifications(ctx, cmd); err != nil {
+	if err := s.NotificationStore.UpdateNotifications(cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.UpdatedResponse{

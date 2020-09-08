@@ -8,6 +8,8 @@ import (
 )
 
 var WireSet = wire.NewSet(
-	aggregate.NewAuthorizationAggregate, aggregate.AuthorizationAggregateMessageBus,
-	query.NewAuthorizationQuery, query.AuthorizationQueryMessageBus,
+	wire.Struct(new(aggregate.AuthorizationAggregate), "*"),
+	wire.Struct(new(query.AuthorizationQuery), "*"),
+	aggregate.AuthorizationAggregateMessageBus,
+	query.AuthorizationQueryMessageBus,
 )

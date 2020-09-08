@@ -13,9 +13,9 @@ import (
 	catalogmodelx "o.o/backend/com/main/catalog/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
@@ -26,6 +26,8 @@ type ProductService struct {
 	CatalogQuery   catalog.QueryBus
 	CatalogAggr    catalog.CommandBus
 	InventoryQuery inventory.QueryBus
+
+	ShopVariantStore sqlstore.ShopVariantStoreInterface
 }
 
 func (s *ProductService) Clone() api.ProductService { res := *s; return &res }
@@ -291,7 +293,7 @@ func (s *ProductService) UpdateProductsTags(ctx context.Context, q *api.UpdatePr
 		},
 	}
 
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShopVariantStore.UpdateShopProductsTags(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.UpdatedResponse{

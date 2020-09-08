@@ -33,9 +33,9 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/syncgroup"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 	"o.o/common/l"
@@ -63,6 +63,8 @@ type ShipmentManager struct {
 	carrierDriver    carriertypes.Driver
 
 	eventBus capi.EventBus
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func NewShipmentManager(
@@ -76,6 +78,7 @@ func NewShipmentManager(
 	cfg carriertypes.Config,
 	carrierDriver carriertypes.Driver,
 	connectionManager *connectionmanager.ConnectionManager,
+	OrderStore sqlstore.OrderStoreInterface,
 ) (*ShipmentManager, error) {
 	sm := &ShipmentManager{
 		eventBus:             eventBus,
@@ -89,6 +92,7 @@ func NewShipmentManager(
 		ConnectionManager:    connectionManager,
 		webhookEndpoints:     cfg.Endpoints,
 		carrierDriver:        carrierDriver,
+		OrderStore:           OrderStore,
 	}
 	return sm, nil
 }
@@ -165,7 +169,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, ffm *ship
 		cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: updateFfm2}
 
 		// Keep the original error
-		_ = bus.Dispatch(ctx, cmd)
+		_ = m.OrderStore.UpdateFulfillment(ctx, cmd)
 	}()
 
 	fromDistrict, fromProvince, err := m.VerifyDistrictCode(ffm.AddressFrom)
@@ -245,7 +249,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, ffm *ship
 	updateCmd := &shipmodelx.UpdateFulfillmentCommand{
 		Fulfillment: ffmToUpdate,
 	}
-	if err := bus.Dispatch(ctx, updateCmd); err != nil {
+	if err := m.OrderStore.UpdateFulfillment(ctx, updateCmd); err != nil {
 		return cm.Trace(err)
 	}
 	return nil

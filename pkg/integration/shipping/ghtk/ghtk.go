@@ -9,7 +9,6 @@ import (
 	"o.o/api/top/types/etc/status5"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/integration/shipping"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 	"o.o/capi/dot"
@@ -126,6 +125,7 @@ func CalcDeliveryDuration(transport ghtkclient.TransportType, from, to *location
 	}
 }
 
+/*
 func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error) {
 	rate := time.Second / 30
 	burstLimit := 30
@@ -182,3 +182,4 @@ func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error)
 	ll.S.Infof("Sync fulfillments GHTK info success: %v/%v, errors %v/%v", successCount, len(ffms), errorCount, len(ffms))
 	return _ffms, nil
 }
+*/

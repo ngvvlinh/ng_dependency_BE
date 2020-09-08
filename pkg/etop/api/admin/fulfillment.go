@@ -13,10 +13,10 @@ import (
 	"o.o/api/top/types/etc/account_tag"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -29,6 +29,7 @@ type FulfillmentService struct {
 	RedisStore    redis.Store
 	ShippingAggr  shipping.CommandBus
 	ShippingQuery shipping.QueryBus
+	OrderStore    sqlstore.OrderStoreInterface
 }
 
 func (s *FulfillmentService) Clone() admin.FulfillmentService {
@@ -71,7 +72,7 @@ func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *pbcm.IDReque
 	query := &shipmodelx.GetFulfillmentExtendedQuery{
 		FulfillmentID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetFulfillmentExtended(ctx, query); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbFulfillment(query.Result.Fulfillment, account_tag.TagEtop, query.Result.Shop, query.Result.Order)
@@ -90,7 +91,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *admin.GetFu
 	if q.ShopId != 0 {
 		query.ShopIDs = []dot.ID{q.ShopId}
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetFulfillmentExtendeds(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &types.FulfillmentsResponse{

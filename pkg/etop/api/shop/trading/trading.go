@@ -21,12 +21,12 @@ import (
 	identityconvert "o.o/backend/com/main/identity/convert"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/backend/pkg/etop/authorize/session"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -40,6 +40,8 @@ type TradingService struct {
 	OrderQuery     ordering.QueryBus
 	InventoryQuery inventory.QueryBus
 	OrderLogic     *logicorder.OrderLogic
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func (s *TradingService) Clone() api.TradingService { res := *s; return &res }
@@ -172,7 +174,7 @@ func (s *TradingService) TradingGetOrder(ctx context.Context, q *pbcm.IDRequest)
 		TradingShopID:      s.SS.Shop().ID,
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbOrder(query.Result.Order, nil, account_tag.TagShop)
@@ -188,7 +190,7 @@ func (s *TradingService) TradingGetOrders(ctx context.Context, q *api.GetOrdersR
 		Paging:        paging,
 		Filters:       cmapi.ToFilters(q.Filters),
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrders(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &inttypes.OrdersResponse{

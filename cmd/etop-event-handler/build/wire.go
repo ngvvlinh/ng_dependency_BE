@@ -44,7 +44,6 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		sqlstore.WireSet,
 
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
-		wire.Value(com.NotifierDB(nil)), // TODO(vu): remove this
 
 		com.BuildDatabaseWebhook,
 		com.BuildDatabaseMain,

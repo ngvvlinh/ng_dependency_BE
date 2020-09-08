@@ -12,13 +12,13 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping_provider"
 	notimodel "o.o/backend/com/eventhandler/notifier/model"
+	notistore "o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/com/main/shipping/carrier"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	"o.o/backend/com/main/shipping/modelx"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
@@ -51,6 +51,8 @@ type MiscService struct {
 
 type CrmService struct {
 	session.Session
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 type VtigerService struct {
@@ -88,7 +90,7 @@ func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *api.R
 	query := &shipmodelx.GetFulfillmentQuery{
 		ShippingCode: r.ShippingCode,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetFulfillment(ctx, query); err != nil {
 		return nil, err
 	}
 	ffm := query.Result
@@ -109,7 +111,7 @@ func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *api.R
 	update := &modelx.UpdateFulfillmentCommand{
 		Fulfillment: ffmUpdate,
 	}
-	if err = bus.Dispatch(ctx, update); err != nil {
+	if err = s.OrderStore.UpdateFulfillment(ctx, update); err != nil {
 		return nil, err
 	}
 	result := &pbcm.UpdatedResponse{
@@ -128,7 +130,7 @@ func (s *CrmService) SendNotification(ctx context.Context, r *api.SendNotificati
 		SendNotification: true,
 		MetaData:         r.MetaData.Data,
 	}
-	_, _, err := sqlstore.CreateNotifications(ctx, cmd)
+	_, _, err := notistore.NewNotificationStore(nil, nil).CreateNotifications(cmd)
 	if err != nil {
 		return nil, err
 	}

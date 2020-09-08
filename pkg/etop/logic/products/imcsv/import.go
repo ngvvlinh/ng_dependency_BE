@@ -27,12 +27,12 @@ import (
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/etop/upload"
 )
 
@@ -44,6 +44,10 @@ type Import struct {
 	uploader         *upload.Uploader
 	shopProductStore catalogsqlstore.ShopProductStoreFactory
 	shopVariantStore catalogsqlstore.ShopVariantStoreFactory
+
+	ExportAttemptStore sqlstore.ExportAttemptStoreInterface
+	CategoryStore      sqlstore.CategoryStoreInterface
+	ShopStore          sqlstore.ShopStoreInterface
 }
 
 func New(rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
@@ -227,7 +231,7 @@ func (im *Import) handleShopImportProductsFromFile(ctx context.Context, c *httpx
 		createAttemptCmd := &model.CreateImportAttemptCommand{
 			ImportAttempt: attempt,
 		}
-		if err = bus.Dispatch(ctx, createAttemptCmd); err != nil {
+		if err = im.ExportAttemptStore.CreateImportAttempt(ctx, createAttemptCmd); err != nil {
 			_err = err
 		}
 	}()

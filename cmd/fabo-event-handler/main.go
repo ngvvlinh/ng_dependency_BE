@@ -80,7 +80,7 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
+	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 
 	dbWebhook, err := cmsql.Connect(cfg.PostgresWebhook)
 	if err != nil {
@@ -106,7 +106,7 @@ func main() {
 		intctlHandler = intctl.New(consumer, cfg.Kafka.TopicPrefix)
 		waiters = append(waiters, intctlHandler)
 
-		webhookSender = webhooksender.New(db, redisStore, changesStore)
+		webhookSender = webhooksender.New(db, redisStore, changesStore, sqlstore.BuildPartnerStore(db))
 		waiters = append(waiters, webhookSender)
 		if err := webhookSender.Load(); err != nil {
 			ll.Fatal("Error loading webhooks", l.Error(err))

@@ -19,7 +19,6 @@ import (
 	servicelocation "o.o/backend/com/main/location"
 	_ "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/projectpath"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -72,6 +71,8 @@ type ETLUtil struct {
 	mapTableNames map[string][]table_name.TableName
 	identityQuery identity.QueryBus
 	resetDB       bool
+
+	AccountUserStore sqlstore.AccountUserStoreInterface
 }
 
 type accountUser struct {
@@ -132,7 +133,7 @@ func initDBs(mapDBCfgs map[string]config.Database, mapTableNames map[string][]ta
 		}
 
 		if wlName == drivers.ETop(cmenv.Env()).Key {
-			sqlstore.New(db, nil, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil) // TODO(vu): refactor this
+			sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil) // TODO(vu): refactor this
 		} else {
 			if cmenv.IsDev() && resetDB {
 				_, _ = db.Exec(`
@@ -179,9 +180,10 @@ func New(
 	resetDB bool,
 ) *ETLUtil {
 	etlUtil := &ETLUtil{
-		mapDBCfgs:     mapDBCfgs,
-		mapTableNames: convertTableNames(mapDBCfgs),
-		resetDB:       resetDB,
+		mapDBCfgs:        mapDBCfgs,
+		mapTableNames:    convertTableNames(mapDBCfgs),
+		resetDB:          resetDB,
+		AccountUserStore: nil, // TODO(vu): fix it
 	}
 	etlUtil.mapDBs = initDBs(mapDBCfgs, etlUtil.mapTableNames, resetDB)
 
@@ -395,7 +397,7 @@ func (s *ETLUtil) getUserIDsAndAccountIDs(ctx context.Context, partnerID dot.ID)
 	getAccountsByUserID := &identitymodelx.GetAllAccountUsersQuery{
 		UserIDs: userIDs,
 	}
-	if err := bus.Dispatch(ctx, getAccountsByUserID); err != nil {
+	if err := s.AccountUserStore.GetAllAccountUsers(ctx, getAccountsByUserID); err != nil {
 		return nil, nil, err
 	}
 	for _, accountUser := range getAccountsByUserID.Result {

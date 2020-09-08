@@ -19,9 +19,9 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpreq"
 	"o.o/backend/pkg/common/apifw/httpx"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
@@ -44,12 +44,15 @@ type Webhook struct {
 	identityQS             identity.QueryBus
 	shippingAggr           shippingcore.CommandBus
 	shipmentWebhookLogAggr *shippingwebhook.Aggregate
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func New(db com.MainDB,
 	shipmentM *carrier.ShipmentManager, identityQ identity.QueryBus,
 	shippingA shippingcore.CommandBus,
 	shipmentWebhookLogAggr *shippingwebhook.Aggregate,
+	OrderStore sqlstore.OrderStoreInterface,
 ) *Webhook {
 	wh := &Webhook{
 		db:                     db,
@@ -57,6 +60,7 @@ func New(db com.MainDB,
 		identityQS:             identityQ,
 		shippingAggr:           shippingA,
 		shipmentWebhookLogAggr: shipmentWebhookLogAggr,
+		OrderStore:             OrderStore,
 	}
 	return wh
 }
@@ -160,7 +164,7 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg vtpostclient.C
 		ExternalShippingCode: orderData.OrderNumber,
 	}
 
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := wh.OrderStore.GetFulfillment(ctx, query); err != nil {
 		return nil, cm.MapError(err).
 			Wrapf(cm.NotFound, "VTPost: Fulfillment not found: %v", orderData.OrderNumber).
 			DefaultInternal().WithMeta("result", "ignore")

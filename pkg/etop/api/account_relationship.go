@@ -16,7 +16,6 @@ import (
 	"o.o/backend/com/main/invitation/convert"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -29,6 +28,8 @@ type AccountRelationshipService struct {
 	InvitationAggr    invitation.CommandBus
 	InvitationQuery   invitation.QueryBus
 	AuthorizationAggr authorization.CommandBus
+	UserStore         sqlstore.UserStoreFactory
+	AccountUserStore  sqlstore.AccountUserStoreInterface
 }
 
 func (s *AccountRelationshipService) Clone() api.AccountRelationshipService {
@@ -163,7 +164,7 @@ func (s *AccountRelationshipService) GetRelationships(ctx context.Context, q *ap
 		Filters:        cmapi.ToFilters(q.Filters),
 		IncludeDeleted: true,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.AccountUserStore.GetAccountUserExtendeds(ctx, query); err != nil {
 		return nil, err
 	}
 
@@ -180,7 +181,7 @@ func (s *AccountRelationshipService) GetRelationships(ctx context.Context, q *ap
 		userIDs = append(userIDs, relationship.UserID)
 	}
 
-	users, err := sqlstore.User(ctx).IDs(userIDs...).List()
+	users, err := s.UserStore(ctx).IDs(userIDs...).List()
 	if err != nil {
 		return nil, err
 	}

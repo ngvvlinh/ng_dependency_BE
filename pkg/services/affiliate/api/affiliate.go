@@ -12,11 +12,11 @@ import (
 	"o.o/api/top/types/etc/account_tag"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
@@ -27,6 +27,8 @@ type AffiliateService struct {
 	CatalogQuery   catalog.QueryBus
 	AffiliateQuery affiliate.QueryBus
 	IdentityQuery  identity.QueryBus
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func (s *AffiliateService) Clone() api.AffiliateService { res := *s; return &res }
@@ -62,7 +64,7 @@ func (s *AffiliateService) GetCommissions(ctx context.Context, q *pbcm.CommonLis
 				PartnerID:          0,
 				IncludeFulfillment: false,
 			}
-			if err := bus.Dispatch(ctx, orderQ); err == nil {
+			if err := s.OrderStore.GetOrder(ctx, orderQ); err == nil {
 				pbCommission.Order = convertpb.PbOrder(orderQ.Result.Order, nil, account_tag.TagEtop)
 			}
 

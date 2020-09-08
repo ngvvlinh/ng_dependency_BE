@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 // The pointer-Session implement Sessioner
@@ -27,9 +29,18 @@ type Session struct {
 }
 
 // New returns a non-pointer Session, for embedding in other structs.
-func New(auth *auth.Authorizer, opts ...Option) Session {
+func New(
+	auth *auth.Authorizer,
+	st *middleware.SessionStarter,
+	userStore sqlstore.UserStoreInterface,
+	accountUserStore sqlstore.AccountUserStoreInterface,
+	opts ...Option,
+) Session {
 	s := Session{}
 	s.SS.auth = auth
+	s.SS.st = st
+	s.SS.UserStore = userStore
+	s.SS.AccountUserStore = accountUserStore
 	return s.MustWith(opts...)
 }
 

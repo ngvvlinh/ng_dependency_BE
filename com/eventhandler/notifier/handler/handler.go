@@ -13,6 +13,7 @@ import (
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/sql/cmsql"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
+	sqlstore2 "o.o/backend/pkg/etop/sqlstore"
 	"o.o/common/l"
 )
 
@@ -52,7 +53,7 @@ const ConsumerGroup = "handler/notifier"
 func New(dbMain com.MainDB, dbNotifier com.NotifierDB, consumer mq.KafkaConsumer, cfg cc.Kafka) (handlerMain *handler.Handler, handlerNotifier *handler.Handler) {
 	x = dbMain
 	xNotifier = dbNotifier
-	notifyStore = sqlstore.NewNotificationStore(dbNotifier)
+	notifyStore = sqlstore.NewNotificationStore(dbNotifier, sqlstore2.NewAccountUserStore(dbMain))
 	deviceStore = sqlstore.NewDeviceStore(dbNotifier)
 	historyStore = historysqlstore.NewHistoryStore(dbMain)
 	userNotifySettingStore = sqlstore.NewUserNotiSettingStore(dbMain)

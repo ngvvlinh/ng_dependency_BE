@@ -26,7 +26,6 @@ import (
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/model"
@@ -243,7 +242,7 @@ func (s *OrderLogic) CreateOrder(
 	cmd := &ordermodelx.CreateOrderCommand{
 		Order: order,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.OrderStore.CreateOrder(ctx, cmd); err != nil {
 		// TODO: refactor
 		if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
 			msg := xerr.Err.Error()
@@ -255,7 +254,7 @@ func (s *OrderLogic) CreateOrder(
 					ShopID:     shop.ID,
 					ExternalID: r.ExternalId, // TODO: external id may be normalized, this won't work
 				}
-				_ = bus.Dispatch(ctx, orderQuery)
+				_ = s.OrderStore.GetOrder(ctx, orderQuery)
 				if orderQuery.Result.Order != nil {
 					newErr = newErr.WithMetap("order_id", orderQuery.Result.Order.ID)
 				}
@@ -268,7 +267,7 @@ func (s *OrderLogic) CreateOrder(
 					PartnerID:  shop.ID,
 					ExternalID: r.ExternalId,
 				}
-				_ = bus.Dispatch(ctx, orderQuery)
+				_ = s.OrderStore.GetOrder(ctx, orderQuery)
 				if orderQuery.Result.Order != nil {
 					newErr = newErr.WithMetap("order_id", orderQuery.Result.Order.ID)
 				}
@@ -481,7 +480,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, shop *identitymodel.Shop, 
 		OrderID: q.Id,
 		ShopID:  shop.ID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return nil, err
 	}
 	oldOrder := query.Result.Order
@@ -676,12 +675,12 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, shop *identitymodel.Shop, 
 		cmd.PartnerID = authPartner.ID
 	}
 
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.OrderStore.UpdateOrder(ctx, cmd); err != nil {
 		return nil, err
 	}
 
 	// re-get order
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbOrder(query.Result.Order, nil, account_tag.TagShop)
@@ -992,7 +991,7 @@ func (s *OrderLogic) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.
 		OrderID:            orderID,
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, getOrderQuery); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, getOrderQuery); err != nil {
 		return nil, err
 	}
 	order := getOrderQuery.Result.Order
@@ -1018,7 +1017,7 @@ func (s *OrderLogic) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.
 		CancelReason:  cancelReason,
 		Status:        status5.N.Wrap(),
 	}
-	if err := bus.Dispatch(ctx, updateOrderCmd); err != nil {
+	if err := s.OrderStore.UpdateOrdersStatus(ctx, updateOrderCmd); err != nil {
 		return nil, err
 	}
 	event := &ordering.OrderCancelledEvent{
@@ -1045,7 +1044,7 @@ func (s *OrderLogic) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.
 	}
 
 	// Get the order again
-	if err := bus.Dispatch(ctx, getOrderQuery); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, getOrderQuery); err != nil {
 		return nil, err
 	}
 

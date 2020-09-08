@@ -37,10 +37,8 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 	authservice "o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/claims"
-	"o.o/backend/pkg/etop/authorize/login"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
-	"o.o/backend/pkg/etop/logic/usering"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/email"
@@ -77,17 +75,22 @@ const (
 type UserService struct {
 	session.Session
 
-	IdentityAggr    identity.CommandBus
-	IdentityQuery   identity.QueryBus
-	InvitationQuery invitation.QueryBus
-	NotifyQuery     notify.QueryBus
-	NotifyAggr      notify.CommandBus
-	EventBus        capi.EventBus
-	AuthStore       auth.Generator
-	TokenStore      tokens.TokenStore
-	RedisStore      redis.Store
-	SMSClient       *sms.Client
-	EmailClient     *email.Client
+	IdentityAggr     identity.CommandBus
+	IdentityQuery    identity.QueryBus
+	InvitationQuery  invitation.QueryBus
+	NotifyQuery      notify.QueryBus
+	NotifyAggr       notify.CommandBus
+	EventBus         capi.EventBus
+	AuthStore        auth.Generator
+	TokenStore       tokens.TokenStore
+	RedisStore       redis.Store
+	SMSClient        *sms.Client
+	EmailClient      *email.Client
+	UserStore        sqlstore.UserStoreFactory
+	UserStoreIface   sqlstore.UserStoreInterface
+	ShopStore        sqlstore.ShopStoreInterface
+	AccountUserStore sqlstore.AccountUserStoreInterface
+	LoginIface       sqlstore.LoginInterface
 }
 
 var UserServiceImpl = &UserService{} // MUSTDO: fix it
@@ -134,7 +137,7 @@ func (s *UserService) updateUserPhone(ctx context.Context, r *api.UpdateUserPhon
 	if err != nil {
 		return nil, err
 	}
-	user, err := checkUserInfo(ctx, s.SS.User().ID, r.AuthenticationMethod)
+	user, err := s.checkUserInfo(ctx, s.SS.User().ID, r.AuthenticationMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +187,7 @@ func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *api.Up
 	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: r.Phone,
 	}
-	err := bus.Dispatch(ctx, userByPhoneQuery)
+	err := s.UserStoreIface.GetUserByEmail(ctx, userByPhoneQuery)
 	if err == nil || cm.ErrorCode(err) != cm.NotFound {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại đã tồn tại vui lòng kiểm tra lại.")
 	}
@@ -247,7 +250,7 @@ func (s *UserService) updateUserEmail(ctx context.Context, r *api.UpdateUserEmai
 	if err != nil {
 		return nil, err
 	}
-	user, err := checkUserInfo(ctx, s.SS.User().ID, r.AuthenticationMethod)
+	user, err := s.checkUserInfo(ctx, s.SS.User().ID, r.AuthenticationMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -311,8 +314,8 @@ func (s *UserService) setRedisCode(userID dot.ID, redisKeyCode string, method st
 	return nil
 }
 
-func checkUserInfo(ctx context.Context, userID dot.ID, method authentication_method.AuthenticationMethod) (*identitymodel.User, error) {
-	user, err := sqlstore.User(ctx).ID(userID).Get()
+func (s *UserService) checkUserInfo(ctx context.Context, userID dot.ID, method authentication_method.AuthenticationMethod) (*identitymodel.User, error) {
+	user, err := s.UserStore(ctx).ID(userID).Get()
 	if err != nil {
 		return nil, cm.Errorf(cm.FailedPrecondition, err, "User không tồn tại")
 	}
@@ -389,7 +392,7 @@ func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *api.Up
 	userByEmailQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Email: r.Email,
 	}
-	err := bus.Dispatch(ctx, userByEmailQuery)
+	err := s.UserStoreIface.GetUserByEmail(ctx, userByEmailQuery)
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
@@ -620,7 +623,7 @@ func (s *UserService) register(
 		}
 	}
 
-	user, err := createUser(ctx, r)
+	user, err := s.createUser(ctx, r)
 	if err != nil {
 		return nil, err
 	}
@@ -633,7 +636,7 @@ func (s *UserService) register(
 				UserID: user.ID,
 			}
 			updateCmd.EmailVerifiedAt = now
-			if err := bus.Dispatch(ctx, updateCmd); err != nil {
+			if err := s.UserStoreIface.UpdateUserVerification(ctx, updateCmd); err != nil {
 				return nil, err
 			}
 		}
@@ -658,7 +661,7 @@ func (s *UserService) register(
 				UserID: user.ID,
 			}
 			updateCmd.PhoneVerifiedAt = now
-			if err := bus.Dispatch(ctx, updateCmd); err != nil {
+			if err := s.UserStoreIface.UpdateUserVerification(ctx, updateCmd); err != nil {
 				return nil, err
 			}
 		}
@@ -682,9 +685,9 @@ func (s *UserService) register(
 	}, nil
 }
 
-func createUser(ctx context.Context, r *etop.CreateUserRequest) (*identitymodel.User, error) {
+func (s *UserService) createUser(ctx context.Context, r *etop.CreateUserRequest) (*identitymodel.User, error) {
 	info := r
-	cmd := &usering.CreateUserCommand{
+	cmd := &identitymodelx.CreateUserCommand{
 		UserInner: identitymodel.UserInner{
 			FullName:  info.FullName,
 			ShortName: info.ShortName,
@@ -699,13 +702,13 @@ func createUser(ctx context.Context, r *etop.CreateUserRequest) (*identitymodel.
 		RefSale:        r.RefSale,
 		RefAff:         r.RefAff,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.UserStoreIface.CreateUser(ctx, cmd); err != nil {
 		return nil, err
 	}
 	query := &identitymodelx.GetUserByIDQuery{
 		UserID: cmd.Result.User.ID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.UserStoreIface.GetUserByID(ctx, query); err != nil {
 		return nil, err
 	}
 	return query.Result, nil
@@ -771,7 +774,7 @@ func (s *UserService) CheckUserRegistration(ctx context.Context, q *api.GetUserB
 	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: q.Phone,
 	}
-	err := bus.Dispatch(ctx, userByPhoneQuery)
+	err := s.UserStoreIface.GetUserByEmail(ctx, userByPhoneQuery)
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
@@ -787,7 +790,7 @@ func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email
 	userByPhoneQuery := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: phone,
 	}
-	if err := bus.Dispatch(ctx, userByPhoneQuery); err != nil &&
+	if err := s.UserStoreIface.GetUserByLogin(ctx, userByPhoneQuery); err != nil &&
 		cm.ErrorCode(err) != cm.NotFound {
 		return identitymodel.UserExtended{}, identitymodel.UserExtended{}, err
 	}
@@ -797,7 +800,7 @@ func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email
 		userByEmailQuery := &identitymodelx.GetUserByLoginQuery{
 			PhoneOrEmail: email,
 		}
-		if err := bus.Dispatch(ctx, userByEmailQuery); err != nil &&
+		if err := s.UserStoreIface.GetUserByLogin(ctx, userByEmailQuery); err != nil &&
 			cm.ErrorCode(err) != cm.NotFound {
 			return identitymodel.UserExtended{}, identitymodel.UserExtended{}, err
 		}
@@ -807,11 +810,11 @@ func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email
 }
 
 func (s *UserService) Login(ctx context.Context, r *api.LoginRequest) (*api.LoginResponse, error) {
-	query := &login.LoginUserQuery{
+	query := &sqlstore.LoginUserQuery{
 		PhoneOrEmail: r.Login,
 		Password:     r.Password,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.LoginIface.LoginUser(ctx, query); err != nil {
 		return nil, err
 	}
 
@@ -859,7 +862,7 @@ func (s *UserService) resetPassword(ctx context.Context, r *api.ResetPasswordReq
 }
 
 func (s *UserService) resetPasswordUsingPhone(ctx context.Context, r *api.ResetPasswordRequest) (*api.ResetPasswordResponse, error) {
-	user, err := getUserByPhone(ctx, r.Phone)
+	user, err := s.getUserByPhone(ctx, r.Phone)
 	if err != nil {
 		return nil, err
 	}
@@ -897,7 +900,7 @@ func (s *UserService) resetPasswordUsingEmail(ctx context.Context, r *api.ResetP
 	query := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Email,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.UserStoreIface.GetUserByLogin(ctx, query); err != nil {
 		return nil, cm.MapError(err).
 			Wrap(cm.NotFound, fmt.Sprintf("Người dùng chưa đăng ký. Vui lòng kiểm tra lại thông tin (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ %v.", wl.X(ctx).CSEmail)).
 			Throw()
@@ -957,11 +960,11 @@ func (s *UserService) ChangePassword(ctx context.Context, r *api.ChangePasswordR
 		return nil, cm.Error(cm.InvalidArgument, "Missing current_password", nil)
 	}
 
-	query := &login.LoginUserQuery{
+	query := &sqlstore.LoginUserQuery{
 		UserID:   s.SS.User().ID,
 		Password: r.CurrentPassword,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.LoginIface.LoginUser(ctx, query); err != nil {
 		return nil, cm.MapError(err).
 			Wrap(cm.Unauthenticated, fmt.Sprintf("Mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập. Nếu cần thêm thông tin, vui lòng liên hệ %v.", wl.X(ctx).CSEmail)).
 			Throw()
@@ -978,7 +981,7 @@ func (s *UserService) ChangePassword(ctx context.Context, r *api.ChangePasswordR
 		UserID:   s.SS.User().ID,
 		Password: r.NewPassword,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.UserStoreIface.SetPassword(ctx, cmd); err != nil {
 		return nil, err
 	}
 
@@ -1012,7 +1015,7 @@ func (s *UserService) changePasswordUsingTokenForEmail(ctx context.Context, r *a
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
 
-	if err := changePassword("", v["email"], tok.UserID, ctx, r.NewPassword, r.ConfirmPassword); err != nil {
+	if err := s.changePassword("", v["email"], tok.UserID, ctx, r.NewPassword, r.ConfirmPassword); err != nil {
 		return nil, err
 	}
 	s.AuthStore.Revoke(auth.UsageResetPassword, r.ResetPasswordToken)
@@ -1020,12 +1023,12 @@ func (s *UserService) changePasswordUsingTokenForEmail(ctx context.Context, r *a
 	return result, nil
 }
 
-func changePassword(phone string, email string, tokUserID dot.ID, ctx context.Context, newPassword string, confirmPassword string) error {
+func (s *UserService) changePassword(phone string, email string, tokUserID dot.ID, ctx context.Context, newPassword string, confirmPassword string) error {
 	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: phone,
 		Email: email,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.UserStoreIface.GetUserByEmail(ctx, query); err != nil {
 		return err
 	}
 	user := query.Result
@@ -1042,7 +1045,7 @@ func changePassword(phone string, email string, tokUserID dot.ID, ctx context.Co
 		UserID:   user.ID,
 		Password: newPassword,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.UserStoreIface.SetPassword(ctx, cmd); err != nil {
 		return err
 	}
 	return nil
@@ -1139,7 +1142,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		userQuery := &identitymodelx.GetUserByIDQuery{
 			UserID: userID,
 		}
-		if err := bus.Dispatch(ctx, userQuery); err != nil {
+		if err := s.UserStoreIface.GetUserByID(ctx, userQuery); err != nil {
 			return nil, nil, err
 		}
 		user = userQuery.Result
@@ -1147,7 +1150,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 
 	// Retrieve list of accounts
 	accQuery := &identitymodelx.GetAllAccountRolesQuery{UserID: userID}
-	if err := bus.Dispatch(ctx, accQuery); err != nil {
+	if err := s.AccountUserStore.GetAllAccountRoles(ctx, accQuery); err != nil {
 		return nil, nil, err
 	}
 
@@ -1187,7 +1190,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		switch {
 		case idutil.IsShopID(currentAccountID):
 			query := &identitymodelx.GetShopExtendedQuery{ShopID: currentAccountID}
-			if err := bus.Dispatch(ctx, query); err != nil {
+			if err := s.ShopStore.GetShopExtended(ctx, query); err != nil {
 				return nil, nil, cm.ErrorTracef(cm.Internal, err, "")
 			}
 			resp.Shop = convertpb.PbShopExtended(query.Result)
@@ -1357,7 +1360,7 @@ func (s *UserService) sendEmailVerificationUsingOTP(
 		UserID:                  user.ID,
 		EmailVerificationSentAt: time.Now(),
 	}
-	if err := bus.Dispatch(ctx, updateCmd); err != nil {
+	if err := s.UserStoreIface.UpdateUserVerification(ctx, updateCmd); err != nil {
 		return nil, err
 	}
 
@@ -1454,7 +1457,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *api.SendEmai
 		UserID:                  user.ID,
 		EmailVerificationSentAt: time.Now(),
 	}
-	if err := bus.Dispatch(ctx, updateCmd); err != nil {
+	if err := s.UserStoreIface.UpdateUserVerification(ctx, updateCmd); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -1486,7 +1489,7 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *api.SendPhon
 	getUserByID := &identitymodelx.GetUserByIDQuery{
 		UserID: s.SS.Claim().UserID,
 	}
-	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
+	if err := s.UserStoreIface.GetUserByID(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
 	user := getUserByID.Result
@@ -1574,7 +1577,7 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *api.VerifyEm
 			UserID:          user.ID,
 			EmailVerifiedAt: time.Now(),
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.UserStoreIface.UpdateUserVerification(ctx, cmd); err != nil {
 			return nil, err
 		}
 	}
@@ -1615,7 +1618,7 @@ func (s *UserService) VerifyEmailUsingOTP(ctx context.Context, r *api.VerifyEmai
 			UserID:          user.ID,
 			EmailVerifiedAt: time.Now(),
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.UserStoreIface.UpdateUserVerification(ctx, cmd); err != nil {
 			return nil, err
 		}
 	}
@@ -1657,7 +1660,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *api.VerifyPh
 	getUserByID := &identitymodelx.GetUserByIDQuery{
 		UserID: s.SS.Claim().UserID,
 	}
-	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
+	if err := s.UserStoreIface.GetUserByID(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
 	var v map[string]string
@@ -1690,7 +1693,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *api.VerifyPh
 			UserID:          user.ID,
 			PhoneVerifiedAt: time.Now(),
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.UserStoreIface.UpdateUserVerification(ctx, cmd); err != nil {
 			return nil, err
 		}
 	}
@@ -1721,7 +1724,7 @@ func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r 
 	getUserByID := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: s.SS.Claim().Extra[keyRequestVerifyPhone],
 	}
-	if err := bus.Dispatch(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
+	if err := s.UserStoreIface.GetUserByEmail(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
 	var v map[string]string
@@ -1860,7 +1863,7 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *api.SendSTokenEmai
 		AccountID: r.AccountId,
 		UserID:    user.ID,
 	}
-	if err := bus.Dispatch(ctx, accQuery); err != nil {
+	if err := s.AccountUserStore.GetAccountUserExtended(ctx, accQuery); err != nil {
 		return nil, err
 	}
 	account := accQuery.Result.Account
@@ -2019,7 +2022,7 @@ func (s *UserService) sendPhoneVerificationForRegister(ctx context.Context, r *a
 	}
 	var msg string
 	var redisCodeCount = fmt.Sprintf("confirm-phone-%v-%v", s.SS.Claim().UserID, r.Phone)
-	redisCodeCount = login.EncodePassword(redisCodeCount)
+	redisCodeCount = sqlstore.EncodePassword(redisCodeCount)
 	msg, err := s.countSendtimeMsg(redisCodeCount, templatemessages.SmsVerificationTpl, templatemessages.SmsVerificationTplRepeat)
 	if err != nil {
 		return nil, err
@@ -2070,7 +2073,7 @@ func (s *UserService) sendPhoneVerificationImpl(ctx context.Context, user *ident
 	return nil
 }
 
-func getUserByPhone(ctx context.Context, phone string) (*identitymodel.User, error) {
+func (s *UserService) getUserByPhone(ctx context.Context, phone string) (*identitymodel.User, error) {
 	_, ok := validate.NormalizePhone(phone)
 	if !ok {
 		return nil, cm.Error(cm.FailedPrecondition, "Số điện thoại không hợp lệ", nil)
@@ -2078,7 +2081,7 @@ func getUserByPhone(ctx context.Context, phone string) (*identitymodel.User, err
 	userByPhone := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: phone,
 	}
-	if err := bus.Dispatch(ctx, userByPhone); err != nil {
+	if err := s.UserStoreIface.GetUserByEmail(ctx, userByPhone); err != nil {
 		return nil, cm.Error(cm.FailedPrecondition, "Số điện này không hợp lệ vì chưa được đăng kí", nil)
 	}
 	return userByPhone.Result, nil
@@ -2103,7 +2106,7 @@ func (s *UserService) verifyPhone(ctx context.Context, usage string, user *ident
 			UserID:                  user.ID,
 			PhoneVerificationSentAt: time.Now(),
 		}
-		if err := bus.Dispatch(ctx, updateCmd); err != nil {
+		if err := s.UserStoreIface.UpdateUserVerification(ctx, updateCmd); err != nil {
 			return err
 		}
 		return nil

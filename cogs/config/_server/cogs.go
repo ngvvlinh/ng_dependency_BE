@@ -8,6 +8,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type SharedConfig struct {
@@ -27,9 +28,16 @@ func DefaultConfig() SharedConfig {
 	}
 }
 
-func NewSession(auth *auth.Authorizer, cfg SharedConfig, redisStore redis.Store) session.Session {
+func NewSession(
+	auth *auth.Authorizer,
+	st *middleware.SessionStarter,
+	userStore sqlstore.UserStoreInterface,
+	accountUserStore sqlstore.AccountUserStoreInterface,
+	cfg SharedConfig,
+	redisStore redis.Store,
+) session.Session {
 	return session.New(
-		auth,
+		auth, st, userStore, accountUserStore,
 		session.OptValidator(tokens.NewTokenStore(redisStore)),
 		session.OptSuperAdmin(cfg.SAdminToken),
 	)

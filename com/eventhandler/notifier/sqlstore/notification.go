@@ -6,11 +6,12 @@ import (
 
 	"o.o/api/top/types/etc/account_type"
 	"o.o/backend/com/eventhandler/notifier/model"
+	com "o.o/backend/com/main"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
-	"o.o/backend/pkg/common/sql/sqlstore"
+	cmstore "o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -19,12 +20,19 @@ var ll = l.New()
 
 type NotificationStore struct {
 	db *cmsql.Database
+
+	AccountUserStore sqlstore.AccountUserStoreInterface
 }
 
-func NewNotificationStore(db *cmsql.Database) *NotificationStore {
+func NewNotificationStore(
+	db com.NotifierDB,
+	accountUserStore sqlstore.AccountUserStoreInterface,
+) *NotificationStore {
 	model.SQLVerifySchema(db)
 	return &NotificationStore{
 		db: db,
+
+		// AccountUserStore: accountUserStore,
 	}
 }
 
@@ -90,7 +98,7 @@ func (s *NotificationStore) CreateNotifications(args *model.CreateNotificationsA
 			UserIDs: userIDs,
 			Type:    account_type.Shop.Wrap(),
 		}
-		if err := bus.Dispatch(context.Background(), query); err != nil {
+		if err := s.AccountUserStore.GetAllAccountUsers(context.Background(), query); err != nil {
 			return 0, 0, err
 		}
 		for _, accountUser := range query.Result {
@@ -182,7 +190,7 @@ func (s *NotificationStore) GetNotifications(args *model.GetNotificationsArgs) (
 	}
 	{
 		x1 := x.Clone()
-		x1, err = sqlstore.LimitSort(x1, sqlstore.ConvertPaging(args.Paging), map[string]string{"created_at": "", "updated_at": ""})
+		x1, err = cmstore.LimitSort(x1, cmstore.ConvertPaging(args.Paging), map[string]string{"created_at": "", "updated_at": ""})
 		if err != nil {
 			return nil, err
 		}

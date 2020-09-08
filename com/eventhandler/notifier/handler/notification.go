@@ -6,14 +6,21 @@ import (
 	"time"
 
 	"o.o/api/top/types/etc/status3"
+	"o.o/backend/com/eventhandler/notifier"
 	notifiermodel "o.o/backend/com/eventhandler/notifier/model"
 	"o.o/backend/com/eventhandler/pgevent"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
+
+var oneSignalNotifier *notifier.Notifier
+
+// TODO(vu): remove this
+func Init(n *notifier.Notifier) {
+	oneSignalNotifier = n
+}
 
 func HandleNotificationEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	if event.Op != pgevent.OpInsert {
@@ -121,9 +128,10 @@ func _sendToOneSignal(ctx context.Context, userID dot.ID, notify *notifiermodel.
 			WebURL:            webUrl,
 		},
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err = oneSignalNotifier.CreateNotification(ctx, cmd); err != nil {
 		return err
 	}
+
 	// UpdateInfo external_noti_id and sync_status
 	updateNotify := &notifiermodel.Notification{
 		ID:                notify.ID,

@@ -10,6 +10,7 @@ import (
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipsqlstore "o.o/backend/com/main/shipping/sqlstore"
 	orderS "o.o/backend/pkg/etop/logic/orders"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 var locationList *types.LocationResponse
@@ -25,6 +26,8 @@ type Shipping struct {
 	OrderLogic       *orderS.OrderLogic
 	ShipnowAggr      shipnow.CommandBus
 	ShipnowQuery     shipnow.QueryBus
+
+	OrderStoreIface sqlstore.OrderStoreInterface
 }
 
 func New(

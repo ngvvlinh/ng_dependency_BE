@@ -6,14 +6,17 @@ import (
 	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	catalogmodelx "o.o/backend/com/main/catalog/modelx"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type ProductSourceService struct {
 	session.Session
+
+	ShopStore     sqlstore.ShopStoreInterface
+	CategoryStore sqlstore.CategoryStoreInterface
 }
 
 func (s *ProductSourceService) Clone() api.ProductSourceService { res := *s; return &res }
@@ -44,7 +47,7 @@ func (s *ProductSourceService) CreateVariant(ctx context.Context, q *api.Depreca
 		DescHTML:   q.DescHtml,
 	}
 
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShopStore.DeprecatedCreateVariant(ctx, cmd); err != nil {
 		return nil, err
 	}
 
@@ -59,7 +62,7 @@ func (s *ProductSourceService) CreateProductSourceCategory(ctx context.Context, 
 		ParentID: q.ParentId,
 	}
 
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShopStore.CreateShopCategory(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbCategory(cmd.Result)
@@ -72,7 +75,7 @@ func (s *ProductSourceService) UpdateProductsPSCategory(ctx context.Context, q *
 		ProductIDs: q.ProductIds,
 		ShopID:     s.SS.Shop().ID,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.ShopStore.UpdateProductsPSCategory(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.UpdatedResponse{
@@ -87,7 +90,7 @@ func (s *ProductSourceService) GetProductSourceCategory(ctx context.Context, q *
 		CategoryID: q.Id,
 	}
 
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.CategoryStore.GetShopCategory(ctx, cmd); err != nil {
 		return nil, err
 	}
 
@@ -100,7 +103,7 @@ func (s *ProductSourceService) GetProductSourceCategories(ctx context.Context, q
 		ShopID: s.SS.Shop().ID,
 	}
 
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.CategoryStore.GetProductSourceCategories(ctx, cmd); err != nil {
 		return nil, err
 	}
 
@@ -117,7 +120,7 @@ func (s *ProductSourceService) UpdateProductSourceCategory(ctx context.Context, 
 		ParentID: q.ParentId,
 		Name:     q.Name,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.CategoryStore.UpdateShopShopCategory(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbCategory(cmd.Result)
@@ -129,7 +132,7 @@ func (s *ProductSourceService) RemoveProductSourceCategory(ctx context.Context, 
 		ID:     q.Id,
 		ShopID: s.SS.Shop().ID,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.CategoryStore.RemoveShopShopCategory(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.RemovedResponse{

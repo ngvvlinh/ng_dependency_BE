@@ -15,12 +15,12 @@ import (
 	com "o.o/backend/com/main"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	callbackmodel "o.o/backend/pkg/etc/xmodel/callback/model"
 	callbackstore "o.o/backend/pkg/etc/xmodel/callback/sqlstore"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -51,12 +51,14 @@ type WebhookSender struct {
 
 	wg sync.WaitGroup
 	m  sync.RWMutex
+
+	PartnerStore sqlstore.PartnerStoreInterface
 }
 
-func New(db com.MainDB, redis redis.Store, cs *storage.ChangesStore) *WebhookSender {
+func New(db com.MainDB, redis redis.Store, cs *storage.ChangesStore, partnerStore sqlstore.PartnerStoreInterface) *WebhookSender {
 	redisStore = redis
 	changesStore = cs
-	return &WebhookSender{db: db}
+	return &WebhookSender{db: db, PartnerStore: partnerStore}
 }
 
 func (s *WebhookSender) Load() error {
@@ -200,7 +202,7 @@ func (s *WebhookSender) Collect(ctx context.Context, entity entity_type.EntityTy
 		query := &identitymodelx.GetPartnersFromRelationQuery{
 			AccountIDs: []dot.ID{shopID},
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := s.PartnerStore.GetPartnersFromRelation(ctx, query); err != nil {
 			return err
 		}
 

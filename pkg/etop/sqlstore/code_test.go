@@ -13,13 +13,13 @@ import (
 
 func TestGenerateCodeWithinTransaction(t *testing.T) {
 	ctx := context.Background()
-	reset := func() { MustExec(`TRUNCATE "code"`) }
+	reset := func() { MustExec(db, `TRUNCATE "code"`) }
 	reset()
 
 	Convey("Init code", t, func() {
 		Reset(reset)
 
-		n, err := createCode(ctx, x, &model.CreateCodeCommand{
+		n, err := createCode(ctx, db, &model.CreateCodeCommand{
 			Code: &model.Code{Code: "123", Type: model.CodeTypeShop},
 		})
 		So(err, ShouldBeNil)
@@ -35,7 +35,7 @@ func TestGenerateCodeWithinTransaction(t *testing.T) {
 				return "ABC"
 			}
 
-			err := x.InTransaction(bus.Ctx(), func(x cmsql.QueryInterface) error {
+			err := db.InTransaction(bus.Ctx(), func(x cmsql.QueryInterface) error {
 				code, err := generateCode(ctx, x, model.CodeTypeShop, fn)
 				So(err, ShouldBeNil)
 				So(code, ShouldEqual, "ABC")
@@ -46,7 +46,7 @@ func TestGenerateCodeWithinTransaction(t *testing.T) {
 
 			Convey("Get the code back", func() {
 				var item model.Code
-				err := x.Where("code = 'ABC'").ShouldGet(&item)
+				err := db.Where("code = 'ABC'").ShouldGet(&item)
 				So(err, ShouldBeNil)
 			})
 		})
@@ -55,7 +55,7 @@ func TestGenerateCodeWithinTransaction(t *testing.T) {
 			fn := func() string {
 				return "123" // always duplicate
 			}
-			err := x.InTransaction(bus.Ctx(), func(x cmsql.QueryInterface) error {
+			err := db.InTransaction(bus.Ctx(), func(x cmsql.QueryInterface) error {
 				_, err := generateCode(ctx, x, model.CodeTypeShop, fn)
 				return err
 			})

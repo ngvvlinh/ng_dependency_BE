@@ -6,6 +6,7 @@ import (
 
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/code/gencode"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/model"
 )
 
@@ -19,8 +20,8 @@ func createCode(ctx context.Context, x Qx, cmd *model.CreateCodeCommand) (int, e
 		Insert(code)
 }
 
-func GenerateCodeWithoutTransaction(ctx context.Context, typeCode model.CodeType, subCode string) (string, error) {
-	return GenerateCode(ctx, x, typeCode, subCode)
+func GenerateCodeWithoutTransaction(ctx context.Context, db *cmsql.Database, typeCode model.CodeType, subCode string) (string, error) {
+	return GenerateCode(ctx, db, typeCode, subCode)
 }
 
 func GenerateCode(ctx context.Context, x Qx, typeCode model.CodeType, subCode string) (string, error) {

@@ -15,6 +15,8 @@ import (
 
 type EcomService struct {
 	session.Session
+
+	*middleware.SessionStarter
 }
 
 func (s *EcomService) Clone() api.EcomService { res := *s; return &res }
@@ -34,7 +36,7 @@ func (s *EcomService) SessionInfo(ctx context.Context, r *pbcm.Empty) (*api.Ecom
 		RequireAuth: true,
 		RequireShop: true,
 	}
-	ctx, err = middleware.StartSessionWithToken(ctx, cookie.Value, sessionQuery)
+	ctx, err = s.StartSessionWithToken(ctx, cookie.Value, sessionQuery)
 	if err != nil {
 		return nil, err
 	}

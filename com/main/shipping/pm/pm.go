@@ -17,6 +17,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	etopmodel "o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -29,15 +30,28 @@ type ProcessManager struct {
 	shippingQuery   shipping.QueryBus
 	redisStore      redis.Store
 	connectionQuery connectioning.QueryBus
+
+	ShopStore    sqlstore.ShopStoreInterface
+	MoneyTxStore sqlstore.MoneyTxStoreInterface
 }
 
-func New(eventBus bus.EventRegistry, shippingQ shipping.QueryBus, shippingA shipping.CommandBus, redisS redis.Store, connectionQ connectioning.QueryBus) *ProcessManager {
+func New(
+	eventBus bus.EventRegistry,
+	shippingQ shipping.QueryBus,
+	shippingA shipping.CommandBus,
+	redisS redis.Store,
+	connectionQ connectioning.QueryBus,
+	ShopStore sqlstore.ShopStoreInterface,
+	MoneyTxStore sqlstore.MoneyTxStoreInterface,
+) *ProcessManager {
 	p := &ProcessManager{
 		eventBus:        eventBus,
 		shippingQuery:   shippingQ,
 		shippingAggr:    shippingA,
 		redisStore:      redisS,
 		connectionQuery: connectionQ,
+		ShopStore:       ShopStore,
+		MoneyTxStore:    MoneyTxStore,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -259,7 +273,7 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 		query := &etopmodel.GetBalanceShopCommand{
 			ShopID: event.ShopID,
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := m.MoneyTxStore.CalcBalanceShop(ctx, query); err != nil {
 			return err
 		}
 		balance := query.Result.Amount
@@ -276,13 +290,13 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 	queryShop := &identitymodelx.GetShopQuery{
 		ShopID: event.ShopID,
 	}
-	if err := bus.Dispatch(ctx, queryShop); err != nil {
+	if err := m.ShopStore.GetShop(ctx, queryShop); err != nil {
 		return err
 	}
 	query := &etopmodel.GetActualUserBalanceCommand{
 		UserID: queryShop.Result.OwnerID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := m.MoneyTxStore.CalcActualUserBalance(ctx, query); err != nil {
 		return err
 	}
 	balance := query.Result.Amount

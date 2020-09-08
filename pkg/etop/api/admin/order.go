@@ -9,13 +9,15 @@ import (
 	"o.o/api/top/types/etc/account_tag"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type OrderService struct {
 	session.Session
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func (s *OrderService) Clone() admin.OrderService {
@@ -28,7 +30,7 @@ func (s *OrderService) GetOrder(ctx context.Context, q *pbcm.IDRequest) (*types.
 		OrderID:            q.Id,
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrder(ctx, query); err != nil {
 		return nil, err
 	}
 
@@ -46,7 +48,7 @@ func (s *OrderService) GetOrders(ctx context.Context, q *admin.GetOrdersRequest)
 		Paging:  paging,
 		Filters: cmapi.ToFilters(q.Filters),
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrders(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &types.OrdersResponse{
@@ -60,7 +62,7 @@ func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *pbcm.IDsRequest) (
 	query := &ordermodelx.GetOrdersQuery{
 		IDs: q.Ids,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetOrders(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &types.OrdersResponse{

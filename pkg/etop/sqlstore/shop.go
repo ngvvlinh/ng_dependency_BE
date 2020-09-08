@@ -6,33 +6,48 @@ import (
 	"time"
 
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	"o.o/backend/com/main/catalog/convert"
 	catalogmodel "o.o/backend/com/main/catalog/model"
 	catalogmodelx "o.o/backend/com/main/catalog/modelx"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/common/validate"
 )
 
-func init() {
-	bus.AddHandlers("sql",
-		CreateShopCategory,
-		DeprecatedCreateVariant,
-		GetAllShopExtendedsQuery,
-		GetShop,
-		GetShopExtended,
-		GetShops,
-		GetShopWithPermission,
-		UpdateProductsPSCategory,
-	)
+type ShopStoreInterface interface {
+
+	CreateShopCategory(ctx context.Context, cmd *catalogmodelx.CreateShopCategoryCommand) error
+
+	DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedCreateVariantCommand) error
+
+	GetShop(ctx context.Context, query *identitymodelx.GetShopQuery) error
+
+	GetShopExtended(ctx context.Context, query *identitymodelx.GetShopExtendedQuery) error
+
+	GetShopWithPermission(ctx context.Context, query *identitymodelx.GetShopWithPermissionQuery) error
+
+	GetShops(ctx context.Context, query *identitymodelx.GetShopsQuery) error
+
+	UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProductsShopCategoryCommand) error
 }
 
-func GetAllShopExtendedsQuery(ctx context.Context, query *identitymodelx.GetAllShopExtendedsQuery) error {
-	s := x.Table("shop").Where("s.deleted_at is NULL")
+type ShopStore struct {
+	db *cmsql.Database
+}
+
+func NewShopStore(db com.MainDB) *ShopStore {
+	s := &ShopStore{
+		db: db,
+	}
+	return s
+}
+
+func (st *ShopStore) GetAllShopExtendedsQuery(ctx context.Context, query *identitymodelx.GetAllShopExtendedsQuery) error {
+	s := st.db.Table("shop").Where("s.deleted_at is NULL")
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
 		query.Paging.Sort = []string{"-updated_at"}
 	}
@@ -51,17 +66,13 @@ func GetAllShopExtendedsQuery(ctx context.Context, query *identitymodelx.GetAllS
 	return nil
 }
 
-// func (ft ShopFilters) NotDeleted() sq.WriterTo {
-// 	return ft.Filter("$.deleted_at IS NULL")
-// }
-
-func GetShop(ctx context.Context, query *identitymodelx.GetShopQuery) error {
+func (st *ShopStore) GetShop(ctx context.Context, query *identitymodelx.GetShopQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
 
 	shop := new(identitymodel.Shop)
-	if err := x.Where("id = ?", query.ShopID).
+	if err := st.db.Where("id = ?", query.ShopID).
 		Where("deleted_at is NULL").
 		ShouldGet(shop); err != nil {
 		return err
@@ -71,19 +82,19 @@ func GetShop(ctx context.Context, query *identitymodelx.GetShopQuery) error {
 	return nil
 }
 
-func GetShops(ctx context.Context, query *identitymodelx.GetShopsQuery) error {
-	return x.Table("shop").
+func (st *ShopStore) GetShops(ctx context.Context, query *identitymodelx.GetShopsQuery) error {
+	return st.db.Table("shop").
 		In("id", query.ShopIDs).
 		Find((*identitymodel.Shops)(&query.Result.Shops))
 }
 
-func GetShopExtended(ctx context.Context, query *identitymodelx.GetShopExtendedQuery) error {
+func (st *ShopStore) GetShopExtended(ctx context.Context, query *identitymodelx.GetShopExtendedQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "", nil)
 	}
 
 	var shop identitymodel.ShopExtended
-	s := x.Where("s.id = ?", query.ShopID)
+	s := st.db.Where("s.id = ?", query.ShopID)
 	if !query.IncludeDeleted {
 		s = s.Where("s.deleted_at is NULL")
 	}
@@ -93,20 +104,20 @@ func GetShopExtended(ctx context.Context, query *identitymodelx.GetShopExtendedQ
 	return err
 }
 
-func GetShopWithPermission(ctx context.Context, query *identitymodelx.GetShopWithPermissionQuery) error {
+func (st *ShopStore) GetShopWithPermission(ctx context.Context, query *identitymodelx.GetShopWithPermissionQuery) error {
 	if query.ShopID == 0 || query.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
 	}
 
 	shop := new(identitymodel.Shop)
-	if err := x.Where("id = ?", query.ShopID).
+	if err := st.db.Where("id = ?", query.ShopID).
 		ShouldGet(shop); err != nil {
 		return err
 	}
 	query.Result.Shop = shop
 
 	accUser := new(identitymodel.AccountUser)
-	if err := x.
+	if err := st.db.
 		Where("account_id = ? AND user_id = ?", query.ShopID, query.UserID).
 		ShouldGet(accUser); err != nil {
 		return err
@@ -115,7 +126,7 @@ func GetShopWithPermission(ctx context.Context, query *identitymodelx.GetShopWit
 	return nil
 }
 
-func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedCreateVariantCommand) error {
+func (st *ShopStore) DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedCreateVariantCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -124,7 +135,7 @@ func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedC
 	}
 
 	productID := cmd.ProductID
-	err := x.InTransaction(ctx, func(s cmsql.QueryInterface) error {
+	err := st.db.InTransaction(ctx, func(s cmsql.QueryInterface) error {
 		variant := &catalogmodel.ShopVariant{
 			ShopID:      cmd.ShopID,
 			VariantID:   cm.NewID(),
@@ -166,11 +177,11 @@ func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedC
 			}
 			variant.ProductID = product.ProductID
 			productID = product.ProductID
-			if err := x.ShouldInsert(product); err != nil {
+			if err := st.db.ShouldInsert(product); err != nil {
 				return err
 			}
 		}
-		return x.ShouldInsert(variant)
+		return st.db.ShouldInsert(variant)
 	})
 	if err != nil {
 		errMsg := err.Error()
@@ -192,7 +203,7 @@ func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedC
 	return nil
 }
 
-func CreateShopCategory(ctx context.Context, cmd *catalogmodelx.CreateShopCategoryCommand) error {
+func (st *ShopStore) CreateShopCategory(ctx context.Context, cmd *catalogmodelx.CreateShopCategoryCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -203,7 +214,7 @@ func CreateShopCategory(ctx context.Context, cmd *catalogmodelx.CreateShopCatego
 	name = strings.Title(name)
 
 	var productSourceCategory = new(catalogmodel.ShopCategory)
-	s := x.Table("shop_category").Where("shop_id = ? AND name = ?", cmd.ShopID, name)
+	s := st.db.Table("shop_category").Where("shop_id = ? AND name = ?", cmd.ShopID, name)
 	if cmd.ParentID != 0 {
 		s = s.Where("parent_id = ?", cmd.ParentID)
 	}
@@ -223,14 +234,14 @@ func CreateShopCategory(ctx context.Context, cmd *catalogmodelx.CreateShopCatego
 		Name:     name,
 	}
 
-	if err := x.Table("shop_category").ShouldInsert(psCategory); err != nil {
+	if err := st.db.Table("shop_category").ShouldInsert(psCategory); err != nil {
 		return err
 	}
 	cmd.Result = psCategory
 	return nil
 }
 
-func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProductsShopCategoryCommand) error {
+func (st *ShopStore) UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProductsShopCategoryCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -239,7 +250,7 @@ func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProd
 	}
 
 	category := new(catalogmodel.ShopCategory)
-	if has, err := x.Table("shop_category").
+	if has, err := st.db.Table("shop_category").
 		Where("id = ? AND shop_id = ?", cmd.CategoryID, cmd.ShopID).
 		Get(category); err != nil {
 		return nil
@@ -247,7 +258,7 @@ func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProd
 		return cm.Error(cm.NotFound, "ShopCategory not found", nil)
 	}
 
-	if updated, err := x.Table("shop_product").
+	if updated, err := st.db.Table("shop_product").
 		Where("shop_id = ?", cmd.ShopID).
 		In("product_id", cmd.ProductIDs).
 		UpdateMap(M{"category_id": cmd.CategoryID}); err != nil {

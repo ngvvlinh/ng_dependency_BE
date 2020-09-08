@@ -20,11 +20,11 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
 	shop2 "o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/capi/util"
 )
@@ -39,6 +39,8 @@ type ReceiptService struct {
 	ReceiptQuery  receipting.QueryBus
 	SupplierQuery suppliering.QueryBus
 	TraderQuery   tradering.QueryBus
+
+	AccountUserStore sqlstore.AccountUserStoreInterface
 }
 
 func (s *ReceiptService) Clone() api.ReceiptService { res := *s; return &res }
@@ -242,7 +244,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 		AccountIDs:     []dot.ID{shopID},
 		IncludeDeleted: true,
 	}
-	if err := bus.Dispatch(ctx, getUsersOfCurrAccount); err != nil {
+	if err := s.AccountUserStore.GetAccountUserExtendeds(ctx, getUsersOfCurrAccount); err != nil {
 		return nil, err
 	}
 	mapUserIDAndUser := make(map[dot.ID]*identitymodel.User)

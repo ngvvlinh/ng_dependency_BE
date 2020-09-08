@@ -1,4 +1,4 @@
-package login
+package sqlstore
 
 import (
 	"bytes"
@@ -13,16 +13,9 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
-
-var ll = l.New()
-
-func init() {
-	bus.AddHandler("login", LoginUser)
-}
 
 type LoginUserQuery struct {
 	UserID       dot.ID
@@ -37,6 +30,14 @@ type LoginUserQuery struct {
 const MsgLoginNotFound = `Người dùng chưa đăng ký. Vui lòng kiểm tra lại thông tin đăng nhập (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ %v.`
 const MsgLoginUnauthenticated = `Mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập (hoặc đăng ký nếu chưa có tài khoản). Nếu cần thêm thông tin, vui lòng liên hệ %v.`
 
+type LoginInterface interface {
+	LoginUser(ctx context.Context, query *LoginUserQuery) error
+}
+
+type Login struct {
+	UserStore UserStoreInterface
+}
+
 // Login flow
 // 1. Get user
 // 2. Check if the user activated
@@ -45,12 +46,12 @@ const MsgLoginUnauthenticated = `Mật khẩu không đúng. Vui lòng kiểm tr
 //   - verify the generated password
 //   - activate user
 //   - then login
-func LoginUser(ctx context.Context, query *LoginUserQuery) error {
+func (login *Login) LoginUser(ctx context.Context, query *LoginUserQuery) error {
 	userQuery := &identitymodelx.GetUserByLoginQuery{
 		UserID:       query.UserID,
 		PhoneOrEmail: query.PhoneOrEmail,
 	}
-	if err := bus.Dispatch(ctx, userQuery); err != nil {
+	if err := login.UserStore.GetUserByLogin(ctx, userQuery); err != nil {
 		if cm.ErrorCode(err) == cm.NotFound {
 			return cm.Errorf(cm.NotFound, nil, MsgLoginNotFound, wl.X(ctx).CSEmail).
 				Log("NotFound: user does not exist")

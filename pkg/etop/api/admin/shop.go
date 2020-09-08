@@ -9,9 +9,9 @@ import (
 	pbcm "o.o/api/top/types/common"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
@@ -20,6 +20,7 @@ type ShopService struct {
 	session.Session
 
 	IdentityQuery identity.QueryBus
+	ShopStore     sqlstore.ShopStoreInterface
 }
 
 func (s *ShopService) Clone() admin.ShopService {
@@ -31,7 +32,7 @@ func (s *ShopService) GetShop(ctx context.Context, q *pbcm.IDRequest) (*etop.Sho
 	query := &identitymodelx.GetShopExtendedQuery{
 		ShopID: q.Id,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.ShopStore.GetShopExtended(ctx, query); err != nil {
 		return nil, err
 	}
 	result := convertpb.PbShopExtended(query.Result)

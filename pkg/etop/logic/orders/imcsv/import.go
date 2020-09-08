@@ -31,7 +31,6 @@ import (
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/redis"
@@ -40,6 +39,7 @@ import (
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/etop/upload"
 	"o.o/backend/tools/pkg/acl" // TODO: remove this
 	"o.o/capi/dot"
@@ -52,6 +52,9 @@ type Import struct {
 	uploader         *upload.Uploader
 	locationBus      location.QueryBus
 	shopVariantStore catalogsqlstore.ShopVariantStoreFactory
+
+	OrderStore         sqlstore.OrderStoreInterface
+	ExportAttemptStore sqlstore.ExportAttemptStoreInterface
 }
 
 func New(auth *auth.Authorizer, _locationBus location.QueryBus, rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
@@ -193,7 +196,7 @@ func (im *Import) handleImportOrder(ctx context.Context, c *httpx.Context, shop 
 		createAttemptCmd := &model.CreateImportAttemptCommand{
 			ImportAttempt: attempt,
 		}
-		if err = bus.Dispatch(ctx, createAttemptCmd); err != nil {
+		if err = im.ExportAttemptStore.CreateImportAttempt(ctx, createAttemptCmd); err != nil {
 			_err = err
 		}
 	}()
@@ -295,7 +298,7 @@ func (im *Import) handleImportOrder(ctx context.Context, c *httpx.Context, shop 
 		cmd := &modelx.CreateOrderCommand{
 			Order: order,
 		}
-		err := bus.Dispatch(ctx, cmd)
+		err := im.OrderStore.CreateOrder(ctx, cmd)
 		_errs[i] = err
 	}
 	if xerrors.Errors(_errs).IsAll() {

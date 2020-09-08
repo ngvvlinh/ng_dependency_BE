@@ -20,7 +20,6 @@ import (
 	"o.o/backend/com/main/inventory/util"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/capi/dot"
 )
 
@@ -553,7 +552,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 		OrderID: args.RefID,
 		ShopID:  args.ShopID,
 	}
-	if err := bus.Dispatch(ctx, queryOrder); err != nil {
+	if err := q.OrderStore.GetOrder(ctx, queryOrder); err != nil {
 		return nil, err
 	}
 	// GET info and put it to cmd

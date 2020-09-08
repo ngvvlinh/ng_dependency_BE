@@ -20,7 +20,6 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel/templatemessages"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/backend/pkg/common/validate"
@@ -30,7 +29,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/claims"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/authorize/tokens"
-	"o.o/backend/pkg/etop/logic/usering"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/sms"
 	"o.o/capi/dot"
@@ -48,6 +47,12 @@ type IntegrationService struct {
 	TokenStore  tokens.TokenStore
 	SMSClient   *sms.Client
 	EmailClient *email.Client
+
+	UserStore        sqlstore.UserStoreInterface
+	AccountStore     sqlstore.AccountStoreInterface
+	AccountUserStore sqlstore.AccountUserStoreInterface
+	PartnerStore     sqlstore.PartnerStoreInterface
+	ShopStore        sqlstore.ShopStoreInterface
 }
 
 func (s *IntegrationService) Clone() integration.IntegrationService {
@@ -75,7 +80,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *integration.InitReques
 		relationQuery = &identitymodelx.GetPartnerRelationQuery{
 			AuthKey: q.AuthToken,
 		}
-		relationError = bus.Dispatch(ctx, relationQuery)
+		relationError = s.PartnerStore.GetPartnerRelationQuery(ctx, relationQuery)
 		if relationError != nil {
 			return nil, cm.MapError(relationError).
 				Map(cm.NotFound, cm.PermissionDenied, "").
@@ -106,7 +111,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *integration.InitReques
 			AccountID:         requestInfo.ShopID,
 			ExternalAccountID: requestInfo.ExternalShopID,
 		}
-		relationError = bus.Dispatch(ctx, relationQuery)
+		relationError = s.PartnerStore.GetPartnerRelationQuery(ctx, relationQuery)
 		// the error will be handled later
 
 	default:
@@ -127,7 +132,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *integration.InitReques
 			PartnerID:      partner.ID,
 			ExternalUserID: requestInfo.ExternalUserID,
 		}
-		err := bus.Dispatch(ctx, relationQuery)
+		err := s.PartnerStore.GetPartnerRelationQuery(ctx, relationQuery)
 		if cm.ErrorCode(err) == cm.OK {
 			// User đã có sẵn tài khoản
 			user := relationQuery.Result.User
@@ -175,7 +180,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *integration.InitReques
 
 func (s *IntegrationService) validatePartner(ctx context.Context, partnerID dot.ID) (*identitymodel.Partner, error) {
 	partnerQuery := &identitymodelx.GetPartner{PartnerID: partnerID}
-	if err := bus.Dispatch(ctx, partnerQuery); err != nil {
+	if err := s.PartnerStore.GetPartner(ctx, partnerQuery); err != nil {
 		return nil, cm.MapError(err).Map(cm.NotFound, cm.PermissionDenied, "Mã xác thực không hợp lệ").Throw()
 	}
 	partner := partnerQuery.Result.Partner
@@ -303,7 +308,7 @@ func (s *IntegrationService) requestLogin(ctx context.Context, r *integration.Re
 		PhoneOrEmail: r.Login,
 	}
 
-	err := bus.Dispatch(ctx, userQuery)
+	err := s.UserStore.GetUserByLogin(ctx, userQuery)
 	var exists bool
 	switch cm.ErrorCode(err) {
 	case cm.NoError:
@@ -496,7 +501,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *integration
 	userQuery := &identitymodelx.GetUserByLoginQuery{
 		PhoneOrEmail: r.Login,
 	}
-	err = bus.Dispatch(ctx, userQuery)
+	err = s.UserStore.GetUserByLogin(ctx, userQuery)
 	switch cm.ErrorCode(err) {
 	case cm.OK:
 		// continue
@@ -717,7 +722,7 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 	// set default source: "partner"
 	source := user_source.Partner
 
-	cmd := &usering.CreateUserCommand{
+	cmd := &identitymodelx.CreateUserCommand{
 		UserInner: identitymodel.UserInner{
 			FullName:  fullName,
 			ShortName: "",
@@ -730,7 +735,7 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 		AgreeEmailInfo: agreeEmailInfo,
 		Source:         source,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.UserStore.CreateUser(ctx, cmd); err != nil {
 		return nil, err
 	}
 	user := cmd.Result.User
@@ -740,7 +745,7 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 			UserID:          user.ID,
 			EmailVerifiedAt: time.Now(),
 		}
-		if err := bus.Dispatch(ctx, verifyCmd); err != nil {
+		if err := s.UserStore.UpdateUserVerification(ctx, verifyCmd); err != nil {
 			ll.Error("Can not update verification", l.Error(err))
 		}
 
@@ -772,7 +777,7 @@ func (s *IntegrationService) registerUser(ctx context.Context, sendConfirmInfo b
 			UserID:          user.ID,
 			PhoneVerifiedAt: time.Now(),
 		}
-		if err := bus.Dispatch(ctx, verifyCmd); err != nil {
+		if err := s.UserStore.UpdateUserVerification(ctx, verifyCmd); err != nil {
 			ll.Error("Can not update verification", l.Error(err))
 		}
 
@@ -816,7 +821,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *integration.Gra
 	shopQuery := &identitymodelx.GetShopQuery{
 		ShopID: r.ShopId,
 	}
-	if err := bus.Dispatch(ctx, shopQuery); err != nil {
+	if err := s.ShopStore.GetShop(ctx, shopQuery); err != nil {
 		return nil, err
 	}
 	shop := shopQuery.Result
@@ -828,7 +833,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *integration.Gra
 		PartnerID: partner.ID,
 		AccountID: shop.ID,
 	}
-	err := bus.Dispatch(ctx, relQuery)
+	err := s.PartnerStore.GetPartnerRelationQuery(ctx, relQuery)
 	switch cm.ErrorCode(err) {
 	case cm.OK:
 		// verify the external_shop_id or automatically fill it
@@ -843,7 +848,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *integration.Gra
 				AccountID:  r.ShopId,
 				ExternalID: requestInfo.ExternalShopID,
 			}
-			if err := bus.Dispatch(ctx, cmd); err != nil {
+			if err := s.PartnerStore.UpdatePartnerRelationCommand(ctx, cmd); err != nil {
 				return nil, cm.Errorf(cm.Internal, err, "Không thể cập nhật thông tin tài khoản. Vui lòng liên hệ %v để được hỗ trợ.", wl.X(ctx).CSEmail).
 					WithMeta("reason", "can not update external_shop_id")
 			}
@@ -855,7 +860,7 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *integration.Gra
 			AccountID:  r.ShopId,
 			ExternalID: requestInfo.ExternalShopID,
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.PartnerStore.CreatePartnerRelation(ctx, cmd); err != nil {
 			return nil, err
 		}
 
@@ -888,7 +893,7 @@ func (s *IntegrationService) SessionInfo(ctx context.Context, q *pbcm.Empty) (*i
 		query := &identitymodelx.GetShopQuery{
 			ShopID: claim.AccountID,
 		}
-		err := bus.Dispatch(ctx, query)
+		err := s.ShopStore.GetShop(ctx, query)
 		switch cm.ErrorCode(err) {
 		case cm.OK, cm.NotFound:
 			// continue
@@ -947,7 +952,7 @@ func (s *IntegrationService) getAvailableAccounts(ctx context.Context, userID do
 		PartnerID: requestInfo.PartnerID,
 		OwnerID:   userID,
 	}
-	if err := bus.Dispatch(ctx, relationQuery); err != nil {
+	if err := s.PartnerStore.GetPartnerRelations(ctx, relationQuery); err != nil {
 		return nil, err
 	}
 
@@ -955,7 +960,7 @@ func (s *IntegrationService) getAvailableAccounts(ctx context.Context, userID do
 		UserID: userID,
 		Type:   account_type.Shop.Wrap(),
 	}
-	if err := bus.Dispatch(ctx, accQuery); err != nil {
+	if err := s.AccountUserStore.GetAllAccountRoles(ctx, accQuery); err != nil {
 		return nil, err
 	}
 	// we map from all accounts to partner relations and generate tokens for each one

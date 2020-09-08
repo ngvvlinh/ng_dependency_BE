@@ -8,15 +8,16 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_tag"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api"
-	"o.o/backend/pkg/etop/authorize/login"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
 type MiscService struct {
 	session.Session
+
+	Login sqlstore.LoginInterface
 }
 
 func (s *MiscService) Clone() admin.MiscService {
@@ -33,11 +34,11 @@ func (s *MiscService) VersionInfo(ctx context.Context, q *pbcm.Empty) (*pbcm.Ver
 }
 
 func (s *MiscService) AdminLoginAsAccount(ctx context.Context, q *admin.LoginAsAccountRequest) (*etop.LoginResponse, error) {
-	loginQuery := &login.LoginUserQuery{
+	loginQuery := &sqlstore.LoginUserQuery{
 		UserID:   s.SS.Claim().UserID,
 		Password: q.Password,
 	}
-	if err := bus.Dispatch(ctx, loginQuery); err != nil {
+	if err := s.Login.LoginUser(ctx, loginQuery); err != nil {
 		return nil, cm.MapError(err).
 			Mapf(cm.Unauthenticated, cm.Unauthenticated, "Admin password: %v", err).
 			DefaultInternal()

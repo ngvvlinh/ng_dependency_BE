@@ -15,6 +15,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/permission"
 	"o.o/backend/pkg/etop/authorize/tokens"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -42,6 +43,10 @@ type session struct {
 	isSuperAdmin bool
 	isAdmin      bool
 	isOwner      bool
+
+	st               *middleware.SessionStarter
+	AccountUserStore sqlstore.AccountUserStoreInterface
+	UserStore        sqlstore.UserStoreInterface
 }
 
 func (s *session) ensureInit() {
@@ -111,7 +116,7 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 		query := &identitymodelx.GetSignedInUserQuery{
 			UserID: claim.AdminID,
 		}
-		if err = bus.Dispatch(ctx, query); err != nil {
+		if err = s.UserStore.GetSignedInUser(ctx, query); err != nil {
 			ll.Error("Invalid AdminID", l.Error(err))
 			return ctx, nil
 		}
@@ -125,12 +130,12 @@ func (s *session) startSession(ctx context.Context, perm permission.Decl, tokenS
 		}
 	}
 
-	ok := middleware.StartSessionUser(ctx, perm.Type == permission.CurUsr || perm.Auth == permission.User, claim, &s.user) &&
-		middleware.StartSessionPartner(ctx, perm.Type == permission.Partner, claim, account, &s.partner) &&
-		middleware.StartSessionShop(ctx, perm.Type == permission.Shop, claim, account, &s.shop, &s.permission) &&
-		middleware.StartSessionAffiliate(ctx, perm.Type == permission.Affiliate, claim, account, &s.affiliate, &s.permission) &&
-		middleware.StartSessionEtopAdmin(ctx, perm.Type == permission.EtopAdmin, claim, &s.permission) &&
-		middleware.StartSessionAuthPartner(ctx, perm.AuthPartner, claim, &s.ctxPartner)
+	ok := s.st.StartSessionUser(ctx, perm.Type == permission.CurUsr || perm.Auth == permission.User, claim, &s.user) &&
+		s.st.StartSessionPartner(ctx, perm.Type == permission.Partner, claim, account, &s.partner) &&
+		s.st.StartSessionShop(ctx, perm.Type == permission.Shop, claim, account, &s.shop, &s.permission) &&
+		s.st.StartSessionAffiliate(ctx, perm.Type == permission.Affiliate, claim, account, &s.affiliate, &s.permission) &&
+		s.st.StartSessionEtopAdmin(ctx, perm.Type == permission.EtopAdmin, claim, &s.permission) &&
+		s.st.StartSessionAuthPartner(ctx, perm.AuthPartner, claim, &s.ctxPartner)
 	if !ok {
 		return ctx, cm.ErrPermissionDenied
 	}
@@ -163,7 +168,7 @@ func (s *session) verifyToken(
 	case permission.APIKey:
 		switch perm.Type {
 		case permission.Shop:
-			claim, account, err = middleware.VerifyAPIKey(ctx, tokenStr, account_type.Shop)
+			claim, account, err = s.st.VerifyAPIKey(ctx, tokenStr, account_type.Shop)
 			if err != nil {
 				return
 			}
@@ -171,7 +176,7 @@ func (s *session) verifyToken(
 			return
 
 		case permission.Partner:
-			claim, account, err = middleware.VerifyAPIKey(ctx, tokenStr, account_type.Partner)
+			claim, account, err = s.st.VerifyAPIKey(ctx, tokenStr, account_type.Partner)
 			if err != nil {
 				return
 			}
@@ -189,7 +194,7 @@ func (s *session) verifyToken(
 		}
 
 	case permission.APIPartnerShopKey:
-		claim, account, err = middleware.VerifyAPIPartnerShopKey(ctx, tokenStr)
+		claim, account, err = s.st.VerifyAPIPartnerShopKey(ctx, tokenStr)
 		if err != nil {
 			return
 		}
@@ -197,7 +202,7 @@ func (s *session) verifyToken(
 		return
 
 	case permission.APIPartnerCarrierKey:
-		claim, account, err = middleware.VerifyAPIKey(ctx, tokenStr, account_type.Carrier)
+		claim, account, err = s.st.VerifyAPIKey(ctx, tokenStr, account_type.Carrier)
 		if err != nil {
 			return
 		}

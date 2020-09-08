@@ -15,16 +15,16 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/com/main/invitation/convert"
 	"o.o/backend/com/main/invitation/model"
-	"o.o/backend/com/main/invitation/sqlstore"
+	invstore "o.o/backend/com/main/invitation/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/templatemessages"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
-	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/sms"
 	"o.o/capi"
@@ -40,12 +40,16 @@ type InvitationAggregate struct {
 	db            *cmsql.Database
 	eventBus      capi.EventBus
 	jwtKey        string
-	store         sqlstore.InvitationStoreFactory
+	store         invstore.InvitationStoreFactory
 	customerQuery customering.QueryBus
 	identityQuery identity.QueryBus
 	smsClient     *sms.Client
 	emailClient   *email.Client
 	flagNewLink   FlagEnableNewLinkInvitation
+
+	AccountUserStore sqlstore.AccountUserStoreInterface
+	ShopStore        sqlstore.ShopStoreInterface
+	UserStore        sqlstore.UserStoreInterface
 }
 
 func NewInvitationAggregate(
@@ -56,19 +60,24 @@ func NewInvitationAggregate(
 	eventBus capi.EventBus,
 	smsClient *sms.Client,
 	emailClient *email.Client,
-	secret cc.SecretToken,
 	flagNewLink FlagEnableNewLinkInvitation,
+	AccountUserStore sqlstore.AccountUserStoreInterface,
+	ShopStore sqlstore.ShopStoreInterface,
+	UserStore sqlstore.UserStoreInterface,
 ) *InvitationAggregate {
 	return &InvitationAggregate{
-		db:            database,
-		eventBus:      eventBus,
-		store:         sqlstore.NewInvitationStore(database),
-		jwtKey:        cfg.Secret,
-		customerQuery: customerQ,
-		identityQuery: identityQ,
-		smsClient:     smsClient,
-		emailClient:   emailClient,
-		flagNewLink:   flagNewLink,
+		db:               database,
+		eventBus:         eventBus,
+		store:            invstore.NewInvitationStore(database),
+		jwtKey:           cfg.Secret,
+		customerQuery:    customerQ,
+		identityQuery:    identityQ,
+		smsClient:        smsClient,
+		emailClient:      emailClient,
+		flagNewLink:      flagNewLink,
+		AccountUserStore: AccountUserStore,
+		ShopStore:        ShopStore,
+		UserStore:        UserStore,
 	}
 }
 
@@ -208,14 +217,14 @@ func (a *InvitationAggregate) sendInvitation(ctx context.Context, args *invitati
 	getUserQuery := &identitymodelx.GetUserByIDQuery{
 		UserID: args.InvitedBy,
 	}
-	if err := bus.Dispatch(ctx, getUserQuery); err != nil {
+	if err := a.UserStore.GetUserByID(ctx, getUserQuery); err != nil {
 		return err
 	}
 
 	getAccountQuery := &identitymodelx.GetShopQuery{
 		ShopID: args.AccountID,
 	}
-	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
+	if err := a.ShopStore.GetShop(ctx, getAccountQuery); err != nil {
 		return err
 	}
 	fullName := "bạn"
@@ -300,7 +309,7 @@ func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email,
 		UserID:    userIsInvited.ID,
 		AccountID: shopID,
 	}
-	err = bus.Dispatch(ctx, getAccountUserQuery)
+	err = a.AccountUserStore.GetAccountUser(ctx, getAccountUserQuery)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 		return userIsInvited, nil
@@ -414,7 +423,7 @@ func (a *InvitationAggregate) DeleteInvitation(
 		AccountID: accountID,
 		UserID:    userID,
 	}
-	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
+	if err := a.AccountUserStore.GetAccountUserExtended(ctx, getAccountUserQuery); err != nil {
 		return 0, cm.MapError(err).
 			Wrap(cm.NotFound, "tài khoản bạn không thuộc shop này").
 			Throw()

@@ -13,6 +13,7 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type ProcessManager struct {
@@ -21,6 +22,8 @@ type ProcessManager struct {
 	addressQuery    address.QueryBus
 	addressAggr     address.CommandBus
 	identityAggr    identity.CommandBus
+
+	AccountUserStore sqlstore.AccountUserStoreInterface
 }
 
 func New(
@@ -30,13 +33,15 @@ func New(
 	invitationQ invitation.QueryBus,
 	addressQuery address.QueryBus,
 	addressAggr address.CommandBus,
+	AccountUserStore sqlstore.AccountUserStoreInterface,
 ) *ProcessManager {
 	p := &ProcessManager{
-		identityQuery:   identityQ,
-		invitationQuery: invitationQ,
-		addressQuery:    addressQuery,
-		addressAggr:     addressAggr,
-		identityAggr:    identityAggr,
+		identityQuery:    identityQ,
+		invitationQuery:  invitationQ,
+		addressQuery:     addressQuery,
+		addressAggr:      addressAggr,
+		identityAggr:     identityAggr,
+		AccountUserStore: AccountUserStore,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -81,7 +86,7 @@ func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitati
 		UserID:    userID,
 		AccountID: currInvitation.AccountID,
 	}
-	err := bus.Dispatch(ctx, getAccountUserQuery)
+	err := m.AccountUserStore.GetAccountUser(ctx, getAccountUserQuery)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 		err := m.createAccountUserWithRoles(ctx, currInvitation, currUser)
@@ -114,7 +119,7 @@ func (m *ProcessManager) createAccountUserWithRoles(
 			Position:  currInvitation.Position,
 		},
 	}
-	if err := bus.Dispatch(ctx, createAccountUserCmd); err != nil {
+	if err := m.AccountUserStore.CreateAccountUser(ctx, createAccountUserCmd); err != nil {
 		return err
 	}
 	return nil

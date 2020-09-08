@@ -5,12 +5,14 @@ import (
 
 	"o.o/api/top/int/admin"
 	notimodel "o.o/backend/com/eventhandler/notifier/model"
+	notistore "o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type NotificationService struct {
 	session.Session
+
+	NotificationStore *notistore.NotificationStore
 }
 
 func (s *NotificationService) Clone() admin.NotificationService {
@@ -28,7 +30,7 @@ func (s *NotificationService) CreateNotifications(ctx context.Context, q *admin.
 		SendAll:          q.SendAll,
 		SendNotification: true,
 	}
-	created, errored, err := sqlstore.CreateNotifications(ctx, cmd)
+	created, errored, err := s.NotificationStore.CreateNotifications(cmd)
 	if err != nil {
 		return nil, err
 	}

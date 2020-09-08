@@ -31,7 +31,7 @@ func TestQueryHandlerReturnsError(t *testing.T) {
 	})
 
 	ctx := NewRootContext(context.Background())
-	err := Dispatch(ctx, &TestQuery{})
+	err := b.Dispatch(ctx, &TestQuery{})
 	assert.Error(t, err)
 }
 

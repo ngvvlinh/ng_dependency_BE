@@ -9,7 +9,6 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -18,6 +17,11 @@ import (
 
 type AccountService struct {
 	session.Session
+
+	PartnerStore      sqlstore.PartnerStoreFactory
+	AccountStore      sqlstore.AccountStoreInterface
+	AccountUserStore  sqlstore.AccountUserStoreInterface
+	PartnerStoreIface sqlstore.PartnerStoreInterface
 }
 
 func (s *AccountService) Clone() api.AccountService {
@@ -34,7 +38,7 @@ func (s *AccountService) UpdateURLSlug(ctx context.Context, r *api.UpdateURLSlug
 	}
 
 	accQuery := &identitymodelx.GetAllAccountRolesQuery{UserID: s.SS.User().ID}
-	if err := bus.Dispatch(ctx, accQuery); err != nil {
+	if err := s.AccountUserStore.GetAllAccountRoles(ctx, accQuery); err != nil {
 		return nil, err
 	}
 
@@ -55,11 +59,11 @@ func (s *AccountService) UpdateURLSlug(ctx context.Context, r *api.UpdateURLSlug
 	}
 
 	result := &pbcm.Empty{}
-	return result, bus.Dispatch(ctx, cmd)
+	return result, s.AccountStore.UpdateAccountURLSlug(ctx, cmd)
 }
 
 func (s *AccountService) GetPublicPartnerInfo(ctx context.Context, q *pbcm.IDRequest) (*api.PublicAccountInfo, error) {
-	partner, err := sqlstore.Partner(ctx).ID(q.Id).Get()
+	partner, err := s.PartnerStore(ctx).ID(q.Id).Get()
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +77,7 @@ func (s *AccountService) GetPublicPartnerInfo(ctx context.Context, q *pbcm.IDReq
 // - list all connected partner
 func (s *AccountService) GetPublicPartners(ctx context.Context, q *pbcm.IDsRequest) (*api.PublicAccountsResponse, error) {
 	if len(q.Ids) != 0 {
-		partners, err := sqlstore.Partner(ctx).IDs(q.Ids...).IncludeDeleted().List()
+		partners, err := s.PartnerStore(ctx).IDs(q.Ids...).IncludeDeleted().List()
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +89,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *pbcm.IDsReque
 
 	accountIDs := s.SS.Claim().AccountIDs
 	if isAdmin(accountIDs) {
-		partners, err := sqlstore.Partner(ctx).IncludeDeleted().List()
+		partners, err := s.PartnerStore(ctx).IncludeDeleted().List()
 		if err != nil {
 			return nil, err
 		}
@@ -102,7 +106,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *pbcm.IDsReque
 	query := &identitymodelx.GetPartnersFromRelationQuery{
 		AccountIDs: listAccountIDs,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.PartnerStoreIface.GetPartnersFromRelation(ctx, query); err != nil {
 		return nil, err
 	}
 	result := &api.PublicAccountsResponse{

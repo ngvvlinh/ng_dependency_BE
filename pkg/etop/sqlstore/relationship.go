@@ -10,28 +10,48 @@ import (
 
 	"o.o/api/main/authorization"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
 
-func init() {
-	bus.AddHandlers("sql",
-		GetAccountUser,
-		GetAccountUserExtended,
-		GetAccountUserExtendeds,
-		GetAllAccountRoles,
-		UpdateInfos,
-		CreateAccountUser,
-		UpdateAccountUser,
-		GetAllAccountUsers,
-		DeleteAccountUser,
-		UpdateRole,
-	)
+type AccountUserStoreInterface interface {
+
+	CreateAccountUser(ctx context.Context, cmd *identitymodelx.CreateAccountUserCommand) error
+
+	DeleteAccountUser(ctx context.Context, cmd *identitymodelx.DeleteAccountUserCommand) error
+
+	GetAccountUser(ctx context.Context, query *identitymodelx.GetAccountUserQuery) error
+
+	GetAccountUserExtended(ctx context.Context, query *identitymodelx.GetAccountUserExtendedQuery) error
+
+	GetAccountUserExtendeds(ctx context.Context, query *identitymodelx.GetAccountUserExtendedsQuery) error
+
+	GetAllAccountRoles(ctx context.Context, query *identitymodelx.GetAllAccountRolesQuery) error
+
+	GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccountUsersQuery) error
+
+	UpdateAccountUser(ctx context.Context, cmd *identitymodelx.UpdateAccountUserCommand) error
+
+	UpdateInfos(ctx context.Context, cmd *identitymodelx.UpdateInfosCommand) error
+
+	UpdateRole(ctx context.Context, cmd *identitymodelx.UpdateRoleCommand) error
+}
+
+type AccountUserStore struct {
+	db *cmsql.Database
+}
+
+func NewAccountUserStore(db com.MainDB) *AccountUserStore {
+	s := &AccountUserStore{
+		db: db,
+	}
+	return s
 }
 
 var filterAccountUserWhitelist = sqlstore.FilterWhitelist{
@@ -50,12 +70,12 @@ var filterAccountUserWhitelist = sqlstore.FilterWhitelist{
 	},
 }
 
-func GetAllAccountRoles(ctx context.Context, query *identitymodelx.GetAllAccountRolesQuery) error {
+func (st *AccountUserStore) GetAllAccountRoles(ctx context.Context, query *identitymodelx.GetAllAccountRolesQuery) error {
 	if query.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
 
-	s := x.Table("account_user").
+	s := st.db.Table("account_user").
 		Where("au.user_id = ? AND au.deleted_at is NULL", query.UserID)
 
 	if query.Type.Valid {
@@ -64,13 +84,13 @@ func GetAllAccountRoles(ctx context.Context, query *identitymodelx.GetAllAccount
 	return s.Find((*identitymodel.AccountUserExtendeds)(&query.Result))
 }
 
-func UpdateInfos(ctx context.Context, cmd *identitymodelx.UpdateInfosCommand) error {
-	return inTransaction(func(s Qx) error {
-		return updateInfos(ctx, s, cmd)
+func (st *AccountUserStore) UpdateInfos(ctx context.Context, cmd *identitymodelx.UpdateInfosCommand) error {
+	return inTransaction(st.db, func(s Qx) error {
+		return st.updateInfos(ctx, s, cmd)
 	})
 }
 
-func updateInfos(ctx context.Context, s Qx, cmd *identitymodelx.UpdateInfosCommand) error {
+func (st *AccountUserStore) updateInfos(ctx context.Context, s Qx, cmd *identitymodelx.UpdateInfosCommand) error {
 	mapUpdate := make(map[string]interface{})
 	if cmd.ShortName.Valid {
 		mapUpdate["short_name"] = cmd.ShortName.String
@@ -90,7 +110,7 @@ func updateInfos(ctx context.Context, s Qx, cmd *identitymodelx.UpdateInfosComma
 	}
 
 	cmd.Result = new(identitymodel.AccountUser)
-	s = x.
+	s = st.db.
 		Where("deleted_at is NULL").
 		Where("account_id = ?", cmd.AccountID).
 		Where("user_id = ?", cmd.UserID)
@@ -98,13 +118,13 @@ func updateInfos(ctx context.Context, s Qx, cmd *identitymodelx.UpdateInfosComma
 	return s.ShouldGet(cmd.Result)
 }
 
-func UpdateRole(ctx context.Context, cmd *identitymodelx.UpdateRoleCommand) error {
-	return inTransaction(func(s Qx) error {
-		return updateRole(ctx, s, cmd)
+func (st *AccountUserStore) UpdateRole(ctx context.Context, cmd *identitymodelx.UpdateRoleCommand) error {
+	return inTransaction(st.db, func(s Qx) error {
+		return st.updateRole(ctx, s, cmd)
 	})
 }
 
-func updateRole(ctx context.Context, s Qx, cmd *identitymodelx.UpdateRoleCommand) error {
+func (st *AccountUserStore) updateRole(ctx context.Context, s Qx, cmd *identitymodelx.UpdateRoleCommand) error {
 	permission := &identitymodel.AccountUser{
 		AccountID:  cmd.AccountID,
 		UserID:     cmd.UserID,
@@ -123,7 +143,7 @@ func updateRole(ctx context.Context, s Qx, cmd *identitymodelx.UpdateRoleCommand
 	return err
 }
 
-func GetAccountUser(ctx context.Context, query *identitymodelx.GetAccountUserQuery) error {
+func (st *AccountUserStore) GetAccountUser(ctx context.Context, query *identitymodelx.GetAccountUserQuery) error {
 	if query.UserID == 0 && !query.FindByAccountID {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
@@ -132,7 +152,7 @@ func GetAccountUser(ctx context.Context, query *identitymodelx.GetAccountUserQue
 	}
 
 	query.Result = new(identitymodel.AccountUser)
-	s := x.
+	s := st.db.
 		Where("deleted_at is NULL").
 		Where("account_id = ?", query.AccountID)
 	if query.UserID != 0 && !query.FindByAccountID {
@@ -141,7 +161,7 @@ func GetAccountUser(ctx context.Context, query *identitymodelx.GetAccountUserQue
 	return s.ShouldGet(query.Result)
 }
 
-func GetAccountUserExtended(ctx context.Context, query *identitymodelx.GetAccountUserExtendedQuery) error {
+func (st *AccountUserStore) GetAccountUserExtended(ctx context.Context, query *identitymodelx.GetAccountUserExtendedQuery) error {
 	if query.UserID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
@@ -149,19 +169,19 @@ func GetAccountUserExtended(ctx context.Context, query *identitymodelx.GetAccoun
 		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 
-	return x.
+	return st.db.
 		Where("au.deleted_at is NULL").
 		Where("au.account_id = ?", query.AccountID).
 		Where("au.user_id = ?", query.UserID).
 		ShouldGet(&query.Result)
 }
 
-func GetAccountUserExtendeds(ctx context.Context, query *identitymodelx.GetAccountUserExtendedsQuery) error {
+func (st *AccountUserStore) GetAccountUserExtendeds(ctx context.Context, query *identitymodelx.GetAccountUserExtendedsQuery) error {
 	if len(query.AccountIDs) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountIDs", nil)
 	}
 
-	s := x.Table("account_user").
+	s := st.db.Table("account_user").
 		In("au.account_id", query.AccountIDs)
 	if !query.IncludeDeleted {
 		s = s.Where("au.deleted_at IS NULL")
@@ -199,31 +219,31 @@ func GetAccountUserExtendeds(ctx context.Context, query *identitymodelx.GetAccou
 	return nil
 }
 
-func CreateAccountUser(ctx context.Context, cmd *identitymodelx.CreateAccountUserCommand) error {
+func (st *AccountUserStore) CreateAccountUser(ctx context.Context, cmd *identitymodelx.CreateAccountUserCommand) error {
 	accUser := cmd.AccountUser
 	if accUser.UserID == 0 || accUser.AccountID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
 	}
 
-	err := x.Table("account_user").ShouldInsert(accUser)
+	err := st.db.Table("account_user").ShouldInsert(accUser)
 	if err != nil {
 		return err
 	}
 
 	cmd.Result = new(identitymodel.AccountUser)
-	err = x.Table("account_user").
+	err = st.db.Table("account_user").
 		Where("account_id = ? AND user_id = ?", accUser.AccountID, accUser.UserID).
 		ShouldGet(cmd.Result)
 	return err
 }
 
-func UpdateAccountUser(ctx context.Context, cmd *identitymodelx.UpdateAccountUserCommand) error {
+func (st *AccountUserStore) UpdateAccountUser(ctx context.Context, cmd *identitymodelx.UpdateAccountUserCommand) error {
 	accUser := cmd.AccountUser
 	if accUser.UserID == 0 || accUser.AccountID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
 	}
 
-	if err := x.Table("account_user").
+	if err := st.db.Table("account_user").
 		Where("user_id = ?", accUser.UserID).
 		Where("account_id = ?", accUser.AccountID).
 		ShouldUpdate(accUser); err != nil {
@@ -234,7 +254,7 @@ func UpdateAccountUser(ctx context.Context, cmd *identitymodelx.UpdateAccountUse
 	return nil
 }
 
-func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccountUsersQuery) error {
+func (st *AccountUserStore) GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccountUsersQuery) error {
 	if len(query.UserIDs) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing UserIDs", nil)
 	}
@@ -246,7 +266,7 @@ func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccount
 		go func(uID dot.ID) {
 			defer wg.Done()
 			var _res []*identitymodel.AccountUser
-			s := x.Table("account_user").
+			s := st.db.Table("account_user").
 				Where("user_id = ? AND deleted_at is NULL", uID)
 			if query.Type.Valid {
 				s = s.Where("type = ?", query.Type)
@@ -268,11 +288,11 @@ func GetAllAccountUsers(ctx context.Context, query *identitymodelx.GetAllAccount
 	return nil
 }
 
-func DeleteAccountUser(ctx context.Context, cmd *identitymodelx.DeleteAccountUserCommand) error {
+func (st *AccountUserStore) DeleteAccountUser(ctx context.Context, cmd *identitymodelx.DeleteAccountUserCommand) error {
 	if cmd.UserID == 0 || cmd.AccountID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
 	}
-	updated, err := x.Table("account_user").
+	updated, err := st.db.Table("account_user").
 		Where("account_id = ?", cmd.AccountID).
 		Where("user_id = ?", cmd.UserID).
 		UpdateMap(map[string]interface{}{

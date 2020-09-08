@@ -9,7 +9,6 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -18,6 +17,9 @@ import (
 
 type UserService struct {
 	session.Session
+
+	AccountUserStore *sqlstore.AccountUserStore
+	UserStore        sqlstore.UserStoreInterface
 }
 
 func (s *UserService) Clone() sadmin.UserService {
@@ -42,7 +44,7 @@ func (s *UserService) CreateUser(ctx context.Context, r *sadmin.SAdminCreateUser
 				Permissions: r.Permission.GetPermissions(),
 			},
 		}
-		if err := sqlstore.UpdateRole(ctx, roleCmd); err != nil {
+		if err := s.AccountUserStore.UpdateRole(ctx, roleCmd); err != nil {
 			return nil, err
 		}
 	}
@@ -61,7 +63,7 @@ func (s *UserService) ResetPassword(ctx context.Context, r *sadmin.SAdminResetPa
 		UserID:   r.UserId,
 		Password: r.Password,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := s.UserStore.SetPassword(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return &pbcm.Empty{}, nil

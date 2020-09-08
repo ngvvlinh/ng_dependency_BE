@@ -9,7 +9,6 @@ import (
 	"o.o/backend/com/main/ordering/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/imcsv"
 )
 
@@ -60,7 +59,7 @@ func (im *Import) verifyOrders(ctx context.Context, shop *identitymodel.Shop, id
 		EdCodes:          codes,
 		OnlyActiveOrders: true,
 	}
-	if err := bus.Dispatch(ctx, orderCodeQuery); err != nil {
+	if err := im.OrderStore.VerifyOrdersByEdCode(ctx, orderCodeQuery); err != nil {
 		return nil, err
 	}
 	existingCodes := orderCodeQuery.Result.EdCodes

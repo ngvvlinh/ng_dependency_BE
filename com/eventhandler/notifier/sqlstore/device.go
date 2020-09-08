@@ -7,6 +7,7 @@ import (
 	"github.com/lib/pq"
 
 	"o.o/backend/com/eventhandler/notifier/model"
+	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -19,7 +20,7 @@ type DeviceStore struct {
 
 type M map[string]interface{}
 
-func NewDeviceStore(db *cmsql.Database) *DeviceStore {
+func NewDeviceStore(db com.NotifierDB) *DeviceStore {
 	model.SQLVerifySchema(db)
 	return &DeviceStore{
 		db: db,

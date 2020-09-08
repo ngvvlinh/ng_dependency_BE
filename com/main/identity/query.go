@@ -45,9 +45,6 @@ func NewQueryService(db com.MainDB) *QueryService {
 func QueryServiceMessageBus(q *QueryService) identity.QueryBus {
 	b := bus.New()
 	h := identity.NewQueryServiceHandler(q)
-
-	// TODO: refactor pkg/etop/sqlstore.CreateShop
-	bus.AddHandler("sql", h.HandleGetUserByID)
 	return h.RegisterHandlers(b)
 }
 

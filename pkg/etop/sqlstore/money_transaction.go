@@ -15,6 +15,7 @@ import (
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
+	com "o.o/backend/com/main"
 	creditmodel "o.o/backend/com/main/credit/model"
 	creditmodelx "o.o/backend/com/main/credit/modelx"
 	identitymodel "o.o/backend/com/main/identity/model"
@@ -27,49 +28,11 @@ import (
 	shipmodely "o.o/backend/com/main/shipping/modely"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
-
-func init() {
-	bus.AddHandlers("sql",
-		CreateMoneyTransactions,
-		CreateMoneyTransaction,
-		GetMoneyTransaction,
-		GetMoneyTransactions,
-		GetMoneyTxsByMoneyTxShippingEtopID,
-		RemoveFfmsMoneyTransaction,
-		ConfirmMoneyTransaction,
-		DeleteMoneyTransaction,
-		UpdateMoneyTransaction,
-
-		CreateMoneyTransactionShippingExternal,
-		CreateMoneyTransactionShippingExternalLine,
-		RemoveMoneyTransactionShippingExternalLines,
-		ConfirmMoneyTransactionShippingExternals,
-		GetMoneyTransactionShippingExternal,
-		GetMoneyTransactionShippingExternals,
-		DeleteMoneyTransactionShippingExternal,
-		UpdateMoneyTransactionShippingExternal,
-		CreateCredit,
-		GetCredit,
-		GetCredits,
-		ConfirmCredit,
-		DeleteCredit,
-		CalcBalanceShop,
-		CalcActualUserBalance,
-		CalcAvailableUserBalance,
-
-		CreateMoneyTransactionShippingEtop,
-		GetMoneyTransactionShippingEtop,
-		GetMoneyTransactionShippingEtops,
-		UpdateMoneyTransactionShippingEtop,
-		DeleteMoneyTransactionShippingEtop,
-		ConfirmMoneyTransactionShippingEtop,
-	)
-}
 
 var zeroTime = time.Unix(0, 0)
 
@@ -110,18 +73,59 @@ var filterMoneyTransactionWhitelist = sqlstore.FilterWhitelist{
 	PrefixOrRename: map[string]string{},
 }
 
-func CreateMoneyTransactions(ctx context.Context, cmd *modelx.CreateMoneyTransactions) error {
-	return createMoneyTransactions(ctx, x, cmd)
+type MoneyTxStoreInterface interface {
+	CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceCommand) error
+
+	CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBalanceCommand) error
+
+	CalcBalanceShop(ctx context.Context, cmd *model.GetBalanceShopCommand) error
+
+	GetMoneyTransaction(ctx context.Context, query *modelx.GetMoneyTransaction) error
+
+	GetMoneyTransactionShippingEtop(ctx context.Context, query *modelx.GetMoneyTransactionShippingEtop) error
+
+	GetMoneyTransactionShippingExternal(ctx context.Context, query *modelx.GetMoneyTransactionShippingExternal) error
+
+	GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransactions) error
+
+	GetMoneyTxsByMoneyTxShippingEtopID(ctx context.Context, query *modelx.GetMoneyTxsByMoneyTxShippingEtopID) error
 }
 
-func createMoneyTransactions(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTransactions) error {
+type MoneyTxStore struct {
+	db *cmsql.Database
+
+	AccountUserStore AccountUserStoreInterface
+	ShopStore        ShopStoreInterface
+	OrderStore       OrderStoreInterface
+}
+
+func NewMoneyTxStore(
+	db com.MainDB,
+	accountUserStore AccountUserStoreInterface,
+	shopStore ShopStoreInterface,
+	orderStore OrderStoreInterface,
+) *MoneyTxStore {
+	s := &MoneyTxStore{
+		db:               db,
+		AccountUserStore: accountUserStore,
+		ShopStore:        shopStore,
+		OrderStore:       orderStore,
+	}
+	return s
+}
+
+func (st *MoneyTxStore) CreateMoneyTransactions(ctx context.Context, cmd *modelx.CreateMoneyTransactions) error {
+	return st.createMoneyTransactions(ctx, st.db, cmd)
+}
+
+func (st *MoneyTxStore) createMoneyTransactions(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTransactions) error {
 	if len(cmd.ShopIDMapFfms) == 0 {
 		return cm.Error(cm.InvalidArgument, "ShopIDMapFfms can not be empty", nil)
 	}
 
 	created := 0
 	for shopID, fulfillments := range cmd.ShopIDMapFfms {
-		totalCOD, totalAmount, totalOrders, _, fulfillmentIDs := CalcFulfillmentsInfo(fulfillments)
+		totalCOD, totalAmount, totalOrders, _, fulfillmentIDs := st.CalcFulfillmentsInfo(fulfillments)
 		shop := cmd.ShopIDMap[shopID]
 		command := &modelx.CreateMoneyTransaction{
 			Shop:           shop,
@@ -131,7 +135,7 @@ func createMoneyTransactions(ctx context.Context, x Qx, cmd *modelx.CreateMoneyT
 			TotalOrders:    totalOrders,
 		}
 
-		if err := createMoneyTransaction(ctx, x, command); err != nil {
+		if err := st.createMoneyTransaction(ctx, st.db, command); err != nil {
 			return err
 		}
 		created++
@@ -140,7 +144,7 @@ func createMoneyTransactions(ctx context.Context, x Qx, cmd *modelx.CreateMoneyT
 	return nil
 }
 
-func CalcFulfillmentsInfo(fulfillments []*shipmodel.Fulfillment) (totalCOD int, totalAmount int, totalOrders int, totalShippingFee int, ffmIDs []dot.ID) {
+func (st *MoneyTxStore) CalcFulfillmentsInfo(fulfillments []*shipmodel.Fulfillment) (totalCOD int, totalAmount int, totalOrders int, totalShippingFee int, ffmIDs []dot.ID) {
 	ffmIDs = make([]dot.ID, len(fulfillments))
 	totalCOD = 0
 	totalAmount = 0
@@ -164,11 +168,11 @@ func CalcFulfillmentsInfo(fulfillments []*shipmodel.Fulfillment) (totalCOD int, 
 	return totalCOD, totalAmount, totalOrders, totalShippingFee, ffmIDs
 }
 
-func CreateMoneyTransaction(ctx context.Context, cmd *modelx.CreateMoneyTransaction) error {
-	return createMoneyTransaction(ctx, x, cmd)
+func (st *MoneyTxStore) CreateMoneyTransaction(ctx context.Context, cmd *modelx.CreateMoneyTransaction) error {
+	return st.createMoneyTransaction(ctx, st.db, cmd)
 }
 
-func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTransaction) error {
+func (st *MoneyTxStore) createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTransaction) error {
 	// only handler for shop
 	if cmd.Shop == nil {
 		return cm.Error(cm.InvalidArgument, "Missing Shop ", nil)
@@ -184,18 +188,18 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 
 	transaction.ID = cm.NewID()
 	// generate order code
-	code, errCode := GenerateCode(ctx, x, model.CodeTypeMoneyTransaction, cmd.Shop.Code)
+	code, errCode := GenerateCode(ctx, st.db, model.CodeTypeMoneyTransaction, cmd.Shop.Code)
 	if errCode != nil {
 		return errCode
 	}
 	transaction.Code = code
-	if err := x.Table("money_transaction_shipping").ShouldInsert(transaction); err != nil {
+	if err := st.db.Table("money_transaction_shipping").ShouldInsert(transaction); err != nil {
 		return err
 	}
 
 	var fulfillments []*shipmodely.FulfillmentExtended
 	var ffms []*shipmodel.Fulfillment
-	if err := x.Table("fulfillment").Where("f.shop_id = ? AND f.type_from = ?",
+	if err := st.db.Table("fulfillment").Where("f.shop_id = ? AND f.type_from = ?",
 		cmd.Shop.ID, model.FFShop).
 		In("f.id", cmd.FulFillmentIDs).Find((*shipmodely.FulfillmentExtendeds)(&fulfillments)); err != nil {
 		return err
@@ -204,7 +208,7 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 		found := false
 		for _, ffm := range fulfillments {
 			if id == ffm.ID {
-				if err := CheckFulfillmentValid(ffm.Fulfillment); err != nil {
+				if err := st.CheckFulfillmentValid(ffm.Fulfillment); err != nil {
 					return err
 				}
 				ffms = append(ffms, ffm.Fulfillment)
@@ -216,7 +220,7 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 			return cm.Errorf(cm.NotFound, nil, "Fulfillment id not found or it has not done or it is belongs to another transaction", id)
 		}
 	}
-	totalCOD, totalAmount, totalOrders, _, _ := CalcFulfillmentsInfo(ffms)
+	totalCOD, totalAmount, totalOrders, _, _ := st.CalcFulfillmentsInfo(ffms)
 	if totalCOD != cmd.TotalCOD {
 		return cm.Error(cm.FailedPrecondition, "Total COD does not match", nil)
 	}
@@ -226,7 +230,7 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 	if totalOrders != cmd.TotalOrders {
 		return cm.Error(cm.FailedPrecondition, "Total Order does not match", nil)
 	}
-	if err := x.Table("fulfillment").In("id", cmd.FulFillmentIDs).
+	if err := st.db.Table("fulfillment").In("id", cmd.FulFillmentIDs).
 		ShouldUpdateMap(M{"money_transaction_id": transaction.ID}); err != nil {
 		return err
 	}
@@ -234,7 +238,7 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 	transaction.TotalCOD = totalCOD
 	transaction.TotalOrders = totalOrders
 	transaction.TotalAmount = totalAmount
-	if err := x.Table("money_transaction_shipping").Where("id = ?", transaction.ID).ShouldUpdate(transaction); err != nil {
+	if err := st.db.Table("money_transaction_shipping").Where("id = ?", transaction.ID).ShouldUpdate(transaction); err != nil {
 		return err
 	}
 
@@ -245,15 +249,15 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 	return nil
 }
 
-func GetMoneyTransaction(ctx context.Context, query *modelx.GetMoneyTransaction) error {
-	return getMoneyTransaction(ctx, x, query)
+func (st *MoneyTxStore) GetMoneyTransaction(ctx context.Context, query *modelx.GetMoneyTransaction) error {
+	return st.getMoneyTransaction(ctx, st.db, query)
 }
 
-func getMoneyTransaction(ctx context.Context, x Qx, query *modelx.GetMoneyTransaction) error {
+func (st *MoneyTxStore) getMoneyTransaction(ctx context.Context, x Qx, query *modelx.GetMoneyTransaction) error {
 	if query.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing transaction ID", nil)
 	}
-	s := x.Table("money_transaction_shipping").Where("id = ?", query.ID)
+	s := st.db.Table("money_transaction_shipping").Where("id = ?", query.ID)
 	if query.ShopID != 0 {
 		s = s.Where("shop_id = ?", query.ShopID)
 	}
@@ -263,7 +267,7 @@ func getMoneyTransaction(ctx context.Context, x Qx, query *modelx.GetMoneyTransa
 		return err
 	}
 	var fulfillments []*shipmodely.FulfillmentExtended
-	if err := x.Table("fulfillment").Where("f.money_transaction_id = ?", query.ID).Find((*shipmodely.FulfillmentExtendeds)(&fulfillments)); err != nil {
+	if err := st.db.Table("fulfillment").Where("f.money_transaction_id = ?", query.ID).Find((*shipmodely.FulfillmentExtendeds)(&fulfillments)); err != nil {
 		return err
 	}
 	query.Result = &txmodely.MoneyTransactionExtended{
@@ -273,8 +277,8 @@ func getMoneyTransaction(ctx context.Context, x Qx, query *modelx.GetMoneyTransa
 	return nil
 }
 
-func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransactions) error {
-	s := x.Table("money_transaction_shipping").Where("m.status != ?", status3.N)
+func (st *MoneyTxStore) GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransactions) error {
+	s := st.db.Table("money_transaction_shipping").Where("m.status != ?", status3.N)
 	if query.ShopID != 0 {
 		s = s.Where("m.shop_id = ?", query.ShopID)
 	}
@@ -316,7 +320,7 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 			}
 
 			var fulfillments []*shipmodely.FulfillmentExtended
-			if err := x.Table("fulfillment").In("f.money_transaction_id", moneyTransactionIDs).
+			if err := st.db.Table("fulfillment").In("f.money_transaction_id", moneyTransactionIDs).
 				Find((*shipmodely.FulfillmentExtendeds)(&fulfillments)); err != nil {
 				return err
 			}
@@ -333,8 +337,8 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 	return nil
 }
 
-func GetMoneyTxsByMoneyTxShippingEtopID(ctx context.Context, query *modelx.GetMoneyTxsByMoneyTxShippingEtopID) error {
-	s := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", query.MoneyTxShippingEtopID)
+func (st *MoneyTxStore) GetMoneyTxsByMoneyTxShippingEtopID(ctx context.Context, query *modelx.GetMoneyTxsByMoneyTxShippingEtopID) error {
+	s := st.db.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", query.MoneyTxShippingEtopID)
 
 	var moneyTransactions []*txmodel.MoneyTransactionShipping
 	if err := s.Find((*txmodel.MoneyTransactionShippings)(&moneyTransactions)); err != nil {
@@ -344,11 +348,11 @@ func GetMoneyTxsByMoneyTxShippingEtopID(ctx context.Context, query *modelx.GetMo
 	return nil
 }
 
-func UpdateMoneyTransaction(ctx context.Context, cmd *modelx.UpdateMoneyTransaction) error {
+func (st *MoneyTxStore) UpdateMoneyTransaction(ctx context.Context, cmd *modelx.UpdateMoneyTransaction) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing transaction ID", nil)
 	}
-	s := x.Table("money_transaction_shipping").Where("id = ?", cmd.ID)
+	s := st.db.Table("money_transaction_shipping").Where("id = ?", cmd.ID)
 	if cmd.ShopID != 0 {
 		s = s.Where("shop_id = ?", cmd.ShopID)
 	}
@@ -378,14 +382,14 @@ func UpdateMoneyTransaction(ctx context.Context, cmd *modelx.UpdateMoneyTransact
 	query := &modelx.GetMoneyTransaction{
 		ID: cmd.ID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.GetMoneyTransaction(ctx, query); err != nil {
 		return err
 	}
 	cmd.Result = query.Result
 	return nil
 }
 
-func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoneyTransaction) error {
+func (st *MoneyTxStore) RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoneyTransaction) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Mising Name", nil)
 	}
@@ -397,13 +401,13 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 	}
 
 	var transaction = new(txmodel.MoneyTransactionShipping)
-	if err := x.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).
+	if err := st.db.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).
 		ShouldGet(transaction); err != nil {
 		return err
 	}
 
 	var fulfillments []*shipmodel.Fulfillment
-	if err := x.Table("fulfillment").
+	if err := st.db.Table("fulfillment").
 		Where("shop_id = ? AND money_transaction_id = ?", cmd.ShopID, cmd.MoneyTransactionID).
 		In("id", cmd.FulfillmentIDs).Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 		return err
@@ -421,8 +425,8 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 			return cm.Error(cm.NotFound, "Fulfillment #"+strconv.Itoa(int(id))+" does not exist in this money transaction", nil)
 		}
 	}
-	return inTransaction(func(s Qx) error {
-		s2 := s.Table("fulfillment").Where("shop_id = ?", cmd.ShopID).In("id", cmd.FulfillmentIDs)
+	return inTransaction(st.db, func(tx Qx) error {
+		s2 := tx.Table("fulfillment").Where("shop_id = ?", cmd.ShopID).In("id", cmd.FulfillmentIDs)
 		if _, err := s2.UpdateMap(M{
 			"money_transaction_id":                   nil,
 			"money_transaction_shipping_external_id": nil,
@@ -430,12 +434,12 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 			return err
 		}
 		var fulfillments []*shipmodel.Fulfillment
-		if err := s.Table("fulfillment").Where("money_transaction_id = ?", cmd.MoneyTransactionID).Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
+		if err := tx.Table("fulfillment").Where("money_transaction_id = ?", cmd.MoneyTransactionID).Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 			return err
 		}
 
 		// update money_transaction
-		totalCOD, totalAmount, totalOrders, _, _ := CalcFulfillmentsInfo(fulfillments)
+		totalCOD, totalAmount, totalOrders, _, _ := st.CalcFulfillmentsInfo(fulfillments)
 		m := map[string]interface{}{
 			"total_cod":    totalCOD,
 			"total_orders": totalOrders,
@@ -446,7 +450,7 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 			m["status"] = status3.N
 		}
 
-		if err := s.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).ShouldUpdateMap(m); err != nil {
+		if err := tx.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).ShouldUpdateMap(m); err != nil {
 			return err
 		}
 
@@ -455,7 +459,7 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 			ID:     cmd.MoneyTransactionID,
 			ShopID: cmd.ShopID,
 		}
-		if err := getMoneyTransaction(ctx, s, query); err != nil {
+		if err := st.getMoneyTransaction(ctx, tx, query); err != nil {
 			return err
 		}
 
@@ -464,7 +468,7 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 	})
 }
 
-func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransaction) error {
+func (st *MoneyTxStore) ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransaction) error {
 	if cmd.MoneyTransactionID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Money transaction ID", nil)
 	}
@@ -476,7 +480,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 		ID:     cmd.MoneyTransactionID,
 		ShopID: cmd.ShopID,
 	}
-	if err := GetMoneyTransaction(ctx, query); err != nil {
+	if err := st.GetMoneyTransaction(ctx, query); err != nil {
 		return err
 	}
 	fulfillments := query.Result.Fulfillments
@@ -491,7 +495,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 		}
 		ffms[i] = ffm.Fulfillment
 	}
-	totalCOD, totalAmount, totalOrders, _, ffmIDs := CalcFulfillmentsInfo(ffms)
+	totalCOD, totalAmount, totalOrders, _, ffmIDs := st.CalcFulfillmentsInfo(ffms)
 
 	if totalCOD != cmd.TotalCOD {
 		return cm.Error(cm.FailedPrecondition, "Total COD does not match", nil)
@@ -503,9 +507,9 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 		return cm.Error(cm.FailedPrecondition, "Total Order does not match", nil)
 	}
 
-	return x.InTransaction(ctx, func(s Qx) error {
+	return st.db.InTransaction(ctx, func(tx Qx) error {
 		now := time.Now()
-		if err := s.Table("money_transaction_shipping").Where("id = ?", cmd.MoneyTransactionID).
+		if err := tx.Table("money_transaction_shipping").Where("id = ?", cmd.MoneyTransactionID).
 			ShouldUpdateMap(M{
 				"total_orders":       totalOrders,
 				"total_cod":          totalCOD,
@@ -517,7 +521,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 			return err
 		}
 
-		if err := s.Table("fulfillment").In("id", ffmIDs).
+		if err := tx.Table("fulfillment").In("id", ffmIDs).
 			ShouldUpdateMap(M{
 				"cod_etop_transfered_at": now,
 			}); err != nil {
@@ -537,7 +541,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 	})
 }
 
-func DeleteMoneyTransaction(ctx context.Context, cmd *modelx.DeleteMoneyTransaction) error {
+func (st *MoneyTxStore) DeleteMoneyTransaction(ctx context.Context, cmd *modelx.DeleteMoneyTransaction) error {
 	if cmd.MoneyTransactionID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Money Transaction ID", nil)
 	}
@@ -545,15 +549,15 @@ func DeleteMoneyTransaction(ctx context.Context, cmd *modelx.DeleteMoneyTransact
 		return cm.Error(cm.InvalidArgument, "Missing Shop ID", nil)
 	}
 	var transaction = new(txmodel.MoneyTransactionShipping)
-	if err := x.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).
+	if err := st.db.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).
 		ShouldGet(transaction); err != nil {
 		return err
 	}
 	if transaction.Status == status3.P {
 		return cm.Error(cm.FailedPrecondition, "Can not delete this money transaction", nil)
 	}
-	return inTransaction(func(s Qx) error {
-		if _, err := s.Table("fulfillment").Where("money_transaction_id = ?", cmd.MoneyTransactionID).
+	return inTransaction(st.db, func(tx Qx) error {
+		if _, err := tx.Table("fulfillment").Where("money_transaction_id = ?", cmd.MoneyTransactionID).
 			UpdateMap(M{
 				"money_transaction_id":                   nil,
 				"money_transaction_shipping_external_id": nil,
@@ -561,7 +565,7 @@ func DeleteMoneyTransaction(ctx context.Context, cmd *modelx.DeleteMoneyTransact
 			return err
 		}
 
-		if deleted, err := s.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).
+		if deleted, err := tx.Table("money_transaction_shipping").Where("id = ? AND shop_id = ?", cmd.MoneyTransactionID, cmd.ShopID).
 			Delete(&txmodel.MoneyTransactionShipping{}); err != nil {
 			return err
 		} else if deleted == 0 {
@@ -572,7 +576,7 @@ func DeleteMoneyTransaction(ctx context.Context, cmd *modelx.DeleteMoneyTransact
 	})
 }
 
-func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.CreateMoneyTransactionShippingExternal) error {
+func (st *MoneyTxStore) CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.CreateMoneyTransactionShippingExternal) error {
 	if cmd.Provider == "" {
 		return cm.Error(cm.InvalidArgument, "Vui lòng chọn nhà vận chuyển", nil)
 	}
@@ -585,8 +589,8 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 		totalCOD += line.ExternalTotalCOD
 		totalOrders++
 	}
-	return inTransaction(func(s Qx) error {
-		code, errCode := GenerateCode(ctx, s, model.CodeTypeMoneyTransactionExternal, model.TypeGHNCode)
+	return inTransaction(st.db, func(tx Qx) error {
+		code, errCode := GenerateCode(ctx, tx, model.CodeTypeMoneyTransactionExternal, model.TypeGHNCode)
 		if errCode != nil {
 			return errCode
 		}
@@ -601,7 +605,7 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 			InvoiceNumber:  cmd.InvoiceNumber,
 			BankAccount:    cmd.BankAccount,
 		}
-		if err := s.Table("money_transaction_shipping_external").ShouldInsert(externalTransaction); err != nil {
+		if err := tx.Table("money_transaction_shipping_external").ShouldInsert(externalTransaction); err != nil {
 			return err
 		}
 
@@ -618,7 +622,7 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 				MoneyTransactionShippingExternalID: externalTransaction.ID,
 				ExternalTotalShippingFee:           line.ExternalTotalShippingFee,
 			}
-			if err := createMoneyTransactionShippingExternalLine(ctx, s, createCmd); err != nil {
+			if err := st.createMoneyTransactionShippingExternalLine(ctx, tx, createCmd); err != nil {
 				return err
 			}
 			if createCmd.Result.EtopFulfillmentID != 0 && createCmd.Result.ImportError == nil {
@@ -626,7 +630,7 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 			}
 		}
 		if len(ffmIDs) > 0 {
-			if err := s.Table("fulfillment").In("id", ffmIDs).ShouldUpdateMap(M{
+			if err := tx.Table("fulfillment").In("id", ffmIDs).ShouldUpdateMap(M{
 				"money_transaction_shipping_external_id": externalTransaction.ID,
 			}); err != nil {
 				return err
@@ -636,7 +640,7 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 		query := &modelx.GetMoneyTransactionShippingExternal{
 			ID: externalTransaction.ID,
 		}
-		if err := getMoneyTransactionShippingExternal(ctx, s, query); err != nil {
+		if err := st.getMoneyTransactionShippingExternal(ctx, tx, query); err != nil {
 			return err
 		}
 		cmd.Result = query.Result
@@ -644,11 +648,11 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 	})
 }
 
-func CreateMoneyTransactionShippingExternalLine(ctx context.Context, cmd *modelx.CreateMoneyTransactionShippingExternalLine) error {
-	return createMoneyTransactionShippingExternalLine(ctx, x, cmd)
+func (st *MoneyTxStore) CreateMoneyTransactionShippingExternalLine(ctx context.Context, cmd *modelx.CreateMoneyTransactionShippingExternalLine) error {
+	return st.createMoneyTransactionShippingExternalLine(ctx, st.db, cmd)
 }
 
-func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTransactionShippingExternalLine) error {
+func (st *MoneyTxStore) createMoneyTransactionShippingExternalLine(ctx context.Context, tx Qx, cmd *modelx.CreateMoneyTransactionShippingExternalLine) error {
 	if cmd.MoneyTransactionShippingExternalID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing MoneyTransactionShippingExternalID", nil)
 	}
@@ -671,7 +675,7 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 		}
 	} else {
 		var ffm = new(shipmodel.Fulfillment)
-		if has, err := x.Table("fulfillment").Where("shipping_code = ?", line.ExternalCode).Get(ffm); err != nil || !has {
+		if has, err := tx.Table("fulfillment").Where("shipping_code = ?", line.ExternalCode).Get(ffm); err != nil || !has {
 			line.ImportError = &model.Error{
 				Code: "ffm_not_found",
 				Msg:  "Không tìm thấy vận đơn trên Etop",
@@ -731,7 +735,7 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 		}
 
 	}
-	if err := x.Table("money_transaction_shipping_external_line").ShouldInsert(line); err != nil {
+	if err := tx.Table("money_transaction_shipping_external_line").ShouldInsert(line); err != nil {
 		return err
 	}
 	cmd.Result = line
@@ -739,7 +743,7 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 	return nil
 }
 
-func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *modelx.RemoveMoneyTransactionShippingExternalLines) error {
+func (st *MoneyTxStore) RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *modelx.RemoveMoneyTransactionShippingExternalLines) error {
 	if cmd.MoneyTransactionShippingExternalID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Money Transaction Shipping External ID", nil)
 	}
@@ -748,13 +752,13 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 	}
 
 	var transaction = new(txmodel.MoneyTransactionShippingExternal)
-	if err := x.Table("money_transaction_shipping_external").Where("id = ?", cmd.MoneyTransactionShippingExternalID).
+	if err := st.db.Table("money_transaction_shipping_external").Where("id = ?", cmd.MoneyTransactionShippingExternalID).
 		ShouldGet(transaction); err != nil {
 		return err
 	}
 
 	var lines []*txmodel.MoneyTransactionShippingExternalLine
-	if err := x.Table("money_transaction_shipping_external_line").Where("money_transaction_shipping_external_id = ?", cmd.MoneyTransactionShippingExternalID).
+	if err := st.db.Table("money_transaction_shipping_external_line").Where("money_transaction_shipping_external_id = ?", cmd.MoneyTransactionShippingExternalID).
 		In("id", cmd.LineIDs).
 		Find((*txmodel.MoneyTransactionShippingExternalLines)(&lines)); err != nil {
 		return err
@@ -775,8 +779,8 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 			return cm.Error(cm.NotFound, "Line #"+strconv.Itoa(int(id))+" does not exist in this money transaction", nil)
 		}
 	}
-	return inTransaction(func(s Qx) error {
-		s2 := s.Table("money_transaction_shipping_external_line").
+	return inTransaction(st.db, func(tx Qx) error {
+		s2 := tx.Table("money_transaction_shipping_external_line").
 			Where("money_transaction_shipping_external_id = ?", cmd.MoneyTransactionShippingExternalID).
 			In("id", cmd.LineIDs)
 		if _, err := s2.Delete(&txmodel.MoneyTransactionShippingExternalLine{}); err != nil {
@@ -784,7 +788,7 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 		}
 
 		if len(ffmIDs) > 0 {
-			if err := s.Table("fulfillment").In("id", ffmIDs).ShouldUpdateMap(M{
+			if err := tx.Table("fulfillment").In("id", ffmIDs).ShouldUpdateMap(M{
 				"money_transaction_shipping_external_id": nil,
 			}); err != nil {
 				return err
@@ -792,7 +796,7 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 		}
 
 		var lines []*txmodel.MoneyTransactionShippingExternalLine
-		if err := s.Table("money_transaction_shipping_external_line").
+		if err := tx.Table("money_transaction_shipping_external_line").
 			Where("money_transaction_shipping_external_id = ?", cmd.MoneyTransactionShippingExternalID).
 			Find((*txmodel.MoneyTransactionShippingExternalLines)(&lines)); err != nil {
 			return err
@@ -813,7 +817,7 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 			m["status"] = status3.N
 		}
 
-		if err := s.Table("money_transaction_shipping_external").Where("id = ?", cmd.MoneyTransactionShippingExternalID).
+		if err := tx.Table("money_transaction_shipping_external").Where("id = ?", cmd.MoneyTransactionShippingExternalID).
 			ShouldUpdateMap(m); err != nil {
 			return err
 		}
@@ -822,7 +826,7 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 		query := &modelx.GetMoneyTransactionShippingExternal{
 			ID: cmd.MoneyTransactionShippingExternalID,
 		}
-		if err := getMoneyTransactionShippingExternal(ctx, s, query); err != nil {
+		if err := st.getMoneyTransactionShippingExternal(ctx, tx, query); err != nil {
 			return err
 		}
 
@@ -831,31 +835,31 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 	})
 }
 
-func DeleteMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.DeleteMoneyTransactionShippingExternal) error {
+func (st *MoneyTxStore) DeleteMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.DeleteMoneyTransactionShippingExternal) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Money Transaction ID", nil)
 	}
 
 	var transaction = new(txmodel.MoneyTransactionShippingExternal)
-	if err := x.Table("money_transaction_shipping_external").Where("id = ?", cmd.ID).
+	if err := st.db.Table("money_transaction_shipping_external").Where("id = ?", cmd.ID).
 		ShouldGet(transaction); err != nil {
 		return err
 	}
 	if transaction.Status == status3.P {
 		return cm.Error(cm.FailedPrecondition, "Can not delete this money transaction", nil)
 	}
-	return inTransaction(func(s Qx) error {
-		if _, err := s.Table("money_transaction_shipping_external_line").Where("money_transaction_shipping_external_id = ?", cmd.ID).
+	return inTransaction(st.db, func(tx Qx) error {
+		if _, err := tx.Table("money_transaction_shipping_external_line").Where("money_transaction_shipping_external_id = ?", cmd.ID).
 			Delete(&txmodel.MoneyTransactionShippingExternalLine{}); err != nil {
 			return err
 		}
 
-		if _, err := s.Table("fulfillment").Where("money_transaction_shipping_external_id = ?", cmd.ID).UpdateMap(M{
+		if _, err := tx.Table("fulfillment").Where("money_transaction_shipping_external_id = ?", cmd.ID).UpdateMap(M{
 			"money_transaction_shipping_external_id": nil,
 		}); err != nil {
 			return err
 		}
-		if deleted, err := s.Table("money_transaction_shipping_external").Where("id = ?", cmd.ID).
+		if deleted, err := tx.Table("money_transaction_shipping_external").Where("id = ?", cmd.ID).
 			Delete(&txmodel.MoneyTransactionShippingExternal{}); err != nil {
 			return err
 		} else if deleted == 0 {
@@ -866,11 +870,11 @@ func DeleteMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Del
 	})
 }
 
-func UpdateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.UpdateMoneyTransactionShippingExternal) error {
+func (st *MoneyTxStore) UpdateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.UpdateMoneyTransactionShippingExternal) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing transaction ID", nil)
 	}
-	s := x.Table("money_transaction_shipping_external").Where("id = ?", cmd.ID)
+	s := st.db.Table("money_transaction_shipping_external").Where("id = ?", cmd.ID)
 	var transaction = new(txmodel.MoneyTransactionShippingExternal)
 	{
 		s1 := s.Clone()
@@ -897,7 +901,7 @@ func UpdateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Upd
 	query := &modelx.GetMoneyTransactionShippingExternal{
 		ID: cmd.ID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.GetMoneyTransactionShippingExternal(ctx, query); err != nil {
 		return err
 	}
 	cmd.Result = query.Result
@@ -914,7 +918,7 @@ func UpdateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Upd
     	* Các ffms returned còn lại để nguyên, cho vào phiên sau
 */
 
-func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransactionExtended *txmodel.MoneyTransactionShippingExternalExtended) (shopFfmMap map[dot.ID][]*shipmodel.Fulfillment, _err error) {
+func (st *MoneyTxStore) PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransactionExtended *txmodel.MoneyTransactionShippingExternalExtended) (shopFfmMap map[dot.ID][]*shipmodel.Fulfillment, _err error) {
 	shopFfmMap = make(map[dot.ID][]*shipmodel.Fulfillment)
 	if externalMoneyTransactionExtended.Status != status3.Z {
 		_err = cm.Error(cm.FailedPrecondition, "Can not confirm this money transaction", nil).WithMetap("id", externalMoneyTransactionExtended.ID)
@@ -935,7 +939,7 @@ func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransa
 		ffmCodes[i] = line.ExternalCode
 	}
 	var fulfillments []*shipmodel.Fulfillment
-	if err := x.Table("fulfillment").
+	if err := st.db.Table("fulfillment").
 		In("shipping_code", ffmCodes).
 		Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 		return shopFfmMap, err
@@ -976,14 +980,14 @@ func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransa
 * Confirm multiplelity money transaction Shipping Externals
 * Collect lines to create money transaction for shop.
  */
-func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.ConfirmMoneyTransactionShippingExternals) error {
+func (st *MoneyTxStore) ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.ConfirmMoneyTransactionShippingExternals) error {
 	if len(cmd.IDs) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Money transaction shipping external ID", nil)
 	}
 	query := &modelx.GetMoneyTransactionShippingExternals{
 		IDs: cmd.IDs,
 	}
-	if err := GetMoneyTransactionShippingExternals(ctx, query); err != nil {
+	if err := st.GetMoneyTransactionShippingExternals(ctx, query); err != nil {
 		return err
 	}
 	externalTransactions := query.Result.MoneyTransactionShippingExternals
@@ -992,23 +996,23 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 	var shopIDs []dot.ID
 	shopFfmMap := make(map[dot.ID][]*shipmodel.Fulfillment)
 	for _, externalTransaction := range externalTransactions {
-		_shopFfmMap, err := PreprocessMoneyTransactionExternal(ctx, externalTransaction)
+		_shopFfmMap, err := st.PreprocessMoneyTransactionExternal(ctx, externalTransaction)
 		if err != nil {
 			return err
 		}
 		externalTransactionIDs = append(externalTransactionIDs, externalTransaction.ID)
 		for shopId, ffms := range _shopFfmMap {
-			shopFfmMap[shopId] = mergeFulfillments(shopFfmMap[shopId], ffms)
+			shopFfmMap[shopId] = st.mergeFulfillments(shopFfmMap[shopId], ffms)
 			if !cm.IDsContain(shopIDs, shopId) {
 				shopIDs = append(shopIDs, shopId)
 			}
 		}
 	}
 	{
-		_shopFfmMap := combineWithExtraFfms()
+		_shopFfmMap := st.combineWithExtraFfms()
 		// make sure do not dupplicate ffm
 		for shopId, ffms := range _shopFfmMap {
-			shopFfmMap[shopId] = mergeFulfillments(shopFfmMap[shopId], ffms)
+			shopFfmMap[shopId] = st.mergeFulfillments(shopFfmMap[shopId], ffms)
 			if !cm.IDsContain(shopIDs, shopId) {
 				shopIDs = append(shopIDs, shopId)
 			}
@@ -1017,7 +1021,7 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 	shopsQuery := &identitymodelx.GetShopsQuery{
 		ShopIDs: shopIDs,
 	}
-	if err := bus.Dispatch(ctx, shopsQuery); err != nil {
+	if err := st.ShopStore.GetShops(ctx, shopsQuery); err != nil {
 		return err
 	}
 
@@ -1035,11 +1039,11 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 		ShopIDMap:     shopsMap,
 	}
 
-	return inTransaction(func(s Qx) error {
-		if err := createMoneyTransactions(ctx, s, cmdCreateMoneyTransaction); err != nil {
+	return inTransaction(st.db, func(tx Qx) error {
+		if err := st.createMoneyTransactions(ctx, tx, cmdCreateMoneyTransaction); err != nil {
 			return err
 		}
-		if err := s.Table("money_transaction_shipping_external").In("id", externalTransactionIDs).
+		if err := tx.Table("money_transaction_shipping_external").In("id", externalTransactionIDs).
 			ShouldUpdateMap(M{
 				"status": status3.P,
 			}); err != nil {
@@ -1050,7 +1054,7 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 	})
 }
 
-func mergeFulfillments(ffms []*shipmodel.Fulfillment, subFfms []*shipmodel.Fulfillment) []*shipmodel.Fulfillment {
+func (st *MoneyTxStore) mergeFulfillments(ffms []*shipmodel.Fulfillment, subFfms []*shipmodel.Fulfillment) []*shipmodel.Fulfillment {
 	mergeFfms := append(ffms, subFfms...)
 	ffmsMap := make(map[dot.ID]*shipmodel.Fulfillment)
 	for _, _ffm := range mergeFfms {
@@ -1063,11 +1067,11 @@ func mergeFulfillments(ffms []*shipmodel.Fulfillment, subFfms []*shipmodel.Fulfi
 	return res
 }
 
-func getExtraFfms(provider shipping_provider.ShippingProvider, isNoneCOD bool, isReturned bool) ([]*shipmodel.Fulfillment, error) {
+func (st *MoneyTxStore) getExtraFfms(provider shipping_provider.ShippingProvider, isNoneCOD bool, isReturned bool) ([]*shipmodel.Fulfillment, error) {
 	// find all ffms has state: "returned" and cod_etop_transfered_at is NULL of this provider
 	// find all ffms has state "delivered" and total_cod_amount = 0
 	var ffms []*shipmodel.Fulfillment
-	s := x.Table("fulfillment").
+	s := st.db.Table("fulfillment").
 		Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", provider.String())
 
 	if isNoneCOD && isReturned {
@@ -1084,17 +1088,17 @@ func getExtraFfms(provider shipping_provider.ShippingProvider, isNoneCOD bool, i
 	return ffms, nil
 }
 
-func combineWithExtraFfms() map[dot.ID][]*shipmodel.Fulfillment {
+func (st *MoneyTxStore) combineWithExtraFfms() map[dot.ID][]*shipmodel.Fulfillment {
 	var ffmAdditionals []*shipmodel.Fulfillment
 	shopFfmMap := make(map[dot.ID][]*shipmodel.Fulfillment)
 	// merge with GHN's ffms returned or (ffm delivered and total_cod_amount = 0)
-	GHNFfms, _ := getExtraFfms(shipping_provider.GHN, true, true)
+	GHNFfms, _ := st.getExtraFfms(shipping_provider.GHN, true, true)
 	ffmAdditionals = append(ffmAdditionals, GHNFfms...)
 
 	// merge with VTPOST's ffms
-	VtpostFfms := GetVtpostExtraFfms()
+	VtpostFfms := st.GetVtpostExtraFfms()
 	ffmAdditionals = append(ffmAdditionals, VtpostFfms...)
-	ffms := FilterCombineExtraFfms(ffmAdditionals)
+	ffms := st.FilterCombineExtraFfms(ffmAdditionals)
 
 	for _, ffm := range ffms {
 		if ffm.ID == 0 {
@@ -1105,7 +1109,7 @@ func combineWithExtraFfms() map[dot.ID][]*shipmodel.Fulfillment {
 	return shopFfmMap
 }
 
-func FilterCombineExtraFfms(ffms []*shipmodel.Fulfillment) []*shipmodel.Fulfillment {
+func (st *MoneyTxStore) FilterCombineExtraFfms(ffms []*shipmodel.Fulfillment) []*shipmodel.Fulfillment {
 	// Sau khi lấy extra ffms, chỉ lấy những ffm có ConnectionMethod là TOPSHIP
 	// Xử lý backward compatible cho trường hợp ffm cũ, ko có ConnectionMethod, ShippingType (mặc định cho vào phiên luôn)
 	var res []*shipmodel.Fulfillment
@@ -1126,42 +1130,42 @@ func FilterCombineExtraFfms(ffms []*shipmodel.Fulfillment) []*shipmodel.Fulfillm
 	return res
 }
 
-func GetVtpostExtraFfms() []*shipmodel.Fulfillment {
+func (st *MoneyTxStore) GetVtpostExtraFfms() []*shipmodel.Fulfillment {
 	// find all ffms has state: "returned" & "returning" and cod_etop_transfered_at is NULL of vtpost
 	// find all ffms has state "delivered" and total_cod_amount = 0
 	var ffms []*shipmodel.Fulfillment
 	{
-		s := x.Table("fulfillment").
+		s := st.db.Table("fulfillment").
 			Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", shipping_provider.VTPost.String()).
 			Where("shipping_state in (?, ?)", shipping.Returned, shipping.Returning)
 		if err := s.Find((*shipmodel.Fulfillments)(&ffms)); err == nil {
-			UpdateVtpostShippingFeeReturned(ffms)
+			st.UpdateVtpostShippingFeeReturned(ffms)
 		}
 	}
 	{
 		// merge with VTPOST's ffms delivered and total_cod_amount = 0
-		VTPOSTFfms, _ := getExtraFfms(shipping_provider.VTPost, true, false)
+		VTPOSTFfms, _ := st.getExtraFfms(shipping_provider.VTPost, true, false)
 		ffms = append(ffms, VTPOSTFfms...)
 	}
 	return ffms
 }
 
-func GetMoneyTransactionShippingExternal(ctx context.Context, query *modelx.GetMoneyTransactionShippingExternal) error {
-	return getMoneyTransactionShippingExternal(ctx, x, query)
+func (st *MoneyTxStore) GetMoneyTransactionShippingExternal(ctx context.Context, query *modelx.GetMoneyTransactionShippingExternal) error {
+	return st.getMoneyTransactionShippingExternal(ctx, st.db, query)
 }
 
-func getMoneyTransactionShippingExternal(ctx context.Context, x Qx, query *modelx.GetMoneyTransactionShippingExternal) error {
+func (st *MoneyTxStore) getMoneyTransactionShippingExternal(ctx context.Context, tx Qx, query *modelx.GetMoneyTransactionShippingExternal) error {
 	if query.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing transaction ID", nil)
 	}
-	s := x.Table("money_transaction_shipping_external").Where("id = ?", query.ID)
+	s := tx.Table("money_transaction_shipping_external").Where("id = ?", query.ID)
 
 	var transaction = new(txmodel.MoneyTransactionShippingExternal)
 	if err := s.ShouldGet(transaction); err != nil {
 		return err
 	}
 	var lines []*txmodel.MoneyTransactionShippingExternalLineExtended
-	if err := x.Table("money_transaction_shipping_external_line").Where("m.money_transaction_shipping_external_id = ?", query.ID).
+	if err := tx.Table("money_transaction_shipping_external_line").Where("m.money_transaction_shipping_external_id = ?", query.ID).
 		Find((*txmodel.MoneyTransactionShippingExternalLineExtendeds)(&lines)); err != nil {
 		return err
 	}
@@ -1172,8 +1176,8 @@ func getMoneyTransactionShippingExternal(ctx context.Context, x Qx, query *model
 	return nil
 }
 
-func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.GetMoneyTransactionShippingExternals) error {
-	s := x.Table("money_transaction_shipping_external")
+func (st *MoneyTxStore) GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.GetMoneyTransactionShippingExternals) error {
+	s := st.db.Table("money_transaction_shipping_external")
 
 	s, _, err := sqlstore.Filters(s, query.Filters, filterMoneyTransactionWhitelist)
 	if err != nil {
@@ -1203,7 +1207,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 		}
 
 		var lines []*txmodel.MoneyTransactionShippingExternalLineExtended
-		if err := x.Table("money_transaction_shipping_external_line").In("m.money_transaction_shipping_external_id", moneyTransactionIDs).
+		if err := st.db.Table("money_transaction_shipping_external_line").In("m.money_transaction_shipping_external_id", moneyTransactionIDs).
 			Find((*txmodel.MoneyTransactionShippingExternalLineExtendeds)(&lines)); err != nil {
 			return err
 		}
@@ -1225,7 +1229,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 	return nil
 }
 
-func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
+func (st *MoneyTxStore) CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
 	if !cm.StringsContain(acceptStates, ffm.ShippingState.String()) {
 		return cm.Error(cm.FailedPrecondition, "Fulfillment #"+ffm.ShippingCode+" does not valid. Status must be delivered or returning or returned.", nil)
 	}
@@ -1248,7 +1252,7 @@ func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
 	return nil
 }
 
-func CreateCredit(ctx context.Context, cmd *creditmodelx.CreateCreditCommand) error {
+func (st *MoneyTxStore) CreateCredit(ctx context.Context, cmd *creditmodelx.CreateCreditCommand) error {
 	switch cmd.Type {
 	case credit_type.Shop:
 		if cmd.ShopID == 0 {
@@ -1268,25 +1272,25 @@ func CreateCredit(ctx context.Context, cmd *creditmodelx.CreateCreditCommand) er
 		Type:   cmd.Type,
 		PaidAt: cmd.PaidAt,
 	}
-	if err := x.Table("credit").ShouldInsert(credit); err != nil {
+	if err := st.db.Table("credit").ShouldInsert(credit); err != nil {
 		return err
 	}
 	query := &creditmodelx.GetCreditQuery{
 		ID: credit.ID,
 	}
-	if err := GetCredit(ctx, query); err != nil {
+	if err := st.GetCredit(ctx, query); err != nil {
 		return err
 	}
 	cmd.Result = query.Result
 	return nil
 }
 
-func GetCredit(ctx context.Context, query *creditmodelx.GetCreditQuery) error {
+func (st *MoneyTxStore) GetCredit(ctx context.Context, query *creditmodelx.GetCreditQuery) error {
 	if query.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
 
-	s := x.Table("credit").Where("c.id = ?", query.ID)
+	s := st.db.Table("credit").Where("c.id = ?", query.ID)
 	if query.ShopID != 0 {
 		s = s.Where("c.shop_id = ?", query.ShopID)
 	}
@@ -1298,8 +1302,8 @@ func GetCredit(ctx context.Context, query *creditmodelx.GetCreditQuery) error {
 	return nil
 }
 
-func GetCredits(ctx context.Context, query *creditmodelx.GetCreditsQuery) error {
-	s := x.Table("credit")
+func (st *MoneyTxStore) GetCredits(ctx context.Context, query *creditmodelx.GetCreditsQuery) error {
+	s := st.db.Table("credit")
 	if query.ShopID != 0 {
 		s = s.Where("c.shop_id = ?", query.ShopID)
 	}
@@ -1321,11 +1325,11 @@ func GetCredits(ctx context.Context, query *creditmodelx.GetCreditsQuery) error 
 	return nil
 }
 
-func ConfirmCredit(ctx context.Context, cmd *creditmodelx.ConfirmCreditCommand) error {
+func (st *MoneyTxStore) ConfirmCredit(ctx context.Context, cmd *creditmodelx.ConfirmCreditCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
-	s := x.Table("credit").Where("id = ?", cmd.ID)
+	s := st.db.Table("credit").Where("id = ?", cmd.ID)
 	if cmd.ShopID != 0 {
 		s = s.Where("shop_id = ?", cmd.ShopID)
 	}
@@ -1355,11 +1359,11 @@ func ConfirmCredit(ctx context.Context, cmd *creditmodelx.ConfirmCreditCommand) 
 	return nil
 }
 
-func DeleteCredit(ctx context.Context, cmd *creditmodelx.DeleteCreditCommand) error {
+func (st *MoneyTxStore) DeleteCredit(ctx context.Context, cmd *creditmodelx.DeleteCreditCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
-	s := x.Table("credit").Where("id = ?", cmd.ID)
+	s := st.db.Table("credit").Where("id = ?", cmd.ID)
 	if cmd.ShopID != 0 {
 		s = s.Where("shop_id = ?", cmd.ShopID)
 	}
@@ -1394,23 +1398,23 @@ func DeleteCredit(ctx context.Context, cmd *creditmodelx.DeleteCreditCommand) er
 	số dư = (1) + (3) - (2)
 */
 
-func CalcBalanceShop(ctx context.Context, cmd *model.GetBalanceShopCommand) error {
+func (st *MoneyTxStore) CalcBalanceShop(ctx context.Context, cmd *model.GetBalanceShopCommand) error {
 	shopID := cmd.ShopID
 	if shopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing shop ID", nil)
 	}
 
 	var totalCODAmount, totalShippingFee, totalCredit sql.NullInt64
-	return inTransaction(func(s Qx) error {
-		if err := s.SQL("SELECT SUM(total_cod_amount) from fulfillment").Where("shop_id = ? AND status != -1 AND status != 0 AND shipping_status != -2 AND etop_payment_status != 1", shopID).
+	return inTransaction(st.db, func(tx Qx) error {
+		if err := tx.SQL("SELECT SUM(total_cod_amount) from fulfillment").Where("shop_id = ? AND status != -1 AND status != 0 AND shipping_status != -2 AND etop_payment_status != 1", shopID).
 			Scan(&totalCODAmount); err != nil {
 			return err
 		}
-		if err := s.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").Where("shop_id = ? AND status != -1 AND status != 0 AND etop_payment_status != 1", shopID).
+		if err := tx.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").Where("shop_id = ? AND status != -1 AND status != 0 AND etop_payment_status != 1", shopID).
 			Scan(&totalShippingFee); err != nil {
 			return err
 		}
-		if err := s.SQL("SELECT SUM(amount) from credit").Where("shop_id = ? AND status = ? AND paid_at is not NULL", shopID, status3.P).
+		if err := tx.SQL("SELECT SUM(amount) from credit").Where("shop_id = ? AND status = ? AND paid_at is not NULL", shopID, status3.P).
 			Scan(&totalCredit); err != nil {
 			return err
 		}
@@ -1428,7 +1432,7 @@ func CalcBalanceShop(ctx context.Context, cmd *model.GetBalanceShopCommand) erro
 
 	số dư = (1) + (3) - (2)
 */
-func CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBalanceCommand) error {
+func (st *MoneyTxStore) CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBalanceCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing user ID")
 	}
@@ -1436,7 +1440,7 @@ func CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBa
 		UserIDs: []dot.ID{cmd.UserID},
 		Role:    authorization.RoleShopOwner,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.AccountUserStore.GetAllAccountUsers(ctx, query); err != nil {
 		return err
 	}
 	accounts := query.Result
@@ -1446,7 +1450,7 @@ func CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBa
 	}
 
 	var totalCODAmount, totalShippingFee, totalCredit sql.NullInt64
-	if err := x.SQL("SELECT SUM(total_cod_amount) from fulfillment").
+	if err := st.db.SQL("SELECT SUM(total_cod_amount) from fulfillment").
 		In("shop_id", shopIDs).
 		Where("status not in (-1, 0) AND etop_payment_status != 1").
 		Where("shipping_status != -2").
@@ -1454,14 +1458,14 @@ func CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBa
 		Scan(&totalCODAmount); err != nil {
 		return err
 	}
-	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
+	if err := st.db.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
 		In("shop_id", shopIDs).
 		Where("status not in (-1, 0) AND etop_payment_status != 1").
 		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
 		Scan(&totalShippingFee); err != nil {
 		return err
 	}
-	if err := x.SQL("SELECT SUM(amount) from credit").
+	if err := st.db.SQL("SELECT SUM(amount) from credit").
 		In("shop_id", shopIDs).
 		Where("status = 1 AND paid_at is not NULL").
 		Scan(&totalCredit); err != nil {
@@ -1479,7 +1483,7 @@ func CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBa
 	- COD: Chỉ tính đơn giao thành công và chưa đối soát
 	- Cước phí: đơn có trạng thái khác hủy (chưa đối soát)
 */
-func CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceCommand) error {
+func (st *MoneyTxStore) CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceCommand) error {
 	if cmd.UserID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing user ID")
 	}
@@ -1487,7 +1491,7 @@ func CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceC
 		UserIDs: []dot.ID{cmd.UserID},
 		Role:    authorization.RoleShopOwner,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.AccountUserStore.GetAllAccountUsers(ctx, query); err != nil {
 		return err
 	}
 	accounts := query.Result
@@ -1497,7 +1501,7 @@ func CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceC
 	}
 
 	var totalCODAmount, totalShippingFee, totalCredit sql.NullInt64
-	if err := x.SQL("SELECT SUM(total_cod_amount) from fulfillment").
+	if err := st.db.SQL("SELECT SUM(total_cod_amount) from fulfillment").
 		In("shop_id", shopIDs).
 		Where("status not in (0,-1) AND etop_payment_status != 1").
 		Where("shipping_status = 1").
@@ -1505,14 +1509,14 @@ func CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceC
 		Scan(&totalCODAmount); err != nil {
 		return err
 	}
-	if err := x.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
+	if err := st.db.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
 		In("shop_id", shopIDs).
 		Where("status not in (0,-1) AND etop_payment_status != 1").
 		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
 		Scan(&totalShippingFee); err != nil {
 		return err
 	}
-	if err := x.SQL("SELECT SUM(amount) from credit").
+	if err := st.db.SQL("SELECT SUM(amount) from credit").
 		In("shop_id", shopIDs).
 		Where("status = 1 AND paid_at is not NULL").
 		Scan(&totalCredit); err != nil {
@@ -1526,20 +1530,20 @@ func CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceC
 // MoneyTransactionShippingEtop
 // Include group of MoneyTransactionShipping
 
-func CreateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.CreateMoneyTransactionShippingEtop) error {
+func (st *MoneyTxStore) CreateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.CreateMoneyTransactionShippingEtop) error {
 	ids := cmd.MoneyTransactionShippingIDs
 	if len(ids) == 0 {
 		return cm.Error(cm.InvalidArgument, "MoneyTransactionIDs can not be empty", nil)
 	}
 
-	mtse, err := prepareMoneyTransactionShippingEtop(ctx, 0, ids)
+	mtse, err := st.prepareMoneyTransactionShippingEtop(ctx, 0, ids)
 	if err != nil {
 		return err
 	}
 	newID := cm.NewID()
-	_err := inTransaction(func(s Qx) error {
+	_err := inTransaction(st.db, func(tx Qx) error {
 		// generate order code
-		code, errCode := GenerateCode(ctx, s, model.CodeTypeMoneyTransactionEtop, "ETOP")
+		code, errCode := GenerateCode(ctx, tx, model.CodeTypeMoneyTransactionEtop, "ETOP")
 		if errCode != nil {
 			return errCode
 		}
@@ -1552,7 +1556,7 @@ func CreateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.CreateM
 			TotalMoneyTransaction: mtse.TotalMoneyTransaction,
 			Code:                  code,
 		}
-		if err := s.Table("money_transaction_shipping_etop").ShouldInsert(mtShippingEtop); err != nil {
+		if err := tx.Table("money_transaction_shipping_etop").ShouldInsert(mtShippingEtop); err != nil {
 			return err
 		}
 		return nil
@@ -1560,7 +1564,7 @@ func CreateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.CreateM
 	if _err != nil {
 		return _err
 	}
-	if err := x.Table("money_transaction_shipping").In("id", ids).
+	if err := st.db.Table("money_transaction_shipping").In("id", ids).
 		ShouldUpdateMap(M{"money_transaction_shipping_etop_id": newID}); err != nil {
 		return err
 	}
@@ -1568,24 +1572,24 @@ func CreateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.CreateM
 	_query := &modelx.GetMoneyTransactionShippingEtop{
 		ID: newID,
 	}
-	if err := bus.Dispatch(ctx, _query); err != nil {
+	if err := st.GetMoneyTransactionShippingEtop(ctx, _query); err != nil {
 		return err
 	}
 	cmd.Result = _query.Result
 	return nil
 }
 
-func GetMoneyTransactionShippingEtop(ctx context.Context, query *modelx.GetMoneyTransactionShippingEtop) error {
+func (st *MoneyTxStore) GetMoneyTransactionShippingEtop(ctx context.Context, query *modelx.GetMoneyTransactionShippingEtop) error {
 	if query.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing transaction ID", nil)
 	}
-	s := x.Table("money_transaction_shipping_etop").Where("id = ?", query.ID)
+	s := st.db.Table("money_transaction_shipping_etop").Where("id = ?", query.ID)
 	var transaction = new(txmodel.MoneyTransactionShippingEtop)
 	if err := s.Where("id = ?", query.ID).ShouldGet(transaction); err != nil {
 		return err
 	}
 	var moneyTransactionShippings []*txmodel.MoneyTransactionShipping
-	if err := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ? AND status != ?", query.ID, status3.N).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
+	if err := st.db.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ? AND status != ?", query.ID, status3.N).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 		return err
 	}
 	moneyTransactionShippingIDs := make([]dot.ID, len(moneyTransactionShippings))
@@ -1597,7 +1601,7 @@ func GetMoneyTransactionShippingEtop(ctx context.Context, query *modelx.GetMoney
 		IDs:                 moneyTransactionShippingIDs,
 		IncludeFulfillments: true,
 	}
-	if err := bus.Dispatch(ctx, mtQuery); err != nil {
+	if err := st.GetMoneyTransactions(ctx, mtQuery); err != nil {
 		return err
 	}
 
@@ -1608,8 +1612,8 @@ func GetMoneyTransactionShippingEtop(ctx context.Context, query *modelx.GetMoney
 	return nil
 }
 
-func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMoneyTransactionShippingEtops) error {
-	s := x.Table("money_transaction_shipping_etop")
+func (st *MoneyTxStore) GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMoneyTransactionShippingEtops) error {
+	s := st.db.Table("money_transaction_shipping_etop")
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
 		query.Paging.Sort = []string{"-updated_at"}
 	}
@@ -1638,7 +1642,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 			mtseIDs[i] = mtse.ID
 		}
 		var moneyTransactionShippings []*txmodel.MoneyTransactionShipping
-		if err := x.Table("money_transaction_shipping").In("money_transaction_shipping_etop_id", mtseIDs).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
+		if err := st.db.Table("money_transaction_shipping").In("money_transaction_shipping_etop_id", mtseIDs).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 			return err
 		}
 		mtsIDs := make([]dot.ID, len(moneyTransactionShippings))
@@ -1649,7 +1653,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 			IDs:                 mtsIDs,
 			IncludeFulfillments: true,
 		}
-		if err := bus.Dispatch(ctx, mtQuery); err != nil {
+		if err := st.GetMoneyTransactions(ctx, mtQuery); err != nil {
 			return err
 		}
 		moneyTransactionsMap := make(map[dot.ID][]*txmodely.MoneyTransactionExtended)
@@ -1668,12 +1672,12 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 	return nil
 }
 
-func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateMoneyTransactionShippingEtop) error {
+func (st *MoneyTxStore) UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateMoneyTransactionShippingEtop) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing transaction ID", nil)
 	}
 	{
-		s1 := x.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID)
+		s1 := st.db.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID)
 		var transaction = new(txmodel.MoneyTransactionShippingEtop)
 		if err := s1.ShouldGet(transaction); err != nil {
 			return err
@@ -1682,7 +1686,7 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateM
 			return cm.Error(cm.InvalidArgument, "This money transaction was confirmed. Can not update!", nil)
 		}
 	}
-	s2 := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", cmd.ID)
+	s2 := st.db.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", cmd.ID)
 	var moneyTransactionShippings []*txmodel.MoneyTransactionShipping
 	if err := s2.Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 		return err
@@ -1692,7 +1696,7 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateM
 		oldIDs[i] = mt.ID
 	}
 	newIDs := patchID(oldIDs, cmd.Adds, cmd.Deletes, cmd.ReplaceAll)
-	mtse, err := prepareMoneyTransactionShippingEtop(ctx, cmd.ID, newIDs)
+	mtse, err := st.prepareMoneyTransactionShippingEtop(ctx, cmd.ID, newIDs)
 	if err != nil {
 		return err
 	}
@@ -1700,20 +1704,20 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateM
 	mtse.InvoiceNumber = cmd.InvoiceNumber
 	mtse.BankAccount = cmd.BankAccount
 
-	err = inTransaction(func(s Qx) error {
+	err = inTransaction(st.db, func(tx Qx) error {
 		if len(oldIDs) > 0 {
-			if err := s.Table("money_transaction_shipping").In("id", oldIDs).ShouldUpdateMap(M{
+			if err := tx.Table("money_transaction_shipping").In("id", oldIDs).ShouldUpdateMap(M{
 				"money_transaction_shipping_etop_id": nil,
 			}); err != nil {
 				return err
 			}
 		}
-		if err := s.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).
+		if err := tx.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).
 			ShouldUpdate(mtse); err != nil {
 			return err
 		}
 		if len(newIDs) > 0 {
-			if err := s.Table("money_transaction_shipping").In("id", newIDs).
+			if err := tx.Table("money_transaction_shipping").In("id", newIDs).
 				ShouldUpdateMap(M{"money_transaction_shipping_etop_id": cmd.ID}); err != nil {
 				return err
 			}
@@ -1726,7 +1730,7 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateM
 	query := &modelx.GetMoneyTransactionShippingEtop{
 		ID: cmd.ID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.GetMoneyTransactionShippingEtop(ctx, query); err != nil {
 		return err
 	}
 	cmd.Result = query.Result
@@ -1751,12 +1755,12 @@ func patchID(list []dot.ID, adds, deletes, replaceAll []dot.ID) []dot.ID {
 	return newList
 }
 
-func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID dot.ID, mtIDs []dot.ID) (*txmodel.MoneyTransactionShippingEtop, error) {
+func (st *MoneyTxStore) prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID dot.ID, mtIDs []dot.ID) (*txmodel.MoneyTransactionShippingEtop, error) {
 	query := &modelx.GetMoneyTransactions{
 		IDs:                 mtIDs,
 		IncludeFulfillments: true,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.GetMoneyTransactions(ctx, query); err != nil {
 		return nil, err
 	}
 
@@ -1787,7 +1791,7 @@ func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID dot.ID, mtI
 			fulfillments = append(fulfillments, ffm.Fulfillment)
 		}
 	}
-	totalCOD, totalAmount, totalOrders, totalShippingFee, _ := CalcFulfillmentsInfo(fulfillments)
+	totalCOD, totalAmount, totalOrders, totalShippingFee, _ := st.CalcFulfillmentsInfo(fulfillments)
 
 	// hotfix: 09/07/2019
 	totalAmount += totalAmountManual
@@ -1802,19 +1806,19 @@ func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID dot.ID, mtI
 	return mtse, nil
 }
 
-func DeleteMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.DeleteMoneyTransactionShippingEtop) error {
+func (st *MoneyTxStore) DeleteMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.DeleteMoneyTransactionShippingEtop) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing MoneyTransaction ID", nil)
 	}
 	var mtse = new(txmodel.MoneyTransactionShippingEtop)
-	if err := x.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).ShouldGet(mtse); err != nil {
+	if err := st.db.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).ShouldGet(mtse); err != nil {
 		return err
 	}
 	if mtse.Status == status3.P {
 		return cm.Error(cm.FailedPrecondition, "MoneyTransaction was confirmed. Can not delete.", nil)
 	}
 	var moneyTransactionShippings []*txmodel.MoneyTransactionShipping
-	if err := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", cmd.ID).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
+	if err := st.db.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", cmd.ID).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 		return err
 	}
 	var mtIDs = make([]dot.ID, len(moneyTransactionShippings))
@@ -1824,15 +1828,15 @@ func DeleteMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.DeleteM
 		}
 		mtIDs[i] = mt.ID
 	}
-	return inTransaction(func(s Qx) error {
+	return inTransaction(st.db, func(tx Qx) error {
 		if len(mtIDs) > 0 {
-			if err := s.Table("money_transaction_shipping").In("id", mtIDs).ShouldUpdateMap(M{
+			if err := tx.Table("money_transaction_shipping").In("id", mtIDs).ShouldUpdateMap(M{
 				"money_transaction_shipping_etop_id": nil,
 			}); err != nil {
 				return err
 			}
 		}
-		if err := s.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).
+		if err := tx.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).
 			ShouldDelete(&txmodel.MoneyTransactionShippingEtop{}); err != nil {
 			return err
 		}
@@ -1841,14 +1845,14 @@ func DeleteMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.DeleteM
 	})
 }
 
-func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.ConfirmMoneyTransactionShippingEtop) error {
+func (st *MoneyTxStore) ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.ConfirmMoneyTransactionShippingEtop) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing MoneyTransaction ID", nil)
 	}
 	query := &modelx.GetMoneyTransactionShippingEtop{
 		ID: cmd.ID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := st.GetMoneyTransactionShippingEtop(ctx, query); err != nil {
 		return err
 	}
 	mtse := query.Result.MoneyTransactionShippingEtop
@@ -1871,7 +1875,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 			}
 			_ffms[j] = ffm.Fulfillment
 		}
-		_totalCOD, _totalAmount, _totalOrders, _totalFee, _ffmIDs := CalcFulfillmentsInfo(_ffms)
+		_totalCOD, _totalAmount, _totalOrders, _totalFee, _ffmIDs := st.CalcFulfillmentsInfo(_ffms)
 
 		// hotfix: 09/07/2019
 		if mt.Type == "manual" {
@@ -1900,10 +1904,10 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 		return cm.Errorf(cm.FailedPrecondition, nil, "Total Orders does not match. (expected_total_order = %v)", totalOrders)
 	}
 
-	return x.InTransaction(ctx, func(s Qx) error {
+	return st.db.InTransaction(ctx, func(tx Qx) error {
 		now := time.Now()
 		for _, mt := range _moneyTransactions {
-			if err := s.Table("money_transaction_shipping").Where("id = ?", mt.ID).
+			if err := tx.Table("money_transaction_shipping").Where("id = ?", mt.ID).
 				ShouldUpdateMap(M{
 					"total_orders":       mt.TotalOrders,
 					"total_cod":          mt.TotalCOD,
@@ -1916,7 +1920,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 			}
 		}
 		if len(ffmIDs) > 0 {
-			if err := s.Table("fulfillment").In("id", ffmIDs).
+			if err := tx.Table("fulfillment").In("id", ffmIDs).
 				ShouldUpdateMap(M{
 					"cod_etop_transfered_at": now,
 				}); err != nil {
@@ -1924,7 +1928,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 			}
 		}
 
-		if err := s.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).
+		if err := tx.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).
 			ShouldUpdateMap(M{
 				"total_orders":            totalOrders,
 				"total_cod":               totalCOD,
@@ -1950,7 +1954,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 }
 
 // CalcVtpostShippingFeeReturned: Tính cước phí trả hàng vtpost
-func CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
+func (st *MoneyTxStore) CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
 	// Nội tỉnh miễn phí trả hàng
 	// Liên tỉnh 50% cước phí chiều đi
 	from := ffm.AddressFrom
@@ -1965,14 +1969,14 @@ func CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
 	return newReturnedFee
 }
 
-func UpdateVtpostShippingFeeReturned(ffms []*shipmodel.Fulfillment) error {
+func (st *MoneyTxStore) UpdateVtpostShippingFeeReturned(ffms []*shipmodel.Fulfillment) error {
 	var updateFFms []*shipmodel.Fulfillment
 	for _, ffm := range ffms {
 		if ffm.ShippingState != shipping.Returned && ffm.ShippingState != shipping.Returning {
 			continue
 		}
 		returnedFee := shippingsharemodel.GetReturnedFee(ffm.ShippingFeeShopLines)
-		newReturnedFee := CalcVtpostShippingFeeReturned(ffm)
+		newReturnedFee := st.CalcVtpostShippingFeeReturned(ffm)
 		if newReturnedFee == 0 || newReturnedFee == returnedFee {
 			continue
 		}
@@ -1993,7 +1997,7 @@ func UpdateVtpostShippingFeeReturned(ffms []*shipmodel.Fulfillment) error {
 		Fulfillments: updateFFms,
 	}
 	ctx := context.Background()
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := st.OrderStore.UpdateFulfillments(ctx, cmd); err != nil {
 		return err
 	}
 	return nil

@@ -14,10 +14,10 @@ import (
 	shippingcarrier "o.o/backend/com/main/shipping/carrier"
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
@@ -26,6 +26,8 @@ type ShipmentService struct {
 
 	ShipmentManager   *shippingcarrier.ShipmentManager
 	ShippingAggregate shipping.CommandBus
+
+	OrderStore sqlstore.OrderStoreInterface
 }
 
 func (s *ShipmentService) Clone() api.ShipmentService { res := *s; return &res }
@@ -98,7 +100,7 @@ func (s *ShipmentService) createFulfillments(ctx context.Context, q *api.CreateF
 		ShopIDs: []dot.ID{shopID},
 		IDs:     args.Result,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.OrderStore.GetFulfillmentExtendeds(ctx, query); err != nil {
 		return nil, err
 	}
 	ffms := convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, account_tag.TagShop)
@@ -224,7 +226,7 @@ func (s *ShipmentService) CreateFulfillmentsFromImport(
 			ShopIDs: []dot.ID{shopID},
 			IDs:     ffmIDs,
 		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		if err := s.OrderStore.GetFulfillmentExtendeds(ctx, query); err != nil {
 			return nil, err
 		}
 

@@ -12,7 +12,6 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/authorization/auth"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/validate"
 	apipartner "o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/authorize/claims"
@@ -64,7 +63,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *api.Login
 			PartnerID:      partner.ID,
 			ExternalUserID: requestInfo.ExternalUserID,
 		}
-		err = bus.Dispatch(ctx, relationUserQuery)
+		err = s.PartnerStore.GetPartnerRelationQuery(ctx, relationUserQuery)
 		switch cm.ErrorCode(err) {
 		case cm.OK:
 			actionUser = "ok"
@@ -78,7 +77,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *api.Login
 		userQuery := &identitymodelx.GetUserByLoginQuery{
 			PhoneOrEmail: r.Login,
 		}
-		err = bus.Dispatch(ctx, userQuery)
+		err = s.UserStore.GetUserByLogin(ctx, userQuery)
 		switch cm.ErrorCode(err) {
 		case cm.OK:
 			actionUser = "ok"
@@ -109,7 +108,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *api.Login
 				PartnerID:  partner.ID,
 				ExternalID: requestInfo.ExternalUserID,
 			}
-			if err := bus.Dispatch(ctx, relationCmd); err != nil {
+			if err := s.PartnerStore.CreatePartnerRelation(ctx, relationCmd); err != nil {
 				return nil, err
 			}
 		}
@@ -159,7 +158,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *api.Login
 			query := &identitymodelx.GetShopQuery{
 				ShopID: acc.Id,
 			}
-			if err := bus.Dispatch(ctx, query); err != nil {
+			if err := s.ShopStore.GetShop(ctx, query); err != nil {
 				return nil, err
 			}
 			shop = query.Result
@@ -175,7 +174,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *api.Login
 			Phone:   requestInfo.ShopOwnerPhone,
 			Email:   requestInfo.ShopOwnerEmail,
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.AccountStore.CreateShop(ctx, cmd); err != nil {
 			return nil, err
 		}
 		shop = cmd.Result.Shop
@@ -187,7 +186,7 @@ func (s *IntegrationService) LoginUsingTokenWL(ctx context.Context, r *api.Login
 			AccountID:  shop.ID,
 			ExternalID: requestInfo.ExternalShopID,
 		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
+		if err := s.PartnerStore.CreatePartnerRelation(ctx, cmd); err != nil {
 			return nil, err
 		}
 	}

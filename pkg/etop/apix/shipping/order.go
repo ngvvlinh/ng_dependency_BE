@@ -19,7 +19,6 @@ import (
 	ordersqlstore "o.o/backend/com/main/ordering/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/validate"
 	convertpbint "o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/apix/convertpb"
@@ -74,7 +73,7 @@ func (s *Shipping) CreateOrder(ctx context.Context, shop *identitymodel.Shop, pa
 		OrderID:            resp.Id,
 		IncludeFulfillment: true,
 	}
-	if err = bus.Dispatch(ctx, orderQuery); err != nil {
+	if err = s.OrderStoreIface.GetOrder(ctx, orderQuery); err != nil {
 		return nil, cm.MapError(err).
 			Map(cm.NotFound, cm.Internal, "").
 			Throw()
@@ -249,7 +248,7 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, sho
 		OrderID:            orderID,
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, orderQuery); err != nil {
+	if err := s.OrderStoreIface.GetOrder(ctx, orderQuery); err != nil {
 		return nil, cm.MapError(err).
 			Map(cm.NotFound, cm.Internal, "").
 			Throw()
@@ -293,7 +292,7 @@ func (s *Shipping) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID
 		OrderID:            orderID,
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, orderQuery); err != nil {
+	if err := s.OrderStoreIface.GetOrder(ctx, orderQuery); err != nil {
 		return nil, err
 	}
 	resp2 := convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments)
@@ -309,7 +308,7 @@ func (s *Shipping) GetOrder(ctx context.Context, shopID dot.ID, r *exttypes.Orde
 		Code:               r.Code,
 		IncludeFulfillment: true,
 	}
-	if err := bus.Dispatch(ctx, orderQuery); err != nil {
+	if err := s.OrderStoreIface.GetOrder(ctx, orderQuery); err != nil {
 		return nil, err
 	}
 	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil

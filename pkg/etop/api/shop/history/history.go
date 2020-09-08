@@ -7,13 +7,15 @@ import (
 	api "o.o/api/top/int/shop"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type HistoryService struct {
 	session.Session
+
+	HistoryStore sqlstore.HistoryStoreInterface
 }
 
 func (s *HistoryService) Clone() api.HistoryService { res := *s; return &res }
@@ -45,7 +47,7 @@ func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *api.GetFu
 		Table:   "fulfillment",
 		Filters: filters,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := s.HistoryStore.GetHistory(ctx, query); err != nil {
 		return nil, err
 	}
 

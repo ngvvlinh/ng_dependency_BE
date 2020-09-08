@@ -10,17 +10,17 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/authorize/auth"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 )
 
 var _ authorization.Aggregate = &AuthorizationAggregate{}
 
 type AuthorizationAggregate struct {
-	auth *auth.Authorizer
-}
+	Auth *auth.Authorizer
 
-func NewAuthorizationAggregate(auth *auth.Authorizer) *AuthorizationAggregate {
-	return &AuthorizationAggregate{auth: auth}
+	AccountUserStore sqlstore.AccountUserStoreInterface
+	ShopStore        sqlstore.ShopStoreInterface
 }
 
 func AuthorizationAggregateMessageBus(a *AuthorizationAggregate) authorization.CommandBus {
@@ -46,7 +46,7 @@ func (a *AuthorizationAggregate) UpdatePermission(
 			Permissions: accountUser.AccountUser.Permissions,
 		},
 	}
-	if err := bus.Dispatch(ctx, updateRoleCmd); err != nil {
+	if err := a.AccountUserStore.UpdateRole(ctx, updateRoleCmd); err != nil {
 		return nil, err
 	}
 
@@ -57,7 +57,7 @@ func (a *AuthorizationAggregate) UpdatePermission(
 		ShortName: updateRoleCmd.Result.ShortName,
 		Position:  updateRoleCmd.Result.Position,
 		Roles:     convert.ConvertStringsToRoles(updateRoleCmd.Result.Permission.Roles),
-		Actions:   convert.ConvertStringsToActions(a.auth.ListActionsByRoles(updateRoleCmd.Result.Permission.Roles)),
+		Actions:   convert.ConvertStringsToActions(a.Auth.ListActionsByRoles(updateRoleCmd.Result.Permission.Roles)),
 	}
 
 	return relationship, nil
@@ -76,7 +76,7 @@ func (a *AuthorizationAggregate) UpdateRelationship(
 		ShortName: args.ShortName,
 		Position:  args.Position,
 	}
-	if err := bus.Dispatch(ctx, updateRelationshipCmd); err != nil {
+	if err := a.AccountUserStore.UpdateInfos(ctx, updateRelationshipCmd); err != nil {
 		return nil, err
 	}
 	relationship := &authorization.Relationship{
@@ -86,7 +86,7 @@ func (a *AuthorizationAggregate) UpdateRelationship(
 		ShortName: updateRelationshipCmd.Result.ShortName,
 		Position:  updateRelationshipCmd.Result.Position,
 		Roles:     convert.ConvertStringsToRoles(updateRelationshipCmd.Result.Permission.Roles),
-		Actions:   convert.ConvertStringsToActions(a.auth.ListActionsByRoles(updateRelationshipCmd.Result.Permission.Roles)),
+		Actions:   convert.ConvertStringsToActions(a.Auth.ListActionsByRoles(updateRelationshipCmd.Result.Permission.Roles)),
 	}
 	return relationship, nil
 }
@@ -109,7 +109,7 @@ func (a *AuthorizationAggregate) validateAuthorization(ctx context.Context, args
 		AccountID: args.AccountID,
 		UserID:    args.CurrUserID,
 	}
-	if err := bus.Dispatch(ctx, getCurrAccountUserQuery); err != nil {
+	if err := a.AccountUserStore.GetAccountUserExtended(ctx, getCurrAccountUserQuery); err != nil {
 		return identitymodel.AccountUserExtended{}, err
 	}
 	currAccountUser := getCurrAccountUserQuery.Result
@@ -127,7 +127,7 @@ func (a *AuthorizationAggregate) validateAuthorization(ctx context.Context, args
 		AccountID: args.AccountID,
 		UserID:    args.UserID,
 	}
-	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
+	if err := a.AccountUserStore.GetAccountUserExtended(ctx, getAccountUserQuery); err != nil {
 		return identitymodel.AccountUserExtended{}, err
 	}
 	accountUser := getAccountUserQuery.Result
@@ -174,7 +174,7 @@ func (a *AuthorizationAggregate) LeaveAccount(
 	getAccountQuery := &identitymodelx.GetShopQuery{
 		ShopID: accountID,
 	}
-	if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
+	if err := a.ShopStore.GetShop(ctx, getAccountQuery); err != nil {
 		return 0, err
 	}
 	if getAccountQuery.Result.OwnerID == userID {
@@ -185,7 +185,7 @@ func (a *AuthorizationAggregate) LeaveAccount(
 		UserID:    userID,
 		AccountID: accountID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := a.AccountUserStore.GetAccountUser(ctx, query); err != nil {
 		return 0, cm.MapError(err).
 			Wrap(cm.NotFound, "tài khoản bạn không thuộc shop này").
 			Throw()
@@ -199,7 +199,7 @@ func (a *AuthorizationAggregate) LeaveAccount(
 		AccountID: accountID,
 		UserID:    userID,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := a.AccountUserStore.DeleteAccountUser(ctx, cmd); err != nil {
 		return 0, err
 	}
 	return cmd.Result.Updated, nil
@@ -217,7 +217,7 @@ func (a *AuthorizationAggregate) RemoveUser(
 		AccountID: args.AccountID,
 		UserID:    args.UserID,
 	}
-	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
+	if err := a.AccountUserStore.GetAccountUserExtended(ctx, getAccountUserQuery); err != nil {
 		return 0, cm.MapError(err).
 			Wrap(cm.NotFound, "tài khoản bạn không thuộc shop này").
 			Throw()
@@ -235,7 +235,7 @@ func (a *AuthorizationAggregate) RemoveUser(
 		AccountID: args.AccountID,
 		UserID:    args.CurrentUserID,
 	}
-	if err := bus.Dispatch(ctx, getCurrentAccountUserQuery); err != nil {
+	if err := a.AccountUserStore.GetAccountUserExtended(ctx, getCurrentAccountUserQuery); err != nil {
 		return 0, cm.MapError(err).
 			Wrap(cm.NotFound, "tài khoản bạn không thuộc shop này").
 			Throw()
@@ -260,7 +260,7 @@ func (a *AuthorizationAggregate) RemoveUser(
 		AccountID: args.AccountID,
 		UserID:    args.UserID,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := a.AccountUserStore.DeleteAccountUser(ctx, cmd); err != nil {
 		return 0, err
 	}
 	return cmd.Result.Updated, nil
