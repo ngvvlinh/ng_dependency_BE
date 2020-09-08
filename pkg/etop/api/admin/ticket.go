@@ -8,6 +8,7 @@ import (
 	"o.o/api/supporting/ticket"
 	api "o.o/api/top/int/admin"
 	shoptypes "o.o/api/top/int/shop/types"
+	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
@@ -28,19 +29,20 @@ func (s *TicketService) GetTicket(ctx context.Context, request *api.GetTicketReq
 	queryAccount := &identity.GetAccountByIDQuery{
 		ID: request.AccountID,
 	}
-	err := s.IndentityQuery.Dispatch(ctx, queryAccount)
-	if err != nil {
+	if err := s.IndentityQuery.Dispatch(ctx, queryAccount); err != nil {
 		return nil, err
 	}
+
 	query := &ticket.GetTicketByIDQuery{
 		ID:        request.ID,
 		AccountID: request.AccountID,
 	}
-	err = s.TicketQuery.Dispatch(ctx, query)
-	if err != nil {
+	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	return convertpb.Convert_core_Ticket_to_api_Ticket(query.Result), nil
+
+	ticket := convertpb.Convert_core_Ticket_to_api_Ticket(query.Result)
+	return ticket, nil
 }
 
 func (s *TicketService) ReopenTicket(ctx context.Context, request *api.ReopenTicketRequest) (*shoptypes.Ticket, error) {
@@ -48,10 +50,10 @@ func (s *TicketService) ReopenTicket(ctx context.Context, request *api.ReopenTic
 		ID:   request.TicketID,
 		Note: request.Note,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_Ticket_to_api_Ticket(cmd.Result), nil
 }
 
@@ -103,10 +105,10 @@ func (s *TicketService) UpdateTicketComment(ctx context.Context, request *api.Up
 		Message:   request.Message,
 		ImageUrls: imageUrls,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_TicketComment_to_api_TicketComment(cmd.Result), nil
 }
 
@@ -138,10 +140,10 @@ func (s *TicketService) GetTicketComments(ctx context.Context, request *api.GetT
 		Filter: filter,
 		Paging: *paging,
 	}
-	err := s.TicketQuery.Dispatch(ctx, query)
-	if err != nil {
+	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
+
 	return &api.GetTicketCommentsResponse{
 		TicketComments: convertpb.Convert_core_TicketComments_to_api_TicketComments(query.Result.TicketComments),
 		Paging:         cmapi.PbPaging(query.Paging),
@@ -153,8 +155,7 @@ func (s *TicketService) CreateTicket(ctx context.Context, request *api.CreateTic
 	query := &identity.GetAccountByIDQuery{
 		ID: request.AccountID,
 	}
-	err := s.IndentityQuery.Dispatch(ctx, query)
-	if err != nil {
+	if err := s.IndentityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	cmd := &ticket.CreateTicketCommand{
@@ -170,11 +171,12 @@ func (s *TicketService) CreateTicket(ctx context.Context, request *api.CreateTic
 		CreatedBy:     userID,
 		CreatedName:   s.SS.User().FullName,
 		CreatedSource: account_type.Etop,
+		RefTicketID:   request.RefTicketID,
 	}
-	err = s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_Ticket_to_api_Ticket(cmd.Result), nil
 }
 
@@ -197,8 +199,7 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 			query := &identity.GetAccountByIDQuery{
 				ID: request.Filter.AccountID,
 			}
-			err := s.IndentityQuery.Dispatch(ctx, query)
-			if err != nil {
+			if err := s.IndentityQuery.Dispatch(ctx, query); err != nil {
 				return nil, err
 			}
 		}
@@ -209,14 +210,13 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 		Filter: filter,
 		Paging: *paging,
 	}
-	err := s.TicketQuery.Dispatch(ctx, query)
-	if err != nil {
+	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.Convert_core_Tickets_to_api_Tickets(query.Result.Tickets)
+	tickets := convertpb.Convert_core_Tickets_to_api_Tickets(query.Result.Tickets)
 	return &api.GetTicketsResponse{
 		Paging:  cmapi.PbPaging(query.Paging),
-		Tickets: result,
+		Tickets: tickets,
 	}, nil
 }
 
@@ -234,10 +234,10 @@ func (s *TicketService) AssignTicket(ctx context.Context, request *api.AssignTic
 		IsLeader:        isLeader,
 		AssignedUserIDs: request.AssignedUserIDs,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_Ticket_to_api_Ticket(cmd.Result), nil
 }
 
@@ -246,10 +246,10 @@ func (s *TicketService) UnassignTicket(ctx context.Context, request *api.AssignT
 		ID:        request.TicketID,
 		UpdatedBy: s.SS.User().ID,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_Ticket_to_api_Ticket(cmd.Result), nil
 }
 
@@ -268,8 +268,7 @@ func (s *TicketService) ConfirmTicket(ctx context.Context, request *api.ConfirmT
 		Note:      request.Note,
 		Result:    nil,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return convertpb.Convert_core_Ticket_to_api_Ticket(cmd.Result), nil
@@ -290,10 +289,10 @@ func (s *TicketService) CloseTicket(ctx context.Context, request *api.CloseTicke
 		Note:     request.Note,
 		State:    request.State,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_Ticket_to_api_Ticket(cmd.Result), nil
 }
 
@@ -304,10 +303,10 @@ func (s *TicketService) CreateTicketLabel(ctx context.Context, request *api.Crea
 		Color:    request.Color,
 		ParentID: request.ParentID,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_TicketLabel_to_api_TicketLabel(cmd.Result), nil
 }
 
@@ -319,10 +318,10 @@ func (s *TicketService) UpdateTicketLabel(ctx context.Context, request *api.Upda
 		Code:     request.Code,
 		ParentID: request.ParentID,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_TicketLabel_to_api_TicketLabel(cmd.Result), nil
 }
 
@@ -331,11 +330,34 @@ func (s *TicketService) DeleteTicketLabel(ctx context.Context, request *api.Dele
 		ID:          request.ID,
 		DeleteChild: request.DeleteChild,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return &api.DeleteTicketLabelResponse{
 		Count: 1,
 	}, nil
+}
+
+func (s *TicketService) GetTicketsByRefTicketID(ctx context.Context, r *shoptypes.GetTicketsByRefTicketIDRequest) (*shoptypes.GetTicketsByRefTicketIDResponse, error) {
+	query := &ticket.ListTicketsByRefTicketIDQuery{
+		RefTicketID: r.RefTicketID,
+	}
+	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	return &shoptypes.GetTicketsByRefTicketIDResponse{
+		Tickets: convertpb.Convert_core_Tickets_to_api_Tickets(query.Result),
+	}, nil
+}
+
+func (s *TicketService) UpdateTicketRefTicketID(ctx context.Context, r *api.UpdateTicketRefTicketIDRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &ticket.UpdateTicketRefTicketIDCommand{
+		ID:          r.ID,
+		RefTicketID: r.RefTicketID,
+	}
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return cmd.Result, nil
 }

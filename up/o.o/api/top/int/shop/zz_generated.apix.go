@@ -10,6 +10,7 @@ import (
 	http "net/http"
 
 	etop "o.o/api/top/int/etop"
+	shoptypes "o.o/api/top/int/shop/types"
 	inttypes "o.o/api/top/int/types"
 	common "o.o/api/top/types/common"
 	capi "o.o/capi"
@@ -4757,6 +4758,7 @@ const Path_Ticket_DeleteTicketComment = "/shop.Ticket/DeleteTicketComment"
 const Path_Ticket_GetTicket = "/shop.Ticket/GetTicket"
 const Path_Ticket_GetTicketComments = "/shop.Ticket/GetTicketComments"
 const Path_Ticket_GetTickets = "/shop.Ticket/GetTickets"
+const Path_Ticket_GetTicketsByRefTicketID = "/shop.Ticket/GetTicketsByRefTicketID"
 const Path_Ticket_UpdateTicketComment = "/shop.Ticket/UpdateTicketComment"
 
 func (s *TicketServiceServer) PathPrefix() string {
@@ -4867,6 +4869,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 				return
 			}
 			resp, err = inner.GetTickets(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/GetTicketsByRefTicketID":
+		msg := &shoptypes.GetTicketsByRefTicketIDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetTicketsByRefTicketID(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

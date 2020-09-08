@@ -128,6 +128,7 @@ func convert_ticketmodel_Ticket_ticket_Ticket(arg *ticketmodel.Ticket, out *tick
 	out.AssignedUserIDs = arg.AssignedUserIDs // simple assign
 	out.AccountID = arg.AccountID             // simple assign
 	out.LabelIDs = arg.LabelIDs               // simple assign
+	out.RefTicketID = arg.RefTicketID         // simple assign
 	out.Title = arg.Title                     // simple assign
 	out.Description = arg.Description         // simple assign
 	out.Note = arg.Note                       // simple assign
@@ -179,6 +180,7 @@ func convert_ticket_Ticket_ticketmodel_Ticket(arg *ticket.Ticket, out *ticketmod
 	out.AssignedUserIDs = arg.AssignedUserIDs // simple assign
 	out.AccountID = arg.AccountID             // simple assign
 	out.LabelIDs = arg.LabelIDs               // simple assign
+	out.RefTicketID = arg.RefTicketID         // simple assign
 	out.Title = arg.Title                     // simple assign
 	out.Description = arg.Description         // simple assign
 	out.Note = arg.Note                       // simple assign
@@ -231,6 +233,7 @@ func apply_ticket_CreateTicketArgs_ticket_Ticket(arg *ticket.CreateTicketArgs, o
 	out.AssignedUserIDs = arg.AssignedUserIDs // simple assign
 	out.AccountID = arg.AccountID             // simple assign
 	out.LabelIDs = arg.LabelIDs               // simple assign
+	out.RefTicketID = arg.RefTicketID         // simple assign
 	out.Title = arg.Title                     // simple assign
 	out.Description = arg.Description         // simple assign
 	out.Note = arg.Note                       // simple assign
@@ -272,6 +275,7 @@ func apply_ticket_UpdateTicketInfoArgs_ticket_Ticket(arg *ticket.UpdateTicketInf
 	out.AssignedUserIDs = out.AssignedUserIDs                // no change
 	out.AccountID = arg.AccountID                            // simple assign
 	out.LabelIDs = out.LabelIDs                              // no change
+	out.RefTicketID = out.RefTicketID                        // types do not match
 	out.Title = arg.Title.Apply(out.Title)                   // apply change
 	out.Description = arg.Description.Apply(out.Description) // apply change
 	out.Note = arg.Note.Apply(out.Note)                      // apply change

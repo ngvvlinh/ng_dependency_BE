@@ -5802,6 +5802,33 @@
         }
       }
     },
+    "/api/shop.Ticket/GetTicketsByRefTicketID": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "GetTicketsByRefTicketID",
+        "operationId": "shop.Ticket-GetTicketsByRefTicketID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/flGetTicketsByRefTicketIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flGetTicketsByRefTicketIDResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Ticket/UpdateTicketComment": {
       "post": {
         "tags": [
@@ -7251,6 +7278,26 @@
         "cancel"
       ]
     },
+    "flGetTicketsByRefTicketIDRequest": {
+      "type": "object",
+      "properties": {
+        "ref_ticket_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "flGetTicketsByRefTicketIDResponse": {
+      "type": "object",
+      "properties": {
+        "tickets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flTicket"
+          }
+        }
+      }
+    },
     "flTicket": {
       "type": "object",
       "properties": {
@@ -7319,6 +7366,10 @@
           "type": "string"
         },
         "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_ticket_id": {
           "type": "string",
           "format": "int64"
         },

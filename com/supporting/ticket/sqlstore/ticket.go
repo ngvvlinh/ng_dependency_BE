@@ -55,8 +55,18 @@ func (s *TicketStore) IDs(ids ...dot.ID) *TicketStore {
 	return s
 }
 
+func (s *TicketStore) RefTicketID(id dot.ID) *TicketStore {
+	s.preds = append(s.preds, sq.In("ref_ticket_id", id))
+	return s
+}
+
 func (s *TicketStore) AccountID(id dot.ID) *TicketStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
+	return s
+}
+
+func (s *TicketStore) OptionalAccountID(id dot.ID) *TicketStore {
+	s.preds = append(s.preds, s.ft.ByAccountID(id).Optional())
 	return s
 }
 

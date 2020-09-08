@@ -55,10 +55,11 @@ type Ticket struct {
 	Note        string `json:"note"`
 	AdminNote   string `json:"admin_note"`
 
-	RefID   dot.ID                        `json:"ref_id"`
-	RefType ticket_ref_type.TicketRefType `json:"ref_type"`
-	RefCode string                        `json:"ref_code"`
-	Source  ticket_source.TicketSource    `json:"source"`
+	RefID       dot.ID                        `json:"ref_id"`
+	RefType     ticket_ref_type.TicketRefType `json:"ref_type"`
+	RefCode     string                        `json:"ref_code"`
+	Source      ticket_source.TicketSource    `json:"source"`
+	RefTicketID dot.ID                        `json:"ref_ticket_id"`
 
 	State  ticket_state.TicketState `json:"state"`
 	Status status5.Status           `json:"status"`
@@ -85,3 +86,15 @@ type TicketFrom struct {
 }
 
 func (m *TicketFrom) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketsByRefTicketIDRequest struct {
+	RefTicketID dot.ID `json:"ref_ticket_id"`
+}
+
+func (m *GetTicketsByRefTicketIDRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTicketsByRefTicketIDResponse struct {
+	Tickets []*Ticket `json:"tickets"`
+}
+
+func (m *GetTicketsByRefTicketIDResponse) String() string { return jsonx.MustMarshalToString(m) }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/meta"
+	cm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
@@ -24,6 +25,7 @@ type Aggregate interface {
 	ReopenTicket(context.Context, *ReopenTicketArgs) (*Ticket, error)
 	AssignTicket(context.Context, *AssignedTicketArgs) (*Ticket, error)
 	UnassignTicket(context.Context, *UnssignTicketArgs) (*Ticket, error)
+	UpdateTicketRefTicketID(context.Context, *UpdateTicketRefTicketIDArgs) (*cm.UpdatedResponse, error)
 
 	//comment
 	CreateTicketComment(context.Context, *CreateTicketCommentArgs) (*TicketComment, error)
@@ -39,7 +41,8 @@ type Aggregate interface {
 type QueryService interface {
 	// ticket
 	GetTicketByID(context.Context, *GetTicketByIDArgs) (*Ticket, error)
-	ListTickets(context.Context, *GetTicketsArgs) (*GetTicketsResponse, error)
+	ListTickets(context.Context, *GetTicketsArgs) (*ListTicketsResponse, error)
+	ListTicketsByRefTicketID(context.Context, *ListTicketsByRefTicketIDArgs) ([]*Ticket, error)
 
 	//comment
 	GetTicketCommentByID(context.Context, *GetTicketCommentByIDArgs) (*TicketComment, error)
@@ -118,7 +121,12 @@ type GetTicketsArgs struct {
 	Paging meta.Paging
 }
 
-type GetTicketsResponse struct {
+type ListTicketsByRefTicketIDArgs struct {
+	AccountID   dot.ID
+	RefTicketID dot.ID
+}
+
+type ListTicketsResponse struct {
 	Tickets []*Ticket
 	Paging  meta.PageInfo
 }
@@ -208,10 +216,11 @@ type ConfirmTicketArgs struct {
 
 // +convert:update=Ticket
 type UpdateTicketInfoArgs struct {
-	ID        dot.ID
-	Code      string
-	AccountID dot.ID
-	Labels    []int8
+	ID          dot.ID
+	Code        string
+	AccountID   dot.ID
+	Labels      []int8
+	RefTicketID dot.ID
 
 	Title       dot.NullString
 	Description dot.NullString
@@ -232,6 +241,7 @@ type CreateTicketArgs struct {
 	AssignedUserIDs []dot.ID
 	AccountID       dot.ID
 	LabelIDs        []dot.ID
+	RefTicketID     dot.NullID
 
 	Title       string
 	Description string
@@ -249,4 +259,9 @@ type CreateTicketArgs struct {
 	CreatedBy     dot.ID
 	CreatedSource account_type.AccountType
 	CreatedName   string
+}
+
+type UpdateTicketRefTicketIDArgs struct {
+	ID          dot.ID
+	RefTicketID dot.NullID
 }

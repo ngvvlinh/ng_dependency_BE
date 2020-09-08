@@ -157,6 +157,7 @@ import (
 	subscription2 "o.o/backend/pkg/etop/api/shop/subscription"
 	summary2 "o.o/backend/pkg/etop/api/shop/summary"
 	"o.o/backend/pkg/etop/api/shop/supplier"
+	"o.o/backend/pkg/etop/api/shop/ticket"
 	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/backend/pkg/etop/api/shop/ws"
 	"o.o/backend/pkg/etop/apix/mc/vnp"
@@ -742,7 +743,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	ticketAggregate := aggregate19.NewTicketAggregate(busBus, mainDB, moneytxQueryBus, shippingQueryBus, orderingQueryBus, store)
 	ticketCommandBus := aggregate19.TicketAggregateMessageBus(ticketAggregate)
-	shopTicketService := &shop.TicketService{
+	ticketTicketService := &ticket.TicketService{
 		Session:     session,
 		TicketQuery: ticketQueryBus,
 		TicketAggr:  ticketCommandBus,
@@ -751,7 +752,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:             session,
 		AccountshipnowQuery: accountshipnowQueryBus,
 	}
-	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, shopTicketService, accountShipnowService)
+	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService)
 	adminMiscService := admin.MiscService{
 		Session: session,
 		Login:   loginInterface,

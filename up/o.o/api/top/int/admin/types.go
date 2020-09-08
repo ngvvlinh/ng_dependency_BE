@@ -137,9 +137,19 @@ type CreateTicketRequest struct {
 	RefCode   string                        `json:"ref_code"`
 	Source    ticket_source.TicketSource    `json:"source"`
 	AccountID dot.ID                        `json:"account_id"`
+	// Ticket ID liên quan
+	RefTicketID dot.NullID `json:"ref_ticket_id"`
 }
 
 func (m *CreateTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateTicketRefTicketIDRequest struct {
+	ID dot.ID `json:"id"`
+	// Truyền lên 0 để xóa ref_ticket_id
+	RefTicketID dot.NullID `json:"ref_ticket_id"`
+}
+
+func (m *UpdateTicketRefTicketIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type FilterShopGetTicket struct {
 	IDs            []dot.ID                      `json:"ids"`

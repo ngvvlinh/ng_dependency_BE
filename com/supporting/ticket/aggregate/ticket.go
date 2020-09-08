@@ -8,6 +8,7 @@ import (
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipping"
 	"o.o/api/supporting/ticket"
+	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_state"
@@ -63,7 +64,7 @@ func TicketAggregateMessageBus(q *TicketAggregate) ticket.CommandBus {
 	return ticket.NewAggregateHandler(q).RegisterHandlers(b)
 }
 
-func (a TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateTicketArgs) (*ticket.Ticket, error) {
+func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateTicketArgs) (*ticket.Ticket, error) {
 	if args.AccountID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing AccountID")
 	}
@@ -72,6 +73,13 @@ func (a TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateTi
 	if err != nil {
 		return nil, err
 	}
+
+	if ticketCore.RefTicketID.Valid {
+		if _, err := a.TicketStore(ctx).ID(ticketCore.RefTicketID.ID).GetTicket(); err != nil {
+			return nil, err
+		}
+	}
+
 	// check reference
 	var refCode = ""
 	if args.RefID != 0 {
@@ -157,7 +165,7 @@ func (a TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateTi
 	return a.TicketStore(ctx).ID(ticketCore.ID).GetTicket()
 }
 
-func (a TicketAggregate) createTicketThirdParty(ctx context.Context, args *ticket.Ticket) error {
+func (a *TicketAggregate) createTicketThirdParty(ctx context.Context, args *ticket.Ticket) error {
 	//TODO(Nam)
 	//CreateTicket
 	// sửa dụng tài khoản của connection
@@ -171,12 +179,12 @@ func (a TicketAggregate) createTicketThirdParty(ctx context.Context, args *ticke
 	panic("implement me")
 }
 
-func (a TicketAggregate) UpdateTicketInfo(ctx context.Context, args *ticket.UpdateTicketInfoArgs) (*ticket.Ticket, error) {
+func (a *TicketAggregate) UpdateTicketInfo(ctx context.Context, args *ticket.UpdateTicketInfoArgs) (*ticket.Ticket, error) {
 	//TODO maybe not use
 	panic("implement me")
 }
 
-func (a TicketAggregate) ConfirmTicket(ctx context.Context, args *ticket.ConfirmTicketArgs) (*ticket.Ticket, error) {
+func (a *TicketAggregate) ConfirmTicket(ctx context.Context, args *ticket.ConfirmTicketArgs) (*ticket.Ticket, error) {
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
@@ -218,7 +226,7 @@ func (a TicketAggregate) ConfirmTicket(ctx context.Context, args *ticket.Confirm
 	return a.TicketStore(ctx).ID(args.ID).GetTicket()
 }
 
-func (a TicketAggregate) CloseTicket(ctx context.Context, args *ticket.CloseTicketArgs) (*ticket.Ticket, error) {
+func (a *TicketAggregate) CloseTicket(ctx context.Context, args *ticket.CloseTicketArgs) (*ticket.Ticket, error) {
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
@@ -258,7 +266,7 @@ func (a TicketAggregate) CloseTicket(ctx context.Context, args *ticket.CloseTick
 	return a.TicketStore(ctx).ID(args.ID).GetTicket()
 }
 
-func (a TicketAggregate) ReopenTicket(ctx context.Context, args *ticket.ReopenTicketArgs) (*ticket.Ticket, error) {
+func (a *TicketAggregate) ReopenTicket(ctx context.Context, args *ticket.ReopenTicketArgs) (*ticket.Ticket, error) {
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
@@ -288,7 +296,7 @@ func (a TicketAggregate) ReopenTicket(ctx context.Context, args *ticket.ReopenTi
 	return a.TicketStore(ctx).ID(args.ID).GetTicket()
 }
 
-func (a TicketAggregate) AssignTicket(ctx context.Context, args *ticket.AssignedTicketArgs) (*ticket.Ticket, error) {
+func (a *TicketAggregate) AssignTicket(ctx context.Context, args *ticket.AssignedTicketArgs) (*ticket.Ticket, error) {
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
@@ -329,7 +337,7 @@ func (a TicketAggregate) AssignTicket(ctx context.Context, args *ticket.Assigned
 	return a.TicketStore(ctx).ID(args.ID).GetTicket()
 }
 
-func (a TicketAggregate) UnassignTicket(ctx context.Context, args *ticket.UnssignTicketArgs) (*ticket.Ticket, error) {
+func (a *TicketAggregate) UnassignTicket(ctx context.Context, args *ticket.UnssignTicketArgs) (*ticket.Ticket, error) {
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
@@ -369,7 +377,7 @@ func (a TicketAggregate) UnassignTicket(ctx context.Context, args *ticket.Unssig
 	return a.TicketStore(ctx).ID(args.ID).GetTicket()
 }
 
-func (a TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.TicketLabel, error) {
+func (a *TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.TicketLabel, error) {
 	var labels []*ticket.TicketLabel
 	err := a.RedisStore.Get("ticket_labels", &labels)
 	switch err {
@@ -391,7 +399,23 @@ func (a TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.Ticket
 	return labels, nil
 }
 
-func (a TicketAggregate) SetTicketLabels(labels []*ticket.TicketLabel) error {
+func (a *TicketAggregate) SetTicketLabels(labels []*ticket.TicketLabel) error {
 	labels = MakeTreeLabel(labels)
 	return a.RedisStore.SetWithTTL("ticket_labels", labels, 1*24*60*60)
+}
+
+func (a *TicketAggregate) UpdateTicketRefTicketID(ctx context.Context, args *ticket.UpdateTicketRefTicketIDArgs) (*pbcm.UpdatedResponse, error) {
+	if args.ID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin ticket ID")
+	}
+	if !args.RefTicketID.Valid {
+		return &pbcm.UpdatedResponse{Updated: 0}, nil
+	}
+	update := &model.Ticket{
+		RefTicketID: args.RefTicketID,
+	}
+	if err := a.TicketStore(ctx).ID(args.ID).UpdateTicketDB(update); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }

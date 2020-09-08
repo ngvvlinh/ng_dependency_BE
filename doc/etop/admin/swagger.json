@@ -3123,6 +3123,33 @@
         }
       }
     },
+    "/api/admin.Ticket/GetTicketsByRefTicketID": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "GetTicketsByRefTicketID",
+        "operationId": "admin.Ticket-GetTicketsByRefTicketID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/flGetTicketsByRefTicketIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flGetTicketsByRefTicketIDResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Ticket/ReopenTicket": {
       "post": {
         "tags": [
@@ -3226,6 +3253,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/flTicketLabel"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Ticket/UpdateTicketRefTicketID": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "UpdateTicketRefTicketID",
+        "operationId": "admin.Ticket-UpdateTicketRefTicketID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateTicketRefTicketIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -4289,6 +4343,26 @@
         "exclude"
       ]
     },
+    "flGetTicketsByRefTicketIDRequest": {
+      "type": "object",
+      "properties": {
+        "ref_ticket_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "flGetTicketsByRefTicketIDResponse": {
+      "type": "object",
+      "properties": {
+        "tickets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flTicket"
+          }
+        }
+      }
+    },
     "flTicket": {
       "type": "object",
       "properties": {
@@ -4357,6 +4431,10 @@
           "type": "string"
         },
         "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_ticket_id": {
           "type": "string",
           "format": "int64"
         },
@@ -8025,6 +8103,11 @@
           "type": "string",
           "format": "int64"
         },
+        "ref_ticket_id": {
+          "description": "Ticket ID liên quan\n",
+          "type": "string",
+          "format": "int64"
+        },
         "ref_type": {
           "$ref": "#/definitions/ovTicketRefType"
         },
@@ -9577,6 +9660,20 @@
           "type": "string"
         },
         "parent_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuUpdateTicketRefTicketIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_ticket_id": {
+          "description": "Truyền lên 0 để xóa ref_ticket_id\n",
           "type": "string",
           "format": "int64"
         }

@@ -77,6 +77,7 @@ func Convert_core_Ticket_to_api_Ticket(in *ticket.Ticket) *types.Ticket {
 		AdminNote:       in.AdminNote,
 		RefID:           in.RefID,
 		RefType:         in.RefType,
+		RefTicketID:     in.RefTicketID.ID,
 		Source:          in.Source,
 		RefCode:         in.RefCode,
 		State:           in.State,
@@ -96,6 +97,7 @@ func Convert_core_Ticket_to_api_Ticket(in *ticket.Ticket) *types.Ticket {
 		},
 	}
 }
+
 func Convert_core_Tickets_to_api_Tickets(items []*ticket.Ticket) []*types.Ticket {
 	result := make([]*types.Ticket, len(items))
 	for i, item := range items {

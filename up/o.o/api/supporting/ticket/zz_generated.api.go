@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	meta "o.o/api/meta"
+	common "o.o/api/top/types/common"
 	account_type "o.o/api/top/types/etc/account_type"
 	status4 "o.o/api/top/types/etc/status4"
 	ticket_ref_type "o.o/api/top/types/etc/ticket/ticket_ref_type"
@@ -77,6 +78,7 @@ type CreateTicketCommand struct {
 	AssignedUserIDs []dot.ID
 	AccountID       dot.ID
 	LabelIDs        []dot.ID
+	RefTicketID     dot.NullID
 	Title           string
 	Description     string
 	Note            string
@@ -201,6 +203,7 @@ type UpdateTicketInfoCommand struct {
 	Code        string
 	AccountID   dot.ID
 	Labels      []int8
+	RefTicketID dot.ID
 	Title       dot.NullString
 	Description dot.NullString
 	Note        dot.NullString
@@ -230,6 +233,18 @@ type UpdateTicketLabelCommand struct {
 
 func (h AggregateHandler) HandleUpdateTicketLabel(ctx context.Context, msg *UpdateTicketLabelCommand) (err error) {
 	msg.Result, err = h.inner.UpdateTicketLabel(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateTicketRefTicketIDCommand struct {
+	ID          dot.ID
+	RefTicketID dot.NullID
+
+	Result *common.UpdatedResponse `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateTicketRefTicketID(ctx context.Context, msg *UpdateTicketRefTicketIDCommand) (err error) {
+	msg.Result, err = h.inner.UpdateTicketRefTicketID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -295,7 +310,7 @@ type ListTicketsQuery struct {
 	Filter *FilterGetTicket
 	Paging meta.Paging
 
-	Result *GetTicketsResponse `json:"-"`
+	Result *ListTicketsResponse `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleListTickets(ctx context.Context, msg *ListTicketsQuery) (err error) {
@@ -303,28 +318,42 @@ func (h QueryServiceHandler) HandleListTickets(ctx context.Context, msg *ListTic
 	return err
 }
 
+type ListTicketsByRefTicketIDQuery struct {
+	AccountID   dot.ID
+	RefTicketID dot.ID
+
+	Result []*Ticket `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListTicketsByRefTicketID(ctx context.Context, msg *ListTicketsByRefTicketIDQuery) (err error) {
+	msg.Result, err = h.inner.ListTicketsByRefTicketID(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
-func (q *AssignTicketCommand) command()        {}
-func (q *CloseTicketCommand) command()         {}
-func (q *ConfirmTicketCommand) command()       {}
-func (q *CreateTicketCommand) command()        {}
-func (q *CreateTicketCommentCommand) command() {}
-func (q *CreateTicketLabelCommand) command()   {}
-func (q *DeleteTicketCommentCommand) command() {}
-func (q *DeleteTicketLabelCommand) command()   {}
-func (q *ReopenTicketCommand) command()        {}
-func (q *UnassignTicketCommand) command()      {}
-func (q *UpdateTicketCommentCommand) command() {}
-func (q *UpdateTicketInfoCommand) command()    {}
-func (q *UpdateTicketLabelCommand) command()   {}
+func (q *AssignTicketCommand) command()            {}
+func (q *CloseTicketCommand) command()             {}
+func (q *ConfirmTicketCommand) command()           {}
+func (q *CreateTicketCommand) command()            {}
+func (q *CreateTicketCommentCommand) command()     {}
+func (q *CreateTicketLabelCommand) command()       {}
+func (q *DeleteTicketCommentCommand) command()     {}
+func (q *DeleteTicketLabelCommand) command()       {}
+func (q *ReopenTicketCommand) command()            {}
+func (q *UnassignTicketCommand) command()          {}
+func (q *UpdateTicketCommentCommand) command()     {}
+func (q *UpdateTicketInfoCommand) command()        {}
+func (q *UpdateTicketLabelCommand) command()       {}
+func (q *UpdateTicketRefTicketIDCommand) command() {}
 
-func (q *GetTicketByIDQuery) query()        {}
-func (q *GetTicketCommentByIDQuery) query() {}
-func (q *GetTicketLabelByIDQuery) query()   {}
-func (q *ListTicketCommentsQuery) query()   {}
-func (q *ListTicketLabelsQuery) query()     {}
-func (q *ListTicketsQuery) query()          {}
+func (q *GetTicketByIDQuery) query()            {}
+func (q *GetTicketCommentByIDQuery) query()     {}
+func (q *GetTicketLabelByIDQuery) query()       {}
+func (q *ListTicketCommentsQuery) query()       {}
+func (q *ListTicketLabelsQuery) query()         {}
+func (q *ListTicketsQuery) query()              {}
+func (q *ListTicketsByRefTicketIDQuery) query() {}
 
 // implement conversion
 
@@ -387,6 +416,7 @@ func (q *CreateTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _
 			AssignedUserIDs: q.AssignedUserIDs,
 			AccountID:       q.AccountID,
 			LabelIDs:        q.LabelIDs,
+			RefTicketID:     q.RefTicketID,
 			Title:           q.Title,
 			Description:     q.Description,
 			Note:            q.Note,
@@ -405,6 +435,7 @@ func (q *CreateTicketCommand) SetCreateTicketArgs(args *CreateTicketArgs) {
 	q.AssignedUserIDs = args.AssignedUserIDs
 	q.AccountID = args.AccountID
 	q.LabelIDs = args.LabelIDs
+	q.RefTicketID = args.RefTicketID
 	q.Title = args.Title
 	q.Description = args.Description
 	q.Note = args.Note
@@ -546,6 +577,7 @@ func (q *UpdateTicketInfoCommand) GetArgs(ctx context.Context) (_ context.Contex
 			Code:        q.Code,
 			AccountID:   q.AccountID,
 			Labels:      q.Labels,
+			RefTicketID: q.RefTicketID,
 			Title:       q.Title,
 			Description: q.Description,
 			Note:        q.Note,
@@ -562,6 +594,7 @@ func (q *UpdateTicketInfoCommand) SetUpdateTicketInfoArgs(args *UpdateTicketInfo
 	q.Code = args.Code
 	q.AccountID = args.AccountID
 	q.Labels = args.Labels
+	q.RefTicketID = args.RefTicketID
 	q.Title = args.Title
 	q.Description = args.Description
 	q.Note = args.Note
@@ -589,6 +622,19 @@ func (q *UpdateTicketLabelCommand) SetUpdateTicketLabelArgs(args *UpdateTicketLa
 	q.Name = args.Name
 	q.Code = args.Code
 	q.ParentID = args.ParentID
+}
+
+func (q *UpdateTicketRefTicketIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateTicketRefTicketIDArgs) {
+	return ctx,
+		&UpdateTicketRefTicketIDArgs{
+			ID:          q.ID,
+			RefTicketID: q.RefTicketID,
+		}
+}
+
+func (q *UpdateTicketRefTicketIDCommand) SetUpdateTicketRefTicketIDArgs(args *UpdateTicketRefTicketIDArgs) {
+	q.ID = args.ID
+	q.RefTicketID = args.RefTicketID
 }
 
 func (q *GetTicketByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTicketByIDArgs) {
@@ -665,6 +711,19 @@ func (q *ListTicketsQuery) SetGetTicketsArgs(args *GetTicketsArgs) {
 	q.Paging = args.Paging
 }
 
+func (q *ListTicketsByRefTicketIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListTicketsByRefTicketIDArgs) {
+	return ctx,
+		&ListTicketsByRefTicketIDArgs{
+			AccountID:   q.AccountID,
+			RefTicketID: q.RefTicketID,
+		}
+}
+
+func (q *ListTicketsByRefTicketIDQuery) SetListTicketsByRefTicketIDArgs(args *ListTicketsByRefTicketIDArgs) {
+	q.AccountID = args.AccountID
+	q.RefTicketID = args.RefTicketID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -690,6 +749,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateTicketComment)
 	b.AddHandler(h.HandleUpdateTicketInfo)
 	b.AddHandler(h.HandleUpdateTicketLabel)
+	b.AddHandler(h.HandleUpdateTicketRefTicketID)
 	return CommandBus{b}
 }
 
@@ -711,5 +771,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListTicketComments)
 	b.AddHandler(h.HandleListTicketLabels)
 	b.AddHandler(h.HandleListTickets)
+	b.AddHandler(h.HandleListTicketsByRefTicketID)
 	return QueryBus{b}
 }

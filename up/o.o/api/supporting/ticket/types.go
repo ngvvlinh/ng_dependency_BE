@@ -22,6 +22,7 @@ type Ticket struct {
 	AssignedUserIDs []dot.ID
 	AccountID       dot.ID
 	LabelIDs        []dot.ID
+	RefTicketID     dot.NullID // reference with another ticket
 
 	Title       string
 	Description string

@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Tickets []*Ticket
 
 const __sqlTicket_Table = "ticket"
-const __sqlTicket_ListCols = "\"id\",\"code\",\"assigned_user_ids\",\"account_id\",\"label_ids\",\"title\",\"description\",\"note\",\"ref_id\",\"ref_type\",\"ref_code\",\"source\",\"state\",\"status\",\"created_by\",\"created_source\",\"created_name\",\"updated_by\",\"confirmed_by\",\"closed_by\",\"created_at\",\"updated_at\",\"confirmed_at\",\"closed_at\""
-const __sqlTicket_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"assigned_user_ids\" = EXCLUDED.\"assigned_user_ids\",\"account_id\" = EXCLUDED.\"account_id\",\"label_ids\" = EXCLUDED.\"label_ids\",\"title\" = EXCLUDED.\"title\",\"description\" = EXCLUDED.\"description\",\"note\" = EXCLUDED.\"note\",\"ref_id\" = EXCLUDED.\"ref_id\",\"ref_type\" = EXCLUDED.\"ref_type\",\"ref_code\" = EXCLUDED.\"ref_code\",\"source\" = EXCLUDED.\"source\",\"state\" = EXCLUDED.\"state\",\"status\" = EXCLUDED.\"status\",\"created_by\" = EXCLUDED.\"created_by\",\"created_source\" = EXCLUDED.\"created_source\",\"created_name\" = EXCLUDED.\"created_name\",\"updated_by\" = EXCLUDED.\"updated_by\",\"confirmed_by\" = EXCLUDED.\"confirmed_by\",\"closed_by\" = EXCLUDED.\"closed_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"closed_at\" = EXCLUDED.\"closed_at\""
+const __sqlTicket_ListCols = "\"id\",\"code\",\"assigned_user_ids\",\"account_id\",\"label_ids\",\"ref_ticket_id\",\"title\",\"description\",\"note\",\"ref_id\",\"ref_type\",\"ref_code\",\"source\",\"state\",\"status\",\"created_by\",\"created_source\",\"created_name\",\"updated_by\",\"confirmed_by\",\"closed_by\",\"created_at\",\"updated_at\",\"confirmed_at\",\"closed_at\""
+const __sqlTicket_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"assigned_user_ids\" = EXCLUDED.\"assigned_user_ids\",\"account_id\" = EXCLUDED.\"account_id\",\"label_ids\" = EXCLUDED.\"label_ids\",\"ref_ticket_id\" = EXCLUDED.\"ref_ticket_id\",\"title\" = EXCLUDED.\"title\",\"description\" = EXCLUDED.\"description\",\"note\" = EXCLUDED.\"note\",\"ref_id\" = EXCLUDED.\"ref_id\",\"ref_type\" = EXCLUDED.\"ref_type\",\"ref_code\" = EXCLUDED.\"ref_code\",\"source\" = EXCLUDED.\"source\",\"state\" = EXCLUDED.\"state\",\"status\" = EXCLUDED.\"status\",\"created_by\" = EXCLUDED.\"created_by\",\"created_source\" = EXCLUDED.\"created_source\",\"created_name\" = EXCLUDED.\"created_name\",\"updated_by\" = EXCLUDED.\"updated_by\",\"confirmed_by\" = EXCLUDED.\"confirmed_by\",\"closed_by\" = EXCLUDED.\"closed_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"closed_at\" = EXCLUDED.\"closed_at\""
 const __sqlTicket_Insert = "INSERT INTO \"ticket\" (" + __sqlTicket_ListCols + ") VALUES"
 const __sqlTicket_Select = "SELECT " + __sqlTicket_ListCols + " FROM \"ticket\""
 const __sqlTicket_Select_history = "SELECT " + __sqlTicket_ListCols + " FROM history.\"ticket\""
@@ -90,6 +90,13 @@ func (m *Ticket) Migration(db *cmsql.Database) {
 			ColumnName:       "label_ids",
 			ColumnType:       "[]dot.ID",
 			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ref_ticket_id": {
+			ColumnName:       "ref_ticket_id",
+			ColumnType:       "dot.NullID",
+			ColumnDBType:     "struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -244,6 +251,7 @@ func (m *Ticket) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Array{m.AssignedUserIDs, opts},
 		m.AccountID,
 		core.Array{m.LabelIDs, opts},
+		m.RefTicketID,
 		core.String(m.Title),
 		core.String(m.Description),
 		core.String(m.Note),
@@ -273,6 +281,7 @@ func (m *Ticket) SQLScanArgs(opts core.Opts) []interface{} {
 		core.Array{&m.AssignedUserIDs, opts},
 		&m.AccountID,
 		core.Array{&m.LabelIDs, opts},
+		&m.RefTicketID,
 		(*core.String)(&m.Title),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.Note),
@@ -329,7 +338,7 @@ func (_ *Tickets) SQLSelect(w SQLWriter) error {
 func (m *Ticket) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicket_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(24)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -339,7 +348,7 @@ func (ms Tickets) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicket_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(24)
+		w.WriteMarkers(25)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -409,6 +418,14 @@ func (m *Ticket) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.LabelIDs, opts})
+	}
+	if m.RefTicketID.Valid {
+		flag = true
+		w.WriteName("ref_ticket_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.RefTicketID)
 	}
 	if m.Title != "" {
 		flag = true
@@ -572,7 +589,7 @@ func (m *Ticket) SQLUpdate(w SQLWriter) error {
 func (m *Ticket) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicket_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(24)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -601,6 +618,7 @@ func (m TicketHistory) AssignedUserIDs() core.Interface {
 }
 func (m TicketHistory) AccountID() core.Interface     { return core.Interface{m["account_id"]} }
 func (m TicketHistory) LabelIDs() core.Interface      { return core.Interface{m["label_ids"]} }
+func (m TicketHistory) RefTicketID() core.Interface   { return core.Interface{m["ref_ticket_id"]} }
 func (m TicketHistory) Title() core.Interface         { return core.Interface{m["title"]} }
 func (m TicketHistory) Description() core.Interface   { return core.Interface{m["description"]} }
 func (m TicketHistory) Note() core.Interface          { return core.Interface{m["note"]} }
@@ -622,47 +640,48 @@ func (m TicketHistory) ConfirmedAt() core.Interface   { return core.Interface{m[
 func (m TicketHistory) ClosedAt() core.Interface      { return core.Interface{m["closed_at"]} }
 
 func (m *TicketHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 24)
-	args := make([]interface{}, 24)
-	for i := 0; i < 24; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(TicketHistory, 24)
+	res := make(TicketHistory, 25)
 	res["id"] = data[0]
 	res["code"] = data[1]
 	res["assigned_user_ids"] = data[2]
 	res["account_id"] = data[3]
 	res["label_ids"] = data[4]
-	res["title"] = data[5]
-	res["description"] = data[6]
-	res["note"] = data[7]
-	res["ref_id"] = data[8]
-	res["ref_type"] = data[9]
-	res["ref_code"] = data[10]
-	res["source"] = data[11]
-	res["state"] = data[12]
-	res["status"] = data[13]
-	res["created_by"] = data[14]
-	res["created_source"] = data[15]
-	res["created_name"] = data[16]
-	res["updated_by"] = data[17]
-	res["confirmed_by"] = data[18]
-	res["closed_by"] = data[19]
-	res["created_at"] = data[20]
-	res["updated_at"] = data[21]
-	res["confirmed_at"] = data[22]
-	res["closed_at"] = data[23]
+	res["ref_ticket_id"] = data[5]
+	res["title"] = data[6]
+	res["description"] = data[7]
+	res["note"] = data[8]
+	res["ref_id"] = data[9]
+	res["ref_type"] = data[10]
+	res["ref_code"] = data[11]
+	res["source"] = data[12]
+	res["state"] = data[13]
+	res["status"] = data[14]
+	res["created_by"] = data[15]
+	res["created_source"] = data[16]
+	res["created_name"] = data[17]
+	res["updated_by"] = data[18]
+	res["confirmed_by"] = data[19]
+	res["closed_by"] = data[20]
+	res["created_at"] = data[21]
+	res["updated_at"] = data[22]
+	res["confirmed_at"] = data[23]
+	res["closed_at"] = data[24]
 	*m = res
 	return nil
 }
 
 func (ms *TicketHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 24)
-	args := make([]interface{}, 24)
-	for i := 0; i < 24; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	res := make(TicketHistories, 0, 128)
@@ -676,25 +695,26 @@ func (ms *TicketHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["assigned_user_ids"] = data[2]
 		m["account_id"] = data[3]
 		m["label_ids"] = data[4]
-		m["title"] = data[5]
-		m["description"] = data[6]
-		m["note"] = data[7]
-		m["ref_id"] = data[8]
-		m["ref_type"] = data[9]
-		m["ref_code"] = data[10]
-		m["source"] = data[11]
-		m["state"] = data[12]
-		m["status"] = data[13]
-		m["created_by"] = data[14]
-		m["created_source"] = data[15]
-		m["created_name"] = data[16]
-		m["updated_by"] = data[17]
-		m["confirmed_by"] = data[18]
-		m["closed_by"] = data[19]
-		m["created_at"] = data[20]
-		m["updated_at"] = data[21]
-		m["confirmed_at"] = data[22]
-		m["closed_at"] = data[23]
+		m["ref_ticket_id"] = data[5]
+		m["title"] = data[6]
+		m["description"] = data[7]
+		m["note"] = data[8]
+		m["ref_id"] = data[9]
+		m["ref_type"] = data[10]
+		m["ref_code"] = data[11]
+		m["source"] = data[12]
+		m["state"] = data[13]
+		m["status"] = data[14]
+		m["created_by"] = data[15]
+		m["created_source"] = data[16]
+		m["created_name"] = data[17]
+		m["updated_by"] = data[18]
+		m["confirmed_by"] = data[19]
+		m["closed_by"] = data[20]
+		m["created_at"] = data[21]
+		m["updated_at"] = data[22]
+		m["confirmed_at"] = data[23]
+		m["closed_at"] = data[24]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

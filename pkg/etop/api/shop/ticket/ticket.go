@@ -1,4 +1,4 @@
-package shop
+package ticket
 
 import (
 	"context"
@@ -39,10 +39,10 @@ func (s *TicketService) CreateTicketComment(ctx context.Context, request *api.Cr
 		Message:       request.Message,
 		ImageUrls:     imageUrls,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_TicketComment_to_api_TicketComment(cmd.Result), nil
 }
 
@@ -61,10 +61,10 @@ func (s *TicketService) UpdateTicketComment(ctx context.Context, request *api.Up
 		Message:   request.Message,
 		ImageUrls: imageUrls,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_TicketComment_to_api_TicketComment(cmd.Result), nil
 }
 
@@ -94,10 +94,10 @@ func (s *TicketService) GetTicketComments(ctx context.Context, request *api.GetT
 		Filter: filter,
 		Paging: *paging,
 	}
-	err := s.TicketQuery.Dispatch(ctx, query)
-	if err != nil {
+	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
+
 	return &api.GetTicketCommentsResponse{
 		TicketComments: convertpb.Convert_core_TicketComments_to_api_TicketComments(query.Result.TicketComments),
 		Paging:         cmapi.PbPaging(query.Paging),
@@ -124,14 +124,14 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 		Filter: filter,
 		Paging: *paging,
 	}
-	err := s.TicketQuery.Dispatch(ctx, query)
-	if err != nil {
+	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.Convert_core_Tickets_to_api_Tickets(query.Result.Tickets)
+	tickets := convertpb.Convert_core_Tickets_to_api_Tickets(query.Result.Tickets)
+
 	return &api.GetTicketsResponse{
 		Paging:  cmapi.PbPaging(query.Paging),
-		Tickets: result,
+		Tickets: tickets,
 	}, nil
 }
 
@@ -140,11 +140,11 @@ func (s *TicketService) GetTicket(ctx context.Context, request *api.GetTicketReq
 		ID:        request.ID,
 		AccountID: s.SS.Shop().ID,
 	}
-	err := s.TicketQuery.Dispatch(ctx, query)
-	if err != nil {
+	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	return convertpb.Convert_core_Ticket_to_api_Ticket(query.Result), nil
+	ticket := convertpb.Convert_core_Ticket_to_api_Ticket(query.Result)
+	return ticket, nil
 }
 
 func (s *TicketService) CreateTicket(ctx context.Context, request *api.CreateTicketRequest) (*shoptypes.Ticket, error) {
@@ -166,9 +166,22 @@ func (s *TicketService) CreateTicket(ctx context.Context, request *api.CreateTic
 		CreatedSource:   account_type.Shop,
 		Result:          nil,
 	}
-	err := s.TicketAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+
 	return convertpb.Convert_core_Ticket_to_api_Ticket(cmd.Result), nil
+}
+
+func (s *TicketService) GetTicketsByRefTicketID(ctx context.Context, r *shoptypes.GetTicketsByRefTicketIDRequest) (*shoptypes.GetTicketsByRefTicketIDResponse, error) {
+	query := &ticket.ListTicketsByRefTicketIDQuery{
+		AccountID:   s.SS.Shop().ID,
+		RefTicketID: r.RefTicketID,
+	}
+	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	return &shoptypes.GetTicketsByRefTicketIDResponse{
+		Tickets: convertpb.Convert_core_Tickets_to_api_Tickets(query.Result),
+	}, nil
 }

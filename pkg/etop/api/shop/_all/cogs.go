@@ -34,6 +34,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/subscription"
 	"o.o/backend/pkg/etop/api/shop/summary"
 	"o.o/backend/pkg/etop/api/shop/supplier"
+	"o.o/backend/pkg/etop/api/shop/ticket"
 	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/backend/pkg/etop/api/shop/ws"
 	"o.o/capi/httprpc"
@@ -74,7 +75,7 @@ func NewServers(
 	purchaseRefundService *purchase_refund.PurchaseRefundService,
 	webServerService *ws.WebServerService,
 	subscriptionService *subscription.SubscriptionService,
-	ticketService *shop.TicketService,
+	ticketService *ticket.TicketService,
 	accountshipnowService *accountshipnow.AccountShipnowService,
 ) shop.Servers {
 

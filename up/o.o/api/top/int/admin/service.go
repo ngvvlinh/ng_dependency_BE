@@ -193,11 +193,13 @@ type TicketService interface {
 	CreateTicket(context.Context, *CreateTicketRequest) (*shoptypes.Ticket, error)
 	GetTickets(context.Context, *GetTicketsRequest) (*GetTicketsResponse, error)
 	GetTicket(context.Context, *GetTicketRequest) (*shoptypes.Ticket, error)
+	GetTicketsByRefTicketID(context.Context, *shoptypes.GetTicketsByRefTicketIDRequest) (*shoptypes.GetTicketsByRefTicketIDResponse, error)
 	AssignTicket(context.Context, *AssignTicketRequest) (*shoptypes.Ticket, error)
 	UnassignTicket(context.Context, *AssignTicketRequest) (*shoptypes.Ticket, error)
 	ConfirmTicket(context.Context, *ConfirmTicketRequest) (*shoptypes.Ticket, error)
 	CloseTicket(context.Context, *CloseTicketRequest) (*shoptypes.Ticket, error)
 	ReopenTicket(context.Context, *ReopenTicketRequest) (*shoptypes.Ticket, error)
+	UpdateTicketRefTicketID(context.Context, *UpdateTicketRefTicketIDRequest) (*cm.UpdatedResponse, error)
 
 	// ticket comment
 	CreateTicketComment(context.Context, *CreateTicketCommentRequest) (*shoptypes.TicketComment, error)

@@ -40,7 +40,7 @@ func TicketQueryMessageBus(q *TicketQuery) ticket.QueryBus {
 	return ticket.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q TicketQuery) GetTicketByID(ctx context.Context, args *ticket.GetTicketByIDArgs) (*ticket.Ticket, error) {
+func (q *TicketQuery) GetTicketByID(ctx context.Context, args *ticket.GetTicketByIDArgs) (*ticket.Ticket, error) {
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
@@ -54,7 +54,7 @@ func (q TicketQuery) GetTicketByID(ctx context.Context, args *ticket.GetTicketBy
 	return ticketCore, nil
 }
 
-func (q TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsArgs) (*ticket.GetTicketsResponse, error) {
+func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsArgs) (*ticket.ListTicketsResponse, error) {
 	query := q.TicketStore(ctx)
 	if args.Filter != nil {
 		// optional
@@ -94,12 +94,20 @@ func (q TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsArg
 			query = query.State(args.Filter.State)
 		}
 	}
-	result, err := query.WithPaging(args.Paging).ListTickets()
+	tickets, err := query.WithPaging(args.Paging).ListTickets()
 	if err != nil {
 		return nil, err
 	}
-	return &ticket.GetTicketsResponse{
-		Tickets: result,
+
+	return &ticket.ListTicketsResponse{
+		Tickets: tickets,
 		Paging:  query.GetPaging(),
 	}, nil
+}
+
+func (q *TicketQuery) ListTicketsByRefTicketID(ctx context.Context, args *ticket.ListTicketsByRefTicketIDArgs) ([]*ticket.Ticket, error) {
+	if args.RefTicketID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin ref ticket ID")
+	}
+	return q.TicketStore(ctx).RefTicketID(args.RefTicketID).OptionalAccountID(args.AccountID).ListTickets()
 }

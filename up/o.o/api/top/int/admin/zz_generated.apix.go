@@ -9,6 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
+	shoptypes "o.o/api/top/int/shop/types"
 	inttypes "o.o/api/top/int/types"
 	common "o.o/api/top/types/common"
 	capi "o.o/capi"
@@ -2183,10 +2184,12 @@ const Path_Ticket_DeleteTicketLabel = "/admin.Ticket/DeleteTicketLabel"
 const Path_Ticket_GetTicket = "/admin.Ticket/GetTicket"
 const Path_Ticket_GetTicketComments = "/admin.Ticket/GetTicketComments"
 const Path_Ticket_GetTickets = "/admin.Ticket/GetTickets"
+const Path_Ticket_GetTicketsByRefTicketID = "/admin.Ticket/GetTicketsByRefTicketID"
 const Path_Ticket_ReopenTicket = "/admin.Ticket/ReopenTicket"
 const Path_Ticket_UnassignTicket = "/admin.Ticket/UnassignTicket"
 const Path_Ticket_UpdateTicketComment = "/admin.Ticket/UpdateTicketComment"
 const Path_Ticket_UpdateTicketLabel = "/admin.Ticket/UpdateTicketLabel"
+const Path_Ticket_UpdateTicketRefTicketID = "/admin.Ticket/UpdateTicketRefTicketID"
 
 func (s *TicketServiceServer) PathPrefix() string {
 	return TicketServicePathPrefix
@@ -2364,6 +2367,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			return
 		}
 		return msg, fn, nil
+	case "/admin.Ticket/GetTicketsByRefTicketID":
+		msg := &shoptypes.GetTicketsByRefTicketIDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetTicketsByRefTicketID(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.Ticket/ReopenTicket":
 		msg := &ReopenTicketRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -2413,6 +2429,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 				return
 			}
 			resp, err = inner.UpdateTicketLabel(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Ticket/UpdateTicketRefTicketID":
+		msg := &UpdateTicketRefTicketIDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateTicketRefTicketID(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

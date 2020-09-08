@@ -434,6 +434,7 @@ type SubscriptionService interface {
 type TicketService interface {
 	CreateTicket(context.Context, *CreateTicketRequest) (*shoptypes.Ticket, error)
 	GetTickets(context.Context, *GetTicketsRequest) (*GetTicketsResponse, error)
+	GetTicketsByRefTicketID(context.Context, *shoptypes.GetTicketsByRefTicketIDRequest) (*shoptypes.GetTicketsByRefTicketIDResponse, error)
 	GetTicket(context.Context, *GetTicketRequest) (*shoptypes.Ticket, error)
 
 	CreateTicketComment(context.Context, *CreateTicketCommentRequest) (*shoptypes.TicketComment, error)
