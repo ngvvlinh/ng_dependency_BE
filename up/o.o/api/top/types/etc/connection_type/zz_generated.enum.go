@@ -154,15 +154,17 @@ var enumConnectionProviderName = map[int]string{
 	3: "vtpost",
 	4: "partner",
 	5: "ahamove",
+	6: "ninjavan",
 }
 
 var enumConnectionProviderValue = map[string]int{
-	"unknown": 0,
-	"ghn":     1,
-	"ghtk":    2,
-	"vtpost":  3,
-	"partner": 4,
-	"ahamove": 5,
+	"unknown":  0,
+	"ghn":      1,
+	"ghtk":     2,
+	"vtpost":   3,
+	"partner":  4,
+	"ahamove":  5,
+	"ninjavan": 6,
 }
 
 func ParseConnectionProvider(s string) (ConnectionProvider, bool) {

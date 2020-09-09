@@ -22,6 +22,9 @@ import (
 	"o.o/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 	ghtkdriver "o.o/backend/pkg/integration/shipping/ghtk/driver"
+	"o.o/backend/pkg/integration/shipping/ninjavan"
+	ninjavanclient "o.o/backend/pkg/integration/shipping/ninjavan/client"
+	ninjavandriver "o.o/backend/pkg/integration/shipping/ninjavan/driver"
 	"o.o/backend/pkg/integration/shipping/services"
 	"o.o/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
@@ -32,12 +35,13 @@ import (
 var ll = l.New()
 
 type Config struct {
-	GHN           ghn.Config            `yaml:"ghn"`
-	GHNWebhook    ghn.WebhookConfig     `yaml:"ghn_webhook"`
-	GHTK          ghtk.Config           `yaml:"ghtk"`
-	GHTKWebhook   _ghtk.WebhookConfig   `yaml:"ghtk_webhook"`
-	VTPost        vtpost.Config         `yaml:"vtpost"`
-	VTPostWebhook _vtpost.WebhookConfig `yaml:"vtpost_webhook"`
+	GHN             ghn.Config             `yaml:"ghn"`
+	GHNWebhook      ghn.WebhookConfig      `yaml:"ghn_webhook"`
+	GHTK            ghtk.Config            `yaml:"ghtk"`
+	GHTKWebhook     _ghtk.WebhookConfig    `yaml:"ghtk_webhook"`
+	VTPost          vtpost.Config          `yaml:"vtpost"`
+	VTPostWebhook   _vtpost.WebhookConfig  `yaml:"vtpost_webhook"`
+	NinjaVanWebhook ninjavan.WebhookConfig `yaml:"ninjavan_webhook"`
 }
 
 func (cfg *Config) MustLoadEnv() {
@@ -48,12 +52,13 @@ func (cfg *Config) MustLoadEnv() {
 
 func DefaultConfig() Config {
 	return Config{
-		GHN:           ghn.DefaultConfig(),
-		GHNWebhook:    ghn.DefaultWebhookConfig(),
-		GHTK:          ghtk.DefaultConfig(),
-		GHTKWebhook:   _ghtk.WebhookConfig{Port: 9032},
-		VTPost:        vtpost.DefaultConfig(),
-		VTPostWebhook: _vtpost.WebhookConfig{Port: 9042},
+		GHN:             ghn.DefaultConfig(),
+		GHNWebhook:      ghn.DefaultWebhookConfig(),
+		GHTK:            ghtk.DefaultConfig(),
+		GHTKWebhook:     _ghtk.WebhookConfig{Port: 9032},
+		VTPost:          vtpost.DefaultConfig(),
+		VTPostWebhook:   _vtpost.WebhookConfig{Port: 9042},
+		NinjaVanWebhook: ninjavan.DefaultWebhookConfig(),
 	}
 }
 
@@ -146,6 +151,12 @@ func (d CarrierDriver) GetShipmentDriver(
 		driver := vtpostdriver.New(env, shopConnection.Token, locationQS, d.shippingCodeGenerator)
 		return driver, nil
 
+	case connection_type.ConnectionProviderNinjaVan:
+		driver := ninjavandriver.New(env, ninjavanclient.NinjaVanCfg{
+			Token: shopConnection.Token,
+		}, locationQS)
+		return driver, nil
+
 	case connection_type.ConnectionProviderPartner:
 		cfg := directclient.PartnerAccountCfg{
 			Token:      shopConnection.Token,
@@ -163,12 +174,13 @@ func (d CarrierDriver) GetShipmentDriver(
 func (d CarrierDriver) GetAffiliateShipmentDriver(env string, locationQS location.QueryBus,
 	conn *connectioning.Connection,
 	endpoints carriertypes.ConfigEndpoints) (carriertypes.ShipmentCarrier, error) {
-	var userID, token, shopIDStr string
+	var userID, token, shopIDStr, secretKey string
 	version := conn.Version
 	if conn.EtopAffiliateAccount != nil {
 		userID = conn.EtopAffiliateAccount.UserID
 		token = conn.EtopAffiliateAccount.Token
 		shopIDStr = conn.EtopAffiliateAccount.ShopID
+		secretKey = conn.EtopAffiliateAccount.SecretKey
 	}
 
 	switch conn.ConnectionProvider {
@@ -210,6 +222,16 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(env string, locationQS locatio
 			Token:     token,
 		}
 		driver := ghtkdriver.New(env, cfg, locationQS)
+		return driver, nil
+	case connection_type.ConnectionProviderNinjaVan:
+		if userID == "" || secretKey == "" {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể khởi tạo driver cho NJV")
+		}
+		cfg := ninjavanclient.NinjaVanCfg{
+			ClientID:  userID,
+			SecretKey: secretKey,
+		}
+		driver := ninjavandriver.New(env, cfg, locationQS)
 		return driver, nil
 	case connection_type.ConnectionProviderPartner:
 		cfg := directclient.PartnerAccountCfg{
@@ -291,6 +313,12 @@ var shipmentServicesByCarrier = services.MapShipmentServices{
 		}, {
 			ServiceID: string(vtpostclient.OrderServiceCodeVBE),
 			Name:      "Chậm - VBE Tiết kiệm theo hộp",
+		},
+	},
+	sptypes.NinjaVan: {
+		{
+			ServiceID: string(ninjavanclient.ServiceLevelStandard),
+			Name:      "Chuẩn",
 		},
 	},
 }

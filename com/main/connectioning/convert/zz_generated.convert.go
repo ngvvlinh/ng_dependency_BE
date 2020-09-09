@@ -403,9 +403,10 @@ func Convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliate
 }
 
 func convert_connectioningmodel_EtopAffiliateAccount_connectioning_EtopAffiliateAccount(arg *connectioningmodel.EtopAffiliateAccount, out *connectioning.EtopAffiliateAccount) {
-	out.UserID = arg.UserID // simple assign
-	out.Token = arg.Token   // simple assign
-	out.ShopID = arg.ShopID // simple assign
+	out.UserID = arg.UserID       // simple assign
+	out.Token = arg.Token         // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.SecretKey = arg.SecretKey // simple assign
 }
 
 func Convert_connectioningmodel_EtopAffiliateAccounts_connectioning_EtopAffiliateAccounts(args []*connectioningmodel.EtopAffiliateAccount) (outs []*connectioning.EtopAffiliateAccount) {
@@ -432,9 +433,10 @@ func Convert_connectioning_EtopAffiliateAccount_connectioningmodel_EtopAffiliate
 }
 
 func convert_connectioning_EtopAffiliateAccount_connectioningmodel_EtopAffiliateAccount(arg *connectioning.EtopAffiliateAccount, out *connectioningmodel.EtopAffiliateAccount) {
-	out.UserID = arg.UserID // simple assign
-	out.Token = arg.Token   // simple assign
-	out.ShopID = arg.ShopID // simple assign
+	out.UserID = arg.UserID       // simple assign
+	out.Token = arg.Token         // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.SecretKey = arg.SecretKey // simple assign
 }
 
 func Convert_connectioning_EtopAffiliateAccounts_connectioningmodel_EtopAffiliateAccounts(args []*connectioning.EtopAffiliateAccount) (outs []*connectioningmodel.EtopAffiliateAccount) {

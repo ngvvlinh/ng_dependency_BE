@@ -152,6 +152,10 @@ func (t Time) IsZero() bool {
 	return tt.IsZero() || tt.Year() < 1990
 }
 
+const (
+	timeRFC3339Custom = "2006-01-02T15:04:05-0700"
+)
+
 // UnmarshalJSON parses JSON time
 func (t *Time) UnmarshalJSON(data []byte) error {
 	if len(data) > 2 && data[0] == '"' && data[len(data)-1] == '"' {
@@ -164,6 +168,10 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 		if tt, ok := parseAsISO8601(data[1 : len(data)-1]); ok {
+			*t = Time(tt)
+			return nil
+		}
+		if tt, err := time.Parse(timeRFC3339Custom, string(data[1:len(data)-1])); err == nil {
 			*t = Time(tt)
 			return nil
 		}

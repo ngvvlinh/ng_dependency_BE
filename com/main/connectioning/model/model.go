@@ -59,6 +59,8 @@ type EtopAffiliateAccount struct {
 	Token  string `json:"token"`
 	// shop_id used for GHN
 	ShopID string `json:"shop_id"`
+	// client_secret for NinjaVan
+	SecretKey string `json:"secret_key,omitempty"`
 }
 
 type ShopConnectionExternalData struct {

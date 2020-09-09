@@ -7134,7 +7134,8 @@
         "ghtk",
         "vtpost",
         "etop",
-        "partner"
+        "partner",
+        "ninjavan"
       ]
     },
     "cdConnectionMethod": {
@@ -7154,7 +7155,8 @@
         "ghtk",
         "vtpost",
         "partner",
-        "ahamove"
+        "ahamove",
+        "ninjavan"
       ]
     },
     "cdConnectionSubtype": {

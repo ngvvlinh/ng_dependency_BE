@@ -59,6 +59,10 @@ func (d *VTPostDriver) GetAffiliateID() string {
 	return ""
 }
 
+func (d *VTPostDriver) GenerateToken(ctx context.Context) (*carrierutil.GenerateTokenResponse, error) {
+	return nil, cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+}
+
 func (d VTPostDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,

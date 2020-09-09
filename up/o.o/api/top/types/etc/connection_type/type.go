@@ -90,4 +90,7 @@ const (
 
 	// +enum=ahamove
 	ConnectionProviderAhamove ConnectionProvider = 5
+
+	// +enum=ninjavan
+	ConnectionProviderNinjaVan ConnectionProvider = 6
 )

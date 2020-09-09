@@ -33,6 +33,15 @@ func CoalesceInt(is ...int) int {
 	return 0
 }
 
+func CoalesceFloat(fs ...float64) float64 {
+	for _, f := range fs {
+		if f != 0 {
+			return f
+		}
+	}
+	return 0
+}
+
 func CoalesceID(ids ...dot.ID) dot.ID {
 	for _, id := range ids {
 		if id != 0 {

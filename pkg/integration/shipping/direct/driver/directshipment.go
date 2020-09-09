@@ -54,6 +54,10 @@ func (d *DirectShipmentDriver) GetAffiliateID() string {
 	return ""
 }
 
+func (d *DirectShipmentDriver) GenerateToken(ctx context.Context) (*carriertypes.GenerateTokenResponse, error) {
+	return nil, cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+}
+
 func (d *DirectShipmentDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,

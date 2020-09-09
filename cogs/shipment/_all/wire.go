@@ -6,9 +6,9 @@ import (
 	"github.com/google/wire"
 
 	_shipment "o.o/backend/cogs/shipment"
-	_ghn "o.o/backend/cogs/shipment/ghn/_all"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
+	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	imhandlers "o.o/backend/pkg/etop/logic/money-transaction/handlers"
@@ -19,7 +19,7 @@ import (
 
 var WireSet = wire.NewSet(
 	_shipment.WireSet,
-	_ghn.WireSet,
+	shipmentwebhookall.WireSet,
 	_ghtk.WireSet,
 	_vtpost.WireSet,
 	wire.FieldsOf(new(Config), "GHN", "GHNWebhook", "GHTK", "GHTKWebhook", "VTPost", "VTPostWebhook"),

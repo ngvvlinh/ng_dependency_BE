@@ -14,9 +14,9 @@ import (
 	_main "o.o/backend/cogs/server/main"
 	server_shop "o.o/backend/cogs/server/shop"
 	server_vtpay "o.o/backend/cogs/server/vtpay"
-	_ghn "o.o/backend/cogs/shipment/ghn/_all"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
+	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	connectioningpm "o.o/backend/com/main/connectioning/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
@@ -85,7 +85,7 @@ type Output struct {
 func BuildServers(
 	etopServer MainServer,
 	webServer WebServer,
-	ghnServer _ghn.GHNWebhookServer,
+	shipmentWebhookServer shipmentwebhookall.ShipmentWebhookServer,
 	ghtkServer _ghtk.GHTKWebhookServer,
 	vtpostServer _vtpost.VTPostWebhookServer,
 	ahamoveServer ahamoveserver.AhamoveWebhookServer,
@@ -93,7 +93,7 @@ func BuildServers(
 	svrs := []lifecycle.HTTPServer{
 		{"Main   ", etopServer},
 		{"Web    ", webServer},
-		{"GHN    ", ghnServer},
+		{"Shipment webhook    ", shipmentWebhookServer},
 		{"GHTK   ", ghtkServer},
 		{"VTPOST ", vtpostServer},
 		{"AHAMOVE", ahamoveServer},

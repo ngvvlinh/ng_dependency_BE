@@ -2,6 +2,7 @@ package types
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/main/connectioning"
 	"o.o/api/main/location"
@@ -51,6 +52,8 @@ type ShipmentCarrier interface {
 
 	GetAffiliateID() string
 
+	GenerateToken(context.Context) (*GenerateTokenResponse, error)
+
 	CreateFulfillment(context.Context, *shipmodel.Fulfillment, *GetShippingServicesArgs, *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error)
 
 	RefreshFulfillment(context.Context, *shipmodel.Fulfillment) (ffmToUpdate *shipmodel.Fulfillment, _ error)
@@ -84,10 +87,10 @@ type GetShippingServicesArgs struct {
 	ToDistrictCode   string
 	ToWardCode       string
 
-	ChargeableWeight int
-	Length           int
-	Width            int
-	Height           int
+	ChargeableWeight int // gram
+	Length           int // cm
+	Width            int // cm
+	Height           int // cm
 	IncludeInsurance bool
 	InsuranceValue   dot.NullInt
 	BasketValue      int
@@ -127,4 +130,11 @@ type AccountResponse struct {
 	UserID        string
 	ShopID        string
 	IsRequiredOTP bool
+}
+
+type GenerateTokenResponse struct {
+	AccessToken string
+	ExpiresAt   time.Time
+	TokenType   string
+	ExpiresIn   int
 }

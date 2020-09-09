@@ -63,9 +63,10 @@ type ConnectionDriverConfig struct {
 }
 
 type EtopAffiliateAccount struct {
-	UserID string // GHN(v3): client_id
-	Token  string
-	ShopID string // GHN(v3): shop_id
+	UserID    string // GHN(v3): client_id
+	Token     string
+	ShopID    string // GHN(v3): shop_id
+	SecretKey string // NinjaVan: client_secret
 }
 
 func (a *EtopAffiliateAccount) GetUserID() string {

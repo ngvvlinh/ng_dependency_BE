@@ -45,6 +45,8 @@ var ll = l.New()
 
 const (
 	PrefixMakeupPriceCode = "###"
+
+	ThirtyMinutes = 30 * time.Minute
 )
 
 type ShipmentManager struct {
@@ -120,7 +122,57 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 	if shopConnection.Status != status3.P || shopConnection.Token == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection does not valid (check status or token)")
 	}
-	return m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, connection, shopConnection, m.webhookEndpoints)
+
+	// check if token is expired then generate new token
+	if err := m.generateToken(ctx, connection, shopConnection); err != nil {
+		return nil, err
+	}
+
+	shipmentDriver, err := m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, connection, shopConnection, m.webhookEndpoints)
+	if err != nil {
+		return nil, err
+	}
+
+	return shipmentDriver, nil
+}
+
+func (m *ShipmentManager) generateToken(ctx context.Context, connection *connectioning.Connection, shopConnection *connectioning.ShopConnection) error {
+	expiresAt := shopConnection.TokenExpiresAt
+	if expiresAt.IsZero() {
+		return nil
+	}
+	now := time.Now()
+	// 30p trước khi hết hạn
+	expiresAt.Add(-ThirtyMinutes)
+	if expiresAt.After(now) {
+		return nil
+	}
+
+	// get driver
+	_driver, err := m.getDriverByEtopAffiliateAccount(ctx, connection.ID)
+	if err != nil {
+		return err
+	}
+
+	// re-generate token
+	generateTokenResp, err := _driver.GenerateToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	// update shopConnection
+	updateShopConnectionCmd := connectioning.CreateOrUpdateShopConnectionCommand{
+		ShopID:         shopConnection.ShopID,
+		ConnectionID:   shopConnection.ConnectionID,
+		Token:          generateTokenResp.AccessToken,
+		TokenExpiresAt: generateTokenResp.ExpiresAt,
+		ExternalData:   shopConnection.ExternalData,
+	}
+	if err := m.connectionAggr.Dispatch(ctx, &updateShopConnectionCmd); err != nil {
+		return err
+	}
+	shopConnection = updateShopConnectionCmd.Result
+	return nil
 }
 
 func (m *ShipmentManager) CreateFulfillments(ctx context.Context, ffms []*shipmodel.Fulfillment) error {

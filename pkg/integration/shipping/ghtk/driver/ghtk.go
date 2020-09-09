@@ -59,6 +59,10 @@ func (d *GHTKDriver) GetAffiliateID() string {
 	return d.client.GetAffiliateID()
 }
 
+func (d *GHTKDriver) GenerateToken(ctx context.Context) (*carrierutil.GenerateTokenResponse, error) {
+	return nil, cm.Errorf(cm.ExternalServiceError, nil, "This carrier does not support this method")
+}
+
 func (d *GHTKDriver) CreateFulfillment(
 	ctx context.Context,
 	ffm *shipmodel.Fulfillment,
