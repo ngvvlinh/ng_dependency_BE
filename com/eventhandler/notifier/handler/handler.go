@@ -5,8 +5,9 @@ import (
 	handler "o.o/backend/com/eventhandler/handler"
 	"o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/com/eventhandler/pgevent"
-	sqlstore2 "o.o/backend/com/fabo/main/fbmessaging/sqlstore"
+	fabosqlstore "o.o/backend/com/fabo/main/fbmessaging/sqlstore"
 	com "o.o/backend/com/main"
+	connectioning "o.o/backend/com/main/connectioning/sqlstore"
 	identitystore "o.o/backend/com/main/identity/sqlstore"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/mq"
@@ -24,7 +25,8 @@ var (
 	historyStore              historysqlstore.HistoryStoreFactory
 	userNotifySettingStore    sqlstore.UserNotiSettingStoreFactory
 	accountUserStore          identitystore.AccountUserStoreFactory
-	customerConversationStore sqlstore2.FbCustomerConversationStoreFactory
+	customerConversationStore fabosqlstore.FbCustomerConversationStoreFactory
+	connectionStore           connectioning.ConnectionStoreFactory
 )
 
 const (
@@ -55,7 +57,8 @@ func New(dbMain com.MainDB, dbNotifier com.NotifierDB, consumer mq.KafkaConsumer
 	historyStore = historysqlstore.NewHistoryStore(dbMain)
 	userNotifySettingStore = sqlstore.NewUserNotiSettingStore(dbMain)
 	accountUserStore = identitystore.NewAccountUserStore(dbMain)
-	customerConversationStore = sqlstore2.NewFbCustomerConversationStore(dbMain)
+	customerConversationStore = fabosqlstore.NewFbCustomerConversationStore(dbMain)
+	connectionStore = connectioning.NewConnectionStore(dbMain)
 
 	handlerMain = handler.New(consumer, cfg)
 	handlerNotifier = handler.New(consumer, cfg)

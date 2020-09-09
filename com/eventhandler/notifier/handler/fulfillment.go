@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"strings"
 
+	"o.o/api/main/connectioning"
 	cmtype "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping"
-	"o.o/api/top/types/etc/shipping_provider"
 	notifiermodel "o.o/backend/com/eventhandler/notifier/model"
 	"o.o/backend/com/eventhandler/pgevent"
 	ordermodel "o.o/backend/com/main/ordering/model"
@@ -40,7 +39,8 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 		return mq.CodeIgnore, nil
 	}
 
-	cmds := prepareNotifyFfmCommands(ctx, history, &ffm)
+	op := event.Op
+	cmds := prepareNotifyFfmCommands(ctx, op, history, &ffm)
 	if err := createNotifications(ctx, cmds); err != nil {
 		return mq.CodeRetry, err
 	}
@@ -48,36 +48,44 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 	return mq.CodeOK, nil
 }
 
-func prepareNotifyFfmCommands(ctx context.Context, history shipmodel.FulfillmentHistory, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
-	externalShippingNote := history.ExternalShippingNote().String()
-	externalSubState := history.ExternalShippingSubState().String()
+func prepareNotifyFfmCommands(ctx context.Context, op pgevent.TGOP, history shipmodel.FulfillmentHistory, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
 	userIDs, err := filterRecipient(ctx, ffm.ShopID, notifyTopicRolesMap[TopicFulfillment])
 	if err != nil || userIDs == nil {
 		return nil
 	}
 
+	connection, err := connectionStore(ctx).ID(ffm.ConnectionID).GetConnection()
+	if err != nil {
+		ll.SendMessagef("get connection got error, %v", err)
+		return nil
+	}
+
 	var res []*notifiermodel.CreateNotificationArgs
-	res = templateFfmChangedNote(userIDs, ffm)
+	externalShippingNote := history.ExternalShippingNote().String()
+	externalSubState := history.ExternalShippingSubState().String()
 	if (externalShippingNote.Valid && ffm.ExternalShippingNote != "") || (externalSubState.Valid && ffm.ExternalShippingSubState != "") {
-		res = append(res, templateFfmChangedNote(userIDs, ffm)...)
+		cmds := templateFfmChangedNote(connection, userIDs, ffm)
+		res = append(res, cmds...)
 	}
 	if history.ShippingFeeShop().Int().Valid {
-		res = append(res, templateFfmChangedFee(userIDs, ffm)...)
+		cmds := templateFfmChangedFee(connection, op, userIDs, ffm)
+		res = append(res, cmds...)
 	}
 	if history.ShippingState().String().Valid {
-		res = append(res, templateFfmChangedStatus(userIDs, ffm)...)
+		cmds := templateFfmChangedStatus(connection, userIDs, ffm)
+		res = append(res, cmds...)
 	}
 	return res
 }
 
-func templateFfmChangedNote(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
+func templateFfmChangedNote(connection *connectioning.Connection, userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
 	title, content := "", ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	subState := ffm.ExternalShippingSubState
 	if subState == "" {
 		subState = "Cập nhật"
 	}
-	title = fmt.Sprintf("%v - %v %v - %v", subState, Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
+	title = fmt.Sprintf("%v - %v %v - %v", subState, connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
 	if ffm.ExternalShippingNote != "" {
 		content, _ = strconv.Unquote("\"" + ffm.ExternalShippingNote + "\"")
 	} else {
@@ -102,8 +110,12 @@ func templateFfmChangedNote(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*not
 	return buildNotifyCmds(args)
 }
 
-func templateFfmChangedFee(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
-	title := fmt.Sprintf("Thay đổi phí vận chuyển - %v %v - %v", Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
+func templateFfmChangedFee(connection *connectioning.Connection, op pgevent.TGOP, userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
+	if op == pgevent.OpInsert && ffm.ShippingFeeShop == 0 {
+		return nil
+	}
+
+	title := fmt.Sprintf("Thay đổi phí vận chuyển - %v %v - %v", connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	content := fmt.Sprintf("Cước phí thay đổi thành %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.ShippingFeeShop, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
 
@@ -121,7 +133,7 @@ func templateFfmChangedFee(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*noti
 	return buildNotifyCmds(args)
 }
 
-func templateFfmChangedStatus(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
+func templateFfmChangedStatus(connection *connectioning.Connection, userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
 	content := ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	switch ffm.ShippingState {
@@ -148,7 +160,7 @@ func templateFfmChangedStatus(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*n
 	default:
 	}
 
-	title := fmt.Sprintf("%v - %v %v - %v", shippingsharemodel.ShippingStateMap[ffm.ShippingState], Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
+	title := fmt.Sprintf("%v - %v %v - %v", shippingsharemodel.ShippingStateMap[ffm.ShippingState], connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
 
 	sendNotification := false
 	if cm.StringsContain(acceptNotifyStates, ffm.ShippingState.String()) {
@@ -166,8 +178,4 @@ func templateFfmChangedStatus(userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*n
 		TopicType:  TopicFulfillment,
 	}
 	return buildNotifyCmds(args)
-}
-
-func Uppercase(provider shipping_provider.ShippingProvider) string {
-	return strings.ToUpper(provider.String())
 }
