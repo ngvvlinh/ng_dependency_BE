@@ -64,11 +64,11 @@ func prepareNotifyFfmCommands(ctx context.Context, op pgevent.TGOP, history ship
 	externalShippingNote := history.ExternalShippingNote().String()
 	externalSubState := history.ExternalShippingSubState().String()
 	if (externalShippingNote.Valid && ffm.ExternalShippingNote != "") || (externalSubState.Valid && ffm.ExternalShippingSubState != "") {
-		cmds := templateFfmChangedNote(connection, userIDs, ffm)
+		cmds := templateFfmChangedNote(connection, userIDs, ffm, history)
 		res = append(res, cmds...)
 	}
 	if history.ShippingFeeShop().Int().Valid {
-		cmds := templateFfmChangedFee(connection, op, userIDs, ffm)
+		cmds := templateFfmChangedFee(connection, op, userIDs, ffm, history)
 		res = append(res, cmds...)
 	}
 	if history.ShippingState().String().Valid {
@@ -78,7 +78,12 @@ func prepareNotifyFfmCommands(ctx context.Context, op pgevent.TGOP, history ship
 	return res
 }
 
-func templateFfmChangedNote(connection *connectioning.Connection, userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
+func templateFfmChangedNote(
+	connection *connectioning.Connection,
+	userIDs []dot.ID,
+	ffm *shipmodel.Fulfillment,
+	history shipmodel.FulfillmentHistory,
+) []*notifiermodel.CreateNotificationArgs {
 	title, content := "", ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	subState := ffm.ExternalShippingSubState
@@ -86,8 +91,9 @@ func templateFfmChangedNote(connection *connectioning.Connection, userIDs []dot.
 		subState = "Cập nhật"
 	}
 	title = fmt.Sprintf("%v - %v %v - %v", subState, connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
-	if ffm.ExternalShippingNote != "" {
-		content, _ = strconv.Unquote("\"" + ffm.ExternalShippingNote + "\"")
+	externalShippingNote := history.ExternalShippingNote().String().String
+	if externalShippingNote != "" {
+		content, _ = strconv.Unquote("\"" + externalShippingNote + "\"")
 	} else {
 		content = fmt.Sprintf("Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
 	}
@@ -110,14 +116,20 @@ func templateFfmChangedNote(connection *connectioning.Connection, userIDs []dot.
 	return buildNotifyCmds(args)
 }
 
-func templateFfmChangedFee(connection *connectioning.Connection, op pgevent.TGOP, userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
-	if op == pgevent.OpInsert && ffm.ShippingFeeShop == 0 {
+func templateFfmChangedFee(
+	connection *connectioning.Connection,
+	op pgevent.TGOP,
+	userIDs []dot.ID,
+	ffm *shipmodel.Fulfillment,
+	history shipmodel.FulfillmentHistory,
+) []*notifiermodel.CreateNotificationArgs {
+	if op == pgevent.OpInsert {
 		return nil
 	}
 
 	title := fmt.Sprintf("Thay đổi phí vận chuyển - %v %v - %v", connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
-	content := fmt.Sprintf("Cước phí thay đổi thành %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.ShippingFeeShop, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
+	content := fmt.Sprintf("Cước phí thay đổi thành %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", history.ShippingFeeShop().Int64().Int64, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
 
 	args := &buildNotifyCmdArgs{
 		UserIDs:    userIDs,
