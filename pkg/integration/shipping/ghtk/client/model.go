@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
@@ -124,6 +125,19 @@ func (sID StateID) ToModel() shipping.State {
 		return shipping.Undeliverable
 	default:
 		return shipping.Unknown
+	}
+}
+
+func (sID StateID) ToSubstateModel() shippingsubstate.Substate {
+	switch sID {
+	case StateIDDelayPicking:
+		return shippingsubstate.PickFail
+	case StateIDDelayDelivering:
+		return shippingsubstate.DeliveryFail
+	case StateIDNotDeliver:
+		return shippingsubstate.DeliveryGiveup
+	default:
+		return 0
 	}
 }
 

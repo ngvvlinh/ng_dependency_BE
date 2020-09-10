@@ -6,6 +6,7 @@ import (
 	"time"
 
 	typesshipping "o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
@@ -80,6 +81,19 @@ func (s State) ToModel() typesshipping.State {
 		return typesshipping.Undeliverable
 	default:
 		return typesshipping.Unknown
+	}
+}
+
+func (s State) ToSubstateModel() shippingsubstate.Substate {
+	switch s {
+	case StateDeliveryFail:
+		return shippingsubstate.DeliveryFail
+	case StateWaitingToReturn:
+		return shippingsubstate.DeliveryGiveup
+	case StateReturnFail:
+		return shippingsubstate.ReturnFail
+	default:
+		return 0
 	}
 }
 

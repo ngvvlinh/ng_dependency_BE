@@ -2,6 +2,7 @@ package update
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	shipmodel "o.o/backend/com/main/shipping/model"
@@ -30,9 +31,22 @@ func CalcUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment, msg *ghtkclien
 	ffmToUpdate.ExternalShippingData = data
 	ffmToUpdate.ExternalShippingState = ghtkclient.StateMapping[stateID]
 	ffmToUpdate.ShippingState = stateID.ToModel()
+	ffmToUpdate.ShippingSubstate = stateID.ToSubstateModel()
 	ffmToUpdate.ShippingStatus = stateID.ToStatus5()
 	ffmToUpdate.ExternalShippingStateCode = strconv.Itoa(statusID)
 
+	subState := ghtkclient.SubStateMapping[stateID]
+	ffmToUpdate.ExternalShippingSubState = subState
+
+	// update note
+	note := ffm.ExternalShippingNote
+	if msg.Reason.String() != "" {
+		reason, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")
+		if !strings.Contains(note, reason) {
+			note = shipping.AppendString(note, reason)
+		}
+		ffmToUpdate.ExternalShippingNote = note
+	}
 	return ffmToUpdate, nil
 }
 

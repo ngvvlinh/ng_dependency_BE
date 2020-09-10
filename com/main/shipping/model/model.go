@@ -9,6 +9,7 @@ import (
 	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
@@ -173,8 +174,9 @@ type Fulfillment struct {
 	Coupon            string
 	ShipmentPriceInfo *shippingsharemodel.ShipmentPriceInfo
 
-	LinesContent string
-	EdCode       string
+	LinesContent     string
+	EdCode           string
+	ShippingSubstate shippingsubstate.Substate
 
 	Rid dot.ID
 }

@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"time"
 
 	"o.o/api/main/identity"
@@ -68,8 +67,6 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		return cm.Errorf(cm.InvalidArgument, err, "GHTK: can not decode JSON callback")
 	}
 	ll.Logger.Info("ghtk webhook", l.Object("msg", msg))
-	statusID := int(msg.StatusID)
-	stateID := ghtkclient.StateID(statusID)
 
 	var ffm *shipmodel.Fulfillment
 	var err error
@@ -119,11 +116,10 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ll.SendMessage(fmt.Sprintf(msg, ffm.ShippingCode, err.Error()))
 		}
 
-		note, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")
-		subState := ghtkclient.SubStateMapping[stateID]
 		update := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
 			FulfillmentID:             ffm.ID,
 			ShippingState:             updateFfm.ShippingState,
+			ShippingSubstate:          updateFfm.ShippingSubstate,
 			ShippingStatus:            updateFfm.ShippingStatus,
 			ExternalShippingData:      updateFfm.ExternalShippingData,
 			ExternalShippingState:     updateFfm.ExternalShippingState,
@@ -142,8 +138,8 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ShippingReturningAt:       updateFfm.ShippingReturningAt,
 			ShippingReturnedAt:        updateFfm.ShippingReturnedAt,
 			ShippingCancelledAt:       updateFfm.ShippingCancelledAt,
-			ExternalShippingNote:      dot.String(note),
-			ExternalShippingSubState:  dot.String(subState),
+			ExternalShippingNote:      dot.String(updateFfm.ExternalShippingNote),
+			ExternalShippingSubState:  dot.String(updateFfm.ExternalShippingSubState),
 		}
 		if err := wh.shippingAggr.Dispatch(ctx, update); err != nil {
 			return err

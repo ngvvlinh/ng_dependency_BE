@@ -9,6 +9,7 @@ import (
 	"o.o/api/main/shipping/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	shippingstate "o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
@@ -260,6 +261,7 @@ type UpdateFulfillmentsCODTransferedAtArgs struct {
 type UpdateFfmExternalShippingInfoArgs struct {
 	FulfillmentID             dot.ID
 	ShippingState             shippingstate.State
+	ShippingSubstate          shippingsubstate.Substate
 	ShippingStatus            status5.Status
 	ExternalShippingData      json.RawMessage
 	ExternalShippingState     string

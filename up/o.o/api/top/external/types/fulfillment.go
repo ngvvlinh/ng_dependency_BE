@@ -5,6 +5,7 @@ import (
 	"o.o/api/top/int/types"
 	"o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -38,6 +39,7 @@ type Fulfillment struct {
 	IncludeInsurance         dot.NullBool                       `json:"include_insurance"`
 	ConfirmStatus            status3.NullStatus                 `json:"confirm_status"`
 	ShippingState            shipping.NullState                 `json:"shipping_state"`
+	ShippingSubstate         shippingsubstate.Substate          `json:"shipping_substate"`
 	ShippingStatus           status5.NullStatus                 `json:"shipping_status"`
 	Status                   status5.NullStatus                 `json:"status"`
 	CodAmount                dot.NullInt                        `json:"cod_amount"`

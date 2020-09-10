@@ -12,6 +12,7 @@ import (
 	orderingtypes "o.o/api/main/ordering/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	shipping "o.o/api/top/types/etc/shipping"
+	substate "o.o/api/top/types/etc/shipping/substate"
 	shipping_fee_type "o.o/api/top/types/etc/shipping_fee_type"
 	shipping_payment_type "o.o/api/top/types/etc/shipping_payment_type"
 	shipping_provider "o.o/api/top/types/etc/shipping_provider"
@@ -165,6 +166,7 @@ func (h AggregateHandler) HandleUpdateFulfillmentCODAmount(ctx context.Context, 
 type UpdateFulfillmentExternalShippingInfoCommand struct {
 	FulfillmentID             dot.ID
 	ShippingState             shipping.State
+	ShippingSubstate          substate.Substate
 	ShippingStatus            status5.Status
 	ExternalShippingData      json.RawMessage
 	ExternalShippingState     string
@@ -594,6 +596,7 @@ func (q *UpdateFulfillmentExternalShippingInfoCommand) GetArgs(ctx context.Conte
 		&UpdateFfmExternalShippingInfoArgs{
 			FulfillmentID:             q.FulfillmentID,
 			ShippingState:             q.ShippingState,
+			ShippingSubstate:          q.ShippingSubstate,
 			ShippingStatus:            q.ShippingStatus,
 			ExternalShippingData:      q.ExternalShippingData,
 			ExternalShippingState:     q.ExternalShippingState,
@@ -620,6 +623,7 @@ func (q *UpdateFulfillmentExternalShippingInfoCommand) GetArgs(ctx context.Conte
 func (q *UpdateFulfillmentExternalShippingInfoCommand) SetUpdateFfmExternalShippingInfoArgs(args *UpdateFfmExternalShippingInfoArgs) {
 	q.FulfillmentID = args.FulfillmentID
 	q.ShippingState = args.ShippingState
+	q.ShippingSubstate = args.ShippingSubstate
 	q.ShippingStatus = args.ShippingStatus
 	q.ExternalShippingData = args.ExternalShippingData
 	q.ExternalShippingState = args.ExternalShippingState

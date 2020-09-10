@@ -290,8 +290,9 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.EtopAdjustedShippingFeeMain = arg.EtopAdjustedShippingFeeMain // simple assign
 	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
 	out.ShipmentPriceInfo = Convert_sharemodel_ShipmentPriceInfo_shipping_ShipmentPriceInfo(arg.ShipmentPriceInfo, nil)
-	out.LinesContent = arg.LinesContent // simple assign
-	out.EdCode = arg.EdCode             // simple assign
+	out.LinesContent = arg.LinesContent         // simple assign
+	out.EdCode = arg.EdCode                     // simple assign
+	out.ShippingSubstate = arg.ShippingSubstate // simple assign
 }
 
 func Convert_shippingmodel_Fulfillments_shipping_Fulfillments(args []*shippingmodel.Fulfillment) (outs []*shipping.Fulfillment) {
@@ -426,9 +427,10 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.ExternalAffiliateID = ""  // zero value
 	out.Coupon = arg.Coupon       // simple assign
 	out.ShipmentPriceInfo = Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(arg.ShipmentPriceInfo, nil)
-	out.LinesContent = arg.LinesContent // simple assign
-	out.EdCode = arg.EdCode             // simple assign
-	out.Rid = 0                         // zero value
+	out.LinesContent = arg.LinesContent         // simple assign
+	out.EdCode = arg.EdCode                     // simple assign
+	out.ShippingSubstate = arg.ShippingSubstate // simple assign
+	out.Rid = 0                                 // zero value
 }
 
 func Convert_shipping_Fulfillments_shippingmodel_Fulfillments(args []*shipping.Fulfillment) (outs []*shippingmodel.Fulfillment) {
@@ -528,6 +530,7 @@ func apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping
 	out.ShipmentPriceInfo = out.ShipmentPriceInfo                                    // no change
 	out.LinesContent = out.LinesContent                                              // no change
 	out.EdCode = out.EdCode                                                          // no change
+	out.ShippingSubstate = out.ShippingSubstate                                      // no change
 }
 
 //-- convert o.o/api/main/shipping.FulfillmentExtended --//

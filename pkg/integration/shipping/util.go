@@ -35,3 +35,13 @@ func ParseDateTimeShipping(s string) (*time.Time, error) {
 	datetime = datetime.Add(hours*time.Hour + 59*time.Minute)
 	return &datetime, nil
 }
+
+func AppendString(s, appendStr string) string {
+	if !strings.HasSuffix(s, ".") {
+		s += ". \n"
+	} else {
+		s += "\n"
+	}
+	s += appendStr
+	return s
+}

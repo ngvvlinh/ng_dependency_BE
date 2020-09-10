@@ -14,6 +14,7 @@ import (
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/shipnow_state"
 	"o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
@@ -420,8 +421,9 @@ type Fulfillment struct {
 	ConnectionID  dot.ID `json:"connection_id"`
 	ShopCarrierID dot.ID `json:"shop_carrier_id"`
 
-	EdCode       string `json:"ed_code"`
-	LinesContent string `json:"lines_content"`
+	EdCode           string                    `json:"ed_code"`
+	LinesContent     string                    `json:"lines_content"`
+	ShippingSubstate shippingsubstate.Substate `json:"shipping_substate"`
 }
 
 func (m *Fulfillment) String() string { return jsonx.MustMarshalToString(m) }

@@ -114,6 +114,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			FulfillmentID:             ffm.ID,
 			ShippingState:             updateFfm.ShippingState,
 			ShippingStatus:            updateFfm.ShippingStatus,
+			ShippingSubstate:          updateFfm.ShippingSubstate,
 			ExternalShippingData:      updateFfm.ExternalShippingData,
 			ExternalShippingState:     updateFfm.ExternalShippingState,
 			ExternalShippingStatus:    updateFfm.ExternalShippingStatus,

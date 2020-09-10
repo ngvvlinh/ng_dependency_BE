@@ -11,6 +11,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
@@ -125,8 +126,9 @@ type Fulfillment struct {
 	EtopPriceRule     bool
 	ShipmentPriceInfo *ShipmentPriceInfo
 
-	LinesContent string
-	EdCode       string
+	LinesContent     string
+	EdCode           string
+	ShippingSubstate shippingsubstate.Substate
 }
 
 type FulfillmentSyncStates struct {

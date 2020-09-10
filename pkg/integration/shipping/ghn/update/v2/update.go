@@ -1,6 +1,8 @@
 package v2
 
 import (
+	"strconv"
+	"strings"
 	"time"
 
 	"o.o/api/top/types/etc/status5"
@@ -28,9 +30,11 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 		ExternalShippingData:      data,
 		ProviderShippingFeeLines:  msg.Fee.ToOrderFee().ToFeeLines(),
 		ShippingState:             state.ToModel(),
+		ShippingSubstate:          state.ToSubstateModel(),
 		ShippingStatus:            state.ToStatus5(),
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
 		ShippingCode:              ffm.ShippingCode,
+		ExternalShippingNote:      ffm.ExternalShippingNote,
 	}
 
 	// Only update status4 if the current status is not ending status
@@ -44,6 +48,16 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 		if ffm.ClosedAt.IsZero() {
 			update.ClosedAt = now
 		}
+	}
+
+	// update note
+	note := ffm.ExternalShippingNote
+	if msg.Reason.String() != "" {
+		reason, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")
+		if !strings.Contains(note, reason) {
+			note = shipping.AppendString(note, reason)
+		}
+		update.ExternalShippingNote = note
 	}
 	return update, nil
 }
@@ -60,6 +74,7 @@ func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, orderGHN *ghnclient.
 		ExternalShippingState:     orderGHN.Status.String(),
 		ExternalShippingStatus:    state.ToStatus5(),
 		ShippingState:             state.ToModel(),
+		ShippingSubstate:          state.ToSubstateModel(),
 		ShippingStatus:            state.ToStatus5(),
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
 		ShippingCode:              ffm.ShippingCode,

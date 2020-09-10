@@ -1940,6 +1940,16 @@
         "anonymous"
       ]
     },
+    "miSubstate": {
+      "type": "string",
+      "enum": [
+        "default",
+        "pick_fail",
+        "delivery_fail",
+        "devivery_giveup",
+        "return_fail"
+      ]
+    },
     "mrAddCustomerRequest": {
       "type": "object",
       "properties": {
@@ -2923,6 +2933,9 @@
         },
         "shipping_status": {
           "$ref": "#/definitions/bnStatus"
+        },
+        "shipping_substate": {
+          "$ref": "#/definitions/miSubstate"
         },
         "shop_id": {
           "type": "string",

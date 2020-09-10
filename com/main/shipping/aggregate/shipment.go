@@ -752,6 +752,7 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 		update := &shipmodel.Fulfillment{
 			ID:                        args.FulfillmentID,
 			ShippingState:             args.ShippingState,
+			ShippingSubstate:          args.ShippingSubstate,
 			ShippingStatus:            args.ShippingStatus,
 			ExternalShippingData:      args.ExternalShippingData,
 			ExternalShippingState:     args.ExternalShippingState,

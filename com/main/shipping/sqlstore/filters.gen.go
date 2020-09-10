@@ -10,6 +10,7 @@ import (
 	orderingtypes "o.o/api/main/ordering/types"
 	connection_type "o.o/api/top/types/etc/connection_type"
 	shipping "o.o/api/top/types/etc/shipping"
+	substate "o.o/api/top/types/etc/shipping/substate"
 	shipping_payment_type "o.o/api/top/types/etc/shipping_payment_type"
 	shipping_provider "o.o/api/top/types/etc/shipping_provider"
 	status3 "o.o/api/top/types/etc/status3"
@@ -1875,6 +1876,25 @@ func (ft *FulfillmentFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
 		Value:  EdCode,
 		IsNil:  EdCode == nil,
 		IsZero: EdCode != nil && (*EdCode) == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByShippingSubstate(ShippingSubstate substate.Substate) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_substate",
+		Value:  ShippingSubstate,
+		IsNil:  ShippingSubstate == 0,
+	}
+}
+
+func (ft *FulfillmentFilters) ByShippingSubstatePtr(ShippingSubstate *substate.Substate) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_substate",
+		Value:  ShippingSubstate,
+		IsNil:  ShippingSubstate == nil,
+		IsZero: ShippingSubstate != nil && (*ShippingSubstate) == 0,
 	}
 }
 
