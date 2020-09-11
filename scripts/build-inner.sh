@@ -64,12 +64,12 @@ etop)
 
     ;;
 fabo)
-    build ./cmd/fabo-server           $BUILD_FABO_SERVER
-    build ./cmd/fabo-event-handler    $BUILD_EVENT_HANDLER
-    build ./cmd/etop-uploader         $BUILD_UPLOADER
-    build ./cmd/pgevent-forwarder     $BUILD_PGEVENT_FORWARDER
-    build ./cmd/fabo-sync-service     $BUILD_FABO_SYNC_SERVICE
-    build ./cmd/fabo-notifier         $BUILD_FABO_NOTIFIER
+    build ./cmd/fabo-server             $BUILD_FABO_SERVER
+    build ./cmd/fabo-event-handler      $BUILD_EVENT_HANDLER
+    build ./cmd/etop-uploader           $BUILD_UPLOADER
+    build ./cmd/fabo-pgevent-forwarder  $BUILD_PGEVENT_FORWARDER
+    build ./cmd/fabo-sync-service       $BUILD_FABO_SYNC_SERVICE
+    build ./cmd/fabo-notifier            $BUILD_FABO_NOTIFIER
     ;;
 *)
     echo unexpected
