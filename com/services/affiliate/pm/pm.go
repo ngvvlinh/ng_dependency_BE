@@ -13,9 +13,7 @@ type ProcessManager struct {
 	affiliate affiliate.CommandBus
 }
 
-var (
-	ll = l.New()
-)
+var ll = l.New()
 
 func New(eventBus bus.EventRegistry, affiliateAggr affiliate.CommandBus) *ProcessManager {
 	p := &ProcessManager{affiliate: affiliateAggr}

@@ -39,7 +39,7 @@ func Default() Config {
 		Env:    "dev",
 	}
 	cfg.Databases["postgres"].Database = "etop_dev"
-	cfg.Databases["postgres_webhook"].Database = "etop_dev"
+	cfg.Databases["postgres_webhook"].Database = "etop_webhook"
 	return cfg
 }
 

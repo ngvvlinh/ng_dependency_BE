@@ -28,9 +28,7 @@ import (
 	"o.o/common/xerrors/logline"
 )
 
-var (
-	ll = l.New()
-)
+var ll = l.New()
 
 type CensorInterface interface {
 	Censor()

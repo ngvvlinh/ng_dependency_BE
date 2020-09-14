@@ -69,9 +69,7 @@ func New(
 	return p
 }
 
-var (
-	ll = l.New()
-)
+var ll = l.New()
 
 func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTransactionConfirmed)

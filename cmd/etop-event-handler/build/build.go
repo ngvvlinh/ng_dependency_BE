@@ -41,7 +41,7 @@ var ll = l.New()
 
 type Output struct {
 	Servers   []lifecycle.HTTPServer
-	Waiters   []Waiter
+	Waiters   []lifecycle.Waiter
 	PgService *pgevent.Service
 	WhSender  *sender.WebhookSender
 	Health    *health.Service
@@ -145,12 +145,10 @@ func BuildWebhookHandler(
 	return h, nil
 }
 
-type Waiter interface{ Wait() }
-
 func BuildWaiters(
 	intctlHandler *intctl.Handler,
 	h *handler.Handler,
-) (waiters []Waiter) {
+) (waiters []lifecycle.Waiter) {
 	waiters = append(waiters, intctlHandler, h)
 	return waiters
 }
