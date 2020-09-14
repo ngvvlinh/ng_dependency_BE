@@ -36,7 +36,6 @@ import (
 	customerpm "o.o/backend/com/shopping/customering/pm"
 	traderpm "o.o/backend/com/shopping/tradering/pm"
 	"o.o/backend/com/web/ecom/webserver"
-	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/apifw/servedoc"
@@ -81,10 +80,6 @@ type Output struct {
 	_connectionPM     *connectioningpm.ProcessManager
 	_pricelistPM      *pricelistpm.ProcessManager
 	_customerPM       *customerpm.ProcessManager
-
-	// inject
-	_m middleware.Middleware
-	_c *captcha.Captcha
 }
 
 func BuildServers(

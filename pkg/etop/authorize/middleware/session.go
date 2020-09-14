@@ -26,19 +26,8 @@ import (
 )
 
 var ll = l.New()
-var sadminToken string
-var identityQS identity.QueryBus
-var tokenStore tokens.TokenStore
 
-type Middleware struct{}
 type SAdminToken string
-
-func New(token SAdminToken, _tokenStore tokens.TokenStore, identityQuery identity.QueryBus) Middleware {
-	sadminToken = string(token)
-	identityQS = identityQuery
-	tokenStore = _tokenStore
-	return Middleware{}
-}
 
 // StartSessionQuery ...
 type StartSessionQuery struct {
@@ -98,6 +87,10 @@ func getToken(ctx context.Context, q *StartSessionQuery) string {
 }
 
 type SessionStarter struct {
+	SAdminToken   SAdminToken
+	IdentityQuery identity.QueryBus
+	TokenStore    tokens.TokenStore
+
 	AccountStore     sqlstore.AccountStoreInterface
 	UserStore        sqlstore.UserStoreInterface
 	PartnerStore     sqlstore.PartnerStoreInterface
@@ -123,7 +116,7 @@ func (st *SessionStarter) StartSessionWithToken(ctx context.Context, token strin
 	// responses token without any credential.
 	if !q.RequireAuth {
 		if token != "" {
-			claim, err := tokenStore.Validate(token)
+			claim, err := st.TokenStore.Validate(token)
 			if err != nil {
 				return ctx, cm.ErrUnauthenticated
 			}
@@ -141,7 +134,7 @@ func (st *SessionStarter) StartSessionWithToken(ctx context.Context, token strin
 	session := new(Session)
 	q.Result = session
 	if q.RequireSuperAdmin {
-		if token == sadminToken {
+		if token == string(st.SAdminToken) {
 			session.IsSuperAdmin = true
 			return ctx, nil
 		}
@@ -180,7 +173,7 @@ func (st *SessionStarter) StartSessionWithToken(ctx context.Context, token strin
 		wlPartnerID = claim.AuthPartnerID
 
 	} else {
-		claim, err = tokenStore.Validate(token)
+		claim, err = st.TokenStore.Validate(token)
 		if err != nil {
 			return ctx, cm.ErrUnauthenticated
 		}
@@ -344,7 +337,7 @@ func (st *SessionStarter) StartSessionAffiliate(ctx context.Context, require boo
 				AffiliateID: claim.AccountID,
 				UserID:      claim.UserID,
 			}
-			if err := identityQS.Dispatch(ctx, query); err != nil {
+			if err := st.IdentityQuery.Dispatch(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
@@ -355,7 +348,7 @@ func (st *SessionStarter) StartSessionAffiliate(ctx context.Context, require boo
 			query := &identity.GetAffiliateByIDQuery{
 				ID: claim.AccountID,
 			}
-			if err := identityQS.Dispatch(ctx, query); err != nil {
+			if err := st.IdentityQuery.Dispatch(ctx, query); err != nil {
 				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}

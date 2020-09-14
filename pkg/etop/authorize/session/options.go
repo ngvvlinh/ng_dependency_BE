@@ -1,12 +1,22 @@
 package session
 
-import "o.o/backend/pkg/etop/authorize/tokens"
+import (
+	"o.o/backend/pkg/common/apifw/captcha"
+	"o.o/backend/pkg/etop/authorize/tokens"
+)
 
 type HookOption func(h *Hook) error
 
 func OptSecret(secret string) HookOption {
 	return func(h *Hook) error {
 		h.secret = secret
+		return nil
+	}
+}
+
+func OptCaptcha(c *captcha.Captcha) HookOption {
+	return func(h *Hook) error {
+		h.captcha = c
 		return nil
 	}
 }

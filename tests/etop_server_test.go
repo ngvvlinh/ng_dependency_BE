@@ -131,42 +131,47 @@ func dropDatabase() error {
 }
 
 func TestLoginAndRegistration(t *testing.T) {
-	var recaptchaToken = "03AGdBq24aw3C3exEMtwydQqcuySIxxIDvILNMMRM8ei3DJ9_CiiuWd8XNwCkXJUjyA6mYwwd26d_MIUcLExeG83u203C0sHrv1voOSKsYhN5MPWxr0RgdUtcHsWLbU4OtnqUst0EGxJjYcqNEo5cM4cWU73XOQ2LUWZSgUvobpDTokoQV-zBJhw7b0uw05rO4PQYgTNp-MssFch8qfHSz7j7zsMKHCXRcqMnLiFS2MhIFg2kHhmKsSvDTLFSbrAA7nZFCVA_WDboRlj8wTSS2CxB1iJwqgw1jPoaWnAjrjQ-vARayUunDq6jiCI0vytMA1QCm_EkWaZwTVQYbKkDiCU6XSlMpz7FvU1RDIKTc9mCUBaDukVk3ZlI"
+	var recaptchaToken = "recaptcha_token"
 	var resp map[string]interface{}
 
 	t.Run("register with phone number", func(t *testing.T) {
-		// login with phone number
-		req := M{}
-		req["phone"] = "0973218967-1-test"
-		req["recaptcha_token"] = recaptchaToken
+		t.Run("register", func(t *testing.T) {
+			req := M{}
+			req["phone"] = "0973218967-1-test"
+			req["recaptcha_token"] = recaptchaToken
 
-		_, err := httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
-			Post(routerCheckUserRegistration)
+			httpResp, err := httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
+				Post(routerCheckUserRegistration)
 
-		require.NoError(t, err)
-		assert.Equal(t, resp["exists"], false)
+			require.NoError(t, err)
+			require.Equal(t, 200, httpResp.StatusCode())
+			assert.Equal(t, false, resp["exists"])
+		})
+		t.Run("init session", func(t *testing.T) {
+			req := M{}
+			httpResp, err := httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
+				Post(routerInitSession)
 
-		req = M{}
+			require.NoError(t, err)
+			require.Equal(t, 200, httpResp.StatusCode())
+			assert.Len(t, resp["access_token"], 43)
+			assert.Equal(t, float64(604800), resp["expires_in"])
+		})
+		t.Run("send phone verification", func(t *testing.T) {
+			var accessToken = resp["access_token"]
 
-		_, err = httpServerMain.NewRequest().SetBody(req).SetResult(&resp).
-			Post(routerInitSession)
+			req := M{}
+			req["phone"] = "0973218967-1-test"
+			httpResp, err := httpServerMain.NewRequest().
+				SetHeader("Authorization", fmt.Sprintf("Bearer %s", accessToken)).
+				SetBody(req).SetResult(&resp).
+				Post(routerSendPhoneVerification)
 
-		require.NoError(t, err)
+			require.NoError(t, err)
 
-		assert.Len(t, resp["access_token"], 43)
-		assert.Equal(t, resp["expires_in"], float64(604800))
-
-		var accessToken = resp["access_token"]
-
-		req = M{}
-		req["phone"] = "0973218967-1-test"
-
-		_, err = httpServerMain.NewRequest().
-			SetHeader("Authorization", fmt.Sprintf("Bearer %s", accessToken)).
-			SetBody(req).SetResult(&resp).
-			Post(routerSendPhoneVerification)
-
-		require.NoError(t, err)
+			_ = httpResp // TODO(vu): error sms_log (code=500)
+			// require.Equal(t, 200, httpResp.StatusCode())
+		})
 	})
 
 	t.Run("registration user wrong password", func(t *testing.T) {
@@ -187,7 +192,7 @@ func TestLoginAndRegistration(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		assert.Len(t, resp["access_token"], 43)
-		assert.Equal(t, resp["expires_in"], float64(604800))
+		assert.Equal(t, float64(604800), resp["expires_in"])
 	})
 
 	t.Run("registration user", func(t *testing.T) {
@@ -222,7 +227,7 @@ func TestLoginAndRegistration(t *testing.T) {
 
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		assert.Equal(t, resp["exists"], false)
+		assert.Equal(t, false, resp["exists"])
 	})
 
 	t.Run("user login with correct phone number and wrong password", func(t *testing.T) {
@@ -247,7 +252,7 @@ func TestLoginAndRegistration(t *testing.T) {
 
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		assert.Equal(t, resp["exists"], true)
+		assert.Equal(t, true, resp["exists"])
 	})
 
 	t.Run("user login with correct phone number and password", func(t *testing.T) {
@@ -273,14 +278,14 @@ func TestLoginAndRegistration(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		assert.Equal(t, resp["exists"], true)
+		assert.Equal(t, true, resp["exists"])
 		assert.Len(t, resp["access_token"], 43)
 
-		assert.Equal(t, resp["expires_in"], float64(604800))
+		assert.Equal(t, float64(604800), resp["expires_in"])
 		require.NotNil(t, resp["user"])
 		user := resp["user"].(map[string]interface{})
-		assert.Equal(t, user["email"], "etop_test@gmail.com-1-test")
-		assert.Equal(t, user["phone"], "0987654321-1-test")
+		assert.Equal(t, "etop_test@gmail.com-1-test", user["email"])
+		assert.Equal(t, "0987654321-1-test", user["phone"])
 	})
 
 	var accessToken string
@@ -295,7 +300,7 @@ func TestLoginAndRegistration(t *testing.T) {
 
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		assert.Equal(t, resp["exists"], true)
+		assert.Equal(t, true, resp["exists"])
 
 		req = M{}
 		req["login"] = "0987654321"
@@ -307,14 +312,14 @@ func TestLoginAndRegistration(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		assert.Equal(t, resp["exists"], true)
+		assert.Equal(t, true, resp["exists"])
 		assert.Len(t, resp["access_token"], 43)
 
-		assert.Equal(t, resp["expires_in"], float64(604800))
+		assert.Equal(t, float64(604800), resp["expires_in"])
 		require.NotNil(t, resp["user"])
 		user := resp["user"].(map[string]interface{})
-		assert.Equal(t, user["email"], "test@etop.vn")
-		assert.Equal(t, user["phone"], "0987654321")
+		assert.Equal(t, "test@etop.vn", user["email"])
+		assert.Equal(t, "0987654321", user["phone"])
 
 		require.NotNil(t, resp["available_accounts"])
 
@@ -323,7 +328,7 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Len(t, availableAccounts, 1)
 		account := availableAccounts[0].(map[string]interface{})
 
-		assert.Equal(t, account["id"], "1137360087033143265")
+		assert.Equal(t, "1137360087033143265", account["id"])
 		accessToken = account["access_token"].(string)
 	})
 
@@ -377,16 +382,16 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Len(t, respCreateAddress["id"], 19)
 
 		addressId = respCreateAddress["id"].(string)
-		assert.Equal(t, respCreateAddress["province"], "Thành phố Hồ Chí Minh")
-		assert.Equal(t, respCreateAddress["province_code"], "79")
-		assert.Equal(t, respCreateAddress["ward"], "Phường 07")
-		assert.Equal(t, respCreateAddress["ward_code"], "27322")
-		assert.Equal(t, respCreateAddress["address1"], "Hồ Chí Minh")
-		assert.Equal(t, respCreateAddress["phone"], "0973218967-1-test")
-		assert.Equal(t, respCreateAddress["district"], "Quận 5")
-		assert.Equal(t, respCreateAddress["district_code"], "774")
-		assert.Equal(t, respCreateAddress["type"], "general")
-		assert.Equal(t, respCreateAddress["full_name"], "xxxx")
+		assert.Equal(t, "Thành phố Hồ Chí Minh", respCreateAddress["province"])
+		assert.Equal(t, "79", respCreateAddress["province_code"])
+		assert.Equal(t, "Phường 07", respCreateAddress["ward"])
+		assert.Equal(t, "27322", respCreateAddress["ward_code"])
+		assert.Equal(t, "Hồ Chí Minh", respCreateAddress["address1"])
+		assert.Equal(t, "0973218967-1-test", respCreateAddress["phone"])
+		assert.Equal(t, "Quận 5", respCreateAddress["district"])
+		assert.Equal(t, "774", respCreateAddress["district_code"])
+		assert.Equal(t, "general", respCreateAddress["type"])
+		assert.Equal(t, "xxxx", respCreateAddress["full_name"])
 	})
 
 	t.Run("update address (only full name) info with shop account", func(t *testing.T) {
@@ -407,16 +412,16 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, respUpdateAddress["full_name"], "yyyyyyyyyyyyyyyyyyyy")
 
 		assert.Len(t, respUpdateAddress["id"], 19)
-		assert.Equal(t, respUpdateAddress["id"], addressId)
-		assert.Equal(t, respUpdateAddress["province"], "Thành phố Hồ Chí Minh")
-		assert.Equal(t, respUpdateAddress["province_code"], "79")
-		assert.Equal(t, respUpdateAddress["ward"], "Phường 07")
-		assert.Equal(t, respUpdateAddress["ward_code"], "27322")
-		assert.Equal(t, respUpdateAddress["address1"], "Hồ Chí Minh")
-		assert.Equal(t, respUpdateAddress["phone"], "0973218967-1-test")
-		assert.Equal(t, respUpdateAddress["district"], "Quận 5")
-		assert.Equal(t, respUpdateAddress["district_code"], "774")
-		assert.Equal(t, respUpdateAddress["type"], "general")
+		assert.Equal(t, addressId, respUpdateAddress["id"])
+		assert.Equal(t, "Thành phố Hồ Chí Minh", respUpdateAddress["province"])
+		assert.Equal(t, "79", respUpdateAddress["province_code"])
+		assert.Equal(t, "Phường 07", respUpdateAddress["ward"])
+		assert.Equal(t, "27322", respUpdateAddress["ward_code"])
+		assert.Equal(t, "Hồ Chí Minh", respUpdateAddress["address1"])
+		assert.Equal(t, "0973218967-1-test", respUpdateAddress["phone"])
+		assert.Equal(t, "Quận 5", respUpdateAddress["district"])
+		assert.Equal(t, "774", respUpdateAddress["district_code"])
+		assert.Equal(t, "general", respUpdateAddress["type"])
 	})
 
 	t.Run("update address info with shop account", func(t *testing.T) {
@@ -438,16 +443,16 @@ func TestLoginAndRegistration(t *testing.T) {
 		assert.Equal(t, respUpdateAddress["full_name"], "zzzzzzzzzzzzzzzzzzz")
 
 		assert.Len(t, respUpdateAddress["id"], 19)
-		assert.Equal(t, respUpdateAddress["id"], addressId)
-		assert.Equal(t, respUpdateAddress["province"], "Thành phố Hồ Chí Minh")
-		assert.Equal(t, respUpdateAddress["province_code"], "79")
-		assert.Equal(t, respUpdateAddress["ward"], "Phường 07")
-		assert.Equal(t, respUpdateAddress["ward_code"], "27322")
-		assert.Equal(t, respUpdateAddress["address1"], "Hồ Chí Minh")
-		assert.Equal(t, respUpdateAddress["phone"], "0973218967-2-test")
-		assert.Equal(t, respUpdateAddress["district"], "Quận 5")
-		assert.Equal(t, respUpdateAddress["district_code"], "774")
-		assert.Equal(t, respUpdateAddress["type"], "general")
+		assert.Equal(t, addressId, respUpdateAddress["id"])
+		assert.Equal(t, "Thành phố Hồ Chí Minh", respUpdateAddress["province"])
+		assert.Equal(t, "79", respUpdateAddress["province_code"])
+		assert.Equal(t, "Phường 07", respUpdateAddress["ward"])
+		assert.Equal(t, "27322", respUpdateAddress["ward_code"])
+		assert.Equal(t, "Hồ Chí Minh", respUpdateAddress["address1"])
+		assert.Equal(t, "0973218967-2-test", respUpdateAddress["phone"])
+		assert.Equal(t, "Quận 5", respUpdateAddress["district"])
+		assert.Equal(t, "774", respUpdateAddress["district_code"])
+		assert.Equal(t, "general", respUpdateAddress["type"])
 	})
 
 	t.Run("get address with shop account", func(t *testing.T) {

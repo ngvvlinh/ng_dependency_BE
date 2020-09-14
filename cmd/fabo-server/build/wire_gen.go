@@ -124,12 +124,17 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	miscService := &api.MiscService{}
 	policy := ProvidePolicy()
 	authorizer := auth.New(policy)
+	sharedConfig := cfg.SharedConfig
+	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	database_minConfig := cfg.Databases
 	databases, err := database_min.BuildDatabases(database_minConfig)
 	if err != nil {
 		return Output{}, nil, err
 	}
 	mainDB := databases.Main
+	queryService := identity.NewQueryService(mainDB)
+	queryBus := identity.QueryServiceMessageBus(queryService)
+	tokenStore := tokens.NewTokenStore(store)
 	busBus := bus.New()
 	addressStore := &sqlstore.AddressStore{
 		DB: mainDB,
@@ -154,19 +159,19 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	shopStoreInterface := sqlstore.BindShopStore(shopStore)
 	sessionStarter := &middleware.SessionStarter{
+		SAdminToken:      sAdminToken,
+		IdentityQuery:    queryBus,
+		TokenStore:       tokenStore,
 		AccountStore:     accountStoreInterface,
 		UserStore:        userStoreInterface,
 		PartnerStore:     partnerStoreInterface,
 		AccountUserStore: accountUserStoreInterface,
 		ShopStore:        shopStoreInterface,
 	}
-	sharedConfig := cfg.SharedConfig
 	session := config_server.NewSession(authorizer, sessionStarter, userStoreInterface, accountUserStoreInterface, sharedConfig, store)
 	carrierManager := SupportedShipnowManager()
 	identityAggregate := identity.NewAggregate(mainDB, carrierManager)
 	commandBus := identity.AggregateMessageBus(identityAggregate)
-	queryService := identity.NewQueryService(mainDB)
-	queryBus := identity.QueryServiceMessageBus(queryService)
 	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
 	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
@@ -175,7 +180,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	notifierAggregate := notifier.NewNotifyAggregate(mainDB, carrierManager)
 	notifyCommandBus := notifier.NewNotifyAggregateMessageBus(notifierAggregate)
 	generator := auth2.NewGenerator(store)
-	tokenStore := tokens.NewTokenStore(store)
 	smsConfig := cfg.SMS
 	v := sms_min.SupportedSMSDrivers(smsConfig)
 	logDB := databases.Log
@@ -554,7 +558,9 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		WebhookCallbackService: webhookCallbackService,
 	}
 	sadminServers := _fabo.NewServers(webhookService)
-	intHandlers, err := BuildIntHandlers(servers, shopServers, faboServers, sadminServers)
+	captchaConfig := cfg.Captcha
+	captchaCaptcha := captcha.New(captchaConfig)
+	intHandlers, err := BuildIntHandlers(servers, shopServers, faboServers, sadminServers, captchaCaptcha)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -594,10 +600,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	processManager3 := pm4.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, moneyTxStoreInterface)
 	processManager4 := pm5.New(busBus, fbuseringCommandBus)
 	fbmessagingProcessManager := fbmessaging.NewProcessManager(busBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
-	sAdminToken := config_server.WireSAdminToken(sharedConfig)
-	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, queryBus)
-	captchaConfig := cfg.Captcha
-	captchaCaptcha := captcha.New(captchaConfig)
 	output := Output{
 		Servers:        v3,
 		EventStream:    eventStream,
@@ -611,8 +613,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		_shippingPM:    processManager3,
 		_fbuserPM:      processManager4,
 		_fbMessagingPM: fbmessagingProcessManager,
-		_m:             middlewareMiddleware,
-		_c:             captchaCaptcha,
 	}
 	return output, func() {
 		cleanup5()

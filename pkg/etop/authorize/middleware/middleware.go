@@ -1,11 +1,9 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 	"strings"
 
-	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/cmenv"
 )
 
@@ -43,8 +41,4 @@ func CORS(next http.Handler) http.HandlerFunc {
 
 		next.ServeHTTP(w, r)
 	}
-}
-
-func VerifyCaptcha(ctx context.Context, token string) error {
-	return captcha.Global.Verify(token)
 }

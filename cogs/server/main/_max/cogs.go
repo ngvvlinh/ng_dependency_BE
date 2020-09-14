@@ -2,6 +2,7 @@ package server_max
 
 import (
 	_main "o.o/backend/cogs/server/main"
+	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
 	affapi "o.o/backend/pkg/etop/api/affiliate"
@@ -28,9 +29,10 @@ func BuildIntHandlers(
 	integrationServers integration.Servers,
 	affServer affapi.Servers,
 	saffServer serviceaffapi.Servers,
+	c *captcha.Captcha,
 ) (hs _main.IntHandlers, _ error) {
 	logging := middlewares.NewLogging()
-	ssHooks, err := session.NewHook(acl.GetACL())
+	ssHooks, err := session.NewHook(acl.GetACL(), session.OptCaptcha(c))
 	if err != nil {
 		return nil, err
 	}

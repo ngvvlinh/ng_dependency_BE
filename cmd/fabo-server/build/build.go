@@ -62,10 +62,6 @@ type Output struct {
 	_shippingPM    *shippingpm.ProcessManager
 	_fbuserPM      *fbuserpm.ProcessManager
 	_fbMessagingPM *fbmessaging.ProcessManager
-
-	// inject
-	_m middleware.Middleware
-	_c *captcha.Captcha
 }
 
 func BuildServers(
@@ -88,9 +84,10 @@ func BuildIntHandlers(
 	shopServers shop.Servers,
 	faboServers fabo.Servers,
 	sadminServers sadmin.Servers,
+	c *captcha.Captcha,
 ) (hs IntHandlers, _ error) {
 	logging := middlewares.NewLogging()
-	ssHooks, err := session.NewHook(acl.GetACL())
+	ssHooks, err := session.NewHook(acl.GetACL(), session.OptCaptcha(c))
 	if err != nil {
 		return nil, err
 	}

@@ -10,7 +10,6 @@ import (
 )
 
 var ll = l.New()
-var Global *Captcha // TODO(vu): remove this
 
 type Config struct {
 	Secret        string `yaml:"secret"`
@@ -39,14 +38,12 @@ func New(cfg Config) *Captcha {
 	if cfg.Secret != "" {
 		recaptcha.Init(cfg.Secret)
 	}
-
-	Global = &Captcha{cfg: cfg}
-	return Global
+	return &Captcha{cfg: cfg}
 }
 
 func (c *Captcha) Verify(token string) error {
 	if token == "" {
-		return cm.Error(cm.CaptchaRequired, "", nil)
+		return cm.Error(cm.CaptchaRequired, "", nil).MarkTrivial()
 	}
 	if !cmenv.IsProd() && c.cfg.LocalPasscode != "" && c.cfg.LocalPasscode == token {
 		return nil
@@ -54,7 +51,7 @@ func (c *Captcha) Verify(token string) error {
 	if ok, err := recaptcha.Confirm("", token); err != nil {
 		return cm.Error(cm.Internal, "", err)
 	} else if !ok {
-		return cm.Error(cm.CaptchaInvalid, "", nil)
+		return cm.Error(cm.CaptchaInvalid, "", nil).MarkTrivial()
 	}
 	return nil
 }
