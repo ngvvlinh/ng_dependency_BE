@@ -174,8 +174,20 @@ func (s *CustomerConversationService) GetCustomerConversationByID(
 		return nil, err
 	}
 
+	// get and map avatar for user in conversation
+	conversation := query.Result
+	mapExternalUserIDAndImageURl, err := s.getImageURLs(ctx, []string{conversation.ExternalUserID})
+	if err != nil {
+		return nil, err
+	}
+	if conversation.ExternalFrom != nil {
+		conversation.ExternalFrom.ImageURL = mapExternalUserIDAndImageURl[conversation.ExternalFrom.ID]
+	}
+	if conversation.ExternalUserID != "" {
+		conversation.ExternalUserPictureURL = mapExternalUserIDAndImageURl[conversation.ExternalUserID]
+	}
 	return &fabo.GetCustomerConversationByIDResponse{
-		Conversation: convertpb.PbFbCustomerConversation(query.Result),
+		Conversation: convertpb.PbFbCustomerConversation(conversation),
 	}, nil
 }
 
