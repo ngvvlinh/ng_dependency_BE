@@ -53,7 +53,8 @@ const ConsumerGroup = "handler/notifier"
 func New(dbMain com.MainDB, dbNotifier com.NotifierDB, consumer mq.KafkaConsumer, cfg cc.Kafka) (handlerMain *handler.Handler, handlerNotifier *handler.Handler) {
 	x = dbMain
 	xNotifier = dbNotifier
-	notifyStore = sqlstore.NewNotificationStore(dbNotifier, sqlstore2.NewAccountUserStore(dbMain))
+	legacyAccountUserStore := &sqlstore2.AccountUserStore{DB: dbMain}
+	notifyStore = sqlstore.NewNotificationStore(dbNotifier, sqlstore2.BindAccountUserStore(legacyAccountUserStore))
 	deviceStore = sqlstore.NewDeviceStore(dbNotifier)
 	historyStore = historysqlstore.NewHistoryStore(dbMain)
 	userNotifySettingStore = sqlstore.NewUserNotiSettingStore(dbMain)

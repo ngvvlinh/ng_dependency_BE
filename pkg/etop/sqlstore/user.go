@@ -61,6 +61,10 @@ func BuildUserStore(db com.MainDB) *UserStore {
 	return NewUserStore(db)(context.Background())
 }
 
+func BindUserStore(s *UserStore) (to UserStoreInterface) {
+	return s
+}
+
 func (st *UserStore) ID(id dot.ID) *UserStore {
 	st.preds = append(st.preds, st.ft.ByID(id))
 	return st

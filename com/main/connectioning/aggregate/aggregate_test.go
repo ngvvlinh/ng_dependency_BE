@@ -9,7 +9,6 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/backend/com/main/connectioning/model"
-	servicelocation "o.o/backend/com/main/location"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
@@ -18,7 +17,6 @@ import (
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/sql/cmsql"
 	. "o.o/backend/pkg/common/testing"
-	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -34,7 +32,6 @@ var (
 func init() {
 	postgres := cc.DefaultPostgres()
 	db = cmsql.MustConnect(postgres)
-	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 	db.MustExec(`
 		DROP TABLE IF EXISTS shop_connection, connection CASCADE;
 		CREATE TABLE connection (

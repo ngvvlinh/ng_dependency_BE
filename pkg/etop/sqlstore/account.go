@@ -21,6 +21,7 @@ import (
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/model"
+	"o.o/capi"
 	"o.o/capi/dot"
 )
 
@@ -37,19 +38,16 @@ type AccountStoreInterface interface {
 }
 
 type AccountStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
 
-	addressStore *AddressStore
+	EventBus     capi.EventBus
+	AddressStore *AddressStore
 	UserStore    UserStoreInterface
 }
 
-func NewAccountStore(db com.MainDB, userStore UserStoreInterface) *AccountStore {
-	s := &AccountStore{
-		db: db,
-
-		addressStore: NewAddressStore(db),
-		UserStore:    userStore,
-	}
+func BindAccountStore(s *AccountStore) (to AccountStoreInterface) {
+	s.db = s.DB
 	return s
 }
 
@@ -172,7 +170,7 @@ func (st *AccountStore) CreateShop(ctx context.Context, cmd *identitymodelx.Crea
 			ShopID: id,
 			UserID: cmd.OwnerID,
 		}
-		if err := eventBus.Publish(ctx, event); err != nil {
+		if err := st.EventBus.Publish(ctx, event); err != nil {
 			return err
 		}
 		return nil
@@ -357,7 +355,7 @@ func (st *AccountStore) updateOrCreateAddress(ctx context.Context, x Qx, address
 			Address: addressObj,
 		}
 
-		if err := st.addressStore.updateAddress(ctx, x, addressCmd); err != nil {
+		if err := st.AddressStore.updateAddress(ctx, x, addressCmd); err != nil {
 			return 0, err
 		}
 		return addressCmd.Result.ID, nil
@@ -368,7 +366,7 @@ func (st *AccountStore) updateOrCreateAddress(ctx context.Context, x Qx, address
 		addressCmd := &addressmodelx.CreateAddressCommand{
 			Address: addressObj,
 		}
-		if err := st.addressStore.createAddress(ctx, x, addressCmd); err != nil {
+		if err := st.AddressStore.createAddress(ctx, x, addressCmd); err != nil {
 			return 0, err
 		}
 		return addressCmd.Result.ID, nil

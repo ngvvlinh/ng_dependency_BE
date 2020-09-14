@@ -36,7 +36,6 @@ import (
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/eventstream"
 	"o.o/backend/pkg/etop/middlewares"
-	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
 	"o.o/backend/tools/pkg/acl"
 	"o.o/capi/httprpc"
@@ -65,7 +64,6 @@ type Output struct {
 	_fbMessagingPM *fbmessaging.ProcessManager
 
 	// inject
-	_s *sqlstore.Store
 	_m middleware.Middleware
 	_c *captcha.Captcha
 }

@@ -31,6 +31,7 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/etop/model"
+	"o.o/capi"
 	"o.o/capi/dot"
 )
 
@@ -92,25 +93,17 @@ type MoneyTxStoreInterface interface {
 }
 
 type MoneyTxStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
 
+	EventBus         capi.EventBus
 	AccountUserStore AccountUserStoreInterface
 	ShopStore        ShopStoreInterface
 	OrderStore       OrderStoreInterface
 }
 
-func NewMoneyTxStore(
-	db com.MainDB,
-	accountUserStore AccountUserStoreInterface,
-	shopStore ShopStoreInterface,
-	orderStore OrderStoreInterface,
-) *MoneyTxStore {
-	s := &MoneyTxStore{
-		db:               db,
-		AccountUserStore: accountUserStore,
-		ShopStore:        shopStore,
-		OrderStore:       orderStore,
-	}
+func BindMoneyTxStore(s *MoneyTxStore) (to MoneyTxStoreInterface) {
+	s.db = s.DB
 	return s
 }
 
@@ -533,7 +526,7 @@ func (st *MoneyTxStore) ConfirmMoneyTransaction(ctx context.Context, cmd *modelx
 			ShopID:            cmd.ShopID,
 			MoneyTxShippingID: cmd.MoneyTransactionID,
 		}
-		if err := eventBus.Publish(ctx, event); err != nil {
+		if err := st.EventBus.Publish(ctx, event); err != nil {
 			return err
 		}
 
@@ -1946,7 +1939,7 @@ func (st *MoneyTxStore) ConfirmMoneyTransactionShippingEtop(ctx context.Context,
 			EventMeta:             meta.NewEvent(),
 			MoneyTxShippingEtopID: cmd.ID,
 		}
-		if err := eventBus.Publish(ctx, event); err != nil {
+		if err := st.EventBus.Publish(ctx, event); err != nil {
 			return err
 		}
 		return nil

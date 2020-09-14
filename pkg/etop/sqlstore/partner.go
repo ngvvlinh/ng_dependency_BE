@@ -59,6 +59,10 @@ func BuildPartnerStore(db com.MainDB) *PartnerStore {
 	return NewPartnerStore(db)(context.Background())
 }
 
+func BindPartnerStore(s *PartnerStore) (to PartnerStoreInterface) {
+	return s
+}
+
 func (st *PartnerStore) ID(id dot.ID) *PartnerStore {
 	st.preds = append(st.preds, st.ft.ByID(id))
 	return st

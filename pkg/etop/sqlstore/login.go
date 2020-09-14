@@ -38,6 +38,10 @@ type Login struct {
 	UserStore UserStoreInterface
 }
 
+func BindLogin(l *Login) (to LoginInterface) {
+	return l
+}
+
 // Login flow
 // 1. Get user
 // 2. Check if the user activated

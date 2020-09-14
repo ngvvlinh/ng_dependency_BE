@@ -42,7 +42,8 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	}
 	changesStore := storage.NewChangesStore(webhookDB)
 	partnerStore := sqlstore.BuildPartnerStore(mainDB)
-	webhookSender := sender.New(mainDB, store, changesStore, partnerStore)
+	partnerStoreInterface := sqlstore.BindPartnerStore(partnerStore)
+	webhookSender := sender.New(mainDB, store, changesStore, partnerStoreInterface)
 	webhookService := &api.WebhookService{
 		Sender: webhookSender,
 	}
@@ -76,7 +77,6 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		return Output{}, nil, err
 	}
 	v2 := BuildWaiters(handler, handlerHandler)
-	sqlstoreStore := sqlstore.New(mainDB, locationQueryBus, busBus)
 	pgeventService, err := BuildPgEventService(ctx, cfg)
 	if err != nil {
 		return Output{}, nil, err
@@ -84,7 +84,6 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	output := Output{
 		Servers:   v,
 		Waiters:   v2,
-		Store:     sqlstoreStore,
 		PgService: pgeventService,
 		WhSender:  webhookSender,
 		Health:    service,

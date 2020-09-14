@@ -21,7 +21,6 @@ import (
 )
 
 type AccountUserStoreInterface interface {
-
 	CreateAccountUser(ctx context.Context, cmd *identitymodelx.CreateAccountUserCommand) error
 
 	DeleteAccountUser(ctx context.Context, cmd *identitymodelx.DeleteAccountUserCommand) error
@@ -44,13 +43,12 @@ type AccountUserStoreInterface interface {
 }
 
 type AccountUserStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
 }
 
-func NewAccountUserStore(db com.MainDB) *AccountUserStore {
-	s := &AccountUserStore{
-		db: db,
-	}
+func BindAccountUserStore(s *AccountUserStore) (to AccountUserStoreInterface) {
+	s.db = s.DB
 	return s
 }
 

@@ -16,7 +16,6 @@ import (
 	"o.o/backend/cmd/etop-etl/register/table_name"
 	identityquery "o.o/backend/com/main/identity"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
-	servicelocation "o.o/backend/com/main/location"
 	_ "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/drivers"
 	"o.o/backend/pkg/common/cmenv"
@@ -133,7 +132,8 @@ func initDBs(mapDBCfgs map[string]config.Database, mapTableNames map[string][]ta
 		}
 
 		if wlName == drivers.ETop(cmenv.Env()).Key {
-			sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil) // TODO(vu): refactor this
+			// sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil) // TODO(vu): refactor this
+
 		} else {
 			if cmenv.IsDev() && resetDB {
 				_, _ = db.Exec(`

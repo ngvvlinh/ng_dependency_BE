@@ -36,8 +36,12 @@ func NewExportAttemptStore(db com.MainDB) ExportAttemptStoreFactory {
 	}
 }
 
-func BuildExportAttempStore(db com.MainDB) *ExportAttemptStore {
+func BuildExportAttemptStore(db com.MainDB) *ExportAttemptStore {
 	return NewExportAttemptStore(db)(context.Background())
+}
+
+func BindExportAttemptStore(s *ExportAttemptStore) (to ExportAttemptStoreInterface) {
+	return s
 }
 
 func (s *ExportAttemptStore) IncludeDeleted() *ExportAttemptStore {

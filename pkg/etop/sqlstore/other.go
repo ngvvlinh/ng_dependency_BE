@@ -16,18 +16,16 @@ import (
 )
 
 type HistoryStoreInterface interface {
-
 	GetHistory(ctx context.Context, query *model.GetHistoryQuery) error
 }
 
 type HistoryStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
 }
 
-func NewHistoryStore(db com.MainDB) *HistoryStore {
-	s := &HistoryStore{
-		db: db,
-	}
+func BindHistoryStore(s *HistoryStore) (to HistoryStoreInterface) {
+	s.db = s.DB
 	return s
 }
 

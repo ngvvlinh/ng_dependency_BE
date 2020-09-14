@@ -83,7 +83,7 @@ func (s *OrderLogic) CreateOrder(
 			ID:     r.CustomerId,
 			ShopID: shop.ID,
 		}
-		if err := customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
+		if err := s.CustomerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
 			return nil, err
 		}
 		r.Customer = &types.OrderCustomer{
@@ -98,7 +98,7 @@ func (s *OrderLogic) CreateOrder(
 			TraderID: r.CustomerId,
 			ShopID:   shop.ID,
 		}
-		if err := traderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
+		if err := s.TraderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
 			switch cm.ErrorCode(err) {
 			case cm.NotFound:
 				isHaveCustomerAddress = false
@@ -107,7 +107,7 @@ func (s *OrderLogic) CreateOrder(
 			}
 		}
 		if isHaveCustomerAddress {
-			customerAddress, err := convertpb.PbShopAddress(ctx, getAddressQuery.Result, locationQuery)
+			customerAddress, err := convertpb.PbShopAddress(ctx, getAddressQuery.Result, s.LocationQuery)
 			if err != nil {
 				return nil, err
 			}
@@ -137,7 +137,7 @@ func (s *OrderLogic) CreateOrder(
 			Phone:  shippingAddress.Phone,
 			ShopID: shop.ID,
 		}
-		if err := customerQuery.Dispatch(ctx, getCustomerByPhone); err != nil && cm.ErrorCode(err) != cm.NotFound {
+		if err := s.CustomerQuery.Dispatch(ctx, getCustomerByPhone); err != nil && cm.ErrorCode(err) != cm.NotFound {
 			return nil, err
 		}
 		phoneCustomer := getCustomerByPhone.Result
@@ -148,7 +148,7 @@ func (s *OrderLogic) CreateOrder(
 				Email:  shippingAddress.Email,
 				ShopID: shop.ID,
 			}
-			if err := customerQuery.Dispatch(ctx, getCustomerByEmail); err != nil && cm.ErrorCode(err) != cm.NotFound {
+			if err := s.CustomerQuery.Dispatch(ctx, getCustomerByEmail); err != nil && cm.ErrorCode(err) != cm.NotFound {
 				return nil, err
 			}
 			emailCustomer = getCustomerByEmail.Result
@@ -163,7 +163,7 @@ func (s *OrderLogic) CreateOrder(
 					Phone:    shippingAddress.Phone,
 					Email:    shippingAddress.Email,
 				}
-				if err := customerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
+				if err := s.CustomerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
 					return nil, err
 				}
 				r.CustomerId = createCustomerCmd.Result.ID
@@ -174,7 +174,7 @@ func (s *OrderLogic) CreateOrder(
 					Type:     customer_type.Individual,
 					Phone:    shippingAddress.Phone,
 				}
-				if err := customerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
+				if err := s.CustomerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
 					return nil, err
 				}
 				r.CustomerId = createCustomerCmd.Result.ID
@@ -187,7 +187,7 @@ func (s *OrderLogic) CreateOrder(
 					FullName: dot.String(shippingAddress.FullName),
 					Email:    dot.String(shippingAddress.Email),
 				}
-				if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+				if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 					return nil, err
 				}
 			} else {
@@ -196,21 +196,21 @@ func (s *OrderLogic) CreateOrder(
 					ShopID:   shop.ID,
 					FullName: dot.String(shippingAddress.FullName),
 				}
-				if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+				if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 					return nil, err
 				}
 			}
 			r.CustomerId = phoneCustomer.ID
 		}
 		// ignore err
-		if _err := updateOrCreateCustomerAddress(ctx, shop.ID, r.CustomerId, shippingAddress); _err != nil {
+		if _err := s.updateOrCreateCustomerAddress(ctx, shop.ID, r.CustomerId, shippingAddress); _err != nil {
 			ll.Error("Auto cập nhật Customer Address lỗi", l.Error(_err))
 		}
-		r.Customer = getCustomerByID(ctx, shop.ID, r.CustomerId)
+		r.Customer = s.getCustomerByID(ctx, shop.ID, r.CustomerId)
 	}
 	if r.CustomerId == 0 && r.ShippingAddress == nil {
 		cmd := &customering.GetCustomerIndependentQuery{}
-		if err := customerQuery.Dispatch(ctx, cmd); err != nil {
+		if err := s.CustomerQuery.Dispatch(ctx, cmd); err != nil {
 			return nil, err
 		}
 		r.CustomerId = cmd.Result.ID
@@ -219,7 +219,7 @@ func (s *OrderLogic) CreateOrder(
 			Type:     cmd.Result.Type,
 		}
 	}
-	lines, err := PrepareOrderLines(ctx, shop.ID, r.Lines)
+	lines, err := s.PrepareOrderLines(ctx, shop.ID, r.Lines)
 	if err != nil {
 		return nil, err
 	}
@@ -293,12 +293,12 @@ func (s *OrderLogic) CreateOrder(
 	return result, nil
 }
 
-func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *types.OrderCustomer {
+func (s *OrderLogic) getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *types.OrderCustomer {
 	getCustomer := &customering.GetCustomerByIDQuery{
 		ID:     customerID,
 		ShopID: shopID,
 	}
-	err := customerQuery.Dispatch(ctx, getCustomer)
+	err := s.CustomerQuery.Dispatch(ctx, getCustomer)
 	if err != nil {
 		return nil
 	}
@@ -312,7 +312,7 @@ func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *types.Orde
 	return customer
 }
 
-func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID dot.ID, orderAddress *types.OrderAddress) error {
+func (s *OrderLogic) updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID dot.ID, orderAddress *types.OrderAddress) error {
 	address, err := convertpb.OrderAddressToModel(orderAddress)
 	if err != nil {
 		return err
@@ -322,7 +322,7 @@ func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID dot.I
 		TraderID: customerID,
 		ShopID:   shopID,
 	}
-	err = traderAddressQuery.Dispatch(ctx, getAddressQuery)
+	err = s.TraderAddressQuery.Dispatch(ctx, getAddressQuery)
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return err
 	}
@@ -340,16 +340,16 @@ func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID dot.I
 			DistrictCode: dot.String(address.DistrictCode),
 			WardCode:     dot.String(address.WardCode),
 		}
-		if err := traderAddressAggr.Dispatch(ctx, updateCustomerAddressCmd); err != nil {
+		if err := s.TraderAddressAggr.Dispatch(ctx, updateCustomerAddressCmd); err != nil {
 			return err
 		}
 	} else {
-		return createCustomerAddress(ctx, shopID, customerID, address)
+		return s.createCustomerAddress(ctx, shopID, customerID, address)
 	}
 	return nil
 }
 
-func createCustomerAddress(
+func (s *OrderLogic) createCustomerAddress(
 	ctx context.Context, shopID, traderID dot.ID, orderAddress *ordermodel.OrderAddress) error {
 	createAddressCmd := &addressing.CreateAddressCommand{
 		ShopID:       shopID,
@@ -364,13 +364,13 @@ func createCustomerAddress(
 		WardCode:     orderAddress.WardCode,
 		IsDefault:    true,
 	}
-	if err := traderAddressAggr.Dispatch(ctx, createAddressCmd); err != nil {
+	if err := s.TraderAddressAggr.Dispatch(ctx, createAddressCmd); err != nil {
 		return err
 	}
 	return nil
 }
 
-func PrepareOrderLines(
+func (s *OrderLogic) PrepareOrderLines(
 	ctx context.Context,
 	shopID dot.ID,
 	lines []*types.CreateOrderLine,
@@ -406,7 +406,7 @@ func PrepareOrderLines(
 			IDs:    variantIDs,
 			ShopID: shopID,
 		}
-		if err := catalogQuery.Dispatch(ctx, variantsQuery); err != nil {
+		if err := s.CatalogQuery.Dispatch(ctx, variantsQuery); err != nil {
 			return nil, err
 		}
 		variants = variantsQuery.Result.Variants
@@ -503,7 +503,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, shop *identitymodel.Shop, 
 	}
 
 	// make sure update always has Lines and FeeLines
-	lines, err := PrepareOrderLines(ctx, shop.ID, q.Lines)
+	lines, err := s.PrepareOrderLines(ctx, shop.ID, q.Lines)
 	if err != nil {
 		return nil, err
 	}
@@ -591,7 +591,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, shop *identitymodel.Shop, 
 			ID:     q.CustomerId,
 			ShopID: shop.ID,
 		}
-		if err := customerQuery.Dispatch(ctx, query); err != nil {
+		if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 			return nil, cm.MapError(err).
 				Wrapf(cm.NotFound, "customer_id %v không tồn tại", q.CustomerId).
 				Throw()
@@ -610,7 +610,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, shop *identitymodel.Shop, 
 			ShopID:   shop.ID,
 			TraderID: q.CustomerId,
 		}
-		if err := traderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
+		if err := s.TraderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
 			switch cm.ErrorCode(err) {
 			case cm.NotFound:
 				isHaveAddress = false
@@ -619,7 +619,7 @@ func (s *OrderLogic) UpdateOrder(ctx context.Context, shop *identitymodel.Shop, 
 			}
 		}
 		if isHaveAddress {
-			customerAddressResult, err := convertpb.PbShopAddress(ctx, getAddressQuery.Result, locationQuery)
+			customerAddressResult, err := convertpb.PbShopAddress(ctx, getAddressQuery.Result, s.LocationQuery)
 			if err != nil {
 				return nil, err
 			}
@@ -1027,7 +1027,7 @@ func (s *OrderLogic) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.
 		AutoInventoryVoucher: autoInventoryVoucher,
 		UpdatedBy:            userID,
 	}
-	if err := eventBus.Publish(ctx, event); err != nil {
+	if err := s.EventBus.Publish(ctx, event); err != nil {
 		ll.Error("RaiseOrderCancelledEvent", l.Error(err))
 	}
 

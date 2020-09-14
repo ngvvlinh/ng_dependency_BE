@@ -212,20 +212,38 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		return Output{}, nil, err
 	}
 	mainDB := databases.Main
+	busBus := bus.New()
+	addressStore := &sqlstore.AddressStore{
+		DB: mainDB,
+	}
 	userStore := sqlstore.BuildUserStore(mainDB)
-	accountStore := sqlstore.NewAccountStore(mainDB, userStore)
+	userStoreInterface := sqlstore.BindUserStore(userStore)
+	accountStore := &sqlstore.AccountStore{
+		DB:           mainDB,
+		EventBus:     busBus,
+		AddressStore: addressStore,
+		UserStore:    userStoreInterface,
+	}
+	accountStoreInterface := sqlstore.BindAccountStore(accountStore)
 	partnerStore := sqlstore.BuildPartnerStore(mainDB)
-	accountUserStore := sqlstore.NewAccountUserStore(mainDB)
-	shopStore := sqlstore.NewShopStore(mainDB)
+	partnerStoreInterface := sqlstore.BindPartnerStore(partnerStore)
+	accountUserStore := &sqlstore.AccountUserStore{
+		DB: mainDB,
+	}
+	accountUserStoreInterface := sqlstore.BindAccountUserStore(accountUserStore)
+	shopStore := &sqlstore.ShopStore{
+		DB: mainDB,
+	}
+	shopStoreInterface := sqlstore.BindShopStore(shopStore)
 	sessionStarter := &middleware.SessionStarter{
-		AccountStore:     accountStore,
-		UserStore:        userStore,
-		PartnerStore:     partnerStore,
-		AccountUserStore: accountUserStore,
-		ShopStore:        shopStore,
+		AccountStore:     accountStoreInterface,
+		UserStore:        userStoreInterface,
+		PartnerStore:     partnerStoreInterface,
+		AccountUserStore: accountUserStoreInterface,
+		ShopStore:        shopStoreInterface,
 	}
 	sharedConfig := cfg.SharedConfig
-	session := config_server.NewSession(authorizer, sessionStarter, userStore, accountUserStore, sharedConfig, store)
+	session := config_server.NewSession(authorizer, sessionStarter, userStoreInterface, accountUserStoreInterface, sharedConfig, store)
 	locationQuery := location.New(mainDB)
 	queryBus := location.QueryMessageBus(locationQuery)
 	queryService := shipnow.NewQueryService(mainDB)
@@ -238,9 +256,22 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	urlConfig := shipnow_all.AhamoveConfig(cfg)
 	carrierAccount := ahamove.NewCarrierAccount(clientClient, urlConfig, identityQueryBus)
 	v := shipnow_all.AllSupportedShipnowCarriers(ahamoveCarrier, carrierAccount)
-	orderStore := sqlstore.NewOrderStore(mainDB, accountStore, shopStore)
-	moneyTxStore := sqlstore.NewMoneyTxStore(mainDB, accountUserStore, shopStore, orderStore)
-	shipnowManager := shipnowcarrier.NewManager(mainDB, queryBus, shipnowQueryBus, v, moneyTxStore)
+	orderStore := &sqlstore.OrderStore{
+		DB:           mainDB,
+		LocationBus:  queryBus,
+		AccountStore: accountStoreInterface,
+		ShopStore:    shopStoreInterface,
+	}
+	orderStoreInterface := sqlstore.BindOrderStore(orderStore)
+	moneyTxStore := &sqlstore.MoneyTxStore{
+		DB:               mainDB,
+		EventBus:         busBus,
+		AccountUserStore: accountUserStoreInterface,
+		ShopStore:        shopStoreInterface,
+		OrderStore:       orderStoreInterface,
+	}
+	moneyTxStoreInterface := sqlstore.BindMoneyTxStore(moneyTxStore)
+	shipnowManager := shipnowcarrier.NewManager(mainDB, queryBus, shipnowQueryBus, v, moneyTxStoreInterface)
 	identityAggregate := identity.NewAggregate(mainDB, shipnowManager)
 	commandBus := identity.AggregateMessageBus(identityAggregate)
 	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
@@ -250,7 +281,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	notifyQueryBus := notifier.QueryServiceNotifyBus(notifierQueryService)
 	notifierAggregate := notifier.NewNotifyAggregate(mainDB, shipnowManager)
 	notifyCommandBus := notifier.NewNotifyAggregateMessageBus(notifierAggregate)
-	busBus := bus.New()
 	generator := auth2.NewGenerator(store)
 	tokenStore := tokens.NewTokenStore(store)
 	smsConfig := cfg.SMS
@@ -264,8 +294,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	emailClient := email.New(smtpConfig)
 	userStoreFactory := sqlstore.NewUserStore(mainDB)
 	login := &sqlstore.Login{
-		UserStore: userStore,
+		UserStore: userStoreInterface,
 	}
+	loginInterface := sqlstore.BindLogin(login)
 	userService := &api.UserService{
 		Session:          session,
 		IdentityAggr:     commandBus,
@@ -280,18 +311,18 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SMSClient:        smsClient,
 		EmailClient:      emailClient,
 		UserStore:        userStoreFactory,
-		UserStoreIface:   userStore,
-		ShopStore:        shopStore,
-		AccountUserStore: accountUserStore,
-		LoginIface:       login,
+		UserStoreIface:   userStoreInterface,
+		ShopStore:        shopStoreInterface,
+		AccountUserStore: accountUserStoreInterface,
+		LoginIface:       loginInterface,
 	}
 	partnerStoreFactory := sqlstore.NewPartnerStore(mainDB)
 	accountService := &api.AccountService{
 		Session:           session,
 		PartnerStore:      partnerStoreFactory,
-		AccountStore:      accountStore,
-		AccountUserStore:  accountUserStore,
-		PartnerStoreIface: partnerStore,
+		AccountStore:      accountStoreInterface,
+		AccountUserStore:  accountUserStoreInterface,
+		PartnerStoreIface: partnerStoreInterface,
 	}
 	locationService := &api.LocationService{
 		Session:       session,
@@ -312,12 +343,12 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	invitationConfig := cfg.Invitation
 	customerQuery := query2.NewCustomerQuery(mainDB)
 	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
-	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, identityQueryBus, busBus, smsClient, emailClient, flagEnableNewLinkInvitation, accountUserStore, shopStore, userStore)
+	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, identityQueryBus, busBus, smsClient, emailClient, flagEnableNewLinkInvitation, accountUserStoreInterface, shopStoreInterface, userStoreInterface)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := &aggregate3.AuthorizationAggregate{
 		Auth:             authorizer,
-		AccountUserStore: accountUserStore,
-		ShopStore:        shopStore,
+		AccountUserStore: accountUserStoreInterface,
+		ShopStore:        shopStoreInterface,
 	}
 	authorizationCommandBus := aggregate3.AuthorizationAggregateMessageBus(authorizationAggregate)
 	accountRelationshipService := &api.AccountRelationshipService{
@@ -326,15 +357,15 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		InvitationQuery:   invitationQueryBus,
 		AuthorizationAggr: authorizationCommandBus,
 		UserStore:         userStoreFactory,
-		AccountUserStore:  accountUserStore,
+		AccountUserStore:  accountUserStoreInterface,
 	}
 	userRelationshipService := &api.UserRelationshipService{
 		Session:                session,
 		InvitationAggr:         invitationCommandBus,
 		InvitationQuery:        invitationQueryBus,
 		AuthorizationAggregate: authorizationCommandBus,
-		ShopStore:              shopStore,
-		UserStore:              userStore,
+		ShopStore:              shopStoreInterface,
+		UserStore:              userStoreInterface,
 	}
 	ticketQuery := query3.NewTicketQuery(store, busBus, mainDB)
 	ticketQueryBus := query3.TicketQueryMessageBus(ticketQuery)
@@ -378,7 +409,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	refundQueryBus := query12.RefundQueryServiceMessageBus(refundQueryService)
 	purchaseRefundQueryService := query13.NewQueryPurchasePurchaseRefund(busBus, mainDB)
 	purchaserefundQueryBus := query13.PurchaseRefundQueryServiceMessageBus(purchaseRefundQueryService)
-	inventoryAggregate := aggregate5.NewAggregateInventory(busBus, mainDB, traderingQueryBus, purchaseorderQueryBus, stocktakingQueryBus, refundQueryBus, purchaserefundQueryBus, catalogQueryBus, orderStore)
+	inventoryAggregate := aggregate5.NewAggregateInventory(busBus, mainDB, traderingQueryBus, purchaseorderQueryBus, stocktakingQueryBus, refundQueryBus, purchaserefundQueryBus, catalogQueryBus, orderStoreInterface)
 	inventoryCommandBus := aggregate5.InventoryAggregateMessageBus(inventoryAggregate)
 	inventoryService := &inventory.InventoryService{
 		Session:        session,
@@ -393,8 +424,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		AddressQuery:   addressQueryBus,
 		AddressAggr:    addressCommandBus,
 		UserStore:      userStoreFactory,
-		AccountStore:   accountStore,
-		UserStoreIface: userStore,
+		AccountStore:   accountStoreInterface,
+		UserStoreIface: userStoreInterface,
 	}
 	collectionService := &collection.CollectionService{
 		Session:      session,
@@ -424,28 +455,33 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		CustomerAggr:  customeringCommandBus,
 		CustomerQuery: customeringQueryBus,
 	}
-	shopVariantStore := sqlstore.NewShopVariantStore(mainDB)
+	shopVariantStore := &sqlstore.ShopVariantStore{
+		DB: mainDB,
+	}
+	shopVariantStoreInterface := sqlstore.BindShopVariantStore(shopVariantStore)
 	productService := &product.ProductService{
 		Session:          session,
 		CatalogQuery:     catalogQueryBus,
 		CatalogAggr:      catalogCommandBus,
 		InventoryQuery:   inventoryQueryBus,
-		ShopVariantStore: shopVariantStore,
+		ShopVariantStore: shopVariantStoreInterface,
 	}
 	categoryService := &category.CategoryService{
 		Session:      session,
 		CatalogQuery: catalogQueryBus,
 		CatalogAggr:  catalogCommandBus,
 	}
-	categoryStore := sqlstore.NewCategoryStore(mainDB)
+	categoryStore := &sqlstore.CategoryStore{
+		DB: mainDB,
+	}
+	categoryStoreInterface := sqlstore.BindCategoryStore(categoryStore)
 	productSourceService := &product_source.ProductSourceService{
 		Session:       session,
-		ShopStore:     shopStore,
-		CategoryStore: categoryStore,
+		ShopStore:     shopStoreInterface,
+		CategoryStore: categoryStoreInterface,
 	}
 	orderingAggregate := ordering.NewAggregate(busBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
-	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
 	mapShipmentServices := shipment_all.SupportedShipmentServices()
 	connectionQuery := query14.NewConnectionQuery(mainDB, mapShipmentServices)
 	connectioningQueryBus := query14.ConnectionQueryMessageBus(connectionQuery)
@@ -466,12 +502,27 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shippingCodeGenerator := driver.NewShippingCodeGenerator(mainDB)
 	typesDriver := shipment_all.SupportedCarrierDriver(shippingCodeGenerator)
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
-	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, connectioningQueryBus, connectioningCommandBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, typesDriver, connectionManager, orderStore)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, connectioningQueryBus, connectioningCommandBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, typesDriver, connectionManager, orderStoreInterface)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
 	}
-	orderLogic := orderS.New(catalogQueryBus, orderingCommandBus, customeringCommandBus, customeringQueryBus, addressingCommandBus, addressingQueryBus, queryBus, busBus, flagFaboOrderAutoConfirmPaymentStatus, shipmentManager)
+	addressStoreInterface := sqlstore.BindAddressStore(addressStore)
+	flagFaboOrderAutoConfirmPaymentStatus := cfg.FlagFaboOrderAutoConfirmPaymentStatus
+	orderLogic := &orderS.OrderLogic{
+		CatalogQuery:                          catalogQueryBus,
+		OrderAggr:                             orderingCommandBus,
+		CustomerAggr:                          customeringCommandBus,
+		CustomerQuery:                         customeringQueryBus,
+		TraderAddressAggr:                     addressingCommandBus,
+		TraderAddressQuery:                    addressingQueryBus,
+		LocationQuery:                         queryBus,
+		EventBus:                              busBus,
+		ShipmentManager:                       shipmentManager,
+		AddressStore:                          addressStoreInterface,
+		OrderStore:                            orderStoreInterface,
+		FlagFaboOrderUpdatePaymentSatusConfig: flagFaboOrderAutoConfirmPaymentStatus,
+	}
 	orderService := &order.OrderService{
 		Session:       session,
 		OrderAggr:     orderingCommandBus,
@@ -479,7 +530,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		OrderQuery:    orderingQueryBus,
 		ReceiptQuery:  receiptingQueryBus,
 		OrderLogic:    orderLogic,
-		OrderStore:    orderStore,
+		OrderStore:    orderStoreInterface,
 	}
 	queryService2 := query15.NewQueryService(mainDB)
 	shippingQueryBus := query15.QueryServiceMessageBus(queryService2)
@@ -487,7 +538,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:         session,
 		ShipmentManager: shipmentManager,
 		ShippingQuery:   shippingQueryBus,
-		OrderStore:      orderStore,
+		OrderStore:      orderStoreInterface,
 	}
 	carrierShipnowManager := carrier2.NewShipnowManager(queryBus, connectioningQueryBus, store, connectionManager, identityQueryBus, shipnowQueryBus)
 	shipnowAggregate := shipnow.NewAggregate(busBus, mainDB, queryBus, identityQueryBus, addressQueryBus, connectioningQueryBus, orderingQueryBus, carrierShipnowManager)
@@ -497,10 +548,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ShipnowAggr:  shipnowCommandBus,
 		ShipnowQuery: shipnowQueryBus,
 	}
-	historyStore := sqlstore.NewHistoryStore(mainDB)
+	historyStore := &sqlstore.HistoryStore{
+		DB: mainDB,
+	}
+	historyStoreInterface := sqlstore.BindHistoryStore(historyStore)
 	historyService := &history.HistoryService{
 		Session:      session,
-		HistoryStore: historyStore,
+		HistoryStore: historyStoreInterface,
 	}
 	moneyTxQuery := query16.NewMoneyTxQuery(mainDB, shippingQueryBus)
 	moneytxQueryBus := query16.MoneyTxQueryMessageBus(moneyTxQuery)
@@ -515,7 +569,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:      session,
 		SummaryQuery: summaryQueryBus,
 		SummaryOld:   summarySummary,
-		MoneyTxStore: moneyTxStore,
+		MoneyTxStore: moneyTxStoreInterface,
 	}
 	eventStream := eventstream.New(ctx)
 	configDirs := cfg.ExportDirs
@@ -526,14 +580,14 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		return Output{}, nil, err
 	}
 	exportAttemptStoreFactory := sqlstore.NewExportAttemptStore(mainDB)
-	exportService, cleanup2 := export.New(store, eventStream, configDirs, bucket, exportAttemptStoreFactory, orderStore)
+	exportService, cleanup2 := export.New(store, eventStream, configDirs, bucket, exportAttemptStoreFactory, orderStoreInterface)
 	exportExportService := &export2.ExportService{
 		Session:     session,
 		Auth:        authorizer,
 		ExportInner: exportService,
 	}
 	notifierDB := databases.Notifier
-	notificationStore := sqlstore2.NewNotificationStore(notifierDB, accountUserStore)
+	notificationStore := sqlstore2.NewNotificationStore(notifierDB, accountUserStoreInterface)
 	deviceStore := sqlstore2.NewDeviceStore(notifierDB)
 	notificationService := &notification.NotificationService{
 		Session:           session,
@@ -542,7 +596,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	authorizeService := &authorize.AuthorizeService{
 		Session:      session,
-		PartnerStore: partnerStore,
+		PartnerStore: partnerStoreInterface,
 	}
 	tradingService := &trading.TradingService{
 		Session:        session,
@@ -552,7 +606,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		OrderQuery:     orderingQueryBus,
 		InventoryQuery: inventoryQueryBus,
 		OrderLogic:     orderLogic,
-		OrderStore:     orderStore,
+		OrderStore:     orderStoreInterface,
 	}
 	config2 := cfg.VTPay
 	provider := vtpay.New(config2)
@@ -576,7 +630,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ReceiptQuery:     receiptingQueryBus,
 		SupplierQuery:    supplieringQueryBus,
 		TraderQuery:      traderingQueryBus,
-		AccountUserStore: accountUserStore,
+		AccountUserStore: accountUserStoreInterface,
 	}
 	supplierAggregate := aggregate9.NewSupplierAggregate(busBus, mainDB)
 	supplieringCommandBus := aggregate9.SupplierAggregateMessageBus(supplierAggregate)
@@ -624,7 +678,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:           session,
 		ShipmentManager:   shipmentManager,
 		ShippingAggregate: shippingCommandBus,
-		OrderStore:        orderStore,
+		OrderStore:        orderStoreInterface,
 	}
 	connectionService := &connection.ConnectionService{
 		Session:         session,
@@ -632,7 +686,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ConnectionQuery: connectioningQueryBus,
 		ConnectionAggr:  connectioningCommandBus,
 	}
-	refundAggregate := aggregate15.NewRefundAggregate(mainDB, busBus, orderStore)
+	refundAggregate := aggregate15.NewRefundAggregate(mainDB, busBus, orderStoreInterface)
 	refundCommandBus := aggregate15.RefundAggregateMessageBus(refundAggregate)
 	refundService := &refund.RefundService{
 		Session:        session,
@@ -641,7 +695,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ReceiptQuery:   receiptingQueryBus,
 		RefundAggr:     refundCommandBus,
 		RefundQuery:    refundQueryBus,
-		OrderStore:     orderStore,
+		OrderStore:     orderStoreInterface,
 	}
 	purchaseRefundAggregate := aggregate16.NewPurchaseRefundAggregate(mainDB, busBus, purchaseorderQueryBus)
 	purchaserefundCommandBus := aggregate16.PurchaseRefundAggregateMessageBus(purchaseRefundAggregate)
@@ -685,19 +739,19 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, shopTicketService)
 	adminMiscService := admin.MiscService{
 		Session: session,
-		Login:   login,
+		Login:   loginInterface,
 	}
 	accountAuthStoreFactory := sqlstore.NewAccountAuthStore(mainDB)
 	adminAccountService := admin.AccountService{
 		Session:          session,
 		AccountAuthStore: accountAuthStoreFactory,
 		UserStore:        userStoreFactory,
-		PartnerStore:     partnerStore,
-		AccountUserStore: accountUserStore,
+		PartnerStore:     partnerStoreInterface,
+		AccountUserStore: accountUserStoreInterface,
 	}
 	adminOrderService := admin.OrderService{
 		Session:    session,
-		OrderStore: orderStore,
+		OrderStore: orderStoreInterface,
 	}
 	adminFulfillmentService := admin.FulfillmentService{
 		Session:       session,
@@ -706,7 +760,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		RedisStore:    store,
 		ShippingAggr:  shippingCommandBus,
 		ShippingQuery: shippingQueryBus,
-		OrderStore:    orderStore,
+		OrderStore:    orderStoreInterface,
 	}
 	moneyTxAggregate := aggregate19.NewMoneyTxAggregate(mainDB, shippingQueryBus, identityQueryBus, busBus)
 	moneytxCommandBus := aggregate19.MoneyTxAggregateMessageBus(moneyTxAggregate)
@@ -718,7 +772,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shopService := admin.ShopService{
 		Session:       session,
 		IdentityQuery: identityQueryBus,
-		ShopStore:     shopStore,
+		ShopStore:     shopStoreInterface,
 	}
 	creditAggregate := credit.NewAggregateCredit(busBus, mainDB, identityQueryBus)
 	creditCommandBus := credit.CreditAggregateMessageBus(creditAggregate)
@@ -810,7 +864,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	sadminUserService := &sadmin.UserService{
 		Session:          session,
 		AccountUserStore: accountUserStore,
-		UserStore:        userStore,
+		UserStore:        userStoreInterface,
 	}
 	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
 	webhookService := &sadmin.WebhookService{
@@ -825,11 +879,11 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		TokenStore:       tokenStore,
 		SMSClient:        smsClient,
 		EmailClient:      emailClient,
-		UserStore:        userStore,
-		AccountStore:     accountStore,
-		AccountUserStore: accountUserStore,
-		PartnerStore:     partnerStore,
-		ShopStore:        shopStore,
+		UserStore:        userStoreInterface,
+		AccountStore:     accountStoreInterface,
+		AccountUserStore: accountUserStoreInterface,
+		PartnerStore:     partnerStoreInterface,
+		ShopStore:        shopStoreInterface,
 	}
 	integrationServers, cleanup3 := integration.NewIntegrationServer(store, integrationMiscService, integrationService)
 	affiliateMiscService := affiliate.MiscService{}
@@ -866,7 +920,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		CatalogQuery:   catalogQueryBus,
 		AffiliateQuery: affiliateQueryBus,
 		IdentityQuery:  identityQueryBus,
-		OrderStore:     orderStore,
+		OrderStore:     orderStoreInterface,
 	}
 	apiServers := api2.NewServers(apiUserService, apiTradingService, apiShopService, affiliateService)
 	intHandlers, err := server_max.BuildIntHandlers(servers, shopServers, adminServers, sadminServers, integrationServers, affiliateServers, apiServers)
@@ -883,7 +937,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	partnerShopService := &partner.ShopService{
 		Session:      session,
-		PartnerStore: partnerStore,
+		PartnerStore: partnerStoreInterface,
 	}
 	kafka := cfg.Kafka
 	producer, err := _producer.SupportedProducers(ctx, kafka)
@@ -1117,21 +1171,21 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	mainServer := BuildMainServer(service, intHandlers, extHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler)
 	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, queryBus)
 	webhookConfig := shipment_allConfig.GHNWebhook
-	v1Webhook := v1.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate, orderStore)
-	v2Webhook := v2.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate, orderStore)
+	v1Webhook := v1.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
+	v2Webhook := v2.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	ghnWebhookServer := _all.NewGHNWebhookServer(webhookConfig, shipmentManager, identityQueryBus, shippingCommandBus, v1Webhook, v2Webhook)
 	_ghtkWebhookConfig := shipment_allConfig.GHTKWebhook
-	webhook6 := webhook3.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate, orderStore)
+	webhook6 := webhook3.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, identityQueryBus, shippingCommandBus, webhook6)
 	_vtpostWebhookConfig := shipment_allConfig.VTPostWebhook
-	webhook7 := webhook4.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate, orderStore)
+	webhook7 := webhook4.New(mainDB, shipmentManager, identityQueryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, identityQueryBus, shippingCommandBus, webhook7)
 	serverWebhookConfig := cfg.AhamoveWebhook
 	ahamoveVerificationFileServer := server2.NewAhamoveVerificationFileServer(ctx, identityQueryBus)
 	webhook8 := webhook5.New(mainDB, ahamoveCarrier, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, shippingwebhookAggregate)
 	ahamoveWebhookServer := server2.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, identityQueryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook8)
 	v5 := BuildServers(mainServer, webServer, ghnWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
-	processManager := pm.New(busBus, identityQueryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus, accountUserStore)
+	processManager := pm.New(busBus, identityQueryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus, accountUserStoreInterface)
 	pmProcessManager := pm2.New(busBus, catalogQueryBus, orderingQueryBus, inventoryCommandBus)
 	processManager2 := pm3.New(busBus, invitationQueryBus, invitationCommandBus)
 	processManager3 := pm4.New(busBus, catalogQueryBus, catalogCommandBus)
@@ -1140,10 +1194,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager6 := pm7.New(busBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus)
 	processManager7 := pm8.New(busBus, purchaseorderQueryBus, receiptingQueryBus)
 	processManager8 := pm9.New(busBus, purchaserefundCommandBus, purchaserefundQueryBus, receiptingQueryBus)
-	processManager9 := pm10.New(busBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, identityQueryBus, moneyTxStore, orderStore)
+	processManager9 := pm10.New(busBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, identityQueryBus, moneyTxStoreInterface, orderStoreInterface)
 	processManager10 := pm11.New(busBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
 	processManager11 := pm12.New(busBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, shipnowManager, carrierShipnowManager)
-	processManager12 := pm13.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStore, moneyTxStore)
+	processManager12 := pm13.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, moneyTxStoreInterface)
 	processManager13 := pm14.New(busBus, affiliateCommandBus)
 	traderAgg := aggregate23.NewTraderAgg(mainDB)
 	traderingCommandBus := aggregate23.TraderAggMessageBus(traderAgg)
@@ -1151,7 +1205,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager15 := pm16.New(busBus, connectioningCommandBus, connectioningQueryBus)
 	processManager16 := pm17.New(store, busBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	processManager17 := pm18.New(busBus, customeringQueryBus, customeringCommandBus, shippingQueryBus)
-	sqlstoreStore := sqlstore.New(mainDB, queryBus, busBus)
 	sAdminToken := config_server.WireSAdminToken(sharedConfig)
 	middlewareMiddleware := middleware.New(sAdminToken, tokenStore, identityQueryBus)
 	captchaConfig := cfg.Captcha
@@ -1177,7 +1230,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		_connectionPM:     processManager15,
 		_pricelistPM:      processManager16,
 		_customerPM:       processManager17,
-		_s:                sqlstoreStore,
 		_m:                middlewareMiddleware,
 		_c:                captchaCaptcha,
 	}

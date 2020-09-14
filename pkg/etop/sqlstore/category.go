@@ -21,11 +21,13 @@ type CategoryStoreInterface interface {
 }
 
 type CategoryStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
 }
 
-func NewCategoryStore(db com.MainDB) *CategoryStore {
-	return &CategoryStore{db: db}
+func BindCategoryStore(s *CategoryStore) (to CategoryStoreInterface) {
+	s.db = s.DB
+	return s
 }
 
 func (st *CategoryStore) NewCategoryStore(db com.MainDB) *CategoryStore {

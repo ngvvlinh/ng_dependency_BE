@@ -23,7 +23,6 @@ import (
 	servicefbpage "o.o/backend/com/fabo/main/fbpage"
 	servicefbuser "o.o/backend/com/fabo/main/fbuser"
 	serviceidentity "o.o/backend/com/main/identity"
-	servicelocation "o.o/backend/com/main/location"
 	customerquery "o.o/backend/com/shopping/customering/query"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
@@ -80,7 +79,6 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
-	sqlstore.New(db, servicelocation.QueryMessageBus(servicelocation.New(nil)), nil)
 
 	dbWebhook, err := cmsql.Connect(cfg.PostgresWebhook)
 	if err != nil {

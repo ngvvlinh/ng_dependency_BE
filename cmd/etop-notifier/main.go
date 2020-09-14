@@ -14,7 +14,6 @@ import (
 	"o.o/backend/com/eventhandler/etop/handler"
 	"o.o/backend/com/eventhandler/notifier"
 	notihandler "o.o/backend/com/eventhandler/notifier/handler"
-	servicelocation "o.o/backend/com/main/location"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
@@ -25,7 +24,6 @@ import (
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
-	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/common/l"
 )
 
@@ -73,13 +71,10 @@ func main() {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
 
-	locationBus := servicelocation.QueryMessageBus(servicelocation.New(nil))
-
 	dbNotifier, err := cmsql.Connect(cfg.PostgresNotifier)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres Notifier", l.Error(err))
 	}
-	sqlstore.New(db, locationBus, nil)
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
 	{

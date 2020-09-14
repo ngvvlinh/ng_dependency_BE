@@ -10,6 +10,7 @@ import (
 	"o.o/backend/com/main/catalog/convert"
 	catalogmodel "o.o/backend/com/main/catalog/model"
 	catalogmodelx "o.o/backend/com/main/catalog/modelx"
+	catalogsqlstore "o.o/backend/com/main/catalog/sqlstore"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
@@ -19,7 +20,6 @@ import (
 )
 
 type ShopStoreInterface interface {
-
 	CreateShopCategory(ctx context.Context, cmd *catalogmodelx.CreateShopCategoryCommand) error
 
 	DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedCreateVariantCommand) error
@@ -36,13 +36,15 @@ type ShopStoreInterface interface {
 }
 
 type ShopStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
+
+	ShopProductStore catalogsqlstore.ShopProductStoreFactory `wire:"-"`
 }
 
-func NewShopStore(db com.MainDB) *ShopStore {
-	s := &ShopStore{
-		db: db,
-	}
+func BindShopStore(s *ShopStore) (to ShopStoreInterface) {
+	s.db = s.DB
+	s.ShopProductStore = catalogsqlstore.NewShopProductStore(s.db) // TODO(vu): remove this
 	return s
 }
 
@@ -160,7 +162,7 @@ func (st *ShopStore) DeprecatedCreateVariant(ctx context.Context, cmd *catalogmo
 		variant.Attributes = convert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(attributes)
 		variant.AttrNormKv = attrNormKv
 		if cmd.ProductID != 0 {
-			_, err := shopProductStore(ctx).ShopID(cmd.ShopID).ID(cmd.ProductID).GetShopProductDB()
+			_, err := st.ShopProductStore(ctx).ShopID(cmd.ShopID).ID(cmd.ProductID).GetShopProductDB()
 			if err != nil {
 				return err
 			}
@@ -194,7 +196,7 @@ func (st *ShopStore) DeprecatedCreateVariant(ctx context.Context, cmd *catalogmo
 		return err
 	}
 
-	q := shopProductStore(ctx).ShopID(cmd.ShopID).ID(productID)
+	q := st.ShopProductStore(ctx).ShopID(cmd.ShopID).ID(productID)
 	product, err := q.GetShopProductWithVariants()
 	if err != nil {
 		return err

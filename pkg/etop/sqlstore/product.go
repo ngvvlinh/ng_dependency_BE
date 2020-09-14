@@ -15,8 +15,6 @@ import (
 	"o.o/capi/dot"
 )
 
-var shopProductStore catalogsqlstore.ShopProductStoreFactory
-
 type ShopVariantStoreInterface interface {
 	GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuery) error
 
@@ -24,15 +22,15 @@ type ShopVariantStoreInterface interface {
 }
 
 type ShopVariantStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
+
+	ShopProductStore catalogsqlstore.ShopProductStoreFactory `wire:"-"`
 }
 
-func NewShopVariantStore(
-	db com.MainDB,
-) *ShopVariantStore {
-	s := &ShopVariantStore{
-		db: db,
-	}
+func BindShopVariantStore(s *ShopVariantStore) (to ShopVariantStoreInterface) {
+	s.db = s.DB
+	s.ShopProductStore = catalogsqlstore.NewShopProductStore(s.db) // TODO(vu): remove this
 	return s
 }
 
@@ -201,7 +199,7 @@ func (st *ShopVariantStore) UpdateShopProduct(ctx context.Context, cmd *catalogm
 		return err
 	}
 	{
-		q := shopProductStore(ctx).ShopID(cmd.ShopID).ID(cmd.Product.ProductID)
+		q := st.ShopProductStore(ctx).ShopID(cmd.ShopID).ID(cmd.Product.ProductID)
 		product, err := q.GetShopProductWithVariants()
 		if err != nil {
 			return err

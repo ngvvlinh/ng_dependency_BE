@@ -12,18 +12,16 @@ import (
 )
 
 type AddressStoreInterface interface {
-
 	GetAddress(ctx context.Context, query *addressmodelx.GetAddressQuery) error
 }
 
 type AddressStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
 }
 
-func NewAddressStore(db com.MainDB) *AddressStore {
-	s := &AddressStore{
-		db: db,
-	}
+func BindAddressStore(s *AddressStore) (to AddressStoreInterface) {
+	s.db = s.DB
 	return s
 }
 

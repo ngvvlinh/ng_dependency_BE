@@ -138,22 +138,16 @@ type OrderStoreInterface interface {
 }
 
 type OrderStore struct {
-	db *cmsql.Database
+	DB com.MainDB
+	db *cmsql.Database `wire:"-"`
 
+	LocationBus  location.QueryBus
 	AccountStore AccountStoreInterface
 	ShopStore    ShopStoreInterface
 }
 
-func NewOrderStore(
-	db com.MainDB,
-	accountStore AccountStoreInterface,
-	shopStore ShopStoreInterface,
-) *OrderStore {
-	s := &OrderStore{
-		db:           db,
-		AccountStore: accountStore,
-		ShopStore:    shopStore,
-	}
+func BindOrderStore(s *OrderStore) (to OrderStoreInterface) {
+	s.db = s.DB
 	return s
 }
 
@@ -1027,14 +1021,14 @@ func (st *OrderStore) getDeliveryRoute(ctx context.Context, ffm *shipmodel.Fulfi
 		queryFrom := location.GetLocationQuery{
 			ProvinceCode: ffm.AddressFrom.ProvinceCode,
 		}
-		err := locationBus.Dispatch(ctx, &queryFrom)
+		err := st.LocationBus.Dispatch(ctx, &queryFrom)
 		if err != nil {
 			return "", err
 		}
 		queryTo := location.GetLocationQuery{
 			ProvinceCode: ffm.AddressTo.ProvinceCode,
 		}
-		err = locationBus.Dispatch(ctx, &queryTo)
+		err = st.LocationBus.Dispatch(ctx, &queryTo)
 		if err != nil {
 			return "", err
 		}

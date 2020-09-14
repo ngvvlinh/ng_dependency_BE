@@ -44,48 +44,23 @@ import (
 )
 
 type OrderLogic struct {
+	CatalogQuery       catalog.QueryBus
+	OrderAggr          ordering.CommandBus
+	CustomerAggr       customering.CommandBus
+	CustomerQuery      customering.QueryBus
+	TraderAddressAggr  addressing.CommandBus
+	TraderAddressQuery addressing.QueryBus
+	LocationQuery      location.QueryBus
+	EventBus           capi.EventBus
+	ShipmentManager    *carrier.ShipmentManager
+
 	AddressStore sqlstore.AddressStoreInterface
 	OrderStore   sqlstore.OrderStoreInterface
+
+	FlagFaboOrderUpdatePaymentSatusConfig FlagFaboOrderAutoConfirmPaymentStatus
 }
+
 type FlagFaboOrderAutoConfirmPaymentStatus bool
-
-var (
-	catalogQuery                          catalog.QueryBus
-	orderAggr                             ordering.CommandBus
-	customerAggr                          customering.CommandBus
-	customerQuery                         customering.QueryBus
-	traderAddressAggr                     addressing.CommandBus
-	traderAddressQuery                    addressing.QueryBus
-	locationQuery                         location.QueryBus
-	eventBus                              capi.EventBus
-	shipmentManager                       *carrier.ShipmentManager
-	flagFaboOrderUpdatePaymentSatusConfig FlagFaboOrderAutoConfirmPaymentStatus
-)
-
-func New(
-	catalogQueryBus catalog.QueryBus,
-	orderAggregate ordering.CommandBus,
-	customerAggregate customering.CommandBus,
-	customerQueryBus customering.QueryBus,
-	traderAddressAggregate addressing.CommandBus,
-	traderAddressQueryBus addressing.QueryBus,
-	locationQueryBus location.QueryBus,
-	eventB capi.EventBus,
-	flagFaboOrderUpdatePaymentSatus FlagFaboOrderAutoConfirmPaymentStatus,
-	shipmentCarrierCtrl *carrier.ShipmentManager,
-) *OrderLogic {
-	catalogQuery = catalogQueryBus
-	orderAggr = orderAggregate
-	customerAggr = customerAggregate
-	customerQuery = customerQueryBus
-	traderAddressAggr = traderAddressAggregate
-	traderAddressQuery = traderAddressQueryBus
-	locationQuery = locationQueryBus
-	eventBus = eventB
-	flagFaboOrderUpdatePaymentSatusConfig = flagFaboOrderUpdatePaymentSatus
-	shipmentManager = shipmentCarrierCtrl
-	return &OrderLogic{}
-}
 
 var blockCarrierByDistricts = map[typeshippingprovider.ShippingProvider][]string{
 	typeshippingprovider.GHN: []string{},
@@ -128,7 +103,7 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 	if order.ConfirmStatus != status3.P ||
 		order.ShopConfirm != status3.P {
 		paymentStatus := status4.Z
-		if flagFaboOrderUpdatePaymentSatusConfig {
+		if s.FlagFaboOrderUpdatePaymentSatusConfig {
 			paymentStatus = status4.P
 		}
 		cmd := &ordermodelx.UpdateOrdersStatusCommand{
@@ -150,7 +125,7 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 			InventoryOverStock:   shop.InventoryOverstock.Apply(true),
 			UpdatedBy:            userID,
 		}
-		if err := eventBus.Publish(ctx, event); err != nil {
+		if err := s.EventBus.Publish(ctx, event); err != nil {
 			ll.Error("RaiseOrderConfirmedEvent", l.Error(err))
 		}
 	}
@@ -247,7 +222,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 	}
 
 	ffms := append(creates, updates...)
-	if err := shipmentManager.CreateFulfillments(ctx, ffms); err != nil {
+	if err := s.ShipmentManager.CreateFulfillments(ctx, ffms); err != nil {
 		return resp, err
 	}
 	// automatically cancel orders on sandbox for ghn and vtpost
@@ -290,7 +265,7 @@ func (s *OrderLogic) ConfirmOrderAndCreateFulfillments(ctx context.Context, user
 		Fulfill:    ordertypes.ShippingTypeShipment,
 		FulfillIDs: ffmIDs,
 	}
-	if err = orderAggr.Dispatch(ctx, cmd); err != nil {
+	if err = s.OrderAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 
@@ -327,7 +302,7 @@ func (s *OrderLogic) RaiseOrderConfirmingEvent(ctx context.Context, shop *identi
 		Lines:                orderLines,
 		AutoInventoryVoucher: autoInventoryVoucher,
 	}
-	if err := eventBus.Publish(ctx, event); err != nil {
+	if err := s.EventBus.Publish(ctx, event); err != nil {
 		return err
 	}
 	return nil
@@ -347,7 +322,7 @@ func (s *OrderLogic) prepareFulfillmentFromOrder(ctx context.Context, order *ord
 	if err != nil {
 		return nil, cm.Error(cm.InvalidArgument, "Thông tin địa chỉ người nhận: "+err.Error()+" Vui lòng cập nhật và thử lại.", err)
 	}
-	if _, _, err := shipmentManager.VerifyDistrictCode(addressTo); err != nil {
+	if _, _, err := s.ShipmentManager.VerifyDistrictCode(addressTo); err != nil {
 		return nil, cm.Error(cm.InvalidArgument, "Thông tin địa chỉ người nhận: "+err.Error()+" Vui lòng cập nhật và thử lại.", nil)
 	}
 
@@ -371,7 +346,7 @@ func (s *OrderLogic) prepareFulfillmentFromOrder(ctx context.Context, order *ord
 		}
 		shopAddress = addressQuery.Result
 	}
-	_, _, err = shipmentManager.VerifyDistrictCode(shopAddress)
+	_, _, err = s.ShipmentManager.VerifyDistrictCode(shopAddress)
 	if err != nil {
 		return nil, cm.Error(cm.FailedPrecondition, "Thông tin địa chỉ cửa hàng trong cấu hình cửa hàng: "+err.Error()+" Vui lòng cập nhật và thử lại.", nil)
 	}
@@ -640,7 +615,7 @@ func (s *OrderLogic) TryCancellingFulfillments(ctx context.Context, order *order
 
 			var shippingProviderErr error
 			if ffm.ConnectionID != 0 {
-				shippingProviderErr = shipmentManager.CancelFulfillment(ctx, ffm)
+				shippingProviderErr = s.ShipmentManager.CancelFulfillment(ctx, ffm)
 			}
 
 			// Send

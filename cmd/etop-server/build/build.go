@@ -50,7 +50,6 @@ import (
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/authetop"
 	"o.o/backend/pkg/etop/authorize/middleware"
-	"o.o/backend/pkg/etop/sqlstore"
 	ahamoveserver "o.o/backend/pkg/integration/shipnow/ahamove/server"
 	"o.o/capi/httprpc"
 	"o.o/common/jsonx"
@@ -82,8 +81,8 @@ type Output struct {
 	_connectionPM     *connectioningpm.ProcessManager
 	_pricelistPM      *pricelistpm.ProcessManager
 	_customerPM       *customerpm.ProcessManager
+
 	// inject
-	_s *sqlstore.Store
 	_m middleware.Middleware
 	_c *captcha.Captcha
 }
