@@ -50,12 +50,22 @@ type Import struct {
 	ShopStore          sqlstore.ShopStoreInterface
 }
 
-func New(rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
+func New(
+	rd redis.Store,
+	ul *upload.Uploader,
+	db com.MainDB,
+	ExportAttemptStore sqlstore.ExportAttemptStoreInterface,
+	CategoryStore sqlstore.CategoryStoreInterface,
+	ShopStore sqlstore.ShopStoreInterface,
+) (*Import, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	im := &Import{
-		uploader:         ul,
-		shopProductStore: catalogsqlstore.NewShopProductStore(db),
-		shopVariantStore: catalogsqlstore.NewShopVariantStore(db),
+		uploader:           ul,
+		shopProductStore:   catalogsqlstore.NewShopProductStore(db),
+		shopVariantStore:   catalogsqlstore.NewShopVariantStore(db),
+		ExportAttemptStore: ExportAttemptStore,
+		CategoryStore:      CategoryStore,
+		ShopStore:          ShopStore,
 	}
 	if ul != nil {
 		im.uploader = ul

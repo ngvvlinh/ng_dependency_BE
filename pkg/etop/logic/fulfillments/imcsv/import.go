@@ -14,7 +14,6 @@ import (
 	"o.o/api/top/int/types"
 	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/status4"
-	com "o.o/backend/com/main"
 	identitymodel "o.o/backend/com/main/identity/model"
 	"o.o/backend/com/main/location"
 	cm "o.o/backend/pkg/common"
@@ -33,15 +32,16 @@ import (
 )
 
 type Import struct {
-	uploader *upload.Uploader
+	Uploader *upload.Uploader
 
 	ExportAttemptStore sqlstore.ExportAttemptStoreInterface
 }
 
-func New(rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
+func New(rd redis.Store, ul *upload.Uploader, exportAttemptStore sqlstore.ExportAttemptStoreInterface) (*Import, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	im := &Import{
-		uploader: ul,
+		Uploader:           ul,
+		ExportAttemptStore: exportAttemptStore,
 	}
 	return im, idempgroup.Shutdown
 }
@@ -87,7 +87,7 @@ func (im *Import) handleImportFulfillments(ctx context.Context, c *httpx.Context
 
 	// We only store file if the file is valid.
 	importID := cm.NewIDWithTag(account_tag.TagImport)
-	uploadCmd, err := uploadFile(im.uploader, importID, rawData)
+	uploadCmd, err := uploadFile(im.Uploader, importID, rawData)
 	if err != nil {
 		return nil, err
 	}

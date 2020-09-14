@@ -573,9 +573,15 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		cleanup()
 		return Output{}, nil, err
 	}
-	imcsvImport, cleanup3 := imcsv.New(authorizer, locationQueryBus, store, uploader, mainDB)
-	import2, cleanup4 := imcsv2.New(store, uploader, mainDB)
-	import3, cleanup5 := imcsv3.New(store, uploader, mainDB)
+	exportAttemptStore := sqlstore.BuildExportAttemptStore(mainDB)
+	exportAttemptStoreInterface := sqlstore.BindExportAttemptStore(exportAttemptStore)
+	imcsvImport, cleanup3 := imcsv.New(authorizer, locationQueryBus, store, uploader, mainDB, orderStoreInterface, exportAttemptStoreInterface)
+	categoryStore := &sqlstore.CategoryStore{
+		DB: mainDB,
+	}
+	categoryStoreInterface := sqlstore.BindCategoryStore(categoryStore)
+	import2, cleanup4 := imcsv2.New(store, uploader, mainDB, exportAttemptStoreInterface, categoryStoreInterface, shopStoreInterface)
+	import3, cleanup5 := imcsv3.New(store, uploader, exportAttemptStoreInterface)
 	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, import3, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()

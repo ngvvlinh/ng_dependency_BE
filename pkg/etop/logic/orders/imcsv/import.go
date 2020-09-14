@@ -57,12 +57,21 @@ type Import struct {
 	ExportAttemptStore sqlstore.ExportAttemptStoreInterface
 }
 
-func New(auth *auth.Authorizer, _locationBus location.QueryBus, rd redis.Store, ul *upload.Uploader, db com.MainDB) (*Import, func()) {
+func New(
+	auth *auth.Authorizer,
+	_locationBus location.QueryBus,
+	rd redis.Store, ul *upload.Uploader,
+	db com.MainDB,
+	OrderStore sqlstore.OrderStoreInterface,
+	ExportAttemptStore sqlstore.ExportAttemptStoreInterface,
+) (*Import, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	im := &Import{
-		auth:        auth,
-		uploader:    ul,
-		locationBus: _locationBus,
+		auth:               auth,
+		uploader:           ul,
+		locationBus:        _locationBus,
+		OrderStore:         OrderStore,
+		ExportAttemptStore: ExportAttemptStore,
 	}
 	im.shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
 	if ul != nil {
