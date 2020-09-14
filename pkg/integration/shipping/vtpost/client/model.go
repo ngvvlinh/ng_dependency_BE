@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
@@ -121,6 +122,10 @@ var StateCodeMap = map[StateShipping][]int{
 	StateDelivered: {501},
 }
 
+var ShippingSubStateMap = map[shippingsubstate.Substate][]int{
+	shippingsubstate.DeliveryFail: {505, 506},
+}
+
 var SubStateMap = map[int]string{
 	100:  "Tiếp nhận đơn hàng từ đối tác",
 	101:  "ViettelPost yêu cầu hủy đơn hàng",
@@ -168,6 +173,15 @@ func ToVTPostShippingState(code int) StateShipping {
 		}
 	}
 	return stateName
+}
+
+func ToShippingSubState(code int) shippingsubstate.Substate {
+	for substate, stateIDs := range ShippingSubStateMap {
+		if cm.IntsContain(stateIDs, code) {
+			return substate
+		}
+	}
+	return 0
 }
 
 func (s StateShipping) ToStatus5() status5.Status {

@@ -655,15 +655,15 @@ func (m *Fulfillment) Migration(db *cmsql.Database) {
 		},
 		"external_shipping_note": {
 			ColumnName:       "external_shipping_note",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
+			ColumnType:       "dot.NullString",
+			ColumnDBType:     "struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
 		"external_shipping_sub_state": {
 			ColumnName:       "external_shipping_sub_state",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
+			ColumnType:       "dot.NullString",
+			ColumnDBType:     "struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -830,7 +830,7 @@ func (m *Fulfillment) Migration(db *cmsql.Database) {
 		},
 		"shipping_substate": {
 			ColumnName:       "shipping_substate",
-			ColumnType:       "substate.Substate",
+			ColumnType:       "substate.NullSubstate",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{"default", "pick_fail", "delivery_fail", "devivery_giveup", "return_fail"},
@@ -940,8 +940,8 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ExternalShippingState),
 		core.String(m.ExternalShippingStateCode),
 		m.ExternalShippingStatus,
-		core.String(m.ExternalShippingNote),
-		core.String(m.ExternalShippingSubState),
+		m.ExternalShippingNote,
+		m.ExternalShippingSubState,
 		core.JSON{m.ExternalShippingData},
 		m.ShippingState,
 		m.ShippingStatus,
@@ -1057,8 +1057,8 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ExternalShippingState),
 		(*core.String)(&m.ExternalShippingStateCode),
 		&m.ExternalShippingStatus,
-		(*core.String)(&m.ExternalShippingNote),
-		(*core.String)(&m.ExternalShippingSubState),
+		&m.ExternalShippingNote,
+		&m.ExternalShippingSubState,
 		core.JSON{&m.ExternalShippingData},
 		&m.ShippingState,
 		&m.ShippingStatus,
@@ -1842,7 +1842,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ExternalShippingStatus)
 	}
-	if m.ExternalShippingNote != "" {
+	if m.ExternalShippingNote.Valid {
 		flag = true
 		w.WriteName("external_shipping_note")
 		w.WriteByte('=')
@@ -1850,7 +1850,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ExternalShippingNote)
 	}
-	if m.ExternalShippingSubState != "" {
+	if m.ExternalShippingSubState.Valid {
 		flag = true
 		w.WriteName("external_shipping_sub_state")
 		w.WriteByte('=')
@@ -2042,7 +2042,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.EdCode)
 	}
-	if m.ShippingSubstate != 0 {
+	if m.ShippingSubstate.Valid {
 		flag = true
 		w.WriteName("shipping_substate")
 		w.WriteByte('=')

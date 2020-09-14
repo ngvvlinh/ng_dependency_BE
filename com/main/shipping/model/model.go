@@ -133,8 +133,8 @@ type Fulfillment struct {
 	ExternalShippingState       string
 	ExternalShippingStateCode   string
 	ExternalShippingStatus      status5.Status
-	ExternalShippingNote        string
-	ExternalShippingSubState    string
+	ExternalShippingNote        dot.NullString
+	ExternalShippingSubState    dot.NullString
 
 	ExternalShippingData json.RawMessage
 
@@ -176,7 +176,7 @@ type Fulfillment struct {
 
 	LinesContent     string
 	EdCode           string
-	ShippingSubstate shippingsubstate.Substate
+	ShippingSubstate shippingsubstate.NullSubstate
 
 	Rid dot.ID
 }

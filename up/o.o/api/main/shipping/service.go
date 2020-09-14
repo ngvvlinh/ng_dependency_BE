@@ -261,7 +261,7 @@ type UpdateFulfillmentsCODTransferedAtArgs struct {
 type UpdateFfmExternalShippingInfoArgs struct {
 	FulfillmentID             dot.ID
 	ShippingState             shippingstate.State
-	ShippingSubstate          shippingsubstate.Substate
+	ShippingSubstate          shippingsubstate.NullSubstate
 	ShippingStatus            status5.Status
 	ExternalShippingData      json.RawMessage
 	ExternalShippingState     string

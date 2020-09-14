@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/integration/shipping"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
+	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
@@ -39,8 +40,11 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 		ExternalShippingStateCode: strconv.Itoa(statusCode),
 		ExternalShippingStatus:    vtpostStatus.ToStatus5(),
 		ShippingState:             vtpostStatus.ToModel(ffm.ShippingState),
+		ShippingSubstate:          vtpostclient.ToShippingSubState(statusCode).Wrap(),
 		EtopDiscount:              ffm.EtopDiscount,
 		ShippingStatus:            vtpostStatus.ToShippingStatus5(ffm.ShippingState),
+		ExternalShippingNote:      dot.String(orderMsg.Note),
+		ExternalShippingSubState:  dot.String(vtpostclient.SubStateMap[statusCode]),
 	}
 
 	// Update price + weight

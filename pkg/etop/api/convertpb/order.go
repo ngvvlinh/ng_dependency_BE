@@ -724,8 +724,8 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 		MoneyTransactionShippingId:         m.MoneyTransactionID,
 		MoneyTransactionShippingExternalId: m.MoneyTransactionShippingExternalID,
 		XShippingLogs:                      PbExternalShippingLogs(m.ExternalShippingLogs),
-		XShippingNote:                      m.ExternalShippingNote,
-		XShippingSubState:                  m.ExternalShippingSubState,
+		XShippingNote:                      m.ExternalShippingNote.String,
+		XShippingSubState:                  m.ExternalShippingSubState.String,
 		ActualCompensationAmount:           m.ActualCompensationAmount,
 		ConnectionID:                       m.ConnectionID,
 		InsuranceValue:                     m.InsuranceValue.Apply(0),
@@ -733,7 +733,7 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 		ShopCarrierID:                      m.ShopCarrierID,
 		EdCode:                             m.EdCode,
 		LinesContent:                       m.LinesContent,
-		ShippingSubstate:                   m.ShippingSubstate,
+		ShippingSubstate:                   m.ShippingSubstate.Enum,
 	}
 	if shop != nil {
 		ff.Shop = PbShop(shop)
@@ -1199,8 +1199,8 @@ func Convert_core_Fulfillment_To_api_Fulfillment(m *shipping.Fulfillment, accTyp
 		MoneyTransactionShippingId:         m.MoneyTransactionID,
 		MoneyTransactionShippingExternalId: m.MoneyTransactionShippingExternalID,
 		XShippingLogs:                      Convert_core_ExternalShippingLogs_To_api_ExternalShippingLogs(m.ExternalShippingLogs),
-		XShippingNote:                      m.ExternalShippingNote,
-		XShippingSubState:                  m.ExternalShippingSubState,
+		XShippingNote:                      m.ExternalShippingNote.String,
+		XShippingSubState:                  m.ExternalShippingSubState.String,
 		ActualCompensationAmount:           m.ActualCompensationAmount,
 	}
 	if shop != nil {

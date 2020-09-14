@@ -63,7 +63,7 @@ func prepareNotifyFfmCommands(ctx context.Context, op pgevent.TGOP, history ship
 	var res []*notifiermodel.CreateNotificationArgs
 	externalShippingNote := history.ExternalShippingNote().String()
 	externalSubState := history.ExternalShippingSubState().String()
-	if (externalShippingNote.Valid && ffm.ExternalShippingNote != "") || (externalSubState.Valid && ffm.ExternalShippingSubState != "") {
+	if (externalShippingNote.Valid && ffm.ExternalShippingNote.Valid) || (externalSubState.Valid && ffm.ExternalShippingSubState.Valid) {
 		cmds := templateFfmChangedNote(connection, userIDs, ffm, history)
 		res = append(res, cmds...)
 	}
@@ -87,10 +87,10 @@ func templateFfmChangedNote(
 	title, content := "", ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	subState := ffm.ExternalShippingSubState
-	if subState == "" {
-		subState = "Cập nhật"
+	if !subState.Valid {
+		subState = dot.String("Cập nhật")
 	}
-	title = fmt.Sprintf("%v - %v %v - %v", subState, connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
+	title = fmt.Sprintf("%v - %v %v - %v", subState.String, connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
 	externalShippingNote := history.ExternalShippingNote().String().String
 	if externalShippingNote != "" {
 		content, _ = strconv.Unquote("\"" + externalShippingNote + "\"")
@@ -99,7 +99,7 @@ func templateFfmChangedNote(
 	}
 
 	sendNotification := true
-	if subState == ghtkclient.SubStateMapping[ghtkclient.StateIDShipperDelivered] {
+	if subState.String == ghtkclient.SubStateMapping[ghtkclient.StateIDShipperDelivered] {
 		sendNotification = false
 	}
 	args := &buildNotifyCmdArgs{

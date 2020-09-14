@@ -25,7 +25,6 @@ import (
 	"o.o/backend/pkg/integration/shipping"
 	"o.o/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
-	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
@@ -77,7 +76,6 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	}
 	ll.Debug("VPPOST callback", l.Object("msg", msg))
 	orderData := msg.Data
-	statusCode := orderData.OrderStatus
 	var ffm *shipmodel.Fulfillment
 	var err error
 	ctx := c.Req.Context()
@@ -118,11 +116,10 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ll.SendMessage(fmt.Sprintf(msg, ffm.ShippingCode, err.Error()))
 		}
 
-		note := orderData.Note
-		subState := vtpostclient.SubStateMap[statusCode]
 		update := &shippingcore.UpdateFulfillmentExternalShippingInfoCommand{
 			FulfillmentID:             ffm.ID,
 			ShippingState:             updateFfm.ShippingState,
+			ShippingSubstate:          updateFfm.ShippingSubstate,
 			ShippingStatus:            updateFfm.ShippingStatus,
 			ExternalShippingData:      updateFfm.ExternalShippingData,
 			ExternalShippingState:     updateFfm.ExternalShippingState,
@@ -141,8 +138,8 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ShippingReturningAt:       updateFfm.ShippingReturningAt,
 			ShippingReturnedAt:        updateFfm.ShippingReturnedAt,
 			ShippingCancelledAt:       updateFfm.ShippingCancelledAt,
-			ExternalShippingNote:      dot.String(note),
-			ExternalShippingSubState:  dot.String(subState),
+			ExternalShippingNote:      ffm.ExternalShippingNote,
+			ExternalShippingSubState:  ffm.ExternalShippingSubState,
 		}
 		if err := wh.shippingAggr.Dispatch(ctx, update); err != nil {
 			return err

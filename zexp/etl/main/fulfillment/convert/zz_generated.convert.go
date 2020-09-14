@@ -5,6 +5,7 @@
 package convert
 
 import (
+	substate "o.o/api/top/types/etc/shipping/substate"
 	shippingmodel "o.o/backend/com/main/shipping/model"
 	conversion "o.o/backend/pkg/common/conversion"
 	fulfillmentmodel "o.o/backend/zexp/etl/main/fulfillment/model"
@@ -142,8 +143,8 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.ExternalShippingState = arg.ExternalShippingState                           // simple assign
 	out.ExternalShippingStateCode = arg.ExternalShippingStateCode                   // simple assign
 	out.ExternalShippingStatus = arg.ExternalShippingStatus                         // simple assign
-	out.ExternalShippingNote = arg.ExternalShippingNote                             // simple assign
-	out.ExternalShippingSubState = arg.ExternalShippingSubState                     // simple assign
+	out.ExternalShippingNote = dot.NullString{}                                     // types do not match
+	out.ExternalShippingSubState = dot.NullString{}                                 // types do not match
 	out.ExternalShippingData = arg.ExternalShippingData                             // simple assign
 	out.ShippingState = arg.ShippingState                                           // simple assign
 	out.ShippingStatus = arg.ShippingStatus                                         // simple assign
@@ -167,7 +168,7 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.ShipmentPriceInfo = nil                                                     // zero value
 	out.LinesContent = ""                                                           // zero value
 	out.EdCode = ""                                                                 // zero value
-	out.ShippingSubstate = 0                                                        // zero value
+	out.ShippingSubstate = substate.NullSubstate{}                                  // zero value
 	out.Rid = arg.Rid                                                               // simple assign
 }
 
@@ -273,8 +274,8 @@ func convert_shippingmodel_Fulfillment_fulfillmentmodel_Fulfillment(arg *shippin
 	out.ExternalShippingState = arg.ExternalShippingState                           // simple assign
 	out.ExternalShippingStateCode = arg.ExternalShippingStateCode                   // simple assign
 	out.ExternalShippingStatus = arg.ExternalShippingStatus                         // simple assign
-	out.ExternalShippingNote = arg.ExternalShippingNote                             // simple assign
-	out.ExternalShippingSubState = arg.ExternalShippingSubState                     // simple assign
+	out.ExternalShippingNote = ""                                                   // types do not match
+	out.ExternalShippingSubState = ""                                               // types do not match
 	out.ExternalShippingData = arg.ExternalShippingData                             // simple assign
 	out.ShippingState = arg.ShippingState                                           // simple assign
 	out.ShippingStatus = arg.ShippingStatus                                         // simple assign

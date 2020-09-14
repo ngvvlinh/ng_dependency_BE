@@ -74,7 +74,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 		ShippingStatus:            state.ToShippingStatus5(ffm.ShippingState),
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
 		ShippingCode:              ffm.ShippingCode,
-		ExternalShippingNote:      msg.Note.String(),
+		ExternalShippingNote:      dot.String(msg.Note.String()),
 	}
 
 	// Only update status4 if the current status is not ending status

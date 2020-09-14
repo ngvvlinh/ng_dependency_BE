@@ -107,8 +107,8 @@ type Fulfillment struct {
 
 	ExternalShippingState    string
 	ExternalShippingStatus   status5.Status
-	ExternalShippingNote     string
-	ExternalShippingSubState string
+	ExternalShippingNote     dot.NullString
+	ExternalShippingSubState dot.NullString
 	ExternalShippingLogs     []*ExternalShippingLog
 	SyncStatus               status4.Status
 	SyncStates               *FulfillmentSyncStates
@@ -128,7 +128,7 @@ type Fulfillment struct {
 
 	LinesContent     string
 	EdCode           string
-	ShippingSubstate shippingsubstate.Substate
+	ShippingSubstate shippingsubstate.NullSubstate
 }
 
 type FulfillmentSyncStates struct {

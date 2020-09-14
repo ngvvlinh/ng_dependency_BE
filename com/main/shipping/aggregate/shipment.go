@@ -769,6 +769,8 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 			ShippingReturningAt:       args.ShippingReturningAt,
 			ShippingReturnedAt:        args.ShippingReturnedAt,
 			ShippingCancelledAt:       args.ShippingCancelledAt,
+			ExternalShippingNote:      args.ExternalShippingNote,
+			ExternalShippingSubState:  args.ExternalShippingSubState,
 		}
 		if args.Weight != 0 {
 			// Deprecated total_weight
@@ -784,16 +786,6 @@ func (a *Aggregate) UpdateFulfillmentExternalShippingInfo(ctx context.Context, a
 		if err := a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update); err != nil {
 			return err
 		}
-
-		args2 := &sqlstore.ForceUpdateExternalShippingInfoArgs{
-			FulfillmentID:            args.FulfillmentID,
-			ExternalShippingNote:     args.ExternalShippingNote,
-			ExternalShippingSubState: args.ExternalShippingSubState,
-		}
-		if err := a.ffmStore(ctx).ForceUpdateExternalShippingInfo(args2); err != nil {
-			return err
-		}
-
 		updated = 1
 		return nil
 	})

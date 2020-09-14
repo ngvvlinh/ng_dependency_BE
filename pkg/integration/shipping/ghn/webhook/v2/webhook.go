@@ -137,7 +137,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 			ShippingReturningAt:       updateFfm.ShippingReturningAt,
 			ShippingReturnedAt:        updateFfm.ShippingReturnedAt,
 			ShippingCancelledAt:       updateFfm.ShippingCancelledAt,
-			ExternalShippingNote:      dot.String(updateFfm.ExternalShippingNote),
+			ExternalShippingNote:      updateFfm.ExternalShippingNote,
 		}
 		if err := wh.shippingAggr.Dispatch(ctx, update); err != nil {
 			return err

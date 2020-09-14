@@ -442,23 +442,3 @@ func (s *FulfillmentStore) ListFulfillmentExtendeds() (res []*shipping.Fulfillme
 	}
 	return
 }
-
-type ForceUpdateExternalShippingInfoArgs struct {
-	FulfillmentID            dot.ID
-	ExternalShippingNote     dot.NullString
-	ExternalShippingSubState dot.NullString
-}
-
-func (s *FulfillmentStore) ForceUpdateExternalShippingInfo(args *ForceUpdateExternalShippingInfoArgs) error {
-	update := map[string]interface{}{}
-	if args.ExternalShippingNote.Valid {
-		update["external_shipping_note"] = args.ExternalShippingNote.String
-	}
-	if args.ExternalShippingSubState.Valid {
-		update["external_shipping_sub_state"] = args.ExternalShippingSubState.String
-	}
-	if len(update) == 0 {
-		return nil
-	}
-	return s.query().Table("fulfillment").Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdateMap(update)
-}

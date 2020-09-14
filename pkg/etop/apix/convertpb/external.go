@@ -447,7 +447,7 @@ func PbFulfillment(m *shipmodel.Fulfillment) *exttypes.Fulfillment {
 		IncludeInsurance:         m.IncludeInsurance,
 		ConfirmStatus:            m.ConfirmStatus.Wrap(),
 		ShippingState:            m.ShippingState.Wrap(),
-		ShippingSubstate:         m.ShippingSubstate,
+		ShippingSubstate:         m.ShippingSubstate.Enum,
 		ShippingStatus:           m.ShippingStatus.Wrap(),
 		Status:                   m.Status.Wrap(),
 		CodAmount:                cmapi.PbPtrInt(m.OriginalCODAmount),

@@ -2,7 +2,6 @@ package v2
 
 import (
 	"strconv"
-	"strings"
 	"time"
 
 	"o.o/api/top/types/etc/status5"
@@ -10,6 +9,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/integration/shipping"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/clientv2"
+	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
 
@@ -30,7 +30,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 		ExternalShippingData:      data,
 		ProviderShippingFeeLines:  msg.Fee.ToOrderFee().ToFeeLines(),
 		ShippingState:             state.ToModel(),
-		ShippingSubstate:          state.ToSubstateModel(),
+		ShippingSubstate:          state.ToSubstateModel().Wrap(),
 		ShippingStatus:            state.ToStatus5(),
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
 		ShippingCode:              ffm.ShippingCode,
@@ -51,13 +51,9 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 	}
 
 	// update note
-	note := ffm.ExternalShippingNote
 	if msg.Reason.String() != "" {
-		reason, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")
-		if !strings.Contains(note, reason) {
-			note = shipping.AppendString(note, reason)
-		}
-		update.ExternalShippingNote = note
+		note, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")
+		update.ExternalShippingNote = dot.String(note)
 	}
 	return update, nil
 }
@@ -74,7 +70,7 @@ func CalcRefreshFulfillmentInfo(ffm *shipmodel.Fulfillment, orderGHN *ghnclient.
 		ExternalShippingState:     orderGHN.Status.String(),
 		ExternalShippingStatus:    state.ToStatus5(),
 		ShippingState:             state.ToModel(),
-		ShippingSubstate:          state.ToSubstateModel(),
+		ShippingSubstate:          state.ToSubstateModel().Wrap(),
 		ShippingStatus:            state.ToStatus5(),
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
 		ShippingCode:              ffm.ShippingCode,

@@ -166,7 +166,7 @@ func (h AggregateHandler) HandleUpdateFulfillmentCODAmount(ctx context.Context, 
 type UpdateFulfillmentExternalShippingInfoCommand struct {
 	FulfillmentID             dot.ID
 	ShippingState             shipping.State
-	ShippingSubstate          substate.Substate
+	ShippingSubstate          substate.NullSubstate
 	ShippingStatus            status5.Status
 	ExternalShippingData      json.RawMessage
 	ExternalShippingState     string
