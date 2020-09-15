@@ -24,6 +24,9 @@ import (
 	"o.o/backend/com/eventhandler/handler"
 	"o.o/backend/com/eventhandler/notifier"
 	comfabo "o.o/backend/com/fabo"
+	"o.o/backend/com/fabo/main/fbmessaging"
+	"o.o/backend/com/fabo/main/fbpage"
+	"o.o/backend/com/fabo/main/fbuser"
 	"o.o/backend/com/main/address"
 	"o.o/backend/com/main/catalog"
 	"o.o/backend/com/main/connectioning"
@@ -137,6 +140,9 @@ func Build(
 		// fabo
 		handler.WireSet,
 		fabopublisher.WireSet,
+		fbmessaging.WireSet,
+		fbpage.WireSet,
+		fbuser.WireSet,
 		fabo.WireSet,
 		comfabo.WireSet,
 

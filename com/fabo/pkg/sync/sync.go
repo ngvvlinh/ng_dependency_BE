@@ -19,6 +19,7 @@ import (
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	faboRedis "o.o/backend/com/fabo/pkg/redis"
+	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
@@ -118,12 +119,17 @@ type Synchronizer struct {
 	timeToCrawl int
 }
 
+type Config struct {
+	TimeLimit   int `yaml:"time_limit"`    // days
+	TimeToCrawl int `yaml:"time_to_crawl"` // mins
+}
+
 func New(
-	db *cmsql.Database,
+	db com.MainDB,
 	fbClient *fbclient.FbClient,
 	fbMessagingAggr fbmessaging.CommandBus, fbMessagingQuery fbmessaging.QueryBus,
 	fbUseringAggr fbusering.CommandBus, fbUseringQuery fbusering.QueryBus,
-	fbRedis *faboRedis.FaboRedis, timeLimit, timeToCrawl int,
+	fbRedis *faboRedis.FaboRedis, cfg Config,
 ) *Synchronizer {
 	sched := scheduler.New(defaultNumWorkers)
 	s := &Synchronizer{
@@ -137,8 +143,8 @@ func New(
 		fbUseringAggr:               fbUseringAggr,
 		fbUseringQuery:              fbUseringQuery,
 		rd:                          fbRedis,
-		timeLimit:                   timeLimit,
-		timeToCrawl:                 timeToCrawl,
+		timeLimit:                   cfg.TimeLimit,
+		timeToCrawl:                 cfg.TimeToCrawl,
 	}
 	return s
 }

@@ -2,6 +2,7 @@ package config
 
 import (
 	"o.o/backend/com/fabo/pkg/fbclient"
+	"o.o/backend/com/fabo/pkg/sync"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/common/l"
@@ -10,20 +11,20 @@ import (
 var ll = l.New()
 
 type Config struct {
-	Postgres    cc.Postgres        `yaml:"postgres"`
+	Databases   cc.Databases       `yaml:",inline"`
 	HTTP        cc.HTTP            `yaml:"http"`
 	TelegramBot cc.TelegramBot     `yaml:"telegram_bot"`
 	Redis       cc.Redis           `yaml:"redis"`
 	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
-	TimeLimit   int                `yaml:"time_limit"`    // days
-	TimeToCrawl int                `yaml:"time_to_crawl"` // mins
-
-	Env string `yaml:"env"`
+	SyncConfig  sync.Config        `yaml:",inline"`
+	Env         string             `yaml:"env"`
 }
 
 func Default() Config {
 	cfg := Config{
-		Postgres: cc.DefaultPostgres(),
+		Databases: map[string]*cc.Postgres{
+			"postgres": cc.PtrDefaultPostgres(),
+		},
 		HTTP: cc.HTTP{
 			Host: "",
 			Port: 8081,
@@ -34,16 +35,18 @@ func Default() Config {
 				"default": 0,
 			},
 		},
-		Env:         cmenv.EnvDev.String(),
-		TimeLimit:   3,
-		TimeToCrawl: 60,
+		Env: cmenv.EnvDev.String(),
+		SyncConfig: sync.Config{
+			TimeLimit:   3,
+			TimeToCrawl: 60,
+		},
 	}
 	return cfg
 }
 
 func Load() (cfg Config, err error) {
 	err = cc.LoadWithDefault(&cfg, Default())
-	cc.PostgresMustLoadEnv(&cfg.Postgres)
+	cc.PostgresMustLoadEnv(cfg.Databases["postgres"])
 	cfg.TelegramBot.MustLoadEnv()
 	cfg.FacebookApp.MustLoadEnv()
 	return cfg, err
