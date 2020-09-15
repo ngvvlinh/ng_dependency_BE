@@ -6,6 +6,7 @@ import (
 
 	"o.o/backend/cmd/fabo-event-handler/build"
 	"o.o/backend/cmd/fabo-event-handler/config"
+	notihandler "o.o/backend/com/eventhandler/notifier/handler"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
@@ -22,6 +23,8 @@ func main() {
 	cfg, err := config.Load()
 	ll.Must(err, "can not load config")
 	cmenv.SetEnvironment("event-handler", cfg.Env)
+	cm.SetMainSiteBaseURL(cfg.URL.MainSite)
+
 	ll.Info("service starting", l.String("commit", cm.CommitMessage()))
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
@@ -38,6 +41,7 @@ func main() {
 
 	ll.Must(output.WhSender.Load(), "can not load webhook")
 	output.WhSender.Start(sdCtx)
+	notihandler.Init(output.Notifier)
 
 	// start servers
 	cancelHTTP := lifecycle.StartHTTP(ctxCancel, output.Servers...)

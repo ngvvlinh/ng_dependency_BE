@@ -38,7 +38,7 @@ func HandleNotificationEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Co
 		return mq.CodeIgnore, nil
 	}
 	if err := SendNotification(ctx, &noti); err != nil {
-		return mq.CodeRetry, nil
+		return mq.CodeRetry, err
 	}
 
 	return mq.CodeOK, nil

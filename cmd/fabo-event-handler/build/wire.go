@@ -26,6 +26,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		wire.FieldsOf(&cfg,
 			"Redis",
 			"Databases",
+			"OneSignal",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
@@ -41,11 +42,14 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 
 		com.BuildDatabaseWebhook,
 		com.BuildDatabaseMain,
+		com.BuildDatabaseNotifier,
 
 		BuildPgEventService,
 		BuildIntHandler,
 		BuildWebhookHandler,
 		BuildWaiters,
+		BuildOneSignal,
+		BuildHandlers,
 		BuildServers,
 		BuildMainServer,
 	))

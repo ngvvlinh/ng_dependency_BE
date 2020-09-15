@@ -11,16 +11,21 @@ import (
 	"o.o/api/fabo/fbusering"
 	"o.o/api/main/identity"
 	"o.o/backend/cmd/fabo-event-handler/config"
+	etophandler "o.o/backend/com/eventhandler/etop/handler"
 	fabohandler "o.o/backend/com/eventhandler/fabo/handler"
 	"o.o/backend/com/eventhandler/handler"
 	handlerapi "o.o/backend/com/eventhandler/handler/api"
 	"o.o/backend/com/eventhandler/handler/intctl"
+	"o.o/backend/com/eventhandler/notifier"
+	notihandler "o.o/backend/com/eventhandler/notifier/handler"
 	"o.o/backend/com/eventhandler/pgevent"
 	"o.o/backend/com/eventhandler/webhook/sender"
 	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
+	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/lifecycle"
 	"o.o/backend/pkg/common/metrics"
@@ -35,11 +40,15 @@ import (
 	"o.o/common/l"
 )
 
+var ll = l.New()
+
 type Output struct {
 	Servers   []lifecycle.HTTPServer
 	Waiters   []lifecycle.Waiter
 	PgService *pgevent.Service
 	WhSender  *sender.WebhookSender
+	Notifier  *notifier.Notifier
+	Handlers  []*handler.Handler
 	Health    *health.Service
 }
 
@@ -148,4 +157,36 @@ func BuildWaiters(
 ) (waiters []lifecycle.Waiter) {
 	waiters = append(waiters, intctlHandler, h)
 	return waiters
+}
+
+func BuildOneSignal(cfg cc.OnesignalConfig) (*notifier.Notifier, error) {
+	if cfg.ApiKey != "" {
+		return notifier.NewOneSignalNotifier(cfg)
+	}
+
+	if cmenv.IsDev() {
+		ll.Warn("DEVELOPMENT. Skip connect to Onesignal")
+	} else {
+		ll.Fatal("Onesignal: No apikey")
+	}
+	return nil, nil
+}
+
+func BuildHandlers(
+	ctx context.Context,
+	cfg config.Config,
+	db com.MainDB,
+	notifierDB com.NotifierDB,
+) ([]*handler.Handler, error) {
+	kafkaCfg := sarama.NewConfig()
+	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
+	consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, etophandler.ConsumerGroup, kafkaCfg)
+	if err != nil {
+		return nil, err
+	}
+
+	hMain, hNotifier := notihandler.New(db, notifierDB, consumer, cfg.Kafka)
+	hMain.StartConsuming(ctx, fabohandler.GetTopics(notihandler.TopicsAndHandlersFabo()), notihandler.TopicsAndHandlersFabo())
+	hNotifier.StartConsuming(ctx, notihandler.GetTopics(notihandler.TopicsAndHandlerNotifier()), notihandler.TopicsAndHandlerNotifier())
+	return []*handler.Handler{hMain, hNotifier}, nil
 }

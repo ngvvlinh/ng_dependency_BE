@@ -49,11 +49,9 @@ etop)
     build ./cmd/etop-event-handler    $BUILD_EVENT_HANDLER
     build ./cmd/etop-uploader         $BUILD_UPLOADER
     build ./cmd/pgevent-forwarder     $BUILD_PGEVENT_FORWARDER
-    build ./cmd/etop-notifier         $BUILD_NOTIFIER
     build ./cmd/etop-etl              $BUILD_ETL
-    build ./cmd/fabo-notifier         $BUILD_FABO_NOTIFIER
     build ./cmd/fabo-sync-service     $BUILD_FABO_SYNC_SERVICE
-    build ./cmd/fabo-event-handler     $BUILD_FABO_EVENT_HANDLER
+    build ./cmd/fabo-event-handler    $BUILD_FABO_EVENT_HANDLER
 
     mkdir -p "$binDir"/com/web/ecom
        cp -R     com/web/ecom/assets    "$binDir"/com/web/ecom/
@@ -69,7 +67,6 @@ fabo)
     build ./cmd/etop-uploader           $BUILD_UPLOADER
     build ./cmd/fabo-pgevent-forwarder  $BUILD_PGEVENT_FORWARDER
     build ./cmd/fabo-sync-service       $BUILD_FABO_SYNC_SERVICE
-    build ./cmd/fabo-notifier            $BUILD_FABO_NOTIFIER
     ;;
 *)
     echo unexpected

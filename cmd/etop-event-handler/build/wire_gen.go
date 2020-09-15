@@ -81,11 +81,26 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	if err != nil {
 		return Output{}, nil, err
 	}
+	onesignalConfig := cfg.Onesignal
+	notifier, err := BuildOneSignal(onesignalConfig)
+	if err != nil {
+		return Output{}, nil, err
+	}
+	notifierDB, err := com.BuildDatabaseNotifier(databases)
+	if err != nil {
+		return Output{}, nil, err
+	}
+	v3, err := BuildHandlers(ctx, cfg, mainDB, notifierDB)
+	if err != nil {
+		return Output{}, nil, err
+	}
 	output := Output{
 		Servers:   v,
 		Waiters:   v2,
 		PgService: pgeventService,
 		WhSender:  webhookSender,
+		Notifier:  notifier,
+		Handlers:  v3,
 		Health:    service,
 	}
 	return output, func() {
