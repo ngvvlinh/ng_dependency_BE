@@ -203,6 +203,7 @@ retry:
 
 	default:
 		ll.Error("Unable to handle message (stop)", l.Error(err))
+		llHigh.SendMessagef("unable to handle message (stop): %v", err)
 		return err
 	}
 }

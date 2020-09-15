@@ -11,6 +11,7 @@ import (
 )
 
 var ll = l.New()
+var llHigh = ll.WithChannel("high")
 
 // Producer ...
 type Producer interface {
