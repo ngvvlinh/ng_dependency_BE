@@ -32,7 +32,7 @@ func NewNotificationStore(
 	return &NotificationStore{
 		db: db,
 
-		// AccountUserStore: accountUserStore,
+		AccountUserStore: accountUserStore,
 	}
 }
 
