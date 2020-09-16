@@ -284,17 +284,17 @@ func ValidateAndUpdateFulfillmentCOD(ctx context.Context, shippingAggr shippingc
 	if newCODAmount != ffm.TotalCODAmount {
 		switch ffm.ConnectionMethod {
 		case connection_type.ConnectionMethodDirect:
-			updateFulfillmentShippingFeesCmd := &shippingcore.UpdateFulfillmentShippingFeesCommand{
+			updateFulfillmentCODAmountCmd := &shippingcore.UpdateFulfillmentCODAmountCommand{
 				FulfillmentID:  ffm.ID,
 				TotalCODAmount: dot.Int(newCODAmount),
 			}
-			if err := shippingAggr.Dispatch(ctx, updateFulfillmentShippingFeesCmd); err != nil {
-				ll.SendMessage("–––\n👹 %v: đơn %v cập nhật thay đổi COD thất bại. 👹 \n Lỗi: %v \n––", args.CarrierName, ffm.ShippingCode, err.Error())
+			if err := shippingAggr.Dispatch(ctx, updateFulfillmentCODAmountCmd); err != nil {
+				ll.SendMessagef("–––\n👹 %v: đơn %v cập nhật thay đổi COD thất bại. 👹 \n Lỗi: %v \n––", args.CarrierName, ffm.ShippingCode, err.Error())
 				return
 			}
 		default:
 			str := "–––\n👹 %v: đơn %v có thay đổi COD. Không thể cập nhật, vui lòng kiểm tra lại. 👹 \n- COD hiện tại: %v \n- COD mới: %v\n–––"
-			ll.SendMessage(fmt.Sprintf(str, args.CarrierName, ffm.ShippingCode, ffm.TotalCODAmount, newCODAmount))
+			ll.SendMessagef(str, args.CarrierName, ffm.ShippingCode, ffm.TotalCODAmount, newCODAmount)
 		}
 	}
 	return
