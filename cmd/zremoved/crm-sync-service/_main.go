@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"o.o/backend/cmd/supporting/crm-sync-service/config"
+	"o.o/backend/cmd/zremoved/crm-sync-service/config"
 	vhtaggregate "o.o/backend/com/supporting/crm/vht/aggregate"
 	vhtquery "o.o/backend/com/supporting/crm/vht/query"
 	vtigeraggregate "o.o/backend/com/supporting/crm/vtiger/aggregate"

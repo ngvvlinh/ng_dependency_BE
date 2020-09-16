@@ -1,4 +1,4 @@
-package main
+package crm_sync_service
 
 import (
 	"context"

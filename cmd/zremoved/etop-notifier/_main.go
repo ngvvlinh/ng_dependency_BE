@@ -10,7 +10,8 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"o.o/backend/cmd/fabo-notifier/config"
+	"o.o/backend/cmd/zremoved/etop-notifier/config"
+	"o.o/backend/com/eventhandler/etop/handler"
 	"o.o/backend/com/eventhandler/notifier"
 	notihandler "o.o/backend/com/eventhandler/notifier/handler"
 	cm "o.o/backend/pkg/common"
@@ -44,7 +45,7 @@ func main() {
 	if cmenv.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
-	wl.Init(cmenv.Env(), wl.FaboServer)
+	wl.Init(cmenv.Env(), wl.EtopServer)
 
 	ctx, ctxCancel := context.WithCancel(context.Background())
 	go func() {
@@ -81,11 +82,11 @@ func main() {
 		if err != nil {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
-
 		hMain, hNotifier := notihandler.New(db, dbNotifier, consumer, cfg.Kafka)
-		hMain.StartConsuming(ctx, notihandler.GetTopics(notihandler.TopicsAndHandlersFabo()), notihandler.TopicsAndHandlersFabo())
+		hMain.StartConsuming(ctx, handler.GetTopics(notihandler.TopicsAndHandlersEtop()), notihandler.TopicsAndHandlersEtop())
 		hNotifier.StartConsuming(ctx, notihandler.GetTopics(notihandler.TopicsAndHandlerNotifier()), notihandler.TopicsAndHandlerNotifier())
 	}
+
 	{
 		if cfg.Onesignal.ApiKey != "" {
 			oneSignalNotifier, err := notifier.NewOneSignalNotifier(cfg.Onesignal)

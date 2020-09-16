@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"o.o/backend/cmd/shipping-sync-service/config"
+	"o.o/backend/cmd/zremoved/shipping-sync-service/config"
 	servicelocation "o.o/backend/com/main/location"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/health"

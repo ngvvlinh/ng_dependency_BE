@@ -1,4 +1,4 @@
-package main
+package shipping_sync_service
 
 import (
 	"context"
