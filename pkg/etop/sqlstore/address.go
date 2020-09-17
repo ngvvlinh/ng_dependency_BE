@@ -80,7 +80,7 @@ func (st *AddressStore) createAddress(ctx context.Context, x Qx, cmd *addressmod
 	// }
 
 	address.ID = cm.NewID()
-	if _, err := st.db.Table("address").Insert(address); err != nil {
+	if _, err := x.Table("address").Insert(address); err != nil {
 		return err
 	}
 	cmd.Result = address
