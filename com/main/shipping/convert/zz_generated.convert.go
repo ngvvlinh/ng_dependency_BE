@@ -21,7 +21,8 @@ import (
 
 /*
 Custom conversions:
-    Fulfillment     // in use
+    Convert_shipping_Fulfillment_To_shippingmodel_Fulfillment    // in use
+    Fulfillment                                                  // in use
 
 Ignored functions: (none)
 */
@@ -314,7 +315,7 @@ func Convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	if out == nil {
 		out = &shippingmodel.Fulfillment{}
 	}
-	convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg, out)
+	Convert_shipping_Fulfillment_To_shippingmodel_Fulfillment(arg, out)
 	return out
 }
 

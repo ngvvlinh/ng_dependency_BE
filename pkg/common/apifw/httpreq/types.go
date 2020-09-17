@@ -154,6 +154,7 @@ func (t Time) IsZero() bool {
 
 const (
 	timeRFC3339Custom = "2006-01-02T15:04:05-0700"
+	timeLayoutCustom  = "2006-01-02 15:04:05"
 )
 
 // UnmarshalJSON parses JSON time
@@ -172,6 +173,10 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 		if tt, err := time.Parse(timeRFC3339Custom, string(data[1:len(data)-1])); err == nil {
+			*t = Time(tt)
+			return nil
+		}
+		if tt, err := time.Parse(timeLayoutCustom, string(data[1:len(data)-1])); err == nil {
 			*t = Time(tt)
 			return nil
 		}

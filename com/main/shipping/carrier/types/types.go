@@ -142,3 +142,11 @@ type GenerateTokenResponse struct {
 	TokenType   string
 	ExpiresIn   int
 }
+
+type ShipmentSync interface {
+	Init(context.Context) error
+
+	Start(context.Context) error
+
+	Stop(context.Context) error
+}

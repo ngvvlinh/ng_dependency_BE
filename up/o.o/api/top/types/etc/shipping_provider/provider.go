@@ -36,6 +36,9 @@ const (
 
 	// +enum=ninjavan
 	NinjaVan ShippingProvider = 26
+
+	// +enum=dhl
+	DHL ShippingProvider = 27
 )
 
 func (s ShippingProvider) Label() string {

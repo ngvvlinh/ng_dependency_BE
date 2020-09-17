@@ -93,4 +93,7 @@ const (
 
 	// +enum=ninjavan
 	ConnectionProviderNinjaVan ConnectionProvider = 6
+
+	// +enum=dhl
+	ConnectionProviderDHL ConnectionProvider = 7
 )

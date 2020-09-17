@@ -13,6 +13,8 @@ import (
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
 	cm "o.o/backend/pkg/common"
+	dhlclient "o.o/backend/pkg/integration/shipping/dhl/client"
+	dhldriver "o.o/backend/pkg/integration/shipping/dhl/driver"
 	directclient "o.o/backend/pkg/integration/shipping/direct/client"
 	directdriver "o.o/backend/pkg/integration/shipping/direct/driver"
 	"o.o/backend/pkg/integration/shipping/ghn"
@@ -158,6 +160,18 @@ func (d CarrierDriver) GetShipmentDriver(
 		}, locationQS, identityQS, shippingcodeQS)
 		return driver, nil
 
+	case connection_type.ConnectionProviderDHL:
+		shopIDConnectionStr := shopConnection.ExternalData.ShopID
+		if shopIDConnectionStr == "" {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection ExternalData: ShopID is invalid")
+		}
+		cfg := dhlclient.DHLAccountCfg{
+			AccountID: shopIDConnectionStr,
+			Token:     shopConnection.Token,
+		}
+		driver := dhldriver.New(env, cfg, locationQS)
+		return driver, nil
+
 	case connection_type.ConnectionProviderPartner:
 		cfg := directclient.PartnerAccountCfg{
 			Token:      shopConnection.Token,
@@ -234,6 +248,17 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(
 			SecretKey: secretKey,
 		}
 		driver := ninjavandriver.New(env, cfg, locationQS, identityQS, shippingcodeQS)
+		return driver, nil
+
+	case connection_type.ConnectionProviderDHL:
+		if userID == "" || secretKey == "" {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể khởi tạo driver cho DHL: UserID or SecretKey can not be empty")
+		}
+		cfg := dhlclient.DHLAccountCfg{
+			ClientID:     userID,
+			ClientSecret: secretKey,
+		}
+		driver := dhldriver.New(env, cfg, locationQS)
 		return driver, nil
 	case connection_type.ConnectionProviderPartner:
 		cfg := directclient.PartnerAccountCfg{
@@ -321,6 +346,20 @@ var shipmentServicesByCarrier = services.MapShipmentServices{
 		{
 			ServiceID: string(ninjavanclient.ServiceLevelStandard),
 			Name:      "Chuẩn",
+		},
+	},
+	sptypes.DHL: {
+		{
+			ServiceID: string(dhlclient.OrderServiceCodeSPD),
+			Name:      "Giao tối ưu",
+		},
+		{
+			ServiceID: string(dhlclient.OrderServiceCodePDE),
+			Name:      "Giao nhanh",
+		},
+		{
+			ServiceID: string(dhlclient.OrderServiceCodePDO),
+			Name:      "Giao tiêu chuẩn",
 		},
 	},
 }

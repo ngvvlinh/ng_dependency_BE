@@ -483,7 +483,7 @@ func (m *Fulfillment) Migration(db *cmsql.Database) {
 			ColumnType:       "shipping_provider.ShippingProvider",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "all", "manual", "ghn", "ghtk", "vtpost", "etop", "partner", "ninjavan"},
+			ColumnEnumValues: []string{"unknown", "all", "manual", "ghn", "ghtk", "vtpost", "etop", "partner", "ninjavan", "dhl"},
 		},
 		"provider_service_id": {
 			ColumnName:       "provider_service_id",

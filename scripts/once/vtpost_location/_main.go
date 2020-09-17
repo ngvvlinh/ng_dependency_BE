@@ -135,6 +135,6 @@ func checkNull(ss ...string) bool {
 
 var ProvinceRegionName = map[location.Region]string{
 	1: "North",
-	2: "Middl",
+	2: "Middle",
 	3: "South",
 }

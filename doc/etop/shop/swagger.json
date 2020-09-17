@@ -7135,7 +7135,8 @@
         "vtpost",
         "etop",
         "partner",
-        "ninjavan"
+        "ninjavan",
+        "dhl"
       ]
     },
     "cdConnectionMethod": {
@@ -7156,7 +7157,8 @@
         "vtpost",
         "partner",
         "ahamove",
-        "ninjavan"
+        "ninjavan",
+        "dhl"
       ]
     },
     "cdConnectionSubtype": {

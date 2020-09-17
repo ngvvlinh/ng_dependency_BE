@@ -34,3 +34,20 @@ func Fulfillment(in *shippingmodel.Fulfillment, out *shipping.Fulfillment) {
 	}
 	return
 }
+
+func Convert_shipping_Fulfillment_To_shippingmodel_Fulfillment(in *shipping.Fulfillment, out *shippingmodel.Fulfillment) {
+	if in == nil {
+		return
+	}
+	convert_shipping_Fulfillment_shippingmodel_Fulfillment(in, out)
+	out.Lines = orderconvert.OrderLinesToModel(in.Lines)
+	out.GrossWeight = in.GrossWeight
+	out.ChargeableWeight = in.ChargeableWeight
+	out.Length = in.Length
+	out.Width = in.Width
+	out.Height = in.Height
+	out.BasketValue = in.BasketValue
+	out.TotalCODAmount = in.CODAmount
+	out.IncludeInsurance = in.IncludeInsurance
+	out.InsuranceValue = in.InsuranceValue
+}

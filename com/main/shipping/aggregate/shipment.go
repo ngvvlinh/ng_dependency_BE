@@ -765,8 +765,10 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 			}
 		}
 
-		if err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillment(update); err != nil {
-			return err
+		if update.ShippingFeeShopLines != nil || update.ProviderShippingFeeLines != nil {
+			if err := a.ffmStore(ctx).ID(ffm.ID).UpdateFulfillment(update); err != nil {
+				return err
+			}
 		}
 		// keep origin error
 		return _err
