@@ -15,4 +15,8 @@ const Policy auth.Policy = authcommon.CommonPolicy + `
 	p, facebook/fanpage:create, owner
 	p, facebook/fanpage:delete, owner
 	p, facebook/fanpage:view, owner, salesman
+	p, facebook/shoptag:create, owner, salesman
+	p, facebook/shoptag:update, owner, salesman
+	p, facebook/shoptag:view, owner, salesman
+	p, facebook/shoptag:delete, owner, salesman
 `

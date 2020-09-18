@@ -22,6 +22,7 @@ var scheme = conversion.Build(convert.RegisterConversions)
 
 type FbUserAggregate struct {
 	db                              *cmsql.Database
+	fbShopTag                       sqlstore.FbShopTagStoreFactory
 	fbUserStore                     sqlstore.FbExternalUserStoreFactory
 	fbUserInternalStore             sqlstore.FbExternalUserInternalFactory
 	fbPageAggr                      fbpaging.CommandBus
@@ -34,6 +35,7 @@ func NewFbUserAggregate(
 ) *FbUserAggregate {
 	return &FbUserAggregate{
 		db:                              db,
+		fbShopTag:                       sqlstore.NewFbShopTagStore(db),
 		fbUserStore:                     sqlstore.NewFbExternalUserStore(db),
 		fbUserInternalStore:             sqlstore.NewFbExternalUserInternalStore(db),
 		fbExternalUserShopCustomerStore: sqlstore.NewFbExternalUserShopCustomerStore(db),
@@ -174,4 +176,32 @@ func (a *FbUserAggregate) DeleteFbExternalUserShopCustomer(ctx context.Context, 
 		query = query.FbExternalUserID(args.ExternalID.String)
 	}
 	return query.DeleteFbExternalUserShopCustomer()
+}
+
+func (a *FbUserAggregate) CreateShopTag(ctx context.Context, args *fbusering.CreateShopTagArgs) (*fbusering.FbShopTag, error) {
+	tag := new(fbusering.FbShopTag)
+	if err := scheme.Convert(args, tag); err != nil {
+		return nil, err
+	}
+	if err := a.fbShopTag(ctx).CreateShopTag(tag); err != nil {
+		return nil, err
+	}
+	return tag, nil
+}
+
+func (a *FbUserAggregate) UpdateShopTag(ctx context.Context, args *fbusering.UpdateShopTagArgs) (*fbusering.FbShopTag, error) {
+	tag := &fbusering.FbShopTag{}
+	tag = convert.Apply_fbusering_UpdateShopTagArgs_fbusering_FbShopTag(args, tag)
+	if err := a.fbShopTag(ctx).ByID(args.ID).UpdateShopTag(tag); err != nil {
+		return nil, err
+	}
+	return tag, nil
+}
+
+func (a *FbUserAggregate) DeleteShopTag(ctx context.Context, args *fbusering.DeleteShopTagArgs) (int, error) {
+	err := a.fbShopTag(ctx).ByID(args.ID).ByShopID(args.ShopID).DeleteShopTag()
+	if err != nil {
+		return 0, err
+	}
+	return 1, nil
 }

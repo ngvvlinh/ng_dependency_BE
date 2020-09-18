@@ -566,3 +566,84 @@ type CheckPagePermissionsResponse struct {
 func (c *CheckPagePermissionsResponse) String() string {
 	return jsonx.MustMarshalToString(c)
 }
+
+type CreateFbShopTagRequest struct {
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
+func (c *CreateFbShopTagRequest) Validate() error {
+	if c.Name == "" {
+		return xerrors.Error(xerrors.InvalidArgument, "missing name", nil)
+	}
+	if c.Color == "" {
+		return xerrors.Error(xerrors.InvalidArgument, "missing color", nil)
+	}
+
+	return nil
+}
+
+func (c *CreateFbShopTagRequest) String() string {
+	return jsonx.MustMarshalToString(c)
+}
+
+type FbShopTagResponse struct {
+	ID     dot.ID `json:"id"`
+	Name   string `json:"name"`
+	Color  string `json:"color"`
+	ShopID dot.ID `json:"shop_id"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (c *FbShopTagResponse) String() string {
+	return jsonx.MustMarshalToString(c)
+}
+
+type ListFbShopTagResponse struct {
+	ShopTags []*FbShopTagResponse `json:"result"`
+}
+
+func (c *ListFbShopTagResponse) String() string {
+	return jsonx.MustMarshalToString(c)
+}
+
+type CreateShopTagResponse struct {
+	ID     dot.ID `json:"id"`
+	Name   string `json:"name"`
+	Color  string `json:"color"`
+	ShopID dot.ID `json:"shop_id"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (c *CreateShopTagResponse) String() string {
+	return jsonx.MustMarshalToString(c)
+}
+
+type DeleteFbShopTagRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (c *DeleteFbShopTagRequest) String() string {
+	return jsonx.MustMarshalToString(c)
+}
+
+type UpdateFbShopTagRequest struct {
+	ID    dot.ID `json:"id"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
+func (c *UpdateFbShopTagRequest) String() string {
+	return jsonx.MustMarshalToString(c)
+}
+
+type ListFbShopTagRequest struct {
+}
+
+func (c *ListFbShopTagRequest) String() string {
+	return jsonx.MustMarshalToString(c)
+}

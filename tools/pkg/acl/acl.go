@@ -241,6 +241,11 @@ const (
 	FbFanpageDelete permission.ActionType = "facebook/fanpage:delete"
 	FbFanpageView   permission.ActionType = "facebook/fanpage:view"
 
+	FbShopTagCreate permission.ActionType = "facebook/shoptag:create"
+	FbShopTagUpdate permission.ActionType = "facebook/shoptag:update"
+	FbShopTagView   permission.ActionType = "facebook/shoptag:view"
+	FbShopTagDelete permission.ActionType = "facebook/shoptag:delete"
+
 	// Admin Credit
 	AdminCreditCreate  permission.ActionType = "admin/credit:create"
 	AdminCreditView    permission.ActionType = "admin/credit:view"
@@ -1229,6 +1234,11 @@ var _acl = map[string]*permission.Decl{
 	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageCreate)},
 	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentCreate)},
 	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true},
+
+	"fabo.Page/CreateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagCreate)},
+	"fabo.Page/UpdateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagUpdate)},
+	"fabo.Page/DeleteTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagDelete)},
+	"fabo.Page/ListTag":   {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagView)},
 
 	// -- Fabo Customer --
 	"fabo.Customer/CreateFbUserCustomer":     {Type: Shop, Actions: actions(FbUserCreate)},

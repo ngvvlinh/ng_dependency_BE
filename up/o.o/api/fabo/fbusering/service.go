@@ -15,20 +15,23 @@ import (
 type Aggregate interface {
 	CreateFbExternalUser(context.Context, *CreateFbExternalUserArgs) (*FbExternalUser, error)
 	CreateFbExternalUsers(context.Context, *CreateFbExternalUsersArgs) ([]*FbExternalUser, error)
-
 	CreateFbExternalUserInternal(context.Context, *CreateFbExternalUserInternalArgs) (*FbExternalUserInternal, error)
-
 	CreateFbExternalUserCombined(context.Context, *CreateFbExternalUserCombinedArgs) (*FbExternalUserCombined, error)
-
 	CreateFbExternalUserShopCustomer(ctx context.Context, shopID dot.ID, externalID string, customerID dot.ID) (*FbExternalUserWithCustomer, error)
-
 	DeleteFbExternalUserShopCustomer(context.Context, *DeleteFbExternalUserShopCustomerArgs) error
+
+	/* -- ShopTag -- */
+	CreateShopTag(ctx context.Context, args *CreateShopTagArgs) (*FbShopTag, error)
+	UpdateShopTag(ctx context.Context, args *UpdateShopTagArgs) (*FbShopTag, error)
+	DeleteShopTag(ctx context.Context, args *DeleteShopTagArgs) (int, error)
 }
 
 type QueryService interface {
+	GetShopTag(ctx context.Context, args *GetShopTagArgs) (*FbShopTag, error)
+	ListShopTag(ctx context.Context, args *ListShopTagArgs) ([]*FbShopTag, error)
+
 	GetFbExternalUserByExternalID(_ context.Context, externalID string) (*FbExternalUser, error)
 	ListFbExternalUsersByExternalIDs(_ context.Context, externalIDs filter.Strings, externalPageID dot.NullString) ([]*FbExternalUser, error)
-
 	GetFbExternalUserInternalByExternalID(_ context.Context, externalID string) (*FbExternalUserInternal, error)
 
 	// -- FbExternalUser with ShopCustomer --
@@ -94,4 +97,32 @@ type FbExternalUserWithCustomer struct {
 type ListFbExternalUsersArgs struct {
 	CustomerID dot.NullID
 	ShopID     dot.ID
+}
+
+// +convert:create=FbShopTag
+type CreateShopTagArgs struct {
+	Name   string
+	Color  string
+	ShopID dot.ID
+}
+
+// +convert:update=FbShopTag
+type UpdateShopTagArgs struct {
+	Name  string
+	Color string
+	ID    dot.ID
+}
+
+type DeleteShopTagArgs struct {
+	ID     dot.ID
+	ShopID dot.ID
+}
+
+type GetShopTagArgs struct {
+	ID     dot.ID
+	ShopID dot.ID
+}
+
+type ListShopTagArgs struct {
+	ShopID dot.ID
 }

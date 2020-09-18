@@ -20,7 +20,9 @@ import (
 var _ fbusering.QueryService = &FbUserQuery{}
 
 type FbUserQuery struct {
-	db                              *cmsql.Database
+	db *cmsql.Database
+
+	fbShopTag                       sqlstore.FbShopTagStoreFactory
 	fbUserStore                     sqlstore.FbExternalUserStoreFactory
 	fbUserInternalStore             sqlstore.FbExternalUserInternalFactory
 	fbExternalUserShopCustomerStore sqlstore.FbExternalUserShopCustomerStoreFactory
@@ -32,6 +34,7 @@ func NewFbUserQuery(database com.MainDB, customerQ customering.QueryBus) *FbUser
 	_defaultAvatarLink := fmt.Sprintf("%s/%s", cm.MainSiteBaseURL(), "dl/fabo/default_avatar.png")
 	return &FbUserQuery{
 		db:                              database,
+		fbShopTag:                       sqlstore.NewFbShopTagStore(database),
 		fbUserStore:                     sqlstore.NewFbExternalUserStore(database),
 		fbExternalUserShopCustomerStore: sqlstore.NewFbExternalUserShopCustomerStore(database),
 		customerQuery:                   customerQ,
@@ -265,6 +268,14 @@ func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, ar
 		Customers: listCustomerFbUser,
 		Paging:    query.Result.Paging,
 	}, nil
+}
+
+func (q *FbUserQuery) GetShopTag(ctx context.Context, args *fbusering.GetShopTagArgs) (*fbusering.FbShopTag, error) {
+	return q.fbShopTag(ctx).ByID(args.ID).ByShopID(args.ShopID).GetShopTag()
+}
+
+func (q *FbUserQuery) ListShopTag(ctx context.Context, args *fbusering.ListShopTagArgs) ([]*fbusering.FbShopTag, error) {
+	return q.fbShopTag(ctx).ByShopID(args.ShopID).ListShopTag()
 }
 
 func replaceDefaultAvatars(fbExternalUsers []*fbusering.FbExternalUser, linkAvatar string) {

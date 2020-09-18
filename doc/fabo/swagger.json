@@ -393,6 +393,60 @@
         }
       }
     },
+    "/api/fabo.Page/CreateTag": {
+      "post": {
+        "tags": [
+          "Page"
+        ],
+        "summary": "CreateTag",
+        "operationId": "fabo.Page-CreateTag",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvCreateFbShopTagRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvFbShopTagResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.Page/DeleteTag": {
+      "post": {
+        "tags": [
+          "Page"
+        ],
+        "summary": "DeleteTag",
+        "operationId": "fabo.Page-DeleteTag",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvDeleteFbShopTagRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.Page/ListPages": {
       "post": {
         "tags": [
@@ -420,6 +474,33 @@
         }
       }
     },
+    "/api/fabo.Page/ListTag": {
+      "post": {
+        "tags": [
+          "Page"
+        ],
+        "summary": "ListTag",
+        "operationId": "fabo.Page-ListTag",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvListFbShopTagRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvListFbShopTagResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.Page/RemovePages": {
       "post": {
         "tags": [
@@ -442,6 +523,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.Page/UpdateTag": {
+      "post": {
+        "tags": [
+          "Page"
+        ],
+        "summary": "UpdateTag",
+        "operationId": "fabo.Page-UpdateTag",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvUpdateFbShopTagRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvFbShopTagResponse"
             }
           }
         }
@@ -538,6 +646,17 @@
         },
         "fb_user": {
           "$ref": "#/definitions/cvFbUserCombined"
+        }
+      }
+    },
+    "cvCreateFbShopTagRequest": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -672,6 +791,15 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "cvDeleteFbShopTagRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1221,6 +1349,33 @@
         }
       }
     },
+    "cvFbShopTagResponse": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "cvFbUser": {
       "type": "object",
       "properties": {
@@ -1405,6 +1560,20 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "cvListFbShopTagRequest": {
+      "type": "object"
+    },
+    "cvListFbShopTagResponse": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbShopTagResponse"
+          }
         }
       }
     },
@@ -1610,6 +1779,21 @@
           "type": "string"
         },
         "url": {
+          "type": "string"
+        }
+      }
+    },
+    "cvUpdateFbShopTagRequest": {
+      "type": "object",
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
           "type": "string"
         }
       }

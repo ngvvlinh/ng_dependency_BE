@@ -316,7 +316,7 @@ func getMissingPermissions(pagePerms []string) []string {
 		mapPagePerms[perm] = struct{}{}
 	}
 
-	missingRoles := []string{}
+	var missingRoles []string
 	for perm, _ := range appScopes {
 		if _, ok := mapPagePerms[perm]; !ok {
 			missingRoles = append(missingRoles, perm)

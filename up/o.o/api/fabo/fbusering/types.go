@@ -52,3 +52,13 @@ type ShopCustomerWithFbExternalUser struct {
 	*customering.ShopCustomer
 	FbUsers []*FbExternalUser
 }
+
+type FbShopTag struct {
+	ID     dot.ID
+	Name   string
+	Color  string
+	ShopID dot.ID
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}

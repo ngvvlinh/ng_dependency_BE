@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type FbExternalUsers []*FbExternalUser
 
 const __sqlFbExternalUser_Table = "fb_external_user"
-const __sqlFbExternalUser_ListCols = "\"external_id\",\"external_info\",\"status\",\"external_page_id\",\"created_at\",\"updated_at\""
-const __sqlFbExternalUser_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_info\" = EXCLUDED.\"external_info\",\"status\" = EXCLUDED.\"status\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbExternalUser_ListCols = "\"external_id\",\"external_info\",\"status\",\"external_page_id\",\"tags\",\"created_at\",\"updated_at\""
+const __sqlFbExternalUser_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_info\" = EXCLUDED.\"external_info\",\"status\" = EXCLUDED.\"status\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"tags\" = EXCLUDED.\"tags\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlFbExternalUser_Insert = "INSERT INTO \"fb_external_user\" (" + __sqlFbExternalUser_ListCols + ") VALUES"
 const __sqlFbExternalUser_Select = "SELECT " + __sqlFbExternalUser_ListCols + " FROM \"fb_external_user\""
 const __sqlFbExternalUser_Select_history = "SELECT " + __sqlFbExternalUser_ListCols + " FROM history.\"fb_external_user\""
@@ -86,6 +86,13 @@ func (m *FbExternalUser) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"tags": {
+			ColumnName:       "tags",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"created_at": {
 			ColumnName:       "created_at",
 			ColumnType:       "time.Time",
@@ -117,6 +124,7 @@ func (m *FbExternalUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.ExternalInfo},
 		m.Status,
 		core.String(m.ExternalPageID),
+		core.Array{m.Tags, opts},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -128,6 +136,7 @@ func (m *FbExternalUser) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.ExternalInfo},
 		&m.Status,
 		(*core.String)(&m.ExternalPageID),
+		core.Array{&m.Tags, opts},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -167,7 +176,7 @@ func (_ *FbExternalUsers) SQLSelect(w SQLWriter) error {
 func (m *FbExternalUser) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(6)
+	w.WriteMarkers(7)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -177,7 +186,7 @@ func (ms FbExternalUsers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(6)
+		w.WriteMarkers(7)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -240,6 +249,14 @@ func (m *FbExternalUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ExternalPageID)
 	}
+	if m.Tags != nil {
+		flag = true
+		w.WriteName("tags")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.Tags, opts})
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -266,7 +283,7 @@ func (m *FbExternalUser) SQLUpdate(w SQLWriter) error {
 func (m *FbExternalUser) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(6)
+	w.WriteMarkers(7)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -296,33 +313,35 @@ func (m FbExternalUserHistory) Status() core.Interface { return core.Interface{m
 func (m FbExternalUserHistory) ExternalPageID() core.Interface {
 	return core.Interface{m["external_page_id"]}
 }
+func (m FbExternalUserHistory) Tags() core.Interface      { return core.Interface{m["tags"]} }
 func (m FbExternalUserHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m FbExternalUserHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *FbExternalUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 6)
-	args := make([]interface{}, 6)
-	for i := 0; i < 6; i++ {
+	data := make([]interface{}, 7)
+	args := make([]interface{}, 7)
+	for i := 0; i < 7; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbExternalUserHistory, 6)
+	res := make(FbExternalUserHistory, 7)
 	res["external_id"] = data[0]
 	res["external_info"] = data[1]
 	res["status"] = data[2]
 	res["external_page_id"] = data[3]
-	res["created_at"] = data[4]
-	res["updated_at"] = data[5]
+	res["tags"] = data[4]
+	res["created_at"] = data[5]
+	res["updated_at"] = data[6]
 	*m = res
 	return nil
 }
 
 func (ms *FbExternalUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 6)
-	args := make([]interface{}, 6)
-	for i := 0; i < 6; i++ {
+	data := make([]interface{}, 7)
+	args := make([]interface{}, 7)
+	for i := 0; i < 7; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FbExternalUserHistories, 0, 128)
@@ -335,8 +354,9 @@ func (ms *FbExternalUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 		m["external_info"] = data[1]
 		m["status"] = data[2]
 		m["external_page_id"] = data[3]
-		m["created_at"] = data[4]
-		m["updated_at"] = data[5]
+		m["tags"] = data[4]
+		m["created_at"] = data[5]
+		m["updated_at"] = data[6]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -955,6 +975,321 @@ func (ms *FbExternalUserShopCustomerHistories) SQLScan(opts core.Opts, rows *sql
 		m["fb_external_user_id"] = data[3]
 		m["customer_id"] = data[4]
 		m["status"] = data[5]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+type FbShopTags []*FbShopTag
+
+const __sqlFbShopTag_Table = "fb_shop_tag"
+const __sqlFbShopTag_ListCols = "\"id\",\"name\",\"color\",\"shop_id\",\"created_at\",\"updated_at\""
+const __sqlFbShopTag_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"name\" = EXCLUDED.\"name\",\"color\" = EXCLUDED.\"color\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbShopTag_Insert = "INSERT INTO \"fb_shop_tag\" (" + __sqlFbShopTag_ListCols + ") VALUES"
+const __sqlFbShopTag_Select = "SELECT " + __sqlFbShopTag_ListCols + " FROM \"fb_shop_tag\""
+const __sqlFbShopTag_Select_history = "SELECT " + __sqlFbShopTag_ListCols + " FROM history.\"fb_shop_tag\""
+const __sqlFbShopTag_UpdateAll = "UPDATE \"fb_shop_tag\" SET (" + __sqlFbShopTag_ListCols + ")"
+const __sqlFbShopTag_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT fb_shop_tag_pkey DO UPDATE SET"
+
+func (m *FbShopTag) SQLTableName() string  { return "fb_shop_tag" }
+func (m *FbShopTags) SQLTableName() string { return "fb_shop_tag" }
+func (m *FbShopTag) SQLListCols() string   { return __sqlFbShopTag_ListCols }
+
+func (m *FbShopTag) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlFbShopTag_ListCols + " FROM \"fb_shop_tag\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *FbShopTag) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "fb_shop_tag"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"name": {
+			ColumnName:       "name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"color": {
+			ColumnName:       "color",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"shop_id": {
+			ColumnName:       "shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "fb_shop_tag", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*FbShopTag)(nil))
+}
+
+func (m *FbShopTag) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		m.ID,
+		core.String(m.Name),
+		core.String(m.Color),
+		m.ShopID,
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *FbShopTag) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		&m.ID,
+		(*core.String)(&m.Name),
+		(*core.String)(&m.Color),
+		&m.ShopID,
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *FbShopTag) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *FbShopTags) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(FbShopTags, 0, 128)
+	for rows.Next() {
+		m := new(FbShopTag)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *FbShopTag) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbShopTag_Select)
+	return nil
+}
+
+func (_ *FbShopTags) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbShopTag_Select)
+	return nil
+}
+
+func (m *FbShopTag) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbShopTag_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(6)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms FbShopTags) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbShopTag_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(6)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *FbShopTag) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlFbShopTag_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlFbShopTag_ListColsOnConflict)
+	return nil
+}
+
+func (ms FbShopTags) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlFbShopTag_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlFbShopTag_ListColsOnConflict)
+	return nil
+}
+
+func (m *FbShopTag) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("fb_shop_tag")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
+	if m.Color != "" {
+		flag = true
+		w.WriteName("color")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Color)
+	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *FbShopTag) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbShopTag_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(6)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type FbShopTagHistory map[string]interface{}
+type FbShopTagHistories []map[string]interface{}
+
+func (m *FbShopTagHistory) SQLTableName() string  { return "history.\"fb_shop_tag\"" }
+func (m FbShopTagHistories) SQLTableName() string { return "history.\"fb_shop_tag\"" }
+
+func (m *FbShopTagHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbShopTag_Select_history)
+	return nil
+}
+
+func (m FbShopTagHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbShopTag_Select_history)
+	return nil
+}
+
+func (m FbShopTagHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m FbShopTagHistory) Name() core.Interface      { return core.Interface{m["name"]} }
+func (m FbShopTagHistory) Color() core.Interface     { return core.Interface{m["color"]} }
+func (m FbShopTagHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
+func (m FbShopTagHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m FbShopTagHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+
+func (m *FbShopTagHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 6)
+	args := make([]interface{}, 6)
+	for i := 0; i < 6; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(FbShopTagHistory, 6)
+	res["id"] = data[0]
+	res["name"] = data[1]
+	res["color"] = data[2]
+	res["shop_id"] = data[3]
+	res["created_at"] = data[4]
+	res["updated_at"] = data[5]
+	*m = res
+	return nil
+}
+
+func (ms *FbShopTagHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 6)
+	args := make([]interface{}, 6)
+	for i := 0; i < 6; i++ {
+		args[i] = &data[i]
+	}
+	res := make(FbShopTagHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(FbShopTagHistory)
+		m["id"] = data[0]
+		m["name"] = data[1]
+		m["color"] = data[2]
+		m["shop_id"] = data[3]
+		m["created_at"] = data[4]
+		m["updated_at"] = data[5]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

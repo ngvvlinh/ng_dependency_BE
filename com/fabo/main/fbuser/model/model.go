@@ -13,6 +13,7 @@ type FbExternalUser struct {
 	ExternalInfo   *FbExternalUserInfo
 	Status         status3.Status
 	ExternalPageID string
+	Tags           []dot.ID
 	CreatedAt      time.Time `sq:"create"`
 	UpdatedAt      time.Time `sq:"update"`
 }
@@ -42,4 +43,15 @@ type FbExternalUserShopCustomer struct {
 	FbExternalUserID string
 	CustomerID       dot.ID
 	Status           status3.Status
+}
+
+// +sqlgen
+type FbShopTag struct {
+	ID     dot.ID
+	Name   string
+	Color  string
+	ShopID dot.ID
+
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
 }
