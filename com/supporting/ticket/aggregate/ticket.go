@@ -8,7 +8,6 @@ import (
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipping"
 	"o.o/api/supporting/ticket"
-	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_state"
@@ -88,13 +87,13 @@ func (a TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateTi
 				return nil, err
 			}
 			refCode = query.Result.ShippingCode
-			if query.Result.ShippingProvider == shipping_provider.GHN {
-				// Send ticket to ghn
-				err := a.createTicketThirdParty(ctx, ticketCore)
-				if err != nil {
-					return nil, err
-				}
-			}
+			// if query.Result.ShippingProvider == shipping_provider.GHN {
+			// 	// Send ticket to ghn
+			// 	err := a.createTicketThirdParty(ctx, ticketCore)
+			// 	if err != nil {
+			// 		return nil, err
+			// 	}
+			// }
 		case ticket_ref_type.MoneyTransaction:
 			query := &moneytx.GetMoneyTxShippingByIDQuery{
 				MoneyTxShippingID: args.RefID,
