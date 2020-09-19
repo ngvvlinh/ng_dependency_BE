@@ -945,7 +945,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		cleanup()
 		return Output{}, nil, err
 	}
-	shippingShipping := shipping.New(locationQueryBus, mainDB, shipmentManager, shippingCommandBus, shippingQueryBus, orderLogic, shipnowCommandBus, shipnowQueryBus)
+	shippingShipping := shipping.New(locationQueryBus, mainDB, shipmentManager, shippingCommandBus, shippingQueryBus, orderLogic, shipnowCommandBus, shipnowQueryBus, orderStoreInterface)
 	partnerMiscService := &partner.MiscService{
 		Session:  session,
 		Shipping: shippingShipping,

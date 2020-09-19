@@ -39,6 +39,7 @@ func New(
 	orderLogic *orderS.OrderLogic,
 	shipnowA shipnow.CommandBus,
 	shipnowQ shipnow.QueryBus,
+	orderStore sqlstore.OrderStoreInterface,
 ) *Shipping {
 	s := &Shipping{
 		LocationBus:      locationBus,
@@ -50,6 +51,7 @@ func New(
 		OrderLogic:       orderLogic,
 		ShipnowAggr:      shipnowA,
 		ShipnowQuery:     shipnowQ,
+		OrderStoreIface:  orderStore,
 	}
 	locationList = buildLocationList(locationBus)
 	return s
