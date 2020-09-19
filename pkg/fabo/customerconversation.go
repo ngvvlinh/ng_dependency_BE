@@ -22,6 +22,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/fabo/convertpb"
 	"o.o/backend/pkg/fabo/faboinfo"
+	"o.o/capi/dot"
 	"o.o/common/xerrors"
 )
 
@@ -120,7 +121,7 @@ func (s *CustomerConversationService) ListCustomerConversations(
 			}
 		}
 
-		mapExternalUserIDAndImageURl, err := s.getImageURLs(ctx, externalUserIDs)
+		mapExternalUserIDAndImageURl, err := s.buildMapFbUserAvatar(ctx, externalUserIDs)
 		if err != nil {
 			return nil, err
 		}
@@ -135,32 +136,66 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		}
 	}
 
-	var fbUserExternalID []string
-	for _, v := range listCustomerConversations {
-		fbUserExternalID = append(fbUserExternalID, v.ExternalUserID)
-	}
-	listFbUserQuery := &fbusering.ListFbExternalUserWithCustomerByExternalIDsQuery{
+	fbUserExternalIDs := getFbExternalUserIDs(listCustomerConversations)
+	listFbUserWithCustomersQuery := &fbusering.ListFbExternalUserWithCustomerByExternalIDsQuery{
 		ShopID:      s.SS.Shop().ID,
-		ExternalIDs: fbUserExternalID,
+		ExternalIDs: fbUserExternalIDs,
 	}
-	err = s.FBUserQuery.Dispatch(ctx, listFbUserQuery)
+	err = s.FBUserQuery.Dispatch(ctx, listFbUserWithCustomersQuery)
 	if err != nil {
 		return nil, err
 	}
 	var mapExternalIDFbUser = make(map[string]*fbusering.FbExternalUserWithCustomer)
-	for _, v := range listFbUserQuery.Result {
+	for _, v := range listFbUserWithCustomersQuery.Result {
 		mapExternalIDFbUser[v.FbExternalUser.ExternalID] = v
 	}
+
+	listFbUserQuery := &fbusering.ListFbExternalUserByIDsQuery{
+		ExtFbUserIDs: fbUserExternalIDs,
+	}
+	if err = s.FBUserQuery.Dispatch(ctx, listFbUserQuery); err != nil {
+		return nil, err
+	}
+	mapFbExternalUserIDTagIds := buildMapFbExternalUserIDTagIds(listFbUserQuery.Result)
+
 	result := &fabo.FbCustomerConversationsResponse{
 		CustomerConversations: convertpb.PbFbCustomerConversations(listCustomerConversations),
 		Paging:                cmapi.PbCursorPageInfo(paging, &listCustomerConversationsQuery.Result.Paging),
 	}
-	for k, v := range result.CustomerConversations {
-		if mapExternalIDFbUser[v.ExternalUserID] != nil {
-			result.CustomerConversations[k].Customer = convertpb2.PbShopCustomer(mapExternalIDFbUser[v.ExternalUserID].ShopCustomer)
+	for i, conversation := range result.CustomerConversations {
+		if mapExternalIDFbUser[conversation.ExternalUserID] != nil {
+			result.CustomerConversations[i].Customer = convertpb2.PbShopCustomer(mapExternalIDFbUser[conversation.ExternalUserID].ShopCustomer)
+		}
+
+		tagIDs, ok := mapFbExternalUserIDTagIds[conversation.ExternalUserID]
+		if ok {
+			result.CustomerConversations[i].ExternalUserTags = tagIDs
 		}
 	}
 	return result, nil
+}
+
+func buildMapFbExternalUserIDTagIds(fbExternalUsers []*fbusering.FbExternalUser) map[string][]dot.ID {
+	result := map[string][]dot.ID{}
+
+	for _, user := range fbExternalUsers {
+		result[user.ExternalID] = user.TagIDs
+	}
+
+	return result
+}
+
+func getFbExternalUserIDs(customerConversations []*fbmessaging.FbCustomerConversation) []string {
+	visited := map[string]struct{}{}
+	var result []string
+	for _, conv := range customerConversations {
+		if _, ok := visited[conv.ExternalUserID]; ok {
+			continue
+		}
+		result = append(result, conv.ExternalUserID)
+		visited[conv.ExternalUserID] = struct{}{}
+	}
+	return result
 }
 
 func (s *CustomerConversationService) GetCustomerConversationByID(
@@ -176,7 +211,7 @@ func (s *CustomerConversationService) GetCustomerConversationByID(
 
 	// get and map avatar for user in conversation
 	conversation := query.Result
-	mapExternalUserIDAndImageURl, err := s.getImageURLs(ctx, []string{conversation.ExternalUserID})
+	mapExternalUserIDAndImageURl, err := s.buildMapFbUserAvatar(ctx, []string{conversation.ExternalUserID})
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +267,7 @@ func (s *CustomerConversationService) ListMessages(
 			}
 		}
 
-		mapExternalUserIDAndImageURl, err := s.getImageURLs(ctx, externalUserIDs)
+		mapExternalUserIDAndImageURl, err := s.buildMapFbUserAvatar(ctx, externalUserIDs)
 		if err != nil {
 			return nil, err
 		}
@@ -308,7 +343,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 			}
 		}
 
-		mapExternalUserIDAndImageURL, err := s.getImageURLs(ctx, externalUserIDs)
+		mapExternalUserIDAndImageURL, err := s.buildMapFbUserAvatar(ctx, externalUserIDs)
 		if err != nil {
 			return nil, err
 		}
@@ -363,7 +398,7 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 			}
 		}
 
-		mapExternalUserIDAndImageURL, err := s.getImageURLs(ctx, externalUserIDs)
+		mapExternalUserIDAndImageURL, err := s.buildMapFbUserAvatar(ctx, externalUserIDs)
 		if err != nil {
 			return nil, err
 		}
@@ -695,7 +730,7 @@ func (s *CustomerConversationService) SendMessage(
 	return convertpb.PbFbExternalMessage(createFbExternalMessageCmd.Result[0]), nil
 }
 
-func (s *CustomerConversationService) getImageURLs(ctx context.Context, externalUserIDs []string) (map[string]string, error) {
+func (s *CustomerConversationService) buildMapFbUserAvatar(ctx context.Context, externalUserIDs []string) (map[string]string, error) {
 	getFbUserQuery := &fbusering.ListFbExternalUsersByExternalIDsQuery{
 		ExternalIDs: externalUserIDs,
 	}

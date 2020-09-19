@@ -237,6 +237,7 @@ const (
 	FbMessageView   permission.ActionType = "facebook/message:view"
 	FbUserCreate    permission.ActionType = "facebook/fbuser:create" // Liên kết fb_user với customer
 	FbUserView      permission.ActionType = "facebook/fbuser:view"
+	FbUserUpdate    permission.ActionType = "facebook/fbuser:update"
 	FbFanpageCreate permission.ActionType = "facebook/fanpage:create"
 	FbFanpageDelete permission.ActionType = "facebook/fanpage:delete"
 	FbFanpageView   permission.ActionType = "facebook/fanpage:view"
@@ -1235,10 +1236,12 @@ var _acl = map[string]*permission.Decl{
 	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentCreate)},
 	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true},
 
-	"fabo.Page/CreateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagCreate)},
-	"fabo.Page/UpdateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagUpdate)},
-	"fabo.Page/DeleteTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagDelete)},
-	"fabo.Page/ListTag":   {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagView)},
+	"fabo.Shop/CreateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagCreate)},
+	"fabo.Shop/UpdateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagUpdate)},
+	"fabo.Shop/DeleteTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagDelete)},
+	"fabo.Shop/GetTags":   {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagView)},
+
+	"fabo.Customer/UpdateTags": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbUserUpdate)},
 
 	// -- Fabo Customer --
 	"fabo.Customer/CreateFbUserCustomer":     {Type: Shop, Actions: actions(FbUserCreate)},

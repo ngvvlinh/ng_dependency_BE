@@ -5,12 +5,12 @@ import (
 	"o.o/api/top/int/fabo"
 )
 
-func ConvertFbUserringTagToResponseTag(tag *fbusering.FbShopTag) *fabo.FbShopTagResponse {
+func Convert_core_FbShopUserTag_To_api_FbShopUserTag(tag *fbusering.FbShopUserTag) *fabo.FbShopUserTag {
 	if tag == nil {
 		return nil
 	}
 
-	return &fabo.FbShopTagResponse{
+	return &fabo.FbShopUserTag{
 		ID:        tag.ID,
 		Name:      tag.Name,
 		Color:     tag.Color,
@@ -20,15 +20,14 @@ func ConvertFbUserringTagToResponseTag(tag *fbusering.FbShopTag) *fabo.FbShopTag
 	}
 }
 
-func ConvertFbUserringTagsToResponseTags(tags []*fbusering.FbShopTag) []*fabo.FbShopTagResponse {
+func Convert_core_FbShopUserTags_To_api_FbShopUserTags(tags []*fbusering.FbShopUserTag) []*fabo.FbShopUserTag {
 	if tags == nil {
 		return nil
 	}
 
-	var result []*fabo.FbShopTagResponse
+	var result []*fabo.FbShopUserTag
 	for _, tag := range tags {
-		result = append(result, ConvertFbUserringTagToResponseTag(tag))
+		result = append(result, Convert_core_FbShopUserTag_To_api_FbShopUserTag(tag))
 	}
-
 	return result
 }

@@ -85,6 +85,23 @@ func (s *CustomerService) ListCustomersWithFbUsers(ctx context.Context, request 
 	return resp, err
 }
 
+func (s *CustomerService) UpdateTags(ctx context.Context, request *fabo.UpdateUserTagsRequest) (resp *fabo.UpdateUserTagResponse, err error) {
+	if err := request.Validate(); err != nil {
+		return nil, err
+	}
+
+	cmdUpdateTag := &fbusering.UpdateShopUserTagsCommand{
+		ShopID:           s.SS.Shop().ID,
+		TagIDs:           request.TagIDs,
+		FbExternalUserID: request.FbExternalUserID,
+	}
+	if err := s.FBUseringAggr.Dispatch(ctx, cmdUpdateTag); err != nil {
+		return nil, err
+	}
+
+	return &fabo.UpdateUserTagResponse{TagIDs: cmdUpdateTag.Result.TagIDs}, nil
+}
+
 func (s *CustomerService) getAllCustomers(ctx context.Context, paging *cm.Paging, request *fabo.ListCustomersWithFbUsersRequest) (*fabo.ListCustomersWithFbUsersResponse, error) {
 	queryCustomerIndependent := &customering.GetCustomerIndependentQuery{}
 	if err := s.CustomerQuery.Dispatch(ctx, queryCustomerIndependent); err != nil {

@@ -558,7 +558,12 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FBUseringQuery: fbuseringQueryBus,
 		FBUseringAggr:  fbuseringCommandBus,
 	}
-	faboServers := fabo.NewServers(pageService, customerConversationService, faboCustomerService, store)
+	shopService := &fabo.ShopService{
+		Session:             session,
+		FBExternalUserQuery: fbuseringQueryBus,
+		FBExternalUserAggr:  fbuseringCommandBus,
+	}
+	faboServers := fabo.NewServers(pageService, customerConversationService, faboCustomerService, shopService, store)
 	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
 	webhookService := &sadmin.WebhookService{
 		Session:                session,

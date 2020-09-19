@@ -3,15 +3,20 @@ package sqlstore
 import (
 	"context"
 
+	"github.com/lib/pq"
+
 	"o.o/api/fabo/fbusering"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
+	fbpagemodel "o.o/backend/com/fabo/main/fbpage/model"
 	"o.o/backend/com/fabo/main/fbuser/convert"
 	"o.o/backend/com/fabo/main/fbuser/model"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/capi/dot"
 )
 
 type FbExternalUserStoreFactory func(ctx context.Context) *FbExternalUserStore
@@ -167,4 +172,36 @@ func (s *FbExternalUserStore) ListFbExternalUsers() (result []*fbusering.FbExter
 		return nil, err
 	}
 	return
+}
+
+func (s *FbExternalUserStore) GetFbExternalUserByShopID(
+	extUserID dot.ID,
+	shopID dot.ID,
+) (*fbusering.FbExternalUser, error) {
+	extUser, err := s.ExternalID(extUserID.String()).GetFbExternalUser()
+	if err != nil {
+		return nil, err
+	}
+
+	// Dựa vào ExternalPageID để biết fb_external_user có thuộc shop_id này không
+	extPage := &fbpagemodel.FbExternalPage{}
+	err = s.query().
+		Table("fb_external_page").
+		Where("shop_id = ? AND external_id = ?", shopID, extUser.ExternalPageID).
+		ShouldGet(extPage)
+	if err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Khách hàng không thuộc shop")
+		}
+		return nil, err
+	}
+
+	return extUser, nil
+}
+
+func (s *FbExternalUserStore) UpdateUserTags(tagIDs []dot.ID) error {
+	updatedIDs := map[string]interface{}{
+		"tag_ids": pq.Array(tagIDs),
+	}
+	return s.query().Table("fb_external_user").Where(s.preds).ShouldUpdateMap(updatedIDs)
 }

@@ -103,30 +103,30 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*fbusermodel.FbExternalUserShopCustomer) = out0
 		return nil
 	})
-	s.Register((*fbusermodel.FbShopTag)(nil), (*fbusering.FbShopTag)(nil), func(arg, out interface{}) error {
-		Convert_fbusermodel_FbShopTag_fbusering_FbShopTag(arg.(*fbusermodel.FbShopTag), out.(*fbusering.FbShopTag))
+	s.Register((*fbusermodel.FbShopUserTag)(nil), (*fbusering.FbShopUserTag)(nil), func(arg, out interface{}) error {
+		Convert_fbusermodel_FbShopUserTag_fbusering_FbShopUserTag(arg.(*fbusermodel.FbShopUserTag), out.(*fbusering.FbShopUserTag))
 		return nil
 	})
-	s.Register(([]*fbusermodel.FbShopTag)(nil), (*[]*fbusering.FbShopTag)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbusermodel_FbShopTags_fbusering_FbShopTags(arg.([]*fbusermodel.FbShopTag))
-		*out.(*[]*fbusering.FbShopTag) = out0
+	s.Register(([]*fbusermodel.FbShopUserTag)(nil), (*[]*fbusering.FbShopUserTag)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusermodel_FbShopUserTags_fbusering_FbShopUserTags(arg.([]*fbusermodel.FbShopUserTag))
+		*out.(*[]*fbusering.FbShopUserTag) = out0
 		return nil
 	})
-	s.Register((*fbusering.FbShopTag)(nil), (*fbusermodel.FbShopTag)(nil), func(arg, out interface{}) error {
-		Convert_fbusering_FbShopTag_fbusermodel_FbShopTag(arg.(*fbusering.FbShopTag), out.(*fbusermodel.FbShopTag))
+	s.Register((*fbusering.FbShopUserTag)(nil), (*fbusermodel.FbShopUserTag)(nil), func(arg, out interface{}) error {
+		Convert_fbusering_FbShopUserTag_fbusermodel_FbShopUserTag(arg.(*fbusering.FbShopUserTag), out.(*fbusermodel.FbShopUserTag))
 		return nil
 	})
-	s.Register(([]*fbusering.FbShopTag)(nil), (*[]*fbusermodel.FbShopTag)(nil), func(arg, out interface{}) error {
-		out0 := Convert_fbusering_FbShopTags_fbusermodel_FbShopTags(arg.([]*fbusering.FbShopTag))
-		*out.(*[]*fbusermodel.FbShopTag) = out0
+	s.Register(([]*fbusering.FbShopUserTag)(nil), (*[]*fbusermodel.FbShopUserTag)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbusering_FbShopUserTags_fbusermodel_FbShopUserTags(arg.([]*fbusering.FbShopUserTag))
+		*out.(*[]*fbusermodel.FbShopUserTag) = out0
 		return nil
 	})
-	s.Register((*fbusering.CreateShopTagArgs)(nil), (*fbusering.FbShopTag)(nil), func(arg, out interface{}) error {
-		Apply_fbusering_CreateShopTagArgs_fbusering_FbShopTag(arg.(*fbusering.CreateShopTagArgs), out.(*fbusering.FbShopTag))
+	s.Register((*fbusering.CreateShopUserTagArgs)(nil), (*fbusering.FbShopUserTag)(nil), func(arg, out interface{}) error {
+		Apply_fbusering_CreateShopUserTagArgs_fbusering_FbShopUserTag(arg.(*fbusering.CreateShopUserTagArgs), out.(*fbusering.FbShopUserTag))
 		return nil
 	})
-	s.Register((*fbusering.UpdateShopTagArgs)(nil), (*fbusering.FbShopTag)(nil), func(arg, out interface{}) error {
-		Apply_fbusering_UpdateShopTagArgs_fbusering_FbShopTag(arg.(*fbusering.UpdateShopTagArgs), out.(*fbusering.FbShopTag))
+	s.Register((*fbusering.UpdateShopUserTagArgs)(nil), (*fbusering.FbShopUserTag)(nil), func(arg, out interface{}) error {
+		Apply_fbusering_UpdateShopUserTagArgs_fbusering_FbShopUserTag(arg.(*fbusering.UpdateShopUserTagArgs), out.(*fbusering.FbShopUserTag))
 		return nil
 	})
 }
@@ -150,6 +150,7 @@ func convert_fbusermodel_FbExternalUser_fbusering_FbExternalUser(arg *fbusermode
 	out.ExternalInfo = Convert_fbusermodel_FbExternalUserInfo_fbusering_FbExternalUserInfo(arg.ExternalInfo, nil)
 	out.Status = arg.Status                 // simple assign
 	out.ExternalPageID = arg.ExternalPageID // simple assign
+	out.TagIDs = arg.TagIDs                 // simple assign
 	out.CreatedAt = arg.CreatedAt           // simple assign
 	out.UpdatedAt = arg.UpdatedAt           // simple assign
 }
@@ -182,7 +183,7 @@ func convert_fbusering_FbExternalUser_fbusermodel_FbExternalUser(arg *fbusering.
 	out.ExternalInfo = Convert_fbusering_FbExternalUserInfo_fbusermodel_FbExternalUserInfo(arg.ExternalInfo, nil)
 	out.Status = arg.Status                 // simple assign
 	out.ExternalPageID = arg.ExternalPageID // simple assign
-	out.Tags = nil                          // zero value
+	out.TagIDs = arg.TagIDs                 // simple assign
 	out.CreatedAt = arg.CreatedAt           // simple assign
 	out.UpdatedAt = arg.UpdatedAt           // simple assign
 }
@@ -216,6 +217,7 @@ func apply_fbusering_CreateFbExternalUserArgs_fbusering_FbExternalUser(arg *fbus
 	out.ExternalInfo = arg.ExternalInfo     // simple assign
 	out.Status = arg.Status                 // simple assign
 	out.ExternalPageID = arg.ExternalPageID // simple assign
+	out.TagIDs = nil                        // zero value
 	out.CreatedAt = time.Time{}             // zero value
 	out.UpdatedAt = time.Time{}             // zero value
 }
@@ -430,20 +432,20 @@ func Convert_fbusering_FbExternalUserShopCustomers_fbusermodel_FbExternalUserSho
 	return outs
 }
 
-//-- convert o.o/api/fabo/fbusering.FbShopTag --//
+//-- convert o.o/api/fabo/fbusering.FbShopUserTag --//
 
-func Convert_fbusermodel_FbShopTag_fbusering_FbShopTag(arg *fbusermodel.FbShopTag, out *fbusering.FbShopTag) *fbusering.FbShopTag {
+func Convert_fbusermodel_FbShopUserTag_fbusering_FbShopUserTag(arg *fbusermodel.FbShopUserTag, out *fbusering.FbShopUserTag) *fbusering.FbShopUserTag {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusering.FbShopTag{}
+		out = &fbusering.FbShopUserTag{}
 	}
-	convert_fbusermodel_FbShopTag_fbusering_FbShopTag(arg, out)
+	convert_fbusermodel_FbShopUserTag_fbusering_FbShopUserTag(arg, out)
 	return out
 }
 
-func convert_fbusermodel_FbShopTag_fbusering_FbShopTag(arg *fbusermodel.FbShopTag, out *fbusering.FbShopTag) {
+func convert_fbusermodel_FbShopUserTag_fbusering_FbShopUserTag(arg *fbusermodel.FbShopUserTag, out *fbusering.FbShopUserTag) {
 	out.ID = arg.ID               // simple assign
 	out.Name = arg.Name           // simple assign
 	out.Color = arg.Color         // simple assign
@@ -452,30 +454,30 @@ func convert_fbusermodel_FbShopTag_fbusering_FbShopTag(arg *fbusermodel.FbShopTa
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
-func Convert_fbusermodel_FbShopTags_fbusering_FbShopTags(args []*fbusermodel.FbShopTag) (outs []*fbusering.FbShopTag) {
+func Convert_fbusermodel_FbShopUserTags_fbusering_FbShopUserTags(args []*fbusermodel.FbShopUserTag) (outs []*fbusering.FbShopUserTag) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]fbusering.FbShopTag, len(args))
-	outs = make([]*fbusering.FbShopTag, len(args))
+	tmps := make([]fbusering.FbShopUserTag, len(args))
+	outs = make([]*fbusering.FbShopUserTag, len(args))
 	for i := range tmps {
-		outs[i] = Convert_fbusermodel_FbShopTag_fbusering_FbShopTag(args[i], &tmps[i])
+		outs[i] = Convert_fbusermodel_FbShopUserTag_fbusering_FbShopUserTag(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_fbusering_FbShopTag_fbusermodel_FbShopTag(arg *fbusering.FbShopTag, out *fbusermodel.FbShopTag) *fbusermodel.FbShopTag {
+func Convert_fbusering_FbShopUserTag_fbusermodel_FbShopUserTag(arg *fbusering.FbShopUserTag, out *fbusermodel.FbShopUserTag) *fbusermodel.FbShopUserTag {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusermodel.FbShopTag{}
+		out = &fbusermodel.FbShopUserTag{}
 	}
-	convert_fbusering_FbShopTag_fbusermodel_FbShopTag(arg, out)
+	convert_fbusering_FbShopUserTag_fbusermodel_FbShopUserTag(arg, out)
 	return out
 }
 
-func convert_fbusering_FbShopTag_fbusermodel_FbShopTag(arg *fbusering.FbShopTag, out *fbusermodel.FbShopTag) {
+func convert_fbusering_FbShopUserTag_fbusermodel_FbShopUserTag(arg *fbusering.FbShopUserTag, out *fbusermodel.FbShopUserTag) {
 	out.ID = arg.ID               // simple assign
 	out.Name = arg.Name           // simple assign
 	out.Color = arg.Color         // simple assign
@@ -484,30 +486,30 @@ func convert_fbusering_FbShopTag_fbusermodel_FbShopTag(arg *fbusering.FbShopTag,
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
-func Convert_fbusering_FbShopTags_fbusermodel_FbShopTags(args []*fbusering.FbShopTag) (outs []*fbusermodel.FbShopTag) {
+func Convert_fbusering_FbShopUserTags_fbusermodel_FbShopUserTags(args []*fbusering.FbShopUserTag) (outs []*fbusermodel.FbShopUserTag) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]fbusermodel.FbShopTag, len(args))
-	outs = make([]*fbusermodel.FbShopTag, len(args))
+	tmps := make([]fbusermodel.FbShopUserTag, len(args))
+	outs = make([]*fbusermodel.FbShopUserTag, len(args))
 	for i := range tmps {
-		outs[i] = Convert_fbusering_FbShopTag_fbusermodel_FbShopTag(args[i], &tmps[i])
+		outs[i] = Convert_fbusering_FbShopUserTag_fbusermodel_FbShopUserTag(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Apply_fbusering_CreateShopTagArgs_fbusering_FbShopTag(arg *fbusering.CreateShopTagArgs, out *fbusering.FbShopTag) *fbusering.FbShopTag {
+func Apply_fbusering_CreateShopUserTagArgs_fbusering_FbShopUserTag(arg *fbusering.CreateShopUserTagArgs, out *fbusering.FbShopUserTag) *fbusering.FbShopUserTag {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusering.FbShopTag{}
+		out = &fbusering.FbShopUserTag{}
 	}
-	apply_fbusering_CreateShopTagArgs_fbusering_FbShopTag(arg, out)
+	apply_fbusering_CreateShopUserTagArgs_fbusering_FbShopUserTag(arg, out)
 	return out
 }
 
-func apply_fbusering_CreateShopTagArgs_fbusering_FbShopTag(arg *fbusering.CreateShopTagArgs, out *fbusering.FbShopTag) {
+func apply_fbusering_CreateShopUserTagArgs_fbusering_FbShopUserTag(arg *fbusering.CreateShopUserTagArgs, out *fbusering.FbShopUserTag) {
 	out.ID = 0                  // zero value
 	out.Name = arg.Name         // simple assign
 	out.Color = arg.Color       // simple assign
@@ -516,18 +518,18 @@ func apply_fbusering_CreateShopTagArgs_fbusering_FbShopTag(arg *fbusering.Create
 	out.UpdatedAt = time.Time{} // zero value
 }
 
-func Apply_fbusering_UpdateShopTagArgs_fbusering_FbShopTag(arg *fbusering.UpdateShopTagArgs, out *fbusering.FbShopTag) *fbusering.FbShopTag {
+func Apply_fbusering_UpdateShopUserTagArgs_fbusering_FbShopUserTag(arg *fbusering.UpdateShopUserTagArgs, out *fbusering.FbShopUserTag) *fbusering.FbShopUserTag {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &fbusering.FbShopTag{}
+		out = &fbusering.FbShopUserTag{}
 	}
-	apply_fbusering_UpdateShopTagArgs_fbusering_FbShopTag(arg, out)
+	apply_fbusering_UpdateShopUserTagArgs_fbusering_FbShopUserTag(arg, out)
 	return out
 }
 
-func apply_fbusering_UpdateShopTagArgs_fbusering_FbShopTag(arg *fbusering.UpdateShopTagArgs, out *fbusering.FbShopTag) {
+func apply_fbusering_UpdateShopUserTagArgs_fbusering_FbShopUserTag(arg *fbusering.UpdateShopUserTagArgs, out *fbusering.FbShopUserTag) {
 	out.ID = arg.ID               // simple assign
 	out.Name = arg.Name           // simple assign
 	out.Color = arg.Color         // simple assign

@@ -56,6 +56,7 @@ func PbFbUserWithCustomer(m *fbusering.FbExternalUser, c *customering.ShopCustom
 		result.CustomerID = c.ID
 		result.Customer = convertpb.PbShopCustomer(c)
 	}
+	result.TagIDS = m.TagIDs
 	return result
 }
 
@@ -81,6 +82,7 @@ func PbExternalUserWithCustomer(m *fbusering.FbExternalUserWithCustomer) *fabo.F
 		UpdatedAt:  m.FbExternalUser.UpdatedAt,
 		CustomerID: customerID,
 		Customer:   convertpb.PbShopCustomer(m.ShopCustomer),
+		TagIDS:     m.TagIDs,
 	}
 }
 

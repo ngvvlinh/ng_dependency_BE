@@ -21,14 +21,15 @@ type Aggregate interface {
 	DeleteFbExternalUserShopCustomer(context.Context, *DeleteFbExternalUserShopCustomerArgs) error
 
 	/* -- ShopTag -- */
-	CreateShopTag(ctx context.Context, args *CreateShopTagArgs) (*FbShopTag, error)
-	UpdateShopTag(ctx context.Context, args *UpdateShopTagArgs) (*FbShopTag, error)
-	DeleteShopTag(ctx context.Context, args *DeleteShopTagArgs) (int, error)
+	CreateShopUserTag(context.Context, *CreateShopUserTagArgs) (*FbShopUserTag, error)
+	UpdateShopUserTag(context.Context, *UpdateShopUserTagArgs) (*FbShopUserTag, error)
+	DeleteShopUserTag(context.Context, *DeleteShopUserTagArgs) (int, error)
+	UpdateShopUserTags(context.Context, *UpdateShopUserTagsArgs) (*FbExternalUser, error)
 }
 
 type QueryService interface {
-	GetShopTag(ctx context.Context, args *GetShopTagArgs) (*FbShopTag, error)
-	ListShopTag(ctx context.Context, args *ListShopTagArgs) ([]*FbShopTag, error)
+	GetShopUserTag(context.Context, *GetShopUserTagArgs) (*FbShopUserTag, error)
+	ListShopUserTags(context.Context, *ListShopUserTagsArgs) ([]*FbShopUserTag, error)
 
 	GetFbExternalUserByExternalID(_ context.Context, externalID string) (*FbExternalUser, error)
 	ListFbExternalUsersByExternalIDs(_ context.Context, externalIDs filter.Strings, externalPageID dot.NullString) ([]*FbExternalUser, error)
@@ -40,6 +41,7 @@ type QueryService interface {
 	ListFbExternalUserWithCustomerByExternalIDs(_ context.Context, shopID dot.ID, externalIDs []string) ([]*FbExternalUserWithCustomer, error)
 	ListFbExternalUsers(context.Context, *ListFbExternalUsersArgs) ([]*FbExternalUserWithCustomer, error)
 	ListShopCustomerWithFbExternalUser(context.Context, *ListCustomerWithFbAvatarsArgs) (*ListShopCustomerWithFbExternalUserResponse, error)
+	ListFbExternalUserByIDs(ctx context.Context, extFbUserIDs []string) ([]*FbExternalUser, error)
 }
 
 type ListShopCustomerWithFbExternalUserResponse struct {
@@ -99,30 +101,48 @@ type ListFbExternalUsersArgs struct {
 	ShopID     dot.ID
 }
 
-// +convert:create=FbShopTag
-type CreateShopTagArgs struct {
+// +convert:create=FbShopUserTag
+type CreateShopUserTagArgs struct {
 	Name   string
 	Color  string
 	ShopID dot.ID
 }
 
-// +convert:update=FbShopTag
-type UpdateShopTagArgs struct {
+// +convert:update=FbShopUserTag
+type UpdateShopUserTagArgs struct {
 	Name  string
 	Color string
 	ID    dot.ID
 }
 
-type DeleteShopTagArgs struct {
+type DeleteShopUserTagArgs struct {
 	ID     dot.ID
 	ShopID dot.ID
 }
 
-type GetShopTagArgs struct {
+type GetShopUserTagArgs struct {
 	ID     dot.ID
 	ShopID dot.ID
 }
 
-type ListShopTagArgs struct {
+type ListShopUserTagsArgs struct {
 	ShopID dot.ID
+}
+
+type FbExternalUserAddTagArgs struct {
+	ShopID           dot.ID
+	TagID            dot.ID
+	FbExternalUserID dot.ID
+}
+
+type FbExternalUserRemoveTagArgs struct {
+	ShopID           dot.ID
+	TagID            dot.ID
+	FbExternalUserID dot.ID
+}
+
+type UpdateShopUserTagsArgs struct {
+	ShopID           dot.ID
+	TagIDs           []dot.ID
+	FbExternalUserID dot.ID
 }

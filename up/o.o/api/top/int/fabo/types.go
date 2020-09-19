@@ -73,6 +73,7 @@ type FbUserWithCustomer struct {
 	UpdatedAt    time.Time           `json:"updated_at"`
 	CustomerID   dot.ID              `json:"customer_id"`
 	Customer     *types.Customer     `json:"customer"`
+	TagIDS       []dot.ID            `json:"tag_ids"`
 }
 
 func (m *FbUserWithCustomer) String() string {
@@ -255,6 +256,7 @@ type FbCustomerConversation struct {
 	ID                         dot.ID                 `json:"id"`
 	ExternalPageID             string                 `json:"external_page_id"`
 	ExternalID                 string                 `json:"external_id"`
+	ExternalUserTags           []dot.ID               `json:"external_user_tags"`
 	ExternalUserID             string                 `json:"external_user_id"`
 	ExternalUserName           string                 `json:"external_user_name"`
 	ExternalFrom               *FbObjectFrom          `json:"external_from"`
@@ -587,7 +589,7 @@ func (c *CreateFbShopTagRequest) String() string {
 	return jsonx.MustMarshalToString(c)
 }
 
-type FbShopTagResponse struct {
+type FbShopUserTag struct {
 	ID     dot.ID `json:"id"`
 	Name   string `json:"name"`
 	Color  string `json:"color"`
@@ -597,12 +599,12 @@ type FbShopTagResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (c *FbShopTagResponse) String() string {
+func (c *FbShopUserTag) String() string {
 	return jsonx.MustMarshalToString(c)
 }
 
 type ListFbShopTagResponse struct {
-	ShopTags []*FbShopTagResponse `json:"result"`
+	ShopTags []*FbShopUserTag `json:"result"`
 }
 
 func (c *ListFbShopTagResponse) String() string {
@@ -627,6 +629,13 @@ type DeleteFbShopTagRequest struct {
 	ID dot.ID `json:"id"`
 }
 
+func (c *DeleteFbShopTagRequest) Validate() error {
+	if c.ID == 0 {
+		return xerrors.Error(xerrors.InvalidArgument, "missing id", nil)
+	}
+	return nil
+}
+
 func (c *DeleteFbShopTagRequest) String() string {
 	return jsonx.MustMarshalToString(c)
 }
@@ -637,13 +646,40 @@ type UpdateFbShopTagRequest struct {
 	Color string `json:"color"`
 }
 
+func (c *UpdateFbShopTagRequest) Validate() error {
+	if c.ID == 0 {
+		return xerrors.Error(xerrors.InvalidArgument, "missing id", nil)
+	}
+	if c.Name == "" && c.Color == "" {
+		return xerrors.Error(xerrors.InvalidArgument, "missing name or color", nil)
+	}
+	return nil
+}
+
 func (c *UpdateFbShopTagRequest) String() string {
 	return jsonx.MustMarshalToString(c)
 }
 
-type ListFbShopTagRequest struct {
+type UpdateUserTagResponse struct {
+	TagIDs []dot.ID `json:"tag_ids"`
 }
 
-func (c *ListFbShopTagRequest) String() string {
+func (c *UpdateUserTagResponse) String() string {
+	return jsonx.MustMarshalToString(c)
+}
+
+type UpdateUserTagsRequest struct {
+	TagIDs           []dot.ID `json:"tag_ids"`
+	FbExternalUserID dot.ID   `json:"fb_external_user_id"`
+}
+
+func (c *UpdateUserTagsRequest) Validate() error {
+	if c.FbExternalUserID == 0 {
+		return xerrors.Error(xerrors.InvalidArgument, "missing fb_external_user_id", nil)
+	}
+	return nil
+}
+
+func (c *UpdateUserTagsRequest) String() string {
 	return jsonx.MustMarshalToString(c)
 }

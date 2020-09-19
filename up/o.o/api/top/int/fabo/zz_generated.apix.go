@@ -9,6 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
+	common "o.o/api/top/types/common"
 	capi "o.o/capi"
 	httprpc "o.o/capi/httprpc"
 )
@@ -25,6 +26,8 @@ func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Serv
 		return NewCustomerServiceServer(builder, hooks...), true
 	case func() PageService:
 		return NewPageServiceServer(builder, hooks...), true
+	case func() ShopService:
+		return NewShopServiceServer(builder, hooks...), true
 	default:
 		return nil, false
 	}
@@ -214,6 +217,7 @@ const Path_Customer_CreateFbUserCustomer = "/fabo.Customer/CreateFbUserCustomer"
 const Path_Customer_GetFbUser = "/fabo.Customer/GetFbUser"
 const Path_Customer_ListCustomersWithFbUsers = "/fabo.Customer/ListCustomersWithFbUsers"
 const Path_Customer_ListFbUsers = "/fabo.Customer/ListFbUsers"
+const Path_Customer_UpdateTags = "/fabo.Customer/UpdateTags"
 
 func (s *CustomerServiceServer) PathPrefix() string {
 	return CustomerServicePathPrefix
@@ -300,6 +304,19 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			return
 		}
 		return msg, fn, nil
+	case "/fabo.Customer/UpdateTags":
+		msg := &UpdateUserTagsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateTags(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	default:
 		msg := fmt.Sprintf("no handler for path %q", path)
 		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
@@ -322,12 +339,8 @@ const PageServicePathPrefix = "/fabo.Page/"
 
 const Path_Page_CheckPermissions = "/fabo.Page/CheckPermissions"
 const Path_Page_ConnectPages = "/fabo.Page/ConnectPages"
-const Path_Page_CreateTag = "/fabo.Page/CreateTag"
-const Path_Page_DeleteTag = "/fabo.Page/DeleteTag"
 const Path_Page_ListPages = "/fabo.Page/ListPages"
-const Path_Page_ListTag = "/fabo.Page/ListTag"
 const Path_Page_RemovePages = "/fabo.Page/RemovePages"
-const Path_Page_UpdateTag = "/fabo.Page/UpdateTag"
 
 func (s *PageServiceServer) PathPrefix() string {
 	return PageServicePathPrefix
@@ -388,32 +401,6 @@ func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			return
 		}
 		return msg, fn, nil
-	case "/fabo.Page/CreateTag":
-		msg := &CreateFbShopTagRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.RequestRouted(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.CreateTag(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
-	case "/fabo.Page/DeleteTag":
-		msg := &DeleteFbShopTagRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.RequestRouted(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.DeleteTag(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
 	case "/fabo.Page/ListPages":
 		msg := &ListPagesRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -424,19 +411,6 @@ func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.ListPages(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
-	case "/fabo.Page/ListTag":
-		msg := &ListFbShopTagRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.RequestRouted(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.ListTag(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -453,7 +427,104 @@ func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			return
 		}
 		return msg, fn, nil
-	case "/fabo.Page/UpdateTag":
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type ShopServiceServer struct {
+	hooks   httprpc.HooksBuilder
+	builder func() ShopService
+}
+
+func NewShopServiceServer(builder func() ShopService, hooks ...httprpc.HooksBuilder) httprpc.Server {
+	return &ShopServiceServer{
+		hooks:   httprpc.ChainHooks(hooks...),
+		builder: builder,
+	}
+}
+
+const ShopServicePathPrefix = "/fabo.Shop/"
+
+const Path_Shop_CreateTag = "/fabo.Shop/CreateTag"
+const Path_Shop_DeleteTag = "/fabo.Shop/DeleteTag"
+const Path_Shop_GetTags = "/fabo.Shop/GetTags"
+const Path_Shop_UpdateTag = "/fabo.Shop/UpdateTag"
+
+func (s *ShopServiceServer) PathPrefix() string {
+	return ShopServicePathPrefix
+}
+
+func (s *ShopServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
+func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	hooks := httprpc.WrapHooks(s.hooks)
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.RequestReceived(ctx, *info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
+}
+
+func (s *ShopServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/fabo.Shop/CreateTag":
+		msg := &CreateFbShopTagRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateTag(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.Shop/DeleteTag":
+		msg := &DeleteFbShopTagRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteTag(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.Shop/GetTags":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetTags(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.Shop/UpdateTag":
 		msg := &UpdateFbShopTagRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()

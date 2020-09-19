@@ -14,6 +14,7 @@ type FbExternalUser struct {
 	ExternalInfo   *FbExternalUserInfo
 	Status         status3.Status
 	ExternalPageID string
+	TagIDs         []dot.ID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
 }
@@ -53,7 +54,7 @@ type ShopCustomerWithFbExternalUser struct {
 	FbUsers []*FbExternalUser
 }
 
-type FbShopTag struct {
+type FbShopUserTag struct {
 	ID     dot.ID
 	Name   string
 	Color  string

@@ -339,21 +339,21 @@ func (ft *FbExternalUserShopCustomerFilters) ByStatusPtr(Status *status3.Status)
 	}
 }
 
-type FbShopTagFilters struct{ prefix string }
+type FbShopUserTagFilters struct{ prefix string }
 
-func NewFbShopTagFilters(prefix string) FbShopTagFilters {
-	return FbShopTagFilters{prefix}
+func NewFbShopUserTagFilters(prefix string) FbShopUserTagFilters {
+	return FbShopUserTagFilters{prefix}
 }
 
-func (ft *FbShopTagFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *FbShopUserTagFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
-func (ft FbShopTagFilters) Prefix() string {
+func (ft FbShopUserTagFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *FbShopTagFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+func (ft *FbShopUserTagFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -362,7 +362,7 @@ func (ft *FbShopTagFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbShopTagFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbShopUserTagFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -372,7 +372,7 @@ func (ft *FbShopTagFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbShopTagFilters) ByName(Name string) *sq.ColumnFilter {
+func (ft *FbShopUserTagFilters) ByName(Name string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
@@ -381,7 +381,7 @@ func (ft *FbShopTagFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbShopTagFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+func (ft *FbShopUserTagFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
@@ -391,7 +391,7 @@ func (ft *FbShopTagFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbShopTagFilters) ByColor(Color string) *sq.ColumnFilter {
+func (ft *FbShopUserTagFilters) ByColor(Color string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "color",
@@ -400,7 +400,7 @@ func (ft *FbShopTagFilters) ByColor(Color string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbShopTagFilters) ByColorPtr(Color *string) *sq.ColumnFilterPtr {
+func (ft *FbShopUserTagFilters) ByColorPtr(Color *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "color",
@@ -410,7 +410,7 @@ func (ft *FbShopTagFilters) ByColorPtr(Color *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbShopTagFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
+func (ft *FbShopUserTagFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -419,7 +419,7 @@ func (ft *FbShopTagFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbShopTagFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *FbShopUserTagFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -429,7 +429,7 @@ func (ft *FbShopTagFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FbShopTagFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *FbShopUserTagFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -438,7 +438,7 @@ func (ft *FbShopTagFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbShopTagFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbShopUserTagFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -448,7 +448,7 @@ func (ft *FbShopTagFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilte
 	}
 }
 
-func (ft *FbShopTagFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *FbShopUserTagFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -457,7 +457,7 @@ func (ft *FbShopTagFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbShopTagFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *FbShopUserTagFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",

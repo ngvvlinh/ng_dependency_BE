@@ -103,7 +103,7 @@ func (s *FbExternalUserShopCustomerStore) ListFbExternalUsers() ([]*fbusering.Fb
 	if err != nil {
 		return nil, err
 	}
-	var result = []*fbusering.FbExternalUserShopCustomer{}
+	var result []*fbusering.FbExternalUserShopCustomer
 	err = scheme.Convert(fbExternalUser, &result)
 	if err != nil {
 		return nil, err

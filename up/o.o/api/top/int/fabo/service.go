@@ -9,21 +9,16 @@ import (
 // +gen:apix
 // +gen:swagger:doc-path=fabo
 
-//// +apix:path=/fabo.Shop
-//type ShopService interface {
-//	CreateTag(context.Context, *CreateFbShopTagRequest) (*FbShopTagResponse, error)
-//	DeleteTag(context.Context, *DeleteFbShopTagRequest) (*FbShopTagResponse, error)
-//	UpdateTag(context.Context, *UpdateFbShopTagRequest) (*FbShopTagResponse, error)
-//	ListTag(context.Context, *ListFbShopTagRequest) (*ListFbShopTagResponse, error)
-//}
+// +apix:path=/fabo.Shop
+type ShopService interface {
+	CreateTag(context.Context, *CreateFbShopTagRequest) (*FbShopUserTag, error)
+	DeleteTag(context.Context, *DeleteFbShopTagRequest) (*cm.Empty, error)
+	UpdateTag(context.Context, *UpdateFbShopTagRequest) (*FbShopUserTag, error)
+	GetTags(context.Context, *cm.Empty) (*ListFbShopTagResponse, error)
+}
 
 // +apix:path=/fabo.Page
 type PageService interface {
-	CreateTag(context.Context, *CreateFbShopTagRequest) (*FbShopTagResponse, error)
-	DeleteTag(context.Context, *DeleteFbShopTagRequest) (*cm.Empty, error)
-	UpdateTag(context.Context, *UpdateFbShopTagRequest) (*FbShopTagResponse, error)
-	ListTag(context.Context, *ListFbShopTagRequest) (*ListFbShopTagResponse, error)
-
 	ConnectPages(context.Context, *ConnectPagesRequest) (*ConnectPagesResponse, error)
 	RemovePages(context.Context, *RemovePagesRequest) (*cm.Empty, error)
 	ListPages(context.Context, *ListPagesRequest) (*ListPagesResponse, error)
@@ -55,4 +50,6 @@ type CustomerService interface {
 	ListFbUsers(ctx context.Context, request *ListFbUsersRequest) (*ListFbUsersResponse, error)
 	GetFbUser(ctx context.Context, request *GetFbUserRequest) (*FbUserWithCustomer, error)
 	ListCustomersWithFbUsers(ctx context.Context, request *ListCustomersWithFbUsersRequest) (*ListCustomersWithFbUsersResponse, error)
+
+	UpdateTags(ctx context.Context, request *UpdateUserTagsRequest) (*UpdateUserTagResponse, error)
 }
