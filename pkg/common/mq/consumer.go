@@ -195,8 +195,8 @@ retry:
 	case CodeRetry:
 		count++
 		if count >= 3 {
-			ll.S.Errorf("Unable to handle message (retried %v): %v", count, err)
-			ll.SendMessagef("unable to handle message (retried %v): %v", count, err)
+			ll.S.Errorf("Unable to handle message (retried %v): %+v", count, err)
+			ll.SendMessagef("unable to handle message (retried %v): %+v", count, err)
 
 			// ignore the error after retrying 3 times
 			return nil
@@ -205,8 +205,8 @@ retry:
 		goto retry
 
 	default:
-		ll.Error("Unable to handle message (stop)", l.Error(err))
-		llHigh.SendMessagef("unable to handle message (stop): %v", err)
+		ll.S.Errorf("Unable to handle message (stop): %+v", err)
+		llHigh.SendMessagef("unable to handle message (stop): %+v", err)
 
 		// return the error for stopping the consumer
 		return err
