@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
+	"unicode"
+	"unicode/utf8"
 
 	"o.o/api/main/location"
 	shippingstate "o.o/api/top/types/etc/shipping"
@@ -401,18 +402,18 @@ func GenerateServiceID(generator *randgenerator.RandGenerator, serviceName strin
 	// backward compatible
 	// old id: the first character is the client code
 	clientCode := ghn.GHNCodeDefault
-	shortCode := strings.ToUpper(string(serviceName[0]))
-	return string(clientCode) + shortCode + serviceID, nil
+	r, _ := utf8.DecodeRuneInString(serviceName)
+	return string(clientCode) + string(unicode.ToUpper(r)) + serviceID, nil
 }
 
 func DecodeShippingServiceName(code string) (name string, ok bool) {
 	if len(code) < 6 {
 		return "", false
 	}
-	switch {
-	case code[1] == 'C': // Chuẩn
+	switch code[1] {
+	case 'C': // Chuẩn
 		return etopmodel.ShippingServiceNameStandard, true
-	case code[1] == 'N': // Nhanh
+	case 'N': // Nhanh
 		return etopmodel.ShippingServiceNameFaster, true
 	}
 	return "", false
@@ -434,8 +435,13 @@ func (d *GHNDriver) ParseServiceID(code string) (serviceID string, err error) {
 
 	// old service id format: "DC123123"
 	// Thống nhất service id cho tất cả NVC, sau đó parse tương ứng
-
-	serviceID = code[2:]
+	// lấy từ ký tự thứ 3 trở đi
+	for i := range code {
+		if i >= 2 {
+			serviceID = code[i:]
+			break
+		}
+	}
 	return serviceID, nil
 }
 
