@@ -10,7 +10,7 @@ for path in "$PROJECT_DIR"/backend/cmd/*; do
     files=$(ls $path/*.go 2>/dev/null || true)
     if [[ -n $files ]]; then
         >&2 echo $path
-        "$deps" "$path" > "${path}/__deps"
+        "$deps" "$@" "$path" > "${path}/__deps"
     fi
 done
 
