@@ -629,11 +629,11 @@ var _acl = map[string]*permission.Decl{
 
 	//-- vnpost --//
 
-	"ext/vnposts/ping":              {Type: Partner, Auth: APIKey},
-	"ext/vnposts/getservicesvnpost": {Type: Partner, Auth: APIKey},
-	"ext/vnposts/createordervnpost": {Type: Partner, Auth: APIKey},
-	"ext/vnposts/cancelordervnpost": {Type: Partner, Auth: APIKey},
-	"ext/vnposts/getordervnpost":    {Type: Partner, Auth: APIKey},
+	"ext/vnposts/ping":              {Type: Shop, Auth: APIKey},
+	"ext/vnposts/getservicesvnpost": {Type: Shop, Auth: APIKey},
+	"ext/vnposts/createordervnpost": {Type: Shop, Auth: APIKey},
+	"ext/vnposts/cancelordervnpost": {Type: Shop, Auth: APIKey},
+	"ext/vnposts/getordervnpost":    {Type: Shop, Auth: APIKey},
 
 	//-- integration --//
 

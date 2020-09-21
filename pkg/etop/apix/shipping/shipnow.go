@@ -155,8 +155,12 @@ func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, userID dot.ID, 
 		}
 
 		// always cancel order if cannot create shipnow ffm
+		partnerID := dot.ID(0)
+		if partner != nil {
+			partnerID = partner.ID
+		}
 		for _, point := range deliveryPoints {
-			_, err = s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partner.ID, point.OrderID, fmt.Sprintf("Tạo đơn shipnow không thành công: %v", _err.Error()), inventory_auto.Unknown)
+			_, err = s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partnerID, point.OrderID, fmt.Sprintf("Tạo đơn shipnow không thành công: %v", _err.Error()), inventory_auto.Unknown)
 		}
 		if err != nil {
 			ll.Error("cancelling order", l.Error(err))

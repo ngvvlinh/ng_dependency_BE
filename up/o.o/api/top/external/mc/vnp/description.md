@@ -5,11 +5,11 @@
 Khi đề cập đến các API trong phần này, chúng tôi sẽ không kèm theo **BASE_URL**
 và bạn mặc định hiểu là khi truy vấn sẽ gắn thêm chuỗi **BASE_URL** phía trước
 đường dẫn cụ thể của API. Ví dụ `/v1/vnposts/ping` sẽ là
-`https://api-development.movecrop.com/v1/vnposts/ping`. Bạn cũng cần một
+`https://vnpost-api-development.movecrop.com/v1/vnposts/ping`. Bạn cũng cần một
 **TOKEN** hợp lệ để truy cập các API.
 
 ```bash
-export BASE_URL=https://api-development.movecrop.com
+export BASE_URL=https://vnpost-api-development.movecrop.com
 export TOKEN=MzRiOWY1Mj...
 ```
 
@@ -20,7 +20,7 @@ Một lời gọi API tiêu biểu như sau:
 ```bash
 curl $BASE_URL/v1/vnposts/ping \
   -H "Content-Type: application/json" \
-  -H "Authorization: Basic $TOKEN" \
+  -H "Authorization: Bearer $TOKEN" \
   -d '{}'
 ```
 
@@ -30,7 +30,7 @@ trị bằng body sử dụng định dạng dữ liệu `application/json`. Cá
 | Header | Nội dung | Mô tả |
 | --- | --- | --- |
 | Content-Type | application/json | |
-| Authorization | Basic MzRiOWY1Mj... | base64encode(apikey:apisecret) |
+| Authorization | Bearer MzRiOWY1Mj... | $TOKEN được cung cấp |
 
 ## HTTP Code
 
