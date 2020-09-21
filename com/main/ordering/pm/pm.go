@@ -365,6 +365,9 @@ func (p *ProcessManager) FulfillmentsCreatedEvent(ctx context.Context, event *sh
 }
 
 func (p *ProcessManager) FulfillmentUpdatedInfoEvent(ctx context.Context, event *shipping.FulfillmentUpdatedInfoEvent) error {
+	if event.OrderID == 0 {
+		return nil
+	}
 	cmd := &ordering.UpdateOrderCustomerInfoCommand{
 		ID:       event.OrderID,
 		FullName: event.FullName,
