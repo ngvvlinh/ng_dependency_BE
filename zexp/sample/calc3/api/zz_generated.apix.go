@@ -40,6 +40,11 @@ func NewCalcServiceServer(builder func() CalcService, hooks ...httprpc.HooksBuil
 
 const CalcServicePathPrefix = "/calc.Calc/"
 
+const Path_Calc_Calc = "/calc.Calc/Calc"
+const Path_Calc_Get = "/calc.Calc/Get"
+const Path_Calc_List = "/calc.Calc/List"
+const Path_Calc_Update = "/calc.Calc/Update"
+
 func (s *CalcServiceServer) PathPrefix() string {
 	return CalcServicePathPrefix
 }

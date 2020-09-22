@@ -43,6 +43,11 @@ func NewAccountServiceServer(builder func() AccountService, hooks ...httprpc.Hoo
 
 const AccountServicePathPrefix = "/affiliate.Account/"
 
+const Path_Account_DeleteAffiliate = "/affiliate.Account/DeleteAffiliate"
+const Path_Account_RegisterAffiliate = "/affiliate.Account/RegisterAffiliate"
+const Path_Account_UpdateAffiliate = "/affiliate.Account/UpdateAffiliate"
+const Path_Account_UpdateAffiliateBankAccount = "/affiliate.Account/UpdateAffiliateBankAccount"
+
 func (s *AccountServiceServer) PathPrefix() string {
 	return AccountServicePathPrefix
 }
@@ -147,6 +152,8 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 }
 
 const MiscServicePathPrefix = "/affiliate.Misc/"
+
+const Path_Misc_VersionInfo = "/affiliate.Misc/VersionInfo"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix

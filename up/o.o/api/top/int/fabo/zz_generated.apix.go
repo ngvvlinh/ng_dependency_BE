@@ -44,6 +44,15 @@ func NewCustomerConversationServiceServer(builder func() CustomerConversationSer
 
 const CustomerConversationServicePathPrefix = "/fabo.CustomerConversation/"
 
+const Path_CustomerConversation_CreatePost = "/fabo.CustomerConversation/CreatePost"
+const Path_CustomerConversation_GetCustomerConversationByID = "/fabo.CustomerConversation/GetCustomerConversationByID"
+const Path_CustomerConversation_ListCommentsByExternalPostID = "/fabo.CustomerConversation/ListCommentsByExternalPostID"
+const Path_CustomerConversation_ListCustomerConversations = "/fabo.CustomerConversation/ListCustomerConversations"
+const Path_CustomerConversation_ListMessages = "/fabo.CustomerConversation/ListMessages"
+const Path_CustomerConversation_SendComment = "/fabo.CustomerConversation/SendComment"
+const Path_CustomerConversation_SendMessage = "/fabo.CustomerConversation/SendMessage"
+const Path_CustomerConversation_UpdateReadStatus = "/fabo.CustomerConversation/UpdateReadStatus"
+
 func (s *CustomerConversationServiceServer) PathPrefix() string {
 	return CustomerConversationServicePathPrefix
 }
@@ -201,6 +210,11 @@ func NewCustomerServiceServer(builder func() CustomerService, hooks ...httprpc.H
 
 const CustomerServicePathPrefix = "/fabo.Customer/"
 
+const Path_Customer_CreateFbUserCustomer = "/fabo.Customer/CreateFbUserCustomer"
+const Path_Customer_GetFbUser = "/fabo.Customer/GetFbUser"
+const Path_Customer_ListCustomersWithFbUsers = "/fabo.Customer/ListCustomersWithFbUsers"
+const Path_Customer_ListFbUsers = "/fabo.Customer/ListFbUsers"
+
 func (s *CustomerServiceServer) PathPrefix() string {
 	return CustomerServicePathPrefix
 }
@@ -305,6 +319,11 @@ func NewPageServiceServer(builder func() PageService, hooks ...httprpc.HooksBuil
 }
 
 const PageServicePathPrefix = "/fabo.Page/"
+
+const Path_Page_CheckPermissions = "/fabo.Page/CheckPermissions"
+const Path_Page_ConnectPages = "/fabo.Page/ConnectPages"
+const Path_Page_ListPages = "/fabo.Page/ListPages"
+const Path_Page_RemovePages = "/fabo.Page/RemovePages"
 
 func (s *PageServiceServer) PathPrefix() string {
 	return PageServicePathPrefix

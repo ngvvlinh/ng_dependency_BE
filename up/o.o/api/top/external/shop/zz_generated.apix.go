@@ -72,6 +72,12 @@ func NewCustomerAddressServiceServer(builder func() CustomerAddressService, hook
 
 const CustomerAddressServicePathPrefix = "/shop.CustomerAddress/"
 
+const Path_CustomerAddress_CreateAddress = "/shop.CustomerAddress/CreateAddress"
+const Path_CustomerAddress_DeleteAddress = "/shop.CustomerAddress/DeleteAddress"
+const Path_CustomerAddress_GetAddress = "/shop.CustomerAddress/GetAddress"
+const Path_CustomerAddress_ListAddresses = "/shop.CustomerAddress/ListAddresses"
+const Path_CustomerAddress_UpdateAddress = "/shop.CustomerAddress/UpdateAddress"
+
 func (s *CustomerAddressServiceServer) PathPrefix() string {
 	return CustomerAddressServicePathPrefix
 }
@@ -190,6 +196,10 @@ func NewCustomerGroupRelationshipServiceServer(builder func() CustomerGroupRelat
 
 const CustomerGroupRelationshipServicePathPrefix = "/shop.CustomerGroupRelationship/"
 
+const Path_CustomerGroupRelationship_CreateRelationship = "/shop.CustomerGroupRelationship/CreateRelationship"
+const Path_CustomerGroupRelationship_DeleteRelationship = "/shop.CustomerGroupRelationship/DeleteRelationship"
+const Path_CustomerGroupRelationship_ListRelationships = "/shop.CustomerGroupRelationship/ListRelationships"
+
 func (s *CustomerGroupRelationshipServiceServer) PathPrefix() string {
 	return CustomerGroupRelationshipServicePathPrefix
 }
@@ -281,6 +291,12 @@ func NewCustomerGroupServiceServer(builder func() CustomerGroupService, hooks ..
 }
 
 const CustomerGroupServicePathPrefix = "/shop.CustomerGroup/"
+
+const Path_CustomerGroup_CreateGroup = "/shop.CustomerGroup/CreateGroup"
+const Path_CustomerGroup_DeleteGroup = "/shop.CustomerGroup/DeleteGroup"
+const Path_CustomerGroup_GetGroup = "/shop.CustomerGroup/GetGroup"
+const Path_CustomerGroup_ListGroups = "/shop.CustomerGroup/ListGroups"
+const Path_CustomerGroup_UpdateGroup = "/shop.CustomerGroup/UpdateGroup"
 
 func (s *CustomerGroupServiceServer) PathPrefix() string {
 	return CustomerGroupServicePathPrefix
@@ -400,6 +416,12 @@ func NewCustomerServiceServer(builder func() CustomerService, hooks ...httprpc.H
 
 const CustomerServicePathPrefix = "/shop.Customer/"
 
+const Path_Customer_CreateCustomer = "/shop.Customer/CreateCustomer"
+const Path_Customer_DeleteCustomer = "/shop.Customer/DeleteCustomer"
+const Path_Customer_GetCustomer = "/shop.Customer/GetCustomer"
+const Path_Customer_ListCustomers = "/shop.Customer/ListCustomers"
+const Path_Customer_UpdateCustomer = "/shop.Customer/UpdateCustomer"
+
 func (s *CustomerServiceServer) PathPrefix() string {
 	return CustomerServicePathPrefix
 }
@@ -518,6 +540,9 @@ func NewFulfillmentServiceServer(builder func() FulfillmentService, hooks ...htt
 
 const FulfillmentServicePathPrefix = "/shop.Fulfillment/"
 
+const Path_Fulfillment_GetFulfillment = "/shop.Fulfillment/GetFulfillment"
+const Path_Fulfillment_ListFulfillments = "/shop.Fulfillment/ListFulfillments"
+
 func (s *FulfillmentServiceServer) PathPrefix() string {
 	return FulfillmentServicePathPrefix
 }
@@ -597,6 +622,8 @@ func NewHistoryServiceServer(builder func() HistoryService, hooks ...httprpc.Hoo
 
 const HistoryServicePathPrefix = "/shop.History/"
 
+const Path_History_GetChanges = "/shop.History/GetChanges"
+
 func (s *HistoryServiceServer) PathPrefix() string {
 	return HistoryServicePathPrefix
 }
@@ -663,6 +690,8 @@ func NewInventoryServiceServer(builder func() InventoryService, hooks ...httprpc
 
 const InventoryServicePathPrefix = "/shop.Inventory/"
 
+const Path_Inventory_ListInventoryLevels = "/shop.Inventory/ListInventoryLevels"
+
 func (s *InventoryServiceServer) PathPrefix() string {
 	return InventoryServicePathPrefix
 }
@@ -728,6 +757,10 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 }
 
 const MiscServicePathPrefix = "/shop.Misc/"
+
+const Path_Misc_CurrentAccount = "/shop.Misc/CurrentAccount"
+const Path_Misc_GetLocationList = "/shop.Misc/GetLocationList"
+const Path_Misc_VersionInfo = "/shop.Misc/VersionInfo"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
@@ -820,6 +853,12 @@ func NewOrderServiceServer(builder func() OrderService, hooks ...httprpc.HooksBu
 }
 
 const OrderServicePathPrefix = "/shop.Order/"
+
+const Path_Order_CancelOrder = "/shop.Order/CancelOrder"
+const Path_Order_ConfirmOrder = "/shop.Order/ConfirmOrder"
+const Path_Order_CreateOrder = "/shop.Order/CreateOrder"
+const Path_Order_GetOrder = "/shop.Order/GetOrder"
+const Path_Order_ListOrders = "/shop.Order/ListOrders"
 
 func (s *OrderServiceServer) PathPrefix() string {
 	return OrderServicePathPrefix
@@ -939,6 +978,10 @@ func NewProductCollectionRelationshipServiceServer(builder func() ProductCollect
 
 const ProductCollectionRelationshipServicePathPrefix = "/shop.ProductCollectionRelationship/"
 
+const Path_ProductCollectionRelationship_CreateRelationship = "/shop.ProductCollectionRelationship/CreateRelationship"
+const Path_ProductCollectionRelationship_DeleteRelationship = "/shop.ProductCollectionRelationship/DeleteRelationship"
+const Path_ProductCollectionRelationship_ListRelationships = "/shop.ProductCollectionRelationship/ListRelationships"
+
 func (s *ProductCollectionRelationshipServiceServer) PathPrefix() string {
 	return ProductCollectionRelationshipServicePathPrefix
 }
@@ -1030,6 +1073,12 @@ func NewProductCollectionServiceServer(builder func() ProductCollectionService, 
 }
 
 const ProductCollectionServicePathPrefix = "/shop.ProductCollection/"
+
+const Path_ProductCollection_CreateCollection = "/shop.ProductCollection/CreateCollection"
+const Path_ProductCollection_DeleteCollection = "/shop.ProductCollection/DeleteCollection"
+const Path_ProductCollection_GetCollection = "/shop.ProductCollection/GetCollection"
+const Path_ProductCollection_ListCollections = "/shop.ProductCollection/ListCollections"
+const Path_ProductCollection_UpdateCollection = "/shop.ProductCollection/UpdateCollection"
 
 func (s *ProductCollectionServiceServer) PathPrefix() string {
 	return ProductCollectionServicePathPrefix
@@ -1149,6 +1198,12 @@ func NewProductServiceServer(builder func() ProductService, hooks ...httprpc.Hoo
 
 const ProductServicePathPrefix = "/shop.Product/"
 
+const Path_Product_CreateProduct = "/shop.Product/CreateProduct"
+const Path_Product_DeleteProduct = "/shop.Product/DeleteProduct"
+const Path_Product_GetProduct = "/shop.Product/GetProduct"
+const Path_Product_ListProducts = "/shop.Product/ListProducts"
+const Path_Product_UpdateProduct = "/shop.Product/UpdateProduct"
+
 func (s *ProductServiceServer) PathPrefix() string {
 	return ProductServicePathPrefix
 }
@@ -1267,6 +1322,11 @@ func NewShipnowServiceServer(builder func() ShipnowService, hooks ...httprpc.Hoo
 
 const ShipnowServicePathPrefix = "/shop.Shipnow/"
 
+const Path_Shipnow_CancelShipnowFulfillment = "/shop.Shipnow/CancelShipnowFulfillment"
+const Path_Shipnow_CreateShipnowFulfillment = "/shop.Shipnow/CreateShipnowFulfillment"
+const Path_Shipnow_GetShipnowFulfillment = "/shop.Shipnow/GetShipnowFulfillment"
+const Path_Shipnow_GetShipnowServices = "/shop.Shipnow/GetShipnowServices"
+
 func (s *ShipnowServiceServer) PathPrefix() string {
 	return ShipnowServicePathPrefix
 }
@@ -1371,6 +1431,12 @@ func NewShippingServiceServer(builder func() ShippingService, hooks ...httprpc.H
 }
 
 const ShippingServicePathPrefix = "/shop.Shipping/"
+
+const Path_Shipping_CancelOrder = "/shop.Shipping/CancelOrder"
+const Path_Shipping_CreateAndConfirmOrder = "/shop.Shipping/CreateAndConfirmOrder"
+const Path_Shipping_GetFulfillment = "/shop.Shipping/GetFulfillment"
+const Path_Shipping_GetOrder = "/shop.Shipping/GetOrder"
+const Path_Shipping_GetShippingServices = "/shop.Shipping/GetShippingServices"
 
 func (s *ShippingServiceServer) PathPrefix() string {
 	return ShippingServicePathPrefix
@@ -1490,6 +1556,12 @@ func NewVariantServiceServer(builder func() VariantService, hooks ...httprpc.Hoo
 
 const VariantServicePathPrefix = "/shop.Variant/"
 
+const Path_Variant_CreateVariant = "/shop.Variant/CreateVariant"
+const Path_Variant_DeleteVariant = "/shop.Variant/DeleteVariant"
+const Path_Variant_GetVariant = "/shop.Variant/GetVariant"
+const Path_Variant_ListVariants = "/shop.Variant/ListVariants"
+const Path_Variant_UpdateVariant = "/shop.Variant/UpdateVariant"
+
 func (s *VariantServiceServer) PathPrefix() string {
 	return VariantServicePathPrefix
 }
@@ -1607,6 +1679,10 @@ func NewWebhookServiceServer(builder func() WebhookService, hooks ...httprpc.Hoo
 }
 
 const WebhookServicePathPrefix = "/shop.Webhook/"
+
+const Path_Webhook_CreateWebhook = "/shop.Webhook/CreateWebhook"
+const Path_Webhook_DeleteWebhook = "/shop.Webhook/DeleteWebhook"
+const Path_Webhook_GetWebhooks = "/shop.Webhook/GetWebhooks"
 
 func (s *WebhookServiceServer) PathPrefix() string {
 	return WebhookServicePathPrefix

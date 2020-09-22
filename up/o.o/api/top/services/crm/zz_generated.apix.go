@@ -47,6 +47,9 @@ func NewCrmServiceServer(builder func() CrmService, hooks ...httprpc.HooksBuilde
 
 const CrmServicePathPrefix = "/crm.Crm/"
 
+const Path_Crm_RefreshFulfillmentFromCarrier = "/crm.Crm/RefreshFulfillmentFromCarrier"
+const Path_Crm_SendNotification = "/crm.Crm/SendNotification"
+
 func (s *CrmServiceServer) PathPrefix() string {
 	return CrmServicePathPrefix
 }
@@ -126,6 +129,8 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 
 const MiscServicePathPrefix = "/crm.Misc/"
 
+const Path_Misc_VersionInfo = "/crm.Misc/VersionInfo"
+
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
@@ -191,6 +196,10 @@ func NewVhtServiceServer(builder func() VhtService, hooks ...httprpc.HooksBuilde
 }
 
 const VhtServicePathPrefix = "/crm.Vht/"
+
+const Path_Vht_CreateOrUpdateCallHistoryByCallID = "/crm.Vht/CreateOrUpdateCallHistoryByCallID"
+const Path_Vht_CreateOrUpdateCallHistoryBySDKCallID = "/crm.Vht/CreateOrUpdateCallHistoryBySDKCallID"
+const Path_Vht_GetCallHistories = "/crm.Vht/GetCallHistories"
 
 func (s *VhtServiceServer) PathPrefix() string {
 	return VhtServicePathPrefix
@@ -283,6 +292,15 @@ func NewVtigerServiceServer(builder func() VtigerService, hooks ...httprpc.Hooks
 }
 
 const VtigerServicePathPrefix = "/crm.Vtiger/"
+
+const Path_Vtiger_CreateOrUpdateContact = "/crm.Vtiger/CreateOrUpdateContact"
+const Path_Vtiger_CreateOrUpdateLead = "/crm.Vtiger/CreateOrUpdateLead"
+const Path_Vtiger_CreateTicket = "/crm.Vtiger/CreateTicket"
+const Path_Vtiger_GetCategories = "/crm.Vtiger/GetCategories"
+const Path_Vtiger_GetContacts = "/crm.Vtiger/GetContacts"
+const Path_Vtiger_GetTicketStatusCount = "/crm.Vtiger/GetTicketStatusCount"
+const Path_Vtiger_GetTickets = "/crm.Vtiger/GetTickets"
+const Path_Vtiger_UpdateTicket = "/crm.Vtiger/UpdateTicket"
 
 func (s *VtigerServiceServer) PathPrefix() string {
 	return VtigerServicePathPrefix

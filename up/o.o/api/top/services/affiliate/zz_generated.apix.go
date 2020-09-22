@@ -47,6 +47,16 @@ func NewAffiliateServiceServer(builder func() AffiliateService, hooks ...httprpc
 
 const AffiliateServicePathPrefix = "/affiliate.Affiliate/"
 
+const Path_Affiliate_AffiliateGetProducts = "/affiliate.Affiliate/AffiliateGetProducts"
+const Path_Affiliate_CreateOrUpdateAffiliateCommissionSetting = "/affiliate.Affiliate/CreateOrUpdateAffiliateCommissionSetting"
+const Path_Affiliate_CreateReferralCode = "/affiliate.Affiliate/CreateReferralCode"
+const Path_Affiliate_GetCommissions = "/affiliate.Affiliate/GetCommissions"
+const Path_Affiliate_GetProductPromotionByProductID = "/affiliate.Affiliate/GetProductPromotionByProductID"
+const Path_Affiliate_GetReferralCodes = "/affiliate.Affiliate/GetReferralCodes"
+const Path_Affiliate_GetReferrals = "/affiliate.Affiliate/GetReferrals"
+const Path_Affiliate_GetTransactions = "/affiliate.Affiliate/GetTransactions"
+const Path_Affiliate_NotifyNewShopPurchase = "/affiliate.Affiliate/NotifyNewShopPurchase"
+
 func (s *AffiliateServiceServer) PathPrefix() string {
 	return AffiliateServicePathPrefix
 }
@@ -217,6 +227,10 @@ func NewShopServiceServer(builder func() ShopService, hooks ...httprpc.HooksBuil
 
 const ShopServicePathPrefix = "/affiliate.Shop/"
 
+const Path_Shop_CheckReferralCodeValid = "/affiliate.Shop/CheckReferralCodeValid"
+const Path_Shop_GetProductPromotion = "/affiliate.Shop/GetProductPromotion"
+const Path_Shop_ShopGetProducts = "/affiliate.Shop/ShopGetProducts"
+
 func (s *ShopServiceServer) PathPrefix() string {
 	return ShopServicePathPrefix
 }
@@ -308,6 +322,13 @@ func NewTradingServiceServer(builder func() TradingService, hooks ...httprpc.Hoo
 }
 
 const TradingServicePathPrefix = "/affiliate.Trading/"
+
+const Path_Trading_CreateOrUpdateTradingCommissionSetting = "/affiliate.Trading/CreateOrUpdateTradingCommissionSetting"
+const Path_Trading_CreateTradingProductPromotion = "/affiliate.Trading/CreateTradingProductPromotion"
+const Path_Trading_GetTradingProductPromotionByProductIDs = "/affiliate.Trading/GetTradingProductPromotionByProductIDs"
+const Path_Trading_GetTradingProductPromotions = "/affiliate.Trading/GetTradingProductPromotions"
+const Path_Trading_TradingGetProducts = "/affiliate.Trading/TradingGetProducts"
+const Path_Trading_UpdateTradingProductPromotion = "/affiliate.Trading/UpdateTradingProductPromotion"
 
 func (s *TradingServiceServer) PathPrefix() string {
 	return TradingServicePathPrefix
@@ -439,6 +460,8 @@ func NewUserServiceServer(builder func() UserService, hooks ...httprpc.HooksBuil
 }
 
 const UserServicePathPrefix = "/affiliate.User/"
+
+const Path_User_UpdateReferral = "/affiliate.User/UpdateReferral"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix

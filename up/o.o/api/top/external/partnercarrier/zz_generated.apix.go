@@ -45,6 +45,9 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 
 const MiscServicePathPrefix = "/carrier.Misc/"
 
+const Path_Misc_CurrentAccount = "/carrier.Misc/CurrentAccount"
+const Path_Misc_GetLocationList = "/carrier.Misc/GetLocationList"
+
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
@@ -123,6 +126,11 @@ func NewShipmentConnectionServiceServer(builder func() ShipmentConnectionService
 }
 
 const ShipmentConnectionServicePathPrefix = "/carrier.ShipmentConnection/"
+
+const Path_ShipmentConnection_CreateConnection = "/carrier.ShipmentConnection/CreateConnection"
+const Path_ShipmentConnection_DeleteConnection = "/carrier.ShipmentConnection/DeleteConnection"
+const Path_ShipmentConnection_GetConnections = "/carrier.ShipmentConnection/GetConnections"
+const Path_ShipmentConnection_UpdateConnection = "/carrier.ShipmentConnection/UpdateConnection"
 
 func (s *ShipmentConnectionServiceServer) PathPrefix() string {
 	return ShipmentConnectionServicePathPrefix
@@ -228,6 +236,8 @@ func NewShipmentServiceServer(builder func() ShipmentService, hooks ...httprpc.H
 }
 
 const ShipmentServicePathPrefix = "/carrier.Shipment/"
+
+const Path_Shipment_UpdateFulfillment = "/carrier.Shipment/UpdateFulfillment"
 
 func (s *ShipmentServiceServer) PathPrefix() string {
 	return ShipmentServicePathPrefix

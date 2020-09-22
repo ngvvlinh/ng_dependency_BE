@@ -80,6 +80,14 @@ func GetHeader(ctx context.Context) http.Header {
 	return v.(http.Header)
 }
 
+func GetAuthorizationToken(ctx context.Context) string {
+	v := ctx.Value(authKey{})
+	if v == nil {
+		return ""
+	}
+	return strings.TrimPrefix(v.(string), "Bearer ")
+}
+
 // GetBearerTokenFromCtx ...
 func GetBearerTokenFromCtx(ctx context.Context) string {
 	authHeader, ok := ctx.Value(authKey{}).(string)

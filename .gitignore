@@ -1,11 +1,11 @@
 *.cover
 *.out
 *.test
-__config.yaml
 .DS_Store
 .idea
 .vscode
 __*
+__config.yaml
 _out
 bin
 debug*

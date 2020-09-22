@@ -43,6 +43,8 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 
 const MiscServicePathPrefix = "/handler.Misc/"
 
+const Path_Misc_VersionInfo = "/handler.Misc/VersionInfo"
+
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
@@ -108,6 +110,8 @@ func NewWebhookServiceServer(builder func() WebhookService, hooks ...httprpc.Hoo
 }
 
 const WebhookServicePathPrefix = "/handler.Webhook/"
+
+const Path_Webhook_ResetState = "/handler.Webhook/ResetState"
 
 func (s *WebhookServiceServer) PathPrefix() string {
 	return WebhookServicePathPrefix

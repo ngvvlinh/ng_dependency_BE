@@ -59,6 +59,15 @@ func NewAccountRelationshipServiceServer(builder func() AccountRelationshipServi
 
 const AccountRelationshipServicePathPrefix = "/etop.AccountRelationship/"
 
+const Path_AccountRelationship_CreateInvitation = "/etop.AccountRelationship/CreateInvitation"
+const Path_AccountRelationship_DeleteInvitation = "/etop.AccountRelationship/DeleteInvitation"
+const Path_AccountRelationship_GetInvitations = "/etop.AccountRelationship/GetInvitations"
+const Path_AccountRelationship_GetRelationships = "/etop.AccountRelationship/GetRelationships"
+const Path_AccountRelationship_RemoveUser = "/etop.AccountRelationship/RemoveUser"
+const Path_AccountRelationship_ResendInvitation = "/etop.AccountRelationship/ResendInvitation"
+const Path_AccountRelationship_UpdatePermission = "/etop.AccountRelationship/UpdatePermission"
+const Path_AccountRelationship_UpdateRelationship = "/etop.AccountRelationship/UpdateRelationship"
+
 func (s *AccountRelationshipServiceServer) PathPrefix() string {
 	return AccountRelationshipServicePathPrefix
 }
@@ -216,6 +225,10 @@ func NewAccountServiceServer(builder func() AccountService, hooks ...httprpc.Hoo
 
 const AccountServicePathPrefix = "/etop.Account/"
 
+const Path_Account_GetPublicPartnerInfo = "/etop.Account/GetPublicPartnerInfo"
+const Path_Account_GetPublicPartners = "/etop.Account/GetPublicPartners"
+const Path_Account_UpdateURLSlug = "/etop.Account/UpdateURLSlug"
+
 func (s *AccountServiceServer) PathPrefix() string {
 	return AccountServicePathPrefix
 }
@@ -307,6 +320,11 @@ func NewAddressServiceServer(builder func() AddressService, hooks ...httprpc.Hoo
 }
 
 const AddressServicePathPrefix = "/etop.Address/"
+
+const Path_Address_CreateAddress = "/etop.Address/CreateAddress"
+const Path_Address_GetAddresses = "/etop.Address/GetAddresses"
+const Path_Address_RemoveAddress = "/etop.Address/RemoveAddress"
+const Path_Address_UpdateAddress = "/etop.Address/UpdateAddress"
 
 func (s *AddressServiceServer) PathPrefix() string {
 	return AddressServicePathPrefix
@@ -412,6 +430,12 @@ func NewBankServiceServer(builder func() BankService, hooks ...httprpc.HooksBuil
 }
 
 const BankServicePathPrefix = "/etop.Bank/"
+
+const Path_Bank_GetBankBranches = "/etop.Bank/GetBankBranches"
+const Path_Bank_GetBankProvinces = "/etop.Bank/GetBankProvinces"
+const Path_Bank_GetBanks = "/etop.Bank/GetBanks"
+const Path_Bank_GetBranchesByBankProvince = "/etop.Bank/GetBranchesByBankProvince"
+const Path_Bank_GetProvincesByBank = "/etop.Bank/GetProvincesByBank"
 
 func (s *BankServiceServer) PathPrefix() string {
 	return BankServicePathPrefix
@@ -531,6 +555,8 @@ func NewEcomServiceServer(builder func() EcomService, hooks ...httprpc.HooksBuil
 
 const EcomServicePathPrefix = "/etop.Ecom/"
 
+const Path_Ecom_SessionInfo = "/etop.Ecom/SessionInfo"
+
 func (s *EcomServiceServer) PathPrefix() string {
 	return EcomServicePathPrefix
 }
@@ -596,6 +622,13 @@ func NewLocationServiceServer(builder func() LocationService, hooks ...httprpc.H
 }
 
 const LocationServicePathPrefix = "/etop.Location/"
+
+const Path_Location_GetDistricts = "/etop.Location/GetDistricts"
+const Path_Location_GetDistrictsByProvince = "/etop.Location/GetDistrictsByProvince"
+const Path_Location_GetProvinces = "/etop.Location/GetProvinces"
+const Path_Location_GetWards = "/etop.Location/GetWards"
+const Path_Location_GetWardsByDistrict = "/etop.Location/GetWardsByDistrict"
+const Path_Location_ParseLocation = "/etop.Location/ParseLocation"
 
 func (s *LocationServiceServer) PathPrefix() string {
 	return LocationServicePathPrefix
@@ -728,6 +761,8 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 
 const MiscServicePathPrefix = "/etop.Misc/"
 
+const Path_Misc_VersionInfo = "/etop.Misc/VersionInfo"
+
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
@@ -794,6 +829,8 @@ func NewTicketServiceServer(builder func() TicketService, hooks ...httprpc.Hooks
 
 const TicketServicePathPrefix = "/etop.Ticket/"
 
+const Path_Ticket_GetTicketLabels = "/etop.Ticket/GetTicketLabels"
+
 func (s *TicketServiceServer) PathPrefix() string {
 	return TicketServicePathPrefix
 }
@@ -859,6 +896,12 @@ func NewUserRelationshipServiceServer(builder func() UserRelationshipService, ho
 }
 
 const UserRelationshipServicePathPrefix = "/etop.UserRelationship/"
+
+const Path_UserRelationship_AcceptInvitation = "/etop.UserRelationship/AcceptInvitation"
+const Path_UserRelationship_GetInvitationByToken = "/etop.UserRelationship/GetInvitationByToken"
+const Path_UserRelationship_GetInvitations = "/etop.UserRelationship/GetInvitations"
+const Path_UserRelationship_LeaveAccount = "/etop.UserRelationship/LeaveAccount"
+const Path_UserRelationship_RejectInvitation = "/etop.UserRelationship/RejectInvitation"
 
 func (s *UserRelationshipServiceServer) PathPrefix() string {
 	return UserRelationshipServicePathPrefix
@@ -977,6 +1020,35 @@ func NewUserServiceServer(builder func() UserService, hooks ...httprpc.HooksBuil
 }
 
 const UserServicePathPrefix = "/etop.User/"
+
+const Path_User_ChangePassword = "/etop.User/ChangePassword"
+const Path_User_ChangePasswordUsingToken = "/etop.User/ChangePasswordUsingToken"
+const Path_User_ChangeRefAff = "/etop.User/ChangeRefAff"
+const Path_User_CheckUserRegistration = "/etop.User/CheckUserRegistration"
+const Path_User_DisableNotifyTopic = "/etop.User/DisableNotifyTopic"
+const Path_User_EnableNotifyTopic = "/etop.User/EnableNotifyTopic"
+const Path_User_GetNotifySetting = "/etop.User/GetNotifySetting"
+const Path_User_InitSession = "/etop.User/InitSession"
+const Path_User_Login = "/etop.User/Login"
+const Path_User_Register = "/etop.User/Register"
+const Path_User_RegisterUsingToken = "/etop.User/RegisterUsingToken"
+const Path_User_ResetPassword = "/etop.User/ResetPassword"
+const Path_User_SendEmailVerification = "/etop.User/SendEmailVerification"
+const Path_User_SendEmailVerificationUsingOTP = "/etop.User/SendEmailVerificationUsingOTP"
+const Path_User_SendPhoneVerification = "/etop.User/SendPhoneVerification"
+const Path_User_SendSTokenEmail = "/etop.User/SendSTokenEmail"
+const Path_User_SessionInfo = "/etop.User/SessionInfo"
+const Path_User_SwitchAccount = "/etop.User/SwitchAccount"
+const Path_User_UpdatePermission = "/etop.User/UpdatePermission"
+const Path_User_UpdateReferenceSale = "/etop.User/UpdateReferenceSale"
+const Path_User_UpdateReferenceUser = "/etop.User/UpdateReferenceUser"
+const Path_User_UpdateUserEmail = "/etop.User/UpdateUserEmail"
+const Path_User_UpdateUserPhone = "/etop.User/UpdateUserPhone"
+const Path_User_UpgradeAccessToken = "/etop.User/UpgradeAccessToken"
+const Path_User_VerifyEmailUsingOTP = "/etop.User/VerifyEmailUsingOTP"
+const Path_User_VerifyEmailUsingToken = "/etop.User/VerifyEmailUsingToken"
+const Path_User_VerifyPhoneResetPasswordUsingToken = "/etop.User/VerifyPhoneResetPasswordUsingToken"
+const Path_User_VerifyPhoneUsingToken = "/etop.User/VerifyPhoneUsingToken"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix

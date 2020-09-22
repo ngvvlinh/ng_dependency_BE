@@ -34,6 +34,10 @@ func New{{.Name}}ServiceServer(builder func() {{.Name}}Service, hooks ... httprp
 
 const {{.Name}}ServicePathPrefix = "/{{.APIPath}}/"
 
+{{range $m := .Methods -}}
+const Path_{{$s.Name}}_{{$m.Name}} = "/{{$s.APIPath}}/{{.APIPath}}"
+{{end}}
+
 func (s *{{$s.Name}}ServiceServer) PathPrefix() string {
 	return {{.Name}}ServicePathPrefix
 }

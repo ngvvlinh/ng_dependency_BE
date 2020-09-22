@@ -42,6 +42,12 @@ func NewShipnowServiceServer(builder func() ShipnowService, hooks ...httprpc.Hoo
 
 const ShipnowServicePathPrefix = "/vnposts/"
 
+const Path_Shipnow_CancelShipnowFulfillment = "/vnposts/cancelordervnpost"
+const Path_Shipnow_CreateShipnowFulfillment = "/vnposts/createordervnpost"
+const Path_Shipnow_GetShipnowFulfillment = "/vnposts/getordervnpost"
+const Path_Shipnow_GetShipnowServices = "/vnposts/getservicesvnpost"
+const Path_Shipnow_Ping = "/vnposts/ping"
+
 func (s *ShipnowServiceServer) PathPrefix() string {
 	return ShipnowServicePathPrefix
 }

@@ -43,6 +43,8 @@ func NewEventServiceServer(builder func() EventService, hooks ...httprpc.HooksBu
 
 const EventServicePathPrefix = "/pgevent.Event/"
 
+const Path_Event_GenerateEvents = "/pgevent.Event/GenerateEvents"
+
 func (s *EventServiceServer) PathPrefix() string {
 	return EventServicePathPrefix
 }
@@ -108,6 +110,8 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 }
 
 const MiscServicePathPrefix = "/pgevent.Misc/"
+
+const Path_Misc_VersionInfo = "/pgevent.Misc/VersionInfo"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix

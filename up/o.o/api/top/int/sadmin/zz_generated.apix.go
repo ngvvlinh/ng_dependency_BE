@@ -45,6 +45,8 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 
 const MiscServicePathPrefix = "/sadmin.Misc/"
 
+const Path_Misc_VersionInfo = "/sadmin.Misc/VersionInfo"
+
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
@@ -110,6 +112,10 @@ func NewUserServiceServer(builder func() UserService, hooks ...httprpc.HooksBuil
 }
 
 const UserServicePathPrefix = "/sadmin.User/"
+
+const Path_User_CreateUser = "/sadmin.User/CreateUser"
+const Path_User_LoginAsAccount = "/sadmin.User/LoginAsAccount"
+const Path_User_ResetPassword = "/sadmin.User/ResetPassword"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix
@@ -202,6 +208,9 @@ func NewWebhookServiceServer(builder func() WebhookService, hooks ...httprpc.Hoo
 }
 
 const WebhookServicePathPrefix = "/sadmin.Webhook/"
+
+const Path_Webhook_RegisterWebhook = "/sadmin.Webhook/RegisterWebhook"
+const Path_Webhook_UnregisterWebhook = "/sadmin.Webhook/UnregisterWebhook"
 
 func (s *WebhookServiceServer) PathPrefix() string {
 	return WebhookServicePathPrefix

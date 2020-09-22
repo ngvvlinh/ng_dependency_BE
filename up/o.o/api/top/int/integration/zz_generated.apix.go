@@ -43,6 +43,14 @@ func NewIntegrationServiceServer(builder func() IntegrationService, hooks ...htt
 
 const IntegrationServicePathPrefix = "/integration.Integration/"
 
+const Path_Integration_GrantAccess = "/integration.Integration/GrantAccess"
+const Path_Integration_Init = "/integration.Integration/Init"
+const Path_Integration_LoginUsingToken = "/integration.Integration/LoginUsingToken"
+const Path_Integration_LoginUsingTokenWL = "/integration.Integration/LoginUsingTokenWL"
+const Path_Integration_Register = "/integration.Integration/Register"
+const Path_Integration_RequestLogin = "/integration.Integration/RequestLogin"
+const Path_Integration_SessionInfo = "/integration.Integration/SessionInfo"
+
 func (s *IntegrationServiceServer) PathPrefix() string {
 	return IntegrationServicePathPrefix
 }
@@ -186,6 +194,8 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 }
 
 const MiscServicePathPrefix = "/integration.Misc/"
+
+const Path_Misc_VersionInfo = "/integration.Misc/VersionInfo"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix

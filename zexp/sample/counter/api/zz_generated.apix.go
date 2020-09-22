@@ -40,6 +40,9 @@ func NewCounterServiceServer(builder func() CounterService, hooks ...httprpc.Hoo
 
 const CounterServicePathPrefix = "/counter.Counter/"
 
+const Path_Counter_Counter = "/counter.Counter/Counter"
+const Path_Counter_Get = "/counter.Counter/Get"
+
 func (s *CounterServiceServer) PathPrefix() string {
 	return CounterServicePathPrefix
 }

@@ -40,6 +40,14 @@ func NewImportServiceServer(builder func() ImportService, hooks ...httprpc.Hooks
 
 const ImportServicePathPrefix = "/partner.Import/"
 
+const Path_Import_Brands = "/partner.Import/Brands"
+const Path_Import_Categories = "/partner.Import/Categories"
+const Path_Import_Collections = "/partner.Import/Collections"
+const Path_Import_Customers = "/partner.Import/Customers"
+const Path_Import_ProductCollections = "/partner.Import/ProductCollections"
+const Path_Import_Products = "/partner.Import/Products"
+const Path_Import_Variants = "/partner.Import/Variants"
+
 func (s *ImportServiceServer) PathPrefix() string {
 	return ImportServicePathPrefix
 }

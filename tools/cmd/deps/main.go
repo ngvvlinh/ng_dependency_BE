@@ -21,6 +21,7 @@ var (
 	flParent     = flag.Bool("parent", false, "include parent on the right")
 	flPrintFiles = flag.Bool("print-files", false, "print list of source files")
 	flCopyFiles  = flag.String("copy-files", "", "copy source code to directory")
+	flTags       = flag.String("tags", "release", "Go build tags (comma separated)")
 )
 
 func usage() {
@@ -41,9 +42,11 @@ func main() {
 	}
 
 	cfg := &packages.Config{
-		BuildFlags: []string{"-tags", "release"},
 		Mode: packages.NeedImports | packages.NeedDeps |
 			packages.NeedFiles | packages.NeedCompiledGoFiles,
+	}
+	if len(*flTags) != 0 {
+		cfg.BuildFlags = []string{"-tags", *flTags}
 	}
 	pkgs, err := packages.Load(cfg, patterns...)
 	if err != nil {

@@ -68,6 +68,13 @@ func NewAccountServiceServer(builder func() AccountService, hooks ...httprpc.Hoo
 
 const AccountServicePathPrefix = "/admin.Account/"
 
+const Path_Account_CreateAdminUser = "/admin.Account/CreateAdminUser"
+const Path_Account_CreatePartner = "/admin.Account/CreatePartner"
+const Path_Account_DeleteAdminUser = "/admin.Account/DeleteAdminUser"
+const Path_Account_GenerateAPIKey = "/admin.Account/GenerateAPIKey"
+const Path_Account_GetAdminUsers = "/admin.Account/GetAdminUsers"
+const Path_Account_UpdateAdminUser = "/admin.Account/UpdateAdminUser"
+
 func (s *AccountServiceServer) PathPrefix() string {
 	return AccountServicePathPrefix
 }
@@ -198,6 +205,14 @@ func NewConnectionServiceServer(builder func() ConnectionService, hooks ...httpr
 }
 
 const ConnectionServicePathPrefix = "/admin.Connection/"
+
+const Path_Connection_ConfirmConnection = "/admin.Connection/ConfirmConnection"
+const Path_Connection_CreateBuiltinConnection = "/admin.Connection/CreateBuiltinConnection"
+const Path_Connection_DisableConnection = "/admin.Connection/DisableConnection"
+const Path_Connection_GetBuiltinShopConnections = "/admin.Connection/GetBuiltinShopConnections"
+const Path_Connection_GetConnectionServices = "/admin.Connection/GetConnectionServices"
+const Path_Connection_GetConnections = "/admin.Connection/GetConnections"
+const Path_Connection_UpdateBuiltinShopConnection = "/admin.Connection/UpdateBuiltinShopConnection"
 
 func (s *ConnectionServiceServer) PathPrefix() string {
 	return ConnectionServicePathPrefix
@@ -343,6 +358,12 @@ func NewCreditServiceServer(builder func() CreditService, hooks ...httprpc.Hooks
 
 const CreditServicePathPrefix = "/admin.Credit/"
 
+const Path_Credit_ConfirmCredit = "/admin.Credit/ConfirmCredit"
+const Path_Credit_CreateCredit = "/admin.Credit/CreateCredit"
+const Path_Credit_DeleteCredit = "/admin.Credit/DeleteCredit"
+const Path_Credit_GetCredit = "/admin.Credit/GetCredit"
+const Path_Credit_GetCredits = "/admin.Credit/GetCredits"
+
 func (s *CreditServiceServer) PathPrefix() string {
 	return CreditServicePathPrefix
 }
@@ -460,6 +481,14 @@ func NewFulfillmentServiceServer(builder func() FulfillmentService, hooks ...htt
 }
 
 const FulfillmentServicePathPrefix = "/admin.Fulfillment/"
+
+const Path_Fulfillment_AddShippingFee = "/admin.Fulfillment/AddShippingFee"
+const Path_Fulfillment_GetFulfillment = "/admin.Fulfillment/GetFulfillment"
+const Path_Fulfillment_GetFulfillments = "/admin.Fulfillment/GetFulfillments"
+const Path_Fulfillment_UpdateFulfillmentCODAmount = "/admin.Fulfillment/UpdateFulfillmentCODAmount"
+const Path_Fulfillment_UpdateFulfillmentInfo = "/admin.Fulfillment/UpdateFulfillmentInfo"
+const Path_Fulfillment_UpdateFulfillmentShippingFees = "/admin.Fulfillment/UpdateFulfillmentShippingFees"
+const Path_Fulfillment_UpdateFulfillmentShippingState = "/admin.Fulfillment/UpdateFulfillmentShippingState"
 
 func (s *FulfillmentServiceServer) PathPrefix() string {
 	return FulfillmentServicePathPrefix
@@ -605,6 +634,12 @@ func NewLocationServiceServer(builder func() LocationService, hooks ...httprpc.H
 
 const LocationServicePathPrefix = "/admin.Location/"
 
+const Path_Location_CreateCustomRegion = "/admin.Location/CreateCustomRegion"
+const Path_Location_DeleteCustomRegion = "/admin.Location/DeleteCustomRegion"
+const Path_Location_GetCustomRegion = "/admin.Location/GetCustomRegion"
+const Path_Location_GetCustomRegions = "/admin.Location/GetCustomRegions"
+const Path_Location_UpdateCustomRegion = "/admin.Location/UpdateCustomRegion"
+
 func (s *LocationServiceServer) PathPrefix() string {
 	return LocationServicePathPrefix
 }
@@ -723,6 +758,9 @@ func NewMiscServiceServer(builder func() MiscService, hooks ...httprpc.HooksBuil
 
 const MiscServicePathPrefix = "/admin.Misc/"
 
+const Path_Misc_AdminLoginAsAccount = "/admin.Misc/AdminLoginAsAccount"
+const Path_Misc_VersionInfo = "/admin.Misc/VersionInfo"
+
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
 }
@@ -801,6 +839,24 @@ func NewMoneyTransactionServiceServer(builder func() MoneyTransactionService, ho
 }
 
 const MoneyTransactionServicePathPrefix = "/admin.MoneyTransaction/"
+
+const Path_MoneyTransaction_ConfirmMoneyTransaction = "/admin.MoneyTransaction/ConfirmMoneyTransaction"
+const Path_MoneyTransaction_ConfirmMoneyTransactionShippingEtop = "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop"
+const Path_MoneyTransaction_ConfirmMoneyTransactionShippingExternals = "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals"
+const Path_MoneyTransaction_CreateMoneyTransaction = "/admin.MoneyTransaction/CreateMoneyTransaction"
+const Path_MoneyTransaction_CreateMoneyTransactionShippingEtop = "/admin.MoneyTransaction/CreateMoneyTransactionShippingEtop"
+const Path_MoneyTransaction_DeleteMoneyTransactionShippingEtop = "/admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop"
+const Path_MoneyTransaction_DeleteMoneyTransactionShippingExternal = "/admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal"
+const Path_MoneyTransaction_GetMoneyTransaction = "/admin.MoneyTransaction/GetMoneyTransaction"
+const Path_MoneyTransaction_GetMoneyTransactionShippingEtop = "/admin.MoneyTransaction/GetMoneyTransactionShippingEtop"
+const Path_MoneyTransaction_GetMoneyTransactionShippingEtops = "/admin.MoneyTransaction/GetMoneyTransactionShippingEtops"
+const Path_MoneyTransaction_GetMoneyTransactionShippingExternal = "/admin.MoneyTransaction/GetMoneyTransactionShippingExternal"
+const Path_MoneyTransaction_GetMoneyTransactionShippingExternals = "/admin.MoneyTransaction/GetMoneyTransactionShippingExternals"
+const Path_MoneyTransaction_GetMoneyTransactions = "/admin.MoneyTransaction/GetMoneyTransactions"
+const Path_MoneyTransaction_RemoveMoneyTransactionShippingExternalLines = "/admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines"
+const Path_MoneyTransaction_UpdateMoneyTransaction = "/admin.MoneyTransaction/UpdateMoneyTransaction"
+const Path_MoneyTransaction_UpdateMoneyTransactionShippingEtop = "/admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop"
+const Path_MoneyTransaction_UpdateMoneyTransactionShippingExternal = "/admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal"
 
 func (s *MoneyTransactionServiceServer) PathPrefix() string {
 	return MoneyTransactionServicePathPrefix
@@ -1076,6 +1132,8 @@ func NewNotificationServiceServer(builder func() NotificationService, hooks ...h
 
 const NotificationServicePathPrefix = "/admin.Notification/"
 
+const Path_Notification_CreateNotifications = "/admin.Notification/CreateNotifications"
+
 func (s *NotificationServiceServer) PathPrefix() string {
 	return NotificationServicePathPrefix
 }
@@ -1141,6 +1199,10 @@ func NewOrderServiceServer(builder func() OrderService, hooks ...httprpc.HooksBu
 }
 
 const OrderServicePathPrefix = "/admin.Order/"
+
+const Path_Order_GetOrder = "/admin.Order/GetOrder"
+const Path_Order_GetOrders = "/admin.Order/GetOrders"
+const Path_Order_GetOrdersByIDs = "/admin.Order/GetOrdersByIDs"
 
 func (s *OrderServiceServer) PathPrefix() string {
 	return OrderServicePathPrefix
@@ -1233,6 +1295,37 @@ func NewShipmentPriceServiceServer(builder func() ShipmentPriceService, hooks ..
 }
 
 const ShipmentPriceServicePathPrefix = "/admin.ShipmentPrice/"
+
+const Path_ShipmentPrice_CreateShipmentPrice = "/admin.ShipmentPrice/CreateShipmentPrice"
+const Path_ShipmentPrice_CreateShipmentPriceList = "/admin.ShipmentPrice/CreateShipmentPriceList"
+const Path_ShipmentPrice_CreateShipmentPriceListPromotion = "/admin.ShipmentPrice/CreateShipmentPriceListPromotion"
+const Path_ShipmentPrice_CreateShipmentService = "/admin.ShipmentPrice/CreateShipmentService"
+const Path_ShipmentPrice_CreateShopShipmentPriceList = "/admin.ShipmentPrice/CreateShopShipmentPriceList"
+const Path_ShipmentPrice_DeleteShipmentPrice = "/admin.ShipmentPrice/DeleteShipmentPrice"
+const Path_ShipmentPrice_DeleteShipmentPriceList = "/admin.ShipmentPrice/DeleteShipmentPriceList"
+const Path_ShipmentPrice_DeleteShipmentPriceListPromotion = "/admin.ShipmentPrice/DeleteShipmentPriceListPromotion"
+const Path_ShipmentPrice_DeleteShipmentService = "/admin.ShipmentPrice/DeleteShipmentService"
+const Path_ShipmentPrice_DeleteShopShipmentPriceList = "/admin.ShipmentPrice/DeleteShopShipmentPriceList"
+const Path_ShipmentPrice_GetShipmentPrice = "/admin.ShipmentPrice/GetShipmentPrice"
+const Path_ShipmentPrice_GetShipmentPriceList = "/admin.ShipmentPrice/GetShipmentPriceList"
+const Path_ShipmentPrice_GetShipmentPriceListPromotion = "/admin.ShipmentPrice/GetShipmentPriceListPromotion"
+const Path_ShipmentPrice_GetShipmentPriceListPromotions = "/admin.ShipmentPrice/GetShipmentPriceListPromotions"
+const Path_ShipmentPrice_GetShipmentPriceLists = "/admin.ShipmentPrice/GetShipmentPriceLists"
+const Path_ShipmentPrice_GetShipmentPrices = "/admin.ShipmentPrice/GetShipmentPrices"
+const Path_ShipmentPrice_GetShipmentService = "/admin.ShipmentPrice/GetShipmentService"
+const Path_ShipmentPrice_GetShipmentServices = "/admin.ShipmentPrice/GetShipmentServices"
+const Path_ShipmentPrice_GetShippingServices = "/admin.ShipmentPrice/GetShippingServices"
+const Path_ShipmentPrice_GetShopShipmentPriceList = "/admin.ShipmentPrice/GetShopShipmentPriceList"
+const Path_ShipmentPrice_GetShopShipmentPriceLists = "/admin.ShipmentPrice/GetShopShipmentPriceLists"
+const Path_ShipmentPrice_SetDefaultShipmentPriceList = "/admin.ShipmentPrice/SetDefaultShipmentPriceList"
+const Path_ShipmentPrice_UpdateShipmentPrice = "/admin.ShipmentPrice/UpdateShipmentPrice"
+const Path_ShipmentPrice_UpdateShipmentPriceList = "/admin.ShipmentPrice/UpdateShipmentPriceList"
+const Path_ShipmentPrice_UpdateShipmentPriceListPromotion = "/admin.ShipmentPrice/UpdateShipmentPriceListPromotion"
+const Path_ShipmentPrice_UpdateShipmentPricesPriorityPoint = "/admin.ShipmentPrice/UpdateShipmentPricesPriorityPoint"
+const Path_ShipmentPrice_UpdateShipmentService = "/admin.ShipmentPrice/UpdateShipmentService"
+const Path_ShipmentPrice_UpdateShipmentServicesAvailableLocations = "/admin.ShipmentPrice/UpdateShipmentServicesAvailableLocations"
+const Path_ShipmentPrice_UpdateShipmentServicesBlacklistLocations = "/admin.ShipmentPrice/UpdateShipmentServicesBlacklistLocations"
+const Path_ShipmentPrice_UpdateShopShipmentPriceList = "/admin.ShipmentPrice/UpdateShopShipmentPriceList"
 
 func (s *ShipmentPriceServiceServer) PathPrefix() string {
 	return ShipmentPriceServicePathPrefix
@@ -1677,6 +1770,10 @@ func NewShopServiceServer(builder func() ShopService, hooks ...httprpc.HooksBuil
 
 const ShopServicePathPrefix = "/admin.Shop/"
 
+const Path_Shop_GetShop = "/admin.Shop/GetShop"
+const Path_Shop_GetShops = "/admin.Shop/GetShops"
+const Path_Shop_GetShopsByIDs = "/admin.Shop/GetShopsByIDs"
+
 func (s *ShopServiceServer) PathPrefix() string {
 	return ShopServicePathPrefix
 }
@@ -1768,6 +1865,25 @@ func NewSubscriptionServiceServer(builder func() SubscriptionService, hooks ...h
 }
 
 const SubscriptionServicePathPrefix = "/admin.Subscription/"
+
+const Path_Subscription_ActivateSubscription = "/admin.Subscription/ActivateSubscription"
+const Path_Subscription_CancelSubscription = "/admin.Subscription/CancelSubscription"
+const Path_Subscription_CreateSubscription = "/admin.Subscription/CreateSubscription"
+const Path_Subscription_CreateSubscriptionBill = "/admin.Subscription/CreateSubscriptionBill"
+const Path_Subscription_CreateSubscriptionPlan = "/admin.Subscription/CreateSubscriptionPlan"
+const Path_Subscription_CreateSubscriptionProduct = "/admin.Subscription/CreateSubscriptionProduct"
+const Path_Subscription_DeleteSubscription = "/admin.Subscription/DeleteSubscription"
+const Path_Subscription_DeleteSubscriptionBill = "/admin.Subscription/DeleteSubscriptionBill"
+const Path_Subscription_DeleteSubscriptionPlan = "/admin.Subscription/DeleteSubscriptionPlan"
+const Path_Subscription_DeleteSubscriptionProduct = "/admin.Subscription/DeleteSubscriptionProduct"
+const Path_Subscription_GetSubscription = "/admin.Subscription/GetSubscription"
+const Path_Subscription_GetSubscriptionBills = "/admin.Subscription/GetSubscriptionBills"
+const Path_Subscription_GetSubscriptionPlans = "/admin.Subscription/GetSubscriptionPlans"
+const Path_Subscription_GetSubscriptionProducts = "/admin.Subscription/GetSubscriptionProducts"
+const Path_Subscription_GetSubscriptions = "/admin.Subscription/GetSubscriptions"
+const Path_Subscription_ManualPaymentSubscriptionBill = "/admin.Subscription/ManualPaymentSubscriptionBill"
+const Path_Subscription_UpdateSubscriptionInfo = "/admin.Subscription/UpdateSubscriptionInfo"
+const Path_Subscription_UpdateSubscriptionPlan = "/admin.Subscription/UpdateSubscriptionPlan"
 
 func (s *SubscriptionServiceServer) PathPrefix() string {
 	return SubscriptionServicePathPrefix
@@ -2056,6 +2172,21 @@ func NewTicketServiceServer(builder func() TicketService, hooks ...httprpc.Hooks
 
 const TicketServicePathPrefix = "/admin.Ticket/"
 
+const Path_Ticket_AssignTicket = "/admin.Ticket/AssignTicket"
+const Path_Ticket_CloseTicket = "/admin.Ticket/CloseTicket"
+const Path_Ticket_ConfirmTicket = "/admin.Ticket/ConfirmTicket"
+const Path_Ticket_CreateTicket = "/admin.Ticket/CreateTicket"
+const Path_Ticket_CreateTicketComment = "/admin.Ticket/CreateTicketComment"
+const Path_Ticket_CreateTicketLabel = "/admin.Ticket/CreateTicketLabel"
+const Path_Ticket_DeleteTicketLabel = "/admin.Ticket/DeleteTicketLabel"
+const Path_Ticket_GetTicket = "/admin.Ticket/GetTicket"
+const Path_Ticket_GetTicketComments = "/admin.Ticket/GetTicketComments"
+const Path_Ticket_GetTickets = "/admin.Ticket/GetTickets"
+const Path_Ticket_ReopenTicket = "/admin.Ticket/ReopenTicket"
+const Path_Ticket_UnassignTicket = "/admin.Ticket/UnassignTicket"
+const Path_Ticket_UpdateTicketComment = "/admin.Ticket/UpdateTicketComment"
+const Path_Ticket_UpdateTicketLabel = "/admin.Ticket/UpdateTicketLabel"
+
 func (s *TicketServiceServer) PathPrefix() string {
 	return TicketServicePathPrefix
 }
@@ -2290,6 +2421,13 @@ func NewUserServiceServer(builder func() UserService, hooks ...httprpc.HooksBuil
 }
 
 const UserServicePathPrefix = "/admin.User/"
+
+const Path_User_BlockUser = "/admin.User/BlockUser"
+const Path_User_GetUser = "/admin.User/GetUser"
+const Path_User_GetUsers = "/admin.User/GetUsers"
+const Path_User_GetUsersByIDs = "/admin.User/GetUsersByIDs"
+const Path_User_UnblockUser = "/admin.User/UnblockUser"
+const Path_User_UpdateUserRef = "/admin.User/UpdateUserRef"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix
