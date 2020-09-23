@@ -88,10 +88,8 @@ func (d *NinjaVanDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.F
 	}
 
 	// get insurance value
-	var insuranceValue int
-	if args.IncludeInsurance {
-		insuranceValue = args.InsuranceValue.Int
-	}
+	maxValueFreeInsuranceFee := d.GetMaxValueFreeInsuranceFee()
+	insuranceValue := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 	addressFrom := ninjavanclient.ToAddress(ffm.AddressFrom)
 	addressTo := ninjavanclient.ToAddress(ffm.AddressTo)
 	now := time.Now()

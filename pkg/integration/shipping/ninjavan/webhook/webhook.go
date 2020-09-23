@@ -173,7 +173,7 @@ func (wh *Webhook) saveLogsWebhook(ctx context.Context, msg ninjavanclient.Callb
 	shippingState := ninjavanclient.State(msg.Status).ToModel()
 	webhookData := &logmodel.ShippingProviderWebhook{
 		ID:                    cm.NewID(),
-		ShippingProvider:      shipping_provider.GHN.String(),
+		ShippingProvider:      shipping_provider.NinjaVan.String(),
 		ShippingCode:          msg.TrackingID.String(),
 		ExternalShippingState: msg.Status.String(),
 		ShippingState:         shippingState.String(),
