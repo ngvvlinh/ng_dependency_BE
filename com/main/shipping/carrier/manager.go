@@ -430,10 +430,6 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 		return nil, err
 	}
 
-	// Chỉ có method=direct mới được login
-	if conn.ConnectionMethod != connection_type.ConnectionMethodDirect {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Do not support this feature for this connection")
-	}
 	return m.carrierDriver.GetAffiliateShipmentDriver(m.env, m.locationQS, conn, m.webhookEndpoints)
 }
 
