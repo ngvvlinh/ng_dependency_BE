@@ -1120,7 +1120,11 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:        session,
 		ShipnowService: shipnowService2,
 	}
-	vnpServers := vnp.NewServers(vnPostService)
+	vnPostWebhookService := &vnp.VNPostWebhookService{
+		Session:      session,
+		WebhookInner: service2,
+	}
+	vnpServers := vnp.NewServers(vnPostService, vnPostWebhookService)
 	extHandlers, err := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers, vnpServers)
 	if err != nil {
 		cleanup6()

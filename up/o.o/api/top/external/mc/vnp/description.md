@@ -43,3 +43,8 @@ trị bằng body sử dụng định dạng dữ liệu `application/json`. Cá
 | 404 | Not Found - API Path không tồn tại, hoặc đối tượng được request không tồn tại.
 | 405 | Method Not Allowed - Luôn sử dụng **POST** trong tất cả API của chúng tôi.
 | 500 | Internal Server Error - Hệ thống đang gặp sự cố. Hãy thử lại sau hoặc liên hệ với chúng tôi.
+
+# Phụ lục
+
+Chi tiết trạng thái đơn giao tức thì xem ở đây: 
+[shipnow_state](https://api.sandbox.etop.vn/doc/shop/appendix.html#trang-thai-don-giao-tuc-thi)

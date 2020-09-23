@@ -15,7 +15,7 @@ func TestBuildJSON(t *testing.T) {
 		[]byte(`{"c":"d"}`),
 	}
 	id := dot.ID(1234567890123456789)
-	out := buildJSON(id, msgs)
+	out, inner := buildJSON(id, msgs)
 
 	var callback struct {
 		ID      string              `json:"id"`
@@ -28,4 +28,6 @@ func TestBuildJSON(t *testing.T) {
 		{"a": "b"},
 		{"c": "d"},
 	})
+	expected := `[{"a":"b"},{"c":"d"}]`
+	require.Equal(t, expected, string(inner))
 }

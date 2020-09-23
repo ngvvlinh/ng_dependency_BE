@@ -141,8 +141,7 @@ func (s *SingleSender) Shutdown() {
 
 func (s *SingleSender) storeToDatabase(callbackID dot.ID, mc *types.MessageCollector, states *WebhookStatesError) error {
 	// TODO: refactor
-	changesData := buildJSON(callbackID, mc.Messages)
-	changesData = changesData[len(jsonOpen)-1 : len(changesData)-1]
+	_, changesData := buildJSON(callbackID, mc.Messages)
 	statesData, _ := jsonx.Marshal(states)
 
 	data := &callbackmodel.Callback{
@@ -153,7 +152,7 @@ func (s *SingleSender) storeToDatabase(callbackID dot.ID, mc *types.MessageColle
 		Changes:   changesData,
 		Result:    statesData,
 	}
-	ll.Debug("store to database", l.ID("id", data.ID), l.ID("account_id", s.webhook.AccountID), l.ID("webhook_id", s.webhook.ID))
+	ll.Debug("store to database", l.ID("id", data.ID), l.ID("account_id", s.webhook.AccountID), l.ID("webhook_id", s.webhook.ID), l.Any("data", data))
 	return changesStore.Insert(context.Background(), data)
 }
 
@@ -293,7 +292,7 @@ func (s *SingleSender) Send() (*WebhookStatesError, error) {
 	}
 
 	callbackID := cm.NewID()
-	data := buildJSON(callbackID, truncate(items.Messages, MaxChangesItems))
+	data, _ := buildJSON(callbackID, truncate(items.Messages, MaxChangesItems))
 	wh := s.webhook
 	status, respData, err := sendWebhookSingleRequest(context.Background(), wh, data)
 
@@ -348,22 +347,24 @@ func sendWebhookSingleRequest(ctx context.Context, wh *callbackmodel.Webhook, da
 const jsonOpen = `"changes":[`
 const jsonClose = `]}`
 
-func buildJSON(callbackID dot.ID, msgs [][]byte) []byte {
+// inner: changes data
+func buildJSON(callbackID dot.ID, msgs [][]byte) (data []byte, inner []byte) {
 	size := 1 + len(jsonOpen) + len(jsonClose) + 30 // id:"",
 	for _, msg := range msgs {
 		size += len(msg) + 1
 	}
 
-	data := make([]byte, 0, size)
+	data = make([]byte, 0, size)
 	data = append(data, `{"id":"`...)
 	data = strconv.AppendInt(data, callbackID.Int64(), 10)
 	data = append(data, `",`...)
 	data = append(data, jsonOpen...)
+	idx := len(data)
 	for _, msg := range msgs {
 		data = append(data, msg...)
 		data = append(data, ',')
 	}
 	data = data[:len(data)-1]
 	data = append(data, jsonClose...)
-	return data
+	return data, data[idx-1 : len(data)-1]
 }

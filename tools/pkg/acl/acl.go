@@ -635,6 +635,10 @@ var _acl = map[string]*permission.Decl{
 	"ext/vnposts/cancelordervnpost": {Type: Shop, Auth: APIKey},
 	"ext/vnposts/getordervnpost":    {Type: Shop, Auth: APIKey},
 
+	"ext/vnposts/webhook/createwebhook": {Type: Shop, Auth: APIKey},
+	"ext/vnposts/webhook/getwebhooks":   {Type: Shop, Auth: APIKey},
+	"ext/vnposts/webhook/deletewebhook": {Type: Shop, Auth: APIKey},
+
 	//-- integration --//
 
 	"integration.Integration/Init":              {Type: Public},

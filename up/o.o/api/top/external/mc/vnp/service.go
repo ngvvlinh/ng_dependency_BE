@@ -18,7 +18,7 @@ import (
 var _ shop.ShipnowService = ShipnowService(nil)
 
 // +apix:path=/vnposts
-// +swagger:tag: Giao Siêu Tốc
+// +swagger:tag: Giao tức thì
 type ShipnowService interface {
 
 	// Ping
@@ -30,29 +30,56 @@ type ShipnowService interface {
 
 	// Get Services
 	//
-	// Lấy danh sách các dịch vụ Siêu Tốc.
+	// Lấy danh sách các dịch vụ tức thì.
 	//
 	// +apix:path=getservicesvnpost
 	GetShipnowServices(context.Context, *types.GetShipnowServicesRequest) (*types.GetShipnowServicesResponse, error)
 
 	// Create Order
 	//
-	// Tạo đơn giao Siêu Tốc.
+	// Tạo đơn giao tức thì.
 	//
 	// +apix:path=createordervnpost
 	CreateShipnowFulfillment(context.Context, *types.CreateShipnowFulfillmentRequest) (*types.ShipnowFulfillment, error)
 
 	// Cancel Order
 	//
-	// Huỷ đơn giao Siêu Tốc.
+	// Huỷ đơn giao tức thì.
 	//
 	// +apix:path=cancelordervnpost
 	CancelShipnowFulfillment(context.Context, *types.CancelShipnowFulfillmentRequest) (*cm.UpdatedResponse, error)
 
 	// Get Order
 	//
-	// Lấy thông tin đơn giao Siêu Tốc.
+	// Lấy thông tin đơn giao tức thì.
 	//
 	// +apix:path=getordervnpost
 	GetShipnowFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.ShipnowFulfillment, error)
+}
+
+// +apix:path=/vnposts/webhook
+type WebhookService interface {
+	// Create Webhook
+	//
+	// Tạo webhook.
+	//
+	// +apix:path=createwebhook
+	CreateWebhook(context.Context, *CreateWebhookRequest) (*Webhook, error)
+
+	// Get Webhooks
+	//
+	// Lấy danh sách webhooks đã đăng ký.
+	//
+	// +apix:path=getwebhooks
+	GetWebhooks(context.Context, *cm.Empty) (*WebhooksResponse, error)
+
+	// Delete Webhook
+	//
+	// Xóa webhook
+	//
+	// +apix:path=deletewebhook
+	DeleteWebhook(context.Context, *types.DeleteWebhookRequest) (*WebhooksResponse, error)
+
+	// This API provides an example for webhook data. It's not a real API.
+	GetChanges(context.Context, *cm.Empty) (*DataCallback, error)
 }

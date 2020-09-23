@@ -11,16 +11,16 @@
   ],
   "swagger": "2.0",
   "info": {
-    "description": "# Cấu trúc API\n\n## Cấu hình\n\nKhi đề cập đến các API trong phần này, chúng tôi sẽ không kèm theo **BASE_URL**\nvà bạn mặc định hiểu là khi truy vấn sẽ gắn thêm chuỗi **BASE_URL** phía trước\nđường dẫn cụ thể của API. Ví dụ `/v1/vnposts/ping` sẽ là\n`https://vnpost-api-development.movecrop.com/v1/vnposts/ping`. Bạn cũng cần một\n**TOKEN** hợp lệ để truy cập các API.\n\n```bash\nexport BASE_URL=https://vnpost-api-development.movecrop.com\nexport TOKEN=MzRiOWY1Mj...\n```\n\n## Request \u0026 Authorization\n\nMột lời gọi API tiêu biểu như sau:\n\n```bash\ncurl $BASE_URL/v1/vnposts/ping \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -d '{}'\n```\n\nTất cả request sử dụng giao thức **HTTPS**, phương thức **POST** và truyền giá\ntrị bằng body sử dụng định dạng dữ liệu `application/json`. Các header bắt buộc:\n\n| Header | Nội dung | Mô tả |\n| --- | --- | --- |\n| Content-Type | application/json | |\n| Authorization | Bearer MzRiOWY1Mj... | $TOKEN được cung cấp |\n\n## HTTP Code\n\n| Status | Mô tả |\n| --- | --- |\n| 200 | OK - Request đã được xử lý thành công.\n| 400 | Bad Request -  Request không đúng cấu trúc hoặc thiếu dữ liệu yêu cầu. Hãy kiểm tra lại request.\n| 401 | Unauthorized - Token của bạn không đúng hoặc đã hết hiệu lực.\n| 403 | Forbidden - Bạn không có quyền truy cập đối tượng này. \n| 404 | Not Found - API Path không tồn tại, hoặc đối tượng được request không tồn tại.\n| 405 | Method Not Allowed - Luôn sử dụng **POST** trong tất cả API của chúng tôi.\n| 500 | Internal Server Error - Hệ thống đang gặp sự cố. Hãy thử lại sau hoặc liên hệ với chúng tôi.",
+    "description": "# Cấu trúc API\n\n## Cấu hình\n\nKhi đề cập đến các API trong phần này, chúng tôi sẽ không kèm theo **BASE_URL**\nvà bạn mặc định hiểu là khi truy vấn sẽ gắn thêm chuỗi **BASE_URL** phía trước\nđường dẫn cụ thể của API. Ví dụ `/v1/vnposts/ping` sẽ là\n`https://vnpost-api-development.movecrop.com/v1/vnposts/ping`. Bạn cũng cần một\n**TOKEN** hợp lệ để truy cập các API.\n\n```bash\nexport BASE_URL=https://vnpost-api-development.movecrop.com\nexport TOKEN=MzRiOWY1Mj...\n```\n\n## Request \u0026 Authorization\n\nMột lời gọi API tiêu biểu như sau:\n\n```bash\ncurl $BASE_URL/v1/vnposts/ping \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: Bearer $TOKEN\" \\\n  -d '{}'\n```\n\nTất cả request sử dụng giao thức **HTTPS**, phương thức **POST** và truyền giá\ntrị bằng body sử dụng định dạng dữ liệu `application/json`. Các header bắt buộc:\n\n| Header | Nội dung | Mô tả |\n| --- | --- | --- |\n| Content-Type | application/json | |\n| Authorization | Bearer MzRiOWY1Mj... | $TOKEN được cung cấp |\n\n## HTTP Code\n\n| Status | Mô tả |\n| --- | --- |\n| 200 | OK - Request đã được xử lý thành công.\n| 400 | Bad Request -  Request không đúng cấu trúc hoặc thiếu dữ liệu yêu cầu. Hãy kiểm tra lại request.\n| 401 | Unauthorized - Token của bạn không đúng hoặc đã hết hiệu lực.\n| 403 | Forbidden - Bạn không có quyền truy cập đối tượng này. \n| 404 | Not Found - API Path không tồn tại, hoặc đối tượng được request không tồn tại.\n| 405 | Method Not Allowed - Luôn sử dụng **POST** trong tất cả API của chúng tôi.\n| 500 | Internal Server Error - Hệ thống đang gặp sự cố. Hãy thử lại sau hoặc liên hệ với chúng tôi.\n\n# Phụ lục\n\nChi tiết trạng thái đơn giao tức thì xem ở đây: \n[shipnow_state](https://api.sandbox.etop.vn/doc/shop/appendix.html#trang-thai-don-giao-tuc-thi)",
     "title": "MoveCrop - VNPost",
     "version": "v1"
   },
   "paths": {
     "/v1/vnposts/cancelordervnpost": {
       "post": {
-        "description": "Huỷ đơn giao Siêu Tốc.\n",
+        "description": "Huỷ đơn giao tức thì.\n",
         "tags": [
-          "Giao Siêu Tốc"
+          "Giao tức thì"
         ],
         "summary": "Cancel Order",
         "operationId": "vnposts-CancelShipnowFulfillment",
@@ -46,9 +46,9 @@
     },
     "/v1/vnposts/createordervnpost": {
       "post": {
-        "description": "Tạo đơn giao Siêu Tốc.\n",
+        "description": "Tạo đơn giao tức thì.\n",
         "tags": [
-          "Giao Siêu Tốc"
+          "Giao tức thì"
         ],
         "summary": "Create Order",
         "operationId": "vnposts-CreateShipnowFulfillment",
@@ -74,9 +74,9 @@
     },
     "/v1/vnposts/getordervnpost": {
       "post": {
-        "description": "Lấy thông tin đơn giao Siêu Tốc.\n",
+        "description": "Lấy thông tin đơn giao tức thì.\n",
         "tags": [
-          "Giao Siêu Tốc"
+          "Giao tức thì"
         ],
         "summary": "Get Order",
         "operationId": "vnposts-GetShipnowFulfillment",
@@ -102,9 +102,9 @@
     },
     "/v1/vnposts/getservicesvnpost": {
       "post": {
-        "description": "Lấy danh sách các dịch vụ Siêu Tốc.\n",
+        "description": "Lấy danh sách các dịch vụ tức thì.\n",
         "tags": [
-          "Giao Siêu Tốc"
+          "Giao tức thì"
         ],
         "summary": "Get Services",
         "operationId": "vnposts-GetShipnowServices",
@@ -132,7 +132,7 @@
       "post": {
         "description": "Kiểm tra token là hợp lệ và server đang hoạt động.\n",
         "tags": [
-          "Giao Siêu Tốc"
+          "Giao tức thì"
         ],
         "summary": "Ping",
         "operationId": "vnposts-Ping",
@@ -151,6 +151,118 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vnposts/webhook/GetChanges": {
+      "post": {
+        "description": "This API provides an example for webhook data. It's not a real API.\n",
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "GetChanges",
+        "operationId": "vnposts-webhook-GetChanges",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xnDataCallback"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vnposts/webhook/createwebhook": {
+      "post": {
+        "description": "Tạo webhook.\n",
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Create Webhook",
+        "operationId": "vnposts-webhook-CreateWebhook",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xnCreateWebhookRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xnWebhook"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vnposts/webhook/deletewebhook": {
+      "post": {
+        "description": "Xóa webhook\n",
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Delete Webhook",
+        "operationId": "vnposts-webhook-DeleteWebhook",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrDeleteWebhookRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xnWebhooksResponse"
+            }
+          }
+        }
+      }
+    },
+    "/v1/vnposts/webhook/getwebhooks": {
+      "post": {
+        "description": "Lấy danh sách webhooks đã đăng ký.\n",
+        "tags": [
+          "Webhook"
+        ],
+        "summary": "Get Webhooks",
+        "operationId": "vnposts-webhook-GetWebhooks",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xnWebhooksResponse"
             }
           }
         }
@@ -288,6 +400,15 @@
         },
         "shipping_service_fee": {
           "type": "integer"
+        }
+      }
+    },
+    "mrDeleteWebhookRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -640,11 +761,172 @@
           "type": "string"
         }
       }
+    },
+    "mrWebhookError": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string"
+        },
+        "resp_body": {
+          "type": "string"
+        },
+        "resp_status": {
+          "type": "integer"
+        },
+        "retried": {
+          "type": "integer"
+        },
+        "sent_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mrWebhookStates": {
+      "type": "object",
+      "properties": {
+        "last_error": {
+          "$ref": "#/definitions/mrWebhookError"
+        },
+        "last_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "state": {
+          "type": "string"
+        }
+      }
+    },
+    "vjEntityType": {
+      "type": "string",
+      "enum": [
+        "shipnow_fulfillment"
+      ]
+    },
+    "xnChange": {
+      "type": "object",
+      "properties": {
+        "change_type": {
+          "type": "string"
+        },
+        "changed": {
+          "allOf": [
+            {
+              "description": "Giá trị thay đổi của đối tượng (entity)\nChỉ chứa những trường có thay đổi\n"
+            },
+            {
+              "$ref": "#/definitions/xnChangeOneOf"
+            }
+          ]
+        },
+        "entity": {
+          "$ref": "#/definitions/vjEntityType"
+        },
+        "lastest": {
+          "allOf": [
+            {
+              "description": "Giá trị hiện tại của đối tượng (entity)\nChứa đầy đủ data\n"
+            },
+            {
+              "$ref": "#/definitions/xnLastestOneOf"
+            }
+          ]
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "xnChangeOneOf": {
+      "type": "object",
+      "properties": {
+        "shipnow_fulfillment": {
+          "$ref": "#/definitions/mrShipnowFulfillment"
+        }
+      }
+    },
+    "xnCreateWebhookRequest": {
+      "type": "object",
+      "properties": {
+        "entities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vjEntityType"
+          }
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "xnDataCallback": {
+      "type": "object",
+      "properties": {
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xnChange"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xnLastestOneOf": {
+      "type": "object",
+      "properties": {
+        "shipnow_fulfillment": {
+          "$ref": "#/definitions/mrShipnowFulfillment"
+        }
+      }
+    },
+    "xnWebhook": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vjEntityType"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "states": {
+          "$ref": "#/definitions/mrWebhookStates"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "xnWebhooksResponse": {
+      "type": "object",
+      "properties": {
+        "webhooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xnWebhook"
+          }
+        }
+      }
     }
   },
   "tags": [
     {
-      "name": "Giao Siêu Tốc"
+      "name": "Giao tức thì"
+    },
+    {
+      "name": "Webhook"
     }
   ]
 }
