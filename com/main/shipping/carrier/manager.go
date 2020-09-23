@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"o.o/api/main/connectioning"
+	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	"o.o/api/main/shipmentpricing/pricelistpromotion"
 	"o.o/api/main/shipmentpricing/shipmentprice"
@@ -51,6 +52,7 @@ const (
 
 type ShipmentManager struct {
 	locationQS           location.QueryBus
+	identityQS           identity.QueryBus
 	connectionQS         connectioning.QueryBus
 	connectionAggr       connectioning.CommandBus
 	env                  string
@@ -72,6 +74,7 @@ type ShipmentManager struct {
 func NewShipmentManager(
 	eventBus capi.EventBus,
 	locationQS location.QueryBus,
+	identityQS identity.QueryBus,
 	connectionQS connectioning.QueryBus,
 	connectionAggr connectioning.CommandBus,
 	shipmentServiceQS shipmentservice.QueryBus,
@@ -85,6 +88,7 @@ func NewShipmentManager(
 	sm := &ShipmentManager{
 		eventBus:             eventBus,
 		locationQS:           locationQS,
+		identityQS:           identityQS,
 		connectionQS:         connectionQS,
 		connectionAggr:       connectionAggr,
 		env:                  cmenv.PartnerEnv(),
@@ -128,7 +132,7 @@ func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID do
 		return nil, err
 	}
 
-	shipmentDriver, err := m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, connection, shopConnection, m.webhookEndpoints)
+	shipmentDriver, err := m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, m.identityQS, connection, shopConnection, m.webhookEndpoints)
 	if err != nil {
 		return nil, err
 	}
@@ -430,7 +434,7 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 		return nil, err
 	}
 
-	return m.carrierDriver.GetAffiliateShipmentDriver(m.env, m.locationQS, conn, m.webhookEndpoints)
+	return m.carrierDriver.GetAffiliateShipmentDriver(m.env, m.locationQS, m.identityQS, conn, m.webhookEndpoints)
 }
 
 func (m *ShipmentManager) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (updateFfm *shipmodel.Fulfillment, err error) {

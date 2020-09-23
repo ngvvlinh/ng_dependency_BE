@@ -503,7 +503,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	config2 := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	shippingCodeGenerator := driver.NewShippingCodeGenerator(mainDB)
 	driver2 := shipment_all.SupportedCarrierDriver(shippingCodeGenerator)
-	shipmentManager, err := carrier2.NewShipmentManager(busBus, locationQueryBus, connectioningQueryBus, connectioningCommandBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, config2, driver2, connectionManager, orderStoreInterface)
+	shipmentManager, err := carrier2.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, config2, driver2, connectionManager, orderStoreInterface)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err

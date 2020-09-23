@@ -285,12 +285,19 @@ type GenerateAccessTokenResponse struct {
 }
 
 type CreateOrderRequest struct {
-	ServiceType  string       `json:"service_type"`
-	ServiceLevel string       `json:"service_level"`
-	Reference    *Reference   `json:"reference"`
-	From         *AddressInfo `json:"from"`
-	To           *AddressInfo `json:"to"`
-	ParcelJob    *ParcelJob   `json:"parcel_job"`
+	ServiceType             string       `json:"service_type"`
+	ServiceLevel            string       `json:"service_level"`
+	RequestedTrackingNumber string       `json:"requested_tracking_number"`
+	Reference               *Reference   `json:"reference"`
+	From                    *AddressInfo `json:"from"`
+	To                      *AddressInfo `json:"to"`
+	ParcelJob               *ParcelJob   `json:"parcel_job"`
+	Marketplace             *Marketplace `json:"marketplace"`
+}
+
+type Marketplace struct {
+	SellerID          string `json:"seller_id"`
+	SellerCompanyName string `json:"seller_company_name"`
 }
 
 type CreateOrderResponse struct {
@@ -319,7 +326,7 @@ func ToAddress(address *model.Address) *AddressInfo {
 			Address1: address.Address1,
 			Address2: address.Address2,
 			Country:  string(VN),
-			City:     address.Province,
+			Province: address.Province,
 			District: address.District,
 			Ward:     address.Ward,
 		},
@@ -337,7 +344,7 @@ type Address struct {
 	Address1    string `json:"address1"` // required
 	Address2    string `json:"address2"`
 	Country     string `json:"country"`      // required
-	City        string `json:"city"`         // required
+	Province    string `json:"province"`     // required
 	District    string `json:"district"`     // required
 	Ward        string `json:"ward"`         // required
 	AddressType string `json:"address_type"` // required

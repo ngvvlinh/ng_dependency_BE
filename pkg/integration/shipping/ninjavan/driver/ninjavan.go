@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
@@ -26,16 +27,18 @@ var _ carriertypes.ShipmentCarrier = &NinjaVanDriver{}
 type NinjaVanDriver struct {
 	client     *ninjavanclient.Client
 	locationQS location.QueryBus
+	identityQS identity.QueryBus
 }
 
 func New(
 	env string, cfg ninjavanclient.NinjaVanCfg,
-	locationQS location.QueryBus,
+	locationQS location.QueryBus, identityQS identity.QueryBus,
 ) *NinjaVanDriver {
 	client := ninjavanclient.New(env, cfg)
 	return &NinjaVanDriver{
 		client:     client,
 		locationQS: locationQS,
+		identityQS: identityQS,
 	}
 }
 
@@ -82,10 +85,17 @@ func (d *NinjaVanDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.F
 	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
 		return nil, err
 	}
+
 	serviceID, err := d.ParseServiceID(service.ProviderServiceID)
 	if err != nil {
 		return nil, err
 	}
+
+	getShopQuery := &identity.GetShopByIDQuery{ID: ffm.ShopID}
+	if err := d.identityQS.Dispatch(ctx, getShopQuery); err != nil {
+		return nil, err
+	}
+	shopName := getShopQuery.Result.Name
 
 	// get insurance value
 	maxValueFreeInsuranceFee := d.GetMaxValueFreeInsuranceFee()
@@ -98,8 +108,9 @@ func (d *NinjaVanDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.F
 	deliveryStartDate := now.Add(ninjavanclient.ThreeDays).Format(ninjavanclient.LayoutISO)
 
 	cmd := &ninjavanclient.CreateOrderRequest{
-		ServiceType:  string(ninjavanclient.ServiceTypeParcel),
-		ServiceLevel: serviceID,
+		ServiceType:             string(ninjavanclient.ServiceTypeMarketPlace),
+		ServiceLevel:            serviceID,
+		RequestedTrackingNumber: ffm.ID.String(),
 		Reference: &ninjavanclient.Reference{
 			MerchantOrderNumber: ffm.ID.String(),
 		},
@@ -124,6 +135,10 @@ func (d *NinjaVanDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.F
 				Width:  cm.CoalesceFloat(float64(args.Width), 10),
 				Height: cm.CoalesceFloat(float64(args.Height), 10),
 			},
+		},
+		Marketplace: &ninjavanclient.Marketplace{
+			SellerID:          ffm.ShopID.String(),
+			SellerCompanyName: shopName,
 		},
 	}
 	r, err := d.client.CreateOrder(ctx, cmd)

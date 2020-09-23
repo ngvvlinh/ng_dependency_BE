@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"o.o/api/main/connectioning"
+	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	"o.o/api/top/types/etc/connection_type"
 	shipmodel "o.o/backend/com/main/shipping/model"
@@ -35,14 +36,14 @@ func (es ConfigEndpoints) GetByCarrier(carrier connection_type.ConnectionProvide
 type Driver interface {
 	GetShipmentDriver(
 		env string, locationQS location.QueryBus,
-		connection *connectioning.Connection,
+		identityQS identity.QueryBus, connection *connectioning.Connection,
 		shopConnection *connectioning.ShopConnection,
 		endpoints ConfigEndpoints,
 	) (ShipmentCarrier, error)
 
 	GetAffiliateShipmentDriver(
 		env string, locationQS location.QueryBus,
-		connection *connectioning.Connection,
+		identityQS identity.QueryBus, connection *connectioning.Connection,
 		endpoints ConfigEndpoints,
 	) (ShipmentCarrier, error)
 }

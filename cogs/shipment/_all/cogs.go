@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"o.o/api/main/connectioning"
+	"o.o/api/main/identity"
 	"o.o/api/main/location"
 	"o.o/api/top/types/etc/connection_type"
 	sptypes "o.o/api/top/types/etc/shipping_provider"
@@ -82,7 +83,7 @@ func SupportedCarrierDriver(shippingCodeGenerator vtpostdriver.ShippingCodeGener
 
 func (d CarrierDriver) GetShipmentDriver(
 	env string, locationQS location.QueryBus,
-	connection *connectioning.Connection,
+	identityQS identity.QueryBus, connection *connectioning.Connection,
 	shopConnection *connectioning.ShopConnection,
 	endpoints carriertypes.ConfigEndpoints,
 ) (carriertypes.ShipmentCarrier, error) {
@@ -154,7 +155,7 @@ func (d CarrierDriver) GetShipmentDriver(
 	case connection_type.ConnectionProviderNinjaVan:
 		driver := ninjavandriver.New(env, ninjavanclient.NinjaVanCfg{
 			Token: shopConnection.Token,
-		}, locationQS)
+		}, locationQS, identityQS)
 		return driver, nil
 
 	case connection_type.ConnectionProviderPartner:
@@ -171,8 +172,9 @@ func (d CarrierDriver) GetShipmentDriver(
 	}
 }
 
-func (d CarrierDriver) GetAffiliateShipmentDriver(env string, locationQS location.QueryBus,
-	conn *connectioning.Connection,
+func (d CarrierDriver) GetAffiliateShipmentDriver(
+	env string, locationQS location.QueryBus,
+	identityQS identity.QueryBus, conn *connectioning.Connection,
 	endpoints carriertypes.ConfigEndpoints) (carriertypes.ShipmentCarrier, error) {
 	var userID, token, shopIDStr, secretKey string
 	version := conn.Version
@@ -231,7 +233,7 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(env string, locationQS locatio
 			ClientID:  userID,
 			SecretKey: secretKey,
 		}
-		driver := ninjavandriver.New(env, cfg, locationQS)
+		driver := ninjavandriver.New(env, cfg, locationQS, identityQS)
 		return driver, nil
 	case connection_type.ConnectionProviderPartner:
 		cfg := directclient.PartnerAccountCfg{
