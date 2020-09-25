@@ -351,20 +351,32 @@ type Address struct {
 }
 
 type ParcelJob struct {
-	IsPickupRequired     bool              `json:"is_pickup_required"` // required
-	PickupInstructions   string            `json:"pickup_instructions"`
-	PickupAddress        *AddressInfo      `json:"pickup_address"`
-	DeliveryStartDate    string            `json:"delivery_start_date"` // yyyy-MM-dd
-	DeliveryTimeslot     *DeliveryTimeslot `json:"delivery_timeslot"`
-	DeliveryInstructions string            `json:"delivery_instructions"`
-	CashOnDelivery       float64           `json:"cash_on_delivery"`
-	InsuredValue         float64           `json:"insured_value"`
-	Dimensions           *Dimensions       `json:"dimensions"`
+	// IsPickupRequired required
+	// NJV yêu cầu truyền `true` lên
+	IsPickupRequired bool `json:"is_pickup_required"` // required
+	// PickupDate required khi is_pickup_required = true
+	// yyyy-MM-dd: mặc định truyền ngày tạo đơn lên
+	PickupDate string `json:"pickup_date"`
+	// PickupTimeslot required khi is_pickup_required = true
+	PickupTimeslot       *Timeslot    `json:"pickup_timeslot"`
+	PickupInstructions   string       `json:"pickup_instructions"`
+	PickupAddress        *AddressInfo `json:"pickup_address"`
+	DeliveryStartDate    string       `json:"delivery_start_date"` // yyyy-MM-dd
+	DeliveryTimeslot     *Timeslot    `json:"delivery_timeslot"`
+	DeliveryInstructions string       `json:"delivery_instructions"`
+	CashOnDelivery       float64      `json:"cash_on_delivery"`
+	InsuredValue         float64      `json:"insured_value"`
+	Dimensions           *Dimensions  `json:"dimensions"`
 }
 
-type DeliveryTimeslot struct {
-	StartTime string `json:"start_time"` // yyyy-MM-dd
-	EndTime   string `json:"end_time"`   // yyyy-MM-dd
+// "pickup_timeslot": {
+//      "start_time": "09:00",
+//      "end_time": "12:00",
+//      "timezone": "Asia/Singapore"
+//    },
+type Timeslot struct {
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
 	TimeZone  string `json:"timezone"`
 }
 

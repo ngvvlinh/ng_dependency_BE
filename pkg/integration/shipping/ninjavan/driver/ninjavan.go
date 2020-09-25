@@ -104,6 +104,8 @@ func (d *NinjaVanDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.F
 	addressTo := ninjavanclient.ToAddress(ffm.AddressTo)
 	now := time.Now()
 
+	// pickupDate mặc định lấy ngày tạo đơn
+	pickupDate := now.Format(ninjavanclient.LayoutISO)
 	// deliveryStartDate = now + 3 days
 	deliveryStartDate := now.Add(ninjavanclient.ThreeDays).Format(ninjavanclient.LayoutISO)
 
@@ -117,11 +119,17 @@ func (d *NinjaVanDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.F
 		From: addressFrom,
 		To:   addressTo,
 		ParcelJob: &ninjavanclient.ParcelJob{
-			IsPickupRequired:   false,
+			IsPickupRequired: true,
+			PickupDate:       pickupDate,
+			PickupTimeslot: &ninjavanclient.Timeslot{
+				StartTime: "09:00",
+				EndTime:   "22:00",
+				TimeZone:  ninjavanclient.TimeZoneHCM,
+			},
 			PickupInstructions: ffm.ShippingNote,
 			PickupAddress:      addressFrom,
 			DeliveryStartDate:  deliveryStartDate,
-			DeliveryTimeslot: &ninjavanclient.DeliveryTimeslot{
+			DeliveryTimeslot: &ninjavanclient.Timeslot{
 				StartTime: "09:00",
 				EndTime:   "22:00",
 				TimeZone:  ninjavanclient.TimeZoneHCM,
