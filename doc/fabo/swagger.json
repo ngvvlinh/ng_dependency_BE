@@ -366,6 +366,33 @@
         }
       }
     },
+    "/api/fabo.ExtraShipment/CustomerReturnRate": {
+      "post": {
+        "tags": [
+          "ExtraShipment"
+        ],
+        "summary": "CustomerReturnRate",
+        "operationId": "fabo.ExtraShipment-CustomerReturnRate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvCustomerReturnRateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvCustomerReturnRateResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.Page/CheckPermissions": {
       "post": {
         "tags": [
@@ -755,6 +782,33 @@
         },
         "type": {
           "$ref": "#/definitions/lxFbCustomerConversationType"
+        }
+      }
+    },
+    "cvCustomerReturnRateRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "cvCustomerReturnRateResponse": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string"
+        },
+        "level_code": {
+          "type": "string"
+        },
+        "rate": {
+          "type": "integer",
+          "format": "float32"
         }
       }
     },
@@ -2075,6 +2129,9 @@
     },
     {
       "name": "CustomerConversation"
+    },
+    {
+      "name": "ExtraShipment"
     },
     {
       "name": "Page"

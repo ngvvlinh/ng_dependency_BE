@@ -683,3 +683,22 @@ func (c *UpdateUserTagsRequest) Validate() error {
 func (c *UpdateUserTagsRequest) String() string {
 	return jsonx.MustMarshalToString(c)
 }
+
+type CustomerReturnRateRequest struct {
+	ConnectionID dot.ID `json:"connection_id"`
+	Phone        string `json:"phone"`
+}
+
+func (r *CustomerReturnRateRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type CustomerReturnRateResponse struct {
+	Level     string  `json:"level"`
+	LevelCode string  `json:"level_code"`
+	Rate      float64 `json:"rate"`
+}
+
+func (r *CustomerReturnRateResponse) String() string {
+	return jsonx.MustMarshalToString(r)
+}

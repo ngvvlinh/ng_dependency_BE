@@ -53,3 +53,8 @@ type CustomerService interface {
 
 	UpdateTags(ctx context.Context, request *UpdateUserTagsRequest) (*UpdateUserTagResponse, error)
 }
+
+// +apix:path=/fabo.ExtraShipment
+type ExtraShipmentService interface {
+	CustomerReturnRate(context.Context, *CustomerReturnRateRequest) (*CustomerReturnRateResponse, error)
+}

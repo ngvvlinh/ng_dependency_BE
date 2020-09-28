@@ -103,7 +103,7 @@ func NewShipmentManager(
 	return sm, nil
 }
 
-func (m *ShipmentManager) getShipmentDriver(ctx context.Context, connectionID dot.ID, shopID dot.ID) (carriertypes.ShipmentCarrier, error) {
+func (m *ShipmentManager) GetShipmentDriver(ctx context.Context, connectionID dot.ID, shopID dot.ID) (carriertypes.ShipmentCarrier, error) {
 	connection, err := m.ConnectionManager.GetConnectionByID(ctx, connectionID)
 	if err != nil {
 		return nil, err
@@ -195,7 +195,7 @@ func (m *ShipmentManager) CreateFulfillments(ctx context.Context, ffms []*shipmo
 
 func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (_err error) {
 	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
-	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
+	driver, err := m.GetShipmentDriver(ctx, connectionID, ffm.ShopID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "invalid connection")
 	}
@@ -336,7 +336,7 @@ func (m *ShipmentManager) VerifyDistrictCode(addr *addressmodel.Address) (*locat
 }
 
 func (m *ShipmentManager) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) error {
-	driver, err := m.getShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
+	driver, err := m.GetShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "invalid connection")
 	}
@@ -439,7 +439,7 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 
 func (m *ShipmentManager) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (updateFfm *shipmodel.Fulfillment, err error) {
 	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
-	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
+	driver, err := m.GetShipmentDriver(ctx, connectionID, ffm.ShopID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "invalid connection (ffm_id = %v)", ffm.ID)
 	}
@@ -452,7 +452,7 @@ func (m *ShipmentManager) RefreshFulfillment(ctx context.Context, ffm *shipmodel
 }
 
 func (m *ShipmentManager) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fulfillment) error {
-	driver, err := m.getShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
+	driver, err := m.GetShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "invalid connection")
 	}
@@ -468,7 +468,7 @@ func (m *ShipmentManager) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmo
 }
 
 func (m *ShipmentManager) UpdateFulfillmentCOD(ctx context.Context, ffm *shipmodel.Fulfillment) error {
-	driver, err := m.getShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
+	driver, err := m.GetShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "invalid connection")
 	}
@@ -512,7 +512,7 @@ func (m *ShipmentManager) GetShipmentServicesAndMakeupPrice(ctx context.Context,
 	}
 
 	var services []*shippingsharemodel.AvailableShippingService
-	driver, err := m.getShipmentDriver(ctx, connID, accountID)
+	driver, err := m.GetShipmentDriver(ctx, connID, accountID)
 	if err != nil {
 		// ll.Error("Driver shipment không hợp lệ", l.ID("shopID", accountID), l.ID("connectionID", connID), l.Error(err))
 		return nil, err
@@ -818,7 +818,7 @@ type CalcMakeupShippingFeesByFfmResponse struct {
 func (m *ShipmentManager) CalcMakeupShippingFeesByFfm(ctx context.Context, args *CalcMakeupShippingFeesByFfmArgs) (*CalcMakeupShippingFeesByFfmResponse, error) {
 	ffm := args.Fulfillment
 	connectionID := shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
-	driver, err := m.getShipmentDriver(ctx, connectionID, ffm.ShopID)
+	driver, err := m.GetShipmentDriver(ctx, connectionID, ffm.ShopID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "invalid connection (ffm_id = %v)", ffm.ID)
 	}

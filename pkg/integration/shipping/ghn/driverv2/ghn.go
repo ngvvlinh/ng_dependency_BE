@@ -61,6 +61,10 @@ func (d *GHNDriver) Ping(ctx context.Context) error {
 	return nil
 }
 
+func (d *GHNDriver) GetClient() *ghnclient.Client {
+	return d.client
+}
+
 func (d *GHNDriver) GetAffiliateID() string {
 	return d.client.GetAffiliateID()
 }

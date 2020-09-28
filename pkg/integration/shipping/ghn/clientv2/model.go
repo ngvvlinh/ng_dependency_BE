@@ -654,3 +654,14 @@ type GetShopByClientOwnerResponse []*ShopInfo
 type AddClientContractRequest struct {
 	ClientID int `json:"client_id"`
 }
+
+// Etl rate customer
+type CustomerReturnRateRequest struct {
+	Phone string `json:"phone"`
+}
+
+type CustomerReturnRateResponse struct {
+	Level     String `json:"level"`
+	LevelCode String `json:"level_code"`
+	Rate      Float  `json:"rate"`
+}

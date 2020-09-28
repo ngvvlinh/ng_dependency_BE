@@ -271,6 +271,15 @@ func (c *Client) AddClientContract(ctx context.Context, req *AddClientContractRe
 	return c.sendRequest(ctx, "/v2/contract/add-client", c.shopID, req, nil)
 }
 
+func (c *Client) CustomerReturnRate(ctx context.Context, req *CustomerReturnRateRequest) (*CustomerReturnRateResponse, error) {
+	var resp CustomerReturnRateResponse
+	err := c.sendRequest(ctx, "/etl/return-rate", c.shopID, req, &resp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
 func (c *Client) sendRequest(ctx context.Context, path string, shopID int, req, resp interface{}) error {
 	var errResp ErrorResponse
 	res, err := c.rclient.R().
