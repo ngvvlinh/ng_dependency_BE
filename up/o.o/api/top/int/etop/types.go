@@ -407,7 +407,7 @@ type ChangePasswordRequest struct {
 func (m *ChangePasswordRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ChangeUserRefAffRequest struct {
-	RefAff string `json:"ref_aff"`
+	RefAff dot.NullString `json:"ref_aff"`
 }
 
 func (c *ChangeUserRefAffRequest) String() string { return jsonx.MustMarshalToString(c) }

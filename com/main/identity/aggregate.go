@@ -252,28 +252,40 @@ func (a *Aggregate) UnblockUser(ctx context.Context, userID dot.ID) (*identity.U
 }
 
 func (a *Aggregate) UpdateUserRef(ctx context.Context, args *identity.UpdateUserRefArgs) (*identity.UserRefSaff, error) {
+	// Validate user
 	_, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	userRef := &identity.UserRefSaff{
+	userRef, err := a.userRefSaffStore(ctx).ByUserID(args.UserID).GetUserRefSaff()
+	if err != nil {
+		// if not exist, create new
+		if cm.ErrorCode(err) != cm.NotFound {
+			return nil, err
+		}
+
+		userRef = &identity.UserRefSaff{
+			UserID:  args.UserID,
+			RefAff:  args.RefAff,
+			RefSale: args.RefSale,
+		}
+		if err = a.userRefSaffStore(ctx).CreateUserRefSaff(userRef); err != nil {
+			return nil, err
+		}
+		return userRef, nil
+	}
+
+	// update shopUserRef
+	updateUserRef := &identity.UserRefSaff{
 		UserID:  args.UserID,
 		RefAff:  args.RefAff,
 		RefSale: args.RefSale,
 	}
-	err = a.userRefSaffStore(ctx).ByUserID(args.UserID).Update(userRef)
-	if err != nil {
-		if cm.ErrorCode(err) == cm.NotFound {
-			if _err := a.userRefSaffStore(ctx).CreateUserRefSaff(userRef); _err != nil {
-				return nil, _err
-			}
-			return userRef, nil
-		}
+	if err = a.userRefSaffStore(ctx).ByUserID(args.UserID).Update(updateUserRef); err != nil {
 		return nil, err
 	}
-
-	return userRef, nil
+	return updateUserRef, nil
 }
 
 func (a *Aggregate) UpdateShipFromAddressID(ctx context.Context, args *identity.UpdateShipFromAddressArgs) error {

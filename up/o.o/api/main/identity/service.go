@@ -39,9 +39,9 @@ type Aggregate interface {
 
 	UnblockUser(ctx context.Context, userID dot.ID) (*User, error)
 
-	UpdateUserRef(context.Context, *UpdateUserRefArgs) (*UserRefSaff, error)
-
 	UpdateShipFromAddressID(context.Context, *UpdateShipFromAddressArgs) error
+
+	UpdateUserRef(context.Context, *UpdateUserRefArgs) (*UserRefSaff, error)
 }
 
 type QueryService interface {
@@ -231,8 +231,8 @@ type ListShopExtendedsResponse struct {
 
 type UpdateUserRefArgs struct {
 	UserID  dot.ID
-	RefAff  string
-	RefSale string
+	RefAff  dot.NullString
+	RefSale dot.NullString
 }
 
 type UpdateShipFromAddressArgs struct {

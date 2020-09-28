@@ -1173,9 +1173,9 @@ func Convert_identitymodel_UserRefSaff_identity_UserRefSaff(arg *identitymodel.U
 }
 
 func convert_identitymodel_UserRefSaff_identity_UserRefSaff(arg *identitymodel.UserRefSaff, out *identity.UserRefSaff) {
-	out.UserID = arg.UserID   // simple assign
-	out.RefAff = arg.RefAff   // simple assign
-	out.RefSale = arg.RefSale // simple assign
+	out.UserID = arg.UserID        // simple assign
+	out.RefAff = dot.NullString{}  // types do not match
+	out.RefSale = dot.NullString{} // types do not match
 }
 
 func Convert_identitymodel_UserRefSaffs_identity_UserRefSaffs(args []*identitymodel.UserRefSaff) (outs []*identity.UserRefSaff) {
@@ -1202,9 +1202,9 @@ func Convert_identity_UserRefSaff_identitymodel_UserRefSaff(arg *identity.UserRe
 }
 
 func convert_identity_UserRefSaff_identitymodel_UserRefSaff(arg *identity.UserRefSaff, out *identitymodel.UserRefSaff) {
-	out.UserID = arg.UserID   // simple assign
-	out.RefAff = arg.RefAff   // simple assign
-	out.RefSale = arg.RefSale // simple assign
+	out.UserID = arg.UserID // simple assign
+	out.RefAff = ""         // types do not match
+	out.RefSale = ""        // types do not match
 }
 
 func Convert_identity_UserRefSaffs_identitymodel_UserRefSaffs(args []*identity.UserRefSaff) (outs []*identitymodel.UserRefSaff) {

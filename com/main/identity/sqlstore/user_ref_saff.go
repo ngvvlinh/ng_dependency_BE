@@ -56,7 +56,7 @@ func (s *UserRefSaffStore) ByRefAff(phone string) *UserRefSaffStore {
 }
 
 func (s *UserRefSaffStore) GetUserRefSaffDB() (*identitymodel.UserRefSaff, error) {
-	var userRef *identitymodel.UserRefSaff
+	userRef := &identitymodel.UserRefSaff{}
 	err := s.query().Where(s.preds...).ShouldGet(userRef)
 	if err != nil {
 		return nil, err
@@ -76,10 +76,19 @@ func (s *UserRefSaffStore) GetUserRefSaff() (*identity.UserRefSaff, error) {
 }
 
 func (s *UserRefSaffStore) Update(ref *identity.UserRefSaff) error {
-	var refModel *identitymodel.UserRefSaff
-	refModel = convert.Convert_identity_UserRefSaff_identitymodel_UserRefSaff(ref, refModel)
-	err := s.query().Where(s.preds...).ShouldUpdate(refModel)
-	return err
+	var update map[string]interface{}
+	if ref.RefAff.Valid {
+		update["ref_aff"] = ref.RefAff
+	}
+	if ref.RefSale.Valid {
+		update["ref_sale"] = ref.RefAff
+	}
+	if len(update) == 0 {
+		return nil
+	}
+	return s.query().Where(s.preds...).
+		Table("user_ref_saff").
+		ShouldUpdateMap(update)
 }
 
 func (s *UserRefSaffStore) ListUserRefSaffDB() (identitymodel.UserRefSaffs, error) {

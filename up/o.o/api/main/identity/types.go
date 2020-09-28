@@ -192,6 +192,6 @@ type AccountUser struct {
 
 type UserRefSaff struct {
 	UserID  dot.ID
-	RefAff  string
-	RefSale string
+	RefAff  dot.NullString
+	RefSale dot.NullString
 }

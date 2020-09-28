@@ -407,9 +407,9 @@ type UnblockUserRequest struct {
 func (m *UnblockUserRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateUserRefRequest struct {
-	UserID  dot.ID `json:"user_id"`
-	RefAff  string `json:"ref_aff"`
-	RefSale string `json:"ref_sale"`
+	UserID  dot.ID         `json:"user_id"`
+	RefAff  dot.NullString `json:"ref_aff"`
+	RefSale dot.NullString `json:"ref_sale"`
 }
 
 func (m *UpdateUserRefRequest) String() string { return jsonx.MustMarshalToString(m) }

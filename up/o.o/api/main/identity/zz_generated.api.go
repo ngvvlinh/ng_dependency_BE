@@ -146,8 +146,8 @@ func (h AggregateHandler) HandleUpdateUserPhone(ctx context.Context, msg *Update
 
 type UpdateUserRefCommand struct {
 	UserID  dot.ID
-	RefAff  string
-	RefSale string
+	RefAff  dot.NullString
+	RefSale dot.NullString
 
 	Result *UserRefSaff `json:"-"`
 }
