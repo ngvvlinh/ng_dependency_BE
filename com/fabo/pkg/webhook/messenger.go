@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
@@ -226,6 +227,23 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		}
 	}
 
+	// Because we don't preventing message from owner of page like handle comments webhook,
+	// So in some cases webhook come after external_message are inserted.
+	// Make sure check `InternalSource` of messages, if it not set or message was not save,
+	// just create/update message with `facebook` (InternalSource field) value, otherwise
+	// hold old value.
+	getOldFbExternalMessageQuery := &fbmessaging.GetFbExternalMessageByExternalIDQuery{
+		ExternalID: messageResp.ID,
+	}
+	if err := wh.fbmessagingQuery.Dispatch(ctx, getOldFbExternalMessageQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return err
+	}
+	oldFbExternalMessage := getOldFbExternalMessageQuery.Result
+	internalSource := fb_internal_source.Facebook
+	if oldFbExternalMessage != nil {
+		internalSource = oldFbExternalMessage.InternalSource
+	}
+
 	// Create new message
 	var externalAttachments []*fbmessaging.FbMessageAttachment
 	if messageResp.Attachments != nil {
@@ -244,6 +262,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 				ExternalFrom:           fbclientconvert.ConvertObjectFrom(messageResp.From),
 				ExternalAttachments:    externalAttachments,
 				ExternalCreatedTime:    messageResp.CreatedTime.ToTime(),
+				InternalSource:         internalSource,
 			},
 		},
 	}); err != nil {

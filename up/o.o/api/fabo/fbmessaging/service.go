@@ -7,6 +7,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
+	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/api/meta"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
@@ -18,25 +19,23 @@ type Aggregate interface {
 	CreateFbExternalMessages(context.Context, *CreateFbExternalMessagesArgs) ([]*FbExternalMessage, error)
 	CreateOrUpdateFbExternalMessages(context.Context, *CreateOrUpdateFbExternalMessagesArgs) ([]*FbExternalMessage, error)
 
-	CreateFbExternalPosts(context.Context, *CreateFbExternalPostsArgs) ([]*FbExternalPost, error)
-	CreateOrUpdateFbExternalPosts(context.Context, *CreateOrUpdateFbExternalPostsArgs) ([]*FbExternalPost, error)
-
 	CreateOrUpdateFbExternalComments(context.Context, *CreateOrUpdateFbExternalCommentsArgs) ([]*FbExternalComment, error)
 
-	CreateFbExternalConversations(context.Context, *CreateFbExternalConversationsArgs) ([]*FbExternalConversation, error)
 	CreateOrUpdateFbExternalConversations(context.Context, *CreateOrUpdateFbExternalConversationsArgs) ([]*FbExternalConversation, error)
-
+	CreateFbExternalConversations(context.Context, *CreateFbExternalConversationsArgs) ([]*FbExternalConversation, error)
 	CreateFbCustomerConversations(context.Context, *CreateFbCustomerConversationsArgs) ([]*FbCustomerConversation, error)
 	CreateOrUpdateFbCustomerConversations(context.Context, *CreateOrUpdateFbCustomerConversationsArgs) ([]*FbCustomerConversation, error)
 	UpdateIsReadCustomerConversation(ctx context.Context, conversationCustomerID dot.ID, isRead bool) (int, error)
 
-	CreateFbExternalPost(context.Context, *FbCreatePostArgs) (*FbExternalPost, error)
-	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
-	UpdateFbPostMessage(context.Context, *FbUpdatePostMessageArgs) error
 	UpdateFbCommentMessage(context.Context, *FbUpdateCommentMessageArgs) (int, error)
-
-	RemovePost(context.Context, *RemovePostArgs) error
 	RemoveComment(context.Context, *RemoveCommentArgs) error
+
+	CreateOrUpdateFbExternalPosts(context.Context, *CreateOrUpdateFbExternalPostsArgs) ([]*FbExternalPost, error)
+	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
+	CreateFbExternalPost(context.Context, *FbCreatePostArgs) (*FbExternalPost, error)
+	UpdateFbPostMessage(context.Context, *FbUpdatePostMessageArgs) error
+	CreateFbExternalPosts(context.Context, *CreateFbExternalPostsArgs) ([]*FbExternalPost, error)
+	RemovePost(context.Context, *RemovePostArgs) error
 }
 
 type QueryService interface {
@@ -53,6 +52,7 @@ type QueryService interface {
 	GetExternalPostByExternalIDWithExternalCreatedTime(_ context.Context, externalID string, time time.Time) (*FbExternalPost, error)
 	GetFbExternalPostByExternalID(_ context.Context, externalID string) (*FbExternalPost, error)
 	GetFbExternalMessageByID(_ context.Context, ID dot.ID) (*FbExternalMessage, error)
+	GetFbExternalMessageByExternalID(_ context.Context, externalID string) (*FbExternalMessage, error)
 	GetFbExternalCommentByID(_ context.Context, ID dot.ID) (*FbExternalComment, error)
 	GetFbExternalCommentByExternalID(_ context.Context, externalID string) (*FbExternalComment, error)
 	GetLatestUpdateActiveComment(_ context.Context, extPostID string, extUserID string) (*FbExternalComment, error)
@@ -84,6 +84,7 @@ type CreateFbExternalMessageArgs struct {
 	ExternalFrom           *FbObjectFrom
 	ExternalAttachments    []*FbMessageAttachment
 	ExternalCreatedTime    time.Time
+	InternalSource         fb_internal_source.FbInternalSource
 }
 
 type CreateFbExternalMessagesArgs struct {
@@ -134,6 +135,7 @@ type CreateFbExternalCommentArgs struct {
 	ExternalAttachment   *CommentAttachment
 	ExternalCreatedTime  time.Time
 	Source               fb_comment_source.FbCommentSource
+	InternalSource       fb_internal_source.FbInternalSource
 }
 
 type CreateOrUpdateFbExternalCommentsArgs struct {

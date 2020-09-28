@@ -9,6 +9,7 @@ import (
 
 	fb_comment_source "o.o/api/fabo/fbmessaging/fb_comment_source"
 	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
+	fb_internal_source "o.o/api/fabo/fbmessaging/fb_internal_source"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
@@ -587,6 +588,25 @@ func (ft *FbExternalCommentFilters) BySourcePtr(Source *fb_comment_source.FbComm
 	}
 }
 
+func (ft *FbExternalCommentFilters) ByInternalSource(InternalSource fb_internal_source.FbInternalSource) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "internal_source",
+		Value:  InternalSource,
+		IsNil:  InternalSource == 0,
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByInternalSourcePtr(InternalSource *fb_internal_source.FbInternalSource) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "internal_source",
+		Value:  InternalSource,
+		IsNil:  InternalSource == nil,
+		IsZero: InternalSource != nil && (*InternalSource) == 0,
+	}
+}
+
 func (ft *FbExternalCommentFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1049,6 +1069,25 @@ func (ft *FbExternalMessageFilters) ByExternalCreatedTimePtr(ExternalCreatedTime
 		Value:  ExternalCreatedTime,
 		IsNil:  ExternalCreatedTime == nil,
 		IsZero: ExternalCreatedTime != nil && (*ExternalCreatedTime).IsZero(),
+	}
+}
+
+func (ft *FbExternalMessageFilters) ByInternalSource(InternalSource fb_internal_source.FbInternalSource) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "internal_source",
+		Value:  InternalSource,
+		IsNil:  InternalSource == 0,
+	}
+}
+
+func (ft *FbExternalMessageFilters) ByInternalSourcePtr(InternalSource *fb_internal_source.FbInternalSource) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "internal_source",
+		Value:  InternalSource,
+		IsNil:  InternalSource == nil,
+		IsZero: InternalSource != nil && (*InternalSource) == 0,
 	}
 }
 

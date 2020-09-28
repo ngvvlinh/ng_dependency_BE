@@ -11,6 +11,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
+	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/top/types/etc/webhook_type"
 	fblog "o.o/backend/com/fabo/main/fblog/model"
@@ -140,6 +141,7 @@ func convertModelCommentToCreateCommentArgs(pageId string, postID string, create
 		ExternalMessage:      comment.Message,
 		ExternalCommentCount: comment.CommentCount,
 		ExternalCreatedTime:  createdTime,
+		InternalSource:       fb_internal_source.Facebook, // comment comes from webhook, by default create it with `Facebook`
 	}
 
 	if comment.From != nil {

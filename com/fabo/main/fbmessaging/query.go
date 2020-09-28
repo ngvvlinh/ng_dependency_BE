@@ -326,6 +326,12 @@ func (q *FbMessagingQuery) GetFbExternalMessageByID(
 	return q.fbExternalMessagesStore(ctx).ID(ID).GetFbExternalMessage()
 }
 
+func (q *FbMessagingQuery) GetFbExternalMessageByExternalID(
+	ctx context.Context, externalID string,
+) (*fbmessaging.FbExternalMessage, error) {
+	return q.fbExternalMessagesStore(ctx).ExternalID(externalID).GetFbExternalMessage()
+}
+
 func (q *FbMessagingQuery) GetFbExternalCommentByID(
 	ctx context.Context, ID dot.ID,
 ) (*fbmessaging.FbExternalComment, error) {

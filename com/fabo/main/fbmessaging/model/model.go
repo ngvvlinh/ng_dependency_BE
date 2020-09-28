@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
+	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/capi/dot"
 )
 
@@ -21,6 +22,7 @@ type FbExternalMessage struct {
 	ExternalFromID         string
 	ExternalAttachments    []*FbMessageAttachment
 	ExternalCreatedTime    time.Time `paging:"external_created_time"`
+	InternalSource         fb_internal_source.FbInternalSource
 	CreatedAt              time.Time `sq:"create"`
 	UpdatedAt              time.Time `sq:"update"`
 	DeletedAt              time.Time
@@ -107,6 +109,7 @@ type FbExternalComment struct {
 	ExternalAttachment   *CommentAttachment
 	ExternalCreatedTime  time.Time `paging:"external_created_time"`
 	Source               fb_comment_source.FbCommentSource
+	InternalSource       fb_internal_source.FbInternalSource
 	CreatedAt            time.Time `sq:"create"`
 	UpdatedAt            time.Time `sq:"update"`
 	DeletedAt            time.Time

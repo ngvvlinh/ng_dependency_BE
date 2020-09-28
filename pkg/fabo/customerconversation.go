@@ -9,6 +9,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
+	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/top/int/fabo"
@@ -565,6 +566,7 @@ func (s *CustomerConversationService) SendComment(
 				ExternalAttachment:   fbclientconvert.ConvertFbCommentAttachment(newComment.Attachment),
 				ExternalCreatedTime:  newComment.CreatedTime.ToTime(),
 				Source:               fb_comment_source.Web,
+				InternalSource:       fb_internal_source.Fabo, // message through our api, set it is `Fabo`
 			},
 		},
 	}
@@ -720,6 +722,7 @@ func (s *CustomerConversationService) SendMessage(
 				ExternalFrom:           fbclientconvert.ConvertObjectFrom(newMessage.From),
 				ExternalAttachments:    externalAttachments,
 				ExternalCreatedTime:    newMessage.CreatedTime.ToTime(),
+				InternalSource:         fb_internal_source.Fabo, // message through our api, set it is `Fabo`
 			},
 		},
 	}
