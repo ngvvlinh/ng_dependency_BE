@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/fabo/fbcustomerconversationsearch"
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
@@ -19,6 +20,7 @@ import (
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/validate"
 	convertpb2 "o.o/backend/pkg/etop/apix/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/fabo/convertpb"
@@ -30,12 +32,14 @@ import (
 type CustomerConversationService struct {
 	session.Session
 
-	FaboPagesKit     *faboinfo.FaboPagesKit
+	FaboPagesKit *faboinfo.FaboPagesKit
+	FBClient     *fbclient.FbClient
+
 	FBMessagingQuery fbmessaging.QueryBus
 	FBMessagingAggr  fbmessaging.CommandBus
 	FBPagingQuery    fbpaging.QueryBus
-	FBClient         *fbclient.FbClient
 	FBUserQuery      fbusering.QueryBus
+	FbSearchQuery    fbcustomerconversationsearch.QueryBus
 }
 
 type APIType string
@@ -110,93 +114,210 @@ func (s *CustomerConversationService) ListCustomerConversations(
 	}
 
 	listCustomerConversations := listCustomerConversationsQuery.Result.FbCustomerConversations
-	// get avatars
-	{
-		var externalUserIDs []string
-		for _, customerConversation := range listCustomerConversations {
-			if customerConversation.ExternalFrom != nil {
-				externalUserIDs = append(externalUserIDs, customerConversation.ExternalFrom.ID)
-			}
-			if customerConversation.ExternalUserID != "" {
-				externalUserIDs = append(externalUserIDs, customerConversation.ExternalUserID)
-			}
-		}
-
-		mapExternalUserIDAndImageURl, err := s.buildMapFbUserAvatar(ctx, externalUserIDs)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, customerConversation := range listCustomerConversations {
-			if customerConversation.ExternalFrom != nil {
-				customerConversation.ExternalFrom.ImageURL = mapExternalUserIDAndImageURl[customerConversation.ExternalFrom.ID]
-			}
-			if customerConversation.ExternalUserID != "" {
-				customerConversation.ExternalUserPictureURL = mapExternalUserIDAndImageURl[customerConversation.ExternalUserID]
-			}
-		}
-	}
-
-	fbUserExternalIDs := getFbExternalUserIDs(listCustomerConversations)
-	listFbUserWithCustomersQuery := &fbusering.ListFbExternalUserWithCustomerByExternalIDsQuery{
-		ShopID:      s.SS.Shop().ID,
-		ExternalIDs: fbUserExternalIDs,
-	}
-	err = s.FBUserQuery.Dispatch(ctx, listFbUserWithCustomersQuery)
+	customerConversations, err := s.buildFbCustomerConversations(ctx, listCustomerConversations)
 	if err != nil {
 		return nil, err
 	}
-	var mapExternalIDFbUser = make(map[string]*fbusering.FbExternalUserWithCustomer)
-	for _, v := range listFbUserWithCustomersQuery.Result {
-		mapExternalIDFbUser[v.FbExternalUser.ExternalID] = v
-	}
-
-	listFbUserQuery := &fbusering.ListFbExternalUserByIDsQuery{
-		ExtFbUserIDs: fbUserExternalIDs,
-	}
-	if err = s.FBUserQuery.Dispatch(ctx, listFbUserQuery); err != nil {
-		return nil, err
-	}
-	mapFbExternalUserIDTagIds := buildMapFbExternalUserIDTagIds(listFbUserQuery.Result)
-
 	result := &fabo.FbCustomerConversationsResponse{
-		CustomerConversations: convertpb.PbFbCustomerConversations(listCustomerConversations),
+		CustomerConversations: customerConversations,
 		Paging:                cmapi.PbCursorPageInfo(paging, &listCustomerConversationsQuery.Result.Paging),
-	}
-	for i, conversation := range result.CustomerConversations {
-		if mapExternalIDFbUser[conversation.ExternalUserID] != nil {
-			result.CustomerConversations[i].Customer = convertpb2.PbShopCustomer(mapExternalIDFbUser[conversation.ExternalUserID].ShopCustomer)
-		}
-
-		tagIDs, ok := mapFbExternalUserIDTagIds[conversation.ExternalUserID]
-		if ok {
-			result.CustomerConversations[i].ExternalUserTags = tagIDs
-		}
 	}
 	return result, nil
 }
 
-func buildMapFbExternalUserIDTagIds(fbExternalUsers []*fbusering.FbExternalUser) map[string][]dot.ID {
-	result := map[string][]dot.ID{}
-
-	for _, user := range fbExternalUsers {
-		result[user.ExternalID] = user.TagIDs
+// Api for full text search
+func (s *CustomerConversationService) SearchCustomerConversations(
+	ctx context.Context,
+	request *fabo.SearchCustomerConversationRequest,
+) (*fabo.SearchFbCustomerConversationsResponse, error) {
+	textToSearch := request.Text
+	shopID := s.SS.Shop().ID
+	var customerConversations []*fbmessaging.FbCustomerConversation
+	if textToSearch == "" {
+		response := &fabo.SearchFbCustomerConversationsResponse{}
+		return response, nil
 	}
 
-	return result
+	pagesQuery := &fbpaging.ListActiveFbPagesByShopIDsQuery{
+		ShopIDs: []dot.ID{shopID},
+	}
+	if err := s.FBPagingQuery.Dispatch(ctx, pagesQuery); err != nil {
+		return nil, err
+	}
+	var extPageIDs []string
+	for _, extPage := range pagesQuery.Result {
+		extPageIDs = append(extPageIDs, extPage.ExternalID)
+	}
+	if len(extPageIDs) == 0 {
+		return &fabo.SearchFbCustomerConversationsResponse{}, nil
+	}
+
+	// search by phone
+	conversationsByPhone, err := s.searchCustomerConversationsByPhone(ctx, shopID, textToSearch)
+	if err != nil {
+		return nil, err
+	}
+	customerConversations = append(customerConversations, conversationsByPhone...)
+
+	// search by external text message
+	conversationsByExternalMessage, err := s.searchCustomerConversationByExternalMessage(ctx, extPageIDs, textToSearch)
+	if err != nil {
+		return nil, err
+	}
+	customerConversations = append(customerConversations, conversationsByExternalMessage...)
+
+	// search by external user name
+	conversationsByExternalUserName, err := s.searchByExternalUserName(ctx, extPageIDs, textToSearch)
+	if err != nil {
+		return nil, err
+	}
+	customerConversations = append(customerConversations, conversationsByExternalUserName...)
+
+	// combine them together & return
+	customerConversations = distinctCustomerConversations(customerConversations)
+	faboCustomerConversations, err := s.buildFbCustomerConversations(ctx, customerConversations)
+	if err != nil {
+		return nil, err
+	}
+	response := &fabo.SearchFbCustomerConversationsResponse{
+		CustomerConversations: faboCustomerConversations,
+	}
+	return response, nil
 }
 
-func getFbExternalUserIDs(customerConversations []*fbmessaging.FbCustomerConversation) []string {
-	visited := map[string]struct{}{}
-	var result []string
-	for _, conv := range customerConversations {
-		if _, ok := visited[conv.ExternalUserID]; ok {
-			continue
-		}
-		result = append(result, conv.ExternalUserID)
-		visited[conv.ExternalUserID] = struct{}{}
+func (s *CustomerConversationService) searchCustomerConversationsByPhone(
+	ctx context.Context, shopID dot.ID, phone string,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	normalizedPhone, isPhone := validate.NormalizePhone(phone)
+	if !isPhone {
+		return nil, nil
 	}
-	return result
+
+	customerQuery := &fbusering.ListShopCustomerIDWithPhoneNormQuery{
+		ShopID: shopID,
+		Phone:  string(normalizedPhone),
+	}
+	if err := s.FBUserQuery.Dispatch(ctx, customerQuery); err != nil {
+		return nil, err
+	}
+
+	customerIDs := customerQuery.Result
+	queryFbExternalUserIDs := &fbusering.ListFbExternalUserIDsByShopCustomerIDsQuery{
+		CustomerIDs: customerIDs,
+	}
+	if err := s.FBUserQuery.Dispatch(ctx, queryFbExternalUserIDs); err != nil {
+		return nil, err
+	}
+
+	fbExtUserIDs := queryFbExternalUserIDs.Result
+	customerByExternalUserIDsQuery := &fbmessaging.ListFbCustomerConversationsByExternalUserIDsQuery{
+		ExtUserIDs: fbExtUserIDs,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, customerByExternalUserIDsQuery); err != nil {
+		return nil, err
+	}
+	return customerByExternalUserIDsQuery.Result, nil
+}
+
+func (s *CustomerConversationService) searchCustomerConversationByExternalMessage(
+	ctx context.Context, pageIDs []string, extMessage string,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	var result []*fbmessaging.FbCustomerConversation
+
+	conversationsInComment, err := s.searchInComment(ctx, pageIDs, extMessage)
+	if err != nil {
+		return nil, err
+	}
+	result = append(result, conversationsInComment...)
+
+	conversationsInMessage, err := s.searchInMessage(ctx, pageIDs, extMessage)
+	if err != nil {
+		return nil, err
+	}
+	result = append(result, conversationsInMessage...)
+
+	return result, nil
+}
+
+func (s *CustomerConversationService) searchByExternalUserName(
+	ctx context.Context, pageIDs []string, extUserName string,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	convSearchQuery := &fbcustomerconversationsearch.ListFbExternalConversationSearchQuery{
+		PageIDs:     pageIDs,
+		ExtUserName: extUserName,
+	}
+	if err := s.FbSearchQuery.Dispatch(ctx, convSearchQuery); err != nil {
+		return nil, err
+	}
+
+	var conversationIDs []dot.ID
+	for _, conv := range convSearchQuery.Result {
+		conversationIDs = append(conversationIDs, conv.ID)
+	}
+
+	customerConversationsQuery := &fbmessaging.ListFbCustomerConversationsByIDsQuery{
+		IDs: conversationIDs,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, customerConversationsQuery); err != nil {
+		return nil, err
+	}
+
+	return customerConversationsQuery.Result, nil
+}
+
+func (s *CustomerConversationService) searchInComment(
+	ctx context.Context, pageIDs []string, extMessage string,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	commentsQuery := &fbcustomerconversationsearch.ListFbExternalCommentSearchQuery{
+		PageIDs:     pageIDs,
+		ExternalMsg: extMessage,
+	}
+	if err := s.FbSearchQuery.Dispatch(ctx, commentsQuery); err != nil {
+		return nil, err
+	}
+	var (
+		postIDs    []string
+		extUserIDs []string
+	)
+	for _, cmt := range commentsQuery.Result {
+		postIDs = append(postIDs, cmt.ExternalPostID)
+		extUserIDs = append(extUserIDs, cmt.ExternalUserID)
+	}
+
+	customerConversationQuery := &fbmessaging.ListFbCustomerConversationsByExtUserIDsAndExtIDsQuery{
+		ExtUserIDs: extUserIDs,
+		ExtIDs:     postIDs,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, customerConversationQuery); err != nil {
+		return nil, err
+	}
+
+	return customerConversationQuery.Result, nil
+}
+
+func (s *CustomerConversationService) searchInMessage(
+	ctx context.Context, pageIDs []string, extMessage string,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	messagesQuery := &fbcustomerconversationsearch.ListFbExternalMessageSearchQuery{
+		PageIDs:     pageIDs,
+		ExternalMsg: extMessage,
+	}
+	if err := s.FbSearchQuery.Dispatch(ctx, messagesQuery); err != nil {
+		return nil, err
+	}
+	var externalConvIDs []string
+	for _, msg := range messagesQuery.Result {
+		externalConvIDs = append(externalConvIDs, msg.ExternalConversationID)
+	}
+
+	customerConversationQuery := &fbmessaging.ListFbCustomerConversationsByExternalIDsQuery{
+		ExternalIDs: externalConvIDs,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, customerConversationQuery); err != nil {
+		return nil, err
+	}
+
+	return customerConversationQuery.Result, nil
 }
 
 func (s *CustomerConversationService) GetCustomerConversationByID(
@@ -791,4 +912,104 @@ func (s *CustomerConversationService) handleAndConvertFacebookApiError(ctx conte
 	default:
 		return err
 	}
+}
+
+func (s *CustomerConversationService) buildFbCustomerConversations(
+	ctx context.Context, listCustomerConversations []*fbmessaging.FbCustomerConversation,
+) ([]*fabo.FbCustomerConversation, error) {
+	{
+		var externalUserIDs []string
+		for _, customerConversation := range listCustomerConversations {
+			if customerConversation.ExternalFrom != nil {
+				externalUserIDs = append(externalUserIDs, customerConversation.ExternalFrom.ID)
+			}
+			if customerConversation.ExternalUserID != "" {
+				externalUserIDs = append(externalUserIDs, customerConversation.ExternalUserID)
+			}
+		}
+
+		mapExternalUserIDAndImageURl, err := s.buildMapFbUserAvatar(ctx, externalUserIDs)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, customerConversation := range listCustomerConversations {
+			if customerConversation.ExternalFrom != nil {
+				customerConversation.ExternalFrom.ImageURL = mapExternalUserIDAndImageURl[customerConversation.ExternalFrom.ID]
+			}
+			if customerConversation.ExternalUserID != "" {
+				customerConversation.ExternalUserPictureURL = mapExternalUserIDAndImageURl[customerConversation.ExternalUserID]
+			}
+		}
+	}
+
+	fbUserExternalIDs := getFbExternalUserIDs(listCustomerConversations)
+	listFbUserWithCustomersQuery := &fbusering.ListFbExternalUserWithCustomerByExternalIDsQuery{
+		ShopID:      s.SS.Shop().ID,
+		ExternalIDs: fbUserExternalIDs,
+	}
+	err := s.FBUserQuery.Dispatch(ctx, listFbUserWithCustomersQuery)
+	if err != nil {
+		return nil, err
+	}
+	var mapExternalIDFbUser = make(map[string]*fbusering.FbExternalUserWithCustomer)
+	for _, v := range listFbUserWithCustomersQuery.Result {
+		mapExternalIDFbUser[v.FbExternalUser.ExternalID] = v
+	}
+
+	listFbUserQuery := &fbusering.ListFbExternalUserByIDsQuery{
+		ExtFbUserIDs: fbUserExternalIDs,
+	}
+	if err = s.FBUserQuery.Dispatch(ctx, listFbUserQuery); err != nil {
+		return nil, err
+	}
+	mapFbExternalUserIDTagIds := buildMapFbExternalUserIDTagIds(listFbUserQuery.Result)
+
+	customerConversations := convertpb.PbFbCustomerConversations(listCustomerConversations)
+	for index, conversation := range customerConversations {
+		if mapExternalIDFbUser[conversation.ExternalUserID] != nil {
+			customerConversations[index].Customer = convertpb2.PbShopCustomer(mapExternalIDFbUser[conversation.ExternalUserID].ShopCustomer)
+		}
+
+		tagIDs, ok := mapFbExternalUserIDTagIds[conversation.ExternalUserID]
+		if ok {
+			customerConversations[index].ExternalUserTags = tagIDs
+		}
+	}
+	return customerConversations, nil
+}
+
+func buildMapFbExternalUserIDTagIds(fbExternalUsers []*fbusering.FbExternalUser) map[string][]dot.ID {
+	result := map[string][]dot.ID{}
+
+	for _, user := range fbExternalUsers {
+		result[user.ExternalID] = user.TagIDs
+	}
+
+	return result
+}
+
+func getFbExternalUserIDs(customerConversations []*fbmessaging.FbCustomerConversation) []string {
+	visited := map[string]struct{}{}
+	var result []string
+	for _, conv := range customerConversations {
+		if _, ok := visited[conv.ExternalUserID]; ok {
+			continue
+		}
+		result = append(result, conv.ExternalUserID)
+		visited[conv.ExternalUserID] = struct{}{}
+	}
+	return result
+}
+
+func distinctCustomerConversations(convs []*fbmessaging.FbCustomerConversation) []*fbmessaging.FbCustomerConversation {
+	seen := map[dot.ID]struct{}{}
+	var result []*fbmessaging.FbCustomerConversation
+	for _, conv := range convs {
+		if _, ok := seen[conv.ID]; !ok {
+			result = append(result, conv)
+			seen[conv.ID] = struct{}{}
+		}
+	}
+	return result
 }

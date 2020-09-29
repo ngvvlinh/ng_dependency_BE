@@ -8,12 +8,19 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/meta"
+	fbsearchmodel "o.o/backend/com/fabo/main/fbcustomerconversationsearch/model"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
+	"o.o/common/l"
+)
+
+var (
+	ll = l.New()
 )
 
 type FbCustomerConversationStoreFactory func(ctx context.Context) *FbCustomerConversationStore
@@ -38,13 +45,19 @@ type FbCustomerConversationStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *FbCustomerConversationStore) WithPaging(paging meta.Paging) *FbCustomerConversationStore {
+func (s *FbCustomerConversationStore) WithPaging(
+	paging meta.Paging) *FbCustomerConversationStore {
 	s.Paging.WithPaging(paging)
 	return s
 }
 
 func (s *FbCustomerConversationStore) ID(id dot.ID) *FbCustomerConversationStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *FbCustomerConversationStore) IDs(ids []dot.ID) *FbCustomerConversationStore {
+	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
 
@@ -60,6 +73,11 @@ func (s *FbCustomerConversationStore) ExternalIDs(externalIDs []string) *FbCusto
 
 func (s *FbCustomerConversationStore) ExternalPageIDs(externalPageIDs []string) *FbCustomerConversationStore {
 	s.preds = append(s.preds, sq.In("external_page_id", externalPageIDs))
+	return s
+}
+
+func (s *FbCustomerConversationStore) ExternalUserIDs(extUserIDs []string) *FbCustomerConversationStore {
+	s.preds = append(s.preds, sq.In("external_user_id", extUserIDs))
 	return s
 }
 
@@ -107,6 +125,18 @@ func (s *FbCustomerConversationStore) CreateFbCustomerConversation(fbCustomerCon
 	fbCustomerConversation.CreatedAt = tempFbCustomerConversation.CreatedAt
 	fbCustomerConversation.UpdatedAt = tempFbCustomerConversation.UpdatedAt
 
+	// prepare data for search
+	customerConvSearch := &fbsearchmodel.FbCustomerConversationSearch{
+		ID:                   fbCustomerConversationDB.ID,
+		ExternalUserNameNorm: normalizeText(fbCustomerConversationDB.ExternalUserName),
+		CreatedAt:            fbCustomerConversationDB.CreatedAt,
+		ExternalPageID:       fbCustomerConversationDB.ExternalPageID,
+	}
+	_, err = s.query().Upsert(customerConvSearch)
+	if err != nil {
+		ll.Error(fmt.Sprintf("create fb_customer_conversation_search got error: %v", err))
+	}
+
 	return nil
 }
 
@@ -118,6 +148,22 @@ func (s *FbCustomerConversationStore) CreateFbCustomerConversations(fbCustomerCo
 	if err != nil {
 		return err
 	}
+
+	// prepare data for search
+	var customerConvSearchs fbsearchmodel.FbCustomerConversationSearchs
+	for _, convDB := range fbCustomerConversationsDB {
+		customerConvSearchs = append(customerConvSearchs, &fbsearchmodel.FbCustomerConversationSearch{
+			ID:                   convDB.ID,
+			ExternalUserNameNorm: normalizeText(convDB.ExternalUserName),
+			CreatedAt:            convDB.CreatedAt,
+			ExternalPageID:       convDB.ExternalPageID,
+		})
+	}
+	_, err = s.query().Upsert(&customerConvSearchs)
+	if err != nil {
+		ll.Error(fmt.Sprintf("create fb_customer_conversation_search got error: %v", err))
+	}
+
 	return nil
 }
 
@@ -187,4 +233,8 @@ func (s *FbCustomerConversationStore) SoftDelete() (int, error) {
 	return query.Table("fb_customer_conversation").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
+}
+
+func normalizeText(s string) string {
+	return validate.NormalizedSearchToTsVector(validate.NormalizeSearch(s))
 }

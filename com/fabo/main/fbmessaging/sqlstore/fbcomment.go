@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/meta"
+	fbsearchmodel "o.o/backend/com/fabo/main/fbcustomerconversationsearch/model"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -99,6 +100,23 @@ func (s *FbExternalCommentStore) CreateOrUpdateFbExternalComment(fbExternalComme
 		return err
 	}
 
+	// prepare data for search
+	externalUserID := fbExternalCommentDB.ExternalUserID
+	if externalUserID == fbExternalCommentDB.ExternalPageID {
+		externalUserID = fbExternalCommentDB.ExternalParentUserID
+	}
+	commentSearch := &fbsearchmodel.FbExternalCommentSearch{
+		ID:                  fbExternalCommentDB.ID,
+		ExternalMessageNorm: normalizeText(fbExternalCommentDB.ExternalMessage),
+		ExternalPageID:      fbExternalComment.ExternalPageID,
+		CreatedAt:           fbExternalCommentDB.CreatedAt,
+		ExternalPostID:      fbExternalCommentDB.ExternalPostID,
+		ExternalUserID:      externalUserID,
+	}
+	if _, err = s.query().Upsert(commentSearch); err != nil {
+		ll.Error(fmt.Sprintf("create fb_external_comment_search got error: %v", err))
+	}
+
 	return nil
 }
 
@@ -110,6 +128,27 @@ func (s *FbExternalCommentStore) CreateFbExternalComments(fbExternalComments []*
 	if err != nil {
 		return err
 	}
+
+	// prepare data for search
+	var commentSearchs fbsearchmodel.FbExternalCommentSearchs
+	for _, cmt := range fbExternalCommentsDB {
+		externalUserID := cmt.ExternalUserID
+		if externalUserID == cmt.ExternalPageID {
+			externalUserID = cmt.ExternalParentUserID
+		}
+		commentSearchs = append(commentSearchs, &fbsearchmodel.FbExternalCommentSearch{
+			ID:                  cmt.ID,
+			ExternalUserID:      externalUserID,
+			ExternalMessageNorm: normalizeText(cmt.ExternalMessage),
+			ExternalPageID:      cmt.ExternalPageID,
+			CreatedAt:           cmt.CreatedAt,
+			ExternalPostID:      cmt.ExternalPostID,
+		})
+	}
+	if _, err = s.query().Upsert(&commentSearchs); err != nil {
+		ll.Error(fmt.Sprintf("create fb_external_comment_search got error: %v", err))
+	}
+
 	return nil
 }
 
@@ -226,7 +265,7 @@ func (s *FbExternalCommentStore) GetLatestCustomerExternalComment(
 	if err := s.query().
 		Where(s.ft.ByExternalPostID(externalPostID)).
 		Where(s.ft.ByExternalUserID(externalUserID)).
-		OrderBy("external_created_time desc", "id desc").
+		OrderBy("external_created_time DESC", "id DESC").
 		Limit(1).
 		ShouldGet(&fbExternalComment); err != nil {
 		return nil, err
@@ -245,7 +284,7 @@ func (s *FbExternalCommentStore) GetLatestUpdatedActiveComment() (*fbmessaging.F
 	if err := s.query().
 		Where(s.preds).
 		Where(sq.NewExpr("deleted_at is NULL")).
-		OrderBy("updated_at desc").
+		OrderBy("updated_at DESC").
 		Limit(1).
 		ShouldGet(&fbExternalComment); err != nil {
 		return nil, err

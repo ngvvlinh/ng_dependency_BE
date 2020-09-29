@@ -15,6 +15,7 @@ import (
 	"o.o/backend/pkg/common/validate"
 	historysqlstore "o.o/backend/pkg/etop-history/sqlstore"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 var _ customering.QueryService = &CustomerQuery{}
@@ -76,6 +77,12 @@ func (q *CustomerQuery) GetCustomer(
 	}
 	return customer, nil
 
+}
+
+func (q *CustomerQuery) ListCustomersByPhoneNorm(
+	ctx context.Context, args *customering.ListCustomersByPhoneNormArgs,
+) ([]*customering.ShopCustomer, error) {
+	return q.store(ctx).ShopID(args.ShopID).FullTextSearchFullPhone(filter.FullTextSearch(args.Phone)).ListCustomers()
 }
 
 func (q *CustomerQuery) GetCustomerByID(

@@ -285,6 +285,33 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/SearchCustomerConversations": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "SearchCustomerConversations",
+        "operationId": "fabo.CustomerConversation-SearchCustomerConversations",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvSearchCustomerConversationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvSearchFbCustomerConversationsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/SendComment": {
       "post": {
         "tags": [
@@ -1840,6 +1867,25 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "cvSearchCustomerConversationRequest": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "cvSearchFbCustomerConversationsResponse": {
+      "type": "object",
+      "properties": {
+        "fb_customer_conversations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvFbCustomerConversation"
           }
         }
       }

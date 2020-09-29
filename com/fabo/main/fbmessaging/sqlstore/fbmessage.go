@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/meta"
+	fbsearchmodel "o.o/backend/com/fabo/main/fbcustomerconversationsearch/model"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -91,6 +92,18 @@ func (s *FbExternalMessageStore) CreateFbExternalMessage(fbExternalMessage *fbme
 	fbExternalMessage.CreatedAt = tempFbExternalMessage.CreatedAt
 	fbExternalMessage.UpdatedAt = tempFbExternalMessage.UpdatedAt
 
+	// prepare for search
+	messageSearch := &fbsearchmodel.FbExternalMessageSearch{
+		ID:                     fbExternalMessageDB.ID,
+		ExternalMessageNorm:    normalizeText(fbExternalMessageDB.ExternalMessage),
+		ExternalPageID:         fbExternalMessageDB.ExternalPageID,
+		CreatedAt:              fbExternalMessageDB.CreatedAt,
+		ExternalConversationID: fbExternalMessageDB.ExternalConversationID,
+	}
+	if _, err = s.query().Upsert(messageSearch); err != nil {
+		ll.Error(fmt.Sprintf("create fb_external_message_search got error: %v", err))
+	}
+
 	return nil
 }
 
@@ -102,6 +115,22 @@ func (s *FbExternalMessageStore) CreateFbExternalMessages(fbExternalMessages []*
 	if err != nil {
 		return err
 	}
+
+	// prepare for search
+	var messageSearchs fbsearchmodel.FbExternalMessageSearchs
+	for _, msg := range fbExternalMessagesDB {
+		messageSearchs = append(messageSearchs, &fbsearchmodel.FbExternalMessageSearch{
+			ID:                     msg.ID,
+			ExternalMessageNorm:    normalizeText(msg.ExternalMessage),
+			CreatedAt:              msg.CreatedAt,
+			ExternalConversationID: msg.ExternalConversationID,
+			ExternalPageID:         msg.ExternalPageID,
+		})
+	}
+	if _, err = s.query().Upsert(&messageSearchs); err != nil {
+		ll.Error(fmt.Sprintf("create fb_external_message_search got error: %v", err))
+	}
+
 	return nil
 }
 

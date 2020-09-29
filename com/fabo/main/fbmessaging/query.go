@@ -380,3 +380,25 @@ func (q *FbMessagingQuery) GetLatestUpdateActiveComment(
 		ExternalPostID(extPostID).
 		GetLatestUpdatedActiveComment()
 }
+
+func (q *FbMessagingQuery) ListFbCustomerConversationsByExternalUserIDs(
+	ctx context.Context, extUserIDs []string,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	return q.fbCustomerConversationStore(ctx).ExternalUserIDs(extUserIDs).ListFbCustomerConversations()
+}
+
+func (q *FbMessagingQuery) ListFbCustomerConversationsByIDs(
+	ctx context.Context, ids []dot.ID,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	return q.fbCustomerConversationStore(ctx).IDs(ids).ListFbCustomerConversations()
+}
+
+func (q *FbMessagingQuery) ListFbCustomerConversationsByExtUserIDsAndExtIDs(
+	ctx context.Context, extUserIDs, extIDs []string,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	return q.
+		fbCustomerConversationStore(ctx).
+		ExternalIDs(extIDs).
+		ExternalUserIDs(extUserIDs).
+		ListFbCustomerConversations()
+}

@@ -38,6 +38,8 @@ type QueryService interface {
 
 	GetCustomerByID(context.Context, *shopping.IDQueryShopArg) (*ShopCustomer, error)
 
+	ListCustomersByPhoneNorm(context.Context, *ListCustomersByPhoneNormArgs) ([]*ShopCustomer, error)
+
 	// unused
 	GetCustomerByCode(ctx context.Context, code string, shopID dot.ID) (*ShopCustomer, error)
 
@@ -61,6 +63,10 @@ type QueryService interface {
 }
 
 //-- queries --//
+type ListCustomersByPhoneNormArgs struct {
+	ShopID dot.ID
+	Phone  string
+}
 
 type ListCustomerGroupsCustomersArgs struct {
 	CustomerIDs []dot.ID

@@ -36,6 +36,7 @@ type QueryService interface {
 	ListFbExternalPagesByExternalIDs(_ context.Context, externalIDs []string) ([]*FbExternalPage, error)
 	ListFbExternalPagesActiveByExternalIDs(_ context.Context, externalIDs []string) ([]*FbExternalPage, error)
 	ListFbPagesByShop(_ context.Context, shopIDs []dot.ID) ([]*FbExternalPage, error)
+	ListActiveFbPagesByShopIDs(_ context.Context, shopIDs []dot.ID) ([]*FbExternalPage, error)
 }
 
 // +convert:create=FbExternalPage

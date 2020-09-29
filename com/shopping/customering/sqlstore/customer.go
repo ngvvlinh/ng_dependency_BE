@@ -60,6 +60,12 @@ func (s *CustomerStore) FullTextSearchFullName(name filter.FullTextSearch) *Cust
 	return s
 }
 
+func (s *CustomerStore) FullTextSearchFullPhone(phone filter.FullTextSearch) *CustomerStore {
+	ts := validate.NormalizeFullTextSearchQueryAnd(phone)
+	s.preds = append(s.preds, s.ft.Filter(`phone_norm @@ ?::tsquery`, ts))
+	return s
+}
+
 func (s *CustomerStore) ID(id dot.ID) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s

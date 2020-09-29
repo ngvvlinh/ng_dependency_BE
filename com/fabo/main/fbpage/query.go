@@ -70,9 +70,9 @@ func (q *FbPageQuery) ListFbExternalPagesByIDs(
 }
 
 func (q *FbPageQuery) ListFbExternalPagesByExternalIDs(
-	ctx context.Context, external_IDs []string,
+	ctx context.Context, externalIDs []string,
 ) ([]*fbpaging.FbExternalPage, error) {
-	fbPages, err := q.fbPageStore(ctx).ExternalIDs(external_IDs).ListFbPages()
+	fbPages, err := q.fbPageStore(ctx).ExternalIDs(externalIDs).ListFbPages()
 	if err != nil {
 		return nil, err
 	}
@@ -120,6 +120,10 @@ func (q *FbPageQuery) GetFbExternalPageInternalActiveByExternalID(
 
 func (q *FbPageQuery) ListFbPagesByShop(ctx context.Context, shopIDs []dot.ID) ([]*fbpaging.FbExternalPage, error) {
 	return q.fbPageStore(ctx).ShopIDs(shopIDs...).ListFbPages()
+}
+
+func (q *FbPageQuery) ListActiveFbPagesByShopIDs(ctx context.Context, shopIDs []dot.ID) ([]*fbpaging.FbExternalPage, error) {
+	return q.fbPageStore(ctx).Status(status3.P).ShopIDs(shopIDs...).ListFbPages()
 }
 
 func (q *FbPageQuery) GetPageAccessToken(ctx context.Context, externalID string) (string, error) {

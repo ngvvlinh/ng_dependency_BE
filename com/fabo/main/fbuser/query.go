@@ -219,6 +219,29 @@ func (q *FbUserQuery) populateFbExternalUsersWithCustomerInfo(ctx context.Contex
 	return result, nil
 }
 
+func (q *FbUserQuery) ListShopCustomerIDWithPhoneNorm(
+	ctx context.Context,
+	shopID dot.ID,
+	phone string,
+) ([]dot.ID, error) {
+	query := &customering.ListCustomersByPhoneNormQuery{
+		ShopID: shopID,
+		Phone:  phone,
+	}
+	err := q.customerQuery.Dispatch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+
+	customers := query.Result
+	var result []dot.ID
+	for _, customer := range customers {
+		result = append(result, customer.ID)
+	}
+
+	return result, nil
+}
+
 func (q *FbUserQuery) ListShopCustomerWithFbExternalUser(ctx context.Context, args *fbusering.ListCustomerWithFbAvatarsArgs) (*fbusering.ListShopCustomerWithFbExternalUserResponse, error) {
 	query := &customering.ListCustomersQuery{
 		ShopID:  args.ShopID,
@@ -280,6 +303,23 @@ func (q *FbUserQuery) GetShopUserTag(ctx context.Context, args *fbusering.GetSho
 
 func (q *FbUserQuery) ListShopUserTags(ctx context.Context, args *fbusering.ListShopUserTagsArgs) ([]*fbusering.FbShopUserTag, error) {
 	return q.fbShopUserTagStore(ctx).ByShopID(args.ShopID).ListShopUserTags()
+}
+
+func (q *FbUserQuery) ListFbExtUserShopCustomersByShopCustomerIDs(ctx context.Context, customerIDs []dot.ID) ([]*fbusering.FbExternalUserShopCustomer, error) {
+	return q.fbExternalUserShopCustomerStore(ctx).ShopCustomerIDs(customerIDs).ListFbExternalUsers()
+}
+
+func (q *FbUserQuery) ListFbExternalUserIDsByShopCustomerIDs(ctx context.Context, customerIDs []dot.ID) ([]string, error) {
+	extUsers, err := q.ListFbExtUserShopCustomersByShopCustomerIDs(ctx, customerIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []string
+	for _, user := range extUsers {
+		result = append(result, user.FbExternalUserID)
+	}
+	return result, nil
 }
 
 func replaceDefaultAvatars(fbExternalUsers []*fbusering.FbExternalUser, linkAvatar string) {

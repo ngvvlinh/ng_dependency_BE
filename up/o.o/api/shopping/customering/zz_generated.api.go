@@ -298,6 +298,18 @@ func (h QueryServiceHandler) HandleListCustomersByIDs(ctx context.Context, msg *
 	return err
 }
 
+type ListCustomersByPhoneNormQuery struct {
+	ShopID dot.ID
+	Phone  string
+
+	Result []*ShopCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListCustomersByPhoneNorm(ctx context.Context, msg *ListCustomersByPhoneNormQuery) (err error) {
+	msg.Result, err = h.inner.ListCustomersByPhoneNorm(msg.GetArgs(ctx))
+	return err
+}
+
 type ListCustomersByPhonesQuery struct {
 	ShopID dot.ID
 	Phones []string
@@ -333,6 +345,7 @@ func (q *ListCustomerGroupsQuery) query()          {}
 func (q *ListCustomerGroupsCustomersQuery) query() {}
 func (q *ListCustomersQuery) query()               {}
 func (q *ListCustomersByIDsQuery) query()          {}
+func (q *ListCustomersByPhoneNormQuery) query()    {}
 func (q *ListCustomersByPhonesQuery) query()       {}
 
 // implement conversion
@@ -627,6 +640,19 @@ func (q *ListCustomersByIDsQuery) SetListCustomerByIDsArgs(args *ListCustomerByI
 	q.IncludeDeleted = args.IncludeDeleted
 }
 
+func (q *ListCustomersByPhoneNormQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomersByPhoneNormArgs) {
+	return ctx,
+		&ListCustomersByPhoneNormArgs{
+			ShopID: q.ShopID,
+			Phone:  q.Phone,
+		}
+}
+
+func (q *ListCustomersByPhoneNormQuery) SetListCustomersByPhoneNormArgs(args *ListCustomersByPhoneNormArgs) {
+	q.ShopID = args.ShopID
+	q.Phone = args.Phone
+}
+
 func (q *ListCustomersByPhonesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, phones []string) {
 	return ctx,
 		q.ShopID,
@@ -680,6 +706,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListCustomerGroupsCustomers)
 	b.AddHandler(h.HandleListCustomers)
 	b.AddHandler(h.HandleListCustomersByIDs)
+	b.AddHandler(h.HandleListCustomersByPhoneNorm)
 	b.AddHandler(h.HandleListCustomersByPhones)
 	return QueryBus{b}
 }

@@ -54,6 +54,7 @@ const Path_CustomerConversation_GetCustomerConversationByID = "/fabo.CustomerCon
 const Path_CustomerConversation_ListCommentsByExternalPostID = "/fabo.CustomerConversation/ListCommentsByExternalPostID"
 const Path_CustomerConversation_ListCustomerConversations = "/fabo.CustomerConversation/ListCustomerConversations"
 const Path_CustomerConversation_ListMessages = "/fabo.CustomerConversation/ListMessages"
+const Path_CustomerConversation_SearchCustomerConversations = "/fabo.CustomerConversation/SearchCustomerConversations"
 const Path_CustomerConversation_SendComment = "/fabo.CustomerConversation/SendComment"
 const Path_CustomerConversation_SendMessage = "/fabo.CustomerConversation/SendMessage"
 const Path_CustomerConversation_UpdateReadStatus = "/fabo.CustomerConversation/UpdateReadStatus"
@@ -153,6 +154,19 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 				return
 			}
 			resp, err = inner.ListMessages(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/SearchCustomerConversations":
+		msg := &SearchCustomerConversationRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.SearchCustomerConversations(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

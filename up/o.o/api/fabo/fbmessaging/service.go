@@ -68,6 +68,9 @@ type QueryService interface {
 	GetFbCustomerConversationByID(_ context.Context, ID dot.ID) (*FbCustomerConversation, error)
 	ListFbCustomerConversationsByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbCustomerConversation, error)
 	ListFbCustomerConversations(context.Context, *ListFbCustomerConversationsArgs) (*FbCustomerConversationsResponse, error)
+	ListFbCustomerConversationsByExternalUserIDs(_ context.Context, extUserIDs []string) ([]*FbCustomerConversation, error)
+	ListFbCustomerConversationsByIDs(_ context.Context, IDs []dot.ID) ([]*FbCustomerConversation, error)
+	ListFbCustomerConversationsByExtUserIDsAndExtIDs(_ context.Context, extUserIDs []string, extIDs []string) ([]*FbCustomerConversation, error)
 
 	ListFbCustomerConversationStates(_ context.Context, IDs []dot.ID) ([]*FbCustomerConversationState, error)
 }

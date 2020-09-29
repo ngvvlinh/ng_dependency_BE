@@ -410,6 +410,18 @@ func (h QueryServiceHandler) HandleListFbCustomerConversations(ctx context.Conte
 	return err
 }
 
+type ListFbCustomerConversationsByExtUserIDsAndExtIDsQuery struct {
+	ExtUserIDs []string
+	ExtIDs     []string
+
+	Result []*FbCustomerConversation `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbCustomerConversationsByExtUserIDsAndExtIDs(ctx context.Context, msg *ListFbCustomerConversationsByExtUserIDsAndExtIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbCustomerConversationsByExtUserIDsAndExtIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListFbCustomerConversationsByExternalIDsQuery struct {
 	ExternalIDs filter.Strings
 
@@ -418,6 +430,28 @@ type ListFbCustomerConversationsByExternalIDsQuery struct {
 
 func (h QueryServiceHandler) HandleListFbCustomerConversationsByExternalIDs(ctx context.Context, msg *ListFbCustomerConversationsByExternalIDsQuery) (err error) {
 	msg.Result, err = h.inner.ListFbCustomerConversationsByExternalIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFbCustomerConversationsByExternalUserIDsQuery struct {
+	ExtUserIDs []string
+
+	Result []*FbCustomerConversation `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbCustomerConversationsByExternalUserIDs(ctx context.Context, msg *ListFbCustomerConversationsByExternalUserIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbCustomerConversationsByExternalUserIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFbCustomerConversationsByIDsQuery struct {
+	IDs []dot.ID
+
+	Result []*FbCustomerConversation `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbCustomerConversationsByIDs(ctx context.Context, msg *ListFbCustomerConversationsByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbCustomerConversationsByIDs(msg.GetArgs(ctx))
 	return err
 }
 
@@ -564,7 +598,10 @@ func (q *GetLatestFbExternalCommentQuery) query()                               
 func (q *GetLatestUpdateActiveCommentQuery) query()                               {}
 func (q *ListFbCustomerConversationStatesQuery) query()                           {}
 func (q *ListFbCustomerConversationsQuery) query()                                {}
+func (q *ListFbCustomerConversationsByExtUserIDsAndExtIDsQuery) query()           {}
 func (q *ListFbCustomerConversationsByExternalIDsQuery) query()                   {}
+func (q *ListFbCustomerConversationsByExternalUserIDsQuery) query()               {}
+func (q *ListFbCustomerConversationsByIDsQuery) query()                           {}
 func (q *ListFbExternalCommentsQuery) query()                                     {}
 func (q *ListFbExternalCommentsByExternalIDsQuery) query()                        {}
 func (q *ListFbExternalConversationsByExternalIDsQuery) query()                   {}
@@ -880,9 +917,25 @@ func (q *ListFbCustomerConversationsQuery) SetListFbCustomerConversationsArgs(ar
 	q.Paging = args.Paging
 }
 
+func (q *ListFbCustomerConversationsByExtUserIDsAndExtIDsQuery) GetArgs(ctx context.Context) (_ context.Context, extUserIDs []string, extIDs []string) {
+	return ctx,
+		q.ExtUserIDs,
+		q.ExtIDs
+}
+
 func (q *ListFbCustomerConversationsByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs filter.Strings) {
 	return ctx,
 		q.ExternalIDs
+}
+
+func (q *ListFbCustomerConversationsByExternalUserIDsQuery) GetArgs(ctx context.Context) (_ context.Context, extUserIDs []string) {
+	return ctx,
+		q.ExtUserIDs
+}
+
+func (q *ListFbCustomerConversationsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {
+	return ctx,
+		q.IDs
 }
 
 func (q *ListFbExternalCommentsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbExternalCommentsArgs) {
@@ -1025,7 +1078,10 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetLatestUpdateActiveComment)
 	b.AddHandler(h.HandleListFbCustomerConversationStates)
 	b.AddHandler(h.HandleListFbCustomerConversations)
+	b.AddHandler(h.HandleListFbCustomerConversationsByExtUserIDsAndExtIDs)
 	b.AddHandler(h.HandleListFbCustomerConversationsByExternalIDs)
+	b.AddHandler(h.HandleListFbCustomerConversationsByExternalUserIDs)
+	b.AddHandler(h.HandleListFbCustomerConversationsByIDs)
 	b.AddHandler(h.HandleListFbExternalComments)
 	b.AddHandler(h.HandleListFbExternalCommentsByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalConversationsByExternalIDs)

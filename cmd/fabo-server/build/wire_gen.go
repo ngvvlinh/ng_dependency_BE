@@ -26,6 +26,7 @@ import (
 	"o.o/backend/com/eventhandler/handler"
 	"o.o/backend/com/eventhandler/notifier"
 	sqlstore2 "o.o/backend/com/eventhandler/notifier/sqlstore"
+	"o.o/backend/com/fabo/main/fbcustomerconversationsearch"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
@@ -544,14 +545,17 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
 	fbmessagingCommandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
+	fbSearchService := fbcustomerconversationsearch.NewFbSearchServiceQuery(mainDB)
+	fbcustomerconversationsearchQueryBus := fbcustomerconversationsearch.FbSearchQueryMessageBus(fbSearchService)
 	customerConversationService := &fabo.CustomerConversationService{
 		Session:          session,
 		FaboPagesKit:     faboPagesKit,
+		FBClient:         fbClient,
 		FBMessagingQuery: fbmessagingQueryBus,
 		FBMessagingAggr:  fbmessagingCommandBus,
 		FBPagingQuery:    fbpagingQueryBus,
-		FBClient:         fbClient,
 		FBUserQuery:      fbuseringQueryBus,
+		FbSearchQuery:    fbcustomerconversationsearchQueryBus,
 	}
 	faboCustomerService := &fabo.CustomerService{
 		Session:        session,
