@@ -44,13 +44,14 @@ import (
 var ll = l.New()
 
 type Output struct {
-	Servers   []lifecycle.HTTPServer
-	Waiters   []lifecycle.Waiter
-	PgService *pgevent.Service
-	WhSender  *sender.WebhookSender
-	Notifier  *notifier.Notifier
-	Handlers  []*handler.Handler
-	Health    *health.Service
+	Servers       []lifecycle.HTTPServer
+	Waiters       []lifecycle.Waiter
+	PgService     *pgevent.Service
+	WhSender      *sender.WebhookSender
+	Notifier      *notifier.Notifier
+	Handlers      []*handler.Handler
+	Health        *health.Service
+	IntctlHandler *intctl.Handler
 }
 
 func BuildServers(
@@ -121,7 +122,6 @@ func BuildIntHandler(
 		return nil, err
 	}
 	h := intctl.New(consumer, cfg.Kafka.TopicPrefix)
-	h.ConsumeAndHandle(ctx)
 	return h, nil
 }
 
@@ -129,6 +129,7 @@ func BuildWebhookHandler(
 	ctx context.Context,
 	cfg config.Config,
 	db com.MainDB,
+	intctlHandler *intctl.Handler,
 	webhookSender *sender.WebhookSender,
 	catalogQuery catalog.QueryBus,
 	customerQuery customering.QueryBus,
@@ -145,6 +146,7 @@ func BuildWebhookHandler(
 	}
 
 	etopHandler := etophandler.New(db, webhookSender, catalogQuery, customerQuery, inventoryQuery, addressQuery, locationQuery, shipnowQuery)
+	etopHandler.RegisterTo(intctlHandler)
 	h := handler.New(consumer, cfg.Kafka)
 	h.StartConsuming(ctx, etophandler.Topics(), etopHandler.TopicsAndHandlers())
 	return h, nil

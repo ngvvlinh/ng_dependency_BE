@@ -51,6 +51,9 @@ func main() {
 		sdCtx.Register(w.Wait)
 	}
 
+	// intctrl consuming
+	output.IntctlHandler.ConsumeAndHandle(sdCtx)
+
 	defer output.Health.Shutdown()
 	defer sdCtx.Wait()
 	output.Health.MarkReady()

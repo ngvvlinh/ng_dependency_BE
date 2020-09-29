@@ -38,7 +38,7 @@ type PartnerStoreInterface interface {
 }
 
 type PartnerStore struct {
-	query cmsql.QueryFactory
+	query func() cmsql.QueryInterface
 	ft    identitysqlstore.PartnerFilters
 	preds []interface{}
 
@@ -50,7 +50,9 @@ type PartnerStoreFactory func(ctx context.Context) *PartnerStore
 func NewPartnerStore(db com.MainDB) PartnerStoreFactory {
 	return func(ctx context.Context) *PartnerStore {
 		return &PartnerStore{
-			query: cmsql.NewQueryFactory(ctx, db),
+			query: func() cmsql.QueryInterface {
+				return cmsql.GetTxOrNewQuery(ctx, db)
+			},
 		}
 	}
 }
@@ -208,6 +210,9 @@ func (st *PartnerStore) GetPartnersFromRelation(ctx context.Context, query *iden
 		return err
 	}
 
+	if len(partnerIDs) == 0 {
+		return nil
+	}
 	partners, err := st.IncludeDeleted().IDs(partnerIDs...).List()
 	query.Result.Partners = partners
 	return err

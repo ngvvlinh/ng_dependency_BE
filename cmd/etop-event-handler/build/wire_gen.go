@@ -72,7 +72,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	locationQueryBus := location.QueryMessageBus(locationQuery)
 	shipnowQueryService := shipnow.NewQueryService(mainDB)
 	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
-	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, webhookSender, queryBus, customeringQueryBus, inventoryQueryBus, addressingQueryBus, locationQueryBus, shipnowQueryBus)
+	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, handler, webhookSender, queryBus, customeringQueryBus, inventoryQueryBus, addressingQueryBus, locationQueryBus, shipnowQueryBus)
 	if err != nil {
 		return Output{}, nil, err
 	}
@@ -95,13 +95,14 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		return Output{}, nil, err
 	}
 	output := Output{
-		Servers:   v,
-		Waiters:   v2,
-		PgService: pgeventService,
-		WhSender:  webhookSender,
-		Notifier:  notifier,
-		Handlers:  v3,
-		Health:    service,
+		Servers:       v,
+		Waiters:       v2,
+		PgService:     pgeventService,
+		WhSender:      webhookSender,
+		Notifier:      notifier,
+		Handlers:      v3,
+		Health:        service,
+		IntctlHandler: handler,
 	}
 	return output, func() {
 	}, nil

@@ -52,13 +52,16 @@ type WebhookSender struct {
 	wg sync.WaitGroup
 	m  sync.RWMutex
 
-	PartnerStore sqlstore.PartnerStoreInterface
+	PartnerStore sqlstore.PartnerStoreFactory
 }
 
 func New(db com.MainDB, redis redis.Store, cs *storage.ChangesStore, partnerStore sqlstore.PartnerStoreInterface) *WebhookSender {
 	redisStore = redis
 	changesStore = cs
-	return &WebhookSender{db: db, PartnerStore: partnerStore}
+	return &WebhookSender{
+		db:           db,
+		PartnerStore: sqlstore.NewPartnerStore(db),
+	}
 }
 
 func (s *WebhookSender) Load() error {
@@ -202,7 +205,7 @@ func (s *WebhookSender) Collect(ctx context.Context, entity entity_type.EntityTy
 		query := &identitymodelx.GetPartnersFromRelationQuery{
 			AccountIDs: []dot.ID{shopID},
 		}
-		if err := s.PartnerStore.GetPartnersFromRelation(ctx, query); err != nil {
+		if err := s.PartnerStore(ctx).GetPartnersFromRelation(ctx, query); err != nil {
 			return err
 		}
 
