@@ -20,6 +20,7 @@ import (
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	moneytxtypes "o.o/backend/pkg/etop/logic/money-transaction/handlers/types"
 	"o.o/backend/pkg/etop/logic/money-transaction/jtexpressimport"
+	"o.o/backend/pkg/etop/logic/money-transaction/njvimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	"o.o/capi/dot"
 )
@@ -32,6 +33,7 @@ type ImportService struct {
 	GHTKImporter      *ghtkimport.GHTKImporter
 	GHNImporter       *ghnimport.GHNImporter
 	JTExpressImporter *jtexpressimport.JTImporter
+	NJVImporter       *njvimport.NJVImporter
 }
 
 var (
@@ -123,22 +125,24 @@ func (s *ImportService) getCarrierImporter(ctx context.Context, connectionID dot
 		return nil, 0, cm.Errorf(cm.InvalidArgument, nil, "Connection ID does not valid")
 	}
 
-	switch connectionID {
-	case connectioning.DefaultTopshipGHNConnectionID:
+	switch conn.ConnectionProvider {
+	case connection_type.ConnectionProviderGHN:
 		return s.GHNImporter, shipping_provider.GHN, nil
-	case connectioning.DefaultTopshipGHTKConnectionID:
+	case connection_type.ConnectionProviderGHTK:
 		return s.GHTKImporter, shipping_provider.GHTK, nil
-	case connectioning.DefaultTopshipVTPostConnectionID:
+	case connection_type.ConnectionProviderVTP:
 		return s.VTPostImporter, shipping_provider.VTPost, nil
+	case connection_type.ConnectionProviderNinjaVan:
+		return s.NJVImporter, shipping_provider.NinjaVan, nil
+	case connection_type.ConnectionProviderPartner:
+		nameNorm := validate.NormalizeSearchSimple(query.Result.Name)
+		if checkJTExpress(nameNorm) {
+			return s.JTExpressImporter, shipping_provider.Partner, nil
+		}
+		return nil, 0, cm.Errorf(cm.InvalidArgument, nil, "Connection ID does not valid")
 	default:
-		// continue
+		return nil, 0, cm.Errorf(cm.InvalidArgument, nil, "Connection ID does not valid")
 	}
-
-	nameNorm := validate.NormalizeSearchSimple(query.Result.Name)
-	if checkJTExpress(nameNorm) {
-		return s.JTExpressImporter, shipping_provider.Partner, nil
-	}
-	return nil, 0, cm.Errorf(cm.InvalidArgument, nil, "Connection ID does not valid")
 }
 
 func GetFormValue(ss []string) string {

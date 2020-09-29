@@ -177,6 +177,7 @@ import (
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/handlers"
 	"o.o/backend/pkg/etop/logic/money-transaction/jtexpressimport"
+	"o.o/backend/pkg/etop/logic/money-transaction/njvimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	"o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
@@ -1154,6 +1155,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	ghnImporter := &ghnimport.GHNImporter{}
 	jtImporter := &jtexpressimport.JTImporter{}
+	njvImporter := &njvimport.NJVImporter{
+		ShippingAggr:  shippingCommandBus,
+		ShippingQuery: shippingQueryBus,
+	}
 	handlersImportService := handlers.ImportService{
 		MoneyTxAggr:       moneytxCommandBus,
 		ConnectionQuery:   connectioningQueryBus,
@@ -1161,6 +1166,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		GHTKImporter:      ghtkImporter,
 		GHNImporter:       ghnImporter,
 		JTExpressImporter: jtImporter,
+		NJVImporter:       njvImporter,
 	}
 	hotFixMoneyTxService := hotfix.New(mainDB)
 	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, hotFixMoneyTxService, session)
