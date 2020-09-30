@@ -71,8 +71,6 @@ func (d VTPostDriver) CreateFulfillment(
 	if ffm.AddressFrom.WardCode == "" || ffm.AddressTo.WardCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "VTPost yêu cầu thông tin phường xã hợp lệ để giao hàng")
 	}
-	// note := carrierutil.GetShippingProviderNote(ffm)
-	note := ffm.ShippingNote
 
 	fromQuery := &location.GetLocationQuery{
 		DistrictCode: ffm.AddressFrom.DistrictCode,
@@ -149,7 +147,7 @@ func (d VTPostDriver) CreateFulfillment(
 		ReceiverProvince:   toProvince.VtpostId,
 		ProductPrice:       insuranceValue,
 		ProductWeight:      args.ChargeableWeight,
-		OrderNote:          note,
+		OrderNote:          ffm.ShippingNote,
 		MoneyCollection:    ffm.TotalCODAmount,
 		MoneyTotalFee:      service.ServiceFee,
 		ListItem:           products,

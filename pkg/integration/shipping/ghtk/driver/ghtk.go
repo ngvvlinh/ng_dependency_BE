@@ -68,10 +68,6 @@ func (d *GHTKDriver) CreateFulfillment(
 	ffm *shipmodel.Fulfillment,
 	args *carriertypes.GetShippingServicesArgs,
 	service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
-	// note := carrierutil.GetShippingProviderNote(ffm)
-
-	note := ffm.ShippingNote
-
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
 	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
@@ -126,7 +122,7 @@ func (d *GHTKDriver) CreateFulfillment(
 			District:     toDistrict.Name,
 			Ward:         ffm.AddressTo.Ward,
 			Tel:          ffm.AddressTo.Phone,
-			Note:         note,
+			Note:         ffm.ShippingNote,
 			WeightOption: "gram",
 			Value:        insuranceValue,
 			TotalWeight:  float32(args.ChargeableWeight),

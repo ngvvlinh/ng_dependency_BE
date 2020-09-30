@@ -14,12 +14,15 @@ const (
 	Unknown TryOnCode = 0
 
 	// +enum=none
+	// +enum:RefName:Không cho xem hàng
 	None TryOnCode = 1
 
 	// +enum=open
+	// +enum:RefName:Cho xem hàng không thử
 	Open TryOnCode = 2
 
 	// +enum=try
+	// +enum:RefName:Cho thử hàng
 	Try TryOnCode = 3
 )
 

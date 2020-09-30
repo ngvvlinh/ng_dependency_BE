@@ -13,6 +13,8 @@ import (
 	"o.o/capi/dot"
 )
 
+const CarrierNote = "KHÔNG TỰ Ý HOÀN HÀNG. Gọi shop nếu giao 1 phần/thất bại."
+
 type Config struct {
 	Endpoints []ConfigEndpoint
 }

@@ -35,3 +35,17 @@ func Blacklist(current byte, arbitraryCharacter byte, blacks ...byte) byte {
 	}
 	return current
 }
+
+func GetShippingCarrierNote(ffm *shipmodel.Fulfillment) string {
+	note := strings.Builder{}
+	if ffm.TryOn != 0 {
+		note.WriteString(ffm.TryOn.GetLabelRefName())
+		note.WriteString(". ")
+	}
+	if ffm.ShippingNote != "" {
+		note.WriteString(ffm.ShippingNote)
+		note.WriteString(". ")
+	}
+	note.WriteString(CarrierNote)
+	return note.String()
+}

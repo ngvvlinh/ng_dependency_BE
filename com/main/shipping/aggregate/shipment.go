@@ -163,13 +163,6 @@ func (a *Aggregate) CreateFulfillments(ctx context.Context, args *shipping.Creat
 		return nil, err
 	}
 
-	mapShippingNote := a.buildShippingNote(ctx, ffms)
-	for index := 0; index < len(ffms); index++ {
-		if note, ok := mapShippingNote[ffms[index].ID]; ok {
-			ffms[index].ShippingNote = note
-		}
-	}
-
 	if err := a.shimentManager.CreateFulfillments(ctx, ffms); err != nil {
 		return nil, err
 	}
@@ -230,81 +223,6 @@ func (a *Aggregate) getAndVerifyAddress(ctx context.Context, address *ordertypes
 		address.Location.WardCode = ward.Code
 	}
 	return province, district, nil
-}
-
-func (a *Aggregate) GetNoteOfShop(ctx context.Context, shopID dot.ID) (*address.AddressNote, error) {
-	cmd := &identity.GetShopByIDQuery{
-		ID: shopID,
-	}
-
-	if err := a.identityQS.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
-
-	cmdAddress := &address.GetAddressByIDQuery{
-		ID: cmd.Result.AddressID,
-	}
-
-	if err := a.addressQS.Dispatch(ctx, cmdAddress); err != nil {
-		return nil, err
-	}
-
-	return cmdAddress.Result.Notes, nil
-}
-
-func (a *Aggregate) getShippingNote(ffm *shipmodel.Fulfillment, note *address.AddressNote) string {
-	shippingNote := strings.Builder{}
-
-	notePick := strings.Builder{}
-	if note != nil && note.LunchBreak != "" {
-		notePick.WriteString("giờ nghỉ trưa: ")
-		notePick.WriteString(note.LunchBreak)
-		notePick.WriteString(".")
-	}
-
-	if ffm.AddressFrom != nil && ffm.AddressFrom.Notes != nil && ffm.AddressFrom.Notes.Note != "" {
-		notePick.WriteString(ffm.AddressFrom.Notes.Note)
-	}
-	noteDelivery := strings.Builder{}
-	if ffm.ShippingNote != "" {
-		noteDelivery.WriteString(ffm.ShippingNote)
-		noteDelivery.WriteString(".")
-	}
-
-	if ffm.TryOn.String() != "" {
-		noteDelivery.WriteString(ffm.TryOn.String())
-	}
-
-	if notePick.String() != "" {
-		shippingNote.WriteString("LẤY:")
-		shippingNote.WriteString(notePick.String())
-		shippingNote.WriteString(".\n")
-	}
-
-	if noteDelivery.String() != "" {
-		shippingNote.WriteString("GIAO:")
-		shippingNote.WriteString(noteDelivery.String())
-		shippingNote.WriteString(".\n")
-	}
-
-	shippingNote.WriteString("KHÔNG TỰ Ý HOÀN HÀNG. Gọi shop nếu giao 1 phần/thất bại.")
-
-	return shippingNote.String()
-}
-
-func (a *Aggregate) buildShippingNote(ctx context.Context, ffms []*shipmodel.Fulfillment) map[dot.ID]string {
-	var result = make(map[dot.ID]string)
-	for _, item := range ffms {
-		note, err := a.GetNoteOfShop(ctx, item.ShopID)
-		if err != nil {
-			continue
-		}
-		if _, ok := result[item.ID]; !ok {
-			result[item.ID] = a.getShippingNote(item, note)
-		}
-	}
-
-	return result
 }
 
 func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *ordering.Order, args *shipping.CreateFulfillmentsArgs) (*shipmodel.Fulfillment, error) {

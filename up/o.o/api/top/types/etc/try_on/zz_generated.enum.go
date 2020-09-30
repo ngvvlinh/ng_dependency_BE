@@ -28,6 +28,26 @@ var enumTryOnCodeValue = map[string]int{
 	"try":     3,
 }
 
+var enumTryOnCodeMapLabel = map[string]map[string]string{
+	"unknown": {
+		"RefName": "",
+	},
+	"none": {
+		"RefName": "Không cho xem hàng",
+	},
+	"open": {
+		"RefName": "Cho xem hàng không thử",
+	},
+	"try": {
+		"RefName": "Cho thử hàng",
+	},
+}
+
+func (e TryOnCode) GetLabelRefName() string {
+	val := enumTryOnCodeName[int(e)]
+	nameVal := enumTryOnCodeMapLabel[val]
+	return nameVal["RefName"]
+}
 func ParseTryOnCode(s string) (TryOnCode, bool) {
 	val, ok := enumTryOnCodeValue[s]
 	return TryOnCode(val), ok

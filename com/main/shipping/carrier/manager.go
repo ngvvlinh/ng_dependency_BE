@@ -288,6 +288,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, ffm *ship
 	providerService.ProviderServiceID = providerServiceID
 
 	_args := args.ToShipmentServiceArgs(connectionID, ffm.ShopID)
+	ffm.ShippingNote = carriertypes.GetShippingCarrierNote(ffm)
 	ffmToUpdate, err := driver.CreateFulfillment(ctx, ffm, _args, providerService)
 	if err != nil {
 		return err
