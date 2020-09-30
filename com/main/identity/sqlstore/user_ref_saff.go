@@ -76,7 +76,7 @@ func (s *UserRefSaffStore) GetUserRefSaff() (*identity.UserRefSaff, error) {
 }
 
 func (s *UserRefSaffStore) Update(ref *identity.UserRefSaff) error {
-	var update map[string]interface{}
+	update := map[string]interface{}{}
 	if ref.RefAff.Valid {
 		update["ref_aff"] = ref.RefAff
 	}

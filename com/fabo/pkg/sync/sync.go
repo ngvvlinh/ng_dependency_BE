@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/top/types/etc/status3"
@@ -336,7 +337,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 	ctx context.Context, shopID dot.ID, pageID dot.ID, accessToken string,
 	externalPageID string, taskArgs *TaskArguments, fbPagingReq *model.FacebookPagingRequest,
 ) error {
-	fmt.Println("getMessagesArgs")
+	fmt.Println("GetMessages")
 
 	conversationID := taskArgs.getMessagesArgs.conversationID
 	externalConversationID := taskArgs.getMessagesArgs.externalConversationID
@@ -428,6 +429,21 @@ func (s *Synchronizer) handleTaskGetMessages(
 			}
 		}
 
+		// Try get old message (if it create by our api or webhook),
+		// if already exists do not change value of field `InternalSource`
+		// otherwise set is default to `fb_internal_source.Facebook`
+		messageQuery := &fbmessaging.GetFbExternalMessageByExternalIDQuery{
+			ExternalID: messageData.ID,
+		}
+		if err := s.fbMessagingQuery.Dispatch(ctx, messageQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+		oldFbExternalMessage := messageQuery.Result
+		internalSource := fb_internal_source.Facebook
+		if oldFbExternalMessage != nil {
+			internalSource = oldFbExternalMessage.InternalSource
+		}
+
 		fbExternalMessagesArgs = append(fbExternalMessagesArgs, &fbmessaging.CreateFbExternalMessageArgs{
 			ID:                     cm.NewID(),
 			ExternalConversationID: externalConversationID,
@@ -439,6 +455,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 			ExternalFrom:           fbclientconvert.ConvertObjectFrom(messageData.From),
 			ExternalAttachments:    externalAttachments,
 			ExternalCreatedTime:    messageData.CreatedTime.ToTime(),
+			InternalSource:         internalSource,
 		})
 	}
 
@@ -619,6 +636,22 @@ func (s *Synchronizer) handleTaskGetComments(
 				externalParentUserID = fbExternalComment.Parent.From.ID
 			}
 		}
+
+		// Try get old message (if it create by our api or webhook),
+		// if already exists do not change value of field `InternalSource`
+		// otherwise set is default to `fb_internal_source.Facebook`
+		commentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+			ExternalID: fbExternalComment.ID,
+		}
+		if err := s.fbMessagingQuery.Dispatch(ctx, commentQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+		comment := commentQuery.Result
+		internalSource := fb_internal_source.Facebook
+		if comment != nil {
+			internalSource = comment.InternalSource
+		}
+
 		createOrUpdateFbExternalCommentsArgs = append(createOrUpdateFbExternalCommentsArgs, &fbmessaging.CreateFbExternalCommentArgs{
 			ID:                   cm.NewID(),
 			ExternalPostID:       externalPostID,
@@ -633,6 +666,7 @@ func (s *Synchronizer) handleTaskGetComments(
 			ExternalFrom:         fbclientconvert.ConvertObjectFrom(fbExternalComment.From),
 			ExternalAttachment:   fbclientconvert.ConvertFbCommentAttachment(fbExternalComment.Attachment),
 			ExternalCreatedTime:  fbExternalComment.CreatedTime.ToTime(),
+			InternalSource:       internalSource,
 		})
 	}
 
