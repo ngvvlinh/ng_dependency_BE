@@ -81,7 +81,7 @@ func (s *UserRefSaffStore) Update(ref *identity.UserRefSaff) error {
 		update["ref_aff"] = ref.RefAff
 	}
 	if ref.RefSale.Valid {
-		update["ref_sale"] = ref.RefAff
+		update["ref_sale"] = ref.RefSale
 	}
 	if len(update) == 0 {
 		return nil
