@@ -201,7 +201,11 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, sho
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partner.ID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
+			partnerID := dot.ID(0)
+			if partner != nil {
+				partnerID = partner.ID
+			}
+			_, err := s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
