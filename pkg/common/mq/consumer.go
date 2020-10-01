@@ -201,7 +201,7 @@ retry:
 			// ignore the error after retrying 3 times
 			return nil
 		}
-		ll.S.Warn("Error while handling message (retry %v)", l.Error(err))
+		ll.S.Warnf("Error while handling message (retry %v): %+v", count, l.Error(err))
 		goto retry
 
 	default:

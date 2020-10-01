@@ -42,7 +42,7 @@ func (s *NotificationStore) CreateNotification(args *model.CreateNotificationArg
 	}
 
 	if args.UserID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Message")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing UserID")
 	}
 	if args.Title == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Title")

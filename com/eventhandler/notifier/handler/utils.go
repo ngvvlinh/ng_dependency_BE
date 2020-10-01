@@ -37,8 +37,12 @@ func buildNotifyCmds(
 	args *buildNotifyCmdArgs,
 ) []*notifiermodel.CreateNotificationArgs {
 	var res []*notifiermodel.CreateNotificationArgs
+	var _meta []byte
+	if args.Meta != nil {
+		_meta, _ = json.Marshal(args.Meta)
+	}
+
 	for _, userID := range args.UserIDs {
-		_meta, _ := json.Marshal(args.Meta)
 		cmd := &notifiermodel.CreateNotificationArgs{
 			AccountID:        args.ShopID,
 			UserID:           userID,
