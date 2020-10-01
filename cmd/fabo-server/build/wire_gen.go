@@ -59,14 +59,15 @@ import (
 	aggregate9 "o.o/backend/com/main/shipping/aggregate"
 	"o.o/backend/com/main/shipping/carrier"
 	pm4 "o.o/backend/com/main/shipping/pm"
-	query9 "o.o/backend/com/main/shipping/query"
+	query10 "o.o/backend/com/main/shipping/query"
+	query9 "o.o/backend/com/main/shippingcode/query"
 	aggregate8 "o.o/backend/com/main/stocktaking/aggregate"
 	query5 "o.o/backend/com/main/stocktaking/query"
 	aggregate7 "o.o/backend/com/shopping/carrying/aggregate"
-	query11 "o.o/backend/com/shopping/carrying/query"
+	query12 "o.o/backend/com/shopping/carrying/query"
 	aggregate5 "o.o/backend/com/shopping/customering/aggregate"
 	query2 "o.o/backend/com/shopping/customering/query"
-	query10 "o.o/backend/com/summary/query"
+	query11 "o.o/backend/com/summary/query"
 	query3 "o.o/backend/com/supporting/ticket/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
@@ -377,6 +378,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	connectioningQueryBus := query8.ConnectionQueryMessageBus(connectionQuery)
 	connectionAggregate := aggregate6.NewConnectionAggregate(mainDB, busBus)
 	connectioningCommandBus := aggregate6.ConnectionAggregateMessageBus(connectionAggregate)
+	queryService2 := query9.NewQueryService(mainDB)
+	shippingcodeQueryBus := query9.QueryServiceMessageBus(queryService2)
 	shipmentserviceQueryService := shipmentservice.NewQueryService(mainDB, store)
 	shipmentserviceQueryBus := shipmentservice.QueryServiceMessageBus(shipmentserviceQueryService)
 	pricelistQueryService := pricelist.NewQueryService(mainDB, store)
@@ -391,7 +394,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	typesConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	driver := shipment_all.SupportedCarrierDriver()
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
-	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, driver, connectionManager, orderStoreInterface)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, driver, connectionManager, orderStoreInterface)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
@@ -421,8 +424,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		OrderLogic:    orderLogic,
 		OrderStore:    orderStoreInterface,
 	}
-	queryService2 := query9.NewQueryService(mainDB)
-	shippingQueryBus := query9.QueryServiceMessageBus(queryService2)
+	queryService3 := query10.NewQueryService(mainDB)
+	shippingQueryBus := query10.QueryServiceMessageBus(queryService3)
 	fulfillmentService := &fulfillment.FulfillmentService{
 		Session:         session,
 		ShipmentManager: shipmentManager,
@@ -437,8 +440,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:      session,
 		HistoryStore: historyStoreInterface,
 	}
-	dashboardQuery := query10.NewDashboardQuery(mainDB, store, locationQueryBus)
-	summaryQueryBus := query10.DashboardQueryMessageBus(dashboardQuery)
+	dashboardQuery := query11.NewDashboardQuery(mainDB, store, locationQueryBus)
+	summaryQueryBus := query11.DashboardQueryMessageBus(dashboardQuery)
 	summarySummary := summary.New(mainDB)
 	moneyTxStore := &sqlstore.MoneyTxStore{
 		DB:               mainDB,
@@ -483,8 +486,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	carrierAggregate := aggregate7.NewCarrierAggregate(busBus, mainDB)
 	carryingCommandBus := aggregate7.CarrierAggregateMessageBus(carrierAggregate)
-	carrierQuery := query11.NewCarrierQuery(mainDB)
-	carryingQueryBus := query11.CarrierQueryMessageBus(carrierQuery)
+	carrierQuery := query12.NewCarrierQuery(mainDB)
+	carryingQueryBus := query12.CarrierQueryMessageBus(carrierQuery)
 	carrierService := &carrier2.CarrierService{
 		Session:      session,
 		CarrierAggr:  carryingCommandBus,

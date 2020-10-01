@@ -6,6 +6,7 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
+	"o.o/api/main/shippingcode"
 	"o.o/api/top/types/etc/connection_type"
 	sptypes "o.o/api/top/types/etc/shipping_provider"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
@@ -61,6 +62,7 @@ func (d CarrierDriver) GetShipmentDriver(
 	connection *connectioning.Connection,
 	shopConnection *connectioning.ShopConnection,
 	endpoints carriertypes.ConfigEndpoints,
+	shippingcodeQS shippingcode.QueryBus,
 ) (carriertypes.ShipmentCarrier, error) {
 	etopAffiliateAccount := connection.EtopAffiliateAccount
 
@@ -121,6 +123,7 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(env string, locationQS locatio
 	identityQS identity.QueryBus,
 	conn *connectioning.Connection,
 	endpoints carriertypes.ConfigEndpoints,
+	shippingcodeQS shippingcode.QueryBus,
 ) (carriertypes.ShipmentCarrier, error) {
 	var userID, token, shopIDStr string
 	version := conn.Version

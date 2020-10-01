@@ -118,7 +118,6 @@ func Build(
 
 		address.WireSet,
 		carrying.WireSet,
-
 		receipting.WireSet,
 		aggregatex.WireSet,
 		summary.WireSet,

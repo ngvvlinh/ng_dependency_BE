@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"o.o/api/main/location"
+	"o.o/api/main/shippingcode"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status4"
@@ -32,18 +33,17 @@ var defaultDrivers = []string{
 }
 
 type VTPostDriver struct {
-	client     *vtpostclient.ClientImpl
-	locationQS location.QueryBus
-	g          ShippingCodeGenerator
+	client         *vtpostclient.ClientImpl
+	locationQS     location.QueryBus
+	shippingcodeQS shippingcode.QueryBus
 }
 
-// TODO(vu): db is only needed for generating code, use an aggregate here instead
-func New(env string, token string, locationQS location.QueryBus, g ShippingCodeGenerator) *VTPostDriver {
+func New(env string, token string, locationQS location.QueryBus, shippingcodeQS shippingcode.QueryBus) *VTPostDriver {
 	client := vtpostclient.NewClientWithToken(env, token)
 	return &VTPostDriver{
-		client:     client,
-		locationQS: locationQS,
-		g:          g,
+		client:         client,
+		locationQS:     locationQS,
+		shippingcodeQS: shippingcodeQS,
 	}
 }
 
@@ -128,7 +128,7 @@ func (d VTPostDriver) CreateFulfillment(
 	deliveryDate.Add(30 * time.Minute)
 	insuranceValue := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 	cmd := &vtpostclient.CreateOrderRequest{
-		OrderNumber: "", // will be filled later
+		OrderNumber: "", // will be filled later,
 		// hard code: 30 mins from now
 		DeliveryDate:       deliveryDate.Format("02/01/2006 15:04:05"),
 		SenderFullname:     ffm.AddressFrom.GetFullName(),
@@ -155,11 +155,12 @@ func (d VTPostDriver) CreateFulfillment(
 		ProductDescription: productName,
 		OrderService:       orderService,
 	}
-	shippingCode, err := d.g.GenerateVtpostShippingCode() // TODO(vu): move db out
-	if err != nil {
-		return nil, cm.Errorf(cm.Internal, err, "Can not generate shipping code for ffm.")
+
+	generateShippingCodeQuery := &shippingcode.GenerateShippingCodeQuery{}
+	if err := d.shippingcodeQS.Dispatch(ctx, generateShippingCodeQuery); err != nil {
+		return nil, err
 	}
-	cmd.OrderNumber = shippingCode
+	cmd.OrderNumber = generateShippingCodeQuery.Result
 
 	r, err := d.client.CreateOrder(ctx, cmd)
 	if err != nil {

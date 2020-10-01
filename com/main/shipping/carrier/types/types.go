@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
+	"o.o/api/main/shippingcode"
 	"o.o/api/top/types/etc/connection_type"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
@@ -40,13 +41,13 @@ type Driver interface {
 		env string, locationQS location.QueryBus,
 		identityQS identity.QueryBus, connection *connectioning.Connection,
 		shopConnection *connectioning.ShopConnection,
-		endpoints ConfigEndpoints,
+		endpoints ConfigEndpoints, shippingcodeQS shippingcode.QueryBus,
 	) (ShipmentCarrier, error)
 
 	GetAffiliateShipmentDriver(
 		env string, locationQS location.QueryBus,
 		identityQS identity.QueryBus, connection *connectioning.Connection,
-		endpoints ConfigEndpoints,
+		endpoints ConfigEndpoints, shippingcodeQS shippingcode.QueryBus,
 	) (ShipmentCarrier, error)
 }
 

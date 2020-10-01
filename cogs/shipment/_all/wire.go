@@ -9,6 +9,7 @@ import (
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
+	"o.o/backend/com/main/shippingcode"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	imhandlers "o.o/backend/pkg/etop/logic/money-transaction/handlers"
@@ -29,6 +30,7 @@ var WireSet = wire.NewSet(
 	jtexpressimport.WireSet,
 	imhandlers.WireSet,
 	directwebhook.WireSet,
+	shippingcode.WireSet,
 	SupportedShippingCarrierConfig,
 	SupportedCarrierDriver,
 	SupportedShipmentServices,

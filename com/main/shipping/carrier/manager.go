@@ -14,6 +14,7 @@ import (
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/main/shipping"
 	shippingtypes "o.o/api/main/shipping/types"
+	"o.o/api/main/shippingcode"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/filter_type"
@@ -56,6 +57,7 @@ type ShipmentManager struct {
 	connectionQS         connectioning.QueryBus
 	connectionAggr       connectioning.CommandBus
 	env                  string
+	shippingcodeQS       shippingcode.QueryBus
 	shipmentServiceQS    shipmentservice.QueryBus
 	shipmentPriceQS      shipmentprice.QueryBus
 	shippingQS           shipping.QueryBus
@@ -77,6 +79,7 @@ func NewShipmentManager(
 	identityQS identity.QueryBus,
 	connectionQS connectioning.QueryBus,
 	connectionAggr connectioning.CommandBus,
+	shippingcodeQS shippingcode.QueryBus,
 	shipmentServiceQS shipmentservice.QueryBus,
 	shipmentPriceQS shipmentprice.QueryBus,
 	priceListPromotionQS pricelistpromotion.QueryBus,
@@ -92,6 +95,7 @@ func NewShipmentManager(
 		connectionQS:         connectionQS,
 		connectionAggr:       connectionAggr,
 		env:                  cmenv.PartnerEnv(),
+		shippingcodeQS:       shippingcodeQS,
 		shipmentServiceQS:    shipmentServiceQS,
 		shipmentPriceQS:      shipmentPriceQS,
 		priceListPromotionQS: priceListPromotionQS,
@@ -132,7 +136,7 @@ func (m *ShipmentManager) GetShipmentDriver(ctx context.Context, connectionID do
 		return nil, err
 	}
 
-	shipmentDriver, err := m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, m.identityQS, connection, shopConnection, m.webhookEndpoints)
+	shipmentDriver, err := m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, m.identityQS, connection, shopConnection, m.webhookEndpoints, m.shippingcodeQS)
 	if err != nil {
 		return nil, err
 	}
@@ -289,6 +293,7 @@ func (m *ShipmentManager) createSingleFulfillment(ctx context.Context, ffm *ship
 
 	_args := args.ToShipmentServiceArgs(connectionID, ffm.ShopID)
 	ffm.ShippingNote = carriertypes.GetShippingCarrierNote(ffm)
+
 	ffmToUpdate, err := driver.CreateFulfillment(ctx, ffm, _args, providerService)
 	if err != nil {
 		return err
@@ -435,7 +440,7 @@ func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, c
 		return nil, err
 	}
 
-	return m.carrierDriver.GetAffiliateShipmentDriver(m.env, m.locationQS, m.identityQS, conn, m.webhookEndpoints)
+	return m.carrierDriver.GetAffiliateShipmentDriver(m.env, m.locationQS, m.identityQS, conn, m.webhookEndpoints, m.shippingcodeQS)
 }
 
 func (m *ShipmentManager) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (updateFfm *shipmodel.Fulfillment, err error) {

@@ -6,6 +6,7 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
+	"o.o/api/main/shippingcode"
 	"o.o/api/top/types/etc/connection_type"
 	sptypes "o.o/api/top/types/etc/shipping_provider"
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
@@ -74,18 +75,17 @@ func SupportedShippingCarrierConfig(cfg Config) carriertypes.Config {
 }
 
 type CarrierDriver struct {
-	shippingCodeGenerator vtpostdriver.ShippingCodeGenerator
 }
 
-func SupportedCarrierDriver(shippingCodeGenerator vtpostdriver.ShippingCodeGenerator) carriertypes.Driver {
-	return CarrierDriver{shippingCodeGenerator: shippingCodeGenerator}
+func SupportedCarrierDriver() carriertypes.Driver {
+	return CarrierDriver{}
 }
 
 func (d CarrierDriver) GetShipmentDriver(
 	env string, locationQS location.QueryBus,
 	identityQS identity.QueryBus, connection *connectioning.Connection,
-	shopConnection *connectioning.ShopConnection,
-	endpoints carriertypes.ConfigEndpoints,
+	shopConnection *connectioning.ShopConnection, endpoints carriertypes.ConfigEndpoints,
+	shippingcodeQS shippingcode.QueryBus,
 ) (carriertypes.ShipmentCarrier, error) {
 	etopAffiliateAccount := connection.EtopAffiliateAccount
 
@@ -149,13 +149,13 @@ func (d CarrierDriver) GetShipmentDriver(
 		return driver, nil
 
 	case connection_type.ConnectionProviderVTP:
-		driver := vtpostdriver.New(env, shopConnection.Token, locationQS, d.shippingCodeGenerator)
+		driver := vtpostdriver.New(env, shopConnection.Token, locationQS, shippingcodeQS)
 		return driver, nil
 
 	case connection_type.ConnectionProviderNinjaVan:
 		driver := ninjavandriver.New(env, ninjavanclient.NinjaVanCfg{
 			Token: shopConnection.Token,
-		}, locationQS, identityQS)
+		}, locationQS, identityQS, shippingcodeQS)
 		return driver, nil
 
 	case connection_type.ConnectionProviderPartner:
@@ -175,7 +175,7 @@ func (d CarrierDriver) GetShipmentDriver(
 func (d CarrierDriver) GetAffiliateShipmentDriver(
 	env string, locationQS location.QueryBus,
 	identityQS identity.QueryBus, conn *connectioning.Connection,
-	endpoints carriertypes.ConfigEndpoints) (carriertypes.ShipmentCarrier, error) {
+	endpoints carriertypes.ConfigEndpoints, shippingcodeQS shippingcode.QueryBus) (carriertypes.ShipmentCarrier, error) {
 	var userID, token, shopIDStr, secretKey string
 	version := conn.Version
 	if conn.EtopAffiliateAccount != nil {
@@ -233,7 +233,7 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(
 			ClientID:  userID,
 			SecretKey: secretKey,
 		}
-		driver := ninjavandriver.New(env, cfg, locationQS, identityQS)
+		driver := ninjavandriver.New(env, cfg, locationQS, identityQS, shippingcodeQS)
 		return driver, nil
 	case connection_type.ConnectionProviderPartner:
 		cfg := directclient.PartnerAccountCfg{

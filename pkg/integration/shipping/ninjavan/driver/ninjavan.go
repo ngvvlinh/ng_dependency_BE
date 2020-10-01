@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/main/identity"
 	"o.o/api/main/location"
+	"o.o/api/main/shippingcode"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status4"
@@ -25,20 +26,23 @@ import (
 var _ carriertypes.ShipmentCarrier = &NinjaVanDriver{}
 
 type NinjaVanDriver struct {
-	client     *ninjavanclient.Client
-	locationQS location.QueryBus
-	identityQS identity.QueryBus
+	client         *ninjavanclient.Client
+	locationQS     location.QueryBus
+	identityQS     identity.QueryBus
+	shippingcodeQS shippingcode.QueryBus
 }
 
 func New(
 	env string, cfg ninjavanclient.NinjaVanCfg,
 	locationQS location.QueryBus, identityQS identity.QueryBus,
+	shippingcodeQS shippingcode.QueryBus,
 ) *NinjaVanDriver {
 	client := ninjavanclient.New(env, cfg)
 	return &NinjaVanDriver{
-		client:     client,
-		locationQS: locationQS,
-		identityQS: identityQS,
+		client:         client,
+		locationQS:     locationQS,
+		identityQS:     identityQS,
+		shippingcodeQS: shippingcodeQS,
 	}
 }
 
@@ -109,12 +113,18 @@ func (d *NinjaVanDriver) CreateFulfillment(ctx context.Context, ffm *shipmodel.F
 	// deliveryStartDate = now + 3 days
 	deliveryStartDate := now.Add(ninjavanclient.ThreeDays).Format(ninjavanclient.LayoutISO)
 
+	generateShippingCodeQuery := &shippingcode.GenerateShippingCodeQuery{}
+	if err := d.shippingcodeQS.Dispatch(ctx, generateShippingCodeQuery); err != nil {
+		return nil, err
+	}
+	shippingCode := generateShippingCodeQuery.Result
+
 	cmd := &ninjavanclient.CreateOrderRequest{
 		ServiceType:             string(ninjavanclient.ServiceTypeMarketPlace),
 		ServiceLevel:            serviceID,
-		RequestedTrackingNumber: ffm.ID.String(),
+		RequestedTrackingNumber: shippingCode,
 		Reference: &ninjavanclient.Reference{
-			MerchantOrderNumber: ffm.ID.String(),
+			MerchantOrderNumber: shippingCode,
 		},
 		From: addressFrom,
 		To:   addressTo,
