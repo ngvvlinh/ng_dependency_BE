@@ -2,7 +2,6 @@ package driver
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"o.o/api/main/connectioning"
@@ -66,9 +65,9 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 	service *shippingsharemodel.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error) {
 	// J&T yêu cầu limit 200 kí tự.
 	note := ffm.ShippingNote
-	note = strings.TrimSuffix(note, carriertypes.CarrierNote)
-	if len(note) > 200 {
-		note = note[:200]
+	runes := []rune(note)
+	if len(runes) > 200 {
+		note = string(runes[:200])
 	}
 
 	fromQuery := &location.GetLocationQuery{
