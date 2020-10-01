@@ -175,7 +175,7 @@ func (m *ShipmentManager) generateToken(ctx context.Context, connection *connect
 	if err := m.connectionAggr.Dispatch(ctx, &updateShopConnectionCmd); err != nil {
 		return err
 	}
-	shopConnection = updateShopConnectionCmd.Result
+	*shopConnection = *updateShopConnectionCmd.Result
 	return nil
 }
 
