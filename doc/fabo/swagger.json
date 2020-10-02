@@ -619,6 +619,15 @@
         "N"
       ]
     },
+    "cdConnectionMethod": {
+      "description": "Deprecated values: \"topship\"\\n",
+      "type": "string",
+      "enum": [
+        "unknown",
+        "builtin",
+        "direct"
+      ]
+    },
     "cvCheckPagePermissionsRequest": {
       "type": "object",
       "properties": {
@@ -785,19 +794,7 @@
         }
       }
     },
-    "cvCustomerReturnRateRequest": {
-      "type": "object",
-      "properties": {
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "phone": {
-          "type": "string"
-        }
-      }
-    },
-    "cvCustomerReturnRateResponse": {
+    "cvCustomerReturnRate": {
       "type": "object",
       "properties": {
         "level": {
@@ -809,6 +806,43 @@
         "rate": {
           "type": "integer",
           "format": "float32"
+        }
+      }
+    },
+    "cvCustomerReturnRateExtended": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "connection_name": {
+          "type": "string"
+        },
+        "customer_return_rate": {
+          "$ref": "#/definitions/cvCustomerReturnRate"
+        }
+      }
+    },
+    "cvCustomerReturnRateRequest": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "cvCustomerReturnRateResponse": {
+      "type": "object",
+      "properties": {
+        "customer_return_rates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvCustomerReturnRateExtended"
+          }
         }
       }
     },

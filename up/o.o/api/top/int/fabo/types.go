@@ -7,6 +7,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/top/external/types"
 	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
 	"o.o/api/top/types/etc/status3"
@@ -685,8 +686,7 @@ func (c *UpdateUserTagsRequest) String() string {
 }
 
 type CustomerReturnRateRequest struct {
-	ConnectionID dot.ID `json:"connection_id"`
-	Phone        string `json:"phone"`
+	Phone string `json:"phone"`
 }
 
 func (r *CustomerReturnRateRequest) String() string {
@@ -694,11 +694,31 @@ func (r *CustomerReturnRateRequest) String() string {
 }
 
 type CustomerReturnRateResponse struct {
+	CustomerReturnRateExtendeds []*CustomerReturnRateExtended `json:"customer_return_rates"`
+}
+
+func (r *CustomerReturnRateResponse) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type CustomerReturnRateExtended struct {
+	ConnectionID     dot.ID                           `json:"connection_id"`
+	ConnectionName   string                           `json:"connection_name"`
+	ConnectionMethod connection_type.ConnectionMethod `json:"connection_method"`
+
+	CustomerReturnRate *CustomerReturnRate `json:"customer_return_rate"`
+}
+
+func (r *CustomerReturnRateExtended) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type CustomerReturnRate struct {
 	Level     string  `json:"level"`
 	LevelCode string  `json:"level_code"`
 	Rate      float64 `json:"rate"`
 }
 
-func (r *CustomerReturnRateResponse) String() string {
+func (r *CustomerReturnRate) String() string {
 	return jsonx.MustMarshalToString(r)
 }

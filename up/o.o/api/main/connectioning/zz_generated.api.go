@@ -259,6 +259,7 @@ func (h QueryServiceHandler) HandleListConnectionServicesByID(ctx context.Contex
 }
 
 type ListConnectionsQuery struct {
+	IDs                []dot.ID
 	PartnerID          dot.ID
 	Status             status3.NullStatus
 	ConnectionType     connection_type.ConnectionType
@@ -599,6 +600,7 @@ func (q *ListConnectionServicesByIDQuery) GetArgs(ctx context.Context) (_ contex
 func (q *ListConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListConnectionsArgs) {
 	return ctx,
 		&ListConnectionsArgs{
+			IDs:                q.IDs,
 			PartnerID:          q.PartnerID,
 			Status:             q.Status,
 			ConnectionType:     q.ConnectionType,
@@ -609,6 +611,7 @@ func (q *ListConnectionsQuery) GetArgs(ctx context.Context) (_ context.Context, 
 }
 
 func (q *ListConnectionsQuery) SetListConnectionsArgs(args *ListConnectionsArgs) {
+	q.IDs = args.IDs
 	q.PartnerID = args.PartnerID
 	q.Status = args.Status
 	q.ConnectionType = args.ConnectionType

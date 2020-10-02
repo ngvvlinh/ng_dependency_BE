@@ -424,7 +424,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		OrderLogic:    orderLogic,
 		OrderStore:    orderStoreInterface,
 	}
-	queryService3 := query10.NewQueryService(mainDB)
+	queryService3 := query10.NewQueryService(mainDB, shipmentManager, connectioningQueryBus)
 	shippingQueryBus := query10.QueryServiceMessageBus(queryService3)
 	fulfillmentService := &fulfillment.FulfillmentService{
 		Session:         session,
@@ -567,9 +567,9 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FBExternalUserAggr:  fbuseringCommandBus,
 	}
 	extraShipmentService := &fabo.ExtraShipmentService{
-		Session:         session,
-		ShipmentManager: shipmentManager,
-		ConnectionQS:    connectioningQueryBus,
+		Session:      session,
+		ShippingQS:   shippingQueryBus,
+		ConnectionQS: connectioningQueryBus,
 	}
 	faboServers := fabo.NewServers(pageService, customerConversationService, faboCustomerService, shopService, extraShipmentService, store)
 	webhookCallbackService := sadmin.NewWebhookCallbackService(store)

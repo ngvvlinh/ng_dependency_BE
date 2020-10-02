@@ -325,6 +325,19 @@ func (h QueryServiceHandler) HandleGetFulfillmentExtended(ctx context.Context, m
 	return err
 }
 
+type ListCustomerReturnRatesQuery struct {
+	ConnectionIDs []dot.ID
+	ShopID        dot.ID
+	Phone         string
+
+	Result []*CustomerReturnRateExtended `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListCustomerReturnRates(ctx context.Context, msg *ListCustomerReturnRatesQuery) (err error) {
+	msg.Result, err = h.inner.ListCustomerReturnRates(msg.GetArgs(ctx))
+	return err
+}
+
 type ListFulfillmentExtendedsByIDsQuery struct {
 	IDs    []dot.ID
 	ShopID dot.ID
@@ -418,6 +431,7 @@ func (q *UpdateFulfillmentsStatusCommand) command()                 {}
 
 func (q *GetFulfillmentByIDOrShippingCodeQuery) query()            {}
 func (q *GetFulfillmentExtendedQuery) query()                      {}
+func (q *ListCustomerReturnRatesQuery) query()                     {}
 func (q *ListFulfillmentExtendedsByIDsQuery) query()               {}
 func (q *ListFulfillmentExtendedsByMoneyTxShippingIDQuery) query() {}
 func (q *ListFulfillmentsByIDsQuery) query()                       {}
@@ -798,6 +812,21 @@ func (q *GetFulfillmentExtendedQuery) GetArgs(ctx context.Context) (_ context.Co
 		q.ShippingCode
 }
 
+func (q *ListCustomerReturnRatesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerReturnRatesArgs) {
+	return ctx,
+		&ListCustomerReturnRatesArgs{
+			ConnectionIDs: q.ConnectionIDs,
+			ShopID:        q.ShopID,
+			Phone:         q.Phone,
+		}
+}
+
+func (q *ListCustomerReturnRatesQuery) SetListCustomerReturnRatesArgs(args *ListCustomerReturnRatesArgs) {
+	q.ConnectionIDs = args.ConnectionIDs
+	q.ShopID = args.ShopID
+	q.Phone = args.Phone
+}
+
 func (q *ListFulfillmentExtendedsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.IDs,
@@ -894,6 +923,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetFulfillmentByIDOrShippingCode)
 	b.AddHandler(h.HandleGetFulfillmentExtended)
+	b.AddHandler(h.HandleListCustomerReturnRates)
 	b.AddHandler(h.HandleListFulfillmentExtendedsByIDs)
 	b.AddHandler(h.HandleListFulfillmentExtendedsByMoneyTxShippingID)
 	b.AddHandler(h.HandleListFulfillmentsByIDs)

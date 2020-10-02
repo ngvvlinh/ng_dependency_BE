@@ -3,24 +3,38 @@ package query
 import (
 	"context"
 
+	"o.o/api/main/connectioning"
 	"o.o/api/main/shipping"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
+	"o.o/backend/com/main/shipping/carrier"
 	"o.o/backend/com/main/shipping/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	ghnclientv2 "o.o/backend/pkg/integration/shipping/ghn/clientv2"
+	ghndriverv2 "o.o/backend/pkg/integration/shipping/ghn/driverv2"
 	"o.o/capi/dot"
 )
 
 var _ shipping.QueryService = &QueryService{}
 
 type QueryService struct {
+	shimentManager *carrier.ShipmentManager
+	connectionQS   connectioning.QueryBus
+
 	store sqlstore.FulfillmentStoreFactory
 }
 
-func NewQueryService(db com.MainDB) *QueryService {
+func NewQueryService(
+	db com.MainDB,
+	shipmentManager *carrier.ShipmentManager, connectionQS connectioning.QueryBus,
+) *QueryService {
 	return &QueryService{
-		store: sqlstore.NewFulfillmentStore(db),
+		shimentManager: shipmentManager,
+		connectionQS:   connectionQS,
+		store:          sqlstore.NewFulfillmentStore(db),
 	}
 }
 
@@ -108,4 +122,58 @@ func (q *QueryService) ListFulfillmentsForMoneyTx(ctx context.Context, args *shi
 	query = query.FilterForMoneyTx(args.IsNoneCOD.Bool, args.ShippingStates)
 
 	return query.ListFfms()
+}
+
+func (q *QueryService) ListCustomerReturnRates(
+	ctx context.Context, args *shipping.ListCustomerReturnRatesArgs,
+) (customerRateExtendeds []*shipping.CustomerReturnRateExtended, _ error) {
+	mConnections := make(map[dot.ID]*connectioning.Connection)
+
+	listConnectionsQuery := &connectioning.ListConnectionsQuery{
+		IDs:               args.ConnectionIDs,
+		ConnectionType:    connection_type.Shipping,
+		ConnectionSubtype: connection_type.ConnectionSubtypeShipment,
+		Status:            status3.WrapStatus(status3.P),
+	}
+	if err := q.connectionQS.Dispatch(ctx, listConnectionsQuery); err != nil {
+		return nil, err
+	}
+
+	for _, connection := range listConnectionsQuery.Result {
+		mConnections[connection.ID] = connection
+	}
+	for _, connection := range mConnections {
+		// handle fabo
+		if connection.ConnectionProvider == connection_type.ConnectionProviderGHN &&
+			connection.ConnectionMethod == connection_type.ConnectionMethodDirect && connection.Version == "v2" {
+			shipmentDriver, err := q.shimentManager.GetDriverByEtopAffiliateAccount(ctx, connection.ID)
+			if err != nil {
+				return nil, err
+			}
+			ghnDriver := shipmentDriver.(*ghndriverv2.GHNDriver)
+			ghnClient := ghnDriver.GetClient()
+
+			etlCustomerRateReq := &ghnclientv2.CustomerReturnRateRequest{
+				Phone: args.Phone,
+			}
+			customerReturnRateResp, err := ghnClient.CustomerReturnRate(ctx, etlCustomerRateReq)
+			if err != nil {
+				return nil, err
+			}
+
+			customerRateExtendeds = append(customerRateExtendeds, &shipping.CustomerReturnRateExtended{
+				Connection: connection,
+				CustomerReturnRate: &shipping.CustomerReturnRate{
+					Level:     customerReturnRateResp.Level.String(),
+					LevelCode: customerReturnRateResp.LevelCode.String(),
+					Rate:      float64(customerReturnRateResp.Rate),
+				},
+			})
+			return customerRateExtendeds, nil
+		} else {
+			// TODO(ngoc)
+		}
+	}
+
+	return
 }

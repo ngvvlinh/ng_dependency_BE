@@ -53,6 +53,9 @@ func (q *ConnectionQuery) ListConnections(ctx context.Context, args *connectioni
 	}
 
 	query := q.connectionStore(ctx).OptionalPartnerID(args.PartnerID).OptionalConnectionType(args.ConnectionType).OptionalConnectionSubtype(args.ConnectionSubtype).OptionalConnectionMethod(args.ConnectionMethod).OptionalConnectionProvider(args.ConnectionProvider)
+	if len(args.IDs) > 0 {
+		query = query.IDs(args.IDs)
+	}
 	return query.ListConnections(args.Status)
 }
 

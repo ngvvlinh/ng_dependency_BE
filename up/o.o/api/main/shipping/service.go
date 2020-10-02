@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"o.o/api/main/connectioning"
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipping/types"
 	shippingtypes "o.o/api/main/shipping/types"
@@ -58,6 +59,8 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetFulfillmentByIDOrShippingCode(context.Context, *GetFulfillmentByIDOrShippingCodeArgs) (*Fulfillment, error)
+
+	ListCustomerReturnRates(context.Context, *ListCustomerReturnRatesArgs) ([]*CustomerReturnRateExtended, error)
 
 	ListFulfillmentsByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*Fulfillment, error)
 
@@ -313,4 +316,21 @@ type ListFulfillmentForMoneyTxArgs struct {
 type ListFullfillmentsByMoneyTxArgs struct {
 	MoneyTxShippingIDs        []dot.ID
 	MoneyTxShippingExternalID dot.ID
+}
+
+type ListCustomerReturnRatesArgs struct {
+	ConnectionIDs []dot.ID
+	ShopID        dot.ID
+	Phone         string
+}
+
+type CustomerReturnRateExtended struct {
+	Connection         *connectioning.Connection
+	CustomerReturnRate *CustomerReturnRate
+}
+
+type CustomerReturnRate struct {
+	Level     string  `json:"level"`
+	LevelCode string  `json:"level_code"`
+	Rate      float64 `json:"rate"`
 }

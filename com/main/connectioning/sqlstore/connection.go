@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -43,6 +44,11 @@ func NewConnectionStore(db *cmsql.Database) ConnectionStoreFactory {
 
 func (s *ConnectionStore) ID(id dot.ID) *ConnectionStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *ConnectionStore) IDs(ids []dot.ID) *ConnectionStore {
+	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
 

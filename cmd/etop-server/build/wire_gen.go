@@ -534,7 +534,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		OrderLogic:    orderLogic,
 		OrderStore:    orderStoreInterface,
 	}
-	queryService4 := query17.NewQueryService(mainDB)
+	queryService4 := query17.NewQueryService(mainDB, shipmentManager, connectioningQueryBus)
 	shippingQueryBus := query17.QueryServiceMessageBus(queryService4)
 	fulfillmentService := &fulfillment.FulfillmentService{
 		Session:         session,

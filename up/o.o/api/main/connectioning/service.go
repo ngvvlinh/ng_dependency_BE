@@ -131,6 +131,7 @@ type UpdateShopConnectionExternalDataArgs struct {
 }
 
 type ListConnectionsArgs struct {
+	IDs                []dot.ID
 	PartnerID          dot.ID
 	Status             status3.NullStatus
 	ConnectionType     connection_type.ConnectionType

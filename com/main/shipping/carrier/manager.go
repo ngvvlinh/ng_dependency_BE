@@ -157,7 +157,7 @@ func (m *ShipmentManager) generateToken(ctx context.Context, connection *connect
 	}
 
 	// get driver
-	_driver, err := m.getDriverByEtopAffiliateAccount(ctx, connection.ID)
+	_driver, err := m.GetDriverByEtopAffiliateAccount(ctx, connection.ID)
 	if err != nil {
 		return err
 	}
@@ -405,7 +405,7 @@ func (m *ShipmentManager) SignIn(ctx context.Context, args *ConnectionSignInArgs
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
 	}
 
-	driver, err := m.getDriverByEtopAffiliateAccount(ctx, args.ConnectionID)
+	driver, err := m.GetDriverByEtopAffiliateAccount(ctx, args.ConnectionID)
 	if err != nil {
 		return nil, err
 	}
@@ -418,7 +418,7 @@ func (m *ShipmentManager) SignIn(ctx context.Context, args *ConnectionSignInArgs
 }
 
 func (m *ShipmentManager) SignUp(ctx context.Context, args *ConnectionSignUpArgs) (newAccount *carriertypes.AccountResponse, _ error) {
-	driver, err := m.getDriverByEtopAffiliateAccount(ctx, args.ConnectionID)
+	driver, err := m.GetDriverByEtopAffiliateAccount(ctx, args.ConnectionID)
 	if err != nil {
 		return nil, err
 	}
@@ -434,7 +434,7 @@ func (m *ShipmentManager) SignUp(ctx context.Context, args *ConnectionSignUpArgs
 	return driver.SignUp(ctx, cmd)
 }
 
-func (m *ShipmentManager) getDriverByEtopAffiliateAccount(ctx context.Context, connectionID dot.ID) (carriertypes.ShipmentCarrier, error) {
+func (m *ShipmentManager) GetDriverByEtopAffiliateAccount(ctx context.Context, connectionID dot.ID) (carriertypes.ShipmentCarrier, error) {
 	conn, err := m.ConnectionManager.GetConnectionByID(ctx, connectionID)
 	if err != nil {
 		return nil, err

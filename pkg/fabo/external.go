@@ -4,20 +4,20 @@ import (
 	"context"
 
 	"o.o/api/main/connectioning"
+	"o.o/api/main/shipping"
 	"o.o/api/top/int/fabo"
 	"o.o/api/top/types/etc/connection_type"
-	"o.o/backend/com/main/shipping/carrier"
+	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/authorize/session"
-	ghnclientv2 "o.o/backend/pkg/integration/shipping/ghn/clientv2"
-	ghndriverv2 "o.o/backend/pkg/integration/shipping/ghn/driverv2"
+	"o.o/capi/dot"
 )
 
 type ExtraShipmentService struct {
 	session.Session
 
-	ShipmentManager *carrier.ShipmentManager
-	ConnectionQS    connectioning.QueryBus
+	ShippingQS   shipping.QueryBus
+	ConnectionQS connectioning.QueryBus
 }
 
 func (s *ExtraShipmentService) Clone() fabo.ExtraShipmentService {
@@ -28,38 +28,56 @@ func (s *ExtraShipmentService) Clone() fabo.ExtraShipmentService {
 func (s *ExtraShipmentService) CustomerReturnRate(
 	ctx context.Context, req *fabo.CustomerReturnRateRequest,
 ) (*fabo.CustomerReturnRateResponse, error) {
-	getConnectionQuery := &connectioning.GetConnectionByIDQuery{
-		ID: req.ConnectionID,
-	}
-	if err := s.ConnectionQS.Dispatch(ctx, getConnectionQuery); err != nil {
-		return nil, err
-	}
-
-	connection := getConnectionQuery.Result
-	if connection.ConnectionMethod != connection_type.ConnectionMethodDirect ||
-		connection.ConnectionProvider != connection_type.ConnectionProviderGHN {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "connection không hợp lệ")
-	}
-
 	shopID := s.SS.Shop().ID
-	shipmentDriver, err := s.ShipmentManager.GetShipmentDriver(ctx, connection.ID, shopID)
-	if err != nil {
-		return nil, err
-	}
-	ghnDriver := shipmentDriver.(*ghndriverv2.GHNDriver)
-	ghnClient := ghnDriver.GetClient()
 
-	etlCustomerRateReq := &ghnclientv2.CustomerReturnRateRequest{
-		Phone: req.Phone,
+	listConnectionsQuery := &connectioning.ListConnectionsQuery{
+		Status:             status3.WrapStatus(status3.P),
+		ConnectionType:     connection_type.Shipping,
+		ConnectionMethod:   connection_type.ConnectionMethodDirect,
+		ConnectionProvider: connection_type.ConnectionProviderGHN,
 	}
-	etlCustomerRateResp, err := ghnClient.CustomerReturnRate(ctx, etlCustomerRateReq)
-	if err != nil {
+	if err := s.ConnectionQS.Dispatch(ctx, listConnectionsQuery); err != nil {
 		return nil, err
+	}
+	connections := listConnectionsQuery.Result
+
+	if len(connections) == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "không tìm thấy connection hợp lệ")
+	}
+	var connectionIDs []dot.ID
+	for _, conn := range connections {
+		connectionIDs = append(connectionIDs, conn.ID)
+	}
+
+	listCustomerReturnRatesQuery := &shipping.ListCustomerReturnRatesQuery{
+		ConnectionIDs: connectionIDs,
+		ShopID:        shopID,
+		Phone:         req.Phone,
+	}
+	if err := s.ShippingQS.Dispatch(ctx, listCustomerReturnRatesQuery); err != nil {
+		return nil, err
+	}
+	customerReturnRateExtendeds := listCustomerReturnRatesQuery.Result
+
+	var customerReturnRateExtendedsResp []*fabo.CustomerReturnRateExtended
+	for _, customerReturnRateExtended := range customerReturnRateExtendeds {
+		customerReturnRate := customerReturnRateExtended.CustomerReturnRate
+		connection := customerReturnRateExtended.Connection
+
+		customerReturnRateExtendedResp := &fabo.CustomerReturnRateExtended{
+			ConnectionID:     connection.ID,
+			ConnectionName:   connection.Name,
+			ConnectionMethod: connection.ConnectionMethod,
+			CustomerReturnRate: &fabo.CustomerReturnRate{
+				Level:     customerReturnRate.Level,
+				LevelCode: customerReturnRate.LevelCode,
+				Rate:      customerReturnRate.Rate,
+			},
+		}
+		customerReturnRateExtendedsResp = append(customerReturnRateExtendedsResp, customerReturnRateExtendedResp)
 	}
 
 	return &fabo.CustomerReturnRateResponse{
-		Level:     etlCustomerRateResp.Level.String(),
-		LevelCode: etlCustomerRateResp.LevelCode.String(),
-		Rate:      float64(etlCustomerRateResp.Rate),
+		CustomerReturnRateExtendeds: customerReturnRateExtendedsResp,
 	}, nil
 }
