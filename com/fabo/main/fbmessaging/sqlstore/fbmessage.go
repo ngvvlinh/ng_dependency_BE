@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"o.o/api/fabo/fbmessaging"
@@ -175,12 +174,12 @@ func (s *FbExternalMessageStore) ListLatestExternalMessages(externalConversation
 	}
 
 	rows, err := s.query().
-		SQL(fmt.Sprintf(`
-			select distinct on (external_conversation_id) id
-			from fb_external_message
-			where external_conversation_id in ('%s')
-			order by external_conversation_id, external_created_time desc
-		`, strings.Join(externalConversationIDs, "','"))).
+		SQL(`
+			SELECT DISTINCT ON (external_conversation_id) id
+			FROM fb_external_message
+			WHERE external_conversation_id IN (?)
+			ORDER BY external_conversation_id, external_created_time DESC
+		`, strings.Join(externalConversationIDs, "','")).
 		Query()
 	if err != nil {
 		return nil, err
@@ -219,14 +218,14 @@ func (s *FbExternalMessageStore) ListLatestCustomerExternalMessages(externalConv
 	}
 
 	rows, err := s.query().
-		SQL(fmt.Sprintf(`
-			select distinct on (external_conversation_id) id
-			from fb_external_message
-			where 
-				external_conversation_id in ('%s') AND 
+		SQL(`
+			SELECT DISTINCT ON (external_conversation_id) id
+			FROM fb_external_message
+			WHERE
+				external_conversation_id IN (?) AND
 				external_from_id <> external_page_id
-			order by external_conversation_id, external_created_time desc
-		`, strings.Join(externalConversationIDs, "','"))).
+			ORDER BY external_conversation_id, external_created_time DESC
+		`, strings.Join(externalConversationIDs, "','")).
 		Query()
 	if err != nil {
 		return nil, err

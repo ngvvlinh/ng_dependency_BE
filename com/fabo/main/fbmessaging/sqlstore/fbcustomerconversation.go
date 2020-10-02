@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
@@ -82,7 +81,7 @@ func (s *FbCustomerConversationStore) ExternalUserIDs(extUserIDs []string) *FbCu
 }
 
 func (s *FbCustomerConversationStore) ExternalIDAndExternalUserID(externalID, externalUserID string) *FbCustomerConversationStore {
-	s.preds = append(s.preds, sq.NewExpr(fmt.Sprintf("external_id = '%s' AND external_user_id = '%s'", externalID, externalUserID)))
+	s.preds = append(s.preds, sq.NewExpr("external_id = ? AND external_user_id = ?", externalID, externalUserID))
 	return s
 }
 

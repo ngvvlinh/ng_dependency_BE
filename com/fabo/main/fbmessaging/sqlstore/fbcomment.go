@@ -2,7 +2,6 @@ package sqlstore
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
@@ -188,9 +187,9 @@ func (s *FbExternalCommentStore) ListFbExternalComments() (result []*fbmessaging
 }
 
 func (s *FbExternalCommentStore) ListFbExternalCommentsOfPage(externalPageID string) (result []*fbmessaging.FbExternalComment, err error) {
-	s.preds = append(s.preds, sq.NewExpr(fmt.Sprintf(`
-	((external_user_id = '%s' AND  external_parent_user_id IS NULL) OR 
-	(external_user_id = '%s' AND external_parent_user_id = '%s'))`, externalPageID, externalPageID, externalPageID)))
+	s.preds = append(s.preds, sq.NewExpr(`
+	((external_user_id = ? AND  external_parent_user_id IS NULL) OR
+	(external_user_id = ? AND external_parent_user_id = ?))`, externalPageID, externalPageID, externalPageID))
 
 	fbExternalComments, err := s.ListFbExternalCommentsDB()
 	if err != nil {
@@ -203,10 +202,10 @@ func (s *FbExternalCommentStore) ListFbExternalCommentsOfPage(externalPageID str
 }
 
 func (s *FbExternalCommentStore) ExternalPageIDAndExternalUserID(externalPageID, externalUserID string) *FbExternalCommentStore {
-	s.preds = append(s.preds, sq.NewExpr(fmt.Sprintf(`
-		external_user_id = '%s' OR 
-		(external_parent_user_id = '%s' AND (external_user_id = '%s' OR external_user_id = '%s'))
-	`, externalUserID, externalUserID, externalUserID, externalPageID)))
+	s.preds = append(s.preds, sq.NewExpr(`
+		external_user_id = ? OR
+		(external_parent_user_id = ? AND (external_user_id = ? OR external_user_id = ?))
+	`, externalUserID, externalUserID, externalUserID, externalPageID))
 	return s
 }
 
@@ -216,14 +215,14 @@ func (s *FbExternalCommentStore) GetLatestExternalComment(
 	var fbExternalComment model.FbExternalComment
 
 	query := s.query().
-		Where(fmt.Sprintf(`
-			external_post_id = '%s' AND 
+		Where(`
+			external_post_id = ? AND
 			(
-				(external_user_id = '%s') OR
-				(external_user_id = '%s' AND external_parent_user_id = '%s')
+				(external_user_id = ?) OR
+				(external_user_id = ? AND external_parent_user_id = ?)
 			)
-		`, externalPostID, externalUserID, externalPageID, externalUserID)).
-		OrderBy("external_created_time desc", "id asc").
+		`, externalPostID, externalUserID, externalPageID, externalUserID).
+		OrderBy("external_created_time DESC", "id ASC").
 		Limit(1)
 	if err := query.ShouldGet(&fbExternalComment); err != nil {
 		return nil, err
