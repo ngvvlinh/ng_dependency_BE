@@ -67,6 +67,7 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternal(ctx context.Context, ar
 				ExternalTotalCOD:                   line.ExternalTotalCOD,
 				ExternalCreatedAt:                  line.ExternalCreatedAt,
 				ExternalClosedAt:                   line.ExternalClosedAt,
+				EtopFulfillmentID:                  line.EtopFulfillmentID,
 				EtopFulfillmentIDRaw:               line.EtopFulfillmentIDRaw,
 				ExternalCustomer:                   line.ExternalCustomer,
 				ExternalAddress:                    line.ExternalAddress,
@@ -111,16 +112,18 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternalLine(ctx context.Context
 		ExternalCustomer:                   args.ExternalCustomer,
 		ExternalAddress:                    args.ExternalAddress,
 		EtopFulfillmentIDRaw:               args.EtopFulfillmentIDRaw,
+		EtopFulfillmentID:                  args.EtopFulfillmentID,
 		MoneyTransactionShippingExternalID: args.MoneyTransactionShippingExternalID,
 		ExternalTotalShippingFee:           args.ExternalTotalShippingFee,
 	}
-	if line.ExternalCode == "" {
+	if line.ExternalCode == "" && line.EtopFulfillmentID == 0 {
 		line.ImportError = &meta.Error{
 			Code: "ffm_id_empty",
 			Msg:  "Thiếu mã vận đơn",
 		}
 	} else {
 		query := &shipping.GetFulfillmentByIDOrShippingCodeQuery{
+			ID:           line.EtopFulfillmentID,
 			ShippingCode: line.ExternalCode,
 			Result:       nil,
 		}
@@ -132,6 +135,7 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternalLine(ctx context.Context
 		} else {
 			ffm := query.Result
 			line.EtopFulfillmentID = ffm.ID
+			line.ExternalCode = ffm.ExternalShippingCode
 			if ffm.MoneyTransactionShippingExternalID != 0 {
 				line.ImportError = &meta.Error{
 					Code: "ffm_exist_money_transaction_shipping_external",

@@ -148,6 +148,7 @@ type CreateMoneyTxShippingExternalLineCommand struct {
 	ExternalCreatedAt                  time.Time
 	ExternalClosedAt                   time.Time
 	EtopFulfillmentIDRaw               string
+	EtopFulfillmentID                  dot.ID
 	ExternalCustomer                   string
 	ExternalAddress                    string
 	MoneyTransactionShippingExternalID dot.ID
@@ -561,6 +562,7 @@ func (q *CreateMoneyTxShippingExternalLineCommand) GetArgs(ctx context.Context) 
 			ExternalCreatedAt:                  q.ExternalCreatedAt,
 			ExternalClosedAt:                   q.ExternalClosedAt,
 			EtopFulfillmentIDRaw:               q.EtopFulfillmentIDRaw,
+			EtopFulfillmentID:                  q.EtopFulfillmentID,
 			ExternalCustomer:                   q.ExternalCustomer,
 			ExternalAddress:                    q.ExternalAddress,
 			MoneyTransactionShippingExternalID: q.MoneyTransactionShippingExternalID,
@@ -574,6 +576,7 @@ func (q *CreateMoneyTxShippingExternalLineCommand) SetCreateMoneyTxShippingExter
 	q.ExternalCreatedAt = args.ExternalCreatedAt
 	q.ExternalClosedAt = args.ExternalClosedAt
 	q.EtopFulfillmentIDRaw = args.EtopFulfillmentIDRaw
+	q.EtopFulfillmentID = args.EtopFulfillmentID
 	q.ExternalCustomer = args.ExternalCustomer
 	q.ExternalAddress = args.ExternalAddress
 	q.MoneyTransactionShippingExternalID = args.MoneyTransactionShippingExternalID

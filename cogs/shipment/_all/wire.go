@@ -10,6 +10,7 @@ import (
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
 	"o.o/backend/com/main/shippingcode"
+	"o.o/backend/pkg/etop/logic/money-transaction/dhlimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	imhandlers "o.o/backend/pkg/etop/logic/money-transaction/handlers"
@@ -30,6 +31,7 @@ var WireSet = wire.NewSet(
 	vtpostimport.WireSet,
 	jtexpressimport.WireSet,
 	njvimport.WireSet,
+	dhlimport.WireSet,
 	imhandlers.WireSet,
 	directwebhook.WireSet,
 	shippingcode.WireSet,

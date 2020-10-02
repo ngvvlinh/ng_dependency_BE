@@ -124,6 +124,7 @@ type CreateMoneyTxShippingExternalLineArgs struct {
 	ExternalCreatedAt                  time.Time
 	ExternalClosedAt                   time.Time
 	EtopFulfillmentIDRaw               string
+	EtopFulfillmentID                  dot.ID
 	ExternalCustomer                   string
 	ExternalAddress                    string
 	MoneyTransactionShippingExternalID dot.ID

@@ -16,6 +16,7 @@ import (
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
+	"o.o/backend/pkg/etop/logic/money-transaction/dhlimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	moneytxtypes "o.o/backend/pkg/etop/logic/money-transaction/handlers/types"
@@ -33,6 +34,7 @@ type ImportService struct {
 	GHTKImporter      *ghtkimport.GHTKImporter
 	GHNImporter       *ghnimport.GHNImporter
 	JTExpressImporter *jtexpressimport.JTImporter
+	DHLImporter       *dhlimport.DHLImporter
 	NJVImporter       *njvimport.NJVImporter
 }
 
@@ -134,6 +136,8 @@ func (s *ImportService) getCarrierImporter(ctx context.Context, connectionID dot
 		return s.VTPostImporter, shipping_provider.VTPost, nil
 	case connection_type.ConnectionProviderNinjaVan:
 		return s.NJVImporter, shipping_provider.NinjaVan, nil
+	case connection_type.ConnectionProviderDHL:
+		return s.DHLImporter, shipping_provider.DHL, nil
 	case connection_type.ConnectionProviderPartner:
 		nameNorm := validate.NormalizeSearchSimple(query.Result.Name)
 		if checkJTExpress(nameNorm) {
