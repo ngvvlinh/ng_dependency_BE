@@ -614,7 +614,8 @@ func (a *Aggregate) UpdateFulfillmentsCODTransferedAt(ctx context.Context, args 
 }
 
 func (a *Aggregate) RemoveFulfillmentsMoneyTxID(ctx context.Context, args *shipping.RemoveFulfillmentsMoneyTxIDArgs) (updated int, _ error) {
-	return a.ffmStore(ctx).RemoveFulfillmentsMoneyTxID(args)
+	// make sure only remove fulfillment moneyTxID if etop not payment for shop
+	return a.ffmStore(ctx).EtopNotPayment().RemoveFulfillmentsMoneyTxID(args)
 }
 
 func (a *Aggregate) UpdateFulfillmentsStatus(ctx context.Context, args *shipping.UpdateFulfillmentsStatusArgs) error {

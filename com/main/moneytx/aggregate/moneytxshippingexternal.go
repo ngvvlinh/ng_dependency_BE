@@ -313,7 +313,7 @@ func (a *MoneyTxAggregate) RemoveMoneyTxShippingExternalLines(ctx context.Contex
 		for _, line := range lines {
 			if id == line.ID {
 				found = true
-				if line.EtopFulfillmentID != 0 {
+				if line.EtopFulfillmentID != 0 && line.ImportError == nil {
 					ffmIDs = append(ffmIDs, line.EtopFulfillmentID)
 				}
 				break

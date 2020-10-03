@@ -187,6 +187,11 @@ func (s *FulfillmentStore) FilterForMoneyTx(isNoneCOD bool, states []shippingsta
 	return s
 }
 
+func (s *FulfillmentStore) EtopNotPayment() *FulfillmentStore {
+	s.preds = append(s.preds, sq.NewIsNullPart("cod_etop_transfered_at", true))
+	return s
+}
+
 func (s *FulfillmentStore) GetFfmDB() (*model.Fulfillment, error) {
 	var ffm model.Fulfillment
 	err := s.query().Where(s.preds...).ShouldGet(&ffm)
