@@ -343,7 +343,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	invitationConfig := cfg.Invitation
 	customerQuery := query4.NewCustomerQuery(mainDB)
 	customeringQueryBus := query4.CustomerQueryMessageBus(customerQuery)
-	invitationAggregate := aggregate4.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, smsClient, emailClient, flagEnableNewLinkInvitation, accountUserStoreInterface, shopStoreInterface, userStoreInterface)
+	invitationAggregate := aggregate4.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, smsClient, emailClient, flagEnableNewLinkInvitation, accountUserStoreInterface, shopStoreInterface, userStoreInterface, store)
 	invitationCommandBus := aggregate4.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := &aggregate5.AuthorizationAggregate{
 		Auth:             authorizer,

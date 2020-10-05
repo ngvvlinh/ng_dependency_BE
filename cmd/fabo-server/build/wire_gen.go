@@ -244,7 +244,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	invitationConfig := cfg.Invitation
 	customerQuery := query2.NewCustomerQuery(mainDB)
 	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
-	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, client, emailClient, flagEnableNewLinkInvitation, accountUserStoreInterface, shopStoreInterface, userStoreInterface)
+	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, client, emailClient, flagEnableNewLinkInvitation, accountUserStoreInterface, shopStoreInterface, userStoreInterface, store)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := &aggregate3.AuthorizationAggregate{
 		Auth:             authorizer,

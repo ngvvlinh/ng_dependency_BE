@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"strings"
 	"time"
@@ -22,11 +23,13 @@ import (
 	"o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/sms"
+	"o.o/backend/pkg/integration/sms/util"
 	"o.o/capi"
 	"o.o/capi/dot"
 )
@@ -46,6 +49,7 @@ type InvitationAggregate struct {
 	smsClient     *sms.Client
 	emailClient   *email.Client
 	flagNewLink   FlagEnableNewLinkInvitation
+	redisStore    redis.Store
 
 	AccountUserStore sqlstore.AccountUserStoreInterface
 	ShopStore        sqlstore.ShopStoreInterface
@@ -64,6 +68,7 @@ func NewInvitationAggregate(
 	AccountUserStore sqlstore.AccountUserStoreInterface,
 	ShopStore sqlstore.ShopStoreInterface,
 	UserStore sqlstore.UserStoreInterface,
+	redis redis.Store,
 ) *InvitationAggregate {
 	return &InvitationAggregate{
 		db:               database,
@@ -78,6 +83,7 @@ func NewInvitationAggregate(
 		AccountUserStore: AccountUserStore,
 		ShopStore:        ShopStore,
 		UserStore:        UserStore,
+		redisStore:       redis,
 	}
 }
 
@@ -104,8 +110,6 @@ func (a *InvitationAggregate) CreateInvitation(
 			if args.Email != "" {
 				return nil, cm.Errorf(cm.FailedPrecondition, nil, "Email %s đã được gửi lời mời.", args.Email)
 			}
-		} else {
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Tài khoản đã được gửi lời mời.")
 		}
 	default:
 		return nil, err
@@ -256,19 +260,42 @@ func (a *InvitationAggregate) sendInvitation(ctx context.Context, args *invitati
 			return err
 		}
 	} else {
-		if err := templatemessages.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
-			"InvitedUsername": invitedUsername,
-			"URL":             args.InvitationURL,
-			"ShopRoles":       shopRoles,
-			"ShopName":        shopName,
-		}); err != nil {
-			return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
+		var countSend int
+		var redisKey = fmt.Sprintf("Invitation-sendphone-%v-%v", args.AccountID, args.Phone)
+		err := a.redisStore.Get(redisKey, &countSend)
+		if err != nil && err != redis.ErrNil {
+			return err
+		}
+		if err != nil && err == redis.ErrNil {
+			countSend = 1
+		}
+		if countSend == 1 {
+			if err := templatemessages.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
+				"URL":      args.InvitationURL,
+				"ShopName": util.ModifyMsgPhone(shopName),
+			}); err != nil {
+				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
+			}
+		} else {
+			if err := templatemessages.PhoneInvitationTplRepeat.Execute(&b, map[string]interface{}{
+				"URL":      args.InvitationURL,
+				"ShopName": util.ModifyMsgPhone(shopName),
+				"SendTime": countSend,
+			}); err != nil {
+				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
+			}
 		}
 		cmd := &sms.SendSMSCommand{
 			Phone:   args.Phone,
 			Content: b.String(),
 		}
 		if err := a.smsClient.SendSMS(ctx, cmd); err != nil {
+			return err
+		}
+
+		// update countSend
+		countSend += 1
+		if err := a.redisStore.Set(redisKey, countSend); err != nil {
 			return err
 		}
 	}
