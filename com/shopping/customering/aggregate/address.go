@@ -47,8 +47,19 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 
 	args.Phone = phoneNorm.String()
 
-	if _, err := q.customerStore(ctx).ID(args.TraderID).GetCustomer(); err != nil {
-		return nil, cm.Error(cm.InvalidArgument, "Không tìm thấy user", nil)
+	// check customer
+	{
+		customer, err := q.customerStore(ctx).ID(args.TraderID).IncludeDeleted().GetCustomer()
+		switch cm.ErrorCode(err) {
+		case cm.NotFound:
+			return nil, cm.Error(cm.InvalidArgument, "Không tìm thấy user", nil)
+		case cm.NoError:
+			if customer.Deleted {
+				return nil, cm.Error(cm.InvalidArgument, "Khách hàng đã bị xóa. Vui lòng kiểm tra lại", nil)
+			}
+		default:
+			return nil, err
+		}
 	}
 
 	if args.IsDefault {
