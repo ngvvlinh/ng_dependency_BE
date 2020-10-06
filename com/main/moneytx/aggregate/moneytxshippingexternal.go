@@ -10,7 +10,6 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
-	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	moneytxsqlstore "o.o/backend/com/main/moneytx/sqlstore"
 	cm "o.o/backend/pkg/common"
@@ -236,7 +235,6 @@ func (a *MoneyTxAggregate) ConfirmMoneyTxShippingExternals(ctx context.Context, 
 	}
 
 	var moneyTxExternalIDs []dot.ID
-	var shopIDs []dot.ID
 	shopFfmsMap := make(map[dot.ID][]*shipping.Fulfillment)
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		// raise event confirming
@@ -257,20 +255,17 @@ func (a *MoneyTxAggregate) ConfirmMoneyTxShippingExternals(ctx context.Context, 
 			}
 			moneyTxExternalIDs = append(moneyTxExternalIDs, moneyTx.ID)
 			for shopID, ffms := range _shopFfmsMap {
-				if !cm.IDsContain(shopIDs, shopID) {
-					shopIDs = append(shopIDs, shopID)
-				}
 				shopFfmsMap[shopID] = mergeFulfillments(shopFfmsMap[shopID], ffms)
 			}
 		}
 
-		shopFfmsAdditionMap := a.combineWithExtraFfms(ctx)
+		shopFfmsAdditionMap, err := a.combineWithExtraFfms(ctx)
+		if err != nil {
+			return err
+		}
 		// make sure do not dupplicate ffm
 		for shopID, ffms := range shopFfmsAdditionMap {
 			shopFfmsMap[shopID] = mergeFulfillments(shopFfmsMap[shopID], ffms)
-			if !cm.IDsContain(shopIDs, shopID) {
-				shopIDs = append(shopIDs, shopID)
-			}
 		}
 
 		cmd := &moneytx.CreateMoneyTxShippingsArgs{
@@ -464,58 +459,25 @@ func mergeFulfillments(ffms []*shipping.Fulfillment, subFfms []*shipping.Fulfill
 		- returned
 		- returning
 		- COD = 0 (state: delivered & total_cod_amount = 0)
+
+	Update 06/10/2020 (tuan)
+		TopShip sẽ tự động đối soát với tất cả NVC trường hợp:
+		- returned
+		- returning
+		- COD = 0 (state: delivered & total_cod_amount = 0)
 */
-
-func (a *MoneyTxAggregate) combineWithExtraFfms(ctx context.Context) (shopFfmsMap map[dot.ID][]*shipping.Fulfillment) {
-	var ffmsAddition []*shipping.Fulfillment
+func (a *MoneyTxAggregate) combineWithExtraFfms(ctx context.Context) (shopFfmsMap map[dot.ID][]*shipping.Fulfillment, _ error) {
 	shopFfmsMap = make(map[dot.ID][]*shipping.Fulfillment)
-
-	queryGHN := &shipping.ListFulfillmentsForMoneyTxQuery{
-		ShippingProvider: shipping_provider.GHN,
-		ShippingStates:   []shippingstate.State{shippingstate.Returned},
-		IsNoneCOD:        dot.Bool(true),
+	query := &shipping.ListFulfillmentsForMoneyTxQuery{
+		ShippingStates: []shippingstate.State{shippingstate.Returning, shippingstate.Returned},
+		IsNoneCOD:      dot.Bool(true),
 	}
-	if err := a.shippingQuery.Dispatch(ctx, queryGHN); err == nil {
-		ffmsAddition = append(ffmsAddition, queryGHN.Result...)
+	if err := a.shippingQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
 	}
-
-	queryVtpost := &shipping.ListFulfillmentsForMoneyTxQuery{
-		ShippingProvider: shipping_provider.VTPost,
-		ShippingStates:   []shippingstate.State{shippingstate.Returning, shippingstate.Returned},
-		IsNoneCOD:        dot.Bool(true),
-	}
-	if err := a.shippingQuery.Dispatch(ctx, queryVtpost); err == nil {
-		ffmsAddition = append(ffmsAddition, queryVtpost.Result...)
-	}
-
-	ffms := filterCombineExtraFfms(ffmsAddition)
-
+	ffms := query.Result
 	for _, ffm := range ffms {
-		if ffm.ID == 0 {
-			continue
-		}
 		shopFfmsMap[ffm.ShopID] = append(shopFfmsMap[ffm.ShopID], ffm)
 	}
-	return shopFfmsMap
-}
-
-func filterCombineExtraFfms(ffms []*shipping.Fulfillment) []*shipping.Fulfillment {
-	// Sau khi lấy extra ffms, chỉ lấy những ffm có ConnectionMethod là TOPSHIP
-	// Xử lý backward compatible cho trường hợp ffm cũ, ko có ConnectionMethod, ShippingType (mặc định cho vào phiên luôn)
-	var res []*shipping.Fulfillment
-	for _, ffm := range ffms {
-		// backward compatible
-		// remove later
-		if ffm.ShippingType == 0 && ffm.ConnectionMethod == 0 {
-			res = append(res, ffm)
-			continue
-		}
-		// -- end backward compatible
-
-		if ffm.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
-			continue
-		}
-		res = append(res, ffm)
-	}
-	return res
+	return shopFfmsMap, nil
 }

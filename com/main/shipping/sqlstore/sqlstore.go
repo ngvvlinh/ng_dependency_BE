@@ -6,6 +6,7 @@ import (
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipping"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
@@ -150,14 +151,25 @@ func (s *FulfillmentStore) ShippingProvider(carrier shipping_provider.ShippingPr
 	return s
 }
 
+func (s *FulfillmentStore) OptionalShippingProvider(carrier shipping_provider.ShippingProvider) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByShippingProvider(carrier).Optional())
+	return s
+}
+
 func (s *FulfillmentStore) ShippingStates(states ...shippingstate.State) *FulfillmentStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "shipping_state", states))
+	return s
+}
+
+func (s *FulfillmentStore) ConnectionMethod(method connection_type.ConnectionMethod) *FulfillmentStore {
+	s.preds = append(s.preds, s.ft.ByConnectionMethod(method))
 	return s
 }
 
 func (s *FulfillmentStore) NotBelongToMoneyTx() *FulfillmentStore {
 	preds := sq.And{
 		sq.NewIsNullPart("money_transaction_id", true),
+		sq.NewIsNullPart("money_transaction_shipping_external_id", true),
 		sq.NewIsNullPart("cod_etop_transfered_at", true),
 	}
 	s.preds = append(s.preds, preds)
@@ -184,6 +196,10 @@ func (s *FulfillmentStore) FilterForMoneyTx(isNoneCOD bool, states []shippingsta
 		preds = sq.PrefixedIn(&s.ft.prefix, "shipping_state", states)
 	}
 	s.preds = append(s.preds, preds)
+
+	// chỉ lấy những đơn bắt đầu từ năm 2020
+	// bỏ qua mấy đơn đã quá cũ
+	s.preds = append(s.preds, sq.NewExpr("created_at > '2020-01-01'"))
 	return s
 }
 

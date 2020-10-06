@@ -110,14 +110,12 @@ func (q *QueryService) ListFulfillmentsByShippingCodes(ctx context.Context, code
 }
 
 func (q *QueryService) ListFulfillmentsForMoneyTx(ctx context.Context, args *shipping.ListFulfillmentForMoneyTxArgs) ([]*shipping.Fulfillment, error) {
-	if args.ShippingProvider == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shipping provider")
-	}
 	if args.ShippingStates == nil && !args.IsNoneCOD.Valid {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing required arguments")
 	}
 	// Chỉ lấy những ffms chưa đối soát và chưa nằm trong phiên thanh toán nào
-	query := q.store(ctx).ShippingProvider(args.ShippingProvider).NotBelongToMoneyTx()
+	// và ffm có connetion_method = builtin
+	query := q.store(ctx).ConnectionMethod(connection_type.ConnectionMethodBuiltin).OptionalShippingProvider(args.ShippingProvider).NotBelongToMoneyTx()
 
 	query = query.FilterForMoneyTx(args.IsNoneCOD.Bool, args.ShippingStates)
 
