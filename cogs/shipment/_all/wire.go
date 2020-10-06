@@ -33,7 +33,6 @@ var WireSet = wire.NewSet(
 	imhandlers.WireSet,
 	directwebhook.WireSet,
 	shippingcode.WireSet,
-	SupportedShippingCarrierConfig,
 	SupportedCarrierDriver,
 	SupportedShipmentServices,
 )

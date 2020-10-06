@@ -67,8 +67,6 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, queryBus, identityQueryBus, shopshipmentpricelistQueryBus, pricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
-	shipment_allConfig := cfg.Shipment
-	typesConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	driver := shipment_all.SupportedCarrierDriver()
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
 	addressStore := &sqlstore.AddressStore{
@@ -94,7 +92,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		ShopStore:    shopStoreInterface,
 	}
 	orderStoreInterface := sqlstore.BindOrderStore(orderStore)
-	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, identityQueryBus, connectioningQueryBus, commandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, driver, connectionManager, orderStoreInterface)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, queryBus, identityQueryBus, connectioningQueryBus, commandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, driver, connectionManager, orderStoreInterface)
 	if err != nil {
 		return Output{}, nil, err
 	}

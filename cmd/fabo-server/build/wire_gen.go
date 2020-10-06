@@ -390,11 +390,9 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, locationQueryBus, queryBus, shopshipmentpricelistQueryBus, pricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
-	shipment_allConfig := cfg.Shipment
-	typesConfig := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	driver := shipment_all.SupportedCarrierDriver()
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
-	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesConfig, driver, connectionManager, orderStoreInterface)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, driver, connectionManager, orderStoreInterface)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
@@ -607,6 +605,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	downloadHandler := server_shop.BuildDownloadHandler()
 	faboImageHandler := fabo2.BuildFaboImageHandler()
 	mainServer := BuildMainServer(service, intHandlers, sharedConfig, importHandler, eventStreamHandler, downloadHandler, faboImageHandler)
+	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook
 	shippingwebhookAggregate := shippingwebhook.NewAggregate(logDB)
 	v2Webhook := v2.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)

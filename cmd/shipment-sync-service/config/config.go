@@ -2,14 +2,12 @@ package config
 
 import (
 	_telebot "o.o/backend/cogs/base/telebot"
-	shipment_all "o.o/backend/cogs/shipment/_all"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 )
 
 type Config struct {
-	Databases cc.Databases        `yaml:",inline"`
-	Shipment  shipment_all.Config `yaml:",inline"`
+	Databases cc.Databases `yaml:",inline"`
 
 	Redis       cc.Redis       `yaml:"redis"`
 	HTTP        cc.HTTP        `yaml:"http"`
@@ -22,7 +20,6 @@ func Default() Config {
 		Databases: map[string]*cc.Postgres{
 			"postgres": cc.PtrDefaultPostgres(),
 		},
-		Shipment:    shipment_all.DefaultConfig(),
 		HTTP:        cc.HTTP{Port: 8200},
 		Redis:       cc.DefaultRedis(),
 		TelegramBot: _telebot.DefaultConfig(),

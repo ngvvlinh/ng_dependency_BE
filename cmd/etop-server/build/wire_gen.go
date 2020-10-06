@@ -502,10 +502,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, locationQueryBus, queryBus, shopshipmentpricelistQueryBus, pricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
-	shipment_allConfig := cfg.Shipment
-	config2 := shipment_all.SupportedShippingCarrierConfig(shipment_allConfig)
 	typesDriver := shipment_all.SupportedCarrierDriver()
-	shipmentManager, err := carrier2.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, config2, typesDriver, connectionManager, orderStoreInterface)
+	shipmentManager, err := carrier2.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesDriver, connectionManager, orderStoreInterface)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
@@ -1199,6 +1197,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	vtPayHandler := server_vtpay.BuildVTPayHandler(serverServer)
 	mainServer := BuildMainServer(service, intHandlers, extHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler)
 	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, locationQueryBus)
+	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook
 	v1Webhook := v1.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	v2Webhook := v2.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
@@ -1211,8 +1210,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	webhook9 := webhook5.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook9)
 	serverWebhookConfig := cfg.AhamoveWebhook
-	config3 := cfg.Ahamove
-	client3 := client2.New(config3)
+	config2 := cfg.Ahamove
+	client3 := client2.New(config2)
 	urlConfig := shipnow_all.AhamoveConfig(cfg)
 	ahamoveCarrier := ahamove.New(client3, urlConfig, locationQueryBus, queryBus, accountshipnowQueryBus)
 	ahamoveVerificationFileServer := server2.NewAhamoveVerificationFileServer(ctx, accountshipnowQueryBus)

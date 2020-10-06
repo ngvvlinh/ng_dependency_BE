@@ -39,15 +39,17 @@ func (es ConfigEndpoints) GetByCarrier(carrier connection_type.ConnectionProvide
 type Driver interface {
 	GetShipmentDriver(
 		env string, locationQS location.QueryBus,
-		identityQS identity.QueryBus, connection *connectioning.Connection,
+		identityQS identity.QueryBus,
+		connection *connectioning.Connection,
 		shopConnection *connectioning.ShopConnection,
-		endpoints ConfigEndpoints, shippingcodeQS shippingcode.QueryBus,
+		shippingcodeQS shippingcode.QueryBus,
 	) (ShipmentCarrier, error)
 
 	GetAffiliateShipmentDriver(
 		env string, locationQS location.QueryBus,
-		identityQS identity.QueryBus, connection *connectioning.Connection,
-		endpoints ConfigEndpoints, shippingcodeQS shippingcode.QueryBus,
+		identityQS identity.QueryBus,
+		connection *connectioning.Connection,
+		shippingcodeQS shippingcode.QueryBus,
 	) (ShipmentCarrier, error)
 }
 

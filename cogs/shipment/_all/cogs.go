@@ -66,16 +66,6 @@ func DefaultConfig() Config {
 	}
 }
 
-func SupportedShippingCarrierConfig(cfg Config) carriertypes.Config {
-	return carriertypes.Config{
-		Endpoints: []carriertypes.ConfigEndpoint{
-			{
-				connection_type.ConnectionProviderGHN, cfg.GHNWebhook.Endpoint,
-			},
-		},
-	}
-}
-
 type CarrierDriver struct {
 }
 
@@ -86,7 +76,7 @@ func SupportedCarrierDriver() carriertypes.Driver {
 func (d CarrierDriver) GetShipmentDriver(
 	env string, locationQS location.QueryBus,
 	identityQS identity.QueryBus, connection *connectioning.Connection,
-	shopConnection *connectioning.ShopConnection, endpoints carriertypes.ConfigEndpoints,
+	shopConnection *connectioning.ShopConnection,
 	shippingcodeQS shippingcode.QueryBus,
 ) (carriertypes.ShipmentCarrier, error) {
 	etopAffiliateAccount := connection.EtopAffiliateAccount
@@ -131,11 +121,7 @@ func (d CarrierDriver) GetShipmentDriver(
 					cfg.AffiliateID = affiliateID
 				}
 			}
-			webhookEndpoint, ok := endpoints.GetByCarrier(connection_type.ConnectionProviderGHN)
-			if !ok {
-				return nil, cm.Errorf(cm.Internal, nil, "no webhook endpoint")
-			}
-			driver := ghndriver.New(env, cfg, locationQS, webhookEndpoint)
+			driver := ghndriver.New(env, cfg, locationQS, "")
 			return driver, nil
 		}
 
@@ -189,7 +175,7 @@ func (d CarrierDriver) GetShipmentDriver(
 func (d CarrierDriver) GetAffiliateShipmentDriver(
 	env string, locationQS location.QueryBus,
 	identityQS identity.QueryBus, conn *connectioning.Connection,
-	endpoints carriertypes.ConfigEndpoints, shippingcodeQS shippingcode.QueryBus) (carriertypes.ShipmentCarrier, error) {
+	shippingcodeQS shippingcode.QueryBus) (carriertypes.ShipmentCarrier, error) {
 	var userID, token, shopIDStr, secretKey string
 	version := conn.Version
 	if conn.EtopAffiliateAccount != nil {
@@ -225,11 +211,7 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(
 				ClientID: clientID,
 				Token:    token,
 			}
-			webhookEndpoint, ok := endpoints.GetByCarrier(connection_type.ConnectionProviderGHN)
-			if !ok {
-				return nil, cm.Errorf(cm.Internal, nil, "no webhook endpoint")
-			}
-			driver := ghndriver.New(env, cfg, locationQS, webhookEndpoint)
+			driver := ghndriver.New(env, cfg, locationQS, "")
 			return driver, nil
 		}
 	case connection_type.ConnectionProviderGHTK:

@@ -62,15 +62,11 @@ type ShipmentManager struct {
 	shipmentPriceQS      shipmentprice.QueryBus
 	shippingQS           shipping.QueryBus
 	priceListPromotionQS pricelistpromotion.QueryBus
-	ghnWebhookEndpoint   string
 	ConnectionManager    *connectionmanager.ConnectionManager
 
-	webhookEndpoints carriertypes.ConfigEndpoints
-	carrierDriver    carriertypes.Driver
-
-	eventBus capi.EventBus
-
-	OrderStore sqlstore.OrderStoreInterface
+	carrierDriver carriertypes.Driver
+	eventBus      capi.EventBus
+	OrderStore    sqlstore.OrderStoreInterface
 }
 
 func NewShipmentManager(
@@ -83,7 +79,6 @@ func NewShipmentManager(
 	shipmentServiceQS shipmentservice.QueryBus,
 	shipmentPriceQS shipmentprice.QueryBus,
 	priceListPromotionQS pricelistpromotion.QueryBus,
-	cfg carriertypes.Config,
 	carrierDriver carriertypes.Driver,
 	connectionManager *connectionmanager.ConnectionManager,
 	OrderStore sqlstore.OrderStoreInterface,
@@ -100,7 +95,6 @@ func NewShipmentManager(
 		shipmentPriceQS:      shipmentPriceQS,
 		priceListPromotionQS: priceListPromotionQS,
 		ConnectionManager:    connectionManager,
-		webhookEndpoints:     cfg.Endpoints,
 		carrierDriver:        carrierDriver,
 		OrderStore:           OrderStore,
 	}
@@ -136,7 +130,7 @@ func (m *ShipmentManager) GetShipmentDriver(ctx context.Context, connectionID do
 		return nil, err
 	}
 
-	shipmentDriver, err := m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, m.identityQS, connection, shopConnection, m.webhookEndpoints, m.shippingcodeQS)
+	shipmentDriver, err := m.carrierDriver.GetShipmentDriver(m.env, m.locationQS, m.identityQS, connection, shopConnection, m.shippingcodeQS)
 	if err != nil {
 		return nil, err
 	}
@@ -440,7 +434,7 @@ func (m *ShipmentManager) GetDriverByEtopAffiliateAccount(ctx context.Context, c
 		return nil, err
 	}
 
-	return m.carrierDriver.GetAffiliateShipmentDriver(m.env, m.locationQS, m.identityQS, conn, m.webhookEndpoints, m.shippingcodeQS)
+	return m.carrierDriver.GetAffiliateShipmentDriver(m.env, m.locationQS, m.identityQS, conn, m.shippingcodeQS)
 }
 
 func (m *ShipmentManager) RefreshFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) (updateFfm *shipmodel.Fulfillment, err error) {

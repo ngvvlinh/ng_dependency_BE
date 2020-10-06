@@ -15,7 +15,6 @@ var WireSet = wire.NewSet(
 	_shipment.WireSet,
 	ghnv2.WireSet,
 	wire.FieldsOf(new(Config), "GHN", "GHNWebhook"),
-	SupportedShippingCarrierConfig,
 	SupportedCarrierDriver,
 	SupportedShipmentServices,
 )

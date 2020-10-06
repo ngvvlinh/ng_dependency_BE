@@ -9,6 +9,7 @@ import (
 
 	"o.o/backend/cmd/shipment-sync-service/config"
 	_base "o.o/backend/cogs/base"
+	_shipment "o.o/backend/cogs/shipment"
 	shipment_all "o.o/backend/cogs/shipment/_all"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/address"
@@ -16,6 +17,7 @@ import (
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/location"
 	"o.o/backend/com/main/ordering"
+	"o.o/backend/com/main/shippingcode"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
@@ -29,22 +31,24 @@ func Build(
 		wire.FieldsOf(&cfg,
 			"Redis",
 			"Databases",
-			"shipment",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
 		address.WireSet,
 		ordering.WireSet,
-		shipment_all.WireSet,
+		_shipment.WireSet,
 		location.WireSet,
 		identity.WireSet,
 		connectioning.WireSet,
+		shippingcode.WireSet,
 
 		com.BuildDatabaseMain,
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
 		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),
 		sqlstore.WireSet,
 
+		shipment_all.SupportedShipmentServices,
+		shipment_all.SupportedCarrierDriver,
 		BuildSyncs,
 		BuildServers,
 	))
