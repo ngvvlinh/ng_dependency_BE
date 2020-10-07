@@ -30,6 +30,29 @@ var enumSubstateValue = map[string]int{
 	"return_fail":     43,
 }
 
+var enumSubstateMapLabel = map[string]map[string]string{
+	"default": {
+		"RefName": "",
+	},
+	"pick_fail": {
+		"RefName": "Lấy hàng thất bại",
+	},
+	"delivery_fail": {
+		"RefName": "Giao hàng thất bại",
+	},
+	"devivery_giveup": {
+		"RefName": "Giao hàng thất bại. Chờ trả hàng",
+	},
+	"return_fail": {
+		"RefName": "Trả hàng thất bại",
+	},
+}
+
+func (e Substate) GetLabelRefName() string {
+	val := enumSubstateName[int(e)]
+	nameVal := enumSubstateMapLabel[val]
+	return nameVal["RefName"]
+}
 func ParseSubstate(s string) (Substate, bool) {
 	val, ok := enumSubstateValue[s]
 	return Substate(val), ok

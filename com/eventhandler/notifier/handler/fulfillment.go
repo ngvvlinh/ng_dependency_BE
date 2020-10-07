@@ -8,6 +8,7 @@ import (
 	"o.o/api/main/connectioning"
 	cmtype "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	notifiermodel "o.o/backend/com/eventhandler/notifier/model"
 	"o.o/backend/com/eventhandler/pgevent"
 	ordermodel "o.o/backend/com/main/ordering/model"
@@ -15,12 +16,15 @@ import (
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/mq"
-	ghtkclient "o.o/backend/pkg/integration/shipping/ghtk/client"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
-var acceptNotifyStates = []string{shipping.Returning.String(), shipping.Returned.String(), shipping.Undeliverable.String()}
+var acceptNotifyStates = []string{
+	shipping.Returning.String(),
+	shipping.Returned.String(),
+	shipping.Undeliverable.String(),
+}
 
 func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	var history shipmodel.FulfillmentHistory
@@ -61,59 +65,19 @@ func prepareNotifyFfmCommands(ctx context.Context, op pgevent.TGOP, history ship
 	}
 
 	var res []*notifiermodel.CreateNotificationArgs
-	externalShippingNote := history.ExternalShippingNote().String()
-	externalSubState := history.ExternalShippingSubState().String()
-	if (externalShippingNote.Valid && ffm.ExternalShippingNote.Valid) || (externalSubState.Valid && ffm.ExternalShippingSubState.Valid) {
-		cmds := templateFfmChangedNote(connection, userIDs, ffm, history)
-		res = append(res, cmds...)
-	}
 	if history.ShippingFeeShop().Int().Valid {
 		cmds := templateFfmChangedFee(connection, op, userIDs, ffm, history)
-		res = append(res, cmds...)
+		if len(cmds) > 0 {
+			res = append(res, cmds...)
+		}
 	}
-	if history.ShippingState().String().Valid {
-		cmds := templateFfmChangedStatus(connection, userIDs, ffm)
-		res = append(res, cmds...)
+	if history.ShippingState().String().Valid || history.ShippingSubstate().String().Valid {
+		cmds := templateFfmChangedStatus(connection, userIDs, ffm, history)
+		if len(cmds) > 0 {
+			res = append(res, cmds...)
+		}
 	}
 	return res
-}
-
-func templateFfmChangedNote(
-	connection *connectioning.Connection,
-	userIDs []dot.ID,
-	ffm *shipmodel.Fulfillment,
-	history shipmodel.FulfillmentHistory,
-) []*notifiermodel.CreateNotificationArgs {
-	title, content := "", ""
-	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
-	subState := ffm.ExternalShippingSubState
-	if !subState.Valid {
-		subState = dot.String("Cập nhật")
-	}
-	title = fmt.Sprintf("%v - %v %v - %v", subState.String, connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
-	externalShippingNote := history.ExternalShippingNote().String().String
-	if externalShippingNote != "" {
-		content, _ = strconv.Unquote("\"" + externalShippingNote + "\"")
-	} else {
-		content = fmt.Sprintf("Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	}
-
-	sendNotification := true
-	if subState.String == ghtkclient.SubStateMapping[ghtkclient.StateIDShipperDelivered] {
-		sendNotification = false
-	}
-	args := &buildNotifyCmdArgs{
-		UserIDs:    userIDs,
-		ShopID:     ffm.ShopID,
-		Title:      title,
-		Message:    content,
-		SendNotify: sendNotification,
-		Entity:     notifiermodel.NotiFulfillment,
-		EntityID:   ffm.ID,
-		Meta:       cmtype.Empty{},
-		TopicType:  TopicFulfillment,
-	}
-	return buildNotifyCmds(args)
 }
 
 func templateFfmChangedFee(
@@ -145,9 +109,48 @@ func templateFfmChangedFee(
 	return buildNotifyCmds(args)
 }
 
-func templateFfmChangedStatus(connection *connectioning.Connection, userIDs []dot.ID, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
+func templateFfmChangedStatus(
+	connection *connectioning.Connection,
+	userIDs []dot.ID,
+	ffm *shipmodel.Fulfillment,
+	history shipmodel.FulfillmentHistory,
+) []*notifiermodel.CreateNotificationArgs {
+	shippingState := history.ShippingState().String().String
+	shippingSubState := history.ShippingSubstate().String().String
 	content := ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
+
+	// ưu tiên cho substate
+	if shippingSubState != "" {
+		substate, ok := shippingsubstate.ParseSubstate(shippingSubState)
+		if !ok {
+			return nil
+		}
+		title := fmt.Sprintf("%v - %v %v - %v", substate.GetLabelRefName(), connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
+		if ffm.ExternalShippingNote.Valid {
+			content, _ = strconv.Unquote("\"" + ffm.ExternalShippingNote.String + "\"")
+		} else {
+			content = fmt.Sprintf("Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
+		}
+
+		args := &buildNotifyCmdArgs{
+			UserIDs:    userIDs,
+			ShopID:     ffm.ShopID,
+			Title:      title,
+			Message:    content,
+			SendNotify: true,
+			Entity:     notifiermodel.NotiFulfillment,
+			EntityID:   ffm.ID,
+			Meta:       cmtype.Empty{},
+			TopicType:  TopicFulfillment,
+		}
+		return buildNotifyCmds(args)
+	}
+
+	if shippingState == "" {
+		return nil
+	}
+
 	switch ffm.ShippingState {
 	case shipping.Picking, shipping.Holding:
 		content = fmt.Sprintf("Dự kiến giao vào %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cm.FormatDateVN(ffm.ExpectedDeliveryAt), ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
