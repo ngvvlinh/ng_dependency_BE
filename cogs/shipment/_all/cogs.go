@@ -33,6 +33,7 @@ import (
 	"o.o/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "o.o/backend/pkg/integration/shipping/vtpost/client"
 	vtpostdriver "o.o/backend/pkg/integration/shipping/vtpost/driver"
+	"o.o/capi"
 	"o.o/common/l"
 )
 
@@ -67,17 +68,19 @@ func DefaultConfig() Config {
 }
 
 type CarrierDriver struct {
+	eventBus capi.EventBus
 }
 
-func SupportedCarrierDriver() carriertypes.Driver {
-	return CarrierDriver{}
+func SupportedCarrierDriver(eventBus capi.EventBus) carriertypes.Driver {
+	return CarrierDriver{
+		eventBus: eventBus,
+	}
 }
 
 func (d CarrierDriver) GetShipmentDriver(
 	env string, locationQS location.QueryBus,
 	identityQS identity.QueryBus, connection *connectioning.Connection,
-	shopConnection *connectioning.ShopConnection,
-	shippingcodeQS shippingcode.QueryBus,
+	shopConnection *connectioning.ShopConnection, shippingcodeQS shippingcode.QueryBus,
 ) (carriertypes.ShipmentCarrier, error) {
 	etopAffiliateAccount := connection.EtopAffiliateAccount
 
@@ -155,7 +158,7 @@ func (d CarrierDriver) GetShipmentDriver(
 			AccountID: shopIDConnectionStr,
 			Token:     shopConnection.Token,
 		}
-		driver := dhldriver.New(env, cfg, locationQS)
+		driver := dhldriver.New(env, cfg, locationQS, d.eventBus)
 		return driver, nil
 
 	case connection_type.ConnectionProviderPartner:
@@ -240,7 +243,7 @@ func (d CarrierDriver) GetAffiliateShipmentDriver(
 			ClientID:     userID,
 			ClientSecret: secretKey,
 		}
-		driver := dhldriver.New(env, cfg, locationQS)
+		driver := dhldriver.New(env, cfg, locationQS, d.eventBus)
 		return driver, nil
 	case connection_type.ConnectionProviderPartner:
 		cfg := directclient.PartnerAccountCfg{

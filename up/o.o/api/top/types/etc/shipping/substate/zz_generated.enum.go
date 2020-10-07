@@ -20,6 +20,7 @@ var enumSubstateName = map[int]string{
 	25: "delivery_fail",
 	37: "devivery_giveup",
 	43: "return_fail",
+	51: "cancelling",
 }
 
 var enumSubstateValue = map[string]int{
@@ -28,6 +29,7 @@ var enumSubstateValue = map[string]int{
 	"delivery_fail":   25,
 	"devivery_giveup": 37,
 	"return_fail":     43,
+	"cancelling":      51,
 }
 
 var enumSubstateMapLabel = map[string]map[string]string{
@@ -45,6 +47,9 @@ var enumSubstateMapLabel = map[string]map[string]string{
 	},
 	"return_fail": {
 		"RefName": "Trả hàng thất bại",
+	},
+	"cancelling": {
+		"RefName": "",
 	},
 }
 

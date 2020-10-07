@@ -30,6 +30,8 @@ type Aggregate interface {
 
 	UpdateFulfillmentShippingState(context.Context, *UpdateFulfillmentShippingStateArgs) (updated int, _ error)
 
+	UpdateFulfillmentShippingSubstate(context.Context, *UpdateFulfillmentShippingSubstateArgs) (updated int, _ error)
+
 	UpdateFulfillmentShippingFees(context.Context, *UpdateFulfillmentShippingFeesArgs) (updated int, err error)
 
 	UpdateFulfillmentCODAmount(context.Context, *UpdateFulfillmentCODAmountArgs) error
@@ -333,4 +335,9 @@ type CustomerReturnRate struct {
 	Level     string  `json:"level"`
 	LevelCode string  `json:"level_code"`
 	Rate      float64 `json:"rate"`
+}
+
+type UpdateFulfillmentShippingSubstateArgs struct {
+	FulfillmentID    dot.ID
+	ShippingSubstate shippingsubstate.Substate
 }

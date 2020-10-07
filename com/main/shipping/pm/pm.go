@@ -9,6 +9,7 @@ import (
 	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_fee_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	connectionmanager "o.o/backend/com/main/connectioning/manager"
@@ -70,6 +71,7 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.MoneyTxShippingRemoveFfms)
 	eventBus.AddEventListener(m.MoneyTxShippingEtopConfirmed)
 	eventBus.AddEventListener(m.SingleFulfillmentCreatingEvent)
+	eventBus.AddEventListener(m.HandleDHLFulfillmentCancelledEvent)
 }
 
 func (m *ProcessManager) MoneyTxShippingExternalCreated(ctx context.Context, event *moneytx.MoneyTxShippingExternalCreatedEvent) error {
@@ -315,4 +317,12 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 		return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
 	}
 	return nil
+}
+
+func (m *ProcessManager) HandleDHLFulfillmentCancelledEvent(ctx context.Context, event *shipping.DHLFulfillmentCancelledEvent) error {
+	updateFfmShippingSubstateCmd := &shipping.UpdateFulfillmentShippingSubstateCommand{
+		FulfillmentID:    event.FulfillmentID,
+		ShippingSubstate: shippingsubstate.Cancelling,
+	}
+	return m.shippingAggr.Dispatch(ctx, updateFfmShippingSubstateCmd)
 }

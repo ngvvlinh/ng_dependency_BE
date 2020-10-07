@@ -441,6 +441,10 @@ func (a *Aggregate) UpdateFulfillmentShippingState(ctx context.Context, args *sh
 	return 1, nil
 }
 
+func (a *Aggregate) UpdateFulfillmentShippingSubstate(ctx context.Context, args *shipping.UpdateFulfillmentShippingSubstateArgs) (updated int, _ error) {
+	return a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentShippingSubstate(args.ShippingSubstate)
+}
+
 func (a *Aggregate) UpdateFulfillmentShippingFees(ctx context.Context, args *shipping.UpdateFulfillmentShippingFeesArgs) (updated int, _ error) {
 	if args.FulfillmentID == 0 && args.ShippingCode == "" {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
@@ -638,26 +642,23 @@ func (a *Aggregate) CancelFulfillment(ctx context.Context, args *shipping.Cancel
 		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hủy.")
 	}
 
-	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		// backward compatible
-		ffm.ConnectionID = shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
+	// backward compatible
+	ffm.ConnectionID = shipping.GetConnectionID(ffm.ConnectionID, ffm.ShippingProvider)
 
-		var ffmDB shipmodel.Fulfillment
-		if err := scheme.Convert(ffm, &ffmDB); err != nil {
+	var ffmDB shipmodel.Fulfillment
+	if err := scheme.Convert(ffm, &ffmDB); err != nil {
+		return err
+	}
+	// case shipment: cancel ffm from carrier
+	if ffm.ConnectionID != 0 {
+		if err := a.shimentManager.CancelFulfillment(ctx, &ffmDB); err != nil {
 			return err
 		}
-		// case shipment: cancel ffm from carrier
-		if ffm.ConnectionID != 0 {
-			if err := a.shimentManager.CancelFulfillment(ctx, &ffmDB); err != nil {
-				return err
-			}
-		}
-		if err := a.ffmStore(ctx).CancelFulfillment(args); err != nil {
-			return err
-		}
+	}
 
-		return nil
-	})
+	if err := a.ffmStore(ctx).CancelFulfillment(args); err != nil {
+		return err
+	}
 
 	return err
 }

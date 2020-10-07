@@ -261,3 +261,8 @@ func GetConnectionID(connectionID dot.ID, carrier shipping_provider.ShippingProv
 func IsStateReturn(state shipping.State) bool {
 	return state == shipping.Returning || state == shipping.Returned
 }
+
+type DHLFulfillmentCancelledEvent struct {
+	meta.EventMeta
+	FulfillmentID dot.ID
+}

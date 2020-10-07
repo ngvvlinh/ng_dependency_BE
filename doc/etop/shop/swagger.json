@@ -7617,7 +7617,8 @@
         "pick_fail",
         "delivery_fail",
         "devivery_giveup",
-        "return_fail"
+        "return_fail",
+        "cancelling"
       ]
     },
     "ojFeeType": {

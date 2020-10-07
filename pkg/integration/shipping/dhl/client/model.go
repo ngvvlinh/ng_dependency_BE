@@ -22,13 +22,22 @@ type (
 const MessageVersion = "1.4"
 const MessageLanguage = "vi_VN"
 
-type ReturnMode string
+type (
+	ReturnMode string
+	// Phương thức lấy hàng
+	HandoverMethod int
+)
 
 const (
 	ReturnToRegisteredAddress ReturnMode = "01"
 	ReturnToPickupAddress     ReturnMode = "02" // (only available with Ad-Hoc Pickup)
 	ReturnToNewAddress        ReturnMode = "03"
 	Abandon                   ReturnMode = "05"
+
+	// Mang hàng qua DHL
+	HandoverMethodDropoff HandoverMethod = 1
+	// DHL qua Pick
+	HandoverMethodPickup HandoverMethod = 2
 )
 
 type State string
@@ -355,57 +364,57 @@ var StatusMapping = map[string]string{
 }
 
 var SecondaryStatusMapping = map[string]string{
-	"77327": "CUSTOMER REFUSED SHIPMENT DUE TO DELAY IN DELIVERY",
-	"77329": "CUSTOMER REJECTED THE SHIPMENT",
-	"77331": "CUSTOMER REFUSED SHIPMENT DUE TO DAMAGE IN TRANSIT",
-	"77333": "THE COD AMOUNT MAY BE INCORRECT",
-	"77335": "CUSTOMER HAS REQUESTED TO CANCEL THE ORDER",
-	"77337": "CUSTOMER HAS ALREADY RECEIVED THE SHIPMENT",
-	"77339": "UNABLE TO OPEN BOX",
-	"77341": "REFUSED COD PAYMENT",
-	"77343": "RECIPIENT NO-SHOW",
-	"77345": "DUE TO COURIER WORKLOAD",
-	"77347": "DUE TO HEAVY TRAFFIC",
-	"77349": "DUE TO BAD WEATHER",
-	"77351": "SHIPMENT WITH INCORRECT COURIER",
-	"77353": "MISSING CUSTOMER ID WITH SHIPMENT",
-	"77355": "DUE TO VEHICLE BREAKDOWN",
-	"77357": "REQUEST FROM DHL TO ABORT DELIVERY ATTEMPT",
-	"77359": "DUE TO STRIKE AND/OR ROADBLOCKS",
-	"77361": "SHIPMENT DAMAGED IN TRANSIT",
-	"77363": "COURIER CANNOT FIND THE LOCATION",
-	"77365": "SHIPMENT LOST IN TRANSIT",
-	"77367": "NO SAFE PLACE TO LEAVE THE SHIPMENT",
-	"77369": "THE SHIPMENT IS TOO LARGE FOR THE MAILBOX",
-	"77371": "UNABLE TO ENTER PREMISES",
-	"77373": "NEIGHBOUR IS UNAVAILABLE",
-	"77375": "WRONG CONTENT IN SHIPMENT",
-	"77377": "SHIPMENT IS DAMAGED",
-	"77379": "UNABLE TO TEST CONTENT",
-	"77381": "CUSTOMER REFUSED SHIPMENT DUE TO MISSING CONTENT",
-	"77383": "THE CUSTOMER HAS MOVED",
-	"77385": "THE GUEST HAS CHECKED OUT FROM THE HOTEL",
-	"77387": "CONSIGNEE REQUEST TO CHANGE THE NEW ADDRESS",
-	"77389": "THE CUSTOMER IS NOT AT HOME",
-	"77391": "THE GUEST HAS NOT ARRIVED AT THE HOTEL",
-	"77393": "THE BUSINESS ADDRESS IS CLOSED",
-	"77395": "THE CUSTOMER IS ON HOLIDAY",
-	"77397": "TOO LATE - AFTER BUSINESS HOURS",
-	"77399": "TOO EARLY - BEFORE BUSINESS HOURS",
-	"77401": "THE CUSTOMER IS OUT FOR LUNCH",
-	"77403": "THE CUSTOMER HAS RESCHEDULED DUE TO NOT AT HOME",
-	"77405": "THE CUSTOMER HAS RESCHEDULED DUE TO COD AMOUNT NOT BEING AVAILABLE",
-	"77407": "CUSTOMER HAS RESCHEDULED DUE TO NOT READY",
-	"77309": "INCORRECT ADDRESS AND/OR PHONE NUMBER",
-	"77311": "CUSTOMER NOT REACHABLE TO VERIFY ADDRESS",
-	"77313": "PROVIDED CONTACT NUMBER IS INACTIVE",
-	"77315": "PROVIDED CONTACT NUMBER DOES NOT EXIST",
-	"77317": "PO BOX IS MISSING ADDRESS AND CONTACT DETAILS",
-	"77319": "INCORRECT ZIPCODE",
-	"77321": "NO SUCH ADDRESS",
-	"77323": "NO SUCH CUSTOMER AT PROVIDED ADDRESS",
-	"77325": "CUSTOMER REFUSED SHIPMENT",
-	"77431": "Cancelled by Customer Service",
+	"77327": "Customer refused shipment due to delay in delivery",
+	"77329": "Customer rejected the shipment",
+	"77331": "Customer refused shipment due to damage in transit",
+	"77333": "The cod amount may be incorrect",
+	"77335": "Customer has requested to cancel the order",
+	"77337": "Customer has already received the shipment",
+	"77339": "Unable to open box",
+	"77341": "Refused cod payment",
+	"77343": "Recipient no-show",
+	"77345": "Due to courier workload",
+	"77347": "Due to heavy traffic",
+	"77349": "Due to bad weather",
+	"77351": "Shipment with incorrect courier",
+	"77353": "Missing customer id with shipment",
+	"77355": "Due to vehicle breakdown",
+	"77357": "Request from dhl to abort delivery attempt",
+	"77359": "Due to strike and/or roadblocks",
+	"77361": "Shipment damaged in transit",
+	"77363": "Courier cannot find the location",
+	"77365": "Shipment lost in transit",
+	"77367": "No safe place to leave the shipment",
+	"77369": "The shipment is too large for the mailbox",
+	"77371": "Unable to enter premises",
+	"77373": "Neighbour is unavailable",
+	"77375": "Wrong content in shipment",
+	"77377": "Shipment is damaged",
+	"77379": "Unable to test content",
+	"77381": "Customer refused shipment due to missing content",
+	"77383": "The customer has moved",
+	"77385": "The guest has checked out from the hotel",
+	"77387": "Consignee request to change the new address",
+	"77389": "The customer is not at home",
+	"77391": "The guest has not arrived at the hotel",
+	"77393": "The business address is closed",
+	"77395": "The customer is on holiday",
+	"77397": "Too late - after business hours",
+	"77399": "Too early - before business hours",
+	"77401": "The customer is out for lunch",
+	"77403": "The customer has rescheduled due to not at home",
+	"77405": "The customer has rescheduled due to cod amount not being available",
+	"77407": "Customer has rescheduled due to not ready",
+	"77309": "Incorrect address and/or phone number",
+	"77311": "Customer not reachable to verify address",
+	"77313": "Provided contact number is inactive",
+	"77315": "Provided contact number does not exist",
+	"77317": "PO box is missing address and contact details",
+	"77319": "Incorrect zipcode",
+	"77321": "No such address",
+	"77323": "No such customer at provided address",
+	"77325": "Customer refused shipment",
+	"77431": "Cancelled by customer service",
 	"77433": "Parcels are oversize",
 	"77435": "Pickup location is closed on arrival",
 	"77437": "No packages to be picked up",
@@ -413,10 +422,10 @@ var SecondaryStatusMapping = map[string]string{
 	"77443": "Insufficient pickup address",
 	"77445": "Closed on the public holiday",
 	"77447": "Inadequate packaging",
-	"77245": "Item Missing",
+	"77245": "Item missing",
 	"77246": "Rejected by customs",
 	"77247": "Return to customer",
-	"77248": "DG Reject",
+	"77248": "DG reject",
 	"77439": "Attemped after business hours",
 	"77449": "Mechant moved to new address",
 	"77451": "Parcel is not ready to be picked up",
@@ -426,10 +435,10 @@ var SecondaryStatusMapping = map[string]string{
 	"77459": "No one at home",
 	"77461": "Pickup rescheduled",
 	"77463": "Pickup was refused",
-	"77288": "ITEM DAMAGED",
-	"77290": "OTHER REASONS",
-	"77292": "PROHIBITED ITEMS, CONFISCATED OR DELAYED",
-	"77294": "SECURITY CHECK FAILURE",
+	"77288": "Item damaged",
+	"77290": "Other reasons",
+	"77292": "Prohibited items, confiscated or delayed",
+	"77294": "Security check failure",
 }
 
 func ToState(status string) State {
@@ -445,10 +454,10 @@ func (s State) ToModel() typesshipping.State {
 	case StateSubmitted,
 		StateShipmentDataReceived:
 		return typesshipping.Created
-	case StateShipmentPickedUp,
-		StateShipmentPickedUpFailed:
+	case StateShipmentPickedUpFailed:
 		return typesshipping.Picking
 	case
+		StateShipmentPickedUp,
 		StateEnRouteToFacility,
 		StateProcessedAtFacility,
 		StateDepartedFromFacility77169,
@@ -643,6 +652,7 @@ type HdrReq struct {
 type BdReq struct {
 	PickupAccountID string             `json:"pickupAccountId"`
 	SoldToAccountID string             `json:"soldToAccountId"`
+	HandoverMethod  HandoverMethod     `json:"handoverMethod"`
 	PickupAddress   *AddressReq        `json:"pickupAddress"`
 	ShipmentItems   []*ShipmentItemReq `json:"shipmentItems"`
 }
@@ -696,19 +706,20 @@ type AddressResp struct {
 }
 
 type ShipmentItemReq struct {
-	ConsigneeAddress *AddressReq `json:"consigneeAddress"`
-	ReturnAddress    *AddressReq `json:"returnAddress"`
-	ShipmentID       string      `json:"shipmentID"`
-	ReturnMode       string      `json:"returnMode"`
-	PackageDesc      string      `json:"packageDesc"`
-	TotalWeight      int         `json:"totalWeight"`
-	TotalWeightUOM   string      `json:"totalWeightUOM"` // g
-	Height           float64     `json:"height"`
-	Length           float64     `json:"length"`
-	Width            float64     `json:"width"`
-	ProductCode      string      `json:"productCode"`
-	CodValue         int         `json:"codValue"`
-	InsuranceValue   float64     `json:"insuranceValue,omitempty"`
+	ConsigneeAddress  *AddressReq `json:"consigneeAddress"`
+	ReturnAddress     *AddressReq `json:"returnAddress"`
+	ShipmentID        string      `json:"shipmentID"`
+	ReturnMode        string      `json:"returnMode"`
+	PackageDesc       string      `json:"packageDesc"`
+	TotalWeight       int         `json:"totalWeight"`
+	TotalWeightUOM    string      `json:"totalWeightUOM"` // g
+	Height            float64     `json:"height"`
+	Length            float64     `json:"length"`
+	Width             float64     `json:"width"`
+	ProductCode       string      `json:"productCode"`
+	ReturnProductCode string      `json:"returnProductCode"`
+	CodValue          int         `json:"codValue,omitempty"`
+	InsuranceValue    float64     `json:"insuranceValue,omitempty"`
 
 	// Doc:
 	// Total declared value of the shipment (in 2 decimal points). Mandatory for Cross Border shipment, optional for Domestic shipment.

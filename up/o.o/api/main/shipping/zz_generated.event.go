@@ -4,6 +4,7 @@
 
 package shipping
 
+func (e *DHLFulfillmentCancelledEvent) GetTopic() string      { return "event/shipping" }
 func (e *FulfillmentFromImportCreatedEvent) GetTopic() string { return "event/shipping" }
 func (e *FulfillmentUpdatedEvent) GetTopic() string           { return "event/shipping" }
 func (e *FulfillmentUpdatedInfoEvent) GetTopic() string       { return "event/shipping" }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"o.o/api/main/location"
+	shipping2 "o.o/api/main/shipping"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status4"
@@ -17,6 +18,7 @@ import (
 	"o.o/backend/pkg/common/randgenerator"
 	"o.o/backend/pkg/integration/shipping"
 	dhlclient "o.o/backend/pkg/integration/shipping/dhl/client"
+	"o.o/capi"
 	"o.o/capi/dot"
 )
 
@@ -25,13 +27,15 @@ var _ carriertypes.ShipmentCarrier = &DHLDriver{}
 type DHLDriver struct {
 	client     *dhlclient.Client
 	locationQS location.QueryBus
+	eventBus   capi.EventBus
 }
 
-func New(env string, cfg dhlclient.DHLAccountCfg, locationQS location.QueryBus) *DHLDriver {
+func New(env string, cfg dhlclient.DHLAccountCfg, locationQS location.QueryBus, eventBus capi.EventBus) *DHLDriver {
 	client := dhlclient.New(env, cfg)
 	return &DHLDriver{
 		client:     client,
 		locationQS: locationQS,
+		eventBus:   eventBus,
 	}
 }
 
@@ -90,7 +94,7 @@ func (d *DHLDriver) CreateFulfillment(
 	if err := d.locationQS.DispatchAll(ctx, fromQuery, toQuery); err != nil {
 		return nil, err
 	}
-	toProvince := toQuery.Result.Province
+	fromProvince := fromQuery.Result.Province
 
 	addressFrom := dhlclient.ToAddress(ffm.AddressFrom)
 	addressTo := dhlclient.ToAddress(ffm.AddressTo)
@@ -127,9 +131,12 @@ func (d *DHLDriver) CreateFulfillment(
 	cmd := &dhlclient.CreateOrdersRequest{
 		ManifestRequest: &dhlclient.ManiFestReq{
 			Bd: &dhlclient.BdReq{
-				PickupAccountID: string(getPickupAccountID(toProvince.Region)),
+				PickupAccountID: string(getPickupAccountID(fromProvince.Region)),
 				SoldToAccountID: "", // add it in client
-				PickupAddress:   addressFrom,
+				// HandoverMethod
+				// Default DHL qua lấy hàng
+				HandoverMethod: dhlclient.HandoverMethodPickup,
+				PickupAddress:  addressFrom,
 				ShipmentItems: []*dhlclient.ShipmentItemReq{
 					{
 						ConsigneeAddress: addressTo,
@@ -143,7 +150,13 @@ func (d *DHLDriver) CreateFulfillment(
 						Length:           float64(args.Length),
 						Width:            float64(args.Width),
 						ProductCode:      serviceID,
-						CodValue:         args.CODAmount,
+						// Return Product Code
+						// Field optional, default là gói PDO (dịch vụ chuẩn)
+						// Tuy nhiên, TopShip chỉ có gói PDE (giao nhanh)
+						// nên nếu không truyền field này lên thì DHL sẽ báo lỗi (do chưa kích hoạt gói PDO)
+						// Workaround: luôn truyền returnProductCode = ProductCode lên
+						ReturnProductCode: serviceID,
+						CodValue:          args.CODAmount,
 						// Total declared value of the shipment (in 2 decimal points). Mandatory for Cross Border shipment, optional for Domestic shipment.
 						// For Vietnam Domestic, totalValue must be a multiple of 500.
 						TotalValue:     float64(args.BasketValue),
@@ -196,6 +209,17 @@ func (d DHLDriver) UpdateFulfillmentCOD(ctx context.Context, fulfillment *shipmo
 }
 
 func (d DHLDriver) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment) error {
+	externalCreatedAt := ffm.ExternalShippingCreatedAt
+
+	// Add 10 minutes to createdAt
+	// System behaviour DHL don't allow to cancel fulfillment before 10 minutes from created
+	if externalCreatedAt.Add(10 * time.Minute).After(time.Now()) {
+		event := &shipping2.DHLFulfillmentCancelledEvent{
+			FulfillmentID: ffm.ID,
+		}
+		return d.eventBus.Publish(ctx, event)
+	}
+
 	shipmentID := ffm.ID.String()
 	getLocationQuery := &location.GetLocationQuery{
 		ProvinceCode: ffm.AddressTo.ProvinceCode,

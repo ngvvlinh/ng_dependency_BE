@@ -32,4 +32,7 @@ const (
 	// +enum=return_fail
 	// +enum:RefName:Trả hàng thất bại
 	ReturnFail Substate = 43
+
+	// +enum=cancelling
+	Cancelling Substate = 51
 )

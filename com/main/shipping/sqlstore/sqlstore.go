@@ -8,6 +8,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
@@ -328,6 +329,14 @@ func (s *FulfillmentStore) UpdateFulfillmentShippingState(args *shipping.UpdateF
 		AdminNote:     args.AdminNote,
 	}
 	return s.query().Where(s.ft.ByID(args.FulfillmentID)).ShouldUpdate(update)
+}
+
+func (s *FulfillmentStore) UpdateFulfillmentShippingSubstate(shippingSubstate shippingsubstate.Substate) (int, error) {
+	query := s.query().Where(s.preds)
+	update := map[string]interface{}{
+		"shipping_substate": shippingSubstate.String(),
+	}
+	return query.Table("fulfillment").UpdateMap(update)
 }
 
 func (s *FulfillmentStore) UpdateFulfillmentCOD(args *shipping.UpdateFulfillmentCODAmountArgs) (int, error) {

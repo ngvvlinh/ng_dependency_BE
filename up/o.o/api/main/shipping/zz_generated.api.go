@@ -260,6 +260,18 @@ func (h AggregateHandler) HandleUpdateFulfillmentShippingState(ctx context.Conte
 	return err
 }
 
+type UpdateFulfillmentShippingSubstateCommand struct {
+	FulfillmentID    dot.ID
+	ShippingSubstate substate.Substate
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentShippingSubstate(ctx context.Context, msg *UpdateFulfillmentShippingSubstateCommand) (err error) {
+	msg.Result, err = h.inner.UpdateFulfillmentShippingSubstate(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateFulfillmentsCODTransferedAtCommand struct {
 	FulfillmentIDs     []dot.ID
 	MoneyTxShippingIDs []dot.ID
@@ -425,6 +437,7 @@ func (q *UpdateFulfillmentInfoCommand) command()                    {}
 func (q *UpdateFulfillmentShippingFeesCommand) command()            {}
 func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) command() {}
 func (q *UpdateFulfillmentShippingStateCommand) command()           {}
+func (q *UpdateFulfillmentShippingSubstateCommand) command()        {}
 func (q *UpdateFulfillmentsCODTransferedAtCommand) command()        {}
 func (q *UpdateFulfillmentsMoneyTxIDCommand) command()              {}
 func (q *UpdateFulfillmentsStatusCommand) command()                 {}
@@ -744,6 +757,19 @@ func (q *UpdateFulfillmentShippingStateCommand) SetUpdateFulfillmentShippingStat
 	q.AdminNote = args.AdminNote
 }
 
+func (q *UpdateFulfillmentShippingSubstateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingSubstateArgs) {
+	return ctx,
+		&UpdateFulfillmentShippingSubstateArgs{
+			FulfillmentID:    q.FulfillmentID,
+			ShippingSubstate: q.ShippingSubstate,
+		}
+}
+
+func (q *UpdateFulfillmentShippingSubstateCommand) SetUpdateFulfillmentShippingSubstateArgs(args *UpdateFulfillmentShippingSubstateArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingSubstate = args.ShippingSubstate
+}
+
 func (q *UpdateFulfillmentsCODTransferedAtCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentsCODTransferedAtArgs) {
 	return ctx,
 		&UpdateFulfillmentsCODTransferedAtArgs{
@@ -903,6 +929,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFeesFromWebhook)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingState)
+	b.AddHandler(h.HandleUpdateFulfillmentShippingSubstate)
 	b.AddHandler(h.HandleUpdateFulfillmentsCODTransferedAt)
 	b.AddHandler(h.HandleUpdateFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleUpdateFulfillmentsStatus)

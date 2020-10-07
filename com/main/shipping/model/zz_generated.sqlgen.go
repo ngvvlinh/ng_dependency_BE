@@ -833,7 +833,7 @@ func (m *Fulfillment) Migration(db *cmsql.Database) {
 			ColumnType:       "substate.NullSubstate",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"default", "pick_fail", "delivery_fail", "devivery_giveup", "return_fail"},
+			ColumnEnumValues: []string{"default", "pick_fail", "delivery_fail", "devivery_giveup", "return_fail", "cancelling"},
 		},
 		"rid": {
 			ColumnName:       "rid",

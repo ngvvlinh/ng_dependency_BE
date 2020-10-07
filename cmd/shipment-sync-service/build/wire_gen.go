@@ -67,7 +67,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, queryBus, identityQueryBus, shopshipmentpricelistQueryBus, pricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
-	driver := shipment_all.SupportedCarrierDriver()
+	driver := shipment_all.SupportedCarrierDriver(busBus)
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
 	addressStore := &sqlstore.AddressStore{
 		DB: mainDB,

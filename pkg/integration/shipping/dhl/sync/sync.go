@@ -11,6 +11,7 @@ import (
 	"o.o/api/main/shipping"
 	"o.o/api/meta"
 	shippingstate "o.o/api/top/types/etc/shipping"
+	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status5"
 	com "o.o/backend/com/main"
@@ -18,10 +19,12 @@ import (
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
 	"o.o/backend/com/main/shipping/convert"
 	shipmodel "o.o/backend/com/main/shipping/model"
+	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
+	etopmodel "o.o/backend/pkg/etop/model"
 	shipping2 "o.o/backend/pkg/integration/shipping"
 	dhlclient "o.o/backend/pkg/integration/shipping/dhl/client"
 	dhldriver "o.o/backend/pkg/integration/shipping/dhl/driver"
@@ -35,31 +38,61 @@ var _ carriertypes.ShipmentSync = &DHLSync{}
 var ll = l.New().WithChannel(meta.ChannelShipmentCarrier)
 
 const (
-	defaultNumWorkers       = 16
-	defaultRecurrent        = 1 * time.Minute
-	defaultRandomTime       = 1 * time.Minute
-	defaultNumFfmsInRequest = 5
+	defaultNumWorkers = 16
+	// set default tracking number 1 minute for test
+	// change to 5 minute when go live
+	defaultRecurrent             = 1 * time.Minute
+	defaultRandomTime            = 1 * time.Minute
+	defaultTimeCancelOrder       = 5 * time.Minute
+	defaultRandomTimeCancelOrder = 5 * time.Minute
+	defaultNumFfmsInRequest      = 5
 )
 
-type TaskArguments struct {
+type status string
+
+const (
+	pending status = "pending"
+	running status = "running"
+	fail    status = "fail"
+	success status = "success"
+)
+
+type TaskStatus struct {
+	Retry  int
+	Status status
+	Err    error
+}
+
+type TaskTrackingArguments struct {
 	ffmIDs       []dot.ID
 	mOldFfms     map[dot.ID]*shipmodel.Fulfillment
 	shopID       dot.ID
 	connectionID dot.ID
 }
 
+type TaskCancelOrderArguments struct {
+	ffm *shipmodel.Fulfillment
+}
+
 type DHLSync struct {
-	db              *cmsql.Database
-	scheduler       *scheduler.Scheduler
-	shipmentManager carrier.ShipmentManager
-	shippingQS      shipping.QueryBus
-	shippingAggr    shipping.CommandBus
+	db                     *cmsql.Database
+	schedulerTrackingOrder *scheduler.Scheduler
+	schedulerCancelOrder   *scheduler.Scheduler
+	shipmentManager        carrier.ShipmentManager
+	shippingQS             shipping.QueryBus
+	shippingAggr           shipping.CommandBus
 
-	mapTaskArguments map[dot.ID]*TaskArguments
-	ffmInProgress    map[dot.ID]*shipmodel.Fulfillment
+	mapTaskTrackingArguments map[dot.ID]*TaskTrackingArguments
+	ffmInProgress            map[dot.ID]*shipmodel.Fulfillment
 
-	ticker *time.Ticker
-	mutex  sync.Mutex
+	// key: ffmID
+	mapTaskCancelOrdersStatus map[dot.ID]*TaskStatus
+	// key: taskID
+	mapTaskCancelOrderArgs map[dot.ID]*TaskCancelOrderArguments
+
+	trackingOrderTicker *time.Ticker
+	cancelOrderTicker   *time.Ticker
+	mutex               sync.Mutex
 }
 
 func New(
@@ -68,14 +101,18 @@ func New(
 ) *DHLSync {
 	sched := scheduler.New(defaultNumWorkers)
 	return &DHLSync{
-		scheduler:        sched,
-		shipmentManager:  *shipmentManager,
-		shippingQS:       shippingQS,
-		shippingAggr:     shippingAggr,
-		db:               db,
-		ticker:           time.NewTicker(defaultRecurrent),
-		mapTaskArguments: make(map[dot.ID]*TaskArguments),
-		ffmInProgress:    make(map[dot.ID]*shipmodel.Fulfillment),
+		schedulerTrackingOrder:    sched,
+		schedulerCancelOrder:      scheduler.New(5),
+		shipmentManager:           *shipmentManager,
+		shippingQS:                shippingQS,
+		shippingAggr:              shippingAggr,
+		db:                        db,
+		trackingOrderTicker:       time.NewTicker(defaultRecurrent),
+		cancelOrderTicker:         time.NewTicker(defaultTimeCancelOrder),
+		mapTaskTrackingArguments:  make(map[dot.ID]*TaskTrackingArguments),
+		ffmInProgress:             make(map[dot.ID]*shipmodel.Fulfillment),
+		mapTaskCancelOrdersStatus: make(map[dot.ID]*TaskStatus),
+		mapTaskCancelOrderArgs:    make(map[dot.ID]*TaskCancelOrderArguments),
 	}
 }
 
@@ -112,18 +149,31 @@ func (d *DHLSync) Init(ctx context.Context) error {
 }
 
 func (d *DHLSync) Start(ctx context.Context) error {
-	d.scheduler.Start()
+	d.schedulerTrackingOrder.Start()
+	d.schedulerCancelOrder.Start()
 
-	d.addTasks(ctx)
+	d.addTrackingTasks(ctx)
+	d.addCancelOrderTasks(ctx)
 	for {
 		select {
-		case <-d.ticker.C:
-			d.addTasks(ctx)
+		case <-d.trackingOrderTicker.C:
+			d.addTrackingTasks(ctx)
+
+		case <-d.cancelOrderTicker.C:
+			d.addCancelOrderTasks(ctx)
 		}
 	}
 }
 
-func (d *DHLSync) addTasks(ctx context.Context) error {
+func (d *DHLSync) Stop(ctx context.Context) error {
+	d.schedulerTrackingOrder.Stop()
+	d.schedulerCancelOrder.Stop()
+	d.trackingOrderTicker.Stop()
+	d.cancelOrderTicker.Stop()
+	return nil
+}
+
+func (d *DHLSync) addTrackingTasks(ctx context.Context) error {
 	// list fulfillments
 	ffms, err := d.listFulfillments()
 	if err != nil {
@@ -175,7 +225,7 @@ func (d *DHLSync) addTasks(ctx context.Context) error {
 
 				// add task arguments
 				taskID := cm.NewID()
-				d.mapTaskArguments[taskID] = &TaskArguments{
+				d.mapTaskTrackingArguments[taskID] = &TaskTrackingArguments{
 					ffmIDs:       ffmIDs[start:end],
 					mOldFfms:     mOldFfms,
 					shopID:       shopID,
@@ -191,9 +241,37 @@ func (d *DHLSync) addTasks(ctx context.Context) error {
 	// add tasks
 	for _, taskID := range taskIDs {
 		t := rand.Intn(int(defaultRandomTime))
-		d.scheduler.AddAfter(taskID, time.Duration(t), d.trackingOrder)
+		d.schedulerTrackingOrder.AddAfter(taskID, time.Duration(t), d.trackingOrder)
 	}
 
+	return nil
+}
+
+func (d *DHLSync) addCancelOrderTasks(ctx context.Context) error {
+	ffms, err := d.listFfmsNeedCancel(ctx)
+	if err != nil {
+		return err
+	}
+	d.mutex.Lock()
+	for _, ffm := range ffms {
+		taskID := cm.NewID()
+		t := rand.Intn(int(defaultRandomTimeCancelOrder))
+
+		taskStatus, ok := d.mapTaskCancelOrdersStatus[ffm.ID]
+		if ok && taskStatus.Retry < 3 && taskStatus.Status == fail {
+			d.mapTaskCancelOrderArgs[taskID] = &TaskCancelOrderArguments{ffm}
+			d.schedulerCancelOrder.AddAfter(taskID, time.Duration(t), d.cancelOrder)
+		}
+		if !ok {
+			d.mapTaskCancelOrderArgs[taskID] = &TaskCancelOrderArguments{ffm}
+			d.mapTaskCancelOrdersStatus[ffm.ID] = &TaskStatus{
+				Retry:  0,
+				Status: pending,
+			}
+			d.schedulerCancelOrder.AddAfter(taskID, time.Duration(t), d.cancelOrder)
+		}
+	}
+	d.mutex.Unlock()
 	return nil
 }
 
@@ -203,7 +281,7 @@ func (d *DHLSync) trackingOrder(id interface{}, p scheduler.Planner) (err error)
 	taskArgumentID := id.(dot.ID)
 
 	d.mutex.Lock()
-	taskArguments := d.mapTaskArguments[taskArgumentID]
+	taskArguments := d.mapTaskTrackingArguments[taskArgumentID]
 	d.mutex.Unlock()
 
 	shopID := taskArguments.shopID
@@ -223,7 +301,7 @@ func (d *DHLSync) trackingOrder(id interface{}, p scheduler.Planner) (err error)
 		for _, ffmID := range taskArguments.ffmIDs {
 			delete(d.ffmInProgress, ffmID)
 		}
-		delete(d.mapTaskArguments, taskArgumentID)
+		delete(d.mapTaskTrackingArguments, taskArgumentID)
 		d.mutex.Unlock()
 
 		if err != nil {
@@ -353,7 +431,112 @@ func (d *DHLSync) callback(
 	return
 }
 
-func (d *DHLSync) Stop(ctx context.Context) error {
-	d.scheduler.Stop()
+func (d *DHLSync) cancelOrder(id interface{}, p scheduler.Planner) (err error) {
+	ctx := bus.Ctx()
+
+	taskArgumentID := id.(dot.ID)
+
+	d.mutex.Lock()
+
+	taskArgs := d.mapTaskCancelOrderArgs[taskArgumentID]
+	ffm := taskArgs.ffm
+
+	taskStatus := d.mapTaskCancelOrdersStatus[ffm.ID]
+	taskStatus.Status = running
+
+	d.mutex.Unlock()
+
+	defer func() {
+		t0 := time.Now()
+		updateFfm := &shipmodel.Fulfillment{
+			LastSyncAt: t0,
+			SyncStates: &shippingsharemodel.FulfillmentSyncStates{
+				SyncAt:    t0,
+				TrySyncAt: t0,
+				Error:     etopmodel.ToError(err),
+			},
+		}
+
+		if err == nil {
+			updateFfm.ShippingSubstate = shippingsubstate.WrapSubstate(shippingsubstate.Default)
+		}
+		_ = d.db.Where("id = ?", ffm.ID).ShouldUpdate(updateFfm)
+
+		if err != nil {
+			d.mutex.Lock()
+			taskStatus.Err = err
+			taskStatus.Status = fail
+			taskStatus.Retry += 1
+			d.mutex.Unlock()
+			if taskStatus.Retry >= 3 {
+				ll.SendMessage(fmt.Sprintf("DHL: Không thể huỷ ffm (ID: %v). \nError: %v", ffm.ID, err))
+			}
+		} else {
+			d.mutex.Lock()
+			taskStatus.Err = nil
+			taskStatus.Status = success
+			delete(d.mapTaskCancelOrdersStatus, ffm.ID)
+			d.mutex.Unlock()
+		}
+
+		d.mutex.Lock()
+		delete(d.mapTaskCancelOrderArgs, taskArgumentID)
+		d.mutex.Unlock()
+	}()
+
+	shipmentCarrier, err := d.shipmentManager.GetShipmentDriver(ctx, ffm.ConnectionID, ffm.ShopID)
+	if err != nil {
+		return err
+	}
+	dhlDriver := shipmentCarrier.(*dhldriver.DHLDriver)
+
+	if err := dhlDriver.CancelFulfillment(ctx, ffm); err != nil {
+		return err
+	}
+
+	d.mutex.Lock()
+	taskStatus.Status = success
+	d.mutex.Unlock()
+
 	return nil
+}
+
+// because DHL's system behaviour don't allow to cancel order before 10 mins from created
+// list ffms that created rather 10 mins and have shippingState = cancelled and shippingSubstate = cancelling
+func (d *DHLSync) listFfmsNeedCancel(ctx context.Context) (ffms []*shipmodel.Fulfillment, err error) {
+	fromID := dot.ID(0)
+
+	for {
+		var _ffms shipmodel.Fulfillments
+
+		err = d.db.
+			Where("id > ?", fromID.Int64()).
+			Where("shipping_provider = ?", shipping_provider.DHL.Name()).
+			Where("shipping_state = ? and shipping_substate = ?", shippingstate.Cancelled.Name(), shippingsubstate.Cancelling.Name()).
+			OrderBy("id asc").
+			Limit(1000).
+			Find(&_ffms)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(_ffms) == 0 {
+			break
+		}
+
+		t0 := time.Now()
+		fromID = _ffms[len(_ffms)-1].ID
+		for _, ffm := range _ffms {
+			externalCreatedAt := ffm.ExternalShippingCreatedAt
+			// when run in real environment, some ffm can't cancel after 10 mins
+			// then get ffm have the diff createdAt and now >= 12 mins.
+			if externalCreatedAt.Add(12 * time.Minute).After(t0) {
+				continue
+			}
+
+			ffms = append(ffms, ffm)
+		}
+	}
+
+	return
 }

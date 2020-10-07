@@ -58,7 +58,7 @@ const (
 
 func New(env string, cfg DHLAccountCfg) *Client {
 	client := &http.Client{
-		Timeout: 30 * time.Second,
+		Timeout: 60 * time.Second,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
@@ -73,11 +73,15 @@ func New(env string, cfg DHLAccountCfg) *Client {
 	}
 	switch env {
 	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
-		PickupAccountIDNorth = "5351118"
-		PickupAccountIDMiddle = "5351118"
+		// TODO: move pickupAccountID to connection
+		PickupAccountIDNorth = "5351163"
+		PickupAccountIDMiddle = "5341522"
 		PickupAccountIDSouth = "5351118"
 		c.baseUrl = "https://apitest.dhlecommerce.asia/rest"
 	case cmenv.PartnerEnvProd:
+		PickupAccountIDNorth = "5363229"
+		PickupAccountIDMiddle = "5363228"
+		PickupAccountIDSouth = "5277176206"
 		c.baseUrl = "https://api.dhlecommerce.asia/rest"
 	default:
 		ll.Fatal("DHL: Invalid env")
