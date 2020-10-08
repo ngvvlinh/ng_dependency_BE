@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"o.o/api/fabo/fbmessaging"
