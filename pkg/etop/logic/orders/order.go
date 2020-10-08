@@ -777,7 +777,7 @@ func prepareOrderLine(
 		}
 		line.Attributes = convert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(v.ShopVariant.Attributes)
 	}
-	if line.RetailPrice <= 0 {
+	if line.RetailPrice < 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,
 			`Giá bán lẻ của sản phẩm "%v" không hợp lệ. Vui lòng kiểm tra lại.`,
 			m.ProductName)
@@ -788,7 +788,7 @@ func prepareOrderLine(
 }
 
 func (s *OrderLogic) PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderRequest, lines []*ordermodel.OrderLine, userID dot.ID) (*ordermodel.Order, error) {
-	if m.BasketValue <= 0 {
+	if m.BasketValue < 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).
 			WithMeta("reason", "basket_value <= 0")
 	}
