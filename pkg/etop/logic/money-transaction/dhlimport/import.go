@@ -8,6 +8,7 @@ import (
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/imcsv"
 	logicmoneytx "o.o/backend/pkg/etop/logic/money-transaction"
 	moneytxtypes "o.o/backend/pkg/etop/logic/money-transaction/handlers/types"
 	"o.o/capi/dot"
@@ -40,10 +41,10 @@ func (D DHLImporter) ValidateAndReadFile(
 	return moneyTxs, nil
 }
 
-func parseRows(idx indexes, startRowNo int, rows [][]string) (res []*moneytx.MoneyTransactionShippingExternalLine, _ error) {
+func parseRows(idx imcsv.Indexer, startRowNo int, rows [][]string) (res []*moneytx.MoneyTransactionShippingExternalLine, _ error) {
 	for i := startRowNo; i < len(rows); i++ {
 		row := rows[i]
-		shipmentID := row[idx.shipmentID]
+		shipmentID := idx.GetCell(row, idxShipmentID)
 		if shipmentID == "" {
 			continue
 		}
@@ -53,7 +54,7 @@ func parseRows(idx indexes, startRowNo int, rows [][]string) (res []*moneytx.Mon
 			continue
 		}
 
-		codAmount, err := strconv.ParseFloat(row[idx.codAmount], 64)
+		codAmount, err := strconv.ParseFloat(idx.GetCell(row, idxCodAmount), 64)
 		if err != nil {
 			continue
 		}
@@ -66,14 +67,13 @@ func parseRows(idx indexes, startRowNo int, rows [][]string) (res []*moneytx.Mon
 	return
 }
 
-func validateSchema(ctx context.Context, rows [][]string) (startRowNo int, idx indexes, err error) {
+func validateSchema(ctx context.Context, rows [][]string) (startRowNo int, idx imcsv.Indexer, err error) {
 	for i, row := range rows {
 		indexer, errs, _ := schema.ValidateSchema(ctx, &row)
 		if len(errs) > 0 {
 			continue
 		}
-		idx = idxes[0]
-		idx.indexer = indexer
+		idx = indexer
 		startRowNo = i + 1
 		return
 	}
