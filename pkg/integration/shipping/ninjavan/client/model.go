@@ -231,6 +231,16 @@ var MapReasons = map[State]map[string]string{
 
 type ErrorResponse struct {
 	ErrorResponseDetail *ErrorResponseDetail `json:"error"`
+	Code                String               `json:"code"`
+	NVErrorCode         String               `json:"nvErrorCode"`
+	Messages            []String             `json:"messages"`
+	Application         String               `json:"application"`
+	Description         String               `json:"description"`
+	Data                *ErrorResponseData   `json:"data"`
+}
+
+type ErrorResponseData struct {
+	Message String `json:"message"`
 }
 
 type ErrorResponseDetail struct {
@@ -246,23 +256,30 @@ func (e *ErrorResponse) Error() (s string) {
 		s = strs.TrimLastPunctuation(s)
 	}()
 
-	errorResponse := e.ErrorResponseDetail
-	b := strings.Builder{}
-	b.WriteString(errorResponse.Message.String())
-	b.WriteString("(")
-	for _, detail := range errorResponse.Details {
-		b.WriteString("Field: ")
-		b.WriteString(detail.Field.String())
-		b.WriteRune(',')
-		b.WriteString("Message: ")
-		b.WriteString(detail.Message.String())
-		b.WriteRune(',')
-		b.WriteString("Reason: ")
-		b.WriteString(detail.Reason.String())
-		break
+	if e.ErrorResponseDetail != nil {
+		errorResponse := e.ErrorResponseDetail
+		b := strings.Builder{}
+		b.WriteString(errorResponse.Message.String())
+		b.WriteString("(")
+		for _, detail := range errorResponse.Details {
+			b.WriteString("Field: ")
+			b.WriteString(detail.Field.String())
+			b.WriteRune(',')
+			b.WriteString("Message: ")
+			b.WriteString(detail.Message.String())
+			b.WriteRune(',')
+			b.WriteString("Reason: ")
+			b.WriteString(detail.Reason.String())
+			break
+		}
+		b.WriteString(")")
+		return b.String()
 	}
-	b.WriteString(")")
-	return b.String()
+	var messages []string
+	for _, message := range e.Messages {
+		messages = append(messages, message.String())
+	}
+	return strings.Join(messages, ", ")
 }
 
 type ErrorDetail struct {
