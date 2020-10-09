@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShipnowFulfillments []*ShipnowFulfillment
 
 const __sqlShipnowFulfillment_Table = "shipnow_fulfillment"
-const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"shipping_service_description\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\",\"address_to_province_code\",\"address_to_district_code\",\"connection_id\",\"connection_method\",\"external_id\",\"coupon\",\"rid\""
-const __sqlShipnowFulfillment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"order_ids\" = EXCLUDED.\"order_ids\",\"pickup_address\" = EXCLUDED.\"pickup_address\",\"carrier\" = EXCLUDED.\"carrier\",\"shipping_service_code\" = EXCLUDED.\"shipping_service_code\",\"shipping_service_fee\" = EXCLUDED.\"shipping_service_fee\",\"shipping_service_name\" = EXCLUDED.\"shipping_service_name\",\"shipping_service_description\" = EXCLUDED.\"shipping_service_description\",\"chargeable_weight\" = EXCLUDED.\"chargeable_weight\",\"gross_weight\" = EXCLUDED.\"gross_weight\",\"basket_value\" = EXCLUDED.\"basket_value\",\"cod_amount\" = EXCLUDED.\"cod_amount\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"request_pickup_at\" = EXCLUDED.\"request_pickup_at\",\"delivery_points\" = EXCLUDED.\"delivery_points\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"shipping_status\" = EXCLUDED.\"shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"carrier_fee_lines\" = EXCLUDED.\"carrier_fee_lines\",\"total_fee\" = EXCLUDED.\"total_fee\",\"shipping_created_at\" = EXCLUDED.\"shipping_created_at\",\"shipping_picking_at\" = EXCLUDED.\"shipping_picking_at\",\"shipping_delivering_at\" = EXCLUDED.\"shipping_delivering_at\",\"shipping_delivered_at\" = EXCLUDED.\"shipping_delivered_at\",\"shipping_cancelled_at\" = EXCLUDED.\"shipping_cancelled_at\",\"sync_status\" = EXCLUDED.\"sync_status\",\"sync_states\" = EXCLUDED.\"sync_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cod_etop_transfered_at\" = EXCLUDED.\"cod_etop_transfered_at\",\"shipping_shared_link\" = EXCLUDED.\"shipping_shared_link\",\"address_to_province_code\" = EXCLUDED.\"address_to_province_code\",\"address_to_district_code\" = EXCLUDED.\"address_to_district_code\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"external_id\" = EXCLUDED.\"external_id\",\"coupon\" = EXCLUDED.\"coupon\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"shipping_service_description\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_phone\",\"address_to_full_name_norm\",\"connection_id\",\"connection_method\",\"external_id\",\"coupon\",\"rid\""
+const __sqlShipnowFulfillment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"order_ids\" = EXCLUDED.\"order_ids\",\"pickup_address\" = EXCLUDED.\"pickup_address\",\"carrier\" = EXCLUDED.\"carrier\",\"shipping_service_code\" = EXCLUDED.\"shipping_service_code\",\"shipping_service_fee\" = EXCLUDED.\"shipping_service_fee\",\"shipping_service_name\" = EXCLUDED.\"shipping_service_name\",\"shipping_service_description\" = EXCLUDED.\"shipping_service_description\",\"chargeable_weight\" = EXCLUDED.\"chargeable_weight\",\"gross_weight\" = EXCLUDED.\"gross_weight\",\"basket_value\" = EXCLUDED.\"basket_value\",\"cod_amount\" = EXCLUDED.\"cod_amount\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"request_pickup_at\" = EXCLUDED.\"request_pickup_at\",\"delivery_points\" = EXCLUDED.\"delivery_points\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"shipping_status\" = EXCLUDED.\"shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"carrier_fee_lines\" = EXCLUDED.\"carrier_fee_lines\",\"total_fee\" = EXCLUDED.\"total_fee\",\"shipping_created_at\" = EXCLUDED.\"shipping_created_at\",\"shipping_picking_at\" = EXCLUDED.\"shipping_picking_at\",\"shipping_delivering_at\" = EXCLUDED.\"shipping_delivering_at\",\"shipping_delivered_at\" = EXCLUDED.\"shipping_delivered_at\",\"shipping_cancelled_at\" = EXCLUDED.\"shipping_cancelled_at\",\"sync_status\" = EXCLUDED.\"sync_status\",\"sync_states\" = EXCLUDED.\"sync_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cod_etop_transfered_at\" = EXCLUDED.\"cod_etop_transfered_at\",\"shipping_shared_link\" = EXCLUDED.\"shipping_shared_link\",\"address_to_province_code\" = EXCLUDED.\"address_to_province_code\",\"address_to_district_code\" = EXCLUDED.\"address_to_district_code\",\"address_to_phone\" = EXCLUDED.\"address_to_phone\",\"address_to_full_name_norm\" = EXCLUDED.\"address_to_full_name_norm\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"external_id\" = EXCLUDED.\"external_id\",\"coupon\" = EXCLUDED.\"coupon\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShipnowFulfillment_Insert = "INSERT INTO \"shipnow_fulfillment\" (" + __sqlShipnowFulfillment_ListCols + ") VALUES"
 const __sqlShipnowFulfillment_Select = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\""
 const __sqlShipnowFulfillment_Select_history = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM history.\"shipnow_fulfillment\""
@@ -338,6 +338,20 @@ func (m *ShipnowFulfillment) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"address_to_phone": {
+			ColumnName:       "address_to_phone",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"address_to_full_name_norm": {
+			ColumnName:       "address_to_full_name_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"connection_id": {
 			ColumnName:       "connection_id",
 			ColumnType:       "dot.ID",
@@ -426,6 +440,8 @@ func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} 
 		core.String(m.ShippingSharedLink),
 		core.String(m.AddressToProvinceCode),
 		core.String(m.AddressToDistrictCode),
+		core.String(m.AddressToPhone),
+		core.String(m.AddressToFullNameNorm),
 		m.ConnectionID,
 		m.ConnectionMethod,
 		core.String(m.ExternalID),
@@ -476,6 +492,8 @@ func (m *ShipnowFulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ShippingSharedLink),
 		(*core.String)(&m.AddressToProvinceCode),
 		(*core.String)(&m.AddressToDistrictCode),
+		(*core.String)(&m.AddressToPhone),
+		(*core.String)(&m.AddressToFullNameNorm),
 		&m.ConnectionID,
 		&m.ConnectionMethod,
 		(*core.String)(&m.ExternalID),
@@ -518,7 +536,7 @@ func (_ *ShipnowFulfillments) SQLSelect(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(45)
+	w.WriteMarkers(47)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -528,7 +546,7 @@ func (ms ShipnowFulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(45)
+		w.WriteMarkers(47)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -879,6 +897,22 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.AddressToDistrictCode)
 	}
+	if m.AddressToPhone != "" {
+		flag = true
+		w.WriteName("address_to_phone")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AddressToPhone)
+	}
+	if m.AddressToFullNameNorm != "" {
+		flag = true
+		w.WriteName("address_to_full_name_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AddressToFullNameNorm)
+	}
 	if m.ConnectionID != 0 {
 		flag = true
 		w.WriteName("connection_id")
@@ -929,7 +963,7 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(45)
+	w.WriteMarkers(47)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1049,6 +1083,12 @@ func (m ShipnowFulfillmentHistory) AddressToProvinceCode() core.Interface {
 func (m ShipnowFulfillmentHistory) AddressToDistrictCode() core.Interface {
 	return core.Interface{m["address_to_district_code"]}
 }
+func (m ShipnowFulfillmentHistory) AddressToPhone() core.Interface {
+	return core.Interface{m["address_to_phone"]}
+}
+func (m ShipnowFulfillmentHistory) AddressToFullNameNorm() core.Interface {
+	return core.Interface{m["address_to_full_name_norm"]}
+}
 func (m ShipnowFulfillmentHistory) ConnectionID() core.Interface {
 	return core.Interface{m["connection_id"]}
 }
@@ -1062,15 +1102,15 @@ func (m ShipnowFulfillmentHistory) Coupon() core.Interface { return core.Interfa
 func (m ShipnowFulfillmentHistory) Rid() core.Interface    { return core.Interface{m["rid"]} }
 
 func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 45)
-	args := make([]interface{}, 45)
-	for i := 0; i < 45; i++ {
+	data := make([]interface{}, 47)
+	args := make([]interface{}, 47)
+	for i := 0; i < 47; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipnowFulfillmentHistory, 45)
+	res := make(ShipnowFulfillmentHistory, 47)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["partner_id"] = data[2]
@@ -1111,19 +1151,21 @@ func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error 
 	res["shipping_shared_link"] = data[37]
 	res["address_to_province_code"] = data[38]
 	res["address_to_district_code"] = data[39]
-	res["connection_id"] = data[40]
-	res["connection_method"] = data[41]
-	res["external_id"] = data[42]
-	res["coupon"] = data[43]
-	res["rid"] = data[44]
+	res["address_to_phone"] = data[40]
+	res["address_to_full_name_norm"] = data[41]
+	res["connection_id"] = data[42]
+	res["connection_method"] = data[43]
+	res["external_id"] = data[44]
+	res["coupon"] = data[45]
+	res["rid"] = data[46]
 	*m = res
 	return nil
 }
 
 func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 45)
-	args := make([]interface{}, 45)
-	for i := 0; i < 45; i++ {
+	data := make([]interface{}, 47)
+	args := make([]interface{}, 47)
+	for i := 0; i < 47; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipnowFulfillmentHistories, 0, 128)
@@ -1172,11 +1214,13 @@ func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) e
 		m["shipping_shared_link"] = data[37]
 		m["address_to_province_code"] = data[38]
 		m["address_to_district_code"] = data[39]
-		m["connection_id"] = data[40]
-		m["connection_method"] = data[41]
-		m["external_id"] = data[42]
-		m["coupon"] = data[43]
-		m["rid"] = data[44]
+		m["address_to_phone"] = data[40]
+		m["address_to_full_name_norm"] = data[41]
+		m["connection_id"] = data[42]
+		m["connection_method"] = data[43]
+		m["external_id"] = data[44]
+		m["coupon"] = data[45]
+		m["rid"] = data[46]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

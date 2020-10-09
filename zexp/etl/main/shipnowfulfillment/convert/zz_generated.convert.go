@@ -194,6 +194,8 @@ func convert_shipnowfulfillmentmodel_ShipnowFulfillment_shipnowmodel_ShipnowFulf
 	out.ShippingSharedLink = arg.ShippingSharedLink       // simple assign
 	out.AddressToProvinceCode = arg.AddressToProvinceCode // simple assign
 	out.AddressToDistrictCode = arg.AddressToDistrictCode // simple assign
+	out.AddressToPhone = ""                               // zero value
+	out.AddressToFullNameNorm = ""                        // zero value
 	out.ConnectionID = 0                                  // zero value
 	out.ConnectionMethod = 0                              // zero value
 	out.ExternalID = ""                                   // zero value

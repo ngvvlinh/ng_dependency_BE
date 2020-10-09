@@ -79,6 +79,8 @@ type ShipnowFulfillment struct {
 
 	AddressToProvinceCode string
 	AddressToDistrictCode string
+	AddressToPhone        string
+	AddressToFullNameNorm string
 
 	ConnectionID     dot.ID
 	ConnectionMethod connection_type.ConnectionMethod

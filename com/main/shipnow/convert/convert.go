@@ -1,6 +1,8 @@
 package convert
 
 import (
+	"strings"
+
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipnow"
 	shipnowtypes "o.o/api/main/shipnow/types"
@@ -10,6 +12,7 @@ import (
 	orderconvert "o.o/backend/com/main/ordering/convert"
 	shipnowmodel "o.o/backend/com/main/shipnow/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
 )
 
@@ -28,6 +31,7 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 	if len(in.DeliveryPoints) > 0 {
 		out.AddressToDistrictCode = in.DeliveryPoints[0].ShippingAddress.DistrictCode
 		out.AddressToProvinceCode = in.DeliveryPoints[0].ShippingAddress.ProvinceCode
+		out.AddressToPhone, out.AddressToFullNameNorm = normalizePhoneAndFullName(in.DeliveryPoints)
 	}
 	var orderIDs []dot.ID
 	for _, point := range in.DeliveryPoints {
@@ -38,6 +42,37 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 	}
 	out.OrderIDs = orderIDs
 	return out
+}
+
+func normalizePhoneAndFullName(deliveryPoints []*shipnow.DeliveryPoint) (phoneNorm, fullNameNorm string) {
+	var phones, fullNames []string
+	for _, deliveryPoint := range deliveryPoints {
+		if deliveryPoint.ShippingAddress == nil {
+			continue
+		}
+		phones = append(phones, deliveryPoint.ShippingAddress.Phone)
+		fullNames = append(fullNames, deliveryPoint.ShippingAddress.FullName)
+	}
+
+	return normalizeSearch(phones), normalizeSearch(fullNames)
+}
+
+func normalizeSearch(strs []string) string {
+	var words []string
+	mWord := make(map[string]bool)
+
+	for _, str := range strs {
+		strNorm := validate.NormalizeSearch(str)
+		for _, word := range strings.Split(strNorm, " ") {
+			if _, ok := mWord[word]; ok {
+				continue
+			}
+			mWord[word] = true
+			words = append(words, word)
+		}
+	}
+
+	return strings.Join(words, " ")
 }
 
 func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillment) {

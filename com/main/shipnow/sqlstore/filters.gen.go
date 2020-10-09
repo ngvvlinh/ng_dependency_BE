@@ -677,6 +677,44 @@ func (ft *ShipnowFulfillmentFilters) ByAddressToDistrictCodePtr(AddressToDistric
 	}
 }
 
+func (ft *ShipnowFulfillmentFilters) ByAddressToPhone(AddressToPhone string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "address_to_phone",
+		Value:  AddressToPhone,
+		IsNil:  AddressToPhone == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByAddressToPhonePtr(AddressToPhone *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "address_to_phone",
+		Value:  AddressToPhone,
+		IsNil:  AddressToPhone == nil,
+		IsZero: AddressToPhone != nil && (*AddressToPhone) == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByAddressToFullNameNorm(AddressToFullNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "address_to_full_name_norm",
+		Value:  AddressToFullNameNorm,
+		IsNil:  AddressToFullNameNorm == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByAddressToFullNameNormPtr(AddressToFullNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "address_to_full_name_norm",
+		Value:  AddressToFullNameNorm,
+		IsNil:  AddressToFullNameNorm == nil,
+		IsZero: AddressToFullNameNorm != nil && (*AddressToFullNameNorm) == "",
+	}
+}
+
 func (ft *ShipnowFulfillmentFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

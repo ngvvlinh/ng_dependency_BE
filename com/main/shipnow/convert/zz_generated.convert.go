@@ -24,11 +24,13 @@ Custom conversions:
     SyncStateToModel        // not use, no conversions between params
 
 Ignored functions:
-    DeliveryPoints           // params are not pointer to named types
-    DeliveryPointsToModel    // params are not pointer to named types
-    GetValueInfo             // params are not pointer to named types
-    GetWeightInfo            // params are not pointer to named types
-    Shipnows                 // params are not pointer to named types
+    DeliveryPoints               // params are not pointer to named types
+    DeliveryPointsToModel        // params are not pointer to named types
+    GetValueInfo                 // params are not pointer to named types
+    GetWeightInfo                // params are not pointer to named types
+    Shipnows                     // params are not pointer to named types
+    normalizePhoneAndFullName    // not recognized
+    normalizeSearch              // params are not pointer to named types
 */
 
 func RegisterConversions(s *conversion.Scheme) {
@@ -241,6 +243,8 @@ func convert_shipnow_ShipnowFulfillment_shipnowmodel_ShipnowFulfillment(arg *shi
 	out.ShippingSharedLink = arg.ShippingSharedLink     // simple assign
 	out.AddressToProvinceCode = ""                      // zero value
 	out.AddressToDistrictCode = ""                      // zero value
+	out.AddressToPhone = ""                             // zero value
+	out.AddressToFullNameNorm = ""                      // zero value
 	out.ConnectionID = arg.ConnectionID                 // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod         // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
