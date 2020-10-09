@@ -700,6 +700,44 @@ func (ft *FulfillmentFilters) ByAddressToWardCodePtr(AddressToWardCode *string) 
 	}
 }
 
+func (ft *FulfillmentFilters) ByAddressToPhone(AddressToPhone string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "address_to_phone",
+		Value:  AddressToPhone,
+		IsNil:  AddressToPhone == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByAddressToPhonePtr(AddressToPhone *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "address_to_phone",
+		Value:  AddressToPhone,
+		IsNil:  AddressToPhone == nil,
+		IsZero: AddressToPhone != nil && (*AddressToPhone) == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByAddressToFullNameNorm(AddressToFullNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "address_to_full_name_norm",
+		Value:  AddressToFullNameNorm,
+		IsNil:  AddressToFullNameNorm == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByAddressToFullNameNormPtr(AddressToFullNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "address_to_full_name_norm",
+		Value:  AddressToFullNameNorm,
+		IsNil:  AddressToFullNameNorm == nil,
+		IsZero: AddressToFullNameNorm != nil && (*AddressToFullNameNorm) == "",
+	}
+}
+
 func (ft *FulfillmentFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

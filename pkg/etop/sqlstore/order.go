@@ -63,7 +63,7 @@ var filterOrderWhitelist = sqlstore.FilterWhitelist{
 var filterFulfillmentWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,
 	Bools:    []string{"include_insurance"},
-	Contains: []string{"customer.name"},
+	Contains: []string{"customer.name", "address_to.full_name", "address_to.phone"},
 	Dates:    []string{"created_at", "updated_at"},
 	Equals: []string{
 		"shipping_code", "shop.id", "carrier",
@@ -86,6 +86,8 @@ var filterFulfillmentWhitelist = sqlstore.FilterWhitelist{
 		"address_to.province_code":               "f.address_to_province_code",
 		"address_to.district_code":               "f.address_to_district_code",
 		"address_to.ward_code":                   "f.address_to_ward_code",
+		"address_to.full_name":                   "f.address_to_full_name_norm",
+		"address_to.phone":                       "f.address_to_phone",
 		"created_at":                             "f",
 		"updated_at":                             "f",
 		"basket_value":                           "f",

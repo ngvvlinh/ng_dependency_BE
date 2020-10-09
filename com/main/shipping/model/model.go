@@ -19,6 +19,7 @@ import (
 	addressmodel "o.o/backend/com/main/address/model"
 	ordermodel "o.o/backend/com/main/ordering/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
+	"o.o/backend/pkg/common/validate"
 	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -81,6 +82,8 @@ type Fulfillment struct {
 	AddressToProvinceCode string
 	AddressToDistrictCode string
 	AddressToWardCode     string
+	AddressToPhone        string
+	AddressToFullNameNorm string
 
 	CreatedAt                   time.Time `sq:"create"`
 	UpdatedAt                   time.Time `sq:"update" paging:"updated_at"`
@@ -206,6 +209,8 @@ func (f *Fulfillment) BeforeUpdate() error {
 		f.AddressToProvinceCode = f.AddressTo.ProvinceCode
 		f.AddressToDistrictCode = f.AddressTo.DistrictCode
 		f.AddressToWardCode = f.AddressTo.WardCode
+		f.AddressToPhone = f.AddressTo.Phone
+		f.AddressToFullNameNorm = validate.NormalizeSearch(f.AddressTo.FullName)
 	}
 	return nil
 }

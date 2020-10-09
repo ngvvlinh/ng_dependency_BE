@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Fulfillments []*Fulfillment
 
 const __sqlFulfillment_Table = "fulfillment"
-const __sqlFulfillment_ListCols = "\"id\",\"order_id\",\"shop_id\",\"partner_id\",\"shop_confirm\",\"confirm_status\",\"total_items\",\"total_weight\",\"basket_value\",\"total_discount\",\"total_amount\",\"total_cod_amount\",\"original_cod_amount\",\"actual_compensation_amount\",\"shipping_fee_customer\",\"shipping_fee_shop\",\"shipping_fee_shop_lines\",\"shipping_service_fee\",\"external_shipping_fee\",\"provider_shipping_fee_lines\",\"etop_discount\",\"etop_fee_adjustment\",\"shipping_fee_main\",\"shipping_fee_return\",\"shipping_fee_insurance\",\"shipping_fee_adjustment\",\"shipping_fee_cods\",\"shipping_fee_info_change\",\"shipping_fee_other\",\"updated_by\",\"etop_adjusted_shipping_fee_main\",\"etop_price_rule\",\"variant_ids\",\"lines\",\"type_from\",\"type_to\",\"address_from\",\"address_to\",\"address_return\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_ward_code\",\"created_at\",\"updated_at\",\"closed_at\",\"expected_delivery_at\",\"expected_pick_at\",\"cod_etop_transfered_at\",\"shipping_fee_shop_transfered_at\",\"shipping_cancelled_at\",\"shipping_delivered_at\",\"shipping_returned_at\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_holding_at\",\"shipping_delivering_at\",\"shipping_returning_at\",\"money_transaction_id\",\"money_transaction_shipping_external_id\",\"cancel_reason\",\"shipping_provider\",\"provider_service_id\",\"shipping_code\",\"shipping_note\",\"try_on\",\"include_insurance\",\"insurance_value\",\"shipping_type\",\"shipping_payment_type\",\"connection_id\",\"connection_method\",\"shop_carrier_id\",\"shipping_service_name\",\"external_shipping_name\",\"external_shipping_id\",\"external_shipping_code\",\"external_shipping_created_at\",\"external_shipping_updated_at\",\"external_shipping_cancelled_at\",\"external_shipping_delivered_at\",\"external_shipping_returned_at\",\"external_shipping_closed_at\",\"external_shipping_state\",\"external_shipping_state_code\",\"external_shipping_status\",\"external_shipping_note\",\"external_shipping_sub_state\",\"external_shipping_data\",\"shipping_state\",\"shipping_status\",\"etop_payment_status\",\"status\",\"sync_status\",\"sync_states\",\"last_sync_at\",\"external_shipping_logs\",\"admin_note\",\"is_partial_delivery\",\"created_by\",\"gross_weight\",\"chargeable_weight\",\"length\",\"width\",\"height\",\"delivery_route\",\"external_affiliate_id\",\"coupon\",\"shipment_price_info\",\"lines_content\",\"ed_code\",\"shipping_substate\",\"rid\""
-const __sqlFulfillment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"order_id\" = EXCLUDED.\"order_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"shop_confirm\" = EXCLUDED.\"shop_confirm\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"total_items\" = EXCLUDED.\"total_items\",\"total_weight\" = EXCLUDED.\"total_weight\",\"basket_value\" = EXCLUDED.\"basket_value\",\"total_discount\" = EXCLUDED.\"total_discount\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_cod_amount\" = EXCLUDED.\"total_cod_amount\",\"original_cod_amount\" = EXCLUDED.\"original_cod_amount\",\"actual_compensation_amount\" = EXCLUDED.\"actual_compensation_amount\",\"shipping_fee_customer\" = EXCLUDED.\"shipping_fee_customer\",\"shipping_fee_shop\" = EXCLUDED.\"shipping_fee_shop\",\"shipping_fee_shop_lines\" = EXCLUDED.\"shipping_fee_shop_lines\",\"shipping_service_fee\" = EXCLUDED.\"shipping_service_fee\",\"external_shipping_fee\" = EXCLUDED.\"external_shipping_fee\",\"provider_shipping_fee_lines\" = EXCLUDED.\"provider_shipping_fee_lines\",\"etop_discount\" = EXCLUDED.\"etop_discount\",\"etop_fee_adjustment\" = EXCLUDED.\"etop_fee_adjustment\",\"shipping_fee_main\" = EXCLUDED.\"shipping_fee_main\",\"shipping_fee_return\" = EXCLUDED.\"shipping_fee_return\",\"shipping_fee_insurance\" = EXCLUDED.\"shipping_fee_insurance\",\"shipping_fee_adjustment\" = EXCLUDED.\"shipping_fee_adjustment\",\"shipping_fee_cods\" = EXCLUDED.\"shipping_fee_cods\",\"shipping_fee_info_change\" = EXCLUDED.\"shipping_fee_info_change\",\"shipping_fee_other\" = EXCLUDED.\"shipping_fee_other\",\"updated_by\" = EXCLUDED.\"updated_by\",\"etop_adjusted_shipping_fee_main\" = EXCLUDED.\"etop_adjusted_shipping_fee_main\",\"etop_price_rule\" = EXCLUDED.\"etop_price_rule\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"lines\" = EXCLUDED.\"lines\",\"type_from\" = EXCLUDED.\"type_from\",\"type_to\" = EXCLUDED.\"type_to\",\"address_from\" = EXCLUDED.\"address_from\",\"address_to\" = EXCLUDED.\"address_to\",\"address_return\" = EXCLUDED.\"address_return\",\"address_to_province_code\" = EXCLUDED.\"address_to_province_code\",\"address_to_district_code\" = EXCLUDED.\"address_to_district_code\",\"address_to_ward_code\" = EXCLUDED.\"address_to_ward_code\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"expected_delivery_at\" = EXCLUDED.\"expected_delivery_at\",\"expected_pick_at\" = EXCLUDED.\"expected_pick_at\",\"cod_etop_transfered_at\" = EXCLUDED.\"cod_etop_transfered_at\",\"shipping_fee_shop_transfered_at\" = EXCLUDED.\"shipping_fee_shop_transfered_at\",\"shipping_cancelled_at\" = EXCLUDED.\"shipping_cancelled_at\",\"shipping_delivered_at\" = EXCLUDED.\"shipping_delivered_at\",\"shipping_returned_at\" = EXCLUDED.\"shipping_returned_at\",\"shipping_created_at\" = EXCLUDED.\"shipping_created_at\",\"shipping_picking_at\" = EXCLUDED.\"shipping_picking_at\",\"shipping_holding_at\" = EXCLUDED.\"shipping_holding_at\",\"shipping_delivering_at\" = EXCLUDED.\"shipping_delivering_at\",\"shipping_returning_at\" = EXCLUDED.\"shipping_returning_at\",\"money_transaction_id\" = EXCLUDED.\"money_transaction_id\",\"money_transaction_shipping_external_id\" = EXCLUDED.\"money_transaction_shipping_external_id\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"shipping_provider\" = EXCLUDED.\"shipping_provider\",\"provider_service_id\" = EXCLUDED.\"provider_service_id\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"try_on\" = EXCLUDED.\"try_on\",\"include_insurance\" = EXCLUDED.\"include_insurance\",\"insurance_value\" = EXCLUDED.\"insurance_value\",\"shipping_type\" = EXCLUDED.\"shipping_type\",\"shipping_payment_type\" = EXCLUDED.\"shipping_payment_type\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"shop_carrier_id\" = EXCLUDED.\"shop_carrier_id\",\"shipping_service_name\" = EXCLUDED.\"shipping_service_name\",\"external_shipping_name\" = EXCLUDED.\"external_shipping_name\",\"external_shipping_id\" = EXCLUDED.\"external_shipping_id\",\"external_shipping_code\" = EXCLUDED.\"external_shipping_code\",\"external_shipping_created_at\" = EXCLUDED.\"external_shipping_created_at\",\"external_shipping_updated_at\" = EXCLUDED.\"external_shipping_updated_at\",\"external_shipping_cancelled_at\" = EXCLUDED.\"external_shipping_cancelled_at\",\"external_shipping_delivered_at\" = EXCLUDED.\"external_shipping_delivered_at\",\"external_shipping_returned_at\" = EXCLUDED.\"external_shipping_returned_at\",\"external_shipping_closed_at\" = EXCLUDED.\"external_shipping_closed_at\",\"external_shipping_state\" = EXCLUDED.\"external_shipping_state\",\"external_shipping_state_code\" = EXCLUDED.\"external_shipping_state_code\",\"external_shipping_status\" = EXCLUDED.\"external_shipping_status\",\"external_shipping_note\" = EXCLUDED.\"external_shipping_note\",\"external_shipping_sub_state\" = EXCLUDED.\"external_shipping_sub_state\",\"external_shipping_data\" = EXCLUDED.\"external_shipping_data\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"shipping_status\" = EXCLUDED.\"shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"status\" = EXCLUDED.\"status\",\"sync_status\" = EXCLUDED.\"sync_status\",\"sync_states\" = EXCLUDED.\"sync_states\",\"last_sync_at\" = EXCLUDED.\"last_sync_at\",\"external_shipping_logs\" = EXCLUDED.\"external_shipping_logs\",\"admin_note\" = EXCLUDED.\"admin_note\",\"is_partial_delivery\" = EXCLUDED.\"is_partial_delivery\",\"created_by\" = EXCLUDED.\"created_by\",\"gross_weight\" = EXCLUDED.\"gross_weight\",\"chargeable_weight\" = EXCLUDED.\"chargeable_weight\",\"length\" = EXCLUDED.\"length\",\"width\" = EXCLUDED.\"width\",\"height\" = EXCLUDED.\"height\",\"delivery_route\" = EXCLUDED.\"delivery_route\",\"external_affiliate_id\" = EXCLUDED.\"external_affiliate_id\",\"coupon\" = EXCLUDED.\"coupon\",\"shipment_price_info\" = EXCLUDED.\"shipment_price_info\",\"lines_content\" = EXCLUDED.\"lines_content\",\"ed_code\" = EXCLUDED.\"ed_code\",\"shipping_substate\" = EXCLUDED.\"shipping_substate\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlFulfillment_ListCols = "\"id\",\"order_id\",\"shop_id\",\"partner_id\",\"shop_confirm\",\"confirm_status\",\"total_items\",\"total_weight\",\"basket_value\",\"total_discount\",\"total_amount\",\"total_cod_amount\",\"original_cod_amount\",\"actual_compensation_amount\",\"shipping_fee_customer\",\"shipping_fee_shop\",\"shipping_fee_shop_lines\",\"shipping_service_fee\",\"external_shipping_fee\",\"provider_shipping_fee_lines\",\"etop_discount\",\"etop_fee_adjustment\",\"shipping_fee_main\",\"shipping_fee_return\",\"shipping_fee_insurance\",\"shipping_fee_adjustment\",\"shipping_fee_cods\",\"shipping_fee_info_change\",\"shipping_fee_other\",\"updated_by\",\"etop_adjusted_shipping_fee_main\",\"etop_price_rule\",\"variant_ids\",\"lines\",\"type_from\",\"type_to\",\"address_from\",\"address_to\",\"address_return\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_ward_code\",\"address_to_phone\",\"address_to_full_name_norm\",\"created_at\",\"updated_at\",\"closed_at\",\"expected_delivery_at\",\"expected_pick_at\",\"cod_etop_transfered_at\",\"shipping_fee_shop_transfered_at\",\"shipping_cancelled_at\",\"shipping_delivered_at\",\"shipping_returned_at\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_holding_at\",\"shipping_delivering_at\",\"shipping_returning_at\",\"money_transaction_id\",\"money_transaction_shipping_external_id\",\"cancel_reason\",\"shipping_provider\",\"provider_service_id\",\"shipping_code\",\"shipping_note\",\"try_on\",\"include_insurance\",\"insurance_value\",\"shipping_type\",\"shipping_payment_type\",\"connection_id\",\"connection_method\",\"shop_carrier_id\",\"shipping_service_name\",\"external_shipping_name\",\"external_shipping_id\",\"external_shipping_code\",\"external_shipping_created_at\",\"external_shipping_updated_at\",\"external_shipping_cancelled_at\",\"external_shipping_delivered_at\",\"external_shipping_returned_at\",\"external_shipping_closed_at\",\"external_shipping_state\",\"external_shipping_state_code\",\"external_shipping_status\",\"external_shipping_note\",\"external_shipping_sub_state\",\"external_shipping_data\",\"shipping_state\",\"shipping_status\",\"etop_payment_status\",\"status\",\"sync_status\",\"sync_states\",\"last_sync_at\",\"external_shipping_logs\",\"admin_note\",\"is_partial_delivery\",\"created_by\",\"gross_weight\",\"chargeable_weight\",\"length\",\"width\",\"height\",\"delivery_route\",\"external_affiliate_id\",\"coupon\",\"shipment_price_info\",\"lines_content\",\"ed_code\",\"shipping_substate\",\"rid\""
+const __sqlFulfillment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"order_id\" = EXCLUDED.\"order_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"shop_confirm\" = EXCLUDED.\"shop_confirm\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"total_items\" = EXCLUDED.\"total_items\",\"total_weight\" = EXCLUDED.\"total_weight\",\"basket_value\" = EXCLUDED.\"basket_value\",\"total_discount\" = EXCLUDED.\"total_discount\",\"total_amount\" = EXCLUDED.\"total_amount\",\"total_cod_amount\" = EXCLUDED.\"total_cod_amount\",\"original_cod_amount\" = EXCLUDED.\"original_cod_amount\",\"actual_compensation_amount\" = EXCLUDED.\"actual_compensation_amount\",\"shipping_fee_customer\" = EXCLUDED.\"shipping_fee_customer\",\"shipping_fee_shop\" = EXCLUDED.\"shipping_fee_shop\",\"shipping_fee_shop_lines\" = EXCLUDED.\"shipping_fee_shop_lines\",\"shipping_service_fee\" = EXCLUDED.\"shipping_service_fee\",\"external_shipping_fee\" = EXCLUDED.\"external_shipping_fee\",\"provider_shipping_fee_lines\" = EXCLUDED.\"provider_shipping_fee_lines\",\"etop_discount\" = EXCLUDED.\"etop_discount\",\"etop_fee_adjustment\" = EXCLUDED.\"etop_fee_adjustment\",\"shipping_fee_main\" = EXCLUDED.\"shipping_fee_main\",\"shipping_fee_return\" = EXCLUDED.\"shipping_fee_return\",\"shipping_fee_insurance\" = EXCLUDED.\"shipping_fee_insurance\",\"shipping_fee_adjustment\" = EXCLUDED.\"shipping_fee_adjustment\",\"shipping_fee_cods\" = EXCLUDED.\"shipping_fee_cods\",\"shipping_fee_info_change\" = EXCLUDED.\"shipping_fee_info_change\",\"shipping_fee_other\" = EXCLUDED.\"shipping_fee_other\",\"updated_by\" = EXCLUDED.\"updated_by\",\"etop_adjusted_shipping_fee_main\" = EXCLUDED.\"etop_adjusted_shipping_fee_main\",\"etop_price_rule\" = EXCLUDED.\"etop_price_rule\",\"variant_ids\" = EXCLUDED.\"variant_ids\",\"lines\" = EXCLUDED.\"lines\",\"type_from\" = EXCLUDED.\"type_from\",\"type_to\" = EXCLUDED.\"type_to\",\"address_from\" = EXCLUDED.\"address_from\",\"address_to\" = EXCLUDED.\"address_to\",\"address_return\" = EXCLUDED.\"address_return\",\"address_to_province_code\" = EXCLUDED.\"address_to_province_code\",\"address_to_district_code\" = EXCLUDED.\"address_to_district_code\",\"address_to_ward_code\" = EXCLUDED.\"address_to_ward_code\",\"address_to_phone\" = EXCLUDED.\"address_to_phone\",\"address_to_full_name_norm\" = EXCLUDED.\"address_to_full_name_norm\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"closed_at\" = EXCLUDED.\"closed_at\",\"expected_delivery_at\" = EXCLUDED.\"expected_delivery_at\",\"expected_pick_at\" = EXCLUDED.\"expected_pick_at\",\"cod_etop_transfered_at\" = EXCLUDED.\"cod_etop_transfered_at\",\"shipping_fee_shop_transfered_at\" = EXCLUDED.\"shipping_fee_shop_transfered_at\",\"shipping_cancelled_at\" = EXCLUDED.\"shipping_cancelled_at\",\"shipping_delivered_at\" = EXCLUDED.\"shipping_delivered_at\",\"shipping_returned_at\" = EXCLUDED.\"shipping_returned_at\",\"shipping_created_at\" = EXCLUDED.\"shipping_created_at\",\"shipping_picking_at\" = EXCLUDED.\"shipping_picking_at\",\"shipping_holding_at\" = EXCLUDED.\"shipping_holding_at\",\"shipping_delivering_at\" = EXCLUDED.\"shipping_delivering_at\",\"shipping_returning_at\" = EXCLUDED.\"shipping_returning_at\",\"money_transaction_id\" = EXCLUDED.\"money_transaction_id\",\"money_transaction_shipping_external_id\" = EXCLUDED.\"money_transaction_shipping_external_id\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"shipping_provider\" = EXCLUDED.\"shipping_provider\",\"provider_service_id\" = EXCLUDED.\"provider_service_id\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"try_on\" = EXCLUDED.\"try_on\",\"include_insurance\" = EXCLUDED.\"include_insurance\",\"insurance_value\" = EXCLUDED.\"insurance_value\",\"shipping_type\" = EXCLUDED.\"shipping_type\",\"shipping_payment_type\" = EXCLUDED.\"shipping_payment_type\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"shop_carrier_id\" = EXCLUDED.\"shop_carrier_id\",\"shipping_service_name\" = EXCLUDED.\"shipping_service_name\",\"external_shipping_name\" = EXCLUDED.\"external_shipping_name\",\"external_shipping_id\" = EXCLUDED.\"external_shipping_id\",\"external_shipping_code\" = EXCLUDED.\"external_shipping_code\",\"external_shipping_created_at\" = EXCLUDED.\"external_shipping_created_at\",\"external_shipping_updated_at\" = EXCLUDED.\"external_shipping_updated_at\",\"external_shipping_cancelled_at\" = EXCLUDED.\"external_shipping_cancelled_at\",\"external_shipping_delivered_at\" = EXCLUDED.\"external_shipping_delivered_at\",\"external_shipping_returned_at\" = EXCLUDED.\"external_shipping_returned_at\",\"external_shipping_closed_at\" = EXCLUDED.\"external_shipping_closed_at\",\"external_shipping_state\" = EXCLUDED.\"external_shipping_state\",\"external_shipping_state_code\" = EXCLUDED.\"external_shipping_state_code\",\"external_shipping_status\" = EXCLUDED.\"external_shipping_status\",\"external_shipping_note\" = EXCLUDED.\"external_shipping_note\",\"external_shipping_sub_state\" = EXCLUDED.\"external_shipping_sub_state\",\"external_shipping_data\" = EXCLUDED.\"external_shipping_data\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"shipping_status\" = EXCLUDED.\"shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"status\" = EXCLUDED.\"status\",\"sync_status\" = EXCLUDED.\"sync_status\",\"sync_states\" = EXCLUDED.\"sync_states\",\"last_sync_at\" = EXCLUDED.\"last_sync_at\",\"external_shipping_logs\" = EXCLUDED.\"external_shipping_logs\",\"admin_note\" = EXCLUDED.\"admin_note\",\"is_partial_delivery\" = EXCLUDED.\"is_partial_delivery\",\"created_by\" = EXCLUDED.\"created_by\",\"gross_weight\" = EXCLUDED.\"gross_weight\",\"chargeable_weight\" = EXCLUDED.\"chargeable_weight\",\"length\" = EXCLUDED.\"length\",\"width\" = EXCLUDED.\"width\",\"height\" = EXCLUDED.\"height\",\"delivery_route\" = EXCLUDED.\"delivery_route\",\"external_affiliate_id\" = EXCLUDED.\"external_affiliate_id\",\"coupon\" = EXCLUDED.\"coupon\",\"shipment_price_info\" = EXCLUDED.\"shipment_price_info\",\"lines_content\" = EXCLUDED.\"lines_content\",\"ed_code\" = EXCLUDED.\"ed_code\",\"shipping_substate\" = EXCLUDED.\"shipping_substate\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlFulfillment_Insert = "INSERT INTO \"fulfillment\" (" + __sqlFulfillment_ListCols + ") VALUES"
 const __sqlFulfillment_Select = "SELECT " + __sqlFulfillment_ListCols + " FROM \"fulfillment\""
 const __sqlFulfillment_Select_history = "SELECT " + __sqlFulfillment_ListCols + " FROM history.\"fulfillment\""
@@ -347,6 +347,20 @@ func (m *Fulfillment) Migration(db *cmsql.Database) {
 		},
 		"address_to_ward_code": {
 			ColumnName:       "address_to_ward_code",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"address_to_phone": {
+			ColumnName:       "address_to_phone",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"address_to_full_name_norm": {
+			ColumnName:       "address_to_full_name_norm",
 			ColumnType:       "string",
 			ColumnDBType:     "string",
 			ColumnTag:        "",
@@ -897,6 +911,8 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.AddressToProvinceCode),
 		core.String(m.AddressToDistrictCode),
 		core.String(m.AddressToWardCode),
+		core.String(m.AddressToPhone),
+		core.String(m.AddressToFullNameNorm),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.ClosedAt),
@@ -1014,6 +1030,8 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.AddressToProvinceCode),
 		(*core.String)(&m.AddressToDistrictCode),
 		(*core.String)(&m.AddressToWardCode),
+		(*core.String)(&m.AddressToPhone),
+		(*core.String)(&m.AddressToFullNameNorm),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.ClosedAt),
@@ -1121,7 +1139,7 @@ func (_ *Fulfillments) SQLSelect(w SQLWriter) error {
 func (m *Fulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(112)
+	w.WriteMarkers(114)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1131,7 +1149,7 @@ func (ms Fulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(112)
+		w.WriteMarkers(114)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1497,6 +1515,22 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.AddressToWardCode)
+	}
+	if m.AddressToPhone != "" {
+		flag = true
+		w.WriteName("address_to_phone")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AddressToPhone)
+	}
+	if m.AddressToFullNameNorm != "" {
+		flag = true
+		w.WriteName("address_to_full_name_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AddressToFullNameNorm)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -2068,7 +2102,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 func (m *Fulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(112)
+	w.WriteMarkers(114)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -2181,6 +2215,12 @@ func (m FulfillmentHistory) AddressToDistrictCode() core.Interface {
 }
 func (m FulfillmentHistory) AddressToWardCode() core.Interface {
 	return core.Interface{m["address_to_ward_code"]}
+}
+func (m FulfillmentHistory) AddressToPhone() core.Interface {
+	return core.Interface{m["address_to_phone"]}
+}
+func (m FulfillmentHistory) AddressToFullNameNorm() core.Interface {
+	return core.Interface{m["address_to_full_name_norm"]}
 }
 func (m FulfillmentHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m FulfillmentHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
@@ -2348,15 +2388,15 @@ func (m FulfillmentHistory) ShippingSubstate() core.Interface {
 func (m FulfillmentHistory) Rid() core.Interface { return core.Interface{m["rid"]} }
 
 func (m *FulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 112)
-	args := make([]interface{}, 112)
-	for i := 0; i < 112; i++ {
+	data := make([]interface{}, 114)
+	args := make([]interface{}, 114)
+	for i := 0; i < 114; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FulfillmentHistory, 112)
+	res := make(FulfillmentHistory, 114)
 	res["id"] = data[0]
 	res["order_id"] = data[1]
 	res["shop_id"] = data[2]
@@ -2399,84 +2439,86 @@ func (m *FulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["address_to_province_code"] = data[39]
 	res["address_to_district_code"] = data[40]
 	res["address_to_ward_code"] = data[41]
-	res["created_at"] = data[42]
-	res["updated_at"] = data[43]
-	res["closed_at"] = data[44]
-	res["expected_delivery_at"] = data[45]
-	res["expected_pick_at"] = data[46]
-	res["cod_etop_transfered_at"] = data[47]
-	res["shipping_fee_shop_transfered_at"] = data[48]
-	res["shipping_cancelled_at"] = data[49]
-	res["shipping_delivered_at"] = data[50]
-	res["shipping_returned_at"] = data[51]
-	res["shipping_created_at"] = data[52]
-	res["shipping_picking_at"] = data[53]
-	res["shipping_holding_at"] = data[54]
-	res["shipping_delivering_at"] = data[55]
-	res["shipping_returning_at"] = data[56]
-	res["money_transaction_id"] = data[57]
-	res["money_transaction_shipping_external_id"] = data[58]
-	res["cancel_reason"] = data[59]
-	res["shipping_provider"] = data[60]
-	res["provider_service_id"] = data[61]
-	res["shipping_code"] = data[62]
-	res["shipping_note"] = data[63]
-	res["try_on"] = data[64]
-	res["include_insurance"] = data[65]
-	res["insurance_value"] = data[66]
-	res["shipping_type"] = data[67]
-	res["shipping_payment_type"] = data[68]
-	res["connection_id"] = data[69]
-	res["connection_method"] = data[70]
-	res["shop_carrier_id"] = data[71]
-	res["shipping_service_name"] = data[72]
-	res["external_shipping_name"] = data[73]
-	res["external_shipping_id"] = data[74]
-	res["external_shipping_code"] = data[75]
-	res["external_shipping_created_at"] = data[76]
-	res["external_shipping_updated_at"] = data[77]
-	res["external_shipping_cancelled_at"] = data[78]
-	res["external_shipping_delivered_at"] = data[79]
-	res["external_shipping_returned_at"] = data[80]
-	res["external_shipping_closed_at"] = data[81]
-	res["external_shipping_state"] = data[82]
-	res["external_shipping_state_code"] = data[83]
-	res["external_shipping_status"] = data[84]
-	res["external_shipping_note"] = data[85]
-	res["external_shipping_sub_state"] = data[86]
-	res["external_shipping_data"] = data[87]
-	res["shipping_state"] = data[88]
-	res["shipping_status"] = data[89]
-	res["etop_payment_status"] = data[90]
-	res["status"] = data[91]
-	res["sync_status"] = data[92]
-	res["sync_states"] = data[93]
-	res["last_sync_at"] = data[94]
-	res["external_shipping_logs"] = data[95]
-	res["admin_note"] = data[96]
-	res["is_partial_delivery"] = data[97]
-	res["created_by"] = data[98]
-	res["gross_weight"] = data[99]
-	res["chargeable_weight"] = data[100]
-	res["length"] = data[101]
-	res["width"] = data[102]
-	res["height"] = data[103]
-	res["delivery_route"] = data[104]
-	res["external_affiliate_id"] = data[105]
-	res["coupon"] = data[106]
-	res["shipment_price_info"] = data[107]
-	res["lines_content"] = data[108]
-	res["ed_code"] = data[109]
-	res["shipping_substate"] = data[110]
-	res["rid"] = data[111]
+	res["address_to_phone"] = data[42]
+	res["address_to_full_name_norm"] = data[43]
+	res["created_at"] = data[44]
+	res["updated_at"] = data[45]
+	res["closed_at"] = data[46]
+	res["expected_delivery_at"] = data[47]
+	res["expected_pick_at"] = data[48]
+	res["cod_etop_transfered_at"] = data[49]
+	res["shipping_fee_shop_transfered_at"] = data[50]
+	res["shipping_cancelled_at"] = data[51]
+	res["shipping_delivered_at"] = data[52]
+	res["shipping_returned_at"] = data[53]
+	res["shipping_created_at"] = data[54]
+	res["shipping_picking_at"] = data[55]
+	res["shipping_holding_at"] = data[56]
+	res["shipping_delivering_at"] = data[57]
+	res["shipping_returning_at"] = data[58]
+	res["money_transaction_id"] = data[59]
+	res["money_transaction_shipping_external_id"] = data[60]
+	res["cancel_reason"] = data[61]
+	res["shipping_provider"] = data[62]
+	res["provider_service_id"] = data[63]
+	res["shipping_code"] = data[64]
+	res["shipping_note"] = data[65]
+	res["try_on"] = data[66]
+	res["include_insurance"] = data[67]
+	res["insurance_value"] = data[68]
+	res["shipping_type"] = data[69]
+	res["shipping_payment_type"] = data[70]
+	res["connection_id"] = data[71]
+	res["connection_method"] = data[72]
+	res["shop_carrier_id"] = data[73]
+	res["shipping_service_name"] = data[74]
+	res["external_shipping_name"] = data[75]
+	res["external_shipping_id"] = data[76]
+	res["external_shipping_code"] = data[77]
+	res["external_shipping_created_at"] = data[78]
+	res["external_shipping_updated_at"] = data[79]
+	res["external_shipping_cancelled_at"] = data[80]
+	res["external_shipping_delivered_at"] = data[81]
+	res["external_shipping_returned_at"] = data[82]
+	res["external_shipping_closed_at"] = data[83]
+	res["external_shipping_state"] = data[84]
+	res["external_shipping_state_code"] = data[85]
+	res["external_shipping_status"] = data[86]
+	res["external_shipping_note"] = data[87]
+	res["external_shipping_sub_state"] = data[88]
+	res["external_shipping_data"] = data[89]
+	res["shipping_state"] = data[90]
+	res["shipping_status"] = data[91]
+	res["etop_payment_status"] = data[92]
+	res["status"] = data[93]
+	res["sync_status"] = data[94]
+	res["sync_states"] = data[95]
+	res["last_sync_at"] = data[96]
+	res["external_shipping_logs"] = data[97]
+	res["admin_note"] = data[98]
+	res["is_partial_delivery"] = data[99]
+	res["created_by"] = data[100]
+	res["gross_weight"] = data[101]
+	res["chargeable_weight"] = data[102]
+	res["length"] = data[103]
+	res["width"] = data[104]
+	res["height"] = data[105]
+	res["delivery_route"] = data[106]
+	res["external_affiliate_id"] = data[107]
+	res["coupon"] = data[108]
+	res["shipment_price_info"] = data[109]
+	res["lines_content"] = data[110]
+	res["ed_code"] = data[111]
+	res["shipping_substate"] = data[112]
+	res["rid"] = data[113]
 	*m = res
 	return nil
 }
 
 func (ms *FulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 112)
-	args := make([]interface{}, 112)
-	for i := 0; i < 112; i++ {
+	data := make([]interface{}, 114)
+	args := make([]interface{}, 114)
+	for i := 0; i < 114; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FulfillmentHistories, 0, 128)
@@ -2527,76 +2569,78 @@ func (ms *FulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["address_to_province_code"] = data[39]
 		m["address_to_district_code"] = data[40]
 		m["address_to_ward_code"] = data[41]
-		m["created_at"] = data[42]
-		m["updated_at"] = data[43]
-		m["closed_at"] = data[44]
-		m["expected_delivery_at"] = data[45]
-		m["expected_pick_at"] = data[46]
-		m["cod_etop_transfered_at"] = data[47]
-		m["shipping_fee_shop_transfered_at"] = data[48]
-		m["shipping_cancelled_at"] = data[49]
-		m["shipping_delivered_at"] = data[50]
-		m["shipping_returned_at"] = data[51]
-		m["shipping_created_at"] = data[52]
-		m["shipping_picking_at"] = data[53]
-		m["shipping_holding_at"] = data[54]
-		m["shipping_delivering_at"] = data[55]
-		m["shipping_returning_at"] = data[56]
-		m["money_transaction_id"] = data[57]
-		m["money_transaction_shipping_external_id"] = data[58]
-		m["cancel_reason"] = data[59]
-		m["shipping_provider"] = data[60]
-		m["provider_service_id"] = data[61]
-		m["shipping_code"] = data[62]
-		m["shipping_note"] = data[63]
-		m["try_on"] = data[64]
-		m["include_insurance"] = data[65]
-		m["insurance_value"] = data[66]
-		m["shipping_type"] = data[67]
-		m["shipping_payment_type"] = data[68]
-		m["connection_id"] = data[69]
-		m["connection_method"] = data[70]
-		m["shop_carrier_id"] = data[71]
-		m["shipping_service_name"] = data[72]
-		m["external_shipping_name"] = data[73]
-		m["external_shipping_id"] = data[74]
-		m["external_shipping_code"] = data[75]
-		m["external_shipping_created_at"] = data[76]
-		m["external_shipping_updated_at"] = data[77]
-		m["external_shipping_cancelled_at"] = data[78]
-		m["external_shipping_delivered_at"] = data[79]
-		m["external_shipping_returned_at"] = data[80]
-		m["external_shipping_closed_at"] = data[81]
-		m["external_shipping_state"] = data[82]
-		m["external_shipping_state_code"] = data[83]
-		m["external_shipping_status"] = data[84]
-		m["external_shipping_note"] = data[85]
-		m["external_shipping_sub_state"] = data[86]
-		m["external_shipping_data"] = data[87]
-		m["shipping_state"] = data[88]
-		m["shipping_status"] = data[89]
-		m["etop_payment_status"] = data[90]
-		m["status"] = data[91]
-		m["sync_status"] = data[92]
-		m["sync_states"] = data[93]
-		m["last_sync_at"] = data[94]
-		m["external_shipping_logs"] = data[95]
-		m["admin_note"] = data[96]
-		m["is_partial_delivery"] = data[97]
-		m["created_by"] = data[98]
-		m["gross_weight"] = data[99]
-		m["chargeable_weight"] = data[100]
-		m["length"] = data[101]
-		m["width"] = data[102]
-		m["height"] = data[103]
-		m["delivery_route"] = data[104]
-		m["external_affiliate_id"] = data[105]
-		m["coupon"] = data[106]
-		m["shipment_price_info"] = data[107]
-		m["lines_content"] = data[108]
-		m["ed_code"] = data[109]
-		m["shipping_substate"] = data[110]
-		m["rid"] = data[111]
+		m["address_to_phone"] = data[42]
+		m["address_to_full_name_norm"] = data[43]
+		m["created_at"] = data[44]
+		m["updated_at"] = data[45]
+		m["closed_at"] = data[46]
+		m["expected_delivery_at"] = data[47]
+		m["expected_pick_at"] = data[48]
+		m["cod_etop_transfered_at"] = data[49]
+		m["shipping_fee_shop_transfered_at"] = data[50]
+		m["shipping_cancelled_at"] = data[51]
+		m["shipping_delivered_at"] = data[52]
+		m["shipping_returned_at"] = data[53]
+		m["shipping_created_at"] = data[54]
+		m["shipping_picking_at"] = data[55]
+		m["shipping_holding_at"] = data[56]
+		m["shipping_delivering_at"] = data[57]
+		m["shipping_returning_at"] = data[58]
+		m["money_transaction_id"] = data[59]
+		m["money_transaction_shipping_external_id"] = data[60]
+		m["cancel_reason"] = data[61]
+		m["shipping_provider"] = data[62]
+		m["provider_service_id"] = data[63]
+		m["shipping_code"] = data[64]
+		m["shipping_note"] = data[65]
+		m["try_on"] = data[66]
+		m["include_insurance"] = data[67]
+		m["insurance_value"] = data[68]
+		m["shipping_type"] = data[69]
+		m["shipping_payment_type"] = data[70]
+		m["connection_id"] = data[71]
+		m["connection_method"] = data[72]
+		m["shop_carrier_id"] = data[73]
+		m["shipping_service_name"] = data[74]
+		m["external_shipping_name"] = data[75]
+		m["external_shipping_id"] = data[76]
+		m["external_shipping_code"] = data[77]
+		m["external_shipping_created_at"] = data[78]
+		m["external_shipping_updated_at"] = data[79]
+		m["external_shipping_cancelled_at"] = data[80]
+		m["external_shipping_delivered_at"] = data[81]
+		m["external_shipping_returned_at"] = data[82]
+		m["external_shipping_closed_at"] = data[83]
+		m["external_shipping_state"] = data[84]
+		m["external_shipping_state_code"] = data[85]
+		m["external_shipping_status"] = data[86]
+		m["external_shipping_note"] = data[87]
+		m["external_shipping_sub_state"] = data[88]
+		m["external_shipping_data"] = data[89]
+		m["shipping_state"] = data[90]
+		m["shipping_status"] = data[91]
+		m["etop_payment_status"] = data[92]
+		m["status"] = data[93]
+		m["sync_status"] = data[94]
+		m["sync_states"] = data[95]
+		m["last_sync_at"] = data[96]
+		m["external_shipping_logs"] = data[97]
+		m["admin_note"] = data[98]
+		m["is_partial_delivery"] = data[99]
+		m["created_by"] = data[100]
+		m["gross_weight"] = data[101]
+		m["chargeable_weight"] = data[102]
+		m["length"] = data[103]
+		m["width"] = data[104]
+		m["height"] = data[105]
+		m["delivery_route"] = data[106]
+		m["external_affiliate_id"] = data[107]
+		m["coupon"] = data[108]
+		m["shipment_price_info"] = data[109]
+		m["lines_content"] = data[110]
+		m["ed_code"] = data[111]
+		m["shipping_substate"] = data[112]
+		m["rid"] = data[113]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

@@ -362,6 +362,8 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.AddressToProvinceCode = ""                                                  // zero value
 	out.AddressToDistrictCode = ""                                                  // zero value
 	out.AddressToWardCode = ""                                                      // zero value
+	out.AddressToPhone = ""                                                         // zero value
+	out.AddressToFullNameNorm = ""                                                  // zero value
 	out.CreatedAt = arg.CreatedAt                                                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                                                   // simple assign
 	out.ClosedAt = arg.ClosedAt                                                     // simple assign

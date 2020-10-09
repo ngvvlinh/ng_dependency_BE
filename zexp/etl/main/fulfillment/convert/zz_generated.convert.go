@@ -100,6 +100,8 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.AddressToProvinceCode = arg.AddressToProvinceCode                           // simple assign
 	out.AddressToDistrictCode = arg.AddressToDistrictCode                           // simple assign
 	out.AddressToWardCode = arg.AddressToWardCode                                   // simple assign
+	out.AddressToPhone = ""                                                         // zero value
+	out.AddressToFullNameNorm = ""                                                  // zero value
 	out.CreatedAt = arg.CreatedAt                                                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                                                   // simple assign
 	out.ClosedAt = arg.ClosedAt                                                     // simple assign
