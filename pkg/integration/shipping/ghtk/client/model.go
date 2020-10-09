@@ -113,11 +113,11 @@ func (sID StateID) ToModel() shipping.State {
 		return shipping.Picking
 	case StateIDStored, StateIDShipperPicked:
 		return shipping.Holding
-	case StateIDDelivering, StateIDDelayDelivering, StateIDShipperCanNotDelivery, StateIDShipperDelayDelivering:
+	case StateIDDelivering, StateIDDelayDelivering, StateIDShipperCanNotDelivery, StateIDShipperDelayDelivering, StateIDNotDeliver:
 		return shipping.Delivering
 	case StateIDDelivered, StateIDCrossChecked, StateIDShipperDelivered:
 		return shipping.Delivered
-	case StateIDReturning, StateIDNotDeliver, StateIDCrossCheckedReturned:
+	case StateIDReturning, StateIDCrossCheckedReturned:
 		return shipping.Returning
 	case StateIDReturned:
 		return shipping.Returned

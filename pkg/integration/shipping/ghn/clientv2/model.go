@@ -65,10 +65,9 @@ func (s State) ToModel() typesshipping.State {
 	case StatePicked, StateStoring,
 		StateTransporting, StateDeliveryFail:
 		return typesshipping.Holding
-	case StateDelivering:
+	case StateDelivering, StateWaitingToReturn:
 		return typesshipping.Delivering
-	case StateWaitingToReturn,
-		StateReturn, StateReturnTransporting,
+	case StateReturn, StateReturnTransporting,
 		StateReturning, StateReturnFail:
 		return typesshipping.Returning
 	case StateReturned:
