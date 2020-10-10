@@ -98,26 +98,22 @@ func (s *OrderLogic) ConfirmOrder(ctx context.Context, userID dot.ID, shop *iden
 		return nil, err
 	}
 
-	// Only update order status when success.
-	// This disallow updating order.
 	if order.ConfirmStatus != status3.P ||
 		order.ShopConfirm != status3.P {
-		paymentStatus := status4.Z
-		if s.FlagFaboOrderUpdatePaymentSatusConfig {
-			paymentStatus = status4.P
-		}
 		cmd := &ordermodelx.UpdateOrdersStatusCommand{
 			OrderIDs:      []dot.ID{r.OrderId},
 			ConfirmStatus: status3.P.Wrap(),
 			ShopConfirm:   status3.P.Wrap(),
-			PaymentStatus: paymentStatus.Wrap(),
+		}
+		if s.FlagFaboOrderUpdatePaymentSatusConfig {
+			// Đơn hàng của Faboshop không có phiếu thu chi để kiểm soát payment_status
+			// Trạng thái đơn hàng thì phụ thuộc vào payment_status để hoàn thành
+			// => Chuyển payment_status sang Hoàn thành với các đơn hàng được tạo ra từ FaboShop
+			cmd.PaymentStatus = status4.P.Wrap()
 		}
 		if err := s.OrderStore.UpdateOrdersStatus(ctx, cmd); err != nil {
 			return resp, err
 		}
-		order.ConfirmStatus = status3.P
-		order.ShopConfirm = status3.P
-		order.PaymentStatus = paymentStatus
 		event := &ordering.OrderConfirmedEvent{
 			OrderID:              order.ID,
 			AutoInventoryVoucher: r.AutoInventoryVoucher,
