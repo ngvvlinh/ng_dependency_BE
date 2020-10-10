@@ -66,6 +66,7 @@ func (mq *KafkaProducer) WithTopic(topic string) Producer {
 func (mq *KafkaProducer) SendJSON(topic string, partition int, id string, v interface{}) {
 	data, err := jsonx.Marshal(v)
 	if err != nil {
+		ll.SendMessagef("error marshalling: %+v", err)
 		ll.Panic("error marshalling", l.Error(err))
 	}
 	mq.Send(topic, partition, id, data)
@@ -95,6 +96,7 @@ type kafkaProducer struct {
 func (mq kafkaProducer) SendJSON(partition int, id string, v interface{}) {
 	data, err := jsonx.Marshal(v)
 	if err != nil {
+		ll.SendMessagef("error marshalling: %+v", err)
 		ll.Panic("error marshalling", l.Error(err))
 	}
 	mq.Send(partition, id, data)

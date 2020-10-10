@@ -168,7 +168,6 @@ func (c *kafkaConsumer) handleMessage(ctx context.Context, handler EventHandler,
 				fmt.Printf("%+v", _err)
 			} else {
 				_err = fmt.Errorf("Panic: %v", e)
-
 			}
 			stack := debug.Stack()
 			fmt.Printf("%s", stack)
