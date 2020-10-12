@@ -175,35 +175,39 @@ var sqlCountFfmByArea = strings.ReplaceAll(strings.ReplaceAll(`
 		`, "\n", " "), "\t", " ")
 
 func (s *SummaryStore) GetCountFfmByArea(shopID dot.ID, dateFrom time.Time, dateTo time.Time) ([]*FfmByArea, error) {
-	var ffm FfmByAreas
+	var ffms FfmByAreas
 	qFfm := s.query().SQL(fmt.Sprintf(sqlCountFfmByArea, "fulfillment"), shopID, dateFrom, dateTo)
-	err := qFfm.Find(&ffm)
+	err := qFfm.Find(&ffms)
 	if err != nil {
 		return nil, err
 	}
 
-	var shipnowFfm FfmByAreas
+	var shipnowFfms FfmByAreas
 	qShipnowFfm := s.query().SQL(fmt.Sprintf(sqlCountFfmByArea, "shipnow_fulfillment"), shopID, dateFrom, dateTo)
-	err = qShipnowFfm.Find(&shipnowFfm)
+	err = qShipnowFfm.Find(&shipnowFfms)
 	if err != nil {
 		return nil, err
 	}
-	var keyShipnowFfm = 0
-	for keyFfm := range ffm {
-		if keyShipnowFfm > len(shipnowFfm)-1 {
-			break
-		}
-		if shipnowFfm[keyShipnowFfm].DistrictCode == ffm[keyFfm].DistrictCode {
-			ffm[keyFfm].Count = ffm[keyFfm].Count + shipnowFfm[keyShipnowFfm].Count
-			keyFfm++
-		}
-		for shipnowFfm[keyShipnowFfm].DistrictCode > ffm[keyFfm].DistrictCode {
-			ffm = append(ffm, shipnowFfm[keyFfm])
-			keyFfm++
-		}
+
+	ffmByDistrictCode := map[string]*FfmByArea{}
+	for _, ffm := range ffms {
+		ffmByDistrictCode[ffm.DistrictCode] = ffm
 	}
-	sort.Slice(ffm, func(i, j int) bool {
-		return ffm[i].Count > ffm[j].Count
+	for _, shipnowFfm := range shipnowFfms {
+		ffm, ok := ffmByDistrictCode[shipnowFfm.DistrictCode]
+		if ok {
+			ffm.Count += shipnowFfm.Count
+			continue
+		}
+		ffmByDistrictCode[shipnowFfm.DistrictCode] = shipnowFfm
+	}
+	var res []*FfmByArea
+	for _, ffm := range ffmByDistrictCode {
+		res = append(res, ffm)
+	}
+
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Count > res[j].Count
 	})
-	return ffm, nil
+	return res, nil
 }
