@@ -1229,7 +1229,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager3 := pm4.New(busBus, catalogQueryBus, catalogCommandBus)
 	processManager4 := pm5.New(busBus, ledgeringCommandBus)
 	processManager5 := pm6.New(busBus, moneytxQueryBus, moneytxCommandBus, shippingQueryBus)
-	processManager6 := pm7.New(busBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus)
+	processManager6 := pm7.New(busBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus, shipnowQueryBus)
 	processManager7 := pm8.New(busBus, purchaseorderQueryBus, receiptingQueryBus)
 	processManager8 := pm9.New(busBus, purchaserefundCommandBus, purchaserefundQueryBus, receiptingQueryBus)
 	processManager9 := pm10.New(busBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, queryBus, moneyTxStoreInterface, orderStoreInterface)

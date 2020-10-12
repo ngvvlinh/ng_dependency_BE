@@ -37,6 +37,7 @@ import (
 	"o.o/backend/com/main/location"
 	"o.o/backend/com/main/ordering"
 	"o.o/backend/com/main/receipting"
+	"o.o/backend/com/main/shipnow"
 	"o.o/backend/com/main/stocktaking"
 	"o.o/backend/com/shopping/carrying"
 	"o.o/backend/com/shopping/customering"
@@ -147,6 +148,7 @@ func Build(
 		fabo.WireSet,
 		comfabo.WireSet,
 		fbcustomerconversationsearch.WireSet,
+		shipnow.WireSet,
 
 		// TODO(vu): remove
 		wire.Value(tradering.QueryBus{}),

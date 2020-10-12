@@ -3,6 +3,8 @@ package sqlstore
 import (
 	"context"
 
+	"github.com/lib/pq"
+
 	"o.o/api/main/ordering"
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/top/types/etc/status3"
@@ -183,6 +185,7 @@ func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForRelease
 		"fulfillment_type":            nil,
 		"fulfillment_ids":             nil,
 		"fulfillment_shipping_states": nil,
+		"fulfillment_shipping_codes":  nil,
 		"fulfillment_shipping_status": status5.Z,
 		"etop_payment_status":         status5.Z,
 		"confirm_status":              status5.Z,
@@ -302,4 +305,14 @@ func (s *OrderStore) UpdateOrderCustomerInfo(args *ordering.UpdateOrderCustomerI
 		return s.query().Table("order").Where(s.preds).ShouldUpdate(update)
 	}
 	return nil
+}
+
+func (s *OrderStore) UpdateFulfillmentShippingCodes(fulfillmentShippingCodes []string) error {
+	if len(s.preds) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")
+	}
+	err := s.query().Table("order").Where(s.preds).ShouldUpdateMap(map[string]interface{}{
+		"fulfillment_shipping_codes": pq.StringArray(fulfillmentShippingCodes),
+	})
+	return err
 }

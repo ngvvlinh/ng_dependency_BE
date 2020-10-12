@@ -35,6 +35,7 @@ type Aggregate interface {
 	CompleteOrder(_ context.Context, OrderID dot.ID, ShopID dot.ID) error
 	UpdateOrderStatus(context.Context, *UpdateOrderStatusArgs) error
 	UpdateOrderPaymentStatus(context.Context, *UpdateOrderPaymentStatusArgs) error
+	UpdateOrdersFulfillmentShippingCodes(context.Context, *UpdateOrdersFulfillmentShippingCodesArgs) error
 }
 
 type QueryService interface {
@@ -223,6 +224,11 @@ type UpdateOrderPaymentInfoArgs struct {
 	ID            dot.ID
 	PaymentStatus status4.Status
 	PaymentID     dot.ID
+}
+
+type UpdateOrdersFulfillmentShippingCodesArgs struct {
+	OrderIDs                 []dot.ID
+	FulfillmentShippingCodes []string
 }
 
 type ReferralMeta struct {

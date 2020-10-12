@@ -106,6 +106,12 @@ type ShipnowExternalCreatedEvent struct {
 	ShipnowFulfillmentID dot.ID
 }
 
+type ShipnowCreatedEvent struct {
+	meta.EventMeta
+
+	ShipnowFulfillmentID dot.ID
+}
+
 func ShipnowStatus(state shipnow_state.State, paymentStatus status4.Status) status5.Status {
 	switch state {
 	case shipnow_state.StateDefault,

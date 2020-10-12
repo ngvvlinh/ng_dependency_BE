@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/ordering"
 	ordertrading "o.o/api/main/ordering/trading"
 	"o.o/api/main/receipting"
+	"o.o/api/main/shipnow"
 	"o.o/api/main/shipping"
 	"o.o/api/services/affiliate"
 	"o.o/api/shopping/customering"
@@ -28,6 +29,7 @@ type ProcessManager struct {
 	inventoryAgg  inventory.CommandBus
 	orderQuery    ordering.QueryBus
 	customerQuery customering.QueryBus
+	shipnowQuery  shipnow.QueryBus
 }
 
 var ll = l.New()
@@ -40,6 +42,7 @@ func New(
 	inventoryAgg inventory.CommandBus,
 	orderQ ordering.QueryBus,
 	customerQ customering.QueryBus,
+	shipnowQ shipnow.QueryBus,
 ) *ProcessManager {
 	p := &ProcessManager{
 		order:         orderAggr,
@@ -48,6 +51,7 @@ func New(
 		inventoryAgg:  inventoryAgg,
 		orderQuery:    orderQ,
 		customerQuery: customerQ,
+		shipnowQuery:  shipnowQ,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -63,6 +67,7 @@ func (p *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.FulfillmentsCreatedEvent)
 	eventBus.AddEventListener(p.ReceiptConfirming)
 	eventBus.AddEventListener(p.FulfillmentUpdatedInfoEvent)
+	eventBus.AddEventListener(p.HandleShipnowFulfillmentCreatedEvent)
 }
 
 func (p *ProcessManager) ReceiptConfirming(ctx context.Context, event *receipting.ReceiptConfirmingEvent) error {
@@ -372,6 +377,26 @@ func (p *ProcessManager) FulfillmentUpdatedInfoEvent(ctx context.Context, event 
 		ID:       event.OrderID,
 		FullName: event.FullName,
 		Phone:    event.Phone,
+	}
+	return p.order.Dispatch(ctx, cmd)
+}
+
+func (p *ProcessManager) HandleShipnowFulfillmentCreatedEvent(ctx context.Context, event *shipnow.ShipnowCreatedEvent) error {
+	if event.ShipnowFulfillmentID == 0 {
+		return nil
+	}
+
+	query := &shipnow.GetShipnowFulfillmentQuery{
+		ID: event.ShipnowFulfillmentID,
+	}
+	if err := p.shipnowQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	ffm := query.Result.ShipnowFulfillment
+
+	cmd := &ordering.UpdateOrdersFulfillmentShippingCodesCommand{
+		OrderIDs:                 ffm.OrderIDs,
+		FulfillmentShippingCodes: []string{ffm.ShippingCode},
 	}
 	return p.order.Dispatch(ctx, cmd)
 }

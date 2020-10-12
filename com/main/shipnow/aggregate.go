@@ -303,6 +303,13 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 			return err
 		}
 
+		event3 := &shipnow.ShipnowCreatedEvent{
+			ShipnowFulfillmentID: ffm.ID,
+		}
+		if err := a.eventBus.Publish(ctx, event3); err != nil {
+			return err
+		}
+
 		update := sqlstore.UpdateStateArgs{
 			ID:             cmd.ID,
 			ConfirmStatus:  status3.P,

@@ -147,6 +147,18 @@ func (h AggregateHandler) HandleUpdateOrdersConfirmStatus(ctx context.Context, m
 	return err
 }
 
+type UpdateOrdersFulfillmentShippingCodesCommand struct {
+	OrderIDs                 []dot.ID
+	FulfillmentShippingCodes []string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateOrdersFulfillmentShippingCodes(ctx context.Context, msg *UpdateOrdersFulfillmentShippingCodesCommand) (err error) {
+	return h.inner.UpdateOrdersFulfillmentShippingCodes(msg.GetArgs(ctx))
+}
+
 type ValidateOrdersForShippingCommand struct {
 	OrderIDs []dot.ID
 
@@ -231,16 +243,17 @@ func (h QueryServiceHandler) HandleListOrdersByCustomerIDs(ctx context.Context, 
 
 // implement interfaces
 
-func (q *CompleteOrderCommand) command()             {}
-func (q *ReleaseOrdersForFfmCommand) command()       {}
-func (q *ReserveOrdersForFfmCommand) command()       {}
-func (q *UpdateOrderCustomerInfoCommand) command()   {}
-func (q *UpdateOrderPaymentInfoCommand) command()    {}
-func (q *UpdateOrderPaymentStatusCommand) command()  {}
-func (q *UpdateOrderShippingStatusCommand) command() {}
-func (q *UpdateOrderStatusCommand) command()         {}
-func (q *UpdateOrdersConfirmStatusCommand) command() {}
-func (q *ValidateOrdersForShippingCommand) command() {}
+func (q *CompleteOrderCommand) command()                        {}
+func (q *ReleaseOrdersForFfmCommand) command()                  {}
+func (q *ReserveOrdersForFfmCommand) command()                  {}
+func (q *UpdateOrderCustomerInfoCommand) command()              {}
+func (q *UpdateOrderPaymentInfoCommand) command()               {}
+func (q *UpdateOrderPaymentStatusCommand) command()             {}
+func (q *UpdateOrderShippingStatusCommand) command()            {}
+func (q *UpdateOrderStatusCommand) command()                    {}
+func (q *UpdateOrdersConfirmStatusCommand) command()            {}
+func (q *UpdateOrdersFulfillmentShippingCodesCommand) command() {}
+func (q *ValidateOrdersForShippingCommand) command()            {}
 
 func (q *GetOrderByCodeQuery) query()              {}
 func (q *GetOrderByIDQuery) query()                {}
@@ -381,6 +394,19 @@ func (q *UpdateOrdersConfirmStatusCommand) SetUpdateOrdersConfirmStatusArgs(args
 	q.ConfirmStatus = args.ConfirmStatus
 }
 
+func (q *UpdateOrdersFulfillmentShippingCodesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrdersFulfillmentShippingCodesArgs) {
+	return ctx,
+		&UpdateOrdersFulfillmentShippingCodesArgs{
+			OrderIDs:                 q.OrderIDs,
+			FulfillmentShippingCodes: q.FulfillmentShippingCodes,
+		}
+}
+
+func (q *UpdateOrdersFulfillmentShippingCodesCommand) SetUpdateOrdersFulfillmentShippingCodesArgs(args *UpdateOrdersFulfillmentShippingCodesArgs) {
+	q.OrderIDs = args.OrderIDs
+	q.FulfillmentShippingCodes = args.FulfillmentShippingCodes
+}
+
 func (q *ValidateOrdersForShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ValidateOrdersForShippingArgs) {
 	return ctx,
 		&ValidateOrdersForShippingArgs{
@@ -467,6 +493,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateOrderShippingStatus)
 	b.AddHandler(h.HandleUpdateOrderStatus)
 	b.AddHandler(h.HandleUpdateOrdersConfirmStatus)
+	b.AddHandler(h.HandleUpdateOrdersFulfillmentShippingCodes)
 	b.AddHandler(h.HandleValidateOrdersForShipping)
 	return CommandBus{b}
 }

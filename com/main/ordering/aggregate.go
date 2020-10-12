@@ -216,6 +216,13 @@ func (a *Aggregate) UpdateOrderCustomerInfo(ctx context.Context, args *ordering.
 	return a.store(ctx).ID(args.ID).UpdateOrderCustomerInfo(args, order.Customer)
 }
 
+func (a *Aggregate) UpdateOrdersFulfillmentShippingCodes(ctx context.Context, args *ordering.UpdateOrdersFulfillmentShippingCodesArgs) error {
+	if len(args.OrderIDs) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "order_id không được để trống")
+	}
+	return a.store(ctx).IDs(args.OrderIDs...).UpdateFulfillmentShippingCodes(args.FulfillmentShippingCodes)
+}
+
 func canUpdateOrder(order *model.Order) (bool, error) {
 	if order == nil {
 		return false, cm.Error(cm.FailedPrecondition, "Đơn hàng không tồn tại", nil)
