@@ -81,9 +81,9 @@ Nếu bạn không nhận ra cửa hàng trên, hãy bỏ qua email này.<br><br
 Đội ngũ {{.WlName}}
 `))
 
-var PhoneInvitationTpl = template.Must(template.New("phone-verification").Parse(`Bạn được mời vào cửa hàng {{.ShopName}} trên etop. Bấm vào liên kết sau để xác nhận {{.URL}}`))
+var PhoneInvitationTpl = template.Must(template.New("phone-verification").Parse(`Bạn được mời vào cửa hàng {{.ShopName}} trên etop. Hãy bấm vào liên kết sau để xác nhận {{.URL}}`))
 
-var PhoneInvitationTplRepeat = template.Must(template.New("phone-verification").Parse(`Bạn được mời vào cửa hàng {{.ShopName}} trên etop. Bấm vào liên kết sau để xác nhận {{.URL}} (gửi lần {{.SendTime}})`))
+var PhoneInvitationTplRepeat = template.Must(template.New("phone-verification").Parse(`Bạn được mời vào cửa hàng {{.ShopName}} trên etop. Hãy bấm vào liên kết sau để xác nhận {{.URL}} (gửi lần {{.SendTime}})`))
 
 var EmailSTokenTpl = template.Must(template.New("email-verification").Parse(`
 Gửi {{.FullName}},<br><br>
