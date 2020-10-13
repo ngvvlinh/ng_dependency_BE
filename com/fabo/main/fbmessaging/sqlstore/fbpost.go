@@ -158,10 +158,11 @@ func (s *FbExternalPostStore) ListFbExternalPosts() (result []*fbmessaging.FbExt
 	return
 }
 
-func (s *FbExternalPostStore) UpdatePostMessage(message string) error {
+func (s *FbExternalPostStore) UpdatePostMessageAndPicture(message string, picture string) error {
 	query := s.query().Where(s.preds)
 	return query.Table("fb_external_post").ShouldUpdateMap(map[string]interface{}{
 		"external_message": message,
+		"external_picture": picture,
 	})
 }
 

@@ -128,10 +128,11 @@ func (wh *Webhook) handleRemovePost(ctx context.Context, pageID, postID string) 
 	return wh.fbmessagingAggr.Dispatch(ctx, removeCmd)
 }
 
-func (wh *Webhook) updateFeedPostMessage(ctx context.Context, postID string, message string) error {
-	cmdUpdate := &fbmessaging.UpdateFbPostMessageCommand{
-		ExternalPostID: postID,
-		Message:        message,
+func (wh *Webhook) updateFeedPost(ctx context.Context, postID string, message string, externalPicture string) error {
+	cmdUpdate := &fbmessaging.UpdateFbPostMessageAndPictureCommand{
+		ExternalPostID:  postID,
+		Message:         message,
+		ExternalPicture: externalPicture,
 	}
 	return wh.fbmessagingAggr.Dispatch(ctx, cmdUpdate)
 }
@@ -141,14 +142,15 @@ func (wh *Webhook) updateParentAndChildPost(ctx context.Context, extPageID strin
 	parentPost := convertModelPostToCreatePostArgs(extPageID, createdTime, extPost)
 	allPosts := []*fbmessaging.CreateFbExternalPostArgs{parentPost}
 
-	// If all attachments is not from other build all child posts.
+	// If all attachments is not from other page, build all child posts.
+	// Behaviour of share po
 	if extPost.IsResourceFromCurrentPage() {
 		childPosts := buildAllChildPost(parentPost)
 		allPosts = append(childPosts, parentPost)
 	}
 
 	for _, post := range allPosts {
-		err := wh.updateFeedPostMessage(ctx, post.ExternalID, post.ExternalMessage)
+		err := wh.updateFeedPost(ctx, post.ExternalID, post.ExternalMessage, post.ExternalPicture)
 		if err != nil {
 			if cm.ErrorCode(err) == cm.NotFound {
 				createPostCmd := &fbmessaging.SaveFbExternalPostCommand{

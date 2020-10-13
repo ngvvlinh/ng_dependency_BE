@@ -196,16 +196,17 @@ func (h AggregateHandler) HandleUpdateFbCommentMessage(ctx context.Context, msg 
 	return err
 }
 
-type UpdateFbPostMessageCommand struct {
-	ExternalPostID string
-	Message        string
+type UpdateFbPostMessageAndPictureCommand struct {
+	ExternalPostID  string
+	Message         string
+	ExternalPicture string
 
 	Result struct {
 	} `json:"-"`
 }
 
-func (h AggregateHandler) HandleUpdateFbPostMessage(ctx context.Context, msg *UpdateFbPostMessageCommand) (err error) {
-	return h.inner.UpdateFbPostMessage(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleUpdateFbPostMessageAndPicture(ctx context.Context, msg *UpdateFbPostMessageAndPictureCommand) (err error) {
+	return h.inner.UpdateFbPostMessageAndPicture(msg.GetArgs(ctx))
 }
 
 type UpdateIsReadCustomerConversationCommand struct {
@@ -579,7 +580,7 @@ func (q *RemoveCommentCommand) command()                         {}
 func (q *RemovePostCommand) command()                            {}
 func (q *SaveFbExternalPostCommand) command()                    {}
 func (q *UpdateFbCommentMessageCommand) command()                {}
-func (q *UpdateFbPostMessageCommand) command()                   {}
+func (q *UpdateFbPostMessageAndPictureCommand) command()         {}
 func (q *UpdateIsReadCustomerConversationCommand) command()      {}
 
 func (q *GetExternalPostByExternalIDWithExternalCreatedTimeQuery) query()         {}
@@ -794,17 +795,19 @@ func (q *UpdateFbCommentMessageCommand) SetFbUpdateCommentMessageArgs(args *FbUp
 	q.Message = args.Message
 }
 
-func (q *UpdateFbPostMessageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdatePostMessageArgs) {
+func (q *UpdateFbPostMessageAndPictureCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdatePostMessageArgs) {
 	return ctx,
 		&FbUpdatePostMessageArgs{
-			ExternalPostID: q.ExternalPostID,
-			Message:        q.Message,
+			ExternalPostID:  q.ExternalPostID,
+			Message:         q.Message,
+			ExternalPicture: q.ExternalPicture,
 		}
 }
 
-func (q *UpdateFbPostMessageCommand) SetFbUpdatePostMessageArgs(args *FbUpdatePostMessageArgs) {
+func (q *UpdateFbPostMessageAndPictureCommand) SetFbUpdatePostMessageArgs(args *FbUpdatePostMessageArgs) {
 	q.ExternalPostID = args.ExternalPostID
 	q.Message = args.Message
+	q.ExternalPicture = args.ExternalPicture
 }
 
 func (q *UpdateIsReadCustomerConversationCommand) GetArgs(ctx context.Context) (_ context.Context, conversationCustomerID dot.ID, isRead bool) {
@@ -1045,7 +1048,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleRemovePost)
 	b.AddHandler(h.HandleSaveFbExternalPost)
 	b.AddHandler(h.HandleUpdateFbCommentMessage)
-	b.AddHandler(h.HandleUpdateFbPostMessage)
+	b.AddHandler(h.HandleUpdateFbPostMessageAndPicture)
 	b.AddHandler(h.HandleUpdateIsReadCustomerConversation)
 	return CommandBus{b}
 }

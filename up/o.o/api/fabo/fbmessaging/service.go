@@ -33,7 +33,7 @@ type Aggregate interface {
 	CreateOrUpdateFbExternalPosts(context.Context, *CreateOrUpdateFbExternalPostsArgs) ([]*FbExternalPost, error)
 	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
 	CreateFbExternalPost(context.Context, *FbCreatePostArgs) (*FbExternalPost, error)
-	UpdateFbPostMessage(context.Context, *FbUpdatePostMessageArgs) error
+	UpdateFbPostMessageAndPicture(context.Context, *FbUpdatePostMessageArgs) error
 	CreateFbExternalPosts(context.Context, *CreateFbExternalPostsArgs) ([]*FbExternalPost, error)
 	RemovePost(context.Context, *RemovePostArgs) error
 }
@@ -260,8 +260,9 @@ type FbSavePostArgs struct {
 }
 
 type FbUpdatePostMessageArgs struct {
-	ExternalPostID string
-	Message        string
+	ExternalPostID  string
+	Message         string
+	ExternalPicture string
 }
 
 type FbUpdateCommentMessageArgs struct {

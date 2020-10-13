@@ -599,10 +599,10 @@ func (a *FbExternalMessagingAggregate) SaveFbExternalPost(
 	return extPost, nil
 }
 
-func (a *FbExternalMessagingAggregate) UpdateFbPostMessage(
+func (a *FbExternalMessagingAggregate) UpdateFbPostMessageAndPicture(
 	ctx context.Context, feedMessage *fbmessaging.FbUpdatePostMessageArgs,
 ) error {
-	return a.fbExternalPostStore(ctx).ExternalID(feedMessage.ExternalPostID).UpdatePostMessage(feedMessage.Message)
+	return a.fbExternalPostStore(ctx).ExternalID(feedMessage.ExternalPostID).UpdatePostMessageAndPicture(feedMessage.Message, feedMessage.ExternalPicture)
 }
 
 func (a *FbExternalMessagingAggregate) UpdateFbCommentMessage(
