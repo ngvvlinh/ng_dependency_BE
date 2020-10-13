@@ -60,6 +60,5 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *dhlclient.ShipmentIt
 			update.ClosedAt = now
 		}
 	}
-
 	return update, nil
 }

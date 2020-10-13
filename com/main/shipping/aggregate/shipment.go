@@ -1239,3 +1239,14 @@ func (a *Aggregate) prepareFulfillmentImport(ctx context.Context, args *shipping
 	}
 	return ffm, nil
 }
+
+func (a *Aggregate) UpdateFulfillmentShippingCode(ctx context.Context, args *shipping.UpdateFulfillmentShippingCodeArgs) error {
+	if args.FulfillmentID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing fulfillment_id")
+	}
+	if args.ShippingCode == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing new shipping_code")
+	}
+	update := &shipmodel.Fulfillment{ShippingCode: args.ShippingCode}
+	return a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update)
+}

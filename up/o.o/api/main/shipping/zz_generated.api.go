@@ -211,6 +211,18 @@ func (h AggregateHandler) HandleUpdateFulfillmentInfo(ctx context.Context, msg *
 	return err
 }
 
+type UpdateFulfillmentShippingCodeCommand struct {
+	FulfillmentID dot.ID
+	ShippingCode  string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFulfillmentShippingCode(ctx context.Context, msg *UpdateFulfillmentShippingCodeCommand) (err error) {
+	return h.inner.UpdateFulfillmentShippingCode(msg.GetArgs(ctx))
+}
+
 type UpdateFulfillmentShippingFeesCommand struct {
 	FulfillmentID            dot.ID
 	ShippingCode             string
@@ -434,6 +446,7 @@ func (q *ShopUpdateFulfillmentInfoCommand) command()                {}
 func (q *UpdateFulfillmentCODAmountCommand) command()               {}
 func (q *UpdateFulfillmentExternalShippingInfoCommand) command()    {}
 func (q *UpdateFulfillmentInfoCommand) command()                    {}
+func (q *UpdateFulfillmentShippingCodeCommand) command()            {}
 func (q *UpdateFulfillmentShippingFeesCommand) command()            {}
 func (q *UpdateFulfillmentShippingFeesFromWebhookCommand) command() {}
 func (q *UpdateFulfillmentShippingStateCommand) command()           {}
@@ -692,6 +705,19 @@ func (q *UpdateFulfillmentInfoCommand) SetUpdateFulfillmentInfoByAdminArgs(args 
 	q.AdminNote = args.AdminNote
 }
 
+func (q *UpdateFulfillmentShippingCodeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingCodeArgs) {
+	return ctx,
+		&UpdateFulfillmentShippingCodeArgs{
+			FulfillmentID: q.FulfillmentID,
+			ShippingCode:  q.ShippingCode,
+		}
+}
+
+func (q *UpdateFulfillmentShippingCodeCommand) SetUpdateFulfillmentShippingCodeArgs(args *UpdateFulfillmentShippingCodeArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShippingCode = args.ShippingCode
+}
+
 func (q *UpdateFulfillmentShippingFeesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateFulfillmentShippingFeesArgs) {
 	return ctx,
 		&UpdateFulfillmentShippingFeesArgs{
@@ -926,6 +952,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateFulfillmentCODAmount)
 	b.AddHandler(h.HandleUpdateFulfillmentExternalShippingInfo)
 	b.AddHandler(h.HandleUpdateFulfillmentInfo)
+	b.AddHandler(h.HandleUpdateFulfillmentShippingCode)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFees)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingFeesFromWebhook)
 	b.AddHandler(h.HandleUpdateFulfillmentShippingState)

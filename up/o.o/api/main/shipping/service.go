@@ -57,6 +57,8 @@ type Aggregate interface {
 	UpdateFulfillmentShippingFeesFromWebhook(context.Context, *UpdateFulfillmentShippingFeesFromWebhookArgs) error
 
 	AddFulfillmentShippingFee(context.Context, *AddFulfillmentShippingFeeArgs) error
+
+	UpdateFulfillmentShippingCode(context.Context, *UpdateFulfillmentShippingCodeArgs) error
 }
 
 type QueryService interface {
@@ -340,4 +342,9 @@ type CustomerReturnRate struct {
 type UpdateFulfillmentShippingSubstateArgs struct {
 	FulfillmentID    dot.ID
 	ShippingSubstate shippingsubstate.Substate
+}
+
+type UpdateFulfillmentShippingCodeArgs struct {
+	FulfillmentID dot.ID
+	ShippingCode  string
 }

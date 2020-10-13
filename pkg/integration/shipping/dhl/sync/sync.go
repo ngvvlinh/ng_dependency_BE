@@ -38,11 +38,9 @@ var _ carriertypes.ShipmentSync = &DHLSync{}
 var ll = l.New().WithChannel(meta.ChannelShipmentCarrier)
 
 const (
-	defaultNumWorkers = 16
-	// set default tracking number 1 minute for test
-	// change to 5 minute when go live
-	defaultRecurrent             = 1 * time.Minute
-	defaultRandomTime            = 1 * time.Minute
+	defaultNumWorkers            = 16
+	defaultRecurrent             = 5 * time.Minute
+	defaultRandomTime            = 5 * time.Minute
 	defaultTimeCancelOrder       = 5 * time.Minute
 	defaultRandomTimeCancelOrder = 5 * time.Minute
 	defaultNumFfmsInRequest      = 5
@@ -122,10 +120,14 @@ func (d *DHLSync) listFulfillments() (ffms []*shipmodel.Fulfillment, err error) 
 	for {
 		var _ffms shipmodel.Fulfillments
 
+		// lấy tất cả ffm chưa hoàn thành
+		// shipping_status not in (1, -1, -2)
+		// riêng trường hợp shipping_status = -2 cần xử lý trường hợp returning (chưa phải trạng thái cuối)
 		err = d.db.
 			Where("id > ?", fromID.Int64()).
 			Where("shipping_provider = ?", shipping_provider.DHL.Name()).
-			Where("status = ? OR status = ? OR shipping_state = ?", status5.Z.Enum(), status5.S.Enum(), shippingstate.Returning.Name()).
+			Where("shipping_code IS NOT NULL").
+			Where("status = ? AND (shipping_status not in (?, ?, ?) OR shipping_state = ?)", status5.S, status5.N, status5.P, status5.NS, shippingstate.Returning.String()).
 			OrderBy("id asc").
 			Limit(1000).
 			Find(&_ffms)
@@ -354,7 +356,7 @@ func (d *DHLSync) trackingOrder(id interface{}, p scheduler.Planner) (err error)
 }
 
 func sendError(shopID, connectionID dot.ID, ffmIDs []dot.ID, err error) {
-	ll.SendMessagef("Shipment-sync-service: DHL\n\nshopID: %v,\nconnectionID: %v,\nffmIDs: %v,\nerror: %v", shopID, connectionID, strings.Join(convertIDsToStrings(ffmIDs), ","), err.Error())
+	ll.SendMessagef("–––\n👹 Shipment-sync-service: DHL 👹\n- ShopID: %v\n- FfmIDs: %v \n- Error: %v\n---", shopID, strings.Join(convertIDsToStrings(ffmIDs), ","), err.Error())
 }
 
 func (d *DHLSync) callback(
@@ -420,6 +422,27 @@ func (d *DHLSync) callback(
 		}
 		if err := d.shippingAggr.Dispatch(ctx, update); err != nil {
 			return err
+		}
+
+		// Trả hàng
+		//
+		// - Khi trả hàng, DHL sẽ sinh ra một trackingID mới (mã DHL mới).
+		// - shipment_id (ffm_id của TopShip) sẽ không đổi
+		// - => Luôn gọi api get tracking (`rest/v3/Tracking`) bằng ffm_id của TopShip. `trackingID` mới sẽ được trả về trong kết quả của api này.
+		// - Đối soát:
+		//  - Đối soát COD sẽ không có đơn trả hàng.
+		//  - Đối soát cước phí (chỉ làm việc với kế toán) - sẽ có 2 đơn DHL
+		// => Update shipping_code (tracking_id) nếu cần
+		newShippingCode := shipmentItem.TrackingID.String()
+		if newShippingCode != "" && oldFfm.ShippingCode != newShippingCode {
+			if !shipping.IsStateReturn(update.ShippingState) {
+				return nil
+			}
+			updateShippingCodeCmd := &shipping.UpdateFulfillmentShippingCodeCommand{
+				FulfillmentID: ffmID,
+				ShippingCode:  newShippingCode,
+			}
+			return d.shippingAggr.Dispatch(ctx, updateShippingCodeCmd)
 		}
 
 		return nil
