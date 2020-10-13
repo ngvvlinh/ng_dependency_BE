@@ -135,7 +135,7 @@ func (a *MoneyTxAggregate) CreateMoneyTxShippingExternalLine(ctx context.Context
 		} else {
 			ffm := query.Result
 			line.EtopFulfillmentID = ffm.ID
-			line.ExternalCode = ffm.ExternalShippingCode
+			line.ExternalCode = ffm.ShippingCode
 			if ffm.MoneyTransactionShippingExternalID != 0 {
 				line.ImportError = &meta.Error{
 					Code: "ffm_exist_money_transaction_shipping_external",
