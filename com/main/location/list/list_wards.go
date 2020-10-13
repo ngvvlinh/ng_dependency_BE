@@ -468,26 +468,6 @@
 // Ward without vtpost: 08557 | Xã Đồng Sơn
 // Total Ward not found VTPostID: 466/11162
 
-// Ward without GHN: 16528 | Phường Quảng Thọ
-// Ward without GHN: 16531 | Phường Quảng Châu
-// Ward without GHN: 16534 | Phường Quảng Vinh
-// Ward without GHN: 23344 | Xã Đắk Blô
-// Ward without GHN: 23377 | Thị trấn Plei Kần
-// Ward without GHN: 23395 | Xã Bờ Y
-// Ward without GHN: 23404 | Xã Ngọc Lây
-// Ward without GHN: 23413 | Xã Ngọc Yêu
-// Ward without GHN: 23800 | Xã Hra
-// Ward without GHN: 26704 | Phường Phú Mỹ
-// Ward without GHN: 00067 | Phường Chương Dương
-// Ward without GHN: 03454 | Xã Bum Tở
-// Ward without GHN: 03754 | Xã Noong Lay
-// Ward without GHN: 03769 | Xã Thôm Mòn
-// Ward without GHN: 03865 | Xã Xím Vàng
-// Ward without GHN: 03871 | Xã Pắc Ngà
-// Ward without GHN: 03892 | Xã Phiêng Côn
-// Ward without GHN: 04117 | Xã Mương Chanh
-// Total Ward not found GHN: 18/11162
-
 package list
 
 import (
@@ -17965,7 +17945,8 @@ var Wards = []*types.Ward{
 		Name:         "Phường Quảng Thọ",
 		VTPostID:     16394,
 		HaravanCode:  "16528",
-		GhnCode:      "",
+		GhnCode:      "280310",
+		Alias:        []string{"Xã Quảng Thọ"},
 	},
 	{
 		Code:         "16531",
@@ -17973,7 +17954,7 @@ var Wards = []*types.Ward{
 		Name:         "Phường Quảng Châu",
 		VTPostID:     12305,
 		HaravanCode:  "16531",
-		GhnCode:      "",
+		GhnCode:      "280305",
 	},
 	{
 		Code:         "16534",
@@ -17981,7 +17962,7 @@ var Wards = []*types.Ward{
 		Name:         "Phường Quảng Vinh",
 		VTPostID:     0,
 		HaravanCode:  "16534",
-		GhnCode:      "",
+		GhnCode:      "280311",
 	},
 	{
 		Code:         "16537",
@@ -36753,8 +36734,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Đắk Blô",
 		VTPostID:     0,
 		HaravanCode:  "",
-		GhnCode:      "",
-		Alias:        []string{"Xã Đắc Blô"}},
+		GhnCode:      "360209",
+		Alias:        []string{"Xã Đắc Blô", "Xã Đắk Plô"}},
 	{
 		Code:         "23347",
 		DistrictCode: "610",
@@ -36841,7 +36822,8 @@ var Wards = []*types.Ward{
 		Name:         "Thị trấn Plei Kần",
 		VTPostID:     8902,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "360301",
+		Alias:        []string{"Thị trấn Plei Cần"},
 	},
 	{
 		Code:         "23380",
@@ -36889,7 +36871,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Bờ Y",
 		VTPostID:     0,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "360307",
+		Alias:        []string{"Xã Pờ Y"},
 	},
 	{
 		Code:         "23398",
@@ -36913,7 +36896,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Ngọc Lây",
 		VTPostID:     0,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "360907",
+		Alias:        []string{"Xã Ngọk Lây"},
 	},
 	{
 		Code:         "23407",
@@ -36937,7 +36921,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Ngọc Yêu",
 		VTPostID:     0,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "360908",
+		Alias:        []string{"Xã Ngok Yêu"},
 	},
 	{
 		Code:         "23416",
@@ -38169,7 +38154,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Hra",
 		VTPostID:     0,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "380309",
+		Alias:        []string{"Xã Hà Ra"},
 	},
 	{
 		Code:         "23803",
@@ -46706,7 +46692,8 @@ var Wards = []*types.Ward{
 		Name:         "Phường Phú Mỹ",
 		VTPostID:     10219,
 		HaravanCode:  "32279",
-		GhnCode:      "",
+		GhnCode:      "520601",
+		Alias:        []string{"Thị trấn Phú Mỹ"},
 	},
 	{
 		Code:         "26707",
@@ -62555,7 +62542,8 @@ var Wards = []*types.Ward{
 		Name:         "Phường Chương Dương",
 		VTPostID:     11,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "1A0201",
+		Alias:        []string{"Phường Chương Dương Độ"},
 	},
 	{
 		Code:         "00070",
@@ -73531,7 +73519,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Bum Tở",
 		VTPostID:     0,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "70503",
+		Alias:        []string{"Xã Bun Tở"},
 	},
 	{
 		Code:         "03457",
@@ -74435,7 +74424,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Noong Lay",
 		VTPostID:     5748,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "140422",
+		Alias:        []string{"Xã Nong Lay"},
 	},
 	{
 		Code:         "03757",
@@ -74475,7 +74465,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Thôm Mòn",
 		VTPostID:     5753,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "140427",
+		Alias:        []string{"Xã Thôn Mòn"},
 	},
 	{
 		Code:         "03772",
@@ -74731,7 +74722,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Xím Vàng",
 		VTPostID:     5819,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "140516",
+		Alias:        []string{"Xã Xín Vàng"},
 	},
 	{
 		Code:         "03868",
@@ -74755,7 +74747,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Pắc Ngà",
 		VTPostID:     5821,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "140502",
+		Alias:        []string{"Xã Bắc Ngà"},
 	},
 	{
 		Code:         "03874",
@@ -74819,7 +74812,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Phiêng Côn",
 		VTPostID:     0,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "140512",
+		Alias:        []string{"Xã Phiêng Kôn"},
 	},
 	{
 		Code:         "03895",
@@ -75323,7 +75317,8 @@ var Wards = []*types.Ward{
 		Name:         "Xã Mương Chanh",
 		VTPostID:     0,
 		HaravanCode:  "",
-		GhnCode:      "",
+		GhnCode:      "140717",
+		Alias:        []string{"Xã Mương Tranh"},
 	},
 	{
 		Code:         "04120",
