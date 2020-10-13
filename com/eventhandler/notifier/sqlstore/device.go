@@ -177,6 +177,13 @@ func (s *DeviceStore) DeleteDevice(device *model.Device) error {
 	return err
 }
 
+func (s *DeviceStore) DeleteDeviceByExternalID(externalDeviceID string, externalServiceID int) error {
+	_, err := s.db.Table("device").
+		Where("external_device_id = ? AND external_service_id = ?", externalDeviceID, externalServiceID).
+		Delete(&model.Device{})
+	return err
+}
+
 func (s *DeviceStore) GetAllUsers() ([]dot.ID, error) {
 	var userIDs []int64
 	x := s.db.SQL(`SELECT DISTINCT user_id FROM device`)

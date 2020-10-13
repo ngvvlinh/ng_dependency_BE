@@ -15,7 +15,9 @@ import (
 	"o.o/common/l"
 )
 
-var oneSignalNotifier *notifier.Notifier
+var (
+	oneSignalNotifier *notifier.Notifier
+)
 
 // TODO(vu): remove this
 func Init(n *notifier.Notifier) {
@@ -107,7 +109,7 @@ func _sendToOneSignal(ctx context.Context, userID dot.ID, notify *notifiermodel.
 	if len(devices) == 0 {
 		return nil
 	}
-	deviceIDs := FilterDevicesByConfig(devices, notify.AccountID)
+	deviceIDs := filterDevicesByConfig(devices, notify.AccountID)
 
 	data := notifiermodel.PrepareNotiData(&notifiermodel.NotiDataAddition{
 		Entity:   notify.Entity,
@@ -128,25 +130,52 @@ func _sendToOneSignal(ctx context.Context, userID dot.ID, notify *notifiermodel.
 			WebURL:            webUrl,
 		},
 	}
-	if err = oneSignalNotifier.CreateNotification(ctx, cmd); err != nil {
-		return err
-	}
 
-	// UpdateInfo external_noti_id and sync_status
 	updateNotify := &notifiermodel.Notification{
 		ID:                notify.ID,
 		SyncStatus:        status3.P,
-		ExternalNotiID:    cmd.Result.ID,
 		ExternalServiceID: notifiermodel.ExternalServiceOneSignalID,
 		SyncedAt:          now,
 	}
-	if err := notifyStore.UpdateNotification(updateNotify); err != nil {
-		return err
+	if err = oneSignalNotifier.CreateNotification(ctx, cmd); err != nil {
+		updateNotify.SyncStatus = status3.N
 	}
-	return nil
+
+	if cmd.Result.Recipients < len(deviceIDs) {
+		handleNotifyError(cmd)
+	}
+
+	updateNotify.ExternalNotiID = cmd.Result.ID
+	err = notifyStore.UpdateNotification(updateNotify)
+	return err
 }
 
-func FilterDevicesByConfig(devices []*notifiermodel.Device, accountID dot.ID) (deviceIDs []string) {
+// Handle error for OneSignal
+// https://documentation.onesignal.com/reference/create-notification#results---create-notification
+// "invalid_player_ids" will only return device ids associated with the targeted app_id if you include ids that are not found within the app_id they will be ignored and not returned within this field
+// => When this error happens, delete the device in our database
+func handleNotifyError(cmd *notifiermodel.SendNotificationCommand) {
+	errVal, ok := cmd.Result.Errors.(map[string]interface{})
+	if !ok {
+		return
+	}
+
+	if invalidPlayerIDs, ok := errVal["invalid_player_ids"]; ok {
+		ids, ok := invalidPlayerIDs.([]interface{})
+		if !ok {
+			return
+		}
+
+		for _, id := range ids {
+			err := deviceStore.DeleteDeviceByExternalID(fmt.Sprintf("%v", id), notifiermodel.ExternalServiceOneSignalID)
+			if err != nil {
+				ll.Error(fmt.Sprintf("delete device got error: %v", err))
+			}
+		}
+	}
+}
+
+func filterDevicesByConfig(devices []*notifiermodel.Device, accountID dot.ID) (deviceIDs []string) {
 	for _, device := range devices {
 		if device.Config == nil {
 			deviceIDs = append(deviceIDs, device.ExternalDeviceID)
