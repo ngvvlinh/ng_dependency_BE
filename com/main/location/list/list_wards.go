@@ -14716,6 +14716,13 @@ var Wards = []*types.Ward{
 		GhnCode:      "282113",
 	},
 	{
+		Code:         "ETOP15307",
+		DistrictCode: "392",
+		Name:         "Xã Yến Sơn",
+		VTPostID:     6504,
+		GhnCode:      "800149",
+	},
+	{
 		Code:         "15307",
 		DistrictCode: "392",
 		Name:         "Xã Hà Ninh",
