@@ -28,6 +28,7 @@ var acceptNotifyStates = []string{
 
 func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	var history shipmodel.FulfillmentHistory
+
 	if ok, err := historyStore(ctx).GetHistory(&history, event.RID); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
@@ -65,8 +66,8 @@ func prepareNotifyFfmCommands(ctx context.Context, op pgevent.TGOP, history ship
 	}
 
 	var res []*notifiermodel.CreateNotificationArgs
-	if history.ShippingFeeShop().Int().Valid {
-		cmds := templateFfmChangedFee(connection, op, userIDs, ffm, history)
+	if op == pgevent.OpUpdate && history.ShippingFeeShop().Int().Valid {
+		cmds := templateFfmChangedFee(connection, userIDs, ffm, history)
 		if len(cmds) > 0 {
 			res = append(res, cmds...)
 		}
@@ -82,12 +83,12 @@ func prepareNotifyFfmCommands(ctx context.Context, op pgevent.TGOP, history ship
 
 func templateFfmChangedFee(
 	connection *connectioning.Connection,
-	op pgevent.TGOP,
 	userIDs []dot.ID,
 	ffm *shipmodel.Fulfillment,
 	history shipmodel.FulfillmentHistory,
 ) []*notifiermodel.CreateNotificationArgs {
-	if op == pgevent.OpInsert {
+	// Không bắn noti thay đổi cước phí khi vừa tạo đơn
+	if history.ShippingState().String().Valid && history.ShippingState().String().String != shipping.Created.String() {
 		return nil
 	}
 
