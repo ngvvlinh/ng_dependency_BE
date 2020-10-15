@@ -423,7 +423,7 @@ func (m *PurchaseRefund) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')

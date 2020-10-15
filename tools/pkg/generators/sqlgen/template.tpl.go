@@ -156,7 +156,11 @@ func (m *{{.TypeNames}}) SQLTableName() string { return {{.TableName | go}} }
 	w.WriteName({{.TableName | go}})
 	w.WriteRawString(" SET ")
     {{range .Cols -}}
+	  {{if isUpdatedAt $.p . | not -}}
 		if {{nonzero $.p .}} {
+      {{else -}}
+        if true { // always update time
+      {{end -}}
 		flag = true
 		w.WriteName({{.ColumnName | go}})
 		w.WriteByte('=')

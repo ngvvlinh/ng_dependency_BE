@@ -427,7 +427,7 @@ func (m *FbCustomerConversation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -785,7 +785,7 @@ func (m *FbCustomerConversationState) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ExternalPageID)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -1300,7 +1300,7 @@ func (m *FbExternalComment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -1779,7 +1779,7 @@ func (m *FbExternalConversation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -2289,7 +2289,7 @@ func (m *FbExternalMessage) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -2798,7 +2798,7 @@ func (m *FbExternalPost) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')

@@ -18,15 +18,16 @@ import (
 )
 
 var funcs = template.FuncMap{
-	"concat":    fnConcat,
-	"go":        fnGo,
-	"quote":     fnQuote,
-	"nonzero":   fnNonZero,
-	"updateArg": fnUpdateArg,
-	"plural":    fnPlural,
-	"toTitle":   fnToTitle,
-	"typeName":  fnTypeName,
-	"baseName":  fnBaseName,
+	"concat":      fnConcat,
+	"go":          fnGo,
+	"quote":       fnQuote,
+	"nonzero":     fnNonZero,
+	"updateArg":   fnUpdateArg,
+	"isUpdatedAt": fnIsUpdatedAt,
+	"plural":      fnPlural,
+	"toTitle":     fnToTitle,
+	"typeName":    fnTypeName,
+	"baseName":    fnBaseName,
 
 	"tableForType":    fnTableForType,
 	"listColsForType": fnListColsForType,
@@ -66,6 +67,10 @@ func fnNonZero(p generator.Printer, col *colDef) string {
 
 func fnUpdateArg(p generator.Printer, col *colDef) string {
 	return genUpdateArg(p, col)
+}
+
+func fnIsUpdatedAt(p generator.Printer, col *colDef) bool {
+	return col.timeLevel == timeUpdate
 }
 
 func fnTypeName(typ types.Type) string {

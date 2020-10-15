@@ -590,7 +590,7 @@ func (m *CommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -891,7 +891,7 @@ func (m *CustomerPolicyGroup) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -1381,7 +1381,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -1996,7 +1996,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -2496,7 +2496,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -2938,7 +2938,7 @@ func (m *ProductPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -3460,7 +3460,7 @@ func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -3882,7 +3882,7 @@ func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -4262,7 +4262,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -4774,7 +4774,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -5202,7 +5202,7 @@ func (m *UserReferral) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')

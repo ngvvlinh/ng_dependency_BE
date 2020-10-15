@@ -1194,7 +1194,7 @@ func (m *VtigerContact) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.EtopUserID)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')

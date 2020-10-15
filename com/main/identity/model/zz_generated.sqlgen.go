@@ -609,7 +609,7 @@ func (m *AccountAuth) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -1210,7 +1210,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -2056,7 +2056,7 @@ func (m *Affiliate) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -2615,7 +2615,7 @@ func (m *Partner) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -3061,7 +3061,7 @@ func (m *PartnerRelation) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -3879,7 +3879,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -5095,7 +5095,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -5581,7 +5581,7 @@ func (m *UserAuth) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedAt)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
@@ -5915,7 +5915,7 @@ func (m *UserInternal) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Hashpwd)
 	}
-	if !m.UpdatedAt.IsZero() {
+	if true { // always update time
 		flag = true
 		w.WriteName("updated_at")
 		w.WriteByte('=')
