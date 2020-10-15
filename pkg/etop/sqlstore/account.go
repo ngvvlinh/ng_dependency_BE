@@ -228,7 +228,7 @@ func (st *AccountStore) UpdateShop(ctx context.Context, cmd *identitymodelx.Upda
 			updateMapValue["auto_create_ffm"] = cmd.AutoCreateFFM
 		}
 		if len(updateMapValue) != 0 {
-			if err := st.db.Table("shop").Where("id= ?", shop.ID).ShouldUpdateMap(updateMapValue); err != nil {
+			if err := tx.Table("shop").Where("id= ?", shop.ID).ShouldUpdateMap(updateMapValue); err != nil {
 				return err
 			}
 		}
@@ -244,7 +244,7 @@ func (st *AccountStore) UpdateShop(ctx context.Context, cmd *identitymodelx.Upda
 		}
 
 		cmd.Result = new(identitymodel.ShopExtended)
-		if has, err := st.db.
+		if has, err := tx.
 			Table("shop").
 			Where("s.id = ?", shop.ID).
 			Get(cmd.Result); err != nil || !has {
