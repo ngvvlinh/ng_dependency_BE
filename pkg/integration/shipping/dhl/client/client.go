@@ -82,7 +82,7 @@ func New(env string, cfg DHLAccountCfg) *Client {
 		PickupAccountIDNorth = "5363229"
 		PickupAccountIDMiddle = "5363228"
 		PickupAccountIDSouth = "5277176206"
-		c.baseUrl = "https://api.dhlecommerce.asia/rest"
+		c.baseUrl = "https://api.dhlecommerce.dhl.com/rest"
 	default:
 		ll.Fatal("DHL: Invalid env")
 	}
