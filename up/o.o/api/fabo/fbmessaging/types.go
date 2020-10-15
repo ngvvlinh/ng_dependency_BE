@@ -22,6 +22,7 @@ type FbExternalMessage struct {
 	ExternalTo             []*FbObjectTo
 	ExternalFrom           *FbObjectFrom
 	ExternalAttachments    []*FbMessageAttachment
+	ExternalMessageShares  []*FbMessageShare
 	InternalSource         fb_internal_source.FbInternalSource
 	ExternalCreatedTime    time.Time
 	CreatedAt              time.Time `compare:"ignore"`
@@ -75,6 +76,13 @@ type FbMessageDataAttachmentVideoData struct {
 	URL        string
 	PreviewURL string
 	Rotation   int
+}
+
+type FbMessageShare struct {
+	ID          string
+	Description string
+	Name        string
+	Link        string
 }
 
 type FbExternalComment struct {

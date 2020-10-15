@@ -21,6 +21,7 @@ type FbExternalMessage struct {
 	ExternalFrom           *FbObjectFrom
 	ExternalFromID         string
 	ExternalAttachments    []*FbMessageAttachment
+	ExternalMessageShares  []*FbMessageShare
 	ExternalCreatedTime    time.Time `paging:"external_created_time"`
 	InternalSource         fb_internal_source.FbInternalSource
 	CreatedAt              time.Time `sq:"create"`
@@ -75,6 +76,13 @@ type FbMessageDataAttachmentVideoData struct {
 	URL        string `json:"url"`
 	PreviewURL string `json:"preview_url"`
 	Rotation   int    `json:"rotation"`
+}
+
+type FbMessageShare struct {
+	ID          string `json:"id"`
+	Description string `json:"description"`
+	Name        string `json:"name"`
+	Link        string `json:"link"`
 }
 
 // +sqlgen

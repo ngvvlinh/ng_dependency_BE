@@ -406,8 +406,12 @@ func (s *Synchronizer) handleTaskGetMessages(
 
 	for _, messageData := range messagesData {
 		var externalAttachments []*fbmessaging.FbMessageAttachment
+		var externalShares []*fbmessaging.FbMessageShare
 		if messageData.Attachments != nil {
 			externalAttachments = fbclientconvert.ConvertMessageDataAttachments(messageData.Attachments.Data)
+		}
+		if messageData.Shares != nil {
+			externalShares = fbclientconvert.ConvertMessageShares(messageData.Shares.Data)
 		}
 
 		if messageData.From != nil {
@@ -444,16 +448,35 @@ func (s *Synchronizer) handleTaskGetMessages(
 			internalSource = oldFbExternalMessage.InternalSource
 		}
 
+		currentMessage := messageData.Message
+		{
+			var strs []string
+			if currentMessage != "" {
+				strs = append(strs, currentMessage)
+			}
+			// Get first share
+			if len(externalShares) > 0 {
+				if externalShares[0].Description != "" {
+					strs = append(strs, externalShares[0].Description)
+				}
+				if externalShares[0].Link != "" {
+					strs = append(strs, externalShares[0].Link)
+				}
+			}
+			currentMessage = strings.Join(strs, "\n")
+		}
+
 		fbExternalMessagesArgs = append(fbExternalMessagesArgs, &fbmessaging.CreateFbExternalMessageArgs{
 			ID:                     cm.NewID(),
 			ExternalConversationID: externalConversationID,
 			ExternalPageID:         externalPageID,
 			ExternalID:             messageData.ID,
-			ExternalMessage:        messageData.Message,
+			ExternalMessage:        currentMessage,
 			ExternalSticker:        messageData.Sticker,
 			ExternalTo:             fbclientconvert.ConvertObjectsTo(messageData.To),
 			ExternalFrom:           fbclientconvert.ConvertObjectFrom(messageData.From),
 			ExternalAttachments:    externalAttachments,
+			ExternalMessageShares:  externalShares,
 			ExternalCreatedTime:    messageData.CreatedTime.ToTime(),
 			InternalSource:         internalSource,
 		})

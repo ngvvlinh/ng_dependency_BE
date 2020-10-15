@@ -289,7 +289,7 @@ func (f *FbClient) CallAPIListMessages(req *ListMessagesRequest) (*model.Message
 
 	params := &ListMessagesParams{
 		AccessToken: req.AccessToken,
-		Fields:      fmt.Sprintf("messages.limit(%d){id,from,to,message,sticker,created_time,attachments{id,image_data,mime_type,name,size,video_data,file_url}}", defaultPaging),
+		Fields:      fmt.Sprintf("messages.limit(%d){id,from,to,message,sticker,created_time,attachments{id,image_data,mime_type,name,size,video_data,file_url},shares{description,id,link,name}}", defaultPaging),
 		DateFormat:  UnixDateFormat,
 	}
 

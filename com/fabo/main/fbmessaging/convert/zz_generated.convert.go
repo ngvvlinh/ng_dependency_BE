@@ -226,6 +226,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*fbmessagingmodel.FbMessageDataAttachmentVideoData) = out0
 		return nil
 	})
+	s.Register((*fbmessagingmodel.FbMessageShare)(nil), (*fbmessaging.FbMessageShare)(nil), func(arg, out interface{}) error {
+		Convert_fbmessagingmodel_FbMessageShare_fbmessaging_FbMessageShare(arg.(*fbmessagingmodel.FbMessageShare), out.(*fbmessaging.FbMessageShare))
+		return nil
+	})
+	s.Register(([]*fbmessagingmodel.FbMessageShare)(nil), (*[]*fbmessaging.FbMessageShare)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessagingmodel_FbMessageShares_fbmessaging_FbMessageShares(arg.([]*fbmessagingmodel.FbMessageShare))
+		*out.(*[]*fbmessaging.FbMessageShare) = out0
+		return nil
+	})
+	s.Register((*fbmessaging.FbMessageShare)(nil), (*fbmessagingmodel.FbMessageShare)(nil), func(arg, out interface{}) error {
+		Convert_fbmessaging_FbMessageShare_fbmessagingmodel_FbMessageShare(arg.(*fbmessaging.FbMessageShare), out.(*fbmessagingmodel.FbMessageShare))
+		return nil
+	})
+	s.Register(([]*fbmessaging.FbMessageShare)(nil), (*[]*fbmessagingmodel.FbMessageShare)(nil), func(arg, out interface{}) error {
+		out0 := Convert_fbmessaging_FbMessageShares_fbmessagingmodel_FbMessageShares(arg.([]*fbmessaging.FbMessageShare))
+		*out.(*[]*fbmessagingmodel.FbMessageShare) = out0
+		return nil
+	})
 	s.Register((*fbmessagingmodel.FbObjectFrom)(nil), (*fbmessaging.FbObjectFrom)(nil), func(arg, out interface{}) error {
 		Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.(*fbmessagingmodel.FbObjectFrom), out.(*fbmessaging.FbObjectFrom))
 		return nil
@@ -895,6 +913,7 @@ func convert_fbmessagingmodel_FbExternalMessage_fbmessaging_FbExternalMessage(ar
 	out.ExternalTo = Convert_fbmessagingmodel_FbObjectToes_fbmessaging_FbObjectToes(arg.ExternalTo)
 	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
 	out.ExternalAttachments = Convert_fbmessagingmodel_FbMessageAttachments_fbmessaging_FbMessageAttachments(arg.ExternalAttachments)
+	out.ExternalMessageShares = Convert_fbmessagingmodel_FbMessageShares_fbmessaging_FbMessageShares(arg.ExternalMessageShares)
 	out.InternalSource = arg.InternalSource           // simple assign
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
@@ -928,6 +947,7 @@ func convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(ar
 	out.ExternalFrom = Convert_fbmessaging_FbObjectFrom_fbmessagingmodel_FbObjectFrom(arg.ExternalFrom, nil)
 	out.ExternalFromID = "" // zero value
 	out.ExternalAttachments = Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(arg.ExternalAttachments)
+	out.ExternalMessageShares = Convert_fbmessaging_FbMessageShares_fbmessagingmodel_FbMessageShares(arg.ExternalMessageShares)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.InternalSource = arg.InternalSource           // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
@@ -968,6 +988,7 @@ func apply_fbmessaging_CreateFbExternalMessageArgs_fbmessaging_FbExternalMessage
 	out.ExternalTo = arg.ExternalTo                         // simple assign
 	out.ExternalFrom = arg.ExternalFrom                     // simple assign
 	out.ExternalAttachments = arg.ExternalAttachments       // simple assign
+	out.ExternalMessageShares = arg.ExternalMessageShares   // simple assign
 	out.InternalSource = arg.InternalSource                 // simple assign
 	out.ExternalCreatedTime = arg.ExternalCreatedTime       // simple assign
 	out.CreatedAt = time.Time{}                             // zero value
@@ -1289,6 +1310,68 @@ func Convert_fbmessaging_FbMessageDataAttachmentVideoDatas_fbmessagingmodel_FbMe
 	outs = make([]*fbmessagingmodel.FbMessageDataAttachmentVideoData, len(args))
 	for i := range tmps {
 		outs[i] = Convert_fbmessaging_FbMessageDataAttachmentVideoData_fbmessagingmodel_FbMessageDataAttachmentVideoData(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/fabo/fbmessaging.FbMessageShare --//
+
+func Convert_fbmessagingmodel_FbMessageShare_fbmessaging_FbMessageShare(arg *fbmessagingmodel.FbMessageShare, out *fbmessaging.FbMessageShare) *fbmessaging.FbMessageShare {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.FbMessageShare{}
+	}
+	convert_fbmessagingmodel_FbMessageShare_fbmessaging_FbMessageShare(arg, out)
+	return out
+}
+
+func convert_fbmessagingmodel_FbMessageShare_fbmessaging_FbMessageShare(arg *fbmessagingmodel.FbMessageShare, out *fbmessaging.FbMessageShare) {
+	out.ID = arg.ID                   // simple assign
+	out.Description = arg.Description // simple assign
+	out.Name = arg.Name               // simple assign
+	out.Link = arg.Link               // simple assign
+}
+
+func Convert_fbmessagingmodel_FbMessageShares_fbmessaging_FbMessageShares(args []*fbmessagingmodel.FbMessageShare) (outs []*fbmessaging.FbMessageShare) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessaging.FbMessageShare, len(args))
+	outs = make([]*fbmessaging.FbMessageShare, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessagingmodel_FbMessageShare_fbmessaging_FbMessageShare(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_fbmessaging_FbMessageShare_fbmessagingmodel_FbMessageShare(arg *fbmessaging.FbMessageShare, out *fbmessagingmodel.FbMessageShare) *fbmessagingmodel.FbMessageShare {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessagingmodel.FbMessageShare{}
+	}
+	convert_fbmessaging_FbMessageShare_fbmessagingmodel_FbMessageShare(arg, out)
+	return out
+}
+
+func convert_fbmessaging_FbMessageShare_fbmessagingmodel_FbMessageShare(arg *fbmessaging.FbMessageShare, out *fbmessagingmodel.FbMessageShare) {
+	out.ID = arg.ID                   // simple assign
+	out.Description = arg.Description // simple assign
+	out.Name = arg.Name               // simple assign
+	out.Link = arg.Link               // simple assign
+}
+
+func Convert_fbmessaging_FbMessageShares_fbmessagingmodel_FbMessageShares(args []*fbmessaging.FbMessageShare) (outs []*fbmessagingmodel.FbMessageShare) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]fbmessagingmodel.FbMessageShare, len(args))
+	outs = make([]*fbmessagingmodel.FbMessageShare, len(args))
+	for i := range tmps {
+		outs[i] = Convert_fbmessaging_FbMessageShare_fbmessagingmodel_FbMessageShare(args[i], &tmps[i])
 	}
 	return outs
 }

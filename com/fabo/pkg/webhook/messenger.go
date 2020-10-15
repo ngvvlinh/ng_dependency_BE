@@ -3,6 +3,7 @@ package webhook
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
@@ -246,9 +247,31 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 
 	// Create new message
 	var externalAttachments []*fbmessaging.FbMessageAttachment
+	var externalShares []*fbmessaging.FbMessageShare
 	if messageResp.Attachments != nil {
 		externalAttachments = fbclientconvert.ConvertMessageDataAttachments(messageResp.Attachments.Data)
 	}
+	if messageResp.Shares != nil {
+		externalShares = fbclientconvert.ConvertMessageShares(messageResp.Shares.Data)
+	}
+	currentMessage := messageResp.Message
+	{
+		var strs []string
+		if currentMessage != "" {
+			strs = append(strs, currentMessage)
+		}
+		// Get first share
+		if len(externalShares) > 0 {
+			if externalShares[0].Description != "" {
+				strs = append(strs, externalShares[0].Description)
+			}
+			if externalShares[0].Link != "" {
+				strs = append(strs, externalShares[0].Link)
+			}
+		}
+		currentMessage = strings.Join(strs, "\n")
+	}
+
 	if err := wh.fbmessagingAggr.Dispatch(ctx, &fbmessaging.CreateOrUpdateFbExternalMessagesCommand{
 		FbExternalMessages: []*fbmessaging.CreateFbExternalMessageArgs{
 			{
@@ -256,11 +279,12 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 				ExternalConversationID: externalConversationID,
 				ExternalPageID:         externalPageID,
 				ExternalID:             messageResp.ID,
-				ExternalMessage:        messageResp.Message,
+				ExternalMessage:        currentMessage,
 				ExternalSticker:        messageResp.Sticker,
 				ExternalTo:             fbclientconvert.ConvertObjectsTo(messageResp.To),
 				ExternalFrom:           fbclientconvert.ConvertObjectFrom(messageResp.From),
 				ExternalAttachments:    externalAttachments,
+				ExternalMessageShares:  externalShares,
 				ExternalCreatedTime:    messageResp.CreatedTime.ToTime(),
 				InternalSource:         internalSource,
 			},

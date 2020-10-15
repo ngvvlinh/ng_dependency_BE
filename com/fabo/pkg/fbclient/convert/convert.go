@@ -108,6 +108,19 @@ func ConvertMessageDataAttachments(ins []*model.MessageDataAttachment) []*fbmess
 	return outs
 }
 
+func ConvertMessageShares(ins []*model.MessageDataShare) []*fbmessaging.FbMessageShare {
+	outs := make([]*fbmessaging.FbMessageShare, 0, len(ins))
+	for _, in := range ins {
+		outs = append(outs, &fbmessaging.FbMessageShare{
+			ID:          in.ID,
+			Description: in.Description,
+			Name:        in.Name,
+			Link:        in.Link,
+		})
+	}
+	return outs
+}
+
 func ConvertAttachments(in *model.Attachments) []*fbmessaging.PostAttachment {
 	if in == nil {
 		return nil

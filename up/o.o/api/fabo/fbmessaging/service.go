@@ -86,6 +86,7 @@ type CreateFbExternalMessageArgs struct {
 	ExternalTo             []*FbObjectTo
 	ExternalFrom           *FbObjectFrom
 	ExternalAttachments    []*FbMessageAttachment
+	ExternalMessageShares  []*FbMessageShare
 	ExternalCreatedTime    time.Time
 	InternalSource         fb_internal_source.FbInternalSource
 }

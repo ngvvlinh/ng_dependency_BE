@@ -18,6 +18,7 @@ type MessageData struct {
 	From        *ObjectFrom             `json:"from"`
 	Sticker     string                  `json:"sticker"`
 	Attachments *MessageDataAttachments `json:"attachments"`
+	Shares      *MessageDataShares      `json:"shares"`
 }
 
 type MessageDataAttachments struct {
@@ -54,6 +55,18 @@ type MessageDataAttachmentVideoData struct {
 	URL        string `json:"url"`
 	PreviewURL string `json:"preview_url"`
 	Rotation   int    `json:"rotation"`
+}
+
+type MessageDataShares struct {
+	Data   []*MessageDataShare     `json:"data"`
+	Paging *FacebookPagingResponse `json:"paging"`
+}
+
+type MessageDataShare struct {
+	ID          string `json:"id"`
+	Description string `json:"description"`
+	Link        string `json:"link"`
+	Name        string `json:"name"`
 }
 
 type SubscribedAppResponse struct {
