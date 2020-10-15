@@ -79,9 +79,12 @@ func New(env string, cfg DHLAccountCfg) *Client {
 		PickupAccountIDSouth = "5351118"
 		c.baseUrl = "https://apitest.dhlecommerce.asia/rest"
 	case cmenv.PartnerEnvProd:
+		// CÔNG TY CỔ PHẦN EB2B - HN - 5363229
 		PickupAccountIDNorth = "5363229"
+		// CÔNG TY CỔ PHẦN EB2B - ĐN - 5363228
 		PickupAccountIDMiddle = "5363228"
-		PickupAccountIDSouth = "5277176206"
+		// CÔNG TY CỔ PHẦN EB2B - HCM - 5363326
+		PickupAccountIDSouth = "5363326"
 		c.baseUrl = "https://api.dhlecommerce.dhl.com/rest"
 	default:
 		ll.Fatal("DHL: Invalid env")
