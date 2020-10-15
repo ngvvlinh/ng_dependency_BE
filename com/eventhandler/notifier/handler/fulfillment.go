@@ -88,7 +88,8 @@ func templateFfmChangedFee(
 	history shipmodel.FulfillmentHistory,
 ) []*notifiermodel.CreateNotificationArgs {
 	// Không bắn noti thay đổi cước phí khi vừa tạo đơn
-	if history.ShippingState().String().Valid && history.ShippingState().String().String != shipping.Created.String() {
+	if history.ShippingState().String().Valid && history.ShippingState().String().String != shipping.Created.String() ||
+		history.ShippingCode().String().Valid {
 		return nil
 	}
 
