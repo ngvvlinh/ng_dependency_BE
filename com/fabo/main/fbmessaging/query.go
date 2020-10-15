@@ -58,40 +58,13 @@ func (q *FbMessagingQuery) ListFbCustomerConversations(
 	}
 	fbCustomerConversations, err := query.WithPaging(args.Paging).ListFbCustomerConversations()
 
-	var fbCustomerConversationsResult []*fbmessaging.FbCustomerConversation
-	// map isRead
-	{
-		var fbCustomerConversationIDs []dot.ID
-		for _, fbCustomerConversation := range fbCustomerConversations {
-			fbCustomerConversationIDs = append(fbCustomerConversationIDs, fbCustomerConversation.ID)
-		}
-		getFbCustomerConversationStateQuery := q.fbExternalConversationStateStore(ctx).IDs(fbCustomerConversationIDs...)
-		if args.IsRead.Valid {
-			getFbCustomerConversationStateQuery = getFbCustomerConversationStateQuery.IsRead(args.IsRead.Bool)
-		}
-
-		fbCustomerConversationStates, err := getFbCustomerConversationStateQuery.ListFbCustomerConversationStates()
-		if err != nil {
-			return nil, err
-		}
-
-		mapFbCustomerConversationStates := make(map[dot.ID]*fbmessaging.FbCustomerConversationState)
-		for _, fbCustomerConversationState := range fbCustomerConversationStates {
-			mapFbCustomerConversationStates[fbCustomerConversationState.ID] = fbCustomerConversationState
-		}
-
-		for _, fbCustomerConversation := range fbCustomerConversations {
-			if fbCustomerConversationState, ok := mapFbCustomerConversationStates[fbCustomerConversation.ID]; ok {
-				fbCustomerConversation.IsRead = fbCustomerConversationState.IsRead
-				fbCustomerConversationsResult = append(fbCustomerConversationsResult, fbCustomerConversation)
-			}
-		}
-	}
+	fbCustomerConversations, err = q.mapStateFbCustomerConversations(ctx, fbCustomerConversations, args.IsRead)
 	if err != nil {
 		return nil, err
 	}
+
 	return &fbmessaging.FbCustomerConversationsResponse{
-		FbCustomerConversations: fbCustomerConversationsResult,
+		FbCustomerConversations: fbCustomerConversations,
 		Paging:                  query.GetPaging(),
 	}, nil
 }
@@ -138,7 +111,7 @@ func (q *FbMessagingQuery) ListFbCustomerConversationsByExternalIDs(
 	if err != nil {
 		return nil, err
 	}
-	return fbExternalMessages, nil
+	return q.mapStateFbCustomerConversations(ctx, fbExternalMessages, dot.NullBool{Valid: false})
 }
 
 func (q *FbMessagingQuery) ListFbExternalMessages(
@@ -384,21 +357,68 @@ func (q *FbMessagingQuery) GetLatestUpdateActiveComment(
 func (q *FbMessagingQuery) ListFbCustomerConversationsByExternalUserIDs(
 	ctx context.Context, extUserIDs []string,
 ) ([]*fbmessaging.FbCustomerConversation, error) {
-	return q.fbCustomerConversationStore(ctx).ExternalUserIDs(extUserIDs).ListFbCustomerConversations()
+	conversations, err := q.fbCustomerConversationStore(ctx).ExternalUserIDs(extUserIDs).ListFbCustomerConversations()
+	if err != nil {
+		return nil, err
+	}
+	return q.mapStateFbCustomerConversations(ctx, conversations, dot.NullBool{Valid: false})
 }
 
 func (q *FbMessagingQuery) ListFbCustomerConversationsByIDs(
 	ctx context.Context, ids []dot.ID,
 ) ([]*fbmessaging.FbCustomerConversation, error) {
-	return q.fbCustomerConversationStore(ctx).IDs(ids).ListFbCustomerConversations()
+	conversations, err := q.fbCustomerConversationStore(ctx).IDs(ids).ListFbCustomerConversations()
+	if err != nil {
+		return nil, err
+	}
+	return q.mapStateFbCustomerConversations(ctx, conversations, dot.NullBool{Valid: false})
 }
 
 func (q *FbMessagingQuery) ListFbCustomerConversationsByExtUserIDsAndExtIDs(
 	ctx context.Context, extUserIDs, extIDs []string,
 ) ([]*fbmessaging.FbCustomerConversation, error) {
-	return q.
+	conversations, err := q.
 		fbCustomerConversationStore(ctx).
 		ExternalIDs(extIDs).
 		ExternalUserIDs(extUserIDs).
 		ListFbCustomerConversations()
+	if err != nil {
+		return nil, err
+	}
+	return q.mapStateFbCustomerConversations(ctx, conversations, dot.NullBool{Valid: false})
+}
+
+func (q *FbMessagingQuery) mapStateFbCustomerConversations(
+	ctx context.Context,
+	fbCustomerConversations []*fbmessaging.FbCustomerConversation,
+	isRead dot.NullBool,
+) ([]*fbmessaging.FbCustomerConversation, error) {
+	var fbCustomerConversationsResult []*fbmessaging.FbCustomerConversation
+	var fbCustomerConversationIDs []dot.ID
+	for _, fbCustomerConversation := range fbCustomerConversations {
+		fbCustomerConversationIDs = append(fbCustomerConversationIDs, fbCustomerConversation.ID)
+	}
+	getFbCustomerConversationStateQuery := q.fbExternalConversationStateStore(ctx).IDs(fbCustomerConversationIDs...)
+	if isRead.Valid {
+		getFbCustomerConversationStateQuery = getFbCustomerConversationStateQuery.IsRead(isRead.Bool)
+	}
+
+	fbCustomerConversationStates, err := getFbCustomerConversationStateQuery.ListFbCustomerConversationStates()
+	if err != nil {
+		return nil, err
+	}
+
+	mapFbCustomerConversationStates := make(map[dot.ID]*fbmessaging.FbCustomerConversationState)
+	for _, fbCustomerConversationState := range fbCustomerConversationStates {
+		mapFbCustomerConversationStates[fbCustomerConversationState.ID] = fbCustomerConversationState
+	}
+
+	for _, fbCustomerConversation := range fbCustomerConversations {
+		if fbCustomerConversationState, ok := mapFbCustomerConversationStates[fbCustomerConversation.ID]; ok {
+			fbCustomerConversation.IsRead = fbCustomerConversationState.IsRead
+			fbCustomerConversationsResult = append(fbCustomerConversationsResult, fbCustomerConversation)
+		}
+	}
+
+	return fbCustomerConversationsResult, nil
 }
