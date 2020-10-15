@@ -2,6 +2,7 @@ package convertpb
 
 import (
 	"context"
+	"encoding/json"
 
 	"o.o/api/main/authorization"
 	"o.o/api/main/credit"
@@ -958,6 +959,9 @@ func PbDevice(m *notimodel.Device) *etop.Device {
 }
 
 func PbNotification(m *notimodel.Notification) *etop.Notification {
+	var meta *etop.NotificationMeta
+	_ = json.Unmarshal(m.MetaData, &meta)
+
 	return &etop.Notification{
 		Id:               m.ID,
 		AccountId:        m.AccountID,
@@ -971,6 +975,7 @@ func PbNotification(m *notimodel.Notification) *etop.Notification {
 		SeenAt:           cmapi.PbTime(m.SeenAt),
 		CreatedAt:        cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:        cmapi.PbTime(m.UpdatedAt),
+		MetaData:         meta,
 	}
 }
 

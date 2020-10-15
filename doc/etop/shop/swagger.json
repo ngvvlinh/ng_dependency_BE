@@ -6836,6 +6836,9 @@
         "message": {
           "type": "string"
         },
+        "meta_data": {
+          "$ref": "#/definitions/baNotificationMeta"
+        },
         "seen_at": {
           "type": "string",
           "format": "date-time"
@@ -6852,6 +6855,20 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "baNotificationMeta": {
+      "type": "object",
+      "properties": {
+        "conversation_id": {
+          "type": "string"
+        },
+        "fb_external_comment_id": {
+          "type": "string"
+        },
+        "fb_external_post_id": {
+          "type": "string"
         }
       }
     },

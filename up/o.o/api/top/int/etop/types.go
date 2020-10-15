@@ -1094,19 +1094,26 @@ type Device struct {
 
 func (m *Device) String() string { return jsonx.MustMarshalToString(m) }
 
+type NotificationMeta struct {
+	ConversationID      string `json:"conversation_id,omitempty"`
+	FbExternalPostID    string `json:"fb_external_post_id,omitempty"`
+	FbExternalCommentID string `json:"fb_external_comment_id,omitempty"`
+}
+
 type Notification struct {
-	Id               dot.ID         `json:"id"`
-	Title            string         `json:"title"`
-	Message          string         `json:"message"`
-	IsRead           bool           `json:"is_read"`
-	Entity           string         `json:"entity"`
-	EntityId         dot.ID         `json:"entity_id"`
-	AccountId        dot.ID         `json:"account_id"`
-	SendNotification bool           `json:"send_notification"`
-	SeenAt           dot.Time       `json:"seen_at"`
-	CreatedAt        dot.Time       `json:"created_at"`
-	UpdatedAt        dot.Time       `json:"updated_at"`
-	SyncStatus       status3.Status `json:"sync_status"`
+	Id               dot.ID            `json:"id"`
+	Title            string            `json:"title"`
+	Message          string            `json:"message"`
+	IsRead           bool              `json:"is_read"`
+	Entity           string            `json:"entity"`
+	EntityId         dot.ID            `json:"entity_id"`
+	AccountId        dot.ID            `json:"account_id"`
+	SendNotification bool              `json:"send_notification"`
+	SeenAt           dot.Time          `json:"seen_at"`
+	CreatedAt        dot.Time          `json:"created_at"`
+	UpdatedAt        dot.Time          `json:"updated_at"`
+	SyncStatus       status3.Status    `json:"sync_status"`
+	MetaData         *NotificationMeta `json:"meta_data"`
 }
 
 func (m *Notification) String() string { return jsonx.MustMarshalToString(m) }
