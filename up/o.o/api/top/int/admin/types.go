@@ -55,7 +55,9 @@ type UpdateTicketCommentRequest struct {
 	AccountID dot.ID `json:"account_id"`
 	ID        dot.ID `json:"id"`
 	Message   string `json:"message"`
-	ImageUrl  string `json:"image_url"`
+	// @deprecated
+	ImageUrl  string   `json:"image_url"`
+	ImageUrls []string `json:"image_urls"`
 }
 
 func (m *UpdateTicketCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -64,11 +66,25 @@ type CreateTicketCommentRequest struct {
 	AccountID dot.ID `json:"account_id"`
 	TicketID  dot.ID `json:"ticket_id"`
 	Message   string `json:"message"`
-	ImageUrl  string `json:"image_url"`
-	ParentID  dot.ID `json:"parent_id"`
+	// @deprecated
+	ImageUrl  string   `json:"image_url"`
+	ImageUrls []string `json:"image_urls"`
+	ParentID  dot.ID   `json:"parent_id"`
 }
 
 func (m *CreateTicketCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteTicketCommentRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *DeleteTicketCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteTicketCommentResponse struct {
+	Count int `json:"count"`
+}
+
+func (m *DeleteTicketCommentResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ConfirmTicketRequest struct {
 	TicketID dot.ID `json:"ticket_id"`

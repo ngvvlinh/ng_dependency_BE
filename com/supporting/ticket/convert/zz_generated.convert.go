@@ -139,6 +139,8 @@ func convert_ticketmodel_Ticket_ticket_Ticket(arg *ticketmodel.Ticket, out *tick
 	out.State = arg.State                     // simple assign
 	out.Status = arg.Status                   // simple assign
 	out.CreatedBy = arg.CreatedBy             // simple assign
+	out.CreatedSource = arg.CreatedSource     // simple assign
+	out.CreatedName = arg.CreatedName         // simple assign
 	out.UpdatedBy = arg.UpdatedBy             // simple assign
 	out.ConfirmedBy = arg.ConfirmedBy         // simple assign
 	out.ClosedBy = arg.ClosedBy               // simple assign
@@ -187,6 +189,8 @@ func convert_ticket_Ticket_ticketmodel_Ticket(arg *ticket.Ticket, out *ticketmod
 	out.State = arg.State                     // simple assign
 	out.Status = arg.Status                   // simple assign
 	out.CreatedBy = arg.CreatedBy             // simple assign
+	out.CreatedSource = arg.CreatedSource     // simple assign
+	out.CreatedName = arg.CreatedName         // simple assign
 	out.UpdatedBy = arg.UpdatedBy             // simple assign
 	out.ConfirmedBy = arg.ConfirmedBy         // simple assign
 	out.ClosedBy = arg.ClosedBy               // simple assign
@@ -238,6 +242,8 @@ func apply_ticket_CreateTicketArgs_ticket_Ticket(arg *ticket.CreateTicketArgs, o
 	out.State = 0                             // zero value
 	out.Status = 0                            // zero value
 	out.CreatedBy = arg.CreatedBy             // simple assign
+	out.CreatedSource = arg.CreatedSource     // simple assign
+	out.CreatedName = arg.CreatedName         // simple assign
 	out.UpdatedBy = 0                         // zero value
 	out.ConfirmedBy = 0                       // zero value
 	out.ClosedBy = 0                          // zero value
@@ -277,6 +283,8 @@ func apply_ticket_UpdateTicketInfoArgs_ticket_Ticket(arg *ticket.UpdateTicketInf
 	out.State = out.State                                    // types do not match
 	out.Status = status5.Status(arg.Status)                  // simple conversion
 	out.CreatedBy = out.CreatedBy                            // no change
+	out.CreatedSource = out.CreatedSource                    // no change
+	out.CreatedName = out.CreatedName                        // no change
 	out.UpdatedBy = out.UpdatedBy                            // no change
 	out.ConfirmedBy = out.ConfirmedBy                        // no change
 	out.ClosedBy = out.ClosedBy                              // no change
@@ -300,17 +308,19 @@ func Convert_ticketmodel_TicketComment_ticket_TicketComment(arg *ticketmodel.Tic
 }
 
 func convert_ticketmodel_TicketComment_ticket_TicketComment(arg *ticketmodel.TicketComment, out *ticket.TicketComment) {
-	out.ID = arg.ID               // simple assign
-	out.TicketID = arg.TicketID   // simple assign
-	out.CreatedBy = arg.CreatedBy // simple assign
-	out.AccountID = arg.AccountID // simple assign
-	out.ParentID = arg.ParentID   // simple assign
-	out.Message = arg.Message     // simple assign
-	out.ImageUrl = arg.ImageUrl   // simple assign
-	out.DeletedAt = arg.DeletedAt // simple assign
-	out.DeletedBy = arg.DeletedBy // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.ID = arg.ID                       // simple assign
+	out.TicketID = arg.TicketID           // simple assign
+	out.CreatedBy = arg.CreatedBy         // simple assign
+	out.CreatedName = arg.CreatedName     // simple assign
+	out.CreatedSource = arg.CreatedSource // simple assign
+	out.AccountID = arg.AccountID         // simple assign
+	out.ParentID = arg.ParentID           // simple assign
+	out.Message = arg.Message             // simple assign
+	out.ImageUrls = arg.ImageUrls         // simple assign
+	out.DeletedAt = arg.DeletedAt         // simple assign
+	out.DeletedBy = arg.DeletedBy         // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
 }
 
 func Convert_ticketmodel_TicketComments_ticket_TicketComments(args []*ticketmodel.TicketComment) (outs []*ticket.TicketComment) {
@@ -337,17 +347,19 @@ func Convert_ticket_TicketComment_ticketmodel_TicketComment(arg *ticket.TicketCo
 }
 
 func convert_ticket_TicketComment_ticketmodel_TicketComment(arg *ticket.TicketComment, out *ticketmodel.TicketComment) {
-	out.ID = arg.ID               // simple assign
-	out.TicketID = arg.TicketID   // simple assign
-	out.CreatedBy = arg.CreatedBy // simple assign
-	out.AccountID = arg.AccountID // simple assign
-	out.ParentID = arg.ParentID   // simple assign
-	out.Message = arg.Message     // simple assign
-	out.ImageUrl = arg.ImageUrl   // simple assign
-	out.DeletedAt = arg.DeletedAt // simple assign
-	out.DeletedBy = arg.DeletedBy // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.ID = arg.ID                       // simple assign
+	out.TicketID = arg.TicketID           // simple assign
+	out.CreatedBy = arg.CreatedBy         // simple assign
+	out.CreatedSource = arg.CreatedSource // simple assign
+	out.CreatedName = arg.CreatedName     // simple assign
+	out.AccountID = arg.AccountID         // simple assign
+	out.ParentID = arg.ParentID           // simple assign
+	out.Message = arg.Message             // simple assign
+	out.ImageUrls = arg.ImageUrls         // simple assign
+	out.DeletedAt = arg.DeletedAt         // simple assign
+	out.DeletedBy = arg.DeletedBy         // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
 }
 
 func Convert_ticket_TicketComments_ticketmodel_TicketComments(args []*ticket.TicketComment) (outs []*ticketmodel.TicketComment) {
@@ -374,17 +386,19 @@ func Apply_ticket_CreateTicketCommentArgs_ticket_TicketComment(arg *ticket.Creat
 }
 
 func apply_ticket_CreateTicketCommentArgs_ticket_TicketComment(arg *ticket.CreateTicketCommentArgs, out *ticket.TicketComment) {
-	out.ID = 0                    // zero value
-	out.TicketID = arg.TicketID   // simple assign
-	out.CreatedBy = arg.CreatedBy // simple assign
-	out.AccountID = arg.AccountID // simple assign
-	out.ParentID = arg.ParentID   // simple assign
-	out.Message = arg.Message     // simple assign
-	out.ImageUrl = arg.ImageUrl   // simple assign
-	out.DeletedAt = time.Time{}   // zero value
-	out.DeletedBy = 0             // zero value
-	out.CreatedAt = time.Time{}   // zero value
-	out.UpdatedAt = time.Time{}   // zero value
+	out.ID = 0                            // zero value
+	out.TicketID = arg.TicketID           // simple assign
+	out.CreatedBy = arg.CreatedBy         // simple assign
+	out.CreatedName = arg.CreatedName     // simple assign
+	out.CreatedSource = arg.CreatedSource // simple assign
+	out.AccountID = arg.AccountID         // simple assign
+	out.ParentID = arg.ParentID           // simple assign
+	out.Message = arg.Message             // simple assign
+	out.ImageUrls = arg.ImageUrls         // simple assign
+	out.DeletedAt = time.Time{}           // zero value
+	out.DeletedBy = 0                     // zero value
+	out.CreatedAt = time.Time{}           // zero value
+	out.UpdatedAt = time.Time{}           // zero value
 }
 
 func Apply_ticket_UpdateTicketCommentArgs_ticket_TicketComment(arg *ticket.UpdateTicketCommentArgs, out *ticket.TicketComment) *ticket.TicketComment {
@@ -399,17 +413,19 @@ func Apply_ticket_UpdateTicketCommentArgs_ticket_TicketComment(arg *ticket.Updat
 }
 
 func apply_ticket_UpdateTicketCommentArgs_ticket_TicketComment(arg *ticket.UpdateTicketCommentArgs, out *ticket.TicketComment) {
-	out.ID = out.ID               // identifier
-	out.TicketID = out.TicketID   // identifier
-	out.CreatedBy = out.CreatedBy // no change
-	out.AccountID = out.AccountID // identifier
-	out.ParentID = out.ParentID   // no change
-	out.Message = arg.Message     // simple assign
-	out.ImageUrl = out.ImageUrl   // no change
-	out.DeletedAt = out.DeletedAt // no change
-	out.DeletedBy = out.DeletedBy // no change
-	out.CreatedAt = out.CreatedAt // no change
-	out.UpdatedAt = out.UpdatedAt // no change
+	out.ID = out.ID                       // identifier
+	out.TicketID = out.TicketID           // identifier
+	out.CreatedBy = out.CreatedBy         // no change
+	out.CreatedName = out.CreatedName     // no change
+	out.CreatedSource = out.CreatedSource // no change
+	out.AccountID = out.AccountID         // identifier
+	out.ParentID = out.ParentID           // no change
+	out.Message = arg.Message             // simple assign
+	out.ImageUrls = arg.ImageUrls         // simple assign
+	out.DeletedAt = out.DeletedAt         // no change
+	out.DeletedBy = out.DeletedBy         // no change
+	out.CreatedAt = out.CreatedAt         // no change
+	out.UpdatedAt = out.UpdatedAt         // no change
 }
 
 //-- convert o.o/api/supporting/ticket.TicketLabel --//

@@ -277,6 +277,7 @@ const (
 
 	AdminTicketCommentCreate permission.ActionType = "admin/admin_ticket:create"
 	AdminTicketCommentUpdate permission.ActionType = "admin/admin_ticket:update"
+	AdminTicketCommentDelete permission.ActionType = "admin/admin_ticket:delete"
 	AdminTicketCommentView   permission.ActionType = "admin/admin_ticket:view"
 
 	AdminTicketLabelCreate permission.ActionType = "admin/admin_ticket_label:create"
@@ -1044,8 +1045,9 @@ var _acl = map[string]*permission.Decl{
 	"shop.Ticket/CreateTicket":        {Type: Shop},
 	"shop.Ticket/GetTickets":          {Type: Shop},
 	"shop.Ticket/GetTicket":           {Type: Shop},
-	"shop.Ticket/CreateTicketComment": {Type: Shop}, //
-	"shop.Ticket/UpdateTicketComment": {Type: Shop}, //
+	"shop.Ticket/CreateTicketComment": {Type: Shop},
+	"shop.Ticket/UpdateTicketComment": {Type: Shop},
+	"shop.Ticket/DeleteTicketComment": {Type: Shop},
 
 	"admin.Ticket/CreateTicket":  {Type: EtopAdmin, Actions: actions(AdminTicketCreate)},
 	"admin.Ticket/GetTickets":    {Type: EtopAdmin, Actions: actions(AdminTicketView)},
@@ -1057,6 +1059,7 @@ var _acl = map[string]*permission.Decl{
 
 	"admin.Ticket/CreateTicketComment": {Type: EtopAdmin, Actions: actions(AdminTicketCommentCreate)},
 	"admin.Ticket/UpdateTicketComment": {Type: EtopAdmin, Actions: actions(AdminTicketCommentUpdate)},
+	"admin.Ticket/DeleteTicketComment": {Type: EtopAdmin, Actions: actions(AdminTicketCommentDelete)},
 	"admin.Ticket/GetTicketComments":   {Type: EtopAdmin, Actions: actions(AdminTicketCommentView)},
 
 	"admin.Ticket/CreateTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelCreate)},

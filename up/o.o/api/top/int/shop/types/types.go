@@ -1,6 +1,7 @@
 package types
 
 import (
+	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
@@ -16,14 +17,17 @@ type TicketComment struct {
 	AccountID dot.ID `json:"account_id"`
 	ParentID  dot.ID `json:"parent_id"`
 
-	Message  string `json:"message"`
-	ImageUrl string `json:"image_url"`
+	Message   string   `json:"message"`
+	ImageUrl  string   `json:"image_url"`
+	ImageUrls []string `json:"image_urls"`
 
 	DeletedAt dot.Time `json:"deleted_at"`
 	DeletedBy dot.ID   `json:"deleted_by"`
 
 	CreatedAt dot.Time `json:"created_at"`
 	UpdatedAt dot.Time `json:"updated_at"`
+
+	From *TicketFrom `json:"from"`
 }
 
 func (m *TicketComment) String() string { return jsonx.MustMarshalToString(m) }
@@ -68,6 +72,16 @@ type Ticket struct {
 	UpdatedAt   dot.Time `json:"updated_at"`
 	ConfirmedAt dot.Time `json:"confirmed_at"`
 	ClosedAt    dot.Time `json:"closed_at"`
+
+	From *TicketFrom `json:"from"`
 }
 
 func (m *Ticket) String() string { return jsonx.MustMarshalToString(m) }
+
+type TicketFrom struct {
+	ID     dot.ID                   `json:"created_by"`
+	Name   string                   `json:"name"`
+	Source account_type.AccountType `json:"source"`
+}
+
+func (m *TicketFrom) String() string { return jsonx.MustMarshalToString(m) }

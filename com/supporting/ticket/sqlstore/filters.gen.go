@@ -7,6 +7,7 @@ package sqlstore
 import (
 	time "time"
 
+	account_type "o.o/api/top/types/etc/account_type"
 	status5 "o.o/api/top/types/etc/status5"
 	ticket_ref_type "o.o/api/top/types/etc/ticket/ticket_ref_type"
 	ticket_source "o.o/api/top/types/etc/ticket/ticket_source"
@@ -276,6 +277,44 @@ func (ft *TicketFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *TicketFilters) ByCreatedSource(CreatedSource account_type.AccountType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_source",
+		Value:  CreatedSource,
+		IsNil:  CreatedSource == 0,
+	}
+}
+
+func (ft *TicketFilters) ByCreatedSourcePtr(CreatedSource *account_type.AccountType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_source",
+		Value:  CreatedSource,
+		IsNil:  CreatedSource == nil,
+		IsZero: CreatedSource != nil && (*CreatedSource) == 0,
+	}
+}
+
+func (ft *TicketFilters) ByCreatedName(CreatedName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_name",
+		Value:  CreatedName,
+		IsNil:  CreatedName == "",
+	}
+}
+
+func (ft *TicketFilters) ByCreatedNamePtr(CreatedName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_name",
+		Value:  CreatedName,
+		IsNil:  CreatedName == nil,
+		IsZero: CreatedName != nil && (*CreatedName) == "",
+	}
+}
+
 func (ft *TicketFilters) ByUpdatedBy(UpdatedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -480,6 +519,44 @@ func (ft *TicketCommentFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilt
 	}
 }
 
+func (ft *TicketCommentFilters) ByCreatedSource(CreatedSource account_type.AccountType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_source",
+		Value:  CreatedSource,
+		IsNil:  CreatedSource == 0,
+	}
+}
+
+func (ft *TicketCommentFilters) ByCreatedSourcePtr(CreatedSource *account_type.AccountType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_source",
+		Value:  CreatedSource,
+		IsNil:  CreatedSource == nil,
+		IsZero: CreatedSource != nil && (*CreatedSource) == 0,
+	}
+}
+
+func (ft *TicketCommentFilters) ByCreatedName(CreatedName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_name",
+		Value:  CreatedName,
+		IsNil:  CreatedName == "",
+	}
+}
+
+func (ft *TicketCommentFilters) ByCreatedNamePtr(CreatedName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_name",
+		Value:  CreatedName,
+		IsNil:  CreatedName == nil,
+		IsZero: CreatedName != nil && (*CreatedName) == "",
+	}
+}
+
 func (ft *TicketCommentFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -534,25 +611,6 @@ func (ft *TicketCommentFilters) ByMessagePtr(Message *string) *sq.ColumnFilterPt
 		Value:  Message,
 		IsNil:  Message == nil,
 		IsZero: Message != nil && (*Message) == "",
-	}
-}
-
-func (ft *TicketCommentFilters) ByImageUrl(ImageUrl string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "image_url",
-		Value:  ImageUrl,
-		IsNil:  ImageUrl == "",
-	}
-}
-
-func (ft *TicketCommentFilters) ByImageUrlPtr(ImageUrl *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "image_url",
-		Value:  ImageUrl,
-		IsNil:  ImageUrl == nil,
-		IsZero: ImageUrl != nil && (*ImageUrl) == "",
 	}
 }
 

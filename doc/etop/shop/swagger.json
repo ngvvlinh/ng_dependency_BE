@@ -5694,6 +5694,33 @@
         }
       }
     },
+    "/api/shop.Ticket/DeleteTicketComment": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "DeleteTicketComment",
+        "operationId": "shop.Ticket-DeleteTicketComment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paDeleteTicketCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paDeleteTicketCommentResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Ticket/GetTicket": {
       "post": {
         "tags": [
@@ -7271,6 +7298,9 @@
         "description": {
           "type": "string"
         },
+        "from": {
+          "$ref": "#/definitions/flTicketFrom"
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -7340,12 +7370,21 @@
           "type": "string",
           "format": "int64"
         },
+        "from": {
+          "$ref": "#/definitions/flTicketFrom"
+        },
         "id": {
           "type": "string",
           "format": "int64"
         },
         "image_url": {
           "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "message": {
           "type": "string"
@@ -7361,6 +7400,21 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "flTicketFrom": {
+      "type": "object",
+      "properties": {
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/definitions/jjAccountType"
         }
       }
     },
@@ -8814,6 +8868,12 @@
         "image_url": {
           "type": "string"
         },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "message": {
           "type": "string"
         },
@@ -9179,6 +9239,23 @@
       }
     },
     "paDeleteBrandResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "paDeleteTicketCommentRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paDeleteTicketCommentResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -13173,6 +13250,12 @@
         },
         "image_url": {
           "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "message": {
           "type": "string"

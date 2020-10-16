@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	meta "o.o/api/meta"
+	account_type "o.o/api/top/types/etc/account_type"
 	status4 "o.o/api/top/types/etc/status4"
 	ticket_ref_type "o.o/api/top/types/etc/ticket/ticket_ref_type"
 	ticket_source "o.o/api/top/types/etc/ticket/ticket_source"
@@ -85,6 +86,8 @@ type CreateTicketCommand struct {
 	RefCode         string
 	Source          ticket_source.TicketSource
 	CreatedBy       dot.ID
+	CreatedSource   account_type.AccountType
+	CreatedName     string
 
 	Result *Ticket `json:"-"`
 }
@@ -95,14 +98,16 @@ func (h AggregateHandler) HandleCreateTicket(ctx context.Context, msg *CreateTic
 }
 
 type CreateTicketCommentCommand struct {
-	CreatedBy dot.ID
-	TicketID  dot.ID
-	AccountID dot.ID
-	ParentID  dot.ID
-	Message   string
-	ImageUrl  string
-	IsLeader  bool
-	IsAdmin   bool
+	CreatedBy     dot.ID
+	CreatedName   string
+	CreatedSource account_type.AccountType
+	TicketID      dot.ID
+	AccountID     dot.ID
+	ParentID      dot.ID
+	Message       string
+	ImageUrls     []string
+	IsLeader      bool
+	IsAdmin       bool
 
 	Result *TicketComment `json:"-"`
 }
@@ -127,9 +132,9 @@ func (h AggregateHandler) HandleCreateTicketLabel(ctx context.Context, msg *Crea
 }
 
 type DeleteTicketCommentCommand struct {
-	TicketID  dot.ID
 	AccountID dot.ID
 	ID        dot.ID
+	IsAdmin   bool
 	DeletedBy dot.ID
 
 	Result int `json:"-"`
@@ -181,6 +186,7 @@ type UpdateTicketCommentCommand struct {
 	ID        dot.ID
 	UpdatedBy dot.ID
 	Message   string
+	ImageUrls []string
 
 	Result *TicketComment `json:"-"`
 }
@@ -390,6 +396,8 @@ func (q *CreateTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _
 			RefCode:         q.RefCode,
 			Source:          q.Source,
 			CreatedBy:       q.CreatedBy,
+			CreatedSource:   q.CreatedSource,
+			CreatedName:     q.CreatedName,
 		}
 }
 
@@ -406,29 +414,35 @@ func (q *CreateTicketCommand) SetCreateTicketArgs(args *CreateTicketArgs) {
 	q.RefCode = args.RefCode
 	q.Source = args.Source
 	q.CreatedBy = args.CreatedBy
+	q.CreatedSource = args.CreatedSource
+	q.CreatedName = args.CreatedName
 }
 
 func (q *CreateTicketCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateTicketCommentArgs) {
 	return ctx,
 		&CreateTicketCommentArgs{
-			CreatedBy: q.CreatedBy,
-			TicketID:  q.TicketID,
-			AccountID: q.AccountID,
-			ParentID:  q.ParentID,
-			Message:   q.Message,
-			ImageUrl:  q.ImageUrl,
-			IsLeader:  q.IsLeader,
-			IsAdmin:   q.IsAdmin,
+			CreatedBy:     q.CreatedBy,
+			CreatedName:   q.CreatedName,
+			CreatedSource: q.CreatedSource,
+			TicketID:      q.TicketID,
+			AccountID:     q.AccountID,
+			ParentID:      q.ParentID,
+			Message:       q.Message,
+			ImageUrls:     q.ImageUrls,
+			IsLeader:      q.IsLeader,
+			IsAdmin:       q.IsAdmin,
 		}
 }
 
 func (q *CreateTicketCommentCommand) SetCreateTicketCommentArgs(args *CreateTicketCommentArgs) {
 	q.CreatedBy = args.CreatedBy
+	q.CreatedName = args.CreatedName
+	q.CreatedSource = args.CreatedSource
 	q.TicketID = args.TicketID
 	q.AccountID = args.AccountID
 	q.ParentID = args.ParentID
 	q.Message = args.Message
-	q.ImageUrl = args.ImageUrl
+	q.ImageUrls = args.ImageUrls
 	q.IsLeader = args.IsLeader
 	q.IsAdmin = args.IsAdmin
 }
@@ -453,17 +467,17 @@ func (q *CreateTicketLabelCommand) SetCreateTicketLabelArgs(args *CreateTicketLa
 func (q *DeleteTicketCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteTicketCommentArgs) {
 	return ctx,
 		&DeleteTicketCommentArgs{
-			TicketID:  q.TicketID,
 			AccountID: q.AccountID,
 			ID:        q.ID,
+			IsAdmin:   q.IsAdmin,
 			DeletedBy: q.DeletedBy,
 		}
 }
 
 func (q *DeleteTicketCommentCommand) SetDeleteTicketCommentArgs(args *DeleteTicketCommentArgs) {
-	q.TicketID = args.TicketID
 	q.AccountID = args.AccountID
 	q.ID = args.ID
+	q.IsAdmin = args.IsAdmin
 	q.DeletedBy = args.DeletedBy
 }
 
@@ -513,6 +527,7 @@ func (q *UpdateTicketCommentCommand) GetArgs(ctx context.Context) (_ context.Con
 			ID:        q.ID,
 			UpdatedBy: q.UpdatedBy,
 			Message:   q.Message,
+			ImageUrls: q.ImageUrls,
 		}
 }
 
@@ -521,6 +536,7 @@ func (q *UpdateTicketCommentCommand) SetUpdateTicketCommentArgs(args *UpdateTick
 	q.ID = args.ID
 	q.UpdatedBy = args.UpdatedBy
 	q.Message = args.Message
+	q.ImageUrls = args.ImageUrls
 }
 
 func (q *UpdateTicketInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateTicketInfoArgs) {

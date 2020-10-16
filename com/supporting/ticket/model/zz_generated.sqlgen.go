@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Tickets []*Ticket
 
 const __sqlTicket_Table = "ticket"
-const __sqlTicket_ListCols = "\"id\",\"code\",\"assigned_user_ids\",\"account_id\",\"label_ids\",\"title\",\"description\",\"note\",\"ref_id\",\"ref_type\",\"ref_code\",\"source\",\"state\",\"status\",\"created_by\",\"updated_by\",\"confirmed_by\",\"closed_by\",\"created_at\",\"updated_at\",\"confirmed_at\",\"closed_at\""
-const __sqlTicket_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"assigned_user_ids\" = EXCLUDED.\"assigned_user_ids\",\"account_id\" = EXCLUDED.\"account_id\",\"label_ids\" = EXCLUDED.\"label_ids\",\"title\" = EXCLUDED.\"title\",\"description\" = EXCLUDED.\"description\",\"note\" = EXCLUDED.\"note\",\"ref_id\" = EXCLUDED.\"ref_id\",\"ref_type\" = EXCLUDED.\"ref_type\",\"ref_code\" = EXCLUDED.\"ref_code\",\"source\" = EXCLUDED.\"source\",\"state\" = EXCLUDED.\"state\",\"status\" = EXCLUDED.\"status\",\"created_by\" = EXCLUDED.\"created_by\",\"updated_by\" = EXCLUDED.\"updated_by\",\"confirmed_by\" = EXCLUDED.\"confirmed_by\",\"closed_by\" = EXCLUDED.\"closed_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"closed_at\" = EXCLUDED.\"closed_at\""
+const __sqlTicket_ListCols = "\"id\",\"code\",\"assigned_user_ids\",\"account_id\",\"label_ids\",\"title\",\"description\",\"note\",\"ref_id\",\"ref_type\",\"ref_code\",\"source\",\"state\",\"status\",\"created_by\",\"created_source\",\"created_name\",\"updated_by\",\"confirmed_by\",\"closed_by\",\"created_at\",\"updated_at\",\"confirmed_at\",\"closed_at\""
+const __sqlTicket_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"code\" = EXCLUDED.\"code\",\"assigned_user_ids\" = EXCLUDED.\"assigned_user_ids\",\"account_id\" = EXCLUDED.\"account_id\",\"label_ids\" = EXCLUDED.\"label_ids\",\"title\" = EXCLUDED.\"title\",\"description\" = EXCLUDED.\"description\",\"note\" = EXCLUDED.\"note\",\"ref_id\" = EXCLUDED.\"ref_id\",\"ref_type\" = EXCLUDED.\"ref_type\",\"ref_code\" = EXCLUDED.\"ref_code\",\"source\" = EXCLUDED.\"source\",\"state\" = EXCLUDED.\"state\",\"status\" = EXCLUDED.\"status\",\"created_by\" = EXCLUDED.\"created_by\",\"created_source\" = EXCLUDED.\"created_source\",\"created_name\" = EXCLUDED.\"created_name\",\"updated_by\" = EXCLUDED.\"updated_by\",\"confirmed_by\" = EXCLUDED.\"confirmed_by\",\"closed_by\" = EXCLUDED.\"closed_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"confirmed_at\" = EXCLUDED.\"confirmed_at\",\"closed_at\" = EXCLUDED.\"closed_at\""
 const __sqlTicket_Insert = "INSERT INTO \"ticket\" (" + __sqlTicket_ListCols + ") VALUES"
 const __sqlTicket_Select = "SELECT " + __sqlTicket_ListCols + " FROM \"ticket\""
 const __sqlTicket_Select_history = "SELECT " + __sqlTicket_ListCols + " FROM history.\"ticket\""
@@ -163,6 +163,20 @@ func (m *Ticket) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"created_source": {
+			ColumnName:       "created_source",
+			ColumnType:       "account_type.AccountType",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "partner", "shop", "affiliate", "carrier", "etop"},
+		},
+		"created_name": {
+			ColumnName:       "created_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"updated_by": {
 			ColumnName:       "updated_by",
 			ColumnType:       "dot.ID",
@@ -240,6 +254,8 @@ func (m *Ticket) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.State,
 		m.Status,
 		m.CreatedBy,
+		m.CreatedSource,
+		core.String(m.CreatedName),
 		m.UpdatedBy,
 		m.ConfirmedBy,
 		m.ClosedBy,
@@ -267,6 +283,8 @@ func (m *Ticket) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.State,
 		&m.Status,
 		&m.CreatedBy,
+		&m.CreatedSource,
+		(*core.String)(&m.CreatedName),
 		&m.UpdatedBy,
 		&m.ConfirmedBy,
 		&m.ClosedBy,
@@ -311,7 +329,7 @@ func (_ *Tickets) SQLSelect(w SQLWriter) error {
 func (m *Ticket) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicket_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(22)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -321,7 +339,7 @@ func (ms Tickets) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicket_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(22)
+		w.WriteMarkers(24)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -472,6 +490,22 @@ func (m *Ticket) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedBy)
 	}
+	if m.CreatedSource != 0 {
+		flag = true
+		w.WriteName("created_source")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedSource)
+	}
+	if m.CreatedName != "" {
+		flag = true
+		w.WriteName("created_name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedName)
+	}
 	if m.UpdatedBy != 0 {
 		flag = true
 		w.WriteName("updated_by")
@@ -538,7 +572,7 @@ func (m *Ticket) SQLUpdate(w SQLWriter) error {
 func (m *Ticket) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicket_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(22)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -565,36 +599,38 @@ func (m TicketHistory) Code() core.Interface { return core.Interface{m["code"]} 
 func (m TicketHistory) AssignedUserIDs() core.Interface {
 	return core.Interface{m["assigned_user_ids"]}
 }
-func (m TicketHistory) AccountID() core.Interface   { return core.Interface{m["account_id"]} }
-func (m TicketHistory) LabelIDs() core.Interface    { return core.Interface{m["label_ids"]} }
-func (m TicketHistory) Title() core.Interface       { return core.Interface{m["title"]} }
-func (m TicketHistory) Description() core.Interface { return core.Interface{m["description"]} }
-func (m TicketHistory) Note() core.Interface        { return core.Interface{m["note"]} }
-func (m TicketHistory) RefID() core.Interface       { return core.Interface{m["ref_id"]} }
-func (m TicketHistory) RefType() core.Interface     { return core.Interface{m["ref_type"]} }
-func (m TicketHistory) RefCode() core.Interface     { return core.Interface{m["ref_code"]} }
-func (m TicketHistory) Source() core.Interface      { return core.Interface{m["source"]} }
-func (m TicketHistory) State() core.Interface       { return core.Interface{m["state"]} }
-func (m TicketHistory) Status() core.Interface      { return core.Interface{m["status"]} }
-func (m TicketHistory) CreatedBy() core.Interface   { return core.Interface{m["created_by"]} }
-func (m TicketHistory) UpdatedBy() core.Interface   { return core.Interface{m["updated_by"]} }
-func (m TicketHistory) ConfirmedBy() core.Interface { return core.Interface{m["confirmed_by"]} }
-func (m TicketHistory) ClosedBy() core.Interface    { return core.Interface{m["closed_by"]} }
-func (m TicketHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
-func (m TicketHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
-func (m TicketHistory) ConfirmedAt() core.Interface { return core.Interface{m["confirmed_at"]} }
-func (m TicketHistory) ClosedAt() core.Interface    { return core.Interface{m["closed_at"]} }
+func (m TicketHistory) AccountID() core.Interface     { return core.Interface{m["account_id"]} }
+func (m TicketHistory) LabelIDs() core.Interface      { return core.Interface{m["label_ids"]} }
+func (m TicketHistory) Title() core.Interface         { return core.Interface{m["title"]} }
+func (m TicketHistory) Description() core.Interface   { return core.Interface{m["description"]} }
+func (m TicketHistory) Note() core.Interface          { return core.Interface{m["note"]} }
+func (m TicketHistory) RefID() core.Interface         { return core.Interface{m["ref_id"]} }
+func (m TicketHistory) RefType() core.Interface       { return core.Interface{m["ref_type"]} }
+func (m TicketHistory) RefCode() core.Interface       { return core.Interface{m["ref_code"]} }
+func (m TicketHistory) Source() core.Interface        { return core.Interface{m["source"]} }
+func (m TicketHistory) State() core.Interface         { return core.Interface{m["state"]} }
+func (m TicketHistory) Status() core.Interface        { return core.Interface{m["status"]} }
+func (m TicketHistory) CreatedBy() core.Interface     { return core.Interface{m["created_by"]} }
+func (m TicketHistory) CreatedSource() core.Interface { return core.Interface{m["created_source"]} }
+func (m TicketHistory) CreatedName() core.Interface   { return core.Interface{m["created_name"]} }
+func (m TicketHistory) UpdatedBy() core.Interface     { return core.Interface{m["updated_by"]} }
+func (m TicketHistory) ConfirmedBy() core.Interface   { return core.Interface{m["confirmed_by"]} }
+func (m TicketHistory) ClosedBy() core.Interface      { return core.Interface{m["closed_by"]} }
+func (m TicketHistory) CreatedAt() core.Interface     { return core.Interface{m["created_at"]} }
+func (m TicketHistory) UpdatedAt() core.Interface     { return core.Interface{m["updated_at"]} }
+func (m TicketHistory) ConfirmedAt() core.Interface   { return core.Interface{m["confirmed_at"]} }
+func (m TicketHistory) ClosedAt() core.Interface      { return core.Interface{m["closed_at"]} }
 
 func (m *TicketHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 22)
-	args := make([]interface{}, 22)
-	for i := 0; i < 22; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(TicketHistory, 22)
+	res := make(TicketHistory, 24)
 	res["id"] = data[0]
 	res["code"] = data[1]
 	res["assigned_user_ids"] = data[2]
@@ -610,21 +646,23 @@ func (m *TicketHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["state"] = data[12]
 	res["status"] = data[13]
 	res["created_by"] = data[14]
-	res["updated_by"] = data[15]
-	res["confirmed_by"] = data[16]
-	res["closed_by"] = data[17]
-	res["created_at"] = data[18]
-	res["updated_at"] = data[19]
-	res["confirmed_at"] = data[20]
-	res["closed_at"] = data[21]
+	res["created_source"] = data[15]
+	res["created_name"] = data[16]
+	res["updated_by"] = data[17]
+	res["confirmed_by"] = data[18]
+	res["closed_by"] = data[19]
+	res["created_at"] = data[20]
+	res["updated_at"] = data[21]
+	res["confirmed_at"] = data[22]
+	res["closed_at"] = data[23]
 	*m = res
 	return nil
 }
 
 func (ms *TicketHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 22)
-	args := make([]interface{}, 22)
-	for i := 0; i < 22; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	res := make(TicketHistories, 0, 128)
@@ -648,13 +686,15 @@ func (ms *TicketHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["state"] = data[12]
 		m["status"] = data[13]
 		m["created_by"] = data[14]
-		m["updated_by"] = data[15]
-		m["confirmed_by"] = data[16]
-		m["closed_by"] = data[17]
-		m["created_at"] = data[18]
-		m["updated_at"] = data[19]
-		m["confirmed_at"] = data[20]
-		m["closed_at"] = data[21]
+		m["created_source"] = data[15]
+		m["created_name"] = data[16]
+		m["updated_by"] = data[17]
+		m["confirmed_by"] = data[18]
+		m["closed_by"] = data[19]
+		m["created_at"] = data[20]
+		m["updated_at"] = data[21]
+		m["confirmed_at"] = data[22]
+		m["closed_at"] = data[23]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -667,8 +707,8 @@ func (ms *TicketHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type TicketComments []*TicketComment
 
 const __sqlTicketComment_Table = "ticket_comment"
-const __sqlTicketComment_ListCols = "\"id\",\"ticket_id\",\"created_by\",\"account_id\",\"parent_id\",\"message\",\"image_url\",\"deleted_at\",\"deleted_by\",\"created_at\",\"updated_at\""
-const __sqlTicketComment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"ticket_id\" = EXCLUDED.\"ticket_id\",\"created_by\" = EXCLUDED.\"created_by\",\"account_id\" = EXCLUDED.\"account_id\",\"parent_id\" = EXCLUDED.\"parent_id\",\"message\" = EXCLUDED.\"message\",\"image_url\" = EXCLUDED.\"image_url\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"deleted_by\" = EXCLUDED.\"deleted_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlTicketComment_ListCols = "\"id\",\"ticket_id\",\"created_by\",\"created_source\",\"created_name\",\"account_id\",\"parent_id\",\"message\",\"image_urls\",\"deleted_at\",\"deleted_by\",\"created_at\",\"updated_at\""
+const __sqlTicketComment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"ticket_id\" = EXCLUDED.\"ticket_id\",\"created_by\" = EXCLUDED.\"created_by\",\"created_source\" = EXCLUDED.\"created_source\",\"created_name\" = EXCLUDED.\"created_name\",\"account_id\" = EXCLUDED.\"account_id\",\"parent_id\" = EXCLUDED.\"parent_id\",\"message\" = EXCLUDED.\"message\",\"image_urls\" = EXCLUDED.\"image_urls\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"deleted_by\" = EXCLUDED.\"deleted_by\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlTicketComment_Insert = "INSERT INTO \"ticket_comment\" (" + __sqlTicketComment_ListCols + ") VALUES"
 const __sqlTicketComment_Select = "SELECT " + __sqlTicketComment_ListCols + " FROM \"ticket_comment\""
 const __sqlTicketComment_Select_history = "SELECT " + __sqlTicketComment_ListCols + " FROM history.\"ticket_comment\""
@@ -716,6 +756,20 @@ func (m *TicketComment) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"created_source": {
+			ColumnName:       "created_source",
+			ColumnType:       "account_type.AccountType",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "partner", "shop", "affiliate", "carrier", "etop"},
+		},
+		"created_name": {
+			ColumnName:       "created_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"account_id": {
 			ColumnName:       "account_id",
 			ColumnType:       "dot.ID",
@@ -737,10 +791,10 @@ func (m *TicketComment) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
-		"image_url": {
-			ColumnName:       "image_url",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
+		"image_urls": {
+			ColumnName:       "image_urls",
+			ColumnType:       "[]string",
+			ColumnDBType:     "[]string",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -788,10 +842,12 @@ func (m *TicketComment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		m.TicketID,
 		m.CreatedBy,
+		m.CreatedSource,
+		core.String(m.CreatedName),
 		m.AccountID,
 		m.ParentID,
 		core.String(m.Message),
-		core.String(m.ImageUrl),
+		core.Array{m.ImageUrls, opts},
 		core.Time(m.DeletedAt),
 		m.DeletedBy,
 		core.Now(m.CreatedAt, now, create),
@@ -804,10 +860,12 @@ func (m *TicketComment) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		&m.TicketID,
 		&m.CreatedBy,
+		&m.CreatedSource,
+		(*core.String)(&m.CreatedName),
 		&m.AccountID,
 		&m.ParentID,
 		(*core.String)(&m.Message),
-		(*core.String)(&m.ImageUrl),
+		core.Array{&m.ImageUrls, opts},
 		(*core.Time)(&m.DeletedAt),
 		&m.DeletedBy,
 		(*core.Time)(&m.CreatedAt),
@@ -849,7 +907,7 @@ func (_ *TicketComments) SQLSelect(w SQLWriter) error {
 func (m *TicketComment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicketComment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(13)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -859,7 +917,7 @@ func (ms TicketComments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicketComment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(11)
+		w.WriteMarkers(13)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -914,6 +972,22 @@ func (m *TicketComment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.CreatedBy)
 	}
+	if m.CreatedSource != 0 {
+		flag = true
+		w.WriteName("created_source")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedSource)
+	}
+	if m.CreatedName != "" {
+		flag = true
+		w.WriteName("created_name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedName)
+	}
 	if m.AccountID != 0 {
 		flag = true
 		w.WriteName("account_id")
@@ -938,13 +1012,13 @@ func (m *TicketComment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Message)
 	}
-	if m.ImageUrl != "" {
+	if m.ImageUrls != nil {
 		flag = true
-		w.WriteName("image_url")
+		w.WriteName("image_urls")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ImageUrl)
+		w.WriteArg(core.Array{m.ImageUrls, opts})
 	}
 	if !m.DeletedAt.IsZero() {
 		flag = true
@@ -988,7 +1062,7 @@ func (m *TicketComment) SQLUpdate(w SQLWriter) error {
 func (m *TicketComment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlTicketComment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(13)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1013,44 +1087,50 @@ func (m TicketCommentHistories) SQLSelect(w SQLWriter) error {
 func (m TicketCommentHistory) ID() core.Interface        { return core.Interface{m["id"]} }
 func (m TicketCommentHistory) TicketID() core.Interface  { return core.Interface{m["ticket_id"]} }
 func (m TicketCommentHistory) CreatedBy() core.Interface { return core.Interface{m["created_by"]} }
-func (m TicketCommentHistory) AccountID() core.Interface { return core.Interface{m["account_id"]} }
-func (m TicketCommentHistory) ParentID() core.Interface  { return core.Interface{m["parent_id"]} }
-func (m TicketCommentHistory) Message() core.Interface   { return core.Interface{m["message"]} }
-func (m TicketCommentHistory) ImageUrl() core.Interface  { return core.Interface{m["image_url"]} }
-func (m TicketCommentHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
-func (m TicketCommentHistory) DeletedBy() core.Interface { return core.Interface{m["deleted_by"]} }
-func (m TicketCommentHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m TicketCommentHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m TicketCommentHistory) CreatedSource() core.Interface {
+	return core.Interface{m["created_source"]}
+}
+func (m TicketCommentHistory) CreatedName() core.Interface { return core.Interface{m["created_name"]} }
+func (m TicketCommentHistory) AccountID() core.Interface   { return core.Interface{m["account_id"]} }
+func (m TicketCommentHistory) ParentID() core.Interface    { return core.Interface{m["parent_id"]} }
+func (m TicketCommentHistory) Message() core.Interface     { return core.Interface{m["message"]} }
+func (m TicketCommentHistory) ImageUrls() core.Interface   { return core.Interface{m["image_urls"]} }
+func (m TicketCommentHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
+func (m TicketCommentHistory) DeletedBy() core.Interface   { return core.Interface{m["deleted_by"]} }
+func (m TicketCommentHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m TicketCommentHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 
 func (m *TicketCommentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 13)
+	args := make([]interface{}, 13)
+	for i := 0; i < 13; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(TicketCommentHistory, 11)
+	res := make(TicketCommentHistory, 13)
 	res["id"] = data[0]
 	res["ticket_id"] = data[1]
 	res["created_by"] = data[2]
-	res["account_id"] = data[3]
-	res["parent_id"] = data[4]
-	res["message"] = data[5]
-	res["image_url"] = data[6]
-	res["deleted_at"] = data[7]
-	res["deleted_by"] = data[8]
-	res["created_at"] = data[9]
-	res["updated_at"] = data[10]
+	res["created_source"] = data[3]
+	res["created_name"] = data[4]
+	res["account_id"] = data[5]
+	res["parent_id"] = data[6]
+	res["message"] = data[7]
+	res["image_urls"] = data[8]
+	res["deleted_at"] = data[9]
+	res["deleted_by"] = data[10]
+	res["created_at"] = data[11]
+	res["updated_at"] = data[12]
 	*m = res
 	return nil
 }
 
 func (ms *TicketCommentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 13)
+	args := make([]interface{}, 13)
+	for i := 0; i < 13; i++ {
 		args[i] = &data[i]
 	}
 	res := make(TicketCommentHistories, 0, 128)
@@ -1062,14 +1142,16 @@ func (ms *TicketCommentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		m["id"] = data[0]
 		m["ticket_id"] = data[1]
 		m["created_by"] = data[2]
-		m["account_id"] = data[3]
-		m["parent_id"] = data[4]
-		m["message"] = data[5]
-		m["image_url"] = data[6]
-		m["deleted_at"] = data[7]
-		m["deleted_by"] = data[8]
-		m["created_at"] = data[9]
-		m["updated_at"] = data[10]
+		m["created_source"] = data[3]
+		m["created_name"] = data[4]
+		m["account_id"] = data[5]
+		m["parent_id"] = data[6]
+		m["message"] = data[7]
+		m["image_urls"] = data[8]
+		m["deleted_at"] = data[9]
+		m["deleted_by"] = data[10]
+		m["created_at"] = data[11]
+		m["updated_at"] = data[12]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

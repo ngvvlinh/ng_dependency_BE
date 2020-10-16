@@ -6,6 +6,7 @@ import (
 	"o.o/api/supporting/ticket"
 	api "o.o/api/top/int/shop"
 	shoptypes "o.o/api/top/int/shop/types"
+	"o.o/api/top/types/etc/account_type"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -21,13 +22,22 @@ type TicketService struct {
 func (s *TicketService) Clone() api.TicketService { res := *s; return &res }
 
 func (s *TicketService) CreateTicketComment(ctx context.Context, request *api.CreateTicketCommentRequest) (*shoptypes.TicketComment, error) {
+	var imageUrls []string
+	if len(request.ImageUrls) > 0 {
+		imageUrls = request.ImageUrls
+	} else if request.ImageUrl != "" {
+		imageUrls = []string{request.ImageUrl}
+	}
+
 	cmd := &ticket.CreateTicketCommentCommand{
-		CreatedBy: s.SS.User().ID,
-		TicketID:  request.TicketID,
-		AccountID: s.SS.Shop().ID,
-		ParentID:  request.ParentID,
-		Message:   request.Message,
-		ImageUrl:  request.ImageUrl,
+		CreatedBy:     s.SS.User().ID,
+		CreatedName:   s.SS.User().FullName,
+		CreatedSource: account_type.Shop,
+		TicketID:      request.TicketID,
+		AccountID:     s.SS.Shop().ID,
+		ParentID:      request.ParentID,
+		Message:       request.Message,
+		ImageUrls:     imageUrls,
 	}
 	err := s.TicketAggr.Dispatch(ctx, cmd)
 	if err != nil {
@@ -37,17 +47,37 @@ func (s *TicketService) CreateTicketComment(ctx context.Context, request *api.Cr
 }
 
 func (s *TicketService) UpdateTicketComment(ctx context.Context, request *api.UpdateTicketCommentRequest) (*shoptypes.TicketComment, error) {
+	var imageUrls []string
+	if len(request.ImageUrls) > 0 {
+		imageUrls = request.ImageUrls
+	} else if request.ImageUrl != "" {
+		imageUrls = []string{request.ImageUrl}
+	}
+
 	cmd := &ticket.UpdateTicketCommentCommand{
 		AccountID: s.SS.Shop().ID,
 		ID:        request.ID,
 		UpdatedBy: s.SS.User().ID,
 		Message:   request.Message,
+		ImageUrls: imageUrls,
 	}
 	err := s.TicketAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return nil, err
 	}
 	return convertpb.Convert_core_TicketComment_to_api_TicketComment(cmd.Result), nil
+}
+
+func (s *TicketService) DeleteTicketComment(ctx context.Context, req *api.DeleteTicketCommentRequest) (*api.DeleteTicketCommentResponse, error) {
+	cmd := &ticket.DeleteTicketCommentCommand{
+		AccountID: s.SS.Shop().ID,
+		ID:        req.ID,
+		DeletedBy: s.SS.User().ID,
+	}
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &api.DeleteTicketCommentResponse{Count: cmd.Result}, nil
 }
 
 func (s *TicketService) GetTicketComments(ctx context.Context, request *api.GetTicketCommentsRequest) (*api.GetTicketCommentsResponse, error) {
@@ -132,6 +162,8 @@ func (s *TicketService) CreateTicket(ctx context.Context, request *api.CreateTic
 		RefCode:         request.RefCode,
 		Source:          request.Source,
 		CreatedBy:       userID,
+		CreatedName:     s.SS.User().FullName,
+		CreatedSource:   account_type.Shop,
 		Result:          nil,
 	}
 	err := s.TicketAggr.Dispatch(ctx, cmd)

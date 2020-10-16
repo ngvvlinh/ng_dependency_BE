@@ -10,7 +10,7 @@ import (
 
 func (a TicketAggregate) CreateTicketComment(ctx context.Context, args *ticket.CreateTicketCommentArgs) (*ticket.TicketComment, error) {
 	if args.TicketID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ticker_id")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ticket_id")
 	}
 	ticketCore, err := a.TicketStore(ctx).ID(args.TicketID).AccountID(args.AccountID).GetTicket()
 	if err != nil {
@@ -40,11 +40,11 @@ func (a TicketAggregate) CreateTicketComment(ctx context.Context, args *ticket.C
 	if err != nil {
 		return nil, err
 	}
-	err = a.TicketCommentStore(ctx).Create(ticketComment)
-	if err != nil {
+	if err := a.TicketCommentStore(ctx).Create(ticketComment); err != nil {
 		return nil, err
 	}
-	return ticketComment, nil
+
+	return a.TicketCommentStore(ctx).ID(ticketComment.ID).GetTicketComment()
 }
 
 func (a TicketAggregate) UpdateTicketComment(ctx context.Context, args *ticket.UpdateTicketCommentArgs) (*ticket.TicketComment, error) {
@@ -64,6 +64,9 @@ func (a TicketAggregate) UpdateTicketComment(ctx context.Context, args *ticket.U
 	var ticketModel = &model.TicketComment{
 		Message: args.Message,
 	}
+	if len(args.ImageUrls) > 0 {
+		ticketModel.ImageUrls = args.ImageUrls
+	}
 	err = a.TicketCommentStore(ctx).ID(args.ID).UpdateTicketCommentDB(ticketModel)
 	if err != nil {
 		return nil, err
@@ -73,14 +76,18 @@ func (a TicketAggregate) UpdateTicketComment(ctx context.Context, args *ticket.U
 }
 
 func (a TicketAggregate) DeleteTicketComment(ctx context.Context, args *ticket.DeleteTicketCommentArgs) (int, error) {
-	if args.TicketID == 0 {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing ticker_id")
-	}
 	if args.AccountID == 0 {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing account_id")
 	}
 	if args.ID == 0 {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Missing id")
 	}
-	return a.TicketCommentStore(ctx).ID(args.ID).AccountID(args.AccountID).ID(args.TicketID).SoftDelete(args.DeletedBy)
+
+	// admin can delete every comments into ticket
+	// shop can delete only comments were created by shop
+	q := a.TicketCommentStore(ctx).ID(args.ID).AccountID(args.AccountID)
+	if !args.IsAdmin {
+		q = q.CreatedBy(args.DeletedBy)
+	}
+	return q.SoftDelete(args.DeletedBy)
 }

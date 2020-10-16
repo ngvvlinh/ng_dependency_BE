@@ -4753,6 +4753,7 @@ const TicketServicePathPrefix = "/shop.Ticket/"
 
 const Path_Ticket_CreateTicket = "/shop.Ticket/CreateTicket"
 const Path_Ticket_CreateTicketComment = "/shop.Ticket/CreateTicketComment"
+const Path_Ticket_DeleteTicketComment = "/shop.Ticket/DeleteTicketComment"
 const Path_Ticket_GetTicket = "/shop.Ticket/GetTicket"
 const Path_Ticket_GetTicketComments = "/shop.Ticket/GetTicketComments"
 const Path_Ticket_GetTickets = "/shop.Ticket/GetTickets"
@@ -4814,6 +4815,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 				return
 			}
 			resp, err = inner.CreateTicketComment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/DeleteTicketComment":
+		msg := &DeleteTicketCommentRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteTicketComment(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

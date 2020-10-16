@@ -3,6 +3,7 @@ package ticket
 import (
 	"time"
 
+	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
@@ -35,10 +36,12 @@ type Ticket struct {
 	State  ticket_state.TicketState
 	Status status5.Status
 
-	CreatedBy   dot.ID
-	UpdatedBy   dot.ID
-	ConfirmedBy dot.ID
-	ClosedBy    dot.ID
+	CreatedBy     dot.ID
+	CreatedSource account_type.AccountType
+	CreatedName   string
+	UpdatedBy     dot.ID
+	ConfirmedBy   dot.ID
+	ClosedBy      dot.ID
 
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -47,14 +50,16 @@ type Ticket struct {
 }
 
 type TicketComment struct {
-	ID        dot.ID
-	TicketID  dot.ID
-	CreatedBy dot.ID
-	AccountID dot.ID
-	ParentID  dot.ID
+	ID            dot.ID
+	TicketID      dot.ID
+	CreatedBy     dot.ID
+	CreatedName   string
+	CreatedSource account_type.AccountType
+	AccountID     dot.ID
+	ParentID      dot.ID
 
-	Message  string
-	ImageUrl string
+	Message   string
+	ImageUrls []string
 
 	DeletedAt time.Time
 	DeletedBy dot.ID

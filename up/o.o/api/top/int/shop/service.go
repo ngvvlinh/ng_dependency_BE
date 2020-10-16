@@ -438,5 +438,6 @@ type TicketService interface {
 
 	CreateTicketComment(context.Context, *CreateTicketCommentRequest) (*shoptypes.TicketComment, error)
 	UpdateTicketComment(context.Context, *UpdateTicketCommentRequest) (*shoptypes.TicketComment, error)
+	DeleteTicketComment(context.Context, *DeleteTicketCommentRequest) (*DeleteTicketCommentResponse, error)
 	GetTicketComments(context.Context, *GetTicketCommentsRequest) (*GetTicketCommentsResponse, error)
 }

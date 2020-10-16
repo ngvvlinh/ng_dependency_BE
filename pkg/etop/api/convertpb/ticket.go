@@ -17,11 +17,17 @@ func Convert_core_TicketComment_to_api_TicketComment(in *ticket.TicketComment) *
 		AccountID: in.AccountID,
 		ParentID:  in.ParentID,
 		Message:   in.Message,
-		ImageUrl:  in.ImageUrl,
+		ImageUrl:  in.ImageUrls[0],
+		ImageUrls: in.ImageUrls,
 		DeletedAt: cmapi.PbTime(in.DeletedAt),
 		DeletedBy: in.DeletedBy,
 		CreatedAt: cmapi.PbTime(in.CreatedAt),
 		UpdatedAt: cmapi.PbTime(in.UpdatedAt),
+		From: &types.TicketFrom{
+			ID:     in.CreatedBy,
+			Name:   in.CreatedName,
+			Source: in.CreatedSource,
+		},
 	}
 }
 
@@ -83,6 +89,11 @@ func Convert_core_Ticket_to_api_Ticket(in *ticket.Ticket) *types.Ticket {
 		UpdatedAt:       cmapi.PbTime(in.UpdatedAt),
 		ConfirmedAt:     cmapi.PbTime(in.ConfirmedAt),
 		ClosedAt:        cmapi.PbTime(in.ClosedAt),
+		From: &types.TicketFrom{
+			ID:     in.CreatedBy,
+			Name:   in.CreatedName,
+			Source: in.CreatedSource,
+		},
 	}
 }
 func Convert_core_Tickets_to_api_Tickets(items []*ticket.Ticket) []*types.Ticket {

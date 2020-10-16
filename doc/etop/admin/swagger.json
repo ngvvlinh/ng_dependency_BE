@@ -2988,6 +2988,33 @@
         }
       }
     },
+    "/api/admin.Ticket/DeleteTicketComment": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "DeleteTicketComment",
+        "operationId": "admin.Ticket-DeleteTicketComment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuDeleteTicketCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuDeleteTicketCommentResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Ticket/DeleteTicketLabel": {
       "post": {
         "tags": [
@@ -4309,6 +4336,9 @@
         "description": {
           "type": "string"
         },
+        "from": {
+          "$ref": "#/definitions/flTicketFrom"
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -4378,12 +4408,21 @@
           "type": "string",
           "format": "int64"
         },
+        "from": {
+          "$ref": "#/definitions/flTicketFrom"
+        },
         "id": {
           "type": "string",
           "format": "int64"
         },
         "image_url": {
           "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "message": {
           "type": "string"
@@ -4399,6 +4438,21 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "flTicketFrom": {
+      "type": "object",
+      "properties": {
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/definitions/jjAccountType"
         }
       }
     },
@@ -7903,7 +7957,14 @@
           "format": "int64"
         },
         "image_url": {
+          "description": "**Deprecated:**\n",
           "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "message": {
           "type": "string"
@@ -8017,6 +8078,23 @@
       "type": "object",
       "properties": {
         "updated": {
+          "type": "integer"
+        }
+      }
+    },
+    "xuDeleteTicketCommentRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuDeleteTicketCommentResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
           "type": "integer"
         }
       }
@@ -9468,7 +9546,14 @@
           "format": "int64"
         },
         "image_url": {
+          "description": "**Deprecated:**\n",
           "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "message": {
           "type": "string"

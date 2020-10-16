@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
@@ -138,22 +139,24 @@ type FilterGetTicket struct {
 }
 
 type DeleteTicketCommentArgs struct {
-	TicketID  dot.ID
 	AccountID dot.ID
 	ID        dot.ID
+	IsAdmin   bool
 
 	DeletedBy dot.ID
 }
 
 // +convert:create=TicketComment
 type CreateTicketCommentArgs struct {
-	CreatedBy dot.ID
-	TicketID  dot.ID
-	AccountID dot.ID
-	ParentID  dot.ID
+	CreatedBy     dot.ID
+	CreatedName   string
+	CreatedSource account_type.AccountType
+	TicketID      dot.ID
+	AccountID     dot.ID
+	ParentID      dot.ID
 
-	Message  string
-	ImageUrl string
+	Message   string
+	ImageUrls []string
 
 	IsLeader bool
 	IsAdmin  bool
@@ -166,7 +169,8 @@ type UpdateTicketCommentArgs struct {
 	ID        dot.ID
 	UpdatedBy dot.ID
 
-	Message string
+	Message   string
+	ImageUrls []string
 }
 
 // từ điển https://en.wiktionary.org/wiki/unassign
@@ -242,5 +246,7 @@ type CreateTicketArgs struct {
 	RefCode string
 	Source  ticket_source.TicketSource
 
-	CreatedBy dot.ID
+	CreatedBy     dot.ID
+	CreatedSource account_type.AccountType
+	CreatedName   string
 }

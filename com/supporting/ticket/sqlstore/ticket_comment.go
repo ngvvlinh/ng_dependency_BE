@@ -111,9 +111,9 @@ func (s *TicketCommentStore) ListTicketComments() ([]*ticket.TicketComment, erro
 }
 
 func (s *TicketCommentStore) Create(args *ticket.TicketComment) error {
-	var label = model.TicketComment{}
-	convert.Convert_ticket_TicketComment_ticketmodel_TicketComment(args, &label)
-	return s.CreateDB(&label)
+	var ticketCommentDB = model.TicketComment{}
+	convert.Convert_ticket_TicketComment_ticketmodel_TicketComment(args, &ticketCommentDB)
+	return s.CreateDB(&ticketCommentDB)
 }
 
 func (s *TicketCommentStore) CreateDB(TicketComment *model.TicketComment) error {

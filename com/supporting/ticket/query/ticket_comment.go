@@ -18,7 +18,7 @@ func (q TicketQuery) GetTicketCommentByID(ctx context.Context, args *ticket.GetT
 }
 
 func (q TicketQuery) ListTicketComments(ctx context.Context, args *ticket.GetTicketCommentsArgs) (*ticket.GetTicketCommentsResponse, error) {
-	var query = q.TicketCommentStore(ctx)
+	var query = q.TicketCommentStore(ctx).WithPaging(args.Paging)
 	if args.Filter != nil {
 		if args.Filter.ParentID != 0 {
 			query = query.ParentID(args.Filter.ParentID)
