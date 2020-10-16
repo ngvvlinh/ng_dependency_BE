@@ -309,7 +309,7 @@ func (f *FbClient) CallAPIListMessages(req *ListMessagesRequest) (*model.Message
 func (f *FbClient) CallAPIGetMessage(req *GetMessageRequest) (*model.MessageData, error) {
 	params := &GetMessageParams{
 		AccessToken: req.AccessToken,
-		Fields:      fmt.Sprintf("id,from,to,message,sticker,created_time,attachments{id,image_data,mime_type,name,size,video_data,file_url}"),
+		Fields:      fmt.Sprintf("id,from,to,message,sticker,created_time,attachments{id,image_data,mime_type,name,size,video_data,file_url},shares{description,id,link,name}"),
 		DateFormat:  UnixDateFormat,
 	}
 

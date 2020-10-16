@@ -461,6 +461,8 @@ func (s *Synchronizer) handleTaskGetMessages(
 				}
 				if externalShares[0].Link != "" {
 					strs = append(strs, externalShares[0].Link)
+				} else {
+					strs = append(strs, externalShares[0].Name)
 				}
 			}
 			currentMessage = strings.Join(strs, "\n")

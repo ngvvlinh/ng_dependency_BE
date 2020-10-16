@@ -267,6 +267,8 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			}
 			if externalShares[0].Link != "" {
 				strs = append(strs, externalShares[0].Link)
+			} else {
+				strs = append(strs, externalShares[0].Name)
 			}
 		}
 		currentMessage = strings.Join(strs, "\n")
