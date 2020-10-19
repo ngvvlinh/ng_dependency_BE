@@ -240,7 +240,7 @@ func buildTableFulfillment(csvWriter *csv.Writer,
 	firstHeaders = append(firstHeaders, "GIÁ TRỊ ĐƠN HÀNG")
 	w.AddColumn("Tổng số lượng sản phẩm", func() string { return FirstLine(line, FormatInt(ffm.Order.Lines.GetTotalItems())) })
 	firstHeaders = append(firstHeaders, "")
-	w.AddColumn("Tổng khối lượng (g)", func() string { return FirstLine(line, FormatInt(ffm.Order.Lines.GetTotalWeight())) })
+	w.AddColumn("Tổng khối lượng (g)", func() string { return FirstLine(line, FormatInt(ffm.Fulfillment.TotalWeight)) })
 	firstHeaders = append(firstHeaders, "")
 	w.AddColumn("Tổng tiền hàng (trước giảm giá)", func() string { return FirstLine(line, FormatInt(ffm.Order.Lines.GetTotalRetailAmount())) })
 	firstHeaders = append(firstHeaders, "")
