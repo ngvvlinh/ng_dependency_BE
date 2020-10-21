@@ -10,14 +10,13 @@ func Convert_core_TicketComment_to_api_TicketComment(in *ticket.TicketComment) *
 	if in == nil {
 		return nil
 	}
-	return &types.TicketComment{
+	res := &types.TicketComment{
 		ID:        in.ID,
 		TicketID:  in.TicketID,
 		CreatedBy: in.CreatedBy,
 		AccountID: in.AccountID,
 		ParentID:  in.ParentID,
 		Message:   in.Message,
-		ImageUrl:  in.ImageUrls[0],
 		ImageUrls: in.ImageUrls,
 		DeletedAt: cmapi.PbTime(in.DeletedAt),
 		DeletedBy: in.DeletedBy,
@@ -29,6 +28,11 @@ func Convert_core_TicketComment_to_api_TicketComment(in *ticket.TicketComment) *
 			Source: in.CreatedSource,
 		},
 	}
+	// backward-compatible
+	if len(in.ImageUrls) > 0 {
+		res.ImageUrl = in.ImageUrls[0]
+	}
+	return res
 }
 
 func Convert_core_TicketComments_to_api_TicketComments(items []*ticket.TicketComment) []*types.TicketComment {
