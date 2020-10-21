@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/shopping/addressing"
+	"o.o/api/shopping/customering"
 	"o.o/backend/com/shopping/customering/model"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
@@ -194,6 +195,10 @@ func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
 	}
 	var addrs []*model.ShopTraderAddress
 	for _, v := range addrsEx {
+		// bỏ qua address của Khách Lẻ (https://github.com/etopvn/one/issues/2730)
+		if v.ShopTraderAddress.TraderID == customering.CustomerAnonymous {
+			continue
+		}
 		addrs = append(addrs, v.ShopTraderAddress)
 	}
 
