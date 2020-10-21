@@ -38,9 +38,14 @@ type GetNotificationArgs struct {
 	ID        dot.ID
 }
 
+type GetNotificationFilterArgs struct {
+	Entity notifier_entity.NotifierEntity
+}
+
 type GetNotificationsArgs struct {
 	AccountID dot.ID
 	Paging    *cm.Paging
+	Filter    *GetNotificationFilterArgs
 }
 
 type UpdateNotificationsArgs struct {

@@ -185,6 +185,9 @@ func (s *NotificationStore) GetNotifications(args *model.GetNotificationsArgs) (
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
 	}
 	x := s.db.Table("notification").Where("account_id = ?", args.AccountID)
+	if args.Filter != nil && args.Filter.Entity.String() != "" {
+		x = x.Where("entity = ?", args.Filter.Entity)
+	}
 	if args.Paging != nil && len(args.Paging.Sort) == 0 {
 		args.Paging.Sort = []string{"-created_at"}
 	}

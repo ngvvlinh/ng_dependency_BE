@@ -73,6 +73,9 @@ func (s *NotificationService) GetNotifications(ctx context.Context, q *etop.GetN
 		Paging:    paging,
 		AccountID: s.SS.Shop().ID,
 	}
+	if q.Filter != nil {
+		query.Filter = &notimodel.GetNotificationFilterArgs{Entity: q.Filter.Entity}
+	}
 	notis, err := s.NotificationStore.GetNotifications(query)
 	if err != nil {
 		return nil, err

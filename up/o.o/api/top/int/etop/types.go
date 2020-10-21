@@ -8,6 +8,7 @@ import (
 	"o.o/api/top/types/etc/authentication_method"
 	"o.o/api/top/types/etc/credit_type"
 	"o.o/api/top/types/etc/ghn_note_code"
+	"o.o/api/top/types/etc/notifier_entity"
 	status3 "o.o/api/top/types/etc/status3"
 	try_on "o.o/api/top/types/etc/try_on"
 	user_source "o.o/api/top/types/etc/user_source"
@@ -1149,8 +1150,13 @@ type DeleteDeviceRequest struct {
 
 func (m *DeleteDeviceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type GetNotificationFilter struct {
+	Entity notifier_entity.NotifierEntity `json:"entity"`
+}
+
 type GetNotificationsRequest struct {
-	Paging *common.Paging `json:"paging"`
+	Paging *common.Paging         `json:"paging"`
+	Filter *GetNotificationFilter `json:"filter"`
 }
 
 func (m *GetNotificationsRequest) String() string { return jsonx.MustMarshalToString(m) }

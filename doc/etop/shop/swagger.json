@@ -6753,9 +6753,20 @@
         }
       }
     },
+    "baGetNotificationFilter": {
+      "type": "object",
+      "properties": {
+        "entity": {
+          "$ref": "#/definitions/wdNotifierEntity"
+        }
+      }
+    },
     "baGetNotificationsRequest": {
       "type": "object",
       "properties": {
+        "filter": {
+          "$ref": "#/definitions/baGetNotificationFilter"
+        },
         "paging": {
           "$ref": "#/definitions/ktPaging"
         }
@@ -16731,6 +16742,16 @@
         "unknown",
         "manual",
         "auto"
+      ]
+    },
+    "wdNotifierEntity": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "fulfillment",
+        "money_transaction_shipping",
+        "fb_external_comment",
+        "fb_external_message"
       ]
     },
     "xjSource": {
