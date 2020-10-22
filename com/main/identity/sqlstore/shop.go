@@ -34,13 +34,19 @@ type ShopStore struct {
 	shopFt ShopFilters
 	preds  []interface{}
 	sqlstore.Paging
-	filter         meta.Filters
-	ctx            context.Context
-	includeDeleted sqlstore.IncludeDeleted
+	filter               meta.Filters
+	ctx                  context.Context
+	includeDeleted       sqlstore.IncludeDeleted
+	includeWLPartnerShop bool
 }
 
 func (s *ShopStore) extend() *ShopStore {
 	s.shopFt.prefix = "s"
+	return s
+}
+
+func (s *ShopStore) IncludeWLPartnerShop() *ShopStore {
+	s.includeWLPartnerShop = true
 	return s
 }
 
@@ -100,7 +106,9 @@ func (s *ShopStore) ListShopDBs() (res []*identitymodel.Shop, err error) {
 		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
 	}
 	query := s.query().Where(s.preds)
-	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
+	if !s.includeWLPartnerShop {
+		query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
+	}
 	query, err = sqlstore.LimitSort(query, &s.Paging, map[string]string{"created_at": "created_at"})
 	if err != nil {
 		return nil, err
@@ -128,7 +136,9 @@ func (s *ShopStore) ListShopExtendedDBs() (res []*identitymodel.ShopExtended, er
 		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
 	}
 	query := s.extend().query().Where(s.preds)
-	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
+	if !s.includeWLPartnerShop {
+		query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
+	}
 	query = s.includeDeleted.Check(query, s.shopFt.NotDeleted())
 	query, err = sqlstore.LimitSort(query, &s.Paging, map[string]string{"created_at": "created_at"}, s.shopFt.prefix)
 	if err != nil {

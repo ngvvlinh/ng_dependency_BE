@@ -36,6 +36,13 @@ type UserStore struct {
 	ft    UserFilters
 	sqlstore.Paging
 	preds []interface{}
+
+	includeWLPartnerUser bool
+}
+
+func (s *UserStore) IncludeWLPartnerUser() *UserStore {
+	s.includeWLPartnerUser = true
+	return s
 }
 
 func (s *UserStore) ByID(id dot.ID) *UserStore {
@@ -95,7 +102,9 @@ func (s *UserStore) WithPaging(paging meta.Paging) *UserStore {
 func (s *UserStore) GetUserDB(ctx context.Context) (*identitymodel.User, error) {
 	var user identitymodel.User
 	query := s.query().Where(s.preds)
-	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(ctx))
+	if !s.includeWLPartnerUser {
+		query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(ctx))
+	}
 	err := query.ShouldGet(&user)
 	return &user, err
 }
@@ -103,7 +112,9 @@ func (s *UserStore) GetUserDB(ctx context.Context) (*identitymodel.User, error) 
 func (s *UserStore) GetUserFtRefSaffDB(ctx context.Context) (*identitymodel.UserFtRefSaff, error) {
 	var user identitymodel.UserFtRefSaff
 	query := s.query().Where(s.preds)
-	query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(ctx))
+	if !s.includeWLPartnerUser {
+		query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(ctx))
+	}
 	err := query.ShouldGet(&user)
 	return &user, err
 }

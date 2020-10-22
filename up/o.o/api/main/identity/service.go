@@ -53,7 +53,7 @@ type QueryService interface {
 
 	GetShopByID(ctx context.Context, ID dot.ID) (*Shop, error)
 
-	ListShopsByIDs(ctx context.Context, IDs []dot.ID) ([]*Shop, error)
+	ListShopsByIDs(context.Context, *ListShopsByIDsArgs) ([]*Shop, error)
 
 	ListShopExtendeds(context.Context, *ListShopQuery) (*ListShopExtendedsResponse, error)
 
@@ -218,10 +218,11 @@ type ListUsersByWLPartnerID struct {
 }
 
 type ListShopQuery struct {
-	Paging  meta.Paging
-	Filters meta.Filters
-	Name    filter.FullTextSearch
-	ShopIDs []dot.ID
+	Paging               meta.Paging
+	Filters              meta.Filters
+	Name                 filter.FullTextSearch
+	ShopIDs              []dot.ID
+	IncludeWLPartnerShop bool
 }
 
 type ListShopExtendedsResponse struct {
@@ -242,4 +243,9 @@ type UpdateShipFromAddressArgs struct {
 
 type UpdateDefaultAddressArgs struct {
 	ID dot.ID
+}
+
+type ListShopsByIDsArgs struct {
+	IDs                  []dot.ID
+	IncludeWLPartnerShop bool
 }

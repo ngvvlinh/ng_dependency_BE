@@ -50,8 +50,12 @@ func (q *QueryService) GetShopByID(ctx context.Context, id dot.ID) (*identity.Sh
 	return q.shopStore(ctx).ByID(id).GetShop()
 }
 
-func (q *QueryService) ListShopsByIDs(ctx context.Context, ids []dot.ID) ([]*identity.Shop, error) {
-	return q.shopStore(ctx).ByIDs(ids...).ListShops()
+func (q *QueryService) ListShopsByIDs(ctx context.Context, args *identity.ListShopsByIDsArgs) ([]*identity.Shop, error) {
+	query := q.shopStore(ctx).ByIDs(args.IDs...)
+	if args.IncludeWLPartnerShop {
+		query.IncludeWLPartnerShop()
+	}
+	return query.ListShops()
 }
 
 func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.ListShopQuery) (*identity.ListShopExtendedsResponse, error) {
@@ -61,6 +65,9 @@ func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.Lis
 	}
 	if args.ShopIDs != nil && len(args.ShopIDs) > 0 {
 		query = query.ByShopIDs(args.ShopIDs...)
+	}
+	if args.IncludeWLPartnerShop {
+		query = query.IncludeWLPartnerShop()
 	}
 	shops, err := query.ListShopExtendeds()
 	if err != nil {

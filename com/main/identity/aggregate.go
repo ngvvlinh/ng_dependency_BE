@@ -253,7 +253,7 @@ func (a *Aggregate) UnblockUser(ctx context.Context, userID dot.ID) (*identity.U
 
 func (a *Aggregate) UpdateUserRef(ctx context.Context, args *identity.UpdateUserRefArgs) (*identity.UserRefSaff, error) {
 	// Validate user
-	_, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx)
+	_, err := a.userStore(ctx).ByID(args.UserID).IncludeWLPartnerUser().GetUserDB(ctx)
 	if err != nil {
 		return nil, err
 	}

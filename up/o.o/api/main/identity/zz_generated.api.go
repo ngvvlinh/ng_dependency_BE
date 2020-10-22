@@ -391,10 +391,11 @@ func (h QueryServiceHandler) HandleListPartnersForWhiteLabel(ctx context.Context
 }
 
 type ListShopExtendedsQuery struct {
-	Paging  meta.Paging
-	Filters meta.Filters
-	Name    filter.FullTextSearch
-	ShopIDs []dot.ID
+	Paging               meta.Paging
+	Filters              meta.Filters
+	Name                 filter.FullTextSearch
+	ShopIDs              []dot.ID
+	IncludeWLPartnerShop bool
 
 	Result *ListShopExtendedsResponse `json:"-"`
 }
@@ -405,7 +406,8 @@ func (h QueryServiceHandler) HandleListShopExtendeds(ctx context.Context, msg *L
 }
 
 type ListShopsByIDsQuery struct {
-	IDs []dot.ID
+	IDs                  []dot.ID
+	IncludeWLPartnerShop bool
 
 	Result []*Shop `json:"-"`
 }
@@ -794,10 +796,11 @@ func (q *ListPartnersForWhiteLabelQuery) SetEmpty(args *meta.Empty) {
 func (q *ListShopExtendedsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopQuery) {
 	return ctx,
 		&ListShopQuery{
-			Paging:  q.Paging,
-			Filters: q.Filters,
-			Name:    q.Name,
-			ShopIDs: q.ShopIDs,
+			Paging:               q.Paging,
+			Filters:              q.Filters,
+			Name:                 q.Name,
+			ShopIDs:              q.ShopIDs,
+			IncludeWLPartnerShop: q.IncludeWLPartnerShop,
 		}
 }
 
@@ -806,11 +809,20 @@ func (q *ListShopExtendedsQuery) SetListShopQuery(args *ListShopQuery) {
 	q.Filters = args.Filters
 	q.Name = args.Name
 	q.ShopIDs = args.ShopIDs
+	q.IncludeWLPartnerShop = args.IncludeWLPartnerShop
 }
 
-func (q *ListShopsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {
+func (q *ListShopsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopsByIDsArgs) {
 	return ctx,
-		q.IDs
+		&ListShopsByIDsArgs{
+			IDs:                  q.IDs,
+			IncludeWLPartnerShop: q.IncludeWLPartnerShop,
+		}
+}
+
+func (q *ListShopsByIDsQuery) SetListShopsByIDsArgs(args *ListShopsByIDsArgs) {
+	q.IDs = args.IDs
+	q.IncludeWLPartnerShop = args.IncludeWLPartnerShop
 }
 
 func (q *ListUsersByWLPartnerIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUsersByWLPartnerID) {

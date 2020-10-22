@@ -48,10 +48,11 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 		shopIDs = q.Filter.ShopIDs
 	}
 	query := &identity.ListShopExtendedsQuery{
-		Paging:  *paging,
-		Filters: cmapi.ToFilters(q.Filters),
-		Name:    fullTextSearch,
-		ShopIDs: shopIDs,
+		Paging:               *paging,
+		Filters:              cmapi.ToFilters(q.Filters),
+		Name:                 fullTextSearch,
+		ShopIDs:              shopIDs,
+		IncludeWLPartnerShop: true,
 	}
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -66,7 +67,8 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 
 func (s *ShopService) GetShopsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*admin.GetShopsResponse, error) {
 	query := &identity.ListShopsByIDsQuery{
-		IDs: q.Ids,
+		IDs:                  q.Ids,
+		IncludeWLPartnerShop: true,
 	}
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
