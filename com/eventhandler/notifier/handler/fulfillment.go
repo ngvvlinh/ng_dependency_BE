@@ -35,12 +35,19 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 		ll.Warn("fulfillment not found", l.Int64("rid", event.RID))
 		return mq.CodeIgnore, nil
 	}
-	id := history.ID().Int64().Apply(0)
+
+	// không tạo notification với trạng thái default và created
+	shippingState := history.ShippingState().String().String
+	if shippingState == shipping.Default.String() || shippingState == shipping.Created.String() {
+		return mq.CodeIgnore, nil
+	}
+
+	ffmID := history.ID().Int64().Apply(0)
 	var ffm shipmodel.Fulfillment
-	if ok, err := x.Where("id = ?", id).Get(&ffm); err != nil {
+	if ok, err := x.Where("id = ?", ffmID).Get(&ffm); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
-		ll.Warn("fulfillment not found", l.Int64("rid", event.RID), l.Int64("id", id))
+		ll.Warn("fulfillment not found", l.Int64("rid", event.RID), l.Int64("id", ffmID))
 		return mq.CodeIgnore, nil
 	}
 
@@ -72,13 +79,100 @@ func prepareNotifyFfmCommands(ctx context.Context, op pgevent.TGOP, history ship
 			res = append(res, cmds...)
 		}
 	}
+
 	if history.ShippingState().String().Valid || history.ShippingSubstate().String().Valid {
 		cmds := templateFfmChangedStatus(connection, userIDs, ffm, history)
 		if len(cmds) > 0 {
 			res = append(res, cmds...)
 		}
 	}
+
+	if history.AddressTo().V != nil {
+		cmds := templateInfoChange(connection, userIDs, ffm)
+		if len(cmds) > 0 {
+			res = append(res, cmds...)
+		}
+	}
+
+	if history.TotalCODAmount().Int64().Valid {
+		cmds := templateFfmChangedCOD(connection, userIDs, ffm, history)
+		if len(cmds) > 0 {
+			res = append(res, cmds...)
+		}
+	}
+
+	if history.ChargeableWeight().Int64().Valid {
+		cmds := templateWeightChange(connection, userIDs, ffm)
+		if len(cmds) > 0 {
+			res = append(res, cmds...)
+		}
+	}
+
 	return res
+}
+
+func templateWeightChange(
+	connection *connectioning.Connection,
+	userIDs []dot.ID,
+	ffm *shipmodel.Fulfillment,
+) []*notifiermodel.CreateNotificationArgs {
+	title := fmt.Sprintf("Thay đổi thông tin - %v %v của khách %v", connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
+	content := fmt.Sprintf("Khối lượng thay đổi thành %v(g)", ffm.ChargeableWeight)
+	args := &buildNotifyCmdArgs{
+		UserIDs:    userIDs,
+		ShopID:     ffm.ShopID,
+		Title:      title,
+		Message:    content,
+		SendNotify: true,
+		Entity:     notifiermodel.NotiFulfillment,
+		EntityID:   ffm.ID,
+		Meta:       cmtype.Empty{},
+		TopicType:  TopicFulfillment,
+	}
+	return buildNotifyCmds(args)
+}
+
+func templateInfoChange(
+	connection *connectioning.Connection,
+	userIDs []dot.ID,
+	ffm *shipmodel.Fulfillment,
+) []*notifiermodel.CreateNotificationArgs {
+	title := fmt.Sprintf("Thay đổi thông tin - %v %v của khách %v", connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
+	content := fmt.Sprintf("Thông tin người nhận thay đổi thành %v - %v - %v, %v, %v.", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Address1, ffm.AddressTo.District, ffm.AddressTo.Province)
+	args := &buildNotifyCmdArgs{
+		UserIDs:    userIDs,
+		ShopID:     ffm.ShopID,
+		Title:      title,
+		Message:    content,
+		SendNotify: true,
+		Entity:     notifiermodel.NotiFulfillment,
+		EntityID:   ffm.ID,
+		Meta:       cmtype.Empty{},
+		TopicType:  TopicFulfillment,
+	}
+	return buildNotifyCmds(args)
+}
+
+func templateFfmChangedCOD(
+	connection *connectioning.Connection,
+	userIDs []dot.ID,
+	ffm *shipmodel.Fulfillment,
+	history shipmodel.FulfillmentHistory,
+) []*notifiermodel.CreateNotificationArgs {
+	title := fmt.Sprintf("Thay đổi thông tin - %v %v của khách %v", connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
+	content := fmt.Sprintf("Thu hộ thay đổi thành %v.", history.TotalCODAmount().Int64().Int64)
+	args := &buildNotifyCmdArgs{
+		UserIDs:    userIDs,
+		ShopID:     ffm.ShopID,
+		Title:      title,
+		Message:    content,
+		SendNotify: true,
+		Entity:     notifiermodel.NotiFulfillment,
+		EntityID:   ffm.ID,
+		Meta:       cmtype.Empty{},
+		TopicType:  TopicFulfillment,
+	}
+	return buildNotifyCmds(args)
 }
 
 func templateFfmChangedFee(
@@ -87,15 +181,14 @@ func templateFfmChangedFee(
 	ffm *shipmodel.Fulfillment,
 	history shipmodel.FulfillmentHistory,
 ) []*notifiermodel.CreateNotificationArgs {
-	// Không bắn noti thay đổi cước phí khi vừa tạo đơn
+	// Không tạo thông báo thay đổi cước phí khi tạo đơn
 	if history.ShippingState().String().Valid && history.ShippingState().String().String != shipping.Created.String() ||
 		history.ShippingCode().String().Valid {
 		return nil
 	}
 
 	title := fmt.Sprintf("Thay đổi phí vận chuyển - %v %v - %v", connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
-	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
-	content := fmt.Sprintf("Cước phí thay đổi thành %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", history.ShippingFeeShop().Int64().Int64, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
+	content := fmt.Sprintf("Cước phí thay đổi thành %v.", history.ShippingFeeShop().Int64().Int64)
 
 	args := &buildNotifyCmdArgs{
 		UserIDs:    userIDs,
@@ -120,6 +213,7 @@ func templateFfmChangedStatus(
 	shippingState := history.ShippingState().String().String
 	shippingSubState := history.ShippingSubstate().String().String
 	content := ""
+	title := ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 
 	// ưu tiên cho substate
@@ -153,10 +247,17 @@ func templateFfmChangedStatus(
 		return nil
 	}
 
+	title = fmt.Sprintf("%v - %v %v %v", shippingsharemodel.ShippingStateMap[ffm.ShippingState], connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
 	switch ffm.ShippingState {
-	case shipping.Picking, shipping.Holding:
+	case shipping.Picking:
 		content = fmt.Sprintf("Dự kiến giao vào %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cm.FormatDateVN(ffm.ExpectedDeliveryAt), ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case shipping.Delivering, shipping.Delivered, shipping.Returned:
+	case shipping.Holding:
+		content = fmt.Sprintf("Dự kiến giao vào %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cm.FormatDateVN(ffm.ExpectedDeliveryAt), ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
+	case shipping.Delivering:
+		content = fmt.Sprintf("Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
+	case shipping.Delivered:
+		content = fmt.Sprintf("Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
+	case shipping.Returned:
 		content = fmt.Sprintf("Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
 	case shipping.Returning:
 		content = fmt.Sprintf("Dự kiến trả hàng trong vòng 3-5 ngày tới. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
@@ -176,8 +277,6 @@ func templateFfmChangedStatus(
 		content = fmt.Sprintf("Lý do hủy: %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cancelReason, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
 	default:
 	}
-
-	title := fmt.Sprintf("%v - %v %v - %v", shippingsharemodel.ShippingStateMap[ffm.ShippingState], connection.Name, ffm.ShippingCode, ffm.AddressTo.FullName)
 
 	sendNotification := false
 	if cm.StringsContain(acceptNotifyStates, ffm.ShippingState.String()) {
