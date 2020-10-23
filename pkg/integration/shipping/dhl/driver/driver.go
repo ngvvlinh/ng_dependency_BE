@@ -222,7 +222,7 @@ func (d DHLDriver) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfill
 
 	shipmentID := ffm.ID.String()
 	getLocationQuery := &location.GetLocationQuery{
-		ProvinceCode: ffm.AddressTo.ProvinceCode,
+		ProvinceCode: ffm.AddressFrom.ProvinceCode,
 	}
 	if err := d.locationQS.Dispatch(ctx, getLocationQuery); err != nil {
 		return err
