@@ -21,7 +21,7 @@ import (
 
 const oneHour = 1 * time.Hour
 
-var ll = l.New()
+var ll = l.New().WithChannel("webhook")
 
 type Webhook struct {
 	db                     *cmsql.Database

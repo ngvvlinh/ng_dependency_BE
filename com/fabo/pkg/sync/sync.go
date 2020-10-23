@@ -33,7 +33,7 @@ import (
 	"o.o/common/xerrors"
 )
 
-var ll = l.New()
+var ll = l.New().WithChannel("sync_service")
 
 const (
 	defaultNumWorkers                  = 32
