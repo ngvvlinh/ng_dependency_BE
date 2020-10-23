@@ -156,9 +156,11 @@ func (h QueryServiceHandler) HandleGetReceiptByID(ctx context.Context, msg *GetR
 }
 
 type ListReceiptsQuery struct {
-	ShopID  dot.ID
-	Paging  meta.Paging
-	Filters meta.Filters
+	ShopID        dot.ID
+	CreatedAtFrom time.Time
+	CreatedAtTo   time.Time
+	Paging        meta.Paging
+	Filters       meta.Filters
 
 	Result *ReceiptsResponse `json:"-"`
 }
@@ -409,14 +411,18 @@ func (q *GetReceiptByIDQuery) SetGetReceiptByIDArg(args *GetReceiptByIDArg) {
 func (q *ListReceiptsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListReceiptsArgs) {
 	return ctx,
 		&ListReceiptsArgs{
-			ShopID:  q.ShopID,
-			Paging:  q.Paging,
-			Filters: q.Filters,
+			ShopID:        q.ShopID,
+			CreatedAtFrom: q.CreatedAtFrom,
+			CreatedAtTo:   q.CreatedAtTo,
+			Paging:        q.Paging,
+			Filters:       q.Filters,
 		}
 }
 
 func (q *ListReceiptsQuery) SetListReceiptsArgs(args *ListReceiptsArgs) {
 	q.ShopID = args.ShopID
+	q.CreatedAtFrom = args.CreatedAtFrom
+	q.CreatedAtTo = args.CreatedAtTo
 	q.Paging = args.Paging
 	q.Filters = args.Filters
 }

@@ -2,6 +2,7 @@ package stocktaking
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/inventory_auto"
@@ -64,9 +65,12 @@ type ConfirmStocktakeRequest struct {
 }
 
 type ListStocktakeRequest struct {
-	Page   meta.Paging
-	ShopID dot.ID
-	Filter []meta.Filter
+	Page          meta.Paging
+	CreatedAtFrom time.Time
+	CreatedAtTo   time.Time
+	Type          stocktake_type.NullStocktakeType
+	ShopID        dot.ID
+	Filter        []meta.Filter
 }
 
 type ListStocktakeResponse struct {

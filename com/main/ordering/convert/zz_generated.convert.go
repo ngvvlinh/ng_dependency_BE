@@ -199,6 +199,7 @@ func convert_orderingmodel_Order_ordering_Order(arg *orderingmodel.Order, out *o
 	out.ReferenceURL = arg.ReferenceURL       // simple assign
 	out.GhnNoteCode = arg.GhnNoteCode         // simple assign
 	out.TryOn = arg.TryOn                     // simple assign
+	out.VariantIDs = arg.VariantIDs           // simple assign
 	out.PreOrder = arg.PreOrder               // simple assign
 }
 
@@ -231,7 +232,7 @@ func convert_ordering_Order_orderingmodel_Order(arg *ordering.Order, out *orderi
 	out.Code = arg.Code                   // simple assign
 	out.EdCode = arg.EdCode               // simple assign
 	out.ProductIDs = nil                  // zero value
-	out.VariantIDs = nil                  // zero value
+	out.VariantIDs = arg.VariantIDs       // simple assign
 	out.PartnerID = arg.PartnerID         // simple assign
 	out.Currency = ""                     // zero value
 	out.PaymentMethod = arg.PaymentMethod // simple assign

@@ -8,6 +8,7 @@ import (
 	context "context"
 	time "time"
 
+	report_time_filter "o.o/api/top/types/etc/report_time_filter"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
@@ -18,6 +19,19 @@ func NewQueryBus(bus capi.Bus) QueryBus { return QueryBus{bus} }
 
 func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
 	return b.bus.Dispatch(ctx, msg)
+}
+
+type ReportIncomeStatementQuery struct {
+	ShopID     dot.ID
+	Year       int
+	TimeFilter report_time_filter.TimeFilter
+
+	Result map[int]*ReportIncomeStatement `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleReportIncomeStatement(ctx context.Context, msg *ReportIncomeStatementQuery) (err error) {
+	msg.Result, err = h.inner.ReportIncomeStatement(msg.GetArgs(ctx))
+	return err
 }
 
 type ReportOrdersQuery struct {
@@ -36,9 +50,25 @@ func (h QueryServiceHandler) HandleReportOrders(ctx context.Context, msg *Report
 
 // implement interfaces
 
-func (q *ReportOrdersQuery) query() {}
+func (q *ReportIncomeStatementQuery) query() {}
+func (q *ReportOrdersQuery) query()          {}
 
 // implement conversion
+
+func (q *ReportIncomeStatementQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ReportIncomeStatementArgs) {
+	return ctx,
+		&ReportIncomeStatementArgs{
+			ShopID:     q.ShopID,
+			Year:       q.Year,
+			TimeFilter: q.TimeFilter,
+		}
+}
+
+func (q *ReportIncomeStatementQuery) SetReportIncomeStatementArgs(args *ReportIncomeStatementArgs) {
+	q.ShopID = args.ShopID
+	q.Year = args.Year
+	q.TimeFilter = args.TimeFilter
+}
 
 func (q *ReportOrdersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ReportOrdersArgs) {
 	return ctx,
@@ -71,6 +101,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleReportIncomeStatement)
 	b.AddHandler(h.HandleReportOrders)
 	return QueryBus{b}
 }

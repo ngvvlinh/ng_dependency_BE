@@ -18,6 +18,7 @@ import (
 var upperAlphabets = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
 const dateLayoutArg = `2006-01-02`
+const styleLeftHeader = `{"alignment": {"horizontal":"left"}, "font": {"family":"Calibri","size":11, "bold": true}}`
 
 type fileType string
 
@@ -40,11 +41,25 @@ func getFileType(r *http.Request) fileType {
 	}
 }
 
-func exportPDF(w http.ResponseWriter, html bytes.Buffer) {
+type PDFOptions struct {
+	width  uint
+	height uint
+}
+
+func exportPDF(w http.ResponseWriter, html bytes.Buffer, options ...interface{}) {
+	var pdfOptions *PDFOptions
+	if len(options) > 0 {
+		pdfOptions = options[0].(*PDFOptions)
+	}
+
 	pdfg, err := wkhtml.NewPDFGenerator()
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
+	}
+	if pdfOptions != nil {
+		pdfg.PageWidth.Set(pdfOptions.width)
+		pdfg.PageHeight.Set(pdfOptions.height)
 	}
 	pdfg.AddPage(wkhtml.NewPageReader(strings.NewReader(html.String())))
 	pdfg.SetOutput(w)

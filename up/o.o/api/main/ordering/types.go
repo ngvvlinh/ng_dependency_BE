@@ -133,6 +133,8 @@ type Order struct {
 	GhnNoteCode     ghn_note_code.GHNNoteCode
 	TryOn           try_on.TryOnCode
 
+	VariantIDs []dot.ID
+
 	PreOrder bool
 }
 

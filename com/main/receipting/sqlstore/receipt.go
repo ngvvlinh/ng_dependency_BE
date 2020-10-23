@@ -71,6 +71,11 @@ func (s *ReceiptStore) ShopID(id dot.ID) *ReceiptStore {
 	return s
 }
 
+func (s *ReceiptStore) CreatedAtFromAndTo(from, to time.Time) *ReceiptStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at >= ? AND created_at < ?", from, to))
+	return s
+}
+
 func (s *ReceiptStore) Code(code string) *ReceiptStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "code", code))
 	return s
@@ -128,6 +133,11 @@ func (s *ReceiptStore) Statuses(statuses ...status3.Status) *ReceiptStore {
 
 func (s *ReceiptStore) LedgerIDs(LedgerIDs ...dot.ID) *ReceiptStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "ledger_id", LedgerIDs))
+	return s
+}
+
+func (s *ReceiptStore) InPerDate(date time.Time) *ReceiptStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at BETWEEN ? AND ?", date, date.Add(24*time.Hour)))
 	return s
 }
 

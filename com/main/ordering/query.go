@@ -79,9 +79,13 @@ func (q *QueryService) ListOrdersConfirmed(
 	ctx context.Context, args *ordering.ListOrdersConfirmedArgs,
 ) ([]*ordering.Order, error) {
 	query := q.store(ctx)
+	query = query.ShopID(args.ShopID)
 	query = query.ConfirmStatus(status3.P)
 	query = query.Statuses([]status5.Status{status5.NS, status5.Z, status5.P, status5.S})
-	query = query.CreatedAtFromAndTo(args.CreatedAtFrom, args.CreatedAtTo)
+
+	if !args.CreatedAtFrom.IsZero() && !args.CreatedAtTo.IsZero() {
+		query = query.CreatedAtFromAndTo(args.CreatedAtFrom, args.CreatedAtTo)
+	}
 
 	if args.CreatedBy != 0 {
 		query = query.CreatedBy(args.CreatedBy)

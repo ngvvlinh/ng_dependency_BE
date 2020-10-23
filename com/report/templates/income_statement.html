@@ -1,0 +1,134 @@
+{{ define "title" }} Báo cáo hoạt động kinh doanh {{ end }}
+
+{{ define "body" }}
+    <style>
+        html {
+            font-family: Arial, serif;
+        }
+
+        .report-info {
+            text-align: center;
+        }
+        .report-title {
+            font-size: 30px;
+            font-weight: 800;
+        }
+        .table-header {
+            text-align: left;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .report-body table {
+            border-collapse: collapse;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+        .report-body tr td {
+            border-top: 1px solid black;
+            text-align: center;
+        }
+    </style>
+    <div class="main">
+        <div class="report-header">
+            <table style="width: 100%;">
+                <tr>
+                    <td><p style="text-align: left;">eTop POS</p></td>
+                    <td><p style="text-align: right;">Ngày lập: {{.Now}}</p></td>
+                </tr>
+            </table>
+        </div>
+        <div class="report-body">
+            <div class="report-info">
+                <p class="report-title">Báo cáo hoạt động kinh doanh</p>
+                <p class="shop-name">Cửa hàng: {{.ShopName}}</p>
+            </div>
+            <table style="width:100%">
+                <tr>
+                    <td></td>
+                    {{range .Cols}}
+                        <td><p style="text-align: right" class="table-header">{{.Header}}</p></td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Doanh thu bán hàng (1)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .Revenue}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Giảm trừ Doanh thu (2)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .Discounts}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Doanh thu thuần (3=1-2)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .NetRevenue}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Giá vốn hàng bán (4)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .CostPrice}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Lợi nhuận gộp về bán hàng (5=3-4)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .GrossProfit}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Chi phí (6 = 6.1 + 6.2 + 6.3)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .Expenses}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header" style="margin-left: 30px;">Phí giao hàng (6.1)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .DeliveryFee}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header" style="margin-left: 30px;">Xuất hủy hàng hóa (6.2)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .Discards}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header" style="margin-left: 30px;">Khác (6.3)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .Others}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Lợi nhuận từ hoạt động kinh doanh (7=5-6)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .ProfitStatement}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Thu nhập khác (8)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .OtherIncomes}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Chi phí khác (9)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .OtherExpenses}}</td>
+                    {{end}}
+                </tr>
+                <tr>
+                    <td><p class="table-header">Lợi nhuận thuần (10=(7+8)-9)</p></td>
+                    {{range .Cols}}
+                        <td style="text-align: right">{{formatPrice .NetProfit}}</td>
+                    {{end}}
+                </tr>
+            </table>
+        </div>
+    </div>
+{{ end }}

@@ -1213,7 +1213,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	aggregate29 := aggregate23.New(logDB)
 	serverServer := server.New(gatewayCommandBus, aggregate29)
 	vtPayHandler := server_vtpay.BuildVTPayHandler(serverServer)
-	reportQuery := query22.NewReportQuery(orderingQueryBus, queryBus, receiptingQueryBus)
+	reportQuery := query22.NewReportQuery(orderingQueryBus, queryBus, receiptingQueryBus, catalogQueryBus, stocktakingQueryBus)
 	reportingQueryBus := query22.ReportQueryMessageBus(reportQuery)
 	reportService := reportserver.ReportService{
 		ReportQuery:   reportingQueryBus,

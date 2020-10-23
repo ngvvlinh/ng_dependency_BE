@@ -53,6 +53,9 @@ func (q *ReceiptQuery) ListReceipts(
 	ctx context.Context, args *receipting.ListReceiptsArgs,
 ) (*receipting.ReceiptsResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID).Filters(args.Filters)
+	if !args.CreatedAtFrom.IsZero() && !args.CreatedAtTo.IsZero() {
+		query = query.CreatedAtFromAndTo(args.CreatedAtFrom, args.CreatedAtTo)
+	}
 	receipts, err := query.WithPaging(args.Paging).ListReceipts()
 	if err != nil {
 		return nil, err

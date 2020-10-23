@@ -54,9 +54,11 @@ type GetReceiptbyIDsArgs struct {
 }
 
 type ListReceiptsArgs struct {
-	ShopID  dot.ID
-	Paging  meta.Paging
-	Filters meta.Filters
+	ShopID        dot.ID
+	CreatedAtFrom time.Time
+	CreatedAtTo   time.Time
+	Paging        meta.Paging
+	Filters       meta.Filters
 }
 
 type ReceiptsResponse struct {

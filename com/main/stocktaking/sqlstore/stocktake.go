@@ -2,9 +2,11 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	st "o.o/api/main/stocktaking"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/stocktake_type"
 	"o.o/backend/com/main/stocktaking/convert"
 	"o.o/backend/com/main/stocktaking/model"
 	cm "o.o/backend/pkg/common"
@@ -66,6 +68,16 @@ func (s *ShopStocktakeStore) IDs(ids ...dot.ID) *ShopStocktakeStore {
 
 func (s *ShopStocktakeStore) ShopID(id dot.ID) *ShopStocktakeStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
+	return s
+}
+
+func (s *ShopStocktakeStore) Type(typ stocktake_type.StocktakeType) *ShopStocktakeStore {
+	s.preds = append(s.preds, s.ft.ByType(typ))
+	return s
+}
+
+func (s *ShopStocktakeStore) CreatedAtFromAndTo(from, to time.Time) *ShopStocktakeStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at >= ? AND created_at < ?", from, to))
 	return s
 }
 

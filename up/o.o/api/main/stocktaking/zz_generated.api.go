@@ -6,6 +6,7 @@ package stocktaking
 
 import (
 	context "context"
+	time "time"
 
 	meta "o.o/api/meta"
 	inventory_auto "o.o/api/top/types/etc/inventory_auto"
@@ -112,9 +113,12 @@ func (h QueryServiceHandler) HandleGetStocktakesByIDs(ctx context.Context, msg *
 }
 
 type ListStocktakeQuery struct {
-	Page   meta.Paging
-	ShopID dot.ID
-	Filter []meta.Filter
+	Page          meta.Paging
+	CreatedAtFrom time.Time
+	CreatedAtTo   time.Time
+	Type          stocktake_type.NullStocktakeType
+	ShopID        dot.ID
+	Filter        []meta.Filter
 
 	Result *ListStocktakeResponse `json:"-"`
 }
@@ -228,14 +232,20 @@ func (q *GetStocktakesByIDsQuery) GetArgs(ctx context.Context) (_ context.Contex
 func (q *ListStocktakeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListStocktakeRequest) {
 	return ctx,
 		&ListStocktakeRequest{
-			Page:   q.Page,
-			ShopID: q.ShopID,
-			Filter: q.Filter,
+			Page:          q.Page,
+			CreatedAtFrom: q.CreatedAtFrom,
+			CreatedAtTo:   q.CreatedAtTo,
+			Type:          q.Type,
+			ShopID:        q.ShopID,
+			Filter:        q.Filter,
 		}
 }
 
 func (q *ListStocktakeQuery) SetListStocktakeRequest(args *ListStocktakeRequest) {
 	q.Page = args.Page
+	q.CreatedAtFrom = args.CreatedAtFrom
+	q.CreatedAtTo = args.CreatedAtTo
+	q.Type = args.Type
 	q.ShopID = args.ShopID
 	q.Filter = args.Filter
 }

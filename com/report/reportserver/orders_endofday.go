@@ -58,7 +58,7 @@ func init() {
 }
 
 func (s *ReportService) ReportOrdersEndOfDay(w http.ResponseWriter, r *http.Request) {
-	data := s.getData(w, r)
+	data := s.getOrderEndOfData(w, r)
 
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -73,7 +73,7 @@ func (s *ReportService) ExportReportOrdersEndOfDay(w http.ResponseWriter, r *htt
 		return
 	}
 
-	data := s.getData(w, r)
+	data := s.getOrderEndOfData(w, r)
 
 	switch fileTyp {
 	case fileTypePDF:
@@ -124,7 +124,7 @@ func (s *ReportService) getParams(ctx context.Context, r *http.Request) (staffNa
 	return
 }
 
-func (s *ReportService) getData(w http.ResponseWriter, r *http.Request) (data OrdersEndOfDayData) {
+func (s *ReportService) getOrderEndOfData(w http.ResponseWriter, r *http.Request) (data OrdersEndOfDayData) {
 	ctx := r.Context()
 	ss := session.GetSessionFromCtx(ctx)
 
