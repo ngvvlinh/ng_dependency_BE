@@ -45,6 +45,7 @@ type QueryService interface {
 	GetOrderByCode(context.Context, *GetOrderByCodeArgs) (*Order, error)
 	ListOrdersByCustomerID(ctx context.Context, shopID, customerID dot.ID) (*OrdersResponse, error)
 	ListOrdersByCustomerIDs(ctx context.Context, shopID dot.ID, customerIDs []dot.ID) (*OrdersResponse, error)
+	ListOrdersConfirmed(context.Context, *ListOrdersConfirmedArgs) ([]*Order, error)
 }
 
 type GetOrderByIDArgs struct {
@@ -276,4 +277,11 @@ type UpdateOrderPaymentStatusArgs struct {
 	OrderID       dot.ID
 	ShopID        dot.ID
 	PaymentStatus status4.NullStatus
+}
+
+type ListOrdersConfirmedArgs struct {
+	ShopID        dot.ID
+	CreatedAtFrom time.Time
+	CreatedAtTo   time.Time
+	CreatedBy     dot.ID
 }

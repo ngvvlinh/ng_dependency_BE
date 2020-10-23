@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/receipting"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/receipt_ref"
+	"o.o/api/top/types/etc/receipt_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/main/receipting/convert"
 	"o.o/backend/com/main/receipting/model"
@@ -102,6 +103,11 @@ func (s *ReceiptStore) RefIDs(isContains bool, ids ...dot.ID) *ReceiptStore {
 		operator = "@>"
 	}
 	s.preds = append(s.preds, sq.NewExpr("ref_ids "+operator+" ?", core.Array{V: ids}))
+	return s
+}
+
+func (s *ReceiptStore) ReceiptType(typ receipt_type.ReceiptType) *ReceiptStore {
+	s.preds = append(s.preds, s.ft.ByType(typ))
 	return s
 }
 

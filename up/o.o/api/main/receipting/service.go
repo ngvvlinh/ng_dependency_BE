@@ -30,6 +30,7 @@ type QueryService interface {
 	ListReceipts(context.Context, *ListReceiptsArgs) (*ReceiptsResponse, error)
 	ListReceiptsByIDs(context.Context, *GetReceiptbyIDsArgs) (*ReceiptsResponse, error)
 	ListReceiptsByRefsAndStatus(context.Context, *ListReceiptsByRefsAndStatusArgs) (*ReceiptsResponse, error)
+	ListReceiptsByRefsAndStatusAndType(context.Context, *ListReceiptsByRefsAndStatusAndTypeArgs) ([]*Receipt, error)
 	ListReceiptsByTraderIDsAndStatuses(ctx context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []status3.Status) (*ReceiptsResponse, error)
 	ListReceiptsByLedgerIDs(context.Context, *ListReceiptsByLedgerIDsArgs) (*ReceiptsResponse, error)
 }
@@ -129,4 +130,13 @@ type ListReceiptsByRefsAndStatusArgs struct {
 	RefType    receipt_ref.ReceiptRef
 	Status     int
 	IsContains bool
+}
+
+type ListReceiptsByRefsAndStatusAndTypeArgs struct {
+	ShopID      dot.ID
+	RefIDs      []dot.ID
+	RefType     receipt_ref.ReceiptRef
+	ReceiptType receipt_type.ReceiptType
+	Status      status3.Status
+	IsContains  bool
 }

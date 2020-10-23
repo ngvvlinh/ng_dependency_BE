@@ -39,8 +39,10 @@ import (
 	"o.o/backend/com/main/purchaserefund"
 	"o.o/backend/com/main/receipting"
 	"o.o/backend/com/main/refund"
+	"o.o/backend/com/main/reporting"
 	"o.o/backend/com/main/shipnow"
 	"o.o/backend/com/main/stocktaking"
+	"o.o/backend/com/report"
 	"o.o/backend/com/services/affiliate"
 	"o.o/backend/com/shopping/carrying"
 	"o.o/backend/com/shopping/customering"
@@ -178,6 +180,8 @@ func Build(
 		webhook.WireSet,
 		middleware.WireSet,
 		logicsummary.WireSet,
+		reporting.WireSet,
+		report.WireSet,
 		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
 		wire.Bind(new(eventstream.Publisher), new(*eventstream.EventStream)),

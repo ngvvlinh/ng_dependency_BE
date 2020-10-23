@@ -1,0 +1,83 @@
+{{ define "title" }} Báo cáo cuối ngày về bán hàng {{ end }}
+
+{{ define "body" }}
+    <style>
+        html {
+            font-family: Arial, serif;
+        }
+
+        .report-info {
+            text-align: center;
+        }
+        .report-title {
+            font-size: 30px;
+            font-weight: 800;
+        }
+        .table-header {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .report-body table {
+            border-collapse: collapse;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+        .report-body tr td {
+            border-top: 1px solid black;
+            text-align: center;
+        }
+    </style>
+    <div class="main">
+        <div class="report-header">
+            <table style="width: 100%;">
+                <tr>
+                    <td><p style="text-align: left;">eTop POS</p></td>
+                    <td><p style="text-align: right;">Ngày lập: {{.Now}}</p></td>
+                </tr>
+            </table>
+        </div>
+        <div class="report-body">
+            <div class="report-info">
+                <p class="report-title">Báo cáo cuối ngày về bán hàng</p>
+                <p class="day-of-sale">Ngày bán: {{.CreatedAt}}</p>
+                <p class="paid-at">Ngày thanh toán: {{.CreatedAt}}</p>
+                <p class="shop-name">Cửa hàng: {{.ShopName}}</p>
+                {{if .StaffName}}
+                    <p class="staff-name">Nhân viên: {{.StaffName}}</p>
+                {{end}}
+            </div>
+            <table style="width:100%">
+                <tr>
+                    <td><p class="table-header">Mã hoá đơn</p></td>
+                    <td><p class="table-header">Thời gian</p></td>
+                    <td><p class="table-header">SL sản phẩm</p></td>
+                    <td><p class="table-header">Doanh thu</p></td>
+                    <td><p class="table-header">Thu khác</p></td>
+                    <td><p class="table-header">Giảm giá</p></td>
+                    <td><p class="table-header">Thực thu</p></td>
+                </tr>
+                <tr>
+                    <td><p class="table-header">Hoá đơn: {{.Summary.TotalOrders}}</p></td>
+                    <td></td>
+                    <td><p class="table-header">{{.Summary.TotalItems}}</p></td>
+                    <td><p class="table-header" style="text-align: right">{{formatPrice .Summary.TotalAmount}}</p></td>
+                    <td><p class="table-header" style="text-align: right">{{formatPrice .Summary.TotalFee}}</p></td>
+                    <td><p class="table-header" style="text-align: right">{{formatPrice .Summary.TotalDiscount}}</p></td>
+                    <td><p class="table-header" style="text-align: right">{{formatPrice .Summary.TotalRevenue}}</p></td>
+                </tr>
+                {{range .Lines}}
+                    <tr>
+                        <td style="color: #33B6D4; font-weight: 600;">{{.OrderCode}}</td>
+                        <td>{{.CreatedAt}}</td>
+                        <td>{{.TotalItems}}</td>
+                        <td style="text-align: right">{{formatPrice .TotalAmount}}</td>
+                        <td style="text-align: right">{{formatPrice .TotalFee}}</td>
+                        <td style="text-align: right">{{formatPrice .TotalDiscount}}</td>
+                        <td style="text-align: right">{{formatPrice .Revenue}}</td>
+                    </tr>
+                {{end}}
+            </table>
+        </div>
+    </div>
+{{ end }}

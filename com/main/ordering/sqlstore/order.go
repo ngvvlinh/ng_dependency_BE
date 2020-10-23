@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"github.com/lib/pq"
 
@@ -100,6 +101,26 @@ func (s *OrderStore) ExternalPartnerID(partnerID dot.ID, externalID string) *Ord
 		s.ft.ByPartnerID(partnerID),
 		s.ft.ByExternalOrderID(externalID),
 	)
+	return s
+}
+
+func (s *OrderStore) PaymentStatus(status status4.Status) *OrderStore {
+	s.preds = append(s.preds, s.ft.ByPaymentStatus(status))
+	return s
+}
+
+func (s *OrderStore) ConfirmStatus(status status3.Status) *OrderStore {
+	s.preds = append(s.preds, s.ft.ByConfirmStatus(status))
+	return s
+}
+
+func (s *OrderStore) CreatedBy(createdBy dot.ID) *OrderStore {
+	s.preds = append(s.preds, s.ft.ByCreatedBy(createdBy))
+	return s
+}
+
+func (s *OrderStore) CreatedAtFromAndTo(createdAtFrom, createdAtTo time.Time) *OrderStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at >= ? AND created_at < ?", createdAtFrom, createdAtTo))
 	return s
 }
 

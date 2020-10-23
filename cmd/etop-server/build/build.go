@@ -32,6 +32,7 @@ import (
 	pricelistpm "o.o/backend/com/main/shipmentpricing/pricelist/pm"
 	shipnowpm "o.o/backend/com/main/shipnow/pm"
 	shippingpm "o.o/backend/com/main/shipping/pm"
+	"o.o/backend/com/report/reportserver"
 	affiliatepm "o.o/backend/com/services/affiliate/pm"
 	customerpm "o.o/backend/com/shopping/customering/pm"
 	traderpm "o.o/backend/com/shopping/tradering/pm"
@@ -113,6 +114,7 @@ func BuildMainServer(
 	eventStream server_shop.EventStreamHandler,
 	downloadHandler server_shop.DownloadHandler,
 	vtpayServer server_vtpay.VTPayHandler,
+	reportServer reportserver.ReportServer,
 ) MainServer {
 	mux := http.NewServeMux()
 	l.RegisterHTTPHandler(mux)
@@ -142,6 +144,7 @@ func BuildMainServer(
 	mux.Handle(eventStream.PathPrefix(), eventStream)
 	mux.Handle(downloadHandler.PathPrefix(), downloadHandler)
 	mux.Handle(vtpayServer.PathPrefix(), vtpayServer)
+	mux.Handle(reportServer.PathPrefix(), mwares(reportServer))
 
 	if cfg.ServeDoc {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))

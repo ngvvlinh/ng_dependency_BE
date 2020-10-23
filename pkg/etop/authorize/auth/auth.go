@@ -28,7 +28,7 @@ const model = `
 	[matchers]
 	m = g(r.role, p.role) && r.action == p.action`
 
-const EcomAuthorization = "e-authorization"
+const Authorization = "e-authorization"
 
 type Roles []string
 

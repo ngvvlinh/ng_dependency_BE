@@ -241,6 +241,20 @@ func (h QueryServiceHandler) HandleListOrdersByCustomerIDs(ctx context.Context, 
 	return err
 }
 
+type ListOrdersConfirmedQuery struct {
+	ShopID        dot.ID
+	CreatedAtFrom time.Time
+	CreatedAtTo   time.Time
+	CreatedBy     dot.ID
+
+	Result []*Order `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListOrdersConfirmed(ctx context.Context, msg *ListOrdersConfirmedQuery) (err error) {
+	msg.Result, err = h.inner.ListOrdersConfirmed(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CompleteOrderCommand) command()                        {}
@@ -261,6 +275,7 @@ func (q *GetOrdersQuery) query()                   {}
 func (q *GetOrdersByIDsAndCustomerIDQuery) query() {}
 func (q *ListOrdersByCustomerIDQuery) query()      {}
 func (q *ListOrdersByCustomerIDsQuery) query()     {}
+func (q *ListOrdersConfirmedQuery) query()         {}
 
 // implement conversion
 
@@ -472,6 +487,23 @@ func (q *ListOrdersByCustomerIDsQuery) GetArgs(ctx context.Context) (_ context.C
 		q.CustomerIDs
 }
 
+func (q *ListOrdersConfirmedQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListOrdersConfirmedArgs) {
+	return ctx,
+		&ListOrdersConfirmedArgs{
+			ShopID:        q.ShopID,
+			CreatedAtFrom: q.CreatedAtFrom,
+			CreatedAtTo:   q.CreatedAtTo,
+			CreatedBy:     q.CreatedBy,
+		}
+}
+
+func (q *ListOrdersConfirmedQuery) SetListOrdersConfirmedArgs(args *ListOrdersConfirmedArgs) {
+	q.ShopID = args.ShopID
+	q.CreatedAtFrom = args.CreatedAtFrom
+	q.CreatedAtTo = args.CreatedAtTo
+	q.CreatedBy = args.CreatedBy
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -516,5 +548,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetOrdersByIDsAndCustomerID)
 	b.AddHandler(h.HandleListOrdersByCustomerID)
 	b.AddHandler(h.HandleListOrdersByCustomerIDs)
+	b.AddHandler(h.HandleListOrdersConfirmed)
 	return QueryBus{b}
 }

@@ -104,6 +104,8 @@ type QueryService interface {
 	GetAllAccountsByUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
 
 	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
+
+	ListUsersByIDsAndNameNorm(context.Context, *ListUsersByIDsAndNameNormArgs) ([]*User, error)
 }
 
 type Account struct {
@@ -294,4 +296,9 @@ type CreateUserArgs struct {
 	RefAff                  string
 	PhoneVerifiedAt         time.Time
 	PhoneVerificationSentAt time.Time
+}
+
+type ListUsersByIDsAndNameNormArgs struct {
+	IDs      []dot.ID
+	NameNorm filter.FullTextSearch
 }

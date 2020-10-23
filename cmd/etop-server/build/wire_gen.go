@@ -75,6 +75,7 @@ import (
 	aggregate16 "o.o/backend/com/main/refund/aggregate"
 	pm11 "o.o/backend/com/main/refund/pm"
 	query14 "o.o/backend/com/main/refund/query"
+	query22 "o.o/backend/com/main/reporting/query"
 	"o.o/backend/com/main/shipmentpricing/pricelist"
 	pm17 "o.o/backend/com/main/shipmentpricing/pricelist/pm"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion"
@@ -91,6 +92,7 @@ import (
 	query16 "o.o/backend/com/main/shippingcode/query"
 	aggregate14 "o.o/backend/com/main/stocktaking/aggregate"
 	query10 "o.o/backend/com/main/stocktaking/query"
+	"o.o/backend/com/report/reportserver"
 	affiliate2 "o.o/backend/com/services/affiliate"
 	pm14 "o.o/backend/com/services/affiliate/pm"
 	aggregate11 "o.o/backend/com/shopping/carrying/aggregate"
@@ -402,7 +404,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	stocktakingQueryBus := query10.StocktakeQueryMessageBus(stocktakeQuery)
 	inventoryQueryService := query11.NewQueryInventory(stocktakingQueryBus, busBus, mainDB)
 	inventoryQueryBus := query11.InventoryQueryServiceMessageBus(inventoryQueryService)
-	receiptQuery := query12.NewReceiptQuery(mainDB)
+	orderingQueryService := ordering.NewQueryService(mainDB)
+	orderingQueryBus := ordering.QueryServiceMessageBus(orderingQueryService)
+	receiptQuery := query12.NewReceiptQuery(mainDB, orderingQueryBus)
 	receiptingQueryBus := query12.ReceiptQueryMessageBus(receiptQuery)
 	purchaseOrderQuery := query13.NewPurchaseOrderQuery(mainDB, busBus, supplieringQueryBus, inventoryQueryBus, receiptingQueryBus)
 	purchaseorderQueryBus := query13.PurchaseOrderQueryMessageBus(purchaseOrderQuery)
@@ -448,8 +452,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	addressingCommandBus := aggregate8.AddressAggregateMessageBus(aggregateAddressAggregate)
 	addressQuery := query4.NewAddressQuery(mainDB)
 	addressingQueryBus := query4.AddressQueryMessageBus(addressQuery)
-	orderingQueryService := ordering.NewQueryService(mainDB)
-	orderingQueryBus := ordering.QueryServiceMessageBus(orderingQueryService)
 	customerService := &customer.CustomerService{
 		Session:       session,
 		LocationQuery: locationQueryBus,
@@ -1201,7 +1203,14 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	aggregate29 := aggregate23.New(logDB)
 	serverServer := server.New(gatewayCommandBus, aggregate29)
 	vtPayHandler := server_vtpay.BuildVTPayHandler(serverServer)
-	mainServer := BuildMainServer(service, intHandlers, extHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler)
+	reportQuery := query22.NewReportQuery(orderingQueryBus, queryBus, receiptingQueryBus)
+	reportingQueryBus := query22.ReportQueryMessageBus(reportQuery)
+	reportService := reportserver.ReportService{
+		ReportQuery:   reportingQueryBus,
+		IdentityQuery: queryBus,
+	}
+	reportServer := reportserver.BuildReportServer(reportService, session)
+	mainServer := BuildMainServer(service, intHandlers, extHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, reportServer)
 	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, locationQueryBus)
 	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook

@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 
+	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
@@ -14,12 +15,17 @@ import (
 var _ receipting.QueryService = &ReceiptQuery{}
 
 type ReceiptQuery struct {
-	store sqlstore.ReceiptStoreFactory
+	store      sqlstore.ReceiptStoreFactory
+	orderQuery ordering.QueryBus
 }
 
-func NewReceiptQuery(db com.MainDB) *ReceiptQuery {
+func NewReceiptQuery(
+	db com.MainDB,
+	orderQuery ordering.QueryBus,
+) *ReceiptQuery {
 	return &ReceiptQuery{
-		store: sqlstore.NewReceiptStore(db),
+		store:      sqlstore.NewReceiptStore(db),
+		orderQuery: orderQuery,
 	}
 }
 
@@ -70,12 +76,27 @@ func (q *ReceiptQuery) ListReceiptsByIDs(context.Context, *receipting.GetReceipt
 func (q *ReceiptQuery) ListReceiptsByRefsAndStatus(
 	ctx context.Context, args *receipting.ListReceiptsByRefsAndStatusArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	query := q.store(ctx).ShopID(args.ShopID).RefIDs(args.IsContains, args.RefIDs...).RefType(args.RefType).Status(status3.Status(args.Status))
+	query := q.store(ctx).ShopID(args.ShopID).
+		RefIDs(args.IsContains, args.RefIDs...).RefType(args.RefType).
+		Status(status3.Status(args.Status))
 	receipts, err := query.ListReceipts()
 	if err != nil {
 		return nil, err
 	}
 	return &receipting.ReceiptsResponse{Receipts: receipts}, nil
+}
+
+func (q *ReceiptQuery) ListReceiptsByRefsAndStatusAndType(
+	ctx context.Context, args *receipting.ListReceiptsByRefsAndStatusAndTypeArgs,
+) ([]*receipting.Receipt, error) {
+	query := q.store(ctx).ShopID(args.ShopID).
+		RefIDs(args.IsContains, args.RefIDs...).RefType(args.RefType).
+		Status(args.Status).ReceiptType(args.ReceiptType)
+	receipts, err := query.ListReceipts()
+	if err != nil {
+		return nil, err
+	}
+	return receipts, nil
 }
 
 func (q *ReceiptQuery) GetReceiptByCode(ctx context.Context, code string, shopID dot.ID) (*receipting.Receipt, error) {

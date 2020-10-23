@@ -1,6 +1,8 @@
 package session
 
 import (
+	"context"
+
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/pkg/etop/authorize/auth"
@@ -99,4 +101,15 @@ func (s *session) IsAdmin() bool {
 func (s *session) IsOwner() bool {
 	s.ensureInit()
 	return s.isOwner
+}
+
+type SessionKey struct{}
+
+func NewCtxWithSession(oldCtx context.Context, ss Session) context.Context {
+	return context.WithValue(oldCtx, SessionKey{}, ss)
+}
+
+// GetSessionFromCtx...
+func GetSessionFromCtx(ctx context.Context) Session {
+	return ctx.Value(SessionKey{}).(Session)
 }

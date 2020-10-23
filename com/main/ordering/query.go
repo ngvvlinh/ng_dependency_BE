@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/ordering"
+	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/ordering/convert"
@@ -72,4 +73,23 @@ func (q *QueryService) ListOrdersByCustomerIDs(ctx context.Context, shopID dot.I
 		return nil, err
 	}
 	return &ordering.OrdersResponse{Orders: convert.Orders(orders)}, nil
+}
+
+func (q *QueryService) ListOrdersConfirmed(
+	ctx context.Context, args *ordering.ListOrdersConfirmedArgs,
+) ([]*ordering.Order, error) {
+	query := q.store(ctx)
+	query = query.ConfirmStatus(status3.P)
+	query = query.Statuses([]status5.Status{status5.NS, status5.Z, status5.P, status5.S})
+	query = query.CreatedAtFromAndTo(args.CreatedAtFrom, args.CreatedAtTo)
+
+	if args.CreatedBy != 0 {
+		query = query.CreatedBy(args.CreatedBy)
+	}
+
+	orders, err := query.ListOrders()
+	if err != nil {
+		return nil, err
+	}
+	return convert.Orders(orders), nil
 }

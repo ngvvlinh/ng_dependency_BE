@@ -1099,7 +1099,7 @@ func setCookieForEcomify(ctx context.Context, account *etop.LoginAccount) {
 		return
 	}
 	cookie := &http.Cookie{
-		Name:     authservice.EcomAuthorization,
+		Name:     authservice.Authorization,
 		Value:    account.AccessToken,
 		Domain:   "",
 		Expires:  time.Now().Add(24 * 60 * 60 * time.Second),

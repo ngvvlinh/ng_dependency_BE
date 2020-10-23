@@ -285,3 +285,14 @@ func (q *QueryService) GetAccountByID(ctx context.Context, ID dot.ID) (*identity
 	}
 	return q.accountStore(ctx).ByID(ID).GetAccount()
 }
+
+func (q *QueryService) ListUsersByIDsAndNameNorm(ctx context.Context, args *identity.ListUsersByIDsAndNameNormArgs) ([]*identity.User, error) {
+	query := q.userStore(ctx)
+	if len(args.IDs) > 0 {
+		query = query.ByIDs(args.IDs)
+	}
+	if len(args.NameNorm) > 0 {
+		query = query.ByFullNameNorm(args.NameNorm)
+	}
+	return query.ListUsers()
+}

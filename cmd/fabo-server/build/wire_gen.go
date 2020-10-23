@@ -341,7 +341,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	addressingQueryBus := query2.AddressQueryMessageBus(addressQuery)
 	orderingQueryService := ordering.NewQueryService(mainDB)
 	orderingQueryBus := ordering.QueryServiceMessageBus(orderingQueryService)
-	receiptQuery := query7.NewReceiptQuery(mainDB)
+	receiptQuery := query7.NewReceiptQuery(mainDB, orderingQueryBus)
 	receiptingQueryBus := query7.ReceiptQueryMessageBus(receiptQuery)
 	customerService := &customer.CustomerService{
 		Session:       session,

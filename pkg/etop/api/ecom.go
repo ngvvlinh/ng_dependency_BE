@@ -52,7 +52,7 @@ func (s *EcomService) SessionInfo(ctx context.Context, r *pbcm.Empty) (*api.Ecom
 
 func getEcomSessionCookie(cookies []*http.Cookie) *http.Cookie {
 	for _, c := range cookies {
-		if c.Name == auth.EcomAuthorization {
+		if c.Name == auth.Authorization {
 			return c
 		}
 	}

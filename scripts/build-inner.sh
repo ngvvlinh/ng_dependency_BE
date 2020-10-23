@@ -58,6 +58,9 @@ etop)
        cp -R     com/web/ecom/assets    "$binDir"/com/web/ecom/
        cp -R     com/web/ecom/templates "$binDir"/com/web/ecom/
 
+    mkdir -p "$binDir"/com/report
+       cp -R     com/report/templates   "$binDir"/com/report/
+
     mkdir -p "$binDir"/zexp/etl
        cp -R     zexp/etl/db   "$binDir"/zexp/etl/
 

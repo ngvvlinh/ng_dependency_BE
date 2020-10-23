@@ -455,6 +455,18 @@ func (h QueryServiceHandler) HandleListShopsByIDs(ctx context.Context, msg *List
 	return err
 }
 
+type ListUsersByIDsAndNameNormQuery struct {
+	IDs      []dot.ID
+	NameNorm filter.FullTextSearch
+
+	Result []*User `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListUsersByIDsAndNameNorm(ctx context.Context, msg *ListUsersByIDsAndNameNormQuery) (err error) {
+	msg.Result, err = h.inner.ListUsersByIDsAndNameNorm(msg.GetArgs(ctx))
+	return err
+}
+
 type ListUsersByWLPartnerIDQuery struct {
 	ID dot.ID
 
@@ -503,6 +515,7 @@ func (q *GetUsersByIDsQuery) query()              {}
 func (q *ListPartnersForWhiteLabelQuery) query()  {}
 func (q *ListShopExtendedsQuery) query()          {}
 func (q *ListShopsByIDsQuery) query()             {}
+func (q *ListUsersByIDsAndNameNormQuery) query()  {}
 func (q *ListUsersByWLPartnerIDQuery) query()     {}
 
 // implement conversion
@@ -911,6 +924,19 @@ func (q *ListShopsByIDsQuery) SetListShopsByIDsArgs(args *ListShopsByIDsArgs) {
 	q.IncludeWLPartnerShop = args.IncludeWLPartnerShop
 }
 
+func (q *ListUsersByIDsAndNameNormQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUsersByIDsAndNameNormArgs) {
+	return ctx,
+		&ListUsersByIDsAndNameNormArgs{
+			IDs:      q.IDs,
+			NameNorm: q.NameNorm,
+		}
+}
+
+func (q *ListUsersByIDsAndNameNormQuery) SetListUsersByIDsAndNameNormArgs(args *ListUsersByIDsAndNameNormArgs) {
+	q.IDs = args.IDs
+	q.NameNorm = args.NameNorm
+}
+
 func (q *ListUsersByWLPartnerIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUsersByWLPartnerID) {
 	return ctx,
 		&ListUsersByWLPartnerID{
@@ -983,6 +1009,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)
 	b.AddHandler(h.HandleListShopExtendeds)
 	b.AddHandler(h.HandleListShopsByIDs)
+	b.AddHandler(h.HandleListUsersByIDsAndNameNorm)
 	b.AddHandler(h.HandleListUsersByWLPartnerID)
 	return QueryBus{b}
 }
