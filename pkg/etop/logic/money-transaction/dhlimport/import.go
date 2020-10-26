@@ -48,9 +48,13 @@ func parseRows(idx imcsv.Indexer, startRowNo int, rows [][]string) (res []*money
 		if shipmentID == "" {
 			continue
 		}
-
 		ffmID, err := strconv.ParseInt(shipmentID, 10, 64)
 		if err != nil {
+			continue
+		}
+
+		shippingCode := idx.GetCell(row, idxShippingCode)
+		if shippingCode == "" {
 			continue
 		}
 
@@ -61,6 +65,7 @@ func parseRows(idx imcsv.Indexer, startRowNo int, rows [][]string) (res []*money
 
 		res = append(res, &moneytx.MoneyTransactionShippingExternalLine{
 			EtopFulfillmentID: dot.ID(ffmID),
+			ExternalCode:      shippingCode,
 			ExternalTotalCOD:  int(codAmount),
 		})
 	}

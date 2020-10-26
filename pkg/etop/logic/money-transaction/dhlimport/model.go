@@ -26,21 +26,9 @@ var schema = imcsv.Schema{
 		Optional: true,
 	},
 	{
-		Name:     "customer_account",
-		Display:  "Tên Tài Khoản Lấy Hàng\n",
-		Norm:     "ten tai khoan lay hang",
-		Optional: true,
-	},
-	{
-		Name:     "sales_channel",
-		Display:  "Kênh Bán Hàng\nSales Channel",
-		Norm:     "kenh ban hang sales channel",
-		Optional: true,
-	},
-	{
-		Name:    "shipment_id",
-		Display: "Mã Đơn Hàng\nShipment ID",
-		Norm:    "ma don hang shipment id",
+		Name:    "shipping_code",
+		Display: "Mã Theo Dõi DHL\nDHL Tracking ID",
+		Norm:    "ma theo doi dhl dhl tracking id",
 	},
 	{
 		Name:    "cod_amount",
@@ -60,6 +48,11 @@ var schema = imcsv.Schema{
 		Optional: true,
 	},
 	{
+		Name:    "shipment_id",
+		Display: "Mã Đơn Hàng\nShipment ID",
+		Norm:    "ma don hang shipment id",
+	},
+	{
 		Name:     "consignee_name",
 		Display:  "Tên Người Nhận Consigneee",
 		Norm:     "ten nguoi nhan consigneee",
@@ -72,8 +65,7 @@ var (
 	idxCreatedDate      = indexer("created_date")
 	idxCustomerCode     = indexer("customer_code")
 	idxCustomerCustomer = indexer("customer_name")
-	idxCustomerAccount  = indexer("customer_account")
-	idxSalesChannel     = indexer("sales_channel")
+	idxShippingCode     = indexer("shipping_code")
 	idxShipmentID       = indexer("shipment_id")
 	idxCodAmount        = indexer("cod_amount")
 	idxCurrency         = indexer("currency")
