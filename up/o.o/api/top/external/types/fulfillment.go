@@ -65,6 +65,7 @@ func (m *FulfillmentsResponse) String() string { return jsonx.MustMarshalToStrin
 type FulfillmentIDRequest struct {
 	Id           dot.ID `json:"id"`
 	ShippingCode string `json:"shipping_code"`
+	ExternalID   string `json:"external_id"`
 }
 
 func (m *FulfillmentIDRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -73,6 +73,7 @@ type CancelShipnowFulfillmentArgs struct {
 	ID           dot.ID
 	ShippingCode string
 	ShopID       dot.ID
+	ExternalID   string
 	CancelReason string
 }
 
@@ -129,6 +130,7 @@ type GetShipnowServicesCommandResult struct {
 type GetShipnowFulfillmentQueryArgs struct {
 	ID           dot.ID
 	ShippingCode string
+	ExternalID   string
 
 	ShopID dot.ID
 }

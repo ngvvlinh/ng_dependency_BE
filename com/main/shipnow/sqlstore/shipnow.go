@@ -84,7 +84,7 @@ func (s *ShipnowStore) OptionalID(id dot.ID) *ShipnowStore {
 }
 
 func (s *ShipnowStore) OptionalExternalID(externalID string) *ShipnowStore {
-	s.preds = append(s.preds, s.ft.ByExternalID(externalID).Optional())
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID).Optional(), sq.NotIn("status", -1))
 	return s
 }
 

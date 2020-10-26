@@ -21,15 +21,21 @@ type ShipnowAddressShortVersion struct {
 func (m *ShipnowAddressShortVersion) String() string { return jsonx.MustMarshalToString(m) }
 
 type ShipnowAddress struct {
+	// @required
 	FullName string `json:"full_name"`
-	Phone    string `json:"phone"`
-	Email    string `json:"email"`
-	Company  string `json:"company"`
+	// @required
+	Phone   string `json:"phone"`
+	Email   string `json:"email"`
+	Company string `json:"company"`
+	// @required
 	Province string `json:"province"`
+	// @required
 	District string `json:"district"`
 	Ward     string `json:"ward"`
-	Address  string `json:"address"`
+	// @required
+	Address string `json:"address"`
 	// Vui lòng cung cấp lat. , long. để lấy được giá chính xác nhất
+	// @required
 	Coordinates *Coordinates `json:"coordinates"`
 }
 
@@ -84,16 +90,13 @@ func (m *CreateShipnowFulfillmentRequest) String() string { return jsonx.MustMar
 
 type ShipnowDeliveryPointRequest struct {
 	ChargeableWeight inttypes.Int `json:"chargeable_weight"`
+	GrossWeight      inttypes.Int `json:"gross_weight"`
+	CODAmount        inttypes.Int `json:"cod_amount"`
+	ShippingNote     string       `json:"shipping_note"`
 	// @required
-	GrossWeight inttypes.Int `json:"gross_weight"`
-	// @required
-	CODAmount       inttypes.Int    `json:"cod_amount"`
-	ShippingNote    string          `json:"shipping_note"`
 	ShippingAddress *ShipnowAddress `json:"shipping_address"`
-	// @required
-	BasketValue inttypes.Int `json:"basket_value"`
-	// @required
-	Lines []*OrderLine `json:"lines"`
+	BasketValue     inttypes.Int    `json:"basket_value"`
+	Lines           []*OrderLine    `json:"lines"`
 }
 
 func (m *ShipnowDeliveryPointRequest) String() string { return jsonx.MustMarshalToString(m) }

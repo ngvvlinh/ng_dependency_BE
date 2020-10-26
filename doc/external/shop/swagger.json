@@ -2876,6 +2876,9 @@
     "mrFulfillmentIDRequest": {
       "type": "object",
       "properties": {
+        "external_id": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -3746,6 +3749,14 @@
     },
     "mrShipnowAddress": {
       "type": "object",
+      "required": [
+        "full_name",
+        "phone",
+        "province",
+        "district",
+        "address",
+        "coordinates"
+      ],
       "properties": {
         "address": {
           "type": "string"
@@ -3856,10 +3867,7 @@
     "mrShipnowDeliveryPointRequest": {
       "type": "object",
       "required": [
-        "gross_weight",
-        "cod_amount",
-        "basket_value",
-        "lines"
+        "shipping_address"
       ],
       "properties": {
         "basket_value": {

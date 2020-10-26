@@ -45,6 +45,7 @@ type ShipnowService interface {
 	// Cancel Order
 	//
 	// Huỷ đơn giao tức thì.
+	// Cung cấp một trong 3 giá trị bên dưới (id, external_id hoặc shipping_code) hủy đơn.
 	//
 	// +apix:path=cancelordervnpost
 	CancelShipnowFulfillment(context.Context, *types.CancelShipnowFulfillmentRequest) (*cm.UpdatedResponse, error)
@@ -52,6 +53,7 @@ type ShipnowService interface {
 	// Get Order
 	//
 	// Lấy thông tin đơn giao tức thì.
+	// Cung cấp một trong 3 giá trị bên dưới (id, external_id hoặc shipping_code) để lấy thông tin đơn.
 	//
 	// +apix:path=getordervnpost
 	GetShipnowFulfillment(context.Context, *types.FulfillmentIDRequest) (*types.ShipnowFulfillment, error)

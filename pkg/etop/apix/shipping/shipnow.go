@@ -97,7 +97,10 @@ func (s *Shipping) CreateShipnowFulfillment(ctx context.Context, userID dot.ID, 
 
 		shippingAddress := point.ShippingAddress
 		orderAddress := convertx.Convert_apix_ShipnowAddress_To_api_OrderAddress(shippingAddress)
-		weight := cm.CoalesceInt(point.ChargeableWeight.Int(), point.GrossWeight.Int())
+		if shippingAddress.Phone == "" || shippingAddress.FullName == "" {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp tên và số điện thoại người nhận")
+		}
+		weight := cm.CoalesceInt(point.ChargeableWeight.Int(), point.GrossWeight.Int(), 100)
 		args := &typesint.CreateOrderRequest{
 			Source:        pbsource.API,
 			PaymentMethod: payment_method.Other,
@@ -203,6 +206,7 @@ func (s *Shipping) CancelShipnowFulfillment(ctx context.Context, accountID dot.I
 		ID:           r.ID,
 		ShippingCode: r.ShippingCode,
 		ShopID:       accountID,
+		ExternalID:   r.ExternalID,
 		CancelReason: r.CancelReason,
 	}
 	return s.ShipnowAggr.Dispatch(ctx, cmd)
@@ -213,6 +217,7 @@ func (s *Shipping) GetShipnowFulfillment(ctx context.Context, accountID dot.ID, 
 		ID:           r.Id,
 		ShippingCode: r.ShippingCode,
 		ShopID:       accountID,
+		ExternalID:   r.ExternalID,
 	}
 	if err := s.ShipnowQuery.Dispatch(ctx, query); err != nil {
 		return nil, err

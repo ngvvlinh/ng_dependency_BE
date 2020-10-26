@@ -28,10 +28,10 @@ func QueryServiceMessageBus(q *QueryService) shipnow.QueryBus {
 }
 
 func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow.GetShipnowFulfillmentQueryArgs) (*shipnow.GetShipnowFulfillmentQueryResult, error) {
-	if query.ID == 0 && query.ShippingCode == "" {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp id hoặc shipping_code")
+	if query.ID == 0 && query.ShippingCode == "" && query.ExternalID == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp id hoặc shipping_code hoặc external_id")
 	}
-	s := q.store(ctx).OptionalID(query.ID).OptionalShippingCode(query.ShippingCode)
+	s := q.store(ctx).OptionalID(query.ID).OptionalShippingCode(query.ShippingCode).OptionalExternalID(query.ExternalID)
 	if query.ShopID != 0 {
 		s = s.ShopID(query.ShopID)
 	}

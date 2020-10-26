@@ -38,6 +38,7 @@ type CancelShipnowFulfillmentCommand struct {
 	ID           dot.ID
 	ShippingCode string
 	ShopID       dot.ID
+	ExternalID   string
 	CancelReason string
 
 	Result *meta.Empty `json:"-"`
@@ -167,6 +168,7 @@ func (h AggregateHandler) HandleUpdateShipnowFulfillmentState(ctx context.Contex
 type GetShipnowFulfillmentQuery struct {
 	ID           dot.ID
 	ShippingCode string
+	ExternalID   string
 	ShopID       dot.ID
 
 	Result *GetShipnowFulfillmentQueryResult `json:"-"`
@@ -223,6 +225,7 @@ func (q *CancelShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ contex
 			ID:           q.ID,
 			ShippingCode: q.ShippingCode,
 			ShopID:       q.ShopID,
+			ExternalID:   q.ExternalID,
 			CancelReason: q.CancelReason,
 		}
 }
@@ -231,6 +234,7 @@ func (q *CancelShipnowFulfillmentCommand) SetCancelShipnowFulfillmentArgs(args *
 	q.ID = args.ID
 	q.ShippingCode = args.ShippingCode
 	q.ShopID = args.ShopID
+	q.ExternalID = args.ExternalID
 	q.CancelReason = args.CancelReason
 }
 
@@ -405,6 +409,7 @@ func (q *GetShipnowFulfillmentQuery) GetArgs(ctx context.Context) (_ context.Con
 		&GetShipnowFulfillmentQueryArgs{
 			ID:           q.ID,
 			ShippingCode: q.ShippingCode,
+			ExternalID:   q.ExternalID,
 			ShopID:       q.ShopID,
 		}
 }
@@ -412,6 +417,7 @@ func (q *GetShipnowFulfillmentQuery) GetArgs(ctx context.Context) (_ context.Con
 func (q *GetShipnowFulfillmentQuery) SetGetShipnowFulfillmentQueryArgs(args *GetShipnowFulfillmentQueryArgs) {
 	q.ID = args.ID
 	q.ShippingCode = args.ShippingCode
+	q.ExternalID = args.ExternalID
 	q.ShopID = args.ShopID
 }
 

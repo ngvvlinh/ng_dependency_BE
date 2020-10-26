@@ -790,7 +790,7 @@ func prepareOrderLine(
 func (s *OrderLogic) PrepareOrder(ctx context.Context, shopID dot.ID, m *types.CreateOrderRequest, lines []*ordermodel.OrderLine, userID dot.ID) (*ordermodel.Order, error) {
 	if m.BasketValue < 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).
-			WithMeta("reason", "basket_value <= 0")
+			WithMeta("reason", "basket_value < 0")
 	}
 	if m.TotalAmount < 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Tổng số tiền không hợp lệ", nil).
