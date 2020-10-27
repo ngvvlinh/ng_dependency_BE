@@ -42,6 +42,12 @@ type CustomerConversationService interface {
 	SendComment(context.Context, *SendCommentRequest) (*FbExternalComment, error)
 
 	CreatePost(context.Context, *CreatePostRequest) (*CreatePostResponse, error)
+
+	MessageTemplateVariables(context.Context, *cm.Empty) (*MessageTemplateVariableResponse, error)
+	MessageTemplates(context.Context, *cm.Empty) (*MessageTemplateResponse, error)
+	CreateMessageTemplate(context.Context, *CreateMessageTemplateRequest) (*MessageTemplate, error)
+	UpdateMessageTemplate(context.Context, *UpdateMessageTemplateRequest) (*cm.Empty, error)
+	DeleteMessageTemplate(context.Context, *DeleteMessageTemplateRequest) (*cm.Empty, error)
 }
 
 // +apix:path=/fabo.Customer

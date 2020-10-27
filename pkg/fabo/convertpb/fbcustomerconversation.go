@@ -1,6 +1,7 @@
 package convertpb
 
 import (
+	"o.o/api/fabo/fbmessagetemplate"
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/top/int/fabo"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
@@ -320,4 +321,31 @@ func PbFbObjectParent(m *fbmessaging.FbObjectParent) *fabo.FbObjectParent {
 		Message:     m.Message,
 		ID:          m.ID,
 	}
+}
+
+func FbMessageTemplate(m *fbmessagetemplate.FbMessageTemplate) *fabo.MessageTemplate {
+	if m == nil {
+		return nil
+	}
+
+	return &fabo.MessageTemplate{
+		ID:        m.ID,
+		Template:  m.Template,
+		ShortCode: m.ShortCode,
+		ShopID:    m.ShopID,
+		CreatedAt: m.CreatedAt,
+		UpdatedAt: m.UpdatedAt,
+	}
+}
+
+func FbMessageTemplates(ms []*fbmessagetemplate.FbMessageTemplate) []*fabo.MessageTemplate {
+	if ms == nil {
+		return nil
+	}
+
+	var result []*fabo.MessageTemplate
+	for _, template := range ms {
+		result = append(result, FbMessageTemplate(template))
+	}
+	return result
 }

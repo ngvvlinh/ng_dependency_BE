@@ -26,6 +26,7 @@ import (
 	"o.o/backend/com/eventhandler/notifier"
 	comfabo "o.o/backend/com/fabo"
 	"o.o/backend/com/fabo/main/fbcustomerconversationsearch"
+	"o.o/backend/com/fabo/main/fbmessagetemplate"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
@@ -148,6 +149,7 @@ func Build(
 		fabo.WireSet,
 		comfabo.WireSet,
 		fbcustomerconversationsearch.WireSet,
+		fbmessagetemplate.WireSet,
 		shipnow.WireSet,
 
 		// TODO(vu): remove

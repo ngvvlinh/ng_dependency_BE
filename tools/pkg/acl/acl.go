@@ -1244,6 +1244,11 @@ var _acl = map[string]*permission.Decl{
 	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageCreate)},
 	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentCreate)},
 	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/MessageTemplateVariables":     {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/MessageTemplates":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/CreateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/UpdateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/DeleteMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
 
 	"fabo.Shop/CreateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagCreate)},
 	"fabo.Shop/UpdateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagUpdate)},

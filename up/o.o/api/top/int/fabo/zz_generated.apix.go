@@ -49,14 +49,19 @@ func NewCustomerConversationServiceServer(builder func() CustomerConversationSer
 
 const CustomerConversationServicePathPrefix = "/fabo.CustomerConversation/"
 
+const Path_CustomerConversation_CreateMessageTemplate = "/fabo.CustomerConversation/CreateMessageTemplate"
 const Path_CustomerConversation_CreatePost = "/fabo.CustomerConversation/CreatePost"
+const Path_CustomerConversation_DeleteMessageTemplate = "/fabo.CustomerConversation/DeleteMessageTemplate"
 const Path_CustomerConversation_GetCustomerConversationByID = "/fabo.CustomerConversation/GetCustomerConversationByID"
 const Path_CustomerConversation_ListCommentsByExternalPostID = "/fabo.CustomerConversation/ListCommentsByExternalPostID"
 const Path_CustomerConversation_ListCustomerConversations = "/fabo.CustomerConversation/ListCustomerConversations"
 const Path_CustomerConversation_ListMessages = "/fabo.CustomerConversation/ListMessages"
+const Path_CustomerConversation_MessageTemplateVariables = "/fabo.CustomerConversation/MessageTemplateVariables"
+const Path_CustomerConversation_MessageTemplates = "/fabo.CustomerConversation/MessageTemplates"
 const Path_CustomerConversation_SearchCustomerConversations = "/fabo.CustomerConversation/SearchCustomerConversations"
 const Path_CustomerConversation_SendComment = "/fabo.CustomerConversation/SendComment"
 const Path_CustomerConversation_SendMessage = "/fabo.CustomerConversation/SendMessage"
+const Path_CustomerConversation_UpdateMessageTemplate = "/fabo.CustomerConversation/UpdateMessageTemplate"
 const Path_CustomerConversation_UpdateReadStatus = "/fabo.CustomerConversation/UpdateReadStatus"
 
 func (s *CustomerConversationServiceServer) PathPrefix() string {
@@ -92,6 +97,19 @@ func (s *CustomerConversationServiceServer) ServeHTTP(resp http.ResponseWriter, 
 
 func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/fabo.CustomerConversation/CreateMessageTemplate":
+		msg := &CreateMessageTemplateRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateMessageTemplate(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/fabo.CustomerConversation/CreatePost":
 		msg := &CreatePostRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -102,6 +120,19 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 				return
 			}
 			resp, err = inner.CreatePost(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/DeleteMessageTemplate":
+		msg := &DeleteMessageTemplateRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteMessageTemplate(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -157,6 +188,32 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 			return
 		}
 		return msg, fn, nil
+	case "/fabo.CustomerConversation/MessageTemplateVariables":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.MessageTemplateVariables(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/MessageTemplates":
+		msg := &common.Empty{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.MessageTemplates(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/fabo.CustomerConversation/SearchCustomerConversations":
 		msg := &SearchCustomerConversationRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -193,6 +250,19 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 				return
 			}
 			resp, err = inner.SendMessage(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/UpdateMessageTemplate":
+		msg := &UpdateMessageTemplateRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateMessageTemplate(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

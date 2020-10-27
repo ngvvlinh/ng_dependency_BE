@@ -27,6 +27,7 @@ import (
 	"o.o/backend/com/eventhandler/notifier"
 	sqlstore2 "o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/com/fabo/main/fbcustomerconversationsearch"
+	"o.o/backend/com/fabo/main/fbmessagetemplate"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
@@ -548,15 +549,21 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	fbmessagingCommandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
 	fbSearchService := fbcustomerconversationsearch.NewFbSearchServiceQuery(mainDB)
 	fbcustomerconversationsearchQueryBus := fbcustomerconversationsearch.FbSearchQueryMessageBus(fbSearchService)
+	fbMessageTemplateQuery := fbmessagetemplate.NewFbMessagingQuery(mainDB)
+	fbmessagetemplateQueryBus := fbmessagetemplate.FbMessagingQueryMessageBus(fbMessageTemplateQuery)
+	fbMessageTemplateAggregate := fbmessagetemplate.NewFbMessageTemplateAggregate(mainDB)
+	fbmessagetemplateCommandBus := fbmessagetemplate.FbMessageTemplateAggregateMessageBus(fbMessageTemplateAggregate)
 	customerConversationService := &fabo.CustomerConversationService{
-		Session:          session,
-		FaboPagesKit:     faboPagesKit,
-		FBClient:         fbClient,
-		FBMessagingQuery: fbmessagingQueryBus,
-		FBMessagingAggr:  fbmessagingCommandBus,
-		FBPagingQuery:    fbpagingQueryBus,
-		FBUserQuery:      fbuseringQueryBus,
-		FbSearchQuery:    fbcustomerconversationsearchQueryBus,
+		Session:                session,
+		FaboPagesKit:           faboPagesKit,
+		FBClient:               fbClient,
+		FBMessagingQuery:       fbmessagingQueryBus,
+		FBMessagingAggr:        fbmessagingCommandBus,
+		FBPagingQuery:          fbpagingQueryBus,
+		FBUserQuery:            fbuseringQueryBus,
+		FbSearchQuery:          fbcustomerconversationsearchQueryBus,
+		FbMessageTemplateQuery: fbmessagetemplateQueryBus,
+		FbMessageTemplateAggr:  fbmessagetemplateCommandBus,
 	}
 	faboCustomerService := &fabo.CustomerService{
 		Session:        session,

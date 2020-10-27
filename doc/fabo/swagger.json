@@ -150,6 +150,33 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/CreateMessageTemplate": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "CreateMessageTemplate",
+        "operationId": "fabo.CustomerConversation-CreateMessageTemplate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvCreateMessageTemplateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvMessageTemplate"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/CreatePost": {
       "post": {
         "tags": [
@@ -172,6 +199,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/cvCreatePostResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.CustomerConversation/DeleteMessageTemplate": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "DeleteMessageTemplate",
+        "operationId": "fabo.CustomerConversation-DeleteMessageTemplate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvDeleteMessageTemplateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -285,6 +339,60 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/MessageTemplateVariables": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "MessageTemplateVariables",
+        "operationId": "fabo.CustomerConversation-MessageTemplateVariables",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvMessageTemplateVariableResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.CustomerConversation/MessageTemplates": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "MessageTemplates",
+        "operationId": "fabo.CustomerConversation-MessageTemplates",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvMessageTemplateResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/SearchCustomerConversations": {
       "post": {
         "tags": [
@@ -361,6 +469,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/cvFbExternalMessage"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.CustomerConversation/UpdateMessageTemplate": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "UpdateMessageTemplate",
+        "operationId": "fabo.CustomerConversation-UpdateMessageTemplate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvUpdateMessageTemplateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -762,6 +897,17 @@
         }
       }
     },
+    "cvCreateMessageTemplateRequest": {
+      "type": "object",
+      "properties": {
+        "short_code": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        }
+      }
+    },
     "cvCreatePostRequest": {
       "type": "object",
       "properties": {
@@ -937,6 +1083,15 @@
       }
     },
     "cvDeleteFbShopTagRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "cvDeleteMessageTemplateRequest": {
       "type": "object",
       "properties": {
         "id": {
@@ -1837,6 +1992,66 @@
         }
       }
     },
+    "cvMessageTemplate": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "short_code": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "cvMessageTemplateResponse": {
+      "type": "object",
+      "properties": {
+        "templates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvMessageTemplate"
+          }
+        }
+      }
+    },
+    "cvMessageTemplateVariable": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "cvMessageTemplateVariableResponse": {
+      "type": "object",
+      "properties": {
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvMessageTemplateVariable"
+          }
+        }
+      }
+    },
     "cvPostAttachment": {
       "type": "object",
       "properties": {
@@ -1966,6 +2181,21 @@
           "format": "int64"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "cvUpdateMessageTemplateRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "short_code": {
+          "type": "string"
+        },
+        "template": {
           "type": "string"
         }
       }

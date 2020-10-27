@@ -734,3 +734,64 @@ type CustomerReturnRate struct {
 func (r *CustomerReturnRate) String() string {
 	return jsonx.MustMarshalToString(r)
 }
+
+type MessageTemplateVariable struct {
+	Code  string `json:"code"`
+	Label string `json:"label"`
+}
+
+type MessageTemplateVariableResponse struct {
+	Variables []*MessageTemplateVariable `json:"variables"`
+}
+
+func (r *MessageTemplateVariableResponse) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type MessageTemplate struct {
+	ID        dot.ID    `json:"id"`
+	Template  string    `json:"template"`
+	ShortCode string    `json:"short_code"`
+	ShopID    dot.ID    `json:"shop_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (r *MessageTemplate) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type MessageTemplateResponse struct {
+	Templates []*MessageTemplate `json:"templates"`
+}
+
+func (r *MessageTemplateResponse) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type CreateMessageTemplateRequest struct {
+	Template  string `json:"template"`
+	ShortCode string `json:"short_code"`
+}
+
+func (r *CreateMessageTemplateRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type UpdateMessageTemplateRequest struct {
+	ID        dot.ID         `json:"id"`
+	Template  dot.NullString `json:"template"`
+	ShortCode dot.NullString `json:"short_code"`
+}
+
+func (r *UpdateMessageTemplateRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type DeleteMessageTemplateRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (r *DeleteMessageTemplateRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}

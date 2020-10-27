@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbcustomerconversationsearch"
+	"o.o/api/fabo/fbmessagetemplate"
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
@@ -29,17 +30,36 @@ import (
 	"o.o/common/xerrors"
 )
 
+var messageTemplateVariables = fabo.MessageTemplateVariableResponse{
+	Variables: []*fabo.MessageTemplateVariable{
+		{
+			Code:  "$$fb_username",
+			Label: "Tên khách hàng",
+		},
+		{
+			Code:  "$$page_name",
+			Label: "Tên page",
+		},
+		{
+			Code:  "$$shop_name",
+			Label: "Tên cửa hàng",
+		},
+	},
+}
+
 type CustomerConversationService struct {
 	session.Session
 
 	FaboPagesKit *faboinfo.FaboPagesKit
 	FBClient     *fbclient.FbClient
 
-	FBMessagingQuery fbmessaging.QueryBus
-	FBMessagingAggr  fbmessaging.CommandBus
-	FBPagingQuery    fbpaging.QueryBus
-	FBUserQuery      fbusering.QueryBus
-	FbSearchQuery    fbcustomerconversationsearch.QueryBus
+	FBMessagingQuery       fbmessaging.QueryBus
+	FBMessagingAggr        fbmessaging.CommandBus
+	FBPagingQuery          fbpaging.QueryBus
+	FBUserQuery            fbusering.QueryBus
+	FbSearchQuery          fbcustomerconversationsearch.QueryBus
+	FbMessageTemplateQuery fbmessagetemplate.QueryBus
+	FbMessageTemplateAggr  fbmessagetemplate.CommandBus
 }
 
 type APIType string
@@ -852,6 +872,62 @@ func (s *CustomerConversationService) SendMessage(
 	}
 
 	return convertpb.PbFbExternalMessage(createFbExternalMessageCmd.Result[0]), nil
+}
+
+func (s *CustomerConversationService) MessageTemplateVariables(ctx context.Context, req *common.Empty) (*fabo.MessageTemplateVariableResponse, error) {
+	return &messageTemplateVariables, nil
+}
+
+func (s *CustomerConversationService) MessageTemplates(ctx context.Context, req *common.Empty) (*fabo.MessageTemplateResponse, error) {
+	query := &fbmessagetemplate.GetMessageTemplatesQuery{
+		ShopID: s.SS.Shop().ID,
+	}
+	if err := s.FbMessageTemplateQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	return &fabo.MessageTemplateResponse{Templates: convertpb.FbMessageTemplates(query.Result)}, nil
+}
+
+func (s *CustomerConversationService) CreateMessageTemplate(ctx context.Context, req *fabo.CreateMessageTemplateRequest) (*fabo.MessageTemplate, error) {
+	if req.Template == "" {
+		return nil, cm.Error(cm.InvalidArgument, "invalid template", nil)
+	}
+
+	cmd := &fbmessagetemplate.CreateMessageTemplateCommand{
+		ShopID:    s.SS.Shop().ID,
+		Template:  req.Template,
+		ShortCode: req.ShortCode,
+	}
+	if err := s.FbMessageTemplateAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	return convertpb.FbMessageTemplate(cmd.Result), nil
+}
+
+func (s *CustomerConversationService) UpdateMessageTemplate(ctx context.Context, req *fabo.UpdateMessageTemplateRequest) (*common.Empty, error) {
+	cmd := &fbmessagetemplate.UpdateMessageTemplateCommand{
+		ID:        req.ID,
+		ShopID:    s.SS.Shop().ID,
+		Template:  req.Template,
+		ShortCode: req.ShortCode,
+	}
+	if err := s.FbMessageTemplateAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &common.Empty{}, nil
+}
+
+func (s *CustomerConversationService) DeleteMessageTemplate(ctx context.Context, req *fabo.DeleteMessageTemplateRequest) (*common.Empty, error) {
+	cmd := &fbmessagetemplate.DeleteMessageTemplateCommand{
+		ShopID: s.SS.Shop().ID,
+		ID:     req.ID,
+	}
+	if err := s.FbMessageTemplateAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	return &common.Empty{}, nil
 }
 
 func (s *CustomerConversationService) buildMapFbUserAvatar(ctx context.Context, externalUserIDs []string) (map[string]string, error) {
