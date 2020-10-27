@@ -3944,6 +3944,12 @@
             "$ref": "#/definitions/mrShipnowDeliveryPoint"
           }
         },
+        "driver_name": {
+          "type": "string"
+        },
+        "driver_phone": {
+          "type": "string"
+        },
         "external_id": {
           "type": "string"
         },

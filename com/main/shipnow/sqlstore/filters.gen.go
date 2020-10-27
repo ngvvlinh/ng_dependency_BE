@@ -791,6 +791,44 @@ func (ft *ShipnowFulfillmentFilters) ByCouponPtr(Coupon *string) *sq.ColumnFilte
 	}
 }
 
+func (ft *ShipnowFulfillmentFilters) ByDriverPhone(DriverPhone string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "driver_phone",
+		Value:  DriverPhone,
+		IsNil:  DriverPhone == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByDriverPhonePtr(DriverPhone *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "driver_phone",
+		Value:  DriverPhone,
+		IsNil:  DriverPhone == nil,
+		IsZero: DriverPhone != nil && (*DriverPhone) == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByDriverName(DriverName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "driver_name",
+		Value:  DriverName,
+		IsNil:  DriverName == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByDriverNamePtr(DriverName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "driver_name",
+		Value:  DriverName,
+		IsNil:  DriverName == nil,
+		IsZero: DriverName != nil && (*DriverName) == "",
+	}
+}
+
 func (ft *ShipnowFulfillmentFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

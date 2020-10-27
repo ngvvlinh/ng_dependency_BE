@@ -477,6 +477,8 @@ func (a *Aggregate) UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, arg
 		CancelReason:               args.CancelReason,
 		ShippingSharedLink:         args.ShippingSharedLink,
 		DeliveryPoints:             args.DeliveryPoints,
+		DriverPhone:                args.DriverPhone,
+		DriverName:                 args.DriverName,
 	}
 	updateArgs.TotalFee = shippingtypes.GetTotalShippingFee(args.FeeLines)
 	ffm, err := a.store(ctx).UpdateCarrierInfo(updateArgs)

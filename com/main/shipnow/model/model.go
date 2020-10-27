@@ -86,6 +86,8 @@ type ShipnowFulfillment struct {
 	ConnectionMethod connection_type.ConnectionMethod
 	ExternalID       string
 	Coupon           string
+	DriverPhone      string
+	DriverName       string
 
 	Rid dot.ID
 }

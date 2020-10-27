@@ -145,6 +145,8 @@ type ShipnowFulfillment struct {
 	CarrierInfo                *CarrierInfo            `json:"carrier_info"`
 	ExternalID                 dot.NullString          `json:"external_id"`
 	Coupon                     dot.NullString          `json:"coupon"`
+	DriverPhone                dot.NullString          `json:"driver_phone"`
+	DriverName                 dot.NullString          `json:"driver_name"`
 }
 
 func (m *ShipnowFulfillment) String() string { return jsonx.MustMarshalToString(m) }
@@ -156,7 +158,9 @@ func (m *ShipnowFulfillment) HasChanged() bool {
 		m.ActualShippingServiceFee.Valid ||
 		m.ShippingNote.Valid ||
 		m.ChargeableWeight.Valid ||
-		m.DeliveryPoints != nil
+		m.DeliveryPoints != nil ||
+		m.DriverName.Valid ||
+		m.DriverPhone.Valid
 }
 
 type CancelShipnowFulfillmentRequest struct {

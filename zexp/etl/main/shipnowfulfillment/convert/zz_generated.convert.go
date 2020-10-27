@@ -200,6 +200,8 @@ func convert_shipnowfulfillmentmodel_ShipnowFulfillment_shipnowmodel_ShipnowFulf
 	out.ConnectionMethod = 0                              // zero value
 	out.ExternalID = ""                                   // zero value
 	out.Coupon = ""                                       // zero value
+	out.DriverPhone = ""                                  // zero value
+	out.DriverName = ""                                   // zero value
 	out.Rid = arg.Rid                                     // simple assign
 }
 

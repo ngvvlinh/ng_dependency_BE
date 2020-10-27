@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShipnowFulfillments []*ShipnowFulfillment
 
 const __sqlShipnowFulfillment_Table = "shipnow_fulfillment"
-const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"shipping_service_description\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_phone\",\"address_to_full_name_norm\",\"connection_id\",\"connection_method\",\"external_id\",\"coupon\",\"rid\""
-const __sqlShipnowFulfillment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"order_ids\" = EXCLUDED.\"order_ids\",\"pickup_address\" = EXCLUDED.\"pickup_address\",\"carrier\" = EXCLUDED.\"carrier\",\"shipping_service_code\" = EXCLUDED.\"shipping_service_code\",\"shipping_service_fee\" = EXCLUDED.\"shipping_service_fee\",\"shipping_service_name\" = EXCLUDED.\"shipping_service_name\",\"shipping_service_description\" = EXCLUDED.\"shipping_service_description\",\"chargeable_weight\" = EXCLUDED.\"chargeable_weight\",\"gross_weight\" = EXCLUDED.\"gross_weight\",\"basket_value\" = EXCLUDED.\"basket_value\",\"cod_amount\" = EXCLUDED.\"cod_amount\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"request_pickup_at\" = EXCLUDED.\"request_pickup_at\",\"delivery_points\" = EXCLUDED.\"delivery_points\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"shipping_status\" = EXCLUDED.\"shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"carrier_fee_lines\" = EXCLUDED.\"carrier_fee_lines\",\"total_fee\" = EXCLUDED.\"total_fee\",\"shipping_created_at\" = EXCLUDED.\"shipping_created_at\",\"shipping_picking_at\" = EXCLUDED.\"shipping_picking_at\",\"shipping_delivering_at\" = EXCLUDED.\"shipping_delivering_at\",\"shipping_delivered_at\" = EXCLUDED.\"shipping_delivered_at\",\"shipping_cancelled_at\" = EXCLUDED.\"shipping_cancelled_at\",\"sync_status\" = EXCLUDED.\"sync_status\",\"sync_states\" = EXCLUDED.\"sync_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cod_etop_transfered_at\" = EXCLUDED.\"cod_etop_transfered_at\",\"shipping_shared_link\" = EXCLUDED.\"shipping_shared_link\",\"address_to_province_code\" = EXCLUDED.\"address_to_province_code\",\"address_to_district_code\" = EXCLUDED.\"address_to_district_code\",\"address_to_phone\" = EXCLUDED.\"address_to_phone\",\"address_to_full_name_norm\" = EXCLUDED.\"address_to_full_name_norm\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"external_id\" = EXCLUDED.\"external_id\",\"coupon\" = EXCLUDED.\"coupon\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"shipping_service_description\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_phone\",\"address_to_full_name_norm\",\"connection_id\",\"connection_method\",\"external_id\",\"coupon\",\"driver_phone\",\"driver_name\",\"rid\""
+const __sqlShipnowFulfillment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"partner_id\" = EXCLUDED.\"partner_id\",\"order_ids\" = EXCLUDED.\"order_ids\",\"pickup_address\" = EXCLUDED.\"pickup_address\",\"carrier\" = EXCLUDED.\"carrier\",\"shipping_service_code\" = EXCLUDED.\"shipping_service_code\",\"shipping_service_fee\" = EXCLUDED.\"shipping_service_fee\",\"shipping_service_name\" = EXCLUDED.\"shipping_service_name\",\"shipping_service_description\" = EXCLUDED.\"shipping_service_description\",\"chargeable_weight\" = EXCLUDED.\"chargeable_weight\",\"gross_weight\" = EXCLUDED.\"gross_weight\",\"basket_value\" = EXCLUDED.\"basket_value\",\"cod_amount\" = EXCLUDED.\"cod_amount\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"request_pickup_at\" = EXCLUDED.\"request_pickup_at\",\"delivery_points\" = EXCLUDED.\"delivery_points\",\"cancel_reason\" = EXCLUDED.\"cancel_reason\",\"status\" = EXCLUDED.\"status\",\"confirm_status\" = EXCLUDED.\"confirm_status\",\"shipping_status\" = EXCLUDED.\"shipping_status\",\"etop_payment_status\" = EXCLUDED.\"etop_payment_status\",\"shipping_state\" = EXCLUDED.\"shipping_state\",\"shipping_code\" = EXCLUDED.\"shipping_code\",\"fee_lines\" = EXCLUDED.\"fee_lines\",\"carrier_fee_lines\" = EXCLUDED.\"carrier_fee_lines\",\"total_fee\" = EXCLUDED.\"total_fee\",\"shipping_created_at\" = EXCLUDED.\"shipping_created_at\",\"shipping_picking_at\" = EXCLUDED.\"shipping_picking_at\",\"shipping_delivering_at\" = EXCLUDED.\"shipping_delivering_at\",\"shipping_delivered_at\" = EXCLUDED.\"shipping_delivered_at\",\"shipping_cancelled_at\" = EXCLUDED.\"shipping_cancelled_at\",\"sync_status\" = EXCLUDED.\"sync_status\",\"sync_states\" = EXCLUDED.\"sync_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"cod_etop_transfered_at\" = EXCLUDED.\"cod_etop_transfered_at\",\"shipping_shared_link\" = EXCLUDED.\"shipping_shared_link\",\"address_to_province_code\" = EXCLUDED.\"address_to_province_code\",\"address_to_district_code\" = EXCLUDED.\"address_to_district_code\",\"address_to_phone\" = EXCLUDED.\"address_to_phone\",\"address_to_full_name_norm\" = EXCLUDED.\"address_to_full_name_norm\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"external_id\" = EXCLUDED.\"external_id\",\"coupon\" = EXCLUDED.\"coupon\",\"driver_phone\" = EXCLUDED.\"driver_phone\",\"driver_name\" = EXCLUDED.\"driver_name\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlShipnowFulfillment_Insert = "INSERT INTO \"shipnow_fulfillment\" (" + __sqlShipnowFulfillment_ListCols + ") VALUES"
 const __sqlShipnowFulfillment_Select = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\""
 const __sqlShipnowFulfillment_Select_history = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM history.\"shipnow_fulfillment\""
@@ -380,6 +380,20 @@ func (m *ShipnowFulfillment) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"driver_phone": {
+			ColumnName:       "driver_phone",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"driver_name": {
+			ColumnName:       "driver_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"rid": {
 			ColumnName:       "rid",
 			ColumnType:       "dot.ID",
@@ -446,6 +460,8 @@ func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} 
 		m.ConnectionMethod,
 		core.String(m.ExternalID),
 		core.String(m.Coupon),
+		core.String(m.DriverPhone),
+		core.String(m.DriverName),
 		m.Rid,
 	}
 }
@@ -498,6 +514,8 @@ func (m *ShipnowFulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ConnectionMethod,
 		(*core.String)(&m.ExternalID),
 		(*core.String)(&m.Coupon),
+		(*core.String)(&m.DriverPhone),
+		(*core.String)(&m.DriverName),
 		&m.Rid,
 	}
 }
@@ -536,7 +554,7 @@ func (_ *ShipnowFulfillments) SQLSelect(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(47)
+	w.WriteMarkers(49)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -546,7 +564,7 @@ func (ms ShipnowFulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(47)
+		w.WriteMarkers(49)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -945,6 +963,22 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Coupon)
 	}
+	if m.DriverPhone != "" {
+		flag = true
+		w.WriteName("driver_phone")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DriverPhone)
+	}
+	if m.DriverName != "" {
+		flag = true
+		w.WriteName("driver_name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DriverName)
+	}
 	if m.Rid != 0 {
 		flag = true
 		w.WriteName("rid")
@@ -963,7 +997,7 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(47)
+	w.WriteMarkers(49)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1099,18 +1133,24 @@ func (m ShipnowFulfillmentHistory) ExternalID() core.Interface {
 	return core.Interface{m["external_id"]}
 }
 func (m ShipnowFulfillmentHistory) Coupon() core.Interface { return core.Interface{m["coupon"]} }
-func (m ShipnowFulfillmentHistory) Rid() core.Interface    { return core.Interface{m["rid"]} }
+func (m ShipnowFulfillmentHistory) DriverPhone() core.Interface {
+	return core.Interface{m["driver_phone"]}
+}
+func (m ShipnowFulfillmentHistory) DriverName() core.Interface {
+	return core.Interface{m["driver_name"]}
+}
+func (m ShipnowFulfillmentHistory) Rid() core.Interface { return core.Interface{m["rid"]} }
 
 func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 47)
-	args := make([]interface{}, 47)
-	for i := 0; i < 47; i++ {
+	data := make([]interface{}, 49)
+	args := make([]interface{}, 49)
+	for i := 0; i < 49; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipnowFulfillmentHistory, 47)
+	res := make(ShipnowFulfillmentHistory, 49)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["partner_id"] = data[2]
@@ -1157,15 +1197,17 @@ func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error 
 	res["connection_method"] = data[43]
 	res["external_id"] = data[44]
 	res["coupon"] = data[45]
-	res["rid"] = data[46]
+	res["driver_phone"] = data[46]
+	res["driver_name"] = data[47]
+	res["rid"] = data[48]
 	*m = res
 	return nil
 }
 
 func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 47)
-	args := make([]interface{}, 47)
-	for i := 0; i < 47; i++ {
+	data := make([]interface{}, 49)
+	args := make([]interface{}, 49)
+	for i := 0; i < 49; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipnowFulfillmentHistories, 0, 128)
@@ -1220,7 +1262,9 @@ func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) e
 		m["connection_method"] = data[43]
 		m["external_id"] = data[44]
 		m["coupon"] = data[45]
-		m["rid"] = data[46]
+		m["driver_phone"] = data[46]
+		m["driver_name"] = data[47]
+		m["rid"] = data[48]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

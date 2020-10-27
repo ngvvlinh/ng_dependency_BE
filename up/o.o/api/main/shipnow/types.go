@@ -58,6 +58,8 @@ type ShipnowFulfillment struct {
 	ExternalID      string
 	TotalFee        int
 	Coupon          string
+	DriverPhone     string
+	DriverName      string
 }
 
 type DeliveryPoint = shipnowtypes.DeliveryPoint

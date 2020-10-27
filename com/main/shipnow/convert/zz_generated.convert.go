@@ -181,9 +181,11 @@ func convert_shipnowmodel_ShipnowFulfillment_shipnow_ShipnowFulfillment(arg *shi
 	out.ConnectionMethod = arg.ConnectionMethod                     // simple assign
 	out.FeeLines = shippingconvert.Convert_sharemodel_ShippingFeeLines_shippingtypes_ShippingFeeLines(arg.FeeLines)
 	out.CarrierFeeLines = shippingconvert.Convert_sharemodel_ShippingFeeLines_shippingtypes_ShippingFeeLines(arg.CarrierFeeLines)
-	out.ExternalID = arg.ExternalID // simple assign
-	out.TotalFee = arg.TotalFee     // simple assign
-	out.Coupon = arg.Coupon         // simple assign
+	out.ExternalID = arg.ExternalID   // simple assign
+	out.TotalFee = arg.TotalFee       // simple assign
+	out.Coupon = arg.Coupon           // simple assign
+	out.DriverPhone = arg.DriverPhone // simple assign
+	out.DriverName = arg.DriverName   // simple assign
 }
 
 func Convert_shipnowmodel_ShipnowFulfillments_shipnow_ShipnowFulfillments(args []*shipnowmodel.ShipnowFulfillment) (outs []*shipnow.ShipnowFulfillment) {
@@ -249,6 +251,8 @@ func convert_shipnow_ShipnowFulfillment_shipnowmodel_ShipnowFulfillment(arg *shi
 	out.ConnectionMethod = arg.ConnectionMethod         // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
 	out.Coupon = arg.Coupon                             // simple assign
+	out.DriverPhone = arg.DriverPhone                   // simple assign
+	out.DriverName = arg.DriverName                     // simple assign
 	out.Rid = 0                                         // zero value
 }
 

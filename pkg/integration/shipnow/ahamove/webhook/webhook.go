@@ -160,6 +160,8 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 		FeeLines:             nil, // update if needed
 		CarrierFeeLines:      nil, // update if needed
 		CancelReason:         orderMsg.CancelComment,
+		DriverPhone:          orderMsg.SupplierId,
+		DriverName:           orderMsg.SupplierName,
 		DeliveryPoints:       deliveryPoints,
 	}
 	if IsPaymentState(shippingState) && ffm.EtopPaymentStatus != status4.P {

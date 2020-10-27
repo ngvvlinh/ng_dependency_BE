@@ -111,6 +111,8 @@ type UpdateShipnowFulfillmentCarrierInfoArgs struct {
 	ShippingSharedLink         string
 	ShippingServiceDescription string
 	DeliveryPoints             []*DeliveryPoint
+	DriverPhone                string
+	DriverName                 string
 }
 
 type UpdateShipnowFulfillmentStateArgs struct {

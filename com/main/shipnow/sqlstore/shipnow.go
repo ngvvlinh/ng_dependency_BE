@@ -252,6 +252,8 @@ type UpdateCarrierInfoArgs struct {
 	CancelReason               string
 	ShippingSharedLink         string
 	DeliveryPoints             []*shipnow.DeliveryPoint
+	DriverPhone                string
+	DriverName                 string
 }
 
 func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.ShipnowFulfillment, error) {
@@ -276,6 +278,8 @@ func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.S
 		CancelReason:               args.CancelReason,
 		ShippingSharedLink:         args.ShippingSharedLink,
 		DeliveryPoints:             convert.Convert_shipnowtypes_DeliveryPoints_shipnowmodel_DeliveryPoints(args.DeliveryPoints),
+		DriverName:                 args.DriverName,
+		DriverPhone:                args.DriverPhone,
 	}
 	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(updateFfm); err != nil {
 		return nil, err

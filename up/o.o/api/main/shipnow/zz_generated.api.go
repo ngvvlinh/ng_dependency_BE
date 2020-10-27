@@ -139,6 +139,8 @@ type UpdateShipnowFulfillmentCarrierInfoCommand struct {
 	ShippingSharedLink         string
 	ShippingServiceDescription string
 	DeliveryPoints             []*shipnowtypes.DeliveryPoint
+	DriverPhone                string
+	DriverName                 string
 
 	Result *ShipnowFulfillment `json:"-"`
 }
@@ -355,6 +357,8 @@ func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs(ctx context.Context
 			ShippingSharedLink:         q.ShippingSharedLink,
 			ShippingServiceDescription: q.ShippingServiceDescription,
 			DeliveryPoints:             q.DeliveryPoints,
+			DriverPhone:                q.DriverPhone,
+			DriverName:                 q.DriverName,
 		}
 }
 
@@ -379,6 +383,8 @@ func (q *UpdateShipnowFulfillmentCarrierInfoCommand) SetUpdateShipnowFulfillment
 	q.ShippingSharedLink = args.ShippingSharedLink
 	q.ShippingServiceDescription = args.ShippingServiceDescription
 	q.DeliveryPoints = args.DeliveryPoints
+	q.DriverPhone = args.DriverPhone
+	q.DriverName = args.DriverName
 }
 
 func (q *UpdateShipnowFulfillmentStateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentStateArgs) {

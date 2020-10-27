@@ -208,6 +208,8 @@ func Convert_core_ShipnowFulfillment_To_apix_ShipnowFulfillment(in *shipnow.Ship
 		BasketValue:                dot.Int(in.ValueInfo.BasketValue),
 		ExternalID:                 dot.String(in.ExternalID),
 		Coupon:                     dot.String(in.Coupon),
+		DriverName:                 dot.String(in.DriverName),
+		DriverPhone:                dot.String(in.DriverPhone),
 	}
 	if conn != nil {
 		res.CarrierInfo = &typesx.CarrierInfo{
@@ -249,6 +251,8 @@ func Convert_shipnowmodel_ShipnowFulfillmentHistory_To_apix_ShipnowFulfillment(i
 		ShippingSharedLink:         in.ShippingSharedLink().String(),
 		CancelReason:               in.CancelReason().String(),
 		ExternalID:                 in.ExternalID().String(),
+		DriverPhone:                in.DriverPhone().String(),
+		DriverName:                 in.DriverName().String(),
 	}
 }
 
