@@ -41,6 +41,9 @@ type CreateAddressCommand struct {
 	Position     string
 	IsDefault    bool
 	Coordinates  *orderingtypes.Coordinates
+	Province     string
+	District     string
+	Ward         string
 
 	Result *ShopTraderAddress `json:"-"`
 }
@@ -89,6 +92,9 @@ type UpdateAddressCommand struct {
 	Position     dot.NullString
 	IsDefault    dot.NullBool
 	Coordinates  *orderingtypes.Coordinates
+	Province     dot.NullString
+	District     dot.NullString
+	Ward         dot.NullString
 
 	Result *ShopTraderAddress `json:"-"`
 }
@@ -210,6 +216,9 @@ func (q *CreateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Position:     q.Position,
 			IsDefault:    q.IsDefault,
 			Coordinates:  q.Coordinates,
+			Province:     q.Province,
+			District:     q.District,
+			Ward:         q.Ward,
 		}
 }
 
@@ -228,6 +237,9 @@ func (q *CreateAddressCommand) SetCreateAddressArgs(args *CreateAddressArgs) {
 	q.Position = args.Position
 	q.IsDefault = args.IsDefault
 	q.Coordinates = args.Coordinates
+	q.Province = args.Province
+	q.District = args.District
+	q.Ward = args.Ward
 }
 
 func (q *DeleteAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShopID dot.ID) {
@@ -259,6 +271,9 @@ func (q *UpdateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Position:     q.Position,
 			IsDefault:    q.IsDefault,
 			Coordinates:  q.Coordinates,
+			Province:     q.Province,
+			District:     q.District,
+			Ward:         q.Ward,
 		}
 }
 
@@ -274,6 +289,9 @@ func (q *UpdateAddressCommand) SetUpdateAddressArgs(args *UpdateAddressArgs) {
 	q.Position = args.Position
 	q.IsDefault = args.IsDefault
 	q.Coordinates = args.Coordinates
+	q.Province = args.Province
+	q.District = args.District
+	q.Ward = args.Ward
 }
 
 func (q *GetAddressActiveByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, traderID dot.ID, ShopID dot.ID) {

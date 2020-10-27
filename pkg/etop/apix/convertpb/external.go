@@ -678,10 +678,9 @@ func PbShopTraderAddressHistory(ctx context.Context, m customermodel.ShopTraderA
 	}
 	province, district, ward := (*location.Province)(nil), (*location.District)(nil), (*location.Ward)(nil)
 	if query.DistrictCode != "" && query.WardCode != "" {
-		if err := locationBus.Dispatch(ctx, query); err != nil {
-			panic("Internal: " + err.Error())
+		if err := locationBus.Dispatch(ctx, query); err == nil {
+			province, district, ward = query.Result.Province, query.Result.District, query.Result.Ward
 		}
-		province, district, ward = query.Result.Province, query.Result.District, query.Result.Ward
 	}
 	out := &exttypes.CustomerAddress{
 		Id:          m.ID().ID().Apply(0),
@@ -697,14 +696,12 @@ func PbShopTraderAddressHistory(ctx context.Context, m customermodel.ShopTraderA
 	}
 	if ward != nil {
 		out.Ward = dot.String(ward.Name)
-		out.WardCode = dot.String(ward.Code)
 	}
 	if district != nil {
 		out.District = dot.String(district.Name)
 	}
 	if province != nil {
 		out.Province = dot.String(province.Name)
-		out.ProvinceCode = dot.String(province.Code)
 	}
 	return out
 }
@@ -720,10 +717,10 @@ func PbShopTraderAddress(ctx context.Context, in *addressing.ShopTraderAddress, 
 		DistrictCode: in.DistrictCode,
 		WardCode:     in.WardCode,
 	}
-	if err := locationBus.Dispatch(ctx, query); err != nil {
-		panic("Internal: " + err.Error())
+	province, district, ward := (*location.Province)(nil), (*location.District)(nil), (*location.Ward)(nil)
+	if err := locationBus.Dispatch(ctx, query); err == nil {
+		province, district, ward = query.Result.Province, query.Result.District, query.Result.Ward
 	}
-	province, district, ward := query.Result.Province, query.Result.District, query.Result.Ward
 	out := &exttypes.CustomerAddress{
 		Id:          in.ID,
 		CustomerID:  in.TraderID,
@@ -738,15 +735,12 @@ func PbShopTraderAddress(ctx context.Context, in *addressing.ShopTraderAddress, 
 	}
 	if ward != nil {
 		out.Ward = dot.String(ward.Name)
-		out.WardCode = dot.String(ward.Code)
 	}
 	if district != nil {
 		out.District = dot.String(district.Name)
-		out.DistrictCode = dot.String(district.Code)
 	}
 	if province != nil {
 		out.Province = dot.String(province.Name)
-		out.ProvinceCode = dot.String(province.Code)
 	}
 	return out
 }

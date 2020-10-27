@@ -334,7 +334,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	customerAggregate := aggregate5.NewCustomerAggregate(busBus, mainDB)
 	customeringCommandBus := aggregate5.CustomerAggregateMessageBus(customerAggregate)
-	aggregateAddressAggregate := aggregate5.NewAddressAggregate(mainDB)
+	aggregateAddressAggregate := aggregate5.NewAddressAggregate(mainDB, locationQueryBus)
 	addressingCommandBus := aggregate5.AddressAggregateMessageBus(aggregateAddressAggregate)
 	addressQuery := query2.NewAddressQuery(mainDB)
 	addressingQueryBus := query2.AddressQueryMessageBus(addressQuery)

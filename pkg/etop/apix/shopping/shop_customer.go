@@ -156,20 +156,20 @@ func (s *Shopping) CreateAddress(ctx context.Context, shopID, partnerID dot.ID, 
 		}
 	}
 	cmd := &addressing.CreateAddressCommand{
-		ShopID:       shopID,
-		PartnerID:    partnerID,
-		TraderID:     request.CustomerId,
-		FullName:     request.FullName,
-		Phone:        request.Phone,
-		Email:        request.Email,
-		Company:      request.Company,
-		Address1:     request.Address1,
-		Address2:     request.Address2,
-		DistrictCode: request.DistrictCode,
-		WardCode:     request.WardCode,
-		Position:     request.Position,
-		IsDefault:    false,
-		Coordinates:  coordinates,
+		ShopID:      shopID,
+		PartnerID:   partnerID,
+		TraderID:    request.CustomerId,
+		FullName:    request.FullName,
+		Phone:       request.Phone,
+		Email:       request.Email,
+		Address1:    request.Address1,
+		Address2:    request.Address2,
+		Coordinates: coordinates,
+		Company:     request.Company,
+		Position:    request.Position,
+		Province:    request.Province,
+		District:    request.District,
+		Ward:        request.Ward,
 	}
 	if err := s.AddressAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -186,18 +186,19 @@ func (s *Shopping) UpdateAddress(ctx context.Context, shopID dot.ID, request *ex
 		}
 	}
 	cmd := &addressing.UpdateAddressCommand{
-		ID:           request.Id,
-		ShopID:       shopID,
-		FullName:     request.FullName,
-		Phone:        request.Phone,
-		Email:        request.Email,
-		Company:      request.Company,
-		Address1:     request.Address1,
-		Address2:     request.Address2,
-		DistrictCode: request.DistrictCode,
-		WardCode:     request.WardCode,
-		Position:     request.Position,
-		Coordinates:  coordinates,
+		ID:          request.Id,
+		ShopID:      shopID,
+		FullName:    request.FullName,
+		Phone:       request.Phone,
+		Email:       request.Email,
+		Company:     request.Company,
+		Address1:    request.Address1,
+		Address2:    request.Address2,
+		Position:    request.Position,
+		Coordinates: coordinates,
+		Province:    request.Province,
+		District:    request.District,
+		Ward:        request.Ward,
 	}
 	if err := s.AddressAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err

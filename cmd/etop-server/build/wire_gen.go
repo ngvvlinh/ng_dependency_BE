@@ -444,7 +444,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	customerAggregate := aggregate8.NewCustomerAggregate(busBus, mainDB)
 	customeringCommandBus := aggregate8.CustomerAggregateMessageBus(customerAggregate)
-	aggregateAddressAggregate := aggregate8.NewAddressAggregate(mainDB)
+	aggregateAddressAggregate := aggregate8.NewAddressAggregate(mainDB, locationQueryBus)
 	addressingCommandBus := aggregate8.AddressAggregateMessageBus(aggregateAddressAggregate)
 	addressQuery := query4.NewAddressQuery(mainDB)
 	addressingQueryBus := query4.AddressQueryMessageBus(addressQuery)

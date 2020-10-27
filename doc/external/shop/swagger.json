@@ -2145,6 +2145,15 @@
     },
     "mrCreateCustomerAddressRequest": {
       "type": "object",
+      "required": [
+        "customer_id",
+        "address1",
+        "full_name",
+        "phone",
+        "province",
+        "district",
+        "ward"
+      ],
       "properties": {
         "address1": {
           "type": "string"
@@ -2165,7 +2174,7 @@
           "type": "string",
           "format": "int64"
         },
-        "district_code": {
+        "district": {
           "type": "string"
         },
         "email": {
@@ -2180,10 +2189,10 @@
         "position": {
           "type": "string"
         },
-        "province_code": {
+        "province": {
           "type": "string"
         },
-        "ward_code": {
+        "ward": {
           "type": "string"
         }
       }
@@ -2557,9 +2566,6 @@
         "district": {
           "type": "string"
         },
-        "district_code": {
-          "type": "string"
-        },
         "email": {
           "type": "string"
         },
@@ -2579,13 +2585,7 @@
         "province": {
           "type": "string"
         },
-        "province_code": {
-          "type": "string"
-        },
         "ward": {
-          "type": "string"
-        },
-        "ward_code": {
           "type": "string"
         }
       }
@@ -4260,7 +4260,7 @@
         "country": {
           "type": "string"
         },
-        "district_code": {
+        "district": {
           "type": "string"
         },
         "email": {
@@ -4279,10 +4279,10 @@
         "position": {
           "type": "string"
         },
-        "province_code": {
+        "province": {
           "type": "string"
         },
-        "ward_code": {
+        "ward": {
           "type": "string"
         }
       }

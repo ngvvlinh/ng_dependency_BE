@@ -170,6 +170,7 @@ func convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg
 	out.Company = arg.Company           // simple assign
 	out.Address1 = arg.Address1         // simple assign
 	out.Address2 = arg.Address2         // simple assign
+	out.ProvinceCode = ""               // zero value
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign
 	out.IsDefault = arg.IsDefault       // simple assign
@@ -178,6 +179,9 @@ func convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.Deleted = false           // zero value
+	out.Province = ""             // zero value
+	out.District = ""             // zero value
+	out.Ward = ""                 // zero value
 }
 
 func Convert_customeringmodel_ShopTraderAddresses_addressing_ShopTraderAddresses(args []*customeringmodel.ShopTraderAddress) (outs []*addressing.ShopTraderAddress) {
@@ -260,6 +264,7 @@ func apply_addressing_CreateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.Company = arg.Company           // simple assign
 	out.Address1 = arg.Address1         // simple assign
 	out.Address2 = arg.Address2         // simple assign
+	out.ProvinceCode = ""               // zero value
 	out.DistrictCode = arg.DistrictCode // simple assign
 	out.WardCode = arg.WardCode         // simple assign
 	out.IsDefault = arg.IsDefault       // simple assign
@@ -268,6 +273,9 @@ func apply_addressing_CreateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
 	out.Deleted = false                 // zero value
+	out.Province = arg.Province         // simple assign
+	out.District = arg.District         // simple assign
+	out.Ward = arg.Ward                 // simple assign
 }
 
 func Apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addressing.UpdateAddressArgs, out *addressing.ShopTraderAddress) *addressing.ShopTraderAddress {
@@ -292,6 +300,7 @@ func apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.Company = arg.Company.Apply(out.Company)                // apply change
 	out.Address1 = arg.Address1.Apply(out.Address1)             // apply change
 	out.Address2 = arg.Address2.Apply(out.Address2)             // apply change
+	out.ProvinceCode = out.ProvinceCode                         // no change
 	out.DistrictCode = arg.DistrictCode.Apply(out.DistrictCode) // apply change
 	out.WardCode = arg.WardCode.Apply(out.WardCode)             // apply change
 	out.IsDefault = arg.IsDefault.Apply(out.IsDefault)          // apply change
@@ -300,6 +309,9 @@ func apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(arg *addres
 	out.CreatedAt = out.CreatedAt                               // no change
 	out.UpdatedAt = out.UpdatedAt                               // no change
 	out.Deleted = out.Deleted                                   // no change
+	out.Province = arg.Province.Apply(out.Province)             // apply change
+	out.District = arg.District.Apply(out.District)             // apply change
+	out.Ward = arg.Ward.Apply(out.Ward)                         // apply change
 }
 
 //-- convert o.o/api/shopping/customering.ShopCustomer --//

@@ -275,7 +275,13 @@ func (p *Paging) decodeCursor() (PagingCursor, error) {
 		}
 		result = append(result, PagingCursorItem{PagingID, nil})
 
-		negativeSort := len(p.Sort) != 0 && strings.HasPrefix(p.Sort[0], "-")
+		var negativeSort bool
+		if len(p.Sort) == 0 {
+			// sort desc by default
+			negativeSort = true
+		} else {
+			negativeSort = strings.HasPrefix(p.Sort[0], "-")
+		}
 		return PagingCursor{
 			Items:        result,
 			Reverse:      reverse,

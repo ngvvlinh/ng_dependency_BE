@@ -115,31 +115,26 @@ type ListCustomersRequest struct {
 func (m *ListCustomersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerAddress struct {
-	Id           dot.ID            `json:"id"`
-	CustomerID   dot.ID            `json:"customer_id"`
-	Province     dot.NullString    `json:"province"`
-	ProvinceCode dot.NullString    `json:"province_code"`
-	District     dot.NullString    `json:"district"`
-	DistrictCode dot.NullString    `json:"district_code"`
-	Ward         dot.NullString    `json:"ward"`
-	WardCode     dot.NullString    `json:"ward_code"`
-	Address1     dot.NullString    `json:"address1"`
-	Address2     dot.NullString    `json:"address2"`
-	FullName     dot.NullString    `json:"full_name"`
-	Company      dot.NullString    `json:"company"`
-	Phone        dot.NullString    `json:"phone"`
-	Email        dot.NullString    `json:"email"`
-	Position     dot.NullString    `json:"position"`
-	Coordinates  *etop.Coordinates `json:"coordinates"`
-	Deleted      bool              `json:"deleted"`
+	Id          dot.ID            `json:"id"`
+	CustomerID  dot.ID            `json:"customer_id"`
+	Province    dot.NullString    `json:"province"`
+	District    dot.NullString    `json:"district"`
+	Ward        dot.NullString    `json:"ward"`
+	Address1    dot.NullString    `json:"address1"`
+	Address2    dot.NullString    `json:"address2"`
+	FullName    dot.NullString    `json:"full_name"`
+	Company     dot.NullString    `json:"company"`
+	Phone       dot.NullString    `json:"phone"`
+	Email       dot.NullString    `json:"email"`
+	Position    dot.NullString    `json:"position"`
+	Coordinates *etop.Coordinates `json:"coordinates"`
+	Deleted     bool              `json:"deleted"`
 }
 
 func (m *CustomerAddress) String() string { return jsonx.MustMarshalToString(m) }
 
 func (m *CustomerAddress) HasChanged() bool {
-	return m.WardCode.Valid ||
-		m.Ward.Valid ||
-		m.DistrictCode.Valid ||
+	return m.Ward.Valid ||
 		m.District.Valid ||
 		m.Position.Valid ||
 		m.Email.Valid ||
@@ -148,8 +143,8 @@ func (m *CustomerAddress) HasChanged() bool {
 		m.FullName.Valid ||
 		m.Address1.Valid ||
 		m.Address2.Valid ||
-		m.Province.Valid ||
-		m.ProvinceCode.Valid
+		m.Province.Valid
+
 }
 
 type CustomerAddressesResponse struct {
@@ -175,37 +170,44 @@ type ListCustomerAddressesRequest struct {
 func (m *ListCustomerAddressesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCustomerAddressRequest struct {
-	CustomerId   dot.ID       `json:"customer_id"`
-	ProvinceCode string       `json:"province_code"`
-	DistrictCode string       `json:"district_code"`
-	WardCode     string       `json:"ward_code"`
-	Address1     string       `json:"address1"`
-	Address2     string       `json:"address2"`
-	Country      string       `json:"country"`
-	FullName     string       `json:"full_name"`
-	Company      string       `json:"company"`
-	Phone        string       `json:"phone"`
-	Email        string       `json:"email"`
-	Position     string       `json:"position"`
-	Coordinates  *Coordinates `json:"coordinates"`
+	// @required
+	CustomerId dot.ID `json:"customer_id"`
+	// @required
+	Address1 string `json:"address1"`
+	Address2 string `json:"address2"`
+	Country  string `json:"country"`
+	// @required
+	FullName string `json:"full_name"`
+	// @required
+	Phone       string       `json:"phone"`
+	Email       string       `json:"email"`
+	Coordinates *Coordinates `json:"coordinates"`
+	Company     string       `json:"company"`
+	Position    string       `json:"position"`
+	// @required
+	Province string `json:"province"`
+	// @required
+	District string `json:"district"`
+	// @required
+	Ward string `json:"ward"`
 }
 
 func (m *CreateCustomerAddressRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateCustomerAddressRequest struct {
-	Id           dot.ID            `json:"id"`
-	ProvinceCode dot.NullString    `json:"province_code"`
-	DistrictCode dot.NullString    `json:"district_code"`
-	WardCode     dot.NullString    `json:"ward_code"`
-	Address1     dot.NullString    `json:"address1"`
-	Address2     dot.NullString    `json:"address2"`
-	Country      dot.NullString    `json:"country"`
-	FullName     dot.NullString    `json:"full_name"`
-	Phone        dot.NullString    `json:"phone"`
-	Email        dot.NullString    `json:"email"`
-	Position     dot.NullString    `json:"position"`
-	Company      dot.NullString    `json:"company"`
-	Coordinates  *etop.Coordinates `json:"coordinates"`
+	Id          dot.ID            `json:"id"`
+	Address1    dot.NullString    `json:"address1"`
+	Address2    dot.NullString    `json:"address2"`
+	Country     dot.NullString    `json:"country"`
+	FullName    dot.NullString    `json:"full_name"`
+	Phone       dot.NullString    `json:"phone"`
+	Email       dot.NullString    `json:"email"`
+	Position    dot.NullString    `json:"position"`
+	Company     dot.NullString    `json:"company"`
+	Coordinates *etop.Coordinates `json:"coordinates"`
+	Province    dot.NullString    `json:"province"`
+	District    dot.NullString    `json:"district"`
+	Ward        dot.NullString    `json:"ward"`
 }
 
 func (m *UpdateCustomerAddressRequest) String() string { return jsonx.MustMarshalToString(m) }

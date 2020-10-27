@@ -54,6 +54,7 @@ type ShopTraderAddress struct {
 	Company      string
 	Address1     string
 	Address2     string
+	ProvinceCode string
 	DistrictCode string
 	WardCode     string
 	IsDefault    bool
@@ -62,6 +63,9 @@ type ShopTraderAddress struct {
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	Deleted      bool
+	Province     string
+	District     string
+	Ward         string
 }
 
 type ShopTraderAddressesResponse struct {
@@ -86,6 +90,9 @@ type CreateAddressArgs struct {
 	Position     string
 	IsDefault    bool
 	Coordinates  *ordertypes.Coordinates
+	Province     string
+	District     string
+	Ward         string
 }
 
 // +convert:update=ShopTraderAddress(ID)
@@ -101,6 +108,9 @@ type UpdateAddressArgs struct {
 	Position     NullString
 	IsDefault    NullBool
 	Coordinates  *ordertypes.Coordinates
+	Province     NullString
+	District     NullString
+	Ward         NullString
 }
 
 type ListAddressesByTraderIDArgs struct {

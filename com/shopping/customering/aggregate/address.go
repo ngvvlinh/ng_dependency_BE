@@ -3,6 +3,7 @@ package aggregate
 import (
 	"context"
 
+	"o.o/api/main/location"
 	"o.o/api/meta"
 	"o.o/api/shopping/addressing"
 	com "o.o/backend/com/main"
@@ -22,12 +23,14 @@ var scheme = conversion.Build(convert.RegisterConversions)
 type AddressAggregate struct {
 	store         sqlstore.AddressStoreFactory
 	customerStore sqlstore.CustomerStoreFactory
+	locationQS    location.QueryBus
 }
 
-func NewAddressAggregate(db com.MainDB) *AddressAggregate {
+func NewAddressAggregate(db com.MainDB, locationQS location.QueryBus) *AddressAggregate {
 	return &AddressAggregate{
 		store:         sqlstore.NewAddressStore(db),
 		customerStore: sqlstore.NewCustomerStore(db),
+		locationQS:    locationQS,
 	}
 }
 
@@ -36,7 +39,7 @@ func AddressAggregateMessageBus(q *AddressAggregate) addressing.CommandBus {
 	return addressing.NewAggregateHandler(q).RegisterHandlers(b)
 }
 
-func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.CreateAddressArgs) (*addressing.ShopTraderAddress, error) {
+func (a *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.CreateAddressArgs) (*addressing.ShopTraderAddress, error) {
 	if args.Phone == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng cung cấp số điện thoại", nil)
 	}
@@ -49,7 +52,7 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 
 	// check customer
 	{
-		customer, err := q.customerStore(ctx).ID(args.TraderID).IncludeDeleted().GetCustomer()
+		customer, err := a.customerStore(ctx).ID(args.TraderID).IncludeDeleted().GetCustomer()
 		switch cm.ErrorCode(err) {
 		case cm.NotFound:
 			return nil, cm.Error(cm.InvalidArgument, "Không tìm thấy user", nil)
@@ -63,7 +66,7 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	}
 
 	if args.IsDefault {
-		if err := q.store(ctx).UpdateStatusAddresses(args.ShopID, args.TraderID, false); err != nil {
+		if err := a.store(ctx).UpdateStatusAddresses(args.ShopID, args.TraderID, false); err != nil {
 			return nil, err
 		}
 	}
@@ -72,15 +75,15 @@ func (q *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	if err := scheme.Convert(args, addr); err != nil {
 		return nil, err
 	}
-	if err := ValidateCreateShopTraderAddress(addr); err != nil {
+	if err := a.ValidateCreateShopTraderAddress(ctx, addr); err != nil {
 		return nil, err
 	}
-	err := q.store(ctx).CreateAddress(addr)
+	err := a.store(ctx).CreateAddress(addr)
 	return addr, err
 }
 
-func (q *AddressAggregate) UpdateAddress(ctx context.Context, ID dot.ID, ShopID dot.ID, args *addressing.UpdateAddressArgs) (*addressing.ShopTraderAddress, error) {
-	addr, err := q.store(ctx).ID(ID).ShopID(ShopID).GetAddress()
+func (a *AddressAggregate) UpdateAddress(ctx context.Context, ID dot.ID, ShopID dot.ID, args *addressing.UpdateAddressArgs) (*addressing.ShopTraderAddress, error) {
+	addr, err := a.store(ctx).ID(ID).ShopID(ShopID).GetAddress()
 	if err != nil {
 		return nil, err
 	}
@@ -96,32 +99,25 @@ func (q *AddressAggregate) UpdateAddress(ctx context.Context, ID dot.ID, ShopID 
 	if err = scheme.Convert(args, addr); err != nil {
 		return nil, err
 	}
-	err = ValidateCreateShopTraderAddress(addr)
-	if err != nil {
+	if err = a.ValidateCreateShopTraderAddress(ctx, addr); err != nil {
 		return nil, err
 	}
 	addrDB := &model.ShopTraderAddress{}
 	if err = scheme.Convert(addr, addrDB); err != nil {
 		return nil, err
 	}
-	err = q.store(ctx).UpdateAddressDB(addrDB)
+	err = a.store(ctx).UpdateAddressDB(addrDB)
 	return addr, err
 }
 
-func (q *AddressAggregate) DeleteAddress(ctx context.Context, ID dot.ID, ShopID dot.ID) (deleted int, _ error) {
-	deleted, err := q.store(ctx).ID(ID).ShopID(ShopID).SoftDelete()
+func (a *AddressAggregate) DeleteAddress(ctx context.Context, ID dot.ID, ShopID dot.ID) (deleted int, _ error) {
+	deleted, err := a.store(ctx).ID(ID).ShopID(ShopID).SoftDelete()
 	return deleted, err
 }
 
-func ValidateCreateShopTraderAddress(args *addressing.ShopTraderAddress) error {
+func (a *AddressAggregate) ValidateCreateShopTraderAddress(ctx context.Context, args *addressing.ShopTraderAddress) error {
 	if args.FullName == "" {
 		return EditErrorMsg("Tên")
-	}
-	if args.DistrictCode == "" {
-		return EditErrorMsg("Quận/Huyện")
-	}
-	if args.WardCode == "" {
-		return EditErrorMsg("Phường/Xã")
 	}
 	if args.Address1 == "" {
 		return EditErrorMsg("Địa chỉ cụ thể")
@@ -129,6 +125,60 @@ func ValidateCreateShopTraderAddress(args *addressing.ShopTraderAddress) error {
 	if args.Phone == "" {
 		return EditErrorMsg("Số điện thoại")
 	}
+	locationQuery := &location.FindOrGetLocationQuery{
+		ProvinceCode: args.ProvinceCode,
+		DistrictCode: args.DistrictCode,
+		WardCode:     args.WardCode,
+		Province:     args.Province,
+		District:     args.District,
+		Ward:         args.Ward,
+	}
+	if err := a.locationQS.Dispatch(ctx, locationQuery); err != nil {
+		return err
+	}
+	loc := locationQuery.Result
+	if loc.Province == nil || loc.District == nil {
+		return cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp thông tin tỉnh/thành phố và quận/huyện")
+	}
+
+	args.Province = loc.Province.Name
+	args.ProvinceCode = loc.Province.Code
+	args.District = loc.District.Name
+	args.DistrictCode = loc.District.Code
+	if loc.Ward != nil {
+		args.Ward = loc.Ward.Name
+		args.WardCode = loc.Ward.Code
+	}
+
+	return nil
+}
+
+func (a *AddressAggregate) ValidateLocation(ctx context.Context, in *addressing.ShopTraderAddress) error {
+	locationQuery := &location.FindOrGetLocationQuery{
+		ProvinceCode: in.ProvinceCode,
+		DistrictCode: in.DistrictCode,
+		WardCode:     in.WardCode,
+		Province:     in.Province,
+		District:     in.District,
+		Ward:         in.Ward,
+	}
+	if err := a.locationQS.Dispatch(ctx, locationQuery); err != nil {
+		return err
+	}
+	loc := locationQuery.Result
+	if loc.Province == nil || loc.District == nil {
+		return cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp thông tin tỉnh/thành phố và quận/huyện")
+	}
+
+	in.Province = loc.Province.Name
+	in.ProvinceCode = loc.Province.Code
+	in.District = loc.District.Name
+	in.DistrictCode = loc.District.Code
+	if loc.Ward != nil {
+		in.Ward = loc.Ward.Name
+		in.WardCode = loc.Ward.Code
+	}
+
 	return nil
 }
 
