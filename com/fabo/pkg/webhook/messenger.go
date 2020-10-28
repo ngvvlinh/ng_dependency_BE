@@ -254,8 +254,12 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	if messageResp.Shares != nil {
 		externalShares = fbclientconvert.ConvertMessageShares(messageResp.Shares.Data)
 	}
+
 	currentMessage := messageResp.Message
-	{
+
+	// if `sticker` is available don't need to build external_message from
+	// share object, prevent for show duplicate sticker on client.
+	if messageResp.Sticker == "" {
 		var strs []string
 		if currentMessage != "" {
 			strs = append(strs, currentMessage)

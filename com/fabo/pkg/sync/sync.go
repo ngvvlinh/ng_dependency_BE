@@ -455,7 +455,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 				strs = append(strs, currentMessage)
 			}
 			// Get first share
-			if len(externalShares) > 0 {
+			if messageData.Sticker == "" && len(externalShares) > 0 {
 				if externalShares[0].Description != "" {
 					strs = append(strs, externalShares[0].Description)
 				}
