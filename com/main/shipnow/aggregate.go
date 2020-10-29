@@ -231,7 +231,7 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		ffm, err := a.store(ctx).ShopID(cmd.ShopID).
 			OptionalID(cmd.ID).
 			OptionalShippingCode(cmd.ShippingCode).
-			OptionalExternalID(cmd.ExternalID).
+			ExternalID(cmd.ExternalID).
 			GetShipnow()
 		if err != nil {
 			return err

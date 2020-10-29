@@ -31,9 +31,12 @@ func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow
 	if query.ID == 0 && query.ShippingCode == "" && query.ExternalID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp id hoặc shipping_code hoặc external_id")
 	}
-	s := q.store(ctx).OptionalID(query.ID).OptionalShippingCode(query.ShippingCode).OptionalExternalID(query.ExternalID)
+	s := q.store(ctx).OptionalID(query.ID).OptionalShippingCode(query.ShippingCode)
 	if query.ShopID != 0 {
 		s = s.ShopID(query.ShopID)
+	}
+	if query.ExternalID != "" {
+		s = s.ExternalID(query.ExternalID)
 	}
 	ffm, err := s.GetShipnow()
 	if err != nil {

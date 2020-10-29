@@ -83,8 +83,8 @@ func (s *ShipnowStore) OptionalID(id dot.ID) *ShipnowStore {
 	return s
 }
 
-func (s *ShipnowStore) OptionalExternalID(externalID string) *ShipnowStore {
-	s.preds = append(s.preds, s.ft.ByExternalID(externalID).Optional(), sq.NotIn("status", -1))
+func (s *ShipnowStore) ExternalID(externalID string) *ShipnowStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID), sq.NotIn("status", -1))
 	return s
 }
 
