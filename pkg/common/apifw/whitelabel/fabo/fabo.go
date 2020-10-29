@@ -64,7 +64,7 @@ func Fabo(env cmenv.EnvType) *whitelabel.WL {
 	InitTemplateMsg()
 	cfg := config{
 		prodHost: "m.faboshop.vn",
-		key:      "fabo",
+		key:      "faboshop",
 	}
 	return &whitelabel.WL{
 		Partner: identity.Partner{
