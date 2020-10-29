@@ -233,7 +233,7 @@ func (st *OrderStore) GetOrders(ctx context.Context, query *ordermodelx.GetOrder
 		return err
 	}
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
-		query.Paging.Sort = []string{"-updated_at"}
+		query.Paging.Sort = []string{"-created_at"}
 	}
 
 	var orders ordermodel.Orders
@@ -375,7 +375,7 @@ func (st *OrderStore) GetOrderExtends(ctx context.Context, query *ordermodelx.Ge
 	}
 
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
-		query.Paging.Sort = []string{"-updated_at"}
+		query.Paging.Sort = []string{"-created_at"}
 	}
 
 	{
@@ -939,7 +939,7 @@ func (st *OrderStore) GetFulfillmentExtendeds(ctx context.Context, query *shipmo
 	}
 
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
-		query.Paging.Sort = []string{"-updated_at"}
+		query.Paging.Sort = []string{"-created_at"}
 	}
 	{
 		s2 := s.Clone()

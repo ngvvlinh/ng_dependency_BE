@@ -186,7 +186,7 @@ func (s *NotificationStore) GetNotifications(args *model.GetNotificationsArgs) (
 	}
 	x := s.db.Table("notification").Where("account_id = ?", args.AccountID)
 	if args.Paging != nil && len(args.Paging.Sort) == 0 {
-		args.Paging.Sort = []string{"-updated_at"}
+		args.Paging.Sort = []string{"-created_at"}
 	}
 	{
 		x1 := x.Clone()
