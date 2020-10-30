@@ -228,11 +228,13 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp id hoặc shipping_code hoặc external_id")
 	}
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		ffm, err := a.store(ctx).ShopID(cmd.ShopID).
+		query := a.store(ctx).ShopID(cmd.ShopID).
 			OptionalID(cmd.ID).
-			OptionalShippingCode(cmd.ShippingCode).
-			ExternalID(cmd.ExternalID).
-			GetShipnow()
+			OptionalShippingCode(cmd.ShippingCode)
+		if cmd.ExternalID != "" {
+			query = query.ExternalID(cmd.ExternalID)
+		}
+		ffm, err := query.GetShipnow()
 		if err != nil {
 			return err
 		}
