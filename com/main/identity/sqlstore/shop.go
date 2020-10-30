@@ -7,6 +7,7 @@ import (
 	"o.o/api/meta"
 	"o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
@@ -169,6 +170,18 @@ func (s *ShopStore) ListShopExtendeds() ([]*identity.ShopExtended, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+func (s *ShopStore) CreateShop(shop *identity.Shop) error {
+	sqlstore.MustNoPreds(s.preds)
+	if shop.ID == 0 {
+		shop.ID = cm.NewID()
+	}
+	var shopDB identitymodel.Shop
+	if err := scheme.Convert(shop, &shopDB); err != nil {
+		return err
+	}
+	return s.query().ShouldInsert(&shopDB)
 }
 
 func (s *ShopStore) UpdateShop(args *identity.Shop) error {

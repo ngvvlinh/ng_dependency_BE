@@ -24,6 +24,13 @@ type UserService interface {
 
 	RegisterUsingToken(context.Context, *CreateUserRequest) (*RegisterResponse, error)
 
+	// RequestRegisterSimplify
+	//
+	// Request OTP for register/login
+	RequestRegisterSimplify(context.Context, *RequestRegisterSimplifyRequest) (*cm.MessageResponse, error)
+
+	RegisterSimplify(context.Context, *RegisterSimplifyRequest) (*LoginResponse, error)
+
 	// Login
 	//
 	// Log the user in and generate access token.

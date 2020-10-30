@@ -85,7 +85,7 @@ func (s *UserRelationshipService) GetInvitationByToken(ctx context.Context, q *a
 		Email: query.Result.Email,
 		Phone: query.Result.Phone,
 	}
-	err := s.UserStore.GetUserByEmail(ctx, getUserQuery)
+	err := s.UserStore.GetUserByEmailOrPhone(ctx, getUserQuery)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 	// no-op

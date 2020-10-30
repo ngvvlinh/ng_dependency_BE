@@ -70,6 +70,7 @@ const (
 	keyRedisSecondCodeUpdateUser        string       = "update-second-code"
 	signalUpdateUserEmail               SignalUpdate = "update-email"
 	signalUpdateUserPhone               SignalUpdate = "update-phone"
+	keyRequestRegisterSimplify          string       = "register-simplify"
 )
 
 type UserService struct {
@@ -187,7 +188,7 @@ func (s *UserService) updatePhoneVerifySecondCode(ctx context.Context, r *api.Up
 	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: r.Phone,
 	}
-	err := s.UserStoreIface.GetUserByEmail(ctx, userByPhoneQuery)
+	err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, userByPhoneQuery)
 	if err == nil || cm.ErrorCode(err) != cm.NotFound {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại đã tồn tại vui lòng kiểm tra lại.")
 	}
@@ -392,7 +393,7 @@ func (s *UserService) updateEmailVerifySecondCode(ctx context.Context, r *api.Up
 	userByEmailQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Email: r.Email,
 	}
-	err := s.UserStoreIface.GetUserByEmail(ctx, userByEmailQuery)
+	err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, userByEmailQuery)
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
@@ -774,7 +775,7 @@ func (s *UserService) CheckUserRegistration(ctx context.Context, q *api.GetUserB
 	userByPhoneQuery := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: q.Phone,
 	}
-	err := s.UserStoreIface.GetUserByEmail(ctx, userByPhoneQuery)
+	err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, userByPhoneQuery)
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
@@ -1028,7 +1029,7 @@ func (s *UserService) changePassword(phone string, email string, tokUserID dot.I
 		Phone: phone,
 		Email: email,
 	}
-	if err := s.UserStoreIface.GetUserByEmail(ctx, query); err != nil {
+	if err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, query); err != nil {
 		return err
 	}
 	user := query.Result
@@ -1724,7 +1725,7 @@ func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r 
 	getUserByID := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: s.SS.Claim().Extra[keyRequestVerifyPhone],
 	}
-	if err := s.UserStoreIface.GetUserByEmail(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
+	if err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, getUserByID); err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
 	var v map[string]string
@@ -2081,7 +2082,7 @@ func (s *UserService) getUserByPhone(ctx context.Context, phone string) (*identi
 	userByPhone := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Phone: phone,
 	}
-	if err := s.UserStoreIface.GetUserByEmail(ctx, userByPhone); err != nil {
+	if err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, userByPhone); err != nil {
 		return nil, cm.Error(cm.FailedPrecondition, "Số điện này không hợp lệ vì chưa được đăng kí", nil)
 	}
 	return userByPhone.Result, nil
@@ -2126,4 +2127,73 @@ func (s *UserService) ChangeRefAff(ctx context.Context, request *api.ChangeUserR
 		return nil, err
 	}
 	return &pbcm.Empty{}, nil
+}
+
+func (s *UserService) RequestRegisterSimplify(ctx context.Context, r *api.RequestRegisterSimplifyRequest) (*pbcm.MessageResponse, error) {
+	phone, ok := validate.NormalizePhone(r.Phone)
+	if !ok {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+	}
+
+	// send OTP
+	key := fmt.Sprintf("%v-%v", keyRequestRegisterSimplify, phone.String())
+	code, err := s.RedisStore.GetString(key)
+	if err != nil || code == "" {
+		code, err = gencode.Random6Digits()
+		if err != nil {
+			return nil, cm.Error(cm.Internal, "", err)
+		}
+		_ = s.RedisStore.SetStringWithTTL(key, code, 5*60)
+	}
+
+	smsMsg := fmt.Sprintf(templatemessages.SmsRegisterSimplifyTpl, code)
+	cmd := &sms.SendSMSCommand{
+		Phone:   phone.String(),
+		Content: smsMsg,
+	}
+	if err := s.SMSClient.SendSMS(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.MessageResponse{
+		Code: "ok",
+		Msg:  "Đã gửi otp tới số điện thoại cung cấp",
+	}, nil
+}
+
+func (s *UserService) RegisterSimplify(ctx context.Context, r *api.RegisterSimplifyRequest) (*api.LoginResponse, error) {
+	phone, ok := validate.NormalizePhone(r.Phone)
+	if !ok {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+	}
+	if r.OTP == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp mã OTP")
+	}
+	key := fmt.Sprintf("%v-%v", keyRequestRegisterSimplify, phone.String())
+	code, err := s.RedisStore.GetString(key)
+	if err != nil && err != redis.ErrNil {
+		return nil, cm.Errorf(cm.Internal, err, "")
+	}
+	if code != r.OTP {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Mã OTP không hợp lệ")
+	}
+
+	cmd := &identity.RegisterSimplifyCommand{
+		Phone: phone.String(),
+	}
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
+		Phone: phone.String(),
+	}
+	if err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, query); err != nil {
+		return nil, err
+	}
+	user := query.Result
+	resp, err := s.CreateLoginResponse(ctx, nil, "", user.ID, user, 0, account_type.Shop.Enum(), true, 0)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }

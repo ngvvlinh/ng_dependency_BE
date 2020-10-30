@@ -8,6 +8,7 @@ import (
 	"o.o/api/top/types/etc/account_type"
 	"o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
@@ -86,4 +87,16 @@ func (s *AccountStore) GetAccount() (*identity.Account, error) {
 		return nil, err
 	}
 	return convert.Convert_identitymodel_Account_identity_Account(shop, nil), nil
+}
+
+func (s *AccountStore) CreateAccount(account *identity.Account) error {
+	sqlstore.MustNoPreds(s.preds)
+	if account.ID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
+	}
+	var accountDB identitymodel.Account
+	if err := scheme.Convert(account, &accountDB); err != nil {
+		return err
+	}
+	return s.query().ShouldInsert(&accountDB)
 }

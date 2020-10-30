@@ -2,47 +2,78 @@ package identity
 
 import (
 	"context"
+	"strings"
 	"time"
 
+	"o.o/api/main/authorization"
 	"o.o/api/main/identity"
+	"o.o/api/top/types/etc/account_tag"
+	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/try_on"
+	"o.o/api/top/types/etc/user_source"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
-	"o.o/backend/com/main/identity/sqlstore"
+	identitystore "o.o/backend/com/main/identity/sqlstore"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/model"
+	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
 	"o.o/common/l"
+	"o.o/common/xerrors"
 )
 
 var ll = l.New()
 
 var _ identity.Aggregate = &Aggregate{}
 
+const (
+	UserEmailKey            = "user_email_key"
+	UserPhoneKey            = "user_phone_key"
+	UserPhoneWLPartnerIDKey = "user_phone_wl_partner_id_idx"
+	UserEmailWLPartnerIDKey = "user_email_wl_partner_id_idx"
+
+	MsgCreateUserDuplicatedPhone = `Số điện thoại đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng số điện thoại khác. Nếu cần thêm thông tin, vui lòng liên hệ %v.`
+	MsgCreateUserDuplicatedEmail = `Email đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác. Nếu cần thêm thông tin, vui lòng liên hệ %v.`
+)
+
+var mapUserError = map[string]string{
+	UserEmailKey:            MsgCreateUserDuplicatedEmail,
+	UserEmailWLPartnerIDKey: MsgCreateUserDuplicatedEmail,
+	UserPhoneKey:            MsgCreateUserDuplicatedPhone,
+	UserPhoneWLPartnerIDKey: MsgCreateUserDuplicatedPhone,
+}
+
 type Aggregate struct {
-	db               *cmsql.Database
-	userStore        sqlstore.UserStoreFactory
-	affiliateStore   sqlstore.AffiliateStoreFactory
-	shopStore        sqlstore.ShopStoreFactory
-	accountStore     sqlstore.AccountStoreFactory
-	accountUserStore sqlstore.AccountUserStoreFactory
-	userRefSaffStore sqlstore.UserRefSaffStoreFactory
+	db                *cmsql.Database
+	userStore         identitystore.UserStoreFactory
+	userInternalStore identitystore.UserInternalStoreFactory
+	affiliateStore    identitystore.AffiliateStoreFactory
+	shopStore         identitystore.ShopStoreFactory
+	accountStore      identitystore.AccountStoreFactory
+	accountUserStore  identitystore.AccountUserStoreFactory
+	userRefSaffStore  identitystore.UserRefSaffStoreFactory
+	eventBus          capi.EventBus
 }
 
 func NewAggregate(db com.MainDB, eventBus capi.EventBus) *Aggregate {
 	return &Aggregate{
-		db:               db,
-		userStore:        sqlstore.NewUserStore(db),
-		shopStore:        sqlstore.NewShopStore(db),
-		affiliateStore:   sqlstore.NewAffiliateStore(db),
-		accountStore:     sqlstore.NewAccountStore(db),
-		accountUserStore: sqlstore.NewAccountUserStore(db),
-		userRefSaffStore: sqlstore.NewUserRefSaffStore(db),
+		db:                db,
+		userStore:         identitystore.NewUserStore(db),
+		userInternalStore: identitystore.NewUserInternalStore(db),
+		shopStore:         identitystore.NewShopStore(db),
+		affiliateStore:    identitystore.NewAffiliateStore(db),
+		accountStore:      identitystore.NewAccountStore(db),
+		accountUserStore:  identitystore.NewAccountUserStore(db),
+		userRefSaffStore:  identitystore.NewUserRefSaffStore(db),
+		eventBus:          eventBus,
 	}
 }
 
@@ -76,17 +107,17 @@ func (a *Aggregate) UpdateUserPhone(ctx context.Context, userID dot.ID, phone st
 }
 
 func (a *Aggregate) UpdateUserReferenceUserID(ctx context.Context, args *identity.UpdateUserReferenceUserIDArgs) error {
-	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx); err != nil {
+	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(); err != nil {
 		return err
 	} else if currentUser.RefSaleID != 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "RefUserID đã tồn tại. Không thể cập nhật.")
 	}
-	refUser, err := a.userStore(ctx).ByPhone(args.RefUserPhone).GetUserDB(ctx)
+	refUser, err := a.userStore(ctx).ByPhone(args.RefUserPhone).GetUserDB()
 	if err != nil {
 		return cm.Errorf(cm.NotFound, nil, "Số điện thoại người dùng không tồn tại.")
 	}
 
-	updateCmd := &sqlstore.UpdateRefferenceIDArgs{
+	updateCmd := &identitystore.UpdateRefferenceIDArgs{
 		UserID:    args.UserID,
 		RefUserID: refUser.ID,
 	}
@@ -94,17 +125,17 @@ func (a *Aggregate) UpdateUserReferenceUserID(ctx context.Context, args *identit
 }
 
 func (a *Aggregate) UpdateUserReferenceSaleID(ctx context.Context, args *identity.UpdateUserReferenceSaleIDArgs) error {
-	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx); err != nil {
+	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(); err != nil {
 		return err
 	} else if currentUser.RefSaleID != 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "RefSaleID đã tồn tại. Không thể cập nhật.")
 	}
-	refUser, err := a.userStore(ctx).ByPhone(args.RefSalePhone).GetUserDB(ctx)
+	refUser, err := a.userStore(ctx).ByPhone(args.RefSalePhone).GetUserDB()
 	if err != nil {
 		return cm.Errorf(cm.NotFound, nil, "Số điện thoại người dùng không tồn tại.")
 	}
 
-	updateCmd := &sqlstore.UpdateRefferenceIDArgs{
+	updateCmd := &identitystore.UpdateRefferenceIDArgs{
 		UserID:    args.UserID,
 		RefSaleID: refUser.ID,
 	}
@@ -126,7 +157,7 @@ func (a *Aggregate) CreateAffiliate(ctx context.Context, args *identity.CreateAf
 	if phoneNorm, ok = validate.NormalizePhone(args.Phone); !ok {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
 	}
-	_args := sqlstore.CreateAffiliateArgs{
+	_args := identitystore.CreateAffiliateArgs{
 		Name:        args.Name,
 		OwnerID:     args.OwnerID,
 		Phone:       phoneNorm.String(),
@@ -157,7 +188,7 @@ func (a *Aggregate) UpdateAffiliateInfo(ctx context.Context, args *identity.Upda
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
 		}
 	}
-	_args := sqlstore.UpdateAffiliateArgs{
+	_args := identitystore.UpdateAffiliateArgs{
 		ID:      args.ID,
 		OwnerID: args.OwnerID,
 		Phone:   phoneNorm.String(),
@@ -168,7 +199,7 @@ func (a *Aggregate) UpdateAffiliateInfo(ctx context.Context, args *identity.Upda
 }
 
 func (a *Aggregate) UpdateAffiliateBankAccount(ctx context.Context, args *identity.UpdateAffiliateBankAccountArgs) (*identity.Affiliate, error) {
-	_args := sqlstore.UpdateAffiliateArgs{
+	_args := identitystore.UpdateAffiliateArgs{
 		ID:          args.ID,
 		OwnerID:     args.OwnerID,
 		BankAccount: args.BankAccount,
@@ -178,14 +209,14 @@ func (a *Aggregate) UpdateAffiliateBankAccount(ctx context.Context, args *identi
 
 func (a *Aggregate) DeleteAffiliate(ctx context.Context, args *identity.DeleteAffiliateArgs) error {
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		args1 := sqlstore.DeleteAffiliateArgs{
+		args1 := identitystore.DeleteAffiliateArgs{
 			ID:      args.ID,
 			OwnerID: args.OwnerID,
 		}
 		if err := a.affiliateStore(ctx).DeleteAffiliate(args1); err != nil {
 			return err
 		}
-		args2 := sqlstore.DeleteAccountUserArgs{
+		args2 := identitystore.DeleteAccountUserArgs{
 			AccountID: args.ID,
 			UserID:    args.OwnerID,
 		}
@@ -194,7 +225,7 @@ func (a *Aggregate) DeleteAffiliate(ctx context.Context, args *identity.DeleteAf
 }
 
 func (a *Aggregate) BlockUser(ctx context.Context, args *identity.BlockUserArgs) (*identity.User, error) {
-	user, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx)
+	user, err := a.userStore(ctx).ByID(args.UserID).GetUserDB()
 	if err != nil {
 		return nil, err
 	}
@@ -211,7 +242,7 @@ func (a *Aggregate) BlockUser(ctx context.Context, args *identity.BlockUserArgs)
 	if err != nil {
 		return nil, err
 	}
-	user, err = a.userStore(ctx).ByID(args.UserID).GetUserDB(ctx)
+	user, err = a.userStore(ctx).ByID(args.UserID).GetUserDB()
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +257,7 @@ func (a *Aggregate) BlockUser(ctx context.Context, args *identity.BlockUserArgs)
 }
 
 func (a *Aggregate) UnblockUser(ctx context.Context, userID dot.ID) (*identity.User, error) {
-	user, err := a.userStore(ctx).ByID(userID).GetUserDB(ctx)
+	user, err := a.userStore(ctx).ByID(userID).GetUserDB()
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +268,7 @@ func (a *Aggregate) UnblockUser(ctx context.Context, userID dot.ID) (*identity.U
 	if err != nil {
 		return nil, err
 	}
-	user, err = a.userStore(ctx).ByID(userID).GetUserDB(ctx)
+	user, err = a.userStore(ctx).ByID(userID).GetUserDB()
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +284,7 @@ func (a *Aggregate) UnblockUser(ctx context.Context, userID dot.ID) (*identity.U
 
 func (a *Aggregate) UpdateUserRef(ctx context.Context, args *identity.UpdateUserRefArgs) (*identity.UserRefSaff, error) {
 	// Validate user
-	_, err := a.userStore(ctx).ByID(args.UserID).IncludeWLPartnerUser().GetUserDB(ctx)
+	_, err := a.userStore(ctx).ByID(args.UserID).IncludeWLPartnerUser().GetUserDB()
 	if err != nil {
 		return nil, err
 	}
@@ -291,4 +322,189 @@ func (a *Aggregate) UpdateUserRef(ctx context.Context, args *identity.UpdateUser
 func (a *Aggregate) UpdateShipFromAddressID(ctx context.Context, args *identity.UpdateShipFromAddressArgs) error {
 	_, err := a.shopStore(ctx).ByID(args.ID).UpdateShipFromAddressID(args.ShipFromAddressID)
 	return err
+}
+
+func (a *Aggregate) RegisterSimplify(ctx context.Context, phone string) error {
+	normalizePhone, ok := validate.NormalizePhone(phone)
+	if !ok {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp lệ")
+	}
+
+	_, err := a.userStore(ctx).ByPhone(normalizePhone.String()).GetUser()
+	if err == nil {
+		// phone đã tồn tại
+		// exit
+		return nil
+	}
+	if cm.ErrorCode(err) != cm.NotFound {
+		return err
+	}
+
+	// create new user + a default shop for this user
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		now := time.Now()
+		userArgs := &identity.CreateUserArgs{
+			Phone:                   normalizePhone.String(),
+			Status:                  status3.P,
+			Source:                  user_source.Etop,
+			PhoneVerifiedAt:         now,
+			PhoneVerificationSentAt: now,
+		}
+		user, err := a.createUser(ctx, userArgs)
+		if err != nil {
+			return err
+		}
+
+		shopArgs := &identity.CreateShopArgs{
+			Name:    normalizePhone.String(),
+			OwnerID: user.ID,
+			Phone:   normalizePhone.String(),
+		}
+		return a.createShop(ctx, shopArgs)
+	})
+}
+
+func (a *Aggregate) CreateShop(ctx context.Context, args *identity.CreateShopArgs) (*identity.Shop, error) {
+	return nil, cm.ErrTODO
+}
+
+func (a *Aggregate) createShop(ctx context.Context, args *identity.CreateShopArgs) error {
+	_, err := a.userStore(ctx).ByID(args.OwnerID).GetUser()
+	if err != nil {
+		return cm.Error(cm.InvalidArgument, "invalid owner_id", nil)
+	}
+
+	id := idutil.NewShopID()
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		account := &identity.Account{
+			ID:       id,
+			Name:     args.Name,
+			Type:     account_type.Shop,
+			ImageURL: args.ImageURL,
+			URLSlug:  args.URLSlug,
+		}
+		if err := a.accountStore(ctx).CreateAccount(account); err != nil {
+			return err
+		}
+
+		au := &identity.AccountUser{
+			AccountID: id,
+			UserID:    args.OwnerID,
+			Status:    status3.P,
+			Permission: identity.Permission{
+				Roles: []string{string(authorization.RoleShopOwner)},
+			},
+		}
+		if err := a.accountUserStore(ctx).CreateAccountUser(au); err != nil {
+			return err
+		}
+		if args.Address != nil {
+			// TODO
+			// create address
+		}
+		code, err := sqlstore.GenerateCode(ctx, tx, model.CodeTypeShop, "")
+		if err != nil {
+			return err
+		}
+		shop := &identity.Shop{
+			ID:                            id,
+			Name:                          args.Name,
+			OwnerID:                       args.OwnerID,
+			AddressID:                     args.AddressID,
+			Phone:                         args.Phone,
+			WebsiteURL:                    args.WebsiteURL.String,
+			ImageURL:                      args.ImageURL,
+			Email:                         args.Email,
+			Code:                          code,
+			MoneyTransactionRRule:         args.MoneyTransactionRRule,
+			SurveyInfo:                    args.SurveyInfo,
+			ShippingServiceSelectStrategy: args.ShippingServicePickStrategy,
+			Status:                        status3.P,
+			BankAccount:                   args.BankAccount,
+			TryOn:                         try_on.Open,
+			CompanyInfo:                   args.CompanyInfo,
+		}
+		if args.MoneyTransactionRRule == "" {
+			// set shop MoneyTransactionRRule default value: FREQ=WEEKLY;BYDAY=MO,WE,FR
+			shop.MoneyTransactionRRule = "FREQ=WEEKLY;BYDAY=MO,WE,FR"
+		}
+		if err := shop.CheckInfo(); err != nil {
+			return err
+		}
+		if args.IsTest {
+			shop.IsTest = 1
+		}
+		if err := a.shopStore(ctx).CreateShop(shop); err != nil {
+			return err
+		}
+
+		// create for search
+		// TODO: shop_search
+
+		event := &identity.AccountCreatedEvent{
+			ShopID: id,
+			UserID: args.OwnerID,
+		}
+		return a.eventBus.Publish(ctx, event)
+	})
+}
+
+func (a *Aggregate) createUser(ctx context.Context, args *identity.CreateUserArgs) (*identity.User, error) {
+	switch args.Status {
+	case status3.P:
+	default:
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Invalid status")
+	}
+
+	now := time.Now()
+	userID := cm.NewIDWithTag(account_tag.TagUser)
+	user := &identity.User{
+		ID:                      userID,
+		FullName:                args.FullName,
+		ShortName:               args.ShortName,
+		Email:                   args.Email,
+		Phone:                   args.Phone,
+		Status:                  args.Status,
+		WLPartnerID:             wl.GetWLPartnerID(ctx),
+		Source:                  args.Source,
+		PhoneVerificationSentAt: args.PhoneVerificationSentAt,
+		PhoneVerifiedAt:         args.PhoneVerifiedAt,
+	}
+	if args.AgreeEmailInfo {
+		user.AgreedEmailInfoAt = now
+	}
+	if args.AgreeTOS {
+		user.AgreedTOSAt = now
+	}
+	if args.IsTest {
+		user.IsTest = 1
+	}
+
+	userInternal := &identity.UserInternal{
+		ID: userID,
+	}
+	if args.Password != "" {
+		userInternal.Hashpwd = EncodePassword(args.Password)
+	}
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		_, err := a.userStore(ctx).CreateUser(user)
+		if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
+			msg := xerr.Err.Error()
+			for errKey, errMsg := range mapUserError {
+				if strings.Contains(msg, errKey) {
+					return cm.Errorf(cm.FailedPrecondition, nil, errMsg, wl.X(ctx).CSEmail)
+				}
+			}
+			return err
+		}
+
+		if err := a.userInternalStore(ctx).CreateUserInternal(userInternal); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return a.userStore(ctx).ByID(userID).GetUser()
 }

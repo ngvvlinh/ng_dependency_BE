@@ -1074,6 +1074,33 @@
         }
       }
     },
+    "/api/etop.User/RegisterSimplify": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "RegisterSimplify",
+        "operationId": "etop.User-RegisterSimplify",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baRegisterSimplifyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baLoginResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.User/RegisterUsingToken": {
       "post": {
         "tags": [
@@ -1096,6 +1123,34 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/baRegisterResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.User/RequestRegisterSimplify": {
+      "post": {
+        "description": "Request OTP for register/login\n",
+        "tags": [
+          "User"
+        ],
+        "summary": "RequestRegisterSimplify",
+        "operationId": "etop.User-RequestRegisterSimplify",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baRequestRegisterSimplifyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktMessageResponse"
             }
           }
         }
@@ -2818,6 +2873,21 @@
         }
       }
     },
+    "baRegisterSimplifyRequest": {
+      "type": "object",
+      "required": [
+        "phone",
+        "otp"
+      ],
+      "properties": {
+        "otp": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
     "baRejectInvitationRequest": {
       "type": "object",
       "properties": {
@@ -2889,6 +2959,17 @@
         "user_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "baRequestRegisterSimplifyRequest": {
+      "type": "object",
+      "required": [
+        "phone"
+      ],
+      "properties": {
+        "phone": {
+          "type": "string"
         }
       }
     },

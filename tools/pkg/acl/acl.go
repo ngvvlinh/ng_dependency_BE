@@ -405,6 +405,8 @@ var _acl = map[string]*permission.Decl{
 
 	"etop.User/Register":                 {Type: Public},
 	"etop.User/RegisterUsingToken":       {Type: Public},
+	"etop.User/RequestRegisterSimplify":  {Type: Public},
+	"etop.User/RegisterSimplify":         {Type: Public},
 	"etop.User/Login":                    {Type: Public},
 	"etop.User/ResetPassword":            {Type: Public, Captcha: "custom"},
 	"etop.User/ChangePasswordUsingToken": {Type: Public},

@@ -19,6 +19,7 @@ import (
 	"o.o/api/top/types/etc/inventory_auto"
 	pbsource "o.o/api/top/types/etc/order_source"
 	identityconvert "o.o/backend/com/main/identity/convert"
+	identitymodel "o.o/backend/com/main/identity/model"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etc/idutil"
@@ -141,9 +142,10 @@ func (s *TradingService) tradingCreateOrder(ctx context.Context, r *inttypes.Tra
 			}
 		}
 	}
-	eTopTrading := identityconvert.ShopDB(query.Result)
+	var etopTrading identitymodel.Shop
+	identityconvert.ShopDB(query.Result, &etopTrading)
 	shopID := s.SS.Shop().ID
-	resp, err := s.OrderLogic.CreateOrder(ctx, eTopTrading, nil, req, &shopID, 0)
+	resp, err := s.OrderLogic.CreateOrder(ctx, &etopTrading, nil, req, &shopID, 0)
 	if err != nil {
 		return nil, 0, err
 	}

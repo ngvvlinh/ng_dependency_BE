@@ -100,6 +100,8 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 
 var SmsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
+var SmsRegisterSimplifyTpl = `Nhập mã %v để truy cập vào ứng dụng eTop.vn của bạn. Mã có hiệu lực trong 5 phút. Vui lòng không chia sẻ cho bất kỳ ai.`
+
 var SmsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
 var SmsChangeEmailTpl = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`

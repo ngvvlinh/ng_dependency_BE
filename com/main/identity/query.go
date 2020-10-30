@@ -80,7 +80,7 @@ func (q *QueryService) ListShopExtendeds(ctx context.Context, args *identity.Lis
 }
 
 func (q *QueryService) GetUserByID(ctx context.Context, args *identity.GetUserByIDQueryArgs) (*identity.User, error) {
-	return q.userStore(ctx).ByID(args.UserID).GetUser(ctx)
+	return q.userStore(ctx).ByID(args.UserID).GetUser()
 }
 
 func (q *QueryService) GetUsersByIDs(ctx context.Context, ids []dot.ID) ([]*identity.User, error) {
@@ -102,15 +102,15 @@ func (q *QueryService) GetUserByPhoneOrEmail(ctx context.Context, args *identity
 	if count != 1 {
 		return nil, cm.Error(cm.InvalidArgument, "", nil)
 	}
-	return query.GetUser(ctx)
+	return query.GetUser()
 }
 
 func (q *QueryService) GetUserByPhone(ctx context.Context, phone string) (*identity.User, error) {
-	return q.userStore(ctx).ByPhone(phone).GetUser(ctx)
+	return q.userStore(ctx).ByPhone(phone).GetUser()
 }
 
 func (q *QueryService) GetUserByEmail(ctx context.Context, email string) (*identity.User, error) {
-	return q.userStore(ctx).ByEmail(email).GetUser(ctx)
+	return q.userStore(ctx).ByEmail(email).GetUser()
 }
 
 func (q *QueryService) ListUsersByWLPartnerID(ctx context.Context, args *identity.ListUsersByWLPartnerID) ([]*identity.User, error) {

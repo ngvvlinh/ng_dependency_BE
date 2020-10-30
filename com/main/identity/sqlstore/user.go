@@ -27,6 +27,7 @@ func NewUserStore(db *cmsql.Database) UserStoreFactory {
 	return func(ctx context.Context) *UserStore {
 		return &UserStore{
 			query: cmsql.NewQueryFactory(ctx, db),
+			ctx:   ctx,
 		}
 	}
 }
@@ -36,6 +37,7 @@ type UserStore struct {
 	ft    UserFilters
 	sqlstore.Paging
 	preds []interface{}
+	ctx   context.Context
 
 	includeWLPartnerUser bool
 }
@@ -99,11 +101,27 @@ func (s *UserStore) WithPaging(paging meta.Paging) *UserStore {
 	return s
 }
 
-func (s *UserStore) GetUserDB(ctx context.Context) (*identitymodel.User, error) {
+func (s *UserStore) CreateUser(user *identity.User) (*identity.User, error) {
+	sqlstore.MustNoPreds(s.preds)
+	if user.ID == 0 {
+		user.ID = cm.NewID()
+	}
+	userDB := &identitymodel.User{}
+	if err := scheme.Convert(user, userDB); err != nil {
+		return nil, err
+	}
+	userDB.WLPartnerID = wl.GetWLPartnerID(s.ctx)
+	if err := s.query().ShouldInsert(userDB); err != nil {
+		return nil, err
+	}
+	return s.ByID(user.ID).GetUser()
+}
+
+func (s *UserStore) GetUserDB() (*identitymodel.User, error) {
 	var user identitymodel.User
 	query := s.query().Where(s.preds)
 	if !s.includeWLPartnerUser {
-		query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(ctx))
+		query = s.FilterByWhiteLabelPartner(query, wl.GetWLPartnerID(s.ctx))
 	}
 	err := query.ShouldGet(&user)
 	return &user, err
@@ -183,8 +201,8 @@ func (s *UserStore) UnblockUser() (int, error) {
 		})
 }
 
-func (s *UserStore) GetUser(ctx context.Context) (*identity.User, error) {
-	result, err := s.GetUserDB(ctx)
+func (s *UserStore) GetUser() (*identity.User, error) {
+	result, err := s.GetUserDB()
 	if err != nil {
 		return nil, err
 	}

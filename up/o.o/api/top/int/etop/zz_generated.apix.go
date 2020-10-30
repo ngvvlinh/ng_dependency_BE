@@ -1031,7 +1031,9 @@ const Path_User_GetNotifySetting = "/etop.User/GetNotifySetting"
 const Path_User_InitSession = "/etop.User/InitSession"
 const Path_User_Login = "/etop.User/Login"
 const Path_User_Register = "/etop.User/Register"
+const Path_User_RegisterSimplify = "/etop.User/RegisterSimplify"
 const Path_User_RegisterUsingToken = "/etop.User/RegisterUsingToken"
+const Path_User_RequestRegisterSimplify = "/etop.User/RequestRegisterSimplify"
 const Path_User_ResetPassword = "/etop.User/ResetPassword"
 const Path_User_SendEmailVerification = "/etop.User/SendEmailVerification"
 const Path_User_SendEmailVerificationUsingOTP = "/etop.User/SendEmailVerificationUsingOTP"
@@ -1213,6 +1215,19 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 			return
 		}
 		return msg, fn, nil
+	case "/etop.User/RegisterSimplify":
+		msg := &RegisterSimplifyRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.RegisterSimplify(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/etop.User/RegisterUsingToken":
 		msg := &CreateUserRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -1223,6 +1238,19 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.RegisterUsingToken(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/etop.User/RequestRegisterSimplify":
+		msg := &RequestRegisterSimplifyRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.RequestRegisterSimplify(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

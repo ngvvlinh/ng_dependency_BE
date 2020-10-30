@@ -2,10 +2,14 @@ package identity
 
 import (
 	"context"
+	"time"
 
+	"o.o/api/main/address"
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/account_type"
+	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/user_source"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 )
@@ -22,6 +26,10 @@ type Aggregate interface {
 	UpdateUserEmail(ctx context.Context, userID dot.ID, email string) error
 
 	UpdateUserPhone(ctx context.Context, userID dot.ID, phone string) error
+
+	// if phone is not existed
+	// create new user & create a default shop for this user
+	RegisterSimplify(ctx context.Context, phone string) error
 
 	// -- Affiliate -- //
 
@@ -42,6 +50,8 @@ type Aggregate interface {
 	UpdateShipFromAddressID(context.Context, *UpdateShipFromAddressArgs) error
 
 	UpdateUserRef(context.Context, *UpdateUserRefArgs) (*UserRefSaff, error)
+
+	CreateShop(context.Context, *CreateShopArgs) (*Shop, error)
 }
 
 type QueryService interface {
@@ -248,4 +258,40 @@ type UpdateDefaultAddressArgs struct {
 type ListShopsByIDsArgs struct {
 	IDs                  []dot.ID
 	IncludeWLPartnerShop bool
+}
+
+type CreateShopArgs struct {
+	Name                        string
+	OwnerID                     dot.ID
+	AddressID                   dot.ID
+	Address                     *address.Address
+	Phone                       string
+	BankAccount                 *identitytypes.BankAccount
+	WebsiteURL                  dot.NullString
+	ImageURL                    string
+	Email                       string
+	AutoCreateFFM               bool
+	IsTest                      bool
+	URLSlug                     string
+	CompanyInfo                 *identitytypes.CompanyInfo
+	MoneyTransactionRRule       string
+	SurveyInfo                  []*SurveyInfo
+	ShippingServicePickStrategy []*ShippingServiceSelectStrategyItem
+}
+
+type CreateUserArgs struct {
+	FullName                string
+	ShortName               string
+	Email                   string
+	Phone                   string
+	Password                string
+	Status                  status3.Status
+	AgreeTOS                bool
+	AgreeEmailInfo          bool
+	IsTest                  bool
+	Source                  user_source.UserSource
+	RefSale                 string
+	RefAff                  string
+	PhoneVerifiedAt         time.Time
+	PhoneVerificationSentAt time.Time
 }

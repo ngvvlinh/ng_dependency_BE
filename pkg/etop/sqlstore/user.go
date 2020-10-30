@@ -27,7 +27,7 @@ type UserStoreInterface interface {
 
 	GetSignedInUser(ctx context.Context, query *identitymodelx.GetSignedInUserQuery) error
 
-	GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error
+	GetUserByEmailOrPhone(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error
 
 	GetUserByID(ctx context.Context, query *identitymodelx.GetUserByIDQuery) error
 
@@ -111,7 +111,7 @@ func (st *UserStore) GetUserByID(ctx context.Context, query *identitymodelx.GetU
 	return s.ShouldGet(query.Result)
 }
 
-func (st *UserStore) GetUserByEmail(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error {
+func (st *UserStore) GetUserByEmailOrPhone(ctx context.Context, query *identitymodelx.GetUserByEmailOrPhoneQuery) error {
 	count := 0
 	q := st.query().Table("user")
 	if query.Email != "" {

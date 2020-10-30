@@ -374,6 +374,22 @@ type CreateUserRequest struct {
 
 func (m *CreateUserRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type RequestRegisterSimplifyRequest struct {
+	// @required
+	Phone string `json:"phone"`
+}
+
+func (m *RequestRegisterSimplifyRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type RegisterSimplifyRequest struct {
+	// @required
+	Phone string `json:"phone"`
+	// @required
+	OTP string `json:"otp"`
+}
+
+func (m *RegisterSimplifyRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type RegisterResponse struct {
 	// @required
 	User *User `json:"user"`

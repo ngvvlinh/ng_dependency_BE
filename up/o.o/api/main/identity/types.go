@@ -1,6 +1,7 @@
 package identity
 
 import (
+	"strings"
 	"time"
 
 	"o.o/api/main/address"
@@ -11,6 +12,8 @@ import (
 	"o.o/api/top/types/etc/try_on"
 	"o.o/api/top/types/etc/user_source"
 	"o.o/capi/dot"
+	cmutil "o.o/capi/util"
+	"o.o/common/xerrors"
 )
 
 // +gen:event:topic=event/identity
@@ -54,6 +57,28 @@ type Shop struct {
 	TryOn       try_on.TryOnCode
 	CompanyInfo *identitytypes.CompanyInfo
 	WLPartnerID dot.ID
+}
+
+func (s *Shop) CheckInfo() error {
+	if s.MoneyTransactionRRule != "" {
+		acceptStrings := []string{"FREQ", "BYMONTHDAY", "BYDAY", "BYSETPOS"}
+		ss := strings.Split(s.MoneyTransactionRRule, ";")
+		for _, s := range ss {
+			prefix := strings.Split(s, "=")[0]
+			if !cmutil.ListStringsContain(acceptStrings, prefix) {
+				return xerrors.Errorf(xerrors.InvalidArgument, nil, "Định dạng MoneyTransactionRRule không hợp lệ. Định dạng đúng: FREQ=WEEKLY;BYDAY=TU,TH,SA. Vui lòng truy cập https://icalendar.org/rrule-tool.html để biết thêm chi tiết.")
+			}
+		}
+	}
+	if s.ShippingServiceSelectStrategy != nil {
+		for _, item := range s.ShippingServiceSelectStrategy {
+			key := strings.ToLower(item.Key)
+			if key == "provider" || key == "shipping_provider" {
+				return xerrors.Errorf(xerrors.InvalidArgument, nil, "Vui lòng sử dụng `carrier` thay vì %v", item.Key)
+			}
+		}
+	}
+	return nil
 }
 
 type ShippingServiceSelectStrategyItem struct {
@@ -108,6 +133,9 @@ type User struct {
 	BlockedBy   dot.ID
 	BlockReason string
 	IsBlocked   bool
+
+	AgreedTOSAt       time.Time
+	AgreedEmailInfoAt time.Time
 }
 
 type UserFtRefSaff struct {
@@ -194,4 +222,11 @@ type UserRefSaff struct {
 	UserID  dot.ID
 	RefAff  dot.NullString
 	RefSale dot.NullString
+}
+
+type UserInternal struct {
+	ID      dot.ID
+	Hashpwd string
+
+	UpdatedAt time.Time `sq:"update"`
 }

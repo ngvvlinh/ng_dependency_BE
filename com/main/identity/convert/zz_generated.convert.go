@@ -20,6 +20,7 @@ import (
 /*
 Custom conversions:
     AccountUser      // in use
+    AccountUserDB    // in use
     Affiliate        // in use
     AffiliateDB      // in use
     BankAccount      // in use
@@ -28,6 +29,7 @@ Custom conversions:
     ShopDB           // in use
     User             // in use
     UserFtRefSaff    // not use, no conversions between params
+    UserModel        // in use
 
 Ignored functions:
     Affiliates           // params are not pointer to named types
@@ -236,6 +238,24 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*identity.User)(nil), (*[]*identitymodel.UserFtRefSaff)(nil), func(arg, out interface{}) error {
 		out0 := Convert_identity_Users_identitymodel_UserFtRefSaffs(arg.([]*identity.User))
 		*out.(*[]*identitymodel.UserFtRefSaff) = out0
+		return nil
+	})
+	s.Register((*identitymodel.UserInternal)(nil), (*identity.UserInternal)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_UserInternal_identity_UserInternal(arg.(*identitymodel.UserInternal), out.(*identity.UserInternal))
+		return nil
+	})
+	s.Register(([]*identitymodel.UserInternal)(nil), (*[]*identity.UserInternal)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_UserInternals_identity_UserInternals(arg.([]*identitymodel.UserInternal))
+		*out.(*[]*identity.UserInternal) = out0
+		return nil
+	})
+	s.Register((*identity.UserInternal)(nil), (*identitymodel.UserInternal)(nil), func(arg, out interface{}) error {
+		Convert_identity_UserInternal_identitymodel_UserInternal(arg.(*identity.UserInternal), out.(*identitymodel.UserInternal))
+		return nil
+	})
+	s.Register(([]*identity.UserInternal)(nil), (*[]*identitymodel.UserInternal)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_UserInternals_identitymodel_UserInternals(arg.([]*identity.UserInternal))
+		*out.(*[]*identitymodel.UserInternal) = out0
 		return nil
 	})
 	s.Register((*identitymodel.UserRefSaff)(nil), (*identity.UserRefSaff)(nil), func(arg, out interface{}) error {
@@ -481,7 +501,7 @@ func Convert_identity_AccountUser_identitymodel_AccountUser(arg *identity.Accoun
 	if out == nil {
 		out = &identitymodel.AccountUser{}
 	}
-	convert_identity_AccountUser_identitymodel_AccountUser(arg, out)
+	AccountUserDB(arg, out)
 	return out
 }
 
@@ -826,7 +846,14 @@ func Convert_identitymodel_Shops_identity_Shops(args []*identitymodel.Shop) (out
 }
 
 func Convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitymodel.Shop) *identitymodel.Shop {
-	return ShopDB(arg)
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.Shop{}
+	}
+	ShopDB(arg, out)
+	return out
 }
 
 func convert_identity_Shop_identitymodel_Shop(arg *identity.Shop, out *identitymodel.Shop) {
@@ -1023,6 +1050,8 @@ func convert_identitymodel_User_identity_User(arg *identitymodel.User, out *iden
 	out.BlockedBy = arg.BlockedBy                             // simple assign
 	out.BlockReason = arg.BlockReason                         // simple assign
 	out.IsBlocked = false                                     // zero value
+	out.AgreedTOSAt = arg.AgreedTOSAt                         // simple assign
+	out.AgreedEmailInfoAt = arg.AgreedEmailInfoAt             // simple assign
 }
 
 func Convert_identitymodel_Users_identity_Users(args []*identitymodel.User) (outs []*identity.User) {
@@ -1044,7 +1073,7 @@ func Convert_identity_User_identitymodel_User(arg *identity.User, out *identitym
 	if out == nil {
 		out = &identitymodel.User{}
 	}
-	convert_identity_User_identitymodel_User(arg, out)
+	UserModel(arg, out)
 	return out
 }
 
@@ -1054,8 +1083,8 @@ func convert_identity_User_identitymodel_User(arg *identity.User, out *identitym
 	out.Status = arg.Status                                   // simple assign
 	out.CreatedAt = arg.CreatedAt                             // simple assign
 	out.UpdatedAt = arg.UpdatedAt                             // simple assign
-	out.AgreedTOSAt = time.Time{}                             // zero value
-	out.AgreedEmailInfoAt = time.Time{}                       // zero value
+	out.AgreedTOSAt = arg.AgreedTOSAt                         // simple assign
+	out.AgreedEmailInfoAt = arg.AgreedEmailInfoAt             // simple assign
 	out.EmailVerifiedAt = arg.EmailVerifiedAt                 // simple assign
 	out.PhoneVerifiedAt = arg.PhoneVerifiedAt                 // simple assign
 	out.EmailVerificationSentAt = arg.EmailVerificationSentAt // simple assign
@@ -1117,6 +1146,8 @@ func convert_identitymodel_UserFtRefSaff_identity_User(arg *identitymodel.UserFt
 	out.BlockedBy = 0                         // zero value
 	out.BlockReason = ""                      // zero value
 	out.IsBlocked = false                     // zero value
+	out.AgreedTOSAt = time.Time{}             // zero value
+	out.AgreedEmailInfoAt = time.Time{}       // zero value
 }
 
 func Convert_identitymodel_UserFtRefSaffs_identity_Users(args []*identitymodel.UserFtRefSaff) (outs []*identity.User) {
@@ -1155,6 +1186,66 @@ func Convert_identity_Users_identitymodel_UserFtRefSaffs(args []*identity.User) 
 	outs = make([]*identitymodel.UserFtRefSaff, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identity_User_identitymodel_UserFtRefSaff(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/main/identity.UserInternal --//
+
+func Convert_identitymodel_UserInternal_identity_UserInternal(arg *identitymodel.UserInternal, out *identity.UserInternal) *identity.UserInternal {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.UserInternal{}
+	}
+	convert_identitymodel_UserInternal_identity_UserInternal(arg, out)
+	return out
+}
+
+func convert_identitymodel_UserInternal_identity_UserInternal(arg *identitymodel.UserInternal, out *identity.UserInternal) {
+	out.ID = arg.ID               // simple assign
+	out.Hashpwd = arg.Hashpwd     // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
+}
+
+func Convert_identitymodel_UserInternals_identity_UserInternals(args []*identitymodel.UserInternal) (outs []*identity.UserInternal) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.UserInternal, len(args))
+	outs = make([]*identity.UserInternal, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_UserInternal_identity_UserInternal(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_UserInternal_identitymodel_UserInternal(arg *identity.UserInternal, out *identitymodel.UserInternal) *identitymodel.UserInternal {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.UserInternal{}
+	}
+	convert_identity_UserInternal_identitymodel_UserInternal(arg, out)
+	return out
+}
+
+func convert_identity_UserInternal_identitymodel_UserInternal(arg *identity.UserInternal, out *identitymodel.UserInternal) {
+	out.ID = arg.ID               // simple assign
+	out.Hashpwd = arg.Hashpwd     // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
+}
+
+func Convert_identity_UserInternals_identitymodel_UserInternals(args []*identity.UserInternal) (outs []*identitymodel.UserInternal) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.UserInternal, len(args))
+	outs = make([]*identitymodel.UserInternal, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_UserInternal_identitymodel_UserInternal(args[i], &tmps[i])
 	}
 	return outs
 }

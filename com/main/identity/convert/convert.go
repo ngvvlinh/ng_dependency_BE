@@ -44,13 +44,9 @@ func UserFtRefSaff(in *identitymodel.UserFtRefSaff) *identity.UserFtRefSaff {
 	return out
 }
 
-func ShopDB(in *identity.Shop) *identitymodel.Shop {
-	if in == nil {
-		return nil
-	}
-	out := &identitymodel.Shop{}
+func ShopDB(in *identity.Shop, out *identitymodel.Shop) {
 	convert_identity_Shop_identitymodel_Shop(in, out)
-	return out
+	return
 }
 
 func Shop(in *identitymodel.Shop) *identity.Shop {
@@ -79,6 +75,17 @@ func User(in *identitymodel.User) (out *identity.User) {
 		UpdatedAt:       in.UpdatedAt,
 		Source:          in.Source,
 		BlockReason:     in.BlockReason,
+	}
+	return
+}
+
+func UserModel(in *identity.User, out *identitymodel.User) {
+	convert_identity_User_identitymodel_User(in, out)
+	out.UserInner = identitymodel.UserInner{
+		FullName:  in.FullName,
+		ShortName: in.ShortName,
+		Email:     in.Email,
+		Phone:     in.Phone,
 	}
 	return
 }
@@ -173,4 +180,11 @@ func AccountUser(in *identitymodel.AccountUser) *identity.AccountUser {
 	out.Permission.Roles = in.Roles
 	out.Permission.Permissions = in.Permissions
 	return out
+}
+
+func AccountUserDB(in *identity.AccountUser, out *identitymodel.AccountUser) {
+	convert_identity_AccountUser_identitymodel_AccountUser(in, out)
+	out.Permissions = in.Permission.Permissions
+	out.Roles = in.Permission.Roles
+	return
 }

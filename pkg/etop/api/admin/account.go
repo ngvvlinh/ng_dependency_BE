@@ -76,7 +76,7 @@ func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdm
 	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
 		Email: q.Email,
 	}
-	if err := s.UserStore(ctx).GetUserByEmail(ctx, query); err != nil {
+	if err := s.UserStore(ctx).GetUserByEmailOrPhone(ctx, query); err != nil {
 		if cm.ErrorCode(err) == cm.NotFound {
 			return nil, cm.Errorf(cm.NotFound, nil, "Email không tồn tại trong hệ thống.")
 		}

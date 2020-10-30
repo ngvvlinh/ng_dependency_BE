@@ -7,6 +7,7 @@ package identity
 import (
 	context "context"
 
+	address "o.o/api/main/address"
 	identitytypes "o.o/api/main/identity/types"
 	meta "o.o/api/meta"
 	account_type "o.o/api/top/types/etc/account_type"
@@ -57,6 +58,32 @@ func (h AggregateHandler) HandleCreateAffiliate(ctx context.Context, msg *Create
 	return err
 }
 
+type CreateShopCommand struct {
+	Name                        string
+	OwnerID                     dot.ID
+	AddressID                   dot.ID
+	Address                     *address.Address
+	Phone                       string
+	BankAccount                 *identitytypes.BankAccount
+	WebsiteURL                  dot.NullString
+	ImageURL                    string
+	Email                       string
+	AutoCreateFFM               bool
+	IsTest                      bool
+	URLSlug                     string
+	CompanyInfo                 *identitytypes.CompanyInfo
+	MoneyTransactionRRule       string
+	SurveyInfo                  []*SurveyInfo
+	ShippingServicePickStrategy []*ShippingServiceSelectStrategyItem
+
+	Result *Shop `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateShop(ctx context.Context, msg *CreateShopCommand) (err error) {
+	msg.Result, err = h.inner.CreateShop(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteAffiliateCommand struct {
 	ID      dot.ID
 	OwnerID dot.ID
@@ -67,6 +94,17 @@ type DeleteAffiliateCommand struct {
 
 func (h AggregateHandler) HandleDeleteAffiliate(ctx context.Context, msg *DeleteAffiliateCommand) (err error) {
 	return h.inner.DeleteAffiliate(msg.GetArgs(ctx))
+}
+
+type RegisterSimplifyCommand struct {
+	Phone string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleRegisterSimplify(ctx context.Context, msg *RegisterSimplifyCommand) (err error) {
+	return h.inner.RegisterSimplify(msg.GetArgs(ctx))
 }
 
 type UnblockUserCommand struct {
@@ -432,7 +470,9 @@ func (h QueryServiceHandler) HandleListUsersByWLPartnerID(ctx context.Context, m
 
 func (q *BlockUserCommand) command()                  {}
 func (q *CreateAffiliateCommand) command()            {}
+func (q *CreateShopCommand) command()                 {}
 func (q *DeleteAffiliateCommand) command()            {}
+func (q *RegisterSimplifyCommand) command()           {}
 func (q *UnblockUserCommand) command()                {}
 func (q *UpdateAffiliateBankAccountCommand) command() {}
 func (q *UpdateAffiliateInfoCommand) command()        {}
@@ -503,6 +543,47 @@ func (q *CreateAffiliateCommand) SetCreateAffiliateArgs(args *CreateAffiliateArg
 	q.BankAccount = args.BankAccount
 }
 
+func (q *CreateShopCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopArgs) {
+	return ctx,
+		&CreateShopArgs{
+			Name:                        q.Name,
+			OwnerID:                     q.OwnerID,
+			AddressID:                   q.AddressID,
+			Address:                     q.Address,
+			Phone:                       q.Phone,
+			BankAccount:                 q.BankAccount,
+			WebsiteURL:                  q.WebsiteURL,
+			ImageURL:                    q.ImageURL,
+			Email:                       q.Email,
+			AutoCreateFFM:               q.AutoCreateFFM,
+			IsTest:                      q.IsTest,
+			URLSlug:                     q.URLSlug,
+			CompanyInfo:                 q.CompanyInfo,
+			MoneyTransactionRRule:       q.MoneyTransactionRRule,
+			SurveyInfo:                  q.SurveyInfo,
+			ShippingServicePickStrategy: q.ShippingServicePickStrategy,
+		}
+}
+
+func (q *CreateShopCommand) SetCreateShopArgs(args *CreateShopArgs) {
+	q.Name = args.Name
+	q.OwnerID = args.OwnerID
+	q.AddressID = args.AddressID
+	q.Address = args.Address
+	q.Phone = args.Phone
+	q.BankAccount = args.BankAccount
+	q.WebsiteURL = args.WebsiteURL
+	q.ImageURL = args.ImageURL
+	q.Email = args.Email
+	q.AutoCreateFFM = args.AutoCreateFFM
+	q.IsTest = args.IsTest
+	q.URLSlug = args.URLSlug
+	q.CompanyInfo = args.CompanyInfo
+	q.MoneyTransactionRRule = args.MoneyTransactionRRule
+	q.SurveyInfo = args.SurveyInfo
+	q.ShippingServicePickStrategy = args.ShippingServicePickStrategy
+}
+
 func (q *DeleteAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteAffiliateArgs) {
 	return ctx,
 		&DeleteAffiliateArgs{
@@ -514,6 +595,11 @@ func (q *DeleteAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context
 func (q *DeleteAffiliateCommand) SetDeleteAffiliateArgs(args *DeleteAffiliateArgs) {
 	q.ID = args.ID
 	q.OwnerID = args.OwnerID
+}
+
+func (q *RegisterSimplifyCommand) GetArgs(ctx context.Context) (_ context.Context, phone string) {
+	return ctx,
+		q.Phone
 }
 
 func (q *UnblockUserCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
@@ -850,7 +936,9 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleBlockUser)
 	b.AddHandler(h.HandleCreateAffiliate)
+	b.AddHandler(h.HandleCreateShop)
 	b.AddHandler(h.HandleDeleteAffiliate)
+	b.AddHandler(h.HandleRegisterSimplify)
 	b.AddHandler(h.HandleUnblockUser)
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)

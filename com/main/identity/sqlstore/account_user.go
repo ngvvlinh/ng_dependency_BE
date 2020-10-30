@@ -10,6 +10,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -91,4 +92,13 @@ func (s *AccountUserStore) ListAccountUser() ([]*identity.AccountUser, error) {
 	var accountUser identitymodel.AccountUsers
 	err := query.Find(&accountUser)
 	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(accountUser), err
+}
+
+func (s *AccountUserStore) CreateAccountUser(au *identity.AccountUser) error {
+	sqlstore.MustNoPreds(s.preds)
+	var auDB identitymodel.AccountUser
+	if err := scheme.Convert(au, &auDB); err != nil {
+		return err
+	}
+	return s.query().ShouldInsert(&auDB)
 }
