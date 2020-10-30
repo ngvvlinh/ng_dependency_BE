@@ -16,6 +16,7 @@ import (
 	"o.o/backend/com/main/invitation/convert"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -77,9 +78,14 @@ func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *ap
 	for _, role := range q.Roles {
 		roles = append(roles, authorization.Role(role))
 	}
+
+	normalizedEmail, ok := validate.NormalizeEmail(q.Email)
+	if !ok {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ")
+	}
 	cmd := &invitation.CreateInvitationCommand{
 		AccountID: s.SS.Shop().ID,
-		Email:     q.Email,
+		Email:     normalizedEmail.String(),
 		Phone:     q.Phone,
 		FullName:  q.FullName,
 		ShortName: q.ShortName,
