@@ -35,6 +35,7 @@ type AddressStore struct {
 	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
+	includeKhachLe bool
 }
 
 func (s *AddressStore) extend() *AddressStore {
@@ -108,6 +109,11 @@ func (s *AddressStore) SetDefaultAddress(ID, shopID, traderID dot.ID) (int, erro
 			"is_default": true,
 		})
 	return updated, err
+}
+
+func (s *AddressStore) IncludeKhachLe() *AddressStore {
+	s.includeKhachLe = true
+	return s
 }
 
 func (s *AddressStore) CreateAddress(addr *addressing.ShopTraderAddress) error {
@@ -193,16 +199,16 @@ func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	var addrs []*model.ShopTraderAddress
 	for _, v := range addrsEx {
 		// bỏ qua address của Khách Lẻ (https://github.com/etopvn/one/issues/2730)
-		if v.ShopTraderAddress.TraderID == customering.CustomerAnonymous {
+		if !s.includeKhachLe && v.ShopTraderAddress.TraderID == customering.CustomerAnonymous {
 			continue
 		}
 		addrs = append(addrs, v.ShopTraderAddress)
 	}
-
-	return addrs, err
+	return addrs, nil
 }
 
 func (s *AddressStore) ListAddresses() (result []*addressing.ShopTraderAddress, err error) {

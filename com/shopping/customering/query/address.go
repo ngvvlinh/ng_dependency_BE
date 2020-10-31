@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/shopping/addressing"
+	"o.o/api/shopping/customering"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/customering/sqlstore"
 	"o.o/backend/pkg/common/bus"
@@ -85,6 +86,9 @@ func (q *AddressQuery) ListAddresses(ctx context.Context, args *addressing.ListA
 	query := q.store(ctx).ShopID(args.ShopID)
 	if args.TraderID != 0 {
 		query = query.TraderID(args.TraderID)
+		if args.TraderID == customering.CustomerAnonymous {
+			query = query.IncludeKhachLe()
+		}
 	}
 
 	if args.Phone != "" {
