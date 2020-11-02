@@ -275,6 +275,7 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.ExternalShippingUpdatedAt = arg.ExternalShippingUpdatedAt                   // simple assign
 	out.ExternalShippingCancelledAt = arg.ExternalShippingCancelledAt               // simple assign
 	out.ExternalShippingDeliveredAt = arg.ExternalShippingDeliveredAt               // simple assign
+	out.ExternalShippingReturningAt = time.Time{}                                   // zero value
 	out.ExternalShippingReturnedAt = arg.ExternalShippingReturnedAt                 // simple assign
 	out.ExternalShippingState = arg.ExternalShippingState                           // simple assign
 	out.ExternalShippingStatus = arg.ExternalShippingStatus                         // simple assign
@@ -515,6 +516,7 @@ func apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping
 	out.ExternalShippingUpdatedAt = out.ExternalShippingUpdatedAt                    // no change
 	out.ExternalShippingCancelledAt = out.ExternalShippingCancelledAt                // no change
 	out.ExternalShippingDeliveredAt = out.ExternalShippingDeliveredAt                // no change
+	out.ExternalShippingReturningAt = out.ExternalShippingReturningAt                // no change
 	out.ExternalShippingReturnedAt = out.ExternalShippingReturnedAt                  // no change
 	out.ExternalShippingState = out.ExternalShippingState                            // no change
 	out.ExternalShippingStatus = out.ExternalShippingStatus                          // no change

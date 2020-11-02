@@ -51,6 +51,15 @@ func CoalesceID(ids ...dot.ID) dot.ID {
 	return 0
 }
 
+func CoalesceTime(times ...time.Time) time.Time {
+	for _, _time := range times {
+		if !_time.IsZero() {
+			return _time
+		}
+	}
+	return time.Time{}
+}
+
 func StringsContain(ss []string, s string) bool {
 	for _, item := range ss {
 		if item == s {

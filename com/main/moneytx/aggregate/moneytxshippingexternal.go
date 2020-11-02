@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 	"strings"
+	"time"
 
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
@@ -219,14 +220,10 @@ func (a *MoneyTxAggregate) ConfirmMoneyTxShippingExternal(ctx context.Context, i
 
 /*
 # Khi tạo phiên thanh toán cho Shop (ConfirmMoneyTxShippingExternals)
-	- Thêm các ffms vào phiên
-		+ GHN
-			- returned
-			- COD = 0 (state: delivered & total_cod_amount = 0)
-		+ Vtpost
-			- returned
-			- returning
-			- COD = 0 (state: delivered & total_cod_amount = 0)
+	TopShip sẽ tự động đối soát với tất cả NVC trường hợp:
+	- returned
+	- returning
+	- COD = 0 (state: delivered & total_cod_amount = 0)
 */
 
 func (a *MoneyTxAggregate) ConfirmMoneyTxShippingExternals(ctx context.Context, ids []dot.ID) (updated int, _ error) {
@@ -481,6 +478,12 @@ func (a *MoneyTxAggregate) combineWithExtraFfms(ctx context.Context) (shopFfmsMa
 	}
 	ffms := query.Result
 	for _, ffm := range ffms {
+		// Trường hợp đơn returning
+		// Chỉ cho vào phiên nếu đơn đã chuyển sang trạng thái returning tối thiểu 5 ngày
+		now := time.Now()
+		if ffm.ShippingState == shippingstate.Returning && now.Sub(ffm.ExternalShippingReturningAt) < 5*24*time.Hour {
+			continue
+		}
 		shopFfmsMap[ffm.ShopID] = append(shopFfmsMap[ffm.ShopID], ffm)
 	}
 	return shopFfmsMap, nil

@@ -5,6 +5,7 @@ import (
 	shippingtypes "o.o/api/main/shipping/types"
 	orderconvert "o.o/backend/com/main/ordering/convert"
 	shippingmodel "o.o/backend/com/main/shipping/model"
+	cm "o.o/backend/pkg/common"
 )
 
 // +gen:convert: o.o/backend/com/main/shipping/model -> o.o/api/main/shipping, o.o/api/main/shipping/types
@@ -32,6 +33,11 @@ func Fulfillment(in *shippingmodel.Fulfillment, out *shipping.Fulfillment) {
 		IncludeInsurance: in.IncludeInsurance.Apply(false),
 		InsuranceValue:   in.InsuranceValue,
 	}
+	out.ExternalShippingCreatedAt = cm.CoalesceTime(in.ExternalShippingCreatedAt, in.ShippingCreatedAt)
+	out.ExternalShippingCancelledAt = cm.CoalesceTime(in.ExternalShippingCancelledAt, in.ShippingCancelledAt)
+	out.ExternalShippingDeliveredAt = cm.CoalesceTime(in.ExternalShippingDeliveredAt, in.ShippingDeliveredAt)
+	out.ExternalShippingReturningAt = in.ShippingReturningAt
+	out.ExternalShippingReturnedAt = cm.CoalesceTime(in.ExternalShippingReturnedAt, in.ShippingReturnedAt)
 	return
 }
 

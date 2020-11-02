@@ -103,6 +103,7 @@ type Fulfillment struct {
 	ExternalShippingUpdatedAt   time.Time
 	ExternalShippingCancelledAt time.Time
 	ExternalShippingDeliveredAt time.Time
+	ExternalShippingReturningAt time.Time
 	ExternalShippingReturnedAt  time.Time
 
 	ExternalShippingState    string
