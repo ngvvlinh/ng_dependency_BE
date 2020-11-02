@@ -235,6 +235,7 @@ const (
 	FbCommentCreate permission.ActionType = "facebook/comment:create"
 	FbMessageCreate permission.ActionType = "facebook/message:create"
 	FbMessageView   permission.ActionType = "facebook/message:view"
+	FbPostCreate    permission.ActionType = "facebook/post:create"
 	FbUserCreate    permission.ActionType = "facebook/fbuser:create" // Liên kết fb_user với customer
 	FbUserView      permission.ActionType = "facebook/fbuser:view"
 	FbUserUpdate    permission.ActionType = "facebook/fbuser:update"
@@ -1243,7 +1244,7 @@ var _acl = map[string]*permission.Decl{
 	"fabo.CustomerConversation/UpdateReadStatus":             {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},
 	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageCreate)},
 	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentCreate)},
-	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbPostCreate)},
 	"fabo.CustomerConversation/MessageTemplateVariables":     {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/MessageTemplates":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/CreateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
