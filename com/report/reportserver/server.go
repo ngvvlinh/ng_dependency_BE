@@ -16,9 +16,9 @@ func BuildReportServer(
 ) ReportServer {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/report/orders/end-of-day", mware(ss, reportService.ReportOrdersEndOfDay))
-	mux.HandleFunc("/report/export/orders/end-of-day", mware(ss, reportService.ExportReportOrdersEndOfDay))
-	return httpx.MakeServer("/report/", mux)
+	mux.HandleFunc("/api/report/orders/end-of-day", mware(ss, reportService.ReportOrdersEndOfDay))
+	mux.HandleFunc("/api/report/export/orders/end-of-day", mware(ss, reportService.ExportReportOrdersEndOfDay))
+	return httpx.MakeServer("/api/report/", mux)
 }
 
 func mware(
