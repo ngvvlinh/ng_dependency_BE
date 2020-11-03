@@ -708,6 +708,7 @@ func (s *CustomerConversationService) SendComment(
 				ExternalCreatedTime:  newComment.CreatedTime.ToTime(),
 				Source:               fb_comment_source.Web,
 				InternalSource:       fb_internal_source.Fabo, // message through our api, set it is `Fabo`
+				CreatedBy:            s.SS.User().ID,
 			},
 		},
 	}
@@ -864,6 +865,7 @@ func (s *CustomerConversationService) SendMessage(
 				ExternalAttachments:    externalAttachments,
 				ExternalCreatedTime:    newMessage.CreatedTime.ToTime(),
 				InternalSource:         fb_internal_source.Fabo, // message through our api, set it is `Fabo`
+				CreatedBy:              s.SS.User().ID,
 			},
 		},
 	}

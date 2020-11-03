@@ -664,6 +664,25 @@ func (ft *FbExternalCommentFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.Col
 	}
 }
 
+func (ft *FbExternalCommentFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == 0,
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == nil,
+		IsZero: CreatedBy != nil && (*CreatedBy) == 0,
+	}
+}
+
 type FbExternalConversationFilters struct{ prefix string }
 
 func NewFbExternalConversationFilters(prefix string) FbExternalConversationFilters {
@@ -1145,6 +1164,25 @@ func (ft *FbExternalMessageFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.Col
 		Value:  DeletedAt,
 		IsNil:  DeletedAt == nil,
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+func (ft *FbExternalMessageFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == 0,
+	}
+}
+
+func (ft *FbExternalMessageFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == nil,
+		IsZero: CreatedBy != nil && (*CreatedBy) == 0,
 	}
 }
 

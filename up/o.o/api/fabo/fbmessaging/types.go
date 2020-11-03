@@ -27,6 +27,7 @@ type FbExternalMessage struct {
 	ExternalCreatedTime    time.Time
 	CreatedAt              time.Time `compare:"ignore"`
 	UpdatedAt              time.Time `compare:"ignore"`
+	CreatedBy              dot.ID
 }
 
 type FbObjectTo struct {
@@ -104,6 +105,7 @@ type FbExternalComment struct {
 	UpdatedAt            time.Time `compare:"ignore"`
 	DeletedAt            time.Time
 	InternalSource       fb_internal_source.FbInternalSource
+	CreatedBy            dot.ID
 }
 
 type FbObjectParent struct {

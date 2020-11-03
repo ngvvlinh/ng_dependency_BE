@@ -89,6 +89,7 @@ type CreateFbExternalMessageArgs struct {
 	ExternalMessageShares  []*FbMessageShare
 	ExternalCreatedTime    time.Time
 	InternalSource         fb_internal_source.FbInternalSource
+	CreatedBy              dot.ID
 }
 
 type CreateFbExternalMessagesArgs struct {
@@ -140,6 +141,7 @@ type CreateFbExternalCommentArgs struct {
 	ExternalCreatedTime  time.Time
 	Source               fb_comment_source.FbCommentSource
 	InternalSource       fb_internal_source.FbInternalSource
+	CreatedBy            dot.ID
 }
 
 type CreateOrUpdateFbExternalCommentsArgs struct {

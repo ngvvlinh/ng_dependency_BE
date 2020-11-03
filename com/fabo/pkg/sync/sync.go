@@ -444,8 +444,10 @@ func (s *Synchronizer) handleTaskGetMessages(
 		}
 		oldFbExternalMessage := messageQuery.Result
 		internalSource := fb_internal_source.Facebook
+		var createdBy dot.ID
 		if oldFbExternalMessage != nil {
 			internalSource = oldFbExternalMessage.InternalSource
+			createdBy = oldFbExternalMessage.CreatedBy
 		}
 
 		currentMessage := messageData.Message
@@ -481,6 +483,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 			ExternalMessageShares:  externalShares,
 			ExternalCreatedTime:    messageData.CreatedTime.ToTime(),
 			InternalSource:         internalSource,
+			CreatedBy:              createdBy,
 		})
 	}
 
@@ -673,8 +676,10 @@ func (s *Synchronizer) handleTaskGetComments(
 		}
 		comment := commentQuery.Result
 		internalSource := fb_internal_source.Facebook
+		var createdBy dot.ID
 		if comment != nil {
 			internalSource = comment.InternalSource
+			createdBy = comment.CreatedBy
 		}
 
 		createOrUpdateFbExternalCommentsArgs = append(createOrUpdateFbExternalCommentsArgs, &fbmessaging.CreateFbExternalCommentArgs{
@@ -692,6 +697,7 @@ func (s *Synchronizer) handleTaskGetComments(
 			ExternalAttachment:   fbclientconvert.ConvertFbCommentAttachment(fbExternalComment.Attachment),
 			ExternalCreatedTime:  fbExternalComment.CreatedTime.ToTime(),
 			InternalSource:       internalSource,
+			CreatedBy:            createdBy,
 		})
 	}
 

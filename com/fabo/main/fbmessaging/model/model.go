@@ -27,6 +27,7 @@ type FbExternalMessage struct {
 	CreatedAt              time.Time `sq:"create"`
 	UpdatedAt              time.Time `sq:"update"`
 	DeletedAt              time.Time
+	CreatedBy              dot.ID
 }
 
 type FbObjectTo struct {
@@ -121,6 +122,7 @@ type FbExternalComment struct {
 	CreatedAt            time.Time `sq:"create"`
 	UpdatedAt            time.Time `sq:"update"`
 	DeletedAt            time.Time
+	CreatedBy            dot.ID
 }
 
 type CommentAttachment struct {
