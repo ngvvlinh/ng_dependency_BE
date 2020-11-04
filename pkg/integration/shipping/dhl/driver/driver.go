@@ -3,6 +3,7 @@ package driver
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"o.o/api/main/location"
@@ -98,13 +99,18 @@ func (d *DHLDriver) CreateFulfillment(
 
 	addressFrom := dhlclient.ToAddress(ffm.AddressFrom)
 	addressTo := dhlclient.ToAddress(ffm.AddressTo)
+	// hiện tại remark không hiện ở hệ thống giao hàng
+	// field remark đó, chỉ nằm ở trên hệ thống để báo cáo theo dõi, chưa được link với hệ thống giao hàng
+	// phương án là chia remark vào address2 và address3
+	// do address2 và address3 đang giới hạn 60 kí tự nên ở đây cắt shippingNote và chia vào address2, address3
+
 	// nội dung ghi chú giao hàng
 	// maximum length of address2 is 60
-	addressTo.Address2 = ffm.ShippingNote
+	addressTo.Address2 = strings.TrimSuffix(ffm.ShippingNote, carriertypes.CarrierNote)
 	if len([]rune(addressTo.Address2)) > 60 {
 		addressTo.Address2 = string(([]rune(addressTo.Address2))[:60])
 	}
-	addressTo.Address3 = "KHÔNG TỰ Ý HOÀN HÀNG. Gọi shop nếu giao thất bại"
+	addressTo.Address3 = carriertypes.CarrierNote
 
 	var packageDesc string
 	if len(ffm.Lines) > 0 {
