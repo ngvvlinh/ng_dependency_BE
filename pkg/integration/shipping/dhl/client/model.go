@@ -662,6 +662,7 @@ type AddressReq struct {
 	Phone    string `json:"phone"`
 	Address1 string `json:"address1"`
 	Address2 string `json:"address2"`
+	Address3 string `json:"address3"`
 	State    string `json:"state"`
 	District string `json:"district"`
 	Country  string `json:"country"`
@@ -699,6 +700,7 @@ type AddressResp struct {
 	Phone    String `json:"phone"`
 	Address1 String `json:"address1"`
 	Address2 String `json:"address2"`
+	Address3 String `json:"address3"`
 	City     String `json:"city"`
 	District String `json:"district"`
 	State    String `json:"state"`

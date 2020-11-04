@@ -98,6 +98,13 @@ func (d *DHLDriver) CreateFulfillment(
 
 	addressFrom := dhlclient.ToAddress(ffm.AddressFrom)
 	addressTo := dhlclient.ToAddress(ffm.AddressTo)
+	// nội dung ghi chú giao hàng
+	// maximum length of address2 is 60
+	addressTo.Address2 = ffm.ShippingNote
+	if len([]rune(addressTo.Address2)) > 60 {
+		addressTo.Address2 = string(([]rune(addressTo.Address2))[:60])
+	}
+	addressTo.Address3 = "KHÔNG TỰ Ý HOÀN HÀNG. Gọi shop nếu giao thất bại"
 
 	var packageDesc string
 	if len(ffm.Lines) > 0 {
@@ -113,8 +120,8 @@ func (d *DHLDriver) CreateFulfillment(
 		}
 	}
 	// maximum length of packageDesc is 50
-	if len(packageDesc) > 50 {
-		packageDesc = packageDesc[:50]
+	if len([]rune(packageDesc)) > 50 {
+		packageDesc = string(([]rune(packageDesc))[:50])
 	}
 
 	serviceID, err := d.ParseServiceID(service.ProviderServiceID)
