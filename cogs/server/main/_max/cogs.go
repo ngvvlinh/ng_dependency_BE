@@ -9,6 +9,7 @@ import (
 	"o.o/backend/pkg/etop/api/integration"
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
+	"o.o/backend/pkg/etop/apix/mc/vht"
 	"o.o/backend/pkg/etop/apix/mc/vnp"
 	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
@@ -55,6 +56,7 @@ func BuildExtHandlers(
 	carrierServers partnercarrier.Servers,
 	partnerImportServers partnerimport.Servers,
 	vnpostServers vnp.Servers,
+	vhtServers vht.Servers,
 ) (hs _main.ExtHandlers, _ error) {
 	logging := middlewares.NewLogging()
 	ssExtHooks, err := session.NewHook(acl.GetExtACL())
@@ -67,6 +69,7 @@ func BuildExtHandlers(
 	hs = append(hs, partnerServers...)
 	hs = append(hs, partnerImportServers...)
 	hs = append(hs, vnpostServers...)
+	hs = append(hs, vhtServers...)
 	hs = httprpc.WithHooks(hs, ssExtHooks, logging)
 	return
 }

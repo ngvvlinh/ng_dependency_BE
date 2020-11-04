@@ -90,6 +90,7 @@ func Build(
 			"Webhook",
 			"FlagEnableNewLinkInvitation",
 			"FlagFaboOrderAutoConfirmPaymentStatus",
+			"WebphonePublicKey",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,

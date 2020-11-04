@@ -29,7 +29,7 @@ type Aggregate interface {
 
 	// if phone is not existed
 	// create new user & create a default shop for this user
-	RegisterSimplify(ctx context.Context, phone string) error
+	RegisterSimplify(ctx context.Context, phone string, fullName string) error
 
 	// -- Affiliate -- //
 

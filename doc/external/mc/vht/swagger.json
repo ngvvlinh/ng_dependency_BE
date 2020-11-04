@@ -1,0 +1,68 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "VHT - VNPost",
+    "version": "v1"
+  },
+  "paths": {
+    "/v1/vht.User/RegisterUser": {
+      "post": {
+        "description": "Chỉ dùng để VHT gọi tạo User\nSử dụng token của VNPost wl partner\nDùng để đăng ký user, sử dụng cho webphone (gọi điện, tạo được ticket trên eTop)\n",
+        "tags": [
+          "User"
+        ],
+        "summary": "RegisterUser",
+        "operationId": "vht.User-RegisterUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xrVHTRegisterUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ktEmpty": {
+      "type": "object"
+    },
+    "xrVHTRegisterUser": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "User"
+    }
+  ]
+}

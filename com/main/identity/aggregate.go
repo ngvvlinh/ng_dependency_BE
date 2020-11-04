@@ -324,7 +324,7 @@ func (a *Aggregate) UpdateShipFromAddressID(ctx context.Context, args *identity.
 	return err
 }
 
-func (a *Aggregate) RegisterSimplify(ctx context.Context, phone string) error {
+func (a *Aggregate) RegisterSimplify(ctx context.Context, phone, fullName string) error {
 	normalizePhone, ok := validate.NormalizePhone(phone)
 	if !ok {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp lệ")
@@ -345,6 +345,7 @@ func (a *Aggregate) RegisterSimplify(ctx context.Context, phone string) error {
 		now := time.Now()
 		userArgs := &identity.CreateUserArgs{
 			Phone:                   normalizePhone.String(),
+			FullName:                fullName,
 			Status:                  status3.P,
 			Source:                  user_source.Etop,
 			PhoneVerifiedAt:         now,

@@ -1051,6 +1051,8 @@ const Path_User_VerifyEmailUsingOTP = "/etop.User/VerifyEmailUsingOTP"
 const Path_User_VerifyEmailUsingToken = "/etop.User/VerifyEmailUsingToken"
 const Path_User_VerifyPhoneResetPasswordUsingToken = "/etop.User/VerifyPhoneResetPasswordUsingToken"
 const Path_User_VerifyPhoneUsingToken = "/etop.User/VerifyPhoneUsingToken"
+const Path_User_WebphoneLogin = "/etop.User/WebphoneLogin"
+const Path_User_WebphoneRequestLogin = "/etop.User/WebphoneRequestLogin"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix
@@ -1472,6 +1474,32 @@ func (s *UserServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.VerifyPhoneUsingToken(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/etop.User/WebphoneLogin":
+		msg := &WebphoneLoginRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.WebphoneLogin(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/etop.User/WebphoneRequestLogin":
+		msg := &WebphoneRequestLoginRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.WebphoneRequestLogin(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

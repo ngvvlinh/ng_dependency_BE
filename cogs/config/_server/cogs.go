@@ -11,6 +11,8 @@ import (
 	"o.o/backend/pkg/etop/sqlstore"
 )
 
+type WebphonePublicKey string
+
 type SharedConfig struct {
 	HTTP        cc.HTTP `yaml:"http"`
 	ServeDoc    bool    `yaml:"serve_doc"`

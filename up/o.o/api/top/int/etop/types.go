@@ -1314,3 +1314,22 @@ type UpdateNotifyTopicRequest struct {
 }
 
 func (m *UpdateNotifyTopicRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type WebphoneRequestLoginRequest struct {
+	Phone string `json:"phone"`
+}
+
+func (m *WebphoneRequestLoginRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type WebphoneRequestLoginResponse struct {
+	SecretKey string `json:"secret_key"`
+}
+
+func (m *WebphoneRequestLoginResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type WebphoneLoginRequest struct {
+	Phone string `json:"phone"`
+	Code  string `json:"code"`
+}
+
+func (m *WebphoneLoginRequest) String() string { return jsonx.MustMarshalToString(m) }

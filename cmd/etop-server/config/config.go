@@ -67,6 +67,7 @@ type Config struct {
 
 	FlagEnableNewLinkInvitation           aggregate.FlagEnableNewLinkInvitation        `yaml:"flag_enable_new_link_invitation"`
 	FlagFaboOrderAutoConfirmPaymentStatus orderS.FlagFaboOrderAutoConfirmPaymentStatus `yaml:"flag_fabo_auto_confirm_payment_status"`
+	WebphonePublicKey                     config_server.WebphonePublicKey              `yaml:"webphone_public_key"`
 }
 
 // Default ...

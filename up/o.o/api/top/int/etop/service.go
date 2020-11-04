@@ -98,6 +98,12 @@ type UserService interface {
 	EnableNotifyTopic(ctx context.Context, empty *UpdateNotifyTopicRequest) (*GetNotifySettingResponse, error)
 
 	DisableNotifyTopic(ctx context.Context, empty *UpdateNotifyTopicRequest) (*GetNotifySettingResponse, error)
+
+	// -- webphone -- //
+
+	WebphoneRequestLogin(context.Context, *WebphoneRequestLoginRequest) (*WebphoneRequestLoginResponse, error)
+
+	WebphoneLogin(context.Context, *WebphoneLoginRequest) (*LoginResponse, error)
 }
 
 // +apix:path=/etop.Account

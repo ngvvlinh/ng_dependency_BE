@@ -164,7 +164,7 @@ func BuildMainServer(
 
 	// always serve partner documentation
 	mux.Handle("/doc/ext", http.RedirectHandler("/doc", http.StatusTemporaryRedirect))
-	for _, s := range strings.Split("shop,partner,partnercarrier,mc/vnp", ",") {
+	for _, s := range strings.Split("shop,partner,partnercarrier,mc/vnp,mc/vht", ",") {
 		mux.Handle("/doc/ext/"+s, servedoc.RedocHandler())
 		mux.Handle("/doc/ext/"+s+"/swagger.json", servedoc.SwaggerHandler("external/"+s+"/swagger.json"))
 	}

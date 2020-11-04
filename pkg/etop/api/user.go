@@ -19,6 +19,7 @@ import (
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/authentication_method"
 	"o.o/api/top/types/etc/status3"
+	config_server "o.o/backend/cogs/config/_server"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
@@ -92,6 +93,9 @@ type UserService struct {
 	ShopStore        sqlstore.ShopStoreInterface
 	AccountUserStore sqlstore.AccountUserStoreInterface
 	LoginIface       sqlstore.LoginInterface
+
+	// Use for webphone login
+	WebphonePublicKey config_server.WebphonePublicKey
 }
 
 var UserServiceImpl = &UserService{} // MUSTDO: fix it

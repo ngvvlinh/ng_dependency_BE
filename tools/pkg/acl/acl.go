@@ -438,6 +438,9 @@ var _acl = map[string]*permission.Decl{
 	"etop.User/UpdateReferenceUser":                {Type: CurUsr},
 	"etop.User/UpdateReferenceSale":                {Type: CurUsr},
 
+	"etop.User/WebphoneRequestLogin": {Type: Public},
+	"etop.User/WebphoneLogin":        {Type: Public},
+
 	"etop.Relationship/InviteUserToAccount":          {Type: CurUsr},
 	"etop.Relationship/AnswerInvitation":             {Type: CurUsr},
 	"etop.Relationship/GetUsersInCurrentAccounts":    {Type: CurUsr},
@@ -649,6 +652,11 @@ var _acl = map[string]*permission.Decl{
 	"ext/vnposts/webhook/createwebhook": {Type: Shop, Auth: APIKey},
 	"ext/vnposts/webhook/getwebhooks":   {Type: Shop, Auth: APIKey},
 	"ext/vnposts/webhook/deletewebhook": {Type: Shop, Auth: APIKey},
+
+	//-- vht --/
+
+	// Only support VNPost wl partner
+	"ext/vht.User/RegisterUser": {Type: Partner, Auth: APIKey},
 
 	//-- integration --//
 

@@ -162,6 +162,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/ticket"
 	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/backend/pkg/etop/api/shop/ws"
+	"o.o/backend/pkg/etop/apix/mc/vht"
 	"o.o/backend/pkg/etop/apix/mc/vnp"
 	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
@@ -300,24 +301,26 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		UserStore: userStoreInterface,
 	}
 	loginInterface := sqlstore.BindLogin(login)
+	webphonePublicKey := cfg.WebphonePublicKey
 	userService := &api.UserService{
-		Session:          session,
-		IdentityAggr:     commandBus,
-		IdentityQuery:    queryBus,
-		InvitationQuery:  invitationQueryBus,
-		NotifyQuery:      notifyQueryBus,
-		NotifyAggr:       notifyCommandBus,
-		EventBus:         busBus,
-		AuthStore:        generator,
-		TokenStore:       tokenStore,
-		RedisStore:       store,
-		SMSClient:        smsClient,
-		EmailClient:      emailClient,
-		UserStore:        userStoreFactory,
-		UserStoreIface:   userStoreInterface,
-		ShopStore:        shopStoreInterface,
-		AccountUserStore: accountUserStoreInterface,
-		LoginIface:       loginInterface,
+		Session:           session,
+		IdentityAggr:      commandBus,
+		IdentityQuery:     queryBus,
+		InvitationQuery:   invitationQueryBus,
+		NotifyQuery:       notifyQueryBus,
+		NotifyAggr:        notifyCommandBus,
+		EventBus:          busBus,
+		AuthStore:         generator,
+		TokenStore:        tokenStore,
+		RedisStore:        store,
+		SMSClient:         smsClient,
+		EmailClient:       emailClient,
+		UserStore:         userStoreFactory,
+		UserStoreIface:    userStoreInterface,
+		ShopStore:         shopStoreInterface,
+		AccountUserStore:  accountUserStoreInterface,
+		LoginIface:        loginInterface,
+		WebphonePublicKey: webphonePublicKey,
 	}
 	partnerStoreFactory := sqlstore.NewPartnerStore(mainDB)
 	accountService := &api.AccountService{
@@ -1130,7 +1133,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		WebhookInner: service2,
 	}
 	vnpServers := vnp.NewServers(vnPostService, vnPostWebhookService)
-	extHandlers, err := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers, vnpServers)
+	vhtUserService := &vht.VHTUserService{
+		Session:       session,
+		IdentityAggr:  commandBus,
+		IdentityQuery: queryBus,
+	}
+	vhtServers := vht.NewServers(vhtUserService)
+	extHandlers, err := server_max.BuildExtHandlers(partnerServers, xshopServers, partnercarrierServers, partnerimportServers, vnpServers, vhtServers)
 	if err != nil {
 		cleanup6()
 		cleanup5()

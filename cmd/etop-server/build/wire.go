@@ -63,6 +63,7 @@ import (
 	"o.o/backend/pkg/etop/api/sadmin"
 	shop_all "o.o/backend/pkg/etop/api/shop/_all"
 	shop_wire "o.o/backend/pkg/etop/api/shop/_wire"
+	"o.o/backend/pkg/etop/apix/mc/vht"
 	"o.o/backend/pkg/etop/apix/mc/vnp"
 	"o.o/backend/pkg/etop/apix/partner"
 	"o.o/backend/pkg/etop/apix/partnercarrier"
@@ -112,6 +113,7 @@ func Build(
 			"AhamoveWebhook",
 			"FlagEnableNewLinkInvitation",
 			"FlagFaboOrderAutoConfirmPaymentStatus",
+			"WebphonePublicKey",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
@@ -130,6 +132,7 @@ func Build(
 		server_admin.WireSet,
 		shop_wire.WireSet,
 		vnp.WireSet,
+		vht.WireSet,
 
 		email.WireSet,
 		affiliate.WireSet,

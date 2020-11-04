@@ -198,24 +198,26 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		UserStore: userStoreInterface,
 	}
 	loginInterface := sqlstore.BindLogin(login)
+	webphonePublicKey := cfg.WebphonePublicKey
 	userService := &api.UserService{
-		Session:          session,
-		IdentityAggr:     commandBus,
-		IdentityQuery:    queryBus,
-		InvitationQuery:  invitationQueryBus,
-		NotifyQuery:      notifyQueryBus,
-		NotifyAggr:       notifyCommandBus,
-		EventBus:         busBus,
-		AuthStore:        generator,
-		TokenStore:       tokenStore,
-		RedisStore:       store,
-		SMSClient:        client,
-		EmailClient:      emailClient,
-		UserStore:        userStoreFactory,
-		UserStoreIface:   userStoreInterface,
-		ShopStore:        shopStoreInterface,
-		AccountUserStore: accountUserStoreInterface,
-		LoginIface:       loginInterface,
+		Session:           session,
+		IdentityAggr:      commandBus,
+		IdentityQuery:     queryBus,
+		InvitationQuery:   invitationQueryBus,
+		NotifyQuery:       notifyQueryBus,
+		NotifyAggr:        notifyCommandBus,
+		EventBus:          busBus,
+		AuthStore:         generator,
+		TokenStore:        tokenStore,
+		RedisStore:        store,
+		SMSClient:         client,
+		EmailClient:       emailClient,
+		UserStore:         userStoreFactory,
+		UserStoreIface:    userStoreInterface,
+		ShopStore:         shopStoreInterface,
+		AccountUserStore:  accountUserStoreInterface,
+		LoginIface:        loginInterface,
+		WebphonePublicKey: webphonePublicKey,
 	}
 	partnerStoreFactory := sqlstore.NewPartnerStore(mainDB)
 	accountService := &api.AccountService{

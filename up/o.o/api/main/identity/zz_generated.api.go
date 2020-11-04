@@ -97,7 +97,8 @@ func (h AggregateHandler) HandleDeleteAffiliate(ctx context.Context, msg *Delete
 }
 
 type RegisterSimplifyCommand struct {
-	Phone string
+	Phone    string
+	FullName string
 
 	Result struct {
 	} `json:"-"`
@@ -623,9 +624,10 @@ func (q *DeleteAffiliateCommand) SetDeleteAffiliateArgs(args *DeleteAffiliateArg
 	q.OwnerID = args.OwnerID
 }
 
-func (q *RegisterSimplifyCommand) GetArgs(ctx context.Context) (_ context.Context, phone string) {
+func (q *RegisterSimplifyCommand) GetArgs(ctx context.Context) (_ context.Context, phone string, fullName string) {
 	return ctx,
-		q.Phone
+		q.Phone,
+		q.FullName
 }
 
 func (q *UnblockUserCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {

@@ -1618,6 +1618,60 @@
         }
       }
     },
+    "/api/etop.User/WebphoneLogin": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "WebphoneLogin",
+        "operationId": "etop.User-WebphoneLogin",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baWebphoneLoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baLoginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.User/WebphoneRequestLogin": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "WebphoneRequestLogin",
+        "operationId": "etop.User-WebphoneRequestLogin",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baWebphoneRequestLoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baWebphoneRequestLoginResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.UserRelationship/AcceptInvitation": {
       "post": {
         "tags": [
@@ -3732,6 +3786,33 @@
           "type": "string"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "baWebphoneLoginRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "baWebphoneRequestLoginRequest": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "baWebphoneRequestLoginResponse": {
+      "type": "object",
+      "properties": {
+        "secret_key": {
           "type": "string"
         }
       }
