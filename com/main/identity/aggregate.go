@@ -425,8 +425,8 @@ func (a *Aggregate) createShop(ctx context.Context, args *identity.CreateShopArg
 			CompanyInfo:                   args.CompanyInfo,
 		}
 		if args.MoneyTransactionRRule == "" {
-			// set shop MoneyTransactionRRule default value: FREQ=WEEKLY;BYDAY=MO,WE,FR
-			shop.MoneyTransactionRRule = "FREQ=WEEKLY;BYDAY=MO,WE,FR"
+			// set shop MoneyTransactionRRule default value: FREQ=WEEKLY;BYDAY=TU,TH
+			shop.MoneyTransactionRRule = "FREQ=WEEKLY;BYDAY=TU,TH"
 		}
 		if err := shop.CheckInfo(); err != nil {
 			return err
