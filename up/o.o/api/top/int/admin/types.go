@@ -1133,3 +1133,13 @@ type DeleteAdminUserResponse struct {
 func (d *DeleteAdminUserResponse) String() string {
 	return jsonx.MustMarshalToString(d)
 }
+
+type UpdateShopInfoRequest struct {
+	ID dot.ID `json:"id"`
+	// referrence: https://icalendar.org/rrule-tool.html
+	MoneyTransactionRrule string `json:"money_transaction_rrule"`
+}
+
+func (d *UpdateShopInfoRequest) String() string {
+	return jsonx.MustMarshalToString(d)
+}

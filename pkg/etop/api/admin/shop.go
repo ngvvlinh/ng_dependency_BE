@@ -20,6 +20,7 @@ type ShopService struct {
 	session.Session
 
 	IdentityQuery identity.QueryBus
+	IdentityAggr  identity.CommandBus
 	ShopStore     sqlstore.ShopStoreInterface
 }
 
@@ -77,4 +78,15 @@ func (s *ShopService) GetShopsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*a
 		Shops: convertpb.Convert_core_Shops_To_api_Shops(query.Result),
 	}
 	return result, nil
+}
+
+func (s *ShopService) UpdateShopInfo(ctx context.Context, r *admin.UpdateShopInfoRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &identity.UpdateShopInfoCommand{
+		ShopID:                r.ID,
+		MoneyTransactionRrule: r.MoneyTransactionRrule,
+	}
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }

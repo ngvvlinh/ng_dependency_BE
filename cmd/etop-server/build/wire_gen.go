@@ -790,6 +790,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shopService := admin.ShopService{
 		Session:       session,
 		IdentityQuery: queryBus,
+		IdentityAggr:  commandBus,
 		ShopStore:     shopStoreInterface,
 	}
 	creditAggregate := credit.NewAggregateCredit(busBus, mainDB, queryBus)

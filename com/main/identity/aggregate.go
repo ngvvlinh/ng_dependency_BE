@@ -508,3 +508,16 @@ func (a *Aggregate) createUser(ctx context.Context, args *identity.CreateUserArg
 	}
 	return a.userStore(ctx).ByID(userID).GetUser()
 }
+
+func (a *Aggregate) UpdateShopInfo(ctx context.Context, args *identity.UpdateShopInfoArgs) error {
+	if args.ShopID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing shop ID")
+	}
+	update := &identity.Shop{
+		MoneyTransactionRRule: args.MoneyTransactionRrule,
+	}
+	if err := update.CheckInfo(); err != nil {
+		return err
+	}
+	return a.shopStore(ctx).ByID(args.ShopID).UpdateShop(update)
+}

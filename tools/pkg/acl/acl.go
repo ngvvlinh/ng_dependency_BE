@@ -336,7 +336,8 @@ const (
 	AdminShipmentPriceView   permission.ActionType = "admin/shipment_price:view"
 
 	// Admin Shop
-	AdminShopView permission.ActionType = "admin/shop:view"
+	AdminShopView   permission.ActionType = "admin/shop:view"
+	AdminShopUpdate permission.ActionType = "admin/shop:update"
 
 	// Admin User
 	AdminUserView      permission.ActionType = "admin/user:view"
@@ -725,9 +726,10 @@ var _acl = map[string]*permission.Decl{
 	"admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":  {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopDelete)},
 	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop": {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopConfirm)},
 
-	"admin.Shop/GetShop":       {Type: EtopAdmin, Actions: actions(AdminShopView)},
-	"admin.Shop/GetShops":      {Type: EtopAdmin, Actions: actions(AdminUserView)},
-	"admin.Shop/GetShopsByIDs": {Type: EtopAdmin, Actions: actions(AdminUserView)},
+	"admin.Shop/GetShop":        {Type: EtopAdmin, Actions: actions(AdminShopView)},
+	"admin.Shop/GetShops":       {Type: EtopAdmin, Actions: actions(AdminUserView)},
+	"admin.Shop/GetShopsByIDs":  {Type: EtopAdmin, Actions: actions(AdminUserView)},
+	"admin.Shop/UpdateShopInfo": {Type: EtopAdmin, Actions: actions(AdminShopUpdate)},
 
 	"admin.Credit/GetCredit":     {Type: EtopAdmin, Actions: actions(AdminCreditView)},
 	"admin.Credit/GetCredits":    {Type: EtopAdmin, Actions: actions(AdminCreditView)},

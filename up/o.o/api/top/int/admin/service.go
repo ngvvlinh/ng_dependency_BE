@@ -74,6 +74,7 @@ type ShopService interface {
 	GetShop(context.Context, *cm.IDRequest) (*etop.Shop, error)
 	GetShops(context.Context, *GetShopsRequest) (*GetShopsResponse, error)
 	GetShopsByIDs(context.Context, *cm.IDsRequest) (*GetShopsResponse, error)
+	UpdateShopInfo(context.Context, *UpdateShopInfoRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/admin.User

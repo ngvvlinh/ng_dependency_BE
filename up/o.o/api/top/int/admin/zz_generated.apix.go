@@ -1774,6 +1774,7 @@ const ShopServicePathPrefix = "/admin.Shop/"
 const Path_Shop_GetShop = "/admin.Shop/GetShop"
 const Path_Shop_GetShops = "/admin.Shop/GetShops"
 const Path_Shop_GetShopsByIDs = "/admin.Shop/GetShopsByIDs"
+const Path_Shop_UpdateShopInfo = "/admin.Shop/UpdateShopInfo"
 
 func (s *ShopServiceServer) PathPrefix() string {
 	return ShopServicePathPrefix
@@ -1844,6 +1845,19 @@ func (s *ShopServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.GetShopsByIDs(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Shop/UpdateShopInfo":
+		msg := &UpdateShopInfoRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateShopInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

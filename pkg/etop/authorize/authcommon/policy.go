@@ -236,6 +236,7 @@ const adminPolicy = `
 	p, admin/shipment_price:view, admin, ad_salelead
 	# admin shop
 	p, admin/shop:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant
+	p, admin/shop:update, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale
 	# admin user
 	p, admin/user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant
 	p, admin/user:block, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale

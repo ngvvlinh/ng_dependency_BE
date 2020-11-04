@@ -2337,6 +2337,33 @@
         }
       }
     },
+    "/api/admin.Shop/UpdateShopInfo": {
+      "post": {
+        "tags": [
+          "Shop"
+        ],
+        "summary": "UpdateShopInfo",
+        "operationId": "admin.Shop-UpdateShopInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuUpdateShopInfoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Subscription/ActivateSubscription": {
       "post": {
         "tags": [
@@ -9594,6 +9621,19 @@
             "type": "string",
             "format": "int64"
           }
+        }
+      }
+    },
+    "xuUpdateShopInfoRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "money_transaction_rrule": {
+          "description": "referrence: https://icalendar.org/rrule-tool.html\n",
+          "type": "string"
         }
       }
     },

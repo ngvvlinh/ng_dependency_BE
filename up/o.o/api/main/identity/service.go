@@ -51,7 +51,10 @@ type Aggregate interface {
 
 	UpdateUserRef(context.Context, *UpdateUserRefArgs) (*UserRefSaff, error)
 
+	// -- Shop -- //
 	CreateShop(context.Context, *CreateShopArgs) (*Shop, error)
+
+	UpdateShopInfo(context.Context, *UpdateShopInfoArgs) error
 }
 
 type QueryService interface {
@@ -301,4 +304,9 @@ type CreateUserArgs struct {
 type ListUsersByIDsAndNameNormArgs struct {
 	IDs      []dot.ID
 	NameNorm filter.FullTextSearch
+}
+
+type UpdateShopInfoArgs struct {
+	ShopID                dot.ID
+	MoneyTransactionRrule string
 }

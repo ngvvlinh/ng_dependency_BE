@@ -158,6 +158,18 @@ func (h AggregateHandler) HandleUpdateShipFromAddressID(ctx context.Context, msg
 	return h.inner.UpdateShipFromAddressID(msg.GetArgs(ctx))
 }
 
+type UpdateShopInfoCommand struct {
+	ShopID                dot.ID
+	MoneyTransactionRrule string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopInfo(ctx context.Context, msg *UpdateShopInfoCommand) (err error) {
+	return h.inner.UpdateShopInfo(msg.GetArgs(ctx))
+}
+
 type UpdateUserEmailCommand struct {
 	UserID dot.ID
 	Email  string
@@ -489,6 +501,7 @@ func (q *UnblockUserCommand) command()                {}
 func (q *UpdateAffiliateBankAccountCommand) command() {}
 func (q *UpdateAffiliateInfoCommand) command()        {}
 func (q *UpdateShipFromAddressIDCommand) command()    {}
+func (q *UpdateShopInfoCommand) command()             {}
 func (q *UpdateUserEmailCommand) command()            {}
 func (q *UpdateUserPhoneCommand) command()            {}
 func (q *UpdateUserRefCommand) command()              {}
@@ -665,6 +678,19 @@ func (q *UpdateShipFromAddressIDCommand) GetArgs(ctx context.Context) (_ context
 func (q *UpdateShipFromAddressIDCommand) SetUpdateShipFromAddressArgs(args *UpdateShipFromAddressArgs) {
 	q.ID = args.ID
 	q.ShipFromAddressID = args.ShipFromAddressID
+}
+
+func (q *UpdateShopInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopInfoArgs) {
+	return ctx,
+		&UpdateShopInfoArgs{
+			ShopID:                q.ShopID,
+			MoneyTransactionRrule: q.MoneyTransactionRrule,
+		}
+}
+
+func (q *UpdateShopInfoCommand) SetUpdateShopInfoArgs(args *UpdateShopInfoArgs) {
+	q.ShopID = args.ShopID
+	q.MoneyTransactionRrule = args.MoneyTransactionRrule
 }
 
 func (q *UpdateUserEmailCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, email string) {
@@ -969,6 +995,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
 	b.AddHandler(h.HandleUpdateShipFromAddressID)
+	b.AddHandler(h.HandleUpdateShopInfo)
 	b.AddHandler(h.HandleUpdateUserEmail)
 	b.AddHandler(h.HandleUpdateUserPhone)
 	b.AddHandler(h.HandleUpdateUserRef)
