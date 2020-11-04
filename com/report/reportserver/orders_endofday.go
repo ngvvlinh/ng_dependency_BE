@@ -3,12 +3,10 @@ package reportserver
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
-
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 
 	"o.o/api/main/identity"
 	"o.o/api/main/reporting"
@@ -17,10 +15,7 @@ import (
 )
 
 var funcMap = template.FuncMap{
-	"formatPrice": func(n int) string {
-		p := message.NewPrinter(language.Vietnamese)
-		return p.Sprint(n)
-	},
+	"formatPrice": formatPrice,
 }
 
 type ReportService struct {
@@ -80,13 +75,21 @@ func (s *ReportService) ExportReportOrdersEndOfDay(w http.ResponseWriter, r *htt
 
 	data := s.getData(w, r)
 
-	var html bytes.Buffer
-	if err := tmpl.Execute(&html, data); err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	switch fileTyp {
+	case fileTypePDF:
+		var html bytes.Buffer
+		if err := tmpl.Execute(&html, data); err != nil {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
+		exportPDF(w, html)
+	case fileTypeExcel:
+		exportExcel(w, data.ToExcelData())
+	default:
+		http.Error(w, "định dạng file không hợp lệ", http.StatusBadRequest)
 		return
 	}
-
-	exportFile(fileTyp, w, html)
 }
 
 func (s *ReportService) getParams(ctx context.Context, r *http.Request) (staffName string, createdAt time.Time, createdBy dot.ID, err error) {
@@ -176,4 +179,94 @@ func (s *ReportService) getData(w http.ResponseWriter, r *http.Request) (data Or
 		data.Summary.TotalRevenue += reportLine.Revenue
 	}
 	return
+}
+
+func (d OrdersEndOfDayData) ToExcelData() (res ReportData) {
+	res.ReportDate = fmt.Sprintf("Ngày lập: %s", d.Now)
+	res.ReportName = "Báo cáo cuối ngày về bán hàng"
+
+	var infos []string
+	infos = append(infos, fmt.Sprintf("Ngày bán: %s", d.CreatedAt))
+	infos = append(infos, fmt.Sprintf("Cửa hàng: %s", d.ShopName))
+	if d.StaffName != "" {
+		infos = append(infos, fmt.Sprintf("Nhân viên: %s", d.StaffName))
+	}
+	res.ReportInfos = infos
+
+	var table [][]Cell
+	table = append(table, []Cell{
+		{
+			IsHeader: true,
+			Value:    "Mã hoá đơn",
+		}, {
+			IsHeader: true,
+			Value:    "Thời gian",
+		}, {
+			IsHeader: true,
+			Value:    "SL sản phẩm",
+		}, {
+			IsHeader: true,
+			Value:    "Doanh thu",
+		}, {
+			IsHeader: true,
+			Value:    "Thu khác",
+		}, {
+			IsHeader: true,
+			Value:    "Giảm giá",
+		}, {
+			IsHeader: true,
+			Value:    "Thực thu",
+		}})
+
+	table = append(table, []Cell{
+		{
+			IsHeader: true,
+			Value:    fmt.Sprintf("Hoá đơn: %d", len(d.Lines)),
+		}, {
+			Value: "",
+		}, {
+			IsHeader: true,
+			Value:    d.Summary.TotalOrders,
+		}, {
+			IsHeader: true,
+			Value:    d.Summary.TotalAmount,
+		}, {
+			IsHeader: true,
+			Value:    d.Summary.TotalFee,
+		}, {
+			IsHeader: true,
+			Value:    d.Summary.TotalDiscount,
+		}, {
+			IsHeader: true,
+			Value:    d.Summary.TotalRevenue,
+		}})
+
+	for _, line := range d.Lines {
+		table = append(table, []Cell{
+			{
+				Value: line.OrderCode,
+			},
+			{
+				Value: line.CreatedAt,
+			},
+			{
+				Value: line.TotalItems,
+			},
+			{
+				Value: line.TotalAmount,
+			},
+			{
+				Value: line.TotalFee,
+			},
+			{
+				Value: line.TotalDiscount,
+			},
+			{
+				Value: line.Revenue,
+			},
+		})
+	}
+	res.ReportTable = table
+
+	return res
 }
