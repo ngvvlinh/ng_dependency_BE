@@ -95,10 +95,17 @@ func InvitationAggregateMessageBus(a *InvitationAggregate) invitation.CommandBus
 func (a *InvitationAggregate) CreateInvitation(
 	ctx context.Context, args *invitation.CreateInvitationArgs,
 ) (*invitation.Invitation, error) {
+	var err error
+	if args.Email, args.Phone, err = validateEmailOrPhone(args.Email, args.Phone); err != nil {
+		return nil, err
+	}
+
 	if !a.checkRoles(args.Roles) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "role không hợp lệ")
 	}
+
 	_, userIsInvited, err := a.getInvitationByEmailOrPhone(ctx, args.Email, args.Phone, args.AccountID)
+
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 	// no-op
@@ -147,25 +154,35 @@ func (a *InvitationAggregate) CreateInvitation(
 	return invitationItem, nil
 }
 
-func (a *InvitationAggregate) getInvitationByEmailOrPhone(ctx context.Context, email string, phone string, accountID dot.ID) (*invitation.Invitation, *identity.User, error) {
+func validateEmailOrPhone(email, phone string) (validatedEmail string, validatedPhone string, err error) {
 	var emailNorm validate.NormalizedEmail
 	var phoneNorm validate.NormalizedPhone
+
 	if email != "" {
 		var ok bool
 		emailNorm, ok = validate.NormalizeEmail(email)
 		if !ok {
-			return nil, nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
+			return "", "", cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
 		}
-		email = emailNorm.String()
+		validatedEmail = emailNorm.String()
 	}
 
 	if phone != "" {
 		var ok bool
 		phoneNorm, ok = validate.NormalizePhone(phone)
 		if !ok {
-			return nil, nil, cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
+			return "", "", cm.Error(cm.InvalidArgument, "Số điện thoại không hợp lệ", nil)
 		}
-		phone = phoneNorm.String()
+		validatedPhone = phoneNorm.String()
+	}
+
+	return
+}
+
+func (a *InvitationAggregate) getInvitationByEmailOrPhone(ctx context.Context, email string, phone string, accountID dot.ID) (*invitation.Invitation, *identity.User, error) {
+	var err error
+	if email, phone, err = validateEmailOrPhone(email, phone); err != nil {
+		return nil, nil, err
 	}
 
 	userIsInvited, err := a.checkUserBelongsToShop(ctx, email, phone, accountID)
@@ -190,6 +207,10 @@ func (a *InvitationAggregate) getInvitationByEmailOrPhone(ctx context.Context, e
 }
 
 func (a *InvitationAggregate) ResendInvitation(ctx context.Context, args *invitation.ResendInvitationArgs) (*invitation.Invitation, error) {
+	var err error
+	if args.Email, args.Phone, err = validateEmailOrPhone(args.Email, args.Phone); err != nil {
+		return nil, err
+	}
 	invitationCore, _, err := a.getInvitationByEmailOrPhone(ctx, args.Email, args.Phone, args.AccountID)
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
