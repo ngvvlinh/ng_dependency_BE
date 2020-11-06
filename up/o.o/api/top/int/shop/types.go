@@ -2915,3 +2915,48 @@ type GetAccountShipnowRequest struct {
 }
 
 func (m *GetAccountShipnowRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type Contact struct {
+	ID        dot.ID   `json:"id"`
+	ShopID    dot.ID   `json:"shop_id"`
+	FullName  string   `json:"full_name"`
+	Phone     string   `json:"phone"`
+	CreatedAt dot.Time `json:"created_at"`
+	UpdatedAt dot.Time `json:"updated_at"`
+}
+
+func (m *Contact) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateContactRequest struct {
+	ID       dot.ID `json:"id"`
+	FullName string `json:"full_name"`
+	Phone    string `json:"phone"`
+}
+
+func (m *CreateContactRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateContactRequest struct {
+	ID       dot.ID         `json:"id"`
+	FullName dot.NullString `json:"full_name"`
+	Phone    dot.NullString `json:"phone"`
+}
+
+func (m *UpdateContactRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetContactByIDRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *GetContactByIDRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteContactResponse struct {
+	Count int `json:"count"`
+}
+
+func (m *DeleteContactResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteContactRequest struct {
+	ID dot.ID `json:"id"`
+}
+
+func (m *DeleteContactRequest) String() string { return jsonx.MustMarshalToString(m) }

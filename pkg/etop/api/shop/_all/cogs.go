@@ -11,6 +11,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/category"
 	"o.o/backend/pkg/etop/api/shop/collection"
 	"o.o/backend/pkg/etop/api/shop/connection"
+	"o.o/backend/pkg/etop/api/shop/contact"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
 	"o.o/backend/pkg/etop/api/shop/export"
@@ -77,6 +78,7 @@ func NewServers(
 	subscriptionService *subscription.SubscriptionService,
 	ticketService *ticket.TicketService,
 	accountshipnowService *accountshipnow.AccountShipnowService,
+	contactService *contact.ContactService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -120,6 +122,7 @@ func NewServers(
 		webServerService.Clone,
 		ticketService.Clone,
 		accountshipnowService.Clone,
+		contactService.Clone,
 	)
 	return servers
 }

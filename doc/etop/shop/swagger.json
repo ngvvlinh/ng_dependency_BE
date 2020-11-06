@@ -1178,6 +1178,114 @@
         }
       }
     },
+    "/api/shop.Contact/CreateContact": {
+      "post": {
+        "tags": [
+          "Contact"
+        ],
+        "summary": "CreateContact",
+        "operationId": "shop.Contact-CreateContact",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateContactRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paContact"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Contact/DeleteContact": {
+      "post": {
+        "tags": [
+          "Contact"
+        ],
+        "summary": "DeleteContact",
+        "operationId": "shop.Contact-DeleteContact",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paDeleteContactRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paDeleteContactResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Contact/GetContactByID": {
+      "post": {
+        "tags": [
+          "Contact"
+        ],
+        "summary": "GetContactByID",
+        "operationId": "shop.Contact-GetContactByID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetContactByIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paContact"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Contact/UpdateContact": {
+      "post": {
+        "tags": [
+          "Contact"
+        ],
+        "summary": "UpdateContact",
+        "operationId": "shop.Contact-UpdateContact",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateContactRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paContact"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Customer/AddCustomersToGroup": {
       "post": {
         "description": "-- group --//\n",
@@ -8271,6 +8379,33 @@
         }
       }
     },
+    "paContact": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "paCreateBrandRequest": {
       "type": "object",
       "properties": {
@@ -8321,6 +8456,21 @@
           "type": "string"
         },
         "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "paCreateContactRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
           "type": "string"
         }
       }
@@ -9331,6 +9481,23 @@
         }
       }
     },
+    "paDeleteContactRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paDeleteContactResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
     "paDeleteTicketCommentRequest": {
       "type": "object",
       "properties": {
@@ -9869,6 +10036,15 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetContactByIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -12583,6 +12759,21 @@
           "type": "string"
         },
         "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "paUpdateContactRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
           "type": "string"
         }
       }
@@ -16832,6 +17023,9 @@
     },
     {
       "name": "Connection"
+    },
+    {
+      "name": "Contact"
     },
     {
       "name": "Customer"

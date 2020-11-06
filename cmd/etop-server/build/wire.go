@@ -28,6 +28,7 @@ import (
 	"o.o/backend/com/main/address"
 	"o.o/backend/com/main/catalog"
 	"o.o/backend/com/main/connectioning"
+	"o.o/backend/com/main/contact"
 	credit "o.o/backend/com/main/credit"
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/inventory"
@@ -192,6 +193,7 @@ func Build(
 		captcha.WireSet,
 		credit.WireSet,
 		ticket.WireSet,
+		contact.WireSet,
 
 		admin_all.WireSet,
 		shop_all.WireSet,

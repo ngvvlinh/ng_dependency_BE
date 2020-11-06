@@ -442,3 +442,11 @@ type TicketService interface {
 	DeleteTicketComment(context.Context, *DeleteTicketCommentRequest) (*DeleteTicketCommentResponse, error)
 	GetTicketComments(context.Context, *GetTicketCommentsRequest) (*GetTicketCommentsResponse, error)
 }
+
+// +apix:path=/shop.Contact
+type ContactService interface {
+	GetContactByID(context.Context, *GetContactByIDRequest) (*Contact, error)
+	CreateContact(context.Context, *CreateContactRequest) (*Contact, error)
+	UpdateContact(context.Context, *UpdateContactRequest) (*Contact, error)
+	DeleteContact(context.Context, *DeleteContactRequest) (*DeleteContactResponse, error)
+}

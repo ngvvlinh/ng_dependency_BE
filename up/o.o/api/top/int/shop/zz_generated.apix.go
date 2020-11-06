@@ -39,6 +39,8 @@ func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Serv
 		return NewCollectionServiceServer(builder, hooks...), true
 	case func() ConnectionService:
 		return NewConnectionServiceServer(builder, hooks...), true
+	case func() ContactService:
+		return NewContactServiceServer(builder, hooks...), true
 	case func() CustomerGroupService:
 		return NewCustomerGroupServiceServer(builder, hooks...), true
 	case func() CustomerService:
@@ -1123,6 +1125,116 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 				return
 			}
 			resp, err = inner.UpdateShopConnection(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type ContactServiceServer struct {
+	hooks   httprpc.HooksBuilder
+	builder func() ContactService
+}
+
+func NewContactServiceServer(builder func() ContactService, hooks ...httprpc.HooksBuilder) httprpc.Server {
+	return &ContactServiceServer{
+		hooks:   httprpc.ChainHooks(hooks...),
+		builder: builder,
+	}
+}
+
+const ContactServicePathPrefix = "/shop.Contact/"
+
+const Path_Contact_CreateContact = "/shop.Contact/CreateContact"
+const Path_Contact_DeleteContact = "/shop.Contact/DeleteContact"
+const Path_Contact_GetContactByID = "/shop.Contact/GetContactByID"
+const Path_Contact_UpdateContact = "/shop.Contact/UpdateContact"
+
+func (s *ContactServiceServer) PathPrefix() string {
+	return ContactServicePathPrefix
+}
+
+func (s *ContactServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
+func (s *ContactServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	hooks := httprpc.WrapHooks(s.hooks)
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.RequestReceived(ctx, *info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
+}
+
+func (s *ContactServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Contact/CreateContact":
+		msg := &CreateContactRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateContact(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Contact/DeleteContact":
+		msg := &DeleteContactRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteContact(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Contact/GetContactByID":
+		msg := &GetContactByIDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetContactByID(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Contact/UpdateContact":
+		msg := &UpdateContactRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateContact(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

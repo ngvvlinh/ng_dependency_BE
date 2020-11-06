@@ -1101,6 +1101,12 @@ var _acl = map[string]*permission.Decl{
 	"admin.Ticket/DeleteTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelUpdate)},
 	"etop.Ticket/GetTicketLabels":    {Type: Public},
 
+	// -- contact -- //
+	"shop.Contact/GetContactByID": {Type: Shop},
+	"shop.Contact/CreateContact":  {Type: Shop},
+	"shop.Contact/UpdateContact":  {Type: Shop},
+	"shop.Contact/DeleteContact":  {Type: Shop},
+
 	//-- crm-service --//
 	"crm.User/GetUserInfo":                         {Type: Shop},
 	"crm.Vtiger/GetContacts":                       {Type: EtopAdmin},

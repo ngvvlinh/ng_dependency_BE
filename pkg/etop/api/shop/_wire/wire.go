@@ -14,6 +14,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/category"
 	"o.o/backend/pkg/etop/api/shop/collection"
 	"o.o/backend/pkg/etop/api/shop/connection"
+	"o.o/backend/pkg/etop/api/shop/contact"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
 	"o.o/backend/pkg/etop/api/shop/export"
@@ -78,4 +79,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(ws.WebServerService), "*"),
 	wire.Struct(new(ticket.TicketService), "*"),
 	wire.Struct(new(accountshipnow.AccountShipnowService), "*"),
+	wire.Struct(new(contact.ContactService), "*"),
 )
