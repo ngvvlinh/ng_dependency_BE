@@ -21,4 +21,7 @@ const (
 
 	// +enum=other
 	Other TicketRefType = 31
+
+	// +enum=contact
+	Contact TicketRefType = 88
 )

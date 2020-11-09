@@ -156,6 +156,7 @@ var enumConnectionProviderName = map[int]string{
 	5: "ahamove",
 	6: "ninjavan",
 	7: "dhl",
+	8: "suitecrm",
 }
 
 var enumConnectionProviderValue = map[string]int{
@@ -167,6 +168,7 @@ var enumConnectionProviderValue = map[string]int{
 	"ahamove":  5,
 	"ninjavan": 6,
 	"dhl":      7,
+	"suitecrm": 8,
 }
 
 func ParseConnectionProvider(s string) (ConnectionProvider, bool) {
@@ -426,11 +428,13 @@ func (n *NullConnectionSubtype) UnmarshalJSON(data []byte) error {
 var enumConnectionTypeName = map[int]string{
 	0: "unknown",
 	1: "shipping",
+	2: "crm",
 }
 
 var enumConnectionTypeValue = map[string]int{
 	"unknown":  0,
 	"shipping": 1,
+	"crm":      2,
 }
 
 func ParseConnectionType(s string) (ConnectionType, bool) {

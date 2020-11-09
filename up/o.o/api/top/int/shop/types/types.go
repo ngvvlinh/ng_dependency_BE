@@ -55,6 +55,7 @@ type Ticket struct {
 	Note        string `json:"note"`
 	AdminNote   string `json:"admin_note"`
 
+	ExternalID  string                        `json:"external_id"`
 	RefID       dot.ID                        `json:"ref_id"`
 	RefType     ticket_ref_type.TicketRefType `json:"ref_type"`
 	RefCode     string                        `json:"ref_code"`

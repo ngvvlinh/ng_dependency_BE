@@ -15,6 +15,9 @@ const (
 
 	// +enum=shipping
 	Shipping ConnectionType = 1
+
+	// +enum=crm
+	CRM ConnectionType = 2
 )
 
 // +enum
@@ -96,4 +99,7 @@ const (
 
 	// +enum=dhl
 	ConnectionProviderDHL ConnectionProvider = 7
+
+	// +enum=suitecrm
+	ConnectionProviderSuiteCRM ConnectionProvider = 8
 )

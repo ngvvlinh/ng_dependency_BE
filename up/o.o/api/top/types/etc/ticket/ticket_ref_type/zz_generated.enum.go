@@ -19,6 +19,7 @@ var enumTicketRefTypeName = map[int]string{
 	42: "ffm",
 	95: "money_transaction",
 	31: "other",
+	88: "contact",
 }
 
 var enumTicketRefTypeValue = map[string]int{
@@ -26,6 +27,7 @@ var enumTicketRefTypeValue = map[string]int{
 	"ffm":               42,
 	"money_transaction": 95,
 	"other":             31,
+	"contact":           88,
 }
 
 func ParseTicketRefType(s string) (TicketRefType, bool) {

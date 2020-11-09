@@ -24,4 +24,7 @@ const (
 
 	// +enum=system
 	System TicketSource = 42
+
+	// +enum=webphone
+	WebPhone TicketSource = 98
 )

@@ -48,7 +48,7 @@ func (q *ConnectionQuery) GetConnectionByCode(ctx context.Context, code string) 
 func (q *ConnectionQuery) ListConnections(ctx context.Context, args *connectioning.ListConnectionsArgs) ([]*connectioning.Connection, error) {
 	// backward-compatible
 	// set default subtype to shipment
-	if args.ConnectionSubtype == 0 {
+	if args.ConnectionType == connection_type.Shipping && args.ConnectionSubtype == 0 {
 		args.ConnectionSubtype = connection_type.ConnectionSubtypeShipment
 	}
 

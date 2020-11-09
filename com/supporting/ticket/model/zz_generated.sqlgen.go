@@ -140,7 +140,7 @@ func (m *Ticket) Migration(db *cmsql.Database) {
 			ColumnType:       "ticket_ref_type.TicketRefType",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"order_trading", "ffm", "money_transaction", "other"},
+			ColumnEnumValues: []string{"order_trading", "ffm", "money_transaction", "other", "contact"},
 		},
 		"ref_code": {
 			ColumnName:       "ref_code",
@@ -154,7 +154,7 @@ func (m *Ticket) Migration(db *cmsql.Database) {
 			ColumnType:       "ticket_source.TicketSource",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"pos_web", "pos_app", "shipment_app", "admin", "system"},
+			ColumnEnumValues: []string{"pos_web", "pos_app", "shipment_app", "admin", "system", "webphone"},
 		},
 		"state": {
 			ColumnName:       "state",

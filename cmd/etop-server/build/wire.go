@@ -22,6 +22,7 @@ import (
 	shipnow_all "o.o/backend/cogs/shipnow/_all"
 	sms_all "o.o/backend/cogs/sms/_all"
 	storage_all "o.o/backend/cogs/storage/_all"
+	ticket_all "o.o/backend/cogs/ticket/_all"
 	_uploader "o.o/backend/cogs/uploader"
 	"o.o/backend/com/eventhandler/notifier"
 	paymentmanager "o.o/backend/com/external/payment/manager"
@@ -197,6 +198,7 @@ func Build(
 
 		admin_all.WireSet,
 		shop_all.WireSet,
+		ticket_all.WireSet,
 
 		ProvidePolicy,
 		auth.WireSet,

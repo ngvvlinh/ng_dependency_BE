@@ -23,6 +23,7 @@ import (
 	"o.o/backend/cogs/shipnow/_all"
 	"o.o/backend/cogs/sms/_all"
 	"o.o/backend/cogs/storage/_all"
+	"o.o/backend/cogs/ticket/_all"
 	"o.o/backend/cogs/uploader"
 	aggregate24 "o.o/backend/com/etc/logging/payment/aggregate"
 	"o.o/backend/com/etc/logging/shippingwebhook"
@@ -113,6 +114,7 @@ import (
 	"o.o/backend/com/subscripting/subscriptionproduct"
 	query19 "o.o/backend/com/summary/query"
 	aggregate19 "o.o/backend/com/supporting/ticket/aggregate"
+	"o.o/backend/com/supporting/ticket/provider"
 	query5 "o.o/backend/com/supporting/ticket/query"
 	aggregate18 "o.o/backend/com/web/webserver/aggregate"
 	query21 "o.o/backend/com/web/webserver/query"
@@ -627,8 +629,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		OrderStore:     orderStoreInterface,
 	}
 	clientConfig := cfg.VTPay
-	provider := vtpay.New(clientConfig)
-	v3 := payment_all.AllSupportedPaymentProviders(provider)
+	vtpayProvider := vtpay.New(clientConfig)
+	v3 := payment_all.AllSupportedPaymentProviders(vtpayProvider)
 	paymentManager := manager2.NewManager(v3, orderingQueryBus)
 	managerCommandBus := manager2.ManagerMesssageBus(paymentManager)
 	paymentService := &payment.PaymentService{
@@ -749,7 +751,16 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:           session,
 		SubscriptionQuery: subscriptionQueryBus,
 	}
-	ticketAggregate := aggregate19.NewTicketAggregate(busBus, mainDB, moneytxQueryBus, shippingQueryBus, orderingQueryBus, queryBus, store)
+	contactQuery := query22.NewContactQuery(mainDB)
+	contactQueryBus := query22.ContactQueryMessageBus(contactQuery)
+	driver2 := ticket_all.SupportedTicketDriver(busBus, shippingQueryBus, contactQueryBus)
+	ticketManager, err := provider.NewTicketManager(connectionManager, busBus, driver2, connectioningQueryBus)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return Output{}, nil, err
+	}
+	ticketAggregate := aggregate19.NewTicketAggregate(busBus, mainDB, moneytxQueryBus, shippingQueryBus, orderingQueryBus, queryBus, ticketManager, connectioningQueryBus, contactQueryBus, store)
 	ticketCommandBus := aggregate19.TicketAggregateMessageBus(ticketAggregate)
 	ticketTicketService := &ticket.TicketService{
 		Session:     session,
@@ -760,8 +771,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:             session,
 		AccountshipnowQuery: accountshipnowQueryBus,
 	}
-	contactQuery := query22.NewContactQuery(mainDB)
-	contactQueryBus := query22.ContactQueryMessageBus(contactQuery)
 	contactAggregate := aggregate20.NewContactAggregate(mainDB)
 	contactCommandBus := aggregate20.ContactAggregateMessageBus(contactAggregate)
 	contactService := &contact.ContactService{

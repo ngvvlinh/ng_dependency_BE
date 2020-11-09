@@ -4330,7 +4330,8 @@
         "partner",
         "ahamove",
         "ninjavan",
-        "dhl"
+        "dhl",
+        "suitecrm"
       ]
     },
     "cdConnectionSubtype": {
@@ -4346,7 +4347,8 @@
       "type": "string",
       "enum": [
         "unknown",
-        "shipping"
+        "shipping",
+        "crm"
       ]
     },
     "csTryOnCode": {
@@ -4468,6 +4470,9 @@
           "format": "int64"
         },
         "description": {
+          "type": "string"
+        },
+        "external_id": {
           "type": "string"
         },
         "from": {
@@ -4629,7 +4634,8 @@
         "pos_app",
         "shipment_app",
         "admin",
-        "system"
+        "system",
+        "webphone"
       ]
     },
     "jjAccountType": {
@@ -4860,7 +4866,8 @@
         "order_trading",
         "ffm",
         "money_transaction",
-        "other"
+        "other",
+        "contact"
       ]
     },
     "pjGHNNoteCode": {

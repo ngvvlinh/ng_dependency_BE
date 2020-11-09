@@ -81,7 +81,7 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 		return nil, err
 	}
 
-	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		if err = a.TicketLabelStore(ctx).ID(args.ID).UpdateTicketLabel(ticketLabelCore); err != nil {
 			return err
 		}
@@ -92,7 +92,8 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 		}
 
 		return a.SetTicketLabels(&result)
-	}); err != nil {
+	})
+	if err != nil {
 		return nil, err
 	}
 
@@ -126,7 +127,8 @@ func (a TicketAggregate) DeleteTicketLabel(ctx context.Context, args *ticket.Del
 
 	ids := getListLabelChildIDs(label)
 	ids = append(ids, args.ID)
-	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		if _, err = a.TicketLabelStore(ctx).IDs(ids...).SoftDelete(); err != nil {
 			return err
 		}
@@ -142,7 +144,8 @@ func (a TicketAggregate) DeleteTicketLabel(ctx context.Context, args *ticket.Del
 		}
 
 		return a.SetTicketLabels(&result)
-	}); err != nil {
+	})
+	if err != nil {
 		return 0, err
 	}
 

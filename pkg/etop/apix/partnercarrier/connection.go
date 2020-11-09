@@ -44,6 +44,7 @@ func (s *ShipmentConnectionService) GetConnections(ctx context.Context, r *pbcm.
 func (s *ShipmentConnectionService) CreateConnection(ctx context.Context, r *partnercarrier.CreateConnectionRequest) (*partnercarrier.ShipmentConnection, error) {
 	query := &connectioning.ListConnectionsQuery{
 		PartnerID:        s.SS.Partner().ID,
+		ConnectionType:   connection_type.Shipping,
 		ConnectionMethod: connection_type.ConnectionMethodDirect,
 	}
 	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {

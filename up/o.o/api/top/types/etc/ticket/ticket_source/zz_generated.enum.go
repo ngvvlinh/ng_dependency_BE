@@ -20,6 +20,7 @@ var enumTicketSourceName = map[int]string{
 	74: "shipment_app",
 	38: "admin",
 	42: "system",
+	98: "webphone",
 }
 
 var enumTicketSourceValue = map[string]int{
@@ -28,6 +29,7 @@ var enumTicketSourceValue = map[string]int{
 	"shipment_app": 74,
 	"admin":        38,
 	"system":       42,
+	"webphone":     98,
 }
 
 func ParseTicketSource(s string) (TicketSource, bool) {

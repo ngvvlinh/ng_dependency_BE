@@ -11,6 +11,7 @@ import (
 	shippingcore "o.o/api/main/shipping"
 	"o.o/api/meta"
 	"o.o/api/top/external/partnercarrier"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	logmodel "o.o/backend/com/etc/logging/shippingwebhook/model"
@@ -133,7 +134,8 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, ffmID dot.ID, ship
 		return nil, nil, cm.Errorf(cm.InvalidArgument, nil, "Missing id or shipping_code")
 	}
 	query := &connectioning.ListConnectionsQuery{
-		PartnerID: partnerID,
+		PartnerID:      partnerID,
+		ConnectionType: connection_type.Shipping,
 	}
 	if err := wh.connectionQS.Dispatch(ctx, query); err != nil {
 		return nil, nil, cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy đối tác vận chuyển (partner_id = %v)", partnerID)

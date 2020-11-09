@@ -5,17 +5,23 @@ import (
 	"fmt"
 	"time"
 
+	"o.o/api/main/connectioning"
+	"o.o/api/main/contact"
 	"o.o/api/main/identity"
 	"o.o/api/main/moneytx"
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipping"
 	"o.o/api/supporting/ticket"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
+	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/supporting/ticket/model"
+	"o.o/backend/com/supporting/ticket/provider"
 	"o.o/backend/com/supporting/ticket/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -43,6 +49,9 @@ type TicketAggregate struct {
 	ShippingQuery                       shipping.QueryBus
 	OrderQuery                          ordering.QueryBus
 	IdentityQuery                       identity.QueryBus
+	TicketManager                       *provider.TicketManager
+	ConnectionQuery                     connectioning.QueryBus
+	ContactQuery                        contact.QueryBus
 	RedisStore                          redis.Store
 }
 
@@ -53,6 +62,9 @@ func NewTicketAggregate(
 	shippingQ shipping.QueryBus,
 	orderQ ordering.QueryBus,
 	identityQ identity.QueryBus,
+	ticketManager *provider.TicketManager,
+	connectionQ connectioning.QueryBus,
+	contactQ contact.QueryBus,
 	redisStore redis.Store,
 ) *TicketAggregate {
 	return &TicketAggregate{
@@ -67,6 +79,9 @@ func NewTicketAggregate(
 		db:                                  db,
 		OrderQuery:                          orderQ,
 		IdentityQuery:                       identityQ,
+		ConnectionQuery:                     connectionQ,
+		TicketManager:                       ticketManager,
+		ContactQuery:                        contactQ,
 		RedisStore:                          redisStore,
 	}
 }
@@ -152,6 +167,36 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 				return nil, err
 			}
 			refCode = getOrderQuery.Result.Code
+		case ticket_ref_type.Contact:
+			// contact - webphone => suite crm
+			if ticketCore.Source == ticket_source.WebPhone {
+				getContactQuery := &contact.GetContactByIDQuery{
+					ID:     args.RefID,
+					ShopID: args.AccountID,
+				}
+				if err := a.ContactQuery.Dispatch(ctx, getContactQuery); err != nil {
+					if cm.ErrorCode(err) == cm.NotFound {
+						return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy liên lạc")
+					}
+					return nil, err
+				}
+
+				listConnectionQuery := &connectioning.ListConnectionsQuery{
+					Status:             status3.P.Wrap(),
+					ConnectionType:     connection_type.CRM,
+					ConnectionMethod:   connection_type.ConnectionMethodBuiltin,
+					ConnectionProvider: connection_type.ConnectionProviderSuiteCRM,
+				}
+				if err := a.ConnectionQuery.Dispatch(ctx, listConnectionQuery); err != nil {
+					return nil, err
+				}
+				connections := listConnectionQuery.Result
+
+				if len(connections) == 0 {
+					return nil, cm.Errorf(cm.InvalidArgument, nil, "connection suite crm not found")
+				}
+				connectionID = connections[0].ID
+			}
 		default:
 			//no-op(other)
 		}
@@ -162,6 +207,11 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 		}
 		ticketCore.RefCode = refCode
 		ticketCore.ConnectionID = connectionID
+	}
+
+	ticketCore, err = a.TicketManager.CreateTicket(ctx, ticketCore)
+	if err != nil {
+		return nil, err
 	}
 
 	if err = a.TicketStore(ctx).Create(ticketCore); err != nil {

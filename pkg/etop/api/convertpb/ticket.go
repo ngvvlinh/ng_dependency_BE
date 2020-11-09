@@ -77,6 +77,7 @@ func Convert_core_Ticket_to_api_Ticket(in *ticket.Ticket) *types.Ticket {
 		Title:           in.Title,
 		Description:     in.Description,
 		Note:            in.Note,
+		ExternalID:      in.ExternalID,
 		AdminNote:       in.AdminNote,
 		RefID:           in.RefID,
 		RefType:         in.RefType,
