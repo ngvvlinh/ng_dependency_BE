@@ -18,6 +18,7 @@ import (
 	"o.o/backend/com/main/shipping/carrier"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
 	"o.o/backend/com/main/shipping/convert"
+	shippingconvert "o.o/backend/com/main/shipping/convert"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	cm "o.o/backend/pkg/common"
@@ -63,7 +64,6 @@ type TaskStatus struct {
 
 type TaskTrackingArguments struct {
 	ffmIDs       []dot.ID
-	mOldFfms     map[dot.ID]*shipmodel.Fulfillment
 	shopID       dot.ID
 	connectionID dot.ID
 }
@@ -217,19 +217,16 @@ func (d *DHLSync) addTrackingTasks(ctx context.Context) error {
 			start := 0
 			for start < len(ffmIDs) {
 				end := minInt(start+defaultNumFfmsInRequest, len(ffmIDs))
-				mOldFfms := make(map[dot.ID]*shipmodel.Fulfillment)
 
 				// add ffm into ffmInProgress
 				for i := start; i < end; i++ {
 					d.ffmInProgress[ffmIDs[i]] = ffms[i]
-					mOldFfms[ffmIDs[i]] = ffms[i]
 				}
 
 				// add task arguments
 				taskID := cm.NewID()
 				d.mapTaskTrackingArguments[taskID] = &TaskTrackingArguments{
 					ffmIDs:       ffmIDs[start:end],
-					mOldFfms:     mOldFfms,
 					shopID:       shopID,
 					connectionID: connectionID,
 				}
@@ -336,11 +333,7 @@ func (d *DHLSync) trackingOrder(id interface{}, p scheduler.Planner) (err error)
 		if err != nil {
 			return cm.Errorf(cm.Internal, err, "Can't parse shipmentID")
 		}
-		ffmModel, ok := taskArguments.mOldFfms[ffmID]
-		if !ok {
-			return cm.Errorf(cm.Internal, err, "Can't find shipmentID %v in system", ffmID)
-		}
-		ffmID, _err := d.callback(ctx, shipmentItem, ffmModel)
+		ffmID, _err := d.callback(ctx, shipmentItem)
 		if _err != nil {
 			sendError(shopID, connectionID, []dot.ID{ffmID}, _err)
 		}
@@ -361,7 +354,6 @@ func sendError(shopID, connectionID dot.ID, ffmIDs []dot.ID, err error) {
 
 func (d *DHLSync) callback(
 	ctx context.Context, shipmentItem *dhlclient.ShipmentItemTrackResp,
-	oldFfm *shipmodel.Fulfillment,
 ) (ffmID dot.ID, err error) {
 	t0 := time.Now()
 
@@ -370,9 +362,19 @@ func (d *DHLSync) callback(
 		return 0, cm.Errorf(cm.Internal, err, "Can't parse shipmentID")
 	}
 
+	query := &shipping.GetFulfillmentByIDOrShippingCodeQuery{
+		ID: ffmID,
+	}
+	if err := d.shippingQS.Dispatch(ctx, query); err != nil {
+		return 0, cm.Errorf(cm.Internal, err, "")
+	}
+	ffm := query.Result
+	var ffmModel shipmodel.Fulfillment
+	shippingconvert.Convert_shipping_Fulfillment_To_shippingmodel_Fulfillment(ffm, &ffmModel)
+
 	err = d.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		// check to update fulfillment
-		updateFfm, err := update.CalcUpdateFulfillment(oldFfm, shipmentItem)
+		updateFfm, err := update.CalcUpdateFulfillment(&ffmModel, shipmentItem)
 		if err != nil {
 			return cm.Errorf(cm.FailedPrecondition, err, err.Error()).WithMeta("result", "ignore")
 		}
@@ -382,7 +384,7 @@ func (d *DHLSync) callback(
 
 		updateFfm.LastSyncAt = t0
 		// UpdateInfo other time
-		updateFfm = shipping2.CalcOtherTimeBaseOnState(updateFfm, oldFfm, t0)
+		updateFfm = shipping2.CalcOtherTimeBaseOnState(updateFfm, &ffmModel, t0)
 
 		// update shipping fee lines
 		newWeight := shipmentItem.GetWeight()
@@ -393,7 +395,7 @@ func (d *DHLSync) callback(
 		}
 		if err := shipping2.UpdateShippingFeeLines(ctx, d.shippingAggr, updateFeeLinesArgs); err != nil {
 			msg := "–––\n👹 DHL: đơn %v có thay đổi cước phí. Không thể cập nhật. Vui lòng kiểm tra lại. 👹\n- Weight: %v\n- State: %v\n- Lỗi: %v\n–––"
-			ll.SendMessage(fmt.Sprintf(msg, oldFfm.ShippingCode, updateFeeLinesArgs.Weight, updateFeeLinesArgs.State, err.Error()))
+			ll.SendMessage(fmt.Sprintf(msg, ffm.ShippingCode, updateFeeLinesArgs.Weight, updateFeeLinesArgs.State, err.Error()))
 		}
 
 		// update info
@@ -434,7 +436,7 @@ func (d *DHLSync) callback(
 		//  - Đối soát cước phí (chỉ làm việc với kế toán) - sẽ có 2 đơn DHL
 		// => Update shipping_code (tracking_id) nếu cần
 		newShippingCode := shipmentItem.TrackingID.String()
-		if newShippingCode != "" && oldFfm.ShippingCode != newShippingCode {
+		if newShippingCode != "" && ffm.ShippingCode != newShippingCode {
 			if !shipping.IsStateReturn(update.ShippingState) {
 				return nil
 			}
@@ -481,6 +483,7 @@ func (d *DHLSync) cancelOrder(id interface{}, p scheduler.Planner) (err error) {
 		}
 
 		if err == nil {
+			updateFfm.ShippingState = shippingstate.Cancelled
 			updateFfm.ShippingSubstate = shippingsubstate.WrapSubstate(shippingsubstate.Default)
 		}
 		_ = d.db.Where("id = ?", ffm.ID).ShouldUpdate(updateFfm)
@@ -535,7 +538,7 @@ func (d *DHLSync) listFfmsNeedCancel(ctx context.Context) (ffms []*shipmodel.Ful
 		err = d.db.
 			Where("id > ?", fromID.Int64()).
 			Where("shipping_provider = ?", shipping_provider.DHL.Name()).
-			Where("shipping_state = ? and shipping_substate = ?", shippingstate.Cancelled.Name(), shippingsubstate.Cancelling.Name()).
+			Where("shipping_state = ? AND shipping_substate = ?", shippingstate.Cancelled.Name(), shippingsubstate.Cancelling.Name()).
 			OrderBy("id asc").
 			Limit(1000).
 			Find(&_ffms)

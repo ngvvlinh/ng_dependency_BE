@@ -26,7 +26,9 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *dhlclient.ShipmentIt
 
 	// ignore when event have the same state and weight
 	externalShippingStateCode := latestEvent.Status.String()
-	if externalShippingStateCode == ffm.ExternalShippingStateCode && msg.GetWeight() == ffm.ChargeableWeight {
+	if externalShippingStateCode == ffm.ExternalShippingStateCode &&
+		msg.GetWeight() == ffm.ChargeableWeight {
+
 		return nil, nil
 	}
 
