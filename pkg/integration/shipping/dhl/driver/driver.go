@@ -12,6 +12,7 @@ import (
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
+	"o.o/api/top/types/etc/try_on"
 	carriertypes "o.o/backend/com/main/shipping/carrier/types"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
@@ -140,6 +141,17 @@ func (d *DHLDriver) CreateFulfillment(
 	insuranceValue := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 
 	now := time.Now()
+	var vasServices *dhlclient.ValueAddedServices
+	switch ffm.TryOn {
+	case try_on.None:
+	case try_on.Open, try_on.Try:
+		// DHL chỉ support cho xem hàng không thử (OBOX)
+		vasServices = &dhlclient.ValueAddedServices{
+			ValueAddedService: []*dhlclient.ValueAddedService{{VasCode: dhlclient.VasCodeOBOX}},
+		}
+	default:
+
+	}
 
 	cmd := &dhlclient.CreateOrdersRequest{
 		ManifestRequest: &dhlclient.ManiFestReq{
@@ -172,10 +184,11 @@ func (d *DHLDriver) CreateFulfillment(
 						CodValue:          args.CODAmount,
 						// Total declared value of the shipment (in 2 decimal points). Mandatory for Cross Border shipment, optional for Domestic shipment.
 						// For Vietnam Domestic, totalValue must be a multiple of 500.
-						TotalValue:     float64(args.BasketValue),
-						InsuranceValue: float64(insuranceValue),
-						Currency:       "VND",
-						Remarks:        "KHÔNG TỰ Ý HOÀN HÀNG. Gọi shop nếu giao thất bại",
+						TotalValue:         float64(args.BasketValue),
+						InsuranceValue:     float64(insuranceValue),
+						Currency:           "VND",
+						Remarks:            "KHÔNG TỰ Ý HOÀN HÀNG. Gọi shop nếu giao thất bại",
+						ValueAddedServices: vasServices,
 					},
 				},
 			},

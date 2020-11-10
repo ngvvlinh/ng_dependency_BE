@@ -26,6 +26,9 @@ type (
 	ReturnMode string
 	// Phương thức lấy hàng
 	HandoverMethod int
+
+	// Value Added Services
+	VasCode string
 )
 
 const (
@@ -38,6 +41,13 @@ const (
 	HandoverMethodDropoff HandoverMethod = 1
 	// DHL qua Pick
 	HandoverMethodPickup HandoverMethod = 2
+
+	// Ppod = thu hồi chứng từ mang về
+	VasCodePPOD VasCode = "PPOD"
+	// Obox = cho xem hàng (không thử)
+	VasCodeOBOX VasCode = "OBOX"
+	// Amd = kiểm đếm số item sku bên trong thực tế
+	VasCodeAMD VasCode = "AMD"
 )
 
 type State string
@@ -729,6 +739,16 @@ type ShipmentItemReq struct {
 	TotalValue float64 `json:"totalValue"`
 	Currency   string  `json:"currency"` // VND
 	Remarks    string  `json:"remarks"`
+
+	ValueAddedServices *ValueAddedServices `json:"valueAddedServices,omitempty"`
+}
+
+type ValueAddedServices struct {
+	ValueAddedService []*ValueAddedService `json:"valueAddedService,omitempty"`
+}
+
+type ValueAddedService struct {
+	VasCode VasCode `json:"vasCode,omitempty"`
 }
 
 type CreateOrdersResponse struct {
