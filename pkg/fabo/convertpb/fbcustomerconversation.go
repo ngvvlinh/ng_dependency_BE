@@ -276,6 +276,9 @@ func PbFbExternalComment(m *fbmessaging.FbExternalComment) *fabo.FbExternalComme
 		ExternalFrom:         PbFbObjectFrom(m.ExternalFrom),
 		ExternalAttachment:   PbCommentAttachment(m.ExternalAttachment),
 		ExternalCreatedTime:  m.ExternalCreatedTime,
+		IsLiked:              m.IsLiked,
+		IsHidden:             m.IsHidden,
+		IsPrivateReplied:     m.IsPrivateReplied,
 		CreatedAt:            m.CreatedAt,
 		UpdatedAt:            m.UpdatedAt,
 	}

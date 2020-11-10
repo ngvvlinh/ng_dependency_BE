@@ -258,6 +258,60 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/HideOrUnHideComment": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "HideOrUnHideComment",
+        "operationId": "fabo.CustomerConversation-HideOrUnHideComment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvHideOrUnHideCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.CustomerConversation/LikeOrUnLikeComment": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "LikeOrUnLikeComment",
+        "operationId": "fabo.CustomerConversation-LikeOrUnLikeComment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvLikeOrUnLikeCommentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/ListCommentsByExternalPostID": {
       "post": {
         "tags": [
@@ -469,6 +523,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/cvFbExternalMessage"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.CustomerConversation/SendPrivateReply": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "SendPrivateReply",
+        "operationId": "fabo.CustomerConversation-SendPrivateReply",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvSendPrivateReplyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
             }
           }
         }
@@ -1302,6 +1383,15 @@
           "type": "string",
           "format": "int64"
         },
+        "is_hidden": {
+          "type": "boolean"
+        },
+        "is_liked": {
+          "type": "boolean"
+        },
+        "is_private_replied": {
+          "type": "boolean"
+        },
         "updated_at": {
           "type": "string",
           "format": "date-time"
@@ -1785,6 +1875,20 @@
         }
       }
     },
+    "cvHideOrUnHideCommentRequest": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "$ref": "#/definitions/lgFbCommentAction"
+        },
+        "external_comment_id": {
+          "type": "string"
+        },
+        "external_page_id": {
+          "type": "string"
+        }
+      }
+    },
     "cvImageMediaDataSubAttachment": {
       "type": "object",
       "properties": {
@@ -1804,6 +1908,20 @@
         },
         "width": {
           "type": "integer"
+        }
+      }
+    },
+    "cvLikeOrUnLikeCommentRequest": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "$ref": "#/definitions/lgFbCommentAction"
+        },
+        "external_comment_id": {
+          "type": "string"
+        },
+        "external_page_id": {
+          "type": "string"
         }
       }
     },
@@ -2142,6 +2260,20 @@
         }
       }
     },
+    "cvSendPrivateReplyRequest": {
+      "type": "object",
+      "properties": {
+        "external_comment_id": {
+          "type": "string"
+        },
+        "external_page_id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
     "cvSubAttachment": {
       "type": "object",
       "properties": {
@@ -2346,6 +2478,16 @@
           "type": "integer"
         }
       }
+    },
+    "lgFbCommentAction": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "like",
+        "unlike",
+        "hide",
+        "unhide"
+      ]
     },
     "ljCustomerType": {
       "description": "Deprecated values: \"independent\"\\n",

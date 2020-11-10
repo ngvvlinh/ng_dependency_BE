@@ -141,6 +141,30 @@ func (h AggregateHandler) HandleCreateOrUpdateFbExternalPosts(ctx context.Contex
 	return err
 }
 
+type HideOrUnHideCommentCommand struct {
+	ExternalCommentID string
+	IsHidden          bool
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleHideOrUnHideComment(ctx context.Context, msg *HideOrUnHideCommentCommand) (err error) {
+	return h.inner.HideOrUnHideComment(msg.GetArgs(ctx))
+}
+
+type LikeOrUnLikeCommentCommand struct {
+	ExternalCommentID string
+	IsLiked           bool
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleLikeOrUnLikeComment(ctx context.Context, msg *LikeOrUnLikeCommentCommand) (err error) {
+	return h.inner.LikeOrUnLikeComment(msg.GetArgs(ctx))
+}
+
 type RemoveCommentCommand struct {
 	ExternalCommentID string
 
@@ -207,6 +231,18 @@ type UpdateFbPostMessageAndPictureCommand struct {
 
 func (h AggregateHandler) HandleUpdateFbPostMessageAndPicture(ctx context.Context, msg *UpdateFbPostMessageAndPictureCommand) (err error) {
 	return h.inner.UpdateFbPostMessageAndPicture(msg.GetArgs(ctx))
+}
+
+type UpdateIsPrivateRepliedCommentCommand struct {
+	ExternalCommentID string
+	IsPrivateReplied  bool
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateIsPrivateRepliedComment(ctx context.Context, msg *UpdateIsPrivateRepliedCommentCommand) (err error) {
+	return h.inner.UpdateIsPrivateRepliedComment(msg.GetArgs(ctx))
 }
 
 type UpdateIsReadCustomerConversationCommand struct {
@@ -576,11 +612,14 @@ func (q *CreateOrUpdateFbExternalCommentsCommand) command()      {}
 func (q *CreateOrUpdateFbExternalConversationsCommand) command() {}
 func (q *CreateOrUpdateFbExternalMessagesCommand) command()      {}
 func (q *CreateOrUpdateFbExternalPostsCommand) command()         {}
+func (q *HideOrUnHideCommentCommand) command()                   {}
+func (q *LikeOrUnLikeCommentCommand) command()                   {}
 func (q *RemoveCommentCommand) command()                         {}
 func (q *RemovePostCommand) command()                            {}
 func (q *SaveFbExternalPostCommand) command()                    {}
 func (q *UpdateFbCommentMessageCommand) command()                {}
 func (q *UpdateFbPostMessageAndPictureCommand) command()         {}
+func (q *UpdateIsPrivateRepliedCommentCommand) command()         {}
 func (q *UpdateIsReadCustomerConversationCommand) command()      {}
 
 func (q *GetExternalPostByExternalIDWithExternalCreatedTimeQuery) query()         {}
@@ -729,6 +768,32 @@ func (q *CreateOrUpdateFbExternalPostsCommand) SetCreateOrUpdateFbExternalPostsA
 	q.FbExternalPosts = args.FbExternalPosts
 }
 
+func (q *HideOrUnHideCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *HideOrUnHideCommentArgs) {
+	return ctx,
+		&HideOrUnHideCommentArgs{
+			ExternalCommentID: q.ExternalCommentID,
+			IsHidden:          q.IsHidden,
+		}
+}
+
+func (q *HideOrUnHideCommentCommand) SetHideOrUnHideCommentArgs(args *HideOrUnHideCommentArgs) {
+	q.ExternalCommentID = args.ExternalCommentID
+	q.IsHidden = args.IsHidden
+}
+
+func (q *LikeOrUnLikeCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *LikeOrUnLikeCommentArgs) {
+	return ctx,
+		&LikeOrUnLikeCommentArgs{
+			ExternalCommentID: q.ExternalCommentID,
+			IsLiked:           q.IsLiked,
+		}
+}
+
+func (q *LikeOrUnLikeCommentCommand) SetLikeOrUnLikeCommentArgs(args *LikeOrUnLikeCommentArgs) {
+	q.ExternalCommentID = args.ExternalCommentID
+	q.IsLiked = args.IsLiked
+}
+
 func (q *RemoveCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveCommentArgs) {
 	return ctx,
 		&RemoveCommentArgs{
@@ -808,6 +873,19 @@ func (q *UpdateFbPostMessageAndPictureCommand) SetFbUpdatePostMessageArgs(args *
 	q.ExternalPostID = args.ExternalPostID
 	q.Message = args.Message
 	q.ExternalPicture = args.ExternalPicture
+}
+
+func (q *UpdateIsPrivateRepliedCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateIsPrivateRepliedCommentArgs) {
+	return ctx,
+		&UpdateIsPrivateRepliedCommentArgs{
+			ExternalCommentID: q.ExternalCommentID,
+			IsPrivateReplied:  q.IsPrivateReplied,
+		}
+}
+
+func (q *UpdateIsPrivateRepliedCommentCommand) SetUpdateIsPrivateRepliedCommentArgs(args *UpdateIsPrivateRepliedCommentArgs) {
+	q.ExternalCommentID = args.ExternalCommentID
+	q.IsPrivateReplied = args.IsPrivateReplied
 }
 
 func (q *UpdateIsReadCustomerConversationCommand) GetArgs(ctx context.Context) (_ context.Context, conversationCustomerID dot.ID, isRead bool) {
@@ -1044,11 +1122,14 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalConversations)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalMessages)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalPosts)
+	b.AddHandler(h.HandleHideOrUnHideComment)
+	b.AddHandler(h.HandleLikeOrUnLikeComment)
 	b.AddHandler(h.HandleRemoveComment)
 	b.AddHandler(h.HandleRemovePost)
 	b.AddHandler(h.HandleSaveFbExternalPost)
 	b.AddHandler(h.HandleUpdateFbCommentMessage)
 	b.AddHandler(h.HandleUpdateFbPostMessageAndPicture)
+	b.AddHandler(h.HandleUpdateIsPrivateRepliedComment)
 	b.AddHandler(h.HandleUpdateIsReadCustomerConversation)
 	return CommandBus{b}
 }

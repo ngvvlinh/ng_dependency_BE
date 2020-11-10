@@ -199,6 +199,38 @@ type SendCommentParams struct {
 	AttachmentURL string `url:"attachment_url,omitempty"`
 }
 
+type LikeCommentRequest struct {
+	AccessToken string
+	PageID      string
+	CommentID   string
+}
+
+type LikeCommentParams struct {
+	AccessToken string `url:"access_token"`
+}
+
+type UnLikeCommentRequest struct {
+	AccessToken string
+	PageID      string
+	CommentID   string
+}
+
+type UnLikeCommentParams struct {
+	AccessToken string `url:"access_token"`
+}
+
+type HideOrUnHideCommentRequest struct {
+	AccessToken string
+	PageID      string
+	CommentID   string
+	IsHidden    bool
+}
+
+type HideOrUnHideCommentParams struct {
+	AccessToken string `url:"access_token"`
+	IsHidden    bool   `url:"is_hidden"`
+}
+
 type CreatePostRequest struct {
 	AccessToken string
 	PageID      string

@@ -607,6 +607,63 @@ func (ft *FbExternalCommentFilters) ByInternalSourcePtr(InternalSource *fb_inter
 	}
 }
 
+func (ft *FbExternalCommentFilters) ByIsLiked(IsLiked bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "is_liked",
+		Value:  IsLiked,
+		IsNil:  bool(!IsLiked),
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByIsLikedPtr(IsLiked *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "is_liked",
+		Value:  IsLiked,
+		IsNil:  IsLiked == nil,
+		IsZero: IsLiked != nil && bool(!(*IsLiked)),
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByIsHidden(IsHidden bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "is_hidden",
+		Value:  IsHidden,
+		IsNil:  bool(!IsHidden),
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByIsHiddenPtr(IsHidden *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "is_hidden",
+		Value:  IsHidden,
+		IsNil:  IsHidden == nil,
+		IsZero: IsHidden != nil && bool(!(*IsHidden)),
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByIsPrivateReplied(IsPrivateReplied bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "is_private_replied",
+		Value:  IsPrivateReplied,
+		IsNil:  bool(!IsPrivateReplied),
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByIsPrivateRepliedPtr(IsPrivateReplied *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "is_private_replied",
+		Value:  IsPrivateReplied,
+		IsNil:  IsPrivateReplied == nil,
+		IsZero: IsPrivateReplied != nil && bool(!(*IsPrivateReplied)),
+	}
+}
+
 func (ft *FbExternalCommentFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

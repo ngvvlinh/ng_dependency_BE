@@ -701,6 +701,9 @@ func convert_fbmessagingmodel_FbExternalComment_fbmessaging_FbExternalComment(ar
 	out.ExternalAttachment = Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg.ExternalAttachment, nil)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.Source = arg.Source                           // simple assign
+	out.IsLiked = arg.IsLiked                         // simple assign
+	out.IsHidden = arg.IsHidden                       // simple assign
+	out.IsPrivateReplied = arg.IsPrivateReplied       // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 	out.DeletedAt = arg.DeletedAt                     // simple assign
@@ -747,6 +750,9 @@ func convert_fbmessaging_FbExternalComment_fbmessagingmodel_FbExternalComment(ar
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
 	out.Source = arg.Source                           // simple assign
 	out.InternalSource = arg.InternalSource           // simple assign
+	out.IsLiked = arg.IsLiked                         // simple assign
+	out.IsHidden = arg.IsHidden                       // simple assign
+	out.IsPrivateReplied = arg.IsPrivateReplied       // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 	out.DeletedAt = arg.DeletedAt                     // simple assign
@@ -784,6 +790,9 @@ func apply_fbmessaging_CreateFbExternalCommentArgs_fbmessaging_FbExternalComment
 	out.ExternalAttachment = arg.ExternalAttachment     // simple assign
 	out.ExternalCreatedTime = arg.ExternalCreatedTime   // simple assign
 	out.Source = arg.Source                             // simple assign
+	out.IsLiked = arg.IsLiked                           // simple assign
+	out.IsHidden = arg.IsHidden                         // simple assign
+	out.IsPrivateReplied = arg.IsPrivateReplied         // simple assign
 	out.CreatedAt = time.Time{}                         // zero value
 	out.UpdatedAt = time.Time{}                         // zero value
 	out.DeletedAt = time.Time{}                         // zero value

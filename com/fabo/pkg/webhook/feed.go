@@ -213,7 +213,6 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 	}
 
 	if externalCmt == nil {
-		var createCmtCmd []*fbmessaging.CreateFbExternalCommentArgs
 		comment, err := wh.fbClient.CallAPICommentByID(&fbclient.GetCommentByIDRequest{
 			AccessToken: accessToken,
 			CommentID:   commentID,
@@ -222,14 +221,43 @@ func (wh *Webhook) handleFeedComment(ctx context.Context, extPageID string, feed
 		if err != nil {
 			return err
 		}
-		createCmtCmd = append(createCmtCmd, convertModelCommentToCreateCommentArgs(extPageID, postID, createdTime, comment))
+
+		createCmtCmd := convertModelCommentToCreateCommentArgs(extPageID, postID, createdTime, comment)
+		if feedChange.IsPageLikeComment(extPageID) {
+			createCmtCmd.IsLiked = true
+		}
+		if feedChange.IsPageHideComment(extPageID) {
+			createCmtCmd.IsHidden = true
+		}
 
 		if err := wh.fbmessagingAggr.Dispatch(ctx, &fbmessaging.CreateOrUpdateFbExternalCommentsCommand{
-			FbExternalComments: createCmtCmd,
+			FbExternalComments: []*fbmessaging.CreateFbExternalCommentArgs{createCmtCmd},
 		}); err != nil {
 			return err
 		}
 		return nil
+	}
+
+	// handle like and unlike
+	if (feedChange.IsPageUnLikeComment(extPageID) && externalCmt.IsLiked) ||
+		(feedChange.IsPageLikeComment(extPageID) && !externalCmt.IsLiked) {
+		if err := wh.fbmessagingAggr.Dispatch(ctx, &fbmessaging.LikeOrUnLikeCommentCommand{
+			ExternalCommentID: externalCmt.ExternalID,
+			IsLiked:           !externalCmt.IsLiked,
+		}); err != nil {
+			return err
+		}
+	}
+
+	// handle hide and unhide
+	if (feedChange.IsPageUnHideComment(extPageID) && externalCmt.IsHidden) ||
+		(feedChange.IsPageHideComment(extPageID) && !externalCmt.IsHidden) {
+		if err := wh.fbmessagingAggr.Dispatch(ctx, &fbmessaging.HideOrUnHideCommentCommand{
+			ExternalCommentID: externalCmt.ExternalID,
+			IsHidden:          !externalCmt.IsHidden,
+		}); err != nil {
+			return err
+		}
 	}
 
 	if feedChange.IsEdited() {

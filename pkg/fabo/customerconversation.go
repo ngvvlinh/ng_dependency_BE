@@ -10,6 +10,7 @@ import (
 	"o.o/api/fabo/fbcustomerconversationsearch"
 	"o.o/api/fabo/fbmessagetemplate"
 	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/api/fabo/fbpaging"
@@ -65,12 +66,15 @@ type CustomerConversationService struct {
 type APIType string
 
 const (
-	APIComment         APIType = "comment"
-	APIMessage         APIType = "message"
-	CanNotCommentMsg           = "Không thể reply trên cuộc hội thoại này, có thể bài post hoặc comment này trên facebook đã bị xóa."
-	SendMessageOutSide         = "Người nhận chưa reply trong vòng 24 giờ nên không thể gửi thêm tin nhắn"
-	PersonNotAvailable         = "Có thể user này đã block page của bạn."
-	ExpiredToken               = "Token truy cập facebook trang của bạn đã hết hạn."
+	APIComment           APIType = "comment"
+	APIMessage           APIType = "message"
+	CanNotCommentMsg             = "Không thể reply trên cuộc hội thoại này, có thể bài post hoặc comment này trên facebook đã bị xóa."
+	SendMessageOutSide           = "Người nhận chưa reply trong vòng 24 giờ nên không thể gửi thêm tin nhắn"
+	PersonNotAvailable           = "Có thể user này đã block page của bạn."
+	ExpiredToken                 = "Token truy cập facebook trang của bạn đã hết hạn."
+	UserCanNotReply              = "Không thể nhắn tin cho user này."
+	AlreadyRepliedToUser         = "Bạn đã phản hồi nên không thể gửi tin nhắn"
+	ReplyingTimeExpired          = "Đã quá thời hạn (7 ngày) kể từ khi KH bình luận, bạn không thể gửi tin nhắn cho KH này."
 )
 
 func (s *CustomerConversationService) Clone() fabo.CustomerConversationService {
@@ -989,6 +993,213 @@ func (s *CustomerConversationService) handleAndConvertFacebookApiError(ctx conte
 			WithMetaM(metaError)
 	default:
 		return err
+	}
+}
+
+func (s *CustomerConversationService) LikeOrUnLikeComment(
+	ctx context.Context, req *fabo.LikeOrUnLikeCommentRequest,
+) (*common.Empty, error) {
+	if req.Action != fb_comment_action.Like && req.Action != fb_comment_action.UnLike {
+		return nil, cm.Error(cm.FailedPrecondition, "Action không hợp lệ", nil)
+	}
+
+	getFbCommentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+		ExternalID: req.ExternalCommentID,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, getFbCommentQuery); err != nil {
+		return nil, err
+	}
+	fbComment := getFbCommentQuery.Result
+
+	if fbComment.ExternalFrom != nil && fbComment.ExternalFrom.ID == fbComment.ExternalPageID {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể %v comment cuả page", req.Action.Label())
+	}
+
+	getFbExternalPageInternalByIDQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
+		ExternalID: req.ExternalPageID,
+	}
+	if err := s.FBPagingQuery.Dispatch(ctx, getFbExternalPageInternalByIDQuery); err != nil {
+		return nil, err
+	}
+	accessToken := getFbExternalPageInternalByIDQuery.Result.Token
+
+	if req.Action == fb_comment_action.Like {
+		if _, err := s.FBClient.CallAPILikeComment(&fbclient.LikeCommentRequest{
+			AccessToken: accessToken,
+			PageID:      req.ExternalPageID,
+			CommentID:   req.ExternalCommentID,
+		}); err != nil {
+			return nil, err
+		}
+	} else {
+		if _, err := s.FBClient.CallAPIUnLikeComment(&fbclient.UnLikeCommentRequest{
+			AccessToken: accessToken,
+			PageID:      req.ExternalPageID,
+			CommentID:   req.ExternalCommentID,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	likeOrUnLikeCommentCmd := &fbmessaging.LikeOrUnLikeCommentCommand{
+		ExternalCommentID: req.ExternalCommentID,
+	}
+	if req.Action == fb_comment_action.Like {
+		likeOrUnLikeCommentCmd.IsLiked = true
+	}
+
+	if err := s.FBMessagingAggr.Dispatch(ctx, likeOrUnLikeCommentCmd); err != nil {
+		return nil, err
+	}
+
+	return &common.Empty{}, nil
+}
+
+func (s *CustomerConversationService) HideOrUnHideComment(
+	ctx context.Context, req *fabo.HideOrUnHideCommentRequest,
+) (*common.Empty, error) {
+	if req.Action != fb_comment_action.Hide && req.Action != fb_comment_action.UnHide {
+		return nil, cm.Error(cm.FailedPrecondition, "Action không hợp lệ", nil)
+	}
+
+	getFbCommentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+		ExternalID: req.ExternalCommentID,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, getFbCommentQuery); err != nil {
+		return nil, err
+	}
+	fbComment := getFbCommentQuery.Result
+
+	if fbComment.ExternalFrom != nil && fbComment.ExternalFrom.ID == fbComment.ExternalPageID {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể %v comment của page", req.Action.Label())
+	}
+
+	getFbExternalPageInternalByIDQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
+		ExternalID: req.ExternalPageID,
+	}
+	if err := s.FBPagingQuery.Dispatch(ctx, getFbExternalPageInternalByIDQuery); err != nil {
+		return nil, err
+	}
+	accessToken := getFbExternalPageInternalByIDQuery.Result.Token
+
+	hideOrUnHideCommentReq := &fbclient.HideOrUnHideCommentRequest{
+		AccessToken: accessToken,
+		PageID:      req.ExternalPageID,
+		CommentID:   req.ExternalCommentID,
+	}
+	if req.Action == fb_comment_action.Hide {
+		hideOrUnHideCommentReq.IsHidden = true
+	}
+	if _, err := s.FBClient.CallAPIHideAndUnHideComment(hideOrUnHideCommentReq); err != nil {
+		return nil, err
+	}
+
+	hideOrUnHideCommentCmd := &fbmessaging.HideOrUnHideCommentCommand{
+		ExternalCommentID: req.ExternalCommentID,
+	}
+	if req.Action == fb_comment_action.Hide {
+		hideOrUnHideCommentCmd.IsHidden = true
+	}
+	if err := s.FBMessagingAggr.Dispatch(ctx, hideOrUnHideCommentCmd); err != nil {
+		return nil, err
+	}
+
+	return &common.Empty{}, nil
+}
+
+func (s *CustomerConversationService) SendPrivateReply(
+	ctx context.Context, req *fabo.SendPrivateReplyRequest,
+) (*common.Empty, error) {
+	if req.Message == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Nội dung tin nhắn ko được để trống")
+	}
+
+	getFbCommentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+		ExternalID: req.ExternalCommentID,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, getFbCommentQuery); err != nil {
+		return nil, err
+	}
+	fbComment := getFbCommentQuery.Result
+
+	if fbComment.ExternalFrom != nil && fbComment.ExternalFrom.ID == fbComment.ExternalPageID {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi tin nhắn cho page")
+	}
+
+	getFbExternalPageInternalByIDQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
+		ExternalID: req.ExternalPageID,
+	}
+	if err := s.FBPagingQuery.Dispatch(ctx, getFbExternalPageInternalByIDQuery); err != nil {
+		return nil, err
+	}
+	accessToken := getFbExternalPageInternalByIDQuery.Result.Token
+
+	sendPrivateReplyReq := &fbclient.SendMessageRequest{
+		AccessToken: accessToken,
+		SendMessageArgs: &fbclientmodel.SendMessageArgs{
+			Recipient: &fbclientmodel.RecipientSendMessageRequest{
+				CommentID: req.ExternalCommentID,
+			},
+			Message: &fbclientmodel.MessageSendMessageRequest{
+				Text: req.Message,
+			},
+		},
+		PageID: req.ExternalPageID,
+	}
+
+	var changeIsPrivateReplies bool
+	_, err := s.FBClient.CallAPISendMessage(sendPrivateReplyReq)
+	changeIsPrivateReplies, err = s.handleErrorWhenSendPrivateReplies(err)
+	if err != nil && !changeIsPrivateReplies {
+		return nil, err
+	}
+
+	if changeIsPrivateReplies {
+		updateIsPrivateRepliesCmd := &fbmessaging.UpdateIsPrivateRepliedCommentCommand{
+			ExternalCommentID: req.ExternalCommentID,
+			IsPrivateReplied:  true,
+		}
+		if err := s.FBMessagingAggr.Dispatch(ctx, updateIsPrivateRepliesCmd); err != nil {
+			return nil, err
+		}
+	}
+
+	return &common.Empty{}, nil
+}
+
+func (s *CustomerConversationService) handleErrorWhenSendPrivateReplies(err error) (changeIsPrivateReplies bool, _ error) {
+	if err == nil {
+		return true, nil
+	}
+
+	apiErr, ok := err.(*xerrors.APIError)
+	if !ok {
+		return false, err
+	}
+
+	metaError := apiErr.Meta
+	code, ok := metaError["code"]
+	if !ok {
+		return false, err
+	}
+
+	intCode, _err := strconv.Atoi(code)
+	if _err != nil {
+		return false, err
+	}
+
+	switch intCode {
+	case int(fbclient.UserCanNotReply):
+		return false, cm.Errorf(cm.FacebookError, nil, UserCanNotReply).
+			WithMetaM(metaError)
+	case int(fbclient.AlreadyRepliedTo):
+		return true, cm.Errorf(cm.FacebookError, nil, AlreadyRepliedToUser).
+			WithMetaM(metaError)
+	case int(fbclient.ReplyingTimeExpired):
+		return false, cm.Errorf(cm.FacebookError, nil, ReplyingTimeExpired).
+			WithMetaM(metaError)
+	default:
+		return false, err
 	}
 }
 

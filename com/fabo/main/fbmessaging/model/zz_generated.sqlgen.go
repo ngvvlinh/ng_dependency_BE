@@ -886,8 +886,8 @@ func (ms *FbCustomerConversationStateHistories) SQLScan(opts core.Opts, rows *sq
 type FbExternalComments []*FbExternalComment
 
 const __sqlFbExternalComment_Table = "fb_external_comment"
-const __sqlFbExternalComment_ListCols = "\"id\",\"external_post_id\",\"external_page_id\",\"external_id\",\"external_user_id\",\"external_parent_id\",\"external_parent_user_id\",\"external_message\",\"external_comment_count\",\"external_parent\",\"external_from\",\"external_attachment\",\"external_created_time\",\"source\",\"internal_source\",\"created_at\",\"updated_at\",\"deleted_at\",\"created_by\""
-const __sqlFbExternalComment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_post_id\" = EXCLUDED.\"external_post_id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_user_id\" = EXCLUDED.\"external_user_id\",\"external_parent_id\" = EXCLUDED.\"external_parent_id\",\"external_parent_user_id\" = EXCLUDED.\"external_parent_user_id\",\"external_message\" = EXCLUDED.\"external_message\",\"external_comment_count\" = EXCLUDED.\"external_comment_count\",\"external_parent\" = EXCLUDED.\"external_parent\",\"external_from\" = EXCLUDED.\"external_from\",\"external_attachment\" = EXCLUDED.\"external_attachment\",\"external_created_time\" = EXCLUDED.\"external_created_time\",\"source\" = EXCLUDED.\"source\",\"internal_source\" = EXCLUDED.\"internal_source\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"created_by\" = EXCLUDED.\"created_by\""
+const __sqlFbExternalComment_ListCols = "\"id\",\"external_post_id\",\"external_page_id\",\"external_id\",\"external_user_id\",\"external_parent_id\",\"external_parent_user_id\",\"external_message\",\"external_comment_count\",\"external_parent\",\"external_from\",\"external_attachment\",\"external_created_time\",\"source\",\"internal_source\",\"is_liked\",\"is_hidden\",\"is_private_replied\",\"created_at\",\"updated_at\",\"deleted_at\",\"created_by\""
+const __sqlFbExternalComment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_post_id\" = EXCLUDED.\"external_post_id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_user_id\" = EXCLUDED.\"external_user_id\",\"external_parent_id\" = EXCLUDED.\"external_parent_id\",\"external_parent_user_id\" = EXCLUDED.\"external_parent_user_id\",\"external_message\" = EXCLUDED.\"external_message\",\"external_comment_count\" = EXCLUDED.\"external_comment_count\",\"external_parent\" = EXCLUDED.\"external_parent\",\"external_from\" = EXCLUDED.\"external_from\",\"external_attachment\" = EXCLUDED.\"external_attachment\",\"external_created_time\" = EXCLUDED.\"external_created_time\",\"source\" = EXCLUDED.\"source\",\"internal_source\" = EXCLUDED.\"internal_source\",\"is_liked\" = EXCLUDED.\"is_liked\",\"is_hidden\" = EXCLUDED.\"is_hidden\",\"is_private_replied\" = EXCLUDED.\"is_private_replied\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"created_by\" = EXCLUDED.\"created_by\""
 const __sqlFbExternalComment_Insert = "INSERT INTO \"fb_external_comment\" (" + __sqlFbExternalComment_ListCols + ") VALUES"
 const __sqlFbExternalComment_Select = "SELECT " + __sqlFbExternalComment_ListCols + " FROM \"fb_external_comment\""
 const __sqlFbExternalComment_Select_history = "SELECT " + __sqlFbExternalComment_ListCols + " FROM history.\"fb_external_comment\""
@@ -1019,6 +1019,27 @@ func (m *FbExternalComment) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{"unknown", "fabo", "facebook"},
 		},
+		"is_liked": {
+			ColumnName:       "is_liked",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"is_hidden": {
+			ColumnName:       "is_hidden",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"is_private_replied": {
+			ColumnName:       "is_private_replied",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"created_at": {
 			ColumnName:       "created_at",
 			ColumnType:       "time.Time",
@@ -1075,6 +1096,9 @@ func (m *FbExternalComment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.ExternalCreatedTime),
 		m.Source,
 		m.InternalSource,
+		core.Bool(m.IsLiked),
+		core.Bool(m.IsHidden),
+		core.Bool(m.IsPrivateReplied),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -1099,6 +1123,9 @@ func (m *FbExternalComment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.ExternalCreatedTime),
 		&m.Source,
 		&m.InternalSource,
+		(*core.Bool)(&m.IsLiked),
+		(*core.Bool)(&m.IsHidden),
+		(*core.Bool)(&m.IsPrivateReplied),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
@@ -1140,7 +1167,7 @@ func (_ *FbExternalComments) SQLSelect(w SQLWriter) error {
 func (m *FbExternalComment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalComment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(22)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1150,7 +1177,7 @@ func (ms FbExternalComments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalComment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(19)
+		w.WriteMarkers(22)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1301,6 +1328,30 @@ func (m *FbExternalComment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.InternalSource)
 	}
+	if m.IsLiked {
+		flag = true
+		w.WriteName("is_liked")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.IsLiked)
+	}
+	if m.IsHidden {
+		flag = true
+		w.WriteName("is_hidden")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.IsHidden)
+	}
+	if m.IsPrivateReplied {
+		flag = true
+		w.WriteName("is_private_replied")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.IsPrivateReplied)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -1343,7 +1394,7 @@ func (m *FbExternalComment) SQLUpdate(w SQLWriter) error {
 func (m *FbExternalComment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalComment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(19)
+	w.WriteMarkers(22)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1406,21 +1457,26 @@ func (m FbExternalCommentHistory) Source() core.Interface { return core.Interfac
 func (m FbExternalCommentHistory) InternalSource() core.Interface {
 	return core.Interface{m["internal_source"]}
 }
+func (m FbExternalCommentHistory) IsLiked() core.Interface  { return core.Interface{m["is_liked"]} }
+func (m FbExternalCommentHistory) IsHidden() core.Interface { return core.Interface{m["is_hidden"]} }
+func (m FbExternalCommentHistory) IsPrivateReplied() core.Interface {
+	return core.Interface{m["is_private_replied"]}
+}
 func (m FbExternalCommentHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m FbExternalCommentHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 func (m FbExternalCommentHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
 func (m FbExternalCommentHistory) CreatedBy() core.Interface { return core.Interface{m["created_by"]} }
 
 func (m *FbExternalCommentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 22)
+	args := make([]interface{}, 22)
+	for i := 0; i < 22; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbExternalCommentHistory, 19)
+	res := make(FbExternalCommentHistory, 22)
 	res["id"] = data[0]
 	res["external_post_id"] = data[1]
 	res["external_page_id"] = data[2]
@@ -1436,18 +1492,21 @@ func (m *FbExternalCommentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["external_created_time"] = data[12]
 	res["source"] = data[13]
 	res["internal_source"] = data[14]
-	res["created_at"] = data[15]
-	res["updated_at"] = data[16]
-	res["deleted_at"] = data[17]
-	res["created_by"] = data[18]
+	res["is_liked"] = data[15]
+	res["is_hidden"] = data[16]
+	res["is_private_replied"] = data[17]
+	res["created_at"] = data[18]
+	res["updated_at"] = data[19]
+	res["deleted_at"] = data[20]
+	res["created_by"] = data[21]
 	*m = res
 	return nil
 }
 
 func (ms *FbExternalCommentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 19)
-	args := make([]interface{}, 19)
-	for i := 0; i < 19; i++ {
+	data := make([]interface{}, 22)
+	args := make([]interface{}, 22)
+	for i := 0; i < 22; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FbExternalCommentHistories, 0, 128)
@@ -1471,10 +1530,13 @@ func (ms *FbExternalCommentHistories) SQLScan(opts core.Opts, rows *sql.Rows) er
 		m["external_created_time"] = data[12]
 		m["source"] = data[13]
 		m["internal_source"] = data[14]
-		m["created_at"] = data[15]
-		m["updated_at"] = data[16]
-		m["deleted_at"] = data[17]
-		m["created_by"] = data[18]
+		m["is_liked"] = data[15]
+		m["is_hidden"] = data[16]
+		m["is_private_replied"] = data[17]
+		m["created_at"] = data[18]
+		m["updated_at"] = data[19]
+		m["deleted_at"] = data[20]
+		m["created_by"] = data[21]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

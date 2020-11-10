@@ -50,6 +50,13 @@ func (msg *WebhookMessages) IsCreateOrEditCommentFromPageOwner() bool {
 			if change.IsRemove() {
 				return false
 			}
+
+			// like/ unlike or hide/ unhide
+			if change.IsPageUnLikeComment(pageId) || change.IsPageLikeComment(pageId) ||
+				change.IsPageHideComment(pageId) || change.IsPageUnHideComment(pageId) {
+				return false
+			}
+
 			if change.Value.From.ID == pageId && change.IsComment() {
 				return true
 			}
@@ -121,7 +128,7 @@ func (v FeedChange) IsEventComment() bool {
 }
 
 func (v FeedChange) IsComment() bool {
-	return v.Value.Item == FeedComment
+	return v.Value.Item == FeedComment || v.Value.CommentID != ""
 }
 
 func (v FeedChange) IsEvent() bool {
@@ -149,14 +156,52 @@ func (v FeedChange) IsOnParentPost() bool {
 }
 
 func (v FeedChange) IsRemove() bool {
-	return v.Value.Verb == FeedRemove
+	return v.Value.Verb == FeedRemove && v.Value.ReactionType == ""
 }
 
 func (v FeedChange) IsDelete() bool {
 	return v.Value.Verb == FeedDelete
 }
 
+// page like user's comment
+func (v FeedChange) IsPageLikeComment(extPageID string) bool {
+	if !v.IsComment() {
+		return false
+	}
+
+	return v.Value.From.ID == extPageID && v.Value.ReactionType == string(ReactionLike) && v.Value.Verb == FeedAdd
+}
+
+// page unlike user's comment
+func (v FeedChange) IsPageUnLikeComment(extPageID string) bool {
+	if !v.IsComment() {
+		return false
+	}
+
+	return v.Value.From.ID == extPageID && v.Value.ReactionType == string(ReactionLike) && v.Value.Verb == FeedRemove
+}
+
+// page hide user's comment
+func (v FeedChange) IsPageHideComment(extPageID string) bool {
+	if !v.IsComment() {
+		return false
+	}
+
+	return v.Value.From.ID == extPageID && v.Value.Verb == FeedHide
+}
+
+// page unhide user's comment
+func (v FeedChange) IsPageUnHideComment(extPageID string) bool {
+	if !v.IsComment() {
+		return false
+	}
+
+	return v.Value.From.ID == extPageID && v.Value.Verb == FeedUnhide
+}
+
 type FeedVerb string
+type CommentVerb string
+type CommentReaction string
 
 // add, block, edit, edited, delete, follow, hide, mute, remove, unblock, unhide, update
 const (
@@ -172,6 +217,8 @@ const (
 	FeedUnblock FeedVerb = "unblock"
 	FeedUnhide  FeedVerb = "unhide"
 	FeedUpdate  FeedVerb = "update"
+
+	ReactionLike CommentReaction = "like"
 )
 
 type ChangeValue struct {

@@ -29,6 +29,9 @@ type Aggregate interface {
 
 	UpdateFbCommentMessage(context.Context, *FbUpdateCommentMessageArgs) (int, error)
 	RemoveComment(context.Context, *RemoveCommentArgs) error
+	LikeOrUnLikeComment(context.Context, *LikeOrUnLikeCommentArgs) error
+	HideOrUnHideComment(context.Context, *HideOrUnHideCommentArgs) error
+	UpdateIsPrivateRepliedComment(context.Context, *UpdateIsPrivateRepliedCommentArgs) error
 
 	CreateOrUpdateFbExternalPosts(context.Context, *CreateOrUpdateFbExternalPostsArgs) ([]*FbExternalPost, error)
 	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
@@ -141,6 +144,9 @@ type CreateFbExternalCommentArgs struct {
 	ExternalCreatedTime  time.Time
 	Source               fb_comment_source.FbCommentSource
 	InternalSource       fb_internal_source.FbInternalSource
+	IsLiked              bool
+	IsHidden             bool
+	IsPrivateReplied     bool
 	CreatedBy            dot.ID
 }
 
@@ -280,4 +286,19 @@ type RemovePostArgs struct {
 
 type RemoveCommentArgs struct {
 	ExternalCommentID string
+}
+
+type LikeOrUnLikeCommentArgs struct {
+	ExternalCommentID string
+	IsLiked           bool
+}
+
+type HideOrUnHideCommentArgs struct {
+	ExternalCommentID string
+	IsHidden          bool
+}
+
+type UpdateIsPrivateRepliedCommentArgs struct {
+	ExternalCommentID string
+	IsPrivateReplied  bool
 }

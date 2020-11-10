@@ -79,7 +79,8 @@ type SendMessageArgs struct {
 }
 
 type RecipientSendMessageRequest struct {
-	ID string `json:"id"`
+	ID        string `json:"id,omitempty"`
+	CommentID string `json:"comment_id,omitempty"`
 }
 
 type MessageSendMessageRequest struct {
@@ -118,4 +119,8 @@ type CreatePostRequest struct {
 
 type CreatePostResponse struct {
 	ID string `json:"id"`
+}
+
+type CommonResponse struct {
+	Success bool `json:"success"`
 }

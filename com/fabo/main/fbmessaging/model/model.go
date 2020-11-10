@@ -24,10 +24,11 @@ type FbExternalMessage struct {
 	ExternalMessageShares  []*FbMessageShare
 	ExternalCreatedTime    time.Time `paging:"external_created_time"`
 	InternalSource         fb_internal_source.FbInternalSource
-	CreatedAt              time.Time `sq:"create"`
-	UpdatedAt              time.Time `sq:"update"`
-	DeletedAt              time.Time
-	CreatedBy              dot.ID
+
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
+	CreatedBy dot.ID
 }
 
 type FbObjectTo struct {
@@ -119,6 +120,9 @@ type FbExternalComment struct {
 	ExternalCreatedTime  time.Time `paging:"external_created_time"`
 	Source               fb_comment_source.FbCommentSource
 	InternalSource       fb_internal_source.FbInternalSource
+	IsLiked              bool      // like by current page
+	IsHidden             bool      // hide by current page
+	IsPrivateReplied     bool      // reply by current page
 	CreatedAt            time.Time `sq:"create"`
 	UpdatedAt            time.Time `sq:"update"`
 	DeletedAt            time.Time

@@ -53,6 +53,8 @@ const Path_CustomerConversation_CreateMessageTemplate = "/fabo.CustomerConversat
 const Path_CustomerConversation_CreatePost = "/fabo.CustomerConversation/CreatePost"
 const Path_CustomerConversation_DeleteMessageTemplate = "/fabo.CustomerConversation/DeleteMessageTemplate"
 const Path_CustomerConversation_GetCustomerConversationByID = "/fabo.CustomerConversation/GetCustomerConversationByID"
+const Path_CustomerConversation_HideOrUnHideComment = "/fabo.CustomerConversation/HideOrUnHideComment"
+const Path_CustomerConversation_LikeOrUnLikeComment = "/fabo.CustomerConversation/LikeOrUnLikeComment"
 const Path_CustomerConversation_ListCommentsByExternalPostID = "/fabo.CustomerConversation/ListCommentsByExternalPostID"
 const Path_CustomerConversation_ListCustomerConversations = "/fabo.CustomerConversation/ListCustomerConversations"
 const Path_CustomerConversation_ListMessages = "/fabo.CustomerConversation/ListMessages"
@@ -61,6 +63,7 @@ const Path_CustomerConversation_MessageTemplates = "/fabo.CustomerConversation/M
 const Path_CustomerConversation_SearchCustomerConversations = "/fabo.CustomerConversation/SearchCustomerConversations"
 const Path_CustomerConversation_SendComment = "/fabo.CustomerConversation/SendComment"
 const Path_CustomerConversation_SendMessage = "/fabo.CustomerConversation/SendMessage"
+const Path_CustomerConversation_SendPrivateReply = "/fabo.CustomerConversation/SendPrivateReply"
 const Path_CustomerConversation_UpdateMessageTemplate = "/fabo.CustomerConversation/UpdateMessageTemplate"
 const Path_CustomerConversation_UpdateReadStatus = "/fabo.CustomerConversation/UpdateReadStatus"
 
@@ -146,6 +149,32 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 				return
 			}
 			resp, err = inner.GetCustomerConversationByID(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/HideOrUnHideComment":
+		msg := &HideOrUnHideCommentRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.HideOrUnHideComment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/LikeOrUnLikeComment":
+		msg := &LikeOrUnLikeCommentRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.LikeOrUnLikeComment(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -250,6 +279,19 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 				return
 			}
 			resp, err = inner.SendMessage(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/SendPrivateReply":
+		msg := &SendPrivateReplyRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.SendPrivateReply(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

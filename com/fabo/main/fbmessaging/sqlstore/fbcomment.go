@@ -312,3 +312,24 @@ func (s *FbExternalCommentStore) SoftDelete() (int, error) {
 		"deleted_at": time.Now(),
 	})
 }
+
+func (s *FbExternalCommentStore) UpdateIsLiked(isLiked bool) (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_external_comment").UpdateMap(map[string]interface{}{
+		"is_liked": isLiked,
+	})
+}
+
+func (s *FbExternalCommentStore) UpdateIsHidden(isHidden bool) (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_external_comment").UpdateMap(map[string]interface{}{
+		"is_hidden": isHidden,
+	})
+}
+
+func (s *FbExternalCommentStore) UpdateIsPrivateReplied(isPrivateReplied bool) (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Table("fb_external_comment").UpdateMap(map[string]interface{}{
+		"is_private_replied": isPrivateReplied,
+	})
+}

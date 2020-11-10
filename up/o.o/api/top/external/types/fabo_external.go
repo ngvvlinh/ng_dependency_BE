@@ -77,6 +77,9 @@ type FbExternalComment struct {
 	ExternalCreatedTime  time.Time          `json:"external_created_time"`
 	ExternalID           dot.NullString     `json:"external_id"`
 	ExternalPostID       dot.NullString     `json:"external_post_id"`
+	IsLiked              dot.NullBool       `json:"is_liked"`
+	IsHidden             dot.NullBool       `json:"is_hidden"`
+	IsPrivateReplied     dot.NullBool       `json:"is_private_replied"`
 	CreatedAt            dot.Time           `json:"created_at"`
 	UpdatedAt            dot.Time           `json:"updated_at"`
 }

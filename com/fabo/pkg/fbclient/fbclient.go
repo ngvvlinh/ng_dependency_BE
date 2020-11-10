@@ -28,8 +28,9 @@ func init() {
 type RequestMethod string
 
 const (
-	GET  RequestMethod = "GET"
-	POST RequestMethod = "POST"
+	GET    RequestMethod = "GET"
+	POST   RequestMethod = "POST"
+	DELETE RequestMethod = "DELETE"
 )
 
 type AppConfig struct {
@@ -377,6 +378,49 @@ func (f *FbClient) CallAPISendComment(req *SendCommentRequest) (*model.SendComme
 	return &sendCommentResponse, nil
 }
 
+func (f *FbClient) CallAPILikeComment(req *LikeCommentRequest) (*model.CommonResponse, error) {
+	params := &LikeCommentParams{
+		AccessToken: req.AccessToken,
+	}
+
+	path := fmt.Sprintf("/%s/likes", req.CommentID)
+	var likeCommentResponse model.CommonResponse
+	if err := f.sendPostRequest(path, req.PageID, params, &likeCommentResponse); err != nil {
+		return nil, err
+	}
+
+	return &likeCommentResponse, nil
+}
+
+func (f *FbClient) CallAPIUnLikeComment(req *UnLikeCommentRequest) (*model.CommonResponse, error) {
+	params := &UnLikeCommentParams{
+		AccessToken: req.AccessToken,
+	}
+
+	path := fmt.Sprintf("/%s/likes", req.CommentID)
+	var unLikeCommentResponse model.CommonResponse
+	if err := f.sendDeleteRequest(path, req.PageID, params, &unLikeCommentResponse); err != nil {
+		return nil, err
+	}
+
+	return &unLikeCommentResponse, nil
+}
+
+func (f *FbClient) CallAPIHideAndUnHideComment(req *HideOrUnHideCommentRequest) (*model.CommonResponse, error) {
+	params := &HideOrUnHideCommentParams{
+		AccessToken: req.AccessToken,
+		IsHidden:    req.IsHidden,
+	}
+
+	path := fmt.Sprintf("/%s", req.CommentID)
+	var hideAndUnHideCommentResponse model.CommonResponse
+	if err := f.sendPostRequest(path, req.PageID, params, &hideAndUnHideCommentResponse); err != nil {
+		return nil, err
+	}
+
+	return &hideAndUnHideCommentResponse, nil
+}
+
 func (f *FbClient) CallAPICreatePost(req *CreatePostRequest) (*model.CreatePostResponse, error) {
 	content := req.Content
 	params := &CreatePostParams{
@@ -443,6 +487,10 @@ func (f *FbClient) sendPostRequest(path, pageID string, params, resp interface{}
 	return f.sendRequest(POST, path, pageID, params, resp)
 }
 
+func (f *FbClient) sendDeleteRequest(path, pageID string, params, resp interface{}) error {
+	return f.sendRequest(DELETE, path, pageID, params, resp)
+}
+
 func (f *FbClient) sendRequest(method RequestMethod, path, pageID string, params, resp interface{}) error {
 	t0 := time.Now()
 
@@ -466,6 +514,8 @@ func (f *FbClient) sendRequest(method RequestMethod, path, pageID string, params
 		res, err = req.Get(_url)
 	case POST:
 		res, err = req.Post(_url)
+	case DELETE:
+		res, err = req.Delete(_url)
 	default:
 		return cm.Errorf(cm.Internal, nil, "unsupported method %v", method)
 	}

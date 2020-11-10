@@ -1260,6 +1260,9 @@ var _acl = map[string]*permission.Decl{
 	"fabo.CustomerConversation/CreateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/UpdateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/DeleteMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/LikeOrUnLikeComment":          {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/HideOrUnHideComment":          {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/SendPrivateReply":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
 
 	"fabo.Shop/CreateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagCreate)},
 	"fabo.Shop/UpdateTag": {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbShopTagUpdate)},

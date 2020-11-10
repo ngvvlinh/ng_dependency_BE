@@ -226,6 +226,9 @@ const (
 	CustomLevelThrottling                   = Code(613)
 	RateLimitCallWithPage                   = Code(80001)
 	RateLimitCallWithMessenger              = Code(80006)
+	UserCanNotReply                         = Code(10903)
+	AlreadyRepliedTo                        = Code(10900)
+	ReplyingTimeExpired                     = Code(10901)
 )
 
 var mapErrorCodeMessage = map[Code]map[string]string{

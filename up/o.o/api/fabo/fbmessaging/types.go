@@ -101,6 +101,9 @@ type FbExternalComment struct {
 	ExternalAttachment   *CommentAttachment `compare:"ignore"`
 	ExternalCreatedTime  time.Time
 	Source               fb_comment_source.FbCommentSource
+	IsLiked              bool
+	IsHidden             bool
+	IsPrivateReplied     bool
 	CreatedAt            time.Time `compare:"ignore"`
 	UpdatedAt            time.Time `compare:"ignore"`
 	DeletedAt            time.Time

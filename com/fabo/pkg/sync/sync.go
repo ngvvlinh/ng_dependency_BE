@@ -677,9 +677,13 @@ func (s *Synchronizer) handleTaskGetComments(
 		comment := commentQuery.Result
 		internalSource := fb_internal_source.Facebook
 		var createdBy dot.ID
+		var isLiked, isHidden, isPrivateReplied bool
 		if comment != nil {
 			internalSource = comment.InternalSource
 			createdBy = comment.CreatedBy
+			isLiked = comment.IsLiked
+			isHidden = comment.IsHidden
+			isPrivateReplied = comment.IsPrivateReplied
 		}
 
 		createOrUpdateFbExternalCommentsArgs = append(createOrUpdateFbExternalCommentsArgs, &fbmessaging.CreateFbExternalCommentArgs{
@@ -697,6 +701,9 @@ func (s *Synchronizer) handleTaskGetComments(
 			ExternalAttachment:   fbclientconvert.ConvertFbCommentAttachment(fbExternalComment.Attachment),
 			ExternalCreatedTime:  fbExternalComment.CreatedTime.ToTime(),
 			InternalSource:       internalSource,
+			IsLiked:              isLiked,
+			IsHidden:             isHidden,
+			IsPrivateReplied:     isPrivateReplied,
 			CreatedBy:            createdBy,
 		})
 	}

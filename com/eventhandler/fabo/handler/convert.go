@@ -26,6 +26,9 @@ func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment, fbParentComme
 		ExternalCreatedTime:  fbcomment.ExternalCreatedTime,
 		ExternalID:           dot.String(fbcomment.ExternalID),
 		ExternalPostID:       dot.String(fbcomment.ExternalPostID),
+		IsLiked:              dot.Bool(fbcomment.IsLiked),
+		IsHidden:             dot.Bool(fbcomment.IsHidden),
+		IsPrivateReplied:     dot.Bool(fbcomment.IsPrivateReplied),
 		CreatedAt:            dot.Time(fbcomment.CreatedAt),
 		UpdatedAt:            dot.Time(fbcomment.UpdatedAt),
 	}

@@ -40,6 +40,9 @@ type CustomerConversationService interface {
 	SendMessage(context.Context, *SendMessageRequest) (*FbExternalMessage, error)
 
 	SendComment(context.Context, *SendCommentRequest) (*FbExternalComment, error)
+	LikeOrUnLikeComment(context.Context, *LikeOrUnLikeCommentRequest) (*cm.Empty, error)
+	HideOrUnHideComment(context.Context, *HideOrUnHideCommentRequest) (*cm.Empty, error)
+	SendPrivateReply(context.Context, *SendPrivateReplyRequest) (*cm.Empty, error)
 
 	CreatePost(context.Context, *CreatePostRequest) (*CreatePostResponse, error)
 

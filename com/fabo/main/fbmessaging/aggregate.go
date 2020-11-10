@@ -666,3 +666,38 @@ func (a *FbExternalMessagingAggregate) RemoveComment(ctx context.Context, remove
 		return nil
 	})
 }
+
+func (a *FbExternalMessagingAggregate) LikeOrUnLikeComment(
+	ctx context.Context, args *fbmessaging.LikeOrUnLikeCommentArgs,
+) error {
+	if _, err := a.fbExternalCommentStore(ctx).ExternalID(args.ExternalCommentID).GetFbExternalComment(); err != nil {
+		return err
+	}
+
+	_, err := a.fbExternalCommentStore(ctx).ExternalID(args.ExternalCommentID).UpdateIsLiked(args.IsLiked)
+	return err
+}
+
+func (a *FbExternalMessagingAggregate) HideOrUnHideComment(
+	ctx context.Context, args *fbmessaging.HideOrUnHideCommentArgs,
+) error {
+	if _, err := a.fbExternalCommentStore(ctx).ExternalID(args.ExternalCommentID).GetFbExternalComment(); err != nil {
+		return err
+	}
+
+	_, err := a.fbExternalCommentStore(ctx).ExternalID(args.ExternalCommentID).UpdateIsHidden(args.IsHidden)
+	return err
+}
+
+func (a *FbExternalMessagingAggregate) UpdateIsPrivateRepliedComment(
+	ctx context.Context, args *fbmessaging.UpdateIsPrivateRepliedCommentArgs,
+) error {
+	if _, err := a.fbExternalCommentStore(ctx).ExternalID(args.ExternalCommentID).GetFbExternalComment(); err != nil {
+		return err
+	}
+
+	if _, err := a.fbExternalCommentStore(ctx).ExternalID(args.ExternalCommentID).UpdateIsPrivateReplied(args.IsPrivateReplied); err != nil {
+		return err
+	}
+	return nil
+}

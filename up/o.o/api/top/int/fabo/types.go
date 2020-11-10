@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/top/external/types"
 	"o.o/api/top/types/common"
@@ -471,6 +472,9 @@ type FbExternalComment struct {
 	ExternalFrom         *FbObjectFrom      `json:"external_from"`
 	ExternalAttachment   *CommentAttachment `json:"external_attachment"`
 	ExternalCreatedTime  time.Time          `json:"external_created_time"`
+	IsLiked              bool               `json:"is_liked"`
+	IsHidden             bool               `json:"is_hidden"`
+	IsPrivateReplied     bool               `json:"is_private_replied"`
 	CreatedAt            time.Time          `json:"created_at"`
 	UpdatedAt            time.Time          `json:"updated_at"`
 }
@@ -547,6 +551,36 @@ func (m *SendCommentRequest) Validate() error {
 }
 
 func (m *SendCommentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type LikeOrUnLikeCommentRequest struct {
+	ExternalPageID    string                            `json:"external_page_id"`
+	ExternalCommentID string                            `json:"external_comment_id"`
+	Action            fb_comment_action.FbCommentAction `json:"action"`
+}
+
+func (m *LikeOrUnLikeCommentRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type HideOrUnHideCommentRequest struct {
+	ExternalPageID    string                            `json:"external_page_id"`
+	ExternalCommentID string                            `json:"external_comment_id"`
+	Action            fb_comment_action.FbCommentAction `json:"action"`
+}
+
+func (m *HideOrUnHideCommentRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type SendPrivateReplyRequest struct {
+	ExternalPageID    string `json:"external_page_id"`
+	ExternalCommentID string `json:"external_comment_id"`
+	Message           string `json:"message"`
+}
+
+func (m *SendPrivateReplyRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
 
 type CreatePostRequest struct {
 	ExternalPageID string `json:"external_page_id"`
