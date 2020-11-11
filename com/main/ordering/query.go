@@ -68,7 +68,7 @@ func (q *QueryService) ListOrdersByCustomerID(ctx context.Context, shopID, custo
 
 func (q *QueryService) ListOrdersByCustomerIDs(ctx context.Context, shopID dot.ID, customerIDs []dot.ID) (*ordering.OrdersResponse, error) {
 	statuses := []status5.Status{status5.Z, status5.P, status5.S}
-	orders, err := q.store(ctx).CustomerIDs(customerIDs...).Statuses(statuses).ListOrders()
+	orders, err := q.store(ctx).CustomerIDs(customerIDs...).ShopID(shopID).Statuses(statuses).ListOrders()
 	if err != nil {
 		return nil, err
 	}
