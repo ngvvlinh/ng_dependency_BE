@@ -1,6 +1,7 @@
 package config
 
 import (
+	"o.o/backend/com/fabo/pkg/fbclient"
 	cc "o.o/backend/pkg/common/config"
 )
 
@@ -16,6 +17,7 @@ type Config struct {
 	URL         struct {
 		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
+	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
 }
 
 func Default() Config {
@@ -57,5 +59,6 @@ func Load() (cfg Config, err error) {
 	cc.EnvMap{
 		"ET_SECRET": &cfg.Secret,
 	}.MustLoad()
+	cfg.FacebookApp.MustLoadEnv()
 	return cfg, err
 }

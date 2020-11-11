@@ -355,9 +355,13 @@ func (q *FbMessagingQuery) GetLatestUpdateActiveComment(
 }
 
 func (q *FbMessagingQuery) ListFbCustomerConversationsByExternalUserIDs(
-	ctx context.Context, extUserIDs []string,
+	ctx context.Context, extUserIDs []string, conversationType fb_customer_conversation_type.NullFbCustomerConversationType,
 ) ([]*fbmessaging.FbCustomerConversation, error) {
-	conversations, err := q.fbCustomerConversationStore(ctx).ExternalUserIDs(extUserIDs).ListFbCustomerConversations()
+	query := q.fbCustomerConversationStore(ctx).ExternalUserIDs(extUserIDs)
+	if conversationType.Valid {
+		query = query.Type(conversationType.Enum)
+	}
+	conversations, err := query.ListFbCustomerConversations()
 	if err != nil {
 		return nil, err
 	}

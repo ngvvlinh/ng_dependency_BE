@@ -31,24 +31,31 @@ const (
 	Processing State = 4
 
 	// +enum=picking
+	// +enum:RefName:Đang lấy hàng
 	Picking State = 5
 
 	// +enum=holding
+	// +enum:RefName:Đang giữ hàng
 	Holding State = 6
 
 	// +enum=returning
+	// +enum:RefName:Đang trả hàng
 	Returning State = 7
 
 	// +enum=returned
+	// +enum:RefName:Đã trả hàng
 	Returned State = 8
 
 	// +enum=delivering
+	// +enum:RefName:Đang giao hàng
 	Delivering State = 9
 
 	// +enum=delivered
+	// +enum:RefName:Đã giao hàng
 	Delivered State = 10
 
 	// +enum=cancelled
+	// +enum:RefName:Đã huỷ đơn hàng
 	Cancelled State = -1
 
 	// Trạng thái Bồi hoàn

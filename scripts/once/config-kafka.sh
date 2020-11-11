@@ -51,7 +51,6 @@ create_topic 64 pgrid_fb_external_message_fabo
 create_topic 64 pgrid_fb_customer_conversation_fabo
 create_topic 64 pgrid_shipnow_fulfillment
 
-
 # UpdateInfo 2018-06-12
 
 # Internal control channel

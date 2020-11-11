@@ -46,6 +46,53 @@ var enumStateValue = map[string]int{
 	"undeliverable": -2,
 }
 
+var enumStateMapLabel = map[string]map[string]string{
+	"unknown": {
+		"RefName": "",
+	},
+	"default": {
+		"RefName": "",
+	},
+	"created": {
+		"RefName": "",
+	},
+	"confirmed": {
+		"RefName": "",
+	},
+	"processing": {
+		"RefName": "",
+	},
+	"picking": {
+		"RefName": "Đang lấy hàng",
+	},
+	"holding": {
+		"RefName": "Đang giữ hàng",
+	},
+	"returning": {
+		"RefName": "Đang trả hàng",
+	},
+	"returned": {
+		"RefName": "Đã trả hàng",
+	},
+	"delivering": {
+		"RefName": "Đang giao hàng",
+	},
+	"delivered": {
+		"RefName": "Đã giao hàng",
+	},
+	"cancelled": {
+		"RefName": "Đã huỷ đơn hàng",
+	},
+	"undeliverable": {
+		"RefName": "",
+	},
+}
+
+func (e State) GetLabelRefName() string {
+	val := enumStateName[int(e)]
+	nameVal := enumStateMapLabel[val]
+	return nameVal["RefName"]
+}
 func ParseState(s string) (State, bool) {
 	val, ok := enumStateValue[s]
 	return State(val), ok

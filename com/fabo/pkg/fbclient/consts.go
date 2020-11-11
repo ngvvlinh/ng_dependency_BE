@@ -66,3 +66,12 @@ type PostAttachmentType string
 const (
 	Album PostAttachmentType = "album"
 )
+
+type MessageTag string
+
+const (
+	CONFIRMED_EVENT_UPDATE MessageTag = "CONFIRMED_EVENT_UPDATE"
+	POST_PURCHASE_UPDATE   MessageTag = "POST_PURCHASE_UPDATE"
+	ACCOUNT_UPDATE         MessageTag = "ACCOUNT_UPDATE"
+	HUMAN_AGENT            MessageTag = "HUMAN_AGENT"
+)

@@ -471,7 +471,8 @@ func (h QueryServiceHandler) HandleListFbCustomerConversationsByExternalIDs(ctx 
 }
 
 type ListFbCustomerConversationsByExternalUserIDsQuery struct {
-	ExtUserIDs []string
+	ExtUserIDs       []string
+	ConversationType fb_customer_conversation_type.NullFbCustomerConversationType
 
 	Result []*FbCustomerConversation `json:"-"`
 }
@@ -1009,9 +1010,10 @@ func (q *ListFbCustomerConversationsByExternalIDsQuery) GetArgs(ctx context.Cont
 		q.ExternalIDs
 }
 
-func (q *ListFbCustomerConversationsByExternalUserIDsQuery) GetArgs(ctx context.Context) (_ context.Context, extUserIDs []string) {
+func (q *ListFbCustomerConversationsByExternalUserIDsQuery) GetArgs(ctx context.Context) (_ context.Context, extUserIDs []string, conversationType fb_customer_conversation_type.NullFbCustomerConversationType) {
 	return ctx,
-		q.ExtUserIDs
+		q.ExtUserIDs,
+		q.ConversationType
 }
 
 func (q *ListFbCustomerConversationsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID) {

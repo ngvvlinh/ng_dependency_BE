@@ -351,6 +351,7 @@ func (f *FbClient) CallAPISendMessage(req *SendMessageRequest) (*model.SendMessa
 		AccessToken: req.AccessToken,
 		Recipient:   string(recipient),
 		Message:     string(message),
+		Tag:         req.SendMessageArgs.Tag,
 	}
 
 	path := "/me/messages"

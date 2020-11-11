@@ -76,6 +76,7 @@ type SubscribedAppResponse struct {
 type SendMessageArgs struct {
 	Recipient *RecipientSendMessageRequest `json:"recipient"`
 	Message   *MessageSendMessageRequest   `json:"message"`
+	Tag       string                       `json:"tag"`
 }
 
 type RecipientSendMessageRequest struct {

@@ -9,16 +9,23 @@ import (
 
 	"o.o/backend/cmd/fabo-event-handler/config"
 	_base "o.o/backend/cogs/base"
+	shipment_fabo "o.o/backend/cogs/shipment/_fabo"
 	handlerapi "o.o/backend/com/eventhandler/handler/api"
 	"o.o/backend/com/eventhandler/webhook/sender"
 	"o.o/backend/com/eventhandler/webhook/storage"
+	comfabo "o.o/backend/com/fabo"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
 	com "o.o/backend/com/main"
+	"o.o/backend/com/main/connectioning"
 	"o.o/backend/com/main/identity"
+	"o.o/backend/com/main/location"
+	"o.o/backend/com/main/ordering"
 	"o.o/backend/com/shopping/customering"
+	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/capi"
 )
 
 func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
@@ -27,6 +34,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 			"Redis",
 			"Databases",
 			"OneSignal",
+			"FacebookApp",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
@@ -39,6 +47,13 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		fbmessaging.WireSet,
 		fbpage.WireSet,
 		identity.WireSet,
+		ordering.WireSet,
+		location.WireSet,
+		connectioning.WireSet,
+		shipment_fabo.WireSet,
+		comfabo.WireSet,
+
+		wire.Bind(new(capi.EventBus), new(bus.Bus)),
 
 		com.BuildDatabaseWebhook,
 		com.BuildDatabaseMain,

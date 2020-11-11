@@ -10,6 +10,8 @@ import (
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/main/identity"
+	"o.o/api/main/ordering"
+	"o.o/api/main/shipping"
 	"o.o/backend/cmd/fabo-event-handler/config"
 	etophandler "o.o/backend/com/eventhandler/etop/handler"
 	fabohandler "o.o/backend/com/eventhandler/fabo/handler"
@@ -20,6 +22,7 @@ import (
 	notihandler "o.o/backend/com/eventhandler/notifier/handler"
 	"o.o/backend/com/eventhandler/pgevent"
 	"o.o/backend/com/eventhandler/webhook/sender"
+	"o.o/backend/com/fabo/pkg/fbclient"
 	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -131,6 +134,9 @@ func BuildWebhookHandler(
 	fbUserQuery fbusering.QueryBus,
 	fbMessagingQuery fbmessaging.QueryBus,
 	fbPageQuery fbpaging.QueryBus,
+	orderQuery ordering.QueryBus,
+	shippingQuery shipping.QueryBus,
+	fbClient *fbclient.FbClient,
 	identityQuery identity.QueryBus,
 ) (*handler.Handler, error) {
 	kafkaCfg := sarama.NewConfig()
@@ -145,7 +151,11 @@ func BuildWebhookHandler(
 		return nil, err
 	}
 
-	faboHandler := fabohandler.New(db, producer, cfg.Kafka.TopicPrefix, fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery)
+	faboHandler := fabohandler.New(
+		db, producer, cfg.Kafka.TopicPrefix,
+		fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery,
+		shippingQuery, orderQuery, fbClient,
+	)
 	h := handler.New(consumer, cfg.Kafka)
 	h.StartConsuming(ctx, fabohandler.Topics(), faboHandler.TopicsAndHandlers())
 	return h, nil

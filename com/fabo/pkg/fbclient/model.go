@@ -185,6 +185,7 @@ type SendMessageParams struct {
 	AccessToken string `url:"access_token"`
 	Recipient   string `url:"recipient"`
 	Message     string `url:"message"`
+	Tag         string `url:"tag,omitempty"`
 }
 
 type SendCommentRequest struct {
