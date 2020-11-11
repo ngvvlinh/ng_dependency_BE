@@ -113,6 +113,9 @@ func (d *GHNDriver) CreateFulfillment(
 				Name:     line.ProductName,
 				Code:     line.Code,
 				Quantity: line.Quantity,
+				Category: ghnclient.ItemCategory{
+					Level1: line.ProductName,
+				},
 			})
 		}
 	} else {

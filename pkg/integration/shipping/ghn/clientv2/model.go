@@ -428,9 +428,16 @@ type CreateOrderRequest struct {
 }
 
 type OrderItem struct {
-	Name     string `json:"name"`
-	Code     string `json:"code"`
-	Quantity int    `json:"quantity"`
+	Name     string       `json:"name"`
+	Code     string       `json:"code"`
+	Quantity int          `json:"quantity"`
+	Category ItemCategory `json:"category"`
+}
+
+type ItemCategory struct {
+	Level1 string `json:"level1"`
+	Level2 string `json:"level2"`
+	Level3 string `json:"level3"`
 }
 
 type CreateOrderResponse struct {
