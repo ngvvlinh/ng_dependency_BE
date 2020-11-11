@@ -264,13 +264,20 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 			return err
 		}
 
-		updateArgs := sqlstore.UpdateCancelArgs{
-			ID:            ffm.ID,
-			ShippingState: shipnow_state.StateCancelled,
-			Status:        status5.N,
-			ConfirmStatus: status3.N,
-			CancelReason:  cmd.CancelReason,
+		// update shipping_state for delivery points
+		deliveryPoints := ffm.DeliveryPoints
+		for _, point := range deliveryPoints {
+			point.ShippingState = shipnow_state.StateCancelled
 		}
+		updateArgs := sqlstore.UpdateCancelArgs{
+			ID:             ffm.ID,
+			ShippingState:  shipnow_state.StateCancelled,
+			Status:         status5.N,
+			ConfirmStatus:  status3.N,
+			CancelReason:   cmd.CancelReason,
+			DeliveryPoints: deliveryPoints,
+		}
+
 		ffm, err = a.store(ctx).UpdateCancelled(updateArgs)
 		if err != nil {
 			return err

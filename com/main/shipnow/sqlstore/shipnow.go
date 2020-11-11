@@ -7,6 +7,7 @@ import (
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipnow"
 	carriertypes "o.o/api/main/shipnow/carrier/types"
+	shipnowtypes "o.o/api/main/shipnow/types"
 	shippingtypes "o.o/api/main/shipping/types"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/shipnow_state"
@@ -208,19 +209,21 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateStateArgs) (*shipnow.ShipnowFu
 }
 
 type UpdateCancelArgs struct {
-	ID            dot.ID
-	ConfirmStatus status3.Status
-	Status        status5.Status
-	ShippingState shipnow_state.State
-	CancelReason  string
+	ID             dot.ID
+	ConfirmStatus  status3.Status
+	Status         status5.Status
+	ShippingState  shipnow_state.State
+	CancelReason   string
+	DeliveryPoints []*shipnowtypes.DeliveryPoint
 }
 
 func (s *ShipnowStore) UpdateCancelled(args UpdateCancelArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateFfm := &model.ShipnowFulfillment{
-		ConfirmStatus: args.ConfirmStatus,
-		ShippingState: args.ShippingState,
-		Status:        args.Status,
-		CancelReason:  args.CancelReason,
+		ConfirmStatus:  args.ConfirmStatus,
+		ShippingState:  args.ShippingState,
+		Status:         args.Status,
+		CancelReason:   args.CancelReason,
+		DeliveryPoints: convert.DeliveryPointsToModel(args.DeliveryPoints),
 	}
 	err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(updateFfm)
 	if err != nil {
