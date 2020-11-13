@@ -210,6 +210,17 @@ const (
 	ShopTradingOrderCreate permission.ActionType = "shop/trading/order:create"
 	ShopTradingOrderView   permission.ActionType = "shop/trading/order:view"
 
+	// shop ticket
+	ShopTicketCreate permission.ActionType = "shop/shop_ticket:create"
+	ShopTicketUpdate permission.ActionType = "shop/shop_ticket:update"
+	ShopTicketView   permission.ActionType = "shop/shop_ticket:view"
+
+	// shop ticket comment
+	ShopTicketCommentCreate permission.ActionType = "shop/shop_ticket_comment:create"
+	ShopTicketCommentUpdate permission.ActionType = "shop/shop_ticket_comment:update"
+	ShopTicketCommentView   permission.ActionType = "shop/shop_ticket_comment:view"
+	ShopTicketCommentDelete permission.ActionType = "shop/shop_ticket_comment:delete"
+
 	ShopPaymentCreate permission.ActionType = "shop/payment:create"
 	ShopPaymentView   permission.ActionType = "shop/payment:view"
 
@@ -1055,13 +1066,14 @@ var _acl = map[string]*permission.Decl{
 
 	// -- ticket -- //
 
-	"shop.Ticket/CreateTicket":            {Type: Shop},
-	"shop.Ticket/GetTickets":              {Type: Shop},
-	"shop.Ticket/GetTicketsByRefTicketID": {Type: Shop},
-	"shop.Ticket/GetTicket":               {Type: Shop},
-	"shop.Ticket/CreateTicketComment":     {Type: Shop},
-	"shop.Ticket/UpdateTicketComment":     {Type: Shop},
-	"shop.Ticket/DeleteTicketComment":     {Type: Shop},
+	"shop.Ticket/CreateTicket":            {Type: Shop, Actions: actions(ShopTicketCreate)},
+	"shop.Ticket/GetTickets":              {Type: Shop, Actions: actions(ShopTicketView)},
+	"shop.Ticket/GetTicketsByRefTicketID": {Type: Shop, Actions: actions(ShopTicketView)},
+	"shop.Ticket/GetTicket":               {Type: Shop, Actions: actions(ShopTicketView)},
+	"shop.Ticket/GetTicketComments":       {Type: Shop, Actions: actions(ShopTicketCommentView)},
+	"shop.Ticket/CreateTicketComment":     {Type: Shop, Actions: actions(ShopTicketCommentCreate)},
+	"shop.Ticket/UpdateTicketComment":     {Type: Shop, Actions: actions(ShopTicketCommentUpdate)},
+	"shop.Ticket/DeleteTicketComment":     {Type: Shop, Actions: actions(ShopTicketCommentDelete)},
 
 	"admin.Ticket/CreateTicket":            {Type: EtopAdmin, Actions: actions(AdminTicketCreate)},
 	"admin.Ticket/GetTickets":              {Type: EtopAdmin, Actions: actions(AdminTicketView)},
