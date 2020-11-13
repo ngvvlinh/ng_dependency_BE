@@ -91,7 +91,6 @@ func (r *ReportQuery) ReportOrders(
 		RefType:     receipt_ref.Order,
 		ReceiptType: receipt_type.Receipt,
 		Status:      status3.P,
-		IsContains:  true,
 	}
 	if err := r.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
 		return nil, err
