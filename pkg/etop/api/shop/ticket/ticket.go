@@ -83,6 +83,7 @@ func (s *TicketService) DeleteTicketComment(ctx context.Context, req *api.Delete
 func (s *TicketService) GetTicketComments(ctx context.Context, request *api.GetTicketCommentsRequest) (*api.GetTicketCommentsResponse, error) {
 	var filter = &ticket.FilterGetTicketComment{}
 	filter.AccountID = s.SS.Shop().ID
+	filter.TicketID = request.TicketID
 	if request.Filter != nil {
 		filter.CreatedBy = request.Filter.CreatedBy
 		filter.ParentID = request.Filter.ParentID
