@@ -41,7 +41,7 @@ import (
 )
 
 type GetTicketCommentsResponse struct {
-	TicketComments []*shoptypes.TicketComment `json:"tickets"`
+	TicketComments []*shoptypes.TicketComment `json:"ticket_comments"`
 	Paging         *common.PageInfo           `json:"paging"`
 }
 
