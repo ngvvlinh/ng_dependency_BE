@@ -20,15 +20,16 @@ func (wh *Webhook) handleMessenger(ctx context.Context, webhookMessages WebhookM
 	entries := webhookMessages.Entry
 	for _, entry := range entries {
 		externalPageID := entry.ID
-		for _, messge := range entry.Messaging {
-			if messge.Message != nil {
-				PSID := messge.Sender.ID
+		for _, message := range entry.Messaging {
+			if message.Message != nil {
+				PSID := message.Sender.ID
 				if PSID == externalPageID {
-					PSID = messge.Recipient.ID
+					PSID = message.Recipient.ID
 				}
 				// message ID
-				mid := messge.Message.Mid
-				err := wh.handleMessageReturned(ctx, externalPageID, PSID, mid)
+				mid := message.Message.Mid
+				timestamp := message.Timestamp
+				err := wh.handleMessageReturned(ctx, externalPageID, PSID, mid, int64(timestamp))
 				if err == nil {
 					continue
 				}
@@ -47,7 +48,7 @@ func (wh *Webhook) handleMessenger(ctx context.Context, webhookMessages WebhookM
 }
 
 // TODO(ngoc): refactor
-func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PSID, mid string) error {
+func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PSID, mid string, externalTimestamp int64) error {
 	isTestPage, _err := wh.IsTestPage(ctx, externalPageID)
 	if _err != nil {
 		if cm.ErrorCode(_err) == cm.NotFound {
@@ -292,6 +293,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 				ExternalAttachments:    externalAttachments,
 				ExternalMessageShares:  externalShares,
 				ExternalCreatedTime:    messageResp.CreatedTime.ToTime(),
+				ExternalTimestamp:      externalTimestamp,
 				InternalSource:         internalSource,
 			},
 		},

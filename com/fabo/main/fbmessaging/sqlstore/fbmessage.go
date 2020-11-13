@@ -150,7 +150,7 @@ func (s *FbExternalMessageStore) ListFbExternalMessagesDB() ([]*model.FbExternal
 	}
 
 	var fbExternalMessages model.FbExternalMessages
-	err = query.Find(&fbExternalMessages)
+	err = query.OrderBy("external_timestamp desc").Find(&fbExternalMessages)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func (s *FbExternalMessageStore) ListLatestExternalMessages(externalConversation
 			SELECT DISTINCT ON (external_conversation_id) id
 			FROM fb_external_message
 			WHERE external_conversation_id IN (?)
-			ORDER BY external_conversation_id, external_created_time DESC
+			ORDER BY external_conversation_id, external_created_time, external_timestamp DESC
 		`, strings.Join(externalConversationIDs, "','")).
 		Query()
 	if err != nil {
@@ -225,7 +225,7 @@ func (s *FbExternalMessageStore) ListLatestCustomerExternalMessages(externalConv
 			WHERE
 				external_conversation_id IN (?) AND
 				external_from_id <> external_page_id
-			ORDER BY external_conversation_id, external_created_time DESC
+			ORDER BY external_conversation_id, external_created_time, external_timestamp DESC
 		`, strings.Join(externalConversationIDs, "','")).
 		Query()
 	if err != nil {

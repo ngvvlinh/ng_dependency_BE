@@ -23,7 +23,10 @@ type FbExternalMessage struct {
 	ExternalAttachments    []*FbMessageAttachment
 	ExternalMessageShares  []*FbMessageShare
 	ExternalCreatedTime    time.Time `paging:"external_created_time"`
-	InternalSource         fb_internal_source.FbInternalSource
+	// Webhook fb trả vê timestamp sẽ phân biệt (sort) tốt hơn external_created_time
+	// vì khi parse timestamp sang time.Time sẽ mất phần milisecond trong timestamp
+	ExternalTimestamp int64
+	InternalSource    fb_internal_source.FbInternalSource
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`

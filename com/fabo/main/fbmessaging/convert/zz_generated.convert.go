@@ -928,6 +928,7 @@ func convert_fbmessagingmodel_FbExternalMessage_fbmessaging_FbExternalMessage(ar
 	out.ExternalMessageShares = Convert_fbmessagingmodel_FbMessageShares_fbmessaging_FbMessageShares(arg.ExternalMessageShares)
 	out.InternalSource = arg.InternalSource           // simple assign
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
+	out.ExternalTimestamp = arg.ExternalTimestamp     // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
 	out.CreatedBy = arg.CreatedBy                     // simple assign
@@ -962,6 +963,7 @@ func convert_fbmessaging_FbExternalMessage_fbmessagingmodel_FbExternalMessage(ar
 	out.ExternalAttachments = Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(arg.ExternalAttachments)
 	out.ExternalMessageShares = Convert_fbmessaging_FbMessageShares_fbmessagingmodel_FbMessageShares(arg.ExternalMessageShares)
 	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
+	out.ExternalTimestamp = arg.ExternalTimestamp     // simple assign
 	out.InternalSource = arg.InternalSource           // simple assign
 	out.CreatedAt = arg.CreatedAt                     // simple assign
 	out.UpdatedAt = arg.UpdatedAt                     // simple assign
@@ -1005,6 +1007,7 @@ func apply_fbmessaging_CreateFbExternalMessageArgs_fbmessaging_FbExternalMessage
 	out.ExternalMessageShares = arg.ExternalMessageShares   // simple assign
 	out.InternalSource = arg.InternalSource                 // simple assign
 	out.ExternalCreatedTime = arg.ExternalCreatedTime       // simple assign
+	out.ExternalTimestamp = arg.ExternalTimestamp           // simple assign
 	out.CreatedAt = time.Time{}                             // zero value
 	out.UpdatedAt = time.Time{}                             // zero value
 	out.CreatedBy = arg.CreatedBy                           // simple assign

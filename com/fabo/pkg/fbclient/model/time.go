@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type FacebookTime int
+type FacebookTime int64
 
 func (t *FacebookTime) ToTime() time.Time {
 	if t == nil {

@@ -1148,6 +1148,25 @@ func (ft *FbExternalMessageFilters) ByExternalCreatedTimePtr(ExternalCreatedTime
 	}
 }
 
+func (ft *FbExternalMessageFilters) ByExternalTimestamp(ExternalTimestamp int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_timestamp",
+		Value:  ExternalTimestamp,
+		IsNil:  ExternalTimestamp == 0,
+	}
+}
+
+func (ft *FbExternalMessageFilters) ByExternalTimestampPtr(ExternalTimestamp *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_timestamp",
+		Value:  ExternalTimestamp,
+		IsNil:  ExternalTimestamp == nil,
+		IsZero: ExternalTimestamp != nil && (*ExternalTimestamp) == 0,
+	}
+}
+
 func (ft *FbExternalMessageFilters) ByInternalSource(InternalSource fb_internal_source.FbInternalSource) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

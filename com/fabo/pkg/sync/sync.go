@@ -445,9 +445,12 @@ func (s *Synchronizer) handleTaskGetMessages(
 		oldFbExternalMessage := messageQuery.Result
 		internalSource := fb_internal_source.Facebook
 		var createdBy dot.ID
+		// timestamp in API * 1000 = timestamp in webhook
+		externalTimestamp := int64(*messageData.CreatedTime) * 1000
 		if oldFbExternalMessage != nil {
 			internalSource = oldFbExternalMessage.InternalSource
 			createdBy = oldFbExternalMessage.CreatedBy
+			externalTimestamp = oldFbExternalMessage.ExternalTimestamp
 		}
 
 		currentMessage := messageData.Message
@@ -482,6 +485,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 			ExternalAttachments:    externalAttachments,
 			ExternalMessageShares:  externalShares,
 			ExternalCreatedTime:    messageData.CreatedTime.ToTime(),
+			ExternalTimestamp:      externalTimestamp,
 			InternalSource:         internalSource,
 			CreatedBy:              createdBy,
 		})

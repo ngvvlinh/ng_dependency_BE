@@ -25,6 +25,7 @@ type FbExternalMessage struct {
 	ExternalMessageShares  []*FbMessageShare
 	InternalSource         fb_internal_source.FbInternalSource
 	ExternalCreatedTime    time.Time
+	ExternalTimestamp      int64
 	CreatedAt              time.Time `compare:"ignore"`
 	UpdatedAt              time.Time `compare:"ignore"`
 	CreatedBy              dot.ID

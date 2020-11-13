@@ -91,6 +91,7 @@ type CreateFbExternalMessageArgs struct {
 	ExternalAttachments    []*FbMessageAttachment
 	ExternalMessageShares  []*FbMessageShare
 	ExternalCreatedTime    time.Time
+	ExternalTimestamp      int64
 	InternalSource         fb_internal_source.FbInternalSource
 	CreatedBy              dot.ID
 }
