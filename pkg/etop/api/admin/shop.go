@@ -82,8 +82,9 @@ func (s *ShopService) GetShopsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*a
 
 func (s *ShopService) UpdateShopInfo(ctx context.Context, r *admin.UpdateShopInfoRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &identity.UpdateShopInfoCommand{
-		ShopID:                r.ID,
-		MoneyTransactionRrule: r.MoneyTransactionRrule,
+		ShopID:                  r.ID,
+		MoneyTransactionRrule:   r.MoneyTransactionRrule,
+		IsPriorMoneyTransaction: r.IsPriorMoneyTransaction,
 	}
 	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

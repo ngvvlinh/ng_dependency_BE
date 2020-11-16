@@ -316,6 +316,7 @@ type Shop struct {
 	SurveyInfo                    []*SurveyInfo                        `json:"survey_info"`
 	ShippingServiceSelectStrategy []*ShippingServiceSelectStrategyItem `json:"shipping_service_select_strategy"`
 	Code                          string                               `json:"code"`
+	IsPriorMoneyTransaction       dot.NullBool                         `json:"is_prior_money_transaction"`
 
 	CreatedAt dot.Time `json:"created_at"`
 	UpdatedAt dot.Time `json:"updated_at"`

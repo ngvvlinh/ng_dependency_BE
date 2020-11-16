@@ -145,8 +145,9 @@ type Shop struct {
 
 	InventoryOverstock dot.NullBool
 
-	WLPartnerID dot.ID
-	Rid         dot.ID
+	WLPartnerID             dot.ID
+	Rid                     dot.ID
+	IsPriorMoneyTransaction dot.NullBool
 }
 
 type ShippingServiceSelectStrategyItem struct {

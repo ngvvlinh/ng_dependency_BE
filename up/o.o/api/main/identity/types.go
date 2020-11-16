@@ -49,14 +49,15 @@ type Shop struct {
 	SurveyInfo                    []*SurveyInfo
 	ShippingServiceSelectStrategy []*ShippingServiceSelectStrategyItem
 
-	Status      status3.Status
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   time.Time
-	BankAccount *identitytypes.BankAccount
-	TryOn       try_on.TryOnCode
-	CompanyInfo *identitytypes.CompanyInfo
-	WLPartnerID dot.ID
+	Status                  status3.Status
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
+	DeletedAt               time.Time
+	BankAccount             *identitytypes.BankAccount
+	TryOn                   try_on.TryOnCode
+	CompanyInfo             *identitytypes.CompanyInfo
+	WLPartnerID             dot.ID
+	IsPriorMoneyTransaction dot.NullBool
 }
 
 func (s *Shop) CheckInfo() error {

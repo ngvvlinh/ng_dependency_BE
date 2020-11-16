@@ -307,6 +307,7 @@ type ListUsersByIDsAndNameNormArgs struct {
 }
 
 type UpdateShopInfoArgs struct {
-	ShopID                dot.ID
-	MoneyTransactionRrule string
+	ShopID                  dot.ID
+	MoneyTransactionRrule   string
+	IsPriorMoneyTransaction dot.NullBool
 }

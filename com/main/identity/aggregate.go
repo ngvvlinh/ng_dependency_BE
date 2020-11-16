@@ -520,5 +520,8 @@ func (a *Aggregate) UpdateShopInfo(ctx context.Context, args *identity.UpdateSho
 	if err := update.CheckInfo(); err != nil {
 		return err
 	}
+	if args.IsPriorMoneyTransaction.Valid {
+		update.IsPriorMoneyTransaction = args.IsPriorMoneyTransaction
+	}
 	return a.shopStore(ctx).ByID(args.ShopID).UpdateShop(update)
 }

@@ -160,8 +160,9 @@ func (h AggregateHandler) HandleUpdateShipFromAddressID(ctx context.Context, msg
 }
 
 type UpdateShopInfoCommand struct {
-	ShopID                dot.ID
-	MoneyTransactionRrule string
+	ShopID                  dot.ID
+	MoneyTransactionRrule   string
+	IsPriorMoneyTransaction dot.NullBool
 
 	Result struct {
 	} `json:"-"`
@@ -685,14 +686,16 @@ func (q *UpdateShipFromAddressIDCommand) SetUpdateShipFromAddressArgs(args *Upda
 func (q *UpdateShopInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopInfoArgs) {
 	return ctx,
 		&UpdateShopInfoArgs{
-			ShopID:                q.ShopID,
-			MoneyTransactionRrule: q.MoneyTransactionRrule,
+			ShopID:                  q.ShopID,
+			MoneyTransactionRrule:   q.MoneyTransactionRrule,
+			IsPriorMoneyTransaction: q.IsPriorMoneyTransaction,
 		}
 }
 
 func (q *UpdateShopInfoCommand) SetUpdateShopInfoArgs(args *UpdateShopInfoArgs) {
 	q.ShopID = args.ShopID
 	q.MoneyTransactionRrule = args.MoneyTransactionRrule
+	q.IsPriorMoneyTransaction = args.IsPriorMoneyTransaction
 }
 
 func (q *UpdateUserEmailCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, email string) {

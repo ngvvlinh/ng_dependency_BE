@@ -1137,7 +1137,8 @@ func (d *DeleteAdminUserResponse) String() string {
 type UpdateShopInfoRequest struct {
 	ID dot.ID `json:"id"`
 	// referrence: https://icalendar.org/rrule-tool.html
-	MoneyTransactionRrule string `json:"money_transaction_rrule"`
+	MoneyTransactionRrule   string       `json:"money_transaction_rrule"`
+	IsPriorMoneyTransaction dot.NullBool `json:"is_prior_money_transaction"`
 }
 
 func (d *UpdateShopInfoRequest) String() string {

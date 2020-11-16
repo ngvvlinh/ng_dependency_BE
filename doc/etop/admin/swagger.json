@@ -3986,6 +3986,9 @@
         "is_blocked": {
           "type": "boolean"
         },
+        "is_prior_money_transaction": {
+          "type": "boolean"
+        },
         "is_test": {
           "type": "boolean"
         },
@@ -9630,6 +9633,9 @@
         "id": {
           "type": "string",
           "format": "int64"
+        },
+        "is_prior_money_transaction": {
+          "type": "boolean"
         },
         "money_transaction_rrule": {
           "description": "referrence: https://icalendar.org/rrule-tool.html\n",

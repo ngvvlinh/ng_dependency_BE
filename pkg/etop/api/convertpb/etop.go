@@ -353,6 +353,7 @@ func PbShopExtended(m *identitymodel.ShopExtended) *etop.Shop {
 		SurveyInfo:                    PbSurveyInfos(m.SurveyInfo),
 		ShippingServiceSelectStrategy: PbShippingServiceSelectStrategy(m.ShippingServiceSelectStrategy),
 		Code:                          m.Code,
+		IsPriorMoneyTransaction:       m.IsPriorMoneyTransaction,
 
 		// deprecated: 2018.07.24+14
 		ProductSourceId: m.ID,
