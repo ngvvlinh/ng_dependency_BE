@@ -259,6 +259,11 @@ const (
 	FbShopTagView   permission.ActionType = "facebook/shoptag:view"
 	FbShopTagDelete permission.ActionType = "facebook/shoptag:delete"
 
+	FbMessageTemplateCreate permission.ActionType = "facebook/message_template:create"
+	FbMessageTemplateUpdate permission.ActionType = "facebook/message_template:update"
+	FbMessageTemplateView   permission.ActionType = "facebook/message_template:view"
+	FbMessageTemplateDelete permission.ActionType = "facebook/message_template:delete"
+
 	// Admin Credit
 	AdminCreditCreate  permission.ActionType = "admin/credit:create"
 	AdminCreditView    permission.ActionType = "admin/credit:view"
@@ -1267,11 +1272,11 @@ var _acl = map[string]*permission.Decl{
 	"fabo.CustomerConversation/SendMessage":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageCreate)},
 	"fabo.CustomerConversation/SendComment":                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentCreate)},
 	"fabo.CustomerConversation/CreatePost":                   {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbPostCreate)},
-	"fabo.CustomerConversation/MessageTemplateVariables":     {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/MessageTemplates":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/CreateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/UpdateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
-	"fabo.CustomerConversation/DeleteMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true},
+	"fabo.CustomerConversation/MessageTemplateVariables":     {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageTemplateView)},
+	"fabo.CustomerConversation/MessageTemplates":             {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageTemplateView)},
+	"fabo.CustomerConversation/CreateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageTemplateCreate)},
+	"fabo.CustomerConversation/UpdateMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageTemplateUpdate)},
+	"fabo.CustomerConversation/DeleteMessageTemplate":        {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbMessageTemplateDelete)},
 	"fabo.CustomerConversation/LikeOrUnLikeComment":          {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/HideOrUnHideComment":          {Type: Shop, Auth: User, IncludeFaboInfo: true},
 	"fabo.CustomerConversation/SendPrivateReply":             {Type: Shop, Auth: User, IncludeFaboInfo: true},
