@@ -28,6 +28,7 @@ import (
 	sqlstore2 "o.o/backend/com/eventhandler/notifier/sqlstore"
 	"o.o/backend/com/fabo/main/fbcustomerconversationsearch"
 	"o.o/backend/com/fabo/main/fbmessagetemplate"
+	pm6 "o.o/backend/com/fabo/main/fbmessagetemplate/pm"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
@@ -641,19 +642,21 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	processManager3 := pm4.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, moneyTxStoreInterface)
 	processManager4 := pm5.New(busBus, fbuseringCommandBus)
 	fbmessagingProcessManager := fbmessaging.NewProcessManager(busBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
+	processManager5 := pm6.NewProcessManager(busBus, fbmessagetemplateCommandBus)
 	output := Output{
-		Servers:        v3,
-		EventStream:    eventStream,
-		Health:         service,
-		Handler:        handlerHandler,
-		Publisher:      publisherPublisher,
-		FbClient:       fbClient,
-		_catalogPM:     processManager,
-		_identityPM:    pmProcessManager,
-		_orderPM:       processManager2,
-		_shippingPM:    processManager3,
-		_fbuserPM:      processManager4,
-		_fbMessagingPM: fbmessagingProcessManager,
+		Servers:              v3,
+		EventStream:          eventStream,
+		Health:               service,
+		Handler:              handlerHandler,
+		Publisher:            publisherPublisher,
+		FbClient:             fbClient,
+		_catalogPM:           processManager,
+		_identityPM:          pmProcessManager,
+		_orderPM:             processManager2,
+		_shippingPM:          processManager3,
+		_fbuserPM:            processManager4,
+		_fbMessagingPM:       fbmessagingProcessManager,
+		_fbMessageTemplatePM: processManager5,
 	}
 	return output, func() {
 		cleanup5()

@@ -11,6 +11,7 @@ import (
 	ghnv2 "o.o/backend/cogs/shipment/ghn/v2"
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
+	fbmessagetemplatepm "o.o/backend/com/fabo/main/fbmessagetemplate/pm"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	fbuserpm "o.o/backend/com/fabo/main/fbuser/pm"
 	"o.o/backend/com/fabo/pkg/fbclient"
@@ -56,12 +57,13 @@ type Output struct {
 	FbClient *fbclient.FbClient
 
 	// pm
-	_catalogPM     *catalogpm.ProcessManager
-	_identityPM    *identitypm.ProcessManager
-	_orderPM       *orderingpm.ProcessManager
-	_shippingPM    *shippingpm.ProcessManager
-	_fbuserPM      *fbuserpm.ProcessManager
-	_fbMessagingPM *fbmessaging.ProcessManager
+	_catalogPM           *catalogpm.ProcessManager
+	_identityPM          *identitypm.ProcessManager
+	_orderPM             *orderingpm.ProcessManager
+	_shippingPM          *shippingpm.ProcessManager
+	_fbuserPM            *fbuserpm.ProcessManager
+	_fbMessagingPM       *fbmessaging.ProcessManager
+	_fbMessageTemplatePM *fbmessagetemplatepm.ProcessManager
 }
 
 func BuildServers(
