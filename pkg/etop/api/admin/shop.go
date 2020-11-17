@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/identity"
+	"o.o/api/main/moneytx"
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
@@ -22,6 +23,7 @@ type ShopService struct {
 	IdentityQuery identity.QueryBus
 	IdentityAggr  identity.CommandBus
 	ShopStore     sqlstore.ShopStoreInterface
+	MoneyTxQuery  moneytx.QueryBus
 }
 
 func (s *ShopService) Clone() admin.ShopService {
@@ -59,9 +61,23 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 		return nil, err
 	}
 
+	// count total money transaction shipping per shop
+	shops := query.Result.Shops
+	_shopIDs := []dot.ID{}
+	for _, shop := range shops {
+		_shopIDs = append(_shopIDs, shop.ID)
+	}
+
+	queryShopMoneyTxCount := &moneytx.CountMoneyTxShippingByShopIDsQuery{
+		ShopIDs: _shopIDs,
+	}
+	if err := s.MoneyTxQuery.Dispatch(ctx, queryShopMoneyTxCount); err != nil {
+		return nil, err
+	}
+
 	result := &admin.GetShopsResponse{
 		Paging: cmapi.PbPageInfo(paging),
-		Shops:  convertpb.Convert_core_ShopExtendeds_To_api_ShopExtendeds(query.Result.Shops),
+		Shops:  convertpb.Convert_core_ShopExtendeds_To_api_ShopExtendeds(shops, queryShopMoneyTxCount.Result),
 	}
 	return result, nil
 }
@@ -74,8 +90,16 @@ func (s *ShopService) GetShopsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*a
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
+
+	// count total money transaction shipping per shop
+	queryShopMoneyTxCount := &moneytx.CountMoneyTxShippingByShopIDsQuery{
+		ShopIDs: q.Ids,
+	}
+	if err := s.MoneyTxQuery.Dispatch(ctx, queryShopMoneyTxCount); err != nil {
+		return nil, err
+	}
 	result := &admin.GetShopsResponse{
-		Shops: convertpb.Convert_core_Shops_To_api_Shops(query.Result),
+		Shops: convertpb.Convert_core_Shops_To_api_Shops(query.Result, queryShopMoneyTxCount.Result),
 	}
 	return result, nil
 }

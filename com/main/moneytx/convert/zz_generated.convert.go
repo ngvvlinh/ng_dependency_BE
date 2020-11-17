@@ -188,6 +188,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*moneytxmodel.MoneyTransactionShippingExternalLineExtended) = out0
 		return nil
 	})
+	s.Register((*moneytxmodel.ShopFtMoneyTxShippingCount)(nil), (*moneytx.ShopFtMoneyTxShippingCount)(nil), func(arg, out interface{}) error {
+		Convert_moneytxmodel_ShopFtMoneyTxShippingCount_moneytx_ShopFtMoneyTxShippingCount(arg.(*moneytxmodel.ShopFtMoneyTxShippingCount), out.(*moneytx.ShopFtMoneyTxShippingCount))
+		return nil
+	})
+	s.Register(([]*moneytxmodel.ShopFtMoneyTxShippingCount)(nil), (*[]*moneytx.ShopFtMoneyTxShippingCount)(nil), func(arg, out interface{}) error {
+		out0 := Convert_moneytxmodel_ShopFtMoneyTxShippingCounts_moneytx_ShopFtMoneyTxShippingCounts(arg.([]*moneytxmodel.ShopFtMoneyTxShippingCount))
+		*out.(*[]*moneytx.ShopFtMoneyTxShippingCount) = out0
+		return nil
+	})
+	s.Register((*moneytx.ShopFtMoneyTxShippingCount)(nil), (*moneytxmodel.ShopFtMoneyTxShippingCount)(nil), func(arg, out interface{}) error {
+		Convert_moneytx_ShopFtMoneyTxShippingCount_moneytxmodel_ShopFtMoneyTxShippingCount(arg.(*moneytx.ShopFtMoneyTxShippingCount), out.(*moneytxmodel.ShopFtMoneyTxShippingCount))
+		return nil
+	})
+	s.Register(([]*moneytx.ShopFtMoneyTxShippingCount)(nil), (*[]*moneytxmodel.ShopFtMoneyTxShippingCount)(nil), func(arg, out interface{}) error {
+		out0 := Convert_moneytx_ShopFtMoneyTxShippingCounts_moneytxmodel_ShopFtMoneyTxShippingCounts(arg.([]*moneytx.ShopFtMoneyTxShippingCount))
+		*out.(*[]*moneytxmodel.ShopFtMoneyTxShippingCount) = out0
+		return nil
+	})
 }
 
 //-- convert o.o/api/main/moneytx.MoneyTransactionShipping --//
@@ -825,6 +843,64 @@ func Convert_moneytx_MoneyTransactionShippingExternalLineExtendeds_moneytxmodel_
 	outs = make([]*moneytxmodel.MoneyTransactionShippingExternalLineExtended, len(args))
 	for i := range tmps {
 		outs[i] = Convert_moneytx_MoneyTransactionShippingExternalLineExtended_moneytxmodel_MoneyTransactionShippingExternalLineExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/main/moneytx.ShopFtMoneyTxShippingCount --//
+
+func Convert_moneytxmodel_ShopFtMoneyTxShippingCount_moneytx_ShopFtMoneyTxShippingCount(arg *moneytxmodel.ShopFtMoneyTxShippingCount, out *moneytx.ShopFtMoneyTxShippingCount) *moneytx.ShopFtMoneyTxShippingCount {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &moneytx.ShopFtMoneyTxShippingCount{}
+	}
+	convert_moneytxmodel_ShopFtMoneyTxShippingCount_moneytx_ShopFtMoneyTxShippingCount(arg, out)
+	return out
+}
+
+func convert_moneytxmodel_ShopFtMoneyTxShippingCount_moneytx_ShopFtMoneyTxShippingCount(arg *moneytxmodel.ShopFtMoneyTxShippingCount, out *moneytx.ShopFtMoneyTxShippingCount) {
+	out.ShopID = arg.ShopID                             // simple assign
+	out.MoneyTxShippingCount = arg.MoneyTxShippingCount // simple assign
+}
+
+func Convert_moneytxmodel_ShopFtMoneyTxShippingCounts_moneytx_ShopFtMoneyTxShippingCounts(args []*moneytxmodel.ShopFtMoneyTxShippingCount) (outs []*moneytx.ShopFtMoneyTxShippingCount) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]moneytx.ShopFtMoneyTxShippingCount, len(args))
+	outs = make([]*moneytx.ShopFtMoneyTxShippingCount, len(args))
+	for i := range tmps {
+		outs[i] = Convert_moneytxmodel_ShopFtMoneyTxShippingCount_moneytx_ShopFtMoneyTxShippingCount(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_moneytx_ShopFtMoneyTxShippingCount_moneytxmodel_ShopFtMoneyTxShippingCount(arg *moneytx.ShopFtMoneyTxShippingCount, out *moneytxmodel.ShopFtMoneyTxShippingCount) *moneytxmodel.ShopFtMoneyTxShippingCount {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &moneytxmodel.ShopFtMoneyTxShippingCount{}
+	}
+	convert_moneytx_ShopFtMoneyTxShippingCount_moneytxmodel_ShopFtMoneyTxShippingCount(arg, out)
+	return out
+}
+
+func convert_moneytx_ShopFtMoneyTxShippingCount_moneytxmodel_ShopFtMoneyTxShippingCount(arg *moneytx.ShopFtMoneyTxShippingCount, out *moneytxmodel.ShopFtMoneyTxShippingCount) {
+	out.MoneyTxShippingCount = arg.MoneyTxShippingCount // simple assign
+	out.ShopID = arg.ShopID                             // simple assign
+}
+
+func Convert_moneytx_ShopFtMoneyTxShippingCounts_moneytxmodel_ShopFtMoneyTxShippingCounts(args []*moneytx.ShopFtMoneyTxShippingCount) (outs []*moneytxmodel.ShopFtMoneyTxShippingCount) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]moneytxmodel.ShopFtMoneyTxShippingCount, len(args))
+	outs = make([]*moneytxmodel.ShopFtMoneyTxShippingCount, len(args))
+	for i := range tmps {
+		outs[i] = Convert_moneytx_ShopFtMoneyTxShippingCount_moneytxmodel_ShopFtMoneyTxShippingCount(args[i], &tmps[i])
 	}
 	return outs
 }

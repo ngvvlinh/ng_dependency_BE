@@ -7004,6 +7004,9 @@
         "is_test": {
           "type": "boolean"
         },
+        "money_transaction_count": {
+          "type": "integer"
+        },
         "money_transaction_rrule": {
           "description": "referrence: https://icalendar.org/rrule-tool.html\n",
           "type": "string"

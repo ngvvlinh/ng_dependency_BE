@@ -320,6 +320,8 @@ type Shop struct {
 
 	CreatedAt dot.Time `json:"created_at"`
 	UpdatedAt dot.Time `json:"updated_at"`
+
+	MoneyTransactionCount int `json:"money_transaction_count"`
 }
 
 func (m *Shop) String() string { return jsonx.MustMarshalToString(m) }

@@ -261,8 +261,9 @@ type UpdateDefaultAddressArgs struct {
 }
 
 type ListShopsByIDsArgs struct {
-	IDs                  []dot.ID
-	IncludeWLPartnerShop bool
+	IDs                     []dot.ID
+	IsPriorMoneyTransaction bool
+	IncludeWLPartnerShop    bool
 }
 
 type CreateShopArgs struct {

@@ -1204,7 +1204,7 @@ func Convert_core_Fulfillment_To_api_Fulfillment(m *shipping.Fulfillment, accTyp
 		ActualCompensationAmount:           m.ActualCompensationAmount,
 	}
 	if shop != nil {
-		ff.Shop = Convert_core_Shop_To_api_Shop(shop)
+		ff.Shop = Convert_core_Shop_To_api_Shop(shop, nil)
 	}
 	if mo != nil {
 		ff.Order = Convert_core_Order_To_api_Order(mo, nil, accType)

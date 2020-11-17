@@ -121,3 +121,10 @@ type MoneyTransactionShippingEtop struct {
 	InvoiceNumber         string
 	WLPartnerID           dot.ID
 }
+
+// +convert:type=moneytx.ShopFtMoneyTxShippingCount
+// +sqlsel
+type ShopFtMoneyTxShippingCount struct {
+	MoneyTxShippingCount int    `sel:"count(*)"`
+	ShopID               dot.ID `sel:"shop_id"`
+}

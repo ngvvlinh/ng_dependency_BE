@@ -855,6 +855,7 @@ const Path_MoneyTransaction_GetMoneyTransactionShippingExternal = "/admin.MoneyT
 const Path_MoneyTransaction_GetMoneyTransactionShippingExternals = "/admin.MoneyTransaction/GetMoneyTransactionShippingExternals"
 const Path_MoneyTransaction_GetMoneyTransactions = "/admin.MoneyTransaction/GetMoneyTransactions"
 const Path_MoneyTransaction_RemoveMoneyTransactionShippingExternalLines = "/admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines"
+const Path_MoneyTransaction_SplitMoneyTransactionShippingExternal = "/admin.MoneyTransaction/SplitMoneyTransactionShippingExternal"
 const Path_MoneyTransaction_UpdateMoneyTransaction = "/admin.MoneyTransaction/UpdateMoneyTransaction"
 const Path_MoneyTransaction_UpdateMoneyTransactionShippingEtop = "/admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop"
 const Path_MoneyTransaction_UpdateMoneyTransactionShippingExternal = "/admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal"
@@ -1071,6 +1072,19 @@ func (s *MoneyTransactionServiceServer) parseRoute(path string, hooks httprpc.Ho
 				return
 			}
 			resp, err = inner.RemoveMoneyTransactionShippingExternalLines(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.MoneyTransaction/SplitMoneyTransactionShippingExternal":
+		msg := &SplitMoneyTxShippingExternalRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.SplitMoneyTransactionShippingExternal(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

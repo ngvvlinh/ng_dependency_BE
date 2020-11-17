@@ -55,6 +55,9 @@ func (q *QueryService) ListShopsByIDs(ctx context.Context, args *identity.ListSh
 	if args.IncludeWLPartnerShop {
 		query.IncludeWLPartnerShop()
 	}
+	if args.IsPriorMoneyTransaction {
+		query.IsPriorMoneyTransaction()
+	}
 	return query.ListShops()
 }
 

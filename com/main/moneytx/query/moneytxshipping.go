@@ -35,3 +35,10 @@ func (q *MoneyTxQuery) ListMoneyTxShippingsByMoneyTxShippingExternalID(ctx conte
 	}
 	return q.moneyTxShippingStore(ctx).MoneyTxShippingExternalID(moneyTxShippingExternalID).ListMoneyTxShippings()
 }
+
+func (q *MoneyTxQuery) CountMoneyTxShippingByShopIDs(ctx context.Context, args *moneytx.CountMoneyTxShippingByShopIDsArgs) ([]*moneytx.ShopFtMoneyTxShippingCount, error) {
+	if len(args.ShopIDs) == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop IDs")
+	}
+	return q.moneyTxShippingStore(ctx).CountMoneyTxShippingByShopIDs(args)
+}

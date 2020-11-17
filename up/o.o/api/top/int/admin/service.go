@@ -60,6 +60,7 @@ type MoneyTransactionService interface {
 	DeleteMoneyTransactionShippingExternal(context.Context, *cm.IDRequest) (*cm.RemovedResponse, error)
 	ConfirmMoneyTransactionShippingExternals(context.Context, *cm.IDsRequest) (*cm.UpdatedResponse, error)
 	UpdateMoneyTransactionShippingExternal(context.Context, *UpdateMoneyTransactionShippingExternalRequest) (*types.MoneyTransactionShippingExternal, error)
+	SplitMoneyTransactionShippingExternal(context.Context, *SplitMoneyTxShippingExternalRequest) (*cm.UpdatedResponse, error)
 
 	GetMoneyTransactionShippingEtop(context.Context, *cm.IDRequest) (*types.MoneyTransactionShippingEtop, error)
 	GetMoneyTransactionShippingEtops(context.Context, *GetMoneyTransactionShippingEtopsRequest) (*types.MoneyTransactionShippingEtopsResponse, error)

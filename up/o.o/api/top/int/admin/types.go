@@ -1144,3 +1144,15 @@ type UpdateShopInfoRequest struct {
 func (d *UpdateShopInfoRequest) String() string {
 	return jsonx.MustMarshalToString(d)
 }
+
+type SplitMoneyTxShippingExternalRequest struct {
+	ID dot.ID `json:"id"`
+	// Tách phiên dựa theo độ ưu tiên đối soát với shop
+	IsSplitByShopPriority bool `json:"is_split_by_shop_priority"`
+	// Tách phiên dựa theo shop mới (shop có số lượng phiên <= max_money_tx_shipping_count)
+	MaxMoneyTxShippingCount int `json:"max_money_tx_shipping_count"`
+}
+
+func (d *SplitMoneyTxShippingExternalRequest) String() string {
+	return jsonx.MustMarshalToString(d)
+}

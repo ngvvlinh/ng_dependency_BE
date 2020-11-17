@@ -51,6 +51,11 @@ func (s *ShopStore) IncludeWLPartnerShop() *ShopStore {
 	return s
 }
 
+func (s *ShopStore) IsPriorMoneyTransaction() *ShopStore {
+	s.preds = append(s.preds, sq.NewExpr("is_prior_money_transaction = true"))
+	return s
+}
+
 func (s *ShopStore) WithPaging(paging meta.Paging) *ShopStore {
 	s.Paging.WithPaging(paging)
 	return s

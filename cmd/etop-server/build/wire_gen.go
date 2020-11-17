@@ -795,6 +795,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityQuery: queryBus,
 		IdentityAggr:  commandBus,
 		ShopStore:     shopStoreInterface,
+		MoneyTxQuery:  moneytxQueryBus,
 	}
 	creditAggregate := credit.NewAggregateCredit(busBus, mainDB, queryBus)
 	creditCommandBus := credit.CreditAggregateMessageBus(creditAggregate)

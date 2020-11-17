@@ -61,10 +61,7 @@ func (q *QueryService) GetFulfillmentByIDOrShippingCode(ctx context.Context, arg
 }
 
 func (q *QueryService) ListFulfillmentsByIDs(ctx context.Context, IDs []dot.ID, shopID dot.ID) ([]*shipping.Fulfillment, error) {
-	if shopID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shopID")
-	}
-	fulfillments, err := q.store(ctx).IDs(IDs...).ShopID(shopID).ListFfms()
+	fulfillments, err := q.store(ctx).IDs(IDs...).OptionalShopID(shopID).ListFfms()
 	if err != nil {
 		return nil, err
 	}

@@ -179,6 +179,7 @@ func (s *MoneyTxShippingStore) ListMoneyTxShippingFtShopsDB() ([]*model.MoneyTra
 var specialShopFilters = []string{
 	"shop.money_transaction_rrule",
 	"shop.bank_account",
+	"shop.is_prior_money_transaction",
 }
 
 func isSupportSpecialFilters(filters meta.Filters) bool {
@@ -280,4 +281,18 @@ func (s *MoneyTxShippingStore) ByWhiteLabelPartner(ctx context.Context, query cm
 		return query.Where(s.ft.ByWLPartnerID(partner.ID))
 	}
 	return query.Where(s.ft.NotBelongWLPartner())
+}
+
+func (s *MoneyTxShippingStore) CountMoneyTxShippingByShopIDs(args *moneytx.CountMoneyTxShippingByShopIDsArgs) ([]*moneytx.ShopFtMoneyTxShippingCount, error) {
+	var shops []*model.ShopFtMoneyTxShippingCount
+	err := s.query().Table("money_transaction_shipping").
+		In("shop_id", args.ShopIDs).
+		Where("status != -1").
+		GroupBy("shop_id").
+		Find((*model.ShopFtMoneyTxShippingCounts)(&shops))
+	if err != nil {
+		return nil, err
+	}
+	res := convert.Convert_moneytxmodel_ShopFtMoneyTxShippingCounts_moneytx_ShopFtMoneyTxShippingCounts(shops)
+	return res, nil
 }

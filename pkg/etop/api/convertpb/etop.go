@@ -10,6 +10,7 @@ import (
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/main/invitation"
 	"o.o/api/main/location"
+	"o.o/api/main/moneytx"
 	ordertypes "o.o/api/main/ordering/types"
 	etop "o.o/api/top/int/etop"
 	"o.o/api/top/types/etc/account_type"
@@ -297,34 +298,47 @@ func PbShop(m *identitymodel.Shop) *etop.Shop {
 	}
 }
 
-func Convert_core_Shop_To_api_Shop(in *identity.Shop) *etop.Shop {
+func Convert_core_Shop_To_api_Shop(in *identity.Shop, shopCount *moneytx.ShopFtMoneyTxShippingCount) *etop.Shop {
 	if in == nil {
 		return nil
 	}
-	return &etop.Shop{
-		Id:                    in.ID,
-		Name:                  in.Name,
-		Status:                in.Status,
-		IsTest:                in.IsTest == 1,
-		Phone:                 in.Phone,
-		AutoCreateFfm:         in.AutoCreateFFM,
-		WebsiteUrl:            in.WebsiteURL,
-		ImageUrl:              in.ImageURL,
-		Email:                 in.Email,
-		ShipToAddressId:       in.ShipToAddressID,
-		ShipFromAddressId:     in.ShipFromAddressID,
-		OwnerId:               in.OwnerID,
-		Code:                  in.Code,
-		BankAccount:           Convert_core_BankAccount_To_api_BankAccount(in.BankAccount),
-		TryOn:                 in.TryOn,
-		MoneyTransactionRrule: in.MoneyTransactionRRule,
+	res := &etop.Shop{
+		Id:                      in.ID,
+		Name:                    in.Name,
+		Status:                  in.Status,
+		IsTest:                  in.IsTest == 1,
+		Phone:                   in.Phone,
+		AutoCreateFfm:           in.AutoCreateFFM,
+		WebsiteUrl:              in.WebsiteURL,
+		ImageUrl:                in.ImageURL,
+		Email:                   in.Email,
+		ShipToAddressId:         in.ShipToAddressID,
+		ShipFromAddressId:       in.ShipFromAddressID,
+		OwnerId:                 in.OwnerID,
+		Code:                    in.Code,
+		BankAccount:             Convert_core_BankAccount_To_api_BankAccount(in.BankAccount),
+		TryOn:                   in.TryOn,
+		MoneyTransactionRrule:   in.MoneyTransactionRRule,
+		IsPriorMoneyTransaction: in.IsPriorMoneyTransaction,
 	}
+	if shopCount != nil && shopCount.ShopID == in.ID {
+		res.MoneyTransactionCount = shopCount.MoneyTxShippingCount
+	}
+	return res
 }
 
-func Convert_core_Shops_To_api_Shops(items []*identity.Shop) []*etop.Shop {
+func Convert_core_Shops_To_api_Shops(items []*identity.Shop, shopFtMoneyTxShippingCounts []*moneytx.ShopFtMoneyTxShippingCount) []*etop.Shop {
 	result := make([]*etop.Shop, len(items))
+
+	mapShopFtMoneyTxShippingCounts := make(map[dot.ID]*moneytx.ShopFtMoneyTxShippingCount)
+	if shopFtMoneyTxShippingCounts != nil {
+		for _, shopCount := range shopFtMoneyTxShippingCounts {
+			mapShopFtMoneyTxShippingCounts[shopCount.ShopID] = shopCount
+		}
+	}
+
 	for i, item := range items {
-		result[i] = Convert_core_Shop_To_api_Shop(item)
+		result[i] = Convert_core_Shop_To_api_Shop(item, mapShopFtMoneyTxShippingCounts[item.ID])
 	}
 	return result
 }
@@ -368,11 +382,11 @@ func PbShopExtendeds(items []*identitymodel.ShopExtended) []*etop.Shop {
 	return result
 }
 
-func Convert_core_ShopExtended_To_api_ShopExtended(m *identity.ShopExtended) *etop.Shop {
+func Convert_core_ShopExtended_To_api_ShopExtended(m *identity.ShopExtended, shopCount *moneytx.ShopFtMoneyTxShippingCount) *etop.Shop {
 	if m == nil {
 		return nil
 	}
-	return &etop.Shop{
+	res := &etop.Shop{
 		Id:                            m.ID,
 		InventoryOverstock:            m.InventoryOverstock.Apply(true),
 		Name:                          m.Name,
@@ -397,16 +411,27 @@ func Convert_core_ShopExtended_To_api_ShopExtended(m *identity.ShopExtended) *et
 		Code:                          m.Code,
 		CreatedAt:                     cmapi.PbTime(m.CreatedAt),
 		UpdatedAt:                     cmapi.PbTime(m.UpdatedAt),
+		IsPriorMoneyTransaction:       m.IsPriorMoneyTransaction,
 
 		// deprecated: 2018.07.24+14
 		ProductSourceId: m.ID,
 	}
+	if shopCount != nil && shopCount.ShopID == m.ID {
+		res.MoneyTransactionCount = shopCount.MoneyTxShippingCount
+	}
+	return res
 }
 
-func Convert_core_ShopExtendeds_To_api_ShopExtendeds(items []*identity.ShopExtended) []*etop.Shop {
+func Convert_core_ShopExtendeds_To_api_ShopExtendeds(items []*identity.ShopExtended, shopFtMoneyTxShippingCounts []*moneytx.ShopFtMoneyTxShippingCount) []*etop.Shop {
+	mapShopFtMoneyTxShippingCounts := make(map[dot.ID]*moneytx.ShopFtMoneyTxShippingCount)
+	if shopFtMoneyTxShippingCounts != nil {
+		for _, shopCount := range shopFtMoneyTxShippingCounts {
+			mapShopFtMoneyTxShippingCounts[shopCount.ShopID] = shopCount
+		}
+	}
 	result := make([]*etop.Shop, len(items))
 	for i, item := range items {
-		result[i] = Convert_core_ShopExtended_To_api_ShopExtended(item)
+		result[i] = Convert_core_ShopExtended_To_api_ShopExtended(item, mapShopFtMoneyTxShippingCounts[item.ID])
 	}
 	return result
 }
@@ -834,7 +859,7 @@ func Convert_core_CreditExtended_to_api_Credit(item *credit.CreditExtended) *eto
 		Amount:    item.Amount,
 		ShopId:    item.ShopID,
 		Type:      item.Type,
-		Shop:      Convert_core_Shop_To_api_Shop(item.Shop),
+		Shop:      Convert_core_Shop_To_api_Shop(item.Shop, nil),
 		CreatedAt: cmapi.PbTime(item.CreatedAt),
 		UpdatedAt: cmapi.PbTime(item.UpdatedAt),
 		PaidAt:    cmapi.PbTime(item.PaidAt),

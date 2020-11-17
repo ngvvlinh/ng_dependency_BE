@@ -6,9 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/main/identity"
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
 	"o.o/api/meta"
+	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/status3"
@@ -487,4 +489,165 @@ func (a *MoneyTxAggregate) combineWithExtraFfms(ctx context.Context) (shopFfmsMa
 		shopFfmsMap[ffm.ShopID] = append(shopFfmsMap[ffm.ShopID], ffm)
 	}
 	return shopFfmsMap, nil
+}
+
+// SplitMoneyTransactionShippingExternal
+//
+// IsSplitByShopPriority: chia phiên NVC  thành 2 phiên:
+// - Phiên chứa các đơn của các:
+//      + shop ưu tiên đối soát trước (shop.is_prior_money_transaction)
+//      + shop mới (shop có số phiên đối soát <= args.MaxMoneyTxShippingCount)
+// - Phiên chưa các đơn còn lại
+// Xóa bỏ phiên cũ sau khi tách xong
+func (a *MoneyTxAggregate) SplitMoneyTxShippingExternal(ctx context.Context, args *moneytx.SplitMoneyTxShippingExternalArgs) (*pbcm.UpdatedResponse, error) {
+	if args.MoneyTxShippingExternalID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing money tx shipping external ID")
+	}
+	if !args.IsSplitByShopPriority && args.MaxMoneyTxShippingCount == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing splitting method")
+	}
+
+	moneyTxExternal, err := a.moneyTxShippingExternalStore(ctx).ID(args.MoneyTxShippingExternalID).GetMoneyTxShippingExternalFtLine()
+	if err != nil {
+		return nil, err
+	}
+	if moneyTxExternal.Status != status3.Z {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not split this money transaction shipping external")
+	}
+
+	ffmIDs := []dot.ID{}
+	for _, line := range moneyTxExternal.Lines {
+		if line.EtopFulfillmentID == 0 || line.ImportError != nil {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Please fix errors before continuing process")
+		}
+		ffmIDs = append(ffmIDs, line.EtopFulfillmentID)
+	}
+
+	query := &shipping.ListFulfillmentsByIDsQuery{
+		IDs: ffmIDs,
+	}
+	if err := a.shippingQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	if len(moneyTxExternal.Lines) != len(query.Result) {
+		return nil, cm.Errorf(cm.Internal, nil, "The quantity of fulfillments is not enough")
+	}
+
+	// mapPriorShopIDs: tập những shop được ưu tiên tách phiên và shop mới
+	mapPriorShopIDs := make(map[dot.ID]bool)
+
+	mapShopIDs := make(map[dot.ID]bool)
+	shopIDs := []dot.ID{}
+	for _, ffm := range query.Result {
+		if mapShopIDs[ffm.ShopID] {
+			continue
+		}
+		mapShopIDs[ffm.ShopID] = true
+		shopIDs = append(shopIDs, ffm.ShopID)
+	}
+	if args.IsSplitByShopPriority {
+		queryShop := &identity.ListShopsByIDsQuery{
+			IDs:                     shopIDs,
+			IncludeWLPartnerShop:    true,
+			IsPriorMoneyTransaction: true,
+		}
+		if err := a.identityQuery.Dispatch(ctx, queryShop); err != nil {
+			return nil, err
+		}
+		for _, shop := range queryShop.Result {
+			mapPriorShopIDs[shop.ID] = true
+		}
+	}
+	if args.MaxMoneyTxShippingCount > 0 {
+		queryCount := &moneytx.CountMoneyTxShippingByShopIDsArgs{
+			ShopIDs: shopIDs,
+		}
+		shopCounts, err := a.moneyTxShippingStore(ctx).CountMoneyTxShippingByShopIDs(queryCount)
+		if err != nil {
+			return nil, err
+		}
+		mapShopFtMoneyTxCount := make(map[dot.ID]int)
+		for _, shop := range shopCounts {
+			mapShopFtMoneyTxCount[shop.ShopID] = shop.MoneyTxShippingCount
+		}
+		for _, shopID := range shopIDs {
+			if mapPriorShopIDs[shopID] {
+				continue
+			}
+			count, ok := mapShopFtMoneyTxCount[shopID]
+			// !ok <=> shop chưa có phiên nào => là shop mới
+			if !ok {
+				mapPriorShopIDs[shopID] = true
+			} else {
+				if count > args.MaxMoneyTxShippingCount {
+					continue
+				}
+				mapPriorShopIDs[shopID] = true
+			}
+		}
+	}
+
+	priorLines := []*moneytx.MoneyTransactionShippingExternalLine{}
+	lines := []*moneytx.MoneyTransactionShippingExternalLine{}
+	for _, ffm := range query.Result {
+		moneyTxExternalLine := &moneytx.MoneyTransactionShippingExternalLine{
+			ExternalCode:     ffm.ShippingCode,
+			ExternalTotalCOD: ffm.TotalCODAmount,
+		}
+		if mapPriorShopIDs[ffm.ShopID] {
+			priorLines = append(priorLines, moneyTxExternalLine)
+		} else {
+			lines = append(lines, moneyTxExternalLine)
+		}
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if len(priorLines) == 0 {
+			return cm.Errorf(cm.Internal, nil, "There is no fulfillment belongs to prior shop. It doesn't need to split this money transaction shipping external.")
+		}
+		if len(lines) == 0 {
+			return cm.Errorf(cm.Internal, nil, "All fulfillments are belongs to prior shop. It doesn't need to split this money transaction shipping external.")
+		}
+		// xóa phiên cũ
+		if _, err := a.DeleteMoneyTxShippingExternal(ctx, args.MoneyTxShippingExternalID); err != nil {
+			return err
+		}
+
+		// tạo phiên chứa những đơn của shop được ưu tiên
+		cmd1 := &moneytx.CreateMoneyTxShippingExternalArgs{
+			Provider:       moneyTxExternal.Provider,
+			ConnectionID:   moneyTxExternal.ConnectionID,
+			ExternalPaidAt: moneyTxExternal.ExternalPaidAt,
+			Lines:          priorLines,
+			BankAccount:    moneyTxExternal.BankAccount,
+			InvoiceNumber:  moneyTxExternal.InvoiceNumber,
+		}
+		if moneyTxExternal.Note == "" {
+			cmd1.Note = "Shop ưu tiên"
+		} else {
+			cmd1.Note = "Shop ưu tiên - " + moneyTxExternal.Note
+		}
+		if _, err := a.CreateMoneyTxShippingExternal(ctx, cmd1); err != nil {
+			return err
+		}
+
+		// tạo phiên chứa các đơn còn lại
+		cmd2 := &moneytx.CreateMoneyTxShippingExternalArgs{
+			Provider:       moneyTxExternal.Provider,
+			ConnectionID:   moneyTxExternal.ConnectionID,
+			ExternalPaidAt: moneyTxExternal.ExternalPaidAt,
+			Lines:          lines,
+			BankAccount:    moneyTxExternal.BankAccount,
+			Note:           moneyTxExternal.Note,
+			InvoiceNumber:  moneyTxExternal.InvoiceNumber,
+		}
+		if _, err := a.CreateMoneyTxShippingExternal(ctx, cmd2); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }

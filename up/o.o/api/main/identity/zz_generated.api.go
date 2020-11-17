@@ -458,8 +458,9 @@ func (h QueryServiceHandler) HandleListShopExtendeds(ctx context.Context, msg *L
 }
 
 type ListShopsByIDsQuery struct {
-	IDs                  []dot.ID
-	IncludeWLPartnerShop bool
+	IDs                     []dot.ID
+	IsPriorMoneyTransaction bool
+	IncludeWLPartnerShop    bool
 
 	Result []*Shop `json:"-"`
 }
@@ -945,13 +946,15 @@ func (q *ListShopExtendedsQuery) SetListShopQuery(args *ListShopQuery) {
 func (q *ListShopsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopsByIDsArgs) {
 	return ctx,
 		&ListShopsByIDsArgs{
-			IDs:                  q.IDs,
-			IncludeWLPartnerShop: q.IncludeWLPartnerShop,
+			IDs:                     q.IDs,
+			IsPriorMoneyTransaction: q.IsPriorMoneyTransaction,
+			IncludeWLPartnerShop:    q.IncludeWLPartnerShop,
 		}
 }
 
 func (q *ListShopsByIDsQuery) SetListShopsByIDsArgs(args *ListShopsByIDsArgs) {
 	q.IDs = args.IDs
+	q.IsPriorMoneyTransaction = args.IsPriorMoneyTransaction
 	q.IncludeWLPartnerShop = args.IncludeWLPartnerShop
 }
 

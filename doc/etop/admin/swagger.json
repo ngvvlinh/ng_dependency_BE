@@ -1257,6 +1257,33 @@
         }
       }
     },
+    "/api/admin.MoneyTransaction/SplitMoneyTransactionShippingExternal": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "summary": "SplitMoneyTransactionShippingExternal",
+        "operationId": "admin.MoneyTransaction-SplitMoneyTransactionShippingExternal",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuSplitMoneyTxShippingExternalRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.MoneyTransaction/UpdateMoneyTransaction": {
       "post": {
         "tags": [
@@ -3991,6 +4018,9 @@
         },
         "is_test": {
           "type": "boolean"
+        },
+        "money_transaction_count": {
+          "type": "integer"
         },
         "money_transaction_rrule": {
           "description": "referrence: https://icalendar.org/rrule-tool.html\n",
@@ -9196,6 +9226,23 @@
         "updated_by": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "xuSplitMoneyTxShippingExternalRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_split_by_shop_priority": {
+          "description": "Tách phiên dựa theo độ ưu tiên đối soát với shop\n",
+          "type": "boolean"
+        },
+        "max_money_tx_shipping_count": {
+          "description": "Tách phiên dựa theo shop mới (shop có số lượng phiên \u003c= max_money_tx_shipping_count)\n",
+          "type": "integer"
         }
       }
     },

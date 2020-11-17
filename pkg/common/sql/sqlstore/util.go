@@ -357,14 +357,14 @@ func reverseSlice(s interface{}) {
 
 func LimitSort(s cmsql.Query, p *Paging, sortWhitelist map[string]string, prefixed ...string) (cmsql.Query, error) {
 	if p == nil {
-		s = s.Limit(1000)
+		s = s.Limit(10000)
 		return s, nil
 	}
 	if p.Limit < 0 || p.Limit > 10000 {
 		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid limit")
 	}
 	if p.Limit == 0 {
-		p.Limit = 1000
+		p.Limit = 10000
 	}
 
 	if p.IsCursorPaging() {

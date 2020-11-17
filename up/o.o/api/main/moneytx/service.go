@@ -8,6 +8,7 @@ import (
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/main/shipping"
 	"o.o/api/meta"
+	cm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
@@ -35,6 +36,7 @@ type Aggregate interface {
 	RemoveMoneyTxShippingExternalLines(context.Context, *RemoveMoneyTxShippingExternalLinesArgs) (*MoneyTransactionShippingExternalFtLine, error)
 	DeleteMoneyTxShippingExternal(ctx context.Context, ID dot.ID) (deleted int, _ error)
 	DeleteMoneyTxShippingExternalLines(ctx context.Context, MoneyTxShippingExternalID dot.ID) error
+	SplitMoneyTxShippingExternal(context.Context, *SplitMoneyTxShippingExternalArgs) (*cm.UpdatedResponse, error)
 
 	// -- Money transaction shipping etop -- //
 	CreateMoneyTxShippingEtop(context.Context, *CreateMoneyTxShippingEtopArgs) (*MoneyTransactionShippingEtop, error)
@@ -49,6 +51,7 @@ type QueryService interface {
 	GetMoneyTxShippingByID(context.Context, *GetMoneyTxByIDQueryArgs) (*MoneyTransactionShipping, error)
 	ListMoneyTxShippings(context.Context, *ListMoneyTxShippingArgs) (*ListMoneyTxShippingsResponse, error)
 	ListMoneyTxShippingsByMoneyTxShippingExternalID(ctx context.Context, MoneyTxShippingExternalID dot.ID) ([]*MoneyTransactionShipping, error)
+	CountMoneyTxShippingByShopIDs(context.Context, *CountMoneyTxShippingByShopIDsArgs) ([]*ShopFtMoneyTxShippingCount, error)
 
 	// -- Money transaction shipping external -- //
 	GetMoneyTxShippingExternal(ctx context.Context, ID dot.ID) (*MoneyTransactionShippingExternalFtLine, error)
@@ -116,6 +119,24 @@ type CreateMoneyTxShippingExternalArgs struct {
 	BankAccount    *identitytypes.BankAccount
 	Note           string
 	InvoiceNumber  string
+}
+
+// SplitMoneyTxShippingExternalArgs
+//
+// Kết quả sẽ trả về 2 phiên
+// - 1 phiên chứa các đơn thỏa mãn các điều kiện bên dưới
+// - 1 phiên chứa các đơn còn lại
+type SplitMoneyTxShippingExternalArgs struct {
+	MoneyTxShippingExternalID dot.ID
+	// IsSplitByShopPriority
+	//
+	// Những shop được ưu tiên đối soát trước => tách làm phiên mới
+	IsSplitByShopPriority bool
+
+	// MaxMoneyTxShippingCount
+	//
+	// Những shop có số phiên tối đa `MaxMoneyTxShippingCount` thì tách làm phiên mới
+	MaxMoneyTxShippingCount int
 }
 
 type CreateMoneyTxShippingExternalLineArgs struct {
@@ -203,4 +224,13 @@ type ListMoneyTxShippingEtopsArgs struct {
 type ListMoneyTxShippingEtopsResponse struct {
 	MoneyTxShippingEtops []*MoneyTransactionShippingEtop
 	Paging               meta.PageInfo
+}
+
+type CountMoneyTxShippingByShopIDsArgs struct {
+	ShopIDs []dot.ID
+}
+
+type ShopFtMoneyTxShippingCount struct {
+	ShopID               dot.ID
+	MoneyTxShippingCount int
 }

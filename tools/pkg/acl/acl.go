@@ -742,6 +742,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal":      {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalDelete)},
 	"admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":    {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalConfirm)},
 	"admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":      {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalUpdate)},
+	"admin.MoneyTransaction/SplitMoneyTransactionShippingExternal":       {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingExternalUpdate)},
 
 	"admin.MoneyTransaction/GetMoneyTransactionShippingEtop":     {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopView)},
 	"admin.MoneyTransaction/GetMoneyTransactionShippingEtops":    {Type: EtopAdmin, Actions: actions(AdminMoneyTransactionShippingEtopView)},

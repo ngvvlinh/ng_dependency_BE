@@ -179,6 +179,18 @@ func (s *MoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx con
 	return result, nil
 }
 
+func (s *MoneyTransactionService) SplitMoneyTransactionShippingExternal(ctx context.Context, r *admin.SplitMoneyTxShippingExternalRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &moneytx.SplitMoneyTxShippingExternalCommand{
+		MoneyTxShippingExternalID: r.ID,
+		IsSplitByShopPriority:     r.IsSplitByShopPriority,
+		MaxMoneyTxShippingCount:   r.MaxMoneyTxShippingCount,
+	}
+	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return cmd.Result, nil
+}
+
 func (s *MoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context.Context, q *pbcm.IDRequest) (*types.MoneyTransactionShippingEtop, error) {
 	query := &moneytx.GetMoneyTxShippingEtopQuery{
 		ID: q.Id,
