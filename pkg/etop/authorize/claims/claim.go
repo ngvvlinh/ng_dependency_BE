@@ -15,6 +15,10 @@ type ClaimInfo struct {
 	AccountID     dot.ID `json:"acc,omitempty"`
 	AuthPartnerID dot.ID `json:"auth_partner,omitempty"` // authenticated via partner
 
+	// Chỉ sử dụng cho 1 số trường hợp session gán sẵn wl_partner_id
+	// Trường hợp này sẽ gán luôn vào ctx để sử dụng
+	WLPartnerID dot.ID `json:"wl_partner_id"`
+
 	SToken bool `json:"stoken,omitempty"`
 
 	AccountIDs      map[dot.ID]int `json:"acs,omitempty"`

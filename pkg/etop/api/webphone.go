@@ -17,9 +17,11 @@ import (
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/etop/authorize/claims"
 )
 
 var keyWebphoneRequestLogin = "webphone-request-login"
+var wlPartnerKeys = []string{wldriver.VNPostKey}
 
 func (s *UserService) WebphoneRequestLogin(ctx context.Context, r *api.WebphoneRequestLoginRequest) (*api.WebphoneRequestLoginResponse, error) {
 	phone, ok := validate.NormalizePhone(r.Phone)
@@ -32,54 +34,72 @@ func (s *UserService) WebphoneRequestLogin(ctx context.Context, r *api.WebphoneR
 	code, err := s.RedisStore.GetString(key)
 	if err != nil || code == "" {
 		code = gencode.GenerateCode(gencode.Alphabet54, 24)
-		_ = s.RedisStore.SetStringWithTTL(key, code, 15*60)
+		_ = s.RedisStore.SetStringWithTTL(key, code, 5*60)
 	}
-	return &api.WebphoneRequestLoginResponse{SecretKey: code}, nil
+	return &api.WebphoneRequestLoginResponse{
+		SecretKey: code,
+	}, nil
 }
 
 func (s *UserService) WebphoneLogin(ctx context.Context, r *api.WebphoneLoginRequest) (*api.LoginResponse, error) {
-	phone, ok := validate.NormalizePhone(r.Phone)
-	if !ok {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
-	}
-	key := fmt.Sprintf("%v-%v", keyWebphoneRequestLogin, phone.String())
-	secretKey, err := s.RedisStore.GetString(key)
-	if err != nil && err != redis.ErrNil {
-		return nil, cm.Errorf(cm.Internal, err, "")
-	}
-
-	// data = phone + public_key
-	data := phone.String() + string(s.WebphonePublicKey)
-	checkSum, err := CheckSum(data, secretKey)
+	phone, wlPartnerKey, err := s.ValidateWLPartnerWebphoneLoginRequest(r)
 	if err != nil {
 		return nil, err
 	}
-	// pp.Println("checkSum :: ", checkSum)
-	if r.Code != checkSum {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Mã code không hợp lệ")
-	}
-
-	// Wrap context to vnpost wl partner
-	ctx = wl.WrapContextByPartnerID(ctx, wldriver.VNPostID)
+	// Wrap context to wl partner
+	wlPartner := wl.GetWLPartnerByKey(wlPartnerKey)
+	wlPartnerID := wlPartner.ID
+	ctx = wl.WrapContextByPartnerID(ctx, wlPartnerID)
 	cmd := &identity.RegisterSimplifyCommand{
-		Phone: phone.String(),
+		Phone: phone,
 	}
 	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 
 	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
-		Phone: phone.String(),
+		Phone: phone,
 	}
 	if err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, query); err != nil {
 		return nil, err
 	}
 	user := query.Result
-	resp, err := s.CreateLoginResponse(ctx, nil, "", user.ID, user, 0, account_type.Shop.Enum(), true, 0)
+
+	// Gán wl_partner_id vào session
+	// Các request sử dụng session này đều được tính cho wl_partner_id này
+	claim := &claims.ClaimInfo{
+		WLPartnerID: wlPartnerID,
+	}
+	resp, err := s.CreateLoginResponse(ctx, claim, "", user.ID, user, 0, account_type.Shop.Enum(), true, 0)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (s *UserService) ValidateWLPartnerWebphoneLoginRequest(r *api.WebphoneLoginRequest) (_phone, partnerKey string, err error) {
+	phone, ok := validate.NormalizePhone(r.Phone)
+	if !ok {
+		return "", "", cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+	}
+	key := fmt.Sprintf("%v-%v", keyWebphoneRequestLogin, phone.String())
+	secretKey, err := s.RedisStore.GetString(key)
+	if err != nil && err != redis.ErrNil {
+		return "", "", cm.Errorf(cm.Internal, err, "")
+	}
+
+	// data = phone + public_key + wl_partner_key
+	for _, partnerKey := range wlPartnerKeys {
+		data := phone.String() + string(s.WebphonePublicKey) + partnerKey
+		checkSum, err := CheckSum(data, secretKey)
+		if err != nil {
+			return "", "", err
+		}
+		if checkSum == r.Code {
+			return phone.String(), partnerKey, nil
+		}
+	}
+	return "", "", cm.Errorf(cm.InvalidArgument, nil, "Mã code không hợp lệ")
 }
 
 func CheckSum(data, secretKey string) (string, error) {

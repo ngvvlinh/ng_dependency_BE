@@ -2928,7 +2928,6 @@ type Contact struct {
 func (m *Contact) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateContactRequest struct {
-	ID       dot.ID `json:"id"`
 	FullName string `json:"full_name"`
 	Phone    string `json:"phone"`
 }

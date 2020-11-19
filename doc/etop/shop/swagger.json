@@ -8466,10 +8466,6 @@
         "full_name": {
           "type": "string"
         },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
         "phone": {
           "type": "string"
         }

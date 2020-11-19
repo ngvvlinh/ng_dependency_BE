@@ -1238,6 +1238,9 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 			tokenCmd.ClaimInfo.SToken = claim.SToken
 			tokenCmd.STokenExpiresAt = claim.STokenExpiresAt
 		}
+		if claim != nil && claim.WLPartnerID != 0 {
+			tokenCmd.ClaimInfo.WLPartnerID = claim.WLPartnerID
+		}
 		if err := s.TokenStore.GenerateToken(ctx, tokenCmd); err != nil {
 			return nil, nil, err
 		}

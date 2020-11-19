@@ -222,6 +222,8 @@ func (s *session) verifyToken(
 		}
 		if perm.AuthPartner.AuthPartner() {
 			wlPartnerID = claim.AuthPartnerID
+		} else if claim.WLPartnerID != 0 {
+			wlPartnerID = claim.WLPartnerID
 		}
 		return
 	}

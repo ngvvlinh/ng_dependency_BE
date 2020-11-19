@@ -57,3 +57,10 @@ func GetWLPartnerID(ctx context.Context) dot.ID {
 	}
 	return 0
 }
+
+func GetWLPartnerByKey(key string) *whitelabel.WL {
+	if whiteLabel == nil {
+		panic("whitelabel has not been initialized")
+	}
+	return whiteLabel.ByPartnerKey(key)
+}

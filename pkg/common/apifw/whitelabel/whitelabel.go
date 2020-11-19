@@ -73,6 +73,14 @@ func (w *WhiteLabel) byPartnerID(id dot.ID) *WL {
 	return p.Clone()
 }
 
+func (w *WhiteLabel) ByPartnerKey(key string) *WL {
+	p := w.partnersByKey[key]
+	if p == nil {
+		return w.etop.Clone()
+	}
+	return p.Clone()
+}
+
 func (w *WhiteLabel) ByContext(ctx context.Context) *WL {
 	wl := ctx.Value(whitelabelKey{})
 	if wl == nil {

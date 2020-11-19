@@ -5,9 +5,10 @@ import (
 	"o.o/api/top/types/etc/wl_type"
 	"o.o/backend/pkg/common/apifw/whitelabel"
 	"o.o/backend/pkg/common/cmenv"
+	"o.o/capi/dot"
 )
 
-const VNPostID = 1156518020386448488
+const VNPostID = dot.ID(1156518020386448488)
 const VNPostKey = "vnpost"
 
 func VNPost(env cmenv.EnvType) *whitelabel.WL {
