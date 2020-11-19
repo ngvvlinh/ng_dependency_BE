@@ -21,6 +21,7 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	fulfillmentmodel "o.o/backend/com/main/shipping/model"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/mq"
 	"o.o/capi/dot"
 	"o.o/common/l"
@@ -59,16 +60,16 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 	return mq.CodeOK, nil
 }
 
-func (h *Handler) sendMessageWhenChangeShippingStateAndSubstate(ctx context.Context, event *pgevent.PgEvent, ffm *shipping.Fulfillment, state, substate string) (mq.Code, error) {
-	// validate state and substate
-	if state == "" && substate == "" {
+func (h *Handler) sendMessageWhenChangeShippingStateAndSubstate(ctx context.Context, event *pgevent.PgEvent, ffm *shipping.Fulfillment, historyState, historySubstate string) (mq.Code, error) {
+	// validate historyState and historySubstate
+	if historyState == "" && historySubstate == "" {
 		return mq.CodeIgnore, nil
 	}
 
-	if state != "" {
+	if historyState != "" {
 		var check bool
 		for _, validState := range validStates {
-			if validState == ffm.ShippingState {
+			if validState.String() == historyState {
 				check = true
 				break
 			}
@@ -123,8 +124,12 @@ func (h *Handler) sendMessageWhenChangeShippingStateAndSubstate(ctx context.Cont
 		return mq.CodeIgnore, nil
 	}
 
-	// generate message depends on substate and state
-	message := h.generateMessage(ffm, shop, substate)
+	// generate message depends on historySubstate and historyState
+	message, err := h.generateMessage(ffm, shop, historyState, historySubstate)
+	if err != nil {
+		ll.Warn("generateMessage error", l.String("err", err.Error()))
+		return mq.CodeIgnore, nil
+	}
 
 	// Chỉ gửi tin nhắn fbUser đã có customerConversation trên hệ thống
 	for _, customerConversation := range listFbCustomerConversationsQuery.Result {
@@ -153,21 +158,28 @@ func (h *Handler) sendMessageWhenChangeShippingStateAndSubstate(ctx context.Cont
 	return mq.CodeOK, nil
 }
 
-func (h *Handler) generateMessage(ffm *shipping.Fulfillment, shop *identity.Shop, substate string) (message string) {
-	shippingState := ffm.ShippingState
-	shippingSubState := ffm.ShippingSubstate
+func (h *Handler) generateMessage(ffm *shipping.Fulfillment, shop *identity.Shop, historyState, historySubstate string) (message string, err error) {
 	shippingNote := ffm.ShippingNote
 	orderCode := ffm.ShippingCode
 	codAmount := ffm.CODAmount
-	if substate != "" {
-		message = templateForSubstate(shippingSubState.Enum, shippingNote, orderCode, codAmount)
+
+	if historySubstate != "" {
+		substate, ok := substate.ParseSubstate(historySubstate)
+		if !ok {
+			return "", cm.Errorf(cm.FailedPrecondition, nil, "unsupported shipping substate %v", historyState)
+		}
+		message = templateForSubstate(substate, shippingNote, orderCode, codAmount)
 	} else {
-		message = templateForState(shippingState, ffm, shop)
+		state, ok := shipping_state.ParseState(historyState)
+		if !ok {
+			return "", cm.Errorf(cm.FailedPrecondition, nil, "unsupported shipping state %v", historyState)
+		}
+		message, err = templateForState(state, ffm, shop)
 	}
 	return
 }
 
-func templateForState(state shipping_state.State, ffm *shipping.Fulfillment, shop *identity.Shop) string {
+func templateForState(state shipping_state.State, ffm *shipping.Fulfillment, shop *identity.Shop) (string, error) {
 	shopName := shop.Name
 	customerName := ffm.AddressTo.FullName
 	customerPhone := ffm.AddressTo.Phone
@@ -194,39 +206,39 @@ Chi tiết đơn:
 • Thu hộ: %sđ
 • Theo dõi: https://donhang.ghn.vn/?order_code=%s
 Đơn hàng được chốt trên ứng dụng Faboshop!`
-		return fmt.Sprintf(tmpl, shop.Name, orderCode, customerName, customerPhone, customerAddress, formatPrice(codAmount), orderCode)
+		return fmt.Sprintf(tmpl, shop.Name, orderCode, customerName, customerPhone, customerAddress, formatPrice(codAmount), orderCode), nil
 	case shipping_state.Picking:
 		tmpl := `Cập nhật trạng thái:
 Nhà vận chuyển đang đến lấy hàng gửi cho %s
 • Đơn hàng: %s - Thu hộ: %sđ
 • Theo dõi: https://donhang.ghn.vn/?order_code=%s`
-		return fmt.Sprintf(tmpl, customerName, orderCode, formatPrice(codAmount), orderCode)
+		return fmt.Sprintf(tmpl, customerName, orderCode, formatPrice(codAmount), orderCode), nil
 	case shipping_state.Holding:
 		tmpl := `Cập nhật trạng thái:
 Đã bàn giao hàng cho nhà vận chuyển và vận chuyển đến %s
 • Đơn hàng: %s - Thu hộ: %sđ
 • Theo dõi: https://donhang.ghn.vn/?order_code=%s`
-		return fmt.Sprintf(tmpl, customerAddress, orderCode, formatPrice(codAmount), orderCode)
+		return fmt.Sprintf(tmpl, customerAddress, orderCode, formatPrice(codAmount), orderCode), nil
 	case shipping_state.Delivering:
 		tmpl := `Cập nhật trạng thái:
 Đơn hàng đang được giao đến %s. Shipper sẽ nhanh chóng giao hàng, %s vui lòng chờ điện thoại.
 • Đơn hàng: %s - Thu hộ: %sđ
 • Theo dõi: https://donhang.ghn.vn/?order_code=%s`
-		return fmt.Sprintf(tmpl, customerName, customerName, orderCode, formatPrice(codAmount), orderCode)
+		return fmt.Sprintf(tmpl, customerName, customerName, orderCode, formatPrice(codAmount), orderCode), nil
 	case shipping_state.Delivered:
 		tmpl := `Cập nhật trạng thái:
 Đơn hàng đã hoàn thành, xin cảm ơn bạn đã tin tưởng sử dụng dịch vụ của Shop %s.
 • Đơn hàng: %s - Thu hộ: %sđ
 • Theo dõi: https://donhang.ghn.vn/?order_code=%s`
-		return fmt.Sprintf(tmpl, shopName, orderCode, formatPrice(codAmount), orderCode)
+		return fmt.Sprintf(tmpl, shopName, orderCode, formatPrice(codAmount), orderCode), nil
 	case shipping_state.Returning:
 		tmpl := `Cập nhật trạng thái:
 Đơn hàng giao không thành công, nhà vận chuyển đã tiến hành hoàn trả hàng về Shop.
 • Đơn hàng: %s - Thu hộ: %sđ
 • Theo dõi: https://donhang.ghn.vn/?order_code=%s`
-		return fmt.Sprintf(tmpl, orderCode, formatPrice(codAmount), orderCode)
+		return fmt.Sprintf(tmpl, orderCode, formatPrice(codAmount), orderCode), nil
 	default:
-		return ""
+		return "", cm.Errorf(cm.FailedPrecondition, nil, "unsupported shipping state %v", state)
 	}
 }
 
