@@ -178,6 +178,17 @@ func (d *GHNDriver) CreateFulfillment(
 		cmd.ReturnWardCode = returnWard.GhnCode
 	}
 
+	// get promotion coupon code
+	if args.Coupon == "" {
+		couponCode, err := d.supportedGHNDriver.GetPromotionCoupon(&GetPromotionCouponArgs{
+			FromProvinceCode: fromDistrict.ProvinceCode,
+			CurrentTime:      time.Now(),
+		})
+		if err == nil && couponCode != "" {
+			cmd.Coupon = couponCode
+		}
+	}
+
 	r, err := d.client.CreateOrder(ctx, cmd)
 	if err != nil {
 		return nil, err
@@ -357,6 +368,17 @@ func (d *GHNDriver) GetShippingServices(ctx context.Context, args *carriertypes.
 	}
 	if toWard != nil {
 		cmd.Request.ToWardCode = toWard.GhnCode
+	}
+
+	// get promotion coupon code
+	if args.Coupon == "" {
+		couponCode, err := d.supportedGHNDriver.GetPromotionCoupon(&GetPromotionCouponArgs{
+			FromProvinceCode: fromProvince.Code,
+			CurrentTime:      time.Now(),
+		})
+		if err == nil && couponCode != "" {
+			cmd.Request.Coupon = couponCode
+		}
 	}
 
 	carrierServices, err := d.CalcShippingFee(ctx, cmd)

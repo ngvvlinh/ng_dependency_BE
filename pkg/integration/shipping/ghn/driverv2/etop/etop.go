@@ -20,3 +20,7 @@ func NewEtopSupportedGHNDriver(env string, cfg ghnclient.GHNAccountCfg) *EtopSup
 func (f *EtopSupportedGHNDriver) AddClientContract(ctx context.Context, clientID int) error {
 	return nil
 }
+
+func (f *EtopSupportedGHNDriver) GetPromotionCoupon(args *driverv2.GetPromotionCouponArgs) (string, error) {
+	return "", nil
+}
