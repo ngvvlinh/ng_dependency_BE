@@ -18,7 +18,6 @@ func Convert_core_TicketComment_to_api_TicketComment(in *ticket.TicketComment) *
 		ParentID:  in.ParentID,
 		Message:   in.Message,
 		ImageUrls: in.ImageUrls,
-		DeletedAt: cmapi.PbTime(in.DeletedAt),
 		DeletedBy: in.DeletedBy,
 		CreatedAt: cmapi.PbTime(in.CreatedAt),
 		UpdatedAt: cmapi.PbTime(in.UpdatedAt),

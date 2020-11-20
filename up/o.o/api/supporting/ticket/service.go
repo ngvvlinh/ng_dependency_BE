@@ -2,6 +2,7 @@ package ticket
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/meta"
 	cm "o.o/api/top/types/common"
@@ -12,6 +13,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_state"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
+	"o.o/common/xerrors"
 )
 
 // +gen:api
@@ -24,7 +26,7 @@ type Aggregate interface {
 	CloseTicket(context.Context, *CloseTicketArgs) (*Ticket, error)
 	ReopenTicket(context.Context, *ReopenTicketArgs) (*Ticket, error)
 	AssignTicket(context.Context, *AssignedTicketArgs) (*Ticket, error)
-	UnassignTicket(context.Context, *UnssignTicketArgs) (*Ticket, error)
+	UnassignTicket(context.Context, *UnassignTicketArgs) (*Ticket, error)
 	UpdateTicketRefTicketID(context.Context, *UpdateTicketRefTicketIDArgs) (*cm.UpdatedResponse, error)
 
 	//comment
@@ -36,11 +38,16 @@ type Aggregate interface {
 	CreateTicketLabel(context.Context, *CreateTicketLabelArgs) (*TicketLabel, error)
 	UpdateTicketLabel(context.Context, *UpdateTicketLabelArgs) (*TicketLabel, error)
 	DeleteTicketLabel(context.Context, *DeleteTicketLabelArgs) (int, error)
+
+	CreateTicketLabelExternal(context.Context, *CreateTicketLabelExternalArgs) (*TicketLabelExternal, error)
+	UpdateTicketLabelExternal(context.Context, *UpdateTicketLabelExternalArgs) (*TicketLabelExternal, error)
+	DeleteTicketLabelExternal(context.Context, *DeleteTicketLabelExternalArgs) (int, error)
 }
 
 type QueryService interface {
 	// ticket
 	GetTicketByID(context.Context, *GetTicketByIDArgs) (*Ticket, error)
+	GetTicketByExternalID(context.Context, *GetTicketByExternalIDArgs) (*Ticket, error)
 	ListTickets(context.Context, *GetTicketsArgs) (*ListTicketsResponse, error)
 	ListTicketsByRefTicketID(context.Context, *ListTicketsByRefTicketIDArgs) ([]*Ticket, error)
 
@@ -87,6 +94,23 @@ type DeleteTicketLabelArgs struct {
 	DeleteChild bool
 }
 
+// +convert:create=TicketLabelExternal
+type CreateTicketLabelExternalArgs struct {
+	ConnectionID dot.ID
+	ExternalID   string
+	ExternalName string
+}
+
+// +convert:update=TicketLabelExternal
+type UpdateTicketLabelExternalArgs struct {
+	ID           dot.ID
+	ExternalName string
+}
+
+type DeleteTicketLabelExternalArgs struct {
+	ID dot.ID
+}
+
 type GetTicketCommentByIDArgs struct {
 	ID        dot.ID
 	AccountID dot.ID
@@ -114,6 +138,10 @@ type GetTicketCommentsResponse struct {
 type GetTicketByIDArgs struct {
 	ID        dot.ID
 	AccountID dot.ID
+}
+
+type GetTicketByExternalIDArgs struct {
+	ExternalID string
 }
 
 type GetTicketsArgs struct {
@@ -170,6 +198,18 @@ type CreateTicketCommentArgs struct {
 	IsAdmin  bool
 }
 
+// +convert:create=TicketComment
+type CreateTicketCommentWebhookArgs struct {
+	TicketID          dot.ID
+	AccountID         dot.ID
+	ParentID          dot.ID
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	ExternalCreatedAt string
+	Message           string
+	ImageUrl          string
+}
+
 // only creator can update
 // +convert:update=TicketComment(ID,TicketID,AccountID)
 type UpdateTicketCommentArgs struct {
@@ -182,7 +222,7 @@ type UpdateTicketCommentArgs struct {
 }
 
 // từ điển https://en.wiktionary.org/wiki/unassign
-type UnssignTicketArgs struct {
+type UnassignTicketArgs struct {
 	ID        dot.ID
 	UpdatedBy dot.ID
 }
@@ -264,4 +304,36 @@ type CreateTicketArgs struct {
 type UpdateTicketRefTicketIDArgs struct {
 	ID          dot.ID
 	RefTicketID dot.NullID
+}
+
+func (m *CreateTicketLabelExternalArgs) Validate() error {
+	if m.ConnectionID == 0 {
+		return EditErrorMsg("ConnectionID")
+	}
+
+	if m.ExternalID == "" {
+		return EditErrorMsg("ExternalID")
+	}
+
+	if m.ExternalName == "" {
+		return EditErrorMsg("ExternalName")
+	}
+
+	return nil
+}
+
+func (m *UpdateTicketLabelExternalArgs) Validate() error {
+	if m.ExternalName == "" {
+		return EditErrorMsg("ExternalName")
+	}
+
+	if m.ID == 0 {
+		return EditErrorMsg("ID")
+	}
+
+	return nil
+}
+
+func EditErrorMsg(str string) error {
+	return xerrors.Errorf(xerrors.InvalidArgument, nil, "Vui lòng nhập thông tin bắt buộc, thiếu %v", str)
 }

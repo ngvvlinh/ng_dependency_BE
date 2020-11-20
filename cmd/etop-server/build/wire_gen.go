@@ -749,7 +749,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:           session,
 		SubscriptionQuery: subscriptionQueryBus,
 	}
-	ticketAggregate := aggregate19.NewTicketAggregate(busBus, mainDB, moneytxQueryBus, shippingQueryBus, orderingQueryBus, store)
+	ticketAggregate := aggregate19.NewTicketAggregate(busBus, mainDB, moneytxQueryBus, shippingQueryBus, orderingQueryBus, queryBus, store)
 	ticketCommandBus := aggregate19.TicketAggregateMessageBus(ticketAggregate)
 	ticketTicketService := &ticket.TicketService{
 		Session:     session,

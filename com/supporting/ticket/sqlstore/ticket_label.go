@@ -2,11 +2,13 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/meta"
 	"o.o/api/supporting/ticket"
 	"o.o/backend/com/supporting/ticket/convert"
 	"o.o/backend/com/supporting/ticket/model"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
@@ -20,6 +22,7 @@ func NewTicketLabelStore(db *cmsql.Database) TicketLabelStoreFactory {
 	return func(ctx context.Context) *TicketLabelStore {
 		return &TicketLabelStore{
 			query: cmsql.NewQueryFactory(ctx, db),
+			ctx:   ctx,
 		}
 	}
 }
@@ -31,12 +34,23 @@ type TicketLabelStore struct {
 	preds   []interface{}
 	filters meta.Filters
 	sqlstore.Paging
+
+	includeDeleted sqlstore.IncludeDeleted
+	ctx            context.Context
 }
 
 func (s *TicketLabelStore) WithPaging(paging meta.Paging) *TicketLabelStore {
 	ss := *s
 	ss.Paging.WithPaging(paging)
 	return &ss
+}
+
+func (s *TicketLabelStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
+	partner := wl.X(ctx)
+	if partner.IsWhiteLabel() {
+		return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	}
+	return query.Where(s.ft.NotBelongWLPartner())
 }
 
 func (s *TicketLabelStore) ID(id dot.ID) *TicketLabelStore {
@@ -56,6 +70,9 @@ func (s *TicketLabelStore) Code(code string) *TicketLabelStore {
 
 func (s *TicketLabelStore) GetTicketLabelDB() (*model.TicketLabel, error) {
 	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+
 	var ticketDB model.TicketLabel
 	err := query.ShouldGet(&ticketDB)
 	return &ticketDB, err
@@ -72,6 +89,9 @@ func (s *TicketLabelStore) GetTicketLabel() (ticketResult *ticket.TicketLabel, e
 
 func (s *TicketLabelStore) ListTicketLabelsDB() ([]*model.TicketLabel, error) {
 	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+
 	// default sort by created_at
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
@@ -97,9 +117,10 @@ func (s *TicketLabelStore) Create(args *ticket.TicketLabel) error {
 	return s.CreateDB(&label)
 }
 
-func (s *TicketLabelStore) CreateDB(TicketLabel *model.TicketLabel) error {
+func (s *TicketLabelStore) CreateDB(ticketLabel *model.TicketLabel) error {
 	sqlstore.MustNoPreds(s.preds)
-	return s.query().ShouldInsert(TicketLabel)
+	ticketLabel.WLPartnerID = wl.GetWLPartnerID(s.ctx)
+	return s.query().ShouldInsert(ticketLabel)
 }
 
 func (s *TicketLabelStore) UpdateTicketLabel(args *ticket.TicketLabel) error {
@@ -110,10 +131,16 @@ func (s *TicketLabelStore) UpdateTicketLabel(args *ticket.TicketLabel) error {
 
 func (s *TicketLabelStore) UpdateTicketLabelDB(args *model.TicketLabel) error {
 	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	return query.ShouldUpdate(args)
 }
 
-func (s *TicketLabelStore) Delete() (int, error) {
+func (s *TicketLabelStore) SoftDelete() (int, error) {
 	query := s.query().Where(s.preds)
-	return query.Delete((*model.TicketLabel)(nil))
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	return query.Table("ticket_label").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
 }

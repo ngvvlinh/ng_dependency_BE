@@ -87,6 +87,25 @@ func (ft *TicketFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *TicketFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *TicketFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
 func (ft *TicketFilters) ByTitle(Title string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -448,6 +467,44 @@ func (ft *TicketFilters) ByClosedAtPtr(ClosedAt *time.Time) *sq.ColumnFilterPtr 
 	}
 }
 
+func (ft *TicketFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == 0,
+	}
+}
+
+func (ft *TicketFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == nil,
+		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
+func (ft *TicketFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == 0,
+	}
+}
+
+func (ft *TicketFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == nil,
+		IsZero: ConnectionID != nil && (*ConnectionID) == 0,
+	}
+}
+
 type TicketCommentFilters struct{ prefix string }
 
 func NewTicketCommentFilters(prefix string) TicketCommentFilters {
@@ -592,6 +649,44 @@ func (ft *TicketCommentFilters) ByParentIDPtr(ParentID *dot.ID) *sq.ColumnFilter
 		Value:  ParentID,
 		IsNil:  ParentID == nil,
 		IsZero: ParentID != nil && (*ParentID) == 0,
+	}
+}
+
+func (ft *TicketCommentFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *TicketCommentFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
+func (ft *TicketCommentFilters) ByExternalCreatedAt(ExternalCreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_created_at",
+		Value:  ExternalCreatedAt,
+		IsNil:  ExternalCreatedAt.IsZero(),
+	}
+}
+
+func (ft *TicketCommentFilters) ByExternalCreatedAtPtr(ExternalCreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_created_at",
+		Value:  ExternalCreatedAt,
+		IsNil:  ExternalCreatedAt == nil,
+		IsZero: ExternalCreatedAt != nil && (*ExternalCreatedAt).IsZero(),
 	}
 }
 
@@ -796,6 +891,300 @@ func (ft *TicketLabelFilters) ByParentIDPtr(ParentID *dot.ID) *sq.ColumnFilterPt
 		Value:  ParentID,
 		IsNil:  ParentID == nil,
 		IsZero: ParentID != nil && (*ParentID) == 0,
+	}
+}
+
+func (ft *TicketLabelFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *TicketLabelFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *TicketLabelFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *TicketLabelFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *TicketLabelFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt.IsZero(),
+	}
+}
+
+func (ft *TicketLabelFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt == nil,
+		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+func (ft *TicketLabelFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == 0,
+	}
+}
+
+func (ft *TicketLabelFilters) ByWLPartnerIDPtr(WLPartnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "wl_partner_id",
+		Value:  WLPartnerID,
+		IsNil:  WLPartnerID == nil,
+		IsZero: WLPartnerID != nil && (*WLPartnerID) == 0,
+	}
+}
+
+type TicketLabelExternalFilters struct{ prefix string }
+
+func NewTicketLabelExternalFilters(prefix string) TicketLabelExternalFilters {
+	return TicketLabelExternalFilters{prefix}
+}
+
+func (ft *TicketLabelExternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft TicketLabelExternalFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *TicketLabelExternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == 0,
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == nil,
+		IsZero: ConnectionID != nil && (*ConnectionID) == 0,
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByExternalName(ExternalName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_name",
+		Value:  ExternalName,
+		IsNil:  ExternalName == "",
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByExternalNamePtr(ExternalName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_name",
+		Value:  ExternalName,
+		IsNil:  ExternalName == nil,
+		IsZero: ExternalName != nil && (*ExternalName) == "",
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt.IsZero(),
+	}
+}
+
+func (ft *TicketLabelExternalFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt == nil,
+		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+type TicketLabelTicketLabelExternalFilters struct{ prefix string }
+
+func NewTicketLabelTicketLabelExternalFilters(prefix string) TicketLabelTicketLabelExternalFilters {
+	return TicketLabelTicketLabelExternalFilters{prefix}
+}
+
+func (ft *TicketLabelTicketLabelExternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft TicketLabelTicketLabelExternalFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *TicketLabelTicketLabelExternalFilters) ByTicketLabelID(TicketLabelID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ticket_label_id",
+		Value:  TicketLabelID,
+		IsNil:  TicketLabelID == 0,
+	}
+}
+
+func (ft *TicketLabelTicketLabelExternalFilters) ByTicketLabelIDPtr(TicketLabelID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ticket_label_id",
+		Value:  TicketLabelID,
+		IsNil:  TicketLabelID == nil,
+		IsZero: TicketLabelID != nil && (*TicketLabelID) == 0,
+	}
+}
+
+func (ft *TicketLabelTicketLabelExternalFilters) ByTicketLabelExternalID(TicketLabelExternalID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ticket_label_external_id",
+		Value:  TicketLabelExternalID,
+		IsNil:  TicketLabelExternalID == 0,
+	}
+}
+
+func (ft *TicketLabelTicketLabelExternalFilters) ByTicketLabelExternalIDPtr(TicketLabelExternalID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ticket_label_external_id",
+		Value:  TicketLabelExternalID,
+		IsNil:  TicketLabelExternalID == nil,
+		IsZero: TicketLabelExternalID != nil && (*TicketLabelExternalID) == 0,
+	}
+}
+
+func (ft *TicketLabelTicketLabelExternalFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt.IsZero(),
+	}
+}
+
+func (ft *TicketLabelTicketLabelExternalFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt == nil,
+		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
 	}
 }
 

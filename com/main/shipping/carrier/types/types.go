@@ -85,7 +85,7 @@ type ShipmentCarrier interface {
 }
 
 type GetShippingServicesArgs struct {
-	// ArbitraryID: this is privided as a seed, for stable randomization
+	// ArbitraryID: this is provided as a seed, for stable randomization
 	ArbitraryID      dot.ID
 	AccountID        dot.ID
 	FromDistrictCode string

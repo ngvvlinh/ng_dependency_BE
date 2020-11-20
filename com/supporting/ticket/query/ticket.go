@@ -54,6 +54,17 @@ func (q *TicketQuery) GetTicketByID(ctx context.Context, args *ticket.GetTicketB
 	return ticketCore, nil
 }
 
+func (q *TicketQuery) GetTicketByExternalID(ctx context.Context, args *ticket.GetTicketByExternalIDArgs) (*ticket.Ticket, error) {
+	if args.ExternalID == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ExternalID")
+	}
+	ticketCore, err := q.TicketStore(ctx).ExternalID(args.ExternalID).GetTicket()
+	if err != nil {
+		return nil, err
+	}
+	return ticketCore, nil
+}
+
 func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsArgs) (*ticket.ListTicketsResponse, error) {
 	query := q.TicketStore(ctx)
 	if args.Filter != nil {

@@ -18,6 +18,7 @@ type Ticket struct {
 	AssignedUserIDs []dot.ID
 	AccountID       dot.ID
 	LabelIDs        []dot.ID
+	ExternalID      string
 	RefTicketID     dot.NullID // reference with another ticket
 
 	Title       string
@@ -43,6 +44,9 @@ type Ticket struct {
 	UpdatedAt   time.Time `sq:"update"`
 	ConfirmedAt time.Time
 	ClosedAt    time.Time
+
+	WLPartnerID  dot.ID
+	ConnectionID dot.ID
 }
 
 // +sqlgen:           Ticket    as t
@@ -68,6 +72,9 @@ type TicketComment struct {
 	AccountID     dot.ID
 	ParentID      dot.ID
 
+	ExternalID        string
+	ExternalCreatedAt time.Time
+
 	Message   string
 	ImageUrls []string
 
@@ -80,9 +87,35 @@ type TicketComment struct {
 
 // +sqlgen
 type TicketLabel struct {
-	ID       dot.ID
-	Name     string
-	Code     string
-	Color    string
-	ParentID dot.ID
+	ID        dot.ID
+	Name      string
+	Code      string
+	Color     string
+	ParentID  dot.ID
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
+
+	WLPartnerID dot.ID
+}
+
+// +sqlgen
+type TicketLabelTicketLabelExternal struct {
+	TicketLabelID         dot.ID
+	TicketLabelExternalID dot.ID
+	DeletedAt             time.Time
+
+	TicketLabel         *TicketLabel         `sq:"-"`
+	TicketLabelExternal *TicketLabelExternal `sq:"-"`
+}
+
+// +sqlgen
+type TicketLabelExternal struct {
+	ID           dot.ID
+	ConnectionID dot.ID
+	ExternalID   string
+	ExternalName string
+	CreatedAt    time.Time `sq:"create"`
+	UpdatedAt    time.Time `sq:"update"`
+	DeletedAt    time.Time
 }

@@ -10,6 +10,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_state"
 	"o.o/backend/com/supporting/ticket/convert"
 	"o.o/backend/com/supporting/ticket/model"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sq/core"
@@ -26,6 +27,7 @@ func NewTicketStore(db *cmsql.Database) TicketStoreFactory {
 	return func(ctx context.Context) *TicketStore {
 		return &TicketStore{
 			query: cmsql.NewQueryFactory(ctx, db),
+			ctx:   ctx,
 		}
 	}
 }
@@ -37,12 +39,24 @@ type TicketStore struct {
 	preds   []interface{}
 	filters meta.Filters
 	sqlstore.Paging
+
+	ctx context.Context
+
+	includeDeleted sqlstore.IncludeDeleted
 }
 
 func (s *TicketStore) WithPaging(paging meta.Paging) *TicketStore {
 	ss := *s
 	ss.Paging.WithPaging(paging)
 	return &ss
+}
+
+func (s *TicketStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
+	partner := wl.X(ctx)
+	if partner.IsWhiteLabel() {
+		return query.Where(s.ft.ByWLPartnerID(partner.ID))
+	}
+	return query.Where(s.ft.NotBelongWLPartner())
 }
 
 func (s *TicketStore) ID(id dot.ID) *TicketStore {
@@ -52,6 +66,11 @@ func (s *TicketStore) ID(id dot.ID) *TicketStore {
 
 func (s *TicketStore) IDs(ids ...dot.ID) *TicketStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
+	return s
+}
+
+func (s *TicketStore) ExternalID(id string) *TicketStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(id).Optional())
 	return s
 }
 
@@ -122,6 +141,8 @@ func (s *TicketStore) AssignedUserIDs(userIDs []dot.ID) *TicketStore {
 
 func (s *TicketStore) GetTicketDB() (*model.Ticket, error) {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query = s.ByWhiteLabelPartner(s.ctx, query)
 	var ticketDB model.Ticket
 	err := query.ShouldGet(&ticketDB)
 	return &ticketDB, err
@@ -138,6 +159,9 @@ func (s *TicketStore) GetTicket() (ticketResult *ticket.Ticket, err error) {
 
 func (s *TicketStore) ListTicketsDB() ([]*model.Ticket, error) {
 	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+
 	// default sort by created_at
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
@@ -167,19 +191,10 @@ func (s *TicketStore) ListTickets() ([]*ticket.Ticket, error) {
 	tickets := convert.Convert_ticketmodel_Tickets_ticket_Tickets(ticketsDB)
 	return tickets, nil
 }
-func (s *TicketStore) UpdateTicketALL(args *ticket.Ticket) error {
-	var ticketDB = &model.Ticket{}
-	convert.Convert_ticket_Ticket_ticketmodel_Ticket(args, ticketDB)
-	return s.UpdateTicketALLDB(ticketDB)
-}
-
-func (s *TicketStore) UpdateTicketALLDB(args *model.Ticket) error {
-	query := s.query().Where(s.preds)
-	return query.UpdateAll().ShouldUpdate(args)
-}
 
 func (s *TicketStore) UpdateTicketDB(args *model.Ticket) error {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	return query.ShouldUpdate(args)
 }
 
@@ -189,21 +204,24 @@ func (s *TicketStore) Create(args *ticket.Ticket) error {
 	return s.CreateDB(&voucherDB)
 }
 
-func (s *TicketStore) CreateDB(Ticket *model.Ticket) error {
+func (s *TicketStore) CreateDB(ticket *model.Ticket) error {
 	sqlstore.MustNoPreds(s.preds)
-	err := s.query().ShouldInsert(Ticket)
+	ticket.WLPartnerID = wl.GetWLPartnerID(s.ctx)
+	err := s.query().ShouldInsert(ticket)
 	if err != nil {
 		return err
 	}
 	err = s.query().ShouldInsert(&model.TicketSearch{
-		ID:        Ticket.ID,
-		TitleNorm: validate.NormalizeSearchCharacter(Ticket.Title),
+		ID:        ticket.ID,
+		TitleNorm: validate.NormalizeSearchCharacter(ticket.Title),
 	})
 	return err
 }
 
 func (s *TicketStore) GetTicketByMaximumCodeNorm() (*model.Ticket, error) {
 	query := s.query().Where(s.preds).Where("code_norm != 0")
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query = query.OrderBy("code_norm desc").Limit(1)
 
 	var ticketDB model.Ticket

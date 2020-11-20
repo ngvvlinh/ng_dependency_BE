@@ -133,6 +133,19 @@ func (h AggregateHandler) HandleCreateTicketLabel(ctx context.Context, msg *Crea
 	return err
 }
 
+type CreateTicketLabelExternalCommand struct {
+	ConnectionID dot.ID
+	ExternalID   string
+	ExternalName string
+
+	Result *TicketLabelExternal `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateTicketLabelExternal(ctx context.Context, msg *CreateTicketLabelExternalCommand) (err error) {
+	msg.Result, err = h.inner.CreateTicketLabelExternal(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteTicketCommentCommand struct {
 	AccountID dot.ID
 	ID        dot.ID
@@ -156,6 +169,17 @@ type DeleteTicketLabelCommand struct {
 
 func (h AggregateHandler) HandleDeleteTicketLabel(ctx context.Context, msg *DeleteTicketLabelCommand) (err error) {
 	msg.Result, err = h.inner.DeleteTicketLabel(msg.GetArgs(ctx))
+	return err
+}
+
+type DeleteTicketLabelExternalCommand struct {
+	ID dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteTicketLabelExternal(ctx context.Context, msg *DeleteTicketLabelExternalCommand) (err error) {
+	msg.Result, err = h.inner.DeleteTicketLabelExternal(msg.GetArgs(ctx))
 	return err
 }
 
@@ -236,6 +260,18 @@ func (h AggregateHandler) HandleUpdateTicketLabel(ctx context.Context, msg *Upda
 	return err
 }
 
+type UpdateTicketLabelExternalCommand struct {
+	ID           dot.ID
+	ExternalName string
+
+	Result *TicketLabelExternal `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateTicketLabelExternal(ctx context.Context, msg *UpdateTicketLabelExternalCommand) (err error) {
+	msg.Result, err = h.inner.UpdateTicketLabelExternal(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateTicketRefTicketIDCommand struct {
 	ID          dot.ID
 	RefTicketID dot.NullID
@@ -245,6 +281,17 @@ type UpdateTicketRefTicketIDCommand struct {
 
 func (h AggregateHandler) HandleUpdateTicketRefTicketID(ctx context.Context, msg *UpdateTicketRefTicketIDCommand) (err error) {
 	msg.Result, err = h.inner.UpdateTicketRefTicketID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetTicketByExternalIDQuery struct {
+	ExternalID string
+
+	Result *Ticket `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetTicketByExternalID(ctx context.Context, msg *GetTicketByExternalIDQuery) (err error) {
+	msg.Result, err = h.inner.GetTicketByExternalID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -332,21 +379,25 @@ func (h QueryServiceHandler) HandleListTicketsByRefTicketID(ctx context.Context,
 
 // implement interfaces
 
-func (q *AssignTicketCommand) command()            {}
-func (q *CloseTicketCommand) command()             {}
-func (q *ConfirmTicketCommand) command()           {}
-func (q *CreateTicketCommand) command()            {}
-func (q *CreateTicketCommentCommand) command()     {}
-func (q *CreateTicketLabelCommand) command()       {}
-func (q *DeleteTicketCommentCommand) command()     {}
-func (q *DeleteTicketLabelCommand) command()       {}
-func (q *ReopenTicketCommand) command()            {}
-func (q *UnassignTicketCommand) command()          {}
-func (q *UpdateTicketCommentCommand) command()     {}
-func (q *UpdateTicketInfoCommand) command()        {}
-func (q *UpdateTicketLabelCommand) command()       {}
-func (q *UpdateTicketRefTicketIDCommand) command() {}
+func (q *AssignTicketCommand) command()              {}
+func (q *CloseTicketCommand) command()               {}
+func (q *ConfirmTicketCommand) command()             {}
+func (q *CreateTicketCommand) command()              {}
+func (q *CreateTicketCommentCommand) command()       {}
+func (q *CreateTicketLabelCommand) command()         {}
+func (q *CreateTicketLabelExternalCommand) command() {}
+func (q *DeleteTicketCommentCommand) command()       {}
+func (q *DeleteTicketLabelCommand) command()         {}
+func (q *DeleteTicketLabelExternalCommand) command() {}
+func (q *ReopenTicketCommand) command()              {}
+func (q *UnassignTicketCommand) command()            {}
+func (q *UpdateTicketCommentCommand) command()       {}
+func (q *UpdateTicketInfoCommand) command()          {}
+func (q *UpdateTicketLabelCommand) command()         {}
+func (q *UpdateTicketLabelExternalCommand) command() {}
+func (q *UpdateTicketRefTicketIDCommand) command()   {}
 
+func (q *GetTicketByExternalIDQuery) query()    {}
 func (q *GetTicketByIDQuery) query()            {}
 func (q *GetTicketCommentByIDQuery) query()     {}
 func (q *GetTicketLabelByIDQuery) query()       {}
@@ -495,6 +546,21 @@ func (q *CreateTicketLabelCommand) SetCreateTicketLabelArgs(args *CreateTicketLa
 	q.ParentID = args.ParentID
 }
 
+func (q *CreateTicketLabelExternalCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateTicketLabelExternalArgs) {
+	return ctx,
+		&CreateTicketLabelExternalArgs{
+			ConnectionID: q.ConnectionID,
+			ExternalID:   q.ExternalID,
+			ExternalName: q.ExternalName,
+		}
+}
+
+func (q *CreateTicketLabelExternalCommand) SetCreateTicketLabelExternalArgs(args *CreateTicketLabelExternalArgs) {
+	q.ConnectionID = args.ConnectionID
+	q.ExternalID = args.ExternalID
+	q.ExternalName = args.ExternalName
+}
+
 func (q *DeleteTicketCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteTicketCommentArgs) {
 	return ctx,
 		&DeleteTicketCommentArgs{
@@ -525,6 +591,17 @@ func (q *DeleteTicketLabelCommand) SetDeleteTicketLabelArgs(args *DeleteTicketLa
 	q.DeleteChild = args.DeleteChild
 }
 
+func (q *DeleteTicketLabelExternalCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteTicketLabelExternalArgs) {
+	return ctx,
+		&DeleteTicketLabelExternalArgs{
+			ID: q.ID,
+		}
+}
+
+func (q *DeleteTicketLabelExternalCommand) SetDeleteTicketLabelExternalArgs(args *DeleteTicketLabelExternalArgs) {
+	q.ID = args.ID
+}
+
 func (q *ReopenTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ReopenTicketArgs) {
 	return ctx,
 		&ReopenTicketArgs{
@@ -538,15 +615,15 @@ func (q *ReopenTicketCommand) SetReopenTicketArgs(args *ReopenTicketArgs) {
 	q.Note = args.Note
 }
 
-func (q *UnassignTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UnssignTicketArgs) {
+func (q *UnassignTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UnassignTicketArgs) {
 	return ctx,
-		&UnssignTicketArgs{
+		&UnassignTicketArgs{
 			ID:        q.ID,
 			UpdatedBy: q.UpdatedBy,
 		}
 }
 
-func (q *UnassignTicketCommand) SetUnssignTicketArgs(args *UnssignTicketArgs) {
+func (q *UnassignTicketCommand) SetUnassignTicketArgs(args *UnassignTicketArgs) {
 	q.ID = args.ID
 	q.UpdatedBy = args.UpdatedBy
 }
@@ -624,6 +701,19 @@ func (q *UpdateTicketLabelCommand) SetUpdateTicketLabelArgs(args *UpdateTicketLa
 	q.ParentID = args.ParentID
 }
 
+func (q *UpdateTicketLabelExternalCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateTicketLabelExternalArgs) {
+	return ctx,
+		&UpdateTicketLabelExternalArgs{
+			ID:           q.ID,
+			ExternalName: q.ExternalName,
+		}
+}
+
+func (q *UpdateTicketLabelExternalCommand) SetUpdateTicketLabelExternalArgs(args *UpdateTicketLabelExternalArgs) {
+	q.ID = args.ID
+	q.ExternalName = args.ExternalName
+}
+
 func (q *UpdateTicketRefTicketIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateTicketRefTicketIDArgs) {
 	return ctx,
 		&UpdateTicketRefTicketIDArgs{
@@ -635,6 +725,17 @@ func (q *UpdateTicketRefTicketIDCommand) GetArgs(ctx context.Context) (_ context
 func (q *UpdateTicketRefTicketIDCommand) SetUpdateTicketRefTicketIDArgs(args *UpdateTicketRefTicketIDArgs) {
 	q.ID = args.ID
 	q.RefTicketID = args.RefTicketID
+}
+
+func (q *GetTicketByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTicketByExternalIDArgs) {
+	return ctx,
+		&GetTicketByExternalIDArgs{
+			ExternalID: q.ExternalID,
+		}
+}
+
+func (q *GetTicketByExternalIDQuery) SetGetTicketByExternalIDArgs(args *GetTicketByExternalIDArgs) {
+	q.ExternalID = args.ExternalID
 }
 
 func (q *GetTicketByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTicketByIDArgs) {
@@ -742,13 +843,16 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateTicket)
 	b.AddHandler(h.HandleCreateTicketComment)
 	b.AddHandler(h.HandleCreateTicketLabel)
+	b.AddHandler(h.HandleCreateTicketLabelExternal)
 	b.AddHandler(h.HandleDeleteTicketComment)
 	b.AddHandler(h.HandleDeleteTicketLabel)
+	b.AddHandler(h.HandleDeleteTicketLabelExternal)
 	b.AddHandler(h.HandleReopenTicket)
 	b.AddHandler(h.HandleUnassignTicket)
 	b.AddHandler(h.HandleUpdateTicketComment)
 	b.AddHandler(h.HandleUpdateTicketInfo)
 	b.AddHandler(h.HandleUpdateTicketLabel)
+	b.AddHandler(h.HandleUpdateTicketLabelExternal)
 	b.AddHandler(h.HandleUpdateTicketRefTicketID)
 	return CommandBus{b}
 }
@@ -765,6 +869,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetTicketByExternalID)
 	b.AddHandler(h.HandleGetTicketByID)
 	b.AddHandler(h.HandleGetTicketCommentByID)
 	b.AddHandler(h.HandleGetTicketLabelByID)

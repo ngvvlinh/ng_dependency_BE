@@ -72,6 +72,7 @@ func (s *TicketCommentStore) AccountID(accountID dot.ID) *TicketCommentStore {
 
 func (s *TicketCommentStore) GetTicketCommentDB() (*model.TicketComment, error) {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	var ticketDB model.TicketComment
 	err := query.ShouldGet(&ticketDB)
 	return &ticketDB, err
@@ -88,6 +89,8 @@ func (s *TicketCommentStore) GetTicketComment() (ticketResult *ticket.TicketComm
 
 func (s *TicketCommentStore) ListTicketCommentsDB() ([]*model.TicketComment, error) {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+
 	// default sort by created_at
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
@@ -123,6 +126,7 @@ func (s *TicketCommentStore) CreateDB(TicketComment *model.TicketComment) error 
 
 func (s *TicketCommentStore) UpdateTicketCommentDB(args *model.TicketComment) error {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	return query.ShouldUpdate(args)
 }
 

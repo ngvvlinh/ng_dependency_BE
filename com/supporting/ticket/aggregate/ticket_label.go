@@ -31,20 +31,24 @@ func (a TicketAggregate) CreateTicketLabel(ctx context.Context, args *ticket.Cre
 			return nil, err
 		}
 	}
-	err = a.validateTicketLabelBeforeCreateOrUpdate(ctx, ticketLabelCore)
-	if err != nil {
+
+	if err := a.validateTicketLabelBeforeCreateOrUpdate(ctx, ticketLabelCore); err != nil {
 		return nil, err
 	}
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		err = a.TicketLabelStore(ctx).Create(ticketLabelCore)
-		if err != nil {
+		if err = a.TicketLabelStore(ctx).Create(ticketLabelCore); err != nil {
 			return err
 		}
+
 		result, err := a.TicketLabelStore(ctx).ListTicketLabels()
 		if err != nil {
 			return err
 		}
-		return a.SetTicketLabels(result)
+
+		if err := a.SetTicketLabels(result); err != nil {
+			return err
+		}
+		return nil
 	}); err != nil {
 		return nil, err
 	}
@@ -57,6 +61,7 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 	if err != nil {
 		return nil, err
 	}
+
 	//TODO check parent is not child
 	if args.ParentID.Valid && args.ParentID.ID != 0 && args.ParentID.ID != ticketLabelCore.ParentID {
 		_, err = a.TicketLabelStore(ctx).ID(args.ParentID.ID).GetTicketLabel()
@@ -69,62 +74,73 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 			return nil, err
 		}
 	}
-	err = scheme.Convert(args, ticketLabelCore)
-	if err != nil {
+	if err = scheme.Convert(args, ticketLabelCore); err != nil {
 		return nil, err
 	}
-	err = a.validateTicketLabelBeforeCreateOrUpdate(ctx, ticketLabelCore)
-	if err != nil {
+	if err = a.validateTicketLabelBeforeCreateOrUpdate(ctx, ticketLabelCore); err != nil {
 		return nil, err
 	}
 
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		err = a.TicketLabelStore(ctx).ID(args.ID).UpdateTicketLabel(ticketLabelCore)
-		if err != nil {
+		if err = a.TicketLabelStore(ctx).ID(args.ID).UpdateTicketLabel(ticketLabelCore); err != nil {
 			return err
 		}
+
 		result, err := a.TicketLabelStore(ctx).ListTicketLabels()
 		if err != nil {
 			return err
 		}
+
 		return a.SetTicketLabels(result)
 	}); err != nil {
 		return nil, err
 	}
 
-	result, _ := a.TicketLabelStore(ctx).ListTicketLabels()
-	err = a.SetTicketLabels(result)
+	result, err := a.TicketLabelStore(ctx).ListTicketLabels()
 	if err != nil {
 		return nil, err
 	}
+
+	if err = a.SetTicketLabels(result); err != nil {
+		return nil, err
+	}
+
 	return ticketLabelCore, nil
 
 }
 
 func (a TicketAggregate) DeleteTicketLabel(ctx context.Context, args *ticket.DeleteTicketLabelArgs) (int, error) {
-	_, err := a.TicketLabelStore(ctx).ID(args.ID).GetTicketLabel()
-	if err != nil {
+	if _, err := a.TicketLabelStore(ctx).ID(args.ID).GetTicketLabel(); err != nil {
 		return 0, err
 	}
+
 	labels, err := a.listTicketLabels(ctx)
 	if err != nil {
 		return 0, err
 	}
+
 	label := getLabel(args.ID, labels)
 	if !args.DeleteChild && label != nil && len(label.Children) > 0 {
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Label có chứa label con")
 	}
+
 	ids := getListLabelChildIDs(label)
 	ids = append(ids, args.ID)
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		_, err = a.TicketLabelStore(ctx).IDs(ids...).Delete()
-		if err != nil {
+		if _, err = a.TicketLabelStore(ctx).IDs(ids...).SoftDelete(); err != nil {
 			return err
 		}
+
+		// delete all ticket_label_ticket_label_external by ticket_label_id
+		if _, err := a.TicketLabelTicketLabelExternalStore(ctx).TicketLabelIDs(ids).SoftDelete(); err != nil {
+			return err
+		}
+
 		result, err := a.TicketLabelStore(ctx).ListTicketLabels()
 		if err != nil {
 			return err
 		}
+
 		return a.SetTicketLabels(result)
 	}); err != nil {
 		return 0, err
@@ -185,18 +201,18 @@ func getLabel(id dot.ID, a []*ticket.TicketLabel) *ticket.TicketLabel {
 	return nil
 }
 
-func MakeTreeLabel(a []*ticket.TicketLabel) []*ticket.TicketLabel {
-	sort.Slice(a, func(i, j int) bool {
-		return a[i].ParentID < a[j].ParentID
+func MakeTreeLabel(ticketLabels []*ticket.TicketLabel) []*ticket.TicketLabel {
+	sort.Slice(ticketLabels, func(i, j int) bool {
+		return ticketLabels[i].ParentID < ticketLabels[j].ParentID
 	})
 	var result []*ticket.TicketLabel
 	var ok bool
-	for _, v := range a {
-		if v.ParentID == 0 {
-			result = append(result, v)
+	for _, ticketLabel := range ticketLabels {
+		if ticketLabel.ParentID == 0 {
+			result = append(result, ticketLabel)
 			continue
 		}
-		result, ok = addToTreeLabel(v, result)
+		result, ok = addToTreeLabel(ticketLabel, result)
 		if ok {
 			// error or something else
 		}

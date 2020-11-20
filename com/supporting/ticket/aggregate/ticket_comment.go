@@ -16,6 +16,7 @@ func (a TicketAggregate) CreateTicketComment(ctx context.Context, args *ticket.C
 	if err != nil {
 		return nil, err
 	}
+
 	// kiểm tra xem là admin, nếu là admin thì kiểm tra assign
 	if !args.IsLeader && args.IsAdmin {
 		isAssigned := false
@@ -29,21 +30,22 @@ func (a TicketAggregate) CreateTicketComment(ctx context.Context, args *ticket.C
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Bạn chưa được assign vào ticket này.")
 		}
 	}
+
+	// kiểm tra ticket parent tồn tại ko
 	if args.ParentID != 0 {
-		_, err := a.TicketCommentStore(ctx).TicketID(args.TicketID).AccountID(args.AccountID).ID(args.ParentID).GetTicketComment()
-		if err != nil {
+		if _, err := a.TicketCommentStore(ctx).TicketID(args.TicketID).AccountID(args.AccountID).ID(args.ParentID).GetTicketComment(); err != nil {
 			return nil, err
 		}
 	}
+
 	var ticketComment = &ticket.TicketComment{}
-	err = scheme.Convert(args, ticketComment)
-	if err != nil {
-		return nil, err
-	}
-	if err := a.TicketCommentStore(ctx).Create(ticketComment); err != nil {
+	if err = scheme.Convert(args, ticketComment); err != nil {
 		return nil, err
 	}
 
+	if err := a.TicketCommentStore(ctx).Create(ticketComment); err != nil {
+		return nil, err
+	}
 	return a.TicketCommentStore(ctx).ID(ticketComment.ID).GetTicketComment()
 }
 
@@ -54,21 +56,23 @@ func (a TicketAggregate) UpdateTicketComment(ctx context.Context, args *ticket.U
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing id")
 	}
+
 	ticketComment, err := a.TicketCommentStore(ctx).ID(args.ID).AccountID(args.AccountID).GetTicketComment()
 	if err != nil {
 		return nil, err
 	}
+
 	if ticketComment.CreatedBy != args.UpdatedBy {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Chỉ có người tạo comment mới được chỉnh sửa")
 	}
+
 	var ticketModel = &model.TicketComment{
 		Message: args.Message,
 	}
 	if len(args.ImageUrls) > 0 {
 		ticketModel.ImageUrls = args.ImageUrls
 	}
-	err = a.TicketCommentStore(ctx).ID(args.ID).UpdateTicketCommentDB(ticketModel)
-	if err != nil {
+	if err = a.TicketCommentStore(ctx).ID(args.ID).UpdateTicketCommentDB(ticketModel); err != nil {
 		return nil, err
 	}
 

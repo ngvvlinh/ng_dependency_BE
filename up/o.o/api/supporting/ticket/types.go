@@ -48,16 +48,19 @@ type Ticket struct {
 	UpdatedAt   time.Time
 	ConfirmedAt time.Time
 	ClosedAt    time.Time
+
+	ConnectionID dot.ID
 }
 
 type TicketComment struct {
-	ID            dot.ID
-	TicketID      dot.ID
-	CreatedBy     dot.ID
-	CreatedName   string
-	CreatedSource account_type.AccountType
-	AccountID     dot.ID
-	ParentID      dot.ID
+	ID                dot.ID
+	TicketID          dot.ID
+	CreatedBy         dot.ID
+	CreatedName       string
+	CreatedSource     account_type.AccountType
+	AccountID         dot.ID
+	ParentID          dot.ID
+	ExternalCreatedAt string
 
 	Message   string
 	ImageUrls []string
@@ -70,12 +73,23 @@ type TicketComment struct {
 }
 
 type TicketLabel struct {
-	ID       dot.ID         `json:"id"`
-	Name     string         `json:"name"`
-	Code     string         `json:"code"`
-	ParentID dot.ID         `json:"parent_id"`
-	Color    string         `json:"color"`
-	Children []*TicketLabel `json:"children"`
+	ID        dot.ID         `json:"id"`
+	Name      string         `json:"name"`
+	Code      string         `json:"code"`
+	ParentID  dot.ID         `json:"parent_id"`
+	Color     string         `json:"color"`
+	Children  []*TicketLabel `json:"-"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+}
+
+type TicketLabelExternal struct {
+	ID           dot.ID
+	ConnectionID dot.ID
+	ExternalID   string
+	ExternalName string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 type TicketCreatingEvent struct {
