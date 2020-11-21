@@ -84,13 +84,12 @@ func (s *FbMessageTemplateStore) DeleteMessageTemplate() error {
 
 func (s *FbMessageTemplateStore) GetFbMessageTemplatesDB() (model.FbMessageTemplates, error) {
 	var result model.FbMessageTemplates
-	err := s.query().Where(s.preds).Find(&result)
+	err := s.query().Where(s.preds).OrderBy("created_at desc").Find(&result)
 	return result, err
 }
 
 func (s *FbMessageTemplateStore) GetFbMessageTemplates() ([]*fbmessagetemplate.FbMessageTemplate, error) {
-	var templateDBs model.FbMessageTemplates
-	err := s.query().Where(s.preds).Find(&templateDBs)
+	templateDBs, err := s.GetFbMessageTemplatesDB()
 	if err != nil {
 		return nil, err
 	}
