@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"o.o/api/main/identity"
@@ -22,6 +23,10 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 	"o.o/capi/dot"
+)
+
+const (
+	ticketLabelsVersion = "v1"
 )
 
 var _ ticket.Aggregate = &TicketAggregate{}
@@ -87,10 +92,10 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 	}
 
 	// get all father label_ids of all labels
-	for _, v := range args.LabelIDs {
-		listLabelIDs, ok := getListLabelFatherID(v, labels)
-		if !ok {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Label không tồn tại")
+	for _, labelID := range args.LabelIDs {
+		listLabelIDs := getListLabelFatherID(labelID, labels)
+		if len(listLabelIDs) == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Label không tồn tại (id = %d)", labelID)
 		}
 		for _, labelID := range listLabelIDs {
 			if !cm.IDsContain(ticketCore.LabelIDs, labelID) {
@@ -391,7 +396,7 @@ func (a *TicketAggregate) UnassignTicket(ctx context.Context, args *ticket.Unass
 
 func (a *TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.TicketLabel, error) {
 	var labels []*ticket.TicketLabel
-	err := a.RedisStore.Get("ticket_labels", &labels)
+	err := a.RedisStore.Get(generateTicketLabelKey(), &labels)
 	switch err {
 	case redis.ErrNil:
 		// no-op
@@ -405,15 +410,15 @@ func (a *TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.Ticke
 		return nil, err
 	}
 
-	if err = a.SetTicketLabels(labels); err != nil {
+	if err := a.SetTicketLabels(&labels); err != nil {
 		return nil, err
 	}
 	return labels, nil
 }
 
-func (a *TicketAggregate) SetTicketLabels(labels []*ticket.TicketLabel) error {
-	labels = MakeTreeLabel(labels)
-	return a.RedisStore.SetWithTTL("ticket_labels", labels, 1*24*60*60)
+func (a *TicketAggregate) SetTicketLabels(labels *[]*ticket.TicketLabel) error {
+	*labels = MakeTreeLabel(*labels)
+	return a.RedisStore.SetWithTTL(generateTicketLabelKey(), labels, 1*24*60*60)
 }
 
 func (a *TicketAggregate) UpdateTicketRefTicketID(ctx context.Context, args *ticket.UpdateTicketRefTicketIDArgs) (*pbcm.UpdatedResponse, error) {
@@ -430,4 +435,8 @@ func (a *TicketAggregate) UpdateTicketRefTicketID(ctx context.Context, args *tic
 		return nil, err
 	}
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func generateTicketLabelKey() string {
+	return fmt.Sprintf("ticket_labels:%s", ticketLabelsVersion)
 }

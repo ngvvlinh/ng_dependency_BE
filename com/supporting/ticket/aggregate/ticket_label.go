@@ -45,7 +45,7 @@ func (a TicketAggregate) CreateTicketLabel(ctx context.Context, args *ticket.Cre
 			return err
 		}
 
-		if err := a.SetTicketLabels(result); err != nil {
+		if err := a.SetTicketLabels(&result); err != nil {
 			return err
 		}
 		return nil
@@ -91,7 +91,7 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 			return err
 		}
 
-		return a.SetTicketLabels(result)
+		return a.SetTicketLabels(&result)
 	}); err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 		return nil, err
 	}
 
-	if err = a.SetTicketLabels(result); err != nil {
+	if err = a.SetTicketLabels(&result); err != nil {
 		return nil, err
 	}
 
@@ -141,7 +141,7 @@ func (a TicketAggregate) DeleteTicketLabel(ctx context.Context, args *ticket.Del
 			return err
 		}
 
-		return a.SetTicketLabels(result)
+		return a.SetTicketLabels(&result)
 	}); err != nil {
 		return 0, err
 	}
@@ -241,20 +241,19 @@ func addToTreeLabel(child *ticket.TicketLabel, father []*ticket.TicketLabel) ([]
 }
 
 // get all label_ids from this id to father have id = 0
-func getListLabelFatherID(id dot.ID, labels []*ticket.TicketLabel) ([]dot.ID, bool) {
+func getListLabelFatherID(id dot.ID, labels []*ticket.TicketLabel) []dot.ID {
 	if len(labels) == 0 {
-		return nil, false
+		return nil
 	}
-	for _, v := range labels {
-		if v.ID == id {
-			return []dot.ID{v.ID}, true
+
+	for _, label := range labels {
+		if label.ID == id {
+			return []dot.ID{label.ID}
 		}
-		ids, ok := getListLabelFatherID(id, v.Children)
-		if ok {
-			var result = []dot.ID{}
-			result = append(result, v.ID)
-			return append(result, ids...), true
+		ids := getListLabelFatherID(id, label.Children)
+		if len(ids) != 0 {
+			return append(ids, label.ID)
 		}
 	}
-	return nil, false
+	return nil
 }

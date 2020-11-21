@@ -78,7 +78,7 @@ type TicketLabel struct {
 	Code      string         `json:"code"`
 	ParentID  dot.ID         `json:"parent_id"`
 	Color     string         `json:"color"`
-	Children  []*TicketLabel `json:"-"`
+	Children  []*TicketLabel `json:"children"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 }
