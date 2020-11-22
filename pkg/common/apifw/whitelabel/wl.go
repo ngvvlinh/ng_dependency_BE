@@ -55,6 +55,9 @@ type Config struct {
 	DatabaseName string
 
 	WLType wl_type.WhiteLabelType
+
+	// define that this whitelabel partner can not get from host (x-forwarded-header)
+	IgnoreParseFromHost bool
 }
 
 type Driver interface {

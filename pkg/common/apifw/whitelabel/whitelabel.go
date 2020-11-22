@@ -120,6 +120,9 @@ func (w *WhiteLabel) fromContext(ctx context.Context, partnerID dot.ID) *WL {
 func (w *WhiteLabel) fromHost(host string) *WL {
 	parts := strings.SplitN(host, ".", 2)
 	for _, p := range w.partners {
+		if p.IgnoreParseFromHost {
+			continue
+		}
 		// itopx.vn
 		if p.Host == host {
 			return p

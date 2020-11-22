@@ -5,11 +5,11 @@
 Khi đề cập đến các API trong phần này, chúng tôi sẽ không kèm theo **BASE_URL**
 và bạn mặc định hiểu là khi truy vấn sẽ gắn thêm chuỗi **BASE_URL** phía trước
 đường dẫn cụ thể của API. Ví dụ `/v1/vnposts/ping` sẽ là
-`https://vnpost-api-development.movecrop.com/v1/vnposts/ping`. Bạn cũng cần một
+`https://vnpost-development.topship.vn/v1/vnposts/ping`. Bạn cũng cần một
 **TOKEN** hợp lệ để truy cập các API.
 
 ```bash
-export BASE_URL=https://vnpost-api-development.movecrop.com
+export BASE_URL=https://vnpost-development.topship.vn
 export TOKEN=MzRiOWY1Mj...
 ```
 

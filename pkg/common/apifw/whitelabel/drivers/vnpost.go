@@ -36,6 +36,9 @@ func VNPost(env cmenv.EnvType) *whitelabel.WL {
 			CompanyFullName:      "VNPost",
 			CSEmail:              "",
 			WLType:               wl_type.POS,
+
+			// vnpost hiện tại không mở ra như một whitelabel partner xài etop/topship.
+			IgnoreParseFromHost: true,
 		},
 		Driver: &vnpostDriver{},
 	}
