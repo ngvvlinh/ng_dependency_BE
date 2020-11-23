@@ -101,6 +101,19 @@ func (h AggregateHandler) HandleCreateFulfillmentsFromImport(ctx context.Context
 	return err
 }
 
+type CreatePartialFulfillmentCommand struct {
+	FulfillmentID dot.ID
+	ShopID        dot.ID
+	InfoChanges   *InfoChanges
+
+	Result dot.ID `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreatePartialFulfillment(ctx context.Context, msg *CreatePartialFulfillmentCommand) (err error) {
+	msg.Result, err = h.inner.CreatePartialFulfillment(msg.GetArgs(ctx))
+	return err
+}
+
 type RemoveFulfillmentsMoneyTxIDCommand struct {
 	FulfillmentIDs            []dot.ID
 	MoneyTxShippingID         dot.ID
@@ -440,6 +453,7 @@ func (q *AddFulfillmentShippingFeeCommand) command()                {}
 func (q *CancelFulfillmentCommand) command()                        {}
 func (q *CreateFulfillmentsCommand) command()                       {}
 func (q *CreateFulfillmentsFromImportCommand) command()             {}
+func (q *CreatePartialFulfillmentCommand) command()                 {}
 func (q *RemoveFulfillmentsMoneyTxIDCommand) command()              {}
 func (q *ShopUpdateFulfillmentCODCommand) command()                 {}
 func (q *ShopUpdateFulfillmentInfoCommand) command()                {}
@@ -549,6 +563,21 @@ func (q *CreateFulfillmentsFromImportCommand) GetArgs(ctx context.Context) (_ co
 
 func (q *CreateFulfillmentsFromImportCommand) SetCreateFulfillmentsFromImportArgs(args *CreateFulfillmentsFromImportArgs) {
 	q.Fulfillments = args.Fulfillments
+}
+
+func (q *CreatePartialFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreatePartialFulfillmentArgs) {
+	return ctx,
+		&CreatePartialFulfillmentArgs{
+			FulfillmentID: q.FulfillmentID,
+			ShopID:        q.ShopID,
+			InfoChanges:   q.InfoChanges,
+		}
+}
+
+func (q *CreatePartialFulfillmentCommand) SetCreatePartialFulfillmentArgs(args *CreatePartialFulfillmentArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.ShopID = args.ShopID
+	q.InfoChanges = args.InfoChanges
 }
 
 func (q *RemoveFulfillmentsMoneyTxIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveFulfillmentsMoneyTxIDArgs) {
@@ -946,6 +975,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCancelFulfillment)
 	b.AddHandler(h.HandleCreateFulfillments)
 	b.AddHandler(h.HandleCreateFulfillmentsFromImport)
+	b.AddHandler(h.HandleCreatePartialFulfillment)
 	b.AddHandler(h.HandleRemoveFulfillmentsMoneyTxID)
 	b.AddHandler(h.HandleShopUpdateFulfillmentCOD)
 	b.AddHandler(h.HandleShopUpdateFulfillmentInfo)

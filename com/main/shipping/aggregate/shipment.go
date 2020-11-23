@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 
 	"o.o/api/main/address"
 	"o.o/api/main/connectioning"
@@ -28,6 +29,7 @@ import (
 	orderconvert "o.o/backend/com/main/ordering/convert"
 	"o.o/backend/com/main/shipping/carrier"
 	shippingconvert "o.o/backend/com/main/shipping/convert"
+	"o.o/backend/com/main/shipping/model"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shippingsharemodel "o.o/backend/com/main/shipping/sharemodel"
 	"o.o/backend/com/main/shipping/sqlstore"
@@ -794,7 +796,8 @@ func (a *Aggregate) UpdateFulfillmentShippingFeesFromWebhook(ctx context.Context
 		AdditionalFeeTypes: nil,
 	}
 
-	if args.NewWeight != 0 && args.NewWeight != ffm.ChargeableWeight {
+	// Đơn giao hàng 1 phần chỉ cần tính lại phí trả hàng nên bỏ qua phí chính
+	if args.NewWeight != 0 && args.NewWeight != ffm.ChargeableWeight && !ffm.IsPartialDelivery {
 		calcFeeResp, err = a.shimentManager.CalcMakeupShippingFeesByFfm(ctx, calcShippingFeesArgs)
 		if err != nil {
 			return err
@@ -1251,4 +1254,80 @@ func (a *Aggregate) UpdateFulfillmentShippingCode(ctx context.Context, args *shi
 	}
 	update := &shipmodel.Fulfillment{ShippingCode: args.ShippingCode}
 	return a.ffmStore(ctx).ID(args.FulfillmentID).UpdateFulfillmentDB(update)
+}
+
+func (a *Aggregate) CreatePartialFulfillment(ctx context.Context, args *shipping.CreatePartialFulfillmentArgs) (fulfillmentID dot.ID, _ error) {
+	oldFfmModel, err := a.ffmStore(ctx).ID(args.FulfillmentID).GetFfmDB()
+	if err != nil {
+		return 0, err
+	}
+
+	t0 := time.Now()
+
+	newFfm := &model.Fulfillment{
+		ID:                       cm.NewID(),
+		OrderID:                  oldFfmModel.OrderID,
+		ShopID:                   oldFfmModel.ShopID,
+		PartnerID:                oldFfmModel.PartnerID,
+		ShopConfirm:              status3.P,
+		ConfirmStatus:            status3.P,
+		TotalItems:               oldFfmModel.TotalItems,
+		TotalWeight:              0,
+		BasketValue:              oldFfmModel.BasketValue,
+		TotalDiscount:            0,
+		TotalAmount:              oldFfmModel.TotalAmount,
+		TotalCODAmount:           0,
+		OriginalCODAmount:        0,
+		ActualCompensationAmount: oldFfmModel.ActualCompensationAmount,
+		EtopPriceRule:            oldFfmModel.EtopPriceRule,
+		VariantIDs:               oldFfmModel.VariantIDs,
+		Lines:                    oldFfmModel.Lines,
+		TypeFrom:                 oldFfmModel.TypeFrom,
+		TypeTo:                   oldFfmModel.TypeTo,
+		AddressFrom:              oldFfmModel.AddressFrom,
+		AddressTo:                oldFfmModel.AddressTo,
+		AddressReturn:            oldFfmModel.AddressReturn,
+		AddressToProvinceCode:    oldFfmModel.AddressToFullNameNorm,
+		AddressToDistrictCode:    oldFfmModel.AddressToDistrictCode,
+		AddressToWardCode:        oldFfmModel.AddressToWardCode,
+		AddressToPhone:           oldFfmModel.AddressToPhone,
+		AddressToFullNameNorm:    oldFfmModel.AddressToFullNameNorm,
+		CreatedAt:                t0,
+		UpdatedAt:                t0,
+		ShippingProvider:         oldFfmModel.ShippingProvider,
+		ProviderServiceID:        oldFfmModel.ProviderServiceID,
+		ShippingCode:             "",
+		ShippingNote:             fmt.Sprintf("Đơn giao hàng một phần được tạo từ đơn giao hàng %s", oldFfmModel.ShippingCode),
+		TryOn:                    oldFfmModel.TryOn,
+		ShippingType:             oldFfmModel.ShippingType,
+		ShippingPaymentType:      oldFfmModel.ShippingPaymentType,
+		ConnectionID:             oldFfmModel.ConnectionID,
+		ConnectionMethod:         oldFfmModel.ConnectionMethod,
+		ShippingServiceName:      oldFfmModel.ShippingServiceName,
+		ExternalShippingName:     oldFfmModel.ExternalShippingName,
+		ExternalShippingID:       oldFfmModel.ExternalShippingID,
+		ShippingState:            shipstate.Returning,
+		ShippingStatus:           shipstate.Returning.ToStatus5(),
+		Status:                   status5.P,
+		IsPartialDelivery:        true,
+		CreatedBy:                oldFfmModel.CreatedBy,
+		DeliveryRoute:            oldFfmModel.DeliveryRoute,
+	}
+
+	if args.InfoChanges != nil {
+		newFfm.ShippingCode = args.InfoChanges.ShippingCode.String
+		newFfm.ExternalShippingCode = args.InfoChanges.ShippingCode.String
+		newFfm.GrossWeight = args.InfoChanges.Weight.Int
+		newFfm.ChargeableWeight = args.InfoChanges.Weight.Int
+		newFfm.Length = args.InfoChanges.Length.Int
+		newFfm.Height = args.InfoChanges.Height.Int
+		newFfm.Width = args.InfoChanges.Height.Int
+	}
+
+	ffm, err := a.ffmStore(ctx).CreateFulfillmentDB(newFfm)
+	if err != nil {
+		return 0, err
+	}
+
+	return ffm.ID, nil
 }

@@ -292,9 +292,10 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.EtopAdjustedShippingFeeMain = arg.EtopAdjustedShippingFeeMain // simple assign
 	out.EtopPriceRule = arg.EtopPriceRule                             // simple assign
 	out.ShipmentPriceInfo = Convert_sharemodel_ShipmentPriceInfo_shipping_ShipmentPriceInfo(arg.ShipmentPriceInfo, nil)
-	out.LinesContent = arg.LinesContent         // simple assign
-	out.EdCode = arg.EdCode                     // simple assign
-	out.ShippingSubstate = arg.ShippingSubstate // simple assign
+	out.LinesContent = arg.LinesContent           // simple assign
+	out.EdCode = arg.EdCode                       // simple assign
+	out.ShippingSubstate = arg.ShippingSubstate   // simple assign
+	out.IsPartialDelivery = arg.IsPartialDelivery // simple assign
 }
 
 func Convert_shippingmodel_Fulfillments_shipping_Fulfillments(args []*shippingmodel.Fulfillment) (outs []*shipping.Fulfillment) {
@@ -419,17 +420,17 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.SyncStates = Convert_shipping_FulfillmentSyncStates_sharemodel_FulfillmentSyncStates(arg.SyncStates, nil)
 	out.LastSyncAt = time.Time{} // zero value
 	out.ExternalShippingLogs = Convert_shipping_ExternalShippingLogs_shippingmodel_ExternalShippingLogs(arg.ExternalShippingLogs)
-	out.AdminNote = ""            // zero value
-	out.IsPartialDelivery = false // zero value
-	out.CreatedBy = 0             // zero value
-	out.GrossWeight = 0           // zero value
-	out.ChargeableWeight = 0      // zero value
-	out.Length = 0                // zero value
-	out.Width = 0                 // zero value
-	out.Height = 0                // zero value
-	out.DeliveryRoute = ""        // zero value
-	out.ExternalAffiliateID = ""  // zero value
-	out.Coupon = arg.Coupon       // simple assign
+	out.AdminNote = ""                            // zero value
+	out.IsPartialDelivery = arg.IsPartialDelivery // simple assign
+	out.CreatedBy = 0                             // zero value
+	out.GrossWeight = 0                           // zero value
+	out.ChargeableWeight = 0                      // zero value
+	out.Length = 0                                // zero value
+	out.Width = 0                                 // zero value
+	out.Height = 0                                // zero value
+	out.DeliveryRoute = ""                        // zero value
+	out.ExternalAffiliateID = ""                  // zero value
+	out.Coupon = arg.Coupon                       // simple assign
 	out.ShipmentPriceInfo = Convert_shipping_ShipmentPriceInfo_sharemodel_ShipmentPriceInfo(arg.ShipmentPriceInfo, nil)
 	out.LinesContent = arg.LinesContent         // simple assign
 	out.EdCode = arg.EdCode                     // simple assign
@@ -536,6 +537,7 @@ func apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping
 	out.LinesContent = out.LinesContent                                              // no change
 	out.EdCode = out.EdCode                                                          // no change
 	out.ShippingSubstate = out.ShippingSubstate                                      // no change
+	out.IsPartialDelivery = out.IsPartialDelivery                                    // no change
 }
 
 //-- convert o.o/api/main/shipping.FulfillmentExtended --//

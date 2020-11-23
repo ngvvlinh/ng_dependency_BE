@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"o.o/api/main/identity"
@@ -32,6 +33,8 @@ import (
 )
 
 var ll = l.New().WithChannel(meta.ChannelShipmentCarrier)
+
+const suffixOrderCode = "_PR"
 
 type MainDB *cmsql.Database // TODO(vu): call the right service
 
@@ -182,19 +185,71 @@ func (wh *Webhook) updateFulfillmentsCODTransferedAt(ctx context.Context, msg gh
 }
 
 func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg ghnclient.CallbackOrder) (ffm *shipmodel.Fulfillment, err error) {
-	orderCode := msg.OrderCode
+	orderCode := msg.OrderCode.String()
 	if orderCode == "" {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "OrderCode is empty")
 	}
 
+	// check ffm is partial return
+	// ffm_partial_return = ffm_main + "_PR"
+	if strings.HasSuffix(orderCode, suffixOrderCode) {
+		shippingCodePR := orderCode
+		shippingCodeMain := strings.TrimSuffix(shippingCodePR, suffixOrderCode)
+
+		// check ffm partial return exists
+		getFfmPRQuery := &modelx.GetFulfillmentQuery{
+			ShippingProvider: shipping_provider.GHN,
+			ShippingCode:     shippingCodePR,
+		}
+		err := wh.OrderStore.GetFulfillment(ctx, getFfmPRQuery)
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			ffm = getFfmPRQuery.Result
+		case cm.NotFound:
+			// get ffm_main
+			getFfmMainQuery := &modelx.GetFulfillmentQuery{
+				ShippingProvider: shipping_provider.GHN,
+				ShippingCode:     shippingCodeMain,
+			}
+			if _err := wh.OrderStore.GetFulfillment(ctx, getFfmMainQuery); _err != nil {
+				return nil, cm.MapError(err).
+					Wrapf(cm.NotFound, "OrderCode not found: %v", shippingCodeMain).
+					DefaultInternal().WithMeta("result", "ignore")
+			}
+
+			// create ffm partial return from ffm main
+			createFfmPRCmd := &shippingcore.CreatePartialFulfillmentCommand{
+				FulfillmentID: getFfmMainQuery.Result.ID,
+				ShopID:        getFfmMainQuery.Result.ShopID,
+				InfoChanges:   &shippingcore.InfoChanges{ShippingCode: dot.String(shippingCodePR)},
+			}
+			if _err := wh.shippingAggr.Dispatch(ctx, createFfmPRCmd); _err != nil {
+				return nil, _err
+			}
+			ffmPRID := createFfmPRCmd.Result
+
+			// get new ffm partial return
+			getNewFfmPRQuery := &modelx.GetFulfillmentQuery{
+				ShippingProvider: shipping_provider.GHN,
+				FulfillmentID:    ffmPRID,
+			}
+			if _err := wh.OrderStore.GetFulfillment(ctx, getNewFfmPRQuery); _err != nil {
+				return nil, err
+			}
+			ffm = getNewFfmPRQuery.Result
+		default:
+			return nil, err
+		}
+	}
+
 	query := &modelx.GetFulfillmentQuery{
 		ShippingProvider: shipping_provider.GHN,
-		ShippingCode:     orderCode.String(),
+		ShippingCode:     orderCode,
 	}
 	if err := wh.OrderStore.GetFulfillment(ctx, query); err != nil {
 		return nil, cm.MapError(err).
 			Wrapf(cm.NotFound, "OrderCode not found: %v", orderCode).
-			DefaultInternal()
+			DefaultInternal().WithMeta("result", "ignore")
 	}
 	return query.Result, nil
 }

@@ -28,6 +28,8 @@ type Aggregate interface {
 
 	CreateFulfillmentsFromImport(context.Context, *CreateFulfillmentsFromImportArgs) ([]*CreateFullfillmentsFromImportResult, error)
 
+	CreatePartialFulfillment(context.Context, *CreatePartialFulfillmentArgs) (fulfillmentID dot.ID, _ error)
+
 	UpdateFulfillmentShippingState(context.Context, *UpdateFulfillmentShippingStateArgs) (updated int, _ error)
 
 	UpdateFulfillmentShippingSubstate(context.Context, *UpdateFulfillmentShippingSubstateArgs) (updated int, _ error)
@@ -85,6 +87,21 @@ type QueryService interface {
 }
 
 //-- Commands --//
+
+type CreatePartialFulfillmentArgs struct {
+	FulfillmentID dot.ID
+	ShopID        dot.ID
+
+	InfoChanges *InfoChanges
+}
+
+type InfoChanges struct {
+	ShippingCode dot.NullString
+	Weight       dot.NullInt
+	Length       dot.NullInt
+	Height       dot.NullInt
+	Width        dot.NullInt
+}
 
 type CreateFulfillmentsArgs struct {
 	ShopID dot.ID

@@ -130,6 +130,9 @@ type Fulfillment struct {
 	LinesContent     string
 	EdCode           string
 	ShippingSubstate shippingsubstate.NullSubstate
+
+	// giao một phần
+	IsPartialDelivery bool
 }
 
 type FulfillmentSyncStates struct {
