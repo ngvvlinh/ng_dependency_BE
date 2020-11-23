@@ -1232,20 +1232,20 @@
         }
       }
     },
-    "/api/shop.Contact/GetContactByID": {
+    "/api/shop.Contact/GetContact": {
       "post": {
         "tags": [
           "Contact"
         ],
-        "summary": "GetContactByID",
-        "operationId": "shop.Contact-GetContactByID",
+        "summary": "GetContact",
+        "operationId": "shop.Contact-GetContact",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/paGetContactByIDRequest"
+              "$ref": "#/definitions/paGetContactRequest"
             }
           }
         ],
@@ -1254,6 +1254,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/paContact"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Contact/GetContacts": {
+      "post": {
+        "tags": [
+          "Contact"
+        ],
+        "summary": "GetContacts",
+        "operationId": "shop.Contact-GetContacts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetContactsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetContactsResponse"
             }
           }
         }
@@ -9847,6 +9874,21 @@
         }
       }
     },
+    "paFilterGetContacts": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
     "paFilterGetCustomerAddresses": {
       "type": "object",
       "properties": {
@@ -10042,12 +10084,37 @@
         }
       }
     },
-    "paGetContactByIDRequest": {
+    "paGetContactRequest": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "paGetContactsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/paFilterGetContacts"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetContactsResponse": {
+      "type": "object",
+      "properties": {
+        "contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paContact"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
         }
       }
     },

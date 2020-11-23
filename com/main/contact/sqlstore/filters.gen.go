@@ -101,6 +101,25 @@ func (ft *ContactFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ContactFilters) ByPhoneNorm(PhoneNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == "",
+	}
+}
+
+func (ft *ContactFilters) ByPhoneNormPtr(PhoneNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == nil,
+		IsZero: PhoneNorm != nil && (*PhoneNorm) == "",
+	}
+}
+
 func (ft *ContactFilters) ByWLPartnerID(WLPartnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

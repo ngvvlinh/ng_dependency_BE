@@ -3,6 +3,7 @@ package contact
 import (
 	"context"
 
+	"o.o/api/meta"
 	"o.o/capi/dot"
 )
 
@@ -16,12 +17,26 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetContactByID(context.Context, *GetContactByIDArgs) (*Contact, error)
+	GetContacts(context.Context, *GetContactsArgs) (*GetContactsResponse, error)
 }
 
 //-- queries --//
 type GetContactByIDArgs struct {
 	ID     dot.ID
 	ShopID dot.ID
+}
+
+type GetContactsArgs struct {
+	ShopID dot.ID
+	IDs    []dot.ID
+	Phone  string
+
+	Paging meta.Paging
+}
+
+type GetContactsResponse struct {
+	Contacts []*Contact
+	Paging   meta.PageInfo
 }
 
 //-- commands --//

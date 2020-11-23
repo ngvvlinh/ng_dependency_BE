@@ -1150,7 +1150,8 @@ const ContactServicePathPrefix = "/shop.Contact/"
 
 const Path_Contact_CreateContact = "/shop.Contact/CreateContact"
 const Path_Contact_DeleteContact = "/shop.Contact/DeleteContact"
-const Path_Contact_GetContactByID = "/shop.Contact/GetContactByID"
+const Path_Contact_GetContact = "/shop.Contact/GetContact"
+const Path_Contact_GetContacts = "/shop.Contact/GetContacts"
 const Path_Contact_UpdateContact = "/shop.Contact/UpdateContact"
 
 func (s *ContactServiceServer) PathPrefix() string {
@@ -1212,8 +1213,8 @@ func (s *ContactServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			return
 		}
 		return msg, fn, nil
-	case "/shop.Contact/GetContactByID":
-		msg := &GetContactByIDRequest{}
+	case "/shop.Contact/GetContact":
+		msg := &GetContactRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
@@ -1221,7 +1222,20 @@ func (s *ContactServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.GetContactByID(newCtx, msg)
+			resp, err = inner.GetContact(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Contact/GetContacts":
+		msg := &GetContactsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetContacts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

@@ -70,6 +70,7 @@ func convert_contactmodel_Contact_contact_Contact(arg *contactmodel.Contact, out
 	out.ShopID = arg.ShopID           // simple assign
 	out.FullName = arg.FullName       // simple assign
 	out.Phone = arg.Phone             // simple assign
+	out.PhoneNorm = arg.PhoneNorm     // simple assign
 	out.WLPartnerID = arg.WLPartnerID // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
@@ -103,6 +104,7 @@ func convert_contact_Contact_contactmodel_Contact(arg *contact.Contact, out *con
 	out.ShopID = arg.ShopID           // simple assign
 	out.FullName = arg.FullName       // simple assign
 	out.Phone = arg.Phone             // simple assign
+	out.PhoneNorm = arg.PhoneNorm     // simple assign
 	out.WLPartnerID = arg.WLPartnerID // simple assign
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
@@ -137,6 +139,7 @@ func apply_contact_CreateContactArgs_contact_Contact(arg *contact.CreateContactA
 	out.ShopID = arg.ShopID     // simple assign
 	out.FullName = arg.FullName // simple assign
 	out.Phone = arg.Phone       // simple assign
+	out.PhoneNorm = ""          // zero value
 	out.WLPartnerID = 0         // zero value
 	out.CreatedAt = time.Time{} // zero value
 	out.UpdatedAt = time.Time{} // zero value
@@ -158,6 +161,7 @@ func apply_contact_UpdateContactArgs_contact_Contact(arg *contact.UpdateContactA
 	out.ShopID = arg.ShopID                         // simple assign
 	out.FullName = arg.FullName.Apply(out.FullName) // apply change
 	out.Phone = arg.Phone.Apply(out.Phone)          // apply change
+	out.PhoneNorm = out.PhoneNorm                   // no change
 	out.WLPartnerID = out.WLPartnerID               // no change
 	out.CreatedAt = out.CreatedAt                   // no change
 	out.UpdatedAt = out.UpdatedAt                   // no change

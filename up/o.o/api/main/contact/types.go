@@ -11,6 +11,7 @@ type Contact struct {
 	ShopID      dot.ID
 	FullName    string
 	Phone       string
+	PhoneNorm   string
 	WLPartnerID dot.ID
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

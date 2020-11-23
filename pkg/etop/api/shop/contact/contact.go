@@ -6,8 +6,10 @@ import (
 	"o.o/api/main/contact"
 	api "o.o/api/top/int/shop"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/capi/dot"
 )
 
 type ContactService struct {
@@ -19,8 +21,8 @@ type ContactService struct {
 
 func (s *ContactService) Clone() api.ContactService { res := *s; return &res }
 
-func (s *ContactService) GetContactByID(
-	ctx context.Context, req *api.GetContactByIDRequest,
+func (s *ContactService) GetContact(
+	ctx context.Context, req *api.GetContactRequest,
 ) (*api.Contact, error) {
 	shopID := s.SS.Shop().ID
 	query := &contact.GetContactByIDQuery{
@@ -32,6 +34,34 @@ func (s *ContactService) GetContactByID(
 	}
 
 	return convertpb.Convert_core_Contact_to_api_Contact(query.Result), nil
+}
+
+func (s *ContactService) GetContacts(
+	ctx context.Context, req *api.GetContactsRequest,
+) (*api.GetContactsResponse, error) {
+	paging := cmapi.CMPaging(req.Paging)
+	shopID := s.SS.Shop().ID
+	var IDs []dot.ID
+	var phone string
+	if req.Filter != nil {
+		IDs = req.Filter.IDs
+		phone = req.Filter.Phone
+	}
+
+	getContactsQuery := &contact.GetContactsQuery{
+		ShopID: shopID,
+		IDs:    IDs,
+		Phone:  phone,
+		Paging: *paging,
+	}
+	if err := s.ContactQuery.Dispatch(ctx, getContactsQuery); err != nil {
+		return nil, err
+	}
+
+	return &api.GetContactsResponse{
+		Contacts: convertpb.PbContacts(getContactsQuery.Result.Contacts),
+		Paging:   cmapi.PbPageInfo(paging),
+	}, nil
 }
 
 func (s *ContactService) CreateContact(

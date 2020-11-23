@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Contacts []*Contact
 
 const __sqlContact_Table = "contact"
-const __sqlContact_ListCols = "\"id\",\"shop_id\",\"full_name\",\"phone\",\"wl_partner_id\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlContact_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"phone\" = EXCLUDED.\"phone\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlContact_ListCols = "\"id\",\"shop_id\",\"full_name\",\"phone\",\"phone_norm\",\"wl_partner_id\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlContact_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"phone\" = EXCLUDED.\"phone\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlContact_Insert = "INSERT INTO \"contact\" (" + __sqlContact_ListCols + ") VALUES"
 const __sqlContact_Select = "SELECT " + __sqlContact_ListCols + " FROM \"contact\""
 const __sqlContact_Select_history = "SELECT " + __sqlContact_ListCols + " FROM history.\"contact\""
@@ -86,6 +86,13 @@ func (m *Contact) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"phone_norm": {
+			ColumnName:       "phone_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"wl_partner_id": {
 			ColumnName:       "wl_partner_id",
 			ColumnType:       "dot.ID",
@@ -131,6 +138,7 @@ func (m *Contact) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ShopID,
 		core.String(m.FullName),
 		core.String(m.Phone),
+		core.String(m.PhoneNorm),
 		m.WLPartnerID,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -144,6 +152,7 @@ func (m *Contact) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ShopID,
 		(*core.String)(&m.FullName),
 		(*core.String)(&m.Phone),
+		(*core.String)(&m.PhoneNorm),
 		&m.WLPartnerID,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -185,7 +194,7 @@ func (_ *Contacts) SQLSelect(w SQLWriter) error {
 func (m *Contact) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlContact_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -195,7 +204,7 @@ func (ms Contacts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlContact_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(9)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -258,6 +267,14 @@ func (m *Contact) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Phone)
 	}
+	if m.PhoneNorm != "" {
+		flag = true
+		w.WriteName("phone_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PhoneNorm)
+	}
 	if m.WLPartnerID != 0 {
 		flag = true
 		w.WriteName("wl_partner_id")
@@ -300,7 +317,7 @@ func (m *Contact) SQLUpdate(w SQLWriter) error {
 func (m *Contact) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlContact_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -326,37 +343,39 @@ func (m ContactHistory) ID() core.Interface          { return core.Interface{m["
 func (m ContactHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
 func (m ContactHistory) FullName() core.Interface    { return core.Interface{m["full_name"]} }
 func (m ContactHistory) Phone() core.Interface       { return core.Interface{m["phone"]} }
+func (m ContactHistory) PhoneNorm() core.Interface   { return core.Interface{m["phone_norm"]} }
 func (m ContactHistory) WLPartnerID() core.Interface { return core.Interface{m["wl_partner_id"]} }
 func (m ContactHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
 func (m ContactHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 func (m ContactHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
 
 func (m *ContactHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ContactHistory, 8)
+	res := make(ContactHistory, 9)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["full_name"] = data[2]
 	res["phone"] = data[3]
-	res["wl_partner_id"] = data[4]
-	res["created_at"] = data[5]
-	res["updated_at"] = data[6]
-	res["deleted_at"] = data[7]
+	res["phone_norm"] = data[4]
+	res["wl_partner_id"] = data[5]
+	res["created_at"] = data[6]
+	res["updated_at"] = data[7]
+	res["deleted_at"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *ContactHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ContactHistories, 0, 128)
@@ -369,10 +388,11 @@ func (ms *ContactHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["shop_id"] = data[1]
 		m["full_name"] = data[2]
 		m["phone"] = data[3]
-		m["wl_partner_id"] = data[4]
-		m["created_at"] = data[5]
-		m["updated_at"] = data[6]
-		m["deleted_at"] = data[7]
+		m["phone_norm"] = data[4]
+		m["wl_partner_id"] = data[5]
+		m["created_at"] = data[6]
+		m["updated_at"] = data[7]
+		m["deleted_at"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

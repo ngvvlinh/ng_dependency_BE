@@ -11,6 +11,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/validate"
 	"o.o/common/l"
 )
 
@@ -48,6 +49,11 @@ func (a *ContactAggregate) CreateContact(
 	if err := scheme.Convert(args, contact); err != nil {
 		return nil, err
 	}
+	if _, ok := validate.NormalizePhone(args.Phone); !ok {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+	}
+
+	contact.PhoneNorm = validate.NormalizeSearchPhone(args.Phone)
 
 	if err := a.store(ctx).CreateContact(contact); err != nil {
 		return nil, err
@@ -70,6 +76,12 @@ func (a *ContactAggregate) UpdateContact(
 	contactDB := new(model.Contact)
 	if err := scheme.Convert(contact, contactDB); err != nil {
 		return nil, err
+	}
+	if args.Phone.Valid {
+		if _, ok := validate.NormalizePhone(args.Phone.String); !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+		}
+		contactDB.PhoneNorm = validate.NormalizeSearchPhone(args.Phone.String)
 	}
 
 	err = a.store(ctx).UpdateContactDB(contactDB)

@@ -9,9 +9,13 @@ import (
 	"o.o/backend/com/main/contact/convert"
 	"o.o/backend/com/main/contact/model"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type ContactStoreFactory func(ctx context.Context) *ContactStore
@@ -26,12 +30,15 @@ func NewContactStore(db *cmsql.Database) ContactStoreFactory {
 	}
 }
 
+var scheme = conversion.Build(convert.RegisterConversions)
+
 type ContactStore struct {
 	ft ContactFilters
 
 	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 
@@ -47,13 +54,29 @@ func (s *ContactStore) Filters(filters meta.Filters) *ContactStore {
 	return s
 }
 
+func (s *ContactStore) WithPaging(paging meta.Paging) *ContactStore {
+	s.Paging.WithPaging(paging)
+	return s
+}
+
 func (s *ContactStore) ID(id dot.ID) *ContactStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
+func (s *ContactStore) IDs(ids ...dot.ID) *ContactStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
+	return s
+}
+
 func (s *ContactStore) ShopID(id dot.ID) *ContactStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
+	return s
+}
+
+func (s *ContactStore) FullTextSearchFullPhone(phone filter.FullTextSearch) *ContactStore {
+	ts := validate.NormalizeFullTextSearchQueryAnd(phone)
+	s.preds = append(s.preds, s.ft.Filter(`phone_norm @@ ?::tsquery`, ts))
 	return s
 }
 
@@ -82,6 +105,41 @@ func (s *ContactStore) GetContact() (contactResult *contact.Contact, _ error) {
 	}
 	contactResult = convert.Convert_contactmodel_Contact_contact_Contact(contact, contactResult)
 	return contactResult, nil
+}
+
+func (s *ContactStore) ListContactsDB() ([]*model.Contact, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortContact, s.ft.prefix)
+	if err != nil {
+		return nil, err
+	}
+	query, _, err = sqlstore.Filters(query, s.filters, FilterContact)
+	if err != nil {
+		return nil, err
+	}
+
+	var contacts model.Contacts
+	err = query.Find(&contacts)
+	if err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(contacts)
+	return contacts, nil
+}
+
+func (s *ContactStore) ListContacts() (result []*contact.Contact, err error) {
+	customers, err := s.ListContactsDB()
+	if err != nil {
+		return nil, err
+	}
+	if err = scheme.Convert(customers, &result); err != nil {
+		return nil, err
+	}
+	return
 }
 
 func (s *ContactStore) CreateContact(contact *contact.Contact) error {

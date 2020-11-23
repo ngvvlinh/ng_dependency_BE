@@ -2942,11 +2942,32 @@ type UpdateContactRequest struct {
 
 func (m *UpdateContactRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type GetContactByIDRequest struct {
+type GetContactRequest struct {
 	ID dot.ID `json:"id"`
 }
 
-func (m *GetContactByIDRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *GetContactRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetContactsRequest struct {
+	Paging *common.Paging     `json:"paging"`
+	Filter *FilterGetContacts `json:"filter"`
+}
+
+func (m *GetContactsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterGetContacts struct {
+	IDs   []dot.ID `json:"ids"`
+	Phone string   `json:"phone"`
+}
+
+func (m *FilterGetContacts) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetContactsResponse struct {
+	Contacts []*Contact       `json:"contacts"`
+	Paging   *common.PageInfo `json:"paging"`
+}
+
+func (m *GetContactsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type DeleteContactResponse struct {
 	Count int `json:"count"`
