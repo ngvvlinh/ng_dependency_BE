@@ -93,6 +93,10 @@ func IsDev() bool {
 	return isDev
 }
 
+func IsSandBox() bool {
+	return env == EnvSandbox
+}
+
 func IsDevOrStag() bool {
 	return notProd && env != EnvSandbox
 }

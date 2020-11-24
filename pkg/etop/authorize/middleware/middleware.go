@@ -23,7 +23,7 @@ func CORS(next http.Handler) http.HandlerFunc {
 			strings.HasSuffix(origin, ".d.etop.vn"):
 			w.Header().Add("Access-Control-Allow-Origin", origin)
 
-		case cmenv.IsDev():
+		case cmenv.IsDev(), cmenv.IsSandBox():
 			w.Header().Add("Access-Control-Allow-Origin", "*")
 
 		default:

@@ -45,7 +45,7 @@ func (a TicketAggregate) CreateTicketLabel(ctx context.Context, args *ticket.Cre
 			return err
 		}
 
-		if err := a.SetTicketLabels(&result); err != nil {
+		if err := a.SetTicketLabels(ctx, &result); err != nil {
 			return err
 		}
 		return nil
@@ -91,7 +91,7 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 			return err
 		}
 
-		return a.SetTicketLabels(&result)
+		return a.SetTicketLabels(ctx, &result)
 	})
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 		return nil, err
 	}
 
-	if err = a.SetTicketLabels(&result); err != nil {
+	if err = a.SetTicketLabels(ctx, &result); err != nil {
 		return nil, err
 	}
 
@@ -143,7 +143,7 @@ func (a TicketAggregate) DeleteTicketLabel(ctx context.Context, args *ticket.Del
 			return err
 		}
 
-		return a.SetTicketLabels(&result)
+		return a.SetTicketLabels(ctx, &result)
 	})
 	if err != nil {
 		return 0, err

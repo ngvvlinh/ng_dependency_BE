@@ -24,6 +24,7 @@ import (
 	"o.o/backend/com/supporting/ticket/provider"
 	"o.o/backend/com/supporting/ticket/sqlstore"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -446,7 +447,7 @@ func (a *TicketAggregate) UnassignTicket(ctx context.Context, args *ticket.Unass
 
 func (a *TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.TicketLabel, error) {
 	var labels []*ticket.TicketLabel
-	err := a.RedisStore.Get(generateTicketLabelKey(), &labels)
+	err := a.RedisStore.Get(generateTicketLabelKey(ctx), &labels)
 	switch err {
 	case redis.ErrNil:
 		// no-op
@@ -460,15 +461,15 @@ func (a *TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.Ticke
 		return nil, err
 	}
 
-	if err := a.SetTicketLabels(&labels); err != nil {
+	if err := a.SetTicketLabels(ctx, &labels); err != nil {
 		return nil, err
 	}
 	return labels, nil
 }
 
-func (a *TicketAggregate) SetTicketLabels(labels *[]*ticket.TicketLabel) error {
+func (a *TicketAggregate) SetTicketLabels(ctx context.Context, labels *[]*ticket.TicketLabel) error {
 	*labels = MakeTreeLabel(*labels)
-	return a.RedisStore.SetWithTTL(generateTicketLabelKey(), labels, 1*24*60*60)
+	return a.RedisStore.SetWithTTL(generateTicketLabelKey(ctx), labels, 1*24*60*60)
 }
 
 func (a *TicketAggregate) UpdateTicketRefTicketID(ctx context.Context, args *ticket.UpdateTicketRefTicketIDArgs) (*pbcm.UpdatedResponse, error) {
@@ -487,6 +488,6 @@ func (a *TicketAggregate) UpdateTicketRefTicketID(ctx context.Context, args *tic
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }
 
-func generateTicketLabelKey() string {
-	return fmt.Sprintf("ticket_labels:%s", ticketLabelsVersion)
+func generateTicketLabelKey(ctx context.Context) string {
+	return fmt.Sprintf("ticket_labels:%s:wl%s", ticketLabelsVersion, wl.GetWLPartnerID(ctx))
 }

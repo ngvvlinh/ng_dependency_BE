@@ -7,21 +7,26 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"o.o/api/main/authorization"
 	"o.o/api/main/identity"
 	api "o.o/api/top/int/etop"
-	"o.o/api/top/types/etc/account_type"
+	"o.o/api/top/types/etc/status3"
+	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
-	wldriver "o.o/backend/pkg/common/apifw/whitelabel/drivers"
-	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/validate"
-	"o.o/backend/pkg/etop/authorize/claims"
+	"o.o/capi/dot"
 )
 
 var keyWebphoneRequestLogin = "webphone-request-login"
-var wlPartnerKeys = []string{wldriver.VNPostKey}
+
+// create an user and a default shop for vnpost
+const (
+	vnpostShopID = 1134164111674536521
+	vnpostKey    = "vnpost"
+)
 
 func (s *UserService) WebphoneRequestLogin(ctx context.Context, r *api.WebphoneRequestLoginRequest) (*api.WebphoneRequestLoginResponse, error) {
 	phone, ok := validate.NormalizePhone(r.Phone)
@@ -42,14 +47,10 @@ func (s *UserService) WebphoneRequestLogin(ctx context.Context, r *api.WebphoneR
 }
 
 func (s *UserService) WebphoneLogin(ctx context.Context, r *api.WebphoneLoginRequest) (*api.LoginResponse, error) {
-	phone, wlPartnerKey, err := s.ValidateWLPartnerWebphoneLoginRequest(r)
+	phone, err := s.ValidateVNPostWebphoneLoginRequest(r)
 	if err != nil {
 		return nil, err
 	}
-	// Wrap context to wl partner
-	wlPartner := wl.GetWLPartnerByKey(wlPartnerKey)
-	wlPartnerID := wlPartner.ID
-	ctx = wl.WrapContextByPartnerID(ctx, wlPartnerID)
 	cmd := &identity.RegisterSimplifyCommand{
 		Phone: phone,
 	}
@@ -64,42 +65,56 @@ func (s *UserService) WebphoneLogin(ctx context.Context, r *api.WebphoneLoginReq
 		return nil, err
 	}
 	user := query.Result
-
-	// Gán wl_partner_id vào session
-	// Các request sử dụng session này đều được tính cho wl_partner_id này
-	claim := &claims.ClaimInfo{
-		WLPartnerID: wlPartnerID,
-	}
-	resp, err := s.CreateLoginResponse(ctx, claim, "", user.ID, user, 0, account_type.Shop.Enum(), true, 0)
+	isExisted, err := s.checkIfAccountUserWithVNPostShopExist(ctx, user.ID)
 	if err != nil {
 		return nil, err
 	}
+	if !isExisted {
+		createAccountUserCmd := &identitymodelx.CreateAccountUserCommand{
+			AccountUser: &identitymodel.AccountUser{
+				AccountID: vnpostShopID,
+				UserID:    user.ID,
+				Status:    status3.P,
+				Permission: identitymodel.Permission{
+					Roles: []string{authorization.RoleSalesMan.String()},
+				},
+			},
+		}
+		if err := s.AccountUserStore.CreateAccountUser(ctx, createAccountUserCmd); err != nil {
+			return nil, err
+		}
+	}
+
+	resp, err := s.CreateLoginResponse(ctx, nil, "", user.ID, user, vnpostShopID, 0, true, 0)
+	if err != nil {
+		return nil, err
+	}
+	// Only return token of default vnpost shop (vnpostShopID)
+	resp.AvailableAccounts = nil
 	return resp, nil
 }
 
-func (s *UserService) ValidateWLPartnerWebphoneLoginRequest(r *api.WebphoneLoginRequest) (_phone, partnerKey string, err error) {
+func (s *UserService) ValidateVNPostWebphoneLoginRequest(r *api.WebphoneLoginRequest) (_phone string, err error) {
 	phone, ok := validate.NormalizePhone(r.Phone)
 	if !ok {
-		return "", "", cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
 	}
 	key := fmt.Sprintf("%v-%v", keyWebphoneRequestLogin, phone.String())
 	secretKey, err := s.RedisStore.GetString(key)
 	if err != nil && err != redis.ErrNil {
-		return "", "", cm.Errorf(cm.Internal, err, "")
+		return "", cm.Errorf(cm.Internal, err, "")
 	}
 
-	// data = phone + public_key + wl_partner_key
-	for _, partnerKey := range wlPartnerKeys {
-		data := phone.String() + string(s.WebphonePublicKey) + partnerKey
-		checkSum, err := CheckSum(data, secretKey)
-		if err != nil {
-			return "", "", err
-		}
-		if checkSum == r.Code {
-			return phone.String(), partnerKey, nil
-		}
+	// data = phone + public_key + "vnpost"
+	data := phone.String() + string(s.WebphonePublicKey) + vnpostKey
+	checkSum, err := CheckSum(data, secretKey)
+	if err != nil {
+		return "", err
 	}
-	return "", "", cm.Errorf(cm.InvalidArgument, nil, "Mã code không hợp lệ")
+	if checkSum == r.Code {
+		return phone.String(), nil
+	}
+	return "", cm.Errorf(cm.InvalidArgument, nil, "Mã code không hợp lệ")
 }
 
 func CheckSum(data, secretKey string) (string, error) {
@@ -110,4 +125,21 @@ func CheckSum(data, secretKey string) (string, error) {
 	}
 	sum := hash.Sum(nil)
 	return base64.StdEncoding.EncodeToString(sum), nil
+}
+
+func (s *UserService) checkIfAccountUserWithVNPostShopExist(ctx context.Context, userID dot.ID) (bool, error) {
+	query := &identitymodelx.GetAccountUserQuery{
+		UserID:    userID,
+		AccountID: vnpostShopID,
+	}
+	err := s.AccountUserStore.GetAccountUser(ctx, query)
+	switch cm.ErrorCode(err) {
+	case cm.NotFound:
+		return false, nil
+	case cm.NoError:
+		return true, nil
+	default:
+		return false, err
+	}
+
 }
