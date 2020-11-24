@@ -7,11 +7,9 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
-	"o.o/api/main/identity"
 	"o.o/backend/com/eventhandler/pgevent"
 	fbmessagingmodel "o.o/backend/com/fabo/main/fbmessaging/model"
 	"o.o/backend/pkg/common/mq"
-	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
@@ -78,18 +76,8 @@ func (h *Handler) HandleFbMessageEvent(ctx context.Context, event *pgevent.PgEve
 		return mq.CodeIgnore, nil
 	}
 	result.FbPageID = queryPage.Result.ID
-	queryUser := &identity.GetUsersByAccountQuery{
-		AccountID: queryPage.Result.ShopID,
-	}
-	if err := h.indentityQuery.Dispatch(ctx, queryUser); err != nil {
-		ll.Warn("user not found", l.Int64("rid", event.RID), l.ID("id", id))
-		return mq.CodeIgnore, nil
-	}
-	var userIDs []dot.ID
-	for _, user := range queryUser.Result {
-		userIDs = append(userIDs, user.UserID)
-	}
-	result.UserIDs = userIDs
+	result.ShopID = queryPage.Result.ShopID
+
 	topic := h.prefix + event.Table + "_fabo" // TODO(vu): refactor
 	d, ok := mapTopics[event.Table]
 	if !ok {

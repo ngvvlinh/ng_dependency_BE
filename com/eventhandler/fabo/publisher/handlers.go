@@ -11,53 +11,44 @@ import (
 
 func (h *Publisher) HandleFbCustomerConversationFaboEvent(ctx context.Context, event *types.FaboEvent) (mq.Code, error) {
 	title := "fabo/customer_conversation/" + strings.ToLower(event.PgEventCustomerConversation.Op)
-	for _, userID := range event.PgEventCustomerConversation.UserIDs {
-		eventCustomerConversation := eventstream.Event{
-			Type:    title,
-			UserID:  userID,
-			Payload: event.PgEventCustomerConversation.FbEventCustomerConversation,
-		}
-		h.publisher.Publish(eventCustomerConversation)
+	eventCustomerConversation := eventstream.Event{
+		Type:      title,
+		AccountID: event.PgEventCustomerConversation.ShopID,
+		Payload:   event.PgEventCustomerConversation.FbEventCustomerConversation,
 	}
+	h.publisher.Publish(eventCustomerConversation)
 	return mq.CodeOK, nil
 }
 
 func (h *Publisher) HandleFbConversationFaboEvent(ctx context.Context, event *types.FaboEvent) (mq.Code, error) {
 	title := "fabo/conversation/" + strings.ToLower(event.PgEventConversation.Op)
-	for _, userID := range event.PgEventConversation.UserIDs {
-		eventConversation := eventstream.Event{
-			Type:    title,
-			UserID:  userID,
-			Payload: event.PgEventConversation.FbEventConversation,
-		}
-		h.publisher.Publish(eventConversation)
+	eventConversation := eventstream.Event{
+		Type:      title,
+		AccountID: event.PgEventConversation.ShopID,
+		Payload:   event.PgEventConversation.FbEventConversation,
 	}
+	h.publisher.Publish(eventConversation)
 	return mq.CodeOK, nil
 }
 
 func (h *Publisher) HandleFbCommentFaboEvent(ctx context.Context, event *types.FaboEvent) (mq.Code, error) {
 	title := "fabo/comment/" + strings.ToLower(event.PgEventComment.Op)
-	for _, userID := range event.PgEventComment.UserIDs {
-		eventComment := eventstream.Event{
-			Type:    title,
-			UserID:  userID,
-			Payload: event.PgEventComment.FbEventComment,
-		}
-		h.publisher.Publish(eventComment)
+	eventComment := eventstream.Event{
+		Type:      title,
+		AccountID: event.PgEventComment.ShopID,
+		Payload:   event.PgEventComment.FbEventComment,
 	}
-
+	h.publisher.Publish(eventComment)
 	return mq.CodeOK, nil
 }
 
 func (h *Publisher) HandleFbMessageFaboEvent(ctx context.Context, event *types.FaboEvent) (mq.Code, error) {
 	title := "fabo/message/" + strings.ToLower(event.PgEventMessage.Op)
-	for _, userID := range event.PgEventMessage.UserIDs {
-		eventMessage := eventstream.Event{
-			Type:    title,
-			UserID:  userID,
-			Payload: event.PgEventMessage.FbEventMessage,
-		}
-		h.publisher.Publish(eventMessage)
+	eventMessage := eventstream.Event{
+		Type:      title,
+		AccountID: event.PgEventMessage.ShopID,
+		Payload:   event.PgEventMessage.FbEventMessage,
 	}
+	h.publisher.Publish(eventMessage)
 	return mq.CodeOK, nil
 }
