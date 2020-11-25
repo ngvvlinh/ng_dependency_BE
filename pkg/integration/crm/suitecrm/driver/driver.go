@@ -41,20 +41,24 @@ func (s SuiteCRMTicketDriver) Ping(ctx context.Context) error {
 }
 
 func (s SuiteCRMTicketDriver) CreateTicket(ctx context.Context, ticket *ticket.Ticket) (*ticket.Ticket, error) {
-	getContactQuery := &contact.GetContactByIDQuery{
-		ID:     ticket.RefID,
-		ShopID: ticket.AccountID,
-	}
-	if err := s.contactQuery.Dispatch(ctx, getContactQuery); err != nil {
-		if cm.ErrorCode(err) == cm.NotFound {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Không tìm thấy thông tin liên lạc")
+	phone := ""
+	if ticket.RefID != 0 {
+		getContactQuery := &contact.GetContactByIDQuery{
+			ID:     ticket.RefID,
+			ShopID: ticket.AccountID,
 		}
-		return nil, err
+		if err := s.contactQuery.Dispatch(ctx, getContactQuery); err != nil {
+			if cm.ErrorCode(err) == cm.NotFound {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Không tìm thấy thông tin liên lạc")
+			}
+			return nil, err
+		}
+		contact := getContactQuery.Result
+		phone = contact.Phone
 	}
-	contact := getContactQuery.Result
 
 	insertCaseReq := &suitecrmclient.InsertCaseRequest{
-		PhoneMobile: contact.Phone,
+		PhoneMobile: phone,
 		Subject:     ticket.Title,
 		Description: ticket.Description,
 		RefType:     "topship", // hardcode

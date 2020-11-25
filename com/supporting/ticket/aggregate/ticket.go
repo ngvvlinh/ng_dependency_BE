@@ -169,35 +169,17 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 			}
 			refCode = getOrderQuery.Result.Code
 		case ticket_ref_type.Contact:
-			// contact - webphone => suite crm
-			if ticketCore.Source == ticket_source.WebPhone {
-				getContactQuery := &contact.GetContactByIDQuery{
-					ID:     args.RefID,
-					ShopID: args.AccountID,
-				}
-				if err := a.ContactQuery.Dispatch(ctx, getContactQuery); err != nil {
-					if cm.ErrorCode(err) == cm.NotFound {
-						return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy liên lạc")
-					}
-					return nil, err
-				}
-
-				listConnectionQuery := &connectioning.ListConnectionsQuery{
-					Status:             status3.P.Wrap(),
-					ConnectionType:     connection_type.CRM,
-					ConnectionMethod:   connection_type.ConnectionMethodBuiltin,
-					ConnectionProvider: connection_type.ConnectionProviderSuiteCRM,
-				}
-				if err := a.ConnectionQuery.Dispatch(ctx, listConnectionQuery); err != nil {
-					return nil, err
-				}
-				connections := listConnectionQuery.Result
-
-				if len(connections) == 0 {
-					return nil, cm.Errorf(cm.InvalidArgument, nil, "connection suite crm not found")
-				}
-				connectionID = connections[0].ID
+			getContactQuery := &contact.GetContactByIDQuery{
+				ID:     args.RefID,
+				ShopID: args.AccountID,
 			}
+			if err := a.ContactQuery.Dispatch(ctx, getContactQuery); err != nil {
+				if cm.ErrorCode(err) == cm.NotFound {
+					return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy liên lạc")
+				}
+				return nil, err
+			}
+
 		default:
 			//no-op(other)
 		}
@@ -210,6 +192,14 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 		ticketCore.ConnectionID = connectionID
 	}
 
+	if ticketCore.ConnectionID == 0 {
+		connID, err := a.getTicketConnectionID(ctx, ticketCore)
+		if err != nil {
+			return nil, err
+		}
+		ticketCore.ConnectionID = connID
+	}
+
 	ticketCore, err = a.TicketManager.CreateTicket(ctx, ticketCore)
 	if err != nil {
 		return nil, err
@@ -219,6 +209,29 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 		return nil, err
 	}
 	return a.TicketStore(ctx).ID(ticketCore.ID).GetTicket()
+}
+
+func (a *TicketAggregate) getTicketConnectionID(ctx context.Context, ticket *ticket.Ticket) (connID dot.ID, _ error) {
+	// Xử lý trường hợp ticket tạo ra từ webphone
+	// webphone => suite crm
+	if ticket.Source == ticket_source.WebPhone {
+		listConnectionQuery := &connectioning.ListConnectionsQuery{
+			Status:             status3.P.Wrap(),
+			ConnectionType:     connection_type.CRM,
+			ConnectionMethod:   connection_type.ConnectionMethodBuiltin,
+			ConnectionProvider: connection_type.ConnectionProviderSuiteCRM,
+		}
+		if err := a.ConnectionQuery.Dispatch(ctx, listConnectionQuery); err != nil {
+			return 0, err
+		}
+		connections := listConnectionQuery.Result
+
+		if len(connections) == 0 {
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "connection suite crm not found")
+		}
+		connID = connections[0].ID
+	}
+	return
 }
 
 func (a *TicketAggregate) UpdateTicketInfo(ctx context.Context, args *ticket.UpdateTicketInfoArgs) (*ticket.Ticket, error) {

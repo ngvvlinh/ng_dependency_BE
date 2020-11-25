@@ -10,7 +10,7 @@ import (
 	"o.o/api/supporting/ticket"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/status3"
-	"o.o/api/top/types/etc/ticket/ticket_ref_type"
+	"o.o/api/top/types/etc/ticket/ticket_source"
 	connectionmanager "o.o/backend/com/main/connectioning/manager"
 	carriertypes "o.o/backend/com/supporting/ticket/provider/types"
 	cm "o.o/backend/pkg/common"
@@ -79,12 +79,8 @@ func (m *TicketManager) GetTicketDriver(ctx context.Context, connectionID dot.ID
 }
 
 func (m *TicketManager) CreateTicket(ctx context.Context, ticketCore *ticket.Ticket) (_ *ticket.Ticket, err error) {
-	if ticketCore.RefID == 0 {
-		return ticketCore, nil
-	}
-
-	switch ticketCore.RefType {
-	case ticket_ref_type.Contact:
+	switch ticketCore.Source {
+	case ticket_source.WebPhone:
 		if ticketCore.ConnectionID == 0 {
 			return nil, cm.Error(cm.InvalidArgument, "connection_id must not be null", nil)
 		}
