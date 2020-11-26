@@ -5,6 +5,7 @@ import (
 	"time"
 
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/cmenv"
 	ghnclient "o.o/backend/pkg/integration/shipping/ghn/clientv2"
 	"o.o/backend/pkg/integration/shipping/ghn/driverv2"
 	"o.o/capi/dot"
@@ -30,6 +31,7 @@ type PromotionCoupon struct {
 	Date        filter.Date
 	Location    PromotionCouponLocation
 	Description string
+	Env         cmenv.EnvType
 }
 
 type PromotionCouponLocation struct {
@@ -50,12 +52,17 @@ var promotionCoupons = []PromotionCoupon{
 			},
 		},
 		Description: "Tất cả các KH đều áp dụng khi tạo đơn qua faboshop và chỉ áp dung cho đơn hàng từ HCM. Thời gian chạy: 24 - hết ngày 29/11 (6 ngày).",
+		Env:         cmenv.EnvProd,
 	},
 }
 
 func (f *FaboSupportedGHNDriver) GetPromotionCoupon(args *driverv2.GetPromotionCouponArgs) (string, error) {
 	current := args.CurrentTime
+	currentEnv := cmenv.Env()
 	for _, c := range promotionCoupons {
+		if c.Env != currentEnv {
+			continue
+		}
 		if c.Date.From.ToTime().After(current) ||
 			c.Date.To.ToTime().Before(current) {
 			return "", cm.Errorf(cm.FailedPrecondition, nil, "Đơn không thuộc khoản thời gian áp dụng coupon")
