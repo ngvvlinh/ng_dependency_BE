@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/main/identity"
 	"o.o/api/top/int/integration"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_type"
@@ -53,6 +54,7 @@ type IntegrationService struct {
 	AccountUserStore sqlstore.AccountUserStoreInterface
 	PartnerStore     sqlstore.PartnerStoreInterface
 	ShopStore        sqlstore.ShopStoreInterface
+	IdentityAggr     identity.CommandBus
 }
 
 func (s *IntegrationService) Clone() integration.IntegrationService {
@@ -867,6 +869,13 @@ func (s *IntegrationService) GrantAccess(ctx context.Context, r *integration.Gra
 	default:
 		return nil, err
 	}
+
+	// set shop IsPriorMoneyTransaction = true
+	updateShop := &identity.UpdateShopInfoCommand{
+		ShopID:                  r.ShopId,
+		IsPriorMoneyTransaction: dot.Bool(true),
+	}
+	_ = s.IdentityAggr.Dispatch(ctx, updateShop)
 
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{

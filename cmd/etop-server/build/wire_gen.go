@@ -928,6 +928,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		AccountUserStore: accountUserStoreInterface,
 		PartnerStore:     partnerStoreInterface,
 		ShopStore:        shopStoreInterface,
+		IdentityAggr:     commandBus,
 	}
 	integrationServers, cleanup3 := integration.NewIntegrationServer(store, integrationMiscService, integrationService)
 	affiliateMiscService := affiliate.MiscService{}
