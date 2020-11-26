@@ -47,6 +47,7 @@ func (m *SAdminResetPasswordRequest) Censor() {
 
 type SAdminRegisterWebhookRequest struct {
 	CallbackURL string                   `json:"callback_url"`
+	Options     map[string]string        `json:"options"`
 	Type        webhook_type.WebhookType `json:"type"`
 }
 

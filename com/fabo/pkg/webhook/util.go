@@ -204,8 +204,27 @@ func convertModelCommentToCreateCommentArgs(pageId string, postID string, create
 	return res
 }
 
+type CallbackOptions struct {
+	UserID string // when object == user
+	PageID string // when object == page
+	Object string // user or page
+}
+
+func convertCallbackOptions(options map[string]string) (res CallbackOptions) {
+	if userID, ok := options["user_id"]; ok {
+		res.UserID = userID
+	}
+	if pageID, ok := options["page_id"]; ok {
+		res.PageID = pageID
+	}
+	if object, ok := options["object"]; ok {
+		res.Object = object
+	}
+	return
+}
+
 func (wh *Webhook) forwardWebhook(c *httpx.Context, message WebhookMessages) {
-	callbackURLs, err := wh.webhookCallbackService.GetWebhookCallbackURLs(webhook_type.Fabo.String())
+	callbacks, err := wh.webhookCallbackService.GetWebhookCallbacks(webhook_type.Fabo.String())
 	if err != nil {
 		return
 	}
@@ -213,9 +232,24 @@ func (wh *Webhook) forwardWebhook(c *httpx.Context, message WebhookMessages) {
 	client := http.Client{
 		Timeout: 60 * time.Second,
 	}
-	for _, callbackURL := range callbackURLs {
-		callbackURL, header := callbackURL, c.Req.Header // closure
-		go func() (_err error) {                         // ignore the error
+	for _, callback := range callbacks {
+		callbackURL, header := callback.URL, c.Req.Header // closure
+		callbackOptions := convertCallbackOptions(callback.Options)
+
+		// filter message by options
+		if callbackOptions.Object != "" && message.Object != callbackOptions.Object {
+			continue
+		}
+		if callbackOptions.Object == "user" && callbackOptions.UserID != "" &&
+			len(message.Entry) != 0 && message.Entry[0].ID != callbackOptions.UserID {
+			continue
+		}
+		if callbackOptions.Object == "page" && callbackOptions.PageID != "" &&
+			len(message.Entry) != 0 && message.Entry[0].ID != callbackOptions.PageID {
+			continue
+		}
+
+		go func() (_err error) { // ignore the error
 			defer func() {
 				wh.mu.RLock()
 				latestTimeError, ok := wh.mapCallbackURLAndLatestTimeError[callbackURL]

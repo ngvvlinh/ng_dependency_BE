@@ -3,7 +3,6 @@ package sadmin
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"o.o/api/top/int/sadmin"
 	"o.o/api/top/types/common"
@@ -15,8 +14,8 @@ import (
 
 const (
 	PrefixWebhookCallbackURL = "WebhookCallbackURL"
+	Version                  = "v1.0"
 	OneDay                   = 24 * 60 * 60
-	Separator                = ","
 )
 
 var ll = l.New()
@@ -41,13 +40,21 @@ func (s *WebhookService) Clone() sadmin.WebhookService {
 	return &res
 }
 
+type Callback struct {
+	URL     string            `json:"url"`
+	Options map[string]string `json:"options"`
+}
+
 func (s *WebhookService) RegisterWebhook(
 	ctx context.Context, request *sadmin.SAdminRegisterWebhookRequest,
 ) (*common.Empty, error) {
 	if request.CallbackURL == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "callback must not be empty")
 	}
-	if err := s.WebhookCallbackService.AddWebhookCallbackURL(request.Type.String(), request.CallbackURL); err != nil {
+	if err := s.WebhookCallbackService.AddWebhookCallback(request.Type.String(), Callback{
+		URL:     request.CallbackURL,
+		Options: request.Options,
+	}); err != nil {
 		return nil, err
 	}
 	ll.SendMessagef("[sadmin] Webhook registered type: %s, callback_url: %s", request.Type.String(), request.CallbackURL)
@@ -74,28 +81,28 @@ func (s *WebhookService) UnregisterWebhook(
 }
 
 func WebhookCallbackKey(webhookType string) string {
-	return fmt.Sprintf("%v-%v", PrefixWebhookCallbackURL, webhookType)
+	return fmt.Sprintf("%v-%v-%v", PrefixWebhookCallbackURL, Version, webhookType)
 }
 
-func (s *WebhookCallbackService) AddWebhookCallbackURL(webhookType, newCallbackURL string) error {
-	callbackURLs, err := s.GetWebhookCallbackURLs(webhookType)
+func (s *WebhookCallbackService) AddWebhookCallback(webhookType string, newCallback Callback) error {
+	callbackURLs, err := s.GetWebhookCallbacks(webhookType)
 	if err != nil {
 		return err
 	}
 
 	var isExist bool
 	for _, callbackURL := range callbackURLs {
-		if newCallbackURL == callbackURL {
+		if newCallback.URL == callbackURL.URL {
 			isExist = true
 			break
 		}
 	}
 
 	if !isExist {
-		callbackURLs = append(callbackURLs, newCallbackURL)
+		callbackURLs = append(callbackURLs, newCallback)
 	}
 
-	return s.SetWebhookCallbackURLs(webhookType, callbackURLs)
+	return s.SetWebhookCallbacks(webhookType, callbackURLs)
 }
 
 func (s *WebhookCallbackService) RemoveAllWebhookCallbackURLs(webhookType string) error {
@@ -109,40 +116,37 @@ func (s *WebhookCallbackService) RemoveAllWebhookCallbackURLs(webhookType string
 }
 
 func (s *WebhookCallbackService) RemoveWebhookCallbackURL(webhookType, oldCallbackURL string) error {
-	callbackURLs, err := s.GetWebhookCallbackURLs(webhookType)
+	callbacks, err := s.GetWebhookCallbacks(webhookType)
 	if err != nil {
 		return err
 	}
 
-	var newCallbackURLs []string
-	for _, callbackURL := range callbackURLs {
-		if oldCallbackURL != callbackURL {
-			newCallbackURLs = append(newCallbackURLs, callbackURL)
+	var newCallbacks []Callback
+	for _, callback := range callbacks {
+		if oldCallbackURL != callback.URL {
+			newCallbacks = append(newCallbacks, callback)
 		}
 	}
 
-	return s.SetWebhookCallbackURLs(webhookType, newCallbackURLs)
+	return s.SetWebhookCallbacks(webhookType, newCallbacks)
 }
 
-func (s *WebhookCallbackService) GetWebhookCallbackURLs(webhookType string) ([]string, error) {
+func (s *WebhookCallbackService) GetWebhookCallbacks(webhookType string) (callbacks []Callback, _ error) {
 	key := WebhookCallbackKey(webhookType)
-	callbackURLsJoined, err := s.rd.GetString(key)
+	err := s.rd.Get(key, &callbacks)
 	switch err {
 	case redis.ErrNil:
 		return nil, nil
 	case nil:
-		if callbackURLsJoined == "" {
-			return nil, nil
-		}
-		return strings.Split(callbackURLsJoined, Separator), nil
+		return callbacks, nil
 	default:
 		return nil, err
 	}
 }
 
-func (s *WebhookCallbackService) SetWebhookCallbackURLs(webhookType string, callbackURLs []string) error {
+func (s *WebhookCallbackService) SetWebhookCallbacks(webhookType string, callbacks []Callback) error {
 	key := WebhookCallbackKey(webhookType)
-	if err := s.rd.SetStringWithTTL(key, strings.Join(callbackURLs, Separator), OneDay); err != nil {
+	if err := s.rd.SetWithTTL(key, callbacks, OneDay); err != nil {
 		return err
 	}
 	return nil
