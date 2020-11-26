@@ -30,7 +30,7 @@ func (s *NotificationService) CreateDevice(ctx context.Context, q *etop.CreateDe
 		DeviceName:       q.DeviceName,
 		ExternalDeviceID: q.ExternalDeviceId,
 	}
-	device, err := s.DeviceStore.CreateDevice(cmd)
+	device, err := s.DeviceStore.CreateDevice(ctx, cmd)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package sqlstore
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -20,6 +21,8 @@ type DeviceStore struct {
 
 type M map[string]interface{}
 
+const MaxDeviceHasSameDeviceIDOrExternalDeviceID = 1
+
 func NewDeviceStore(db com.NotifierDB) *DeviceStore {
 	model.SQLVerifySchema(db)
 	return &DeviceStore{
@@ -27,7 +30,7 @@ func NewDeviceStore(db com.NotifierDB) *DeviceStore {
 	}
 }
 
-func (s *DeviceStore) CreateDevice(args *model.CreateDeviceArgs) (*model.Device, error) {
+func (s *DeviceStore) CreateDevice(ctx context.Context, args *model.CreateDeviceArgs) (*model.Device, error) {
 	if args.UserID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing User ID")
 	}
@@ -43,52 +46,90 @@ func (s *DeviceStore) CreateDevice(args *model.CreateDeviceArgs) (*model.Device,
 		externalServiceID = model.ExternalServiceOneSignalID
 	}
 
-	var dbDevice = new(model.Device)
-	ok, err := s.db.Table("device").Where("external_device_id = ? AND user_id = ? AND external_service_id = ?", args.ExternalDeviceID, args.UserID, externalServiceID).Get(dbDevice)
+	var dbDevices model.Devices
+	query := s.db.Table("device").Where("user_id = ? AND external_service_id = ?", args.UserID, externalServiceID)
+	if args.DeviceID != "" {
+		query = query.Where("device_id = ? OR external_device_id = ?", args.DeviceID, args.ExternalDeviceID)
+	} else {
+		query = query.Where("external_device_id = ?", args.ExternalDeviceID)
+	}
+	query = query.OrderBy("created_at DESC")
+	if err := query.Find(&dbDevices); err != nil {
+		return nil, err
+	}
+
+	var id dot.ID
+	err := s.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		var dbDevice *model.Device
+		if len(dbDevices) >= MaxDeviceHasSameDeviceIDOrExternalDeviceID {
+			// Mỗi user chỉ giữ lại 1 device với device_id hoặc external_device_id
+			dbDevice = dbDevices[0]
+			deviceIDs := []dot.ID{}
+			for _, device := range dbDevices {
+				deviceIDs = append(deviceIDs, device.ID)
+			}
+			deleteDeviceIDs := deviceIDs[1:]
+			if len(deleteDeviceIDs) > 0 {
+				if err := tx.Table("device").In("id", deleteDeviceIDs).ShouldDelete(&model.Device{}); err != nil {
+					return err
+				}
+			}
+		}
+
+		device := &model.Device{
+			AccountID:         args.AccountID,
+			UserID:            args.UserID,
+			DeviceName:        args.DeviceName,
+			DeviceID:          args.DeviceID,
+			ExternalDeviceID:  args.ExternalDeviceID,
+			ExternalServiceID: externalServiceID,
+		}
+		defaultConfig := &model.DeviceConfig{
+			SubcribeAllShop: true,
+			Mute:            false,
+		}
+		if dbDevice != nil && dbDevice.ID != 0 {
+			if !dbDevice.DeactivatedAt.IsZero() {
+				if err := s.activeDevice(tx, dbDevice.ID); err != nil {
+					return err
+				}
+			}
+			// update it
+			if err := tx.Table("device").Where("id = ?", dbDevice.ID).ShouldUpdate(device); err != nil {
+				return err
+			}
+		} else {
+			// create new device and make sure only one external_device_id is actived at a time
+			if err := s.deactiveAllDeviceHasExternalID(tx, args.ExternalDeviceID); err != nil {
+				return err
+			}
+			id = cm.NewID()
+			device.ID = id
+			device.Config = defaultConfig
+			if err := tx.Table("device").ShouldInsert(device); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
-	device := &model.Device{
-		AccountID:         args.AccountID,
-		UserID:            args.UserID,
-		DeviceName:        args.DeviceName,
-		DeviceID:          args.DeviceID,
-		ExternalDeviceID:  args.ExternalDeviceID,
-		ExternalServiceID: externalServiceID,
-	}
-	defaultConfig := &model.DeviceConfig{
-		SubcribeAllShop: true,
-		Mute:            false,
-	}
-	var id dot.ID
-	if ok && dbDevice.ID != 0 {
-		if !dbDevice.DeactivatedAt.IsZero() {
-			// active this device
-			if err := s.db.Table("device").Where("id = ?", dbDevice.ID).ShouldUpdateMap(M{"deactivated_at": nil}); err != nil {
-				return nil, err
-			}
-		}
-		// update it
-		if err := s.db.Table("device").Where("id = ?", dbDevice.ID).ShouldUpdate(device); err != nil {
-			return nil, err
-		}
-	} else {
-		// create new device and make sure only one external_device_id is actived at a time
-		if _, err := s.db.Table("device").Where("external_device_id = ? AND deactivated_at IS NULL", args.ExternalDeviceID).UpdateMap(M{"deactivated_at": time.Now()}); err != nil {
-			return nil, err
-		}
-		id = cm.NewID()
-		device.ID = id
-		device.Config = defaultConfig
-		if err := s.db.Table("device").ShouldInsert(device); err != nil {
-			return nil, err
-		}
-	}
+
 	res, err := s.GetDevice(&model.GetDeviceArgs{
 		UserID:           args.UserID,
-		ExternalDeviceID: device.ExternalDeviceID,
+		ExternalDeviceID: args.ExternalDeviceID,
 	})
 	return res, err
+}
+
+func (s *DeviceStore) deactiveAllDeviceHasExternalID(tx cmsql.QueryInterface, externalDeviceID string) error {
+	_, err := tx.Table("device").Where("external_device_id = ? AND deactivated_at IS NULL", externalDeviceID).UpdateMap(M{"deactivated_at": time.Now()})
+	return err
+}
+
+func (s *DeviceStore) activeDevice(tx cmsql.QueryInterface, deviceID dot.ID) error {
+	return tx.Table("device").Where("id = ?", deviceID).ShouldUpdateMap(M{"deactivated_at": nil})
 }
 
 func (s *DeviceStore) UpdateDevice(args *model.UpdateDeviceArgs) (*model.Device, error) {
