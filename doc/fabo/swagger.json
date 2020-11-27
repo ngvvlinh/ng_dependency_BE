@@ -1342,6 +1342,10 @@
           "type": "string",
           "format": "date-time"
         },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
         "external_attachment": {
           "$ref": "#/definitions/cvCommentAttachment"
         },
@@ -1404,6 +1408,10 @@
         "created_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
         },
         "external_attachments": {
           "type": "array",

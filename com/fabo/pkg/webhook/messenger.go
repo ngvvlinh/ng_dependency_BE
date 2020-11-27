@@ -13,6 +13,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/redis"
+	"o.o/capi/dot"
 	"o.o/common/xerrors"
 )
 
@@ -242,8 +243,10 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	}
 	oldFbExternalMessage := getOldFbExternalMessageQuery.Result
 	internalSource := fb_internal_source.Facebook
+	var createdBy dot.ID
 	if oldFbExternalMessage != nil {
 		internalSource = oldFbExternalMessage.InternalSource
+		createdBy = oldFbExternalMessage.CreatedBy
 	}
 
 	// Create new message
@@ -295,6 +298,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 				ExternalCreatedTime:    messageResp.CreatedTime.ToTime(),
 				ExternalTimestamp:      externalTimestamp,
 				InternalSource:         internalSource,
+				CreatedBy:              createdBy,
 			},
 		},
 	}); err != nil {

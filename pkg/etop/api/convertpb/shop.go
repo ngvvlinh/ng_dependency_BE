@@ -175,6 +175,7 @@ func PbCustomer(m *customering.ShopCustomer) *apishop.Customer {
 		Birthday:  m.Birthday,
 		CreatedAt: cmapi.PbTime(m.CreatedAt),
 		UpdatedAt: cmapi.PbTime(m.UpdatedAt),
+		Deleted:   m.Deleted,
 		Status:    m.Status,
 	}
 }

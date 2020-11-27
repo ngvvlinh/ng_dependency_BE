@@ -366,6 +366,7 @@ type FbExternalMessage struct {
 	ExternalFrom           *FbObjectFrom          `json:"external_from"`
 	ExternalAttachments    []*FbMessageAttachment `json:"external_attachments"`
 	ExternalCreatedTime    time.Time              `json:"external_created_time"`
+	CreatedBy              dot.ID                 `json:"created_by"`
 	CreatedAt              time.Time              `json:"created_at"`
 	UpdatedAt              time.Time              `json:"updated_at"`
 }
@@ -475,6 +476,7 @@ type FbExternalComment struct {
 	IsLiked              bool               `json:"is_liked"`
 	IsHidden             bool               `json:"is_hidden"`
 	IsPrivateReplied     bool               `json:"is_private_replied"`
+	CreatedBy            dot.ID             `json:"created_by"`
 	CreatedAt            time.Time          `json:"created_at"`
 	UpdatedAt            time.Time          `json:"updated_at"`
 }

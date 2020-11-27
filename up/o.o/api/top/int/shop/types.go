@@ -1607,6 +1607,7 @@ type Customer struct {
 	CreatedAt dot.Time                   `json:"created_at"`
 	UpdatedAt dot.Time                   `json:"updated_at"`
 	Status    status3.Status             `json:"status"`
+	Deleted   bool                       `json:"deleted"`
 	GroupIds  []dot.ID                   `json:"group_ids"`
 	Liability *CustomerLiability         `json:"liability"`
 }

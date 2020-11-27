@@ -29,6 +29,7 @@ func PbFbExternalComment(fbcomment *fbmessaging.FbExternalComment, fbParentComme
 		IsLiked:              dot.Bool(fbcomment.IsLiked),
 		IsHidden:             dot.Bool(fbcomment.IsHidden),
 		IsPrivateReplied:     dot.Bool(fbcomment.IsPrivateReplied),
+		CreatedBy:            fbcomment.CreatedBy.Wrap(),
 		CreatedAt:            dot.Time(fbcomment.CreatedAt),
 		UpdatedAt:            dot.Time(fbcomment.UpdatedAt),
 	}
@@ -323,6 +324,7 @@ func PbFbExternalMessage(fbmessage *fbmessaging.FbExternalMessage) *exttypes.FbE
 		ExternalFrom:           PbFbExternalFrom(fbmessage.ExternalFrom),
 		ExternalAttachments:    PbFbMessageAttachments(fbmessage.ExternalAttachments),
 		ExternalCreatedTime:    fbmessage.ExternalCreatedTime,
+		CreatedBy:              fbmessage.CreatedBy.Wrap(),
 		CreatedAt:              fbmessage.CreatedAt,
 		UpdatedAt:              fbmessage.UpdatedAt,
 	}

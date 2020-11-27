@@ -60,6 +60,7 @@ func PbFbExternalMessage(m *fbmessaging.FbExternalMessage) *fabo.FbExternalMessa
 		ExternalFrom:           PbFbObjectFrom(m.ExternalFrom),
 		ExternalAttachments:    PbFbMessageAttachments(m.ExternalAttachments),
 		ExternalCreatedTime:    m.ExternalCreatedTime,
+		CreatedBy:              m.CreatedBy,
 		CreatedAt:              m.CreatedAt,
 		UpdatedAt:              m.UpdatedAt,
 	}
@@ -279,6 +280,7 @@ func PbFbExternalComment(m *fbmessaging.FbExternalComment) *fabo.FbExternalComme
 		IsLiked:              m.IsLiked,
 		IsHidden:             m.IsHidden,
 		IsPrivateReplied:     m.IsPrivateReplied,
+		CreatedBy:            m.CreatedBy,
 		CreatedAt:            m.CreatedAt,
 		UpdatedAt:            m.UpdatedAt,
 	}
