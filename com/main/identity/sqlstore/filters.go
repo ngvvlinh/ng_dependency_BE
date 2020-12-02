@@ -17,6 +17,10 @@ func (ft ShopFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
+func (ft *AccountUserFilters) NotDeleted() sq.WriterTo {
+	return ft.Filter("$.deleted_at IS NULL")
+}
+
 var filterShopExtendedWhitelist = sqlstore.FilterWhitelist{
 	Arrays:   nil,
 	Bools:    nil,

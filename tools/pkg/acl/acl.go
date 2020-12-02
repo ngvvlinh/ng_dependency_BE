@@ -224,6 +224,11 @@ const (
 	ShopPaymentCreate permission.ActionType = "shop/payment:create"
 	ShopPaymentView   permission.ActionType = "shop/payment:view"
 
+	// extension etelecom
+	ShopExtensionCreate permission.ActionType = "shop/extension:create"
+	ShopExtensionDelete permission.ActionType = "shop/extension:delete"
+	ShopExtensionView   permission.ActionType = "shop/extension:view"
+
 	WsWebsiteCreate permission.ActionType = "shop/webserver/wswebsite:create"
 	WsWebsiteUpdate permission.ActionType = "shop/webserver/wswebsite:update"
 	WsWebsiteView   permission.ActionType = "shop/webserver/wswebsite:view"
@@ -1265,6 +1270,10 @@ var _acl = map[string]*permission.Decl{
 	"shop.WebServer/GetWsPage":       {Type: Shop, Actions: actions(WsPageView)},
 	"shop.WebServer/GetWsPages":      {Type: Shop, Actions: actions(WsPageView)},
 	"shop.WebServer/GetWsPagesByIDs": {Type: Shop, Actions: actions(WsPageView)},
+
+	// Etelecom
+	"shop.Etelecom/CreateExtension": {Type: Shop, Actions: actions(ShopExtensionCreate)},
+	"shop.Etelecom/GetExtensions":   {Type: Shop, Actions: actions(ShopExtensionView)},
 
 	// -- Fabo --
 	"fabo.Page/ConnectPages":                                 {Type: Shop, Actions: actions(FbFanpageCreate)},

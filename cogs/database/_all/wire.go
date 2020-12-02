@@ -7,6 +7,6 @@ import (
 )
 
 var WireSet = wire.NewSet(
-	wire.FieldsOf(new(Databases), "main", "log", "notifier", "affiliate", "webserver"),
+	wire.FieldsOf(new(Databases), "main", "log", "notifier", "affiliate", "webserver", "etelecom"),
 	BuildDatabases,
 )

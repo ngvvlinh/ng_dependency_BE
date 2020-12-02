@@ -10,6 +10,7 @@ type LogDB *cmsql.Database
 type NotifierDB *cmsql.Database
 type AffiliateDB *cmsql.Database
 type WebhookDB *cmsql.Database
+type EtelecomDB *cmsql.Database
 
 func BuildDatabaseMain(c cc.Databases) (MainDB, error) {
 	cfg, err := c.Get("postgres")
@@ -45,6 +46,14 @@ func BuildDatabaseNotifier(c cc.Databases) (NotifierDB, error) {
 
 func BuildDatabaseAffiliateDB(c cc.Databases) (AffiliateDB, error) {
 	cfg, err := c.Get("postgres_affiliate")
+	if err != nil {
+		return nil, err
+	}
+	return cmsql.Connect(cfg)
+}
+
+func BuildDatabaseEtelecomDB(c cc.Databases) (EtelecomDB, error) {
+	cfg, err := c.Get("postgres_etelecom")
 	if err != nil {
 		return nil, err
 	}

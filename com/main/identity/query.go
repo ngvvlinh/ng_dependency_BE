@@ -299,3 +299,7 @@ func (q *QueryService) ListUsersByIDsAndNameNorm(ctx context.Context, args *iden
 	}
 	return query.ListUsers()
 }
+
+func (q *QueryService) GetAccountUser(ctx context.Context, userID, accountID dot.ID) (*identity.AccountUser, error) {
+	return q.accountUserStore(ctx).ByUserID(userID).ByAccountID(accountID).GetAccountUser()
+}

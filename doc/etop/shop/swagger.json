@@ -1827,6 +1827,60 @@
         }
       }
     },
+    "/api/shop.Etelecom/CreateExtension": {
+      "post": {
+        "tags": [
+          "Extension"
+        ],
+        "summary": "CreateExtension",
+        "operationId": "shop.Etelecom-CreateExtension",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateExtensionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paExtension"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Etelecom/GetExtensions": {
+      "post": {
+        "tags": [
+          "Extension"
+        ],
+        "summary": "GetExtensions",
+        "operationId": "shop.Etelecom-GetExtensions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetExtensionResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Export/GetExports": {
       "post": {
         "tags": [
@@ -8595,6 +8649,20 @@
         }
       }
     },
+    "paCreateExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "description": "user_id: nhân viên của shop, người được gán vào extension\n",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "paCreateFulfillmentFromImportArgs": {
       "type": "object",
       "properties": {
@@ -9789,6 +9857,38 @@
         }
       }
     },
+    "paExtension": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extension_number": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "paExternalAccountAhamove": {
       "type": "object",
       "properties": {
@@ -10177,6 +10277,17 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/paExportItem"
+          }
+        }
+      }
+    },
+    "paGetExtensionResponse": {
+      "type": "object",
+      "properties": {
+        "extensions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paExtension"
           }
         }
       }
@@ -17108,6 +17219,9 @@
     },
     {
       "name": "Export"
+    },
+    {
+      "name": "Extension"
     },
     {
       "name": "Fulfillment"

@@ -451,3 +451,9 @@ type ContactService interface {
 	UpdateContact(context.Context, *UpdateContactRequest) (*Contact, error)
 	DeleteContact(context.Context, *DeleteContactRequest) (*DeleteContactResponse, error)
 }
+
+// +apix:path=/shop.Etelecom
+type ExtensionService interface {
+	GetExtensions(context.Context, *cm.Empty) (*GetExtensionResponse, error)
+	CreateExtension(context.Context, *CreateExtensionRequest) (*Extension, error)
+}

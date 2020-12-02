@@ -17,6 +17,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/contact"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
+	"o.o/backend/pkg/etop/api/shop/etelecom"
 	"o.o/backend/pkg/etop/api/shop/export"
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
@@ -80,4 +81,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(ticket.TicketService), "*"),
 	wire.Struct(new(accountshipnow.AccountShipnowService), "*"),
 	wire.Struct(new(contact.ContactService), "*"),
+	wire.Struct(new(etelecom.ExtensionService), "*"),
 )

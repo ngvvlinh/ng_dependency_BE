@@ -2981,3 +2981,33 @@ type DeleteContactRequest struct {
 }
 
 func (m *DeleteContactRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type Extension struct {
+	ID              dot.ID    `json:"id"`
+	UserID          dot.ID    `json:"user_id"`
+	AccountID       dot.ID    `json:"account_id"`
+	ExtensionNumber string    `json:"extension_number"`
+	ConnectionID    dot.ID    `json:"connection_id"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
+func (m *Extension) String() string { return jsonx.MustMarshalToString(m) }
+
+type ExtensionExternalData struct {
+	ID dot.ID `json:"id"`
+}
+
+type GetExtensionResponse struct {
+	Extensions []*Extension `json:"extensions"`
+}
+
+func (m *GetExtensionResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateExtensionRequest struct {
+	// user_id: nhân viên của shop, người được gán vào extension
+	UserID       dot.ID `json:"user_id"`
+	ConnectionID dot.ID `json:"connection_id"`
+}
+
+func (m *CreateExtensionRequest) String() string { return jsonx.MustMarshalToString(m) }

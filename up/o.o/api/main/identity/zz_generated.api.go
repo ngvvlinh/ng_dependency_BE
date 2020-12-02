@@ -244,6 +244,18 @@ func (h QueryServiceHandler) HandleGetAccountByID(ctx context.Context, msg *GetA
 	return err
 }
 
+type GetAccountUserQuery struct {
+	UserID    dot.ID
+	AccountID dot.ID
+
+	Result *AccountUser `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAccountUser(ctx context.Context, msg *GetAccountUserQuery) (err error) {
+	msg.Result, err = h.inner.GetAccountUser(msg.GetArgs(ctx))
+	return err
+}
+
 type GetAffiliateByIDQuery struct {
 	ID dot.ID
 
@@ -512,6 +524,7 @@ func (q *UpdateUserReferenceSaleIDCommand) command()  {}
 func (q *UpdateUserReferenceUserIDCommand) command()  {}
 
 func (q *GetAccountByIDQuery) query()             {}
+func (q *GetAccountUserQuery) query()             {}
 func (q *GetAffiliateByIDQuery) query()           {}
 func (q *GetAffiliateWithPermissionQuery) query() {}
 func (q *GetAffiliatesByIDsQuery) query()         {}
@@ -755,6 +768,12 @@ func (q *UpdateUserReferenceUserIDCommand) SetUpdateUserReferenceUserIDArgs(args
 func (q *GetAccountByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
+}
+
+func (q *GetAccountUserQuery) GetArgs(ctx context.Context) (_ context.Context, UserID dot.ID, AccountID dot.ID) {
+	return ctx,
+		q.UserID,
+		q.AccountID
 }
 
 func (q *GetAffiliateByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
@@ -1025,6 +1044,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetAccountByID)
+	b.AddHandler(h.HandleGetAccountUser)
 	b.AddHandler(h.HandleGetAffiliateByID)
 	b.AddHandler(h.HandleGetAffiliateWithPermission)
 	b.AddHandler(h.HandleGetAffiliatesByIDs)

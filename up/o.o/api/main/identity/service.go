@@ -109,6 +109,8 @@ type QueryService interface {
 	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
 
 	ListUsersByIDsAndNameNorm(context.Context, *ListUsersByIDsAndNameNormArgs) ([]*User, error)
+
+	GetAccountUser(ctx context.Context, UserID, AccountID dot.ID) (*AccountUser, error)
 }
 
 type Account struct {

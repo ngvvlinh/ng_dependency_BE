@@ -13,6 +13,7 @@ type Config struct {
 	PostgresLogs      cc.Postgres `yaml:"postgres_logs"`
 	PostgresNotifier  cc.Postgres `yaml:"postgres_notifier"`
 	PostgresAffiliate cc.Postgres `yaml:"postgres_affiliate"`
+	PostgresEtelecom  cc.Postgres `yaml:"postgres_etelecom"`
 }
 
 func DefaultConfig() Config {
@@ -22,12 +23,14 @@ func DefaultConfig() Config {
 		PostgresLogs:      cc.DefaultPostgres(),
 		PostgresNotifier:  cc.DefaultPostgres(),
 		PostgresWebServer: cc.DefaultPostgres(),
+		PostgresEtelecom:  cc.DefaultPostgres(),
 	}
 	cfg.Postgres.Database = "etop_dev"
 	cfg.PostgresAffiliate.Database = "etop_dev"
 	cfg.PostgresNotifier.Database = "etop_dev"
 	cfg.PostgresWebServer.Database = "etop_dev"
 	cfg.PostgresLogs.Database = "etop_dev"
+	cfg.PostgresEtelecom.Database = "etop_dev"
 	return cfg
 }
 
@@ -37,6 +40,7 @@ func (cfg *Config) MustLoadEnv() {
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
 	cc.PostgresMustLoadEnv(&cfg.PostgresAffiliate, "ET_POSTGRES_AFFILIATE")
 	cc.PostgresMustLoadEnv(&cfg.PostgresWebServer, "ET_POSTGRES_WEB_SERVER")
+	cc.PostgresMustLoadEnv(&cfg.PostgresEtelecom, "ET_POSTGRES_ETELECOM")
 }
 
 type Databases struct {
@@ -45,6 +49,7 @@ type Databases struct {
 	Notifier  com.NotifierDB
 	Affiliate com.AffiliateDB
 	WebServer web.WebServerDB
+	Etelecom  com.EtelecomDB
 }
 
 func BuildDatabases(cfg Config) (dbs Databases, err error) {
@@ -65,6 +70,10 @@ func BuildDatabases(cfg Config) (dbs Databases, err error) {
 		return dbs, err
 	}
 	dbs.WebServer, err = cmsql.Connect(cfg.PostgresWebServer)
+	if err != nil {
+		return dbs, err
+	}
+	dbs.Etelecom, err = cmsql.Connect(cfg.PostgresEtelecom)
 	if err != nil {
 		return dbs, err
 	}

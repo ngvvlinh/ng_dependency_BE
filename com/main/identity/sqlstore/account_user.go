@@ -30,6 +30,8 @@ type AccountUserStore struct {
 	query cmsql.QueryFactory
 	preds []interface{}
 	ft    AccountUserFilters
+
+	includeDeleted sqlstore.IncludeDeleted
 }
 
 func (s *AccountUserStore) ByAccountID(id dot.ID) *AccountUserStore {
@@ -49,8 +51,20 @@ func (s *AccountUserStore) ByUserID(id dot.ID) *AccountUserStore {
 
 func (s *AccountUserStore) GetAccountUserDB() (*identitymodel.AccountUser, error) {
 	var acc identitymodel.AccountUser
-	err := s.query().Where(s.preds).ShouldGet(&acc)
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	err := query.ShouldGet(&acc)
 	return &acc, err
+}
+
+func (s *AccountUserStore) GetAccountUser() (*identity.AccountUser, error) {
+	accountUsersDB, err := s.GetAccountUserDB()
+	if err != nil {
+		return nil, err
+	}
+	var res *identity.AccountUser
+	res = convert.Convert_identitymodel_AccountUser_identity_AccountUser(accountUsersDB, res)
+	return res, nil
 }
 
 type DeleteAccountUserArgs struct {
