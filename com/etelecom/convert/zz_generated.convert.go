@@ -118,6 +118,7 @@ func convert_etelecommodel_Extension_etelecom_Extension(arg *etelecommodel.Exten
 	out.ID = arg.ID                               // simple assign
 	out.UserID = arg.UserID                       // simple assign
 	out.AccountID = arg.AccountID                 // simple assign
+	out.HotlineID = arg.HotlineID                 // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
 	out.ExternalData = Convert_etelecommodel_ExtensionExternalData_etelecom_ExtensionExternalData(arg.ExternalData, nil)
@@ -155,6 +156,7 @@ func convert_etelecom_Extension_etelecommodel_Extension(arg *etelecom.Extension,
 	out.ID = arg.ID                               // simple assign
 	out.UserID = arg.UserID                       // simple assign
 	out.AccountID = arg.AccountID                 // simple assign
+	out.HotlineID = arg.HotlineID                 // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
 	out.ExternalData = Convert_etelecom_ExtensionExternalData_etelecommodel_ExtensionExternalData(arg.ExternalData, nil)
@@ -192,6 +194,7 @@ func apply_etelecom_CreateExtensionArgs_etelecom_Extension(arg *etelecom.CreateE
 	out.ID = 0                                    // zero value
 	out.UserID = arg.UserID                       // simple assign
 	out.AccountID = arg.AccountID                 // simple assign
+	out.HotlineID = 0                             // zero value
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
 	out.ExternalData = nil                        // zero value
@@ -273,10 +276,9 @@ func Convert_etelecommodel_Hotline_etelecom_Hotline(arg *etelecommodel.Hotline, 
 
 func convert_etelecommodel_Hotline_etelecom_Hotline(arg *etelecommodel.Hotline, out *etelecom.Hotline) {
 	out.ID = arg.ID                             // simple assign
-	out.UserID = arg.UserID                     // simple assign
+	out.OwnerID = arg.OwnerID                   // simple assign
 	out.Hotline = arg.Hotline                   // simple assign
 	out.Network = arg.Network                   // simple assign
-	out.Provider = arg.Provider                 // simple assign
 	out.ConnectionID = arg.ConnectionID         // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod // simple assign
 	out.CreatedAt = arg.CreatedAt               // simple assign
@@ -309,10 +311,9 @@ func Convert_etelecom_Hotline_etelecommodel_Hotline(arg *etelecom.Hotline, out *
 
 func convert_etelecom_Hotline_etelecommodel_Hotline(arg *etelecom.Hotline, out *etelecommodel.Hotline) {
 	out.ID = arg.ID                             // simple assign
-	out.UserID = arg.UserID                     // simple assign
+	out.OwnerID = arg.OwnerID                   // simple assign
 	out.Hotline = arg.Hotline                   // simple assign
 	out.Network = arg.Network                   // simple assign
-	out.Provider = arg.Provider                 // simple assign
 	out.ConnectionID = arg.ConnectionID         // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod // simple assign
 	out.CreatedAt = arg.CreatedAt               // simple assign

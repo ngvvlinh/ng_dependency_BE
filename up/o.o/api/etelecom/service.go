@@ -3,6 +3,7 @@ package etelecom
 import (
 	"context"
 
+	cm "o.o/api/top/types/common"
 	"o.o/capi/dot"
 	"o.o/common/xerrors"
 )
@@ -12,6 +13,7 @@ import (
 type Aggregate interface {
 	CreateExtension(context.Context, *CreateExtensionArgs) (*Extension, error)
 	DeleteExtension(ctx context.Context, id dot.ID) error
+	UpdateExternalExtensionInfo(context.Context, *UpdateExternalExtensionInfoArgs) error
 }
 
 type QueryService interface {
@@ -20,6 +22,9 @@ type QueryService interface {
 
 	GetExtension(context.Context, *GetExtensionArgs) (*Extension, error)
 	ListExtensions(context.Context, *ListExtensionsArgs) ([]*Extension, error)
+
+	// generate extension number => then use it for create external extension
+	GetPrivateExtensionNumber(context.Context, *cm.Empty) (extensionNumber string, _ error)
 }
 
 // +convert:create=Extension
@@ -42,11 +47,12 @@ func (args *CreateExtensionArgs) Validate() error {
 }
 
 type GetHotlineArgs struct {
-	ID dot.ID
+	ID      dot.ID
+	OwnerID dot.ID
 }
 
 type ListHotlinesArgs struct {
-	UserID       dot.ID
+	OwnerID      dot.ID
 	ConnectionID dot.ID
 }
 
@@ -60,4 +66,12 @@ type GetExtensionArgs struct {
 type ListExtensionsArgs struct {
 	UserID       dot.ID
 	ConnectionID dot.ID
+}
+
+type UpdateExternalExtensionInfoArgs struct {
+	ID                dot.ID
+	HotlineID         dot.ID
+	ExternalID        string
+	ExtensionNumber   string
+	ExtensionPassword string
 }

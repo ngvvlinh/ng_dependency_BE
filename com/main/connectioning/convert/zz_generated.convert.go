@@ -133,6 +133,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*connectioningmodel.ShopConnectionExternalData) = out0
 		return nil
 	})
+	s.Register((*connectioningmodel.ShopConnectionTelecomData)(nil), (*connectioning.ShopConnectionTelecomData)(nil), func(arg, out interface{}) error {
+		Convert_connectioningmodel_ShopConnectionTelecomData_connectioning_ShopConnectionTelecomData(arg.(*connectioningmodel.ShopConnectionTelecomData), out.(*connectioning.ShopConnectionTelecomData))
+		return nil
+	})
+	s.Register(([]*connectioningmodel.ShopConnectionTelecomData)(nil), (*[]*connectioning.ShopConnectionTelecomData)(nil), func(arg, out interface{}) error {
+		out0 := Convert_connectioningmodel_ShopConnectionTelecomDatas_connectioning_ShopConnectionTelecomDatas(arg.([]*connectioningmodel.ShopConnectionTelecomData))
+		*out.(*[]*connectioning.ShopConnectionTelecomData) = out0
+		return nil
+	})
+	s.Register((*connectioning.ShopConnectionTelecomData)(nil), (*connectioningmodel.ShopConnectionTelecomData)(nil), func(arg, out interface{}) error {
+		Convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConnectionTelecomData(arg.(*connectioning.ShopConnectionTelecomData), out.(*connectioningmodel.ShopConnectionTelecomData))
+		return nil
+	})
+	s.Register(([]*connectioning.ShopConnectionTelecomData)(nil), (*[]*connectioningmodel.ShopConnectionTelecomData)(nil), func(arg, out interface{}) error {
+		out0 := Convert_connectioning_ShopConnectionTelecomDatas_connectioningmodel_ShopConnectionTelecomDatas(arg.([]*connectioning.ShopConnectionTelecomData))
+		*out.(*[]*connectioningmodel.ShopConnectionTelecomData) = out0
+		return nil
+	})
 }
 
 //-- convert o.o/api/main/connectioning.Connection --//
@@ -476,6 +494,7 @@ func convert_connectioningmodel_ShopConnection_connectioning_ShopConnection(arg 
 	out.DeletedAt = arg.DeletedAt           // simple assign
 	out.IsGlobal = arg.IsGlobal             // simple assign
 	out.ExternalData = Convert_connectioningmodel_ShopConnectionExternalData_connectioning_ShopConnectionExternalData(arg.ExternalData, nil)
+	out.TelecomData = Convert_connectioningmodel_ShopConnectionTelecomData_connectioning_ShopConnectionTelecomData(arg.TelecomData, nil)
 }
 
 func Convert_connectioningmodel_ShopConnections_connectioning_ShopConnections(args []*connectioningmodel.ShopConnection) (outs []*connectioning.ShopConnection) {
@@ -514,6 +533,7 @@ func convert_connectioning_ShopConnection_connectioningmodel_ShopConnection(arg 
 	out.DeletedAt = arg.DeletedAt           // simple assign
 	out.IsGlobal = arg.IsGlobal             // simple assign
 	out.ExternalData = Convert_connectioning_ShopConnectionExternalData_connectioningmodel_ShopConnectionExternalData(arg.ExternalData, nil)
+	out.TelecomData = Convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConnectionTelecomData(arg.TelecomData, nil)
 }
 
 func Convert_connectioning_ShopConnections_connectioningmodel_ShopConnections(args []*connectioning.ShopConnection) (outs []*connectioningmodel.ShopConnection) {
@@ -551,6 +571,7 @@ func apply_connectioning_CreateShopConnectionArgs_connectioning_ShopConnection(a
 	out.DeletedAt = time.Time{}             // zero value
 	out.IsGlobal = false                    // zero value
 	out.ExternalData = arg.ExternalData     // simple assign
+	out.TelecomData = nil                   // zero value
 }
 
 func Apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_ShopConnection(arg *connectioning.UpdateShopConnectionExternalDataArgs, out *connectioning.ShopConnection) *connectioning.ShopConnection {
@@ -576,6 +597,7 @@ func apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_Shop
 	out.DeletedAt = out.DeletedAt           // no change
 	out.IsGlobal = out.IsGlobal             // no change
 	out.ExternalData = arg.ExternalData     // simple assign
+	out.TelecomData = out.TelecomData       // no change
 }
 
 //-- convert o.o/api/main/connectioning.ShopConnectionExternalData --//
@@ -634,6 +656,68 @@ func Convert_connectioning_ShopConnectionExternalDatas_connectioningmodel_ShopCo
 	outs = make([]*connectioningmodel.ShopConnectionExternalData, len(args))
 	for i := range tmps {
 		outs[i] = Convert_connectioning_ShopConnectionExternalData_connectioningmodel_ShopConnectionExternalData(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/main/connectioning.ShopConnectionTelecomData --//
+
+func Convert_connectioningmodel_ShopConnectionTelecomData_connectioning_ShopConnectionTelecomData(arg *connectioningmodel.ShopConnectionTelecomData, out *connectioning.ShopConnectionTelecomData) *connectioning.ShopConnectionTelecomData {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &connectioning.ShopConnectionTelecomData{}
+	}
+	convert_connectioningmodel_ShopConnectionTelecomData_connectioning_ShopConnectionTelecomData(arg, out)
+	return out
+}
+
+func convert_connectioningmodel_ShopConnectionTelecomData_connectioning_ShopConnectionTelecomData(arg *connectioningmodel.ShopConnectionTelecomData, out *connectioning.ShopConnectionTelecomData) {
+	out.Username = arg.Username       // simple assign
+	out.Password = arg.Password       // simple assign
+	out.TenantHost = arg.TenantHost   // simple assign
+	out.TenantToken = arg.TenantToken // simple assign
+}
+
+func Convert_connectioningmodel_ShopConnectionTelecomDatas_connectioning_ShopConnectionTelecomDatas(args []*connectioningmodel.ShopConnectionTelecomData) (outs []*connectioning.ShopConnectionTelecomData) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]connectioning.ShopConnectionTelecomData, len(args))
+	outs = make([]*connectioning.ShopConnectionTelecomData, len(args))
+	for i := range tmps {
+		outs[i] = Convert_connectioningmodel_ShopConnectionTelecomData_connectioning_ShopConnectionTelecomData(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConnectionTelecomData(arg *connectioning.ShopConnectionTelecomData, out *connectioningmodel.ShopConnectionTelecomData) *connectioningmodel.ShopConnectionTelecomData {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &connectioningmodel.ShopConnectionTelecomData{}
+	}
+	convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConnectionTelecomData(arg, out)
+	return out
+}
+
+func convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConnectionTelecomData(arg *connectioning.ShopConnectionTelecomData, out *connectioningmodel.ShopConnectionTelecomData) {
+	out.Username = arg.Username       // simple assign
+	out.Password = arg.Password       // simple assign
+	out.TenantHost = arg.TenantHost   // simple assign
+	out.TenantToken = arg.TenantToken // simple assign
+}
+
+func Convert_connectioning_ShopConnectionTelecomDatas_connectioningmodel_ShopConnectionTelecomDatas(args []*connectioning.ShopConnectionTelecomData) (outs []*connectioningmodel.ShopConnectionTelecomData) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]connectioningmodel.ShopConnectionTelecomData, len(args))
+	outs = make([]*connectioningmodel.ShopConnectionTelecomData, len(args))
+	for i := range tmps {
+		outs[i] = Convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConnectionTelecomData(args[i], &tmps[i])
 	}
 	return outs
 }

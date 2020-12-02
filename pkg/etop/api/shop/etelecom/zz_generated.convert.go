@@ -136,6 +136,7 @@ func convert_shop_Extension_etelecom_Extension(arg *shop.Extension, out *eteleco
 	out.ID = arg.ID                           // simple assign
 	out.UserID = arg.UserID                   // simple assign
 	out.AccountID = arg.AccountID             // simple assign
+	out.HotlineID = 0                         // zero value
 	out.ExtensionNumber = arg.ExtensionNumber // simple assign
 	out.ExtensionPassword = ""                // zero value
 	out.ExternalData = nil                    // zero value

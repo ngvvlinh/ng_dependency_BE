@@ -19,16 +19,18 @@ import (
 	"o.o/backend/cogs/shipment/_all"
 	"o.o/backend/cogs/shipment/ghtk"
 	"o.o/backend/cogs/shipment/vtpost"
-	"o.o/backend/cogs/shipment/webhook/_all"
+	_all2 "o.o/backend/cogs/shipment/webhook/_all"
 	"o.o/backend/cogs/shipnow/_all"
 	"o.o/backend/cogs/sms/_all"
 	"o.o/backend/cogs/storage/_all"
+	"o.o/backend/cogs/telecom/_all"
 	"o.o/backend/cogs/ticket/_all"
 	"o.o/backend/cogs/uploader"
 	aggregate25 "o.o/backend/com/etc/logging/payment/aggregate"
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	aggregate3 "o.o/backend/com/etc/logging/smslog/aggregate"
 	aggregate21 "o.o/backend/com/etelecom/aggregate"
+	provider2 "o.o/backend/com/etelecom/provider"
 	query23 "o.o/backend/com/etelecom/query"
 	"o.o/backend/com/eventhandler/notifier"
 	sqlstore2 "o.o/backend/com/eventhandler/notifier/sqlstore"
@@ -782,10 +784,17 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ContactAggr:  contactCommandBus,
 	}
 	etelecomDB := databases.Etelecom
-	etelecomAggregate := aggregate21.NewEtelecomAggregate(etelecomDB, busBus)
-	etelecomCommandBus := aggregate21.AggregateMessageBus(etelecomAggregate)
+	driver3 := _all.SupportedTelecomDriver(busBus)
 	queryService5 := query23.NewQueryService(etelecomDB)
 	etelecomQueryBus := query23.QueryServiceMessageBus(queryService5)
+	telecomManager, err := provider2.NewTelecomManager(busBus, connectionManager, driver3, connectioningQueryBus, connectioningCommandBus, queryBus, etelecomQueryBus)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return Output{}, nil, err
+	}
+	etelecomAggregate := aggregate21.NewEtelecomAggregate(etelecomDB, busBus, telecomManager)
+	etelecomCommandBus := aggregate21.AggregateMessageBus(etelecomAggregate)
 	extensionService := &etelecom.ExtensionService{
 		Session:       session,
 		EtelecomAggr:  etelecomCommandBus,
@@ -1263,7 +1272,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	v1Webhook := v1.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	v2Webhook := v2.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	webhook7 := webhook3.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
-	shipmentWebhookServer := _all.NewShipmentWebhookServer(webhookConfig, v1Webhook, v2Webhook, webhook7)
+	shipmentWebhookServer := _all2.NewShipmentWebhookServer(webhookConfig, v1Webhook, v2Webhook, webhook7)
 	_ghtkWebhookConfig := shipment_allConfig.GHTKWebhook
 	webhook8 := webhook4.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	ghtkWebhookServer := _ghtk.NewGHTKWebhookServer(_ghtkWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook8)

@@ -4331,7 +4331,8 @@
         "ahamove",
         "ninjavan",
         "dhl",
-        "suitecrm"
+        "suitecrm",
+        "vht"
       ]
     },
     "cdConnectionSubtype": {
@@ -4348,7 +4349,8 @@
       "enum": [
         "unknown",
         "shipping",
-        "crm"
+        "crm",
+        "telecom"
       ]
     },
     "csTryOnCode": {

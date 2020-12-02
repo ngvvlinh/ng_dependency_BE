@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Extensions []*Extension
 
 const __sqlExtension_Table = "extension"
-const __sqlExtension_ListCols = "\"id\",\"user_id\",\"account_id\",\"extension_number\",\"extension_password\",\"external_data\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlExtension_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"extension_number\" = EXCLUDED.\"extension_number\",\"extension_password\" = EXCLUDED.\"extension_password\",\"external_data\" = EXCLUDED.\"external_data\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlExtension_ListCols = "\"id\",\"user_id\",\"account_id\",\"hotline_id\",\"extension_number\",\"extension_password\",\"external_data\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlExtension_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"extension_number\" = EXCLUDED.\"extension_number\",\"extension_password\" = EXCLUDED.\"extension_password\",\"external_data\" = EXCLUDED.\"external_data\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlExtension_Insert = "INSERT INTO \"extension\" (" + __sqlExtension_ListCols + ") VALUES"
 const __sqlExtension_Select = "SELECT " + __sqlExtension_ListCols + " FROM \"extension\""
 const __sqlExtension_Select_history = "SELECT " + __sqlExtension_ListCols + " FROM history.\"extension\""
@@ -74,6 +74,13 @@ func (m *Extension) Migration(db *cmsql.Database) {
 		},
 		"account_id": {
 			ColumnName:       "account_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"hotline_id": {
+			ColumnName:       "hotline_id",
 			ColumnType:       "dot.ID",
 			ColumnDBType:     "int64",
 			ColumnTag:        "",
@@ -151,6 +158,7 @@ func (m *Extension) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		m.UserID,
 		m.AccountID,
+		m.HotlineID,
 		core.String(m.ExtensionNumber),
 		core.String(m.ExtensionPassword),
 		core.JSON{m.ExternalData},
@@ -167,6 +175,7 @@ func (m *Extension) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		&m.UserID,
 		&m.AccountID,
+		&m.HotlineID,
 		(*core.String)(&m.ExtensionNumber),
 		(*core.String)(&m.ExtensionPassword),
 		core.JSON{&m.ExternalData},
@@ -212,7 +221,7 @@ func (_ *Extensions) SQLSelect(w SQLWriter) error {
 func (m *Extension) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -222,7 +231,7 @@ func (ms Extensions) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(11)
+		w.WriteMarkers(12)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -276,6 +285,14 @@ func (m *Extension) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.AccountID)
+	}
+	if m.HotlineID != 0 {
+		flag = true
+		w.WriteName("hotline_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.HotlineID)
 	}
 	if m.ExtensionNumber != "" {
 		flag = true
@@ -351,7 +368,7 @@ func (m *Extension) SQLUpdate(w SQLWriter) error {
 func (m *Extension) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -376,6 +393,7 @@ func (m ExtensionHistories) SQLSelect(w SQLWriter) error {
 func (m ExtensionHistory) ID() core.Interface        { return core.Interface{m["id"]} }
 func (m ExtensionHistory) UserID() core.Interface    { return core.Interface{m["user_id"]} }
 func (m ExtensionHistory) AccountID() core.Interface { return core.Interface{m["account_id"]} }
+func (m ExtensionHistory) HotlineID() core.Interface { return core.Interface{m["hotline_id"]} }
 func (m ExtensionHistory) ExtensionNumber() core.Interface {
 	return core.Interface{m["extension_number"]}
 }
@@ -392,34 +410,35 @@ func (m ExtensionHistory) UpdatedAt() core.Interface { return core.Interface{m["
 func (m ExtensionHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
 
 func (m *ExtensionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ExtensionHistory, 11)
+	res := make(ExtensionHistory, 12)
 	res["id"] = data[0]
 	res["user_id"] = data[1]
 	res["account_id"] = data[2]
-	res["extension_number"] = data[3]
-	res["extension_password"] = data[4]
-	res["external_data"] = data[5]
-	res["connection_id"] = data[6]
-	res["connection_method"] = data[7]
-	res["created_at"] = data[8]
-	res["updated_at"] = data[9]
-	res["deleted_at"] = data[10]
+	res["hotline_id"] = data[3]
+	res["extension_number"] = data[4]
+	res["extension_password"] = data[5]
+	res["external_data"] = data[6]
+	res["connection_id"] = data[7]
+	res["connection_method"] = data[8]
+	res["created_at"] = data[9]
+	res["updated_at"] = data[10]
+	res["deleted_at"] = data[11]
 	*m = res
 	return nil
 }
 
 func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ExtensionHistories, 0, 128)
@@ -431,14 +450,15 @@ func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["user_id"] = data[1]
 		m["account_id"] = data[2]
-		m["extension_number"] = data[3]
-		m["extension_password"] = data[4]
-		m["external_data"] = data[5]
-		m["connection_id"] = data[6]
-		m["connection_method"] = data[7]
-		m["created_at"] = data[8]
-		m["updated_at"] = data[9]
-		m["deleted_at"] = data[10]
+		m["hotline_id"] = data[3]
+		m["extension_number"] = data[4]
+		m["extension_password"] = data[5]
+		m["external_data"] = data[6]
+		m["connection_id"] = data[7]
+		m["connection_method"] = data[8]
+		m["created_at"] = data[9]
+		m["updated_at"] = data[10]
+		m["deleted_at"] = data[11]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -451,8 +471,8 @@ func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type Hotlines []*Hotline
 
 const __sqlHotline_Table = "hotline"
-const __sqlHotline_ListCols = "\"id\",\"user_id\",\"hotline\",\"network\",\"provider\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlHotline_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"hotline\" = EXCLUDED.\"hotline\",\"network\" = EXCLUDED.\"network\",\"provider\" = EXCLUDED.\"provider\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlHotline_ListCols = "\"id\",\"owner_id\",\"hotline\",\"network\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlHotline_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"hotline\" = EXCLUDED.\"hotline\",\"network\" = EXCLUDED.\"network\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlHotline_Insert = "INSERT INTO \"hotline\" (" + __sqlHotline_ListCols + ") VALUES"
 const __sqlHotline_Select = "SELECT " + __sqlHotline_ListCols + " FROM \"hotline\""
 const __sqlHotline_Select_history = "SELECT " + __sqlHotline_ListCols + " FROM history.\"hotline\""
@@ -486,8 +506,8 @@ func (m *Hotline) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
-		"user_id": {
-			ColumnName:       "user_id",
+		"owner_id": {
+			ColumnName:       "owner_id",
 			ColumnType:       "dot.ID",
 			ColumnDBType:     "int64",
 			ColumnTag:        "",
@@ -502,13 +522,6 @@ func (m *Hotline) Migration(db *cmsql.Database) {
 		},
 		"network": {
 			ColumnName:       "network",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
-			ColumnTag:        "",
-			ColumnEnumValues: []string{},
-		},
-		"provider": {
-			ColumnName:       "provider",
 			ColumnType:       "string",
 			ColumnDBType:     "string",
 			ColumnTag:        "",
@@ -563,10 +576,9 @@ func (m *Hotline) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		m.ID,
-		m.UserID,
+		m.OwnerID,
 		core.String(m.Hotline),
 		core.String(m.Network),
-		core.String(m.Provider),
 		m.ConnectionID,
 		m.ConnectionMethod,
 		core.Now(m.CreatedAt, now, create),
@@ -578,10 +590,9 @@ func (m *Hotline) SQLArgs(opts core.Opts, create bool) []interface{} {
 func (m *Hotline) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
-		&m.UserID,
+		&m.OwnerID,
 		(*core.String)(&m.Hotline),
 		(*core.String)(&m.Network),
-		(*core.String)(&m.Provider),
 		&m.ConnectionID,
 		&m.ConnectionMethod,
 		(*core.Time)(&m.CreatedAt),
@@ -624,7 +635,7 @@ func (_ *Hotlines) SQLSelect(w SQLWriter) error {
 func (m *Hotline) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -634,7 +645,7 @@ func (ms Hotlines) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(10)
+		w.WriteMarkers(9)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -673,13 +684,13 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ID)
 	}
-	if m.UserID != 0 {
+	if m.OwnerID != 0 {
 		flag = true
-		w.WriteName("user_id")
+		w.WriteName("owner_id")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.UserID)
+		w.WriteArg(m.OwnerID)
 	}
 	if m.Hotline != "" {
 		flag = true
@@ -696,14 +707,6 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.Network)
-	}
-	if m.Provider != "" {
-		flag = true
-		w.WriteName("provider")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Provider)
 	}
 	if m.ConnectionID != 0 {
 		flag = true
@@ -755,7 +758,7 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 func (m *Hotline) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -778,10 +781,9 @@ func (m HotlineHistories) SQLSelect(w SQLWriter) error {
 }
 
 func (m HotlineHistory) ID() core.Interface           { return core.Interface{m["id"]} }
-func (m HotlineHistory) UserID() core.Interface       { return core.Interface{m["user_id"]} }
+func (m HotlineHistory) OwnerID() core.Interface      { return core.Interface{m["owner_id"]} }
 func (m HotlineHistory) Hotline() core.Interface      { return core.Interface{m["hotline"]} }
 func (m HotlineHistory) Network() core.Interface      { return core.Interface{m["network"]} }
-func (m HotlineHistory) Provider() core.Interface     { return core.Interface{m["provider"]} }
 func (m HotlineHistory) ConnectionID() core.Interface { return core.Interface{m["connection_id"]} }
 func (m HotlineHistory) ConnectionMethod() core.Interface {
 	return core.Interface{m["connection_method"]}
@@ -791,33 +793,32 @@ func (m HotlineHistory) UpdatedAt() core.Interface { return core.Interface{m["up
 func (m HotlineHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
 
 func (m *HotlineHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(HotlineHistory, 10)
+	res := make(HotlineHistory, 9)
 	res["id"] = data[0]
-	res["user_id"] = data[1]
+	res["owner_id"] = data[1]
 	res["hotline"] = data[2]
 	res["network"] = data[3]
-	res["provider"] = data[4]
-	res["connection_id"] = data[5]
-	res["connection_method"] = data[6]
-	res["created_at"] = data[7]
-	res["updated_at"] = data[8]
-	res["deleted_at"] = data[9]
+	res["connection_id"] = data[4]
+	res["connection_method"] = data[5]
+	res["created_at"] = data[6]
+	res["updated_at"] = data[7]
+	res["deleted_at"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *HotlineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(HotlineHistories, 0, 128)
@@ -827,15 +828,14 @@ func (ms *HotlineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		}
 		m := make(HotlineHistory)
 		m["id"] = data[0]
-		m["user_id"] = data[1]
+		m["owner_id"] = data[1]
 		m["hotline"] = data[2]
 		m["network"] = data[3]
-		m["provider"] = data[4]
-		m["connection_id"] = data[5]
-		m["connection_method"] = data[6]
-		m["created_at"] = data[7]
-		m["updated_at"] = data[8]
-		m["deleted_at"] = data[9]
+		m["connection_id"] = data[4]
+		m["connection_method"] = data[5]
+		m["created_at"] = data[6]
+		m["updated_at"] = data[7]
+		m["deleted_at"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

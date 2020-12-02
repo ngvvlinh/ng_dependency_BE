@@ -11,10 +11,9 @@ import (
 
 type Hotline struct {
 	ID               dot.ID
-	UserID           dot.ID
+	OwnerID          dot.ID
 	Hotline          string
 	Network          string
-	Provider         string
 	ConnectionID     dot.ID
 	ConnectionMethod connection_type.ConnectionMethod
 	CreatedAt        time.Time
@@ -26,6 +25,7 @@ type Extension struct {
 	ID                dot.ID
 	UserID            dot.ID
 	AccountID         dot.ID
+	HotlineID         dot.ID
 	ExtensionNumber   string
 	ExtensionPassword string
 	ExternalData      *ExtensionExternalData

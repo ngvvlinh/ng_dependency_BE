@@ -1,6 +1,6 @@
 CREATE TABLE hotline (
     id INT8 PRIMARY KEY
-    , user_id INT8
+    , owner_id INT8
     , hotline TEXT
     , network TEXT
     , connection_id INT8
@@ -37,3 +37,5 @@ CREATE TABLE summary (
     , updated_at TIMESTAMPTZ
     , deleted_at TIMESTAMPTZ
 );
+
+CREATE SEQUENCE extension_number START 201;

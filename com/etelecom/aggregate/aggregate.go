@@ -4,6 +4,7 @@ import (
 	"o.o/api/etelecom"
 	"o.o/api/main/identity"
 	"o.o/backend/com/etelecom/convert"
+	telecomprovider "o.o/backend/com/etelecom/provider"
 	"o.o/backend/com/etelecom/sqlstore"
 	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
@@ -21,14 +22,19 @@ type EtelecomAggregate struct {
 	hotlineStore   sqlstore.HotlineStoreFactory
 	extensionStore sqlstore.ExtensionStoreFactory
 	identityQuery  identity.QueryBus
+	telecomManager *telecomprovider.TelecomManager
 }
 
-func NewEtelecomAggregate(dbEtelecom com.EtelecomDB, eventBus capi.EventBus) *EtelecomAggregate {
+func NewEtelecomAggregate(
+	dbEtelecom com.EtelecomDB, eventBus capi.EventBus,
+	telecomManager *telecomprovider.TelecomManager,
+) *EtelecomAggregate {
 	return &EtelecomAggregate{
 		txDB:           (*cmsql.Database)(dbEtelecom),
 		eventBus:       eventBus,
 		hotlineStore:   sqlstore.NewHotlineStore(dbEtelecom),
 		extensionStore: sqlstore.NewExtensionStore(dbEtelecom),
+		telecomManager: telecomManager,
 	}
 }
 

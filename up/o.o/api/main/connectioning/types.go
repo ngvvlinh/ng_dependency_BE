@@ -19,6 +19,9 @@ const (
 	// shipnow
 	DefaultTopShipAhamoveConnectionID = dot.ID(1000343411864064400)
 	DefaultDirectAhamoveConnectionID  = dot.ID(1000212023297494791)
+
+	// etelecom
+	DefaultBuiltinVHTEtelecomConnectionID = dot.ID(100085369475949390)
 )
 
 type Connection struct {
@@ -102,6 +105,7 @@ type ShopConnection struct {
 	DeletedAt      time.Time
 	IsGlobal       bool
 	ExternalData   *ShopConnectionExternalData
+	TelecomData    *ShopConnectionTelecomData
 }
 
 type ShopConnectionExternalData struct {
@@ -109,6 +113,13 @@ type ShopConnectionExternalData struct {
 	//Email  string
 	Identifier string
 	ShopID     string
+}
+
+type ShopConnectionTelecomData struct {
+	Username    string
+	Password    string
+	TenantHost  string
+	TenantToken string
 }
 
 type ConnectionUpdatedEvent struct {

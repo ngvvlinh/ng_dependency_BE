@@ -9,11 +9,11 @@ import (
 
 // +sqlgen
 type Hotline struct {
-	ID               dot.ID
-	UserID           dot.ID
+	ID dot.ID
+	// OwnerID - userID chủ tài khoản
+	OwnerID          dot.ID
 	Hotline          string
 	Network          string
-	Provider         string
 	ConnectionID     dot.ID
 	ConnectionMethod connection_type.ConnectionMethod
 	CreatedAt        time.Time `sq:"create"`
@@ -23,12 +23,14 @@ type Hotline struct {
 
 // +sqlgen
 type Extension struct {
-	ID                dot.ID
+	ID dot.ID
+	// UserID - userID nhân viên được gán với extension
 	UserID            dot.ID
 	AccountID         dot.ID
+	HotlineID         dot.ID
 	ExtensionNumber   string
 	ExtensionPassword string
-	ExternalData      *ExtensionExternalData
+	ExternalData      *ExtensionExternalData `json:"external_data"`
 	ConnectionID      dot.ID
 	ConnectionMethod  connection_type.ConnectionMethod
 	CreatedAt         time.Time `sq:"create"`
@@ -37,7 +39,7 @@ type Extension struct {
 }
 
 type ExtensionExternalData struct {
-	ID string
+	ID string `json:"id"`
 }
 
 // +sqlgen

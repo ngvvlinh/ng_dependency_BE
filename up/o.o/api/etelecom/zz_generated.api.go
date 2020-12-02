@@ -7,6 +7,7 @@ package etelecom
 import (
 	context "context"
 
+	common "o.o/api/top/types/common"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
@@ -50,6 +51,21 @@ func (h AggregateHandler) HandleDeleteExtension(ctx context.Context, msg *Delete
 	return h.inner.DeleteExtension(msg.GetArgs(ctx))
 }
 
+type UpdateExternalExtensionInfoCommand struct {
+	ID                dot.ID
+	HotlineID         dot.ID
+	ExternalID        string
+	ExtensionNumber   string
+	ExtensionPassword string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateExternalExtensionInfo(ctx context.Context, msg *UpdateExternalExtensionInfoCommand) (err error) {
+	return h.inner.UpdateExternalExtensionInfo(msg.GetArgs(ctx))
+}
+
 type GetExtensionQuery struct {
 	ID           dot.ID
 	UserID       dot.ID
@@ -65,13 +81,23 @@ func (h QueryServiceHandler) HandleGetExtension(ctx context.Context, msg *GetExt
 }
 
 type GetHotlineQuery struct {
-	ID dot.ID
+	ID      dot.ID
+	OwnerID dot.ID
 
 	Result *Hotline `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleGetHotline(ctx context.Context, msg *GetHotlineQuery) (err error) {
 	msg.Result, err = h.inner.GetHotline(msg.GetArgs(ctx))
+	return err
+}
+
+type GetPrivateExtensionNumberQuery struct {
+	Result string `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetPrivateExtensionNumber(ctx context.Context, msg *GetPrivateExtensionNumberQuery) (err error) {
+	msg.Result, err = h.inner.GetPrivateExtensionNumber(msg.GetArgs(ctx))
 	return err
 }
 
@@ -88,7 +114,7 @@ func (h QueryServiceHandler) HandleListExtensions(ctx context.Context, msg *List
 }
 
 type ListHotlinesQuery struct {
-	UserID       dot.ID
+	OwnerID      dot.ID
 	ConnectionID dot.ID
 
 	Result []*Hotline `json:"-"`
@@ -101,13 +127,15 @@ func (h QueryServiceHandler) HandleListHotlines(ctx context.Context, msg *ListHo
 
 // implement interfaces
 
-func (q *CreateExtensionCommand) command() {}
-func (q *DeleteExtensionCommand) command() {}
+func (q *CreateExtensionCommand) command()             {}
+func (q *DeleteExtensionCommand) command()             {}
+func (q *UpdateExternalExtensionInfoCommand) command() {}
 
-func (q *GetExtensionQuery) query()   {}
-func (q *GetHotlineQuery) query()     {}
-func (q *ListExtensionsQuery) query() {}
-func (q *ListHotlinesQuery) query()   {}
+func (q *GetExtensionQuery) query()              {}
+func (q *GetHotlineQuery) query()                {}
+func (q *GetPrivateExtensionNumberQuery) query() {}
+func (q *ListExtensionsQuery) query()            {}
+func (q *ListHotlinesQuery) query()              {}
 
 // implement conversion
 
@@ -135,6 +163,25 @@ func (q *DeleteExtensionCommand) GetArgs(ctx context.Context) (_ context.Context
 		q.Id
 }
 
+func (q *UpdateExternalExtensionInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalExtensionInfoArgs) {
+	return ctx,
+		&UpdateExternalExtensionInfoArgs{
+			ID:                q.ID,
+			HotlineID:         q.HotlineID,
+			ExternalID:        q.ExternalID,
+			ExtensionNumber:   q.ExtensionNumber,
+			ExtensionPassword: q.ExtensionPassword,
+		}
+}
+
+func (q *UpdateExternalExtensionInfoCommand) SetUpdateExternalExtensionInfoArgs(args *UpdateExternalExtensionInfoArgs) {
+	q.ID = args.ID
+	q.HotlineID = args.HotlineID
+	q.ExternalID = args.ExternalID
+	q.ExtensionNumber = args.ExtensionNumber
+	q.ExtensionPassword = args.ExtensionPassword
+}
+
 func (q *GetExtensionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExtensionArgs) {
 	return ctx,
 		&GetExtensionArgs{
@@ -155,12 +202,22 @@ func (q *GetExtensionQuery) SetGetExtensionArgs(args *GetExtensionArgs) {
 func (q *GetHotlineQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetHotlineArgs) {
 	return ctx,
 		&GetHotlineArgs{
-			ID: q.ID,
+			ID:      q.ID,
+			OwnerID: q.OwnerID,
 		}
 }
 
 func (q *GetHotlineQuery) SetGetHotlineArgs(args *GetHotlineArgs) {
 	q.ID = args.ID
+	q.OwnerID = args.OwnerID
+}
+
+func (q *GetPrivateExtensionNumberQuery) GetArgs(ctx context.Context) (_ context.Context, _ *common.Empty) {
+	return ctx,
+		&common.Empty{}
+}
+
+func (q *GetPrivateExtensionNumberQuery) SetEmpty(args *common.Empty) {
 }
 
 func (q *ListExtensionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListExtensionsArgs) {
@@ -179,13 +236,13 @@ func (q *ListExtensionsQuery) SetListExtensionsArgs(args *ListExtensionsArgs) {
 func (q *ListHotlinesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListHotlinesArgs) {
 	return ctx,
 		&ListHotlinesArgs{
-			UserID:       q.UserID,
+			OwnerID:      q.OwnerID,
 			ConnectionID: q.ConnectionID,
 		}
 }
 
 func (q *ListHotlinesQuery) SetListHotlinesArgs(args *ListHotlinesArgs) {
-	q.UserID = args.UserID
+	q.OwnerID = args.OwnerID
 	q.ConnectionID = args.ConnectionID
 }
 
@@ -203,6 +260,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleCreateExtension)
 	b.AddHandler(h.HandleDeleteExtension)
+	b.AddHandler(h.HandleUpdateExternalExtensionInfo)
 	return CommandBus{b}
 }
 
@@ -220,6 +278,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetExtension)
 	b.AddHandler(h.HandleGetHotline)
+	b.AddHandler(h.HandleGetPrivateExtensionNumber)
 	b.AddHandler(h.HandleListExtensions)
 	b.AddHandler(h.HandleListHotlines)
 	return QueryBus{b}

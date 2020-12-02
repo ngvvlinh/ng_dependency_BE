@@ -41,6 +41,11 @@ func (s *ExtensionStore) UserID(id dot.ID) *ExtensionStore {
 	return s
 }
 
+func (s *ExtensionStore) ConnectionID(id dot.ID) *ExtensionStore {
+	s.preds = append(s.preds, s.ft.ByConnectionID(id))
+	return s
+}
+
 func (s *ExtensionStore) OptionalUserID(id dot.ID) *ExtensionStore {
 	s.preds = append(s.preds, s.ft.ByUserID(id).Optional())
 	return s
@@ -103,6 +108,15 @@ func (s *ExtensionStore) CreateExtension(ext *etelecom.Extension) (*etelecom.Ext
 		return nil, err
 	}
 	return s.ID(ext.ID).GetExtension()
+}
+
+func (s *ExtensionStore) UpdateExtension(ext *etelecom.Extension) error {
+	var extDB model.Extension
+	if err := scheme.Convert(ext, &extDB); err != nil {
+		return err
+	}
+	query := s.query().Where(s.preds)
+	return query.ShouldUpdate(&extDB)
 }
 
 func (s *ExtensionStore) SoftDelete() (int, error) {

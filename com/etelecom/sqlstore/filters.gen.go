@@ -83,6 +83,25 @@ func (ft *ExtensionFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPt
 	}
 }
 
+func (ft *ExtensionFilters) ByHotlineID(HotlineID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "hotline_id",
+		Value:  HotlineID,
+		IsNil:  HotlineID == 0,
+	}
+}
+
+func (ft *ExtensionFilters) ByHotlineIDPtr(HotlineID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "hotline_id",
+		Value:  HotlineID,
+		IsNil:  HotlineID == nil,
+		IsZero: HotlineID != nil && (*HotlineID) == 0,
+	}
+}
+
 func (ft *ExtensionFilters) ByExtensionNumber(ExtensionNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -249,22 +268,22 @@ func (ft *HotlineFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *HotlineFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
+func (ft *HotlineFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "user_id",
-		Value:  UserID,
-		IsNil:  UserID == 0,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == 0,
 	}
 }
 
-func (ft *HotlineFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
+func (ft *HotlineFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "user_id",
-		Value:  UserID,
-		IsNil:  UserID == nil,
-		IsZero: UserID != nil && (*UserID) == 0,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == nil,
+		IsZero: OwnerID != nil && (*OwnerID) == 0,
 	}
 }
 
@@ -303,25 +322,6 @@ func (ft *HotlineFilters) ByNetworkPtr(Network *string) *sq.ColumnFilterPtr {
 		Value:  Network,
 		IsNil:  Network == nil,
 		IsZero: Network != nil && (*Network) == "",
-	}
-}
-
-func (ft *HotlineFilters) ByProvider(Provider string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "provider",
-		Value:  Provider,
-		IsNil:  Provider == "",
-	}
-}
-
-func (ft *HotlineFilters) ByProviderPtr(Provider *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "provider",
-		Value:  Provider,
-		IsNil:  Provider == nil,
-		IsZero: Provider != nil && (*Provider) == "",
 	}
 }
 

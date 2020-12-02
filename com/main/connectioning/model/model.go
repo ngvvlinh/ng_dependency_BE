@@ -48,6 +48,7 @@ type ShopConnection struct {
 	DeletedAt        time.Time
 	IsGlobal         bool
 	ExternalData     *ShopConnectionExternalData
+	TelecomData      *ShopConnectionTelecomData
 }
 
 type ConnectionStates struct {
@@ -69,6 +70,13 @@ type ShopConnectionExternalData struct {
 	// new: identifier include either email or phone
 	Identifier string `json:"identifier"` // email or phone
 	ShopID     string `json:"shop_id"`
+}
+
+type ShopConnectionTelecomData struct {
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	TenantHost  string `json:"tenant_host"`
+	TenantToken string `json:"tenant_token"`
 }
 
 type ConnectionService struct {

@@ -40,8 +40,8 @@ func (s *HotlineStore) ID(id dot.ID) *HotlineStore {
 	return s
 }
 
-func (s *HotlineStore) OptionalUserID(id dot.ID) *HotlineStore {
-	s.preds = append(s.preds, s.ft.ByUserID(id).Optional())
+func (s *HotlineStore) OptionalOwnerID(userid dot.ID) *HotlineStore {
+	s.preds = append(s.preds, s.ft.ByOwnerID(userid).Optional())
 	return s
 }
 
@@ -72,6 +72,7 @@ func (s *HotlineStore) GetHotline() (*etelecom.Hotline, error) {
 
 func (s *HotlineStore) ListHotlinesDB() (res []*model.Hotline, err error) {
 	query := s.query().Where(s.preds)
+	query = query.OrderBy("created_at DESC")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	err = query.Find((*model.Hotlines)(&res))
 	return

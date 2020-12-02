@@ -174,7 +174,7 @@ func (c *Client) sendRequest(ctx context.Context, method Method, args sendReques
 		return nil
 	case status >= 400:
 		if err = jsonx.Unmarshal(res.Body(), &errResp); err != nil {
-			return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Ninja Van: %v. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
+			return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Ninja Van: %v. Chúng tôi đang liên hệ với Ninja Van để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
 		}
 		return cm.Errorf(cm.ExternalServiceError, &errResp, "Lỗi từ Ninja Van: %v. Nếu cần thêm thông tin vui lòng liên hệ %v.", errResp.Error(), wl.X(ctx).CSEmail)
 	default:

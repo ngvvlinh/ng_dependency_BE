@@ -1,0 +1,52 @@
+package _all
+
+import (
+	"o.o/api/main/connectioning"
+	"o.o/api/top/types/etc/connection_type"
+	telecomtypes "o.o/backend/com/etelecom/provider/types"
+	cm "o.o/backend/pkg/common"
+	vhtclient "o.o/backend/pkg/integration/telecom/vht/client"
+	vhtdriver "o.o/backend/pkg/integration/telecom/vht/driver"
+	"o.o/capi"
+	"o.o/common/l"
+)
+
+var ll = l.New()
+
+type TelecomDriver struct {
+	eventBus capi.EventBus
+}
+
+func SupportedTelecomDriver(
+	eventBus capi.EventBus,
+) telecomtypes.Driver {
+	return TelecomDriver{
+		eventBus: eventBus,
+	}
+}
+
+func (t TelecomDriver) GetTelecomDriver(
+	env string, connection *connectioning.Connection,
+	shopConnection *connectioning.ShopConnection,
+) (telecomtypes.TelecomDriver, error) {
+	switch connection.ConnectionProvider {
+	case connection_type.ConnectionProviderVHT:
+		if shopConnection.Token == "" {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "token must not be null")
+		}
+		if shopConnection.TelecomData == nil {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "telecom_data must not be null")
+		}
+		cfg := vhtclient.VHTAccountCfg{
+			Password:    shopConnection.TelecomData.Password,
+			Token:       shopConnection.Token,
+			Username:    shopConnection.TelecomData.Username,
+			TenantHost:  shopConnection.TelecomData.TenantHost,
+			TenantToken: shopConnection.TelecomData.TenantToken,
+		}
+		driver := vhtdriver.New(env, cfg)
+		return driver, nil
+	default:
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection không hợp lệ")
+	}
+}

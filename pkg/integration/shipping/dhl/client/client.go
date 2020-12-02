@@ -258,7 +258,6 @@ func (c *Client) sendRequest(ctx context.Context, method Method, args sendReques
 
 	status := res.StatusCode()
 	body := res.Body()
-	fmt.Println(string(body))
 	switch {
 	case status == 200:
 		if err = jsonx.Unmarshal(body, args.resp); err != nil {

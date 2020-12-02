@@ -18,6 +18,9 @@ const (
 
 	// +enum=crm
 	CRM ConnectionType = 2
+
+	// +enum=telecom
+	Telecom ConnectionType = 3
 )
 
 // +enum
@@ -102,4 +105,7 @@ const (
 
 	// +enum=suitecrm
 	ConnectionProviderSuiteCRM ConnectionProvider = 8
+
+	// +enum=vht
+	ConnectionProviderVHT ConnectionProvider = 9
 )
