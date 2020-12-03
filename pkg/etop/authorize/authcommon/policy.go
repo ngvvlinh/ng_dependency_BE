@@ -110,7 +110,7 @@ const shopPolicy = `#connection
 	p, relationship/invitation:delete, admin, owner, staff_management
 	p, relationship/permission:update, admin, owner, staff_management
 	p, relationship/relationship:update, admin, owner, staff_management
-	p, relationship/relationship:view, admin, owner, staff_management
+	p, relationship/relationship:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	p, relationship/relationship:remove, admin, owner, staff_management
 	# stocktake
 	p, shop/stocktake:create, admin, owner, purchasing_management, inventory_management
