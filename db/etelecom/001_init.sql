@@ -37,5 +37,3 @@ CREATE TABLE summary (
     , updated_at TIMESTAMPTZ
     , deleted_at TIMESTAMPTZ
 );
-
-

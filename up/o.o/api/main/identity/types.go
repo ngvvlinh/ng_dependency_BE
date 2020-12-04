@@ -18,6 +18,15 @@ import (
 
 // +gen:event:topic=event/identity
 
+type (
+	SubjectType string
+)
+
+const (
+	SubjectTypeAccount SubjectType = "account"
+	SubjectTypeUser    SubjectType = "user"
+)
+
 type Permission struct {
 	Roles       []string
 	Permissions []string
@@ -230,4 +239,18 @@ type UserInternal struct {
 	Hashpwd string
 
 	UpdatedAt time.Time `sq:"update"`
+}
+
+type PartnerRelation struct {
+	AuthKey           string
+	PartnerID         dot.ID
+	SubjectID         dot.ID
+	SubjectType       SubjectType
+	ExternalSubjectID string
+
+	Nonce     dot.ID
+	Status    status3.Status
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
 }

@@ -114,6 +114,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*identitymodel.Partner) = out0
 		return nil
 	})
+	s.Register((*identitymodel.PartnerRelation)(nil), (*identity.PartnerRelation)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_PartnerRelation_identity_PartnerRelation(arg.(*identitymodel.PartnerRelation), out.(*identity.PartnerRelation))
+		return nil
+	})
+	s.Register(([]*identitymodel.PartnerRelation)(nil), (*[]*identity.PartnerRelation)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_PartnerRelations_identity_PartnerRelations(arg.([]*identitymodel.PartnerRelation))
+		*out.(*[]*identity.PartnerRelation) = out0
+		return nil
+	})
+	s.Register((*identity.PartnerRelation)(nil), (*identitymodel.PartnerRelation)(nil), func(arg, out interface{}) error {
+		Convert_identity_PartnerRelation_identitymodel_PartnerRelation(arg.(*identity.PartnerRelation), out.(*identitymodel.PartnerRelation))
+		return nil
+	})
+	s.Register(([]*identity.PartnerRelation)(nil), (*[]*identitymodel.PartnerRelation)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_PartnerRelations_identitymodel_PartnerRelations(arg.([]*identity.PartnerRelation))
+		*out.(*[]*identitymodel.PartnerRelation) = out0
+		return nil
+	})
 	s.Register((*identitymodel.Permission)(nil), (*identity.Permission)(nil), func(arg, out interface{}) error {
 		Convert_identitymodel_Permission_identity_Permission(arg.(*identitymodel.Permission), out.(*identity.Permission))
 		return nil
@@ -677,6 +695,81 @@ func Convert_identity_Partners_identitymodel_Partners(args []*identity.Partner) 
 	outs = make([]*identitymodel.Partner, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identity_Partner_identitymodel_Partner(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/main/identity.PartnerRelation --//
+
+func Convert_identitymodel_PartnerRelation_identity_PartnerRelation(arg *identitymodel.PartnerRelation, out *identity.PartnerRelation) *identity.PartnerRelation {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.PartnerRelation{}
+	}
+	convert_identitymodel_PartnerRelation_identity_PartnerRelation(arg, out)
+	return out
+}
+
+func convert_identitymodel_PartnerRelation_identity_PartnerRelation(arg *identitymodel.PartnerRelation, out *identity.PartnerRelation) {
+	out.AuthKey = arg.AuthKey                     // simple assign
+	out.PartnerID = arg.PartnerID                 // simple assign
+	out.SubjectID = arg.SubjectID                 // simple assign
+	out.SubjectType = arg.SubjectType             // simple assign
+	out.ExternalSubjectID = arg.ExternalSubjectID // simple assign
+	out.Nonce = arg.Nonce                         // simple assign
+	out.Status = arg.Status                       // simple assign
+	out.CreatedAt = arg.CreatedAt                 // simple assign
+	out.UpdatedAt = arg.UpdatedAt                 // simple assign
+	out.DeletedAt = arg.DeletedAt                 // simple assign
+}
+
+func Convert_identitymodel_PartnerRelations_identity_PartnerRelations(args []*identitymodel.PartnerRelation) (outs []*identity.PartnerRelation) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.PartnerRelation, len(args))
+	outs = make([]*identity.PartnerRelation, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_PartnerRelation_identity_PartnerRelation(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_PartnerRelation_identitymodel_PartnerRelation(arg *identity.PartnerRelation, out *identitymodel.PartnerRelation) *identitymodel.PartnerRelation {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.PartnerRelation{}
+	}
+	convert_identity_PartnerRelation_identitymodel_PartnerRelation(arg, out)
+	return out
+}
+
+func convert_identity_PartnerRelation_identitymodel_PartnerRelation(arg *identity.PartnerRelation, out *identitymodel.PartnerRelation) {
+	out.AuthKey = arg.AuthKey                     // simple assign
+	out.PartnerID = arg.PartnerID                 // simple assign
+	out.SubjectID = arg.SubjectID                 // simple assign
+	out.SubjectType = arg.SubjectType             // simple assign
+	out.ExternalSubjectID = arg.ExternalSubjectID // simple assign
+	out.Nonce = arg.Nonce                         // simple assign
+	out.Status = arg.Status                       // simple assign
+	out.CreatedAt = arg.CreatedAt                 // simple assign
+	out.UpdatedAt = arg.UpdatedAt                 // simple assign
+	out.DeletedAt = arg.DeletedAt                 // simple assign
+	out.Permission = identitymodel.Permission{}   // zero value
+}
+
+func Convert_identity_PartnerRelations_identitymodel_PartnerRelations(args []*identity.PartnerRelation) (outs []*identitymodel.PartnerRelation) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.PartnerRelation, len(args))
+	outs = make([]*identitymodel.PartnerRelation, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_PartnerRelation_identitymodel_PartnerRelation(args[i], &tmps[i])
 	}
 	return outs
 }

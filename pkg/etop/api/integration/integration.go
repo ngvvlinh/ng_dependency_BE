@@ -987,7 +987,7 @@ func (s *IntegrationService) getAvailableAccounts(ctx context.Context, userID do
 			ImageUrl: acc.Account.ImageURL,
 		}
 		for _, rel := range relationQuery.Result.Relations {
-			if rel.SubjectType == identitymodel.SubjectTypeAccount && rel.SubjectID == acc.Account.ID {
+			if rel.SubjectType == identity.SubjectTypeAccount && rel.SubjectID == acc.Account.ID {
 				// the partner has permission to access this account
 				tokenCmd := &tokens.GenerateTokenCommand{
 					ClaimInfo: claims.ClaimInfo{

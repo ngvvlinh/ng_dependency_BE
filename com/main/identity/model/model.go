@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/ghn_note_code"
@@ -18,15 +19,6 @@ import (
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etc/typeutil"
 	"o.o/capi/dot"
-)
-
-type (
-	SubjectType string
-)
-
-const (
-	SubjectTypeAccount SubjectType = "account"
-	SubjectTypeUser    SubjectType = "user"
 )
 
 // +sqlgen
@@ -331,7 +323,7 @@ type PartnerRelation struct {
 	AuthKey           string
 	PartnerID         dot.ID
 	SubjectID         dot.ID
-	SubjectType       SubjectType
+	SubjectType       identity.SubjectType
 	ExternalSubjectID string
 
 	Nonce     dot.ID

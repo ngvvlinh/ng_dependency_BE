@@ -2816,7 +2816,7 @@ func (m *PartnerRelation) Migration(db *cmsql.Database) {
 		},
 		"subject_type": {
 			ColumnName:       "subject_type",
-			ColumnType:       "SubjectType",
+			ColumnType:       "identity.SubjectType",
 			ColumnDBType:     "string",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},

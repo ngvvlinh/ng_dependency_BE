@@ -491,14 +491,23 @@ func (a *MoneyTxAggregate) combineWithExtraFfms(ctx context.Context) (shopFfmsMa
 	return shopFfmsMap, nil
 }
 
-// SplitMoneyTransactionShippingExternal
-//
-// IsSplitByShopPriority: chia phiên NVC  thành 2 phiên:
-// - Phiên chứa các đơn của các:
-//      + shop ưu tiên đối soát trước (shop.is_prior_money_transaction)
-//      + shop mới (shop có số phiên đối soát <= args.MaxMoneyTxShippingCount)
-// - Phiên chưa các đơn còn lại
-// Xóa bỏ phiên cũ sau khi tách xong
+const (
+	_PartnerShop  = "partner_shop"
+	_PriorityShop = "priority_shop"
+	_NewShop      = "new_shop"
+)
+
+/* SplitMoneyTransactionShippingExternal
+
+	Chia phiên NVC thành nhiều phiên:
+	1. Phiên chứa các đơn của shop từ đối tác (ưu tiên cao nhất)
+    2. Phiên chứa các đơn của các:
+        shop ưu tiên đối soát trước (shop.is_prior_money_transaction)
+	3. Phiên chứa các đơn của các:
+		shop mới (shop có số phiên đối soát <= args.MaxMoneyTxShippingCount)
+	4. Phiên chứa các đơn còn lại
+	Xóa bỏ phiên cũ sau khi tách xong
+*/
 func (a *MoneyTxAggregate) SplitMoneyTxShippingExternal(ctx context.Context, args *moneytx.SplitMoneyTxShippingExternalArgs) (*pbcm.UpdatedResponse, error) {
 	if args.MoneyTxShippingExternalID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing money tx shipping external ID")
@@ -533,8 +542,28 @@ func (a *MoneyTxAggregate) SplitMoneyTxShippingExternal(ctx context.Context, arg
 		return nil, cm.Errorf(cm.Internal, nil, "The quantity of fulfillments is not enough")
 	}
 
-	// mapPriorShopIDs: tập những shop được ưu tiên tách phiên và shop mới
-	mapPriorShopIDs := make(map[dot.ID]bool)
+	type moneyTxShippingExternal struct {
+		name                  string
+		mapShopIDs            map[dot.ID]bool
+		shippingExternalLines []*moneytx.MoneyTransactionShippingExternalLine
+	}
+	moneyTxShippingExternals := map[string]*moneyTxShippingExternal{
+		_PartnerShop: {
+			name:                  "Phiên shop partner",
+			mapShopIDs:            make(map[dot.ID]bool),
+			shippingExternalLines: []*moneytx.MoneyTransactionShippingExternalLine{},
+		},
+		_PriorityShop: {
+			name:                  "Phiên shop ưu tiên",
+			mapShopIDs:            make(map[dot.ID]bool),
+			shippingExternalLines: []*moneytx.MoneyTransactionShippingExternalLine{},
+		},
+		_NewShop: {
+			name:                  "Phiên shop mới",
+			mapShopIDs:            make(map[dot.ID]bool),
+			shippingExternalLines: []*moneytx.MoneyTransactionShippingExternalLine{},
+		},
+	}
 
 	mapShopIDs := make(map[dot.ID]bool)
 	shopIDs := []dot.ID{}
@@ -545,6 +574,15 @@ func (a *MoneyTxAggregate) SplitMoneyTxShippingExternal(ctx context.Context, arg
 		mapShopIDs[ffm.ShopID] = true
 		shopIDs = append(shopIDs, ffm.ShopID)
 	}
+
+	mapPartnerShopIDs, err := a.buildMapPartnerShopID(ctx, shopIDs)
+	if err != nil {
+		return nil, err
+	}
+	if partnerShop, ok := moneyTxShippingExternals[_PartnerShop]; ok {
+		partnerShop.mapShopIDs = mapPartnerShopIDs
+	}
+
 	if args.IsSplitByShopPriority {
 		queryShop := &identity.ListShopsByIDsQuery{
 			IDs:                     shopIDs,
@@ -555,7 +593,7 @@ func (a *MoneyTxAggregate) SplitMoneyTxShippingExternal(ctx context.Context, arg
 			return nil, err
 		}
 		for _, shop := range queryShop.Result {
-			mapPriorShopIDs[shop.ID] = true
+			moneyTxShippingExternals[_PriorityShop].mapShopIDs[shop.ID] = true
 		}
 	}
 	if args.MaxMoneyTxShippingCount > 0 {
@@ -571,83 +609,102 @@ func (a *MoneyTxAggregate) SplitMoneyTxShippingExternal(ctx context.Context, arg
 			mapShopFtMoneyTxCount[shop.ShopID] = shop.MoneyTxShippingCount
 		}
 		for _, shopID := range shopIDs {
-			if mapPriorShopIDs[shopID] {
-				continue
-			}
 			count, ok := mapShopFtMoneyTxCount[shopID]
 			// !ok <=> shop chưa có phiên nào => là shop mới
-			if !ok {
-				mapPriorShopIDs[shopID] = true
-			} else {
-				if count > args.MaxMoneyTxShippingCount {
-					continue
-				}
-				mapPriorShopIDs[shopID] = true
+			if !ok || count <= args.MaxMoneyTxShippingCount {
+				moneyTxShippingExternals[_NewShop].mapShopIDs[shopID] = true
 			}
 		}
 	}
 
-	priorLines := []*moneytx.MoneyTransactionShippingExternalLine{}
-	lines := []*moneytx.MoneyTransactionShippingExternalLine{}
+	remainlines := []*moneytx.MoneyTransactionShippingExternalLine{}
 	for _, ffm := range query.Result {
 		moneyTxExternalLine := &moneytx.MoneyTransactionShippingExternalLine{
 			ExternalCode:     ffm.ShippingCode,
 			ExternalTotalCOD: ffm.TotalCODAmount,
 		}
-		if mapPriorShopIDs[ffm.ShopID] {
-			priorLines = append(priorLines, moneyTxExternalLine)
+		partnerMoneyTxExternal, _ := moneyTxShippingExternals[_PartnerShop]
+		priorityMoneyTxExternal := moneyTxShippingExternals[_PriorityShop]
+		newMoneyTxExternal := moneyTxShippingExternals[_NewShop]
+		if partnerMoneyTxExternal.mapShopIDs[ffm.ShopID] {
+			partnerMoneyTxExternal.shippingExternalLines = append(partnerMoneyTxExternal.shippingExternalLines, moneyTxExternalLine)
+		} else if priorityMoneyTxExternal.mapShopIDs[ffm.ShopID] {
+			priorityMoneyTxExternal.shippingExternalLines = append(priorityMoneyTxExternal.shippingExternalLines, moneyTxExternalLine)
+		} else if newMoneyTxExternal.mapShopIDs[ffm.ShopID] {
+			newMoneyTxExternal.shippingExternalLines = append(newMoneyTxExternal.shippingExternalLines, moneyTxExternalLine)
 		} else {
-			lines = append(lines, moneyTxExternalLine)
+			remainlines = append(remainlines, moneyTxExternalLine)
 		}
 	}
 
+	numMoneyTxExternalCreated := 0
 	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		if len(priorLines) == 0 {
-			return cm.Errorf(cm.Internal, nil, "There is no fulfillment belongs to prior shop. It doesn't need to split this money transaction shipping external.")
+		if len(remainlines) == len(moneyTxExternal.Lines) {
+			return cm.Errorf(cm.FailedPrecondition, nil, "It doesn't need to split this money transaction shipping external.")
 		}
-		if len(lines) == 0 {
-			return cm.Errorf(cm.Internal, nil, "All fulfillments are belongs to prior shop. It doesn't need to split this money transaction shipping external.")
-		}
+
 		// xóa phiên cũ
 		if _, err := a.DeleteMoneyTxShippingExternal(ctx, args.MoneyTxShippingExternalID); err != nil {
 			return err
 		}
 
-		// tạo phiên chứa những đơn của shop được ưu tiên
-		cmd1 := &moneytx.CreateMoneyTxShippingExternalArgs{
+		cmd := &moneytx.CreateMoneyTxShippingExternalArgs{
 			Provider:       moneyTxExternal.Provider,
 			ConnectionID:   moneyTxExternal.ConnectionID,
 			ExternalPaidAt: moneyTxExternal.ExternalPaidAt,
-			Lines:          priorLines,
 			BankAccount:    moneyTxExternal.BankAccount,
 			InvoiceNumber:  moneyTxExternal.InvoiceNumber,
 		}
-		if moneyTxExternal.Note == "" {
-			cmd1.Note = "Shop ưu tiên"
-		} else {
-			cmd1.Note = "Shop ưu tiên - " + moneyTxExternal.Note
-		}
-		if _, err := a.CreateMoneyTxShippingExternal(ctx, cmd1); err != nil {
-			return err
+		for _, _moneyTx := range moneyTxShippingExternals {
+			if len(_moneyTx.shippingExternalLines) == 0 {
+				continue
+			}
+			cmdCreate := *cmd
+			cmdCreate.Lines = _moneyTx.shippingExternalLines
+			if moneyTxExternal.Note == "" {
+				cmdCreate.Note = _moneyTx.name
+			} else {
+				cmdCreate.Note = _moneyTx.name + " - " + moneyTxExternal.Note
+			}
+			if _, err := a.CreateMoneyTxShippingExternal(ctx, &cmdCreate); err != nil {
+				return err
+			}
+			numMoneyTxExternalCreated++
 		}
 
 		// tạo phiên chứa các đơn còn lại
-		cmd2 := &moneytx.CreateMoneyTxShippingExternalArgs{
-			Provider:       moneyTxExternal.Provider,
-			ConnectionID:   moneyTxExternal.ConnectionID,
-			ExternalPaidAt: moneyTxExternal.ExternalPaidAt,
-			Lines:          lines,
-			BankAccount:    moneyTxExternal.BankAccount,
-			Note:           moneyTxExternal.Note,
-			InvoiceNumber:  moneyTxExternal.InvoiceNumber,
-		}
-		if _, err := a.CreateMoneyTxShippingExternal(ctx, cmd2); err != nil {
-			return err
+		if len(remainlines) > 0 {
+			cmdCreate := *cmd
+			cmdCreate.Lines = remainlines
+			if moneyTxExternal.Note == "" {
+				cmdCreate.Note = "Phiên shop bình thường"
+			} else {
+				cmdCreate.Note = "Phiên shop bình thường" + " - " + moneyTxExternal.Note
+			}
+			if _, err := a.CreateMoneyTxShippingExternal(ctx, &cmdCreate); err != nil {
+				return err
+			}
+			numMoneyTxExternalCreated++
 		}
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	return &pbcm.UpdatedResponse{Updated: 1}, nil
+	return &pbcm.UpdatedResponse{Updated: numMoneyTxExternalCreated}, nil
+}
+
+func (a *MoneyTxAggregate) buildMapPartnerShopID(ctx context.Context, shopIDs []dot.ID) (map[dot.ID]bool, error) {
+	query := &identity.ListPartnerRelationsBySubjectIDsQuery{
+		SubjectIDs:  shopIDs,
+		SubjectType: identity.SubjectTypeAccount,
+	}
+	if err := a.identityQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	var res = make(map[dot.ID]bool)
+	for _, relation := range query.Result {
+		res[relation.SubjectID] = true
+	}
+	return res, nil
 }

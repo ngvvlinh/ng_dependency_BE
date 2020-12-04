@@ -19,24 +19,26 @@ import (
 var _ identity.QueryService = &QueryService{}
 
 type QueryService struct {
-	userStore        sqlstore.UserStoreFactory
-	accountStore     sqlstore.AccountStoreFactory
-	partnerStore     sqlstore.PartnerStoreFactory
-	affiliateStore   sqlstore.AffiliateStoreFactory
-	shopStore        sqlstore.ShopStoreFactory
-	accountUserStore sqlstore.AccountUserStoreFactory
-	userRefSaffStore sqlstore.UserRefSaffStoreFactory
+	userStore            sqlstore.UserStoreFactory
+	accountStore         sqlstore.AccountStoreFactory
+	partnerStore         sqlstore.PartnerStoreFactory
+	partnerRelationStore sqlstore.PartnerRelationStoreFactory
+	affiliateStore       sqlstore.AffiliateStoreFactory
+	shopStore            sqlstore.ShopStoreFactory
+	accountUserStore     sqlstore.AccountUserStoreFactory
+	userRefSaffStore     sqlstore.UserRefSaffStoreFactory
 }
 
 func NewQueryService(db com.MainDB) *QueryService {
 	return &QueryService{
-		userStore:        sqlstore.NewUserStore(db),
-		accountStore:     sqlstore.NewAccountStore(db),
-		partnerStore:     sqlstore.NewPartnerStore(db),
-		shopStore:        sqlstore.NewShopStore(db),
-		affiliateStore:   sqlstore.NewAffiliateStore(db),
-		accountUserStore: sqlstore.NewAccountUserStore(db),
-		userRefSaffStore: sqlstore.NewUserRefSaffStore(db),
+		userStore:            sqlstore.NewUserStore(db),
+		accountStore:         sqlstore.NewAccountStore(db),
+		partnerStore:         sqlstore.NewPartnerStore(db),
+		partnerRelationStore: sqlstore.NewPartnerRelationStore(db),
+		shopStore:            sqlstore.NewShopStore(db),
+		affiliateStore:       sqlstore.NewAffiliateStore(db),
+		accountUserStore:     sqlstore.NewAccountUserStore(db),
+		userRefSaffStore:     sqlstore.NewUserRefSaffStore(db),
 	}
 }
 
@@ -302,4 +304,8 @@ func (q *QueryService) ListUsersByIDsAndNameNorm(ctx context.Context, args *iden
 
 func (q *QueryService) GetAccountUser(ctx context.Context, userID, accountID dot.ID) (*identity.AccountUser, error) {
 	return q.accountUserStore(ctx).ByUserID(userID).ByAccountID(accountID).GetAccountUser()
+}
+
+func (q *QueryService) ListPartnerRelationsBySubjectIDs(ctx context.Context, args *identity.ListPartnerRelationsBySubjectIDsArgs) ([]*identity.PartnerRelation, error) {
+	return q.partnerRelationStore(ctx).BySubjectType(args.SubjectType).BySubjectIDs(args.SubjectIDs...).ListPartnerRelations()
 }

@@ -111,6 +111,8 @@ type QueryService interface {
 	ListUsersByIDsAndNameNorm(context.Context, *ListUsersByIDsAndNameNormArgs) ([]*User, error)
 
 	GetAccountUser(ctx context.Context, UserID, AccountID dot.ID) (*AccountUser, error)
+
+	ListPartnerRelationsBySubjectIDs(context.Context, *ListPartnerRelationsBySubjectIDsArgs) ([]*PartnerRelation, error)
 }
 
 type Account struct {
@@ -313,4 +315,9 @@ type UpdateShopInfoArgs struct {
 	ShopID                  dot.ID
 	MoneyTransactionRrule   string
 	IsPriorMoneyTransaction dot.NullBool
+}
+
+type ListPartnerRelationsBySubjectIDsArgs struct {
+	SubjectIDs  []dot.ID
+	SubjectType SubjectType
 }

@@ -445,6 +445,18 @@ func (h QueryServiceHandler) HandleGetUsersByIDs(ctx context.Context, msg *GetUs
 	return err
 }
 
+type ListPartnerRelationsBySubjectIDsQuery struct {
+	SubjectIDs  []dot.ID
+	SubjectType SubjectType
+
+	Result []*PartnerRelation `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListPartnerRelationsBySubjectIDs(ctx context.Context, msg *ListPartnerRelationsBySubjectIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListPartnerRelationsBySubjectIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListPartnersForWhiteLabelQuery struct {
 	Result []*Partner `json:"-"`
 }
@@ -523,29 +535,30 @@ func (q *UpdateUserRefCommand) command()              {}
 func (q *UpdateUserReferenceSaleIDCommand) command()  {}
 func (q *UpdateUserReferenceUserIDCommand) command()  {}
 
-func (q *GetAccountByIDQuery) query()             {}
-func (q *GetAccountUserQuery) query()             {}
-func (q *GetAffiliateByIDQuery) query()           {}
-func (q *GetAffiliateWithPermissionQuery) query() {}
-func (q *GetAffiliatesByIDsQuery) query()         {}
-func (q *GetAffiliatesByOwnerIDQuery) query()     {}
-func (q *GetAllAccountsByUsersQuery) query()      {}
-func (q *GetPartnerByIDQuery) query()             {}
-func (q *GetShopByIDQuery) query()                {}
-func (q *GetUserByEmailQuery) query()             {}
-func (q *GetUserByIDQuery) query()                {}
-func (q *GetUserByPhoneQuery) query()             {}
-func (q *GetUserByPhoneOrEmailQuery) query()      {}
-func (q *GetUserFtRefSaffByIDQuery) query()       {}
-func (q *GetUserFtRefSaffsQuery) query()          {}
-func (q *GetUsersQuery) query()                   {}
-func (q *GetUsersByAccountQuery) query()          {}
-func (q *GetUsersByIDsQuery) query()              {}
-func (q *ListPartnersForWhiteLabelQuery) query()  {}
-func (q *ListShopExtendedsQuery) query()          {}
-func (q *ListShopsByIDsQuery) query()             {}
-func (q *ListUsersByIDsAndNameNormQuery) query()  {}
-func (q *ListUsersByWLPartnerIDQuery) query()     {}
+func (q *GetAccountByIDQuery) query()                   {}
+func (q *GetAccountUserQuery) query()                   {}
+func (q *GetAffiliateByIDQuery) query()                 {}
+func (q *GetAffiliateWithPermissionQuery) query()       {}
+func (q *GetAffiliatesByIDsQuery) query()               {}
+func (q *GetAffiliatesByOwnerIDQuery) query()           {}
+func (q *GetAllAccountsByUsersQuery) query()            {}
+func (q *GetPartnerByIDQuery) query()                   {}
+func (q *GetShopByIDQuery) query()                      {}
+func (q *GetUserByEmailQuery) query()                   {}
+func (q *GetUserByIDQuery) query()                      {}
+func (q *GetUserByPhoneQuery) query()                   {}
+func (q *GetUserByPhoneOrEmailQuery) query()            {}
+func (q *GetUserFtRefSaffByIDQuery) query()             {}
+func (q *GetUserFtRefSaffsQuery) query()                {}
+func (q *GetUsersQuery) query()                         {}
+func (q *GetUsersByAccountQuery) query()                {}
+func (q *GetUsersByIDsQuery) query()                    {}
+func (q *ListPartnerRelationsBySubjectIDsQuery) query() {}
+func (q *ListPartnersForWhiteLabelQuery) query()        {}
+func (q *ListShopExtendedsQuery) query()                {}
+func (q *ListShopsByIDsQuery) query()                   {}
+func (q *ListUsersByIDsAndNameNormQuery) query()        {}
+func (q *ListUsersByWLPartnerIDQuery) query()           {}
 
 // implement conversion
 
@@ -935,6 +948,19 @@ func (q *GetUsersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, ID
 		q.IDs
 }
 
+func (q *ListPartnerRelationsBySubjectIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListPartnerRelationsBySubjectIDsArgs) {
+	return ctx,
+		&ListPartnerRelationsBySubjectIDsArgs{
+			SubjectIDs:  q.SubjectIDs,
+			SubjectType: q.SubjectType,
+		}
+}
+
+func (q *ListPartnerRelationsBySubjectIDsQuery) SetListPartnerRelationsBySubjectIDsArgs(args *ListPartnerRelationsBySubjectIDsArgs) {
+	q.SubjectIDs = args.SubjectIDs
+	q.SubjectType = args.SubjectType
+}
+
 func (q *ListPartnersForWhiteLabelQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
 	return ctx,
 		&meta.Empty{}
@@ -1061,6 +1087,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUsers)
 	b.AddHandler(h.HandleGetUsersByAccount)
 	b.AddHandler(h.HandleGetUsersByIDs)
+	b.AddHandler(h.HandleListPartnerRelationsBySubjectIDs)
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)
 	b.AddHandler(h.HandleListShopExtendeds)
 	b.AddHandler(h.HandleListShopsByIDs)

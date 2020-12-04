@@ -7,12 +7,12 @@ package sqlstore
 import (
 	time "time"
 
+	identity "o.o/api/main/identity"
 	account_type "o.o/api/top/types/etc/account_type"
 	ghn_note_code "o.o/api/top/types/etc/ghn_note_code"
 	status3 "o.o/api/top/types/etc/status3"
 	try_on "o.o/api/top/types/etc/try_on"
 	user_source "o.o/api/top/types/etc/user_source"
-	identitymodel "o.o/backend/com/main/identity/model"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
@@ -1255,7 +1255,7 @@ func (ft *PartnerRelationFilters) BySubjectIDPtr(SubjectID *dot.ID) *sq.ColumnFi
 	}
 }
 
-func (ft *PartnerRelationFilters) BySubjectType(SubjectType identitymodel.SubjectType) *sq.ColumnFilter {
+func (ft *PartnerRelationFilters) BySubjectType(SubjectType identity.SubjectType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "subject_type",
@@ -1264,7 +1264,7 @@ func (ft *PartnerRelationFilters) BySubjectType(SubjectType identitymodel.Subjec
 	}
 }
 
-func (ft *PartnerRelationFilters) BySubjectTypePtr(SubjectType *identitymodel.SubjectType) *sq.ColumnFilterPtr {
+func (ft *PartnerRelationFilters) BySubjectTypePtr(SubjectType *identity.SubjectType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "subject_type",

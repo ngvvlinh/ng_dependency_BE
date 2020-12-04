@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/account_tag"
 	"o.o/api/top/types/etc/account_type"
 	com "o.o/backend/com/main"
@@ -204,7 +205,7 @@ func (st *PartnerStore) GetPartnersFromRelation(ctx context.Context, query *iden
 
 	var partnerIDs []dot.ID
 	if err := st.query().SQL(`SELECT array_agg(partner_id) FROM partner_relation`).
-		Where("subject_type = ?", identitymodel.SubjectTypeAccount).
+		Where("subject_type = ?", identity.SubjectTypeAccount).
 		In("subject_id", query.AccountIDs).
 		Scan(core.ArrayScanner(&partnerIDs)); err != nil {
 		return err
@@ -233,7 +234,7 @@ func (st *PartnerStore) CreatePartnerRelation(ctx context.Context, cmd *identity
 			AuthKey:           key,
 			PartnerID:         cmd.PartnerID,
 			SubjectID:         cmd.AccountID,
-			SubjectType:       identitymodel.SubjectTypeAccount,
+			SubjectType:       identity.SubjectTypeAccount,
 			ExternalSubjectID: cmd.ExternalID,
 			Nonce:             cm.NewID(), // TODO: use crypto/rand
 			Status:            1,
@@ -247,7 +248,7 @@ func (st *PartnerStore) CreatePartnerRelation(ctx context.Context, cmd *identity
 			AuthKey:           key,
 			PartnerID:         cmd.PartnerID,
 			SubjectID:         cmd.UserID,
-			SubjectType:       identitymodel.SubjectTypeUser,
+			SubjectType:       identity.SubjectTypeUser,
 			ExternalSubjectID: cmd.ExternalID,
 			Nonce:             cm.NewID(), // TODO: use crypto/rand
 			Status:            1,
@@ -265,7 +266,7 @@ func (st *PartnerStore) UpdatePartnerRelationCommand(ctx context.Context, cmd *i
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing required params")
 	}
 
-	return st.query().Where("subject_type = ?", identitymodel.SubjectTypeAccount).
+	return st.query().Where("subject_type = ?", identity.SubjectTypeAccount).
 		Where("partner_id = ?", cmd.PartnerID).
 		Where("subject_id = ?", cmd.AccountID).
 		Where("external_subject_id IS NULL").
