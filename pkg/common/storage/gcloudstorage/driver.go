@@ -87,6 +87,14 @@ func (b *Driver) Name() string {
 	return b.bucketName
 }
 
+func (b *Driver) Client() *gstorage.Client {
+	return b.client
+}
+
+func (b *Driver) Bucket() *gstorage.BucketHandle {
+	return b.bucket
+}
+
 func (b *Driver) OpenForWrite(ctx context.Context, path string) (io.WriteCloser, error) {
 	obj := b.bucket.Object(path)
 	return obj.NewWriter(ctx), nil
