@@ -5,10 +5,12 @@ import (
 	"time"
 
 	"o.o/api/etelecom"
+	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/etelecom/convert"
 	"o.o/backend/com/etelecom/model"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -40,6 +42,11 @@ func (s *HotlineStore) ID(id dot.ID) *HotlineStore {
 	return s
 }
 
+func (s *HotlineStore) OptionalStatus(status status3.Status) *HotlineStore {
+	s.preds = append(s.preds, s.ft.ByStatus(status).Optional())
+	return s
+}
+
 func (s *HotlineStore) OptionalOwnerID(userid dot.ID) *HotlineStore {
 	s.preds = append(s.preds, s.ft.ByOwnerID(userid).Optional())
 	return s
@@ -47,6 +54,16 @@ func (s *HotlineStore) OptionalOwnerID(userid dot.ID) *HotlineStore {
 
 func (s *HotlineStore) OptionalConnectionID(connID dot.ID) *HotlineStore {
 	s.preds = append(s.preds, s.ft.ByConnectionID(connID).Optional())
+	return s
+}
+
+func (s *HotlineStore) ConnectionID(connID dot.ID) *HotlineStore {
+	s.preds = append(s.preds, s.ft.ByConnectionID(connID))
+	return s
+}
+
+func (s *HotlineStore) ConnectionIDs(connIDs ...dot.ID) *HotlineStore {
+	s.preds = append(s.preds, sq.In("connection_id", connIDs))
 	return s
 }
 

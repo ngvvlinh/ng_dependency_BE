@@ -13,6 +13,7 @@ const (
 	ChannelSMS             = "sms"
 	ChannelDataWarehouse   = "etl"
 	ChannelShipmentCarrier = "shipment_carrier"
+	ChannelTelecomProvider = "telecom_provider"
 	ChannelHigh            = "high"
 	ChannelDeploy          = "deploy"
 )

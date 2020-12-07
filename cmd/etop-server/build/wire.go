@@ -25,7 +25,6 @@ import (
 	telecom_all "o.o/backend/cogs/telecom/_all"
 	ticket_all "o.o/backend/cogs/ticket/_all"
 	_uploader "o.o/backend/cogs/uploader"
-	"o.o/backend/com/etelecom"
 	"o.o/backend/com/eventhandler/notifier"
 	paymentmanager "o.o/backend/com/external/payment/manager"
 	"o.o/backend/com/main/address"
@@ -175,7 +174,6 @@ func Build(
 		shipnow.WireSet,
 		webserver.WireSet,
 		subscripting.WireSet,
-		etelecom.WireSet,
 		saffapi.WireSet,
 		affapi.WireSet,
 		partner.WireSet,

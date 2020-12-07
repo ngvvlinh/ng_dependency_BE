@@ -18,6 +18,7 @@ type Aggregate interface {
 type QueryService interface {
 	GetContactByID(context.Context, *GetContactByIDArgs) (*Contact, error)
 	GetContacts(context.Context, *GetContactsArgs) (*GetContactsResponse, error)
+	GetContactsByPhone(context.Context, *GetContactsByPhoneArgs) ([]*Contact, error)
 }
 
 //-- queries --//
@@ -32,6 +33,11 @@ type GetContactsArgs struct {
 	Phone  string
 
 	Paging meta.Paging
+}
+
+type GetContactsByPhoneArgs struct {
+	ShopID dot.ID
+	Phone  string
 }
 
 type GetContactsResponse struct {

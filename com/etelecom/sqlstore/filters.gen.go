@@ -7,10 +7,370 @@ package sqlstore
 import (
 	time "time"
 
+	call_log_direction "o.o/api/etelecom/call_log_direction"
+	call_state "o.o/api/etelecom/call_state"
 	connection_type "o.o/api/top/types/etc/connection_type"
+	status3 "o.o/api/top/types/etc/status3"
+	status5 "o.o/api/top/types/etc/status5"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
+
+type CallLogFilters struct{ prefix string }
+
+func NewCallLogFilters(prefix string) CallLogFilters {
+	return CallLogFilters{prefix}
+}
+
+func (ft *CallLogFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft CallLogFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *CallLogFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft *CallLogFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
+func (ft *CallLogFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "account_id",
+		Value:  AccountID,
+		IsNil:  AccountID == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "account_id",
+		Value:  AccountID,
+		IsNil:  AccountID == nil,
+		IsZero: AccountID != nil && (*AccountID) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByStartedAt(StartedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "started_at",
+		Value:  StartedAt,
+		IsNil:  StartedAt.IsZero(),
+	}
+}
+
+func (ft *CallLogFilters) ByStartedAtPtr(StartedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "started_at",
+		Value:  StartedAt,
+		IsNil:  StartedAt == nil,
+		IsZero: StartedAt != nil && (*StartedAt).IsZero(),
+	}
+}
+
+func (ft *CallLogFilters) ByEndedAt(EndedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ended_at",
+		Value:  EndedAt,
+		IsNil:  EndedAt.IsZero(),
+	}
+}
+
+func (ft *CallLogFilters) ByEndedAtPtr(EndedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ended_at",
+		Value:  EndedAt,
+		IsNil:  EndedAt == nil,
+		IsZero: EndedAt != nil && (*EndedAt).IsZero(),
+	}
+}
+
+func (ft *CallLogFilters) ByDuration(Duration int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "duration",
+		Value:  Duration,
+		IsNil:  Duration == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByDurationPtr(Duration *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "duration",
+		Value:  Duration,
+		IsNil:  Duration == nil,
+		IsZero: Duration != nil && (*Duration) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByCaller(Caller string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "caller",
+		Value:  Caller,
+		IsNil:  Caller == "",
+	}
+}
+
+func (ft *CallLogFilters) ByCallerPtr(Caller *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "caller",
+		Value:  Caller,
+		IsNil:  Caller == nil,
+		IsZero: Caller != nil && (*Caller) == "",
+	}
+}
+
+func (ft *CallLogFilters) ByCallee(Callee string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "callee",
+		Value:  Callee,
+		IsNil:  Callee == "",
+	}
+}
+
+func (ft *CallLogFilters) ByCalleePtr(Callee *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "callee",
+		Value:  Callee,
+		IsNil:  Callee == nil,
+		IsZero: Callee != nil && (*Callee) == "",
+	}
+}
+
+func (ft *CallLogFilters) ByExternalDirection(ExternalDirection string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_direction",
+		Value:  ExternalDirection,
+		IsNil:  ExternalDirection == "",
+	}
+}
+
+func (ft *CallLogFilters) ByExternalDirectionPtr(ExternalDirection *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_direction",
+		Value:  ExternalDirection,
+		IsNil:  ExternalDirection == nil,
+		IsZero: ExternalDirection != nil && (*ExternalDirection) == "",
+	}
+}
+
+func (ft *CallLogFilters) ByDirection(Direction call_log_direction.CallLogDirection) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "direction",
+		Value:  Direction,
+		IsNil:  Direction == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByDirectionPtr(Direction *call_log_direction.CallLogDirection) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "direction",
+		Value:  Direction,
+		IsNil:  Direction == nil,
+		IsZero: Direction != nil && (*Direction) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByExtensionID(ExtensionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "extension_id",
+		Value:  ExtensionID,
+		IsNil:  ExtensionID == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByExtensionIDPtr(ExtensionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "extension_id",
+		Value:  ExtensionID,
+		IsNil:  ExtensionID == nil,
+		IsZero: ExtensionID != nil && (*ExtensionID) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByHotlineID(HotlineID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "hotline_id",
+		Value:  HotlineID,
+		IsNil:  HotlineID == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByHotlineIDPtr(HotlineID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "hotline_id",
+		Value:  HotlineID,
+		IsNil:  HotlineID == nil,
+		IsZero: HotlineID != nil && (*HotlineID) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByExternalCallStatus(ExternalCallStatus string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_call_status",
+		Value:  ExternalCallStatus,
+		IsNil:  ExternalCallStatus == "",
+	}
+}
+
+func (ft *CallLogFilters) ByExternalCallStatusPtr(ExternalCallStatus *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_call_status",
+		Value:  ExternalCallStatus,
+		IsNil:  ExternalCallStatus == nil,
+		IsZero: ExternalCallStatus != nil && (*ExternalCallStatus) == "",
+	}
+}
+
+func (ft *CallLogFilters) ByContactID(ContactID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "contact_id",
+		Value:  ContactID,
+		IsNil:  ContactID == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByContactIDPtr(ContactID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "contact_id",
+		Value:  ContactID,
+		IsNil:  ContactID == nil,
+		IsZero: ContactID != nil && (*ContactID) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *CallLogFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *CallLogFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *CallLogFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *CallLogFilters) ByCallState(CallState call_state.CallState) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "call_state",
+		Value:  CallState,
+		IsNil:  CallState == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByCallStatePtr(CallState *call_state.CallState) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "call_state",
+		Value:  CallState,
+		IsNil:  CallState == nil,
+		IsZero: CallState != nil && (*CallState) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByCallStatus(CallStatus status5.Status) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "call_status",
+		Value:  CallStatus,
+		IsNil:  CallStatus == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByCallStatusPtr(CallStatus *status5.Status) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "call_status",
+		Value:  CallStatus,
+		IsNil:  CallStatus == nil,
+		IsZero: CallStatus != nil && (*CallStatus) == 0,
+	}
+}
 
 type ExtensionFilters struct{ prefix string }
 
@@ -140,44 +500,6 @@ func (ft *ExtensionFilters) ByExtensionPasswordPtr(ExtensionPassword *string) *s
 	}
 }
 
-func (ft *ExtensionFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "connection_id",
-		Value:  ConnectionID,
-		IsNil:  ConnectionID == 0,
-	}
-}
-
-func (ft *ExtensionFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "connection_id",
-		Value:  ConnectionID,
-		IsNil:  ConnectionID == nil,
-		IsZero: ConnectionID != nil && (*ConnectionID) == 0,
-	}
-}
-
-func (ft *ExtensionFilters) ByConnectionMethod(ConnectionMethod connection_type.ConnectionMethod) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "connection_method",
-		Value:  ConnectionMethod,
-		IsNil:  ConnectionMethod == 0,
-	}
-}
-
-func (ft *ExtensionFilters) ByConnectionMethodPtr(ConnectionMethod *connection_type.ConnectionMethod) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "connection_method",
-		Value:  ConnectionMethod,
-		IsNil:  ConnectionMethod == nil,
-		IsZero: ConnectionMethod != nil && (*ConnectionMethod) == 0,
-	}
-}
-
 func (ft *ExtensionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -284,6 +606,25 @@ func (ft *HotlineFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
 		Value:  OwnerID,
 		IsNil:  OwnerID == nil,
 		IsZero: OwnerID != nil && (*OwnerID) == 0,
+	}
+}
+
+func (ft *HotlineFilters) ByName(Name string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == "",
+	}
+}
+
+func (ft *HotlineFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == nil,
+		IsZero: Name != nil && (*Name) == "",
 	}
 }
 
@@ -417,6 +758,44 @@ func (ft *HotlineFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterP
 		Value:  DeletedAt,
 		IsNil:  DeletedAt == nil,
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+func (ft *HotlineFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *HotlineFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
+	}
+}
+
+func (ft *HotlineFilters) ByDescription(Description string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "description",
+		Value:  Description,
+		IsNil:  Description == "",
+	}
+}
+
+func (ft *HotlineFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "description",
+		Value:  Description,
+		IsNil:  Description == nil,
+		IsZero: Description != nil && (*Description) == "",
 	}
 }
 

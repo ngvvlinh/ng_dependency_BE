@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"o.o/api/etelecom"
+	"o.o/api/main/contact"
 	"o.o/api/main/identity"
 	"o.o/backend/com/etelecom/convert"
 	telecomprovider "o.o/backend/com/etelecom/provider"
@@ -21,19 +22,23 @@ type EtelecomAggregate struct {
 	eventBus       capi.EventBus
 	hotlineStore   sqlstore.HotlineStoreFactory
 	extensionStore sqlstore.ExtensionStoreFactory
+	callLogStore   sqlstore.CallLogStoreFactory
+	contactQuery   contact.QueryBus
 	identityQuery  identity.QueryBus
 	telecomManager *telecomprovider.TelecomManager
 }
 
 func NewEtelecomAggregate(
 	dbEtelecom com.EtelecomDB, eventBus capi.EventBus,
-	telecomManager *telecomprovider.TelecomManager,
+	contactQS contact.QueryBus, telecomManager *telecomprovider.TelecomManager,
 ) *EtelecomAggregate {
 	return &EtelecomAggregate{
 		txDB:           (*cmsql.Database)(dbEtelecom),
 		eventBus:       eventBus,
+		contactQuery:   contactQS,
 		hotlineStore:   sqlstore.NewHotlineStore(dbEtelecom),
 		extensionStore: sqlstore.NewExtensionStore(dbEtelecom),
+		callLogStore:   sqlstore.NewCallLogStore(dbEtelecom),
 		telecomManager: telecomManager,
 	}
 }

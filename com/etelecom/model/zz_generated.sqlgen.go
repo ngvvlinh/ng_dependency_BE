@@ -27,11 +27,590 @@ func SQLVerifySchema(db *cmsql.Database) {
 
 type SQLWriter = core.SQLWriter
 
+type CallLogs []*CallLog
+
+const __sqlCallLog_Table = "call_log"
+const __sqlCallLog_ListCols = "\"id\",\"external_id\",\"account_id\",\"started_at\",\"ended_at\",\"duration\",\"caller\",\"callee\",\"audio_urls\",\"external_direction\",\"direction\",\"extension_id\",\"hotline_id\",\"external_call_status\",\"contact_id\",\"created_at\",\"updated_at\",\"call_state\",\"call_status\""
+const __sqlCallLog_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_id\" = EXCLUDED.\"external_id\",\"account_id\" = EXCLUDED.\"account_id\",\"started_at\" = EXCLUDED.\"started_at\",\"ended_at\" = EXCLUDED.\"ended_at\",\"duration\" = EXCLUDED.\"duration\",\"caller\" = EXCLUDED.\"caller\",\"callee\" = EXCLUDED.\"callee\",\"audio_urls\" = EXCLUDED.\"audio_urls\",\"external_direction\" = EXCLUDED.\"external_direction\",\"direction\" = EXCLUDED.\"direction\",\"extension_id\" = EXCLUDED.\"extension_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"external_call_status\" = EXCLUDED.\"external_call_status\",\"contact_id\" = EXCLUDED.\"contact_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"call_state\" = EXCLUDED.\"call_state\",\"call_status\" = EXCLUDED.\"call_status\""
+const __sqlCallLog_Insert = "INSERT INTO \"call_log\" (" + __sqlCallLog_ListCols + ") VALUES"
+const __sqlCallLog_Select = "SELECT " + __sqlCallLog_ListCols + " FROM \"call_log\""
+const __sqlCallLog_Select_history = "SELECT " + __sqlCallLog_ListCols + " FROM history.\"call_log\""
+const __sqlCallLog_UpdateAll = "UPDATE \"call_log\" SET (" + __sqlCallLog_ListCols + ")"
+const __sqlCallLog_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT call_log_pkey DO UPDATE SET"
+
+func (m *CallLog) SQLTableName() string  { return "call_log" }
+func (m *CallLogs) SQLTableName() string { return "call_log" }
+func (m *CallLog) SQLListCols() string   { return __sqlCallLog_ListCols }
+
+func (m *CallLog) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlCallLog_ListCols + " FROM \"call_log\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *CallLog) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "call_log"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_id": {
+			ColumnName:       "external_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"account_id": {
+			ColumnName:       "account_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"started_at": {
+			ColumnName:       "started_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"ended_at": {
+			ColumnName:       "ended_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"duration": {
+			ColumnName:       "duration",
+			ColumnType:       "int",
+			ColumnDBType:     "int",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"caller": {
+			ColumnName:       "caller",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"callee": {
+			ColumnName:       "callee",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"audio_urls": {
+			ColumnName:       "audio_urls",
+			ColumnType:       "[]string",
+			ColumnDBType:     "[]string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_direction": {
+			ColumnName:       "external_direction",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"direction": {
+			ColumnName:       "direction",
+			ColumnType:       "call_log_direction.CallLogDirection",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "in", "out", "ext"},
+		},
+		"extension_id": {
+			ColumnName:       "extension_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"hotline_id": {
+			ColumnName:       "hotline_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_call_status": {
+			ColumnName:       "external_call_status",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"contact_id": {
+			ColumnName:       "contact_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"call_state": {
+			ColumnName:       "call_state",
+			ColumnType:       "call_state.CallState",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "answered", "not_answered"},
+		},
+		"call_status": {
+			ColumnName:       "call_status",
+			ColumnType:       "status5.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "S", "N", "NS"},
+		},
+	}
+	if err := migration.Compare(db, "call_log", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*CallLog)(nil))
+}
+
+func (m *CallLog) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		m.ID,
+		core.String(m.ExternalID),
+		m.AccountID,
+		core.Time(m.StartedAt),
+		core.Time(m.EndedAt),
+		core.Int(m.Duration),
+		core.String(m.Caller),
+		core.String(m.Callee),
+		core.Array{m.AudioURLs, opts},
+		core.String(m.ExternalDirection),
+		m.Direction,
+		m.ExtensionID,
+		m.HotlineID,
+		core.String(m.ExternalCallStatus),
+		m.ContactID,
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+		m.CallState,
+		m.CallStatus,
+	}
+}
+
+func (m *CallLog) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		&m.ID,
+		(*core.String)(&m.ExternalID),
+		&m.AccountID,
+		(*core.Time)(&m.StartedAt),
+		(*core.Time)(&m.EndedAt),
+		(*core.Int)(&m.Duration),
+		(*core.String)(&m.Caller),
+		(*core.String)(&m.Callee),
+		core.Array{&m.AudioURLs, opts},
+		(*core.String)(&m.ExternalDirection),
+		&m.Direction,
+		&m.ExtensionID,
+		&m.HotlineID,
+		(*core.String)(&m.ExternalCallStatus),
+		&m.ContactID,
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+		&m.CallState,
+		&m.CallStatus,
+	}
+}
+
+func (m *CallLog) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *CallLogs) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(CallLogs, 0, 128)
+	for rows.Next() {
+		m := new(CallLog)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *CallLog) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlCallLog_Select)
+	return nil
+}
+
+func (_ *CallLogs) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlCallLog_Select)
+	return nil
+}
+
+func (m *CallLog) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlCallLog_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(19)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms CallLogs) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlCallLog_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(19)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *CallLog) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlCallLog_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCallLog_ListColsOnConflict)
+	return nil
+}
+
+func (ms CallLogs) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlCallLog_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlCallLog_ListColsOnConflict)
+	return nil
+}
+
+func (m *CallLog) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("call_log")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.ExternalID != "" {
+		flag = true
+		w.WriteName("external_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExternalID)
+	}
+	if m.AccountID != 0 {
+		flag = true
+		w.WriteName("account_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AccountID)
+	}
+	if !m.StartedAt.IsZero() {
+		flag = true
+		w.WriteName("started_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.StartedAt)
+	}
+	if !m.EndedAt.IsZero() {
+		flag = true
+		w.WriteName("ended_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.EndedAt)
+	}
+	if m.Duration != 0 {
+		flag = true
+		w.WriteName("duration")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Duration)
+	}
+	if m.Caller != "" {
+		flag = true
+		w.WriteName("caller")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Caller)
+	}
+	if m.Callee != "" {
+		flag = true
+		w.WriteName("callee")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Callee)
+	}
+	if m.AudioURLs != nil {
+		flag = true
+		w.WriteName("audio_urls")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.AudioURLs, opts})
+	}
+	if m.ExternalDirection != "" {
+		flag = true
+		w.WriteName("external_direction")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExternalDirection)
+	}
+	if m.Direction != 0 {
+		flag = true
+		w.WriteName("direction")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Direction)
+	}
+	if m.ExtensionID != 0 {
+		flag = true
+		w.WriteName("extension_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExtensionID)
+	}
+	if m.HotlineID != 0 {
+		flag = true
+		w.WriteName("hotline_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.HotlineID)
+	}
+	if m.ExternalCallStatus != "" {
+		flag = true
+		w.WriteName("external_call_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExternalCallStatus)
+	}
+	if m.ContactID != 0 {
+		flag = true
+		w.WriteName("contact_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ContactID)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if true { // always update time
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if m.CallState != 0 {
+		flag = true
+		w.WriteName("call_state")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CallState)
+	}
+	if m.CallStatus != 0 {
+		flag = true
+		w.WriteName("call_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CallStatus)
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *CallLog) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlCallLog_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(19)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type CallLogHistory map[string]interface{}
+type CallLogHistories []map[string]interface{}
+
+func (m *CallLogHistory) SQLTableName() string  { return "history.\"call_log\"" }
+func (m CallLogHistories) SQLTableName() string { return "history.\"call_log\"" }
+
+func (m *CallLogHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlCallLog_Select_history)
+	return nil
+}
+
+func (m CallLogHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlCallLog_Select_history)
+	return nil
+}
+
+func (m CallLogHistory) ID() core.Interface         { return core.Interface{m["id"]} }
+func (m CallLogHistory) ExternalID() core.Interface { return core.Interface{m["external_id"]} }
+func (m CallLogHistory) AccountID() core.Interface  { return core.Interface{m["account_id"]} }
+func (m CallLogHistory) StartedAt() core.Interface  { return core.Interface{m["started_at"]} }
+func (m CallLogHistory) EndedAt() core.Interface    { return core.Interface{m["ended_at"]} }
+func (m CallLogHistory) Duration() core.Interface   { return core.Interface{m["duration"]} }
+func (m CallLogHistory) Caller() core.Interface     { return core.Interface{m["caller"]} }
+func (m CallLogHistory) Callee() core.Interface     { return core.Interface{m["callee"]} }
+func (m CallLogHistory) AudioURLs() core.Interface  { return core.Interface{m["audio_urls"]} }
+func (m CallLogHistory) ExternalDirection() core.Interface {
+	return core.Interface{m["external_direction"]}
+}
+func (m CallLogHistory) Direction() core.Interface   { return core.Interface{m["direction"]} }
+func (m CallLogHistory) ExtensionID() core.Interface { return core.Interface{m["extension_id"]} }
+func (m CallLogHistory) HotlineID() core.Interface   { return core.Interface{m["hotline_id"]} }
+func (m CallLogHistory) ExternalCallStatus() core.Interface {
+	return core.Interface{m["external_call_status"]}
+}
+func (m CallLogHistory) ContactID() core.Interface  { return core.Interface{m["contact_id"]} }
+func (m CallLogHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
+func (m CallLogHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
+func (m CallLogHistory) CallState() core.Interface  { return core.Interface{m["call_state"]} }
+func (m CallLogHistory) CallStatus() core.Interface { return core.Interface{m["call_status"]} }
+
+func (m *CallLogHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 19)
+	args := make([]interface{}, 19)
+	for i := 0; i < 19; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(CallLogHistory, 19)
+	res["id"] = data[0]
+	res["external_id"] = data[1]
+	res["account_id"] = data[2]
+	res["started_at"] = data[3]
+	res["ended_at"] = data[4]
+	res["duration"] = data[5]
+	res["caller"] = data[6]
+	res["callee"] = data[7]
+	res["audio_urls"] = data[8]
+	res["external_direction"] = data[9]
+	res["direction"] = data[10]
+	res["extension_id"] = data[11]
+	res["hotline_id"] = data[12]
+	res["external_call_status"] = data[13]
+	res["contact_id"] = data[14]
+	res["created_at"] = data[15]
+	res["updated_at"] = data[16]
+	res["call_state"] = data[17]
+	res["call_status"] = data[18]
+	*m = res
+	return nil
+}
+
+func (ms *CallLogHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 19)
+	args := make([]interface{}, 19)
+	for i := 0; i < 19; i++ {
+		args[i] = &data[i]
+	}
+	res := make(CallLogHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(CallLogHistory)
+		m["id"] = data[0]
+		m["external_id"] = data[1]
+		m["account_id"] = data[2]
+		m["started_at"] = data[3]
+		m["ended_at"] = data[4]
+		m["duration"] = data[5]
+		m["caller"] = data[6]
+		m["callee"] = data[7]
+		m["audio_urls"] = data[8]
+		m["external_direction"] = data[9]
+		m["direction"] = data[10]
+		m["extension_id"] = data[11]
+		m["hotline_id"] = data[12]
+		m["external_call_status"] = data[13]
+		m["contact_id"] = data[14]
+		m["created_at"] = data[15]
+		m["updated_at"] = data[16]
+		m["call_state"] = data[17]
+		m["call_status"] = data[18]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
 type Extensions []*Extension
 
 const __sqlExtension_Table = "extension"
-const __sqlExtension_ListCols = "\"id\",\"user_id\",\"account_id\",\"hotline_id\",\"extension_number\",\"extension_password\",\"external_data\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlExtension_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"extension_number\" = EXCLUDED.\"extension_number\",\"extension_password\" = EXCLUDED.\"extension_password\",\"external_data\" = EXCLUDED.\"external_data\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlExtension_ListCols = "\"id\",\"user_id\",\"account_id\",\"hotline_id\",\"extension_number\",\"extension_password\",\"external_data\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlExtension_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"extension_number\" = EXCLUDED.\"extension_number\",\"extension_password\" = EXCLUDED.\"extension_password\",\"external_data\" = EXCLUDED.\"external_data\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlExtension_Insert = "INSERT INTO \"extension\" (" + __sqlExtension_ListCols + ") VALUES"
 const __sqlExtension_Select = "SELECT " + __sqlExtension_ListCols + " FROM \"extension\""
 const __sqlExtension_Select_history = "SELECT " + __sqlExtension_ListCols + " FROM history.\"extension\""
@@ -107,20 +686,6 @@ func (m *Extension) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
-		"connection_id": {
-			ColumnName:       "connection_id",
-			ColumnType:       "dot.ID",
-			ColumnDBType:     "int64",
-			ColumnTag:        "",
-			ColumnEnumValues: []string{},
-		},
-		"connection_method": {
-			ColumnName:       "connection_method",
-			ColumnType:       "connection_type.ConnectionMethod",
-			ColumnDBType:     "enum",
-			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "builtin", "topship", "direct"},
-		},
 		"created_at": {
 			ColumnName:       "created_at",
 			ColumnType:       "time.Time",
@@ -162,8 +727,6 @@ func (m *Extension) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ExtensionNumber),
 		core.String(m.ExtensionPassword),
 		core.JSON{m.ExternalData},
-		m.ConnectionID,
-		m.ConnectionMethod,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -179,8 +742,6 @@ func (m *Extension) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ExtensionNumber),
 		(*core.String)(&m.ExtensionPassword),
 		core.JSON{&m.ExternalData},
-		&m.ConnectionID,
-		&m.ConnectionMethod,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
@@ -221,7 +782,7 @@ func (_ *Extensions) SQLSelect(w SQLWriter) error {
 func (m *Extension) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(10)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -231,7 +792,7 @@ func (ms Extensions) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(12)
+		w.WriteMarkers(10)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -318,22 +879,6 @@ func (m *Extension) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.ExternalData})
 	}
-	if m.ConnectionID != 0 {
-		flag = true
-		w.WriteName("connection_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ConnectionID)
-	}
-	if m.ConnectionMethod != 0 {
-		flag = true
-		w.WriteName("connection_method")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ConnectionMethod)
-	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -368,7 +913,7 @@ func (m *Extension) SQLUpdate(w SQLWriter) error {
 func (m *Extension) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(10)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -401,24 +946,20 @@ func (m ExtensionHistory) ExtensionPassword() core.Interface {
 	return core.Interface{m["extension_password"]}
 }
 func (m ExtensionHistory) ExternalData() core.Interface { return core.Interface{m["external_data"]} }
-func (m ExtensionHistory) ConnectionID() core.Interface { return core.Interface{m["connection_id"]} }
-func (m ExtensionHistory) ConnectionMethod() core.Interface {
-	return core.Interface{m["connection_method"]}
-}
-func (m ExtensionHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m ExtensionHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
-func (m ExtensionHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m ExtensionHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
+func (m ExtensionHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m ExtensionHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
 
 func (m *ExtensionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ExtensionHistory, 12)
+	res := make(ExtensionHistory, 10)
 	res["id"] = data[0]
 	res["user_id"] = data[1]
 	res["account_id"] = data[2]
@@ -426,19 +967,17 @@ func (m *ExtensionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["extension_number"] = data[4]
 	res["extension_password"] = data[5]
 	res["external_data"] = data[6]
-	res["connection_id"] = data[7]
-	res["connection_method"] = data[8]
-	res["created_at"] = data[9]
-	res["updated_at"] = data[10]
-	res["deleted_at"] = data[11]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
+	res["deleted_at"] = data[9]
 	*m = res
 	return nil
 }
 
 func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ExtensionHistories, 0, 128)
@@ -454,11 +993,9 @@ func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["extension_number"] = data[4]
 		m["extension_password"] = data[5]
 		m["external_data"] = data[6]
-		m["connection_id"] = data[7]
-		m["connection_method"] = data[8]
-		m["created_at"] = data[9]
-		m["updated_at"] = data[10]
-		m["deleted_at"] = data[11]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
+		m["deleted_at"] = data[9]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -471,8 +1008,8 @@ func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type Hotlines []*Hotline
 
 const __sqlHotline_Table = "hotline"
-const __sqlHotline_ListCols = "\"id\",\"owner_id\",\"hotline\",\"network\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlHotline_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"hotline\" = EXCLUDED.\"hotline\",\"network\" = EXCLUDED.\"network\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlHotline_ListCols = "\"id\",\"owner_id\",\"name\",\"hotline\",\"network\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\",\"status\",\"description\""
+const __sqlHotline_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"hotline\" = EXCLUDED.\"hotline\",\"network\" = EXCLUDED.\"network\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"status\" = EXCLUDED.\"status\",\"description\" = EXCLUDED.\"description\""
 const __sqlHotline_Insert = "INSERT INTO \"hotline\" (" + __sqlHotline_ListCols + ") VALUES"
 const __sqlHotline_Select = "SELECT " + __sqlHotline_ListCols + " FROM \"hotline\""
 const __sqlHotline_Select_history = "SELECT " + __sqlHotline_ListCols + " FROM history.\"hotline\""
@@ -510,6 +1047,13 @@ func (m *Hotline) Migration(db *cmsql.Database) {
 			ColumnName:       "owner_id",
 			ColumnType:       "dot.ID",
 			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"name": {
+			ColumnName:       "name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -562,6 +1106,20 @@ func (m *Hotline) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"description": {
+			ColumnName:       "description",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "hotline", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -577,6 +1135,7 @@ func (m *Hotline) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		m.ID,
 		m.OwnerID,
+		core.String(m.Name),
 		core.String(m.Hotline),
 		core.String(m.Network),
 		m.ConnectionID,
@@ -584,6 +1143,8 @@ func (m *Hotline) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		m.Status,
+		core.String(m.Description),
 	}
 }
 
@@ -591,6 +1152,7 @@ func (m *Hotline) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
 		&m.OwnerID,
+		(*core.String)(&m.Name),
 		(*core.String)(&m.Hotline),
 		(*core.String)(&m.Network),
 		&m.ConnectionID,
@@ -598,6 +1160,8 @@ func (m *Hotline) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		&m.Status,
+		(*core.String)(&m.Description),
 	}
 }
 
@@ -635,7 +1199,7 @@ func (_ *Hotlines) SQLSelect(w SQLWriter) error {
 func (m *Hotline) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -645,7 +1209,7 @@ func (ms Hotlines) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(9)
+		w.WriteMarkers(12)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -691,6 +1255,14 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.OwnerID)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
 	}
 	if m.Hotline != "" {
 		flag = true
@@ -748,6 +1320,22 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.Status != 0 {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Status)
+	}
+	if m.Description != "" {
+		flag = true
+		w.WriteName("description")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Description)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -758,7 +1346,7 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 func (m *Hotline) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -782,43 +1370,49 @@ func (m HotlineHistories) SQLSelect(w SQLWriter) error {
 
 func (m HotlineHistory) ID() core.Interface           { return core.Interface{m["id"]} }
 func (m HotlineHistory) OwnerID() core.Interface      { return core.Interface{m["owner_id"]} }
+func (m HotlineHistory) Name() core.Interface         { return core.Interface{m["name"]} }
 func (m HotlineHistory) Hotline() core.Interface      { return core.Interface{m["hotline"]} }
 func (m HotlineHistory) Network() core.Interface      { return core.Interface{m["network"]} }
 func (m HotlineHistory) ConnectionID() core.Interface { return core.Interface{m["connection_id"]} }
 func (m HotlineHistory) ConnectionMethod() core.Interface {
 	return core.Interface{m["connection_method"]}
 }
-func (m HotlineHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m HotlineHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
-func (m HotlineHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m HotlineHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m HotlineHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m HotlineHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
+func (m HotlineHistory) Status() core.Interface      { return core.Interface{m["status"]} }
+func (m HotlineHistory) Description() core.Interface { return core.Interface{m["description"]} }
 
 func (m *HotlineHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(HotlineHistory, 9)
+	res := make(HotlineHistory, 12)
 	res["id"] = data[0]
 	res["owner_id"] = data[1]
-	res["hotline"] = data[2]
-	res["network"] = data[3]
-	res["connection_id"] = data[4]
-	res["connection_method"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
-	res["deleted_at"] = data[8]
+	res["name"] = data[2]
+	res["hotline"] = data[3]
+	res["network"] = data[4]
+	res["connection_id"] = data[5]
+	res["connection_method"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
+	res["deleted_at"] = data[9]
+	res["status"] = data[10]
+	res["description"] = data[11]
 	*m = res
 	return nil
 }
 
 func (ms *HotlineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	res := make(HotlineHistories, 0, 128)
@@ -829,13 +1423,16 @@ func (ms *HotlineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m := make(HotlineHistory)
 		m["id"] = data[0]
 		m["owner_id"] = data[1]
-		m["hotline"] = data[2]
-		m["network"] = data[3]
-		m["connection_id"] = data[4]
-		m["connection_method"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
-		m["deleted_at"] = data[8]
+		m["name"] = data[2]
+		m["hotline"] = data[3]
+		m["network"] = data[4]
+		m["connection_id"] = data[5]
+		m["connection_method"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
+		m["deleted_at"] = data[9]
+		m["status"] = data[10]
+		m["description"] = data[11]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

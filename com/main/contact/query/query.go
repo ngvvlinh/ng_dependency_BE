@@ -58,3 +58,16 @@ func (q *ContactQuery) GetContacts(
 		Paging:   query.GetPaging(),
 	}, nil
 }
+
+func (q *ContactQuery) GetContactsByPhone(
+	ctx context.Context, args *contact.GetContactsByPhoneArgs,
+) ([]*contact.Contact, error) {
+	if args.ShopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "shop_id is missing")
+	}
+	if args.Phone == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "phone is missing")
+	}
+
+	return q.store(ctx).ShopID(args.ShopID).Phone(args.Phone).ListContacts()
+}

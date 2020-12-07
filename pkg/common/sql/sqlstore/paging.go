@@ -34,7 +34,10 @@ const (
 	// +enum=created_at
 	PagingCreatedAt PagingField = 5
 
-	NumPagingField = int(PagingCreatedAt) + 1
+	// +enum=started_at
+	PagingStartedAt PagingField = 6
+
+	NumPagingField = int(PagingStartedAt) + 1
 )
 
 var pagingFieldDescs = map[PagingField]*PagingFieldDesc{
@@ -52,6 +55,14 @@ var pagingFieldDescs = map[PagingField]*PagingFieldDesc{
 		Encode: func(w io.Writer, v interface{}) error { return writeInt64(w, timex.Micros(v.(time.Time))) },
 	},
 	PagingCreatedAt: {
+		FromField: func(field reflect.Value) interface{} { return field.Interface().(time.Time) },
+		Decode: func(r io.Reader) (interface{}, error) {
+			v, err := readInt64(r)
+			return timex.FromMicros(v).In(time.UTC), err
+		},
+		Encode: func(w io.Writer, v interface{}) error { return writeInt64(w, timex.Micros(v.(time.Time))) },
+	},
+	PagingStartedAt: {
 		FromField: func(field reflect.Value) interface{} { return field.Interface().(time.Time) },
 		Decode: func(r io.Reader) (interface{}, error) {
 			v, err := readInt64(r)

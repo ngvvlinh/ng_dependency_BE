@@ -15,6 +15,7 @@ func DefaultConfig() cc.TelegramBot {
 			meta.ChannelHigh:            0,
 			meta.ChannelDeploy:          0,
 			meta.ChannelShipmentCarrier: 0,
+			meta.ChannelTelecomProvider: 0,
 		},
 	}
 }

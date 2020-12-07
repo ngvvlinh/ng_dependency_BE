@@ -798,7 +798,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	etelecomDB := databases.Etelecom
 	driver3 := _all.SupportedTelecomDriver(busBus)
-	queryService5 := query24.NewQueryService(etelecomDB)
+	queryService5 := query24.NewQueryService(etelecomDB, connectioningQueryBus)
 	etelecomQueryBus := query24.QueryServiceMessageBus(queryService5)
 	telecomManager, err := provider2.NewTelecomManager(busBus, connectionManager, driver3, connectioningQueryBus, connectioningCommandBus, queryBus, etelecomQueryBus)
 	if err != nil {
@@ -806,7 +806,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		cleanup()
 		return Output{}, nil, err
 	}
-	etelecomAggregate := aggregate22.NewEtelecomAggregate(etelecomDB, busBus, telecomManager)
+	etelecomAggregate := aggregate22.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager)
 	etelecomCommandBus := aggregate22.AggregateMessageBus(etelecomAggregate)
 	extensionService := &etelecom.ExtensionService{
 		Session:       session,

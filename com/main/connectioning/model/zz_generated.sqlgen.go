@@ -637,8 +637,8 @@ func (ms *ConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type ShopConnections []*ShopConnection
 
 const __sqlShopConnection_Table = "shop_connection"
-const __sqlShopConnection_ListCols = "\"owner_id\",\"shop_id\",\"connection_id\",\"token\",\"token_expires_at\",\"status\",\"connection_states\",\"created_at\",\"updated_at\",\"deleted_at\",\"is_global\",\"external_data\",\"telecom_data\""
-const __sqlShopConnection_ListColsOnConflict = "\"owner_id\" = EXCLUDED.\"owner_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"connection_id\" = EXCLUDED.\"connection_id\",\"token\" = EXCLUDED.\"token\",\"token_expires_at\" = EXCLUDED.\"token_expires_at\",\"status\" = EXCLUDED.\"status\",\"connection_states\" = EXCLUDED.\"connection_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"is_global\" = EXCLUDED.\"is_global\",\"external_data\" = EXCLUDED.\"external_data\",\"telecom_data\" = EXCLUDED.\"telecom_data\""
+const __sqlShopConnection_ListCols = "\"owner_id\",\"shop_id\",\"connection_id\",\"token\",\"token_expires_at\",\"status\",\"connection_states\",\"created_at\",\"updated_at\",\"deleted_at\",\"is_global\",\"external_data\",\"telecom_data\",\"last_sync_at\""
+const __sqlShopConnection_ListColsOnConflict = "\"owner_id\" = EXCLUDED.\"owner_id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"connection_id\" = EXCLUDED.\"connection_id\",\"token\" = EXCLUDED.\"token\",\"token_expires_at\" = EXCLUDED.\"token_expires_at\",\"status\" = EXCLUDED.\"status\",\"connection_states\" = EXCLUDED.\"connection_states\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"is_global\" = EXCLUDED.\"is_global\",\"external_data\" = EXCLUDED.\"external_data\",\"telecom_data\" = EXCLUDED.\"telecom_data\",\"last_sync_at\" = EXCLUDED.\"last_sync_at\""
 const __sqlShopConnection_Insert = "INSERT INTO \"shop_connection\" (" + __sqlShopConnection_ListCols + ") VALUES"
 const __sqlShopConnection_Select = "SELECT " + __sqlShopConnection_ListCols + " FROM \"shop_connection\""
 const __sqlShopConnection_Select_history = "SELECT " + __sqlShopConnection_ListCols + " FROM history.\"shop_connection\""
@@ -756,6 +756,13 @@ func (m *ShopConnection) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"last_sync_at": {
+			ColumnName:       "last_sync_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "shop_connection", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -782,6 +789,7 @@ func (m *ShopConnection) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Bool(m.IsGlobal),
 		core.JSON{m.ExternalData},
 		core.JSON{m.TelecomData},
+		core.Time(m.LastSyncAt),
 	}
 }
 
@@ -800,6 +808,7 @@ func (m *ShopConnection) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Bool)(&m.IsGlobal),
 		core.JSON{&m.ExternalData},
 		core.JSON{&m.TelecomData},
+		(*core.Time)(&m.LastSyncAt),
 	}
 }
 
@@ -837,7 +846,7 @@ func (_ *ShopConnections) SQLSelect(w SQLWriter) error {
 func (m *ShopConnection) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopConnection_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -847,7 +856,7 @@ func (ms ShopConnections) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopConnection_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(13)
+		w.WriteMarkers(14)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -982,6 +991,14 @@ func (m *ShopConnection) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.TelecomData})
 	}
+	if !m.LastSyncAt.IsZero() {
+		flag = true
+		w.WriteName("last_sync_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.LastSyncAt)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -992,7 +1009,7 @@ func (m *ShopConnection) SQLUpdate(w SQLWriter) error {
 func (m *ShopConnection) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopConnection_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1035,17 +1052,18 @@ func (m ShopConnectionHistory) ExternalData() core.Interface {
 	return core.Interface{m["external_data"]}
 }
 func (m ShopConnectionHistory) TelecomData() core.Interface { return core.Interface{m["telecom_data"]} }
+func (m ShopConnectionHistory) LastSyncAt() core.Interface  { return core.Interface{m["last_sync_at"]} }
 
 func (m *ShopConnectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopConnectionHistory, 13)
+	res := make(ShopConnectionHistory, 14)
 	res["owner_id"] = data[0]
 	res["shop_id"] = data[1]
 	res["connection_id"] = data[2]
@@ -1059,14 +1077,15 @@ func (m *ShopConnectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["is_global"] = data[10]
 	res["external_data"] = data[11]
 	res["telecom_data"] = data[12]
+	res["last_sync_at"] = data[13]
 	*m = res
 	return nil
 }
 
 func (ms *ShopConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopConnectionHistories, 0, 128)
@@ -1088,6 +1107,7 @@ func (ms *ShopConnectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 		m["is_global"] = data[10]
 		m["external_data"] = data[11]
 		m["telecom_data"] = data[12]
+		m["last_sync_at"] = data[13]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

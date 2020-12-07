@@ -37,6 +37,8 @@ type Aggregate interface {
 
 	UpdateShopConnectionToken(context.Context, *UpdateShopConnectionExternalDataArgs) (*ShopConnection, error)
 
+	UpdateShopConnectionLastSyncAt(context.Context, *UpdateShopConnectionLastSyncAtArgs) (*ShopConnection, error)
+
 	ConfirmShopConnection(context.Context, *ShopConnectionQueryArgs) (updated int, err error)
 
 	DeleteShopConnection(context.Context, *ShopConnectionQueryArgs) (deleted int, _ error)
@@ -128,6 +130,13 @@ type UpdateShopConnectionExternalDataArgs struct {
 	Token          string
 	TokenExpiresAt time.Time
 	ExternalData   *ShopConnectionExternalData
+}
+
+type UpdateShopConnectionLastSyncAtArgs struct {
+	OwnerID      dot.ID
+	ShopID       dot.ID
+	ConnectionID dot.ID
+	LastSyncAt   time.Time
 }
 
 type ListConnectionsArgs struct {

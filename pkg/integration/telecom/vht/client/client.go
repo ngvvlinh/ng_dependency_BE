@@ -5,8 +5,10 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
+	"github.com/gorilla/schema"
 	"gopkg.in/resty.v1"
 
 	cm "o.o/backend/pkg/common"
@@ -44,7 +46,10 @@ const (
 	GetMethod  Method = "GET"
 )
 
+var encoder = schema.NewEncoder()
+
 func New(env string, cfg VHTAccountCfg) *Client {
+	encoder.SetAliasTag("url")
 	client := &http.Client{
 		Timeout: 60 * time.Second,
 		Transport: &http.Transport{
@@ -62,7 +67,12 @@ func New(env string, cfg VHTAccountCfg) *Client {
 	}
 
 	switch env {
-	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev, cmenv.PartnerEnvProd:
+	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
+		c.baseUrl = "https://sip.vht.com.vn:8900/api"
+		if c.tenantHost == "" {
+			c.tenantHost = "https://api-dev.vht.com.vn"
+		}
+	case cmenv.PartnerEnvProd:
 		c.baseUrl = "https://sip.vht.com.vn:8900/api"
 	default:
 		ll.Fatal("VHT: Invalid env")
@@ -109,12 +119,13 @@ func (c *Client) CreateExtension(ctx context.Context, req *CreateExtensionsReque
 	return &resp, nil
 }
 
-func (c *Client) GetCallLogs(ctx context.Context) (*GetCallLogsResponse, error) {
+func (c *Client) GetCallLogs(ctx context.Context, req *GetCallLogsRequest) (*GetCallLogsResponse, error) {
 	var resp GetCallLogsResponse
 
 	err := c.sendGetRequest(ctx, sendRequestArgs{
 		url:   URL(c.tenantHost, "/vpbx/tenant.Cdr/GetCdr"),
 		token: c.tenantToken,
+		req:   req,
 		resp:  &resp,
 	})
 	if err != nil {
@@ -138,17 +149,26 @@ func (c *Client) sendRequest(ctx context.Context, method Method, args sendReques
 	var err error
 
 	request := c.rclient.R().
-		SetBody(args.req).
+		SetResult(&args.resp).
 		SetError(&errResp)
 	if args.token != "" {
 		request.SetHeader("access_token", args.token)
+		request.SetHeader("Authorization", "Bearer "+args.token)
 	}
 
 	switch method {
 	case PostMethod:
-		res, err = request.Post(args.url)
+		res, err = request.SetBody(args.req).Post(args.url)
 	case GetMethod:
-		res, err = request.Get(args.url)
+		queryString := url.Values{}
+		if args.req != nil {
+			err := encoder.Encode(args.req, queryString)
+			if err != nil {
+				return cm.Error(cm.Internal, "", err)
+			}
+		}
+
+		res, err = request.SetQueryString(queryString.Encode()).Get(args.url)
 	default:
 		panic(fmt.Sprintf("unsupported method %v", method))
 	}

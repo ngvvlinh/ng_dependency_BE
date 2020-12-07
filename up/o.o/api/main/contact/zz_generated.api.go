@@ -90,14 +90,27 @@ func (h QueryServiceHandler) HandleGetContacts(ctx context.Context, msg *GetCont
 	return err
 }
 
+type GetContactsByPhoneQuery struct {
+	ShopID dot.ID
+	Phone  string
+
+	Result []*Contact `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetContactsByPhone(ctx context.Context, msg *GetContactsByPhoneQuery) (err error) {
+	msg.Result, err = h.inner.GetContactsByPhone(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateContactCommand) command() {}
 func (q *DeleteContactCommand) command() {}
 func (q *UpdateContactCommand) command() {}
 
-func (q *GetContactByIDQuery) query() {}
-func (q *GetContactsQuery) query()    {}
+func (q *GetContactByIDQuery) query()     {}
+func (q *GetContactsQuery) query()        {}
+func (q *GetContactsByPhoneQuery) query() {}
 
 // implement conversion
 
@@ -176,6 +189,19 @@ func (q *GetContactsQuery) SetGetContactsArgs(args *GetContactsArgs) {
 	q.Paging = args.Paging
 }
 
+func (q *GetContactsByPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetContactsByPhoneArgs) {
+	return ctx,
+		&GetContactsByPhoneArgs{
+			ShopID: q.ShopID,
+			Phone:  q.Phone,
+		}
+}
+
+func (q *GetContactsByPhoneQuery) SetGetContactsByPhoneArgs(args *GetContactsByPhoneArgs) {
+	q.ShopID = args.ShopID
+	q.Phone = args.Phone
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -208,5 +234,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetContactByID)
 	b.AddHandler(h.HandleGetContacts)
+	b.AddHandler(h.HandleGetContactsByPhone)
 	return QueryBus{b}
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"o.o/api/etelecom"
-	"o.o/api/main/connectioning"
 	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
 )
@@ -20,11 +19,8 @@ func (a *EtelecomAggregate) CreateExtension(ctx context.Context, args *etelecom.
 	if err := a.eventBus.Publish(ctx, event); err != nil {
 		return nil, err
 	}
-	if args.ConnectionID == 0 {
-		args.ConnectionID = connectioning.DefaultBuiltinVHTEtelecomConnectionID
-	}
 
-	ext, err := a.extensionStore(ctx).UserID(args.UserID).AccountID(args.AccountID).ConnectionID(args.ConnectionID).GetExtension()
+	ext, err := a.extensionStore(ctx).UserID(args.UserID).AccountID(args.AccountID).HotlineID(args.HotlineID).GetExtension()
 	switch cm.ErrorCode(err) {
 	case cm.NoError:
 		if ext.ExtensionNumber != "" {

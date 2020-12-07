@@ -20,6 +20,7 @@ var enumPagingFieldName = map[int]string{
 	3: "external_created_time",
 	4: "last_message_at",
 	5: "created_at",
+	6: "started_at",
 }
 
 var enumPagingFieldValue = map[string]int{
@@ -29,6 +30,7 @@ var enumPagingFieldValue = map[string]int{
 	"external_created_time": 3,
 	"last_message_at":       4,
 	"created_at":            5,
+	"started_at":            6,
 }
 
 func ParsePagingField(s string) (PagingField, bool) {

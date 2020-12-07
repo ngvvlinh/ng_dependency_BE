@@ -1830,7 +1830,7 @@
     "/api/shop.Etelecom/CreateExtension": {
       "post": {
         "tags": [
-          "Extension"
+          "Etelecom"
         ],
         "summary": "CreateExtension",
         "operationId": "shop.Etelecom-CreateExtension",
@@ -1854,13 +1854,67 @@
         }
       }
     },
+    "/api/shop.Etelecom/GetCallLogs": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "GetCallLogs",
+        "operationId": "shop.Etelecom-GetCallLogs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetCallLogsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetCallLogsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/GetExtensions": {
       "post": {
         "tags": [
-          "Extension"
+          "Etelecom"
         ],
         "summary": "GetExtensions",
         "operationId": "shop.Etelecom-GetExtensions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetExtensionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetExtensionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Etelecom/GetHotlines": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "GetHotlines",
+        "operationId": "shop.Etelecom-GetHotlines",
         "parameters": [
           {
             "name": "body",
@@ -1875,7 +1929,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/paGetExtensionResponse"
+              "$ref": "#/definitions/paGetHotLinesResponse"
             }
           }
         }
@@ -7771,6 +7825,15 @@
         "discard"
       ]
     },
+    "jfCallLogDirection": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "in",
+        "out",
+        "ext"
+      ]
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -7780,6 +7843,14 @@
         "affiliate",
         "carrier",
         "etop"
+      ]
+    },
+    "jwCallState": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "answered",
+        "not_answered"
       ]
     },
     "kfFullTextSearch": {
@@ -7799,6 +7870,46 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "ktCursorPageInfo": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "next": {
+          "type": "string"
+        },
+        "prev": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktCursorPaging": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
         }
       }
     },
@@ -8200,6 +8311,95 @@
         },
         "available_balance": {
           "type": "integer"
+        }
+      }
+    },
+    "paCallLog": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "audio_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "call_state": {
+          "$ref": "#/definitions/jwCallState"
+        },
+        "call_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "callee": {
+          "type": "string"
+        },
+        "caller": {
+          "type": "string"
+        },
+        "contact_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "direction": {
+          "$ref": "#/definitions/jfCallLogDirection"
+        },
+        "duration": {
+          "type": "integer"
+        },
+        "ended_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extension_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_call_status": {
+          "type": "string"
+        },
+        "external_direction": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "paCallLogsFilter": {
+      "type": "object",
+      "properties": {
+        "extension_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "hotline_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -8708,7 +8908,7 @@
     "paCreateExtensionRequest": {
       "type": "object",
       "properties": {
-        "connection_id": {
+        "hotline_id": {
           "type": "string",
           "format": "int64"
         },
@@ -9920,16 +10120,16 @@
           "type": "string",
           "format": "int64"
         },
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "created_at": {
           "type": "string",
           "format": "date-time"
         },
         "extension_number": {
           "type": "string"
+        },
+        "hotline_id": {
+          "type": "string",
+          "format": "int64"
         },
         "id": {
           "type": "string",
@@ -10201,6 +10401,31 @@
         }
       }
     },
+    "paGetCallLogsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/paCallLogsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "paGetCallLogsResponse": {
+      "type": "object",
+      "properties": {
+        "call_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paCallLog"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
     "paGetCarriersRequest": {
       "type": "object",
       "properties": {
@@ -10337,7 +10562,16 @@
         }
       }
     },
-    "paGetExtensionResponse": {
+    "paGetExtensionsRequest": {
+      "type": "object",
+      "properties": {
+        "hotline_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paGetExtensionsResponse": {
       "type": "object",
       "properties": {
         "extensions": {
@@ -10407,6 +10641,17 @@
         },
         "status": {
           "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "paGetHotLinesResponse": {
+      "type": "object",
+      "properties": {
+        "hotlines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paHotline"
+          }
         }
       }
     },
@@ -11129,6 +11374,49 @@
           "items": {
             "$ref": "#/definitions/paWsWebsite"
           }
+        }
+      }
+    },
+    "paHotline": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "hotline": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "network": {
+          "type": "string"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -17330,10 +17618,10 @@
       "name": "CustomerGroup"
     },
     {
-      "name": "Export"
+      "name": "Etelecom"
     },
     {
-      "name": "Extension"
+      "name": "Export"
     },
     {
       "name": "Fulfillment"

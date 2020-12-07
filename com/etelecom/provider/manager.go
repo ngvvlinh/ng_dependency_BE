@@ -58,7 +58,7 @@ func NewTelecomManager(
 	}, nil
 }
 
-func (m *TelecomManager) GetTelecomDriver(ctx context.Context, connectionID, shopID dot.ID) (providertypes.TelecomDriver, error) {
+func (m *TelecomManager) GetTelecomDriver(ctx context.Context, connectionID, ownerID dot.ID) (providertypes.TelecomDriver, error) {
 	connection, err := m.connectionManager.GetConnectionByID(ctx, connectionID)
 	if err != nil {
 		return nil, err
@@ -71,11 +71,11 @@ func (m *TelecomManager) GetTelecomDriver(ctx context.Context, connectionID, sho
 	// connection
 	getShopConnectionQuery := connectionmanager.GetShopConnectionArgs{
 		ConnectionID: connectionID,
-		ShopID:       shopID,
+		OwnerID:      ownerID,
 	}
 	if connection.ConnectionMethod == connection_type.ConnectionMethodBuiltin {
 		// ignore shopID
-		getShopConnectionQuery.ShopID = 0
+		getShopConnectionQuery.OwnerID = 0
 		getShopConnectionQuery.IsGlobal = true
 	}
 	shopConnection, err := m.connectionManager.GetShopConnection(ctx, getShopConnectionQuery)
@@ -134,7 +134,15 @@ func (m *TelecomManager) generateToken(ctx context.Context, shopConnection *conn
 }
 
 func (m *TelecomManager) CreateExtension(ctx context.Context, ext *etelecom.Extension) (*CreateExtensionResponse, error) {
-	driver, err := m.GetTelecomDriver(ctx, ext.ConnectionID, ext.AccountID)
+	hotlineQuery := &etelecom.GetHotlineQuery{
+		ID: ext.HotlineID,
+	}
+	if err := m.etelecomQS.Dispatch(ctx, hotlineQuery); err != nil {
+		return nil, err
+	}
+	hotline := hotlineQuery.Result
+
+	driver, err := m.GetTelecomDriver(ctx, hotline.ConnectionID, hotline.OwnerID)
 	if err != nil {
 		return nil, err
 	}
@@ -146,24 +154,6 @@ func (m *TelecomManager) CreateExtension(ctx context.Context, ext *etelecom.Exte
 		return nil, err
 	}
 	user := userQuery.Result
-
-	shopQuery := &identity.GetShopByIDQuery{
-		ID: ext.AccountID,
-	}
-	if err := m.identityQS.Dispatch(ctx, shopQuery); err != nil {
-		return nil, err
-	}
-	shop := shopQuery.Result
-
-	hotlineArgs := getHotlineArgs{
-		HotlineID:    ext.HotlineID,
-		OwnerID:      shop.OwnerID,
-		ConnectionID: ext.ConnectionID,
-	}
-	hotline, err := m.getHotLine(ctx, hotlineArgs)
-	if err != nil {
-		return nil, err
-	}
 
 	// get extension number
 	extQuery := &etelecom.GetPrivateExtensionNumberQuery{}

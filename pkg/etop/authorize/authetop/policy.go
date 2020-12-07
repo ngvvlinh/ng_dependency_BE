@@ -10,4 +10,6 @@ const Policy auth.Policy = authcommon.CommonPolicy + `
 	p, shop/extension:create, admin, owner, staff_management
 	p, shop/extension:delete, admin, owner, staff_management
 	p, shop/extension:view, admin, owner, staff_management
+	p, shop/hotline:view, admin, owner, staff_management
+	p, shop/calllog:view, admin, owner, staff_management
 `

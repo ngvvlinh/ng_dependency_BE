@@ -19,7 +19,13 @@ type TelecomDriver interface {
 	Ping(ctx context.Context) error
 	GenerateToken(ctx context.Context) (*GenerateTokenResponse, error)
 	CreateExtension(ctx context.Context, req *CreateExtensionRequest) (*CreateExtensionResponse, error)
-	GetCallLogs(ctx context.Context) ([]*CallLog, error)
+	GetCallLogs(ctx context.Context, req *GetCallLogsRequest) (*GetCallLogsResponse, error)
+}
+
+type TelecomSync interface {
+	Init(ctx context.Context) error
+	Start(ctx context.Context) error
+	Stop(ctx context.Context) error
 }
 
 type GenerateTokenResponse struct {
@@ -48,13 +54,25 @@ type CreateExtensionResponse struct {
 	ID string
 }
 
+type GetCallLogsRequest struct {
+	StartedAt time.Time
+	EndedAt   time.Time
+	ScrollID  string // VHT pagination
+}
+
+type GetCallLogsResponse struct {
+	CallLogs []*CallLog
+	ScrollID string // VHT pagination
+}
+
 type CallLog struct {
-	CallID       string
-	CallStatus   string
-	Callee       string
-	CalleeDomain string
-	StartTime    string
-	EndTime      string
-	TaskDuration string
-	AudioURLs    []string
+	CallID     string
+	CallStatus string
+	Caller     string
+	Callee     string
+	Direction  string
+	StartedAt  time.Time
+	EndedAt    time.Time
+	Duration   int
+	AudioURLs  []string
 }

@@ -80,6 +80,11 @@ func (s *ContactStore) FullTextSearchFullPhone(phone filter.FullTextSearch) *Con
 	return s
 }
 
+func (s *ContactStore) Phone(phone string) *ContactStore {
+	s.preds = append(s.preds, s.ft.ByPhone(phone))
+	return s
+}
+
 func (s *ContactStore) ByWhiteLabelPartner(ctx context.Context, query cmsql.Query) cmsql.Query {
 	partner := wl.X(ctx)
 	if partner.IsWhiteLabel() {

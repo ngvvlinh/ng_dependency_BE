@@ -49,6 +49,7 @@ type ShopConnection struct {
 	IsGlobal         bool
 	ExternalData     *ShopConnectionExternalData
 	TelecomData      *ShopConnectionTelecomData
+	LastSyncAt       time.Time
 }
 
 type ConnectionStates struct {

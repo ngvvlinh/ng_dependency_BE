@@ -375,6 +375,45 @@ func (a *ConnectionAggregate) UpdateShopConnectionToken(ctx context.Context, arg
 	return a.CreateOrUpdateShopConnection(ctx, cmd)
 }
 
+func (a *ConnectionAggregate) UpdateShopConnectionLastSyncAt(
+	ctx context.Context, args *connectioning.UpdateShopConnectionLastSyncAtArgs,
+) (res *connectioning.ShopConnection, err error) {
+	if args.ConnectionID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")
+	}
+
+	conn, err := a.connectionStore(ctx).ID(args.ConnectionID).GetConnection()
+	if err != nil {
+		return nil, err
+	}
+	if conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
+		if args.ShopID == 0 && args.OwnerID == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID or OwnerID")
+		}
+	}
+
+	shopConn, err := a.shopConnectionStore(ctx).OptionalShopID(args.ShopID).OptionalOwnerID(args.OwnerID).ConnectionID(args.ConnectionID).GetShopConnection()
+	if err != nil {
+		return nil, err
+	}
+
+	// Update
+	err = a.txDB.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		update := &connectioning.UpdateShopConnectionLastSyncAtArgs{
+			OwnerID:      shopConn.OwnerID,
+			ShopID:       shopConn.ShopID,
+			ConnectionID: shopConn.ConnectionID,
+			LastSyncAt:   args.LastSyncAt,
+		}
+		res, err = a.shopConnectionStore(ctx).UpdateShopConnectionLastSyncAt(update)
+		if err != nil {
+			return err
+		}
+		return a.raiseShopConnectionUpdatedEvent(ctx, shopConn.ShopID, shopConn.OwnerID, shopConn.ConnectionID)
+	})
+	return
+}
+
 func (a *ConnectionAggregate) CreateOrUpdateShopConnection(ctx context.Context, args *connectioning.CreateShopConnectionArgs) (res *connectioning.ShopConnection, err error) {
 	if args.ConnectionID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ConnectionID")

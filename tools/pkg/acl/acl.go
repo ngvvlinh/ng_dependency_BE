@@ -228,6 +228,8 @@ const (
 	ShopExtensionCreate permission.ActionType = "shop/extension:create"
 	ShopExtensionDelete permission.ActionType = "shop/extension:delete"
 	ShopExtensionView   permission.ActionType = "shop/extension:view"
+	ShopHotlineView     permission.ActionType = "shop/hotline:view"
+	ShopCallLogView     permission.ActionType = "shop/calllog:view"
 
 	WsWebsiteCreate permission.ActionType = "shop/webserver/wswebsite:create"
 	WsWebsiteUpdate permission.ActionType = "shop/webserver/wswebsite:update"
@@ -1274,6 +1276,10 @@ var _acl = map[string]*permission.Decl{
 	// Etelecom
 	"shop.Etelecom/CreateExtension": {Type: Shop, Actions: actions(ShopExtensionCreate)},
 	"shop.Etelecom/GetExtensions":   {Type: Shop, Actions: actions(ShopExtensionView)},
+
+	"shop.Etelecom/GetHotlines": {Type: Shop, Actions: actions(ShopHotlineView)},
+
+	"shop.Etelecom/GetCallLogs": {Type: Shop, Actions: actions(ShopCallLogView)},
 
 	// Setting
 	"shop.Setting/CreateSetting": {Type: Shop},

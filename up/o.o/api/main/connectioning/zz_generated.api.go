@@ -195,6 +195,20 @@ func (h AggregateHandler) HandleUpdateConnectionFromOrigin(ctx context.Context, 
 	return h.inner.UpdateConnectionFromOrigin(msg.GetArgs(ctx))
 }
 
+type UpdateShopConnectionLastSyncAtCommand struct {
+	OwnerID      dot.ID
+	ShopID       dot.ID
+	ConnectionID dot.ID
+	LastSyncAt   time.Time
+
+	Result *ShopConnection `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopConnectionLastSyncAt(ctx context.Context, msg *UpdateShopConnectionLastSyncAtCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShopConnectionLastSyncAt(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateShopConnectionTokenCommand struct {
 	OwnerID        dot.ID
 	ShopID         dot.ID
@@ -345,6 +359,7 @@ func (q *DisableConnectionCommand) command()                {}
 func (q *UpdateConnectionCommand) command()                 {}
 func (q *UpdateConnectionAffiliateAccountCommand) command() {}
 func (q *UpdateConnectionFromOriginCommand) command()       {}
+func (q *UpdateShopConnectionLastSyncAtCommand) command()   {}
 func (q *UpdateShopConnectionTokenCommand) command()        {}
 
 func (q *GetConnectionByCodeQuery) query()                 {}
@@ -544,6 +559,23 @@ func (q *UpdateConnectionFromOriginCommand) GetArgs(ctx context.Context) (_ cont
 		q.ConnectionID
 }
 
+func (q *UpdateShopConnectionLastSyncAtCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopConnectionLastSyncAtArgs) {
+	return ctx,
+		&UpdateShopConnectionLastSyncAtArgs{
+			OwnerID:      q.OwnerID,
+			ShopID:       q.ShopID,
+			ConnectionID: q.ConnectionID,
+			LastSyncAt:   q.LastSyncAt,
+		}
+}
+
+func (q *UpdateShopConnectionLastSyncAtCommand) SetUpdateShopConnectionLastSyncAtArgs(args *UpdateShopConnectionLastSyncAtArgs) {
+	q.OwnerID = args.OwnerID
+	q.ShopID = args.ShopID
+	q.ConnectionID = args.ConnectionID
+	q.LastSyncAt = args.LastSyncAt
+}
+
 func (q *UpdateShopConnectionTokenCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopConnectionExternalDataArgs) {
 	return ctx,
 		&UpdateShopConnectionExternalDataArgs{
@@ -684,6 +716,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateConnection)
 	b.AddHandler(h.HandleUpdateConnectionAffiliateAccount)
 	b.AddHandler(h.HandleUpdateConnectionFromOrigin)
+	b.AddHandler(h.HandleUpdateShopConnectionLastSyncAt)
 	b.AddHandler(h.HandleUpdateShopConnectionToken)
 	return CommandBus{b}
 }

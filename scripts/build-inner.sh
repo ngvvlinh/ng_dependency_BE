@@ -53,6 +53,7 @@ etop)
     build ./cmd/fabo-sync-service     $BUILD_FABO_SYNC_SERVICE
     build ./cmd/shipment-sync-service $BUILD_SHIPMENT_SYNCE_SERVICE
     build ./cmd/fabo-event-handler    $BUILD_FABO_EVENT_HANDLER
+    build ./cmd/telecom-sync-service  $BUILD_TELECOM_SYNC_SERVICE
 
     mkdir -p "$binDir"/com/web/ecom
        cp -R     com/web/ecom/assets    "$binDir"/com/web/ecom/

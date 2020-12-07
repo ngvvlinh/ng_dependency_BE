@@ -23,6 +23,28 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
+	s.Register((*etelecom.CallLog)(nil), (*shop.CallLog)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_CallLog_shop_CallLog(arg.(*etelecom.CallLog), out.(*shop.CallLog))
+		return nil
+	})
+	s.Register(([]*etelecom.CallLog)(nil), (*[]*shop.CallLog)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_CallLogs_shop_CallLogs(arg.([]*etelecom.CallLog))
+		*out.(*[]*shop.CallLog) = out0
+		return nil
+	})
+	s.Register((*shop.CallLog)(nil), (*etelecom.CallLog)(nil), func(arg, out interface{}) error {
+		Convert_shop_CallLog_etelecom_CallLog(arg.(*shop.CallLog), out.(*etelecom.CallLog))
+		return nil
+	})
+	s.Register(([]*shop.CallLog)(nil), (*[]*etelecom.CallLog)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shop_CallLogs_etelecom_CallLogs(arg.([]*shop.CallLog))
+		*out.(*[]*etelecom.CallLog) = out0
+		return nil
+	})
+	s.Register((*etelecom.CreateCallLogFromCDRArgs)(nil), (*shop.CallLog)(nil), func(arg, out interface{}) error {
+		Apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg.(*etelecom.CreateCallLogFromCDRArgs), out.(*shop.CallLog))
+		return nil
+	})
 	s.Register((*etelecom.CreateExtensionArgs)(nil), (*shop.Extension)(nil), func(arg, out interface{}) error {
 		Apply_etelecom_CreateExtensionArgs_shop_Extension(arg.(*etelecom.CreateExtensionArgs), out.(*shop.Extension))
 		return nil
@@ -63,6 +85,147 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*etelecom.ExtensionExternalData) = out0
 		return nil
 	})
+	s.Register((*etelecom.Hotline)(nil), (*shop.Hotline)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_Hotline_shop_Hotline(arg.(*etelecom.Hotline), out.(*shop.Hotline))
+		return nil
+	})
+	s.Register(([]*etelecom.Hotline)(nil), (*[]*shop.Hotline)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_Hotlines_shop_Hotlines(arg.([]*etelecom.Hotline))
+		*out.(*[]*shop.Hotline) = out0
+		return nil
+	})
+	s.Register((*shop.Hotline)(nil), (*etelecom.Hotline)(nil), func(arg, out interface{}) error {
+		Convert_shop_Hotline_etelecom_Hotline(arg.(*shop.Hotline), out.(*etelecom.Hotline))
+		return nil
+	})
+	s.Register(([]*shop.Hotline)(nil), (*[]*etelecom.Hotline)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shop_Hotlines_etelecom_Hotlines(arg.([]*shop.Hotline))
+		*out.(*[]*etelecom.Hotline) = out0
+		return nil
+	})
+}
+
+//-- convert o.o/api/top/int/shop.CallLog --//
+
+func Convert_etelecom_CallLog_shop_CallLog(arg *etelecom.CallLog, out *shop.CallLog) *shop.CallLog {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shop.CallLog{}
+	}
+	convert_etelecom_CallLog_shop_CallLog(arg, out)
+	return out
+}
+
+func convert_etelecom_CallLog_shop_CallLog(arg *etelecom.CallLog, out *shop.CallLog) {
+	out.ID = arg.ID                                 // simple assign
+	out.ExternalID = arg.ExternalID                 // simple assign
+	out.AccountID = arg.AccountID                   // simple assign
+	out.StartedAt = arg.StartedAt                   // simple assign
+	out.EndedAt = arg.EndedAt                       // simple assign
+	out.Duration = arg.Duration                     // simple assign
+	out.Caller = arg.Caller                         // simple assign
+	out.Callee = arg.Callee                         // simple assign
+	out.AudioURLs = arg.AudioURLs                   // simple assign
+	out.ExternalDirection = arg.ExternalDirection   // simple assign
+	out.Direction = arg.Direction                   // simple assign
+	out.ExtensionID = arg.ExtensionID               // simple assign
+	out.ExternalCallStatus = arg.ExternalCallStatus // simple assign
+	out.ContactID = arg.ContactID                   // simple assign
+	out.CreatedAt = arg.CreatedAt                   // simple assign
+	out.UpdatedAt = arg.UpdatedAt                   // simple assign
+	out.CallState = arg.CallState                   // simple assign
+	out.CallStatus = arg.CallStatus                 // simple assign
+}
+
+func Convert_etelecom_CallLogs_shop_CallLogs(args []*etelecom.CallLog) (outs []*shop.CallLog) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shop.CallLog, len(args))
+	outs = make([]*shop.CallLog, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecom_CallLog_shop_CallLog(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shop_CallLog_etelecom_CallLog(arg *shop.CallLog, out *etelecom.CallLog) *etelecom.CallLog {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecom.CallLog{}
+	}
+	convert_shop_CallLog_etelecom_CallLog(arg, out)
+	return out
+}
+
+func convert_shop_CallLog_etelecom_CallLog(arg *shop.CallLog, out *etelecom.CallLog) {
+	out.ID = arg.ID                                 // simple assign
+	out.ExternalID = arg.ExternalID                 // simple assign
+	out.AccountID = arg.AccountID                   // simple assign
+	out.StartedAt = arg.StartedAt                   // simple assign
+	out.EndedAt = arg.EndedAt                       // simple assign
+	out.Duration = arg.Duration                     // simple assign
+	out.Caller = arg.Caller                         // simple assign
+	out.Callee = arg.Callee                         // simple assign
+	out.AudioURLs = arg.AudioURLs                   // simple assign
+	out.ExternalDirection = arg.ExternalDirection   // simple assign
+	out.ExternalCallStatus = arg.ExternalCallStatus // simple assign
+	out.CallState = arg.CallState                   // simple assign
+	out.CallStatus = arg.CallStatus                 // simple assign
+	out.Direction = arg.Direction                   // simple assign
+	out.ExtensionID = arg.ExtensionID               // simple assign
+	out.HotlineID = 0                               // zero value
+	out.ContactID = arg.ContactID                   // simple assign
+	out.CreatedAt = arg.CreatedAt                   // simple assign
+	out.UpdatedAt = arg.UpdatedAt                   // simple assign
+}
+
+func Convert_shop_CallLogs_etelecom_CallLogs(args []*shop.CallLog) (outs []*etelecom.CallLog) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecom.CallLog, len(args))
+	outs = make([]*etelecom.CallLog, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shop_CallLog_etelecom_CallLog(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *shop.CallLog) *shop.CallLog {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shop.CallLog{}
+	}
+	apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg, out)
+	return out
+}
+
+func apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *shop.CallLog) {
+	out.ID = 0                                      // zero value
+	out.ExternalID = arg.ExternalID                 // simple assign
+	out.AccountID = 0                               // zero value
+	out.StartedAt = arg.StartedAt                   // simple assign
+	out.EndedAt = arg.EndedAt                       // simple assign
+	out.Duration = arg.Duration                     // simple assign
+	out.Caller = arg.Caller                         // simple assign
+	out.Callee = arg.Callee                         // simple assign
+	out.AudioURLs = arg.AudioURLs                   // simple assign
+	out.ExternalDirection = arg.ExternalDirection   // simple assign
+	out.Direction = arg.Direction                   // simple assign
+	out.ExtensionID = 0                             // zero value
+	out.ExternalCallStatus = arg.ExternalCallStatus // simple assign
+	out.ContactID = 0                               // zero value
+	out.CreatedAt = time.Time{}                     // zero value
+	out.UpdatedAt = time.Time{}                     // zero value
+	out.CallState = arg.CallState                   // simple assign
+	out.CallStatus = arg.CallStatus                 // simple assign
 }
 
 //-- convert o.o/api/top/int/shop.Extension --//
@@ -83,7 +246,7 @@ func apply_etelecom_CreateExtensionArgs_shop_Extension(arg *etelecom.CreateExten
 	out.UserID = arg.UserID                   // simple assign
 	out.AccountID = arg.AccountID             // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber // simple assign
-	out.ConnectionID = arg.ConnectionID       // simple assign
+	out.HotlineID = arg.HotlineID             // simple assign
 	out.CreatedAt = time.Time{}               // zero value
 	out.UpdatedAt = time.Time{}               // zero value
 }
@@ -104,7 +267,7 @@ func convert_etelecom_Extension_shop_Extension(arg *etelecom.Extension, out *sho
 	out.UserID = arg.UserID                   // simple assign
 	out.AccountID = arg.AccountID             // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber // simple assign
-	out.ConnectionID = arg.ConnectionID       // simple assign
+	out.HotlineID = arg.HotlineID             // simple assign
 	out.CreatedAt = arg.CreatedAt             // simple assign
 	out.UpdatedAt = arg.UpdatedAt             // simple assign
 }
@@ -136,12 +299,10 @@ func convert_shop_Extension_etelecom_Extension(arg *shop.Extension, out *eteleco
 	out.ID = arg.ID                           // simple assign
 	out.UserID = arg.UserID                   // simple assign
 	out.AccountID = arg.AccountID             // simple assign
-	out.HotlineID = 0                         // zero value
+	out.HotlineID = arg.HotlineID             // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber // simple assign
 	out.ExtensionPassword = ""                // zero value
 	out.ExternalData = nil                    // zero value
-	out.ConnectionID = arg.ConnectionID       // simple assign
-	out.ConnectionMethod = 0                  // zero value
 	out.CreatedAt = arg.CreatedAt             // simple assign
 	out.UpdatedAt = arg.UpdatedAt             // simple assign
 	out.DeletedAt = time.Time{}               // zero value
@@ -211,6 +372,83 @@ func Convert_shop_ExtensionExternalDatas_etelecom_ExtensionExternalDatas(args []
 	outs = make([]*etelecom.ExtensionExternalData, len(args))
 	for i := range tmps {
 		outs[i] = Convert_shop_ExtensionExternalData_etelecom_ExtensionExternalData(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/top/int/shop.Hotline --//
+
+func Convert_etelecom_Hotline_shop_Hotline(arg *etelecom.Hotline, out *shop.Hotline) *shop.Hotline {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shop.Hotline{}
+	}
+	convert_etelecom_Hotline_shop_Hotline(arg, out)
+	return out
+}
+
+func convert_etelecom_Hotline_shop_Hotline(arg *etelecom.Hotline, out *shop.Hotline) {
+	out.ID = arg.ID                             // simple assign
+	out.OwnerID = arg.OwnerID                   // simple assign
+	out.Name = arg.Name                         // simple assign
+	out.Hotline = arg.Hotline                   // simple assign
+	out.Network = arg.Network                   // simple assign
+	out.ConnectionID = arg.ConnectionID         // simple assign
+	out.ConnectionMethod = arg.ConnectionMethod // simple assign
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.Status = arg.Status                     // simple assign
+	out.Description = arg.Description           // simple assign
+}
+
+func Convert_etelecom_Hotlines_shop_Hotlines(args []*etelecom.Hotline) (outs []*shop.Hotline) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]shop.Hotline, len(args))
+	outs = make([]*shop.Hotline, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecom_Hotline_shop_Hotline(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_shop_Hotline_etelecom_Hotline(arg *shop.Hotline, out *etelecom.Hotline) *etelecom.Hotline {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecom.Hotline{}
+	}
+	convert_shop_Hotline_etelecom_Hotline(arg, out)
+	return out
+}
+
+func convert_shop_Hotline_etelecom_Hotline(arg *shop.Hotline, out *etelecom.Hotline) {
+	out.ID = arg.ID                             // simple assign
+	out.OwnerID = arg.OwnerID                   // simple assign
+	out.Name = arg.Name                         // simple assign
+	out.Hotline = arg.Hotline                   // simple assign
+	out.Network = arg.Network                   // simple assign
+	out.ConnectionID = arg.ConnectionID         // simple assign
+	out.ConnectionMethod = arg.ConnectionMethod // simple assign
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.DeletedAt = time.Time{}                 // zero value
+	out.Status = arg.Status                     // simple assign
+	out.Description = arg.Description           // simple assign
+}
+
+func Convert_shop_Hotlines_etelecom_Hotlines(args []*shop.Hotline) (outs []*etelecom.Hotline) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecom.Hotline, len(args))
+	outs = make([]*etelecom.Hotline, len(args))
+	for i := range tmps {
+		outs[i] = Convert_shop_Hotline_etelecom_Hotline(args[i], &tmps[i])
 	}
 	return outs
 }

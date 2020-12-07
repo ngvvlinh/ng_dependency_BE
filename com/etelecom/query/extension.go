@@ -14,12 +14,16 @@ func (q *QueryService) GetExtension(ctx context.Context, args *etelecom.GetExten
 	if args.ID != 0 {
 		return query.ID(args.ID).GetExtension()
 	}
-	query = query.UserID(args.UserID).AccountID(args.AccountID).OptionalConnectionID(args.ConnectionID)
+	query = query.UserID(args.UserID).AccountID(args.AccountID).OptionalHotlineID(args.HotlineID)
 	return query.GetExtension()
 }
 
 func (q *QueryService) ListExtensions(ctx context.Context, args *etelecom.ListExtensionsArgs) ([]*etelecom.Extension, error) {
-	return q.extensionStore(ctx).OptionalUserID(args.UserID).OptionalConnectionID(args.ConnectionID).ListExtensions()
+	query := q.extensionStore(ctx).OptionalHotlineID(args.HotlineID)
+	if len(args.AccountIDs) > 0 {
+		query = query.AccountIDs(args.AccountIDs...)
+	}
+	return query.ListExtensions()
 }
 
 func (q *QueryService) GetPrivateExtensionNumber(ctx context.Context, _ *cm.Empty) (string, error) {

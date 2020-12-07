@@ -534,6 +534,7 @@ func convert_connectioning_ShopConnection_connectioningmodel_ShopConnection(arg 
 	out.IsGlobal = arg.IsGlobal             // simple assign
 	out.ExternalData = Convert_connectioning_ShopConnectionExternalData_connectioningmodel_ShopConnectionExternalData(arg.ExternalData, nil)
 	out.TelecomData = Convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConnectionTelecomData(arg.TelecomData, nil)
+	out.LastSyncAt = time.Time{} // zero value
 }
 
 func Convert_connectioning_ShopConnections_connectioningmodel_ShopConnections(args []*connectioning.ShopConnection) (outs []*connectioningmodel.ShopConnection) {

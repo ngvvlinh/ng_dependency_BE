@@ -118,26 +118,41 @@ func (v *VHTDriver) CreateExtension(ctx context.Context, req *telecomtypes.Creat
 	}, nil
 }
 
-func (v *VHTDriver) GetCallLogs(ctx context.Context) (res []*telecomtypes.CallLog, _ error) {
-	getCallLogsRequest, err := v.client.GetCallLogs(ctx)
+func (v *VHTDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCallLogsRequest) (res *telecomtypes.GetCallLogsResponse, _ error) {
+	getCallLogReq := &vhtclient.GetCallLogsRequest{
+		ScrollID: req.ScrollID,
+	}
+	if !req.StartedAt.IsZero() {
+		getCallLogReq.StartTime = req.StartedAt.Unix()
+	}
+	if !req.EndedAt.IsZero() {
+		getCallLogReq.EndTime = req.EndedAt.Unix()
+	}
+
+	getCallLogsResp, err := v.client.GetCallLogs(ctx, getCallLogReq)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, callLog := range getCallLogsRequest.Sessions {
+	res = &telecomtypes.GetCallLogsResponse{
+		ScrollID: getCallLogsResp.ScrollID.String(),
+	}
+
+	for _, callLog := range getCallLogsResp.Sessions {
 		callLogRes := &telecomtypes.CallLog{
-			CallID:       callLog.CallID.String(),
-			CallStatus:   callLog.CallStatus.String(),
-			Callee:       callLog.Callee.String(),
-			CalleeDomain: callLog.CalleeDomain.String(),
-			StartTime:    callLog.StartTime.String(),
-			EndTime:      callLog.EndTime.String(),
-			TaskDuration: callLog.TaskDuration.String(),
+			CallID:     callLog.CallID.String(),
+			CallStatus: string(callLog.CallStatus),
+			Caller:     callLog.Caller.String(),
+			Callee:     callLog.Callee.String(),
+			Direction:  callLog.Direction.String(),
+			StartedAt:  callLog.StartTime.ToTime(),
+			EndedAt:    callLog.EndTime.ToTime(),
+			Duration:   callLog.TalkDuration.Int(),
 		}
 		for _, audioURL := range callLog.AudioURLs {
-			callLogRes.AudioURLs = append(callLogRes.AudioURLs, audioURL.String())
+			callLogRes.AudioURLs = append(callLogRes.AudioURLs, audioURL.URL.String())
 		}
-		res = append(res, callLogRes)
+		res.CallLogs = append(res.CallLogs, callLogRes)
 	}
 
 	return res, nil

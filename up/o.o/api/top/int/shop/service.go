@@ -453,9 +453,12 @@ type ContactService interface {
 }
 
 // +apix:path=/shop.Etelecom
-type ExtensionService interface {
-	GetExtensions(context.Context, *cm.Empty) (*GetExtensionResponse, error)
+type EtelecomService interface {
+	GetExtensions(context.Context, *GetExtensionsRequest) (*GetExtensionsResponse, error)
 	CreateExtension(context.Context, *CreateExtensionRequest) (*Extension, error)
+
+	GetHotlines(context.Context, *cm.Empty) (*GetHotLinesResponse, error)
+	GetCallLogs(context.Context, *GetCallLogsRequest) (*GetCallLogsResponse, error)
 }
 
 // +apix:path=/shop.Setting

@@ -173,6 +173,24 @@ func (s *ShopConnectionStore) UpdateShopConnectionToken(args *connectioning.Upda
 	return s.OptionalShopID(args.ShopID).OptionalOwnerID(args.OwnerID).ConnectionID(args.ConnectionID).GetShopConnection()
 }
 
+func (s *ShopConnectionStore) UpdateShopConnectionLastSyncAt(args *connectioning.UpdateShopConnectionLastSyncAtArgs) (*connectioning.ShopConnection, error) {
+	update := &model.ShopConnection{
+		LastSyncAt: args.LastSyncAt,
+	}
+	query := s.query().Where(s.ft.ByConnectionID(args.ConnectionID))
+	if args.ShopID != 0 {
+		query = query.Where(s.ft.ByShopID(args.ShopID))
+	} else if args.OwnerID != 0 {
+		query = query.Where(s.ft.ByOwnerID(args.OwnerID))
+	} else {
+		query = query.Where(s.ft.ByIsGlobal(true))
+	}
+	if err := query.ShouldUpdate(update); err != nil {
+		return nil, err
+	}
+	return s.OptionalShopID(args.ShopID).OptionalOwnerID(args.OwnerID).ConnectionID(args.ConnectionID).GetShopConnection()
+}
+
 func (s *ShopConnectionStore) ConfirmShopConnection() (updated int, _ error) {
 	if len(s.preds) == 0 {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "must provide preds")

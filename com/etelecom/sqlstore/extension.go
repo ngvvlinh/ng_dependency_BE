@@ -7,6 +7,7 @@ import (
 	"o.o/api/etelecom"
 	"o.o/backend/com/etelecom/model"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -41,8 +42,18 @@ func (s *ExtensionStore) UserID(id dot.ID) *ExtensionStore {
 	return s
 }
 
-func (s *ExtensionStore) ConnectionID(id dot.ID) *ExtensionStore {
-	s.preds = append(s.preds, s.ft.ByConnectionID(id))
+func (s *ExtensionStore) HotlineID(id dot.ID) *ExtensionStore {
+	s.preds = append(s.preds, s.ft.ByHotlineID(id))
+	return s
+}
+
+func (s *ExtensionStore) HotlineIDs(ids ...dot.ID) *ExtensionStore {
+	s.preds = append(s.preds, sq.In("hotline_id", ids))
+	return s
+}
+
+func (s *ExtensionStore) ExtensionNumber(extensionNumber string) *ExtensionStore {
+	s.preds = append(s.preds, s.ft.ByExtensionNumber(extensionNumber))
 	return s
 }
 
@@ -56,8 +67,18 @@ func (s *ExtensionStore) AccountID(id dot.ID) *ExtensionStore {
 	return s
 }
 
-func (s *ExtensionStore) OptionalConnectionID(connID dot.ID) *ExtensionStore {
-	s.preds = append(s.preds, s.ft.ByConnectionID(connID).Optional())
+func (s *ExtensionStore) AccountIDs(ids ...dot.ID) *ExtensionStore {
+	s.preds = append(s.preds, sq.In("account_id", ids))
+	return s
+}
+
+func (s *ExtensionStore) OptionalAccountID(accountID dot.ID) *ExtensionStore {
+	s.preds = append(s.preds, s.ft.ByAccountID(accountID).Optional())
+	return s
+}
+
+func (s *ExtensionStore) OptionalHotlineID(hotlineID dot.ID) *ExtensionStore {
+	s.preds = append(s.preds, s.ft.ByHotlineID(hotlineID).Optional())
 	return s
 }
 
@@ -82,7 +103,7 @@ func (s *ExtensionStore) GetExtension() (*etelecom.Extension, error) {
 }
 
 func (s *ExtensionStore) ListExtensionsDB() (res []*model.Extension, err error) {
-	query := s.query().Where(s.preds)
+	query := s.query().Where(s.preds).OrderBy("created_at DESC")
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	err = query.Find((*model.Extensions)(&res))
 	return

@@ -553,3 +553,22 @@ func (ft *ShopConnectionFilters) ByIsGlobalPtr(IsGlobal *bool) *sq.ColumnFilterP
 		IsZero: IsGlobal != nil && bool(!(*IsGlobal)),
 	}
 }
+
+func (ft *ShopConnectionFilters) ByLastSyncAt(LastSyncAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "last_sync_at",
+		Value:  LastSyncAt,
+		IsNil:  LastSyncAt.IsZero(),
+	}
+}
+
+func (ft *ShopConnectionFilters) ByLastSyncAtPtr(LastSyncAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "last_sync_at",
+		Value:  LastSyncAt,
+		IsNil:  LastSyncAt == nil,
+		IsZero: LastSyncAt != nil && (*LastSyncAt).IsZero(),
+	}
+}
