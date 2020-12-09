@@ -60,6 +60,10 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 			if line.ShippingFeeType == shipping_fee_type.Main {
 				continue
 			}
+			if line.ShippingFeeType == shipping_fee_type.Return {
+				// MoneyTotal của VTPost không bao gồm phí trả hàng
+				continue
+			}
 			mainFee = mainFee - line.Cost
 		}
 		if mainFee >= 0 {
