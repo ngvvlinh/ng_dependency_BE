@@ -102,6 +102,7 @@ func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, e
 
 func (s *AccountUserStore) ListAccountUser() ([]*identity.AccountUser, error) {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
 	var accountUser identitymodel.AccountUsers
 	err := query.Find(&accountUser)
