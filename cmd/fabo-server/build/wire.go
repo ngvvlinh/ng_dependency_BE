@@ -42,6 +42,7 @@ import (
 	"o.o/backend/com/main/stocktaking"
 	"o.o/backend/com/shopping/carrying"
 	"o.o/backend/com/shopping/customering"
+	"o.o/backend/com/shopping/setting"
 	"o.o/backend/com/summary"
 	"o.o/backend/com/supporting/ticket"
 	"o.o/backend/pkg/common/apifw/captcha"
@@ -115,6 +116,7 @@ func Build(
 		location.WireSet,
 		catalog.WireSet,
 		customering.WireSet,
+		setting.WireSet,
 		ordering.WireSet,
 		stocktaking.WireSet,
 		identity.WireSet,

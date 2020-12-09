@@ -50,6 +50,7 @@ import (
 	"o.o/backend/com/services/affiliate"
 	"o.o/backend/com/shopping/carrying"
 	"o.o/backend/com/shopping/customering"
+	"o.o/backend/com/shopping/setting"
 	"o.o/backend/com/shopping/suppliering"
 	"o.o/backend/com/shopping/tradering"
 	"o.o/backend/com/subscripting"
@@ -151,6 +152,7 @@ func Build(
 		location.WireSet,
 		catalog.WireSet,
 		customering.WireSet,
+		setting.WireSet,
 		ordering.WireSet,
 		stocktaking.WireSet,
 		refund.WireSet,

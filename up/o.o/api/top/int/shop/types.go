@@ -3011,3 +3011,27 @@ type CreateExtensionRequest struct {
 }
 
 func (m *CreateExtensionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopSetting struct {
+	ShopID          dot.ID                                    `json:"shop_id"`
+	PaymentTypeID   shipping_payment_type.ShippingPaymentType `json:"payment_type_id"`
+	ReturnAddressID dot.ID                                    `json:"return_address_id"`
+	ReturnAddress   *etop.Address                             `json:"return_address"`
+	TryOn           try_on.TryOnCode                          `json:"try_on"`
+	ShippingNote    string                                    `json:"shipping_note"`
+	Weight          int                                       `json:"weight"`
+	CreatedAt       dot.Time                                  `json:"created_at"`
+	UpdatedAt       dot.Time                                  `json:"updated_at"`
+}
+
+func (m *ShopSetting) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateSettingRequest struct {
+	PaymentTypeID shipping_payment_type.NullShippingPaymentType `json:"payment_type_id"`
+	ReturnAddress *etop.Address                                 `json:"return_address"`
+	TryOn         try_on.NullTryOnCode                          `json:"try_on"`
+	ShippingNote  dot.NullString                                `json:"shipping_note"`
+	Weight        dot.NullInt                                   `json:"weight"`
+}
+
+func (m *UpdateSettingRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -4938,6 +4938,60 @@
         }
       }
     },
+    "/api/shop.Setting/GetSetting": {
+      "post": {
+        "tags": [
+          "Setting"
+        ],
+        "summary": "GetSetting",
+        "operationId": "shop.Setting-GetSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopSetting"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Setting/UpdateSetting": {
+      "post": {
+        "tags": [
+          "Setting"
+        ],
+        "summary": "UpdateSetting",
+        "operationId": "shop.Setting-UpdateSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateSettingRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopSetting"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Shipment/CancelFulfillment": {
       "post": {
         "tags": [
@@ -12374,6 +12428,42 @@
         }
       }
     },
+    "paShopSetting": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payment_type_id": {
+          "$ref": "#/definitions/qeShippingPaymentType"
+        },
+        "return_address": {
+          "$ref": "#/definitions/baAddress"
+        },
+        "return_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "weight": {
+          "type": "integer"
+        }
+      }
+    },
     "paShopShortProduct": {
       "type": "object",
       "properties": {
@@ -13575,6 +13665,26 @@
           "type": "integer"
         },
         "total_amount": {
+          "type": "integer"
+        }
+      }
+    },
+    "paUpdateSettingRequest": {
+      "type": "object",
+      "properties": {
+        "payment_type_id": {
+          "$ref": "#/definitions/qeShippingPaymentType"
+        },
+        "return_address": {
+          "$ref": "#/definitions/baAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "weight": {
           "type": "integer"
         }
       }
@@ -17269,6 +17379,9 @@
     },
     {
       "name": "Refund"
+    },
+    {
+      "name": "Setting"
     },
     {
       "name": "Shipment"

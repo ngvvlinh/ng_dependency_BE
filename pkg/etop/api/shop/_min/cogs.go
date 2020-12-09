@@ -19,6 +19,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/notification"
 	"o.o/backend/pkg/etop/api/shop/order"
 	"o.o/backend/pkg/etop/api/shop/product"
+	"o.o/backend/pkg/etop/api/shop/setting"
 	"o.o/backend/pkg/etop/api/shop/shipment"
 	"o.o/backend/pkg/etop/api/shop/stocktake"
 	"o.o/backend/pkg/etop/api/shop/summary"
@@ -46,6 +47,7 @@ func NewServers(
 	carrierService *carrier.CarrierService,
 	stocktakeService *stocktake.StocktakeService,
 	shipmentService *shipment.ShipmentService,
+	settingService *setting.SettingService,
 	connectionService *connection.ConnectionService,
 ) shop.Servers {
 
@@ -75,6 +77,7 @@ func NewServers(
 		shipmentService.Clone,
 		stocktakeService.Clone,
 		summaryService.Clone,
+		settingService.Close,
 	)
 	return servers
 }

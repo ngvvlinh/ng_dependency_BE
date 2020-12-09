@@ -30,6 +30,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/purchase_refund"
 	"o.o/backend/pkg/etop/api/shop/receipt"
 	"o.o/backend/pkg/etop/api/shop/refund"
+	"o.o/backend/pkg/etop/api/shop/setting"
 	"o.o/backend/pkg/etop/api/shop/shipment"
 	"o.o/backend/pkg/etop/api/shop/shipnow"
 	"o.o/backend/pkg/etop/api/shop/stocktake"
@@ -80,6 +81,7 @@ func NewServers(
 	ticketService *ticket.TicketService,
 	accountshipnowService *accountshipnow.AccountShipnowService,
 	contactService *contact.ContactService,
+	settingService *setting.SettingService,
 	extensionService *etelecom.ExtensionService,
 ) shop.Servers {
 
@@ -125,6 +127,7 @@ func NewServers(
 		ticketService.Clone,
 		accountshipnowService.Clone,
 		contactService.Clone,
+		settingService.Close,
 		extensionService.Clone,
 	)
 	return servers

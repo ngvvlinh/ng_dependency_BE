@@ -1275,6 +1275,11 @@ var _acl = map[string]*permission.Decl{
 	"shop.Etelecom/CreateExtension": {Type: Shop, Actions: actions(ShopExtensionCreate)},
 	"shop.Etelecom/GetExtensions":   {Type: Shop, Actions: actions(ShopExtensionView)},
 
+	// Setting
+	"shop.Setting/CreateSetting": {Type: Shop},
+	"shop.Setting/UpdateSetting": {Type: Shop},
+	"shop.Setting/GetSetting":    {Type: Shop},
+
 	// -- Fabo --
 	"fabo.Page/ConnectPages":                                 {Type: Shop, Actions: actions(FbFanpageCreate)},
 	"fabo.Page/RemovePages":                                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbFanpageDelete)},

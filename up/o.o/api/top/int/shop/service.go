@@ -457,3 +457,9 @@ type ExtensionService interface {
 	GetExtensions(context.Context, *cm.Empty) (*GetExtensionResponse, error)
 	CreateExtension(context.Context, *CreateExtensionRequest) (*Extension, error)
 }
+
+// +apix:path=/shop.Setting
+type SettingService interface {
+	GetSetting(context.Context, *cm.Empty) (*ShopSetting, error)
+	UpdateSetting(context.Context, *UpdateSettingRequest) (*ShopSetting, error)
+}

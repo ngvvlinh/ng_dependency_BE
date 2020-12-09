@@ -33,6 +33,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/purchase_refund"
 	"o.o/backend/pkg/etop/api/shop/receipt"
 	"o.o/backend/pkg/etop/api/shop/refund"
+	"o.o/backend/pkg/etop/api/shop/setting"
 	"o.o/backend/pkg/etop/api/shop/shipment"
 	"o.o/backend/pkg/etop/api/shop/shipnow"
 	"o.o/backend/pkg/etop/api/shop/stocktake"
@@ -81,5 +82,6 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(ticket.TicketService), "*"),
 	wire.Struct(new(accountshipnow.AccountShipnowService), "*"),
 	wire.Struct(new(contact.ContactService), "*"),
+	wire.Struct(new(setting.SettingService), "*"),
 	wire.Struct(new(etelecom.ExtensionService), "*"),
 )

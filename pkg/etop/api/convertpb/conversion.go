@@ -1,6 +1,7 @@
 package convertpb
 
 import (
+	addressing "o.o/api/main/address"
 	ordertypes "o.o/api/main/ordering/types"
 	"o.o/api/main/shipnow"
 	shipnowtypes "o.o/api/main/shipnow/types"
@@ -286,4 +287,38 @@ func Convert_core_ShipnowServices_To_api_ShipnowServices(ins []*shipnowtypes.Shi
 		outs = append(outs, Convert_core_ShipnowService_To_api_ShipnowService(in))
 	}
 	return
+}
+
+func Convert_api_EtopAddress_To_core_Address(in *etop.Address) *addressing.Address {
+	if in == nil {
+		return nil
+	}
+	out := &addressing.Address{
+		ID:           in.Id,
+		FullName:     in.FullName,
+		FirstName:    in.FirstName,
+		LastName:     in.LastName,
+		Phone:        in.Phone,
+		Position:     in.Position,
+		Email:        in.Email,
+		Country:      in.Country,
+		Province:     in.Province,
+		District:     in.District,
+		Ward:         in.Ward,
+		Zip:          in.Zip,
+		DistrictCode: in.DistrictCode,
+		ProvinceCode: in.ProvinceCode,
+		WardCode:     in.WardCode,
+		Address1:     in.Address1,
+		Address2:     in.Address2,
+		Type:         in.Type,
+	}
+	if in.Coordinates != nil {
+		out.Coordinates = &ordertypes.Coordinates{
+			Latitude:  in.Coordinates.Latitude,
+			Longitude: in.Coordinates.Longitude,
+		}
+	}
+
+	return out
 }
