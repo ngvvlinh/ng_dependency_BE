@@ -7,6 +7,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/top/external/types"
+	"o.o/api/top/int/shop"
 	"o.o/api/top/types/common"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/customer_type"
@@ -831,3 +832,16 @@ type DeleteMessageTemplateRequest struct {
 func (r *DeleteMessageTemplateRequest) String() string {
 	return jsonx.MustMarshalToString(r)
 }
+
+type SummaryShopRequest struct {
+	DateFrom string `json:"date_from"`
+	DateTo   string `json:"date_to"`
+}
+
+func (r *SummaryShopRequest) String() string { return jsonx.MustMarshalToString(r) }
+
+type SummaryShopResponse struct {
+	Tables []*shop.SummaryTable `json:"tables"`
+}
+
+func (r *SummaryShopResponse) String() string { return jsonx.MustMarshalToString(r) }

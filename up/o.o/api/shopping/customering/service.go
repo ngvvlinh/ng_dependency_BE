@@ -156,6 +156,8 @@ type CreateCustomerArgs struct {
 	Note     string
 	Phone    string
 	Email    string
+
+	CreatedBy dot.ID
 }
 
 // +convert:update=ShopCustomer(ID,ShopID)

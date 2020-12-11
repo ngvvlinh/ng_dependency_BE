@@ -134,8 +134,8 @@ func (s *SummaryStore) GetTopSellItem(shopID dot.ID, dateFrom time.Time, dateTo 
 type StaffOrder struct {
 	UserName    string `sel:"u.full_name"`
 	UserID      dot.ID `sel:"u.id"`
-	TotalCount  int32  `sel:"count(o.id) as total_amount"`
-	TotalAmount int32  `sel:"sum(o.total_amount) as order_count"`
+	TotalCount  int64  `sel:"count(o.id) as total_amount"`
+	TotalAmount int64  `sel:"sum(o.total_amount) as order_count"`
 }
 
 func (s *SummaryStore) GetListStaffOrder(shopID dot.ID, dateFrom time.Time, dateTo time.Time) (StaffOrders, error) {

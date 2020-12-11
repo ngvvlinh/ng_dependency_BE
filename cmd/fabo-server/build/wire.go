@@ -43,6 +43,7 @@ import (
 	"o.o/backend/com/shopping/carrying"
 	"o.o/backend/com/shopping/customering"
 	"o.o/backend/com/shopping/setting"
+	fabosummary "o.o/backend/com/summary/fabo"
 	"o.o/backend/com/supporting/ticket"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/bus"
@@ -124,6 +125,7 @@ func Build(
 		carrying.WireSet,
 		receipting.WireSet,
 		aggregatex.WireSet,
+		fabosummary.WireSet,
 		connectioning.WireSet,
 		shipment_fabo.WireSet,
 		export.WireSet,

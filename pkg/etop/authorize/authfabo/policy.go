@@ -25,4 +25,6 @@ const Policy auth.Policy = authcommon.CommonPolicy + `
 	p, facebook/message_template:update, owner, salesman
 	p, facebook/message_template:view, owner, salesman
 	p, facebook/message_template:delete, owner, salesman
+	# dashboard
+	p, shop/dashboard:view, owner
 `

@@ -851,6 +851,33 @@
           }
         }
       }
+    },
+    "/api/fabo.Summary/SummaryShop": {
+      "post": {
+        "tags": [
+          "Summary"
+        ],
+        "summary": "SummaryShop",
+        "operationId": "fabo.Summary-SummaryShop",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvSummaryShopRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvSummaryShopResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -2299,6 +2326,28 @@
         }
       }
     },
+    "cvSummaryShopRequest": {
+      "type": "object",
+      "properties": {
+        "date_from": {
+          "type": "string"
+        },
+        "date_to": {
+          "type": "string"
+        }
+      }
+    },
+    "cvSummaryShopResponse": {
+      "type": "object",
+      "properties": {
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paSummaryTable"
+          }
+        }
+      }
+    },
     "cvTargetDataSubAttachment": {
       "type": "object",
       "properties": {
@@ -2573,6 +2622,79 @@
         }
       }
     },
+    "paSummaryColRow": {
+      "type": "object",
+      "properties": {
+        "indent": {
+          "type": "integer"
+        },
+        "label": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "paSummaryItem": {
+      "type": "object",
+      "properties": {
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "label": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paSummaryTable": {
+      "type": "object",
+      "properties": {
+        "columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paSummaryColRow"
+          }
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paSummaryItem"
+          }
+        },
+        "label": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paSummaryColRow"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "pwGender": {
       "type": "string",
       "enum": [
@@ -2598,6 +2720,9 @@
     },
     {
       "name": "Shop"
+    },
+    {
+      "name": "Summary"
     }
   ]
 }

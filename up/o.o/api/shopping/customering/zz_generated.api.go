@@ -67,6 +67,7 @@ type CreateCustomerCommand struct {
 	Note         string
 	Phone        string
 	Email        string
+	CreatedBy    dot.ID
 
 	Result *ShopCustomer `json:"-"`
 }
@@ -386,6 +387,7 @@ func (q *CreateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 			Note:         q.Note,
 			Phone:        q.Phone,
 			Email:        q.Email,
+			CreatedBy:    q.CreatedBy,
 		}
 }
 
@@ -401,6 +403,7 @@ func (q *CreateCustomerCommand) SetCreateCustomerArgs(args *CreateCustomerArgs) 
 	q.Note = args.Note
 	q.Phone = args.Phone
 	q.Email = args.Email
+	q.CreatedBy = args.CreatedBy
 }
 
 func (q *CreateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCustomerGroupArgs) {

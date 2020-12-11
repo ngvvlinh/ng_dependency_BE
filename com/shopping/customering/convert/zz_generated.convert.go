@@ -346,6 +346,7 @@ func convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *custome
 	out.Status = status3.Status(arg.Status) // simple conversion
 	out.CreatedAt = arg.CreatedAt           // simple assign
 	out.UpdatedAt = arg.UpdatedAt           // simple assign
+	out.CreatedBy = arg.CreatedBy           // simple assign
 	out.Deleted = false                     // zero value
 }
 
@@ -394,6 +395,7 @@ func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
 	out.DeletedAt = time.Time{}         // zero value
+	out.CreatedBy = arg.CreatedBy       // simple assign
 	out.Rid = 0                         // zero value
 }
 
@@ -439,6 +441,7 @@ func apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.Status = 0                      // zero value
 	out.CreatedAt = time.Time{}         // zero value
 	out.UpdatedAt = time.Time{}         // zero value
+	out.CreatedBy = arg.CreatedBy       // simple assign
 	out.Deleted = false                 // zero value
 }
 
@@ -465,6 +468,7 @@ func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.Status = out.Status                         // no change
 	out.CreatedAt = out.CreatedAt                   // no change
 	out.UpdatedAt = out.UpdatedAt                   // no change
+	out.CreatedBy = out.CreatedBy                   // no change
 	out.Deleted = out.Deleted                       // no change
 }
 

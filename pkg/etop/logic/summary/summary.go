@@ -38,7 +38,7 @@ func (s *Summary) SummarizeFulfillments(ctx context.Context, query *model.Summar
 		timeout = 5 * time.Second
 	}
 
-	key := fmt.Sprintf("SummarizeFulfillments %v", query.ShopID)
+	key := fmt.Sprintf("SummarizeShop %v", query.ShopID)
 	resp, err, _ := idempgroup.Do(key, timeout, func() (interface{}, error) {
 		return s.summarizeFulfillments(ctx, query)
 	})

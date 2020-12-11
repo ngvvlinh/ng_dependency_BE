@@ -73,6 +73,7 @@ import (
 	query2 "o.o/backend/com/shopping/customering/query"
 	aggregate10 "o.o/backend/com/shopping/setting/aggregate"
 	query12 "o.o/backend/com/shopping/setting/query"
+	query13 "o.o/backend/com/summary/fabo/query"
 	query3 "o.o/backend/com/supporting/ticket/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
@@ -577,7 +578,13 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		ShippingQS:   shippingQueryBus,
 		ConnectionQS: connectioningQueryBus,
 	}
-	faboServers := fabo2.NewServers(pageService, customerConversationService, faboCustomerService, shopService, extraShipmentService, store)
+	dashboardQuery := query13.NewDashboardQuery(mainDB, store)
+	summaryQueryBus := query13.DashboardQueryMessageBus(dashboardQuery)
+	summaryService := &fabo2.SummaryService{
+		Session:      session,
+		SummaryQuery: summaryQueryBus,
+	}
+	faboServers := fabo2.NewServers(pageService, customerConversationService, faboCustomerService, shopService, extraShipmentService, summaryService, store)
 	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
 	webhookService := &sadmin.WebhookService{
 		Session:                session,

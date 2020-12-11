@@ -30,6 +30,8 @@ func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Serv
 		return NewPageServiceServer(builder, hooks...), true
 	case func() ShopService:
 		return NewShopServiceServer(builder, hooks...), true
+	case func() SummaryService:
+		return NewSummaryServiceServer(builder, hooks...), true
 	default:
 		return nil, false
 	}
@@ -730,6 +732,74 @@ func (s *ShopServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.UpdateTag(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type SummaryServiceServer struct {
+	hooks   httprpc.HooksBuilder
+	builder func() SummaryService
+}
+
+func NewSummaryServiceServer(builder func() SummaryService, hooks ...httprpc.HooksBuilder) httprpc.Server {
+	return &SummaryServiceServer{
+		hooks:   httprpc.ChainHooks(hooks...),
+		builder: builder,
+	}
+}
+
+const SummaryServicePathPrefix = "/fabo.Summary/"
+
+const Path_Summary_SummaryShop = "/fabo.Summary/SummaryShop"
+
+func (s *SummaryServiceServer) PathPrefix() string {
+	return SummaryServicePathPrefix
+}
+
+func (s *SummaryServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
+func (s *SummaryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	hooks := httprpc.WrapHooks(s.hooks)
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.RequestReceived(ctx, *info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
+}
+
+func (s *SummaryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/fabo.Summary/SummaryShop":
+		msg := &SummaryShopRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.SummaryShop(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

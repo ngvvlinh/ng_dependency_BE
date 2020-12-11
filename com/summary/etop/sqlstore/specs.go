@@ -104,18 +104,6 @@ func Contain(list []string, s string) bool {
 	return false
 }
 
-func buildData(data []smry.Cell) []summary.SummaryItem {
-	res := make([]summary.SummaryItem, len(data))
-	for i, item := range data {
-		res[i] = summary.SummaryItem{
-			Spec:  item.Subject.GetSpec(),
-			Value: item.Value,
-			Unit:  item.Subject.Unit,
-		}
-	}
-	return res
-}
-
 func (s SummaryStore) execQuery(ctx context.Context, tables []*smry.Table, shopID dot.ID, tableName string) error {
 	builder := smry.NewSummaryQueryBuilder(tableName)
 	count := 1
@@ -211,7 +199,7 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 	rows02 := []smry.Subject{
 		row_tổng_đơn,
 	}
-	rowsPerDay := buildRowPerDate(dateFrom, dateTo)
+	rowsPerDay := util.BuildRowPerDate(dateFrom, dateTo)
 	table02 := smry.BuildTable(rows02, rowsPerDay, "Số lượng đơn theo ngày", "fulfillment02", "shipnow_fulfillment", "datefrom-dateto")
 
 	pred_giao_hàng_nhanh := smry.Predicate{
@@ -284,7 +272,7 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 		row_tổng_thu_hộ.Combine("", pre_tính_cod),
 		row_tổng_phí_vận_chuyển.Combine("", pre_tính_cod),
 	}
-	cols05 := buildRowPerDate(dateFrom, dateTo)
+	cols05 := util.BuildRowPerDate(dateFrom, dateTo)
 	table05 := smry.BuildTable(rows05, cols05, "Giá trị giao hàng theo ngày", "fulfillment05", "datefrom-dateto&&total_amount")
 
 	row_tiền_thu_hộ := smry.NewSubject("Tổng tiền thu hộ", "", "sum", "SUM(cod_amount)", nil)
@@ -295,7 +283,7 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 		row_tiền_thu_hộ.Combine("", pred_chưa_hủy),
 		row_tổng_phí.Combine("", pred_chưa_hủy),
 	}
-	cols08 := buildRowPerDate(dateFrom, dateTo)
+	cols08 := util.BuildRowPerDate(dateFrom, dateTo)
 	table08 := smry.BuildTable(rows08, cols08, "Giá trị giao hàng", "fulfillment05", "shipnow_fulfillment", "datefrom-dateto&&total_amount")
 
 	pred_bồi_hoàn := smry.Predicate{
@@ -366,18 +354,4 @@ func buildTablesTopShipFulfillment(dateFrom time.Time, dateTo time.Time) (ffm []
 
 	return suryFfm, tablesShipnowFfm
 
-}
-
-func buildRowPerDate(dateFrom time.Time, dateTo time.Time) []smry.Predicator {
-	var result []smry.Predicator
-	var timeStart = dateFrom
-	for timeStart.Before(dateTo) {
-		result = append(result, smry.Predicate{
-			Spec:  timeStart.Format("2006-01-02"),
-			Label: timeStart.Format("2006-01-02"),
-			Expr:  sq.NewExpr("created_at >= ? and ? > created_at", timeStart, timeStart.Add(24*time.Hour)),
-		})
-		timeStart = timeStart.Add(24 * time.Hour)
-	}
-	return result
 }

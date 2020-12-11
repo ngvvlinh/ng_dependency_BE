@@ -78,6 +78,7 @@ func convert_customermodel_ShopCustomer_customeringmodel_ShopCustomer(arg *custo
 	out.CreatedAt = arg.CreatedAt       // simple assign
 	out.UpdatedAt = arg.UpdatedAt       // simple assign
 	out.DeletedAt = time.Time{}         // zero value
+	out.CreatedBy = 0                   // zero value
 	out.Rid = arg.Rid                   // simple assign
 }
 

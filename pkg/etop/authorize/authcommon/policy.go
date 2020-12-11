@@ -6,19 +6,19 @@ const shopPolicy = `#connection
 	p, shop/connection:delete, owner
 	p, shop/connection:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	# carrier
-    p, shop/carrier:create, admin, owner, salesman
+	p, shop/carrier:create, admin, owner, salesman
 	p, shop/carrier:update, admin, owner, salesman
 	p, shop/carrier:delete, admin, owner, salesman
 	p, shop/carrier:view, admin, owner, salesman, accountant
 	# category
 	p, shop/category:create, admin, owner
 	p, shop/category:update, admin, owner, purchasing_management
-    p, shop/category:delete, admin, owner
-    p, shop/category:view, admin, owner, salesman, accountant, purchasing_management, inventory_management
+	p, shop/category:delete, admin, owner
+	p, shop/category:view, admin, owner, salesman, accountant, purchasing_management, inventory_management
 	# collection
 	p, shop/collection:create, admin, owner, purchasing_management
 	p, shop/collection:update, admin, owner, purchasing_management
-    p, shop/collection:view, admin, owner, accountant, salesman, purchasing_management, inventory_management
+	p, shop/collection:view, admin, owner, accountant, salesman, purchasing_management, inventory_management
 	# customer
 	p, shop/customer:create, admin, owner, salesman
 	p, shop/customer:update, admin, owner, salesman
@@ -26,11 +26,9 @@ const shopPolicy = `#connection
 	p, shop/customer:view, admin, owner, salesman, accountant
 	p, shop/customer:manage, admin, owner, salesman
 	p, shop/customer_group:manage, admin, owner, salesman
-    # dashboard
-    p, shop/dashboard:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	# external account
-    p, shop/external_account:manage, admin, owner
-    # fulfillment
+	p, shop/external_account:manage, admin, owner
+	# fulfillment
 	p, shop/fulfillment:create, admin, owner, salesman
 	p, shop/fulfillment:update, admin, owner, salesman
 	p, shop/fulfillment:cancel, admin, owner, salesman
@@ -39,9 +37,9 @@ const shopPolicy = `#connection
 	# inventory
 	p, shop/inventory:view, admin, owner, inventory_management, purchasing_management
 	p, shop/inventory:update, admin, owner, inventory_management, purchasing_management
-    p, shop/inventory:create, admin, owner, salesman, inventory_management, purchasing_management
-    p, shop/inventory:confirm, admin, owner, inventory_management, salesman
-    p, shop/inventory:cancel, admin, owner, inventory_management
+	p, shop/inventory:create, admin, owner, salesman, inventory_management, purchasing_management
+	p, shop/inventory:confirm, admin, owner, inventory_management, salesman
+	p, shop/inventory:cancel, admin, owner, inventory_management
 	# ledger
 	p, shop/ledger:create, admin, owner, accountant
 	p, shop/ledger:view, admin, owner, accountant, salesman, purchasing_management
@@ -58,14 +56,14 @@ const shopPolicy = `#connection
 	p, shop/order:cancel, admin, owner, salesman
 	p, shop/order:import, admin, owner, salesman
 	p, shop/order:export, admin, owner, salesman, inventory_management
-    # order: hotfix, all users can access order page
+	# order: hotfix, all users can access order page
 	p, shop/order:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	# purchase_order
 	p, shop/purchase_order:view, admin, owner, accountant, purchasing_management
 	p, shop/purchase_order:create, admin, owner, purchasing_management
-    p, shop/purchase_order:update, admin, owner, purchasing_management
+	p, shop/purchase_order:update, admin, owner, purchasing_management
 	p, shop/purchase_order:confirm, admin, owner, purchasing_management
-    p, shop/purchase_order:cancel, admin, owner, purchasing_management
+	p, shop/purchase_order:cancel, admin, owner, purchasing_management
 	# product
 	p, shop/product:create, admin, owner, purchasing_management
 	p, shop/product/basic_info:update, admin, owner, purchasing_management
@@ -98,7 +96,7 @@ const shopPolicy = `#connection
 	p, shop/shipnow:view, admin, owner, salesman, accountant
 	p, shop/shipnow:create, admin, owner, salesman
 	p, shop/shipnow:update, admin, owner, salesman
-    p, shop/shipnow:cancel, admin, owner, salesman
+	p, shop/shipnow:cancel, admin, owner, salesman
 	p, shop/shipnow:confirm, admin, owner, salesman
 	# shop
 	p, shop/balance:view, admin, owner, accountant
@@ -141,9 +139,9 @@ const shopPolicy = `#connection
 	# trading
 	p, trading/order:view, admin, owner
 	p, trading/order:create, admin, owner
-    p, shop/trading/product:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
-    p, shop/trading/order:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
-    p, shop/trading/order:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+	p, shop/trading/product:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+	p, shop/trading/order:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+	p, shop/trading/order:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	# payment
 	p, shop/payment:create, admin, owner
 	p, shop/payment:view, admin, owner

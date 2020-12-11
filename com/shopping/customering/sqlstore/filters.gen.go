@@ -408,6 +408,25 @@ func (ft *ShopCustomerFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFi
 	}
 }
 
+func (ft *ShopCustomerFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == 0,
+	}
+}
+
+func (ft *ShopCustomerFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == nil,
+		IsZero: CreatedBy != nil && (*CreatedBy) == 0,
+	}
+}
+
 func (ft *ShopCustomerFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

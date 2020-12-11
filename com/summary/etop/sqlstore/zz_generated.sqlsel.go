@@ -63,8 +63,8 @@ func (m *StaffOrder) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.String)(&m.UserName),
 		&m.UserID,
-		(*core.Int32)(&m.TotalCount),
-		(*core.Int32)(&m.TotalAmount),
+		(*core.Int64)(&m.TotalCount),
+		(*core.Int64)(&m.TotalAmount),
 	}
 }
 

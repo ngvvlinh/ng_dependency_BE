@@ -1005,10 +1005,10 @@ var _acl = map[string]*permission.Decl{
 	"shop.MoneyTransaction/GetMoneyTransaction":  {Type: Shop, Actions: actions(ShopMoneyTransactionView)},
 	"shop.MoneyTransaction/GetMoneyTransactions": {Type: Shop, Actions: actions(ShopMoneyTransactionView)},
 
-	"shop.Summary/SummarizeFulfillments": {Type: Shop, Actions: actions(ShopDashboardView)},
-	"shop.Summary/SummarizePOS":          {Type: Shop, Actions: actions(ShopDashboardView)},
-	"shop.Summary/SummarizeTopShip":      {Type: Shop},
-	"shop.Summary/CalcBalanceUser":       {Type: Shop, AuthPartner: Opt, Actions: actions(UserBalanceView)},
+	"shop.Summary/SummarizeShop":    {Type: Shop, Actions: actions(ShopDashboardView)},
+	"shop.Summary/SummarizePOS":     {Type: Shop, Actions: actions(ShopDashboardView)},
+	"shop.Summary/SummarizeTopShip": {Type: Shop},
+	"shop.Summary/CalcBalanceUser":  {Type: Shop, AuthPartner: Opt, Actions: actions(UserBalanceView)},
 
 	"shop.Export/GetExports":    {Type: Shop},
 	"shop.Export/RequestExport": {Type: Shop},
@@ -1334,6 +1334,9 @@ var _acl = map[string]*permission.Decl{
 
 	// -- Fabo external
 	"fabo.ExtraShipment/CustomerReturnRate": {Type: Shop},
+
+	// -- Fabo summary
+	"fabo.Summary/SummaryShop": {Type: Shop, Auth: User, Actions: actions(ShopDashboardView)},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

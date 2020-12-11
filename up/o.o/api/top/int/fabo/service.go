@@ -68,3 +68,8 @@ type CustomerService interface {
 type ExtraShipmentService interface {
 	CustomerReturnRate(context.Context, *CustomerReturnRateRequest) (*CustomerReturnRateResponse, error)
 }
+
+// +apix:path=/fabo.Summary
+type SummaryService interface {
+	SummaryShop(context.Context, *SummaryShopRequest) (*SummaryShopResponse, error)
+}

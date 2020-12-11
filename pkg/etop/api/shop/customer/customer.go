@@ -45,14 +45,15 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, r *api.CreateCusto
 		ctx, key, 15*time.Second, "tạo khách hàng",
 		func() (interface{}, error) {
 			cmd := &customering.CreateCustomerCommand{
-				ShopID:   s.SS.Shop().ID,
-				FullName: r.FullName,
-				Gender:   r.Gender,
-				Type:     r.Type,
-				Birthday: r.Birthday,
-				Note:     r.Note,
-				Phone:    r.Phone,
-				Email:    r.Email,
+				ShopID:    s.SS.Shop().ID,
+				FullName:  r.FullName,
+				Gender:    r.Gender,
+				Type:      r.Type,
+				Birthday:  r.Birthday,
+				Note:      r.Note,
+				Phone:     r.Phone,
+				Email:     r.Email,
+				CreatedBy: s.SS.User().ID,
 			}
 			if err := s.CustomerAggr.Dispatch(ctx, cmd); err != nil {
 				return nil, err

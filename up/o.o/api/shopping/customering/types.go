@@ -34,6 +34,8 @@ type ShopCustomer struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
+	CreatedBy dot.ID
+
 	Deleted bool
 }
 

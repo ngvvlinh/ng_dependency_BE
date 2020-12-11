@@ -21,6 +21,7 @@ func NewServers(
 	customerService *CustomerService,
 	shopService *ShopService,
 	extraShipmentService *ExtraShipmentService,
+	summaryService *SummaryService,
 	rd redis.Store,
 ) Servers {
 	idempgroup = idemp.NewRedisGroup(rd, "idemp_fabo", 30)
@@ -30,6 +31,7 @@ func NewServers(
 		customerService.Clone,
 		shopService.Clone,
 		extraShipmentService.Clone,
+		summaryService.Clone,
 	)
 	return servers
 }

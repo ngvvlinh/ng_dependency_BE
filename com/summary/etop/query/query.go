@@ -9,13 +9,12 @@ import (
 	"o.o/api/summary"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/summary/etop/sqlstore"
+	"o.o/backend/com/summary/util"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
-	"o.o/capi/dot"
 )
 
 const currentVersion = "2"
-const dateLayout = "2016-01-02"
 const redisTime = 2 * 60
 
 var _ summary.QueryService = &DashboardQuery{}
@@ -27,7 +26,7 @@ func DashboardQueryMessageBus(q *DashboardQuery) summary.QueryBus {
 
 func (d *DashboardQuery) SummaryTopShip(ctx context.Context, req *summary.SummaryTopShipRequest) (*summary.SummaryTopShipResponse, error) {
 	var summaryTableRedis summary.SummaryTopShipResponse
-	keyRedis := buildKey(req.ShopID, req.DateFrom, req.DateTo, "topship")
+	keyRedis := util.BuildKey(req.ShopID, req.DateFrom, req.DateTo, "topship", currentVersion)
 	isReturn, err := d.checkRedis(keyRedis, &summaryTableRedis)
 	if isReturn {
 		return &summaryTableRedis, err
@@ -89,17 +88,9 @@ func NewDashboardQuery(db com.MainDB, resdis redis.Store, locationBus location.Q
 	}
 }
 
-func buildKey(shopID dot.ID, dateFrom, dateTo time.Time, keycode string) string {
-	key := "summary/" + keycode + ":version=" + currentVersion +
-		",shop=" + shopID.String() +
-		",from=" + dateFrom.Format(dateLayout) +
-		",to=" + dateTo.Format(dateLayout)
-	return key
-}
-
 func (q *DashboardQuery) SummaryPOS(ctx context.Context, req *summary.SummaryPOSRequest) (*summary.SummaryPOSResponse, error) {
 	var summaryTableRedis summary.SummaryPOSResponse
-	keyRedis := buildKey(req.ShopID, req.DateFrom, req.DateTo, "pos")
+	keyRedis := util.BuildKey(req.ShopID, req.DateFrom, req.DateTo, "pos", currentVersion)
 	isReturn, err := q.checkRedis(keyRedis, &summaryTableRedis)
 	if isReturn {
 		return &summaryTableRedis, err
@@ -606,11 +597,11 @@ func buildStaffOrderTable(args []*sqlstore.StaffOrder) *summary.SummaryTable {
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[2].Spec + summaryTable.Rows[index].Spec,
-			Value: int64(value.TotalCount),
+			Value: value.TotalCount,
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[3].Spec + summaryTable.Rows[index].Spec,
-			Value: int64(value.TotalAmount),
+			Value: value.TotalAmount,
 		})
 	}
 	return &summaryTable

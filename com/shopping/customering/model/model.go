@@ -44,6 +44,8 @@ type ShopCustomer struct {
 	UpdatedAt    time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt    time.Time
 
+	CreatedBy dot.ID
+
 	Rid dot.ID
 }
 
