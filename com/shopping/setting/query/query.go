@@ -34,7 +34,7 @@ func (s ShopSettingQuery) GetShopSetting(
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id")
 	}
 
-	shopSetting, err := s.store(ctx).GetShopSetting()
+	shopSetting, err := s.store(ctx).ShopID(args.ShopID).GetShopSetting()
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
 		return &setting.ShopSetting{
