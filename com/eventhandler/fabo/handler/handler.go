@@ -62,7 +62,8 @@ func New(
 
 func (h *Handler) TopicsAndHandlers() map[string]mq.EventHandler {
 	return pgevent.WrapMapHandlers(map[string]pgevent.HandlerFunc{
-		"fulfillment":              h.HandleFulfillmentEvent,
+		// turn off feature send message shipping_state changed
+		//"fulfillment":              h.HandleFulfillmentEvent,
 		"fb_external_conversation": h.HandleFbConversationEvent,
 		"fb_external_comment":      h.HandleFbCommentEvent,
 		"fb_external_message":      h.HandleFbMessageEvent,
