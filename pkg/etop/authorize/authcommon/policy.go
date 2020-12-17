@@ -162,13 +162,13 @@ const shopPolicy = `#connection
 	p, shop/webserver/wspage:delete, admin, owner
 	p, shop/webserver/wspage:view, admin, owner
 	# ticket
-	p, shop/shop_ticket:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, customer_service
-	p, shop/shop_ticket:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, customer_service
-	p, shop/shop_ticket:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, customer_service
-	p, shop/shop_ticket_comment:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, customer_service
-	p, shop/shop_ticket_comment:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, customer_service
-	p, shop/shop_ticket_comment:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, customer_service
-	p, shop/shop_ticket_comment:delete, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, customer_service
+	p, shop/shop_ticket:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket_comment:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket_comment:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket_comment:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket_comment:delete, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 `
 
 const adminPolicy = `

@@ -105,7 +105,7 @@ func (q *QueryService) GetUserByPhoneOrEmail(ctx context.Context, args *identity
 		query = query.ByEmail(args.Email)
 	}
 	if count != 1 {
-		return nil, cm.Error(cm.InvalidArgument, "", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Vui lòng chỉ cung cấp email hoặc số điện thoại.", nil)
 	}
 	return query.GetUser()
 }

@@ -8370,6 +8370,10 @@
         "external_id": {
           "type": "string"
         },
+        "hotline_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -10125,6 +10129,9 @@
           "format": "date-time"
         },
         "extension_number": {
+          "type": "string"
+        },
+        "extension_password": {
           "type": "string"
         },
         "hotline_id": {

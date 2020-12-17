@@ -59,6 +59,11 @@ func (s *CallLogStore) HotlineIDs(hotlineIDs ...dot.ID) *CallLogStore {
 	return s
 }
 
+func (s *CallLogStore) AccountID(accountID dot.ID) *CallLogStore {
+	s.preds = append(s.preds, s.ft.ByAccountID(accountID))
+	return s
+}
+
 func (s *CallLogStore) GetCallLogDB() (*model.CallLog, error) {
 	query := s.query().Where(s.preds)
 	var callLog model.CallLog

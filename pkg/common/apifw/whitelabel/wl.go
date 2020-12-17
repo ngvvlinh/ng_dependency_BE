@@ -36,6 +36,8 @@ type Config struct {
 
 	AuthURL string
 
+	TelecomURL string
+
 	InviteUserURLByEmail string
 
 	InviteUserURLByPhone string
@@ -75,4 +77,12 @@ type Templates struct {
 
 func MustParseTemplate(name, tpl string) *template.Template {
 	return template.Must(template.New(name).Parse(tpl))
+}
+
+func (c Config) GetTelecomInviteUserURLByEmail(baseURL string) string {
+	return baseURL + "/invitation"
+}
+
+func (c Config) GetTelecomInviteUserURLByPhone(baseURL string, phone string) string {
+	return baseURL + "/i/p" + phone
 }

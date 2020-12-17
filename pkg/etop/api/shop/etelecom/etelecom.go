@@ -31,6 +31,13 @@ func (s *ExtensionService) GetExtensions(ctx context.Context, r *api.GetExtensio
 		return nil, err
 	}
 	res := Convert_etelecom_Extensions_shop_Extensions(query.Result)
+
+	// censor extension password
+	for _, ext := range res {
+		if ext.UserID != s.SS.User().ID {
+			ext.ExtensionPassword = ""
+		}
+	}
 	return &api.GetExtensionsResponse{Extensions: res}, nil
 }
 
@@ -74,26 +81,12 @@ func (s *ExtensionService) GetCallLogs(ctx context.Context, r *api.GetCallLogsRe
 		return nil, err
 	}
 	query := &etelecom.ListCallLogsQuery{
-		Paging: *paging,
+		AccountID: s.SS.Shop().ID,
+		Paging:    *paging,
 	}
 	if r.Filter != nil && (len(r.Filter.ExtensionIDs) > 0 || len(r.Filter.HotlineIDs) > 0) {
 		query.HotlineIDs = r.Filter.HotlineIDs
 		query.ExtensionIDs = r.Filter.ExtensionIDs
-	} else {
-		queryExtensions := &etelecom.ListExtensionsQuery{
-			AccountIDs: []dot.ID{s.SS.Shop().ID},
-		}
-		if err := s.EtelecomQuery.Dispatch(ctx, queryExtensions); err != nil {
-			return nil, err
-		}
-		extensionIDs := []dot.ID{}
-		for _, hl := range queryExtensions.Result {
-			extensionIDs = append(extensionIDs, hl.ID)
-		}
-		if len(extensionIDs) == 0 {
-			return &api.GetCallLogsResponse{}, nil
-		}
-		query.ExtensionIDs = extensionIDs
 	}
 
 	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {

@@ -20,7 +20,7 @@ func (m *ProcessManager) ExtensionCreatingEvent(ctx context.Context, event *etel
 	roles := query.Result.Roles
 	acceptRoles := []string{
 		authorization.RoleShopOwner.String(),
-		authorization.RoleCustomerService.String(),
+		authorization.RoleTelecomCustomerService.String(),
 	}
 	isPermision := false
 	for _, role := range roles {

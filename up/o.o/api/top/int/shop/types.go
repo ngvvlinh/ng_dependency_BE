@@ -3008,13 +3008,14 @@ type GetHotLinesResponse struct {
 func (m *GetHotLinesResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Extension struct {
-	ID              dot.ID    `json:"id"`
-	UserID          dot.ID    `json:"user_id"`
-	AccountID       dot.ID    `json:"account_id"`
-	ExtensionNumber string    `json:"extension_number"`
-	HotlineID       dot.ID    `json:"hotline_id"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID                dot.ID    `json:"id"`
+	UserID            dot.ID    `json:"user_id"`
+	AccountID         dot.ID    `json:"account_id"`
+	ExtensionNumber   string    `json:"extension_number"`
+	ExtensionPassword string    `json:"extension_password"`
+	HotlineID         dot.ID    `json:"hotline_id"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
 }
 
 func (m *Extension) String() string { return jsonx.MustMarshalToString(m) }
@@ -3047,6 +3048,7 @@ type CallLog struct {
 	ID                 dot.ID                              `json:"id"`
 	ExternalID         string                              `json:"external_id"`
 	AccountID          dot.ID                              `json:"account_id"`
+	HotlineID          dot.ID                              `json:"hotline_id"`
 	StartedAt          time.Time                           `json:"started_at"`
 	EndedAt            time.Time                           `json:"ended_at"`
 	Duration           int                                 `json:"duration"`

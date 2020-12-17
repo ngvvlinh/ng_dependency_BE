@@ -492,11 +492,10 @@ func (a *InvitationAggregate) DeleteInvitation(
 
 func GetInvitationURL(ctx context.Context, args *invitation.Invitation, flag FlagEnableNewLinkInvitation) (*url.URL, error) {
 	var invitationUrl string
-	if args.Email != "" || (args.Phone != "" && !flag) {
-		invitationUrl = wl.X(ctx).InviteUserURLByEmail
+	if isRoleForTelecom(ctx, args) {
+		invitationUrl = getInvitationURLForTelecom(ctx, args, flag)
 	} else {
-		// format url: https://example.com/i/p000000
-		invitationUrl = wl.X(ctx).InviteUserURLByPhone + "/p" + args.Phone
+		invitationUrl = getInvitationURL(ctx, args, flag)
 	}
 
 	URL, err := url.Parse(invitationUrl)
@@ -509,4 +508,24 @@ func GetInvitationURL(ctx context.Context, args *invitation.Invitation, flag Fla
 	}
 	URL.RawQuery = urlQuery.Encode()
 	return URL, nil
+}
+
+func getInvitationURLForTelecom(ctx context.Context, args *invitation.Invitation, flag FlagEnableNewLinkInvitation) string {
+	wlPartner := wl.X(ctx)
+	if args.Email != "" || (args.Phone != "" && !flag) {
+		return wlPartner.Config.GetTelecomInviteUserURLByEmail(wlPartner.TelecomURL)
+	}
+	return wlPartner.Config.GetTelecomInviteUserURLByPhone(wlPartner.TelecomURL, args.Phone)
+}
+
+func getInvitationURL(ctx context.Context, args *invitation.Invitation, flag FlagEnableNewLinkInvitation) string {
+	wlPartner := wl.X(ctx)
+	if args.Email != "" || (args.Phone != "" && !flag) {
+		return wlPartner.InviteUserURLByEmail
+	}
+	return wlPartner.InviteUserURLByPhone + "/p" + args.Phone
+}
+
+func isRoleForTelecom(ctx context.Context, args *invitation.Invitation) bool {
+	return authorization.IsContainsRole(args.Roles, authorization.RoleTelecomCustomerService)
 }

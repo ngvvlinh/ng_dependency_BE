@@ -25,7 +25,8 @@ const (
 	RoleAccountant           Role = "accountant"
 	RolePurchasingManagement Role = "purchasing_management"
 	RoleStaffManagement      Role = "staff_management"
-	RoleCustomerService      Role = "customer_service"
+
+	RoleTelecomCustomerService Role = "telecom_customerservice"
 )
 
 var Roles = [14]Role{
@@ -42,7 +43,7 @@ var Roles = [14]Role{
 	RoleAccountant,
 	RolePurchasingManagement,
 	RoleStaffManagement,
-	RoleCustomerService,
+	RoleTelecomCustomerService,
 }
 
 var roleLabels = map[Role]string{
@@ -59,7 +60,7 @@ var roleLabels = map[Role]string{
 	RoleSalesMan:                 "Bán hàng",
 	RoleInventoryManagement:      "Quản lý kho",
 	RolePurchasingManagement:     "Thu mua",
-	RoleCustomerService:          "Chăm sóc khách hàng",
+	RoleTelecomCustomerService:   "Chăm sóc khách hàng",
 }
 
 func ParseRoleLabels(roles []Role) (result []string) {

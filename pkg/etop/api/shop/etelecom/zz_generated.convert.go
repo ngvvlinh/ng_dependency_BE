@@ -122,6 +122,7 @@ func convert_etelecom_CallLog_shop_CallLog(arg *etelecom.CallLog, out *shop.Call
 	out.ID = arg.ID                                 // simple assign
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = arg.AccountID                   // simple assign
+	out.HotlineID = arg.HotlineID                   // simple assign
 	out.StartedAt = arg.StartedAt                   // simple assign
 	out.EndedAt = arg.EndedAt                       // simple assign
 	out.Duration = arg.Duration                     // simple assign
@@ -178,7 +179,7 @@ func convert_shop_CallLog_etelecom_CallLog(arg *shop.CallLog, out *etelecom.Call
 	out.CallStatus = arg.CallStatus                 // simple assign
 	out.Direction = arg.Direction                   // simple assign
 	out.ExtensionID = arg.ExtensionID               // simple assign
-	out.HotlineID = 0                               // zero value
+	out.HotlineID = arg.HotlineID                   // simple assign
 	out.ContactID = arg.ContactID                   // simple assign
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
@@ -211,6 +212,7 @@ func apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg *etelecom.CreateCa
 	out.ID = 0                                      // zero value
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = 0                               // zero value
+	out.HotlineID = 0                               // zero value
 	out.StartedAt = arg.StartedAt                   // simple assign
 	out.EndedAt = arg.EndedAt                       // simple assign
 	out.Duration = arg.Duration                     // simple assign
@@ -242,13 +244,14 @@ func Apply_etelecom_CreateExtensionArgs_shop_Extension(arg *etelecom.CreateExten
 }
 
 func apply_etelecom_CreateExtensionArgs_shop_Extension(arg *etelecom.CreateExtensionArgs, out *shop.Extension) {
-	out.ID = 0                                // zero value
-	out.UserID = arg.UserID                   // simple assign
-	out.AccountID = arg.AccountID             // simple assign
-	out.ExtensionNumber = arg.ExtensionNumber // simple assign
-	out.HotlineID = arg.HotlineID             // simple assign
-	out.CreatedAt = time.Time{}               // zero value
-	out.UpdatedAt = time.Time{}               // zero value
+	out.ID = 0                                    // zero value
+	out.UserID = arg.UserID                       // simple assign
+	out.AccountID = arg.AccountID                 // simple assign
+	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
+	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.HotlineID = arg.HotlineID                 // simple assign
+	out.CreatedAt = time.Time{}                   // zero value
+	out.UpdatedAt = time.Time{}                   // zero value
 }
 
 func Convert_etelecom_Extension_shop_Extension(arg *etelecom.Extension, out *shop.Extension) *shop.Extension {
@@ -263,13 +266,14 @@ func Convert_etelecom_Extension_shop_Extension(arg *etelecom.Extension, out *sho
 }
 
 func convert_etelecom_Extension_shop_Extension(arg *etelecom.Extension, out *shop.Extension) {
-	out.ID = arg.ID                           // simple assign
-	out.UserID = arg.UserID                   // simple assign
-	out.AccountID = arg.AccountID             // simple assign
-	out.ExtensionNumber = arg.ExtensionNumber // simple assign
-	out.HotlineID = arg.HotlineID             // simple assign
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
+	out.ID = arg.ID                               // simple assign
+	out.UserID = arg.UserID                       // simple assign
+	out.AccountID = arg.AccountID                 // simple assign
+	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
+	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.HotlineID = arg.HotlineID                 // simple assign
+	out.CreatedAt = arg.CreatedAt                 // simple assign
+	out.UpdatedAt = arg.UpdatedAt                 // simple assign
 }
 
 func Convert_etelecom_Extensions_shop_Extensions(args []*etelecom.Extension) (outs []*shop.Extension) {
@@ -296,16 +300,16 @@ func Convert_shop_Extension_etelecom_Extension(arg *shop.Extension, out *eteleco
 }
 
 func convert_shop_Extension_etelecom_Extension(arg *shop.Extension, out *etelecom.Extension) {
-	out.ID = arg.ID                           // simple assign
-	out.UserID = arg.UserID                   // simple assign
-	out.AccountID = arg.AccountID             // simple assign
-	out.HotlineID = arg.HotlineID             // simple assign
-	out.ExtensionNumber = arg.ExtensionNumber // simple assign
-	out.ExtensionPassword = ""                // zero value
-	out.ExternalData = nil                    // zero value
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
-	out.DeletedAt = time.Time{}               // zero value
+	out.ID = arg.ID                               // simple assign
+	out.UserID = arg.UserID                       // simple assign
+	out.AccountID = arg.AccountID                 // simple assign
+	out.HotlineID = arg.HotlineID                 // simple assign
+	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
+	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.ExternalData = nil                        // zero value
+	out.CreatedAt = arg.CreatedAt                 // simple assign
+	out.UpdatedAt = arg.UpdatedAt                 // simple assign
+	out.DeletedAt = time.Time{}                   // zero value
 }
 
 func Convert_shop_Extensions_etelecom_Extensions(args []*shop.Extension) (outs []*etelecom.Extension) {

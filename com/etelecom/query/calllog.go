@@ -17,7 +17,10 @@ func (q *QueryService) GetCallLogByExternalID(
 }
 
 func (q *QueryService) ListCallLogs(ctx context.Context, args *etelecom.ListCallLogsArgs) (*etelecom.ListCallLogsResponse, error) {
-	query := q.callLogStore(ctx).WithPaging(args.Paging)
+	if args.AccountID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing account_id")
+	}
+	query := q.callLogStore(ctx).WithPaging(args.Paging).AccountID(args.AccountID)
 	if len(args.HotlineIDs) > 0 {
 		query = query.HotlineIDs(args.HotlineIDs...)
 	}
