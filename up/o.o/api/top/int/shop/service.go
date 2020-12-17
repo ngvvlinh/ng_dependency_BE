@@ -454,11 +454,11 @@ type ContactService interface {
 
 // +apix:path=/shop.Etelecom
 type EtelecomService interface {
-	GetExtensions(context.Context, *GetExtensionsRequest) (*GetExtensionsResponse, error)
-	CreateExtension(context.Context, *CreateExtensionRequest) (*Extension, error)
+	GetExtensions(context.Context, *shoptypes.GetExtensionsRequest) (*shoptypes.GetExtensionsResponse, error)
+	CreateExtension(context.Context, *shoptypes.CreateExtensionRequest) (*shoptypes.Extension, error)
 
-	GetHotlines(context.Context, *cm.Empty) (*GetHotLinesResponse, error)
-	GetCallLogs(context.Context, *GetCallLogsRequest) (*GetCallLogsResponse, error)
+	GetHotlines(context.Context, *cm.Empty) (*shoptypes.GetHotLinesResponse, error)
+	GetCallLogs(context.Context, *shoptypes.GetCallLogsRequest) (*shoptypes.GetCallLogsResponse, error)
 }
 
 // +apix:path=/shop.Setting

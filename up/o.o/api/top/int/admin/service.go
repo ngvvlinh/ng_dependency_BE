@@ -214,3 +214,9 @@ type TicketService interface {
 	UpdateTicketLabel(context.Context, *UpdateTicketLabelRequest) (*shoptypes.TicketLabel, error)
 	DeleteTicketLabel(context.Context, *DeleteTicketLabelRequest) (*DeleteTicketLabelResponse, error)
 }
+
+// +apix:path=/admin.Etelecom
+type EtelecomService interface {
+	CreateHotline(context.Context, *CreateHotlineRequest) (*shoptypes.Hotline, error)
+	UpdateHotline(context.Context, *UpdateHotlineRequest) (*cm.UpdatedResponse, error)
+}

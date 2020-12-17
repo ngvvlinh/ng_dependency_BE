@@ -11,6 +11,7 @@ import (
 	"o.o/backend/cogs/shipment/_all"
 	"o.o/backend/cogs/telecom/_all"
 	aggregate2 "o.o/backend/com/etelecom/aggregate"
+	pm2 "o.o/backend/com/etelecom/pm"
 	"o.o/backend/com/etelecom/provider"
 	query2 "o.o/backend/com/etelecom/query"
 	"o.o/backend/com/main"
@@ -59,15 +60,17 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	}
 	contactQuery := query3.NewContactQuery(mainDB)
 	contactQueryBus := query3.ContactQueryMessageBus(contactQuery)
-	etelecomAggregate := aggregate2.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager)
+	etelecomAggregate := aggregate2.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager, queryBus)
 	etelecomCommandBus := aggregate2.AggregateMessageBus(etelecomAggregate)
 	v2 := BuildSyncs(ctx, mainDB, telecomManager, etelecomQueryBus, etelecomCommandBus, commandBus)
 	processManager := pm.New(busBus, commandBus, queryBus)
+	pmProcessManager := pm2.New(busBus, etelecomCommandBus, etelecomQueryBus)
 	output := Output{
 		Servers:       v,
 		Health:        service,
 		TelecomSyncs:  v2,
 		_connectionPM: processManager,
+		_etelecomPM:   pmProcessManager,
 	}
 	return output, func() {
 	}, nil

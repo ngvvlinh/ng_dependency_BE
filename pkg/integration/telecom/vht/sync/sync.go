@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/k0kubun/pp"
+
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/call_log_direction"
 	"o.o/api/main/connectioning"
@@ -112,6 +114,7 @@ func (v *VHTSync) addCrawlCallLogsTasks(ctx context.Context) error {
 
 	v.mutex.Lock()
 	for _, shopConnection := range shopConnections {
+		pp.Println("shop connection :: ", shopConnection)
 		keyTenant := v.getKeyTenantInProgress(shopConnection.ConnectionID, shopConnection.ShopID)
 
 		// check tenant is in progress

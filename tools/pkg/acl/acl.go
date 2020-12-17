@@ -224,7 +224,7 @@ const (
 	ShopPaymentCreate permission.ActionType = "shop/payment:create"
 	ShopPaymentView   permission.ActionType = "shop/payment:view"
 
-	// extension etelecom
+	// shop extension etelecom
 	ShopExtensionCreate permission.ActionType = "shop/extension:create"
 	ShopExtensionDelete permission.ActionType = "shop/extension:delete"
 	ShopExtensionView   permission.ActionType = "shop/extension:view"
@@ -404,6 +404,10 @@ const (
 	AdminCustomRegionUpdate permission.ActionType = "admin/custom_region:update"
 	AdminCustomRegionDelete permission.ActionType = "admin/custom_region:delete"
 	AdminCustomRegionView   permission.ActionType = "admin/custom_region:view"
+
+	// admin extension etelecom
+	AdminHotlineCreate permission.ActionType = "admin/hotline:create"
+	AdminHotlineUpdate permission.ActionType = "admin/hotline:update"
 )
 
 // ACL declares access control list
@@ -840,6 +844,10 @@ var _acl = map[string]*permission.Decl{
 	"admin.Subscription/CreateSubscriptionBill":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionBillCreate)},
 	"admin.Subscription/ManualPaymentSubscriptionBill": {Type: EtopAdmin, Actions: actions(AdminManualPaymentSubscriptionBillCreate)},
 	"admin.Subscription/DeleteSubscriptionBill":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionBillDelete)},
+
+	"admin.Etelecom/CreateHotline": {Type: EtopAdmin, Actions: actions(AdminHotlineCreate)},
+	"admin.Etelecom/UpdateHotline": {Type: EtopAdmin, Actions: actions(AdminHotlineUpdate)},
+
 	//-- shop --//
 
 	"shop.Account/RegisterShop": {Type: CurUsr, AuthPartner: Opt},

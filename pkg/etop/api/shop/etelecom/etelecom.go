@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/etelecom"
 	api "o.o/api/top/int/shop"
+	shoptypes "o.o/api/top/int/shop/types"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -23,14 +24,14 @@ func (s *ExtensionService) Clone() api.EtelecomService {
 	return &res
 }
 
-func (s *ExtensionService) GetExtensions(ctx context.Context, r *api.GetExtensionsRequest) (*api.GetExtensionsResponse, error) {
+func (s *ExtensionService) GetExtensions(ctx context.Context, r *shoptypes.GetExtensionsRequest) (*shoptypes.GetExtensionsResponse, error) {
 	query := &etelecom.ListExtensionsQuery{
 		AccountIDs: []dot.ID{s.SS.Shop().ID},
 	}
 	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	res := Convert_etelecom_Extensions_shop_Extensions(query.Result)
+	res := Convert_etelecom_Extensions_shoptypes_Extensions(query.Result)
 
 	// censor extension password
 	for _, ext := range res {
@@ -38,10 +39,10 @@ func (s *ExtensionService) GetExtensions(ctx context.Context, r *api.GetExtensio
 			ext.ExtensionPassword = ""
 		}
 	}
-	return &api.GetExtensionsResponse{Extensions: res}, nil
+	return &shoptypes.GetExtensionsResponse{Extensions: res}, nil
 }
 
-func (s *ExtensionService) CreateExtension(ctx context.Context, r *api.CreateExtensionRequest) (*api.Extension, error) {
+func (s *ExtensionService) CreateExtension(ctx context.Context, r *shoptypes.CreateExtensionRequest) (*shoptypes.Extension, error) {
 	cmd := &etelecom.CreateExtensionCommand{
 		UserID:    r.UserID,
 		AccountID: s.SS.Shop().ID,
@@ -50,12 +51,12 @@ func (s *ExtensionService) CreateExtension(ctx context.Context, r *api.CreateExt
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	var res api.Extension
-	Convert_etelecom_Extension_shop_Extension(cmd.Result, &res)
+	var res shoptypes.Extension
+	Convert_etelecom_Extension_shoptypes_Extension(cmd.Result, &res)
 	return &res, nil
 }
 
-func (s *ExtensionService) GetHotlines(ctx context.Context, _ *pbcm.Empty) (*api.GetHotLinesResponse, error) {
+func (s *ExtensionService) GetHotlines(ctx context.Context, _ *pbcm.Empty) (*shoptypes.GetHotLinesResponse, error) {
 	// list all hotline builtin
 	queryBuiltinHotlines := &etelecom.ListBuiltinHotlinesQuery{}
 	if err := s.EtelecomQuery.Dispatch(ctx, queryBuiltinHotlines); err != nil {
@@ -71,11 +72,11 @@ func (s *ExtensionService) GetHotlines(ctx context.Context, _ *pbcm.Empty) (*api
 	}
 	hotlines := append(builtinHotlines, query.Result...)
 
-	res := Convert_etelecom_Hotlines_shop_Hotlines(hotlines)
-	return &api.GetHotLinesResponse{Hotlines: res}, nil
+	res := Convert_etelecom_Hotlines_shoptypes_Hotlines(hotlines)
+	return &shoptypes.GetHotLinesResponse{Hotlines: res}, nil
 }
 
-func (s *ExtensionService) GetCallLogs(ctx context.Context, r *api.GetCallLogsRequest) (*api.GetCallLogsResponse, error) {
+func (s *ExtensionService) GetCallLogs(ctx context.Context, r *shoptypes.GetCallLogsRequest) (*shoptypes.GetCallLogsResponse, error) {
 	paging, err := cmapi.CMCursorPaging(r.Paging)
 	if err != nil {
 		return nil, err
@@ -92,8 +93,8 @@ func (s *ExtensionService) GetCallLogs(ctx context.Context, r *api.GetCallLogsRe
 	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	res := Convert_etelecom_CallLogs_shop_CallLogs(query.Result.CallLogs)
-	return &api.GetCallLogsResponse{
+	res := Convert_etelecom_CallLogs_shoptypes_CallLogs(query.Result.CallLogs)
+	return &shoptypes.GetCallLogsResponse{
 		CallLogs: res,
 		Paging:   cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
 	}, nil

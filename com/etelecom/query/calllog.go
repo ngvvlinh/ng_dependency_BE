@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/etelecom"
 	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
 func (q *QueryService) GetCallLogByExternalID(
@@ -35,4 +36,8 @@ func (q *QueryService) ListCallLogs(ctx context.Context, args *etelecom.ListCall
 		CallLogs: res,
 		Paging:   query.GetPaging(),
 	}, nil
+}
+
+func (q *QueryService) GetCallLog(ctx context.Context, id dot.ID) (*etelecom.CallLog, error) {
+	return q.callLogStore(ctx).ID(id).GetCallLog()
 }

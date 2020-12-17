@@ -1689,7 +1689,7 @@ func (s *EtelecomServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Etelecom/CreateExtension":
-		msg := &CreateExtensionRequest{}
+		msg := &shoptypes.CreateExtensionRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
@@ -1702,7 +1702,7 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		}
 		return msg, fn, nil
 	case "/shop.Etelecom/GetCallLogs":
-		msg := &GetCallLogsRequest{}
+		msg := &shoptypes.GetCallLogsRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
@@ -1715,7 +1715,7 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		}
 		return msg, fn, nil
 	case "/shop.Etelecom/GetExtensions":
-		msg := &GetExtensionsRequest{}
+		msg := &shoptypes.GetExtensionsRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

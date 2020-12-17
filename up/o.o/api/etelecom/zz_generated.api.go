@@ -10,8 +10,10 @@ import (
 
 	call_log_direction "o.o/api/etelecom/call_log_direction"
 	call_state "o.o/api/etelecom/call_state"
+	mobile_network "o.o/api/etelecom/mobile_network"
 	meta "o.o/api/meta"
 	common "o.o/api/top/types/common"
+	status3 "o.o/api/top/types/etc/status3"
 	status5 "o.o/api/top/types/etc/status5"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -69,6 +71,24 @@ func (h AggregateHandler) HandleCreateExtension(ctx context.Context, msg *Create
 	return err
 }
 
+type CreateHotlineCommand struct {
+	OwnerID      dot.ID
+	Name         string
+	Hotline      string
+	Network      mobile_network.MobileNetwork
+	ConnectionID dot.ID
+	Status       status3.Status
+	Description  string
+	IsFreeCharge dot.NullBool
+
+	Result *Hotline `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateHotline(ctx context.Context, msg *CreateHotlineCommand) (err error) {
+	msg.Result, err = h.inner.CreateHotline(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteExtensionCommand struct {
 	Id dot.ID
 
@@ -78,6 +98,19 @@ type DeleteExtensionCommand struct {
 
 func (h AggregateHandler) HandleDeleteExtension(ctx context.Context, msg *DeleteExtensionCommand) (err error) {
 	return h.inner.DeleteExtension(msg.GetArgs(ctx))
+}
+
+type UpdateCallLogPostageCommand struct {
+	ID                 dot.ID
+	DurationForPostage int
+	Postage            int
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateCallLogPostage(ctx context.Context, msg *UpdateCallLogPostageCommand) (err error) {
+	return h.inner.UpdateCallLogPostage(msg.GetArgs(ctx))
 }
 
 type UpdateExternalExtensionInfoCommand struct {
@@ -93,6 +126,32 @@ type UpdateExternalExtensionInfoCommand struct {
 
 func (h AggregateHandler) HandleUpdateExternalExtensionInfo(ctx context.Context, msg *UpdateExternalExtensionInfoCommand) (err error) {
 	return h.inner.UpdateExternalExtensionInfo(msg.GetArgs(ctx))
+}
+
+type UpdateHotlineInfoCommand struct {
+	ID           dot.ID
+	IsFreeCharge dot.NullBool
+	Name         string
+	Description  string
+	Status       status3.NullStatus
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateHotlineInfo(ctx context.Context, msg *UpdateHotlineInfoCommand) (err error) {
+	return h.inner.UpdateHotlineInfo(msg.GetArgs(ctx))
+}
+
+type GetCallLogQuery struct {
+	ID dot.ID
+
+	Result *CallLog `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCallLog(ctx context.Context, msg *GetCallLogQuery) (err error) {
+	msg.Result, err = h.inner.GetCallLog(msg.GetArgs(ctx))
+	return err
 }
 
 type GetCallLogByExternalIDQuery struct {
@@ -192,9 +251,13 @@ func (h QueryServiceHandler) HandleListHotlines(ctx context.Context, msg *ListHo
 
 func (q *CreateCallLogFromCDRCommand) command()        {}
 func (q *CreateExtensionCommand) command()             {}
+func (q *CreateHotlineCommand) command()               {}
 func (q *DeleteExtensionCommand) command()             {}
+func (q *UpdateCallLogPostageCommand) command()        {}
 func (q *UpdateExternalExtensionInfoCommand) command() {}
+func (q *UpdateHotlineInfoCommand) command()           {}
 
+func (q *GetCallLogQuery) query()                {}
 func (q *GetCallLogByExternalIDQuery) query()    {}
 func (q *GetExtensionQuery) query()              {}
 func (q *GetHotlineQuery) query()                {}
@@ -262,9 +325,49 @@ func (q *CreateExtensionCommand) SetCreateExtensionArgs(args *CreateExtensionArg
 	q.HotlineID = args.HotlineID
 }
 
+func (q *CreateHotlineCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateHotlineArgs) {
+	return ctx,
+		&CreateHotlineArgs{
+			OwnerID:      q.OwnerID,
+			Name:         q.Name,
+			Hotline:      q.Hotline,
+			Network:      q.Network,
+			ConnectionID: q.ConnectionID,
+			Status:       q.Status,
+			Description:  q.Description,
+			IsFreeCharge: q.IsFreeCharge,
+		}
+}
+
+func (q *CreateHotlineCommand) SetCreateHotlineArgs(args *CreateHotlineArgs) {
+	q.OwnerID = args.OwnerID
+	q.Name = args.Name
+	q.Hotline = args.Hotline
+	q.Network = args.Network
+	q.ConnectionID = args.ConnectionID
+	q.Status = args.Status
+	q.Description = args.Description
+	q.IsFreeCharge = args.IsFreeCharge
+}
+
 func (q *DeleteExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, id dot.ID) {
 	return ctx,
 		q.Id
+}
+
+func (q *UpdateCallLogPostageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCallLogPostageArgs) {
+	return ctx,
+		&UpdateCallLogPostageArgs{
+			ID:                 q.ID,
+			DurationForPostage: q.DurationForPostage,
+			Postage:            q.Postage,
+		}
+}
+
+func (q *UpdateCallLogPostageCommand) SetUpdateCallLogPostageArgs(args *UpdateCallLogPostageArgs) {
+	q.ID = args.ID
+	q.DurationForPostage = args.DurationForPostage
+	q.Postage = args.Postage
 }
 
 func (q *UpdateExternalExtensionInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalExtensionInfoArgs) {
@@ -284,6 +387,30 @@ func (q *UpdateExternalExtensionInfoCommand) SetUpdateExternalExtensionInfoArgs(
 	q.ExternalID = args.ExternalID
 	q.ExtensionNumber = args.ExtensionNumber
 	q.ExtensionPassword = args.ExtensionPassword
+}
+
+func (q *UpdateHotlineInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateHotlineInfoArgs) {
+	return ctx,
+		&UpdateHotlineInfoArgs{
+			ID:           q.ID,
+			IsFreeCharge: q.IsFreeCharge,
+			Name:         q.Name,
+			Description:  q.Description,
+			Status:       q.Status,
+		}
+}
+
+func (q *UpdateHotlineInfoCommand) SetUpdateHotlineInfoArgs(args *UpdateHotlineInfoArgs) {
+	q.ID = args.ID
+	q.IsFreeCharge = args.IsFreeCharge
+	q.Name = args.Name
+	q.Description = args.Description
+	q.Status = args.Status
+}
+
+func (q *GetCallLogQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
 }
 
 func (q *GetCallLogByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCallLogByExternalIDArgs) {
@@ -400,8 +527,11 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleCreateCallLogFromCDR)
 	b.AddHandler(h.HandleCreateExtension)
+	b.AddHandler(h.HandleCreateHotline)
 	b.AddHandler(h.HandleDeleteExtension)
+	b.AddHandler(h.HandleUpdateCallLogPostage)
 	b.AddHandler(h.HandleUpdateExternalExtensionInfo)
+	b.AddHandler(h.HandleUpdateHotlineInfo)
 	return CommandBus{b}
 }
 
@@ -417,6 +547,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetCallLog)
 	b.AddHandler(h.HandleGetCallLogByExternalID)
 	b.AddHandler(h.HandleGetExtension)
 	b.AddHandler(h.HandleGetHotline)

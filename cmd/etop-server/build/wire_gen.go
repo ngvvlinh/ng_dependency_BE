@@ -30,6 +30,7 @@ import (
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	aggregate3 "o.o/backend/com/etc/logging/smslog/aggregate"
 	aggregate22 "o.o/backend/com/etelecom/aggregate"
+	pm19 "o.o/backend/com/etelecom/pm"
 	provider2 "o.o/backend/com/etelecom/provider"
 	query24 "o.o/backend/com/etelecom/query"
 	"o.o/backend/com/eventhandler/notifier"
@@ -806,7 +807,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		cleanup()
 		return Output{}, nil, err
 	}
-	etelecomAggregate := aggregate22.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager)
+	etelecomAggregate := aggregate22.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager, connectioningQueryBus)
 	etelecomCommandBus := aggregate22.AggregateMessageBus(etelecomAggregate)
 	extensionService := &etelecom.ExtensionService{
 		Session:       session,
@@ -936,7 +937,12 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		TicketAggr:     ticketCommandBus,
 		IndentityQuery: queryBus,
 	}
-	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService)
+	etelecomService := admin.EtelecomService{
+		Session:       session,
+		EtelecomAggr:  etelecomCommandBus,
+		EtelecomQuery: etelecomQueryBus,
+	}
+	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, etelecomService)
 	sadminMiscService := &sadmin.MiscService{
 		Session: session,
 	}
@@ -1321,6 +1327,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager15 := pm16.New(busBus, connectioningCommandBus, connectioningQueryBus)
 	processManager16 := pm17.New(store, busBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	processManager17 := pm18.New(busBus, customeringQueryBus, customeringCommandBus, shippingQueryBus)
+	processManager18 := pm19.New(busBus, etelecomCommandBus, etelecomQueryBus)
 	output := Output{
 		Servers:           v4,
 		Health:            service,
@@ -1342,6 +1349,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		_connectionPM:     processManager15,
 		_pricelistPM:      processManager16,
 		_customerPM:       processManager17,
+		_etelecomPM:       processManager18,
 	}
 	return output, func() {
 		cleanup9()

@@ -117,6 +117,15 @@ func (s *HotlineStore) CreateHotline(hotline *etelecom.Hotline) (*etelecom.Hotli
 	return s.ID(hotline.ID).GetHotline()
 }
 
+func (s *HotlineStore) UpdateHotline(hotline *etelecom.Hotline) error {
+	var hotlineDB model.Hotline
+	if err := scheme.Convert(hotline, &hotlineDB); err != nil {
+		return err
+	}
+	query := s.query().Where(s.preds)
+	return query.ShouldUpdate(&hotlineDB)
+}
+
 func (s *HotlineStore) SoftDelete() (int, error) {
 	query := s.query().Where(s.preds)
 	return query.Table("hotline").UpdateMap(map[string]interface{}{

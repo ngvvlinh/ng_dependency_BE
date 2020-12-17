@@ -8,6 +8,7 @@ import (
 	contacting "o.o/api/main/contact"
 	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
+	"o.o/common/l"
 )
 
 func (a *EtelecomAggregate) CreateCallLogFromCDR(
@@ -67,6 +68,17 @@ func (a *EtelecomAggregate) CreateCallLogFromCDR(
 		return nil, err
 	}
 
+	event := &etelecom.CallLogCreatedEvent{
+		ID:         callLogResult.ID,
+		Direction:  callLogResult.Direction,
+		Callee:     callLogResult.Callee,
+		Duration:   callLogResult.Duration,
+		CallStatus: callLogResult.CallStatus,
+		HotlineID:  callLogResult.HotlineID,
+	}
+	if _err := a.eventBus.Publish(ctx, event); _err != nil {
+		ll.Error("Error event call log created :: ", l.Error(_err))
+	}
 	return callLogResult, nil
 }
 
@@ -79,4 +91,15 @@ func (a *EtelecomAggregate) getHotlineIDs(ctx context.Context, connectionID, own
 		hotlineIDs = append(hotlineIDs, hl.ID)
 	}
 	return hotlineIDs, nil
+}
+
+func (a *EtelecomAggregate) UpdateCallLogPostage(ctx context.Context, args *etelecom.UpdateCallLogPostageArgs) error {
+	if args.ID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing call log ID")
+	}
+	update := &etelecom.CallLog{
+		DurationPostage: args.DurationForPostage,
+		Postage:         args.Postage,
+	}
+	return a.callLogStore(ctx).ID(args.ID).UpdateCallLog(update)
 }

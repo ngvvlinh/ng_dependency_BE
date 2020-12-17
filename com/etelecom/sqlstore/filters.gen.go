@@ -372,6 +372,44 @@ func (ft *CallLogFilters) ByCallStatusPtr(CallStatus *status5.Status) *sq.Column
 	}
 }
 
+func (ft *CallLogFilters) ByDurationPostage(DurationPostage int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "duration_postage",
+		Value:  DurationPostage,
+		IsNil:  DurationPostage == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByDurationPostagePtr(DurationPostage *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "duration_postage",
+		Value:  DurationPostage,
+		IsNil:  DurationPostage == nil,
+		IsZero: DurationPostage != nil && (*DurationPostage) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByPostage(Postage int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "postage",
+		Value:  Postage,
+		IsNil:  Postage == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByPostagePtr(Postage *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "postage",
+		Value:  Postage,
+		IsNil:  Postage == nil,
+		IsZero: Postage != nil && (*Postage) == 0,
+	}
+}
+
 type ExtensionFilters struct{ prefix string }
 
 func NewExtensionFilters(prefix string) ExtensionFilters {
@@ -796,171 +834,5 @@ func (ft *HotlineFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilter
 		Value:  Description,
 		IsNil:  Description == nil,
 		IsZero: Description != nil && (*Description) == "",
-	}
-}
-
-type SummaryFilters struct{ prefix string }
-
-func NewSummaryFilters(prefix string) SummaryFilters {
-	return SummaryFilters{prefix}
-}
-
-func (ft *SummaryFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(&ft.prefix, pred, args...)
-}
-
-func (ft SummaryFilters) Prefix() string {
-	return ft.prefix
-}
-
-func (ft *SummaryFilters) ByID(ID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == 0,
-	}
-}
-
-func (ft *SummaryFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == nil,
-		IsZero: ID != nil && (*ID) == 0,
-	}
-}
-
-func (ft *SummaryFilters) ByExtensionID(ExtensionID dot.ID) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "extension_id",
-		Value:  ExtensionID,
-		IsNil:  ExtensionID == 0,
-	}
-}
-
-func (ft *SummaryFilters) ByExtensionIDPtr(ExtensionID *dot.ID) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "extension_id",
-		Value:  ExtensionID,
-		IsNil:  ExtensionID == nil,
-		IsZero: ExtensionID != nil && (*ExtensionID) == 0,
-	}
-}
-
-func (ft *SummaryFilters) ByDate(Date string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "date",
-		Value:  Date,
-		IsNil:  Date == "",
-	}
-}
-
-func (ft *SummaryFilters) ByDatePtr(Date *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "date",
-		Value:  Date,
-		IsNil:  Date == nil,
-		IsZero: Date != nil && (*Date) == "",
-	}
-}
-
-func (ft *SummaryFilters) ByTotalPhoneCall(TotalPhoneCall int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "total_phone_call",
-		Value:  TotalPhoneCall,
-		IsNil:  TotalPhoneCall == 0,
-	}
-}
-
-func (ft *SummaryFilters) ByTotalPhoneCallPtr(TotalPhoneCall *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "total_phone_call",
-		Value:  TotalPhoneCall,
-		IsNil:  TotalPhoneCall == nil,
-		IsZero: TotalPhoneCall != nil && (*TotalPhoneCall) == 0,
-	}
-}
-
-func (ft *SummaryFilters) ByTotalCallTime(TotalCallTime int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "total_call_time",
-		Value:  TotalCallTime,
-		IsNil:  TotalCallTime == 0,
-	}
-}
-
-func (ft *SummaryFilters) ByTotalCallTimePtr(TotalCallTime *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "total_call_time",
-		Value:  TotalCallTime,
-		IsNil:  TotalCallTime == nil,
-		IsZero: TotalCallTime != nil && (*TotalCallTime) == 0,
-	}
-}
-
-func (ft *SummaryFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "created_at",
-		Value:  CreatedAt,
-		IsNil:  CreatedAt.IsZero(),
-	}
-}
-
-func (ft *SummaryFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "created_at",
-		Value:  CreatedAt,
-		IsNil:  CreatedAt == nil,
-		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
-	}
-}
-
-func (ft *SummaryFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "updated_at",
-		Value:  UpdatedAt,
-		IsNil:  UpdatedAt.IsZero(),
-	}
-}
-
-func (ft *SummaryFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "updated_at",
-		Value:  UpdatedAt,
-		IsNil:  UpdatedAt == nil,
-		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
-	}
-}
-
-func (ft *SummaryFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "deleted_at",
-		Value:  DeletedAt,
-		IsNil:  DeletedAt.IsZero(),
-	}
-}
-
-func (ft *SummaryFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "deleted_at",
-		Value:  DeletedAt,
-		IsNil:  DeletedAt == nil,
-		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
 	}
 }

@@ -26,6 +26,7 @@ type Hotline struct {
 	DeletedAt        time.Time
 	Status           status3.Status
 	Description      string
+	IsFreeCharge     dot.NullBool
 }
 
 // +sqlgen
@@ -45,18 +46,6 @@ type Extension struct {
 
 type ExtensionExternalData struct {
 	ID string `json:"id"`
-}
-
-// +sqlgen
-type Summary struct {
-	ID             dot.ID
-	ExtensionID    dot.ID
-	Date           string
-	TotalPhoneCall int
-	TotalCallTime  int
-	CreatedAt      time.Time `sq:"create"`
-	UpdatedAt      time.Time `sq:"update"`
-	DeletedAt      time.Time
 }
 
 // +sqlgen
@@ -86,6 +75,8 @@ type CallLog struct {
 	UpdatedAt          time.Time `sq:"update"`
 	CallState          call_state.CallState
 	CallStatus         status5.Status
+	DurationPostage    int
+	Postage            int
 
 	// depends on connectionID to get extension
 	// accountID get from extension (above)

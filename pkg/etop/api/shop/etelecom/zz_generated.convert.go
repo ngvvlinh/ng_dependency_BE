@@ -8,7 +8,7 @@ import (
 	time "time"
 
 	etelecom "o.o/api/etelecom"
-	shop "o.o/api/top/int/shop"
+	shoptypes "o.o/api/top/int/shop/types"
 	conversion "o.o/backend/pkg/common/conversion"
 )
 
@@ -23,102 +23,106 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
-	s.Register((*etelecom.CallLog)(nil), (*shop.CallLog)(nil), func(arg, out interface{}) error {
-		Convert_etelecom_CallLog_shop_CallLog(arg.(*etelecom.CallLog), out.(*shop.CallLog))
+	s.Register((*etelecom.CallLog)(nil), (*shoptypes.CallLog)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_CallLog_shoptypes_CallLog(arg.(*etelecom.CallLog), out.(*shoptypes.CallLog))
 		return nil
 	})
-	s.Register(([]*etelecom.CallLog)(nil), (*[]*shop.CallLog)(nil), func(arg, out interface{}) error {
-		out0 := Convert_etelecom_CallLogs_shop_CallLogs(arg.([]*etelecom.CallLog))
-		*out.(*[]*shop.CallLog) = out0
+	s.Register(([]*etelecom.CallLog)(nil), (*[]*shoptypes.CallLog)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_CallLogs_shoptypes_CallLogs(arg.([]*etelecom.CallLog))
+		*out.(*[]*shoptypes.CallLog) = out0
 		return nil
 	})
-	s.Register((*shop.CallLog)(nil), (*etelecom.CallLog)(nil), func(arg, out interface{}) error {
-		Convert_shop_CallLog_etelecom_CallLog(arg.(*shop.CallLog), out.(*etelecom.CallLog))
+	s.Register((*shoptypes.CallLog)(nil), (*etelecom.CallLog)(nil), func(arg, out interface{}) error {
+		Convert_shoptypes_CallLog_etelecom_CallLog(arg.(*shoptypes.CallLog), out.(*etelecom.CallLog))
 		return nil
 	})
-	s.Register(([]*shop.CallLog)(nil), (*[]*etelecom.CallLog)(nil), func(arg, out interface{}) error {
-		out0 := Convert_shop_CallLogs_etelecom_CallLogs(arg.([]*shop.CallLog))
+	s.Register(([]*shoptypes.CallLog)(nil), (*[]*etelecom.CallLog)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shoptypes_CallLogs_etelecom_CallLogs(arg.([]*shoptypes.CallLog))
 		*out.(*[]*etelecom.CallLog) = out0
 		return nil
 	})
-	s.Register((*etelecom.CreateCallLogFromCDRArgs)(nil), (*shop.CallLog)(nil), func(arg, out interface{}) error {
-		Apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg.(*etelecom.CreateCallLogFromCDRArgs), out.(*shop.CallLog))
+	s.Register((*etelecom.CreateCallLogFromCDRArgs)(nil), (*shoptypes.CallLog)(nil), func(arg, out interface{}) error {
+		Apply_etelecom_CreateCallLogFromCDRArgs_shoptypes_CallLog(arg.(*etelecom.CreateCallLogFromCDRArgs), out.(*shoptypes.CallLog))
 		return nil
 	})
-	s.Register((*etelecom.CreateExtensionArgs)(nil), (*shop.Extension)(nil), func(arg, out interface{}) error {
-		Apply_etelecom_CreateExtensionArgs_shop_Extension(arg.(*etelecom.CreateExtensionArgs), out.(*shop.Extension))
+	s.Register((*etelecom.CreateExtensionArgs)(nil), (*shoptypes.Extension)(nil), func(arg, out interface{}) error {
+		Apply_etelecom_CreateExtensionArgs_shoptypes_Extension(arg.(*etelecom.CreateExtensionArgs), out.(*shoptypes.Extension))
 		return nil
 	})
-	s.Register((*etelecom.Extension)(nil), (*shop.Extension)(nil), func(arg, out interface{}) error {
-		Convert_etelecom_Extension_shop_Extension(arg.(*etelecom.Extension), out.(*shop.Extension))
+	s.Register((*etelecom.Extension)(nil), (*shoptypes.Extension)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_Extension_shoptypes_Extension(arg.(*etelecom.Extension), out.(*shoptypes.Extension))
 		return nil
 	})
-	s.Register(([]*etelecom.Extension)(nil), (*[]*shop.Extension)(nil), func(arg, out interface{}) error {
-		out0 := Convert_etelecom_Extensions_shop_Extensions(arg.([]*etelecom.Extension))
-		*out.(*[]*shop.Extension) = out0
+	s.Register(([]*etelecom.Extension)(nil), (*[]*shoptypes.Extension)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_Extensions_shoptypes_Extensions(arg.([]*etelecom.Extension))
+		*out.(*[]*shoptypes.Extension) = out0
 		return nil
 	})
-	s.Register((*shop.Extension)(nil), (*etelecom.Extension)(nil), func(arg, out interface{}) error {
-		Convert_shop_Extension_etelecom_Extension(arg.(*shop.Extension), out.(*etelecom.Extension))
+	s.Register((*shoptypes.Extension)(nil), (*etelecom.Extension)(nil), func(arg, out interface{}) error {
+		Convert_shoptypes_Extension_etelecom_Extension(arg.(*shoptypes.Extension), out.(*etelecom.Extension))
 		return nil
 	})
-	s.Register(([]*shop.Extension)(nil), (*[]*etelecom.Extension)(nil), func(arg, out interface{}) error {
-		out0 := Convert_shop_Extensions_etelecom_Extensions(arg.([]*shop.Extension))
+	s.Register(([]*shoptypes.Extension)(nil), (*[]*etelecom.Extension)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shoptypes_Extensions_etelecom_Extensions(arg.([]*shoptypes.Extension))
 		*out.(*[]*etelecom.Extension) = out0
 		return nil
 	})
-	s.Register((*etelecom.ExtensionExternalData)(nil), (*shop.ExtensionExternalData)(nil), func(arg, out interface{}) error {
-		Convert_etelecom_ExtensionExternalData_shop_ExtensionExternalData(arg.(*etelecom.ExtensionExternalData), out.(*shop.ExtensionExternalData))
+	s.Register((*etelecom.ExtensionExternalData)(nil), (*shoptypes.ExtensionExternalData)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_ExtensionExternalData_shoptypes_ExtensionExternalData(arg.(*etelecom.ExtensionExternalData), out.(*shoptypes.ExtensionExternalData))
 		return nil
 	})
-	s.Register(([]*etelecom.ExtensionExternalData)(nil), (*[]*shop.ExtensionExternalData)(nil), func(arg, out interface{}) error {
-		out0 := Convert_etelecom_ExtensionExternalDatas_shop_ExtensionExternalDatas(arg.([]*etelecom.ExtensionExternalData))
-		*out.(*[]*shop.ExtensionExternalData) = out0
+	s.Register(([]*etelecom.ExtensionExternalData)(nil), (*[]*shoptypes.ExtensionExternalData)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_ExtensionExternalDatas_shoptypes_ExtensionExternalDatas(arg.([]*etelecom.ExtensionExternalData))
+		*out.(*[]*shoptypes.ExtensionExternalData) = out0
 		return nil
 	})
-	s.Register((*shop.ExtensionExternalData)(nil), (*etelecom.ExtensionExternalData)(nil), func(arg, out interface{}) error {
-		Convert_shop_ExtensionExternalData_etelecom_ExtensionExternalData(arg.(*shop.ExtensionExternalData), out.(*etelecom.ExtensionExternalData))
+	s.Register((*shoptypes.ExtensionExternalData)(nil), (*etelecom.ExtensionExternalData)(nil), func(arg, out interface{}) error {
+		Convert_shoptypes_ExtensionExternalData_etelecom_ExtensionExternalData(arg.(*shoptypes.ExtensionExternalData), out.(*etelecom.ExtensionExternalData))
 		return nil
 	})
-	s.Register(([]*shop.ExtensionExternalData)(nil), (*[]*etelecom.ExtensionExternalData)(nil), func(arg, out interface{}) error {
-		out0 := Convert_shop_ExtensionExternalDatas_etelecom_ExtensionExternalDatas(arg.([]*shop.ExtensionExternalData))
+	s.Register(([]*shoptypes.ExtensionExternalData)(nil), (*[]*etelecom.ExtensionExternalData)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shoptypes_ExtensionExternalDatas_etelecom_ExtensionExternalDatas(arg.([]*shoptypes.ExtensionExternalData))
 		*out.(*[]*etelecom.ExtensionExternalData) = out0
 		return nil
 	})
-	s.Register((*etelecom.Hotline)(nil), (*shop.Hotline)(nil), func(arg, out interface{}) error {
-		Convert_etelecom_Hotline_shop_Hotline(arg.(*etelecom.Hotline), out.(*shop.Hotline))
+	s.Register((*etelecom.CreateHotlineArgs)(nil), (*shoptypes.Hotline)(nil), func(arg, out interface{}) error {
+		Apply_etelecom_CreateHotlineArgs_shoptypes_Hotline(arg.(*etelecom.CreateHotlineArgs), out.(*shoptypes.Hotline))
 		return nil
 	})
-	s.Register(([]*etelecom.Hotline)(nil), (*[]*shop.Hotline)(nil), func(arg, out interface{}) error {
-		out0 := Convert_etelecom_Hotlines_shop_Hotlines(arg.([]*etelecom.Hotline))
-		*out.(*[]*shop.Hotline) = out0
+	s.Register((*etelecom.Hotline)(nil), (*shoptypes.Hotline)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_Hotline_shoptypes_Hotline(arg.(*etelecom.Hotline), out.(*shoptypes.Hotline))
 		return nil
 	})
-	s.Register((*shop.Hotline)(nil), (*etelecom.Hotline)(nil), func(arg, out interface{}) error {
-		Convert_shop_Hotline_etelecom_Hotline(arg.(*shop.Hotline), out.(*etelecom.Hotline))
+	s.Register(([]*etelecom.Hotline)(nil), (*[]*shoptypes.Hotline)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_Hotlines_shoptypes_Hotlines(arg.([]*etelecom.Hotline))
+		*out.(*[]*shoptypes.Hotline) = out0
 		return nil
 	})
-	s.Register(([]*shop.Hotline)(nil), (*[]*etelecom.Hotline)(nil), func(arg, out interface{}) error {
-		out0 := Convert_shop_Hotlines_etelecom_Hotlines(arg.([]*shop.Hotline))
+	s.Register((*shoptypes.Hotline)(nil), (*etelecom.Hotline)(nil), func(arg, out interface{}) error {
+		Convert_shoptypes_Hotline_etelecom_Hotline(arg.(*shoptypes.Hotline), out.(*etelecom.Hotline))
+		return nil
+	})
+	s.Register(([]*shoptypes.Hotline)(nil), (*[]*etelecom.Hotline)(nil), func(arg, out interface{}) error {
+		out0 := Convert_shoptypes_Hotlines_etelecom_Hotlines(arg.([]*shoptypes.Hotline))
 		*out.(*[]*etelecom.Hotline) = out0
 		return nil
 	})
 }
 
-//-- convert o.o/api/top/int/shop.CallLog --//
+//-- convert o.o/api/top/int/shop/types.CallLog --//
 
-func Convert_etelecom_CallLog_shop_CallLog(arg *etelecom.CallLog, out *shop.CallLog) *shop.CallLog {
+func Convert_etelecom_CallLog_shoptypes_CallLog(arg *etelecom.CallLog, out *shoptypes.CallLog) *shoptypes.CallLog {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &shop.CallLog{}
+		out = &shoptypes.CallLog{}
 	}
-	convert_etelecom_CallLog_shop_CallLog(arg, out)
+	convert_etelecom_CallLog_shoptypes_CallLog(arg, out)
 	return out
 }
 
-func convert_etelecom_CallLog_shop_CallLog(arg *etelecom.CallLog, out *shop.CallLog) {
+func convert_etelecom_CallLog_shoptypes_CallLog(arg *etelecom.CallLog, out *shoptypes.CallLog) {
 	out.ID = arg.ID                                 // simple assign
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = arg.AccountID                   // simple assign
@@ -138,32 +142,34 @@ func convert_etelecom_CallLog_shop_CallLog(arg *etelecom.CallLog, out *shop.Call
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 	out.CallState = arg.CallState                   // simple assign
 	out.CallStatus = arg.CallStatus                 // simple assign
+	out.DurationPostage = arg.DurationPostage       // simple assign
+	out.Postage = arg.Postage                       // simple assign
 }
 
-func Convert_etelecom_CallLogs_shop_CallLogs(args []*etelecom.CallLog) (outs []*shop.CallLog) {
+func Convert_etelecom_CallLogs_shoptypes_CallLogs(args []*etelecom.CallLog) (outs []*shoptypes.CallLog) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]shop.CallLog, len(args))
-	outs = make([]*shop.CallLog, len(args))
+	tmps := make([]shoptypes.CallLog, len(args))
+	outs = make([]*shoptypes.CallLog, len(args))
 	for i := range tmps {
-		outs[i] = Convert_etelecom_CallLog_shop_CallLog(args[i], &tmps[i])
+		outs[i] = Convert_etelecom_CallLog_shoptypes_CallLog(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_shop_CallLog_etelecom_CallLog(arg *shop.CallLog, out *etelecom.CallLog) *etelecom.CallLog {
+func Convert_shoptypes_CallLog_etelecom_CallLog(arg *shoptypes.CallLog, out *etelecom.CallLog) *etelecom.CallLog {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &etelecom.CallLog{}
 	}
-	convert_shop_CallLog_etelecom_CallLog(arg, out)
+	convert_shoptypes_CallLog_etelecom_CallLog(arg, out)
 	return out
 }
 
-func convert_shop_CallLog_etelecom_CallLog(arg *shop.CallLog, out *etelecom.CallLog) {
+func convert_shoptypes_CallLog_etelecom_CallLog(arg *shoptypes.CallLog, out *etelecom.CallLog) {
 	out.ID = arg.ID                                 // simple assign
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = arg.AccountID                   // simple assign
@@ -183,32 +189,34 @@ func convert_shop_CallLog_etelecom_CallLog(arg *shop.CallLog, out *etelecom.Call
 	out.ContactID = arg.ContactID                   // simple assign
 	out.CreatedAt = arg.CreatedAt                   // simple assign
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
+	out.DurationPostage = arg.DurationPostage       // simple assign
+	out.Postage = arg.Postage                       // simple assign
 }
 
-func Convert_shop_CallLogs_etelecom_CallLogs(args []*shop.CallLog) (outs []*etelecom.CallLog) {
+func Convert_shoptypes_CallLogs_etelecom_CallLogs(args []*shoptypes.CallLog) (outs []*etelecom.CallLog) {
 	if args == nil {
 		return nil
 	}
 	tmps := make([]etelecom.CallLog, len(args))
 	outs = make([]*etelecom.CallLog, len(args))
 	for i := range tmps {
-		outs[i] = Convert_shop_CallLog_etelecom_CallLog(args[i], &tmps[i])
+		outs[i] = Convert_shoptypes_CallLog_etelecom_CallLog(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *shop.CallLog) *shop.CallLog {
+func Apply_etelecom_CreateCallLogFromCDRArgs_shoptypes_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *shoptypes.CallLog) *shoptypes.CallLog {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &shop.CallLog{}
+		out = &shoptypes.CallLog{}
 	}
-	apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg, out)
+	apply_etelecom_CreateCallLogFromCDRArgs_shoptypes_CallLog(arg, out)
 	return out
 }
 
-func apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *shop.CallLog) {
+func apply_etelecom_CreateCallLogFromCDRArgs_shoptypes_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *shoptypes.CallLog) {
 	out.ID = 0                                      // zero value
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = 0                               // zero value
@@ -228,22 +236,24 @@ func apply_etelecom_CreateCallLogFromCDRArgs_shop_CallLog(arg *etelecom.CreateCa
 	out.UpdatedAt = time.Time{}                     // zero value
 	out.CallState = arg.CallState                   // simple assign
 	out.CallStatus = arg.CallStatus                 // simple assign
+	out.DurationPostage = 0                         // zero value
+	out.Postage = 0                                 // zero value
 }
 
-//-- convert o.o/api/top/int/shop.Extension --//
+//-- convert o.o/api/top/int/shop/types.Extension --//
 
-func Apply_etelecom_CreateExtensionArgs_shop_Extension(arg *etelecom.CreateExtensionArgs, out *shop.Extension) *shop.Extension {
+func Apply_etelecom_CreateExtensionArgs_shoptypes_Extension(arg *etelecom.CreateExtensionArgs, out *shoptypes.Extension) *shoptypes.Extension {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &shop.Extension{}
+		out = &shoptypes.Extension{}
 	}
-	apply_etelecom_CreateExtensionArgs_shop_Extension(arg, out)
+	apply_etelecom_CreateExtensionArgs_shoptypes_Extension(arg, out)
 	return out
 }
 
-func apply_etelecom_CreateExtensionArgs_shop_Extension(arg *etelecom.CreateExtensionArgs, out *shop.Extension) {
+func apply_etelecom_CreateExtensionArgs_shoptypes_Extension(arg *etelecom.CreateExtensionArgs, out *shoptypes.Extension) {
 	out.ID = 0                                    // zero value
 	out.UserID = arg.UserID                       // simple assign
 	out.AccountID = arg.AccountID                 // simple assign
@@ -254,18 +264,18 @@ func apply_etelecom_CreateExtensionArgs_shop_Extension(arg *etelecom.CreateExten
 	out.UpdatedAt = time.Time{}                   // zero value
 }
 
-func Convert_etelecom_Extension_shop_Extension(arg *etelecom.Extension, out *shop.Extension) *shop.Extension {
+func Convert_etelecom_Extension_shoptypes_Extension(arg *etelecom.Extension, out *shoptypes.Extension) *shoptypes.Extension {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &shop.Extension{}
+		out = &shoptypes.Extension{}
 	}
-	convert_etelecom_Extension_shop_Extension(arg, out)
+	convert_etelecom_Extension_shoptypes_Extension(arg, out)
 	return out
 }
 
-func convert_etelecom_Extension_shop_Extension(arg *etelecom.Extension, out *shop.Extension) {
+func convert_etelecom_Extension_shoptypes_Extension(arg *etelecom.Extension, out *shoptypes.Extension) {
 	out.ID = arg.ID                               // simple assign
 	out.UserID = arg.UserID                       // simple assign
 	out.AccountID = arg.AccountID                 // simple assign
@@ -276,30 +286,30 @@ func convert_etelecom_Extension_shop_Extension(arg *etelecom.Extension, out *sho
 	out.UpdatedAt = arg.UpdatedAt                 // simple assign
 }
 
-func Convert_etelecom_Extensions_shop_Extensions(args []*etelecom.Extension) (outs []*shop.Extension) {
+func Convert_etelecom_Extensions_shoptypes_Extensions(args []*etelecom.Extension) (outs []*shoptypes.Extension) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]shop.Extension, len(args))
-	outs = make([]*shop.Extension, len(args))
+	tmps := make([]shoptypes.Extension, len(args))
+	outs = make([]*shoptypes.Extension, len(args))
 	for i := range tmps {
-		outs[i] = Convert_etelecom_Extension_shop_Extension(args[i], &tmps[i])
+		outs[i] = Convert_etelecom_Extension_shoptypes_Extension(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_shop_Extension_etelecom_Extension(arg *shop.Extension, out *etelecom.Extension) *etelecom.Extension {
+func Convert_shoptypes_Extension_etelecom_Extension(arg *shoptypes.Extension, out *etelecom.Extension) *etelecom.Extension {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &etelecom.Extension{}
 	}
-	convert_shop_Extension_etelecom_Extension(arg, out)
+	convert_shoptypes_Extension_etelecom_Extension(arg, out)
 	return out
 }
 
-func convert_shop_Extension_etelecom_Extension(arg *shop.Extension, out *etelecom.Extension) {
+func convert_shoptypes_Extension_etelecom_Extension(arg *shoptypes.Extension, out *etelecom.Extension) {
 	out.ID = arg.ID                               // simple assign
 	out.UserID = arg.UserID                       // simple assign
 	out.AccountID = arg.AccountID                 // simple assign
@@ -312,88 +322,114 @@ func convert_shop_Extension_etelecom_Extension(arg *shop.Extension, out *eteleco
 	out.DeletedAt = time.Time{}                   // zero value
 }
 
-func Convert_shop_Extensions_etelecom_Extensions(args []*shop.Extension) (outs []*etelecom.Extension) {
+func Convert_shoptypes_Extensions_etelecom_Extensions(args []*shoptypes.Extension) (outs []*etelecom.Extension) {
 	if args == nil {
 		return nil
 	}
 	tmps := make([]etelecom.Extension, len(args))
 	outs = make([]*etelecom.Extension, len(args))
 	for i := range tmps {
-		outs[i] = Convert_shop_Extension_etelecom_Extension(args[i], &tmps[i])
+		outs[i] = Convert_shoptypes_Extension_etelecom_Extension(args[i], &tmps[i])
 	}
 	return outs
 }
 
-//-- convert o.o/api/top/int/shop.ExtensionExternalData --//
+//-- convert o.o/api/top/int/shop/types.ExtensionExternalData --//
 
-func Convert_etelecom_ExtensionExternalData_shop_ExtensionExternalData(arg *etelecom.ExtensionExternalData, out *shop.ExtensionExternalData) *shop.ExtensionExternalData {
+func Convert_etelecom_ExtensionExternalData_shoptypes_ExtensionExternalData(arg *etelecom.ExtensionExternalData, out *shoptypes.ExtensionExternalData) *shoptypes.ExtensionExternalData {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &shop.ExtensionExternalData{}
+		out = &shoptypes.ExtensionExternalData{}
 	}
-	convert_etelecom_ExtensionExternalData_shop_ExtensionExternalData(arg, out)
+	convert_etelecom_ExtensionExternalData_shoptypes_ExtensionExternalData(arg, out)
 	return out
 }
 
-func convert_etelecom_ExtensionExternalData_shop_ExtensionExternalData(arg *etelecom.ExtensionExternalData, out *shop.ExtensionExternalData) {
+func convert_etelecom_ExtensionExternalData_shoptypes_ExtensionExternalData(arg *etelecom.ExtensionExternalData, out *shoptypes.ExtensionExternalData) {
 	out.ID = 0 // types do not match
 }
 
-func Convert_etelecom_ExtensionExternalDatas_shop_ExtensionExternalDatas(args []*etelecom.ExtensionExternalData) (outs []*shop.ExtensionExternalData) {
+func Convert_etelecom_ExtensionExternalDatas_shoptypes_ExtensionExternalDatas(args []*etelecom.ExtensionExternalData) (outs []*shoptypes.ExtensionExternalData) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]shop.ExtensionExternalData, len(args))
-	outs = make([]*shop.ExtensionExternalData, len(args))
+	tmps := make([]shoptypes.ExtensionExternalData, len(args))
+	outs = make([]*shoptypes.ExtensionExternalData, len(args))
 	for i := range tmps {
-		outs[i] = Convert_etelecom_ExtensionExternalData_shop_ExtensionExternalData(args[i], &tmps[i])
+		outs[i] = Convert_etelecom_ExtensionExternalData_shoptypes_ExtensionExternalData(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_shop_ExtensionExternalData_etelecom_ExtensionExternalData(arg *shop.ExtensionExternalData, out *etelecom.ExtensionExternalData) *etelecom.ExtensionExternalData {
+func Convert_shoptypes_ExtensionExternalData_etelecom_ExtensionExternalData(arg *shoptypes.ExtensionExternalData, out *etelecom.ExtensionExternalData) *etelecom.ExtensionExternalData {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &etelecom.ExtensionExternalData{}
 	}
-	convert_shop_ExtensionExternalData_etelecom_ExtensionExternalData(arg, out)
+	convert_shoptypes_ExtensionExternalData_etelecom_ExtensionExternalData(arg, out)
 	return out
 }
 
-func convert_shop_ExtensionExternalData_etelecom_ExtensionExternalData(arg *shop.ExtensionExternalData, out *etelecom.ExtensionExternalData) {
+func convert_shoptypes_ExtensionExternalData_etelecom_ExtensionExternalData(arg *shoptypes.ExtensionExternalData, out *etelecom.ExtensionExternalData) {
 	out.ID = "" // types do not match
 }
 
-func Convert_shop_ExtensionExternalDatas_etelecom_ExtensionExternalDatas(args []*shop.ExtensionExternalData) (outs []*etelecom.ExtensionExternalData) {
+func Convert_shoptypes_ExtensionExternalDatas_etelecom_ExtensionExternalDatas(args []*shoptypes.ExtensionExternalData) (outs []*etelecom.ExtensionExternalData) {
 	if args == nil {
 		return nil
 	}
 	tmps := make([]etelecom.ExtensionExternalData, len(args))
 	outs = make([]*etelecom.ExtensionExternalData, len(args))
 	for i := range tmps {
-		outs[i] = Convert_shop_ExtensionExternalData_etelecom_ExtensionExternalData(args[i], &tmps[i])
+		outs[i] = Convert_shoptypes_ExtensionExternalData_etelecom_ExtensionExternalData(args[i], &tmps[i])
 	}
 	return outs
 }
 
-//-- convert o.o/api/top/int/shop.Hotline --//
+//-- convert o.o/api/top/int/shop/types.Hotline --//
 
-func Convert_etelecom_Hotline_shop_Hotline(arg *etelecom.Hotline, out *shop.Hotline) *shop.Hotline {
+func Apply_etelecom_CreateHotlineArgs_shoptypes_Hotline(arg *etelecom.CreateHotlineArgs, out *shoptypes.Hotline) *shoptypes.Hotline {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &shop.Hotline{}
+		out = &shoptypes.Hotline{}
 	}
-	convert_etelecom_Hotline_shop_Hotline(arg, out)
+	apply_etelecom_CreateHotlineArgs_shoptypes_Hotline(arg, out)
 	return out
 }
 
-func convert_etelecom_Hotline_shop_Hotline(arg *etelecom.Hotline, out *shop.Hotline) {
+func apply_etelecom_CreateHotlineArgs_shoptypes_Hotline(arg *etelecom.CreateHotlineArgs, out *shoptypes.Hotline) {
+	out.ID = 0                          // zero value
+	out.OwnerID = arg.OwnerID           // simple assign
+	out.Name = arg.Name                 // simple assign
+	out.Hotline = arg.Hotline           // simple assign
+	out.Network = arg.Network           // simple assign
+	out.ConnectionID = arg.ConnectionID // simple assign
+	out.ConnectionMethod = 0            // zero value
+	out.CreatedAt = time.Time{}         // zero value
+	out.UpdatedAt = time.Time{}         // zero value
+	out.Status = arg.Status             // simple assign
+	out.Description = arg.Description   // simple assign
+	out.IsFreeCharge = arg.IsFreeCharge // simple assign
+}
+
+func Convert_etelecom_Hotline_shoptypes_Hotline(arg *etelecom.Hotline, out *shoptypes.Hotline) *shoptypes.Hotline {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &shoptypes.Hotline{}
+	}
+	convert_etelecom_Hotline_shoptypes_Hotline(arg, out)
+	return out
+}
+
+func convert_etelecom_Hotline_shoptypes_Hotline(arg *etelecom.Hotline, out *shoptypes.Hotline) {
 	out.ID = arg.ID                             // simple assign
 	out.OwnerID = arg.OwnerID                   // simple assign
 	out.Name = arg.Name                         // simple assign
@@ -405,32 +441,33 @@ func convert_etelecom_Hotline_shop_Hotline(arg *etelecom.Hotline, out *shop.Hotl
 	out.UpdatedAt = arg.UpdatedAt               // simple assign
 	out.Status = arg.Status                     // simple assign
 	out.Description = arg.Description           // simple assign
+	out.IsFreeCharge = arg.IsFreeCharge         // simple assign
 }
 
-func Convert_etelecom_Hotlines_shop_Hotlines(args []*etelecom.Hotline) (outs []*shop.Hotline) {
+func Convert_etelecom_Hotlines_shoptypes_Hotlines(args []*etelecom.Hotline) (outs []*shoptypes.Hotline) {
 	if args == nil {
 		return nil
 	}
-	tmps := make([]shop.Hotline, len(args))
-	outs = make([]*shop.Hotline, len(args))
+	tmps := make([]shoptypes.Hotline, len(args))
+	outs = make([]*shoptypes.Hotline, len(args))
 	for i := range tmps {
-		outs[i] = Convert_etelecom_Hotline_shop_Hotline(args[i], &tmps[i])
+		outs[i] = Convert_etelecom_Hotline_shoptypes_Hotline(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_shop_Hotline_etelecom_Hotline(arg *shop.Hotline, out *etelecom.Hotline) *etelecom.Hotline {
+func Convert_shoptypes_Hotline_etelecom_Hotline(arg *shoptypes.Hotline, out *etelecom.Hotline) *etelecom.Hotline {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &etelecom.Hotline{}
 	}
-	convert_shop_Hotline_etelecom_Hotline(arg, out)
+	convert_shoptypes_Hotline_etelecom_Hotline(arg, out)
 	return out
 }
 
-func convert_shop_Hotline_etelecom_Hotline(arg *shop.Hotline, out *etelecom.Hotline) {
+func convert_shoptypes_Hotline_etelecom_Hotline(arg *shoptypes.Hotline, out *etelecom.Hotline) {
 	out.ID = arg.ID                             // simple assign
 	out.OwnerID = arg.OwnerID                   // simple assign
 	out.Name = arg.Name                         // simple assign
@@ -443,16 +480,17 @@ func convert_shop_Hotline_etelecom_Hotline(arg *shop.Hotline, out *etelecom.Hotl
 	out.DeletedAt = time.Time{}                 // zero value
 	out.Status = arg.Status                     // simple assign
 	out.Description = arg.Description           // simple assign
+	out.IsFreeCharge = arg.IsFreeCharge         // simple assign
 }
 
-func Convert_shop_Hotlines_etelecom_Hotlines(args []*shop.Hotline) (outs []*etelecom.Hotline) {
+func Convert_shoptypes_Hotlines_etelecom_Hotlines(args []*shoptypes.Hotline) (outs []*etelecom.Hotline) {
 	if args == nil {
 		return nil
 	}
 	tmps := make([]etelecom.Hotline, len(args))
 	outs = make([]*etelecom.Hotline, len(args))
 	for i := range tmps {
-		outs[i] = Convert_shop_Hotline_etelecom_Hotline(args[i], &tmps[i])
+		outs[i] = Convert_shoptypes_Hotline_etelecom_Hotline(args[i], &tmps[i])
 	}
 	return outs
 }

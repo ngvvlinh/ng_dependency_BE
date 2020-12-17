@@ -8,6 +8,7 @@ import (
 	"o.o/api/etelecom"
 	"o.o/api/main/connectioning"
 	"o.o/backend/cmd/telecom-sync-service/config"
+	etelecompm "o.o/backend/com/etelecom/pm"
 	"o.o/backend/com/etelecom/provider"
 	"o.o/backend/com/etelecom/provider/types"
 	com "o.o/backend/com/main"
@@ -26,6 +27,7 @@ type Output struct {
 
 	// pm
 	_connectionPM *connectioningpm.ProcessManager
+	_etelecomPM   *etelecompm.ProcessManager
 }
 
 func BuildServers(cfg config.Config, healthService *health.Service) []lifecycle.HTTPServer {

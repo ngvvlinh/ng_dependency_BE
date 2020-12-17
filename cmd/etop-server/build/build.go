@@ -17,6 +17,7 @@ import (
 	_ghtk "o.o/backend/cogs/shipment/ghtk"
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
+	etelecompm "o.o/backend/com/etelecom/pm"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	connectioningpm "o.o/backend/com/main/connectioning/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
@@ -81,6 +82,7 @@ type Output struct {
 	_connectionPM     *connectioningpm.ProcessManager
 	_pricelistPM      *pricelistpm.ProcessManager
 	_customerPM       *customerpm.ProcessManager
+	_etelecomPM       *etelecompm.ProcessManager
 }
 
 func BuildServers(
