@@ -282,19 +282,6 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 		"01", // HN
 		"79", // HCM
 	}
-	if cm.StringsContain(provinces, fromAddress.ProvinceCode) {
-		query := &etopmodel.GetBalanceShopCommand{
-			ShopID: event.ShopID,
-		}
-		if err := m.MoneyTxStore.CalcBalanceShop(ctx, query); err != nil {
-			return err
-		}
-		balance := query.Result.Amount
-		if balance-event.ShippingFee < MinShopBalance {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
-		}
-		return nil
-	}
 
 	// Trường hợp địa chỉ lấy hàng nằm ngoài HCM, HN
 	// Tính số dư user: GetBalanceUser
@@ -313,6 +300,15 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 		return err
 	}
 	balance := query.Result.Amount
+
+	// HCM, HN
+	if cm.StringsContain(provinces, fromAddress.ProvinceCode) {
+		if balance-event.ShippingFee < MinShopBalance {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
+		}
+		return nil
+	}
+
 	if balance-event.ShippingFee < 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
 	}
