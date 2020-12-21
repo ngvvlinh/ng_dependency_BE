@@ -53,6 +53,6 @@ type SummaryItem struct {
 	ImageUrls []string `json:"image_urls"`
 	Label     string   `json:"label"`
 	Spec      string   `json:"spec"`
-	Value     int      `json:"value"`
+	Value     int64    `json:"value"`
 	Unit      string   `json:"unit"`
 }

@@ -1289,6 +1289,8 @@ var _acl = map[string]*permission.Decl{
 
 	"shop.Etelecom/GetCallLogs": {Type: Shop, Actions: actions(ShopCallLogView)},
 
+	"shop.Etelecom/SummaryEtelecom": {Type: Shop, Actions: actions(ShopDashboardView)},
+
 	// Setting
 	"shop.Setting/CreateSetting": {Type: Shop},
 	"shop.Setting/UpdateSetting": {Type: Shop},

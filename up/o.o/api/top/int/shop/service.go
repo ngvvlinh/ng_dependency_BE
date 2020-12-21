@@ -459,6 +459,8 @@ type EtelecomService interface {
 
 	GetHotlines(context.Context, *cm.Empty) (*shoptypes.GetHotLinesResponse, error)
 	GetCallLogs(context.Context, *shoptypes.GetCallLogsRequest) (*shoptypes.GetCallLogsResponse, error)
+
+	SummaryEtelecom(context.Context, *SummaryEtelecomRequest) (*SummaryEtelecomResponse, error)
 }
 
 // +apix:path=/shop.Setting

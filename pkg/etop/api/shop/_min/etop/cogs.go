@@ -1,4 +1,4 @@
-package shop_min
+package etop
 
 import (
 	"o.o/backend/pkg/common/redis"

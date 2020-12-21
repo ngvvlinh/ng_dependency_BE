@@ -8,7 +8,6 @@ import (
 	"github.com/google/wire"
 
 	"o.o/api/main/accountshipnow"
-	"o.o/api/main/credit"
 	"o.o/api/services/affiliate"
 	"o.o/api/shopping/tradering"
 	"o.o/backend/cmd/fabo-server/config"
@@ -44,7 +43,6 @@ import (
 	"o.o/backend/com/shopping/carrying"
 	"o.o/backend/com/shopping/customering"
 	"o.o/backend/com/shopping/setting"
-	"o.o/backend/com/summary"
 	"o.o/backend/com/supporting/ticket"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/bus"
@@ -52,8 +50,8 @@ import (
 	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/export"
 	sadmin_fabo "o.o/backend/pkg/etop/api/sadmin/_fabo"
-	shop_min "o.o/backend/pkg/etop/api/shop/_min"
-	shop_wire "o.o/backend/pkg/etop/api/shop/_wire"
+	shop_min "o.o/backend/pkg/etop/api/shop/_min/fabo"
+	shop_wire "o.o/backend/pkg/etop/api/shop/_wire/fabo"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/eventstream"
@@ -61,7 +59,6 @@ import (
 	logicorder "o.o/backend/pkg/etop/logic/orders"
 	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
 	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
-	logicsummary "o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/fabo"
 	"o.o/backend/pkg/integration/email"
@@ -127,12 +124,10 @@ func Build(
 		carrying.WireSet,
 		receipting.WireSet,
 		aggregatex.WireSet,
-		summary.WireSet,
 		connectioning.WireSet,
 		shipment_fabo.WireSet,
 		export.WireSet,
 		middleware.WireSet,
-		logicsummary.WireSet,
 		sadmin_fabo.WireSet,
 		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
@@ -161,7 +156,6 @@ func Build(
 		wire.Value(affiliate.CommandBus{}),
 		wire.Value(accountshipnow.CommandBus{}),
 		wire.Value(accountshipnow.QueryBus{}),
-		wire.Value(credit.QueryBus{}),
 
 		BuildIntHandlers,
 		BuildMainServer,

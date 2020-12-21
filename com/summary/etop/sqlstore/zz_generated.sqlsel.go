@@ -17,7 +17,7 @@ func (m *FfmByAreas) SQLTableName() string { return "" }
 
 func (m *FfmByArea) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.Int)(&m.Count),
+		(*core.Int64)(&m.Count),
 		(*core.String)(&m.ProvinceCode),
 		(*core.String)(&m.DistrictCode),
 	}
@@ -63,8 +63,8 @@ func (m *StaffOrder) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.String)(&m.UserName),
 		&m.UserID,
-		(*core.Int64)(&m.TotalCount),
-		(*core.Int64)(&m.TotalAmount),
+		(*core.Int32)(&m.TotalCount),
+		(*core.Int32)(&m.TotalAmount),
 	}
 }
 

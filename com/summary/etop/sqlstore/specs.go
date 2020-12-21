@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/summary"
 	"o.o/api/top/types/etc/status5"
+	"o.o/backend/com/summary/util"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sq/core"
@@ -35,8 +36,8 @@ func (s SummaryStore) SummarizeTopship(ctx context.Context, req *summary.Summary
 	if err := s.execQuery(ctx, tablesShipnowFfm, shopID, "shipnow_fulfillment"); err != nil {
 		return nil, err
 	}
-	resTablesFfm := buildResponse(tablesFfm)
-	resTablesShipnowFfm := buildResponse(tablesShipnowFfm)
+	resTablesFfm := util.BuildResponse(tablesFfm)
+	resTablesShipnowFfm := util.BuildResponse(tablesShipnowFfm)
 	for key, value := range resTablesFfm {
 		for _, _value := range resTablesShipnowFfm {
 			if Contain(value.Tags, "fulfillment03") && Contain(_value.Tags, "fulfillment03") {
@@ -101,47 +102,6 @@ func Contain(list []string, s string) bool {
 		}
 	}
 	return false
-}
-
-func buildResponse(tables []*smry.Table) []*summary.SummaryTable {
-	res := make([]*summary.SummaryTable, len(tables))
-	for i, table := range tables {
-		stable := &summary.SummaryTable{
-			Label: table.Label,
-			Tags:  table.Tags,
-			Cols:  buildCols(table.Cols),
-			Rows:  buildRows(table.Rows),
-			Data:  buildData(table.Data),
-		}
-		res[i] = stable
-	}
-	return res
-}
-
-func buildCols(cols []smry.Predicator) []summary.SummaryColRow {
-	res := make([]summary.SummaryColRow, len(cols))
-	for i, col := range cols {
-		res[i] = summary.SummaryColRow{
-			Label:  col.GetLabel(),
-			Spec:   col.GetSpec(),
-			Unit:   "",
-			Indent: 0,
-		}
-	}
-	return res
-}
-
-func buildRows(rows []smry.Subject) []summary.SummaryColRow {
-	res := make([]summary.SummaryColRow, len(rows))
-	for i, row := range rows {
-		res[i] = summary.SummaryColRow{
-			Label:  row.GetLabel(),
-			Spec:   row.GetSpec(),
-			Unit:   row.Unit,
-			Indent: row.Ident,
-		}
-	}
-	return res
 }
 
 func buildData(data []smry.Cell) []summary.SummaryItem {

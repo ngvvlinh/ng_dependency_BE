@@ -1935,6 +1935,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/SummaryEtelecom": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "SummaryEtelecom",
+        "operationId": "shop.Etelecom-SummaryEtelecom",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paSummaryEtelecomRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paSummaryEtelecomResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Export/GetExports": {
       "post": {
         "tags": [
@@ -13127,6 +13154,28 @@
         }
       }
     },
+    "paSummaryEtelecomRequest": {
+      "type": "object",
+      "properties": {
+        "date_from": {
+          "type": "string"
+        },
+        "date_to": {
+          "type": "string"
+        }
+      }
+    },
+    "paSummaryEtelecomResponse": {
+      "type": "object",
+      "properties": {
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paSummaryTable"
+          }
+        }
+      }
+    },
     "paSummaryItem": {
       "type": "object",
       "properties": {
@@ -13146,7 +13195,8 @@
           "type": "string"
         },
         "value": {
-          "type": "integer"
+          "type": "string",
+          "format": "int64"
         }
       }
     },

@@ -8,7 +8,7 @@ import (
 	"o.o/api/main/location"
 	"o.o/api/summary"
 	com "o.o/backend/com/main"
-	"o.o/backend/com/summary/sqlstore"
+	"o.o/backend/com/summary/etop/sqlstore"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi/dot"
@@ -286,7 +286,7 @@ func (d *DashboardQuery) buildFfmByAreaTable(ctx context.Context, args []*sqlsto
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[0].Spec + summaryTable.Rows[key].Spec,
-			Value: int64(value.Count),
+			Value: value.Count,
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[1].Spec + summaryTable.Rows[key].Spec,
@@ -314,23 +314,6 @@ func getStartDayTime() time.Time {
 	timeToday = timeToday.Add(-time.Duration(timeToday.Hour()) * time.Hour)
 	timeToday = timeToday.Add(-time.Duration(timeToday.Minute()) * time.Minute)
 	return timeToday
-}
-
-func getLastMonthTime() (time.Time, time.Time) {
-	timeNow := time.Now()
-	lastDayLastMonth := timeNow.Add(-time.Duration(timeNow.Day()+1) * time.Hour * 24)
-	if timeNow.Day() > lastDayLastMonth.Day() {
-		return startOfDay(lastDayLastMonth), startOfDay(lastDayLastMonth).Add(24 * time.Hour)
-	}
-	dayOfLastMonth := lastDayLastMonth.Add((time.Duration(lastDayLastMonth.Day() - timeNow.Day())) * time.Hour * -24)
-	return startOfDay(dayOfLastMonth), startOfDay(dayOfLastMonth).Add(24 * time.Hour)
-}
-
-func startOfDay(args time.Time) time.Time {
-	args = args.Add(-time.Duration(args.Second()) * time.Second)
-	args = args.Add(-time.Duration(args.Hour()) * time.Hour)
-	args = args.Add(-time.Duration(args.Minute()) * time.Minute)
-	return args
 }
 
 func (q *DashboardQuery) checkRedis(key string, obj interface{}) (bool, error) {
@@ -623,11 +606,11 @@ func buildStaffOrderTable(args []*sqlstore.StaffOrder) *summary.SummaryTable {
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[2].Spec + summaryTable.Rows[index].Spec,
-			Value: value.TotalCount,
+			Value: int64(value.TotalCount),
 		})
 		summaryTable.Data = append(summaryTable.Data, summary.SummaryItem{
 			Spec:  summaryTable.Cols[3].Spec + summaryTable.Rows[index].Spec,
-			Value: value.TotalAmount,
+			Value: int64(value.TotalAmount),
 		})
 	}
 	return &summaryTable

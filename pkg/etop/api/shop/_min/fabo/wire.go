@@ -1,6 +1,6 @@
 // +build wireinject
 
-package shop_min
+package fabo
 
 import (
 	"github.com/google/wire"

@@ -39,6 +39,6 @@ type SummaryColRow struct {
 
 type SummaryItem struct {
 	Spec  string
-	Value int
+	Value int64
 	Unit  string
 }

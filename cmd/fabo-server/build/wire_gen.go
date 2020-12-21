@@ -8,13 +8,12 @@ package build
 import (
 	"context"
 	"o.o/api/main/accountshipnow"
-	"o.o/api/main/credit"
 	"o.o/api/services/affiliate"
 	"o.o/api/shopping/tradering"
 	"o.o/backend/cmd/fabo-server/config"
 	"o.o/backend/cogs/config/_server"
 	"o.o/backend/cogs/database/_min"
-	fabo2 "o.o/backend/cogs/server/fabo"
+	fabo3 "o.o/backend/cogs/server/fabo"
 	"o.o/backend/cogs/server/shop"
 	"o.o/backend/cogs/shipment/_fabo"
 	v2_2 "o.o/backend/cogs/shipment/ghn/v2"
@@ -69,12 +68,11 @@ import (
 	aggregate8 "o.o/backend/com/main/stocktaking/aggregate"
 	query5 "o.o/backend/com/main/stocktaking/query"
 	aggregate7 "o.o/backend/com/shopping/carrying/aggregate"
-	query12 "o.o/backend/com/shopping/carrying/query"
+	query11 "o.o/backend/com/shopping/carrying/query"
 	aggregate5 "o.o/backend/com/shopping/customering/aggregate"
 	query2 "o.o/backend/com/shopping/customering/query"
 	aggregate10 "o.o/backend/com/shopping/setting/aggregate"
-	query13 "o.o/backend/com/shopping/setting/query"
-	query11 "o.o/backend/com/summary/query"
+	query12 "o.o/backend/com/shopping/setting/query"
 	query3 "o.o/backend/com/supporting/ticket/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
@@ -87,7 +85,7 @@ import (
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/sadmin/_fabo"
 	"o.o/backend/pkg/etop/api/shop"
-	"o.o/backend/pkg/etop/api/shop/_min"
+	"o.o/backend/pkg/etop/api/shop/_min/fabo"
 	"o.o/backend/pkg/etop/api/shop/account"
 	"o.o/backend/pkg/etop/api/shop/authorize"
 	"o.o/backend/pkg/etop/api/shop/brand"
@@ -107,7 +105,6 @@ import (
 	"o.o/backend/pkg/etop/api/shop/setting"
 	"o.o/backend/pkg/etop/api/shop/shipment"
 	"o.o/backend/pkg/etop/api/shop/stocktake"
-	summary2 "o.o/backend/pkg/etop/api/shop/summary"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
@@ -116,9 +113,8 @@ import (
 	"o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
 	imcsv2 "o.o/backend/pkg/etop/logic/products/imcsv"
-	"o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
-	"o.o/backend/pkg/fabo"
+	fabo2 "o.o/backend/pkg/fabo"
 	"o.o/backend/pkg/fabo/faboinfo"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook/v2"
@@ -448,25 +444,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:      session,
 		HistoryStore: historyStoreInterface,
 	}
-	dashboardQuery := query11.NewDashboardQuery(mainDB, store, locationQueryBus)
-	summaryQueryBus := query11.DashboardQueryMessageBus(dashboardQuery)
-	summarySummary := summary.New(mainDB)
-	creditQueryBus := _wireCreditQueryBusValue
-	moneyTxStore := &sqlstore.MoneyTxStore{
-		DB:               mainDB,
-		EventBus:         busBus,
-		AccountUserStore: accountUserStoreInterface,
-		ShopStore:        shopStoreInterface,
-		OrderStore:       orderStoreInterface,
-	}
-	moneyTxStoreInterface := sqlstore.BindMoneyTxStore(moneyTxStore)
-	summaryService := &summary2.SummaryService{
-		Session:      session,
-		SummaryQuery: summaryQueryBus,
-		SummaryOld:   summarySummary,
-		CreditQuery:  creditQueryBus,
-		MoneyTxStore: moneyTxStoreInterface,
-	}
 	eventStream := eventstream.New(ctx)
 	configDirs := cfg.ExportDirs
 	driverConfig := cfg.StorageDriver
@@ -496,8 +473,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	carrierAggregate := aggregate7.NewCarrierAggregate(busBus, mainDB)
 	carryingCommandBus := aggregate7.CarrierAggregateMessageBus(carrierAggregate)
-	carrierQuery := query12.NewCarrierQuery(mainDB)
-	carryingQueryBus := query12.CarrierQueryMessageBus(carrierQuery)
+	carrierQuery := query11.NewCarrierQuery(mainDB)
+	carryingQueryBus := query11.CarrierQueryMessageBus(carrierQuery)
 	carrierService := &carrier2.CarrierService{
 		Session:      session,
 		CarrierAggr:  carryingCommandBus,
@@ -520,8 +497,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		ShippingAggregate: shippingCommandBus,
 		OrderStore:        orderStoreInterface,
 	}
-	shopSettingQuery := query13.NewShopSettingQuery(mainDB)
-	settingQueryBus := query13.ShopSettingQueryMessageBus(shopSettingQuery)
+	shopSettingQuery := query12.NewShopSettingQuery(mainDB)
+	settingQueryBus := query12.ShopSettingQueryMessageBus(shopSettingQuery)
 	shopSettingAggregate := aggregate10.NewShopSettingAggregate(mainDB, addressCommandBus)
 	settingCommandBus := aggregate10.ShopSettingAggregateMessageBus(shopSettingAggregate)
 	settingService := &setting.SettingService{
@@ -538,7 +515,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		IdentityQuery:      queryBus,
 		AccountshipnowAggr: accountshipnowCommandBus,
 	}
-	shopServers := shop_min.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, summaryService, exportExportService, notificationService, authorizeService, carrierService, stocktakeService, shipmentService, settingService, connectionService)
+	shopServers := fabo.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, exportExportService, notificationService, authorizeService, carrierService, stocktakeService, shipmentService, settingService, connectionService)
 	fbPageQuery := fbpage.NewFbPageQuery(mainDB)
 	fbpagingQueryBus := fbpage.FbPageQueryMessageBus(fbPageQuery)
 	fbUserQuery := fbuser.NewFbUserQuery(mainDB, customeringQueryBus)
@@ -553,7 +530,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	fbuseringCommandBus := fbuser.FbUserAggregateMessageBus(fbUserAggregate)
 	appConfig := cfg.FacebookApp
 	fbClient := fbclient.New(appConfig)
-	pageService := &fabo.PageService{
+	pageService := &fabo2.PageService{
 		Session:             session,
 		FaboInfo:            faboPagesKit,
 		FBExternalUserQuery: fbuseringQueryBus,
@@ -572,7 +549,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	fbmessagetemplateQueryBus := fbmessagetemplate.FbMessagingQueryMessageBus(fbMessageTemplateQuery)
 	fbMessageTemplateAggregate := fbmessagetemplate.NewFbMessageTemplateAggregate(mainDB)
 	fbmessagetemplateCommandBus := fbmessagetemplate.FbMessageTemplateAggregateMessageBus(fbMessageTemplateAggregate)
-	customerConversationService := &fabo.CustomerConversationService{
+	customerConversationService := &fabo2.CustomerConversationService{
 		Session:                session,
 		FaboPagesKit:           faboPagesKit,
 		FBClient:               fbClient,
@@ -584,23 +561,23 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FbMessageTemplateQuery: fbmessagetemplateQueryBus,
 		FbMessageTemplateAggr:  fbmessagetemplateCommandBus,
 	}
-	faboCustomerService := &fabo.CustomerService{
+	faboCustomerService := &fabo2.CustomerService{
 		Session:        session,
 		CustomerQuery:  customeringQueryBus,
 		FBUseringQuery: fbuseringQueryBus,
 		FBUseringAggr:  fbuseringCommandBus,
 	}
-	shopService := &fabo.ShopService{
+	shopService := &fabo2.ShopService{
 		Session:             session,
 		FBExternalUserQuery: fbuseringQueryBus,
 		FBExternalUserAggr:  fbuseringCommandBus,
 	}
-	extraShipmentService := &fabo.ExtraShipmentService{
+	extraShipmentService := &fabo2.ExtraShipmentService{
 		Session:      session,
 		ShippingQS:   shippingQueryBus,
 		ConnectionQS: connectioningQueryBus,
 	}
-	faboServers := fabo.NewServers(pageService, customerConversationService, faboCustomerService, shopService, extraShipmentService, store)
+	faboServers := fabo2.NewServers(pageService, customerConversationService, faboCustomerService, shopService, extraShipmentService, store)
 	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
 	webhookService := &sadmin.WebhookService{
 		Session:                session,
@@ -634,7 +611,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, import3, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
-	faboImageHandler := fabo2.BuildFaboImageHandler()
+	faboImageHandler := fabo3.BuildFaboImageHandler()
 	mainServer := BuildMainServer(service, intHandlers, sharedConfig, importHandler, eventStreamHandler, downloadHandler, faboImageHandler)
 	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook
@@ -655,6 +632,14 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	shipnowQueryService := shipnow.NewQueryService(mainDB)
 	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
 	processManager2 := pm3.New(busBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus, shipnowQueryBus)
+	moneyTxStore := &sqlstore.MoneyTxStore{
+		DB:               mainDB,
+		EventBus:         busBus,
+		AccountUserStore: accountUserStoreInterface,
+		ShopStore:        shopStoreInterface,
+		OrderStore:       orderStoreInterface,
+	}
+	moneyTxStoreInterface := sqlstore.BindMoneyTxStore(moneyTxStore)
 	processManager3 := pm4.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, moneyTxStoreInterface)
 	processManager4 := pm5.New(busBus, fbuseringCommandBus)
 	fbmessagingProcessManager := fbmessaging.NewProcessManager(busBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
@@ -687,6 +672,5 @@ var (
 	_wireQueryBusValue               = tradering.QueryBus{}
 	_wireAccountshipnowQueryBusValue = accountshipnow.QueryBus{}
 	_wireCommandBusValue             = accountshipnow.CommandBus{}
-	_wireCreditQueryBusValue         = credit.QueryBus{}
 	_wireAffiliateCommandBusValue    = affiliate.CommandBus{}
 )

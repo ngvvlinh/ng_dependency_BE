@@ -96,7 +96,7 @@ func (t *Table) SetCell(row, col int, subject Subject) *Cell {
 
 type Cell struct {
 	Subject Subject
-	Value   int
+	Value   int64
 }
 
 type Subject struct {

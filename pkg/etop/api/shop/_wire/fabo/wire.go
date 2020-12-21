@@ -1,6 +1,6 @@
 // +build wireinject
 
-package _wire
+package fabo
 
 import (
 	"github.com/google/wire"
@@ -17,7 +17,6 @@ import (
 	"o.o/backend/pkg/etop/api/shop/contact"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
-	"o.o/backend/pkg/etop/api/shop/etelecom"
 	"o.o/backend/pkg/etop/api/shop/export"
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
@@ -38,13 +37,12 @@ import (
 	"o.o/backend/pkg/etop/api/shop/shipnow"
 	"o.o/backend/pkg/etop/api/shop/stocktake"
 	"o.o/backend/pkg/etop/api/shop/subscription"
-	"o.o/backend/pkg/etop/api/shop/summary"
 	"o.o/backend/pkg/etop/api/shop/supplier"
 	"o.o/backend/pkg/etop/api/shop/ticket"
 	"o.o/backend/pkg/etop/api/shop/trading"
-	"o.o/backend/pkg/etop/api/shop/ws"
 )
 
+// TODO(ngoc): remove unnecessary services
 var WireSet = wire.NewSet(
 	wire.Struct(new(account.AccountService), "*"),
 	wire.Struct(new(authorize.AuthorizeService), "*"),
@@ -75,13 +73,10 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(shipnow.ShipnowService), "*"),
 	wire.Struct(new(stocktake.StocktakeService), "*"),
 	wire.Struct(new(subscription.SubscriptionService), "*"),
-	wire.Struct(new(summary.SummaryService), "*"),
 	wire.Struct(new(supplier.SupplierService), "*"),
 	wire.Struct(new(trading.TradingService), "*"),
-	wire.Struct(new(ws.WebServerService), "*"),
 	wire.Struct(new(ticket.TicketService), "*"),
 	wire.Struct(new(accountshipnow.AccountShipnowService), "*"),
 	wire.Struct(new(contact.ContactService), "*"),
 	wire.Struct(new(setting.SettingService), "*"),
-	wire.Struct(new(etelecom.ExtensionService), "*"),
 )

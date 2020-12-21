@@ -83,7 +83,7 @@ import (
 	aggregate16 "o.o/backend/com/main/refund/aggregate"
 	pm11 "o.o/backend/com/main/refund/pm"
 	query14 "o.o/backend/com/main/refund/query"
-	query25 "o.o/backend/com/main/reporting/query"
+	query26 "o.o/backend/com/main/reporting/query"
 	"o.o/backend/com/main/shipmentpricing/pricelist"
 	pm17 "o.o/backend/com/main/shipmentpricing/pricelist/pm"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion"
@@ -119,7 +119,8 @@ import (
 	"o.o/backend/com/subscripting/subscriptionbill"
 	"o.o/backend/com/subscripting/subscriptionplan"
 	"o.o/backend/com/subscripting/subscriptionproduct"
-	query19 "o.o/backend/com/summary/query"
+	query25 "o.o/backend/com/summary/etelecom/query"
+	query19 "o.o/backend/com/summary/etop/query"
 	aggregate19 "o.o/backend/com/supporting/ticket/aggregate"
 	"o.o/backend/com/supporting/ticket/provider"
 	query5 "o.o/backend/com/supporting/ticket/query"
@@ -812,10 +813,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	etelecomAggregate := aggregate22.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager, connectioningQueryBus, queryBus)
 	etelecomCommandBus := aggregate22.AggregateMessageBus(etelecomAggregate)
+	summaryQuery := query25.NewSummaryQuery(etelecomDB, store)
+	queryBus2 := query25.SummaryQueryMessageBus(summaryQuery)
 	extensionService := &etelecom.ExtensionService{
 		Session:       session,
 		EtelecomAggr:  etelecomCommandBus,
 		EtelecomQuery: etelecomQueryBus,
+		SummaryQuery:  queryBus2,
 	}
 	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, settingService, extensionService)
 	adminMiscService := admin.MiscService{
@@ -1278,8 +1282,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	aggregate32 := aggregate26.New(logDB)
 	serverServer := server.New(gatewayCommandBus, aggregate32)
 	vtPayHandler := server_vtpay.BuildVTPayHandler(serverServer)
-	reportQuery := query25.NewReportQuery(orderingQueryBus, queryBus, receiptingQueryBus, catalogQueryBus, stocktakingQueryBus)
-	reportingQueryBus := query25.ReportQueryMessageBus(reportQuery)
+	reportQuery := query26.NewReportQuery(orderingQueryBus, queryBus, receiptingQueryBus, catalogQueryBus, stocktakingQueryBus)
+	reportingQueryBus := query26.ReportQueryMessageBus(reportQuery)
 	reportService := reportserver.ReportService{
 		ReportQuery:   reportingQueryBus,
 		IdentityQuery: queryBus,

@@ -53,7 +53,8 @@ import (
 	"o.o/backend/com/shopping/suppliering"
 	"o.o/backend/com/shopping/tradering"
 	"o.o/backend/com/subscripting"
-	"o.o/backend/com/summary"
+	etelecomsummary "o.o/backend/com/summary/etelecom"
+	etopsummary "o.o/backend/com/summary/etop"
 	"o.o/backend/com/supporting/ticket"
 	"o.o/backend/com/web/webserver"
 	"o.o/backend/pkg/common/apifw/captcha"
@@ -66,7 +67,7 @@ import (
 	"o.o/backend/pkg/etop/api/integration"
 	"o.o/backend/pkg/etop/api/sadmin"
 	shop_all "o.o/backend/pkg/etop/api/shop/_all"
-	shop_wire "o.o/backend/pkg/etop/api/shop/_wire"
+	shop_wire "o.o/backend/pkg/etop/api/shop/_wire/etop"
 	"o.o/backend/pkg/etop/apix/mc/vht"
 	"o.o/backend/pkg/etop/apix/mc/vnp"
 	"o.o/backend/pkg/etop/apix/partner"
@@ -166,7 +167,8 @@ func Build(
 		inventory.WireSet,
 		ledgering.WireSet,
 		purchaseorder.WireSet,
-		summary.WireSet,
+		etopsummary.WireSet,
+		etelecomsummary.WireSet,
 		purchaserefund.WireSet,
 		connectioning.WireSet,
 		shipment_all.WireSet,

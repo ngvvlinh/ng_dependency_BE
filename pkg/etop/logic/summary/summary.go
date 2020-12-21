@@ -89,7 +89,7 @@ func execQuery(ctx context.Context, db *cmsql.Database, tables []*Table, shopID 
 	for _, table := range tables {
 		for i := range table.Data {
 			// must always use [i] because we want to take the address
-			builder.AddCell(&table.Data[i].Subject, (*core.Int)(&table.Data[i].Value))
+			builder.AddCell(&table.Data[i].Subject, (*core.Int64)(&table.Data[i].Value))
 		}
 	}
 	return db.SQL(builder).WithContext(ctx).
@@ -178,7 +178,7 @@ func buildTableAverage(input *Table) *Table {
 	return table
 }
 
-func setRow(table *Table, row, col int, value int, label, unit, spec string) {
+func setRow(table *Table, row, col int, value int64, label, unit, spec string) {
 	subj := Subject{
 		Label: label,
 		Unit:  unit,
@@ -191,10 +191,10 @@ func setRow(table *Table, row, col int, value int, label, unit, spec string) {
 	cell.Value = value
 }
 
-func calcDiv(input *Table, above, below, col int) int {
+func calcDiv(input *Table, above, below, col int) int64 {
 	n := input.Cell(below, col).Value
 	if n == 0 {
 		return 0
 	}
-	return int(math.Trunc(float64(input.Cell(above, col).Value) / float64(n)))
+	return int64(math.Trunc(float64(input.Cell(above, col).Value) / float64(n)))
 }

@@ -4,10 +4,13 @@ import (
 	"context"
 
 	"o.o/api/etelecom"
+	"o.o/api/etelecom/summary"
 	api "o.o/api/top/int/shop"
 	shoptypes "o.o/api/top/int/shop/types"
 	pbcm "o.o/api/top/types/common"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
@@ -17,6 +20,7 @@ type ExtensionService struct {
 
 	EtelecomAggr  etelecom.CommandBus
 	EtelecomQuery etelecom.QueryBus
+	SummaryQuery  summary.QueryBus
 }
 
 func (s *ExtensionService) Clone() api.EtelecomService {
@@ -98,5 +102,31 @@ func (s *ExtensionService) GetCallLogs(ctx context.Context, r *shoptypes.GetCall
 	return &shoptypes.GetCallLogsResponse{
 		CallLogs: res,
 		Paging:   cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
+	}, nil
+}
+
+func (s *ExtensionService) SummaryEtelecom(
+	ctx context.Context, req *api.SummaryEtelecomRequest,
+) (*api.SummaryEtelecomResponse, error) {
+	dateFrom, dateTo, err := cm.ParseDateFromTo(req.DateFrom, req.DateTo)
+	if err != nil {
+		return nil, err
+	}
+
+	if dateTo.Before(dateFrom) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "date_to must be after date_from")
+	}
+
+	query := &summary.SummaryQuery{
+		ShopID:   s.SS.Shop().ID,
+		DateFrom: dateFrom,
+		DateTo:   dateTo,
+	}
+	if err := s.SummaryQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+
+	return &api.SummaryEtelecomResponse{
+		Tables: convertpb.PbSummaryTablesNew(query.Result.ListTable),
 	}, nil
 }
