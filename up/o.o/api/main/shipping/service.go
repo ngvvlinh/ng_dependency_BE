@@ -158,6 +158,8 @@ type CreateFulfillmentFromImportArgs struct {
 	TryOn try_on.TryOnCode
 
 	ShippingNote string
+
+	CreatedBy dot.ID
 }
 
 type CreateFullfillmentsFromImportResult struct {

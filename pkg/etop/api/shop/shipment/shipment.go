@@ -201,6 +201,7 @@ func (s *ShipmentService) CreateFulfillmentsFromImport(
 			CODAmount:           importFulfillmentArgs.CODAmount,
 			ShippingNote:        importFulfillmentArgs.ShippingNote,
 			TryOn:               importFulfillmentArgs.TryOn,
+			CreatedBy:           s.SS.Claim().UserID,
 		})
 	}
 

@@ -326,6 +326,7 @@ func (a *Aggregate) prepareFulfillmentFromOrder(ctx context.Context, order *orde
 		ShippingType:        args.ShippingType,
 		Coupon:              args.Coupon,
 		ShippingPaymentType: args.ShippingPaymentType.Apply(shipping_payment_type.Seller),
+		CreatedBy:           order.CreatedBy,
 	}
 	if conn != nil {
 		// backward compatible
@@ -1229,6 +1230,7 @@ func (a *Aggregate) prepareFulfillmentImport(ctx context.Context, args *shipping
 		ShippingType:        shippingType,
 		ShippingPaymentType: shipping_payment_type.Seller,
 		LinesContent:        args.ProductDescription,
+		CreatedBy:           args.CreatedBy,
 	}
 
 	if conn != nil {
