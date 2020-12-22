@@ -810,7 +810,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		cleanup()
 		return Output{}, nil, err
 	}
-	etelecomAggregate := aggregate22.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager, connectioningQueryBus)
+	etelecomAggregate := aggregate22.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager, connectioningQueryBus, queryBus)
 	etelecomCommandBus := aggregate22.AggregateMessageBus(etelecomAggregate)
 	extensionService := &etelecom.ExtensionService{
 		Session:       session,

@@ -62,6 +62,7 @@ type CreateExtensionCommand struct {
 	AccountID         dot.ID
 	ExtensionPassword string
 	HotlineID         dot.ID
+	OwnerID           dot.ID
 
 	Result *Extension `json:"-"`
 }
@@ -119,6 +120,7 @@ type UpdateExternalExtensionInfoCommand struct {
 	ExternalID        string
 	ExtensionNumber   string
 	ExtensionPassword string
+	TenantDomain      string
 
 	Result struct {
 	} `json:"-"`
@@ -314,6 +316,7 @@ func (q *CreateExtensionCommand) GetArgs(ctx context.Context) (_ context.Context
 			AccountID:         q.AccountID,
 			ExtensionPassword: q.ExtensionPassword,
 			HotlineID:         q.HotlineID,
+			OwnerID:           q.OwnerID,
 		}
 }
 
@@ -323,6 +326,7 @@ func (q *CreateExtensionCommand) SetCreateExtensionArgs(args *CreateExtensionArg
 	q.AccountID = args.AccountID
 	q.ExtensionPassword = args.ExtensionPassword
 	q.HotlineID = args.HotlineID
+	q.OwnerID = args.OwnerID
 }
 
 func (q *CreateHotlineCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateHotlineArgs) {
@@ -378,6 +382,7 @@ func (q *UpdateExternalExtensionInfoCommand) GetArgs(ctx context.Context) (_ con
 			ExternalID:        q.ExternalID,
 			ExtensionNumber:   q.ExtensionNumber,
 			ExtensionPassword: q.ExtensionPassword,
+			TenantDomain:      q.TenantDomain,
 		}
 }
 
@@ -387,6 +392,7 @@ func (q *UpdateExternalExtensionInfoCommand) SetUpdateExternalExtensionInfoArgs(
 	q.ExternalID = args.ExternalID
 	q.ExtensionNumber = args.ExtensionNumber
 	q.ExtensionPassword = args.ExtensionPassword
+	q.TenantDomain = args.TenantDomain
 }
 
 func (q *UpdateHotlineInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateHotlineInfoArgs) {

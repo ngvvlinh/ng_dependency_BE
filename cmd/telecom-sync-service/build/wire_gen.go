@@ -60,7 +60,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	}
 	contactQuery := query3.NewContactQuery(mainDB)
 	contactQueryBus := query3.ContactQueryMessageBus(contactQuery)
-	etelecomAggregate := aggregate2.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager, queryBus)
+	etelecomAggregate := aggregate2.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager, queryBus, identityQueryBus)
 	etelecomCommandBus := aggregate2.AggregateMessageBus(etelecomAggregate)
 	v2 := BuildSyncs(ctx, mainDB, telecomManager, etelecomQueryBus, etelecomCommandBus, commandBus)
 	processManager := pm.New(busBus, commandBus, queryBus)

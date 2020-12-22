@@ -260,6 +260,7 @@ func convert_etelecommodel_Extension_etelecom_Extension(arg *etelecommodel.Exten
 	out.HotlineID = arg.HotlineID                 // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.TenantDomain = arg.TenantDomain           // simple assign
 	out.ExternalData = Convert_etelecommodel_ExtensionExternalData_etelecom_ExtensionExternalData(arg.ExternalData, nil)
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
@@ -296,6 +297,7 @@ func convert_etelecom_Extension_etelecommodel_Extension(arg *etelecom.Extension,
 	out.HotlineID = arg.HotlineID                 // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.TenantDomain = arg.TenantDomain           // simple assign
 	out.ExternalData = Convert_etelecom_ExtensionExternalData_etelecommodel_ExtensionExternalData(arg.ExternalData, nil)
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
@@ -332,6 +334,7 @@ func apply_etelecom_CreateExtensionArgs_etelecom_Extension(arg *etelecom.CreateE
 	out.HotlineID = arg.HotlineID                 // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.TenantDomain = ""                         // zero value
 	out.ExternalData = nil                        // zero value
 	out.CreatedAt = time.Time{}                   // zero value
 	out.UpdatedAt = time.Time{}                   // zero value

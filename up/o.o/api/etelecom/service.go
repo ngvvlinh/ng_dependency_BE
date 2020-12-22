@@ -52,6 +52,7 @@ type CreateExtensionArgs struct {
 	AccountID         dot.ID
 	ExtensionPassword string
 	HotlineID         dot.ID
+	OwnerID           dot.ID
 }
 
 func (args *CreateExtensionArgs) Validate() error {
@@ -128,6 +129,7 @@ type UpdateExternalExtensionInfoArgs struct {
 	ExternalID        string
 	ExtensionNumber   string
 	ExtensionPassword string
+	TenantDomain      string
 }
 
 type GetCallLogByExternalIDArgs struct {

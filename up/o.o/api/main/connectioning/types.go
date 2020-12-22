@@ -116,10 +116,11 @@ type ShopConnectionExternalData struct {
 }
 
 type ShopConnectionTelecomData struct {
-	Username    string
-	Password    string
-	TenantHost  string
-	TenantToken string
+	Username     string
+	Password     string
+	TenantHost   string
+	TenantToken  string
+	TenantDomain string
 }
 
 type ConnectionUpdatedEvent struct {

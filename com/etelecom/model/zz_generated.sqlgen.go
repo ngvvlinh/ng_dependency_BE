@@ -651,8 +651,8 @@ func (ms *CallLogHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type Extensions []*Extension
 
 const __sqlExtension_Table = "extension"
-const __sqlExtension_ListCols = "\"id\",\"user_id\",\"account_id\",\"hotline_id\",\"extension_number\",\"extension_password\",\"external_data\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlExtension_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"extension_number\" = EXCLUDED.\"extension_number\",\"extension_password\" = EXCLUDED.\"extension_password\",\"external_data\" = EXCLUDED.\"external_data\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlExtension_ListCols = "\"id\",\"user_id\",\"account_id\",\"hotline_id\",\"extension_number\",\"extension_password\",\"tenant_domain\",\"external_data\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlExtension_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"extension_number\" = EXCLUDED.\"extension_number\",\"extension_password\" = EXCLUDED.\"extension_password\",\"tenant_domain\" = EXCLUDED.\"tenant_domain\",\"external_data\" = EXCLUDED.\"external_data\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlExtension_Insert = "INSERT INTO \"extension\" (" + __sqlExtension_ListCols + ") VALUES"
 const __sqlExtension_Select = "SELECT " + __sqlExtension_ListCols + " FROM \"extension\""
 const __sqlExtension_Select_history = "SELECT " + __sqlExtension_ListCols + " FROM history.\"extension\""
@@ -721,6 +721,13 @@ func (m *Extension) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"tenant_domain": {
+			ColumnName:       "tenant_domain",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"external_data": {
 			ColumnName:       "external_data",
 			ColumnType:       "*ExtensionExternalData",
@@ -768,6 +775,7 @@ func (m *Extension) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.HotlineID,
 		core.String(m.ExtensionNumber),
 		core.String(m.ExtensionPassword),
+		core.String(m.TenantDomain),
 		core.JSON{m.ExternalData},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -783,6 +791,7 @@ func (m *Extension) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.HotlineID,
 		(*core.String)(&m.ExtensionNumber),
 		(*core.String)(&m.ExtensionPassword),
+		(*core.String)(&m.TenantDomain),
 		core.JSON{&m.ExternalData},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -824,7 +833,7 @@ func (_ *Extensions) SQLSelect(w SQLWriter) error {
 func (m *Extension) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -834,7 +843,7 @@ func (ms Extensions) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(10)
+		w.WriteMarkers(11)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -913,6 +922,14 @@ func (m *Extension) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ExtensionPassword)
 	}
+	if m.TenantDomain != "" {
+		flag = true
+		w.WriteName("tenant_domain")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.TenantDomain)
+	}
 	if m.ExternalData != nil {
 		flag = true
 		w.WriteName("external_data")
@@ -955,7 +972,7 @@ func (m *Extension) SQLUpdate(w SQLWriter) error {
 func (m *Extension) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -987,39 +1004,41 @@ func (m ExtensionHistory) ExtensionNumber() core.Interface {
 func (m ExtensionHistory) ExtensionPassword() core.Interface {
 	return core.Interface{m["extension_password"]}
 }
+func (m ExtensionHistory) TenantDomain() core.Interface { return core.Interface{m["tenant_domain"]} }
 func (m ExtensionHistory) ExternalData() core.Interface { return core.Interface{m["external_data"]} }
 func (m ExtensionHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
 func (m ExtensionHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 func (m ExtensionHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
 
 func (m *ExtensionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ExtensionHistory, 10)
+	res := make(ExtensionHistory, 11)
 	res["id"] = data[0]
 	res["user_id"] = data[1]
 	res["account_id"] = data[2]
 	res["hotline_id"] = data[3]
 	res["extension_number"] = data[4]
 	res["extension_password"] = data[5]
-	res["external_data"] = data[6]
-	res["created_at"] = data[7]
-	res["updated_at"] = data[8]
-	res["deleted_at"] = data[9]
+	res["tenant_domain"] = data[6]
+	res["external_data"] = data[7]
+	res["created_at"] = data[8]
+	res["updated_at"] = data[9]
+	res["deleted_at"] = data[10]
 	*m = res
 	return nil
 }
 
 func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ExtensionHistories, 0, 128)
@@ -1034,10 +1053,11 @@ func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["hotline_id"] = data[3]
 		m["extension_number"] = data[4]
 		m["extension_password"] = data[5]
-		m["external_data"] = data[6]
-		m["created_at"] = data[7]
-		m["updated_at"] = data[8]
-		m["deleted_at"] = data[9]
+		m["tenant_domain"] = data[6]
+		m["external_data"] = data[7]
+		m["created_at"] = data[8]
+		m["updated_at"] = data[9]
+		m["deleted_at"] = data[10]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

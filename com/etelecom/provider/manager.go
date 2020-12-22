@@ -59,13 +59,32 @@ func NewTelecomManager(
 }
 
 func (m *TelecomManager) GetTelecomDriver(ctx context.Context, connectionID, ownerID dot.ID) (providertypes.TelecomDriver, error) {
-	connection, err := m.connectionManager.GetConnectionByID(ctx, connectionID)
+	connection, shopConnection, err := m.GetTelecomConnection(ctx, connectionID, ownerID)
 	if err != nil {
 		return nil, err
 	}
 
+	telecomDriver, err := m.telecomDriver.GetTelecomDriver(m.env, connection, shopConnection)
+	if err != nil {
+		return nil, err
+	}
+
+	// update token
+	if err := m.generateToken(ctx, shopConnection, telecomDriver); err != nil {
+		return nil, err
+	}
+
+	return telecomDriver, nil
+}
+
+func (m *TelecomManager) GetTelecomConnection(ctx context.Context, connectionID, ownerID dot.ID) (*connectioning.Connection, *connectioning.ShopConnection, error) {
+	connection, err := m.connectionManager.GetConnectionByID(ctx, connectionID)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	if connection.ConnectionType != connection_type.Telecom {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "unsupported connection_type %v", connection.ConnectionType)
+		return nil, nil, cm.Errorf(cm.FailedPrecondition, nil, "unsupported connection_type %v", connection.ConnectionType)
 	}
 
 	// connection
@@ -80,24 +99,13 @@ func (m *TelecomManager) GetTelecomDriver(ctx context.Context, connectionID, own
 	}
 	shopConnection, err := m.connectionManager.GetShopConnection(ctx, getShopConnectionQuery)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if shopConnection.Status != status3.P || shopConnection.Token == "" {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection does not valid (check status or token)")
+		return nil, nil, cm.Errorf(cm.InvalidArgument, nil, "Connection does not valid (check status or token)")
 	}
-
-	telecomDriver, err := m.telecomDriver.GetTelecomDriver(m.env, connection, shopConnection)
-	if err != nil {
-		return nil, err
-	}
-
-	// update token
-	if err := m.generateToken(ctx, shopConnection, telecomDriver); err != nil {
-		return nil, err
-	}
-
-	return telecomDriver, nil
+	return connection, shopConnection, nil
 }
 
 func (m *TelecomManager) generateToken(ctx context.Context, shopConnection *connectioning.ShopConnection, telecomDriver providertypes.TelecomDriver) error {

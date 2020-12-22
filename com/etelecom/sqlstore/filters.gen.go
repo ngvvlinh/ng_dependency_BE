@@ -538,6 +538,25 @@ func (ft *ExtensionFilters) ByExtensionPasswordPtr(ExtensionPassword *string) *s
 	}
 }
 
+func (ft *ExtensionFilters) ByTenantDomain(TenantDomain string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "tenant_domain",
+		Value:  TenantDomain,
+		IsNil:  TenantDomain == "",
+	}
+}
+
+func (ft *ExtensionFilters) ByTenantDomainPtr(TenantDomain *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "tenant_domain",
+		Value:  TenantDomain,
+		IsNil:  TenantDomain == nil,
+		IsZero: TenantDomain != nil && (*TenantDomain) == "",
+	}
+}
+
 func (ft *ExtensionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

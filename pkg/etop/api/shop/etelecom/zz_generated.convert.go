@@ -259,6 +259,7 @@ func apply_etelecom_CreateExtensionArgs_shoptypes_Extension(arg *etelecom.Create
 	out.AccountID = arg.AccountID                 // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.TenantDomain = ""                         // zero value
 	out.HotlineID = arg.HotlineID                 // simple assign
 	out.CreatedAt = time.Time{}                   // zero value
 	out.UpdatedAt = time.Time{}                   // zero value
@@ -281,6 +282,7 @@ func convert_etelecom_Extension_shoptypes_Extension(arg *etelecom.Extension, out
 	out.AccountID = arg.AccountID                 // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.TenantDomain = arg.TenantDomain           // simple assign
 	out.HotlineID = arg.HotlineID                 // simple assign
 	out.CreatedAt = arg.CreatedAt                 // simple assign
 	out.UpdatedAt = arg.UpdatedAt                 // simple assign
@@ -316,6 +318,7 @@ func convert_shoptypes_Extension_etelecom_Extension(arg *shoptypes.Extension, ou
 	out.HotlineID = arg.HotlineID                 // simple assign
 	out.ExtensionNumber = arg.ExtensionNumber     // simple assign
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
+	out.TenantDomain = arg.TenantDomain           // simple assign
 	out.ExternalData = nil                        // zero value
 	out.CreatedAt = arg.CreatedAt                 // simple assign
 	out.UpdatedAt = arg.UpdatedAt                 // simple assign

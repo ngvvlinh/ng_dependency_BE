@@ -7759,6 +7759,9 @@
           "type": "string",
           "format": "int64"
         },
+        "tenant_domain": {
+          "type": "string"
+        },
         "updated_at": {
           "type": "string",
           "format": "date-time"

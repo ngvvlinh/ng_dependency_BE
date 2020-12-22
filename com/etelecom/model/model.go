@@ -38,6 +38,7 @@ type Extension struct {
 	HotlineID         dot.ID
 	ExtensionNumber   string
 	ExtensionPassword string
+	TenantDomain      string
 	ExternalData      *ExtensionExternalData `json:"external_data"`
 	CreatedAt         time.Time              `sq:"create"`
 	UpdatedAt         time.Time              `sq:"update"`

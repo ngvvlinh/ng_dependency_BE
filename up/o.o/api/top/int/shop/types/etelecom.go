@@ -43,6 +43,7 @@ type Extension struct {
 	AccountID         dot.ID    `json:"account_id"`
 	ExtensionNumber   string    `json:"extension_number"`
 	ExtensionPassword string    `json:"extension_password"`
+	TenantDomain      string    `json:"tenant_domain"`
 	HotlineID         dot.ID    `json:"hotline_id"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`

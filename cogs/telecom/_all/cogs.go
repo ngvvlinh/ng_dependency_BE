@@ -34,8 +34,19 @@ func (t TelecomDriver) GetTelecomDriver(
 		if shopConnection.Token == "" {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "token must not be null")
 		}
-		if shopConnection.TelecomData == nil {
+		exData := shopConnection.TelecomData
+		if exData == nil {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "telecom_data must not be null")
+		}
+		if exData.TenantToken == "" {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "ShopConnection missing tenant token. connection_id = %v, owner_id = %v", shopConnection.ConnectionID, shopConnection.OwnerID)
+		}
+		if exData.Username == "" || exData.Password == "" {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "ShopConnection Telecom missing username or password. connection_id = %v, owner_id = %v", shopConnection.ConnectionID, shopConnection.OwnerID)
+		}
+		// need tenant domain to telecom client sign in sip
+		if exData.TenantToken == "" || exData.TenantDomain == "" {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "ShopConnection Telecom missing tenant token or tenant domain. connection_id = %v, owner_id = %v", shopConnection.ConnectionID, shopConnection.OwnerID)
 		}
 		cfg := vhtclient.VHTAccountCfg{
 			Password:    shopConnection.TelecomData.Password,

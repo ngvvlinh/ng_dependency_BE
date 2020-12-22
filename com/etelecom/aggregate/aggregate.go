@@ -37,6 +37,7 @@ func NewEtelecomAggregate(
 	dbEtelecom com.EtelecomDB, eventBus capi.EventBus,
 	contactQS contact.QueryBus, telecomManager *telecomprovider.TelecomManager,
 	connectionQ connectioning.QueryBus,
+	identityQ identity.QueryBus,
 ) *EtelecomAggregate {
 	return &EtelecomAggregate{
 		txDB:            (*cmsql.Database)(dbEtelecom),
@@ -47,6 +48,7 @@ func NewEtelecomAggregate(
 		callLogStore:    sqlstore.NewCallLogStore(dbEtelecom),
 		telecomManager:  telecomManager,
 		connectionQuery: connectionQ,
+		identityQuery:   identityQ,
 	}
 }
 

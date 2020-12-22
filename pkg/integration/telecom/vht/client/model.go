@@ -22,11 +22,12 @@ const (
 )
 
 type VHTAccountCfg struct {
-	Username    string `json:"username"`
-	Password    string `json:"password"`
-	Token       string `json:"token"`
-	TenantHost  string `json:"tenant_host"`
-	TenantToken string `json:"tenant_token"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	Token        string `json:"token"`
+	TenantHost   string `json:"tenant_host"`
+	TenantToken  string `json:"tenant_token"`
+	TenantDomain string `json:"tenant_domain"`
 }
 
 type LoginRequest struct {

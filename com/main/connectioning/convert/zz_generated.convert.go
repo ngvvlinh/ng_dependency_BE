@@ -675,10 +675,11 @@ func Convert_connectioningmodel_ShopConnectionTelecomData_connectioning_ShopConn
 }
 
 func convert_connectioningmodel_ShopConnectionTelecomData_connectioning_ShopConnectionTelecomData(arg *connectioningmodel.ShopConnectionTelecomData, out *connectioning.ShopConnectionTelecomData) {
-	out.Username = arg.Username       // simple assign
-	out.Password = arg.Password       // simple assign
-	out.TenantHost = arg.TenantHost   // simple assign
-	out.TenantToken = arg.TenantToken // simple assign
+	out.Username = arg.Username         // simple assign
+	out.Password = arg.Password         // simple assign
+	out.TenantHost = arg.TenantHost     // simple assign
+	out.TenantToken = arg.TenantToken   // simple assign
+	out.TenantDomain = arg.TenantDomain // simple assign
 }
 
 func Convert_connectioningmodel_ShopConnectionTelecomDatas_connectioning_ShopConnectionTelecomDatas(args []*connectioningmodel.ShopConnectionTelecomData) (outs []*connectioning.ShopConnectionTelecomData) {
@@ -705,10 +706,11 @@ func Convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConn
 }
 
 func convert_connectioning_ShopConnectionTelecomData_connectioningmodel_ShopConnectionTelecomData(arg *connectioning.ShopConnectionTelecomData, out *connectioningmodel.ShopConnectionTelecomData) {
-	out.Username = arg.Username       // simple assign
-	out.Password = arg.Password       // simple assign
-	out.TenantHost = arg.TenantHost   // simple assign
-	out.TenantToken = arg.TenantToken // simple assign
+	out.Username = arg.Username         // simple assign
+	out.Password = arg.Password         // simple assign
+	out.TenantHost = arg.TenantHost     // simple assign
+	out.TenantToken = arg.TenantToken   // simple assign
+	out.TenantDomain = arg.TenantDomain // simple assign
 }
 
 func Convert_connectioning_ShopConnectionTelecomDatas_connectioningmodel_ShopConnectionTelecomDatas(args []*connectioning.ShopConnectionTelecomData) (outs []*connectioningmodel.ShopConnectionTelecomData) {

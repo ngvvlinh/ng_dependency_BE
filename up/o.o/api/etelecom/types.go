@@ -37,10 +37,12 @@ type Extension struct {
 	HotlineID         dot.ID
 	ExtensionNumber   string
 	ExtensionPassword string
-	ExternalData      *ExtensionExternalData
-	CreatedAt         time.Time
-	UpdatedAt         time.Time
-	DeletedAt         time.Time
+	// Dùng để đăng nhập vào SIP
+	TenantDomain string
+	ExternalData *ExtensionExternalData
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    time.Time
 }
 
 type ExtensionExternalData struct {
