@@ -20,6 +20,7 @@ type Credit struct {
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time
 	PaidAt    time.Time
+	Classify  credit_type.CreditClassify
 }
 
 // +sqlgen:           Credit as c

@@ -13,3 +13,20 @@ const (
 	// +enum=shop
 	Shop CreditType = 1
 )
+
+// +enum
+// +enum:zero=null
+type CreditClassify int
+
+type NullCreditClassify struct {
+	Enum  CreditClassify
+	Valid bool
+}
+
+const (
+	// +enum=shipping
+	CreditClassifyShipping CreditClassify = 0
+
+	// +enum=telecom
+	CreditClassifyTelecom CreditClassify = 1
+)

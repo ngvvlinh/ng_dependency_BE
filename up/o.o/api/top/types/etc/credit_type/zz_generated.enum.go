@@ -14,6 +14,136 @@ import (
 
 var __jsonNull = []byte("null")
 
+var enumCreditClassifyName = map[int]string{
+	0: "shipping",
+	1: "telecom",
+}
+
+var enumCreditClassifyValue = map[string]int{
+	"shipping": 0,
+	"telecom":  1,
+}
+
+func ParseCreditClassify(s string) (CreditClassify, bool) {
+	val, ok := enumCreditClassifyValue[s]
+	return CreditClassify(val), ok
+}
+
+func ParseCreditClassifyWithDefault(s string, d CreditClassify) CreditClassify {
+	val, ok := enumCreditClassifyValue[s]
+	if !ok {
+		return d
+	}
+	return CreditClassify(val)
+}
+
+func (e CreditClassify) Apply(d CreditClassify) CreditClassify {
+	if e == 0 {
+		return d
+	}
+	return e
+}
+
+func (e CreditClassify) Enum() int {
+	return int(e)
+}
+
+func (e CreditClassify) Name() string {
+	return enumCreditClassifyName[e.Enum()]
+}
+
+func (e CreditClassify) String() string {
+	s, ok := enumCreditClassifyName[e.Enum()]
+	if ok {
+		return s
+	}
+	return fmt.Sprintf("CreditClassify(%v)", e.Enum())
+}
+
+func (e CreditClassify) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + enumCreditClassifyName[e.Enum()] + "\""), nil
+}
+
+func (e *CreditClassify) UnmarshalJSON(data []byte) error {
+	value, err := mix.UnmarshalJSONEnumInt(enumCreditClassifyValue, data, "CreditClassify")
+	if err != nil {
+		return err
+	}
+	*e = CreditClassify(value)
+	return nil
+}
+
+func (e CreditClassify) Value() (driver.Value, error) {
+	if e == 0 {
+		return nil, nil
+	}
+	return e.String(), nil
+}
+
+func (e *CreditClassify) Scan(src interface{}) error {
+	value, err := mix.ScanEnumInt(enumCreditClassifyValue, src, "CreditClassify")
+	*e = (CreditClassify)(value)
+	return err
+}
+
+func (e CreditClassify) Wrap() NullCreditClassify {
+	return WrapCreditClassify(e)
+}
+
+func ParseCreditClassifyWithNull(s dot.NullString, d CreditClassify) NullCreditClassify {
+	if !s.Valid {
+		return NullCreditClassify{}
+	}
+	val, ok := enumCreditClassifyValue[s.String]
+	if !ok {
+		return d.Wrap()
+	}
+	return CreditClassify(val).Wrap()
+}
+
+func WrapCreditClassify(enum CreditClassify) NullCreditClassify {
+	return NullCreditClassify{Enum: enum, Valid: true}
+}
+
+func (n NullCreditClassify) Apply(s CreditClassify) CreditClassify {
+	if n.Valid {
+		return n.Enum
+	}
+	return s
+}
+
+func (n NullCreditClassify) Value() (driver.Value, error) {
+	if !n.Valid {
+		return nil, nil
+	}
+	return n.Enum.Value()
+}
+
+func (n *NullCreditClassify) Scan(src interface{}) error {
+	if src == nil {
+		n.Enum, n.Valid = 0, false
+		return nil
+	}
+	n.Valid = true
+	return n.Enum.Scan(src)
+}
+
+func (n NullCreditClassify) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return n.Enum.MarshalJSON()
+	}
+	return __jsonNull, nil
+}
+
+func (n *NullCreditClassify) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		n.Enum, n.Valid = 0, false
+		return nil
+	}
+	n.Valid = true
+	return n.Enum.UnmarshalJSON(data)
+}
+
 var enumCreditTypeName = map[int]string{
 	1: "shop",
 }

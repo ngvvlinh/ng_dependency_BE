@@ -8,6 +8,7 @@ package build
 import (
 	"context"
 	"o.o/api/main/accountshipnow"
+	"o.o/api/main/credit"
 	"o.o/api/services/affiliate"
 	"o.o/api/shopping/tradering"
 	"o.o/backend/cmd/fabo-server/config"
@@ -450,6 +451,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	dashboardQuery := query11.NewDashboardQuery(mainDB, store, locationQueryBus)
 	summaryQueryBus := query11.DashboardQueryMessageBus(dashboardQuery)
 	summarySummary := summary.New(mainDB)
+	creditQueryBus := _wireCreditQueryBusValue
 	moneyTxStore := &sqlstore.MoneyTxStore{
 		DB:               mainDB,
 		EventBus:         busBus,
@@ -462,6 +464,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:      session,
 		SummaryQuery: summaryQueryBus,
 		SummaryOld:   summarySummary,
+		CreditQuery:  creditQueryBus,
 		MoneyTxStore: moneyTxStoreInterface,
 	}
 	eventStream := eventstream.New(ctx)
@@ -684,5 +687,6 @@ var (
 	_wireQueryBusValue               = tradering.QueryBus{}
 	_wireAccountshipnowQueryBusValue = accountshipnow.QueryBus{}
 	_wireCommandBusValue             = accountshipnow.CommandBus{}
+	_wireCreditQueryBusValue         = credit.QueryBus{}
 	_wireAffiliateCommandBusValue    = affiliate.CommandBus{}
 )

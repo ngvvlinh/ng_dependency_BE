@@ -19,6 +19,7 @@ type Credit struct {
 	UpdatedAt time.Time
 	DeletedAt time.Time
 	PaidAt    time.Time
+	Classify  credit_type.CreditClassify
 }
 
 type CreditExtended struct {

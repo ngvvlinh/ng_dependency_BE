@@ -40,10 +40,11 @@ func (h AggregateHandler) HandleConfirmCredit(ctx context.Context, msg *ConfirmC
 }
 
 type CreateCreditCommand struct {
-	Amount int
-	ShopID dot.ID
-	Type   credit_type.CreditType
-	PaidAt time.Time
+	Amount   int
+	ShopID   dot.ID
+	Type     credit_type.CreditType
+	PaidAt   time.Time
+	Classify credit_type.NullCreditClassify
 
 	Result *CreditExtended `json:"-"`
 }
@@ -77,6 +78,17 @@ func (h QueryServiceHandler) HandleGetCredit(ctx context.Context, msg *GetCredit
 	return err
 }
 
+type GetTelecomUserBalanceQuery struct {
+	UserID dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetTelecomUserBalance(ctx context.Context, msg *GetTelecomUserBalanceQuery) (err error) {
+	msg.Result, err = h.inner.GetTelecomUserBalance(msg.GetArgs(ctx))
+	return err
+}
+
 type ListCreditsQuery struct {
 	ShopID dot.ID
 	Paging *meta.Paging
@@ -95,8 +107,9 @@ func (q *ConfirmCreditCommand) command() {}
 func (q *CreateCreditCommand) command()  {}
 func (q *DeleteCreditCommand) command()  {}
 
-func (q *GetCreditQuery) query()   {}
-func (q *ListCreditsQuery) query() {}
+func (q *GetCreditQuery) query()             {}
+func (q *GetTelecomUserBalanceQuery) query() {}
+func (q *ListCreditsQuery) query()           {}
 
 // implement conversion
 
@@ -116,10 +129,11 @@ func (q *ConfirmCreditCommand) SetConfirmCreditArgs(args *ConfirmCreditArgs) {
 func (q *CreateCreditCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCreditArgs) {
 	return ctx,
 		&CreateCreditArgs{
-			Amount: q.Amount,
-			ShopID: q.ShopID,
-			Type:   q.Type,
-			PaidAt: q.PaidAt,
+			Amount:   q.Amount,
+			ShopID:   q.ShopID,
+			Type:     q.Type,
+			PaidAt:   q.PaidAt,
+			Classify: q.Classify,
 		}
 }
 
@@ -128,6 +142,7 @@ func (q *CreateCreditCommand) SetCreateCreditArgs(args *CreateCreditArgs) {
 	q.ShopID = args.ShopID
 	q.Type = args.Type
 	q.PaidAt = args.PaidAt
+	q.Classify = args.Classify
 }
 
 func (q *DeleteCreditCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteCreditArgs) {
@@ -154,6 +169,11 @@ func (q *GetCreditQuery) GetArgs(ctx context.Context) (_ context.Context, _ *Get
 func (q *GetCreditQuery) SetGetCreditArgs(args *GetCreditArgs) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+}
+
+func (q *GetTelecomUserBalanceQuery) GetArgs(ctx context.Context) (_ context.Context, UserID dot.ID) {
+	return ctx,
+		q.UserID
 }
 
 func (q *ListCreditsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCreditsArgs) {
@@ -200,6 +220,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetCredit)
+	b.AddHandler(h.HandleGetTelecomUserBalance)
 	b.AddHandler(h.HandleListCredits)
 	return QueryBus{b}
 }

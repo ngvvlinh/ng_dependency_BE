@@ -6,3 +6,5 @@ ALTER TABLE call_log
     , ADD COLUMN duration_postage int;
 
 DROP TABLE summary;
+
+CREATE INDEX ON call_log(account_id, call_status);

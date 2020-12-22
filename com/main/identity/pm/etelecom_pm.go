@@ -30,7 +30,7 @@ func (m *ProcessManager) ExtensionCreatingEvent(ctx context.Context, event *etel
 		}
 	}
 	if !isPermision {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Chỉ chủ shop hoặc nhân viên CSKH mới được quyền tạo extension")
+		return cm.Errorf(cm.FailedPrecondition, nil, "Chỉ được tạo extension cho nhân viên có quyền CSKH")
 	}
 	return nil
 }

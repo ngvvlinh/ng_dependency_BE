@@ -4851,7 +4851,7 @@ func (s *SummaryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *SummaryServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Summary/CalcBalanceUser":
-		msg := &common.Empty{}
+		msg := &CalcBalanceUserRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

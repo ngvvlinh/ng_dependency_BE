@@ -241,7 +241,7 @@ type SummaryService interface {
 	SummarizeFulfillments(context.Context, *SummarizeFulfillmentsRequest) (*SummarizeFulfillmentsResponse, error)
 	SummarizeTopShip(context.Context, *SummarizeTopShipRequest) (*SummarizeTopShipResponse, error)
 	SummarizePOS(context.Context, *SummarizePOSRequest) (*SummarizePOSResponse, error)
-	CalcBalanceUser(context.Context, *cm.Empty) (*CalcBalanceUserResponse, error)
+	CalcBalanceUser(context.Context, *CalcBalanceUserRequest) (*CalcBalanceUserResponse, error)
 }
 
 // +apix:path=/shop.Export

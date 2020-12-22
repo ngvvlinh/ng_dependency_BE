@@ -586,6 +586,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	dashboardQuery := query19.NewDashboardQuery(mainDB, store, locationQueryBus)
 	summaryQueryBus := query19.DashboardQueryMessageBus(dashboardQuery)
 	summarySummary := summary.New(mainDB)
+	etelecomDB := databases.Etelecom
+	creditQueryService := credit.NewQueryCredit(busBus, mainDB, etelecomDB, queryBus)
+	creditQueryBus := credit.CreditQueryServiceMessageBus(creditQueryService)
 	moneyTxStore := &sqlstore.MoneyTxStore{
 		DB:               mainDB,
 		EventBus:         busBus,
@@ -598,6 +601,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:      session,
 		SummaryQuery: summaryQueryBus,
 		SummaryOld:   summarySummary,
+		CreditQuery:  creditQueryBus,
 		MoneyTxStore: moneyTxStoreInterface,
 	}
 	eventStream := eventstream.New(ctx)
@@ -797,7 +801,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SettingAggr:  settingCommandBus,
 		AddressQ:     addressQueryBus,
 	}
-	etelecomDB := databases.Etelecom
 	driver3 := _all.SupportedTelecomDriver(busBus)
 	queryService5 := query24.NewQueryService(etelecomDB, connectioningQueryBus)
 	etelecomQueryBus := query24.QueryServiceMessageBus(queryService5)
@@ -856,8 +859,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	creditAggregate := credit.NewAggregateCredit(busBus, mainDB, queryBus)
 	creditCommandBus := credit.CreditAggregateMessageBus(creditAggregate)
-	creditQueryService := credit.NewQueryCredit(busBus, mainDB, queryBus)
-	creditQueryBus := credit.CreditQueryServiceMessageBus(creditQueryService)
 	creditService := admin.CreditService{
 		Session:     session,
 		CreditAggr:  creditCommandBus,

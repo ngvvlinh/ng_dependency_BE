@@ -90,6 +90,7 @@ func convert_creditmodel_Credit_credit_Credit(arg *creditmodel.Credit, out *cred
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.DeletedAt = arg.DeletedAt // simple assign
 	out.PaidAt = arg.PaidAt       // simple assign
+	out.Classify = arg.Classify   // simple assign
 }
 
 func Convert_creditmodel_Credits_credit_Credits(args []*creditmodel.Credit) (outs []*credit.Credit) {
@@ -125,6 +126,7 @@ func convert_credit_Credit_creditmodel_Credit(arg *credit.Credit, out *creditmod
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.DeletedAt = arg.DeletedAt // simple assign
 	out.PaidAt = arg.PaidAt       // simple assign
+	out.Classify = arg.Classify   // simple assign
 }
 
 func Convert_credit_Credits_creditmodel_Credits(args []*credit.Credit) (outs []*creditmodel.Credit) {
@@ -160,6 +162,7 @@ func apply_credit_CreateCreditArgs_credit_Credit(arg *credit.CreateCreditArgs, o
 	out.UpdatedAt = time.Time{} // zero value
 	out.DeletedAt = time.Time{} // zero value
 	out.PaidAt = arg.PaidAt     // simple assign
+	out.Classify = 0            // types do not match
 }
 
 //-- convert o.o/api/main/credit.CreditExtended --//

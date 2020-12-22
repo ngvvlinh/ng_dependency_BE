@@ -3,9 +3,10 @@ package summary
 import (
 	"context"
 
+	"o.o/api/main/credit"
 	"o.o/api/summary"
 	api "o.o/api/top/int/shop"
-	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/credit_type"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -19,6 +20,7 @@ type SummaryService struct {
 
 	SummaryQuery summary.QueryBus
 	SummaryOld   *logicsummary.Summary
+	CreditQuery  credit.QueryBus
 
 	MoneyTxStore sqlstore.MoneyTxStoreInterface
 }
@@ -79,25 +81,39 @@ func (s *SummaryService) SummarizePOS(ctx context.Context, q *api.SummarizePOSRe
 	return result, nil
 }
 
-func (s *SummaryService) CalcBalanceUser(ctx context.Context, q *pbcm.Empty) (*api.CalcBalanceUserResponse, error) {
+func (s *SummaryService) CalcBalanceUser(ctx context.Context, q *api.CalcBalanceUserRequest) (*api.CalcBalanceUserResponse, error) {
 	shop := s.SS.Shop()
-	queryActual := &model.GetActualUserBalanceCommand{
-		UserID: shop.OwnerID,
-	}
-	if err := s.MoneyTxStore.CalcActualUserBalance(ctx, queryActual); err != nil {
-		return nil, err
+
+	// creditClassify: default is shipping
+	creditClassify := q.CreditClassify
+	result := &api.CalcBalanceUserResponse{}
+	if !creditClassify.Valid || creditClassify.Enum == credit_type.CreditClassifyShipping {
+		queryActual := &model.GetActualUserBalanceCommand{
+			UserID: shop.OwnerID,
+		}
+		if err := s.MoneyTxStore.CalcActualUserBalance(ctx, queryActual); err != nil {
+			return nil, err
+		}
+
+		queryAvailable := &model.GetAvailableUserBalanceCommand{
+			UserID: shop.OwnerID,
+		}
+		if err := s.MoneyTxStore.CalcAvailableUserBalance(ctx, queryAvailable); err != nil {
+			return nil, err
+		}
+		result.AvailableBalance = queryAvailable.Result.Amount
+		result.ActualBalance = queryActual.Result.Amount
 	}
 
-	queryAvailable := &model.GetAvailableUserBalanceCommand{
-		UserID: shop.OwnerID,
-	}
-	if err := s.MoneyTxStore.CalcAvailableUserBalance(ctx, queryAvailable); err != nil {
-		return nil, err
+	if !creditClassify.Valid || creditClassify.Enum == credit_type.CreditClassifyTelecom {
+		query := &credit.GetTelecomUserBalanceQuery{
+			UserID: shop.OwnerID,
+		}
+		if err := s.CreditQuery.Dispatch(ctx, query); err != nil {
+			return nil, err
+		}
+		result.TelecomBalance = query.Result
 	}
 
-	result := &api.CalcBalanceUserResponse{
-		AvailableBalance: queryAvailable.Result.Amount,
-		ActualBalance:    queryActual.Result.Amount,
-	}
 	return result, nil
 }

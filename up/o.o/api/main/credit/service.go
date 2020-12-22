@@ -20,14 +20,17 @@ type Aggregate interface {
 type QueryService interface {
 	GetCredit(context.Context, *GetCreditArgs) (*CreditExtended, error)
 	ListCredits(context.Context, *ListCreditsArgs) (*ListCreditsResponse, error)
+
+	GetTelecomUserBalance(ctx context.Context, UserID dot.ID) (int, error)
 }
 
 // +convert:create=Credit
 type CreateCreditArgs struct {
-	Amount int
-	ShopID dot.ID
-	Type   credit_type.CreditType
-	PaidAt time.Time
+	Amount   int
+	ShopID   dot.ID
+	Type     credit_type.CreditType
+	PaidAt   time.Time
+	Classify credit_type.NullCreditClassify
 }
 
 type ConfirmCreditArgs struct {
@@ -53,4 +56,10 @@ type ListCreditsArgs struct {
 type ListCreditsResponse struct {
 	Credits []*CreditExtended
 	Paging  *meta.PageInfo
+}
+
+type GetTotalCreditArgs struct {
+	UserID   dot.ID
+	ShopIDs  []dot.ID
+	Classify credit_type.CreditClassify
 }

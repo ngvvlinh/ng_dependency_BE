@@ -197,3 +197,22 @@ func (ft *CreditFilters) ByPaidAtPtr(PaidAt *time.Time) *sq.ColumnFilterPtr {
 		IsZero: PaidAt != nil && (*PaidAt).IsZero(),
 	}
 }
+
+func (ft *CreditFilters) ByClassify(Classify credit_type.CreditClassify) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "classify",
+		Value:  Classify,
+		IsNil:  Classify == 0,
+	}
+}
+
+func (ft *CreditFilters) ByClassifyPtr(Classify *credit_type.CreditClassify) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "classify",
+		Value:  Classify,
+		IsNil:  Classify == nil,
+		IsZero: Classify != nil && (*Classify) == 0,
+	}
+}

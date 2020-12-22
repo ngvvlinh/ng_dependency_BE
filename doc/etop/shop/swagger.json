@@ -5653,7 +5653,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/paCalcBalanceUserRequest"
             }
           }
         ],
@@ -6811,6 +6811,13 @@
         "warehouse",
         "shipto",
         "shipfrom"
+      ]
+    },
+    "aeCreditClassify": {
+      "type": "string",
+      "enum": [
+        "shipping",
+        "telecom"
       ]
     },
     "akReceiptRef": {
@@ -8554,13 +8561,27 @@
         }
       }
     },
+    "paCalcBalanceUserRequest": {
+      "type": "object",
+      "properties": {
+        "credit_classify": {
+          "$ref": "#/definitions/aeCreditClassify"
+        }
+      }
+    },
     "paCalcBalanceUserResponse": {
       "type": "object",
       "properties": {
         "actual_balance": {
+          "description": "Sử dụng cho vận chuyển\n",
           "type": "integer"
         },
         "available_balance": {
+          "description": "Sử dụng cho vận chuyển\n",
+          "type": "integer"
+        },
+        "telecom_balance": {
+          "description": "Sử dụng cho Telecom\n",
           "type": "integer"
         }
       }

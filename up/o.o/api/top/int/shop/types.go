@@ -10,6 +10,7 @@ import (
 	"o.o/api/top/int/types"
 	"o.o/api/top/int/types/spreadsheet"
 	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/credit_type"
 	"o.o/api/top/types/etc/customer_type"
 	"o.o/api/top/types/etc/gender"
 	"o.o/api/top/types/etc/ghn_note_code"
@@ -1398,9 +1399,19 @@ type ImportProductsResponse struct {
 
 func (m *ImportProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
+type CalcBalanceUserRequest struct {
+	CreditClassify credit_type.NullCreditClassify `json:"credit_classify"`
+}
+
+func (m *CalcBalanceUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type CalcBalanceUserResponse struct {
+	// Sử dụng cho vận chuyển
 	AvailableBalance int `json:"available_balance"`
-	ActualBalance    int `json:"actual_balance"`
+	// Sử dụng cho vận chuyển
+	ActualBalance int `json:"actual_balance"`
+	// Sử dụng cho Telecom
+	TelecomBalance int `json:"telecom_balance"`
 }
 
 func (m *CalcBalanceUserResponse) String() string { return jsonx.MustMarshalToString(m) }
