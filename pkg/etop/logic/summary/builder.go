@@ -8,15 +8,23 @@ import (
 )
 
 type SummaryQueryBuilder struct {
-	Table    string
-	Items    []*Subject
-	ScanArgs []interface{}
-	Pred     Predicator
+	Table        string
+	Items        []*Subject
+	ScanArgs     []interface{}
+	SummaryJoins []*SummaryJoin
+	Pred         Predicator
 }
 
 func NewSummaryQueryBuilder(table string) *SummaryQueryBuilder {
 	return &SummaryQueryBuilder{
 		Table: table,
+	}
+}
+
+func NewSummaryQueryWithJoinsBuilder(table string, joins []*SummaryJoin) *SummaryQueryBuilder {
+	return &SummaryQueryBuilder{
+		Table:        table,
+		SummaryJoins: joins,
 	}
 }
 
@@ -40,6 +48,15 @@ func (q *SummaryQueryBuilder) WriteSQLTo(w sq.SQLWriter) error {
 	w.TrimLast(2)
 	w.WriteRawString("\nFROM ")
 	w.WriteName(q.Table)
+
+	if len(q.SummaryJoins) != 0 {
+		w.WriteRawString("\n")
+		for _, summaryJoin := range q.SummaryJoins {
+			if err := summaryJoin.WriteSQLTo(w); err != nil {
+				return err
+			}
+		}
+	}
 	if q.Pred != nil {
 		w.WriteRawString(" WHERE ")
 		if err := q.Pred.WriteSQLTo(w); err != nil {
@@ -231,6 +248,28 @@ func (p ComposedPredicate) WriteSQLTo(w sq.SQLWriter) error {
 	}
 	w.TrimLast(7)
 	w.WriteRawString(")")
+	return nil
+}
+
+type SummaryJoin struct {
+	Table string
+	Preds []string
+}
+
+func (p *SummaryJoin) WriteSQLTo(w sq.SQLWriter) error {
+	w.WriteRawString("JOIN ")
+	w.WriteName(p.Table)
+
+	if len(p.Preds) != 0 {
+		w.WriteRawString(" ON ")
+		for i, pred := range p.Preds {
+			w.WriteRawString(pred)
+			if i != len(p.Preds)-1 {
+				w.WriteRawString(" AND ")
+			}
+		}
+	}
+	w.WriteRawString("\n")
 	return nil
 }
 

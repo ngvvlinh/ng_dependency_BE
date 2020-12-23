@@ -93,23 +93,19 @@ func (s *SummaryStore) SummarizeShop(ctx context.Context, req *summary.SummarySh
 		return nil, err
 	}
 
-	var tableFbUsersWereAdvised *smry.Table
-	{
-		tableFbUsersByMessage := buildTableFbUsersWereAdvisedByMessage(dateFrom, dateTo, userIDs)
-		if err := s.execQuery(ctx, []*smry.Table{tableFbUsersByMessage}, 0, "fb_external_message"); err != nil {
-			return nil, err
-		}
-		tableFbUsersWereAdvised = tableFbUsersByMessage.Clone("Khách hàng đã tư vấn", "khach_hang_da_tu_van", "datefrom-dateto")
-		tableFbUsersWereAdvised.Rows[0].Label = "Khách hàng đã tư vấn"
+	tableFbUsersByMessage := buildTableFbUsersWereAdvisedByMessage(dateFrom, dateTo, userIDs)
+	if err := s.execQuery(ctx, []*smry.Table{tableFbUsersByMessage}, 0, "fb_external_message"); err != nil {
+		return nil, err
+	}
 
-		tableFbUsersByComment := buildTableFbUsersWereAdvisedByComment(dateFrom, dateTo, userIDs)
-		if err := s.execQuery(ctx, []*smry.Table{tableFbUsersByComment}, 0, "fb_external_comment"); err != nil {
-			return nil, err
-		}
+	tableFbUsersByComment := buildTableFbUsersWereAdvisedByComment(dateFrom, dateTo, userIDs)
+	if err := s.execQuery(ctx, []*smry.Table{tableFbUsersByComment}, 0, "fb_external_comment"); err != nil {
+		return nil, err
+	}
 
-		for i := 0; i < len(tableFbUsersWereAdvised.Data); i++ {
-			tableFbUsersWereAdvised.Data[i].Value += tableFbUsersByComment.Data[i].Value
-		}
+	tableFbUsersWereAdvised, err := buildTableFbUsersWereAdvised(s.db, dateFrom, dateTo, userIDs)
+	if err != nil {
+		return nil, err
 	}
 
 	tableCustomerStaffs := buildTableNewCustomerByStaffs(dateFrom, dateTo, userIDs)
@@ -189,16 +185,16 @@ func (s SummaryStore) execQuery(ctx context.Context, tables []*smry.Table, shopI
 func buildTablesFulfillment(dateFrom, dateTo time.Time) (tablesFfm []*smry.Table) {
 	pred_doanh_thu_sản_phẩm := smry.Predicate{
 		Label: "Doanh thu sản phẩm",
-		Spec:  "status != -1 and shipping_state != cancelled",
-		Expr:  sq.NewExpr("status != -1 OR shipping_state != 'cancelled'"),
+		Spec:  "shop_confirm = 1 and shipping_code != null and shipping_state not in (default, cancelled) and status not in (0, -1)",
+		Expr:  sq.NewExpr("shop_confirm = 1 and shipping_code is not null and shipping_state not in ('default', 'cancelled') and status not in (0, -1)"),
 	}
 
 	row_doanh_thu_sản_phẩm := smry.NewSubject("Tổng danh thu sản phẩm", "", "SUM(basket_value)", "SUM(basket_value)", nil)
 
 	pred_doanh_thu_COD := smry.Predicate{
 		Label: "Doanh thu COD",
-		Spec:  "status != -1 or shipping_state != cancelled",
-		Expr:  sq.NewExpr("status <> -1 OR shipping_state <> 'cancelled'"),
+		Spec:  "shop_confirm = 1 and shipping_code != null and shipping_state not in (default, cancelled) and status not in (0, -1)",
+		Expr:  sq.NewExpr("shop_confirm = 1 and shipping_code is not null and shipping_state not in ('default', 'cancelled') and status not in (0, -1)"),
 	}
 
 	row_doanh_thu_COD := smry.NewSubject("Tổng doanh thu COD", "", "SUM(total_cod_amount)", "SUM(total_cod_amount)", nil)
@@ -350,16 +346,16 @@ func buildTableFfmByStaffs(
 ) (tableFfmStaffs *smry.Table) {
 	pred_doanh_thu_sản_phẩm := smry.Predicate{
 		Label: "Doanh thu sản phẩm",
-		Spec:  "status != -1 and shipping_state != cancelled",
-		Expr:  sq.NewExpr("status != -1 OR shipping_state != 'cancelled'"),
+		Spec:  "shop_confirm = 1 and shipping_code != null and shipping_state not in (default, cancelled) and status not in (0, -1)",
+		Expr:  sq.NewExpr("shop_confirm = 1 and shipping_code is not null and shipping_state not in ('default', 'cancelled') and status not in (0, -1)"),
 	}
 
 	row_doanh_thu_sản_phẩm := smry.NewSubject("doanh_thu_san_pham", "", "SUM(basket_value)", "SUM(basket_value)", nil)
 
 	pred_doanh_thu_COD := smry.Predicate{
 		Label: "Doanh thu COD",
-		Spec:  "status != -1 or shipping_state != cancelled",
-		Expr:  sq.NewExpr("status <> -1 OR shipping_state <> 'cancelled'"),
+		Spec:  "shop_confirm = 1 and shipping_code != null and shipping_state not in (default, cancelled) and status not in (0, -1)",
+		Expr:  sq.NewExpr("shop_confirm = 1 and shipping_code is not null and shipping_state not in ('default', 'cancelled') and status not in (0, -1)"),
 	}
 
 	row_doanh_thu_COD := smry.NewSubject("Tổng doanh thu COD", "", "SUM(total_cod_amount)", "SUM(total_cod_amount)", nil)
@@ -554,6 +550,95 @@ func buildTableFbUsersWereAdvisedByComment(
 	return smry.BuildTable(rows, cols, "Kết quả tổng quát", "fb_external_comment", "datefrom-dateto", "total")
 }
 
+func buildTableFbUsersWereAdvised(
+	db *cmsql.Database, dateFrom, dateTo time.Time, userIDs []dot.ID,
+) (*smry.Table, error) {
+	pred_khách_hàng_đã_tư_vấn := smry.Predicate{
+		Label: "Khách hàng đã tư vấn",
+		Spec:  "deleted is null",
+		Expr:  sq.NewExpr("fb_external_message.deleted_at is null and fb_external_comment.deleted_at is null"),
+	}
+
+	row_tổng := smry.NewSubject("Tổng khách hàng đã tư vấn", "", "count(khach_hang_da_tu_van)", "count(khach_hang_da_tu_van)", nil)
+
+	rows := []smry.Subject{
+		row_tổng.Combine("Khách hàng đã tư vấn", pred_khách_hàng_đã_tư_vấn),
+	}
+
+	var cols []smry.Predicator
+	for _, userID := range userIDs {
+		cols = append(cols, smry.Predicate{
+			Label: fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+			Spec:  fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+			Expr:  sq.NewExpr("user_id = ?, from(?) - to(?)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+		})
+	}
+
+	table := smry.BuildTable(rows, cols, "Kết quả tổng quát", "khach_hang_da_tu_van", "datefrom-dateto", "total")
+
+	mapCreatedByAndMapFbUserID := make(map[dot.ID]map[dot.ID]bool)
+	{
+		dbRows, err := db.
+			SQL("SELECT DISTINCT fec.external_parent_user_id, fec.created_by "+
+				"FROM fb_external_comment fec ").
+			Where("fec.external_created_time >= ? AND fec.external_created_time < ? ", dateFrom, dateTo).
+			In("fec.created_by", userIDs).
+			Clone().
+			Query()
+		if err != nil {
+			return nil, err
+		}
+
+		var fbUserID, createdBy dot.ID
+		for dbRows.Next() {
+			err := dbRows.Scan(&fbUserID, &createdBy)
+			if err != nil {
+				return nil, err
+			}
+
+			if _, ok := mapCreatedByAndMapFbUserID[createdBy]; !ok {
+				mapCreatedByAndMapFbUserID[createdBy] = make(map[dot.ID]bool)
+			}
+			mapCreatedByAndMapFbUserID[createdBy][fbUserID] = true
+		}
+	}
+
+	{
+		dbRows, err := db.
+			SQL("SELECT DISTINCT fec.external_user_id, fem.created_by "+
+				"FROM fb_external_message fem "+
+				"JOIN fb_external_conversation fec on fem.external_conversation_id = fec.external_id ").
+			Where("fem.external_created_time >= ? AND fem.external_created_time < ?", dateFrom, dateTo).
+			In("fem.created_by", userIDs).
+			Clone().
+			Query()
+		if err != nil {
+			return nil, err
+		}
+
+		var fbUserID, createdBy dot.ID
+		for dbRows.Next() {
+			err := dbRows.Scan(&fbUserID, &createdBy)
+			if err != nil {
+				return nil, err
+			}
+
+			if _, ok := mapCreatedByAndMapFbUserID[createdBy]; !ok {
+				mapCreatedByAndMapFbUserID[createdBy] = make(map[dot.ID]bool)
+			}
+			mapCreatedByAndMapFbUserID[createdBy][fbUserID] = true
+		}
+	}
+
+	for i, userID := range userIDs {
+		if mapFbUserID, ok := mapCreatedByAndMapFbUserID[userID]; ok {
+			table.Data[i].Value = int64(len(mapFbUserID))
+		}
+	}
+
+	return table, nil
+}
+
 func getToday(now time.Time) (from, to time.Time) {
 	dateFrom, dateTo := now, now
 	dateFrom = dateFrom.Add(-time.Duration(dateFrom.Second()) * time.Second)
@@ -561,4 +646,12 @@ func getToday(now time.Time) (from, to time.Time) {
 	dateFrom = dateFrom.Add(-time.Duration(dateFrom.Hour()) * time.Hour)
 
 	return dateFrom, dateTo
+}
+
+func convertIDsToInt64s(ids []dot.ID) []int64 {
+	res := make([]int64, 0, len(ids))
+	for _, id := range ids {
+		res = append(res, id.Int64())
+	}
+	return res
 }
