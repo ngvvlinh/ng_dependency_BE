@@ -59,7 +59,9 @@ func (a CreditAggregate) CreateCredit(ctx context.Context, args *credit.CreateCr
 	if args.Amount == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing amount", nil)
 	}
-	shopCreditAmount, err := a.CreditStore(ctx).ShopID(args.ShopID).SumCredit()
+
+	creditClassify := args.Classify
+	shopCreditAmount, err := a.CreditStore(ctx).ShopID(args.ShopID).Classify(creditClassify).SumCredit()
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +101,9 @@ func (a CreditAggregate) ConfirmCredit(ctx context.Context, args *credit.Confirm
 	if err != nil {
 		return nil, err
 	}
-	shopCreditAmount, err := a.CreditStore(ctx).ShopID(creditValue.ShopID).SumCredit()
+
+	creditClassify := creditValue.Classify
+	shopCreditAmount, err := a.CreditStore(ctx).ShopID(creditValue.ShopID).Classify(creditClassify).SumCredit()
 	if err != nil {
 		return nil, err
 	}

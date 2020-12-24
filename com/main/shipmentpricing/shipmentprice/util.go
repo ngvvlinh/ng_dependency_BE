@@ -5,6 +5,7 @@ import (
 
 	"o.o/backend/com/main/shipmentpricing/util"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
+	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi/dot"
 )
@@ -27,7 +28,7 @@ func getActiveShipmentPricesRedisKey(ctx context.Context, shipmentPriceListID do
 	if shipmentPriceListID != 0 {
 		key += ":pricelistid" + shipmentPriceListID.String()
 	}
-	return key
+	return concatWithEnvKey(key)
 }
 
 func DeleteRedisCache(ctx context.Context, redisStore redis.Store, shipmentPriceListID dot.ID) error {
@@ -40,4 +41,11 @@ func DeleteRedisCache(ctx context.Context, redisStore redis.Store, shipmentPrice
 		}
 	}
 	return redisStore.Del(key1)
+}
+
+func concatWithEnvKey(key string) string {
+	if cmenv.Env() != cmenv.EnvProd {
+		key += ":" + cmenv.Env().String()
+	}
+	return key
 }

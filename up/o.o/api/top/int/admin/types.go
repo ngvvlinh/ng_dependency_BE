@@ -398,10 +398,11 @@ type GetCreditsRequest struct {
 func (m *GetCreditsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateCreditRequest struct {
-	Amount int                    `json:"amount"`
-	ShopId dot.ID                 `json:"shop_id"`
-	Type   credit_type.CreditType `json:"type"`
-	PaidAt dot.Time               `json:"paid_at"`
+	Amount   int                            `json:"amount"`
+	ShopId   dot.ID                         `json:"shop_id"`
+	Type     credit_type.CreditType         `json:"type"`
+	PaidAt   dot.Time                       `json:"paid_at"`
+	Classify credit_type.NullCreditClassify `json:"classify"`
 }
 
 func (m *CreateCreditRequest) String() string { return jsonx.MustMarshalToString(m) }

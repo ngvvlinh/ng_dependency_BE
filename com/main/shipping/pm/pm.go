@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/main/connectioning"
+	"o.o/api/main/credit"
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
 	shippingtypes "o.o/api/main/shipping/types"
@@ -17,7 +18,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
-	etopmodel "o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
 	"o.o/capi/dot"
@@ -32,8 +32,8 @@ type ProcessManager struct {
 	redisStore      redis.Store
 	connectionQuery connectioning.QueryBus
 
-	ShopStore    sqlstore.ShopStoreInterface
-	MoneyTxStore sqlstore.MoneyTxStoreInterface
+	ShopStore   sqlstore.ShopStoreInterface
+	CreditQuery credit.QueryBus
 }
 
 func New(
@@ -43,7 +43,7 @@ func New(
 	redisS redis.Store,
 	connectionQ connectioning.QueryBus,
 	ShopStore sqlstore.ShopStoreInterface,
-	MoneyTxStore sqlstore.MoneyTxStoreInterface,
+	CreditQ credit.QueryBus,
 ) *ProcessManager {
 	p := &ProcessManager{
 		eventBus:        eventBus,
@@ -52,7 +52,7 @@ func New(
 		redisStore:      redisS,
 		connectionQuery: connectionQ,
 		ShopStore:       ShopStore,
-		MoneyTxStore:    MoneyTxStore,
+		CreditQuery:     CreditQ,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -293,23 +293,23 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 	if err := m.ShopStore.GetShop(ctx, queryShop); err != nil {
 		return err
 	}
-	query := &etopmodel.GetActualUserBalanceCommand{
+	query := &credit.GetShippingUserBalanceQuery{
 		UserID: queryShop.Result.OwnerID,
 	}
-	if err := m.MoneyTxStore.CalcActualUserBalance(ctx, query); err != nil {
+	if err := m.CreditQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	balance := query.Result.Amount
+	actualBalance := query.Result.ShippingActualUserBalance
 
 	// HCM, HN
 	if cm.StringsContain(provinces, fromAddress.ProvinceCode) {
-		if balance-event.ShippingFee < MinShopBalance {
+		if actualBalance-event.ShippingFee < MinShopBalance {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
 		}
 		return nil
 	}
 
-	if balance-event.ShippingFee < 0 {
+	if actualBalance-event.ShippingFee < 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Số dư của bạn không đủ để tạo đơn. Vui lòng nạp thêm tiền.")
 	}
 	return nil

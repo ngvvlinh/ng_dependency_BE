@@ -22,6 +22,7 @@ type QueryService interface {
 	ListCredits(context.Context, *ListCreditsArgs) (*ListCreditsResponse, error)
 
 	GetTelecomUserBalance(ctx context.Context, UserID dot.ID) (int, error)
+	GetShippingUserBalance(ctx context.Context, UserID dot.ID) (*GetShippingUserBalanceResponse, error)
 }
 
 // +convert:create=Credit
@@ -30,7 +31,7 @@ type CreateCreditArgs struct {
 	ShopID   dot.ID
 	Type     credit_type.CreditType
 	PaidAt   time.Time
-	Classify credit_type.NullCreditClassify
+	Classify credit_type.CreditClassify
 }
 
 type ConfirmCreditArgs struct {
@@ -62,4 +63,9 @@ type GetTotalCreditArgs struct {
 	UserID   dot.ID
 	ShopIDs  []dot.ID
 	Classify credit_type.CreditClassify
+}
+
+type GetShippingUserBalanceResponse struct {
+	ShippingActualUserBalance    int
+	ShippingAvailableUserBalance int
 }

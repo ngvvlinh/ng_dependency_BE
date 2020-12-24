@@ -8,18 +8,21 @@ import (
 	"o.o/api/main/connectioning"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cipherx"
+	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/redis"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
 
 const (
-	DefaultTTl     = 2 * 60 * 60
-	SecretKey      = "connectionsecretkey"
-	VersionCaching = "1.2"
+	DefaultTTl = 2 * 60 * 60
+	SecretKey  = "connectionsecretkey"
 )
 
-var ll = l.New()
+var (
+	ll             = l.New()
+	VersionCaching = "1.2"
+)
 
 type ConnectionManager struct {
 	redisStore   redis.Store
@@ -110,15 +113,25 @@ func GetRedisShopConnectionKey(args GetShopConnectionArgs) string {
 		shopID = 0
 		ownerID = 0
 	}
-	return fmt.Sprintf("shopConn:%v:sid:%v:uid:%v:connid:%v", VersionCaching, shopID.String(), ownerID.String(), args.ConnectionID.String())
+	key := fmt.Sprintf("shopConn:%v:sid:%v:uid:%v:connid:%v", VersionCaching, shopID.String(), ownerID.String(), args.ConnectionID.String())
+	return concatWithEnvKey(key)
 }
 
 func GetRedisConnectionKeyByID(connID dot.ID) string {
-	return fmt.Sprintf("conn:id:%v:%v", VersionCaching, connID.String())
+	key := fmt.Sprintf("conn:id:%v:%v", VersionCaching, connID.String())
+	return concatWithEnvKey(key)
 }
 
 func getRedisConnectionKeyByCode(code string) string {
-	return fmt.Sprintf("conn:code:%v:%v", VersionCaching, code)
+	key := fmt.Sprintf("conn:code:%v:%v", VersionCaching, code)
+	return concatWithEnvKey(key)
+}
+
+func concatWithEnvKey(key string) string {
+	if cmenv.Env() != cmenv.EnvProd {
+		key += ":" + cmenv.Env().String()
+	}
+	return key
 }
 
 func (m *ConnectionManager) loadRedis(key string, v interface{}) error {

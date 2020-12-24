@@ -37,13 +37,6 @@ func ParseCreditClassifyWithDefault(s string, d CreditClassify) CreditClassify {
 	return CreditClassify(val)
 }
 
-func (e CreditClassify) Apply(d CreditClassify) CreditClassify {
-	if e == 0 {
-		return d
-	}
-	return e
-}
-
 func (e CreditClassify) Enum() int {
 	return int(e)
 }
@@ -74,9 +67,6 @@ func (e *CreditClassify) UnmarshalJSON(data []byte) error {
 }
 
 func (e CreditClassify) Value() (driver.Value, error) {
-	if e == 0 {
-		return nil, nil
-	}
 	return e.String(), nil
 }
 

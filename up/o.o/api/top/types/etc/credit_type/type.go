@@ -15,7 +15,6 @@ const (
 )
 
 // +enum
-// +enum:zero=null
 type CreditClassify int
 
 type NullCreditClassify struct {

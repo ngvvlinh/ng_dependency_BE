@@ -88,24 +88,17 @@ func (s *SummaryService) CalcBalanceUser(ctx context.Context, q *api.CalcBalance
 	creditClassify := q.CreditClassify
 	result := &api.CalcBalanceUserResponse{}
 	if !creditClassify.Valid || creditClassify.Enum == credit_type.CreditClassifyShipping {
-		queryActual := &model.GetActualUserBalanceCommand{
+		query := &credit.GetShippingUserBalanceQuery{
 			UserID: shop.OwnerID,
 		}
-		if err := s.MoneyTxStore.CalcActualUserBalance(ctx, queryActual); err != nil {
+		if err := s.CreditQuery.Dispatch(ctx, query); err != nil {
 			return nil, err
 		}
-
-		queryAvailable := &model.GetAvailableUserBalanceCommand{
-			UserID: shop.OwnerID,
-		}
-		if err := s.MoneyTxStore.CalcAvailableUserBalance(ctx, queryAvailable); err != nil {
-			return nil, err
-		}
-		result.AvailableBalance = queryAvailable.Result.Amount
-		result.ActualBalance = queryActual.Result.Amount
+		result.ActualBalance = query.Result.ShippingActualUserBalance
+		result.AvailableBalance = query.Result.ShippingAvailableUserBalance
 	}
 
-	if !creditClassify.Valid || creditClassify.Enum == credit_type.CreditClassifyTelecom {
+	if creditClassify.Valid && creditClassify.Enum == credit_type.CreditClassifyTelecom {
 		query := &credit.GetTelecomUserBalanceQuery{
 			UserID: shop.OwnerID,
 		}

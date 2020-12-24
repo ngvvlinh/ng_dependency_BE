@@ -43,7 +43,7 @@ type etopDriver struct {
 
 func getTelecomURL(env cmenv.EnvType) string {
 	if env == cmenv.EnvProd {
-		return "https://etelecom.vn"
+		return "https://shop.etelecom.vn"
 	}
-	return "https://etelecom." + baseHost(env)
+	return "https://shop-etelecom." + baseHost(env)
 }

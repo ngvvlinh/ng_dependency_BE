@@ -3567,6 +3567,13 @@
         "shipfrom"
       ]
     },
+    "aeCreditClassify": {
+      "type": "string",
+      "enum": [
+        "shipping",
+        "telecom"
+      ]
+    },
     "aeCreditType": {
       "type": "string",
       "enum": [
@@ -3797,6 +3804,9 @@
       "properties": {
         "amount": {
           "type": "integer"
+        },
+        "classify": {
+          "$ref": "#/definitions/aeCreditClassify"
         },
         "created_at": {
           "type": "string",
@@ -7927,6 +7937,9 @@
       "properties": {
         "amount": {
           "type": "integer"
+        },
+        "classify": {
+          "$ref": "#/definitions/aeCreditClassify"
         },
         "paid_at": {
           "type": "string",

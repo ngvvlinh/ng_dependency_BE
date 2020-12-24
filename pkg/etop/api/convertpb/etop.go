@@ -864,6 +864,7 @@ func Convert_core_CreditExtended_to_api_Credit(item *credit.CreditExtended) *eto
 		UpdatedAt: cmapi.PbTime(item.UpdatedAt),
 		PaidAt:    cmapi.PbTime(item.PaidAt),
 		Status:    item.Status,
+		Classify:  item.Classify,
 	}
 }
 

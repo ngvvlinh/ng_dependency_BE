@@ -7,6 +7,7 @@ import (
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/etop"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/credit_type"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -26,10 +27,11 @@ func (s *CreditService) Clone() admin.CreditService {
 
 func (s *CreditService) CreateCredit(ctx context.Context, q *admin.CreateCreditRequest) (*etop.Credit, error) {
 	cmd := &credit.CreateCreditCommand{
-		Amount: q.Amount,
-		ShopID: q.ShopId,
-		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
-		Type:   q.Type,
+		Amount:   q.Amount,
+		ShopID:   q.ShopId,
+		PaidAt:   cmapi.PbTimeToModel(q.PaidAt),
+		Type:     q.Type,
+		Classify: q.Classify.Apply(credit_type.CreditClassifyShipping),
 	}
 
 	if err := s.CreditAggr.Dispatch(ctx, cmd); err != nil {

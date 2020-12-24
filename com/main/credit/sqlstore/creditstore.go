@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"o.o/api/main/credit"
+	"o.o/api/top/types/etc/credit_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/main/credit/convert"
 	"o.o/backend/com/main/credit/model"
@@ -65,6 +66,16 @@ func (s *CreditStore) IDs(ids ...dot.ID) *CreditStore {
 
 func (s *CreditStore) ShopID(id dot.ID) *CreditStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
+	return s
+}
+
+func (s *CreditStore) ShopIDs(ids ...dot.ID) *CreditStore {
+	s.preds = append(s.preds, sq.In("shop_id", ids))
+	return s
+}
+
+func (s *CreditStore) Classify(classify credit_type.CreditClassify) *CreditStore {
+	s.preds = append(s.preds, s.ft.ByClassifyPtr(&classify))
 	return s
 }
 

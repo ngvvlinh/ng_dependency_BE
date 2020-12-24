@@ -1324,7 +1324,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager9 := pm10.New(busBus, receiptingQueryBus, receiptingCommandBus, ledgeringQueryBus, ledgeringCommandBus, queryBus, moneyTxStoreInterface, orderStoreInterface)
 	processManager10 := pm11.New(busBus, refundQueryBus, receiptingQueryBus, refundCommandBus)
 	processManager11 := pm12.New(busBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, shipnowManager, queryBus, addressQueryBus, accountshipnowQueryBus, accountshipnowCommandBus, connectioningCommandBus)
-	processManager12 := pm13.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, moneyTxStoreInterface)
+	processManager12 := pm13.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, creditQueryBus)
 	processManager13 := pm14.New(busBus, affiliateCommandBus)
 	traderAgg := aggregate27.NewTraderAgg(mainDB)
 	traderingCommandBus := aggregate27.TraderAggMessageBus(traderAgg)

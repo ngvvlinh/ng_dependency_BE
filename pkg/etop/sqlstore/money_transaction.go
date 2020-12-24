@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"o.o/api/main/authorization"
 	"o.o/api/main/moneytx"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
@@ -75,10 +74,6 @@ var filterMoneyTransactionWhitelist = sqlstore.FilterWhitelist{
 }
 
 type MoneyTxStoreInterface interface {
-	CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceCommand) error
-
-	CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBalanceCommand) error
-
 	CalcBalanceShop(ctx context.Context, cmd *model.GetBalanceShopCommand) error
 
 	GetMoneyTransaction(ctx context.Context, query *modelx.GetMoneyTransaction) error
@@ -1414,110 +1409,6 @@ func (st *MoneyTxStore) CalcBalanceShop(ctx context.Context, cmd *model.GetBalan
 		cmd.Result.Amount = int(totalCODAmount.Int64 - totalShippingFee.Int64 + totalCredit.Int64)
 		return nil
 	})
-}
-
-/*
-	CalcAvailableUserBalance: tính số dư dự kiến user (không tính những ffm đã thanh toán)
-
-	(1) COD của tất cả Shop (ffm) khác trạng thái hủy và không phải là đơn trả hàng (status != -1 AND status != 0 AND shipping_status != -2 AND etop_payment_status != 1)
-	(2) Phí giao hàng (ffm) khác trạng thái hủy (đã bao gồm đơn trả hàng)
-	(3) Credit
-
-	số dư = (1) + (3) - (2)
-*/
-func (st *MoneyTxStore) CalcAvailableUserBalance(ctx context.Context, cmd *model.GetAvailableUserBalanceCommand) error {
-	if cmd.UserID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing user ID")
-	}
-	query := &identitymodelx.GetAllAccountUsersQuery{
-		UserIDs: []dot.ID{cmd.UserID},
-		Role:    authorization.RoleShopOwner,
-	}
-	if err := st.AccountUserStore.GetAllAccountUsers(ctx, query); err != nil {
-		return err
-	}
-	accounts := query.Result
-	var shopIDs = make([]dot.ID, len(accounts))
-	for i, a := range accounts {
-		shopIDs[i] = a.AccountID
-	}
-
-	var totalCODAmount, totalShippingFee, totalCredit sql.NullInt64
-	if err := st.db.SQL("SELECT SUM(total_cod_amount) from fulfillment").
-		In("shop_id", shopIDs).
-		Where("status not in (-1, 0) AND etop_payment_status != 1").
-		Where("shipping_status != -2").
-		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
-		Scan(&totalCODAmount); err != nil {
-		return err
-	}
-	if err := st.db.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
-		In("shop_id", shopIDs).
-		Where("status not in (-1, 0) AND etop_payment_status != 1").
-		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
-		Scan(&totalShippingFee); err != nil {
-		return err
-	}
-	if err := st.db.SQL("SELECT SUM(amount) from credit").
-		In("shop_id", shopIDs).
-		Where("status = 1 AND paid_at is not NULL").
-		Scan(&totalCredit); err != nil {
-		return err
-	}
-
-	cmd.Result.Amount = int(totalCODAmount.Int64 - totalShippingFee.Int64 + totalCredit.Int64)
-	return nil
-}
-
-/*
-	CalcActualUserBalance: tính số dư thực tế user (không tính những ffm đã thanh toán)
-
-	- Tính theo user
-	- COD: Chỉ tính đơn giao thành công và chưa đối soát
-	- Cước phí: đơn có trạng thái khác hủy (chưa đối soát)
-*/
-func (st *MoneyTxStore) CalcActualUserBalance(ctx context.Context, cmd *model.GetActualUserBalanceCommand) error {
-	if cmd.UserID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing user ID")
-	}
-	query := &identitymodelx.GetAllAccountUsersQuery{
-		UserIDs: []dot.ID{cmd.UserID},
-		Role:    authorization.RoleShopOwner,
-	}
-	if err := st.AccountUserStore.GetAllAccountUsers(ctx, query); err != nil {
-		return err
-	}
-	accounts := query.Result
-	var shopIDs = make([]dot.ID, len(accounts))
-	for i, a := range accounts {
-		shopIDs[i] = a.AccountID
-	}
-
-	var totalCODAmount, totalShippingFee, totalCredit sql.NullInt64
-	if err := st.db.SQL("SELECT SUM(total_cod_amount) from fulfillment").
-		In("shop_id", shopIDs).
-		Where("status not in (0,-1) AND etop_payment_status != 1").
-		Where("shipping_status = 1").
-		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
-		Scan(&totalCODAmount); err != nil {
-		return err
-	}
-	if err := st.db.SQL("SELECT SUM(shipping_fee_shop) from fulfillment").
-		In("shop_id", shopIDs).
-		Where("status not in (0,-1) AND etop_payment_status != 1").
-		Where("connection_method IS NULL OR connection_method = ?", connection_type.ConnectionMethodBuiltin).
-		Scan(&totalShippingFee); err != nil {
-		return err
-	}
-	if err := st.db.SQL("SELECT SUM(amount) from credit").
-		In("shop_id", shopIDs).
-		Where("status = 1 AND paid_at is not NULL").
-		Scan(&totalCredit); err != nil {
-		return err
-	}
-
-	cmd.Result.Amount = int(totalCODAmount.Int64 - totalShippingFee.Int64 + totalCredit.Int64)
-	return nil
 }
 
 // MoneyTransactionShippingEtop

@@ -162,7 +162,7 @@ func apply_credit_CreateCreditArgs_credit_Credit(arg *credit.CreateCreditArgs, o
 	out.UpdatedAt = time.Time{} // zero value
 	out.DeletedAt = time.Time{} // zero value
 	out.PaidAt = arg.PaidAt     // simple assign
-	out.Classify = 0            // types do not match
+	out.Classify = arg.Classify // simple assign
 }
 
 //-- convert o.o/api/main/credit.CreditExtended --//
