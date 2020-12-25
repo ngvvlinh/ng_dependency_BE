@@ -82,7 +82,7 @@ func NewServers(
 	accountshipnowService *accountshipnow.AccountShipnowService,
 	contactService *contact.ContactService,
 	settingService *setting.SettingService,
-	extensionService *etelecom.ExtensionService,
+	etelecomService *etelecom.EtelecomService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -128,7 +128,7 @@ func NewServers(
 		accountshipnowService.Clone,
 		contactService.Clone,
 		settingService.Close,
-		extensionService.Clone,
+		etelecomService.Clone,
 	)
 	return servers
 }

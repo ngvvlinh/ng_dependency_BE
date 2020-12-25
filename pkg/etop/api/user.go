@@ -2185,7 +2185,8 @@ func (s *UserService) RegisterSimplify(ctx context.Context, r *api.RegisterSimpl
 	}
 
 	cmd := &identity.RegisterSimplifyCommand{
-		Phone: phone.String(),
+		Phone:               phone.String(),
+		IsCreateDefaultShop: true,
 	}
 	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

@@ -1282,8 +1282,9 @@ var _acl = map[string]*permission.Decl{
 	"shop.WebServer/GetWsPagesByIDs": {Type: Shop, Actions: actions(WsPageView)},
 
 	// Etelecom
-	"shop.Etelecom/CreateExtension": {Type: Shop, Actions: actions(ShopExtensionCreate)},
-	"shop.Etelecom/GetExtensions":   {Type: Shop, Actions: actions(ShopExtensionView)},
+	"shop.Etelecom/CreateExtension":              {Type: Shop, Actions: actions(ShopExtensionCreate)},
+	"shop.Etelecom/GetExtensions":                {Type: Shop, Actions: actions(ShopExtensionView)},
+	"shop.Etelecom/CreateUserAndAssignExtension": {Type: Shop, Actions: actions(ShopExtensionCreate)},
 
 	"shop.Etelecom/GetHotlines": {Type: Shop, Actions: actions(ShopHotlineView)},
 

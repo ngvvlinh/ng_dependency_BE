@@ -6,11 +6,13 @@ package identity
 
 import (
 	context "context"
+	time "time"
 
 	address "o.o/api/main/address"
 	identitytypes "o.o/api/main/identity/types"
 	meta "o.o/api/meta"
 	account_type "o.o/api/top/types/etc/account_type"
+	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 	filter "o.o/capi/filter"
@@ -39,6 +41,26 @@ type BlockUserCommand struct {
 
 func (h AggregateHandler) HandleBlockUser(ctx context.Context, msg *BlockUserCommand) (err error) {
 	msg.Result, err = h.inner.BlockUser(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateAccountUserCommand struct {
+	AccountID            dot.ID
+	UserID               dot.ID
+	Status               status3.Status
+	Permission           Permission
+	FullName             string
+	ShortName            string
+	Position             string
+	InvitationSentAt     time.Time
+	InvitationSentBy     dot.ID
+	InvitationAcceptedAt time.Time
+
+	Result *AccountUser `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateAccountUser(ctx context.Context, msg *CreateAccountUserCommand) (err error) {
+	msg.Result, err = h.inner.CreateAccountUser(msg.GetArgs(ctx))
 	return err
 }
 
@@ -97,8 +119,10 @@ func (h AggregateHandler) HandleDeleteAffiliate(ctx context.Context, msg *Delete
 }
 
 type RegisterSimplifyCommand struct {
-	Phone    string
-	FullName string
+	Phone               string
+	Password            string
+	FullName            string
+	IsCreateDefaultShop bool
 
 	Result struct {
 	} `json:"-"`
@@ -117,6 +141,19 @@ type UnblockUserCommand struct {
 func (h AggregateHandler) HandleUnblockUser(ctx context.Context, msg *UnblockUserCommand) (err error) {
 	msg.Result, err = h.inner.UnblockUser(msg.GetArgs(ctx))
 	return err
+}
+
+type UpdateAccountUserPermissionCommand struct {
+	AccountID  dot.ID
+	UserID     dot.ID
+	Permission Permission
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateAccountUserPermission(ctx context.Context, msg *UpdateAccountUserPermissionCommand) (err error) {
+	return h.inner.UpdateAccountUserPermission(msg.GetArgs(ctx))
 }
 
 type UpdateAffiliateBankAccountCommand struct {
@@ -519,21 +556,23 @@ func (h QueryServiceHandler) HandleListUsersByWLPartnerID(ctx context.Context, m
 
 // implement interfaces
 
-func (q *BlockUserCommand) command()                  {}
-func (q *CreateAffiliateCommand) command()            {}
-func (q *CreateShopCommand) command()                 {}
-func (q *DeleteAffiliateCommand) command()            {}
-func (q *RegisterSimplifyCommand) command()           {}
-func (q *UnblockUserCommand) command()                {}
-func (q *UpdateAffiliateBankAccountCommand) command() {}
-func (q *UpdateAffiliateInfoCommand) command()        {}
-func (q *UpdateShipFromAddressIDCommand) command()    {}
-func (q *UpdateShopInfoCommand) command()             {}
-func (q *UpdateUserEmailCommand) command()            {}
-func (q *UpdateUserPhoneCommand) command()            {}
-func (q *UpdateUserRefCommand) command()              {}
-func (q *UpdateUserReferenceSaleIDCommand) command()  {}
-func (q *UpdateUserReferenceUserIDCommand) command()  {}
+func (q *BlockUserCommand) command()                   {}
+func (q *CreateAccountUserCommand) command()           {}
+func (q *CreateAffiliateCommand) command()             {}
+func (q *CreateShopCommand) command()                  {}
+func (q *DeleteAffiliateCommand) command()             {}
+func (q *RegisterSimplifyCommand) command()            {}
+func (q *UnblockUserCommand) command()                 {}
+func (q *UpdateAccountUserPermissionCommand) command() {}
+func (q *UpdateAffiliateBankAccountCommand) command()  {}
+func (q *UpdateAffiliateInfoCommand) command()         {}
+func (q *UpdateShipFromAddressIDCommand) command()     {}
+func (q *UpdateShopInfoCommand) command()              {}
+func (q *UpdateUserEmailCommand) command()             {}
+func (q *UpdateUserPhoneCommand) command()             {}
+func (q *UpdateUserRefCommand) command()               {}
+func (q *UpdateUserReferenceSaleIDCommand) command()   {}
+func (q *UpdateUserReferenceUserIDCommand) command()   {}
 
 func (q *GetAccountByIDQuery) query()                   {}
 func (q *GetAccountUserQuery) query()                   {}
@@ -575,6 +614,35 @@ func (q *BlockUserCommand) SetBlockUserArgs(args *BlockUserArgs) {
 	q.UserID = args.UserID
 	q.BlockBy = args.BlockBy
 	q.BlockReason = args.BlockReason
+}
+
+func (q *CreateAccountUserCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateAccountUserArgs) {
+	return ctx,
+		&CreateAccountUserArgs{
+			AccountID:            q.AccountID,
+			UserID:               q.UserID,
+			Status:               q.Status,
+			Permission:           q.Permission,
+			FullName:             q.FullName,
+			ShortName:            q.ShortName,
+			Position:             q.Position,
+			InvitationSentAt:     q.InvitationSentAt,
+			InvitationSentBy:     q.InvitationSentBy,
+			InvitationAcceptedAt: q.InvitationAcceptedAt,
+		}
+}
+
+func (q *CreateAccountUserCommand) SetCreateAccountUserArgs(args *CreateAccountUserArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
+	q.Status = args.Status
+	q.Permission = args.Permission
+	q.FullName = args.FullName
+	q.ShortName = args.ShortName
+	q.Position = args.Position
+	q.InvitationSentAt = args.InvitationSentAt
+	q.InvitationSentBy = args.InvitationSentBy
+	q.InvitationAcceptedAt = args.InvitationAcceptedAt
 }
 
 func (q *CreateAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateAffiliateArgs) {
@@ -652,15 +720,41 @@ func (q *DeleteAffiliateCommand) SetDeleteAffiliateArgs(args *DeleteAffiliateArg
 	q.OwnerID = args.OwnerID
 }
 
-func (q *RegisterSimplifyCommand) GetArgs(ctx context.Context) (_ context.Context, phone string, fullName string) {
+func (q *RegisterSimplifyCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RegisterSimplifyArgs) {
 	return ctx,
-		q.Phone,
-		q.FullName
+		&RegisterSimplifyArgs{
+			Phone:               q.Phone,
+			Password:            q.Password,
+			FullName:            q.FullName,
+			IsCreateDefaultShop: q.IsCreateDefaultShop,
+		}
+}
+
+func (q *RegisterSimplifyCommand) SetRegisterSimplifyArgs(args *RegisterSimplifyArgs) {
+	q.Phone = args.Phone
+	q.Password = args.Password
+	q.FullName = args.FullName
+	q.IsCreateDefaultShop = args.IsCreateDefaultShop
 }
 
 func (q *UnblockUserCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
 	return ctx,
 		q.UserID
+}
+
+func (q *UpdateAccountUserPermissionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAccountUserPermissionArgs) {
+	return ctx,
+		&UpdateAccountUserPermissionArgs{
+			AccountID:  q.AccountID,
+			UserID:     q.UserID,
+			Permission: q.Permission,
+		}
+}
+
+func (q *UpdateAccountUserPermissionCommand) SetUpdateAccountUserPermissionArgs(args *UpdateAccountUserPermissionArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
+	q.Permission = args.Permission
 }
 
 func (q *UpdateAffiliateBankAccountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAffiliateBankAccountArgs) {
@@ -1040,11 +1134,13 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleBlockUser)
+	b.AddHandler(h.HandleCreateAccountUser)
 	b.AddHandler(h.HandleCreateAffiliate)
 	b.AddHandler(h.HandleCreateShop)
 	b.AddHandler(h.HandleDeleteAffiliate)
 	b.AddHandler(h.HandleRegisterSimplify)
 	b.AddHandler(h.HandleUnblockUser)
+	b.AddHandler(h.HandleUpdateAccountUserPermission)
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
 	b.AddHandler(h.HandleUpdateShipFromAddressID)

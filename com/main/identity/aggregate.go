@@ -19,6 +19,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etc/idutil"
@@ -33,6 +34,7 @@ import (
 var ll = l.New()
 
 var _ identity.Aggregate = &Aggregate{}
+var scheme = conversion.Build(convert.RegisterConversions)
 
 const (
 	UserEmailKey            = "user_email_key"
@@ -324,8 +326,8 @@ func (a *Aggregate) UpdateShipFromAddressID(ctx context.Context, args *identity.
 	return err
 }
 
-func (a *Aggregate) RegisterSimplify(ctx context.Context, phone, fullName string) error {
-	normalizePhone, ok := validate.NormalizePhone(phone)
+func (a *Aggregate) RegisterSimplify(ctx context.Context, args *identity.RegisterSimplifyArgs) error {
+	normalizePhone, ok := validate.NormalizePhone(args.Phone)
 	if !ok {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại không hợp lệ")
 	}
@@ -345,7 +347,8 @@ func (a *Aggregate) RegisterSimplify(ctx context.Context, phone, fullName string
 		now := time.Now()
 		userArgs := &identity.CreateUserArgs{
 			Phone:                   normalizePhone.String(),
-			FullName:                fullName,
+			FullName:                args.FullName,
+			Password:                args.Password,
 			Status:                  status3.P,
 			Source:                  user_source.Etop,
 			PhoneVerifiedAt:         now,
@@ -356,12 +359,15 @@ func (a *Aggregate) RegisterSimplify(ctx context.Context, phone, fullName string
 			return err
 		}
 
-		shopArgs := &identity.CreateShopArgs{
-			Name:    normalizePhone.String(),
-			OwnerID: user.ID,
-			Phone:   normalizePhone.String(),
+		if args.IsCreateDefaultShop {
+			shopArgs := &identity.CreateShopArgs{
+				Name:    normalizePhone.String(),
+				OwnerID: user.ID,
+				Phone:   normalizePhone.String(),
+			}
+			return a.createShop(ctx, shopArgs)
 		}
-		return a.createShop(ctx, shopArgs)
+		return nil
 	})
 }
 
@@ -524,4 +530,31 @@ func (a *Aggregate) UpdateShopInfo(ctx context.Context, args *identity.UpdateSho
 		update.IsPriorMoneyTransaction = args.IsPriorMoneyTransaction
 	}
 	return a.shopStore(ctx).ByID(args.ShopID).UpdateShop(update)
+}
+
+func (a *Aggregate) CreateAccountUser(ctx context.Context, args *identity.CreateAccountUserArgs) (*identity.AccountUser, error) {
+	if err := args.Validate(); err != nil {
+		return nil, err
+	}
+	var accountUser identity.AccountUser
+	if err := scheme.Convert(args, &accountUser); err != nil {
+		return nil, err
+	}
+	if err := a.accountUserStore(ctx).CreateAccountUser(&accountUser); err != nil {
+		return nil, err
+	}
+	return a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).GetAccountUser()
+}
+
+func (a *Aggregate) UpdateAccountUserPermission(ctx context.Context, args *identity.UpdateAccountUserPermissionArgs) error {
+	if args.UserID == 0 || args.AccountID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing require params")
+	}
+	update := &identity.AccountUser{
+		Permission: args.Permission,
+	}
+	if err := a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).UpdateAccountUser(update); err != nil {
+		return err
+	}
+	return nil
 }

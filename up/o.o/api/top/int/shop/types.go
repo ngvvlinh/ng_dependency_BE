@@ -3016,16 +3016,3 @@ type UpdateSettingRequest struct {
 }
 
 func (m *UpdateSettingRequest) String() string { return jsonx.MustMarshalToString(m) }
-
-type SummaryEtelecomRequest struct {
-	DateFrom string `json:"date_from"`
-	DateTo   string `json:"date_to"`
-}
-
-func (r *SummaryEtelecomRequest) String() string { return jsonx.MustMarshalToString(r) }
-
-type SummaryEtelecomResponse struct {
-	Tables []*SummaryTable `json:"tables"`
-}
-
-func (r *SummaryEtelecomResponse) String() string { return jsonx.MustMarshalToString(r) }

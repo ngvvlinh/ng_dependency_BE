@@ -78,6 +78,10 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*identitymodel.AccountUser) = out0
 		return nil
 	})
+	s.Register((*identity.CreateAccountUserArgs)(nil), (*identity.AccountUser)(nil), func(arg, out interface{}) error {
+		Apply_identity_CreateAccountUserArgs_identity_AccountUser(arg.(*identity.CreateAccountUserArgs), out.(*identity.AccountUser))
+		return nil
+	})
 	s.Register((*identitymodel.Affiliate)(nil), (*identity.Affiliate)(nil), func(arg, out interface{}) error {
 		Convert_identitymodel_Affiliate_identity_Affiliate(arg.(*identitymodel.Affiliate), out.(*identity.Affiliate))
 		return nil
@@ -555,6 +559,39 @@ func Convert_identity_AccountUsers_identitymodel_AccountUsers(args []*identity.A
 		outs[i] = Convert_identity_AccountUser_identitymodel_AccountUser(args[i], &tmps[i])
 	}
 	return outs
+}
+
+func Apply_identity_CreateAccountUserArgs_identity_AccountUser(arg *identity.CreateAccountUserArgs, out *identity.AccountUser) *identity.AccountUser {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.AccountUser{}
+	}
+	apply_identity_CreateAccountUserArgs_identity_AccountUser(arg, out)
+	return out
+}
+
+func apply_identity_CreateAccountUserArgs_identity_AccountUser(arg *identity.CreateAccountUserArgs, out *identity.AccountUser) {
+	out.AccountID = arg.AccountID                       // simple assign
+	out.UserID = arg.UserID                             // simple assign
+	out.Status = arg.Status                             // simple assign
+	out.ResponseStatus = 0                              // zero value
+	out.CreatedAt = time.Time{}                         // zero value
+	out.UpdatedAt = time.Time{}                         // zero value
+	out.DeletedAt = time.Time{}                         // zero value
+	out.Permission = arg.Permission                     // simple assign
+	out.FullName = arg.FullName                         // simple assign
+	out.ShortName = arg.ShortName                       // simple assign
+	out.Position = arg.Position                         // simple assign
+	out.InvitationSentAt = arg.InvitationSentAt         // simple assign
+	out.InvitationSentBy = arg.InvitationSentBy         // simple assign
+	out.InvitationAcceptedAt = arg.InvitationAcceptedAt // simple assign
+	out.InvitationRejectedAt = time.Time{}              // zero value
+	out.DisabledAt = time.Time{}                        // zero value
+	out.DisabledBy = time.Time{}                        // zero value
+	out.DisableReason = ""                              // zero value
+	out.Rid = 0                                         // zero value
 }
 
 //-- convert o.o/api/main/identity.Affiliate --//

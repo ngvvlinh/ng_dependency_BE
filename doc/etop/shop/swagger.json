@@ -1854,6 +1854,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/CreateUserAndAssignExtension": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "CreateUserAndAssignExtension",
+        "operationId": "shop.Etelecom-CreateUserAndAssignExtension",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateUserAndAssignExtensionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktMessageResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/GetCallLogs": {
       "post": {
         "tags": [
@@ -9706,6 +9733,24 @@
           "$ref": "#/definitions/fpTicketSource"
         },
         "title": {
+          "type": "string"
+        }
+      }
+    },
+    "paCreateUserAndAssignExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "hotline_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
           "type": "string"
         }
       }

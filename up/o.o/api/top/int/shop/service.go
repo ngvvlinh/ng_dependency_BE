@@ -461,6 +461,8 @@ type EtelecomService interface {
 	GetCallLogs(context.Context, *shoptypes.GetCallLogsRequest) (*shoptypes.GetCallLogsResponse, error)
 
 	SummaryEtelecom(context.Context, *SummaryEtelecomRequest) (*SummaryEtelecomResponse, error)
+
+	CreateUserAndAssignExtension(context.Context, *CreateUserAndAssignExtensionRequest) (*cm.MessageResponse, error)
 }
 
 // +apix:path=/shop.Setting

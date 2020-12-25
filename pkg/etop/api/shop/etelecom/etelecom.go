@@ -5,30 +5,36 @@ import (
 
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/summary"
+	"o.o/api/main/authorization"
+	"o.o/api/main/identity"
 	api "o.o/api/top/int/shop"
 	shoptypes "o.o/api/top/int/shop/types"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
 
-type ExtensionService struct {
+type EtelecomService struct {
 	session.Session
 
 	EtelecomAggr  etelecom.CommandBus
 	EtelecomQuery etelecom.QueryBus
 	SummaryQuery  summary.QueryBus
+	IdentityAggr  identity.CommandBus
+	IdentityQuery identity.QueryBus
 }
 
-func (s *ExtensionService) Clone() api.EtelecomService {
+func (s *EtelecomService) Clone() api.EtelecomService {
 	res := *s
 	return &res
 }
 
-func (s *ExtensionService) GetExtensions(ctx context.Context, r *shoptypes.GetExtensionsRequest) (*shoptypes.GetExtensionsResponse, error) {
+func (s *EtelecomService) GetExtensions(ctx context.Context, r *shoptypes.GetExtensionsRequest) (*shoptypes.GetExtensionsResponse, error) {
 	query := &etelecom.ListExtensionsQuery{
 		AccountIDs: []dot.ID{s.SS.Shop().ID},
 	}
@@ -46,7 +52,7 @@ func (s *ExtensionService) GetExtensions(ctx context.Context, r *shoptypes.GetEx
 	return &shoptypes.GetExtensionsResponse{Extensions: res}, nil
 }
 
-func (s *ExtensionService) CreateExtension(ctx context.Context, r *shoptypes.CreateExtensionRequest) (*shoptypes.Extension, error) {
+func (s *EtelecomService) CreateExtension(ctx context.Context, r *shoptypes.CreateExtensionRequest) (*shoptypes.Extension, error) {
 	cmd := &etelecom.CreateExtensionCommand{
 		UserID:    r.UserID,
 		AccountID: s.SS.Shop().ID,
@@ -61,7 +67,7 @@ func (s *ExtensionService) CreateExtension(ctx context.Context, r *shoptypes.Cre
 	return &res, nil
 }
 
-func (s *ExtensionService) GetHotlines(ctx context.Context, _ *pbcm.Empty) (*shoptypes.GetHotLinesResponse, error) {
+func (s *EtelecomService) GetHotlines(ctx context.Context, _ *pbcm.Empty) (*shoptypes.GetHotLinesResponse, error) {
 	// list all hotline builtin
 	queryBuiltinHotlines := &etelecom.ListBuiltinHotlinesQuery{}
 	if err := s.EtelecomQuery.Dispatch(ctx, queryBuiltinHotlines); err != nil {
@@ -81,7 +87,7 @@ func (s *ExtensionService) GetHotlines(ctx context.Context, _ *pbcm.Empty) (*sho
 	return &shoptypes.GetHotLinesResponse{Hotlines: res}, nil
 }
 
-func (s *ExtensionService) GetCallLogs(ctx context.Context, r *shoptypes.GetCallLogsRequest) (*shoptypes.GetCallLogsResponse, error) {
+func (s *EtelecomService) GetCallLogs(ctx context.Context, r *shoptypes.GetCallLogsRequest) (*shoptypes.GetCallLogsResponse, error) {
 	paging, err := cmapi.CMCursorPaging(r.Paging)
 	if err != nil {
 		return nil, err
@@ -105,7 +111,7 @@ func (s *ExtensionService) GetCallLogs(ctx context.Context, r *shoptypes.GetCall
 	}, nil
 }
 
-func (s *ExtensionService) SummaryEtelecom(
+func (s *EtelecomService) SummaryEtelecom(
 	ctx context.Context, req *api.SummaryEtelecomRequest,
 ) (*api.SummaryEtelecomResponse, error) {
 	dateFrom, dateTo, err := cm.ParseDateFromTo(req.DateFrom, req.DateTo)
@@ -129,4 +135,98 @@ func (s *ExtensionService) SummaryEtelecom(
 	return &api.SummaryEtelecomResponse{
 		Tables: convertpb.PbSummaryTablesNew(query.Result.ListTable),
 	}, nil
+}
+
+func (s *EtelecomService) CreateUserAndAssignExtension(ctx context.Context, r *api.CreateUserAndAssignExtensionRequest) (*pbcm.MessageResponse, error) {
+	phoneNorm, ok := validate.NormalizePhone(r.Phone)
+	if !ok {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+	}
+	if r.FullName == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng điền họ tên")
+	}
+	if r.Password == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng điền password")
+	}
+	if r.HotlineID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn hotline")
+	}
+	phone := phoneNorm.String()
+
+	// register user if needed
+	cmd := &identity.RegisterSimplifyCommand{
+		Phone:    phone,
+		FullName: r.FullName,
+		Password: r.Password,
+	}
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	// get user
+	query := &identity.GetUserByPhoneOrEmailQuery{
+		Phone: phone,
+	}
+	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	if err := s.createEtelecomAccountUserAndAddRoleCS(ctx, query.Result.ID, s.SS.Shop().ID); err != nil {
+		return nil, err
+	}
+
+	// create & assign extension for this user
+	createExtRequest := &shoptypes.CreateExtensionRequest{
+		UserID:    query.Result.ID,
+		HotlineID: r.HotlineID,
+	}
+	_, err := s.CreateExtension(ctx, createExtRequest)
+	if err != nil {
+		return nil, err
+	}
+	return &pbcm.MessageResponse{
+		Code: "OK",
+		Msg:  "Tạo người dùng và gán extension thành công",
+	}, nil
+}
+
+func (s *EtelecomService) createEtelecomAccountUserAndAddRoleCS(ctx context.Context, userID, accountID dot.ID) error {
+	query := &identity.GetAccountUserQuery{
+		UserID:    userID,
+		AccountID: accountID,
+	}
+	err := s.IdentityQuery.Dispatch(ctx, query)
+	switch cm.ErrorCode(err) {
+	case cm.NotFound:
+		// create new
+		cmd := &identity.CreateAccountUserCommand{
+			AccountID: accountID,
+			UserID:    userID,
+			Status:    status3.P,
+			Permission: identity.Permission{
+				Roles: []string{authorization.RoleTelecomCustomerService.String()},
+			},
+		}
+		return s.IdentityAggr.Dispatch(ctx, cmd)
+
+	case cm.NoError:
+		// continue
+		// check if it has role EtelecomCS => add if needed
+		accountUser := query.Result
+
+		if cm.StringsContain(accountUser.Roles, authorization.RoleShopOwner.String()) ||
+			cm.StringsContain(accountUser.Roles, authorization.RoleTelecomCustomerService.String()) {
+			return nil
+		}
+		cmd := &identity.UpdateAccountUserPermissionCommand{
+			UserID:    userID,
+			AccountID: accountID,
+			Permission: identity.Permission{
+				Roles: append(accountUser.Roles, authorization.RoleTelecomCustomerService.String()),
+			},
+		}
+		return s.IdentityAggr.Dispatch(ctx, cmd)
+
+	default:
+		return err
+	}
 }

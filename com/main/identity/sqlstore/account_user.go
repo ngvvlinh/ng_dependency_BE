@@ -117,3 +117,12 @@ func (s *AccountUserStore) CreateAccountUser(au *identity.AccountUser) error {
 	}
 	return s.query().ShouldInsert(&auDB)
 }
+
+func (s *AccountUserStore) UpdateAccountUser(au *identity.AccountUser) error {
+	query := s.query().Where(s.preds)
+	var auDB identitymodel.AccountUser
+	if err := scheme.Convert(au, &auDB); err != nil {
+		return err
+	}
+	return query.ShouldUpdate(&auDB)
+}

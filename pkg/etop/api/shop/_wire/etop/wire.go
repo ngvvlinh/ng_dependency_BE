@@ -83,5 +83,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(accountshipnow.AccountShipnowService), "*"),
 	wire.Struct(new(contact.ContactService), "*"),
 	wire.Struct(new(setting.SettingService), "*"),
-	wire.Struct(new(etelecom.ExtensionService), "*"),
+	wire.Struct(new(etelecom.EtelecomService), "*"),
 )

@@ -815,13 +815,15 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	etelecomCommandBus := aggregate22.AggregateMessageBus(etelecomAggregate)
 	summaryQuery := query25.NewSummaryQuery(etelecomDB, store)
 	queryBus2 := query25.SummaryQueryMessageBus(summaryQuery)
-	extensionService := &etelecom.ExtensionService{
+	etelecomService := &etelecom.EtelecomService{
 		Session:       session,
 		EtelecomAggr:  etelecomCommandBus,
 		EtelecomQuery: etelecomQueryBus,
 		SummaryQuery:  queryBus2,
+		IdentityAggr:  commandBus,
+		IdentityQuery: queryBus,
 	}
-	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, settingService, extensionService)
+	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, settingService, etelecomService)
 	adminMiscService := admin.MiscService{
 		Session: session,
 		Login:   loginInterface,
@@ -942,12 +944,12 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		TicketAggr:     ticketCommandBus,
 		IndentityQuery: queryBus,
 	}
-	etelecomService := admin.EtelecomService{
+	adminEtelecomService := admin.EtelecomService{
 		Session:       session,
 		EtelecomAggr:  etelecomCommandBus,
 		EtelecomQuery: etelecomQueryBus,
 	}
-	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, etelecomService)
+	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, adminEtelecomService)
 	sadminMiscService := &sadmin.MiscService{
 		Session: session,
 	}

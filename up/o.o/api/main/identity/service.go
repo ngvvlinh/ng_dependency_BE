@@ -12,6 +12,7 @@ import (
 	"o.o/api/top/types/etc/user_source"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
+	"o.o/common/xerrors"
 )
 
 // +gen:api
@@ -29,7 +30,7 @@ type Aggregate interface {
 
 	// if phone is not existed
 	// create new user & create a default shop for this user
-	RegisterSimplify(ctx context.Context, phone string, fullName string) error
+	RegisterSimplify(context.Context, *RegisterSimplifyArgs) error
 
 	// -- Affiliate -- //
 
@@ -55,6 +56,11 @@ type Aggregate interface {
 	CreateShop(context.Context, *CreateShopArgs) (*Shop, error)
 
 	UpdateShopInfo(context.Context, *UpdateShopInfoArgs) error
+
+	// -- Account User -- //
+	CreateAccountUser(context.Context, *CreateAccountUserArgs) (*AccountUser, error)
+
+	UpdateAccountUserPermission(context.Context, *UpdateAccountUserPermissionArgs) error
 }
 
 type QueryService interface {
@@ -320,4 +326,47 @@ type UpdateShopInfoArgs struct {
 type ListPartnerRelationsBySubjectIDsArgs struct {
 	SubjectIDs  []dot.ID
 	SubjectType SubjectType
+}
+
+type RegisterSimplifyArgs struct {
+	Phone               string
+	Password            string
+	FullName            string
+	IsCreateDefaultShop bool
+}
+
+// +convert:create=AccountUser
+type CreateAccountUserArgs struct {
+	AccountID dot.ID
+	UserID    dot.ID
+
+	Status status3.Status // 1: activated, -1: rejected/disabled, 0: pending
+	Permission
+
+	FullName  string
+	ShortName string
+	Position  string
+
+	InvitationSentAt     time.Time
+	InvitationSentBy     dot.ID
+	InvitationAcceptedAt time.Time
+}
+
+func (args *CreateAccountUserArgs) Validate() error {
+	if args.UserID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing user ID")
+	}
+	if args.AccountID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
+	}
+	if len(args.Roles) == 0 {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "Require at least 1 role")
+	}
+	return nil
+}
+
+type UpdateAccountUserPermissionArgs struct {
+	AccountID dot.ID
+	UserID    dot.ID
+	Permission
 }
