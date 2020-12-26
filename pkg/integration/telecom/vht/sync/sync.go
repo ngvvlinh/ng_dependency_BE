@@ -8,8 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/k0kubun/pp"
-
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/call_log_direction"
 	"o.o/api/main/connectioning"
@@ -56,8 +54,8 @@ type VHTSync struct {
 	// crawl call log
 	schedulerCrawlCallLogs *scheduler.Scheduler
 	crawlCallLogsTicker    *time.Ticker
-	// key = {connection_id}-{shop_id}
-	//		shop_id = 0 then key = {connection_id}
+	// key = {connection_id}-{owner_id}
+	//		owner_id = 0 then key = {connection_id}
 	// value = taskID
 	mapTenantInProgress map[string]dot.ID
 	mapTaskCrawlCallLog map[dot.ID]*TaskCrawlLogArguments
@@ -114,8 +112,7 @@ func (v *VHTSync) addCrawlCallLogsTasks(ctx context.Context) error {
 
 	v.mutex.Lock()
 	for _, shopConnection := range shopConnections {
-		pp.Println("shop connection :: ", shopConnection)
-		keyTenant := v.getKeyTenantInProgress(shopConnection.ConnectionID, shopConnection.ShopID)
+		keyTenant := v.getKeyTenantInProgress(shopConnection.ConnectionID, shopConnection.OwnerID)
 
 		// check tenant is in progress
 		if _, ok := v.mapTenantInProgress[keyTenant]; ok {
@@ -187,6 +184,7 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 			EndedAt:   now,
 			ScrollID:  scrollID,
 		}
+
 		getCallLogsResp, err = telecomDriver.GetCallLogs(ctx, getCallLogsReq)
 		if err != nil {
 			return err
@@ -249,6 +247,7 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 					}
 					if xerr, ok := _err.(*xerrors.APIError); ok && xerr.Err != nil {
 						errMsg := xerr.Err.Error()
+
 						if strings.Contains(errMsg, uniqueExternalIDCallLog) ||
 							strings.Contains(errMsg, uniqueExternalIDDirectionCallLog) {
 							// ignore if duplicate
@@ -273,11 +272,11 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 	return nil
 }
 
-func (v *VHTSync) getKeyTenantInProgress(connectionID, shopID dot.ID) string {
-	if shopID == 0 {
+func (v *VHTSync) getKeyTenantInProgress(connectionID, ownerID dot.ID) string {
+	if ownerID == 0 {
 		return fmt.Sprintf("%d", connectionID.Int64())
 	}
-	return fmt.Sprintf("%d-%d", connectionID.Int64(), shopID.Int64())
+	return fmt.Sprintf("%d-%d", connectionID.Int64(), ownerID.Int64())
 }
 
 func (v *VHTSync) listShopConnections(ctx context.Context) (shopConnections []*model.ShopConnection, err error) {

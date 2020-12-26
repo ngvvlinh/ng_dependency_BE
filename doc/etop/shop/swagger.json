@@ -16935,6 +16935,26 @@
         }
       }
     },
+    "qdShopConnectionTelecomData": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "tenant_domain": {
+          "type": "string"
+        },
+        "tenant_host": {
+          "type": "string"
+        },
+        "tenant_token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
     "qdSubrCustomer": {
       "type": "object",
       "properties": {
@@ -17253,8 +17273,23 @@
         "external_data": {
           "$ref": "#/definitions/qdShopConnectionExternalData"
         },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "telecom_data": {
+          "$ref": "#/definitions/qdShopConnectionTelecomData"
+        },
         "token": {
           "type": "string"
+        },
+        "token_expires_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

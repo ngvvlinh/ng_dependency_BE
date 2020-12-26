@@ -492,7 +492,7 @@ func (m *ShipnowManager) RefreshToken(ctx context.Context, args *carrier.Refresh
 	}
 
 	// update shop_connection
-	update := &connectioning.UpdateShopConnectionTokenCommand{
+	update := &connectioning.UpdateShopConnectionCommand{
 		OwnerID:      ownerID,
 		ConnectionID: args.ConnectionID,
 		Token:        xAccount.Token,

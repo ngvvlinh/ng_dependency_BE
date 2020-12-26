@@ -127,8 +127,9 @@ func (m *TelecomManager) generateToken(ctx context.Context, shopConnection *conn
 	}
 
 	// update shopConnection
+	// shop connection telecom go with owner_id
 	updateShopConnectionCmd := connectioning.CreateOrUpdateShopConnectionCommand{
-		ShopID:         shopConnection.ShopID,
+		OwnerID:        shopConnection.OwnerID,
 		ConnectionID:   shopConnection.ConnectionID,
 		Token:          generateTokenResp.AccessToken,
 		TokenExpiresAt: generateTokenResp.ExpiresAt,

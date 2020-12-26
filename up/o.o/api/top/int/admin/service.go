@@ -113,7 +113,7 @@ type ConnectionService interface {
 
 	CreateBuiltinConnection(context.Context, *types.CreateBuiltinConnectionRequest) (*types.Connection, error)
 	GetBuiltinShopConnections(context.Context, *cm.Empty) (*types.GetShopConnectionsResponse, error)
-	UpdateBuiltinShopConnection(context.Context, *types.UpdateShopConnectionRequest) (*cm.UpdatedResponse, error)
+	UpdateShopConnection(context.Context, *types.UpdateShopConnectionRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/admin.ShipmentPrice

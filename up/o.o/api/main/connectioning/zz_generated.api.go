@@ -94,6 +94,7 @@ type CreateOrUpdateShopConnectionCommand struct {
 	Token          string
 	TokenExpiresAt time.Time
 	ExternalData   *ShopConnectionExternalData
+	TelecomData    *ShopConnectionTelecomData
 
 	Result *ShopConnection `json:"-"`
 }
@@ -110,6 +111,7 @@ type CreateShopConnectionCommand struct {
 	Token          string
 	TokenExpiresAt time.Time
 	ExternalData   *ShopConnectionExternalData
+	TelecomData    *ShopConnectionTelecomData
 
 	Result *ShopConnection `json:"-"`
 }
@@ -195,6 +197,23 @@ func (h AggregateHandler) HandleUpdateConnectionFromOrigin(ctx context.Context, 
 	return h.inner.UpdateConnectionFromOrigin(msg.GetArgs(ctx))
 }
 
+type UpdateShopConnectionCommand struct {
+	OwnerID        dot.ID
+	ShopID         dot.ID
+	ConnectionID   dot.ID
+	Token          string
+	TokenExpiresAt time.Time
+	ExternalData   *ShopConnectionExternalData
+	TelecomData    *ShopConnectionTelecomData
+
+	Result *ShopConnection `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopConnection(ctx context.Context, msg *UpdateShopConnectionCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShopConnection(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateShopConnectionLastSyncAtCommand struct {
 	OwnerID      dot.ID
 	ShopID       dot.ID
@@ -206,22 +225,6 @@ type UpdateShopConnectionLastSyncAtCommand struct {
 
 func (h AggregateHandler) HandleUpdateShopConnectionLastSyncAt(ctx context.Context, msg *UpdateShopConnectionLastSyncAtCommand) (err error) {
 	msg.Result, err = h.inner.UpdateShopConnectionLastSyncAt(msg.GetArgs(ctx))
-	return err
-}
-
-type UpdateShopConnectionTokenCommand struct {
-	OwnerID        dot.ID
-	ShopID         dot.ID
-	ConnectionID   dot.ID
-	Token          string
-	TokenExpiresAt time.Time
-	ExternalData   *ShopConnectionExternalData
-
-	Result *ShopConnection `json:"-"`
-}
-
-func (h AggregateHandler) HandleUpdateShopConnectionToken(ctx context.Context, msg *UpdateShopConnectionTokenCommand) (err error) {
-	msg.Result, err = h.inner.UpdateShopConnectionToken(msg.GetArgs(ctx))
 	return err
 }
 
@@ -359,8 +362,8 @@ func (q *DisableConnectionCommand) command()                {}
 func (q *UpdateConnectionCommand) command()                 {}
 func (q *UpdateConnectionAffiliateAccountCommand) command() {}
 func (q *UpdateConnectionFromOriginCommand) command()       {}
+func (q *UpdateShopConnectionCommand) command()             {}
 func (q *UpdateShopConnectionLastSyncAtCommand) command()   {}
-func (q *UpdateShopConnectionTokenCommand) command()        {}
 
 func (q *GetConnectionByCodeQuery) query()                 {}
 func (q *GetConnectionByIDQuery) query()                   {}
@@ -452,6 +455,7 @@ func (q *CreateOrUpdateShopConnectionCommand) GetArgs(ctx context.Context) (_ co
 			Token:          q.Token,
 			TokenExpiresAt: q.TokenExpiresAt,
 			ExternalData:   q.ExternalData,
+			TelecomData:    q.TelecomData,
 		}
 }
 
@@ -462,6 +466,7 @@ func (q *CreateOrUpdateShopConnectionCommand) SetCreateShopConnectionArgs(args *
 	q.Token = args.Token
 	q.TokenExpiresAt = args.TokenExpiresAt
 	q.ExternalData = args.ExternalData
+	q.TelecomData = args.TelecomData
 }
 
 func (q *CreateShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopConnectionArgs) {
@@ -473,6 +478,7 @@ func (q *CreateShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Co
 			Token:          q.Token,
 			TokenExpiresAt: q.TokenExpiresAt,
 			ExternalData:   q.ExternalData,
+			TelecomData:    q.TelecomData,
 		}
 }
 
@@ -483,6 +489,7 @@ func (q *CreateShopConnectionCommand) SetCreateShopConnectionArgs(args *CreateSh
 	q.Token = args.Token
 	q.TokenExpiresAt = args.TokenExpiresAt
 	q.ExternalData = args.ExternalData
+	q.TelecomData = args.TelecomData
 }
 
 func (q *DeleteConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteConnectionArgs) {
@@ -559,6 +566,29 @@ func (q *UpdateConnectionFromOriginCommand) GetArgs(ctx context.Context) (_ cont
 		q.ConnectionID
 }
 
+func (q *UpdateShopConnectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopConnectionArgs) {
+	return ctx,
+		&UpdateShopConnectionArgs{
+			OwnerID:        q.OwnerID,
+			ShopID:         q.ShopID,
+			ConnectionID:   q.ConnectionID,
+			Token:          q.Token,
+			TokenExpiresAt: q.TokenExpiresAt,
+			ExternalData:   q.ExternalData,
+			TelecomData:    q.TelecomData,
+		}
+}
+
+func (q *UpdateShopConnectionCommand) SetUpdateShopConnectionArgs(args *UpdateShopConnectionArgs) {
+	q.OwnerID = args.OwnerID
+	q.ShopID = args.ShopID
+	q.ConnectionID = args.ConnectionID
+	q.Token = args.Token
+	q.TokenExpiresAt = args.TokenExpiresAt
+	q.ExternalData = args.ExternalData
+	q.TelecomData = args.TelecomData
+}
+
 func (q *UpdateShopConnectionLastSyncAtCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopConnectionLastSyncAtArgs) {
 	return ctx,
 		&UpdateShopConnectionLastSyncAtArgs{
@@ -574,27 +604,6 @@ func (q *UpdateShopConnectionLastSyncAtCommand) SetUpdateShopConnectionLastSyncA
 	q.ShopID = args.ShopID
 	q.ConnectionID = args.ConnectionID
 	q.LastSyncAt = args.LastSyncAt
-}
-
-func (q *UpdateShopConnectionTokenCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopConnectionExternalDataArgs) {
-	return ctx,
-		&UpdateShopConnectionExternalDataArgs{
-			OwnerID:        q.OwnerID,
-			ShopID:         q.ShopID,
-			ConnectionID:   q.ConnectionID,
-			Token:          q.Token,
-			TokenExpiresAt: q.TokenExpiresAt,
-			ExternalData:   q.ExternalData,
-		}
-}
-
-func (q *UpdateShopConnectionTokenCommand) SetUpdateShopConnectionExternalDataArgs(args *UpdateShopConnectionExternalDataArgs) {
-	q.OwnerID = args.OwnerID
-	q.ShopID = args.ShopID
-	q.ConnectionID = args.ConnectionID
-	q.Token = args.Token
-	q.TokenExpiresAt = args.TokenExpiresAt
-	q.ExternalData = args.ExternalData
 }
 
 func (q *GetConnectionByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string) {
@@ -716,8 +725,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateConnection)
 	b.AddHandler(h.HandleUpdateConnectionAffiliateAccount)
 	b.AddHandler(h.HandleUpdateConnectionFromOrigin)
+	b.AddHandler(h.HandleUpdateShopConnection)
 	b.AddHandler(h.HandleUpdateShopConnectionLastSyncAt)
-	b.AddHandler(h.HandleUpdateShopConnectionToken)
 	return CommandBus{b}
 }
 

@@ -274,8 +274,8 @@ const adminPolicy = `
 	p, admin/connection:confirm, admin
 	p, admin/connection:disable, admin
 	p, admin/connection_builtin:create, admin
-	p, admin/connection_shop_builtin:create, admin, ad_sale, ad_salelead
-	p, admin/connection_shop_builtin:update, admin
+	p, admin/shop_connection_builtin:create, admin, ad_sale, ad_salelead
+	p, admin/shop_connection:update, admin
 	p, admin/connection_service:view, admin, ad_sale, ad_salelead
 	# admin custom region
 	p, admin/custom_region:create, admin, ad_salelead

@@ -339,13 +339,13 @@
         }
       }
     },
-    "/api/admin.Connection/UpdateBuiltinShopConnection": {
+    "/api/admin.Connection/UpdateShopConnection": {
       "post": {
         "tags": [
           "Connection"
         ],
-        "summary": "UpdateBuiltinShopConnection",
-        "operationId": "admin.Connection-UpdateBuiltinShopConnection",
+        "summary": "UpdateShopConnection",
+        "operationId": "admin.Connection-UpdateShopConnection",
         "parameters": [
           {
             "name": "body",
@@ -6857,6 +6857,26 @@
         }
       }
     },
+    "qdShopConnectionTelecomData": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "tenant_domain": {
+          "type": "string"
+        },
+        "tenant_host": {
+          "type": "string"
+        },
+        "tenant_token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
     "qdSubrBillLine": {
       "type": "object",
       "properties": {
@@ -7144,8 +7164,23 @@
         "external_data": {
           "$ref": "#/definitions/qdShopConnectionExternalData"
         },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "telecom_data": {
+          "$ref": "#/definitions/qdShopConnectionTelecomData"
+        },
         "token": {
           "type": "string"
+        },
+        "token_expires_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

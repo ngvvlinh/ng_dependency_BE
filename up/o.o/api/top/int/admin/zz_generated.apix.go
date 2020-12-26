@@ -215,7 +215,7 @@ const Path_Connection_DisableConnection = "/admin.Connection/DisableConnection"
 const Path_Connection_GetBuiltinShopConnections = "/admin.Connection/GetBuiltinShopConnections"
 const Path_Connection_GetConnectionServices = "/admin.Connection/GetConnectionServices"
 const Path_Connection_GetConnections = "/admin.Connection/GetConnections"
-const Path_Connection_UpdateBuiltinShopConnection = "/admin.Connection/UpdateBuiltinShopConnection"
+const Path_Connection_UpdateShopConnection = "/admin.Connection/UpdateShopConnection"
 
 func (s *ConnectionServiceServer) PathPrefix() string {
 	return ConnectionServicePathPrefix
@@ -328,7 +328,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 			return
 		}
 		return msg, fn, nil
-	case "/admin.Connection/UpdateBuiltinShopConnection":
+	case "/admin.Connection/UpdateShopConnection":
 		msg := &inttypes.UpdateShopConnectionRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
@@ -337,7 +337,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 			if err != nil {
 				return
 			}
-			resp, err = inner.UpdateBuiltinShopConnection(newCtx, msg)
+			resp, err = inner.UpdateShopConnection(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

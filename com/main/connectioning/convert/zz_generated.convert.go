@@ -111,8 +111,8 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_connectioning_CreateShopConnectionArgs_connectioning_ShopConnection(arg.(*connectioning.CreateShopConnectionArgs), out.(*connectioning.ShopConnection))
 		return nil
 	})
-	s.Register((*connectioning.UpdateShopConnectionExternalDataArgs)(nil), (*connectioning.ShopConnection)(nil), func(arg, out interface{}) error {
-		Apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_ShopConnection(arg.(*connectioning.UpdateShopConnectionExternalDataArgs), out.(*connectioning.ShopConnection))
+	s.Register((*connectioning.UpdateShopConnectionArgs)(nil), (*connectioning.ShopConnection)(nil), func(arg, out interface{}) error {
+		Apply_connectioning_UpdateShopConnectionArgs_connectioning_ShopConnection(arg.(*connectioning.UpdateShopConnectionArgs), out.(*connectioning.ShopConnection))
 		return nil
 	})
 	s.Register((*connectioningmodel.ShopConnectionExternalData)(nil), (*connectioning.ShopConnectionExternalData)(nil), func(arg, out interface{}) error {
@@ -572,21 +572,21 @@ func apply_connectioning_CreateShopConnectionArgs_connectioning_ShopConnection(a
 	out.DeletedAt = time.Time{}             // zero value
 	out.IsGlobal = false                    // zero value
 	out.ExternalData = arg.ExternalData     // simple assign
-	out.TelecomData = nil                   // zero value
+	out.TelecomData = arg.TelecomData       // simple assign
 }
 
-func Apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_ShopConnection(arg *connectioning.UpdateShopConnectionExternalDataArgs, out *connectioning.ShopConnection) *connectioning.ShopConnection {
+func Apply_connectioning_UpdateShopConnectionArgs_connectioning_ShopConnection(arg *connectioning.UpdateShopConnectionArgs, out *connectioning.ShopConnection) *connectioning.ShopConnection {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &connectioning.ShopConnection{}
 	}
-	apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_ShopConnection(arg, out)
+	apply_connectioning_UpdateShopConnectionArgs_connectioning_ShopConnection(arg, out)
 	return out
 }
 
-func apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_ShopConnection(arg *connectioning.UpdateShopConnectionExternalDataArgs, out *connectioning.ShopConnection) {
+func apply_connectioning_UpdateShopConnectionArgs_connectioning_ShopConnection(arg *connectioning.UpdateShopConnectionArgs, out *connectioning.ShopConnection) {
 	out.OwnerID = arg.OwnerID               // simple assign
 	out.ShopID = out.ShopID                 // identifier
 	out.ConnectionID = out.ConnectionID     // identifier
@@ -598,7 +598,7 @@ func apply_connectioning_UpdateShopConnectionExternalDataArgs_connectioning_Shop
 	out.DeletedAt = out.DeletedAt           // no change
 	out.IsGlobal = out.IsGlobal             // no change
 	out.ExternalData = arg.ExternalData     // simple assign
-	out.TelecomData = out.TelecomData       // no change
+	out.TelecomData = arg.TelecomData       // simple assign
 }
 
 //-- convert o.o/api/main/connectioning.ShopConnectionExternalData --//

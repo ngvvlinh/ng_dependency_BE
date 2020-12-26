@@ -102,10 +102,7 @@ func (s *ConnectionService) GetBuiltinShopConnections(ctx context.Context, r *pb
 	return result, nil
 }
 
-func (s *ConnectionService) UpdateBuiltinShopConnection(ctx context.Context, r *types.UpdateShopConnectionRequest) (*pbcm.UpdatedResponse, error) {
-	if r.ExternalData == nil || r.ExternalData.UserID == "" {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "UserID không được để trống")
-	}
+func (s *ConnectionService) UpdateShopConnection(ctx context.Context, r *types.UpdateShopConnectionRequest) (*pbcm.UpdatedResponse, error) {
 	query := &connectioning.GetConnectionByIDQuery{
 		ID: r.ConnectionID,
 	}
@@ -113,19 +110,48 @@ func (s *ConnectionService) UpdateBuiltinShopConnection(ctx context.Context, r *
 		return nil, err
 	}
 	conn := query.Result
-	if conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Connection không hợp lệ")
+
+	switch conn.ConnectionType {
+	case connection_type.Shipping:
+		if r.ExternalData == nil {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "External data không được để trống")
+		}
+	case connection_type.Telecom:
+		if r.TelecomData == nil {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Telecom data không được để trống")
+		}
+	default:
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection không hợp lệ")
 	}
 
-	identifier := cm.Coalesce(r.ExternalData.Email, r.ExternalData.Identifier)
-	cmd := &connectioning.UpdateShopConnectionTokenCommand{
-		ConnectionID: r.ConnectionID,
-		Token:        r.Token,
-		ExternalData: &connectioning.ShopConnectionExternalData{
+	var externalData *connectioning.ShopConnectionExternalData
+	var telecomData *connectioning.ShopConnectionTelecomData
+	if r.ExternalData != nil {
+		identifier := cm.Coalesce(r.ExternalData.Email, r.ExternalData.Identifier)
+		externalData = &connectioning.ShopConnectionExternalData{
 			UserID:     r.ExternalData.UserID,
 			Identifier: identifier,
 			ShopID:     r.ExternalData.ShopID,
-		},
+		}
+	}
+	if r.TelecomData != nil {
+		telecomData = &connectioning.ShopConnectionTelecomData{
+			Username:     r.TelecomData.Username,
+			Password:     r.TelecomData.Password,
+			TenantHost:   r.TelecomData.TenantHost,
+			TenantToken:  r.TelecomData.TenantToken,
+			TenantDomain: r.TelecomData.TenantDomain,
+		}
+	}
+
+	cmd := &connectioning.UpdateShopConnectionCommand{
+		ConnectionID:   r.ConnectionID,
+		ShopID:         r.ShopID,
+		OwnerID:        r.OwnerID,
+		Token:          r.Token,
+		TokenExpiresAt: r.TokenExpiresAt,
+		ExternalData:   externalData,
+		TelecomData:    telecomData,
 	}
 	if err := s.ConnectionAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

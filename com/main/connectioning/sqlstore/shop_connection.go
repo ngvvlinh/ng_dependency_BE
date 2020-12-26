@@ -149,28 +149,13 @@ func (s *ShopConnectionStore) CreateShopConnectionDB(shopConn *model.ShopConnect
 	return nil
 }
 
-func (s *ShopConnectionStore) UpdateShopConnectionToken(args *connectioning.UpdateShopConnectionExternalDataArgs) (*connectioning.ShopConnection, error) {
-	var externalData model.ShopConnectionExternalData
-	if err := scheme.Convert(args.ExternalData, &externalData); err != nil {
-		return nil, err
+func (s *ShopConnectionStore) UpdateShopConnection(shopConn *connectioning.ShopConnection) error {
+	var shopConnDB model.ShopConnection
+	if err := scheme.Convert(shopConn, &shopConnDB); err != nil {
+		return err
 	}
-	update := &model.ShopConnection{
-		Token:          args.Token,
-		TokenExpiresAt: args.TokenExpiresAt,
-		ExternalData:   &externalData,
-	}
-	query := s.query().Where(s.ft.ByConnectionID(args.ConnectionID))
-	if args.ShopID != 0 {
-		query = query.Where(s.ft.ByShopID(args.ShopID))
-	} else if args.OwnerID != 0 {
-		query = query.Where(s.ft.ByOwnerID(args.OwnerID))
-	} else {
-		query = query.Where(s.ft.ByIsGlobal(true))
-	}
-	if err := query.ShouldUpdate(update); err != nil {
-		return nil, err
-	}
-	return s.OptionalShopID(args.ShopID).OptionalOwnerID(args.OwnerID).ConnectionID(args.ConnectionID).GetShopConnection()
+	query := s.query().Where(s.preds)
+	return query.ShouldUpdate(&shopConnDB)
 }
 
 func (s *ShopConnectionStore) UpdateShopConnectionLastSyncAt(args *connectioning.UpdateShopConnectionLastSyncAtArgs) (*connectioning.ShopConnection, error) {

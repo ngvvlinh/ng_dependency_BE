@@ -395,8 +395,8 @@ const (
 	AdminConnectionConfirm           permission.ActionType = "admin/connection:confirm"
 	AdminConnectionDisable           permission.ActionType = "admin/connection:disable"
 	AdminConnectionBuiltinCreate     permission.ActionType = "admin/connection_builtin:create"
-	AdminConnectionShopBuiltinCreate permission.ActionType = "admin/connection_shop_builtin:create"
-	AdminConnectionShopBuiltinUpdate permission.ActionType = "admin/connection_shop_builtin:update"
+	AdminConnectionShopBuiltinCreate permission.ActionType = "admin/shop_connection_builtin:create"
+	AdminConnectionShopUpdate        permission.ActionType = "admin/shop_connection:update"
 	AdminConnectionServiceView       permission.ActionType = "admin/connection_service:view"
 
 	// Admin custom region
@@ -775,13 +775,13 @@ var _acl = map[string]*permission.Decl{
 
 	"admin.Notification/CreateNotifications": {Type: EtopAdmin},
 
-	"admin.Connection/GetConnections":              {Type: EtopAdmin, Actions: actions(AdminConnectionView)},
-	"admin.Connection/ConfirmConnection":           {Type: EtopAdmin, Actions: actions(AdminConnectionConfirm)},
-	"admin.Connection/DisableConnection":           {Type: EtopAdmin, Actions: actions(AdminConnectionDisable)},
-	"admin.Connection/CreateBuiltinConnection":     {Type: EtopAdmin, Actions: actions(AdminConnectionBuiltinCreate)},
-	"admin.Connection/GetBuiltinShopConnections":   {Type: EtopAdmin, Actions: actions(AdminConnectionShopBuiltinCreate)},
-	"admin.Connection/UpdateBuiltinShopConnection": {Type: EtopAdmin, Actions: actions(AdminConnectionShopBuiltinUpdate)},
-	"admin.Connection/GetConnectionServices":       {Type: EtopAdmin, Actions: actions(AdminConnectionServiceView)},
+	"admin.Connection/GetConnections":            {Type: EtopAdmin, Actions: actions(AdminConnectionView)},
+	"admin.Connection/ConfirmConnection":         {Type: EtopAdmin, Actions: actions(AdminConnectionConfirm)},
+	"admin.Connection/DisableConnection":         {Type: EtopAdmin, Actions: actions(AdminConnectionDisable)},
+	"admin.Connection/CreateBuiltinConnection":   {Type: EtopAdmin, Actions: actions(AdminConnectionBuiltinCreate)},
+	"admin.Connection/GetBuiltinShopConnections": {Type: EtopAdmin, Actions: actions(AdminConnectionShopBuiltinCreate)},
+	"admin.Connection/UpdateShopConnection":      {Type: EtopAdmin, Actions: actions(AdminConnectionShopUpdate)},
+	"admin.Connection/GetConnectionServices":     {Type: EtopAdmin, Actions: actions(AdminConnectionServiceView)},
 
 	"admin.ShipmentPrice/GetShipmentServices":                      {Type: EtopAdmin, Actions: actions(AdminShipmentServiceView)},
 	"admin.ShipmentPrice/GetShipmentService":                       {Type: EtopAdmin, Actions: actions(AdminShipmentServiceView)},

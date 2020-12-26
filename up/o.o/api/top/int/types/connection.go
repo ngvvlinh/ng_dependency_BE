@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
@@ -116,6 +118,16 @@ func (m *ShopConnectionExternalData) Reset() {
 }
 func (m *ShopConnectionExternalData) String() string { return jsonx.MustMarshalToString(m) }
 
+type ShopConnectionTelecomData struct {
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	TenantHost   string `json:"tenant_host"`
+	TenantToken  string `json:"tenant_token"`
+	TenantDomain string `json:"tenant_domain"`
+}
+
+func (m *ShopConnectionTelecomData) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetConnectionsRequest struct {
 	ConnectionMethod  connection_type.ConnectionMethod  `json:"connection_method"`
 	ConnectionSubtype connection_type.ConnectionSubtype `json:"connection_subtype"`
@@ -182,9 +194,13 @@ func (m *DeleteShopConnectionRequest) String() string {
 }
 
 type UpdateShopConnectionRequest struct {
-	ConnectionID dot.ID                      `json:"connection_id"`
-	Token        string                      `json:"token"`
-	ExternalData *ShopConnectionExternalData `json:"external_data"`
+	ConnectionID   dot.ID                      `json:"connection_id"`
+	ShopID         dot.ID                      `json:"shop_id"`
+	OwnerID        dot.ID                      `json:"owner_id"`
+	Token          string                      `json:"token"`
+	TokenExpiresAt time.Time                   `json:"token_expires_at"`
+	ExternalData   *ShopConnectionExternalData `json:"external_data"`
+	TelecomData    *ShopConnectionTelecomData  `json:"telecom_data"`
 }
 
 func (m *UpdateShopConnectionRequest) String() string {
