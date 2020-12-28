@@ -9,6 +9,7 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 )
 
@@ -35,7 +36,7 @@ func (s *MoneyTransactionService) CreateMoneyTransaction(ctx context.Context, q 
 	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return convertpb.PbMoneyTxShipping(cmd.Result), nil
+	return convertpball.PbMoneyTxShipping(cmd.Result), nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransaction(ctx context.Context, q *pbcm.IDRequest) (*types.MoneyTransaction, error) {
@@ -45,7 +46,7 @@ func (s *MoneyTransactionService) GetMoneyTransaction(ctx context.Context, q *pb
 	if err := s.MoneyTxQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShipping(query.Result)
+	result := convertpball.PbMoneyTxShipping(query.Result)
 	return result, nil
 }
 
@@ -62,7 +63,7 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *a
 	}
 	result := &types.MoneyTransactionsResponse{
 		Paging:            cmapi.PbMetaPageInfo(query.Result.Paging),
-		MoneyTransactions: convertpb.PbMoneyTxShippings(query.Result.MoneyTxShippings),
+		MoneyTransactions: convertpball.PbMoneyTxShippings(query.Result.MoneyTxShippings),
 	}
 	return result, nil
 }
@@ -77,7 +78,7 @@ func (s *MoneyTransactionService) UpdateMoneyTransaction(ctx context.Context, q 
 	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShipping(cmd.Result)
+	result := convertpball.PbMoneyTxShipping(cmd.Result)
 	return result, nil
 }
 
@@ -105,7 +106,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingExternal(ctx contex
 	if err := s.MoneyTxQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShippingExternalFtLine(query.Result)
+	result := convertpball.PbMoneyTxShippingExternalFtLine(query.Result)
 	return result, nil
 }
 
@@ -121,7 +122,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingExternals(ctx conte
 	}
 	result := &types.MoneyTransactionShippingExternalsResponse{
 		Paging:            cmapi.PbMetaPageInfo(query.Result.Paging),
-		MoneyTransactions: convertpb.PbMoneyTxShippingExternalsFtLine(query.Result.MoneyTxShippingExternals),
+		MoneyTransactions: convertpball.PbMoneyTxShippingExternalsFtLine(query.Result.MoneyTxShippingExternals),
 	}
 	return result, nil
 }
@@ -134,7 +135,7 @@ func (s *MoneyTransactionService) RemoveMoneyTransactionShippingExternalLines(ct
 	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result)
+	result := convertpball.PbMoneyTxShippingExternalFtLine(cmd.Result)
 	return result, nil
 }
 
@@ -175,7 +176,7 @@ func (s *MoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx con
 	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result)
+	result := convertpball.PbMoneyTxShippingExternalFtLine(cmd.Result)
 	return result, nil
 }
 
@@ -198,7 +199,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context.Co
 	if err := s.MoneyTxQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShippingEtop(query.Result)
+	result := convertpball.PbMoneyTxShippingEtop(query.Result)
 	return result, nil
 }
 
@@ -215,7 +216,7 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.C
 	}
 	result := &types.MoneyTransactionShippingEtopsResponse{
 		Paging:                        cmapi.PbMetaPageInfo(query.Result.Paging),
-		MoneyTransactionShippingEtops: convertpb.PbMoneyTxShippingEtops(query.Result.MoneyTxShippingEtops),
+		MoneyTransactionShippingEtops: convertpball.PbMoneyTxShippingEtops(query.Result.MoneyTxShippingEtops),
 	}
 	return result, nil
 }
@@ -227,7 +228,7 @@ func (s *MoneyTransactionService) CreateMoneyTransactionShippingEtop(ctx context
 	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShippingEtop(cmd.Result)
+	result := convertpball.PbMoneyTxShippingEtop(cmd.Result)
 	return result, nil
 }
 
@@ -244,7 +245,7 @@ func (s *MoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx context
 	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShippingEtop(cmd.Result)
+	result := convertpball.PbMoneyTxShippingEtop(cmd.Result)
 	return result, nil
 }
 

@@ -14,6 +14,7 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -46,7 +47,7 @@ func (s *AffiliateService) GetCommissions(ctx context.Context, q *pbcm.CommonLis
 	var pbCommissions []*api.SellerCommission
 
 	for _, commission := range commissionQ.Result {
-		pbCommission := convertpb.PbSellerCommission(commission)
+		pbCommission := convertpball.PbSellerCommission(commission)
 
 		if commission.FromSellerID != 0 {
 			affiliateQ := &identity.GetAffiliateByIDQuery{
@@ -104,7 +105,7 @@ func (s *AffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.
 	if err := s.AffiliateAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbCommissionSetting(cmd.Result)
+	result := convertpball.PbCommissionSetting(cmd.Result)
 	return result, nil
 }
 
@@ -148,11 +149,11 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *pbcm.Com
 		}
 		var pbAffCommissionSetting *api.CommissionSetting = nil
 		if affCommissionSetting != nil {
-			pbAffCommissionSetting = convertpb.PbCommissionSetting(affCommissionSetting)
+			pbAffCommissionSetting = convertpball.PbCommissionSetting(affCommissionSetting)
 		}
 		var pbShopPromotion *api.ProductPromotion = nil
 		if shopPromotion != nil {
-			pbShopPromotion = convertpb.PbProductPromotion(shopPromotion)
+			pbShopPromotion = convertpball.PbProductPromotion(shopPromotion)
 		}
 
 		products = append(products, &api.AffiliateProductResponse{
@@ -180,7 +181,7 @@ func (s *AffiliateService) CreateReferralCode(ctx context.Context, q *api.Create
 		return nil, err
 	}
 
-	result := convertpb.PbReferralCode(cmd.Result)
+	result := convertpball.PbReferralCode(cmd.Result)
 
 	return result, nil
 }
@@ -194,7 +195,7 @@ func (s *AffiliateService) GetReferralCodes(ctx context.Context, q *pbcm.CommonL
 	}
 
 	result := &api.GetReferralCodesResponse{
-		ReferralCodes: convertpb.PbReferralCodes(query.Result),
+		ReferralCodes: convertpball.PbReferralCodes(query.Result),
 	}
 
 	return result, nil
@@ -225,7 +226,7 @@ func (s *AffiliateService) GetReferrals(ctx context.Context, q *pbcm.CommonListR
 
 	var referrals []*api.Referral
 	for _, aff := range affiliateQ.Result {
-		pbAffiliate := convertpb.PbReferral(aff)
+		pbAffiliate := convertpball.PbReferral(aff)
 		referrals = append(referrals, pbAffiliate)
 	}
 

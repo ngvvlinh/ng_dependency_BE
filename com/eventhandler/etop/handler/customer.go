@@ -10,6 +10,7 @@ import (
 	customermodel "o.o/backend/com/shopping/customering/model"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/etop/apix/convertpb"
+	convertxmin "o.o/backend/pkg/etop/apix/convertpb/_min"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
@@ -44,7 +45,7 @@ func (h *Handler) HandleShopCustomerEvent(ctx context.Context, event *pgevent.Pg
 
 	change := pbChange(event)
 	change.Latest = &types.LatestOneOf{
-		Customer: convertpb.PbShopCustomer(customer),
+		Customer: convertxmin.PbShopCustomer(customer),
 	}
 	change.Changed = &types.ChangeOneOf{
 		Customer: changed,

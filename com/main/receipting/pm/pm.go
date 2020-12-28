@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"o.o/api/main/identity"
+	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/main/ledgering"
 	"o.o/api/main/moneytx"
 	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
+	shippingcore "o.o/api/main/shipping"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/types/etc/ledger_type"
 	"o.o/api/top/types/etc/receipt_mode"
@@ -17,12 +19,7 @@ import (
 	"o.o/api/top/types/etc/receipt_type"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/status3"
-	identityconvert "o.o/backend/com/main/identity/convert"
-	identitysharemodel "o.o/backend/com/main/identity/sharemodel"
-	"o.o/backend/com/main/moneytx/modelx"
-	txmodelx "o.o/backend/com/main/moneytx/modelx"
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
-	"o.o/backend/com/main/shipping/modely"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etc/idutil"
@@ -41,8 +38,9 @@ type ProcessManager struct {
 	ledgerAggr    ledgering.CommandBus
 	identityQuery identity.QueryBus
 
-	MoneyTxStore sqlstore.MoneyTxStoreInterface
-	OrderStore   sqlstore.OrderStoreInterface
+	moneyTxQuery  moneytx.QueryBus
+	OrderStore    sqlstore.OrderStoreInterface
+	shippingQuery shippingcore.QueryBus
 }
 
 func New(
@@ -52,8 +50,9 @@ func New(
 	ledgerQuery ledgering.QueryBus,
 	ledgerAggregate ledgering.CommandBus,
 	identityQuery identity.QueryBus,
-	MoneyTxStore sqlstore.MoneyTxStoreInterface,
+	moneyTxQ moneytx.QueryBus,
 	OrderStore sqlstore.OrderStoreInterface,
+	shippingQ shippingcore.QueryBus,
 ) *ProcessManager {
 	p := &ProcessManager{
 		eventBus:      eventBus,
@@ -62,8 +61,9 @@ func New(
 		ledgerQuery:   ledgerQuery,
 		ledgerAggr:    ledgerAggregate,
 		identityQuery: identityQuery,
-		MoneyTxStore:  MoneyTxStore,
+		moneyTxQuery:  moneyTxQ,
 		OrderStore:    OrderStore,
+		shippingQuery: shippingQ,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -95,21 +95,30 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 	var (
 		ledgerID         dot.ID
 		totalShippingFee int
-		fulfillments     []*modely.FulfillmentExtended
+		fulfillments     []*shippingcore.FulfillmentExtended
 		orderIDs         []dot.ID
 	)
 	mapOrderAndReceivedAmount := make(map[dot.ID]int)
 	mapOrder := make(map[dot.ID]ordermodelx.OrderWithFulfillments)
-	mapOrderFulfillment := make(map[dot.ID]*modely.FulfillmentExtended)
+	mapOrderFulfillment := make(map[dot.ID]*shippingcore.FulfillmentExtended)
 
-	getMoneyTransaction := &modelx.GetMoneyTransaction{
-		ID:     event.MoneyTxShippingID,
-		ShopID: event.ShopID,
+	getMoneyTransaction := &moneytx.GetMoneyTxShippingByIDQuery{
+		MoneyTxShippingID: event.MoneyTxShippingID,
+		ShopID:            event.ShopID,
 	}
-	if err := m.MoneyTxStore.GetMoneyTransaction(ctx, getMoneyTransaction); err != nil {
+	if err := m.moneyTxQuery.Dispatch(ctx, getMoneyTransaction); err != nil {
 		return err
 	}
-	for _, fulfillment := range getMoneyTransaction.Result.Fulfillments {
+
+	ffmQuery := &shippingcore.ListFulfillmentExtendedsByMoneyTxShippingIDQuery{
+		ShopID:            event.ShopID,
+		MoneyTxShippingID: event.MoneyTxShippingID,
+	}
+	if err := m.shippingQuery.Dispatch(ctx, ffmQuery); err != nil {
+		return err
+	}
+
+	for _, fulfillment := range ffmQuery.Result {
 		fulfillments = append(fulfillments, fulfillment)
 		orderIDs = append(orderIDs, fulfillment.OrderID)
 		totalShippingFee += fulfillment.ShippingFeeShop
@@ -169,8 +178,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 		if err := m.identityQuery.Dispatch(ctx, query); err != nil {
 			return err
 		}
-		shopBankAccount := query.Result.BankAccount
-		bankAccount = identityconvert.Convert_identitytypes_BankAccount_sharemodel_BankAccount(shopBankAccount, bankAccount)
+		bankAccount = query.Result.BankAccount
 	}
 	if bankAccount == nil {
 		// Bỏ qua trường hợp không tìm thấy sổ quỹ
@@ -199,7 +207,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *m
 func (m *ProcessManager) createPayment(
 	ctx context.Context,
 	totalShippingFee int,
-	fulfillments []*modely.FulfillmentExtended,
+	fulfillments []*shippingcore.FulfillmentExtended,
 	shopID, ledgerID dot.ID,
 ) error {
 	receiptLines := []*receipting.ReceiptLine{}
@@ -259,7 +267,7 @@ func (m *ProcessManager) createPayment(
 
 func (m *ProcessManager) createReceipts(
 	ctx context.Context,
-	mapOrderFulfillment map[dot.ID]*modely.FulfillmentExtended,
+	mapOrderFulfillment map[dot.ID]*shippingcore.FulfillmentExtended,
 	mapOrderAndReceivedAmount map[dot.ID]int,
 	mapOrder map[dot.ID]ordermodelx.OrderWithFulfillments,
 	shopID, ledgerID dot.ID) error {
@@ -332,7 +340,7 @@ func (m *ProcessManager) createReceipts(
 	return nil
 }
 
-func (m *ProcessManager) getOrCreateLedgerID(ctx context.Context, bankAccount *identitysharemodel.BankAccount, shopID dot.ID) (dot.ID, error) {
+func (m *ProcessManager) getOrCreateLedgerID(ctx context.Context, bankAccount *identitytypes.BankAccount, shopID dot.ID) (dot.ID, error) {
 	if bankAccount == nil {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Thiếu thông tin tài khoản ngân hàng. Vui lòng kiểm tra lại")
 	}
@@ -348,7 +356,7 @@ func (m *ProcessManager) getOrCreateLedgerID(ctx context.Context, bankAccount *i
 		cmd := &ledgering.CreateLedgerCommand{
 			ShopID:      shopID,
 			Name:        fmt.Sprintf("[%v] %v", bankAccount.Branch, bankAccount.AccountName),
-			BankAccount: identityconvert.BankAccount(bankAccount),
+			BankAccount: bankAccount,
 			Note:        "Tài khoản thanh toán tự tạo",
 			Type:        ledger_type.LedgerTypeBank,
 		}
@@ -364,13 +372,13 @@ func (m *ProcessManager) getOrCreateLedgerID(ctx context.Context, bankAccount *i
 }
 
 func (m *ProcessManager) MoneyTxShippingEtopConfirmed(ctx context.Context, event *moneytx.MoneyTxShippingEtopConfirmedEvent) error {
-	query := &txmodelx.GetMoneyTxsByMoneyTxShippingEtopID{
+	query := &moneytx.ListMoneyTxShippingsQuery{
 		MoneyTxShippingEtopID: event.MoneyTxShippingEtopID,
 	}
-	if err := m.MoneyTxStore.GetMoneyTxsByMoneyTxShippingEtopID(ctx, query); err != nil {
+	if err := m.moneyTxQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	moneyTxs := query.Result.MoneyTransactions
+	moneyTxs := query.Result.MoneyTxShippings
 	for _, moneyTx := range moneyTxs {
 		cmd := &moneytx.MoneyTxShippingConfirmedEvent{
 			ShopID:            moneyTx.ShopID,

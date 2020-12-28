@@ -17,7 +17,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
-	shop2 "o.o/backend/pkg/etop/api/shop"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	inventory2 "o.o/backend/pkg/etop/api/shop/inventory"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -65,7 +65,7 @@ func (s *RefundService) CreateRefund(ctx context.Context, q *api.CreateRefundReq
 	if err != nil {
 		return nil, err
 	}
-	result := shop2.PbRefund(cmd.Result)
+	result := convertpball.PbRefund(cmd.Result)
 	result, err = s.populateRefund(ctx, result)
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (s *RefundService) UpdateRefund(ctx context.Context, q *api.UpdateRefundReq
 	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err
 	}
-	result := shop2.PbRefund(cmd.Result)
+	result := convertpball.PbRefund(cmd.Result)
 	result, err := s.populateRefund(ctx, result)
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func (s *RefundService) ConfirmRefund(ctx context.Context, q *api.ConfirmRefundR
 	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err
 	}
-	result := shop2.PbRefund(cmd.Result)
+	result := convertpball.PbRefund(cmd.Result)
 	result, err := s.populateRefund(ctx, result)
 	if err != nil {
 		return nil, err
@@ -139,7 +139,7 @@ func (s *RefundService) CancelRefund(ctx context.Context, q *api.CancelRefundReq
 	if err := s.RefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err
 	}
-	result := shop2.PbRefund(cmd.Result)
+	result := convertpball.PbRefund(cmd.Result)
 	result, err := s.populateRefund(ctx, result)
 	if err != nil {
 		return nil, err
@@ -163,7 +163,7 @@ func (s *RefundService) GetRefund(ctx context.Context, q *pbcm.IDRequest) (*api.
 	if err := s.OrderStore.GetOrder(ctx, queryOrder); err != nil {
 		return nil, err
 	}
-	result := shop2.PbRefund(query.Result)
+	result := convertpball.PbRefund(query.Result)
 	result, err := s.populateRefund(ctx, result)
 	if err != nil {
 		return nil, err
@@ -181,7 +181,7 @@ func (s *RefundService) GetRefundsByIDs(ctx context.Context, q *pbcm.IDsRequest)
 	if err := s.RefundQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	resp := shop2.PbRefunds(query.Result)
+	resp := convertpball.PbRefunds(query.Result)
 	resp, err := s.populateRefunds(ctx, resp)
 	if err != nil {
 		return nil, err
@@ -203,7 +203,7 @@ func (s *RefundService) GetRefunds(ctx context.Context, q *api.GetRefundsRequest
 	if err := s.RefundQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	resp := shop2.PbRefunds(query.Result.Refunds)
+	resp := convertpball.PbRefunds(query.Result.Refunds)
 	resp, err := s.populateRefunds(ctx, resp)
 	if err != nil {
 		return nil, err

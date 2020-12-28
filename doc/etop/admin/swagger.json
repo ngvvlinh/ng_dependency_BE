@@ -514,7 +514,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xuCreateHotlineRequest"
+              "$ref": "#/definitions/riCreateHotlineRequest"
             }
           }
         ],
@@ -522,7 +522,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/flHotline"
+              "$ref": "#/definitions/riHotline"
             }
           }
         }
@@ -541,7 +541,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/xuUpdateHotlineRequest"
+              "$ref": "#/definitions/riUpdateHotlineRequest"
             }
           }
         ],
@@ -4491,52 +4491,6 @@
         }
       }
     },
-    "flHotline": {
-      "type": "object",
-      "properties": {
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "connection_method": {
-          "$ref": "#/definitions/cdConnectionMethod"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "description": {
-          "type": "string"
-        },
-        "hotline": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "is_free_charge": {
-          "type": "boolean"
-        },
-        "name": {
-          "type": "string"
-        },
-        "network": {
-          "$ref": "#/definitions/tcMobileNetwork"
-        },
-        "owner_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "status": {
-          "$ref": "#/definitions/blStatus"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "flTicket": {
       "type": "object",
       "properties": {
@@ -7561,6 +7515,101 @@
         "buyer"
       ]
     },
+    "riCreateHotlineRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "description": {
+          "type": "string"
+        },
+        "hotline": {
+          "type": "string"
+        },
+        "is_free_charge": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "network": {
+          "$ref": "#/definitions/tcMobileNetwork"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "riHotline": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "hotline": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_free_charge": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "network": {
+          "$ref": "#/definitions/tcMobileNetwork"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "riUpdateHotlineRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_free_charge": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
     "sdShippingFeeType": {
       "type": "string",
       "enum": [
@@ -8003,34 +8052,6 @@
           "items": {
             "type": "string"
           }
-        }
-      }
-    },
-    "xuCreateHotlineRequest": {
-      "type": "object",
-      "properties": {
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "description": {
-          "type": "string"
-        },
-        "hotline": {
-          "type": "string"
-        },
-        "is_free_charge": {
-          "type": "boolean"
-        },
-        "name": {
-          "type": "string"
-        },
-        "network": {
-          "$ref": "#/definitions/tcMobileNetwork"
-        },
-        "owner_id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -9571,27 +9592,6 @@
         },
         "shipping_state": {
           "$ref": "#/definitions/sfState"
-        }
-      }
-    },
-    "xuUpdateHotlineRequest": {
-      "type": "object",
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "is_free_charge": {
-          "type": "boolean"
-        },
-        "name": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/blStatus"
         }
       }
     },

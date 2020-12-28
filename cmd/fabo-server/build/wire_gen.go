@@ -10,11 +10,10 @@ import (
 	"o.o/api/main/accountshipnow"
 	"o.o/api/main/credit"
 	"o.o/api/services/affiliate"
-	"o.o/api/shopping/tradering"
 	"o.o/backend/cmd/fabo-server/config"
 	"o.o/backend/cogs/config/_server"
 	"o.o/backend/cogs/database/_min"
-	fabo3 "o.o/backend/cogs/server/fabo"
+	fabo4 "o.o/backend/cogs/server/fabo"
 	"o.o/backend/cogs/server/shop"
 	"o.o/backend/cogs/shipment/_fabo"
 	v2_2 "o.o/backend/cogs/shipment/ghn/v2"
@@ -41,10 +40,10 @@ import (
 	aggregate3 "o.o/backend/com/main/authorization/aggregate"
 	aggregate4 "o.o/backend/com/main/catalog/aggregate"
 	"o.o/backend/com/main/catalog/pm"
-	query4 "o.o/backend/com/main/catalog/query"
+	query3 "o.o/backend/com/main/catalog/query"
 	aggregate6 "o.o/backend/com/main/connectioning/aggregate"
 	"o.o/backend/com/main/connectioning/manager"
-	query8 "o.o/backend/com/main/connectioning/query"
+	query7 "o.o/backend/com/main/connectioning/query"
 	"o.o/backend/com/main/identity"
 	pm2 "o.o/backend/com/main/identity/pm"
 	"o.o/backend/com/main/inventory/aggregatex"
@@ -54,44 +53,39 @@ import (
 	"o.o/backend/com/main/location"
 	"o.o/backend/com/main/ordering"
 	pm3 "o.o/backend/com/main/ordering/pm"
-	query7 "o.o/backend/com/main/receipting/query"
+	query4 "o.o/backend/com/main/receipting/query"
 	"o.o/backend/com/main/shipmentpricing/pricelist"
 	"o.o/backend/com/main/shipmentpricing/pricelistpromotion"
 	"o.o/backend/com/main/shipmentpricing/shipmentprice"
 	"o.o/backend/com/main/shipmentpricing/shipmentservice"
 	"o.o/backend/com/main/shipmentpricing/shopshipmentpricelist"
 	"o.o/backend/com/main/shipnow"
-	aggregate9 "o.o/backend/com/main/shipping/aggregate"
+	aggregate7 "o.o/backend/com/main/shipping/aggregate"
 	"o.o/backend/com/main/shipping/carrier"
 	pm4 "o.o/backend/com/main/shipping/pm"
-	query10 "o.o/backend/com/main/shipping/query"
-	query9 "o.o/backend/com/main/shippingcode/query"
-	aggregate8 "o.o/backend/com/main/stocktaking/aggregate"
+	query9 "o.o/backend/com/main/shipping/query"
+	query8 "o.o/backend/com/main/shippingcode/query"
 	query5 "o.o/backend/com/main/stocktaking/query"
-	aggregate7 "o.o/backend/com/shopping/carrying/aggregate"
-	query11 "o.o/backend/com/shopping/carrying/query"
 	aggregate5 "o.o/backend/com/shopping/customering/aggregate"
 	query2 "o.o/backend/com/shopping/customering/query"
-	aggregate10 "o.o/backend/com/shopping/setting/aggregate"
-	query12 "o.o/backend/com/shopping/setting/query"
-	query13 "o.o/backend/com/summary/fabo/query"
-	query3 "o.o/backend/com/supporting/ticket/query"
+	aggregate8 "o.o/backend/com/shopping/setting/aggregate"
+	query10 "o.o/backend/com/shopping/setting/query"
+	query11 "o.o/backend/com/summary/fabo/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	auth2 "o.o/backend/pkg/common/authorization/auth"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/export"
+	"o.o/backend/pkg/etop/api/root"
+	"o.o/backend/pkg/etop/api/root/fabo"
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/sadmin/_fabo"
 	"o.o/backend/pkg/etop/api/shop"
-	"o.o/backend/pkg/etop/api/shop/_min/fabo"
+	fabo2 "o.o/backend/pkg/etop/api/shop/_min/fabo"
 	"o.o/backend/pkg/etop/api/shop/account"
 	"o.o/backend/pkg/etop/api/shop/authorize"
-	"o.o/backend/pkg/etop/api/shop/brand"
-	carrier2 "o.o/backend/pkg/etop/api/shop/carrier"
 	"o.o/backend/pkg/etop/api/shop/category"
 	"o.o/backend/pkg/etop/api/shop/collection"
 	"o.o/backend/pkg/etop/api/shop/connection"
@@ -100,13 +94,11 @@ import (
 	export2 "o.o/backend/pkg/etop/api/shop/export"
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
-	"o.o/backend/pkg/etop/api/shop/inventory"
 	"o.o/backend/pkg/etop/api/shop/notification"
 	"o.o/backend/pkg/etop/api/shop/order"
 	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/backend/pkg/etop/api/shop/setting"
 	"o.o/backend/pkg/etop/api/shop/shipment"
-	"o.o/backend/pkg/etop/api/shop/stocktake"
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/authorize/tokens"
@@ -116,7 +108,7 @@ import (
 	"o.o/backend/pkg/etop/logic/orders/imcsv"
 	imcsv2 "o.o/backend/pkg/etop/logic/products/imcsv"
 	"o.o/backend/pkg/etop/sqlstore"
-	fabo2 "o.o/backend/pkg/fabo"
+	fabo3 "o.o/backend/pkg/fabo"
 	"o.o/backend/pkg/fabo/faboinfo"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/shipping/ghn/webhook/v2"
@@ -129,7 +121,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	redisRedis := cfg.Redis
 	store := redis.Connect(redisRedis)
 	service := health.New(store)
-	miscService := &api.MiscService{}
+	miscService := &root.MiscService{}
 	policy := ProvidePolicy()
 	authorizer := auth.New(policy)
 	sharedConfig := cfg.SharedConfig
@@ -184,8 +176,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
 	notifierQueryService := notifier.NewQueryService(mainDB)
 	notifyQueryBus := notifier.QueryServiceNotifyBus(notifierQueryService)
-	carrierManager := SupportedShipnowManager()
-	notifierAggregate := notifier.NewNotifyAggregate(mainDB, carrierManager)
+	notifierAggregate := notifier.NewNotifyAggregate(mainDB)
 	notifyCommandBus := notifier.NewNotifyAggregateMessageBus(notifierAggregate)
 	generator := auth2.NewGenerator(store)
 	smsConfig := cfg.SMS
@@ -202,7 +193,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	loginInterface := sqlstore.BindLogin(login)
 	webphonePublicKey := cfg.WebphonePublicKey
-	userService := &api.UserService{
+	userService := &root.UserService{
 		Session:           session,
 		IdentityAggr:      commandBus,
 		IdentityQuery:     queryBus,
@@ -223,7 +214,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		WebphonePublicKey: webphonePublicKey,
 	}
 	partnerStoreFactory := sqlstore.NewPartnerStore(mainDB)
-	accountService := &api.AccountService{
+	accountService := &root.AccountService{
 		Session:           session,
 		PartnerStore:      partnerStoreFactory,
 		AccountStore:      accountStoreInterface,
@@ -232,18 +223,18 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	}
 	locationQuery := location.New(mainDB)
 	locationQueryBus := location.QueryMessageBus(locationQuery)
-	locationService := &api.LocationService{
+	locationService := &root.LocationService{
 		Session:       session,
 		LocationQuery: locationQueryBus,
 	}
-	bankService := &api.BankService{
+	bankService := &root.BankService{
 		Session: session,
 	}
 	addressAggregate := address.NewAggregateAddress(busBus, mainDB, locationQueryBus)
 	addressCommandBus := address.AddressAggregateMessageBus(addressAggregate)
 	addressQueryService := address.NewQueryAddress(mainDB, busBus)
 	addressQueryBus := address.QueryServiceMessageBus(addressQueryService)
-	addressService := &api.AddressService{
+	addressService := &root.AddressService{
 		Session:     session,
 		AddressAggr: addressCommandBus,
 		AddressQS:   addressQueryBus,
@@ -259,7 +250,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		ShopStore:        shopStoreInterface,
 	}
 	authorizationCommandBus := aggregate3.AuthorizationAggregateMessageBus(authorizationAggregate)
-	accountRelationshipService := &api.AccountRelationshipService{
+	accountRelationshipService := &root.AccountRelationshipService{
 		Session:           session,
 		InvitationAggr:    invitationCommandBus,
 		InvitationQuery:   invitationQueryBus,
@@ -267,7 +258,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		UserStore:         userStoreFactory,
 		AccountUserStore:  accountUserStoreInterface,
 	}
-	userRelationshipService := &api.UserRelationshipService{
+	userRelationshipService := &root.UserRelationshipService{
 		Session:                session,
 		InvitationAggr:         invitationCommandBus,
 		InvitationQuery:        invitationQueryBus,
@@ -275,51 +266,16 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		ShopStore:              shopStoreInterface,
 		UserStore:              userStoreInterface,
 	}
-	ticketQuery := query3.NewTicketQuery(store, busBus, mainDB)
-	ticketQueryBus := query3.TicketQueryMessageBus(ticketQuery)
-	ticketService := &api.TicketService{
-		Session:     session,
-		TicketQuery: ticketQueryBus,
-	}
-	ecomService := &api.EcomService{
+	ecomService := &root.EcomService{
 		Session:        session,
 		SessionStarter: sessionStarter,
 	}
 	emailConfig := cfg.Email
-	servers, cleanup := api.NewServers(miscService, userService, accountService, locationService, bankService, addressService, accountRelationshipService, userRelationshipService, ticketService, ecomService, store, emailConfig, smsConfig)
+	servers, cleanup := fabo.NewServers(miscService, userService, accountService, locationService, bankService, addressService, accountRelationshipService, userRelationshipService, ecomService, store, emailConfig, smsConfig)
 	shopMiscService := &shop.MiscService{
 		Session: session,
 	}
-	queryQueryService := query4.New(mainDB)
-	catalogQueryBus := query4.QueryServiceMessageBus(queryQueryService)
-	aggregateAggregate := aggregate4.New(busBus, mainDB)
-	catalogCommandBus := aggregate4.AggregateMessageBus(aggregateAggregate)
-	brandService := &brand.BrandService{
-		Session:      session,
-		CatalogQuery: catalogQueryBus,
-		CatalogAggr:  catalogCommandBus,
-	}
-	traderingQueryBus := _wireQueryBusValue
-	stocktakeQuery := query5.NewQueryStocktake(mainDB)
-	stocktakingQueryBus := query5.StocktakeQueryMessageBus(stocktakeQuery)
-	orderStore := &sqlstore.OrderStore{
-		DB:           mainDB,
-		LocationBus:  locationQueryBus,
-		AccountStore: accountStoreInterface,
-		ShopStore:    shopStoreInterface,
-	}
-	orderStoreInterface := sqlstore.BindOrderStore(orderStore)
-	inventoryAggregate := aggregatex.NewAggregateInventory(busBus, mainDB, stocktakingQueryBus, catalogQueryBus, orderStoreInterface)
-	inventoryCommandBus := aggregatex.InventoryAggregateMessageBus(inventoryAggregate)
-	inventoryQueryService := query6.NewQueryInventory(stocktakingQueryBus, busBus, mainDB)
-	inventoryQueryBus := query6.InventoryQueryServiceMessageBus(inventoryQueryService)
-	inventoryService := &inventory.InventoryService{
-		Session:        session,
-		TraderQuery:    traderingQueryBus,
-		InventoryAggr:  inventoryCommandBus,
-		InventoryQuery: inventoryQueryBus,
-	}
-	accountshipnowQueryBus := _wireAccountshipnowQueryBusValue
+	accountshipnowQueryBus := _wireQueryBusValue
 	accountshipnowCommandBus := _wireCommandBusValue
 	accountAccountService := &account.AccountService{
 		Session:             session,
@@ -333,6 +289,10 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		AccountshipnowQuery: accountshipnowQueryBus,
 		AccountshipnowAggr:  accountshipnowCommandBus,
 	}
+	queryQueryService := query3.New(mainDB)
+	catalogQueryBus := query3.QueryServiceMessageBus(queryQueryService)
+	aggregateAggregate := aggregate4.New(busBus, mainDB)
+	catalogCommandBus := aggregate4.AggregateMessageBus(aggregateAggregate)
 	collectionService := &collection.CollectionService{
 		Session:      session,
 		CatalogQuery: catalogQueryBus,
@@ -346,8 +306,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	addressingQueryBus := query2.AddressQueryMessageBus(addressQuery)
 	orderingQueryService := ordering.NewQueryService(mainDB)
 	orderingQueryBus := ordering.QueryServiceMessageBus(orderingQueryService)
-	receiptQuery := query7.NewReceiptQuery(mainDB, orderingQueryBus)
-	receiptingQueryBus := query7.ReceiptQueryMessageBus(receiptQuery)
+	receiptQuery := query4.NewReceiptQuery(mainDB, orderingQueryBus)
+	receiptingQueryBus := query4.ReceiptQueryMessageBus(receiptQuery)
 	customerService := &customer.CustomerService{
 		Session:       session,
 		LocationQuery: locationQueryBus,
@@ -363,6 +323,10 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		CustomerAggr:  customeringCommandBus,
 		CustomerQuery: customeringQueryBus,
 	}
+	stocktakeQuery := query5.NewQueryStocktake(mainDB)
+	stocktakingQueryBus := query5.StocktakeQueryMessageBus(stocktakeQuery)
+	inventoryQueryService := query6.NewQueryInventory(stocktakingQueryBus, busBus, mainDB)
+	inventoryQueryBus := query6.InventoryQueryServiceMessageBus(inventoryQueryService)
 	shopVariantStore := &sqlstore.ShopVariantStore{
 		DB: mainDB,
 	}
@@ -382,12 +346,12 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	orderingAggregate := ordering.NewAggregate(busBus, mainDB)
 	orderingCommandBus := ordering.AggregateMessageBus(orderingAggregate)
 	mapShipmentServices := shipment_all.SupportedShipmentServices()
-	connectionQuery := query8.NewConnectionQuery(mainDB, mapShipmentServices)
-	connectioningQueryBus := query8.ConnectionQueryMessageBus(connectionQuery)
+	connectionQuery := query7.NewConnectionQuery(mainDB, mapShipmentServices)
+	connectioningQueryBus := query7.ConnectionQueryMessageBus(connectionQuery)
 	connectionAggregate := aggregate6.NewConnectionAggregate(mainDB, busBus)
 	connectioningCommandBus := aggregate6.ConnectionAggregateMessageBus(connectionAggregate)
-	queryService2 := query9.NewQueryService(mainDB)
-	shippingcodeQueryBus := query9.QueryServiceMessageBus(queryService2)
+	queryService2 := query8.NewQueryService(mainDB)
+	shippingcodeQueryBus := query8.QueryServiceMessageBus(queryService2)
 	shipmentserviceQueryService := shipmentservice.NewQueryService(mainDB, store)
 	shipmentserviceQueryBus := shipmentservice.QueryServiceMessageBus(shipmentserviceQueryService)
 	pricelistQueryService := pricelist.NewQueryService(mainDB, store)
@@ -400,6 +364,13 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
 	driver := shipment_all.SupportedCarrierDriver()
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
+	orderStore := &sqlstore.OrderStore{
+		DB:           mainDB,
+		LocationBus:  locationQueryBus,
+		AccountStore: accountStoreInterface,
+		ShopStore:    shopStoreInterface,
+	}
+	orderStoreInterface := sqlstore.BindOrderStore(orderStore)
 	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, driver, connectionManager, orderStoreInterface)
 	if err != nil {
 		cleanup()
@@ -430,8 +401,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		OrderLogic:    orderLogic,
 		OrderStore:    orderStoreInterface,
 	}
-	queryService3 := query10.NewQueryService(mainDB, shipmentManager, connectioningQueryBus)
-	shippingQueryBus := query10.QueryServiceMessageBus(queryService3)
+	queryService3 := query9.NewQueryService(mainDB, shipmentManager, connectioningQueryBus)
+	shippingQueryBus := query9.QueryServiceMessageBus(queryService3)
 	fulfillmentService := &fulfillment.FulfillmentService{
 		Session:         session,
 		ShipmentManager: shipmentManager,
@@ -473,36 +444,18 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:      session,
 		PartnerStore: partnerStoreInterface,
 	}
-	carrierAggregate := aggregate7.NewCarrierAggregate(busBus, mainDB)
-	carryingCommandBus := aggregate7.CarrierAggregateMessageBus(carrierAggregate)
-	carrierQuery := query11.NewCarrierQuery(mainDB)
-	carryingQueryBus := query11.CarrierQueryMessageBus(carrierQuery)
-	carrierService := &carrier2.CarrierService{
-		Session:      session,
-		CarrierAggr:  carryingCommandBus,
-		CarrierQuery: carryingQueryBus,
-	}
-	stocktakeAggregate := aggregate8.NewAggregateStocktake(mainDB, busBus, store)
-	stocktakingCommandBus := aggregate8.StocktakeAggregateMessageBus(stocktakeAggregate)
-	stocktakeService := &stocktake.StocktakeService{
-		Session:        session,
-		CatalogQuery:   catalogQueryBus,
-		StocktakeAggr:  stocktakingCommandBus,
-		StocktakeQuery: stocktakingQueryBus,
-		InventoryQuery: inventoryQueryBus,
-	}
-	aggregate11 := aggregate9.NewAggregate(mainDB, busBus, locationQueryBus, orderingQueryBus, shipmentManager, connectioningQueryBus, queryBus, addressQueryBus)
-	shippingCommandBus := aggregate9.AggregateMessageBus(aggregate11)
+	aggregate9 := aggregate7.NewAggregate(mainDB, busBus, locationQueryBus, orderingQueryBus, shipmentManager, connectioningQueryBus, queryBus, addressQueryBus)
+	shippingCommandBus := aggregate7.AggregateMessageBus(aggregate9)
 	shipmentService := &shipment.ShipmentService{
 		Session:           session,
 		ShipmentManager:   shipmentManager,
 		ShippingAggregate: shippingCommandBus,
 		OrderStore:        orderStoreInterface,
 	}
-	shopSettingQuery := query12.NewShopSettingQuery(mainDB)
-	settingQueryBus := query12.ShopSettingQueryMessageBus(shopSettingQuery)
-	shopSettingAggregate := aggregate10.NewShopSettingAggregate(mainDB, addressCommandBus)
-	settingCommandBus := aggregate10.ShopSettingAggregateMessageBus(shopSettingAggregate)
+	shopSettingQuery := query10.NewShopSettingQuery(mainDB)
+	settingQueryBus := query10.ShopSettingQueryMessageBus(shopSettingQuery)
+	shopSettingAggregate := aggregate8.NewShopSettingAggregate(mainDB, addressCommandBus)
+	settingCommandBus := aggregate8.ShopSettingAggregateMessageBus(shopSettingAggregate)
 	settingService := &setting.SettingService{
 		Session:      session,
 		SettingQuery: settingQueryBus,
@@ -517,7 +470,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		IdentityQuery:      queryBus,
 		AccountshipnowAggr: accountshipnowCommandBus,
 	}
-	shopServers := fabo.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, exportExportService, notificationService, authorizeService, carrierService, stocktakeService, shipmentService, settingService, connectionService)
+	shopServers := fabo2.NewServers(store, shopMiscService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, exportExportService, notificationService, authorizeService, shipmentService, settingService, connectionService)
 	fbPageQuery := fbpage.NewFbPageQuery(mainDB)
 	fbpagingQueryBus := fbpage.FbPageQueryMessageBus(fbPageQuery)
 	fbUserQuery := fbuser.NewFbUserQuery(mainDB, customeringQueryBus)
@@ -532,7 +485,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	fbuseringCommandBus := fbuser.FbUserAggregateMessageBus(fbUserAggregate)
 	appConfig := cfg.FacebookApp
 	fbClient := fbclient.New(appConfig)
-	pageService := &fabo2.PageService{
+	pageService := &fabo3.PageService{
 		Session:             session,
 		FaboInfo:            faboPagesKit,
 		FBExternalUserQuery: fbuseringQueryBus,
@@ -551,7 +504,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	fbmessagetemplateQueryBus := fbmessagetemplate.FbMessagingQueryMessageBus(fbMessageTemplateQuery)
 	fbMessageTemplateAggregate := fbmessagetemplate.NewFbMessageTemplateAggregate(mainDB)
 	fbmessagetemplateCommandBus := fbmessagetemplate.FbMessageTemplateAggregateMessageBus(fbMessageTemplateAggregate)
-	customerConversationService := &fabo2.CustomerConversationService{
+	customerConversationService := &fabo3.CustomerConversationService{
 		Session:                session,
 		FaboPagesKit:           faboPagesKit,
 		FBClient:               fbClient,
@@ -563,29 +516,29 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FbMessageTemplateQuery: fbmessagetemplateQueryBus,
 		FbMessageTemplateAggr:  fbmessagetemplateCommandBus,
 	}
-	faboCustomerService := &fabo2.CustomerService{
+	faboCustomerService := &fabo3.CustomerService{
 		Session:        session,
 		CustomerQuery:  customeringQueryBus,
 		FBUseringQuery: fbuseringQueryBus,
 		FBUseringAggr:  fbuseringCommandBus,
 	}
-	shopService := &fabo2.ShopService{
+	shopService := &fabo3.ShopService{
 		Session:             session,
 		FBExternalUserQuery: fbuseringQueryBus,
 		FBExternalUserAggr:  fbuseringCommandBus,
 	}
-	extraShipmentService := &fabo2.ExtraShipmentService{
+	extraShipmentService := &fabo3.ExtraShipmentService{
 		Session:      session,
 		ShippingQS:   shippingQueryBus,
 		ConnectionQS: connectioningQueryBus,
 	}
-	dashboardQuery := query13.NewDashboardQuery(mainDB, store)
-	summaryQueryBus := query13.DashboardQueryMessageBus(dashboardQuery)
-	summaryService := &fabo2.SummaryService{
+	dashboardQuery := query11.NewDashboardQuery(mainDB, store)
+	summaryQueryBus := query11.DashboardQueryMessageBus(dashboardQuery)
+	summaryService := &fabo3.SummaryService{
 		Session:      session,
 		SummaryQuery: summaryQueryBus,
 	}
-	faboServers := fabo2.NewServers(pageService, customerConversationService, faboCustomerService, shopService, extraShipmentService, summaryService, store)
+	faboServers := fabo3.NewServers(pageService, customerConversationService, faboCustomerService, shopService, extraShipmentService, summaryService, store)
 	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
 	webhookService := &sadmin.WebhookService{
 		Session:                session,
@@ -619,7 +572,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, import3, session)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
-	faboImageHandler := fabo3.BuildFaboImageHandler()
+	faboImageHandler := fabo4.BuildFaboImageHandler()
 	mainServer := BuildMainServer(service, intHandlers, sharedConfig, importHandler, eventStreamHandler, downloadHandler, faboImageHandler)
 	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook
@@ -637,6 +590,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	processManager := pm.New(busBus, catalogQueryBus, catalogCommandBus)
 	pmProcessManager := pm2.New(busBus, queryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus, accountUserStoreInterface)
 	affiliateCommandBus := _wireAffiliateCommandBusValue
+	inventoryAggregate := aggregatex.NewAggregateInventory(busBus, mainDB, stocktakingQueryBus, catalogQueryBus, orderStoreInterface)
+	inventoryCommandBus := aggregatex.InventoryAggregateMessageBus(inventoryAggregate)
 	shipnowQueryService := shipnow.NewQueryService(mainDB)
 	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
 	processManager2 := pm3.New(busBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus, shipnowQueryBus)
@@ -670,9 +625,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 }
 
 var (
-	_wireQueryBusValue               = tradering.QueryBus{}
-	_wireAccountshipnowQueryBusValue = accountshipnow.QueryBus{}
-	_wireCommandBusValue             = accountshipnow.CommandBus{}
-	_wireAffiliateCommandBusValue    = affiliate.CommandBus{}
-	_wireCreditQueryBusValue         = credit.QueryBus{}
+	_wireQueryBusValue            = accountshipnow.QueryBus{}
+	_wireCommandBusValue          = accountshipnow.CommandBus{}
+	_wireAffiliateCommandBusValue = affiliate.CommandBus{}
+	_wireCreditQueryBusValue      = credit.QueryBus{}
 )

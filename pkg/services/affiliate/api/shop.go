@@ -11,7 +11,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etc/idutil"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -40,11 +40,11 @@ func (s *ShopService) GetProductPromotion(ctx context.Context, q *api.GetProduct
 	if q.ReferralCode.Valid {
 		commissionSetting, err := GetCommissionSettingByReferralCode(ctx, s.AffiliateQuery, q.ReferralCode.String, q.ProductId)
 		if err == nil {
-			pbReferralDiscount = convertpb.PbCommissionSetting(commissionSetting)
+			pbReferralDiscount = convertpball.PbCommissionSetting(commissionSetting)
 		}
 	}
 	result := &api.GetProductPromotionResponse{
-		Promotion:        convertpb.PbProductPromotion(promotionQuery.Result),
+		Promotion:        convertpball.PbProductPromotion(promotionQuery.Result),
 		ReferralDiscount: pbReferralDiscount,
 	}
 	return result, nil
@@ -72,7 +72,7 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *pbcm.CommonListReq
 		productPromotion := productPromotionMap[p.ProductID]
 		var pbProductPromotion *api.ProductPromotion = nil
 		if productPromotion != nil {
-			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
+			pbProductPromotion = convertpball.PbProductPromotion(productPromotion)
 		}
 		productResult := product.PbShopProductWithVariants(p)
 		productResult, err := trading.PopulateTradingProductWithInventoryCount(ctx, s.InventoryQuery, productResult)
@@ -113,9 +113,9 @@ func (s *ShopService) CheckReferralCodeValid(ctx context.Context, q *api.CheckRe
 	if err != nil {
 		return nil, cm.Errorf(cm.ValidationFailed, nil, "Không thể sử dụng mã giới thiệu của chính bạn")
 	}
-	pbReferralDiscount := convertpb.PbCommissionSetting(commissionSetting)
+	pbReferralDiscount := convertpball.PbCommissionSetting(commissionSetting)
 	result := &api.GetProductPromotionResponse{
-		Promotion:        convertpb.PbProductPromotion(promotionQuery.Result),
+		Promotion:        convertpball.PbProductPromotion(promotionQuery.Result),
 		ReferralDiscount: pbReferralDiscount,
 	}
 	return result, nil

@@ -23,7 +23,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/validate"
-	convertpb2 "o.o/backend/pkg/etop/apix/convertpb"
+	convertxmin "o.o/backend/pkg/etop/apix/convertpb/_min"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/fabo/convertpb"
 	"o.o/backend/pkg/fabo/faboinfo"
@@ -1257,7 +1257,7 @@ func (s *CustomerConversationService) buildFbCustomerConversations(
 	customerConversations := convertpb.PbFbCustomerConversations(listCustomerConversations)
 	for index, conversation := range customerConversations {
 		if mapExternalIDFbUser[conversation.ExternalUserID] != nil {
-			customerConversations[index].Customer = convertpb2.PbShopCustomer(mapExternalIDFbUser[conversation.ExternalUserID].ShopCustomer)
+			customerConversations[index].Customer = convertxmin.PbShopCustomer(mapExternalIDFbUser[conversation.ExternalUserID].ShopCustomer)
 		}
 
 		tagIDs, ok := mapFbExternalUserIDTagIds[conversation.ExternalUserID]

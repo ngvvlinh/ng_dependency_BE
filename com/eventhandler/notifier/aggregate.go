@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"o.o/api/main/notify"
-	"o.o/api/main/shipnow/carrier"
 	"o.o/backend/com/eventhandler/notifier/sqlstore"
 	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
@@ -14,7 +13,7 @@ import (
 
 var _ notify.Aggregate = &Aggregate{}
 
-func NewNotifyAggregate(db com.MainDB, carrierManager carrier.Manager) *Aggregate {
+func NewNotifyAggregate(db com.MainDB) *Aggregate {
 	return &Aggregate{
 		db:                     db,
 		userNotifySettingStore: sqlstore.NewUserNotiSettingStore(db),

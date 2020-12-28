@@ -8,7 +8,7 @@ import (
 	inttypes "o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 )
 
@@ -28,7 +28,7 @@ func (s *MoneyTransactionService) GetMoneyTransaction(ctx context.Context, q *pb
 	if err := s.MoneyTxQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbMoneyTxShipping(query.Result)
+	result := convertpball.PbMoneyTxShipping(query.Result)
 	return result, nil
 }
 
@@ -44,7 +44,7 @@ func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *a
 	}
 	result := &inttypes.MoneyTransactionsResponse{
 		Paging:            cmapi.PbMetaPageInfo(query.Result.Paging),
-		MoneyTransactions: convertpb.PbMoneyTxShippings(query.Result.MoneyTxShippings),
+		MoneyTransactions: convertpball.PbMoneyTxShippings(query.Result.MoneyTxShippings),
 	}
 	return result, nil
 }

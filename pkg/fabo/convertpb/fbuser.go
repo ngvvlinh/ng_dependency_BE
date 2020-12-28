@@ -4,7 +4,7 @@ import (
 	"o.o/api/fabo/fbusering"
 	"o.o/api/shopping/customering"
 	"o.o/api/top/int/fabo"
-	"o.o/backend/pkg/etop/apix/convertpb"
+	convertxmin "o.o/backend/pkg/etop/apix/convertpb/_min"
 	"o.o/capi/dot"
 )
 
@@ -54,7 +54,7 @@ func PbFbUserWithCustomer(m *fbusering.FbExternalUser, c *customering.ShopCustom
 	}
 	if c != nil {
 		result.CustomerID = c.ID
-		result.Customer = convertpb.PbShopCustomer(c)
+		result.Customer = convertxmin.PbShopCustomer(c)
 	}
 	result.TagIDS = m.TagIDs
 	return result
@@ -81,7 +81,7 @@ func PbExternalUserWithCustomer(m *fbusering.FbExternalUserWithCustomer) *fabo.F
 		CreatedAt:  m.FbExternalUser.CreatedAt,
 		UpdatedAt:  m.FbExternalUser.UpdatedAt,
 		CustomerID: customerID,
-		Customer:   convertpb.PbShopCustomer(m.ShopCustomer),
+		Customer:   convertxmin.PbShopCustomer(m.ShopCustomer),
 		TagIDS:     m.TagIDs,
 	}
 }

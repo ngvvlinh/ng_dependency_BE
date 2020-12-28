@@ -8,7 +8,7 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_tag"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/etop/api"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
@@ -60,7 +60,7 @@ func (s *MiscService) adminCreateLoginResponse(ctx context.Context, adminID, use
 		return nil, cm.Error(cm.InvalidArgument, "Missing AdminID", nil)
 	}
 
-	resp, err := api.CreateLoginResponse(ctx, nil, "", userID, nil, accountID, 0, false, adminID)
+	resp, err := apiroot.CreateLoginResponse(ctx, nil, "", userID, nil, accountID, 0, false, adminID)
 	if err != nil {
 		return nil, err
 	}

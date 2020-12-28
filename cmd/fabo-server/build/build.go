@@ -3,7 +3,6 @@ package build
 import (
 	"net/http"
 
-	shipnowcarrier "o.o/api/main/shipnow/carrier"
 	"o.o/backend/cmd/fabo-server/config"
 	config_server "o.o/backend/cogs/config/_server"
 	server_fabo "o.o/backend/cogs/server/fabo"
@@ -28,7 +27,7 @@ import (
 	"o.o/backend/pkg/common/lifecycle"
 	"o.o/backend/pkg/common/metrics"
 	"o.o/backend/pkg/common/sql/sqltrace"
-	"o.o/backend/pkg/etop/api"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/auth"
@@ -82,7 +81,7 @@ func BuildServers(
 type IntHandlers []httprpc.Server
 
 func BuildIntHandlers(
-	rootServers api.Servers,
+	rootServers apiroot.Servers,
 	shopServers shop.Servers,
 	faboServers fabo.Servers,
 	sadminServers sadmin.Servers,
@@ -163,10 +162,6 @@ func BuildWebhookServer(
 		Handler: mux,
 	}
 	return svr
-}
-
-func SupportedShipnowManager() shipnowcarrier.Manager {
-	return nil
 }
 
 func ProvidePolicy() auth.Policy { return authfabo.Policy }

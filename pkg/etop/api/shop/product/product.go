@@ -557,7 +557,6 @@ func GetProductQuantity(ctx context.Context, inventoryQuery inventory.QueryBus, 
 }
 
 func getVariantsQuantity(ctx context.Context, inventoryQuery inventory.QueryBus, shopID dot.ID, variantIDs []dot.ID) (map[dot.ID]*inventory.InventoryVariant, error) {
-
 	var mapInventoryVariant = make(map[dot.ID]*inventory.InventoryVariant)
 	if len(variantIDs) == 0 {
 		return mapInventoryVariant, nil

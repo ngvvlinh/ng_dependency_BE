@@ -12,7 +12,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etc/idutil"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -56,12 +56,12 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *pbcm.CommonL
 		supplyCommissionSetting := supplyCommissionSettingMap[p.ProductID]
 		var pbSupplyCommissionSetting *api.SupplyCommissionSetting = nil
 		if supplyCommissionSetting != nil {
-			pbSupplyCommissionSetting = convertpb.PbSupplyCommissionSetting(supplyCommissionSetting)
+			pbSupplyCommissionSetting = convertpball.PbSupplyCommissionSetting(supplyCommissionSetting)
 		}
 		productPromotion := productPromotionMap[p.ProductID]
 		var pbProductPromotion *api.ProductPromotion = nil
 		if productPromotion != nil {
-			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
+			pbProductPromotion = convertpball.PbProductPromotion(productPromotion)
 		}
 		productResult := product.PbShopProductWithVariants(p)
 		productResult, err := trading.PopulateTradingProductWithInventoryCount(ctx, s.InventoryQuery, productResult)
@@ -99,7 +99,7 @@ func (s *TradingService) GetTradingProductPromotions(ctx context.Context, q *pbc
 
 	result := &api.GetProductPromotionsResponse{
 		Paging:     cmapi.PbPageInfo(paging),
-		Promotions: convertpb.PbProductPromotions(query.Result.Promotions),
+		Promotions: convertpball.PbProductPromotions(query.Result.Promotions),
 	}
 	return result, nil
 }
@@ -132,7 +132,7 @@ func (s *TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Cont
 		return nil, err
 	}
 
-	result := convertpb.PbSupplyCommissionSetting(cmd.Result)
+	result := convertpball.PbSupplyCommissionSetting(cmd.Result)
 
 	return result, nil
 }
@@ -149,7 +149,7 @@ func (s *TradingService) GetTradingProductPromotionByProductIDs(ctx context.Cont
 		return nil, err
 	}
 	result := &api.GetTradingProductPromotionByIDsResponse{
-		Promotions: convertpb.PbProductPromotions(productPromotionsQ.Result),
+		Promotions: convertpball.PbProductPromotions(productPromotionsQ.Result),
 	}
 	return result, nil
 }
@@ -179,7 +179,7 @@ func (s *TradingService) CreateTradingProductPromotion(ctx context.Context, q *a
 	if err := s.AffiliateAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbProductPromotion(cmd.Result)
+	result := convertpball.PbProductPromotion(cmd.Result)
 	return result, nil
 }
 
@@ -199,6 +199,6 @@ func (s *TradingService) UpdateTradingProductPromotion(ctx context.Context, q *a
 	if err := s.AffiliateAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbProductPromotion(cmd.Result)
+	result := convertpball.PbProductPromotion(cmd.Result)
 	return result, nil
 }

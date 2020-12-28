@@ -11,7 +11,7 @@ import (
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 )
 
@@ -43,7 +43,7 @@ func (s *SubscriptionService) CreateSubscriptionProduct(ctx context.Context, r *
 	if err := s.SubrProductAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbSubrProduct(cmd.Result)
+	result := convertpball.PbSubrProduct(cmd.Result)
 	return result, nil
 }
 
@@ -52,7 +52,7 @@ func (s *SubscriptionService) GetSubscriptionProducts(ctx context.Context, r *pb
 	if err := s.SubrProductQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	res := convertpb.PbSubrProducts(query.Result)
+	res := convertpball.PbSubrProducts(query.Result)
 	result := &types.GetSubrProductsResponse{
 		SubscriptionProducts: res,
 	}
@@ -82,7 +82,7 @@ func (s *SubscriptionService) CreateSubscriptionPlan(ctx context.Context, r *typ
 	if err := s.SubrPlanAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbSubrPlan(cmd.Result)
+	result := convertpball.PbSubrPlan(cmd.Result)
 	return result, nil
 }
 
@@ -109,7 +109,7 @@ func (s *SubscriptionService) GetSubscriptionPlans(ctx context.Context, r *pbcm.
 		return nil, err
 	}
 	result := &types.GetSubrPlansResponse{
-		SubscriptionPlans: convertpb.PbSubrPlans(query.Result),
+		SubscriptionPlans: convertpball.PbSubrPlans(query.Result),
 	}
 	return result, nil
 }
@@ -133,7 +133,7 @@ func (s *SubscriptionService) GetSubscription(ctx context.Context, r *types.Subs
 	if err := s.SubscriptionQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbSubscription(query.Result)
+	result := convertpball.PbSubscription(query.Result)
 	return result, nil
 }
 
@@ -148,7 +148,7 @@ func (s *SubscriptionService) GetSubscriptions(ctx context.Context, r *types.Get
 		return nil, err
 	}
 	result := &types.GetSubscriptionsResponse{
-		Subscriptions: convertpb.PbSubscriptions(query.Result.Subscriptions),
+		Subscriptions: convertpball.PbSubscriptions(query.Result.Subscriptions),
 		Paging:        cmapi.PbMetaPageInfo(query.Result.Paging),
 	}
 	return result, nil
@@ -158,14 +158,14 @@ func (s *SubscriptionService) CreateSubscription(ctx context.Context, r *types.C
 	cmd := &subscription.CreateSubscriptionCommand{
 		AccountID:            r.AccountID,
 		CancelAtPeriodEnd:    r.CancelAtPeriodEnd,
-		Lines:                convertpb.Convert_api_SubscriptionLines_To_core_SubscriptionLines(r.Lines),
+		Lines:                convertpball.Convert_api_SubscriptionLines_To_core_SubscriptionLines(r.Lines),
 		BillingCycleAnchorAt: r.BillingCycleAnchorAt.ToTime(),
-		Customer:             convertpb.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
+		Customer:             convertpball.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
 	}
 	if err := s.SubscriptionAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbSubscription(cmd.Result)
+	result := convertpball.PbSubscription(cmd.Result)
 	return result, nil
 }
 
@@ -175,8 +175,8 @@ func (s *SubscriptionService) UpdateSubscriptionInfo(ctx context.Context, r *typ
 		AccountID:            r.AccountID,
 		CancelAtPeriodEnd:    r.CancelAtPeriodEnd,
 		BillingCycleAnchorAt: r.BillingCycleAnchorAt.ToTime(),
-		Customer:             convertpb.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
-		Lines:                convertpb.Convert_api_SubscriptionLines_To_core_SubscriptionLines(r.Lines),
+		Customer:             convertpball.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
+		Lines:                convertpball.Convert_api_SubscriptionLines_To_core_SubscriptionLines(r.Lines),
 	}
 	if err := s.SubscriptionAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -231,7 +231,7 @@ func (s *SubscriptionService) GetSubscriptionBills(ctx context.Context, r *types
 	if err := s.SubrBillQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	res := convertpb.PbSubrBills(query.Result.SubscriptionBills)
+	res := convertpball.PbSubrBills(query.Result.SubscriptionBills)
 	result := &types.GetSubscriptionBillsResponse{
 		SubscriptionBills: res,
 		Paging:            cmapi.PbMetaPageInfo(query.Result.Paging),
@@ -244,13 +244,13 @@ func (s *SubscriptionService) CreateSubscriptionBill(ctx context.Context, r *typ
 		SubscriptionID: r.SubscriptionID,
 		AccountID:      r.AccountID,
 		TotalAmount:    r.TotalAmount,
-		Customer:       convertpb.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
+		Customer:       convertpball.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
 		Description:    r.Description,
 	}
 	if err := s.SubrBillAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbSubrBill(cmd.Result)
+	result := convertpball.PbSubrBill(cmd.Result)
 	return result, nil
 }
 

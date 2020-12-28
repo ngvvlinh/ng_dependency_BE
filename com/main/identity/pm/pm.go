@@ -51,7 +51,6 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.InvitationAccepted)
 	eventBus.AddEventListener(m.AddressCreated)
 	eventBus.AddEventListener(m.DefaultAddressUpdated)
-	eventBus.AddEventListener(m.ExtensionCreatingEvent)
 }
 
 func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitation.InvitationAcceptedEvent) error {

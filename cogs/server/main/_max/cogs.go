@@ -3,10 +3,10 @@ package server_max
 import (
 	_main "o.o/backend/cogs/server/main"
 	"o.o/backend/pkg/common/apifw/captcha"
-	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
 	affapi "o.o/backend/pkg/etop/api/affiliate"
 	"o.o/backend/pkg/etop/api/integration"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/apix/mc/vht"
@@ -23,7 +23,7 @@ import (
 )
 
 func BuildIntHandlers(
-	rootServers api.Servers,
+	rootServers apiroot.Servers,
 	shopServers shop.Servers,
 	adminServers admin.Servers,
 	sadminServers sadmin.Servers,

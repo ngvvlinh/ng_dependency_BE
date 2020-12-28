@@ -12,6 +12,7 @@ import (
 	common "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/apix/convertpb"
+	convertxmin "o.o/backend/pkg/etop/apix/convertpb/_min"
 	"o.o/capi/dot"
 )
 
@@ -25,7 +26,7 @@ func (s *Shopping) GetCustomer(ctx context.Context, shopID dot.ID, request *exte
 	if err := s.CustomerQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	return convertpb.PbShopCustomer(query.Result), nil
+	return convertxmin.PbShopCustomer(query.Result), nil
 }
 
 func (s *Shopping) ListCustomers(ctx context.Context, shopID dot.ID, request *externaltypes.ListCustomersRequest) (*externaltypes.CustomersResponse, error) {
@@ -71,7 +72,7 @@ func (s *Shopping) CreateCustomer(ctx context.Context, shopID dot.ID, partnerID 
 	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return convertpb.PbShopCustomer(cmd.Result), nil
+	return convertxmin.PbShopCustomer(cmd.Result), nil
 }
 
 func (s *Shopping) UpdateCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.UpdateCustomerRequest) (*externaltypes.Customer, error) {
@@ -96,7 +97,7 @@ func (s *Shopping) UpdateCustomer(ctx context.Context, shopID dot.ID, request *e
 	if err := s.CustomerAggregate.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	return convertpb.PbShopCustomer(cmd.Result), nil
+	return convertxmin.PbShopCustomer(cmd.Result), nil
 }
 
 func (s *Shopping) DeleteCustomer(ctx context.Context, shopID dot.ID, request *externaltypes.DeleteCustomerRequest) (*cm.Empty, error) {

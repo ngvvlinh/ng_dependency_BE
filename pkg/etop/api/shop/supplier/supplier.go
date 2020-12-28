@@ -14,7 +14,7 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	shop2 "o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
@@ -40,7 +40,7 @@ func (s *SupplierService) GetSupplier(ctx context.Context, r *pbcm.IDRequest) (*
 	if err := s.SupplierQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbSupplier(query.Result)
+	result := convertpball.PbSupplier(query.Result)
 
 	if err := s.listLiabilities(ctx, s.SS.Shop().ID, []*shop.Supplier{result}); err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (s *SupplierService) GetSuppliers(ctx context.Context, r *api.GetSuppliersR
 		return nil, err
 	}
 	result := &api.SuppliersResponse{
-		Suppliers: convertpb.PbSuppliers(query.Result.Suppliers),
+		Suppliers: convertpball.PbSuppliers(query.Result.Suppliers),
 		Paging:    cmapi.PbPageInfo(paging),
 	}
 
@@ -77,7 +77,7 @@ func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *pbcm.IDsRequ
 	if err := s.SupplierQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := &api.SuppliersResponse{Suppliers: convertpb.PbSuppliers(query.Result.Suppliers)}
+	result := &api.SuppliersResponse{Suppliers: convertpball.PbSuppliers(query.Result.Suppliers)}
 
 	if err := s.listLiabilities(ctx, s.SS.Shop().ID, result.Suppliers); err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func (s *SupplierService) CreateSupplier(ctx context.Context, r *api.CreateSuppl
 			if err := s.SupplierAggr.Dispatch(ctx, cmd); err != nil {
 				return nil, err
 			}
-			result := convertpb.PbSupplier(cmd.Result)
+			result := convertpball.PbSupplier(cmd.Result)
 			return result, nil
 		})
 
@@ -130,7 +130,7 @@ func (s *SupplierService) UpdateSupplier(ctx context.Context, r *api.UpdateSuppl
 	if err := s.SupplierAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbSupplier(cmd.Result)
+	result := convertpball.PbSupplier(cmd.Result)
 	return result, nil
 }
 
@@ -208,7 +208,7 @@ func (s *SupplierService) GetSuppliersByVariantID(ctx context.Context, r *api.Ge
 	if err := s.SupplierQuery.Dispatch(ctx, querySuppplies); err != nil {
 		return nil, err
 	}
-	result := &api.SuppliersResponse{Suppliers: convertpb.PbSuppliers(querySuppplies.Result.Suppliers)}
+	result := &api.SuppliersResponse{Suppliers: convertpball.PbSuppliers(querySuppplies.Result.Suppliers)}
 
 	if err := s.listLiabilities(ctx, s.SS.Shop().ID, result.Suppliers); err != nil {
 		return nil, err

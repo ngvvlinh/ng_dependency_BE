@@ -1827,168 +1827,6 @@
         }
       }
     },
-    "/api/shop.Etelecom/CreateExtension": {
-      "post": {
-        "tags": [
-          "Etelecom"
-        ],
-        "summary": "CreateExtension",
-        "operationId": "shop.Etelecom-CreateExtension",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/flCreateExtensionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/flExtension"
-            }
-          }
-        }
-      }
-    },
-    "/api/shop.Etelecom/CreateUserAndAssignExtension": {
-      "post": {
-        "tags": [
-          "Etelecom"
-        ],
-        "summary": "CreateUserAndAssignExtension",
-        "operationId": "shop.Etelecom-CreateUserAndAssignExtension",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/paCreateUserAndAssignExtensionRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktMessageResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/shop.Etelecom/GetCallLogs": {
-      "post": {
-        "tags": [
-          "Etelecom"
-        ],
-        "summary": "GetCallLogs",
-        "operationId": "shop.Etelecom-GetCallLogs",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/flGetCallLogsRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/flGetCallLogsResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/shop.Etelecom/GetExtensions": {
-      "post": {
-        "tags": [
-          "Etelecom"
-        ],
-        "summary": "GetExtensions",
-        "operationId": "shop.Etelecom-GetExtensions",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/flGetExtensionsRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/flGetExtensionsResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/shop.Etelecom/GetHotlines": {
-      "post": {
-        "tags": [
-          "Etelecom"
-        ],
-        "summary": "GetHotlines",
-        "operationId": "shop.Etelecom-GetHotlines",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/flGetHotLinesResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/shop.Etelecom/SummaryEtelecom": {
-      "post": {
-        "tags": [
-          "Etelecom"
-        ],
-        "summary": "SummaryEtelecom",
-        "operationId": "shop.Etelecom-SummaryEtelecom",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/paSummaryEtelecomRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/paSummaryEtelecomResponse"
-            }
-          }
-        }
-      }
-    },
     "/api/shop.Export/GetExports": {
       "post": {
         "tags": [
@@ -7674,214 +7512,6 @@
         "cancel"
       ]
     },
-    "flCallLog": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "audio_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "call_state": {
-          "$ref": "#/definitions/jwCallState"
-        },
-        "call_status": {
-          "$ref": "#/definitions/bnStatus"
-        },
-        "callee": {
-          "type": "string"
-        },
-        "caller": {
-          "type": "string"
-        },
-        "contact_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "direction": {
-          "$ref": "#/definitions/jfCallLogDirection"
-        },
-        "duration": {
-          "type": "integer"
-        },
-        "duration_postage": {
-          "description": "Đơn vị: phút\n",
-          "type": "integer"
-        },
-        "ended_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "extension_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "external_call_status": {
-          "type": "string"
-        },
-        "external_direction": {
-          "type": "string"
-        },
-        "external_id": {
-          "type": "string"
-        },
-        "hotline_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "postage": {
-          "type": "integer"
-        },
-        "started_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "flCallLogsFilter": {
-      "type": "object",
-      "properties": {
-        "extension_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "hotline_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        }
-      }
-    },
-    "flCreateExtensionRequest": {
-      "type": "object",
-      "properties": {
-        "hotline_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "user_id": {
-          "description": "user_id: nhân viên của shop, người được gán vào extension\n",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "flExtension": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "extension_number": {
-          "type": "string"
-        },
-        "extension_password": {
-          "type": "string"
-        },
-        "hotline_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "tenant_domain": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "flGetCallLogsRequest": {
-      "type": "object",
-      "properties": {
-        "filter": {
-          "$ref": "#/definitions/flCallLogsFilter"
-        },
-        "paging": {
-          "$ref": "#/definitions/ktCursorPaging"
-        }
-      }
-    },
-    "flGetCallLogsResponse": {
-      "type": "object",
-      "properties": {
-        "call_logs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/flCallLog"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/ktCursorPageInfo"
-        }
-      }
-    },
-    "flGetExtensionsRequest": {
-      "type": "object",
-      "properties": {
-        "hotline_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "flGetExtensionsResponse": {
-      "type": "object",
-      "properties": {
-        "extensions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/flExtension"
-          }
-        }
-      }
-    },
-    "flGetHotLinesResponse": {
-      "type": "object",
-      "properties": {
-        "hotlines": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/flHotline"
-          }
-        }
-      }
-    },
     "flGetTicketsByRefTicketIDRequest": {
       "type": "object",
       "properties": {
@@ -7899,52 +7529,6 @@
           "items": {
             "$ref": "#/definitions/flTicket"
           }
-        }
-      }
-    },
-    "flHotline": {
-      "type": "object",
-      "properties": {
-        "connection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "connection_method": {
-          "$ref": "#/definitions/cdConnectionMethod"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "description": {
-          "type": "string"
-        },
-        "hotline": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "is_free_charge": {
-          "type": "boolean"
-        },
-        "name": {
-          "type": "string"
-        },
-        "network": {
-          "$ref": "#/definitions/tcMobileNetwork"
-        },
-        "owner_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "status": {
-          "$ref": "#/definitions/blStatus"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
         }
       }
     },
@@ -8140,15 +7724,6 @@
         "discard"
       ]
     },
-    "jfCallLogDirection": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "in",
-        "out",
-        "ext"
-      ]
-    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -8158,14 +7733,6 @@
         "affiliate",
         "carrier",
         "etop"
-      ]
-    },
-    "jwCallState": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "answered",
-        "not_answered"
       ]
     },
     "kfFullTextSearch": {
@@ -8185,46 +7752,6 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
-        }
-      }
-    },
-    "ktCursorPageInfo": {
-      "type": "object",
-      "properties": {
-        "after": {
-          "type": "string"
-        },
-        "before": {
-          "type": "string"
-        },
-        "limit": {
-          "type": "integer"
-        },
-        "next": {
-          "type": "string"
-        },
-        "prev": {
-          "type": "string"
-        },
-        "sort": {
-          "type": "string"
-        }
-      }
-    },
-    "ktCursorPaging": {
-      "type": "object",
-      "properties": {
-        "after": {
-          "type": "string"
-        },
-        "before": {
-          "type": "string"
-        },
-        "limit": {
-          "type": "integer"
-        },
-        "sort": {
-          "type": "string"
         }
       }
     },
@@ -9733,24 +9260,6 @@
           "$ref": "#/definitions/fpTicketSource"
         },
         "title": {
-          "type": "string"
-        }
-      }
-    },
-    "paCreateUserAndAssignExtensionRequest": {
-      "type": "object",
-      "properties": {
-        "full_name": {
-          "type": "string"
-        },
-        "hotline_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "password": {
-          "type": "string"
-        },
-        "phone": {
           "type": "string"
         }
       }
@@ -13196,28 +12705,6 @@
         },
         "unit": {
           "type": "string"
-        }
-      }
-    },
-    "paSummaryEtelecomRequest": {
-      "type": "object",
-      "properties": {
-        "date_from": {
-          "type": "string"
-        },
-        "date_to": {
-          "type": "string"
-        }
-      }
-    },
-    "paSummaryEtelecomResponse": {
-      "type": "object",
-      "properties": {
-        "tables": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/paSummaryTable"
-          }
         }
       }
     },
@@ -17681,16 +17168,6 @@
         "ahamove"
       ]
     },
-    "tcMobileNetwork": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "mobiphone",
-        "vinaphone",
-        "viettel",
-        "other"
-      ]
-    },
     "ueWsBannerShowStyle": {
       "type": "string",
       "enum": [
@@ -17797,9 +17274,6 @@
     },
     {
       "name": "CustomerGroup"
-    },
-    {
-      "name": "Etelecom"
     },
     {
       "name": "Export"

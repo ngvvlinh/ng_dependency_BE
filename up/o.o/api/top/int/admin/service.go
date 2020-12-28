@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 
+	etelecomtypes "o.o/api/top/int/etelecom/types"
 	etop "o.o/api/top/int/etop"
 	shoptypes "o.o/api/top/int/shop/types"
 	"o.o/api/top/int/types"
@@ -217,6 +218,6 @@ type TicketService interface {
 
 // +apix:path=/admin.Etelecom
 type EtelecomService interface {
-	CreateHotline(context.Context, *CreateHotlineRequest) (*shoptypes.Hotline, error)
-	UpdateHotline(context.Context, *UpdateHotlineRequest) (*cm.UpdatedResponse, error)
+	CreateHotline(context.Context, *etelecomtypes.CreateHotlineRequest) (*etelecomtypes.Hotline, error)
+	UpdateHotline(context.Context, *etelecomtypes.UpdateHotlineRequest) (*cm.UpdatedResponse, error)
 }

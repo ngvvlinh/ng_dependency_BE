@@ -4,6 +4,7 @@ API Documentation:
 
 - [/doc/etop](/doc/etop) Shared API for managing login and account
 - [/doc/etop/shop](/doc/etop/shop) API for shops
+- [/doc/etop/etelecom](/doc/etop/etelecom) API for shops using eTelecom
 - [/doc/etop/affiliate](/doc/etop/affiliate) API for affiliates
 - [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service
 - [/doc/etop/integration](/doc/etop/integration) API for shop to integrate with external partners

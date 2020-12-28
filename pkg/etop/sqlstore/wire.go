@@ -21,7 +21,6 @@ var WireSet = wire.NewSet(
 	BindAddressStore, wire.Struct(new(AddressStore), "*"),
 	BindCategoryStore, wire.Struct(new(CategoryStore), "*"),
 	BindHistoryStore, wire.Struct(new(HistoryStore), "*"),
-	BindMoneyTxStore, wire.Struct(new(MoneyTxStore), "*"),
 	BindOrderStore, wire.Struct(new(OrderStore), "*"),
 	BindShopStore, wire.Struct(new(ShopStore), "*"),
 	BindShopVariantStore, wire.Struct(new(ShopVariantStore), "*"),

@@ -9,7 +9,7 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/credit_type"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 )
 
@@ -37,7 +37,7 @@ func (s *CreditService) CreateCredit(ctx context.Context, q *admin.CreateCreditR
 	if err := s.CreditAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.Convert_core_CreditExtended_to_api_Credit(cmd.Result)
+	result := convertpball.Convert_core_CreditExtended_to_api_Credit(cmd.Result)
 	return result, nil
 }
 
@@ -49,7 +49,7 @@ func (s *CreditService) GetCredit(ctx context.Context, q *admin.GetCreditRequest
 	if err := s.CreditQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.Convert_core_CreditExtended_to_api_Credit(query.Result)
+	result := convertpball.Convert_core_CreditExtended_to_api_Credit(query.Result)
 	return result, nil
 }
 
@@ -63,7 +63,7 @@ func (s *CreditService) GetCredits(ctx context.Context, q *admin.GetCreditsReque
 		return nil, err
 	}
 	result := &etop.CreditsResponse{
-		Credits: convertpb.Convert_core_CreditExtendeds_to_api_Credits(query.Result.Credits),
+		Credits: convertpball.Convert_core_CreditExtendeds_to_api_Credits(query.Result.Credits),
 		Paging:  cmapi.PbPageInfo(paging),
 	}
 	return result, nil

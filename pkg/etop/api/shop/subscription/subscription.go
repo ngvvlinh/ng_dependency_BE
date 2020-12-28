@@ -7,7 +7,7 @@ import (
 	api "o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 )
 
@@ -30,7 +30,7 @@ func (s *SubscriptionService) GetSubscription(ctx context.Context, r *types.Subs
 	if err := s.SubscriptionQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbSubscription(query.Result)
+	result := convertpball.PbSubscription(query.Result)
 	return result, nil
 }
 
@@ -44,7 +44,7 @@ func (s *SubscriptionService) GetSubscriptions(ctx context.Context, r *types.Get
 		return nil, err
 	}
 	result := &types.GetSubscriptionsResponse{
-		Subscriptions: convertpb.PbSubscriptions(query.Result.Subscriptions),
+		Subscriptions: convertpball.PbSubscriptions(query.Result.Subscriptions),
 		Paging:        cmapi.PbMetaPageInfo(query.Result.Paging),
 	}
 	return result, nil

@@ -6,14 +6,14 @@ import (
 	api "o.o/api/top/int/shop"
 	"o.o/api/webserver"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/shop"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 )
 
 func (s *WebServerService) CreateWsPage(ctx context.Context, r *api.CreateWsPageRequest) (*api.WsPage, error) {
 	shopID := s.SS.Shop().ID
 	cmd := &webserver.CreateWsPageCommand{
 		ShopID:    shopID,
-		SEOConfig: shop.ConvertSEOConfig(r.SEOConfig),
+		SEOConfig: convertpball.ConvertSEOConfig(r.SEOConfig),
 		Name:      r.Name,
 		Slug:      r.Slug,
 		DescHTML:  r.DescHTML,
@@ -33,7 +33,7 @@ func (s *WebServerService) UpdateWsPage(ctx context.Context, r *api.UpdateWsPage
 	cmd := &webserver.UpdateWsPageCommand{
 		ShopID:    shopID,
 		ID:        r.ID,
-		SEOConfig: shop.ConvertSEOConfig(r.SEOConfig),
+		SEOConfig: convertpball.ConvertSEOConfig(r.SEOConfig),
 		Name:      r.Name,
 		Slug:      r.Slug,
 		DescHTML:  r.DescHTML,

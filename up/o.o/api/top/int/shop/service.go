@@ -452,19 +452,6 @@ type ContactService interface {
 	DeleteContact(context.Context, *DeleteContactRequest) (*DeleteContactResponse, error)
 }
 
-// +apix:path=/shop.Etelecom
-type EtelecomService interface {
-	GetExtensions(context.Context, *shoptypes.GetExtensionsRequest) (*shoptypes.GetExtensionsResponse, error)
-	CreateExtension(context.Context, *shoptypes.CreateExtensionRequest) (*shoptypes.Extension, error)
-
-	GetHotlines(context.Context, *cm.Empty) (*shoptypes.GetHotLinesResponse, error)
-	GetCallLogs(context.Context, *shoptypes.GetCallLogsRequest) (*shoptypes.GetCallLogsResponse, error)
-
-	SummaryEtelecom(context.Context, *SummaryEtelecomRequest) (*SummaryEtelecomResponse, error)
-
-	CreateUserAndAssignExtension(context.Context, *CreateUserAndAssignExtensionRequest) (*cm.MessageResponse, error)
-}
-
 // +apix:path=/shop.Setting
 type SettingService interface {
 	GetSetting(context.Context, *cm.Empty) (*ShopSetting, error)

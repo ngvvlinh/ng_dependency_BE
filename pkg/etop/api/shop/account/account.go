@@ -16,8 +16,8 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/validate"
-	etop "o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/tools/pkg/acl"
@@ -88,7 +88,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *api.UpdateShopReques
 				Email:     user.Email,
 				AccountId: s.SS.Shop().ID,
 			}
-			userService := etop.UserServiceImpl.Clone().(*etop.UserService)
+			userService := apiroot.UserServiceImpl.Clone().(*apiroot.UserService)
 			userService.Session = s.Session
 			result, err := userService.SendSTokenEmail(ctx, req)
 			if err != nil {

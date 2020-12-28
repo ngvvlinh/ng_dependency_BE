@@ -8,7 +8,7 @@ import (
 	api "o.o/api/top/int/shop"
 	"o.o/api/webserver"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	shop2 "o.o/backend/pkg/etop/api/shop"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/capi/dot"
 )
 
@@ -17,7 +17,7 @@ func (s *WebServerService) CreateOrUpdateWsCategory(ctx context.Context, r *api.
 	cmd := &webserver.CreateOrUpdateWsCategoryCommand{
 		ID:        r.CategoryID,
 		ShopID:    shopID,
-		SEOConfig: shop2.ConvertSEOConfig(r.SEOConfig),
+		SEOConfig: convertpball.ConvertSEOConfig(r.SEOConfig),
 		Slug:      r.Slug,
 		Appear:    r.Appear,
 		Image:     r.Image,

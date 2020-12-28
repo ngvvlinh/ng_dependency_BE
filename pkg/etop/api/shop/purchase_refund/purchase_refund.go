@@ -12,8 +12,7 @@ import (
 	pbcm "o.o/api/top/types/common"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/convertpb"
-	shop2 "o.o/backend/pkg/etop/api/shop"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	inventory2 "o.o/backend/pkg/etop/api/shop/inventory"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
@@ -58,7 +57,7 @@ func (s *PurchaseRefundService) CreatePurchaseRefund(ctx context.Context, q *api
 	if err != nil {
 		return nil, err
 	}
-	result := shop2.PbPurchaseRefund(cmd.Result)
+	result := convertpball.PbPurchaseRefund(cmd.Result)
 	result, err = s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return nil, err
@@ -94,7 +93,7 @@ func (s *PurchaseRefundService) UpdatePurchaseRefund(ctx context.Context, q *api
 	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err
 	}
-	result := shop2.PbPurchaseRefund(cmd.Result)
+	result := convertpball.PbPurchaseRefund(cmd.Result)
 	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return nil, err
@@ -120,7 +119,7 @@ func (s *PurchaseRefundService) ConfirmPurchaseRefund(ctx context.Context, q *ap
 	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err
 	}
-	result := shop2.PbPurchaseRefund(cmd.Result)
+	result := convertpball.PbPurchaseRefund(cmd.Result)
 	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return nil, err
@@ -146,7 +145,7 @@ func (s *PurchaseRefundService) CancelPurchaseRefund(ctx context.Context, q *api
 	if err := s.PurchaseRefundAggr.Dispatch(ctx, &cmd); err != nil {
 		return nil, err
 	}
-	result := shop2.PbPurchaseRefund(cmd.Result)
+	result := convertpball.PbPurchaseRefund(cmd.Result)
 	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return nil, err
@@ -174,7 +173,7 @@ func (s *PurchaseRefundService) GetPurchaseRefund(ctx context.Context, q *pbcm.I
 	if err := s.PurchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
 		return nil, err
 	}
-	result := shop2.PbPurchaseRefund(query.Result)
+	result := convertpball.PbPurchaseRefund(query.Result)
 	result, err := s.populatePurchaseRefundWithSupplier(ctx, result)
 	if err != nil {
 		return nil, err
@@ -183,7 +182,7 @@ func (s *PurchaseRefundService) GetPurchaseRefund(ctx context.Context, q *pbcm.I
 	if err != nil {
 		return nil, err
 	}
-	result.Supplier = convertpb.PbPurchaseOrderSupplier(queryPurchaseOrder.Result.Supplier)
+	result.Supplier = convertpball.PbPurchaseOrderSupplier(queryPurchaseOrder.Result.Supplier)
 	return result, nil
 }
 
@@ -196,7 +195,7 @@ func (s *PurchaseRefundService) GetPurchaseRefundsByIDs(ctx context.Context, q *
 	if err := s.PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	resp := shop2.PbPurchaseRefunds(query.Result)
+	resp := convertpball.PbPurchaseRefunds(query.Result)
 	var err error
 	if len(resp) > 0 {
 		resp, err = s.populatePurchaseRefundsWithSupplier(ctx, resp)
@@ -225,7 +224,7 @@ func (s *PurchaseRefundService) GetPurchaseRefunds(ctx context.Context, q *api.G
 	if err := s.PurchaseRefundQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	resp := shop2.PbPurchaseRefunds(query.Result.PurchaseRefunds)
+	resp := convertpball.PbPurchaseRefunds(query.Result.PurchaseRefunds)
 	var err error
 	if len(resp) > 0 {
 		resp, err = s.populatePurchaseRefundsWithSupplier(ctx, resp)
@@ -269,7 +268,7 @@ func (s *PurchaseRefundService) populatePurchaseRefundsWithSupplier(ctx context.
 	var supplierIDs []dot.ID
 	for key, value := range purchaseRefunds {
 		// Add supplier's information to purchaseRefunds
-		purchaseRefunds[key].Supplier = convertpb.PbPurchaseOrderSupplier(purchaseOrderMap[value.PurchaseOrderID].Supplier)
+		purchaseRefunds[key].Supplier = convertpball.PbPurchaseOrderSupplier(purchaseOrderMap[value.PurchaseOrderID].Supplier)
 		supplierID := purchaseOrderMap[value.PurchaseOrderID].SupplierID
 		if supplierID != 0 {
 			purchaseRefunds[key].SupplierID = supplierID
@@ -311,7 +310,7 @@ func (s *PurchaseRefundService) populatePurchaseRefundWithSupplier(ctx context.C
 		return nil, err
 	}
 	// Add supplier's information to purchase_refund
-	purchaseRefundArg.Supplier = convertpb.PbPurchaseOrderSupplier(queryPurchaseOrder.Result.Supplier)
+	purchaseRefundArg.Supplier = convertpball.PbPurchaseOrderSupplier(queryPurchaseOrder.Result.Supplier)
 	purchaseRefundArg.SupplierID = queryPurchaseOrder.Result.SupplierID
 	if queryPurchaseOrder.Result.SupplierID != 0 {
 		purchaseRefundArg.Supplier.Deleted = false

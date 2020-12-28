@@ -5,7 +5,7 @@ import (
 
 	"o.o/api/etelecom"
 	"o.o/api/top/int/admin"
-	shoptypes "o.o/api/top/int/shop/types"
+	etelecomtypes "o.o/api/top/int/etelecom/types"
 	pbcm "o.o/api/top/types/common"
 	shopetelecom "o.o/backend/pkg/etop/api/shop/etelecom"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -23,7 +23,7 @@ func (s *EtelecomService) Clone() admin.EtelecomService {
 	return &res
 }
 
-func (s *EtelecomService) CreateHotline(ctx context.Context, r *admin.CreateHotlineRequest) (*shoptypes.Hotline, error) {
+func (s *EtelecomService) CreateHotline(ctx context.Context, r *etelecomtypes.CreateHotlineRequest) (*etelecomtypes.Hotline, error) {
 	cmd := &etelecom.CreateHotlineCommand{
 		OwnerID:      r.OwnerID,
 		Name:         r.Name,
@@ -36,11 +36,11 @@ func (s *EtelecomService) CreateHotline(ctx context.Context, r *admin.CreateHotl
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	res := shopetelecom.Convert_etelecom_Hotline_shoptypes_Hotline(cmd.Result, nil)
+	res := shopetelecom.Convert_etelecom_Hotline_etelecomtypes_Hotline(cmd.Result, nil)
 	return res, nil
 }
 
-func (s *EtelecomService) UpdateHotline(ctx context.Context, r *admin.UpdateHotlineRequest) (*pbcm.UpdatedResponse, error) {
+func (s *EtelecomService) UpdateHotline(ctx context.Context, r *etelecomtypes.UpdateHotlineRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &etelecom.UpdateHotlineInfoCommand{
 		ID:           r.ID,
 		IsFreeCharge: r.IsFreeCharge,

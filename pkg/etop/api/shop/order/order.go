@@ -22,8 +22,8 @@ import (
 	ordermodelx "o.o/backend/com/main/ordering/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	shop2 "o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/session"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
@@ -70,7 +70,7 @@ func (s *OrderService) GetOrder(ctx context.Context, q *pbcm.IDRequest) (*types.
 
 func (s *OrderService) GetOrders(ctx context.Context, q *shop.GetOrdersRequest) (*types.OrdersResponse, error) {
 	claim, partner := s.SS.Claim(), s.SS.CtxPartner()
-	shopIDs, err := api.MixAccount(claim, q.Mixed)
+	shopIDs, err := apiroot.MixAccount(claim, q.Mixed)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ func (s *OrderService) checkValidateCustomer(ctx context.Context, orders []*type
 }
 
 func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *etop.IDsRequest) (*types.OrdersResponse, error) {
-	shopIDs, err := api.MixAccount(s.SS.Claim(), q.Mixed)
+	shopIDs, err := apiroot.MixAccount(s.SS.Claim(), q.Mixed)
 	if err != nil {
 		return nil, err
 	}

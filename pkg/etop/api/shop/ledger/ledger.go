@@ -9,6 +9,7 @@ import (
 	"o.o/api/top/types/etc/ledger_type"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 )
 
@@ -30,7 +31,7 @@ func (s *LedgerService) GetLedger(ctx context.Context, r *pbcm.IDRequest) (*api.
 		return nil, err
 	}
 
-	result := convertpb.PbLedger(query.Result)
+	result := convertpball.PbLedger(query.Result)
 	return result, nil
 }
 
@@ -46,7 +47,7 @@ func (s *LedgerService) GetLedgers(ctx context.Context, r *api.GetLedgersRequest
 	}
 
 	result := &api.LedgersResponse{
-		Ledgers: convertpb.PbLedgers(query.Result.Ledgers),
+		Ledgers: convertpball.PbLedgers(query.Result.Ledgers),
 		Paging:  cmapi.PbPageInfo(paging),
 	}
 	return result, nil
@@ -64,7 +65,7 @@ func (s *LedgerService) CreateLedger(ctx context.Context, r *api.CreateLedgerReq
 	if err := s.LedgerAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbLedger(cmd.Result)
+	result := convertpball.PbLedger(cmd.Result)
 
 	return result, nil
 }
@@ -81,7 +82,7 @@ func (s *LedgerService) UpdateLedger(ctx context.Context, r *api.UpdateLedgerReq
 		return nil, err
 	}
 
-	result := convertpb.PbLedger(cmd.Result)
+	result := convertpball.PbLedger(cmd.Result)
 	return result, nil
 }
 

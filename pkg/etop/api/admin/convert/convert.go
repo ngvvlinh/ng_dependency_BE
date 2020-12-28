@@ -7,6 +7,8 @@ import (
 	"o.o/api/main/shipmentpricing/shipmentservice"
 	"o.o/api/main/shipmentpricing/shopshipmentpricelist"
 	"o.o/api/top/int/admin"
+	identitymodel "o.o/backend/com/main/identity/model"
+	"o.o/backend/pkg/etop/api/convertpb"
 )
 
 func PbShipmentPriceList(in *pricelist.ShipmentPriceList) *admin.ShipmentPriceList {
@@ -414,4 +416,25 @@ func Convert_core_PriceListPromotions_To_api_PriceListPromotions(items []*pricel
 		result[i] = Convert_core_PriceListPromotion_To_api_PriceListPromotion(item)
 	}
 	return result
+}
+
+func CreatePartnerRequestToModel(m *admin.CreatePartnerRequest) *identitymodel.Partner {
+	p := m.Partner
+	isTest := 0
+	if p.IsTest {
+		isTest = 1
+	}
+	return &identitymodel.Partner{
+		ID:             0,
+		OwnerID:        p.OwnerId,
+		Status:         0,
+		IsTest:         isTest,
+		Name:           p.Name,
+		PublicName:     p.PublicName,
+		Phone:          p.Phone,
+		Email:          p.Email,
+		ImageURL:       p.ImageUrl,
+		WebsiteURL:     p.WebsiteUrl,
+		ContactPersons: convertpb.ContactPersonsToModel(p.ContactPersons),
+	}
 }

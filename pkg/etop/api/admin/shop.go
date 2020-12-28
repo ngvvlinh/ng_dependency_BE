@@ -11,6 +11,7 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi/dot"
@@ -77,7 +78,7 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 
 	result := &admin.GetShopsResponse{
 		Paging: cmapi.PbPageInfo(paging),
-		Shops:  convertpb.Convert_core_ShopExtendeds_To_api_ShopExtendeds(shops, queryShopMoneyTxCount.Result),
+		Shops:  convertpball.Convert_core_ShopExtendeds_To_api_ShopExtendeds(shops, queryShopMoneyTxCount.Result),
 	}
 	return result, nil
 }
@@ -99,7 +100,7 @@ func (s *ShopService) GetShopsByIDs(ctx context.Context, q *pbcm.IDsRequest) (*a
 		return nil, err
 	}
 	result := &admin.GetShopsResponse{
-		Shops: convertpb.Convert_core_Shops_To_api_Shops(query.Result, queryShopMoneyTxCount.Result),
+		Shops: convertpball.Convert_core_Shops_To_api_Shops(query.Result, queryShopMoneyTxCount.Result),
 	}
 	return result, nil
 }

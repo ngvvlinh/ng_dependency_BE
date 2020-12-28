@@ -22,6 +22,7 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	shop2 "o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -54,7 +55,7 @@ func (s *ReceiptService) CreateReceipt(ctx context.Context, q *api.CreateReceipt
 	if err != nil {
 		return nil, err
 	}
-	result := convertpb.PbReceipt(resp.(*receipting.Receipt))
+	result := convertpball.PbReceipt(resp.(*receipting.Receipt))
 	return result, nil
 }
 
@@ -71,7 +72,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *api.CreateReceipt
 		Type:        q.Type,
 		Mode:        receipt_mode.Manual,
 		Status:      int(status3.Z),
-		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
+		Lines:       convertpball.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		PaidAt:      q.PaidAt.ToTime(),
 		Note:        q.Note,
 	}
@@ -92,7 +93,7 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *api.UpdateReceipt
 		LedgerID:    q.LedgerId,
 		RefIDs:      nil,
 		RefType:     q.RefType,
-		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
+		Lines:       convertpball.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 		Trader:      nil,
 		PaidAt:      q.PaidAt.ToTime(),
 		Note:        q.Note,
@@ -102,7 +103,7 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *api.UpdateReceipt
 		return nil, err
 	}
 
-	result := convertpb.PbReceipt(cmd.Result)
+	result := convertpball.PbReceipt(cmd.Result)
 	return result, nil
 }
 
@@ -218,7 +219,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 	mapLedger := make(map[dot.ID]*ledgering.ShopLedger)
 	var refIDs, userIDs, traderIDs, ledgerIDs []dot.ID
 
-	receiptsResult = convertpb.PbReceipts(receipts)
+	receiptsResult = convertpball.PbReceipts(receipts)
 
 	// Get ref_ids into receiptLines
 	for _, receipt := range receipts {
@@ -274,7 +275,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID,
 		mapLedger[ledger.ID] = ledger
 	}
 	for _, receipt := range receiptsResult {
-		receipt.Ledger = convertpb.PbLedger(mapLedger[receipt.LedgerId])
+		receipt.Ledger = convertpball.PbLedger(mapLedger[receipt.LedgerId])
 	}
 	return receiptsResult, nil
 }

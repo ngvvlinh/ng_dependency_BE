@@ -20,7 +20,7 @@ import (
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/imcsv"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 )
 
 const (
@@ -129,7 +129,7 @@ func (im *Import) HandleImportMoneyTransactions(c *httpx.Context) error {
 	if err := im.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
-	c.SetResult(convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result))
+	c.SetResult(convertpball.PbMoneyTxShippingExternalFtLine(cmd.Result))
 	return nil
 }
 

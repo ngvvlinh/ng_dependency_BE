@@ -7,7 +7,7 @@ import (
 	api "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 )
 
@@ -28,7 +28,7 @@ func (s *CarrierService) GetCarrier(ctx context.Context, r *pbcm.IDRequest) (*ap
 	if err := s.CarrierQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbCarrier(query.Result)
+	result := convertpball.PbCarrier(query.Result)
 	return result, nil
 }
 
@@ -43,7 +43,7 @@ func (s *CarrierService) GetCarriers(ctx context.Context, r *api.GetCarriersRequ
 		return nil, err
 	}
 	result := &api.CarriersResponse{
-		Carriers: convertpb.PbCarriers(query.Result.Carriers),
+		Carriers: convertpball.PbCarriers(query.Result.Carriers),
 		Paging:   cmapi.PbPageInfo(paging),
 	}
 	return result, nil
@@ -58,7 +58,7 @@ func (s *CarrierService) GetCarriersByIDs(ctx context.Context, r *pbcm.IDsReques
 		return nil, err
 	}
 	result := &api.CarriersResponse{
-		Carriers: convertpb.PbCarriers(query.Result.Carriers),
+		Carriers: convertpball.PbCarriers(query.Result.Carriers),
 	}
 	return result, nil
 }
@@ -72,7 +72,7 @@ func (s *CarrierService) CreateCarrier(ctx context.Context, r *api.CreateCarrier
 	if err := s.CarrierAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbCarrier(cmd.Result)
+	result := convertpball.PbCarrier(cmd.Result)
 	return result, nil
 }
 
@@ -86,7 +86,7 @@ func (s *CarrierService) UpdateCarrier(ctx context.Context, r *api.UpdateCarrier
 	if err := s.CarrierAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := convertpb.PbCarrier(cmd.Result)
+	result := convertpball.PbCarrier(cmd.Result)
 	return result, nil
 }
 

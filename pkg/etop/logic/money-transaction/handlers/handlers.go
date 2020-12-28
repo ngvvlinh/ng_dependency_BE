@@ -15,7 +15,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/imcsv"
 	"o.o/backend/pkg/common/validate"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/logic/money-transaction/dhlimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
@@ -111,7 +111,7 @@ func (s *ImportService) HandleImportMoneyTxs(c *httpx.Context) error {
 	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
-	c.SetResult(convertpb.PbMoneyTxShippingExternalFtLine(cmd.Result))
+	c.SetResult(convertpball.PbMoneyTxShippingExternalFtLine(cmd.Result))
 	return nil
 }
 

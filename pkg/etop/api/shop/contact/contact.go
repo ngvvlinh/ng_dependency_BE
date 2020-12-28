@@ -7,7 +7,7 @@ import (
 	api "o.o/api/top/int/shop"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api/convertpb"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
@@ -33,7 +33,7 @@ func (s *ContactService) GetContact(
 		return nil, err
 	}
 
-	return convertpb.Convert_core_Contact_to_api_Contact(query.Result), nil
+	return convertpball.Convert_core_Contact_to_api_Contact(query.Result), nil
 }
 
 func (s *ContactService) GetContacts(
@@ -59,7 +59,7 @@ func (s *ContactService) GetContacts(
 	}
 
 	return &api.GetContactsResponse{
-		Contacts: convertpb.PbContacts(getContactsQuery.Result.Contacts),
+		Contacts: convertpball.PbContacts(getContactsQuery.Result.Contacts),
 		Paging:   cmapi.PbPageInfo(paging),
 	}, nil
 }
@@ -83,7 +83,7 @@ func (s *ContactService) CreateContact(
 		return nil, err
 	}
 
-	return convertpb.Convert_core_Contact_to_api_Contact(cmd.Result), nil
+	return convertpball.Convert_core_Contact_to_api_Contact(cmd.Result), nil
 }
 
 func (s *ContactService) UpdateContact(
@@ -100,7 +100,7 @@ func (s *ContactService) UpdateContact(
 		return nil, err
 	}
 
-	return convertpb.Convert_core_Contact_to_api_Contact(cmd.Result), nil
+	return convertpball.Convert_core_Contact_to_api_Contact(cmd.Result), nil
 }
 
 func (s *ContactService) DeleteContact(

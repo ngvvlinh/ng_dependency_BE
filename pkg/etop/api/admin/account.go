@@ -11,6 +11,7 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/etop/api/admin/convert"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -35,7 +36,7 @@ func (s *AccountService) Clone() admin.AccountService {
 
 func (s *AccountService) CreatePartner(ctx context.Context, q *admin.CreatePartnerRequest) (*etop.Partner, error) {
 	cmd := &identitymodelx.CreatePartnerCommand{
-		Partner: convertpb.CreatePartnerRequestToModel(q),
+		Partner: convert.CreatePartnerRequestToModel(q),
 	}
 	if err := s.PartnerStore.CreatePartner(ctx, cmd); err != nil {
 		return nil, err

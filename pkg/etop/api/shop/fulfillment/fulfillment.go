@@ -12,8 +12,8 @@ import (
 	shipmodelx "o.o/backend/com/main/shipping/modelx"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etc/idutil"
-	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 )
@@ -43,7 +43,7 @@ func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *pbcm.IDReque
 }
 
 func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *shop.GetFulfillmentsRequest) (*inttypes.FulfillmentsResponse, error) {
-	shopIDs, err := api.MixAccount(s.SS.Claim(), q.Mixed)
+	shopIDs, err := apiroot.MixAccount(s.SS.Claim(), q.Mixed)
 	if err != nil {
 		return nil, err
 	}

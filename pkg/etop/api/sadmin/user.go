@@ -10,7 +10,7 @@ import (
 	identitymodelx "o.o/backend/com/main/identity/modelx"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etc/idutil"
-	"o.o/backend/pkg/etop/api"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
 )
@@ -28,7 +28,7 @@ func (s *UserService) Clone() sadmin.UserService {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, r *sadmin.SAdminCreateUserRequest) (*etop.RegisterResponse, error) {
-	resp, err := api.UserServiceImpl.Register(ctx, r.Info)
+	resp, err := apiroot.UserServiceImpl.Register(ctx, r.Info)
 	if err != nil {
 		return nil, err
 	}
@@ -70,6 +70,6 @@ func (s *UserService) ResetPassword(ctx context.Context, r *sadmin.SAdminResetPa
 }
 
 func (s *UserService) LoginAsAccount(ctx context.Context, r *sadmin.LoginAsAccountRequest) (*etop.LoginResponse, error) {
-	resp, err := api.CreateLoginResponse(ctx, nil, "", r.UserId, nil, r.AccountId, 0, true, 0)
+	resp, err := apiroot.CreateLoginResponse(ctx, nil, "", r.UserId, nil, r.AccountId, 0, true, 0)
 	return resp, err
 }

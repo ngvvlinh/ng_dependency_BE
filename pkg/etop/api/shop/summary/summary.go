@@ -12,7 +12,6 @@ import (
 	"o.o/backend/pkg/etop/authorize/session"
 	logicsummary "o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/model"
-	"o.o/backend/pkg/etop/sqlstore"
 )
 
 type SummaryService struct {
@@ -21,8 +20,6 @@ type SummaryService struct {
 	SummaryQuery summary.QueryBus
 	SummaryOld   *logicsummary.Summary
 	CreditQuery  credit.QueryBus
-
-	MoneyTxStore sqlstore.MoneyTxStoreInterface
 }
 
 func (s *SummaryService) Clone() api.SummaryService { res := *s; return &res }

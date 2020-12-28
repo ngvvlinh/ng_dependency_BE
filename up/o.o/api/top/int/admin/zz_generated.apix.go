@@ -9,6 +9,7 @@ import (
 	fmt "fmt"
 	http "net/http"
 
+	etelecomtypes "o.o/api/top/int/etelecom/types"
 	shoptypes "o.o/api/top/int/shop/types"
 	inttypes "o.o/api/top/int/types"
 	common "o.o/api/top/types/common"
@@ -522,7 +523,7 @@ func (s *EtelecomServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Etelecom/CreateHotline":
-		msg := &CreateHotlineRequest{}
+		msg := &etelecomtypes.CreateHotlineRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
@@ -535,7 +536,7 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		}
 		return msg, fn, nil
 	case "/admin.Etelecom/UpdateHotline":
-		msg := &UpdateHotlineRequest{}
+		msg := &etelecomtypes.UpdateHotlineRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

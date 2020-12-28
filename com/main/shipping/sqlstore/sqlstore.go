@@ -47,6 +47,11 @@ type FulfillmentStore struct {
 	includeDeleted bool
 }
 
+func (s *FulfillmentStore) extend() *FulfillmentStore {
+	s.ft.prefix = "f"
+	return s
+}
+
 func (s *FulfillmentStore) WithPaging(paging meta.Paging) *FulfillmentStore {
 	s.Paging.WithPaging(paging)
 	return s
@@ -446,11 +451,11 @@ func (s *FulfillmentStore) GetFulfillmentExtended() (*shipping.FulfillmentExtend
 
 func (s *FulfillmentStore) ListFulfillmentExtendedsDB() ([]*shippingmodely.FulfillmentExtended, error) {
 	var ffms shippingmodely.FulfillmentExtendeds
-	query := s.query().Where(s.preds...)
+	query := s.extend().query().Where(s.preds...)
 	if len(s.Paging.Sort) == 0 {
-		s.Paging.Sort = append(s.Paging.Sort, "-created_at")
+		s.Paging.Sort = append(s.Paging.Sort, "created_at")
 	}
-	query, err := sqlstore.LimitSort(query, &s.Paging, SortFulfillment)
+	query, err := sqlstore.LimitSort(query, &s.Paging, SortFulfillmentExtended)
 	if err != nil {
 		return nil, err
 	}

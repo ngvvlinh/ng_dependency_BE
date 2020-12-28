@@ -9,7 +9,7 @@ import (
 	"o.o/api/webserver"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	shop2 "o.o/backend/pkg/etop/api/shop"
+	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/api/shop/product"
 	"o.o/capi/dot"
 )
@@ -19,15 +19,15 @@ func (s *WebServerService) CreateWsWebsite(ctx context.Context, r *api.CreateWsW
 	cmd := &webserver.CreateWsWebsiteCommand{
 		ShopID:             shopID,
 		MainColor:          r.MainColor,
-		Banner:             shop2.ConvertBanner(r.Banner),
-		OutstandingProduct: shop2.ConvertSpecialProduct(r.OutstandingProduct),
-		NewProduct:         shop2.ConvertSpecialProduct(r.NewProduct),
-		SEOConfig:          shop2.ConvertWsGeneralSEO(r.SEOConfig),
-		Facebook:           shop2.ConvertFacebook(r.Facebook),
+		Banner:             convertpball.ConvertBanner(r.Banner),
+		OutstandingProduct: convertpball.ConvertSpecialProduct(r.OutstandingProduct),
+		NewProduct:         convertpball.ConvertSpecialProduct(r.NewProduct),
+		SEOConfig:          convertpball.ConvertWsGeneralSEO(r.SEOConfig),
+		Facebook:           convertpball.ConvertFacebook(r.Facebook),
 		GoogleAnalyticsID:  r.GoogleAnalyticsID,
 		DomainName:         r.DomainName,
 		OverStock:          r.OverStock,
-		ShopInfo:           shop2.ConvertShopInfo(r.ShopInfo),
+		ShopInfo:           convertpball.ConvertShopInfo(r.ShopInfo),
 		Description:        r.Description,
 		LogoImage:          r.LogoImage,
 		FaviconImage:       r.FaviconImage,
@@ -51,15 +51,15 @@ func (s *WebServerService) UpdateWsWebsite(ctx context.Context, r *api.UpdateWsW
 		ShopID:             shopID,
 		ID:                 r.ID,
 		MainColor:          r.MainColor,
-		Banner:             shop2.ConvertBanner(r.Banner),
-		OutstandingProduct: shop2.ConvertSpecialProduct(r.OutstandingProduct),
-		NewProduct:         shop2.ConvertSpecialProduct(r.NewProduct),
-		SEOConfig:          shop2.ConvertWsGeneralSEO(r.SEOConfig),
-		Facebook:           shop2.ConvertFacebook(r.Facebook),
+		Banner:             convertpball.ConvertBanner(r.Banner),
+		OutstandingProduct: convertpball.ConvertSpecialProduct(r.OutstandingProduct),
+		NewProduct:         convertpball.ConvertSpecialProduct(r.NewProduct),
+		SEOConfig:          convertpball.ConvertWsGeneralSEO(r.SEOConfig),
+		Facebook:           convertpball.ConvertFacebook(r.Facebook),
 		GoogleAnalyticsID:  r.GoogleAnalyticsID,
 		DomainName:         r.DomainName,
 		OverStock:          r.OverStock,
-		ShopInfo:           shop2.ConvertShopInfo(r.ShopInfo),
+		ShopInfo:           convertpball.ConvertShopInfo(r.ShopInfo),
 		Description:        r.Description,
 		LogoImage:          r.LogoImage,
 		FaviconImage:       r.FaviconImage,

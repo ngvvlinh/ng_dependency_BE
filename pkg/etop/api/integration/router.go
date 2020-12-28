@@ -3,7 +3,7 @@ package integration
 import (
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/etop/api"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/capi/httprpc"
 )
 
@@ -14,7 +14,7 @@ func NewIntegrationServer(
 	miscService *MiscService,
 	integrationService *IntegrationService,
 ) (Servers, func()) {
-	idempgroup = idemp.NewRedisGroup(rd, api.PrefixIdempUser, 0)
+	idempgroup = idemp.NewRedisGroup(rd, apiroot.PrefixIdempUser, 0)
 	servers := httprpc.MustNewServers(
 		miscService.Clone,
 		integrationService.Clone,

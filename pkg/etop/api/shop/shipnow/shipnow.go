@@ -12,8 +12,8 @@ import (
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
-	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/convertpb"
+	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
 )
@@ -42,7 +42,7 @@ func (s *ShipnowService) GetShipnowFulfillment(ctx context.Context, q *pbcm.IDRe
 }
 
 func (s *ShipnowService) GetShipnowFulfillments(ctx context.Context, q *types.GetShipnowFulfillmentsRequest) (*types.ShipnowFulfillments, error) {
-	shopIDs, err := api.MixAccount(s.SS.Claim(), q.Mixed)
+	shopIDs, err := apiroot.MixAccount(s.SS.Claim(), q.Mixed)
 	if err != nil {
 		return nil, err
 	}

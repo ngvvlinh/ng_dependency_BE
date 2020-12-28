@@ -9,4 +9,11 @@ func (ft FulfillmentFilters) NotDeleted() sq.WriterTo {
 var SortFulfillment = map[string]string{
 	"id":         "",
 	"updated_at": "",
+	"created_at": "",
+}
+
+var SortFulfillmentExtended = map[string]string{
+	"id":         "f.id",
+	"updated_at": "f.updated_at",
+	"created_at": "f.created_at",
 }

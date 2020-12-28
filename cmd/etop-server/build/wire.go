@@ -59,12 +59,12 @@ import (
 	"o.o/backend/com/web/webserver"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/etop/api"
 	"o.o/backend/pkg/etop/api/admin"
 	admin_all "o.o/backend/pkg/etop/api/admin/_all"
 	affapi "o.o/backend/pkg/etop/api/affiliate"
 	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/api/integration"
+	apiroot_all "o.o/backend/pkg/etop/api/root/_all"
 	"o.o/backend/pkg/etop/api/sadmin"
 	shop_all "o.o/backend/pkg/etop/api/shop/_all"
 	shop_wire "o.o/backend/pkg/etop/api/shop/_wire/etop"
@@ -148,7 +148,7 @@ func Build(
 		fulfillmentcsv.WireSet,
 		eventstream.WireSet,
 		shopping.WireSet,
-		api.WireSet,
+		apiroot_all.WireSet,
 		location.WireSet,
 		catalog.WireSet,
 		customering.WireSet,

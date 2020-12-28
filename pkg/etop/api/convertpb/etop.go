@@ -5,12 +5,10 @@ import (
 	"encoding/json"
 
 	"o.o/api/main/authorization"
-	"o.o/api/main/credit"
 	"o.o/api/main/identity"
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/main/invitation"
 	"o.o/api/main/location"
-	"o.o/api/main/moneytx"
 	ordertypes "o.o/api/main/ordering/types"
 	etop "o.o/api/top/int/etop"
 	"o.o/api/top/types/etc/account_type"
@@ -18,7 +16,6 @@ import (
 	"o.o/api/top/types/etc/status3"
 	notimodel "o.o/backend/com/eventhandler/notifier/model"
 	addressmodel "o.o/backend/com/main/address/model"
-	creditmodel "o.o/backend/com/main/credit/model"
 	identitymodel "o.o/backend/com/main/identity/model"
 	identitysharemodel "o.o/backend/com/main/identity/sharemodel"
 	cm "o.o/backend/pkg/common"
@@ -298,51 +295,6 @@ func PbShop(m *identitymodel.Shop) *etop.Shop {
 	}
 }
 
-func Convert_core_Shop_To_api_Shop(in *identity.Shop, shopCount *moneytx.ShopFtMoneyTxShippingCount) *etop.Shop {
-	if in == nil {
-		return nil
-	}
-	res := &etop.Shop{
-		Id:                      in.ID,
-		Name:                    in.Name,
-		Status:                  in.Status,
-		IsTest:                  in.IsTest == 1,
-		Phone:                   in.Phone,
-		AutoCreateFfm:           in.AutoCreateFFM,
-		WebsiteUrl:              in.WebsiteURL,
-		ImageUrl:                in.ImageURL,
-		Email:                   in.Email,
-		ShipToAddressId:         in.ShipToAddressID,
-		ShipFromAddressId:       in.ShipFromAddressID,
-		OwnerId:                 in.OwnerID,
-		Code:                    in.Code,
-		BankAccount:             Convert_core_BankAccount_To_api_BankAccount(in.BankAccount),
-		TryOn:                   in.TryOn,
-		MoneyTransactionRrule:   in.MoneyTransactionRRule,
-		IsPriorMoneyTransaction: in.IsPriorMoneyTransaction,
-	}
-	if shopCount != nil && shopCount.ShopID == in.ID {
-		res.MoneyTransactionCount = shopCount.MoneyTxShippingCount
-	}
-	return res
-}
-
-func Convert_core_Shops_To_api_Shops(items []*identity.Shop, shopFtMoneyTxShippingCounts []*moneytx.ShopFtMoneyTxShippingCount) []*etop.Shop {
-	result := make([]*etop.Shop, len(items))
-
-	mapShopFtMoneyTxShippingCounts := make(map[dot.ID]*moneytx.ShopFtMoneyTxShippingCount)
-	if shopFtMoneyTxShippingCounts != nil {
-		for _, shopCount := range shopFtMoneyTxShippingCounts {
-			mapShopFtMoneyTxShippingCounts[shopCount.ShopID] = shopCount
-		}
-	}
-
-	for i, item := range items {
-		result[i] = Convert_core_Shop_To_api_Shop(item, mapShopFtMoneyTxShippingCounts[item.ID])
-	}
-	return result
-}
-
 func PbShopExtended(m *identitymodel.ShopExtended) *etop.Shop {
 	return &etop.Shop{
 		Id:                            m.ID,
@@ -378,60 +330,6 @@ func PbShopExtendeds(items []*identitymodel.ShopExtended) []*etop.Shop {
 	result := make([]*etop.Shop, len(items))
 	for i, item := range items {
 		result[i] = PbShopExtended(item)
-	}
-	return result
-}
-
-func Convert_core_ShopExtended_To_api_ShopExtended(m *identity.ShopExtended, shopCount *moneytx.ShopFtMoneyTxShippingCount) *etop.Shop {
-	if m == nil {
-		return nil
-	}
-	res := &etop.Shop{
-		Id:                            m.ID,
-		InventoryOverstock:            m.InventoryOverstock.Apply(true),
-		Name:                          m.Name,
-		Status:                        m.Status,
-		Address:                       Convert_core_Address_To_api_Address(m.Address),
-		Phone:                         m.Phone,
-		BankAccount:                   Convert_core_BankAccount_To_api_BankAccount(m.BankAccount),
-		WebsiteUrl:                    m.WebsiteURL,
-		ImageUrl:                      m.ImageURL,
-		Email:                         m.Email,
-		ShipToAddressId:               m.ShipToAddressID,
-		ShipFromAddressId:             m.ShipFromAddressID,
-		AutoCreateFfm:                 m.AutoCreateFFM,
-		TryOn:                         m.TryOn,
-		GhnNoteCode:                   m.GhnNoteCode,
-		OwnerId:                       m.OwnerID,
-		User:                          Convert_core_User_To_api_User(m.User),
-		CompanyInfo:                   Convert_core_CompanyInfo_To_api_CompanyInfo(m.CompanyInfo),
-		MoneyTransactionRrule:         m.MoneyTransactionRRule,
-		SurveyInfo:                    Convert_core_SurveyInfos_To_api_SurveyInfors(m.SurveyInfo),
-		ShippingServiceSelectStrategy: Convert_core_ShippingServiceSelectStrategy_To_api_ShippingServiceSelectStrategy(m.ShippingServiceSelectStrategy),
-		Code:                          m.Code,
-		CreatedAt:                     cmapi.PbTime(m.CreatedAt),
-		UpdatedAt:                     cmapi.PbTime(m.UpdatedAt),
-		IsPriorMoneyTransaction:       m.IsPriorMoneyTransaction,
-
-		// deprecated: 2018.07.24+14
-		ProductSourceId: m.ID,
-	}
-	if shopCount != nil && shopCount.ShopID == m.ID {
-		res.MoneyTransactionCount = shopCount.MoneyTxShippingCount
-	}
-	return res
-}
-
-func Convert_core_ShopExtendeds_To_api_ShopExtendeds(items []*identity.ShopExtended, shopFtMoneyTxShippingCounts []*moneytx.ShopFtMoneyTxShippingCount) []*etop.Shop {
-	mapShopFtMoneyTxShippingCounts := make(map[dot.ID]*moneytx.ShopFtMoneyTxShippingCount)
-	if shopFtMoneyTxShippingCounts != nil {
-		for _, shopCount := range shopFtMoneyTxShippingCounts {
-			mapShopFtMoneyTxShippingCounts[shopCount.ShopID] = shopCount
-		}
-	}
-	result := make([]*etop.Shop, len(items))
-	for i, item := range items {
-		result[i] = Convert_core_ShopExtended_To_api_ShopExtended(item, mapShopFtMoneyTxShippingCounts[item.ID])
 	}
 	return result
 }
@@ -823,59 +721,6 @@ func PbUpdateAddressToModel(accountID dot.ID, p *etop.UpdateAddressRequest) (*ad
 	return res, nil
 }
 
-func PbCreditExtended(item *creditmodel.CreditExtended) *etop.Credit {
-	if item == nil {
-		return nil
-	}
-
-	return &etop.Credit{
-		Id:        item.ID,
-		Amount:    item.Amount,
-		ShopId:    item.ShopID,
-		Type:      item.Type,
-		Shop:      PbShop(item.Shop),
-		CreatedAt: cmapi.PbTime(item.CreatedAt),
-		UpdatedAt: cmapi.PbTime(item.UpdatedAt),
-		PaidAt:    cmapi.PbTime(item.PaidAt),
-		Status:    item.Status,
-	}
-}
-
-func PbCreditExtendeds(items []*creditmodel.CreditExtended) []*etop.Credit {
-	result := make([]*etop.Credit, len(items))
-	for i, item := range items {
-		result[i] = PbCreditExtended(item)
-	}
-	return result
-}
-
-func Convert_core_CreditExtended_to_api_Credit(item *credit.CreditExtended) *etop.Credit {
-	if item == nil {
-		return nil
-	}
-
-	return &etop.Credit{
-		Id:        item.ID,
-		Amount:    item.Amount,
-		ShopId:    item.ShopID,
-		Type:      item.Type,
-		Shop:      Convert_core_Shop_To_api_Shop(item.Shop, nil),
-		CreatedAt: cmapi.PbTime(item.CreatedAt),
-		UpdatedAt: cmapi.PbTime(item.UpdatedAt),
-		PaidAt:    cmapi.PbTime(item.PaidAt),
-		Status:    item.Status,
-		Classify:  item.Classify,
-	}
-}
-
-func Convert_core_CreditExtendeds_to_api_Credits(items []*credit.CreditExtended) []*etop.Credit {
-	result := make([]*etop.Credit, len(items))
-	for i, item := range items {
-		result[i] = Convert_core_CreditExtended_to_api_Credit(item)
-	}
-	return result
-}
-
 func ShippingServiceSelectStrategyToModel(s []*etop.ShippingServiceSelectStrategyItem) []*identitymodel.ShippingServiceSelectStrategyItem {
 	if s == nil {
 		return nil
@@ -1126,6 +971,32 @@ func PbRelationships(ms []*authorization.Relationship) []*etop.Relationship {
 	res := make([]*etop.Relationship, len(ms))
 	for i, m := range ms {
 		res[i] = PbRelationship(m)
+	}
+	return res
+}
+
+func Convert_core_Shop_To_api_Shop(in *identity.Shop) *etop.Shop {
+	if in == nil {
+		return nil
+	}
+	res := &etop.Shop{
+		Id:                      in.ID,
+		Name:                    in.Name,
+		Status:                  in.Status,
+		IsTest:                  in.IsTest == 1,
+		Phone:                   in.Phone,
+		AutoCreateFfm:           in.AutoCreateFFM,
+		WebsiteUrl:              in.WebsiteURL,
+		ImageUrl:                in.ImageURL,
+		Email:                   in.Email,
+		ShipToAddressId:         in.ShipToAddressID,
+		ShipFromAddressId:       in.ShipFromAddressID,
+		OwnerId:                 in.OwnerID,
+		Code:                    in.Code,
+		BankAccount:             Convert_core_BankAccount_To_api_BankAccount(in.BankAccount),
+		TryOn:                   in.TryOn,
+		MoneyTransactionRrule:   in.MoneyTransactionRRule,
+		IsPriorMoneyTransaction: in.IsPriorMoneyTransaction,
 	}
 	return res
 }
