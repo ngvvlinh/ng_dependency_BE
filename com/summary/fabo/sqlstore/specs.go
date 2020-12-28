@@ -93,16 +93,6 @@ func (s *SummaryStore) SummarizeShop(ctx context.Context, req *summary.SummarySh
 		return nil, err
 	}
 
-	tableFbUsersByMessage := buildTableFbUsersWereAdvisedByMessage(dateFrom, dateTo, userIDs)
-	if err := s.execQuery(ctx, []*smry.Table{tableFbUsersByMessage}, 0, "fb_external_message"); err != nil {
-		return nil, err
-	}
-
-	tableFbUsersByComment := buildTableFbUsersWereAdvisedByComment(dateFrom, dateTo, userIDs)
-	if err := s.execQuery(ctx, []*smry.Table{tableFbUsersByComment}, 0, "fb_external_comment"); err != nil {
-		return nil, err
-	}
-
 	tableFbUsersWereAdvised, err := buildTableFbUsersWereAdvised(s.db, dateFrom, dateTo, userIDs)
 	if err != nil {
 		return nil, err
@@ -448,7 +438,7 @@ func buildTableMessagesByStaffs(
 ) (tableMessages *smry.Table) {
 	pred_tin_nhắn_đã_gửi := smry.Predicate{
 		Label: "Tin nhắn đã gửi",
-		Spec:  "deleted is null",
+		Spec:  "tin_nhan_da_gui",
 		Expr:  sq.NewExpr("deleted_at is null"),
 	}
 
@@ -475,7 +465,7 @@ func buildTableCommentsByStaffs(
 ) (tableMessages *smry.Table) {
 	pred_tin_nhắn_đã_gửi := smry.Predicate{
 		Label: "Comment đã gửi",
-		Spec:  "deleted is null",
+		Spec:  "comment_da_gui",
 		Expr:  sq.NewExpr("deleted_at is null"),
 	}
 
