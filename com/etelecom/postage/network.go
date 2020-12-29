@@ -36,5 +36,9 @@ func GetPhoneNetwork(phone string) mobile_network.MobileNetwork {
 		return mobile_network.Other
 	}
 	prefixPhoneNumber := string(phoneNorm)[:3]
-	return PrefixPhoneNumberNetWork[prefixPhoneNumber]
+	network, ok := PrefixPhoneNumberNetWork[prefixPhoneNumber]
+	if !ok {
+		return mobile_network.Other
+	}
+	return network
 }

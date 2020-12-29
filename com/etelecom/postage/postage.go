@@ -20,12 +20,12 @@ var PriceListCall = []PriceList{
 	{
 		Direction:    call_log_direction.Out,
 		Network:      mobile_network.Viettel,
-		FeePerMinute: 550,
+		FeePerMinute: 450,
 	},
 	{
 		Direction:    call_log_direction.Out,
 		Network:      mobile_network.Vinaphone,
-		FeePerMinute: 650,
+		FeePerMinute: 450,
 	},
 	{
 		Direction:    call_log_direction.Out,

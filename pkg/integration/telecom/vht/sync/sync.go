@@ -153,6 +153,8 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 	ownerID := taskArguments.shopConnection.OwnerID
 	connectionID := taskArguments.shopConnection.ConnectionID
 	lastSyncAt := taskArguments.shopConnection.LastSyncAt
+	// make sure we don't miss call logs (cdr) in 15 minutes
+	lastSyncAt = lastSyncAt.Add(-15 * time.Minute)
 
 	tenantKey := v.getKeyTenantInProgress(connectionID, ownerID)
 
@@ -214,7 +216,7 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 			}
 
 			if lastSyncAt.After(callLogResp.StartedAt) {
-				return nil
+				break
 			}
 			var createCallLogCmds []*etelecom.CreateCallLogFromCDRCommand
 
