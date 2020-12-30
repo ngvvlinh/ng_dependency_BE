@@ -96,21 +96,27 @@ func (s *SummaryStore) SummarizeShop(ctx context.Context, req *summary.SummarySh
 		return nil, err
 	}
 
-	tablesFbUsersWereAdvised, err := buildTableFbUsersWereAdvised(s.db, dateFrom, dateTo, userIDs, externalPageIDs)
+	tableFbUsersWereAdvised, err := buildTableFbUsersWereAdvised(s.db, dateFrom, dateTo, userIDs, externalPageIDs)
 	if err != nil {
 		return nil, err
 	}
 
-	tableFbUsersWereAdvisedByMessage := tablesFbUsersWereAdvised[1]
-	tableFbUsersWereAdvisedByComment := tablesFbUsersWereAdvised[1]
-	tableFbUsersWereAdvised := tablesFbUsersWereAdvised[2]
+	tableMessagesStaffs, err := buildTableMessagesByStaffs(s.db, dateFrom, dateTo, userIDs, externalPageIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	tableCommentsStaffs, err := buildTableCommentsByStaffs(s.db, dateFrom, dateTo, userIDs, externalPageIDs)
+	if err != nil {
+		return nil, err
+	}
 
 	newTableStaffs, err := util.MergeTables([]*smry.Table{
 		tableFfmStaffs,
 		tableCustomerStaffs,
 		tableCustomerNameStaffs,
-		tableFbUsersWereAdvisedByMessage,
-		tableFbUsersWereAdvisedByComment,
+		tableMessagesStaffs,
+		tableCommentsStaffs,
 		tableFbUsersWereAdvised,
 	}, util.SameCols)
 	if err != nil {
@@ -534,89 +540,169 @@ func buildTableCustomerNameByStaffs(
 	return
 }
 
-// tables return:
-// -	tableFbUsersWereAdvisedByMessage
-// -	tableFbUsersWereAdvisedByComment
-// -	tableFbUsersWereAdvised
+func buildTableMessagesByStaffs(
+	db *cmsql.Database, dateFrom, dateTo time.Time, userIDs []dot.ID, externalPageIDs []string,
+) (tableMessages *smry.Table, _ error) {
+	pred_tin_nhắn_đã_gửi := smry.Predicate{
+		Label: "Tin nhắn đã gửi",
+		Spec:  "tin_nhan_da_gui",
+		Expr:  sq.NewExpr("deleted_at is null"),
+	}
+
+	row_tổng := smry.NewSubject("Tổng khách tin nhắn đã gửi", "", "count", "COUNT(external_id)", nil)
+
+	rows := []smry.Subject{
+		row_tổng.Combine("Tin nhắn đã gửi", pred_tin_nhắn_đã_gửi),
+	}
+
+	var cols []smry.Predicator
+	for _, userID := range userIDs {
+		cols = append(cols, smry.Predicate{
+			Label: fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+			Spec:  fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+			Expr:  sq.NewExpr("external_created_time >= ? and ? > external_created_time and created_by = ?", dateFrom, dateTo, userID),
+		})
+	}
+	table := smry.BuildTable(rows, cols, "Kết quả tổng quát", "fb_external_message", "datefrom-dateto", "total")
+
+	dbRows, err := db.
+		SQL("SELECT COUNT(external_id), created_by "+
+			"FROM fb_external_message ").
+		Where("external_created_time >= ? AND external_created_time < ? and deleted_at is null", dateFrom, dateTo).
+		In("created_by", userIDs).
+		In("external_page_id", externalPageIDs).
+		GroupBy("created_by").
+		Clone().
+		Query()
+	if err != nil {
+		return nil, err
+	}
+
+	mapCreatedByAndCountMessages := make(map[dot.ID]int64)
+	var (
+		createdBy     dot.ID
+		countMessages int64
+	)
+	for dbRows.Next() {
+		err := dbRows.Scan(&countMessages, &createdBy)
+		if err != nil {
+			return nil, err
+		}
+		mapCreatedByAndCountMessages[createdBy] = countMessages
+	}
+
+	for i, col := range table.Cols {
+		label := col.GetLabel()
+		userIDStr := label[len("user_id = "):strings.Index(label, ",")]
+		userID, err := dot.ParseID(userIDStr)
+		if err != nil {
+			return nil, err
+		}
+
+		if countMessages, ok := mapCreatedByAndCountMessages[userID]; ok {
+			table.Data[i].Value = countMessages
+		}
+	}
+
+	return table, nil
+}
+
+func buildTableCommentsByStaffs(
+	db *cmsql.Database, dateFrom, dateTo time.Time, userIDs []dot.ID, externalPageIDs []string,
+) (tableMessages *smry.Table, _ error) {
+	pred_tin_nhắn_đã_gửi := smry.Predicate{
+		Label: "Comment đã gửi",
+		Spec:  "comment_da_gui",
+		Expr:  sq.NewExpr("deleted_at is null"),
+	}
+
+	row_tổng := smry.NewSubject("Tổng khách comment đã gửi", "", "count", "COUNT(external_id)", nil)
+
+	rows := []smry.Subject{
+		row_tổng.Combine("Comment đã gửi", pred_tin_nhắn_đã_gửi),
+	}
+
+	var cols []smry.Predicator
+	for _, userID := range userIDs {
+		cols = append(cols, smry.Predicate{
+			Label: fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+			Spec:  fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+			Expr:  sq.NewExpr("external_created_time >= ? and ? > external_created_time and created_by = ?", dateFrom, dateTo, userID),
+		})
+	}
+	table := smry.BuildTable(rows, cols, "Kết quả tổng quát", "fb_external_comment", "datefrom-dateto", "total")
+
+	dbRows, err := db.
+		SQL("SELECT COUNT(external_id), created_by "+
+			"FROM fb_external_comment ").
+		Where("external_created_time >= ? AND external_created_time < ? and deleted_at is null", dateFrom, dateTo).
+		In("created_by", userIDs).
+		In("external_page_id", externalPageIDs).
+		GroupBy("created_by").
+		Clone().
+		Query()
+	if err != nil {
+		return nil, err
+	}
+
+	mapCreatedByAndCountComments := make(map[dot.ID]int64)
+	var (
+		createdBy     dot.ID
+		countComments int64
+	)
+	for dbRows.Next() {
+		err := dbRows.Scan(&countComments, &createdBy)
+		if err != nil {
+			return nil, err
+		}
+		mapCreatedByAndCountComments[createdBy] = countComments
+	}
+
+	for i, col := range table.Cols {
+		label := col.GetLabel()
+		userIDStr := label[len("user_id = "):strings.Index(label, ",")]
+		userID, err := dot.ParseID(userIDStr)
+		if err != nil {
+			return nil, err
+		}
+
+		if countComments, ok := mapCreatedByAndCountComments[userID]; ok {
+			table.Data[i].Value = countComments
+		}
+	}
+
+	return table, nil
+}
+
 func buildTableFbUsersWereAdvised(
 	db *cmsql.Database, dateFrom, dateTo time.Time,
 	userIDs []dot.ID, externalPageIDs []string,
-) (tables []*smry.Table, _ error) {
-	var tableFbUsersWereAdvisedByComment, tableFbUsersWereAdvisedByMessage, tableFbUsersWereAdvised *smry.Table
-	{
-		pred_comment_đã_gửi := smry.Predicate{
-			Label: "Comment đã gửi",
-			Spec:  "comment_da_gui",
-			Expr:  sq.NewExpr("deleted_at is null"),
-		}
+) (table *smry.Table, _ error) {
 
-		row_tổng := smry.NewSubject("Tổng khách comment đã gửi", "", "count", "COUNT(*)", nil)
-
-		rows := []smry.Subject{
-			row_tổng.Combine("Comment đã gửi", pred_comment_đã_gửi),
-		}
-
-		var cols []smry.Predicator
-		for _, userID := range userIDs {
-			cols = append(cols, smry.Predicate{
-				Label: fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
-				Spec:  fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
-				Expr:  sq.NewExpr("external_created_time >= ? and ? > external_created_time and created_by = ?", dateFrom, dateTo, userID),
-			})
-		}
-		tableFbUsersWereAdvisedByComment = smry.BuildTable(rows, cols, "Kết quả tổng quát", "fb_external_comment", "datefrom-dateto", "total")
+	pred_khách_hàng_đã_tư_vấn := smry.Predicate{
+		Label: "Khách hàng đã tư vấn",
+		Spec:  "deleted is null",
+		Expr:  sq.NewExpr("fb_external_message.deleted_at is null and fb_external_comment.deleted_at is null"),
 	}
-	{
-		pred_tin_nhắn_đã_gửi := smry.Predicate{
-			Label: "Tin nhắn đã gửi",
-			Spec:  "tin_nhan_da_gui",
-			Expr:  sq.NewExpr("deleted_at is null"),
-		}
 
-		row_tổng := smry.NewSubject("Tổng khách tin nhắn đã gửi", "", "count", "COUNT(*)", nil)
+	row_tổng := smry.NewSubject("Tổng khách hàng đã tư vấn", "", "count(khach_hang_da_tu_van)", "count(khach_hang_da_tu_van)", nil)
 
-		rows := []smry.Subject{
-			row_tổng.Combine("Tin nhắn đã gửi", pred_tin_nhắn_đã_gửi),
-		}
-
-		var cols []smry.Predicator
-		for _, userID := range userIDs {
-			cols = append(cols, smry.Predicate{
-				Label: fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
-				Spec:  fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
-				Expr:  sq.NewExpr("external_created_time >= ? and ? > external_created_time and created_by = ?", dateFrom, dateTo, userID),
-			})
-		}
-		tableFbUsersWereAdvisedByMessage = smry.BuildTable(rows, cols, "Kết quả tổng quát", "fb_external_message", "datefrom-dateto", "total")
+	rows := []smry.Subject{
+		row_tổng.Combine("Khách hàng đã tư vấn", pred_khách_hàng_đã_tư_vấn),
 	}
-	{
-		pred_khách_hàng_đã_tư_vấn := smry.Predicate{
-			Label: "Khách hàng đã tư vấn",
-			Spec:  "deleted is null",
-			Expr:  sq.NewExpr("fb_external_message.deleted_at is null and fb_external_comment.deleted_at is null"),
-		}
 
-		row_tổng := smry.NewSubject("Tổng khách hàng đã tư vấn", "", "count(khach_hang_da_tu_van)", "count(khach_hang_da_tu_van)", nil)
-
-		rows := []smry.Subject{
-			row_tổng.Combine("Khách hàng đã tư vấn", pred_khách_hàng_đã_tư_vấn),
-		}
-
-		var cols []smry.Predicator
-		for _, userID := range userIDs {
-			cols = append(cols, smry.Predicate{
-				Label: fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
-				Spec:  fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
-				Expr:  sq.NewExpr("user_id = ?, from(?) - to(?)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
-			})
-		}
-
-		tableFbUsersWereAdvised = smry.BuildTable(rows, cols, "Kết quả tổng quát", "khach_hang_da_tu_van", "datefrom-dateto", "total")
+	var cols []smry.Predicator
+	for _, userID := range userIDs {
+		cols = append(cols, smry.Predicate{
+			Label: fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+			Spec:  fmt.Sprintf("user_id = %d, from(%s) - to(%s)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+			Expr:  sq.NewExpr("user_id = ?, from(?) - to(?)", userID, dateFrom.Format("2006-01-02"), dateTo.Format("2006-01-02")),
+		})
 	}
+
+	tableFbUsersWereAdvised := smry.BuildTable(rows, cols, "Kết quả tổng quát", "khach_hang_da_tu_van", "datefrom-dateto", "total")
 
 	mapCreatedByAndMapFbUserID := make(map[dot.ID]map[dot.ID]bool)
-	mapCreatedByAndMapFbUserIDByComment := make(map[dot.ID]map[dot.ID]bool)
-	mapCreatedByAndMapFbUserIDByMessage := make(map[dot.ID]map[dot.ID]bool)
 	{
 		dbRows, err := db.
 			SQL("SELECT DISTINCT fec.external_parent_user_id, fec.created_by "+
@@ -641,11 +727,6 @@ func buildTableFbUsersWereAdvised(
 				mapCreatedByAndMapFbUserID[createdBy] = make(map[dot.ID]bool)
 			}
 			mapCreatedByAndMapFbUserID[createdBy][fbUserID] = true
-
-			if _, ok := mapCreatedByAndMapFbUserIDByComment[createdBy]; !ok {
-				mapCreatedByAndMapFbUserIDByComment[createdBy] = make(map[dot.ID]bool)
-			}
-			mapCreatedByAndMapFbUserIDByComment[createdBy][fbUserID] = true
 		}
 	}
 
@@ -674,11 +755,6 @@ func buildTableFbUsersWereAdvised(
 				mapCreatedByAndMapFbUserID[createdBy] = make(map[dot.ID]bool)
 			}
 			mapCreatedByAndMapFbUserID[createdBy][fbUserID] = true
-
-			if _, ok := mapCreatedByAndMapFbUserIDByMessage[createdBy]; !ok {
-				mapCreatedByAndMapFbUserIDByMessage[createdBy] = make(map[dot.ID]bool)
-			}
-			mapCreatedByAndMapFbUserIDByMessage[createdBy][fbUserID] = true
 		}
 	}
 
@@ -688,34 +764,7 @@ func buildTableFbUsersWereAdvised(
 		}
 	}
 
-	for i, col := range tableFbUsersWereAdvisedByComment.Cols {
-		label := col.GetLabel()
-		userIDStr := label[len("user_id = "):strings.Index(label, ",")]
-		userID, err := dot.ParseID(userIDStr)
-		if err != nil {
-			return nil, err
-		}
-
-		if mapFbUserID, ok := mapCreatedByAndMapFbUserIDByComment[userID]; ok {
-			tableFbUsersWereAdvisedByComment.Data[i].Value = int64(len(mapFbUserID))
-		}
-	}
-
-	for i, col := range tableFbUsersWereAdvisedByMessage.Cols {
-		label := col.GetLabel()
-		userIDStr := label[len("user_id = "):strings.Index(label, ",")]
-		userID, err := dot.ParseID(userIDStr)
-		if err != nil {
-			return nil, err
-		}
-
-		if mapFbUserID, ok := mapCreatedByAndMapFbUserIDByMessage[userID]; ok {
-			tableFbUsersWereAdvisedByMessage.Data[i].Value = int64(len(mapFbUserID))
-		}
-	}
-
-	tables = append(tables, tableFbUsersWereAdvisedByMessage, tableFbUsersWereAdvisedByComment, tableFbUsersWereAdvised)
-	return tables, nil
+	return tableFbUsersWereAdvised, nil
 }
 
 func getToday(now time.Time) (from, to time.Time) {
