@@ -3,6 +3,7 @@ package update
 import (
 	"time"
 
+	typesshipping "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/status5"
 	shipmodel "o.o/backend/com/main/shipping/model"
 	shipping2 "o.o/backend/pkg/integration/shipping"
@@ -23,6 +24,22 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *dhlclient.ShipmentIt
 	state := dhlclient.ToState(latestEvent.Status.String())
 	data, _ := jsonx.Marshal(latestEvent)
 	secondaryStatus := latestEvent.SecondaryStatus.String()
+
+	// TH: khách muốn gửi hàng tại bưu cục thay vì shipper lấy hàng
+	// DHL sẽ trả về 3 trạng thái:
+	// 	- (1): 134 - Lấy hàng không thành công - Trạng thái của shipper
+	// 	- (2): 116 - Đơn hàng đã đến điểm dịch vụ
+	//	- (3): 130 - Đã lấy hàng thành công - Trạng thái của bưu cục
+	// Tính huống thực tế sẽ gồm 3 trường hợp:
+	// TH1: 1 -> 2 -> 3
+	// TH2: 2 -> 1 -> 3
+	// TH3: 3 -> 1 -> 2
+	// 2 trường hợp đầu ko cần quan tâm vì sẽ tự đúng
+	// với trường hợp 3 sẽ giải quyết: nếu DHL trả về mã 134 mà ffm hiện tại là 130 (hoặc holding) thì ignore
+	if state == dhlclient.StateShipmentPickedUpFailed &&
+		ffm.ShippingState == typesshipping.Holding {
+		return nil, nil
+	}
 
 	// ignore when event have the same state and weight
 	externalShippingStateCode := latestEvent.Status.String()
