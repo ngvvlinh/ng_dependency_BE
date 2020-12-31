@@ -6,7 +6,7 @@ import (
 
 	telecomtypes "o.o/backend/com/etelecom/provider/types"
 	cm "o.o/backend/pkg/common"
-	vhtclient "o.o/backend/pkg/integration/telecom/vht/client"
+	vhtclient "o.o/backend/pkg/integration/telecom/portsip/client"
 )
 
 var _ telecomtypes.TelecomDriver = &VHTDriver{}
@@ -146,12 +146,10 @@ func (v *VHTDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCallLo
 			Callee:     callLog.Callee.String(),
 			Direction:  callLog.Direction.String(),
 			StartedAt:  callLog.StartTime.ToTime(),
-			EndedAt:    callLog.EndTime.ToTime(),
+			EndedAt:    callLog.EndedTime.ToTime(),
 			Duration:   callLog.TalkDuration.Int(),
 		}
-		for _, audioURL := range callLog.AudioURLs {
-			callLogRes.AudioURLs = append(callLogRes.AudioURLs, audioURL.URL.String())
-		}
+		callLogRes.AudioURLs = append(callLogRes.AudioURLs, callLog.RecordingFileURL.String())
 		res.CallLogs = append(res.CallLogs, callLogRes)
 	}
 

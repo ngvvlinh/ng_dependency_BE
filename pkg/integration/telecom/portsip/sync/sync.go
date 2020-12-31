@@ -22,7 +22,7 @@ import (
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
-	vhtclient "o.o/backend/pkg/integration/telecom/vht/client"
+	vhtclient "o.o/backend/pkg/integration/telecom/portsip/client"
 	"o.o/capi/dot"
 	"o.o/common/l"
 	"o.o/common/xerrors"
@@ -289,7 +289,7 @@ func (v *VHTSync) listShopConnections(ctx context.Context) (shopConnections []*m
 
 		err = v.dbMain.
 			Where("connection_type = ?", connection_type.Telecom).
-			Where("connection_provider = ?", connection_type.ConnectionProviderVHT).
+			Where("connection_provider = ?", connection_type.ConnectionProviderPortSIP).
 			Where("status = ?", status3.P).
 			Limit(1000).
 			Find(&_connections)

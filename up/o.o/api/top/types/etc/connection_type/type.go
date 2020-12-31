@@ -106,6 +106,6 @@ const (
 	// +enum=suitecrm
 	ConnectionProviderSuiteCRM ConnectionProvider = 8
 
-	// +enum=vht
-	ConnectionProviderVHT ConnectionProvider = 9
+	// +enum=portsip
+	ConnectionProviderPortSIP ConnectionProvider = 9
 )

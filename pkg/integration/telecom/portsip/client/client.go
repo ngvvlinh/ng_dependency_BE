@@ -123,7 +123,7 @@ func (c *Client) GetCallLogs(ctx context.Context, req *GetCallLogsRequest) (*Get
 	var resp GetCallLogsResponse
 
 	err := c.sendGetRequest(ctx, sendRequestArgs{
-		url:   URL(c.tenantHost, "/vpbx/tenant.Cdr/GetCdr"),
+		url:   URL(c.tenantHost, "/portsip-pbx/v1/cdr"),
 		token: c.tenantToken,
 		req:   req,
 		resp:  &resp,

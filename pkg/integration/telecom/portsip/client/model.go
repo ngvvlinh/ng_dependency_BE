@@ -21,6 +21,7 @@ const (
 	VHTCallStatusNone       VHTCallStatus = "NONE"
 )
 
+// Actually, VHT is portsip
 type VHTAccountCfg struct {
 	Username     string `json:"username"`
 	Password     string `json:"password"`
@@ -137,32 +138,27 @@ type GetCallLogsResponse struct {
 }
 
 type SessionCallLog struct {
-	AppID              Int                    `json:"app_id"` // 3000001
-	AudioURLs          []*AudioSessionCallLog `json:"audio_urls"`
-	CallID             String                 `json:"call_id"`             // "9a3thmvujh498hkv35m9-gw"
-	CallStatus         VHTCallStatus          `json:"call_status"`         // FAIL
-	Callee             String                 `json:"callee"`              // "0943630091"
-	CalleeDomain       String                 `json:"callee_domain"`       // "etop-dev.vht.com.vn"
-	Caller             String                 `json:"caller"`              // "2611"
-	CallerDisplayName  String                 `json:"caller_display_name"` // "2611"
-	CallerDomain       String                 `json:"caller_domain"`       // "etop-dev.vht.com.vn"
-	Customer           *CustomerSession       `json:"customer"`
-	Direction          String                 `json:"direction"`  // "ext"
-	EndReason          String                 `json:"end_reason"` // "Unknown"
-	EndTime            Time                   `json:"end_time"`   // "2020-12-01T18:08:28+07:00"
-	Order              *OrderSession          `json:"order"`
-	RequestDescription String                 `json:"request_description"`
-	SessionID          String                 `json:"session_id"`    // "386111305045643264"
-	StartTime          Time                   `json:"start_time"`    // "2020-12-01T18:08:28+07:00"
-	TalkDuration       Int                    `json:"talk_duration"` // 0
-	TenantID           String                 `json:"tenant_id"`     // "373302079663509504"
-	TenantName         String                 `json:"tenant_name"`   // "Etop-dev"
-	Type               Int                    `json:"type"`          // 1
-}
-
-type AudioSessionCallLog struct {
-	CallType String `json:"call_type"`
-	URL      String `json:"url"`
+	AppID              Int              `json:"app_id"` // 3000001
+	RecordingFileURL   String           `json:"recording_file_url"`
+	CallID             String           `json:"call_id"`             // "9a3thmvujh498hkv35m9-gw"
+	CallStatus         VHTCallStatus    `json:"call_status"`         // FAIL
+	Callee             String           `json:"callee"`              // "0943630091"
+	CalleeDomain       String           `json:"callee_domain"`       // "etop-dev.vht.com.vn"
+	Caller             String           `json:"caller"`              // "2611"
+	CallerDisplayName  String           `json:"caller_display_name"` // "2611"
+	CallerDomain       String           `json:"caller_domain"`       // "etop-dev.vht.com.vn"
+	Customer           *CustomerSession `json:"customer"`
+	Direction          String           `json:"direction"`    // "ext"
+	EndedReason        String           `json:"ended_reason"` // "Unknown"
+	EndedTime          Time             `json:"ended_time"`   // "2020-12-01T18:08:28+07:00"
+	Order              *OrderSession    `json:"order"`
+	RequestDescription String           `json:"request_description"`
+	SessionID          String           `json:"session_id"`    // "386111305045643264"
+	StartTime          Time             `json:"start_time"`    // "2020-12-01T18:08:28+07:00"
+	TalkDuration       Int              `json:"talk_duration"` // 0
+	TenantID           String           `json:"tenant_id"`     // "373302079663509504"
+	TenantName         String           `json:"tenant_name"`   // "Etop-dev"
+	Type               Int              `json:"type"`          // 1
 }
 
 type CustomerSession struct {

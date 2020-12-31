@@ -5,8 +5,8 @@ import (
 	"o.o/api/top/types/etc/connection_type"
 	telecomtypes "o.o/backend/com/etelecom/provider/types"
 	cm "o.o/backend/pkg/common"
-	vhtclient "o.o/backend/pkg/integration/telecom/vht/client"
-	vhtdriver "o.o/backend/pkg/integration/telecom/vht/driver"
+	vhtclient "o.o/backend/pkg/integration/telecom/portsip/client"
+	vhtdriver "o.o/backend/pkg/integration/telecom/portsip/driver"
 	"o.o/capi"
 	"o.o/common/l"
 )
@@ -30,7 +30,7 @@ func (t TelecomDriver) GetTelecomDriver(
 	shopConnection *connectioning.ShopConnection,
 ) (telecomtypes.TelecomDriver, error) {
 	switch connection.ConnectionProvider {
-	case connection_type.ConnectionProviderVHT:
+	case connection_type.ConnectionProviderPortSIP:
 		if shopConnection.Token == "" {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "token must not be null")
 		}

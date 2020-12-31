@@ -16,7 +16,7 @@ import (
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/lifecycle"
 	"o.o/backend/pkg/common/metrics"
-	vhtsync "o.o/backend/pkg/integration/telecom/vht/sync"
+	vhtsync "o.o/backend/pkg/integration/telecom/portsip/sync"
 	"o.o/common/l"
 )
 
