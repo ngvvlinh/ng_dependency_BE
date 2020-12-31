@@ -81,7 +81,7 @@ const shopPolicy = `#connection
 	p, shop/receipt:view, admin, owner, accountant
 	# settings
 	p, shop/settings/shop_info:update, admin, owner
-	p, shop/settings/shop_info:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+	p, shop/settings/shop_info:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/settings/company_info:view, admin, owner
 	p, shop/settings/company_info:update, admin, owner
 	p, shop/settings/bank_info:view, admin, owner
