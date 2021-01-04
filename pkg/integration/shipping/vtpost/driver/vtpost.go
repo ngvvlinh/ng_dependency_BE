@@ -369,25 +369,13 @@ func (d *VTPostDriver) ParseServiceID(code string) (orderService string, err err
 	}
 
 	res := code[len(code)-3:]
-	switch res {
-	case getLast3Character(vtpostclient.OrderServiceCodeSCOD):
-		orderService = vtpostclient.OrderServiceCodeSCOD.String()
-	case string(vtpostclient.OrderServiceCodeVCN),
-		string(vtpostclient.OrderServiceCodeVTK),
-		string(vtpostclient.OrderServiceCodePHS),
-		string(vtpostclient.OrderServiceCodeVVT),
-		string(vtpostclient.OrderServiceCodeVHT),
-		string(vtpostclient.OrderServiceCodePTN),
-		string(vtpostclient.OrderServiceCodePHT),
-		string(vtpostclient.OrderServiceCodeVBS),
-		string(vtpostclient.OrderServiceCodeVBE):
-		orderService = res
-	default:
-	}
-	if orderService == "" {
+
+	// map EtopServiceCode to VTPostServiceCode
+	_orderService, ok := vtpostclient.MapVTPostServiceCodes[res]
+	if !ok {
 		err = cm.Errorf(cm.InvalidArgument, nil, "invalid service id")
 	}
-
+	orderService = _orderService.String()
 	return
 }
 
@@ -404,8 +392,12 @@ func (d *VTPostDriver) GenerateServiceID(generator *randgenerator.RandGenerator,
 	default:
 		return "", cm.Errorf(cm.Internal, nil, "VTPost invalid service code")
 	}
-	// Get 3 last characters of service
-	_serviceCode := getLast3Character(serviceCode)
+
+	// map VTPostOrderServiceCode to EtopOrderServiceCode
+	_serviceCode, ok := vtpostclient.MapEtopServiceCodes[serviceCode]
+	if !ok {
+		return "", cm.Errorf(cm.Internal, nil, "VTPost invalid service code")
+	}
 
 	// backward compatible
 	// old id: the second character is the client code

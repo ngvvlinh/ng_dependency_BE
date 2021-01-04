@@ -23,10 +23,48 @@ func (c VTPostOrderServiceCode) String() string { return string(c) }
 func (c VTPostShippingFeeType) String() string  { return string(c) }
 func (c VTPostProductType) String() string      { return string(c) }
 
+var MapEtopServiceCodes = map[VTPostOrderServiceCode]string{
+	OrderServiceCodeSCOD:      "SOD",
+	OrderServiceCodeLCOD:      "LOD",
+	OrderServiceCodeNCOD:      "NOD",
+	OrderServiceCodeVCN:       "VCN",
+	OrderServiceCodeVTK:       "VTK",
+	OrderServiceCodePHS:       "PHS",
+	OrderServiceCodeV60:       "V60",
+	OrderServiceCodeVVT:       "VVT",
+	OrderServiceCodeVHT:       "VHT",
+	OrderServiceCodePTN:       "PTN",
+	OrderServiceCodePHT:       "PHT",
+	OrderServiceCodeVBS:       "VBS",
+	OrderServiceCodeVBE:       "VBE",
+	OrderServiceCodeInsurance: "GBH",
+}
+
+var MapVTPostServiceCodes = map[string]VTPostOrderServiceCode{
+	"SOD": OrderServiceCodeSCOD,
+	"LOD": OrderServiceCodeLCOD,
+	"NOD": OrderServiceCodeNCOD,
+	"VCN": OrderServiceCodeVCN,
+	"VTK": OrderServiceCodeVTK,
+	"PHS": OrderServiceCodePHS,
+	"V60": OrderServiceCodeV60,
+	"VVT": OrderServiceCodeVVT,
+	"VHT": OrderServiceCodeVHT,
+	"PTN": OrderServiceCodePTN,
+	"PHT": OrderServiceCodePHT,
+	"VBS": OrderServiceCodeVBS,
+	"VBE": OrderServiceCodeVBE,
+	"GBH": OrderServiceCodeInsurance,
+}
+
 const (
 	// Nhanh - SCOD Giao hàng thu tiền
 	OrderServiceCodeSCOD VTPostOrderServiceCode = "SCOD"
-	// Nhanh - VCN Chuyển phát nhanh - Express dilivery
+	// Chậm - LCOD TMĐT Bộ
+	OrderServiceCodeLCOD VTPostOrderServiceCode = "LCOD"
+	// Nhanh - NCOD TMĐT Bay
+	OrderServiceCodeNCOD VTPostOrderServiceCode = "NCOD"
+	// Nhanh - VCN Chuyển phát nhanh - Express delivery
 	OrderServiceCodeVCN VTPostOrderServiceCode = "VCN"
 	// Chậm - VTK - VTK Tiết kiệm - Express Saver
 	OrderServiceCodeVTK VTPostOrderServiceCode = "VTK"
@@ -77,10 +115,10 @@ const (
 
 func (s VTPostOrderServiceCode) Name() string {
 	switch s {
-	case OrderServiceCodeVTK, OrderServiceCodePHS, OrderServiceCodeVBE, OrderServiceCodeVVT:
+	case OrderServiceCodeVTK, OrderServiceCodePHS, OrderServiceCodeVBE, OrderServiceCodeVVT, OrderServiceCodeLCOD:
 		return model.ShippingServiceNameStandard
 	case OrderServiceCodeSCOD, OrderServiceCodeVCN, OrderServiceCodeVHT, OrderServiceCodePTN,
-		OrderServiceCodePHT, OrderServiceCodeVBS, OrderServiceCodeV60:
+		OrderServiceCodePHT, OrderServiceCodeVBS, OrderServiceCodeV60, OrderServiceCodeNCOD:
 		return model.ShippingServiceNameFaster
 	}
 	return s.String()

@@ -296,6 +296,14 @@ var shipmentServicesByCarrier = services.MapShipmentServices{
 	},
 	sptypes.VTPost: {
 		{
+			ServiceID: string(vtpostclient.OrderServiceCodeLCOD),
+			Name:      "Chậm - LCOD TMĐT bộ",
+		},
+		{
+			ServiceID: string(vtpostclient.OrderServiceCodeNCOD),
+			Name:      "Chậm - NCOD TMĐT bay",
+		},
+		{
 			ServiceID: string(vtpostclient.OrderServiceCodeSCOD),
 			Name:      "Nhanh - SCOD Giao hàng thu tiền",
 		}, {
