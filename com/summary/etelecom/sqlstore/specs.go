@@ -209,7 +209,7 @@ func buildTableCallLogPerExtension(dateFrom, dateTo time.Time, extensionIDs []do
 		colsPerExtension = append(colsPerExtension, smry.Predicate{
 			Label: fmt.Sprintf("extensionID(%d)", extensionID),
 			Spec:  fmt.Sprintf("extension_id = %d", extensionID),
-			Expr:  sq.NewExpr("extension_id = ?", extensionID),
+			Expr:  sq.NewExpr("extension_id = ? and created_at >= ? and created_at < ?", extensionID, dateFrom, dateTo),
 		})
 	}
 
