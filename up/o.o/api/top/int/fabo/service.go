@@ -25,6 +25,12 @@ type PageService interface {
 	CheckPermissions(context.Context, *CheckPagePermissionsRequest) (*CheckPagePermissionsResponse, error)
 }
 
+// +apix:path=/fabo.Demo
+type DemoService interface {
+	ListLiveVideos(context.Context, *ListLiveVideosRequest) (*ListLiveVideosResponse, error)
+	ListFeeds(context.Context, *ListFeedsRequest) (*ListFeedsResponse, error)
+}
+
 // +apix:path=/fabo.CustomerConversation
 type CustomerConversationService interface {
 	ListCustomerConversations(context.Context, *ListCustomerConversationsRequest) (*FbCustomerConversationsResponse, error)

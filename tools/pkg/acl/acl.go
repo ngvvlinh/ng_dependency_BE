@@ -1338,6 +1338,10 @@ var _acl = map[string]*permission.Decl{
 
 	// -- Fabo summary
 	"fabo.Summary/SummaryShop": {Type: Shop, Auth: User, Actions: actions(ShopDashboardView)},
+
+	// -- Fabo demo
+	"fabo.Demo/ListLiveVideos": {Type: Shop},
+	"fabo.Demo/ListFeeds":      {Type: Shop},
 }
 
 func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {

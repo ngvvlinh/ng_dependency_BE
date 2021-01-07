@@ -16,5 +16,6 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(ShopService), "*"),
 	wire.Struct(new(ExtraShipmentService), "*"),
 	wire.Struct(new(SummaryService), "*"),
+	wire.Struct(new(DemoService), "*"),
 	NewServers,
 )

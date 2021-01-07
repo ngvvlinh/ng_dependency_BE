@@ -845,3 +845,91 @@ type SummaryShopResponse struct {
 }
 
 func (r *SummaryShopResponse) String() string { return jsonx.MustMarshalToString(r) }
+
+type ListLiveVideosRequest struct {
+	Token string `json:"token"`
+}
+
+func (r *ListLiveVideosRequest) String() string { return jsonx.MustMarshalToString(r) }
+
+type ListLiveVideosResponse struct {
+	Videos []*LiveVideoUser `json:"videos"`
+}
+
+func (r *ListLiveVideosResponse) String() string { return jsonx.MustMarshalToString(r) }
+
+type LiveVideoUser struct {
+	ID           string              `json:"id"`
+	Video        *LiveVideoVideo     `json:"video"`
+	PermalinkURL string              `json:"permalink_url"`
+	EmbedHTML    string              `json:"embed_html"`
+	CreatedTime  time.Time           `json:"created_time"`
+	From         *FbObjectFrom       `json:"from"`
+	Comments     []*LiveVideoComment `json:"comments"`
+}
+
+func (r *LiveVideoUser) String() string { return jsonx.MustMarshalToString(r) }
+
+type LiveVideoComment struct {
+	CreatedTime time.Time `json:"created_time"`
+	ID          string    `json:"id"`
+	Message     string    `json:"message"`
+}
+
+func (r *LiveVideoComment) String() string { return jsonx.MustMarshalToString(r) }
+
+type LiveVideoVideo struct {
+	ID      string `json:"id"`
+	Picture string `json:"picture"`
+	Source  string `json:"source"`
+}
+
+func (r *LiveVideoVideo) String() string { return jsonx.MustMarshalToString(r) }
+
+type ListFeedsRequest struct {
+	Token string `json:"token"`
+}
+
+func (r *ListFeedsRequest) String() string { return jsonx.MustMarshalToString(r) }
+
+type ListFeedsResponse struct {
+	Feeds []*PostWithComments `json:"feeds"`
+}
+
+func (r *ListFeedsResponse) String() string { return jsonx.MustMarshalToString(r) }
+
+type PostWithComments struct {
+	Post     `json:"post"`
+	Comments []*PostComment `json:"comments"`
+}
+
+func (r *PostWithComments) String() string { return jsonx.MustMarshalToString(r) }
+
+type Post struct {
+	ID           string            `json:"id"`
+	From         *FbObjectFrom     `json:"from"`
+	FullPicture  string            `json:"full_picture"`
+	Icon         string            `json:"icon"`
+	IsExpired    bool              `json:"is_expired"`
+	IsHidden     bool              `json:"is_hidden"`
+	IsPopular    bool              `json:"is_popular"`
+	IsPublished  bool              `json:"is_published"`
+	Message      string            `json:"message"`
+	Story        string            `json:"story"`
+	PermalinkURL string            `json:"permalink_url"`
+	StatusType   string            `json:"status_type"`
+	Picture      string            `json:"picture"`
+	Attachments  []*PostAttachment `json:"attachments"`
+	CreatedTime  time.Time         `json:"created_time"`
+	UpdatedTime  time.Time         `json:"updated_time"`
+}
+
+func (r *Post) String() string { return jsonx.MustMarshalToString(r) }
+
+type PostComment struct {
+	CreatedTime time.Time `json:"created_time"`
+	ID          string    `json:"id"`
+	Message     string    `json:"message"`
+}
+
+func (r *PostComment) String() string { return jsonx.MustMarshalToString(r) }

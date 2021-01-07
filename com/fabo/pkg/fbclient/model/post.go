@@ -114,3 +114,16 @@ type TargetDataSubAttachment struct {
 	ID  string `json:"id"`
 	URL string `json:"url"`
 }
+
+type PostsWithCommentsResponse struct {
+	Feeds *PostsWithComments `json:"feed"`
+}
+
+type PostsWithComments struct {
+	Data []*PostWithComments `json:"data"`
+}
+
+type PostWithComments struct {
+	Post
+	Comments *Comments `json:"comments"`
+}

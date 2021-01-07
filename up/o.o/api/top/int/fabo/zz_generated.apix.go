@@ -24,6 +24,8 @@ func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Serv
 		return NewCustomerConversationServiceServer(builder, hooks...), true
 	case func() CustomerService:
 		return NewCustomerServiceServer(builder, hooks...), true
+	case func() DemoService:
+		return NewDemoServiceServer(builder, hooks...), true
 	case func() ExtraShipmentService:
 		return NewExtraShipmentServiceServer(builder, hooks...), true
 	case func() PageService:
@@ -444,6 +446,88 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.UpdateTags(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type DemoServiceServer struct {
+	hooks   httprpc.HooksBuilder
+	builder func() DemoService
+}
+
+func NewDemoServiceServer(builder func() DemoService, hooks ...httprpc.HooksBuilder) httprpc.Server {
+	return &DemoServiceServer{
+		hooks:   httprpc.ChainHooks(hooks...),
+		builder: builder,
+	}
+}
+
+const DemoServicePathPrefix = "/fabo.Demo/"
+
+const Path_Demo_ListFeeds = "/fabo.Demo/ListFeeds"
+const Path_Demo_ListLiveVideos = "/fabo.Demo/ListLiveVideos"
+
+func (s *DemoServiceServer) PathPrefix() string {
+	return DemoServicePathPrefix
+}
+
+func (s *DemoServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
+func (s *DemoServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	hooks := httprpc.WrapHooks(s.hooks)
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.RequestReceived(ctx, *info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
+}
+
+func (s *DemoServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/fabo.Demo/ListFeeds":
+		msg := &ListFeedsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ListFeeds(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.Demo/ListLiveVideos":
+		msg := &ListLiveVideosRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ListLiveVideos(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

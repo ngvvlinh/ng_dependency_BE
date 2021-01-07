@@ -17,6 +17,7 @@ type Servers []httprpc.Server
 
 func NewServers(
 	pageService *PageService,
+	demoService *DemoService,
 	conversationService *CustomerConversationService,
 	customerService *CustomerService,
 	shopService *ShopService,
@@ -27,6 +28,7 @@ func NewServers(
 	idempgroup = idemp.NewRedisGroup(rd, "idemp_fabo", 30)
 	servers := httprpc.MustNewServers(
 		pageService.Clone,
+		demoService.Clone,
 		conversationService.Clone,
 		customerService.Clone,
 		shopService.Clone,

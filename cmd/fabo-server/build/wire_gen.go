@@ -494,6 +494,10 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FBExternalPageAggr:  fbpagingCommandBus,
 		FBClient:            fbClient,
 	}
+	demoService := &fabo3.DemoService{
+		Session:  session,
+		FBClient: fbClient,
+	}
 	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB)
 	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
@@ -538,7 +542,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:      session,
 		SummaryQuery: summaryQueryBus,
 	}
-	faboServers := fabo3.NewServers(pageService, customerConversationService, faboCustomerService, shopService, extraShipmentService, summaryService, store)
+	faboServers := fabo3.NewServers(pageService, demoService, customerConversationService, faboCustomerService, shopService, extraShipmentService, summaryService, store)
 	webhookCallbackService := sadmin.NewWebhookCallbackService(store)
 	webhookService := &sadmin.WebhookService{
 		Session:                session,

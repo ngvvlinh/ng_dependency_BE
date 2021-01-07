@@ -609,6 +609,60 @@
         }
       }
     },
+    "/api/fabo.Demo/ListFeeds": {
+      "post": {
+        "tags": [
+          "Demo"
+        ],
+        "summary": "ListFeeds",
+        "operationId": "fabo.Demo-ListFeeds",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvListFeedsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvListFeedsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/fabo.Demo/ListLiveVideos": {
+      "post": {
+        "tags": [
+          "Demo"
+        ],
+        "summary": "ListLiveVideos",
+        "operationId": "fabo.Demo-ListLiveVideos",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvListLiveVideosRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvListLiveVideosResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.ExtraShipment/CustomerReturnRate": {
       "post": {
         "tags": [
@@ -2058,6 +2112,44 @@
         }
       }
     },
+    "cvListFeedsRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "cvListFeedsResponse": {
+      "type": "object",
+      "properties": {
+        "feeds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvPostWithComments"
+          }
+        }
+      }
+    },
+    "cvListLiveVideosRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "cvListLiveVideosResponse": {
+      "type": "object",
+      "properties": {
+        "videos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvLiveVideoUser"
+          }
+        }
+      }
+    },
     "cvListMessagesRequest": {
       "type": "object",
       "properties": {
@@ -2094,6 +2186,65 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "cvLiveVideoComment": {
+      "type": "object",
+      "properties": {
+        "created_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "cvLiveVideoUser": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvLiveVideoComment"
+          }
+        },
+        "created_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "embed_html": {
+          "type": "string"
+        },
+        "from": {
+          "$ref": "#/definitions/cvFbObjectFrom"
+        },
+        "id": {
+          "type": "string"
+        },
+        "permalink_url": {
+          "type": "string"
+        },
+        "video": {
+          "$ref": "#/definitions/cvLiveVideoVideo"
+        }
+      }
+    },
+    "cvLiveVideoVideo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "picture": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
         }
       }
     },
@@ -2205,6 +2356,64 @@
         }
       }
     },
+    "cvPost": {
+      "type": "object",
+      "properties": {
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvPostAttachment"
+          }
+        },
+        "created_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "from": {
+          "$ref": "#/definitions/cvFbObjectFrom"
+        },
+        "full_picture": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "is_expired": {
+          "type": "boolean"
+        },
+        "is_hidden": {
+          "type": "boolean"
+        },
+        "is_popular": {
+          "type": "boolean"
+        },
+        "is_published": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        },
+        "permalink_url": {
+          "type": "string"
+        },
+        "picture": {
+          "type": "string"
+        },
+        "status_type": {
+          "type": "string"
+        },
+        "story": {
+          "type": "string"
+        },
+        "updated_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "cvPostAttachment": {
       "type": "object",
       "properties": {
@@ -2222,6 +2431,35 @@
         },
         "type": {
           "type": "string"
+        }
+      }
+    },
+    "cvPostComment": {
+      "type": "object",
+      "properties": {
+        "created_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "cvPostWithComments": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvPostComment"
+          }
+        },
+        "post": {
+          "$ref": "#/definitions/cvPost"
         }
       }
     },
@@ -2711,6 +2949,9 @@
     },
     {
       "name": "CustomerConversation"
+    },
+    {
+      "name": "Demo"
     },
     {
       "name": "ExtraShipment"

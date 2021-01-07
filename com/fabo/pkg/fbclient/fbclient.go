@@ -454,6 +454,34 @@ func (f *FbClient) CallAPICommentByID(req *GetCommentByIDRequest) (*model.Commen
 	return &comment, nil
 }
 
+func (f *FbClient) CallAPIListLiveVideos(req *ListLiveVideosRequest) (*model.LiveVideosResponse, error) {
+	params := &ListLiveVideosParams{
+		AccessToken: req.AccessToken,
+		Fields:      "live_videos.limit(20){creation_time,video{id,picture,source},stream_url,id,comments.filter(stream).summary(total_count).limit(20){from{id,name,email,first_name,last_name,picture},created_time,id,message,attachment},permalink_url,from,embed_html,status}",
+		DateFormat:  UnixDateFormat,
+	}
+	path := "/me"
+	var resp model.LiveVideosResponse
+	if err := f.sendGetRequest(path, "", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+func (f *FbClient) CallAPIListFeedsWithComments(req *ListFeedsWithCommentsRequest) (*model.PostsWithCommentsResponse, error) {
+	params := &ListFeedsWithCommentsParams{
+		AccessToken: req.AccessToken,
+		Fields:      "feed.limit(20){id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments},comments.filter(stream).summary(total_count).limit(20){from{id,name,email,first_name,last_name,picture},created_time,id,message,attachment}}",
+		DateFormat:  UnixDateFormat,
+	}
+	path := "/me"
+	var resp model.PostsWithCommentsResponse
+	if err := f.sendGetRequest(path, "", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
 func (f *FbClient) CallAPIGetProfileByPSID(req *GetProfileRequest) (*model.Profile, error) {
 	if req.ProfileDefault == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Profile mustn't be null")
