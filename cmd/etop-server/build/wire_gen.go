@@ -178,6 +178,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/ticket"
 	"o.o/backend/pkg/etop/api/shop/trading"
 	"o.o/backend/pkg/etop/api/shop/ws"
+	"o.o/backend/pkg/etop/apix/authx"
 	"o.o/backend/pkg/etop/apix/mc/vht"
 	"o.o/backend/pkg/etop/apix/mc/vnp"
 	"o.o/backend/pkg/etop/apix/partner"
@@ -1212,6 +1213,20 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		cleanup()
 		return Output{}, nil, err
 	}
+	middlewareSessionStarter := middleware.SessionStarter{
+		SAdminToken:      sAdminToken,
+		IdentityQuery:    queryBus,
+		TokenStore:       tokenStore,
+		AccountStore:     accountStoreInterface,
+		UserStore:        userStoreInterface,
+		PartnerStore:     partnerStoreInterface,
+		AccountUserStore: accountUserStoreInterface,
+		ShopStore:        shopStoreInterface,
+	}
+	authxService := authx.AuthxService{
+		St: middlewareSessionStarter,
+	}
+	authxHandler := server_max.BuildAuthxHandler(authxService)
 	ghnimportImport := ghnimport.Import{
 		MoneyTxAggr: moneytxCommandBus,
 	}
@@ -1283,7 +1298,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityQuery: queryBus,
 	}
 	reportServer := reportserver.BuildReportServer(reportService, session)
-	mainServer := BuildMainServer(service, intHandlers, extHandlers, sharedConfig, cfg, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, reportServer)
+	mainServer := BuildMainServer(service, intHandlers, extHandlers, authxHandler, sharedConfig, cfg, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, reportServer)
 	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, locationQueryBus)
 	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook

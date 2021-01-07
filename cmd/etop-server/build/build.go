@@ -111,6 +111,7 @@ func BuildMainServer(
 	healthService *health.Service,
 	intHandlers _main.IntHandlers,
 	extHandlers _main.ExtHandlers,
+	authxHandler _main.AuthxHandler,
 	sharedCfg config_server.SharedConfig,
 	cfg config.Config,
 	adminImport server_admin.ImportServer,
@@ -149,6 +150,7 @@ func BuildMainServer(
 	mux.Handle(downloadHandler.PathPrefix(), downloadHandler)
 	mux.Handle(vtpayServer.PathPrefix(), vtpayServer)
 	mux.Handle(reportServer.PathPrefix(), mwares(reportServer))
+	mux.Handle(authxHandler.PathPrefix(), mwares(authxHandler))
 
 	if sharedCfg.ServeDoc {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))

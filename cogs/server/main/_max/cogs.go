@@ -3,12 +3,14 @@ package server_max
 import (
 	_main "o.o/backend/cogs/server/main"
 	"o.o/backend/pkg/common/apifw/captcha"
+	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/etop/api/admin"
 	affapi "o.o/backend/pkg/etop/api/affiliate"
 	"o.o/backend/pkg/etop/api/integration"
 	apiroot "o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/api/sadmin"
 	"o.o/backend/pkg/etop/api/shop"
+	"o.o/backend/pkg/etop/apix/authx"
 	"o.o/backend/pkg/etop/apix/mc/vht"
 	"o.o/backend/pkg/etop/apix/mc/vnp"
 	"o.o/backend/pkg/etop/apix/partner"
@@ -72,4 +74,14 @@ func BuildExtHandlers(
 	hs = append(hs, vhtServers...)
 	hs = httprpc.WithHooks(hs, ssExtHooks, logging)
 	return
+}
+
+func BuildAuthxHandler(
+	authxService authx.AuthxService,
+) _main.AuthxHandler {
+	rt := httpx.New()
+	rt.Use(httpx.RecoverAndLog(false))
+
+	rt.POST("/v1/authx/AuthUser", authxService.AuthUser)
+	return httpx.MakeServer("/v1/authx/", rt)
 }
