@@ -53,6 +53,10 @@ func (m *ProcessManager) CallLogCreated(ctx context.Context, event *etelecom.Cal
 	}
 
 	// convert to minute
+	// update 08-01-2021
+	// Telecom change pricelist,
+	// Postage will calculated by duration (second)
+	// So don't need to use DurationForPostage (may be delete later)
 	durationMinute := int(math.Ceil(float64(event.Duration) / SecondsPerMinute))
 	update := &etelecom.UpdateCallLogPostageCommand{
 		ID:                 event.ID,
@@ -69,9 +73,9 @@ func (m *ProcessManager) CallLogCreated(ctx context.Context, event *etelecom.Cal
 		return nil
 	}
 	calcPostageArgs := postage.CalcPostageArgs{
-		Phone:           phone,
-		Direction:       event.Direction,
-		DurationPostage: durationMinute,
+		Phone:          phone,
+		Direction:      event.Direction,
+		DurationSecond: event.Duration,
 	}
 	fee := postage.CalcPostage(calcPostageArgs)
 	update.Postage = fee

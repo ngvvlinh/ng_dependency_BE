@@ -21,7 +21,6 @@ import (
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	connectioningpm "o.o/backend/com/main/connectioning/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
-	identitypmetelecom "o.o/backend/com/main/identity/pm_etelecom"
 	inventorypm "o.o/backend/com/main/inventory/pm"
 	invitationpm "o.o/backend/com/main/invitation/pm"
 	ledgerpm "o.o/backend/com/main/ledgering/pm"
@@ -65,26 +64,25 @@ type Output struct {
 	Health  *health.Service
 
 	// pm
-	_identityPM         *identitypm.ProcessManager
-	_identityPMEtelecom *identitypmetelecom.ProcessManager
-	_inventoryPM        *inventorypm.ProcessManager
-	_invitationPM       *invitationpm.ProcessManager
-	_catalogPM          *catalogpm.ProcessManager
-	_ledgerPM           *ledgerpm.ProcessManager
-	_moneytxPM          *moneytxpm.ProcessManager
-	_orderPM            *orderingpm.ProcessManager
-	_purchaseOrderPM    *purchaseorderpm.ProcessManager
-	_purchaseRefundPM   *purchaserefundpm.ProcessManager
-	_receiptPM          *receiptpm.ProcessManager
-	_refundPM           *refundpm.ProcessManager
-	_shipnowPM          *shipnowpm.ProcessManager
-	_shippingPM         *shippingpm.ProcessManager
-	_affiliatePM        *affiliatepm.ProcessManager
-	_traderPM           *traderpm.ProcessManager
-	_connectionPM       *connectioningpm.ProcessManager
-	_pricelistPM        *pricelistpm.ProcessManager
-	_customerPM         *customerpm.ProcessManager
-	_etelecomPM         *etelecompm.ProcessManager
+	_identityPM       *identitypm.ProcessManager
+	_inventoryPM      *inventorypm.ProcessManager
+	_invitationPM     *invitationpm.ProcessManager
+	_catalogPM        *catalogpm.ProcessManager
+	_ledgerPM         *ledgerpm.ProcessManager
+	_moneytxPM        *moneytxpm.ProcessManager
+	_orderPM          *orderingpm.ProcessManager
+	_purchaseOrderPM  *purchaseorderpm.ProcessManager
+	_purchaseRefundPM *purchaserefundpm.ProcessManager
+	_receiptPM        *receiptpm.ProcessManager
+	_refundPM         *refundpm.ProcessManager
+	_shipnowPM        *shipnowpm.ProcessManager
+	_shippingPM       *shippingpm.ProcessManager
+	_affiliatePM      *affiliatepm.ProcessManager
+	_traderPM         *traderpm.ProcessManager
+	_connectionPM     *connectioningpm.ProcessManager
+	_pricelistPM      *pricelistpm.ProcessManager
+	_customerPM       *customerpm.ProcessManager
+	_etelecomPM       *etelecompm.ProcessManager
 }
 
 func BuildServers(

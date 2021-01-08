@@ -56,7 +56,6 @@ import (
 	"o.o/backend/com/main/credit"
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/identity/pm"
-	"o.o/backend/com/main/identity/pm_etelecom"
 	aggregate5 "o.o/backend/com/main/inventory/aggregate"
 	pm2 "o.o/backend/com/main/inventory/pm"
 	query9 "o.o/backend/com/main/inventory/query"
@@ -1308,7 +1307,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	ahamoveWebhookServer := server2.NewAhamoveWebhookServer(serverWebhookConfig, shipmentManager, ahamoveCarrier, queryBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, orderingQueryBus, ahamoveVerificationFileServer, webhook10)
 	v4 := BuildServers(mainServer, webServer, shipmentWebhookServer, ghtkWebhookServer, vtPostWebhookServer, ahamoveWebhookServer)
 	processManager := pm.New(busBus, queryBus, commandBus, invitationQueryBus, addressQueryBus, addressCommandBus, accountUserStoreInterface)
-	pm_etelecomProcessManager := pm_etelecom.New(busBus, queryBus)
 	pmProcessManager := pm2.New(busBus, catalogQueryBus, orderingQueryBus, inventoryCommandBus)
 	processManager2 := pm3.New(busBus, invitationQueryBus, invitationCommandBus)
 	processManager3 := pm4.New(busBus, catalogQueryBus, catalogCommandBus)
@@ -1330,28 +1328,27 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager17 := pm18.New(busBus, customeringQueryBus, customeringCommandBus, shippingQueryBus)
 	processManager18 := pm19.New(busBus, etelecomCommandBus, etelecomQueryBus)
 	output := Output{
-		Servers:             v4,
-		Health:              service,
-		_identityPM:         processManager,
-		_identityPMEtelecom: pm_etelecomProcessManager,
-		_inventoryPM:        pmProcessManager,
-		_invitationPM:       processManager2,
-		_catalogPM:          processManager3,
-		_ledgerPM:           processManager4,
-		_moneytxPM:          processManager5,
-		_orderPM:            processManager6,
-		_purchaseOrderPM:    processManager7,
-		_purchaseRefundPM:   processManager8,
-		_receiptPM:          processManager9,
-		_refundPM:           processManager10,
-		_shipnowPM:          processManager11,
-		_shippingPM:         processManager12,
-		_affiliatePM:        processManager13,
-		_traderPM:           processManager14,
-		_connectionPM:       processManager15,
-		_pricelistPM:        processManager16,
-		_customerPM:         processManager17,
-		_etelecomPM:         processManager18,
+		Servers:           v4,
+		Health:            service,
+		_identityPM:       processManager,
+		_inventoryPM:      pmProcessManager,
+		_invitationPM:     processManager2,
+		_catalogPM:        processManager3,
+		_ledgerPM:         processManager4,
+		_moneytxPM:        processManager5,
+		_orderPM:          processManager6,
+		_purchaseOrderPM:  processManager7,
+		_purchaseRefundPM: processManager8,
+		_receiptPM:        processManager9,
+		_refundPM:         processManager10,
+		_shipnowPM:        processManager11,
+		_shippingPM:       processManager12,
+		_affiliatePM:      processManager13,
+		_traderPM:         processManager14,
+		_connectionPM:     processManager15,
+		_pricelistPM:      processManager16,
+		_customerPM:       processManager17,
+		_etelecomPM:       processManager18,
 	}
 	return output, func() {
 		cleanup9()

@@ -13,14 +13,6 @@ func (a *EtelecomAggregate) CreateExtension(ctx context.Context, args *etelecom.
 	if err := args.Validate(); err != nil {
 		return nil, err
 	}
-	event := &etelecom.ExtensionCreatingEvent{
-		UserID:    args.UserID,
-		AccountID: args.AccountID,
-	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
-		return nil, err
-	}
-
 	tenantDomain, err := a.getTenantDomain(ctx, args)
 	if err != nil {
 		return nil, err

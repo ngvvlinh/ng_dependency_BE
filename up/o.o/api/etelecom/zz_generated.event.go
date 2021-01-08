@@ -4,5 +4,4 @@
 
 package etelecom
 
-func (e *CallLogCreatedEvent) GetTopic() string    { return "event/etelecom" }
-func (e *ExtensionCreatingEvent) GetTopic() string { return "event/etelecom" }
+func (e *CallLogCreatedEvent) GetTopic() string { return "event/etelecom" }

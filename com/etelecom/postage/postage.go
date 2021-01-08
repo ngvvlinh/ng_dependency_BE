@@ -1,6 +1,8 @@
 package postage
 
 import (
+	"math"
+
 	"o.o/api/etelecom/call_log_direction"
 	"o.o/api/etelecom/mobile_network"
 )
@@ -8,29 +10,29 @@ import (
 type PriceList struct {
 	Direction    call_log_direction.CallLogDirection
 	Network      mobile_network.MobileNetwork
-	FeePerMinute int
+	FeePerSecond float64
 }
 
 var PriceListCall = []PriceList{
 	{
 		Direction:    call_log_direction.Out,
 		Network:      mobile_network.Mobiphone,
-		FeePerMinute: 450,
+		FeePerSecond: 7.5,
 	},
 	{
 		Direction:    call_log_direction.Out,
 		Network:      mobile_network.Viettel,
-		FeePerMinute: 450,
+		FeePerSecond: 7.5,
 	},
 	{
 		Direction:    call_log_direction.Out,
 		Network:      mobile_network.Vinaphone,
-		FeePerMinute: 450,
+		FeePerSecond: 7.5,
 	},
 	{
 		Direction:    call_log_direction.Out,
 		Network:      mobile_network.Other,
-		FeePerMinute: 800,
+		FeePerSecond: 13.4,
 	},
 }
 
@@ -45,10 +47,9 @@ func init() {
 }
 
 type CalcPostageArgs struct {
-	Phone     string
-	Direction call_log_direction.CallLogDirection
-	// Duration: minute
-	DurationPostage int
+	Phone          string
+	Direction      call_log_direction.CallLogDirection
+	DurationSecond int
 }
 
 func CalcPostage(args CalcPostageArgs) int {
@@ -56,7 +57,8 @@ func CalcPostage(args CalcPostageArgs) int {
 	pricelists := PriceListCallByNetWork[network]
 	for _, pl := range pricelists {
 		if pl.Network == network && pl.Direction == args.Direction {
-			return args.DurationPostage * pl.FeePerMinute
+			fee := float64(args.DurationSecond) * pl.FeePerSecond
+			return int(math.Ceil(fee))
 		}
 	}
 	return 0

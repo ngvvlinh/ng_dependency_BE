@@ -60,14 +60,6 @@ type Summary struct {
 	DeletedAt      time.Time
 }
 
-type ExtensionCreatingEvent struct {
-	// ID nhân viên shop
-	UserID dot.ID
-
-	// Shop ID
-	AccountID dot.ID
-}
-
 type CallLog struct {
 	ID                 dot.ID
 	ExternalID         string
