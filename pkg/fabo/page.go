@@ -187,12 +187,13 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	listCreateFbPageCombinedCmd := make([]*fbpaging.CreateFbExternalPageCombinedArgs, 0, len(accounts.Accounts.Data))
 	for _, account := range accounts.Accounts.Data {
 		// Verify role (Admin)
-		if fbclient.GetRole(account.Tasks) != fbclient.ADMIN {
+		currRole := fbclient.GetRole(account.Tasks)
+		if currRole != fbclient.ADMIN && currRole != fbclient.EDITOR {
 			fbErrorPages = append(fbErrorPages, &fabo.FbErrorPage{
 				ExternalID:       account.Id,
 				ExternalName:     account.Name,
 				ExternalImageURL: account.Picture.Data.Url,
-				Reason:           "Tài khoản Facebook cần có quyền Admin trên Fanpage để kết nối.",
+				Reason:           "Tài khoản Facebook cần có quyền Admin hoặc Editor trên Fanpage để kết nối.",
 			})
 			continue
 		}
