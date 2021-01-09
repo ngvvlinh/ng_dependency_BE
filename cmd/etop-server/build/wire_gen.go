@@ -1283,7 +1283,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IdentityQuery: queryBus,
 	}
 	reportServer := reportserver.BuildReportServer(reportService, session)
-	mainServer := BuildMainServer(service, intHandlers, extHandlers, sharedConfig, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, reportServer)
+	mainServer := BuildMainServer(service, intHandlers, extHandlers, sharedConfig, cfg, importServer, importHandler, eventStreamHandler, downloadHandler, vtPayHandler, reportServer)
 	webServer := BuildWebServer(cfg, webserverQueryBus, catalogQueryBus, subscriptionQueryBus, store, locationQueryBus)
 	shipment_allConfig := cfg.Shipment
 	webhookConfig := shipment_allConfig.GHNWebhook

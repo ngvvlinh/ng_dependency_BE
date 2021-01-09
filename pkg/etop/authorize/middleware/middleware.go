@@ -21,10 +21,10 @@ func CORS(next http.Handler) http.HandlerFunc {
 			strings.HasSuffix(origin, ".ecomify.vn"),
 			strings.HasSuffix(origin, ".ecom.d.etop.vn"),
 			strings.HasSuffix(origin, ".d.etop.vn"):
-			w.Header().Add("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Origin", origin)
 
-		case cmenv.IsDev(), cmenv.IsSandBox():
-			w.Header().Add("Access-Control-Allow-Origin", "*")
+		case cmenv.IsSandBox(), cmenv.IsDevOrStag():
+			w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		default:
 			next.ServeHTTP(w, r)

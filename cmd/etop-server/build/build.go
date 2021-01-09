@@ -51,6 +51,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/authetop"
 	"o.o/backend/pkg/etop/authorize/middleware"
+	middlewarewebphone "o.o/backend/pkg/etop/authorize/middleware/webphone"
 	ahamoveserver "o.o/backend/pkg/integration/shipnow/ahamove/server"
 	"o.o/capi/httprpc"
 	"o.o/common/jsonx"
@@ -110,7 +111,8 @@ func BuildMainServer(
 	healthService *health.Service,
 	intHandlers _main.IntHandlers,
 	extHandlers _main.ExtHandlers,
-	cfg config_server.SharedConfig,
+	sharedCfg config_server.SharedConfig,
+	cfg config.Config,
 	adminImport server_admin.ImportServer,
 	shopImport server_shop.ImportHandler,
 	eventStream server_shop.EventStreamHandler,
@@ -148,7 +150,7 @@ func BuildMainServer(
 	mux.Handle(vtpayServer.PathPrefix(), vtpayServer)
 	mux.Handle(reportServer.PathPrefix(), mwares(reportServer))
 
-	if cfg.ServeDoc {
+	if sharedCfg.ServeDoc {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		for _, s := range strings.Split("etop/sadmin,etop/admin,etop/shop,etop/etelecom,etop/integration,etop/affiliate,services/crm,services/affiliate,fabo", ",") {
@@ -171,9 +173,10 @@ func BuildMainServer(
 		mux.Handle("/doc/ext/"+s+"/swagger.json", servedoc.SwaggerHandler("external/"+s+"/swagger.json"))
 	}
 
-	h := middleware.CORS(mux)
+	// middleware webphone -> global
+	h := middlewarewebphone.CORS(cfg.WebphonePublicKey)(middleware.CORS(mux))
 	svr := &http.Server{
-		Addr:    cfg.HTTP.Address(),
+		Addr:    sharedCfg.HTTP.Address(),
 		Handler: h,
 	}
 	return svr
