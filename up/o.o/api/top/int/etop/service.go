@@ -8,14 +8,17 @@ import (
 
 // +gen:apix
 // +gen:swagger:doc-path=etop
+// +gen:swagger:doc-path-2=xfabo/common
 // +gen:swagger:description=description.md
 
 // +apix:path=/etop.Misc
+// +apix:path:2=/etop.Misc
 type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/etop.User
+// +apix:path:2=/etop.User
 type UserService interface {
 	// Register
 	//
@@ -116,6 +119,7 @@ type AccountService interface {
 }
 
 // +apix:path=/etop.Location
+// +apix:path:2=/etop.Account
 type LocationService interface {
 	GetProvinces(context.Context, *cm.Empty) (*GetProvincesResponse, error)
 
@@ -131,6 +135,7 @@ type LocationService interface {
 }
 
 // +apix:path=/etop.Bank
+// +apix:path:2=/etop.Bank
 type BankService interface {
 	GetBanks(context.Context, *cm.Empty) (*GetBanksResponse, error)
 
@@ -144,6 +149,7 @@ type BankService interface {
 }
 
 // +apix:path=/etop.Address
+// +apix:path:2=/etop.Address
 type AddressService interface {
 	CreateAddress(context.Context, *CreateAddressRequest) (*Address, error)
 
@@ -155,6 +161,7 @@ type AddressService interface {
 }
 
 // +apix:path=/etop.UserRelationship
+// +apix:path:2=/etop.UserRelationship
 // +wrapper:endpoint-prefix=UserRelationship
 type UserRelationshipService interface {
 	AcceptInvitation(context.Context, *AcceptInvitationRequest) (*cm.UpdatedResponse, error)
@@ -165,6 +172,7 @@ type UserRelationshipService interface {
 }
 
 // +apix:path=/etop.AccountRelationship
+// +apix:path:2=/etop.AccountRelationship
 // +wrapper:endpoint-prefix=AccountRelationship
 type AccountRelationshipService interface {
 	CreateInvitation(context.Context, *CreateInvitationRequest) (*Invitation, error)

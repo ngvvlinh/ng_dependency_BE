@@ -2,6 +2,7 @@ package build
 
 import (
 	"net/http"
+	"strings"
 
 	"o.o/backend/cmd/fabo-server/config"
 	config_server "o.o/backend/cogs/config/_server"
@@ -22,6 +23,7 @@ import (
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
+	"o.o/backend/pkg/common/apifw/servedoc"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/common/lifecycle"
@@ -42,6 +44,8 @@ import (
 	"o.o/common/jsonx"
 	"o.o/common/l"
 )
+
+var ll = l.New()
 
 type Output struct {
 	Servers     []lifecycle.HTTPServer
@@ -136,6 +140,20 @@ func BuildMainServer(
 	mux.Handle(eventStream.PathPrefix(), eventStream)
 	mux.Handle(downloadHandler.PathPrefix(), downloadHandler)
 	mux.Handle(faboImageHandler.PathPrefix(), faboImageHandler)
+
+	if cfg.ServeDoc {
+		mux.Handle("/", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))
+		mux.Handle("/doc", http.RedirectHandler("/doc/fabo", http.StatusTemporaryRedirect))
+		for _, s := range strings.Split("xfabo/shop,xfabo/common,fabo", ",") {
+			swaggerPath := "/doc/" + s + "/swagger.json"
+			mux.Handle("/doc/"+s, servedoc.RedocHandler())
+			mux.Handle(swaggerPath, servedoc.SwaggerHandler(s+"/swagger.json"))
+		}
+		// mux.Handle("/doc/fabo", servedoc.RedocHandler())
+	} else {
+		ll.Warn("DOCUMENTATION IS DISABLED (config.serve_doc = false)")
+		mux.Handle("/doc", http.NotFoundHandler())
+	}
 
 	h := middleware.CORS(mux)
 	svr := &http.Server{

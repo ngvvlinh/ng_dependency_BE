@@ -8,6 +8,7 @@ import (
 
 // +gen:apix
 // +gen:swagger:doc-path=fabo
+// +gen:swagger:description=description.md
 
 // +apix:path=/fabo.Shop
 type ShopService interface {

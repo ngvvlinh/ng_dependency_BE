@@ -11,8 +11,10 @@ import (
 
 // +gen:apix
 // +gen:swagger:doc-path=etop/shop
+// +gen:swagger:doc-path-2=xfabo/shop
 
 // +apix:path=/shop.Misc
+// +apix:path:2=/shop.Misc
 type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
@@ -77,6 +79,7 @@ type CollectionService interface {
 }
 
 // +apix:path=/shop.Customer
+// +apix:path:2=/shop.Customer
 type CustomerService interface {
 	CreateCustomer(context.Context, *CreateCustomerRequest) (*Customer, error)
 	UpdateCustomer(context.Context, *UpdateCustomerRequest) (*Customer, error)
@@ -109,6 +112,7 @@ type CustomerGroupService interface {
 }
 
 // +apix:path=/shop.Product
+// +apix:path:2=/shop.Product
 type ProductService interface {
 
 	//-- product --//
@@ -170,6 +174,7 @@ type ProductSourceService interface {
 }
 
 // +apix:path=/shop.Order
+// +apix:path:2=/shop.Order
 type OrderService interface {
 	CreateOrder(context.Context, *types.CreateOrderRequest) (*types.Order, error)
 	GetOrder(context.Context, *cm.IDRequest) (*types.Order, error)
@@ -190,6 +195,7 @@ type OrderService interface {
 }
 
 // +apix:path=/shop.Fulfillment
+// +apix:path:2=/shop.Fulfillment
 type FulfillmentService interface {
 	GetFulfillment(context.Context, *cm.IDRequest) (*types.Fulfillment, error)
 	GetFulfillments(context.Context, *GetFulfillmentsRequest) (*types.FulfillmentsResponse, error)
@@ -202,6 +208,7 @@ type FulfillmentService interface {
 }
 
 // +apix:path=/shop.Shipment
+// +apix:path:2=/shop.Shipment
 type ShipmentService interface {
 	GetShippingServices(context.Context, *types.GetShippingServicesRequest) (*types.GetShippingServicesResponse, error)
 	CreateFulfillments(context.Context, *CreateFulfillmentsRequest) (*CreateFulfillmentsResponse, error)
@@ -251,6 +258,7 @@ type ExportService interface {
 }
 
 // +apix:path=/shop.Notification
+// +apix:path:2=/shop.Notification
 type NotificationService interface {
 	CreateDevice(context.Context, *etop.CreateDeviceRequest) (*etop.Device, error)
 	DeleteDevice(context.Context, *etop.DeleteDeviceRequest) (*cm.DeletedResponse, error)
@@ -350,6 +358,7 @@ type StocktakeService interface {
 }
 
 // +apix:path=/shop.Connection
+// +apix:path:2=/shop.Connection
 type ConnectionService interface {
 	GetConnections(context.Context, *types.GetConnectionsRequest) (*types.GetConnectionsResponse, error)
 	GetAvailableConnections(context.Context, *types.GetAvailableConnectionsRequest) (*types.GetConnectionsResponse, error)
@@ -453,6 +462,7 @@ type ContactService interface {
 }
 
 // +apix:path=/shop.Setting
+// +apix:path:2=/shop.Setting
 type SettingService interface {
 	GetSetting(context.Context, *cm.Empty) (*ShopSetting, error)
 	UpdateSetting(context.Context, *UpdateSettingRequest) (*ShopSetting, error)

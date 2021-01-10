@@ -80,37 +80,70 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, _ g
 	if err != nil {
 		return err
 	}
-	swaggerDoc, err := GenerateSwagger(ng, opts, services)
-	if err != nil {
-		return generator.Errorf(err, "generate swagger: %v", err)
-	}
+
 	{
-		dir := filepath.Join(gen.ProjectPath(), "doc", docPath)
-		filename := filepath.Join(dir, "swagger.json")
-		f, err2 := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-		if err2 != nil {
-			return err2
+		swaggerDoc, err := GenerateSwagger(ng, opts, services, false)
+		if err != nil {
+			return generator.Errorf(err, "generate swagger: %v", err)
 		}
-		defer func() {
-			err3 := f.Close()
-			if _err == nil {
-				_err = err3
-			}
-		}()
-		encoder := json.NewEncoder(f)
-		encoder.SetIndent("", "  ")
-		if err4 := encoder.Encode(swaggerDoc); err4 != nil {
-			return generator.Errorf(nil, "generate swagger: %v", err4)
+		if err := writeSwaggerFile(docPath, swaggerDoc); err != nil {
+			return err
+		}
+	}
+
+	{
+		// gen swagger docs for api path 2
+		docPath2 := pkgDirectives.GetArg("gen:swagger:doc-path-2")
+		if docPath2 == "" {
+			return nil
+		}
+		opt2 := opts
+		// remove description
+		// we don't need it
+		opt2.Description = ""
+		swaggerDocs2, err := GenerateSwagger(ng, opt2, services, true)
+		if err != nil {
+			return generator.Errorf(err, "generate swagger: %v", err)
+		}
+		if err := writeSwaggerFile(docPath2, swaggerDocs2); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (*spec.SwaggerProps, error) {
+func writeSwaggerFile(docPath string, swaggerDoc *spec.SwaggerProps) (_err error) {
+	dir := filepath.Join(gen.ProjectPath(), "doc", docPath)
+	filename := filepath.Join(dir, "swagger.json")
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		return err
+	}
+	f, err2 := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err2 != nil {
+		return err2
+	}
+	defer func() {
+		err3 := f.Close()
+		if _err == nil {
+			_err = err3
+		}
+	}()
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "  ")
+	if err4 := encoder.Encode(swaggerDoc); err4 != nil {
+		return generator.Errorf(nil, "generate swagger: %v", err4)
+	}
+	return nil
+}
+
+func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service, apiPath2 bool) (*spec.SwaggerProps, error) {
 	definitions := map[string]spec.Schema{}
 	pathItems := map[string]spec.PathItem{}
 	for _, service := range services {
-
+		if apiPath2 && service.APIPath2 == "" {
+			continue
+		}
 		for _, method := range service.Methods {
 			desc, err := parseItemDescription(ng, method.Name, method.Method)
 			if err != nil {
@@ -164,12 +197,15 @@ func GenerateSwagger(ng generator.Engine, opts Opts, services []*defs.Service) (
 	info := &spec.Info{
 		InfoProps: spec.InfoProps{
 			Version:     coalesce(opts.Version, "v1"),
-			Title:       coalesce(opts.Title, "eTop API"),
+			Title:       coalesce(opts.Title, "API Document"),
 			Description: opts.Description,
 		},
 	}
 	var tags []spec.Tag
 	for _, s := range services {
+		if apiPath2 && s.APIPath2 == "" {
+			continue
+		}
 		tags = append(tags, spec.Tag{
 			TagProps: spec.TagProps{
 				Name: getTagForService(ng, s),

@@ -21,6 +21,8 @@ type Service struct {
 	Methods   []*Method
 
 	Interface *types.TypeName
+
+	APIPath2 string
 }
 
 type Method struct {

@@ -11,7 +11,8 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "eTop API",
+    "description": "API Documentation:\n\n### Fabo\n\n- [/doc/common](/doc/xfabo/common) Shared API for managing login and account\n- [/doc/shop](/doc/xfabo/shop) API for shops\n- [/doc/fabo](/doc/fabo) API for fabo conversation",
+    "title": "API Document",
     "version": "v1"
   },
   "paths": {

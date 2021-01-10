@@ -1,0 +1,7332 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "API Document",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/shop.Connection/DeleteShopConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "DeleteShopConnection",
+        "operationId": "shop.Connection-DeleteShopConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdDeleteShopConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/GetAvailableConnections": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetAvailableConnections",
+        "operationId": "shop.Connection-GetAvailableConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetAvailableConnectionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/GetConnections": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetConnections",
+        "operationId": "shop.Connection-GetConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetConnectionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/GetShopConnections": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "GetShopConnections",
+        "operationId": "shop.Connection-GetShopConnections",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetShopConnectionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/LoginShopConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "LoginShopConnection",
+        "operationId": "shop.Connection-LoginShopConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdLoginShopConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdLoginShopConnectionResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/LoginShopConnectionWithOTP": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "LoginShopConnectionWithOTP",
+        "operationId": "shop.Connection-LoginShopConnectionWithOTP",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdLoginShopConnectionWithOTPRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdLoginShopConnectionWithOTPResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/RegisterShopConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "RegisterShopConnection",
+        "operationId": "shop.Connection-RegisterShopConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdRegisterShopConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdShopConnection"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Connection/UpdateShopConnection": {
+      "post": {
+        "tags": [
+          "Connection"
+        ],
+        "summary": "UpdateShopConnection",
+        "operationId": "shop.Connection-UpdateShopConnection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdUpdateShopConnectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/AddCustomersToGroup": {
+      "post": {
+        "description": "-- group --//\n",
+        "tags": [
+          "Customer"
+        ],
+        "summary": "AddCustomersToGroup",
+        "operationId": "shop.Customer-AddCustomersToGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paAddCustomerToGroupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/BatchSetCustomersStatus": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "BatchSetCustomersStatus",
+        "operationId": "shop.Customer-BatchSetCustomersStatus",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paSetCustomersStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/CreateCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "CreateCustomer",
+        "operationId": "shop.Customer-CreateCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/CreateCustomerAddress": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "CreateCustomerAddress",
+        "operationId": "shop.Customer-CreateCustomerAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateCustomerAddressRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomerAddress"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/DeleteCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "DeleteCustomer",
+        "operationId": "shop.Customer-DeleteCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/DeleteCustomerAddress": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "DeleteCustomerAddress",
+        "operationId": "shop.Customer-DeleteCustomerAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/GetCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "GetCustomer",
+        "operationId": "shop.Customer-GetCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/GetCustomerAddresses": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "GetCustomerAddresses",
+        "operationId": "shop.Customer-GetCustomerAddresses",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetCustomerAddressesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomerAddressesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/GetCustomerDetails": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "GetCustomerDetails",
+        "operationId": "shop.Customer-GetCustomerDetails",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomerDetailsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/GetCustomers": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "GetCustomers",
+        "operationId": "shop.Customer-GetCustomers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetCustomersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/GetCustomersByIDs": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "GetCustomersByIDs",
+        "operationId": "shop.Customer-GetCustomersByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/RemoveCustomersFromGroup": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "RemoveCustomersFromGroup",
+        "operationId": "shop.Customer-RemoveCustomersFromGroup",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paRemoveCustomerOutOfGroupRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktRemovedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/SetDefaultCustomerAddress": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "SetDefaultCustomerAddress",
+        "operationId": "shop.Customer-SetDefaultCustomerAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/UpdateCustomer": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "UpdateCustomer",
+        "operationId": "shop.Customer-UpdateCustomer",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateCustomerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomer"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Customer/UpdateCustomerAddress": {
+      "post": {
+        "tags": [
+          "Customer"
+        ],
+        "summary": "UpdateCustomerAddress",
+        "operationId": "shop.Customer-UpdateCustomerAddress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateCustomerAddressRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCustomerAddress"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Fulfillment/GetExternalShippingServices": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetExternalShippingServices",
+        "operationId": "shop.Fulfillment-GetExternalShippingServices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetExternalShippingServicesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetExternalShippingServicesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Fulfillment/GetFulfillment": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetFulfillment",
+        "operationId": "shop.Fulfillment-GetFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Fulfillment/GetFulfillments": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetFulfillments",
+        "operationId": "shop.Fulfillment-GetFulfillments",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetFulfillmentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdFulfillmentsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Fulfillment/GetFulfillmentsByIDs": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetFulfillmentsByIDs",
+        "operationId": "shop.Fulfillment-GetFulfillmentsByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetFulfillmentsByIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdFulfillmentsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Fulfillment/GetPublicExternalShippingServices": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetPublicExternalShippingServices",
+        "operationId": "shop.Fulfillment-GetPublicExternalShippingServices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetExternalShippingServicesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetExternalShippingServicesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Fulfillment/GetPublicFulfillment": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "GetPublicFulfillment",
+        "operationId": "shop.Fulfillment-GetPublicFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetPublicFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdPublicFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Fulfillment/UpdateFulfillmentsShippingState": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "summary": "UpdateFulfillmentsShippingState",
+        "operationId": "shop.Fulfillment-UpdateFulfillmentsShippingState",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateFulfillmentsShippingStateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Misc/VersionInfo": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "summary": "VersionInfo",
+        "operationId": "shop.Misc-VersionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktVersionInfoResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Notification/CreateDevice": {
+      "post": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "CreateDevice",
+        "operationId": "shop.Notification-CreateDevice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baCreateDeviceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baDevice"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Notification/DeleteDevice": {
+      "post": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "DeleteDevice",
+        "operationId": "shop.Notification-DeleteDevice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baDeleteDeviceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Notification/GetNotification": {
+      "post": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "GetNotification",
+        "operationId": "shop.Notification-GetNotification",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baNotification"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Notification/GetNotifications": {
+      "post": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "GetNotifications",
+        "operationId": "shop.Notification-GetNotifications",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baGetNotificationsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baNotificationsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Notification/UpdateNotifications": {
+      "post": {
+        "tags": [
+          "Notification"
+        ],
+        "summary": "UpdateNotifications",
+        "operationId": "shop.Notification-UpdateNotifications",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baUpdateNotificationsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/CancelOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "CancelOrder",
+        "operationId": "shop.Order-CancelOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCancelOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrderWithErrorsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/CompleteOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "CompleteOrder",
+        "operationId": "shop.Order-CompleteOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paOrderIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/ConfirmOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "ConfirmOrder",
+        "operationId": "shop.Order-ConfirmOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paConfirmOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrder"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/ConfirmOrderAndCreateFulfillments": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "ConfirmOrderAndCreateFulfillments",
+        "operationId": "shop.Order-ConfirmOrderAndCreateFulfillments",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paOrderIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrderWithErrorsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/CreateOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "CreateOrder",
+        "operationId": "shop.Order-CreateOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrder"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/GetOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "GetOrder",
+        "operationId": "shop.Order-GetOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrder"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/GetOrders": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "GetOrders",
+        "operationId": "shop.Order-GetOrders",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetOrdersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrdersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/GetOrdersByIDs": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "GetOrdersByIDs",
+        "operationId": "shop.Order-GetOrdersByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/baIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrdersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/GetOrdersByReceiptID": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "GetOrdersByReceiptID",
+        "operationId": "shop.Order-GetOrdersByReceiptID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetOrdersByReceiptIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrdersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/UpdateOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "UpdateOrder",
+        "operationId": "shop.Order-UpdateOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdUpdateOrderRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrder"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/UpdateOrderPaymentStatus": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "UpdateOrderPaymentStatus",
+        "operationId": "shop.Order-UpdateOrderPaymentStatus",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateOrderPaymentStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/UpdateOrderShippingInfo": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "UpdateOrderShippingInfo",
+        "operationId": "shop.Order-UpdateOrderShippingInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateOrderShippingInfoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Order/UpdateOrdersStatus": {
+      "post": {
+        "description": "**Deprecated:**\n",
+        "tags": [
+          "Order"
+        ],
+        "summary": "UpdateOrdersStatus",
+        "operationId": "shop.Order-UpdateOrdersStatus",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateOrdersStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/AddProductCollection": {
+      "post": {
+        "description": "-- collection --//\n",
+        "tags": [
+          "Product"
+        ],
+        "summary": "AddProductCollection",
+        "operationId": "shop.Product-AddProductCollection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paAddShopProductCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/CreateProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "CreateProduct",
+        "operationId": "shop.Product-CreateProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/CreateVariant": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "CreateVariant",
+        "operationId": "shop.Product-CreateVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/GetProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "GetProduct",
+        "operationId": "shop.Product-GetProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/GetProducts": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "GetProducts",
+        "operationId": "shop.Product-GetProducts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetVariantsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProductsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/GetProductsByIDs": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "GetProductsByIDs",
+        "operationId": "shop.Product-GetProductsByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProductsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/GetVariant": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "GetVariant",
+        "operationId": "shop.Product-GetVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/GetVariantsByIDs": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "GetVariantsByIDs",
+        "operationId": "shop.Product-GetVariantsByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopVariantsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/GetVariantsBySupplierID": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "GetVariantsBySupplierID",
+        "operationId": "shop.Product-GetVariantsBySupplierID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetVariantsBySupplierIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopVariantsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/RemoveProductCategory": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "RemoveProductCategory",
+        "operationId": "shop.Product-RemoveProductCategory",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/RemoveProductCollection": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "RemoveProductCollection",
+        "operationId": "shop.Product-RemoveProductCollection",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paRemoveShopProductCollectionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktRemovedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/RemoveProducts": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "RemoveProducts",
+        "operationId": "shop.Product-RemoveProducts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paRemoveVariantsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktRemovedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/RemoveVariants": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "RemoveVariants",
+        "operationId": "shop.Product-RemoveVariants",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paRemoveVariantsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktRemovedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateProduct": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateProduct",
+        "operationId": "shop.Product-UpdateProduct",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateProductRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateProductCategory": {
+      "post": {
+        "description": "-- category --//\n",
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateProductCategory",
+        "operationId": "shop.Product-UpdateProductCategory",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateProductCategoryRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateProductImages": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateProductImages",
+        "operationId": "shop.Product-UpdateProductImages",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateVariantImagesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateProductMetaFields": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateProductMetaFields",
+        "operationId": "shop.Product-UpdateProductMetaFields",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateProductMetaFieldsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopProduct"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateProductsStatus": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateProductsStatus",
+        "operationId": "shop.Product-UpdateProductsStatus",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateProductStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paUpdateProductStatusResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateProductsTags": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateProductsTags",
+        "operationId": "shop.Product-UpdateProductsTags",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateProductsTagsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateVariant": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateVariant",
+        "operationId": "shop.Product-UpdateVariant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateVariantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateVariantAttributes": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateVariantAttributes",
+        "operationId": "shop.Product-UpdateVariantAttributes",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateVariantAttributesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateVariantImages": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateVariantImages",
+        "operationId": "shop.Product-UpdateVariantImages",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateVariantImagesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopVariant"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Product/UpdateVariantsStatus": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "summary": "UpdateVariantsStatus",
+        "operationId": "shop.Product-UpdateVariantsStatus",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateProductStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paUpdateProductStatusResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Setting/GetSetting": {
+      "post": {
+        "tags": [
+          "Setting"
+        ],
+        "summary": "GetSetting",
+        "operationId": "shop.Setting-GetSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopSetting"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Setting/UpdateSetting": {
+      "post": {
+        "tags": [
+          "Setting"
+        ],
+        "summary": "UpdateSetting",
+        "operationId": "shop.Setting-UpdateSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateSettingRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paShopSetting"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Shipment/CancelFulfillment": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "CancelFulfillment",
+        "operationId": "shop.Shipment-CancelFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCancelFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Shipment/CreateFulfillments": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "CreateFulfillments",
+        "operationId": "shop.Shipment-CreateFulfillments",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateFulfillmentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCreateFulfillmentsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Shipment/CreateFulfillmentsFromImport": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "CreateFulfillmentsFromImport",
+        "operationId": "shop.Shipment-CreateFulfillmentsFromImport",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateFulfillmentsFromImportRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paCreateFulfillmentsFromImportResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Shipment/GetShippingServices": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "GetShippingServices",
+        "operationId": "shop.Shipment-GetShippingServices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetShippingServicesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetShippingServicesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Shipment/UpdateFulfillmentCOD": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "UpdateFulfillmentCOD",
+        "operationId": "shop.Shipment-UpdateFulfillmentCOD",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateFulfillmentCODRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Shipment/UpdateFulfillmentInfo": {
+      "post": {
+        "tags": [
+          "Shipment"
+        ],
+        "summary": "UpdateFulfillmentInfo",
+        "operationId": "shop.Shipment-UpdateFulfillmentInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateFulfillmentInfoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "adAddressType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "general",
+        "warehouse",
+        "shipto",
+        "shipfrom"
+      ]
+    },
+    "baAddress": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "first_name": {
+          "description": "**Deprecated:** use full_name instead\n",
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "last_name": {
+          "description": "**Deprecated:** use full_name instead\n",
+          "type": "string"
+        },
+        "notes": {
+          "$ref": "#/definitions/baAddressNote"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/adAddressType"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      }
+    },
+    "baAddressNote": {
+      "type": "object",
+      "properties": {
+        "lunch_break": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "open_time": {
+          "type": "string"
+        },
+        "other": {
+          "type": "string"
+        }
+      }
+    },
+    "baBankAccount": {
+      "type": "object",
+      "properties": {
+        "account_name": {
+          "type": "string"
+        },
+        "account_number": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        }
+      }
+    },
+    "baCompanyInfo": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "legal_representative": {
+          "$ref": "#/definitions/baContactPerson"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tax_code": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        }
+      }
+    },
+    "baContactPerson": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        }
+      }
+    },
+    "baCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
+    "baCreateDeviceRequest": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "device_name": {
+          "type": "string"
+        },
+        "external_device_id": {
+          "type": "string"
+        }
+      }
+    },
+    "baDeleteDeviceRequest": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "external_device_id": {
+          "type": "string"
+        }
+      }
+    },
+    "baDevice": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "device_name": {
+          "type": "string"
+        },
+        "external_device_id": {
+          "type": "string"
+        },
+        "external_service_id": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "baGetNotificationFilter": {
+      "type": "object",
+      "properties": {
+        "entity": {
+          "$ref": "#/definitions/wdNotifierEntity"
+        }
+      }
+    },
+    "baGetNotificationsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/baGetNotificationFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "baIDsRequest": {
+      "type": "object",
+      "required": [
+        "ids"
+      ],
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "mixed": {
+          "$ref": "#/definitions/baMixedAccount"
+        }
+      }
+    },
+    "baMixedAccount": {
+      "type": "object",
+      "properties": {
+        "all": {
+          "type": "boolean"
+        },
+        "all_shops": {
+          "type": "boolean"
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "baNotification": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "entity": {
+          "type": "string"
+        },
+        "entity_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_read": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        },
+        "meta_data": {
+          "$ref": "#/definitions/baNotificationMeta"
+        },
+        "seen_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "send_notification": {
+          "type": "boolean"
+        },
+        "sync_status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "title": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "baNotificationMeta": {
+      "type": "object",
+      "properties": {
+        "conversation_id": {
+          "type": "string"
+        },
+        "fb_external_comment_id": {
+          "type": "string"
+        },
+        "fb_external_post_id": {
+          "type": "string"
+        }
+      }
+    },
+    "baNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "notifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baNotification"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "baShippingServiceSelectStrategyItem": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "baShop": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "$ref": "#/definitions/baAddress"
+        },
+        "auto_create_ffm": {
+          "type": "boolean"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/baBankAccount"
+        },
+        "block_reason": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "company_info": {
+          "$ref": "#/definitions/baCompanyInfo"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email": {
+          "type": "string"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ghn_note_code": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use try_on instead\n"
+            },
+            {
+              "$ref": "#/definitions/pjGHNNoteCode"
+            }
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "inventory_overstock": {
+          "type": "boolean"
+        },
+        "is_blocked": {
+          "type": "boolean"
+        },
+        "is_prior_money_transaction": {
+          "type": "boolean"
+        },
+        "is_test": {
+          "type": "boolean"
+        },
+        "money_transaction_count": {
+          "type": "integer"
+        },
+        "money_transaction_rrule": {
+          "description": "referrence: https://icalendar.org/rrule-tool.html\n",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ship_from_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ship_to_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_service_select_strategy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baShippingServiceSelectStrategyItem"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "survey_info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baSurveyInfo"
+          }
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/baUser"
+        },
+        "website_url": {
+          "type": "string"
+        }
+      }
+    },
+    "baSurveyInfo": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        }
+      }
+    },
+    "baUpdateNotificationsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "is_read": {
+          "type": "boolean"
+        }
+      }
+    },
+    "baUser": {
+      "description": "Represents a user in eTop system. The user may or may not have associated accounts.\n",
+      "type": "object",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "block_reason": {
+          "type": "string"
+        },
+        "blocked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email": {
+          "type": "string"
+        },
+        "email_verification_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email_verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_blocked": {
+          "type": "boolean"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "phone_verification_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "phone_verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ref_aff": {
+          "type": "string"
+        },
+        "ref_sale": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/definitions/djUserSource"
+        },
+        "total_shop": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "bjState": {
+      "type": "string",
+      "enum": [
+        "default",
+        "created",
+        "assigning",
+        "picking",
+        "delivering",
+        "delivered",
+        "returning",
+        "returned",
+        "unknown",
+        "undeliverable",
+        "cancelled"
+      ]
+    },
+    "blStatus": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "N"
+      ]
+    },
+    "bmStatus": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "S",
+        "N"
+      ]
+    },
+    "bnStatus": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "S",
+        "N",
+        "NS"
+      ]
+    },
+    "bwShippingProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "all",
+        "manual",
+        "ghn",
+        "ghtk",
+        "vtpost",
+        "etop",
+        "partner",
+        "ninjavan",
+        "dhl"
+      ]
+    },
+    "cdConnectionMethod": {
+      "description": "Deprecated values: \"topship\"\\n",
+      "type": "string",
+      "enum": [
+        "unknown",
+        "builtin",
+        "direct"
+      ]
+    },
+    "cdConnectionProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ghn",
+        "ghtk",
+        "vtpost",
+        "partner",
+        "ahamove",
+        "ninjavan",
+        "dhl",
+        "suitecrm",
+        "portsip"
+      ]
+    },
+    "cdConnectionSubtype": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipment",
+        "manual",
+        "shipnow"
+      ]
+    },
+    "cdConnectionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "shipping",
+        "crm",
+        "telecom"
+      ]
+    },
+    "csTryOnCode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "none",
+        "open",
+        "try"
+      ]
+    },
+    "djUserSource": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "psx",
+        "etop",
+        "topship",
+        "ts_app_android",
+        "ts_app_ios",
+        "ts_app_web",
+        "partner",
+        "etop_app_ios",
+        "etop_app_android"
+      ]
+    },
+    "dkAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "kfFullTextSearch": {
+      "type": "string"
+    },
+    "ktDeletedResponse": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktEmpty": {
+      "type": "object"
+    },
+    "ktError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "ktFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Comma separated properties: \"name,s_name\"\n",
+          "type": "string"
+        },
+        "op": {
+          "description": "Can be = ≠ (!=) \u003c ≤ (\u003c=) \u003e ≥ (\u003e=) ⊃ (c) ∈ (in) ∩ (n)\n\n- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ \u003c ≤ \u003e ≥\n- Array: = ≠ (only with value is {})\n",
+          "type": "string"
+        },
+        "value": {
+          "description": "Must always be string\n",
+          "type": "string"
+        }
+      }
+    },
+    "ktIDRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ktIDsRequest": {
+      "type": "object",
+      "required": [
+        "ids"
+      ],
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "ktMetaField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "ktPageInfo": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "total": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktPaging": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer"
+        },
+        "offset": {
+          "type": "integer"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktRemovedResponse": {
+      "type": "object",
+      "properties": {
+        "removed": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
+    "ktVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "service": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "ljCustomerType": {
+      "description": "Deprecated values: \"independent\"\\n",
+      "type": "string",
+      "enum": [
+        "unknown",
+        "individual",
+        "organization",
+        "anonymous"
+      ]
+    },
+    "miSubstate": {
+      "type": "string",
+      "enum": [
+        "default",
+        "pick_fail",
+        "delivery_fail",
+        "devivery_giveup",
+        "return_fail",
+        "cancelling"
+      ]
+    },
+    "ojFeeType": {
+      "type": "string",
+      "enum": [
+        "other",
+        "shipping",
+        "tax"
+      ]
+    },
+    "paAddCustomerToGroupRequest": {
+      "type": "object",
+      "properties": {
+        "customer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "group_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paAddShopProductCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "collection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paCancelFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
+        "fulfillment_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paCancelOrderRequest": {
+      "type": "object",
+      "properties": {
+        "auto_inventory_voucher": {
+          "$ref": "#/definitions/rtAutoInventoryVoucher"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paConfirmOrderRequest": {
+      "type": "object",
+      "properties": {
+        "auto_create_fulfillment": {
+          "type": "boolean"
+        },
+        "auto_inventory_voucher": {
+          "allOf": [
+            {
+              "description": "enum ('create', 'create')\n"
+            },
+            {
+              "$ref": "#/definitions/rtAutoInventoryVoucher"
+            }
+          ]
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paCreateCustomerAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "paCreateCustomerRequest": {
+      "type": "object",
+      "required": [
+        "full_name",
+        "phone"
+      ],
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "type": {
+          "allOf": [
+            {
+              "description": "enum ('individual', 'organization')\n\nDeprecated values: \"independent\"\\n"
+            },
+            {
+              "$ref": "#/definitions/ljCustomerType"
+            }
+          ]
+        }
+      }
+    },
+    "paCreateFulfillmentFromImportArgs": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "product_description": {
+          "type": "string"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "total_weight": {
+          "type": "integer"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        }
+      }
+    },
+    "paCreateFulfillmentsFromImportRequest": {
+      "type": "object",
+      "properties": {
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paCreateFulfillmentFromImportArgs"
+          }
+        }
+      }
+    },
+    "paCreateFulfillmentsFromImportResponse": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktError"
+          }
+        },
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdFulfillment"
+          }
+        }
+      }
+    },
+    "paCreateFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "coupon": {
+          "type": "string"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "insurance_value": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "return_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_payment_type": {
+          "$ref": "#/definitions/qeShippingPaymentType"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_type": {
+          "$ref": "#/definitions/pkShippingType"
+        },
+        "shop_carrier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "width": {
+          "type": "integer"
+        }
+      }
+    },
+    "paCreateFulfillmentsResponse": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktError"
+          }
+        },
+        "fulfillment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdFulfillment"
+          }
+        }
+      }
+    },
+    "paCreateProductRequest": {
+      "type": "object",
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktMetaField"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product_type": {
+          "$ref": "#/definitions/pdProductType"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "paCreateVariantRequest": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "paCustomer": {
+      "type": "object",
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "group_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "liability": {
+          "$ref": "#/definitions/paCustomerLiability"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/ljCustomerType"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "paCustomerAddress": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "paCustomerAddressesResponse": {
+      "type": "object",
+      "properties": {
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paCustomerAddress"
+          }
+        }
+      }
+    },
+    "paCustomerDetailsResponse": {
+      "type": "object",
+      "properties": {
+        "customer": {
+          "$ref": "#/definitions/paCustomer"
+        },
+        "summary_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paIndependentSummaryItem"
+          }
+        }
+      }
+    },
+    "paCustomerLiability": {
+      "type": "object",
+      "properties": {
+        "liability": {
+          "type": "integer"
+        },
+        "received_amount": {
+          "type": "integer"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "total_orders": {
+          "type": "integer"
+        }
+      }
+    },
+    "paCustomersResponse": {
+      "type": "object",
+      "properties": {
+        "customers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paCustomer"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "paEtopProduct": {
+      "type": "object",
+      "properties": {
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_source_category_id": {
+          "description": "**Deprecated:**\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "paEtopVariant": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "paFilterGetCustomerAddresses": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "paFilterGetCustomersRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        }
+      }
+    },
+    "paFilterGetVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        }
+      }
+    },
+    "paGetCustomerAddressesRequest": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "filter": {
+          "$ref": "#/definitions/paFilterGetCustomerAddresses"
+        }
+      }
+    },
+    "paGetCustomersRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/paFilterGetCustomersRequest"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "get_all": {
+          "type": "boolean"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetFulfillmentsByIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "paGetFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "mixed": {
+          "$ref": "#/definitions/baMixedAccount"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "paGetOrdersByReceiptIDRequest": {
+      "type": "object",
+      "properties": {
+        "receipt_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paGetOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "mixed": {
+          "$ref": "#/definitions/baMixedAccount"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetPublicFulfillmentRequest": {
+      "type": "object",
+      "required": [
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "paGetVariantRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paGetVariantsBySupplierIDRequest": {
+      "type": "object",
+      "properties": {
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paGetVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/paFilterGetVariantsRequest"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paIndependentSummaryItem": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer"
+        }
+      }
+    },
+    "paInventoryVariantShopVariant": {
+      "type": "object",
+      "properties": {
+        "cost_price": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "quantity_on_hand": {
+          "type": "integer"
+        },
+        "quantity_picked": {
+          "type": "integer"
+        }
+      }
+    },
+    "paOrderIDRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paRemoveCustomerOutOfGroupRequest": {
+      "type": "object",
+      "properties": {
+        "customer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "group_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paRemoveShopProductCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "collection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paRemoveVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "paSetCustomersStatusRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "paShopProduct": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "collection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ed_code": {
+          "description": "**Deprecated:** use code instead\n",
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "info": {
+          "$ref": "#/definitions/paEtopProduct"
+        },
+        "is_available": {
+          "type": "boolean"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktMetaField"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_type": {
+          "$ref": "#/definitions/pdProductType"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "stags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paTag"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "tags": {
+          "description": "**Deprecated:** use stags instead\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paShopVariant"
+          }
+        }
+      }
+    },
+    "paShopProductsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paShopProduct"
+          }
+        }
+      }
+    },
+    "paShopSetting": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payment_type_id": {
+          "$ref": "#/definitions/qeShippingPaymentType"
+        },
+        "return_address": {
+          "$ref": "#/definitions/baAddress"
+        },
+        "return_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "weight": {
+          "type": "integer"
+        }
+      }
+    },
+    "paShopShortProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "paShopVariant": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ed_code": {
+          "description": "**Deprecated:** use code instead\n",
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "info": {
+          "$ref": "#/definitions/paEtopVariant"
+        },
+        "inventory_variant": {
+          "allOf": [
+            {
+              "description": "**Deprecated:**\n"
+            },
+            {
+              "$ref": "#/definitions/paInventoryVariantShopVariant"
+            }
+          ]
+        },
+        "is_available": {
+          "type": "boolean"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product": {
+          "$ref": "#/definitions/paShopShortProduct"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "quantity_on_hand": {
+          "type": "integer"
+        },
+        "quantity_picked": {
+          "type": "integer"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "stags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paTag"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "tags": {
+          "description": "**Deprecated:** use stags instead\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "paShopVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paShopVariant"
+          }
+        }
+      }
+    },
+    "paTag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "paUpdateCustomerAddressRequest": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "paUpdateCustomerRequest": {
+      "type": "object",
+      "properties": {
+        "birthday": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "type": {
+          "allOf": [
+            {
+              "description": "enum ('individual', 'organization','independent')\n\nDeprecated values: \"independent\"\\n"
+            },
+            {
+              "$ref": "#/definitions/ljCustomerType"
+            }
+          ]
+        }
+      }
+    },
+    "paUpdateFulfillmentCODRequest": {
+      "type": "object",
+      "properties": {
+        "cod_amount": {
+          "type": "integer"
+        },
+        "fulfillment_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paUpdateFulfillmentInfoRequest": {
+      "type": "object",
+      "properties": {
+        "fulfillment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "insurance_value": {
+          "type": "integer"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_payment_type": {
+          "$ref": "#/definitions/qeShippingPaymentType"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        }
+      }
+    },
+    "paUpdateFulfillmentsShippingStateRequest": {
+      "type": "object",
+      "required": [
+        "shipping_state"
+      ],
+      "properties": {
+        "ids": {
+          "description": "Only support for manual order\n",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/sfState"
+        }
+      }
+    },
+    "paUpdateOrderPaymentStatusRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/bmStatus"
+        }
+      }
+    },
+    "paUpdateOrderShippingInfoRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping": {
+          "$ref": "#/definitions/qdOrderShipping"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        }
+      }
+    },
+    "paUpdateOrdersStatusRequest": {
+      "type": "object",
+      "required": [
+        "ids",
+        "confirm"
+      ],
+      "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
+        "confirm": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        }
+      }
+    },
+    "paUpdateProductCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paUpdateProductMetaFieldsRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktMetaField"
+          }
+        }
+      }
+    },
+    "paUpdateProductRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "meta_fields": {
+          "$ref": "#/definitions/ktMetaField"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "product_type": {
+          "$ref": "#/definitions/pdProductType"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "paUpdateProductStatusRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "paUpdateProductStatusResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
+        }
+      }
+    },
+    "paUpdateProductsTagsRequest": {
+      "type": "object",
+      "required": [
+        "ids"
+      ],
+      "properties": {
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delete_all": {
+          "type": "boolean"
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "paUpdateSettingRequest": {
+      "type": "object",
+      "properties": {
+        "payment_type_id": {
+          "$ref": "#/definitions/qeShippingPaymentType"
+        },
+        "return_address": {
+          "$ref": "#/definitions/baAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "weight": {
+          "type": "integer"
+        }
+      }
+    },
+    "paUpdateVariantAttributesRequest": {
+      "type": "object",
+      "required": [
+        "variant_id"
+      ],
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "paUpdateVariantImagesRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delete_all": {
+          "type": "boolean"
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "paUpdateVariantRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "cost_price": {
+          "type": "integer"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "sku": {
+          "description": "**Deprecated:**\n",
+          "type": "string"
+        }
+      }
+    },
+    "pdProductType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "services",
+        "goods"
+      ]
+    },
+    "pjGHNNoteCode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "CHOTHUHANG",
+        "CHOXEMHANGKHONGTHU",
+        "KHONGCHOXEMHANG"
+      ]
+    },
+    "pkShippingType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "manual",
+        "shipment",
+        "shipnow"
+      ]
+    },
+    "pwGender": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "male",
+        "female",
+        "other"
+      ]
+    },
+    "qdConnection": {
+      "type": "object",
+      "properties": {
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "connection_provider": {
+          "$ref": "#/definitions/cdConnectionProvider"
+        },
+        "connection_subtype": {
+          "$ref": "#/definitions/cdConnectionSubtype"
+        },
+        "connection_type": {
+          "$ref": "#/definitions/cdConnectionType"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "tracking_url": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdConnectionInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "qdCreateOrderLine": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderLineMetaField"
+          }
+        },
+        "payment_price": {
+          "type": "integer"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdCreateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "customer": {
+          "allOf": [
+            {
+              "description": "If order_source is self, customer must be shop information\nand customer_address, shipping_address must be shop address.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderCustomer"
+            }
+          ]
+        },
+        "customer_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "discounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderDiscount"
+          }
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderFeeLine"
+          }
+        },
+        "ghn_note_code": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shop_shipping.try_on instead\n"
+            },
+            {
+              "$ref": "#/definitions/pjGHNNoteCode"
+            }
+          ]
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdCreateOrderLine"
+          }
+        },
+        "order_discount": {
+          "type": "integer"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "payment_method": {
+          "$ref": "#/definitions/yiPaymentMethod"
+        },
+        "pre_order": {
+          "type": "boolean"
+        },
+        "reference_url": {
+          "type": "string"
+        },
+        "referral_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "shipping": {
+          "$ref": "#/definitions/qdOrderShipping"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shop_address": {
+          "allOf": [
+            {
+              "description": "If there are products from shop, this field should be set.\nOtherwise, use shop default address.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderAddress"
+            }
+          ]
+        },
+        "shop_cod": {
+          "description": "**Deprecated:** use shipping.cod_amount instead\n",
+          "type": "integer"
+        },
+        "shop_shipping": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping instead\n\nOrderShipping provides shipping information for an order to be shipped.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderShipping"
+            }
+          ]
+        },
+        "shop_shipping_fee": {
+          "description": "**Deprecated:** use fee_lines.shipping instead\n",
+          "type": "integer"
+        },
+        "source": {
+          "$ref": "#/definitions/xjSource"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "total_discount": {
+          "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
+        },
+        "total_weight": {
+          "description": "**Deprecated:** use shipping.gross_weight, shipping.chargeable_weight\n",
+          "type": "integer"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        }
+      }
+    },
+    "qdDeleteShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdDeliveryPoint": {
+      "type": "object",
+      "properties": {
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderLine"
+          }
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "value_info": {
+          "$ref": "#/definitions/qdValueInfo"
+        },
+        "weight_info": {
+          "$ref": "#/definitions/qdWeightInfo"
+        }
+      }
+    },
+    "qdExternalShippingLog": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "state_text": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        }
+      }
+    },
+    "qdExternalShippingService": {
+      "type": "object",
+      "properties": {
+        "carrier": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use connection instead\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
+        },
+        "code": {
+          "type": "string"
+        },
+        "connection_info": {
+          "$ref": "#/definitions/qdConnectionInfo"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "external_id": {
+          "description": "**Deprecated:** use code\n",
+          "type": "string"
+        },
+        "fee": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "provider": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use carier\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
+        },
+        "service_fee": {
+          "description": "**Deprecated:** use fee\n",
+          "type": "integer"
+        },
+        "shipment_price_info": {
+          "$ref": "#/definitions/qdShipmentPriceInfo"
+        },
+        "shipment_service_info": {
+          "$ref": "#/definitions/qdShipmentServiceInfo"
+        }
+      }
+    },
+    "qdFulfillment": {
+      "type": "object",
+      "properties": {
+        "actual_compensation_amount": {
+          "type": "integer"
+        },
+        "address_from": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use pickup_address instead\n"
+            },
+            {
+              "$ref": "#/definitions/baAddress"
+            }
+          ]
+        },
+        "address_to": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping_address instead\n"
+            },
+            {
+              "$ref": "#/definitions/baAddress"
+            }
+          ]
+        },
+        "admin_note": {
+          "type": "string"
+        },
+        "basket_value": {
+          "type": "integer"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "carrier": {
+          "$ref": "#/definitions/bwShippingProvider"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "cod_etop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "code": {
+          "type": "string"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "etop_discount": {
+          "type": "integer"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "insurance_value": {
+          "type": "integer"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderLine"
+          }
+        },
+        "lines_content": {
+          "type": "string"
+        },
+        "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "money_transaction_shipping_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order": {
+          "$ref": "#/definitions/qdOrder"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "provider_shipping_fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShippingFeeLine"
+          }
+        },
+        "return_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_fee_customer": {
+          "type": "integer"
+        },
+        "shipping_fee_shop": {
+          "type": "integer"
+        },
+        "shipping_fee_shop_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShippingFeeLine"
+          }
+        },
+        "shipping_fee_shop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_payment_type": {
+          "$ref": "#/definitions/qeShippingPaymentType"
+        },
+        "shipping_provider": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use carrier instead\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/sfState"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "shipping_substate": {
+          "$ref": "#/definitions/miSubstate"
+        },
+        "shop": {
+          "$ref": "#/definitions/baShop"
+        },
+        "shop_carrier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "total_amount": {
+          "description": "**Deprecated:**\n",
+          "type": "integer"
+        },
+        "total_cod_amount": {
+          "description": "**Deprecated:** use cod_amount\n",
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
+        },
+        "total_weight": {
+          "description": "**Deprecated:** use chargeable_weight\n",
+          "type": "integer"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_shipping_cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_code": {
+          "type": "string"
+        },
+        "x_shipping_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_fee": {
+          "type": "integer"
+        },
+        "x_shipping_id": {
+          "type": "string"
+        },
+        "x_shipping_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdExternalShippingLog"
+          }
+        },
+        "x_shipping_note": {
+          "type": "string"
+        },
+        "x_shipping_returned_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_state": {
+          "type": "string"
+        },
+        "x_shipping_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "x_shipping_sub_state": {
+          "type": "string"
+        },
+        "x_shipping_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_sync_states": {
+          "$ref": "#/definitions/qdFulfillmentSyncStates"
+        },
+        "x_sync_status": {
+          "$ref": "#/definitions/bmStatus"
+        }
+      }
+    },
+    "qdFulfillmentSyncStates": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/definitions/ktError"
+        },
+        "next_shipping_state": {
+          "$ref": "#/definitions/sfState"
+        },
+        "sync_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdFulfillmentsResponse": {
+      "type": "object",
+      "properties": {
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdFulfillment"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "qdGetAvailableConnectionsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_subtype": {
+          "$ref": "#/definitions/cdConnectionSubtype"
+        }
+      }
+    },
+    "qdGetConnectionsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "connection_subtype": {
+          "$ref": "#/definitions/cdConnectionSubtype"
+        }
+      }
+    },
+    "qdGetConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdConnection"
+          }
+        }
+      }
+    },
+    "qdGetExternalShippingServicesRequest": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "coupon": {
+          "type": "string"
+        },
+        "from_district": {
+          "type": "string"
+        },
+        "from_district_code": {
+          "type": "string"
+        },
+        "from_province": {
+          "type": "string"
+        },
+        "from_province_code": {
+          "type": "string"
+        },
+        "from_ward": {
+          "type": "string"
+        },
+        "from_ward_code": {
+          "type": "string"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "insurance_value": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "to_district": {
+          "type": "string"
+        },
+        "to_district_code": {
+          "type": "string"
+        },
+        "to_province": {
+          "type": "string"
+        },
+        "to_province_code": {
+          "type": "string"
+        },
+        "to_ward": {
+          "type": "string"
+        },
+        "to_ward_code": {
+          "type": "string"
+        },
+        "total_cod_amount": {
+          "description": "**Deprecated:** use cod_amount instead\n",
+          "type": "integer"
+        },
+        "value": {
+          "description": "**Deprecated:** use basket_value instead\n",
+          "type": "integer"
+        },
+        "weight": {
+          "description": "**Deprecated:** use gross_weight instead\n",
+          "type": "integer"
+        },
+        "width": {
+          "type": "integer"
+        }
+      }
+    },
+    "qdGetExternalShippingServicesResponse": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdExternalShippingService"
+          }
+        }
+      }
+    },
+    "qdGetShippingServicesRequest": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "connection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "coupon": {
+          "type": "string"
+        },
+        "from_district": {
+          "type": "string"
+        },
+        "from_district_code": {
+          "type": "string"
+        },
+        "from_province": {
+          "type": "string"
+        },
+        "from_province_code": {
+          "type": "string"
+        },
+        "from_ward": {
+          "type": "string"
+        },
+        "from_ward_code": {
+          "type": "string"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "insurance_value": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "to_district": {
+          "type": "string"
+        },
+        "to_district_code": {
+          "type": "string"
+        },
+        "to_province": {
+          "type": "string"
+        },
+        "to_province_code": {
+          "type": "string"
+        },
+        "to_ward": {
+          "type": "string"
+        },
+        "to_ward_code": {
+          "type": "string"
+        },
+        "total_cod_amount": {
+          "type": "integer"
+        },
+        "width": {
+          "type": "integer"
+        }
+      }
+    },
+    "qdGetShippingServicesResponse": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdExternalShippingService"
+          }
+        }
+      }
+    },
+    "qdGetShopConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "shop_connections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShopConnection"
+          }
+        }
+      }
+    },
+    "qdLoginShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "email": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "qdLoginShopConnectionResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "qdLoginShopConnectionWithOTPRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "otp": {
+          "type": "string"
+        }
+      }
+    },
+    "qdLoginShopConnectionWithOTPResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "qdOrder": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "code": {
+          "type": "string"
+        },
+        "confirm": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** replaced by confirm_status\n"
+            },
+            {
+              "$ref": "#/definitions/blStatus"
+            }
+          ]
+        },
+        "confirm_status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdOrderCustomer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "customer_payment_status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "discounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderDiscount"
+          }
+        },
+        "ed_code": {
+          "description": "the same as external_code\n",
+          "type": "string"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderFeeLine"
+          }
+        },
+        "fulfillment_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "fulfillment_shipping_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "fulfillment_status": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** replaced by fulfillment_shipping_status\n"
+            },
+            {
+              "$ref": "#/definitions/bnStatus"
+            }
+          ]
+        },
+        "fulfillment_type": {
+          "type": "string"
+        },
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdXFulfillment"
+          }
+        },
+        "ghn_note_code": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use try_on_code instead\n"
+            },
+            {
+              "$ref": "#/definitions/pjGHNNoteCode"
+            }
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderLine"
+          }
+        },
+        "order_discount": {
+          "type": "integer"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payment_method": {
+          "$ref": "#/definitions/yiPaymentMethod"
+        },
+        "payment_status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "pre_order": {
+          "type": "boolean"
+        },
+        "processed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "received_amount": {
+          "description": "received_amount get from receipt\n",
+          "type": "integer"
+        },
+        "reference_url": {
+          "type": "string"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "shipping": {
+          "$ref": "#/definitions/qdOrderShipping"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_fee": {
+          "description": "**Deprecated:** use fee_lines.shipping\n",
+          "type": "integer"
+        },
+        "shipping_note": {
+          "description": "**Deprecated:** use shop_shipping.shipping_note instead\n",
+          "type": "string"
+        },
+        "shop_cod": {
+          "description": "@deperecated use shop_shipping.cod_amount instead\n",
+          "type": "integer"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_name": {
+          "type": "string"
+        },
+        "shop_shipping": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping instead\n\nOrderShipping provides shipping information for an order to be shipped.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderShipping"
+            }
+          ]
+        },
+        "shop_shipping_fee": {
+          "description": "@deperecated use fee_lines.shipping instead\n",
+          "type": "integer"
+        },
+        "source": {
+          "$ref": "#/definitions/xjSource"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "total_discount": {
+          "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
+        },
+        "total_weight": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdOrderAddress": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/baCoordinates"
+        },
+        "country": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      }
+    },
+    "qdOrderCustomer": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/pwGender"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/ljCustomerType"
+        }
+      }
+    },
+    "qdOrderDiscount": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "code": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "qdOrderFeeLine": {
+      "type": "object",
+      "required": [
+        "name",
+        "amount"
+      ],
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "code": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/ojFeeType"
+        }
+      }
+    },
+    "qdOrderLine": {
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dkAttribute"
+          }
+        },
+        "code": {
+          "type": "string"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "is_outside_etop": {
+          "type": "boolean"
+        },
+        "list_price": {
+          "type": "integer"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderLineMetaField"
+          }
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payment_price": {
+          "type": "integer"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "retail_price": {
+          "type": "integer"
+        },
+        "total_discount": {
+          "type": "integer"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdOrderLineMetaField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "qdOrderShipping": {
+      "description": "OrderShipping provides shipping information for an order to be shipped.\n",
+      "type": "object",
+      "properties": {
+        "carrier": {
+          "$ref": "#/definitions/bwShippingProvider"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "return_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "sh_address": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use pickup_address\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderAddress"
+            }
+          ]
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_provider": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use carrier\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "weight": {
+          "description": "**Deprecated:**\n",
+          "type": "integer"
+        },
+        "width": {
+          "type": "integer"
+        },
+        "x_service_id": {
+          "description": "**Deprecated:**\n",
+          "type": "string"
+        },
+        "x_service_name": {
+          "description": "**Deprecated:**\n",
+          "type": "string"
+        },
+        "x_shipping_fee": {
+          "description": "**Deprecated:**\n",
+          "type": "integer"
+        }
+      }
+    },
+    "qdOrderWithErrorsResponse": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "description": "**Deprecated:**\n",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktError"
+          }
+        },
+        "fulfillment_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktError"
+          }
+        },
+        "order": {
+          "$ref": "#/definitions/qdOrder"
+        }
+      }
+    },
+    "qdOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrder"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
+    "qdPublicFulfillment": {
+      "description": "Public API for using with ManyChat\n",
+      "type": "object",
+      "properties": {
+        "delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "delivered_at_text": {
+          "description": "For using with ManyChat\n",
+          "type": "string"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/sfState"
+        },
+        "shipping_state_text": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        }
+      }
+    },
+    "qdRegisterShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "district": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        }
+      }
+    },
+    "qdShipmentPriceInfo": {
+      "type": "object",
+      "properties": {
+        "makeup_fee": {
+          "type": "integer"
+        },
+        "origin_fee": {
+          "type": "integer"
+        },
+        "shipment_price_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdShipmentServiceInfo": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "error_message": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "is_available": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "qdShipnowFulfillment": {
+      "type": "object",
+      "properties": {
+        "cancel_reason": {
+          "type": "string"
+        },
+        "carrier": {
+          "type": "string"
+        },
+        "cod_etop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirm_status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "coupon": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdDeliveryPoint"
+          }
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "request_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_delivering_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_picking_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_description": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_shared_link": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/bjState"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "value_info": {
+          "$ref": "#/definitions/qdValueInfo"
+        },
+        "weight_info": {
+          "$ref": "#/definitions/qdWeightInfo"
+        }
+      }
+    },
+    "qdShippingFeeLine": {
+      "type": "object",
+      "properties": {
+        "cost": {
+          "type": "integer"
+        },
+        "shipping_fee_type": {
+          "$ref": "#/definitions/sdShippingFeeType"
+        }
+      }
+    },
+    "qdShopConnection": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_data": {
+          "$ref": "#/definitions/qdShopConnectionExternalData"
+        },
+        "is_global": {
+          "type": "boolean"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdShopConnectionExternalData": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "identifier": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "qdShopConnectionTelecomData": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "tenant_domain": {
+          "type": "string"
+        },
+        "tenant_host": {
+          "type": "string"
+        },
+        "tenant_token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "qdUpdateOrderRequest": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdOrderCustomer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderFeeLine"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdCreateOrderLine"
+          }
+        },
+        "order_discount": {
+          "type": "integer"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "shipping": {
+          "$ref": "#/definitions/qdOrderShipping"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shop_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shop_cod": {
+          "description": "**Deprecated:** use shipping.cod_amount instead\n",
+          "type": "integer"
+        },
+        "shop_shipping": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping instead\n\nOrderShipping provides shipping information for an order to be shipped.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderShipping"
+            }
+          ]
+        },
+        "shop_shipping_fee": {
+          "description": "**Deprecated:** use fee_lines instead\n",
+          "type": "integer"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
+        },
+        "total_weight": {
+          "description": "**Deprecated:**\n",
+          "type": "integer"
+        }
+      }
+    },
+    "qdUpdateShopConnectionRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_data": {
+          "$ref": "#/definitions/qdShopConnectionExternalData"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "telecom_data": {
+          "$ref": "#/definitions/qdShopConnectionTelecomData"
+        },
+        "token": {
+          "type": "string"
+        },
+        "token_expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdValueInfo": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        }
+      }
+    },
+    "qdWeightInfo": {
+      "type": "object",
+      "properties": {
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "gross_weight": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "length": {
+          "type": "integer"
+        },
+        "width": {
+          "type": "integer"
+        }
+      }
+    },
+    "qdXFulfillment": {
+      "type": "object",
+      "properties": {
+        "actual_compensation_amount": {
+          "type": "integer"
+        },
+        "address_from": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use pickup_address instead\n"
+            },
+            {
+              "$ref": "#/definitions/baAddress"
+            }
+          ]
+        },
+        "address_to": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping_address instead\n"
+            },
+            {
+              "$ref": "#/definitions/baAddress"
+            }
+          ]
+        },
+        "basket_value": {
+          "type": "integer"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "carrier": {
+          "$ref": "#/definitions/bwShippingProvider"
+        },
+        "chargeable_weight": {
+          "type": "integer"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cod_amount": {
+          "type": "integer"
+        },
+        "cod_etop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "etop_discount": {
+          "type": "integer"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "expected_delivery_at": {
+          "description": "**Deprecated:** use estimated_delivery_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_pick_at": {
+          "description": "**Deprecated:** use estimated_pickup_at\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "description": "backward-compatible fields from shipment\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "include_insurance": {
+          "type": "boolean"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderLine"
+          }
+        },
+        "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "money_transaction_shipping_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order": {
+          "$ref": "#/definitions/qdOrder"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "provider_shipping_fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShippingFeeLine"
+          }
+        },
+        "return_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "shipment": {
+          "$ref": "#/definitions/qdFulfillment"
+        },
+        "shipnow": {
+          "$ref": "#/definitions/qdShipnowFulfillment"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_fee_customer": {
+          "type": "integer"
+        },
+        "shipping_fee_shop": {
+          "type": "integer"
+        },
+        "shipping_fee_shop_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdShippingFeeLine"
+          }
+        },
+        "shipping_fee_shop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shipping_provider": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use carrier instead\n"
+            },
+            {
+              "$ref": "#/definitions/bwShippingProvider"
+            }
+          ]
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/sfState"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "shop": {
+          "$ref": "#/definitions/baShop"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "total_amount": {
+          "description": "**Deprecated:**\n",
+          "type": "integer"
+        },
+        "total_cod_amount": {
+          "description": "**Deprecated:** use cod_amount\n",
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
+        },
+        "total_weight": {
+          "description": "**Deprecated:** use chargeable_weight\n",
+          "type": "integer"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_code": {
+          "type": "string"
+        },
+        "x_shipping_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_fee": {
+          "type": "integer"
+        },
+        "x_shipping_id": {
+          "type": "string"
+        },
+        "x_shipping_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdExternalShippingLog"
+          }
+        },
+        "x_shipping_note": {
+          "type": "string"
+        },
+        "x_shipping_returned_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_state": {
+          "type": "string"
+        },
+        "x_shipping_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "x_shipping_sub_state": {
+          "type": "string"
+        },
+        "x_shipping_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_sync_states": {
+          "$ref": "#/definitions/qdFulfillmentSyncStates"
+        },
+        "x_sync_status": {
+          "$ref": "#/definitions/bmStatus"
+        }
+      }
+    },
+    "qeShippingPaymentType": {
+      "type": "string",
+      "enum": [
+        "none",
+        "seller",
+        "buyer"
+      ]
+    },
+    "rtAutoInventoryVoucher": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "create",
+        "confirm"
+      ]
+    },
+    "sdShippingFeeType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "main",
+        "return",
+        "adjustment",
+        "insurance",
+        "tax",
+        "other",
+        "cods",
+        "address_change",
+        "discount",
+        "redelivery"
+      ]
+    },
+    "sfState": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "default",
+        "created",
+        "confirmed",
+        "processing",
+        "picking",
+        "holding",
+        "returning",
+        "returned",
+        "delivering",
+        "delivered",
+        "cancelled",
+        "undeliverable"
+      ]
+    },
+    "wdNotifierEntity": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "fulfillment",
+        "money_transaction_shipping",
+        "fb_external_comment",
+        "fb_external_message"
+      ]
+    },
+    "xjSource": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "self",
+        "import",
+        "api",
+        "etop_pos",
+        "etop_pxs",
+        "etop_cmx",
+        "ts_app",
+        "etop_app",
+        "haravan",
+        "ecomify"
+      ]
+    },
+    "yiPaymentMethod": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "cod",
+        "bank",
+        "other",
+        "vtpay",
+        "momo",
+        "bankdeposit",
+        "manual"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "name": "Connection"
+    },
+    {
+      "name": "Customer"
+    },
+    {
+      "name": "Fulfillment"
+    },
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "Notification"
+    },
+    {
+      "name": "Order"
+    },
+    {
+      "name": "Product"
+    },
+    {
+      "name": "Setting"
+    },
+    {
+      "name": "Shipment"
+    }
+  ]
+}

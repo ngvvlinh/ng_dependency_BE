@@ -11,93 +11,10 @@
   ],
   "swagger": "2.0",
   "info": {
-    "description": "API Documentation:\n\n### eTop\n\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/etop/shop](/doc/etop/shop) API for shops\n- [/doc/etop/etelecom](/doc/etop/etelecom) API for shops using eTelecom\n- [/doc/etop/affiliate](/doc/etop/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/etop/integration](/doc/etop/integration) API for shop to integrate with external partners\n- [/doc/etop/admin](/doc/etop/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/ext/carrier](/doc/ext/partnercarrier) External API for partners\n- [/doc/etop/sadmin](/doc/etop/sadmin) Special API for super admins\n\n### Fabo\n\n- [/doc/fabo](/doc/fabo) Fabo",
     "title": "API Document",
     "version": "v1"
   },
   "paths": {
-    "/api/etop.Account/GetPublicPartnerInfo": {
-      "post": {
-        "tags": [
-          "Account"
-        ],
-        "summary": "GetPublicPartnerInfo",
-        "operationId": "etop.Account-GetPublicPartnerInfo",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktIDRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/baPublicAccountInfo"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Account/GetPublicPartners": {
-      "post": {
-        "description": "leave ids empty to get all connected partners\n",
-        "tags": [
-          "Account"
-        ],
-        "summary": "GetPublicPartners",
-        "operationId": "etop.Account-GetPublicPartners",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktIDsRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/baPublicAccountsResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Account/UpdateURLSlug": {
-      "post": {
-        "tags": [
-          "Account"
-        ],
-        "summary": "UpdateURLSlug",
-        "operationId": "etop.Account-UpdateURLSlug",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/baUpdateURLSlugRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        }
-      }
-    },
     "/api/etop.AccountRelationship/CreateInvitation": {
       "post": {
         "tags": [
@@ -557,33 +474,6 @@
         }
       }
     },
-    "/api/etop.Ecom/SessionInfo": {
-      "post": {
-        "tags": [
-          "Ecom"
-        ],
-        "summary": "SessionInfo",
-        "operationId": "etop.Ecom-SessionInfo",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ktEmpty"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/baEcomSessionInfoResponse"
-            }
-          }
-        }
-      }
-    },
     "/api/etop.Location/GetDistricts": {
       "post": {
         "tags": [
@@ -768,33 +658,6 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ktVersionInfoResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Ticket/GetTicketLabels": {
-      "post": {
-        "tags": [
-          "Ticket"
-        ],
-        "summary": "GetTicketLabels",
-        "operationId": "etop.Ticket-GetTicketLabels",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/baGetTicketLabelsRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/baGetTicketLabelsResponse"
             }
           }
         }
@@ -2318,14 +2181,6 @@
         }
       }
     },
-    "baEcomSessionInfoResponse": {
-      "type": "object",
-      "properties": {
-        "allow_access": {
-          "type": "boolean"
-        }
-      }
-    },
     "baGetAddressResponse": {
       "type": "object",
       "properties": {
@@ -2529,25 +2384,6 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
-        }
-      }
-    },
-    "baGetTicketLabelsRequest": {
-      "type": "object",
-      "properties": {
-        "tree": {
-          "type": "boolean"
-        }
-      }
-    },
-    "baGetTicketLabelsResponse": {
-      "type": "object",
-      "properties": {
-        "ticket_labels": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/flTicketLabel"
-          }
         }
       }
     },
@@ -2881,38 +2717,6 @@
         },
         "region": {
           "type": "string"
-        }
-      }
-    },
-    "baPublicAccountInfo": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "image_url": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "type": {
-          "$ref": "#/definitions/jjAccountType"
-        },
-        "website": {
-          "type": "string"
-        }
-      }
-    },
-    "baPublicAccountsResponse": {
-      "type": "object",
-      "properties": {
-        "accounts": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/baPublicAccountInfo"
-          }
         }
       }
     },
@@ -3494,18 +3298,6 @@
         }
       }
     },
-    "baUpdateURLSlugRequest": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "url_slug": {
-          "type": "string"
-        }
-      }
-    },
     "baUpdateUserEmailRequest": {
       "type": "object",
       "properties": {
@@ -3855,34 +3647,6 @@
         "etop_app_android"
       ]
     },
-    "flTicketLabel": {
-      "type": "object",
-      "properties": {
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/flTicketLabel"
-          }
-        },
-        "code": {
-          "type": "string"
-        },
-        "color": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "parent_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "jiAuthenticationMethod": {
       "type": "string",
       "enum": [
@@ -3930,21 +3694,6 @@
         "id": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "ktIDsRequest": {
-      "type": "object",
-      "required": [
-        "ids"
-      ],
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
         }
       }
     },
@@ -4031,9 +3780,6 @@
   },
   "tags": [
     {
-      "name": "Account"
-    },
-    {
       "name": "AccountRelationship"
     },
     {
@@ -4043,16 +3789,10 @@
       "name": "Bank"
     },
     {
-      "name": "Ecom"
-    },
-    {
       "name": "Location"
     },
     {
       "name": "Misc"
-    },
-    {
-      "name": "Ticket"
     },
     {
       "name": "User"
