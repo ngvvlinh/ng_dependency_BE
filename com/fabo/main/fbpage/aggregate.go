@@ -84,7 +84,7 @@ func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
 		}
 	}
 
-	// get all oldFbPages by (shop_id) from DB
+	// get all oldFbPages by (externalIDs) from DB
 	// create map fbPageDisabled (oldFbPages don't appear into arg)
 	oldFbPages, err := a.fbExternalPageStore(ctx).ExternalIDs(externalIDs).ListFbExternalPagesDB()
 	if err != nil {
@@ -98,6 +98,7 @@ func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
 		} else {
 			// Depend on (ON CONFLICT), we change the IDs of args to same with oldFbPages
 			// Then when create args, db will update elements with exists IDs
+			// replace new shopID
 			mapExternalIDAndFbPageCombined[oldFbPage.ExternalID].FbPage.ID = oldFbPage.ID
 			mapExternalIDAndFbPageCombined[oldFbPage.ExternalID].FbPageInternal.ID = oldFbPage.ID
 		}
@@ -106,20 +107,6 @@ func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
 	mapFbPages := make(map[dot.ID]*fbpaging.FbExternalPage)
 	mapFbPageInternals := make(map[dot.ID]*fbpaging.FbExternalPageInternal)
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		//// Disable fbPages (mapFbPagesDisabled)
-		//{
-		//	externalIDs := make([]string, 0, len(mapFbPageDisabled))
-		//	for externalID := range mapFbPageDisabled {
-		//		externalIDs = append(externalIDs, externalID)
-		//	}
-		//
-		//	if len(externalIDs) > 0 {
-		//		if _, err := a.fbExternalPageStore(ctx).ExternalIDs(externalIDs).UpdateConnectionStatus(int(status3.N)); err != nil {
-		//			return err
-		//		}
-		//	}
-		//}
-
 		// Create newfbPages (mapFbPagesEnabled)
 		{
 			newFbPageModels := make([]*fbpaging.FbExternalPage, 0, len(args.FbPageCombineds))

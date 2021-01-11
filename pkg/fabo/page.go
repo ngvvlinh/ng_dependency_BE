@@ -198,16 +198,6 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 			continue
 		}
 
-		if fbPage, ok := mapFbPageActive[account.Id]; ok && fbPage.ShopID != shopID {
-			fbErrorPages = append(fbErrorPages, &fabo.FbErrorPage{
-				ExternalID:       account.Id,
-				ExternalName:     account.Name,
-				ExternalImageURL: account.Picture.Data.Url,
-				Reason:           "Fanpage đã được kết nối với tài khoản trong hệ thống.",
-			})
-			continue
-		}
-
 		fbPageID := cm.NewID()
 		categories := make([]*fbpaging.ExternalCategory, 0, len(account.CategoryList))
 		for _, category := range account.CategoryList {
