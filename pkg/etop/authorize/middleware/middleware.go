@@ -26,6 +26,8 @@ func CORS(next http.Handler) http.HandlerFunc {
 		case cmenv.IsSandBox(), cmenv.IsDevOrStag():
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 
+		case cmenv.IsProd():
+
 		default:
 			next.ServeHTTP(w, r)
 			return
