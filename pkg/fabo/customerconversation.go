@@ -93,34 +93,19 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		Paging: *paging,
 	}
 	if request.Filter != nil {
-		fbPageIDsRequest := request.Filter.FbPageIDs
 		externalPageIDsRequest := request.Filter.ExternalPageID
-		if len(fbPageIDsRequest) != 0 {
-			listFbExternalPagesByIDsQuery := &fbpaging.ListFbExternalPagesByIDsQuery{
-				IDs: fbPageIDsRequest,
-			}
-			if err := s.FBPagingQuery.Dispatch(ctx, listFbExternalPagesByIDsQuery); err != nil {
-				return nil, err
-			}
-			for _, fbExternalPage := range listFbExternalPagesByIDsQuery.Result {
-				externalPageIDsRequest = append(externalPageIDsRequest, fbExternalPage.ExternalID)
-			}
-		}
 
-		if len(fbPageIDsRequest) == 0 && len(externalPageIDsRequest) == 0 {
+		if len(externalPageIDsRequest) == 0 {
 			faboInfo, err := s.FaboPagesKit.GetPages(ctx, s.SS.Shop().ID)
 			if err != nil {
 				return nil, err
 			}
-			fbPageIDsRequest = faboInfo.FbPageIDs
 			externalPageIDsRequest = faboInfo.ExternalPageIDs
 		}
 		listCustomerConversationsQuery.ExternalPageIDs = externalPageIDsRequest
 		listCustomerConversationsQuery.IsRead = request.Filter.IsRead
 
-		if request.Filter.FbExternalUserID.Valid {
-			listCustomerConversationsQuery.ExternalUserID = request.Filter.FbExternalUserID
-		} else {
+		if request.Filter.ExternalUserID.Valid {
 			listCustomerConversationsQuery.ExternalUserID = request.Filter.ExternalUserID
 		}
 		listCustomerConversationsQuery.Type = request.Filter.Type

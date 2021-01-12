@@ -29,6 +29,7 @@ func Convert_core_Setting_to_api_Setting(in *setting.ShopSetting) *shoptypes.Sho
 		TryOn:           tryOn,
 		ShippingNote:    in.ShippingNote,
 		Weight:          in.Weight,
+		HideAllComments: in.HideAllComments,
 		CreatedAt:       cmapi.PbTime(in.CreatedAt),
 		UpdatedAt:       cmapi.PbTime(in.UpdatedAt),
 	}

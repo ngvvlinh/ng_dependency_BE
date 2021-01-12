@@ -110,6 +110,7 @@ import (
 	query2 "o.o/backend/com/shopping/customering/query"
 	aggregate21 "o.o/backend/com/shopping/setting/aggregate"
 	query23 "o.o/backend/com/shopping/setting/query"
+	"o.o/backend/com/shopping/setting/util"
 	aggregate10 "o.o/backend/com/shopping/suppliering/aggregate"
 	query6 "o.o/backend/com/shopping/suppliering/query"
 	aggregate27 "o.o/backend/com/shopping/tradering/aggregate"
@@ -785,9 +786,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ContactQuery: contactQueryBus,
 		ContactAggr:  contactCommandBus,
 	}
-	shopSettingQuery := query23.NewShopSettingQuery(mainDB)
+	shopSettingUtil := util.NewShopSettingUtil(store)
+	shopSettingQuery := query23.NewShopSettingQuery(mainDB, shopSettingUtil)
 	settingQueryBus := query23.ShopSettingQueryMessageBus(shopSettingQuery)
-	shopSettingAggregate := aggregate21.NewShopSettingAggregate(mainDB, addressCommandBus)
+	shopSettingAggregate := aggregate21.NewShopSettingAggregate(mainDB, addressCommandBus, shopSettingUtil)
 	settingCommandBus := aggregate21.ShopSettingAggregateMessageBus(shopSettingAggregate)
 	settingService := &setting.SettingService{
 		Session:      session,

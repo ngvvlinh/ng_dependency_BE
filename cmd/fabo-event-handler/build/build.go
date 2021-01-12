@@ -12,6 +12,7 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipping"
+	"o.o/api/shopping/setting"
 	"o.o/backend/cmd/fabo-event-handler/config"
 	etophandler "o.o/backend/com/eventhandler/etop/handler"
 	fabohandler "o.o/backend/com/eventhandler/fabo/handler"
@@ -138,6 +139,7 @@ func BuildWebhookHandler(
 	shippingQuery shipping.QueryBus,
 	fbClient *fbclient.FbClient,
 	identityQuery identity.QueryBus,
+	shopSetting setting.QueryBus,
 ) (*handler.Handler, error) {
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
@@ -154,7 +156,7 @@ func BuildWebhookHandler(
 	faboHandler := fabohandler.New(
 		db, producer, cfg.Kafka.TopicPrefix,
 		fbUserQuery, fbMessagingQuery, fbPageQuery, identityQuery,
-		shippingQuery, orderQuery, fbClient,
+		shippingQuery, orderQuery, shopSetting, fbClient,
 	)
 	h := handler.New(consumer, cfg.Kafka)
 	h.StartConsuming(ctx, fabohandler.Topics(), faboHandler.TopicsAndHandlers())

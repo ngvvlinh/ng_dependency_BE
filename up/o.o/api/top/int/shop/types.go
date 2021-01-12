@@ -3001,6 +3001,7 @@ type ShopSetting struct {
 	TryOn           try_on.NullTryOnCode                          `json:"try_on"`
 	ShippingNote    string                                        `json:"shipping_note"`
 	Weight          int                                           `json:"weight"`
+	HideAllComments dot.NullBool                                  `json:"hide_all_comments"`
 	CreatedAt       dot.Time                                      `json:"created_at"`
 	UpdatedAt       dot.Time                                      `json:"updated_at"`
 }
@@ -3008,11 +3009,12 @@ type ShopSetting struct {
 func (m *ShopSetting) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateSettingRequest struct {
-	PaymentTypeID shipping_payment_type.NullShippingPaymentType `json:"payment_type_id"`
-	ReturnAddress *etop.Address                                 `json:"return_address"`
-	TryOn         try_on.NullTryOnCode                          `json:"try_on"`
-	ShippingNote  dot.NullString                                `json:"shipping_note"`
-	Weight        dot.NullInt                                   `json:"weight"`
+	PaymentTypeID   shipping_payment_type.NullShippingPaymentType `json:"payment_type_id"`
+	ReturnAddress   *etop.Address                                 `json:"return_address"`
+	TryOn           try_on.NullTryOnCode                          `json:"try_on"`
+	ShippingNote    dot.NullString                                `json:"shipping_note"`
+	Weight          dot.NullInt                                   `json:"weight"`
+	HideAllComments dot.NullBool                                  `json:"hide_all_comments"`
 }
 
 func (m *UpdateSettingRequest) String() string { return jsonx.MustMarshalToString(m) }

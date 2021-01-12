@@ -249,13 +249,8 @@ type SearchCustomerConversationRequest struct {
 func (m *SearchCustomerConversationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CustomerConversationFilter struct {
-	// New
 	ExternalPageID filter.Strings `json:"external_page_id"`
 	ExternalUserID dot.NullString `json:"external_user_id"`
-
-	// Old
-	FbPageIDs        filter.IDs     `json:"fb_page_id"`
-	FbExternalUserID dot.NullString `json:"fb_external_user_id"`
 
 	IsRead dot.NullBool                                                 `json:"is_read"`
 	Type   fb_customer_conversation_type.NullFbCustomerConversationType `json:"type"`

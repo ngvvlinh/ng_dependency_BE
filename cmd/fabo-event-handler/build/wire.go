@@ -23,6 +23,7 @@ import (
 	"o.o/backend/com/main/location"
 	"o.o/backend/com/main/ordering"
 	"o.o/backend/com/shopping/customering"
+	"o.o/backend/com/shopping/setting"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/capi"
@@ -52,6 +53,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		connectioning.WireSet,
 		shipment_fabo.WireSet,
 		comfabo.WireSet,
+		setting.WireSet,
 
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
 

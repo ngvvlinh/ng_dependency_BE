@@ -66,6 +66,7 @@ func convert_settingmodel_ShopSetting_setting_ShopSetting(arg *settingmodel.Shop
 	out.TryOn = arg.TryOn                     // simple assign
 	out.ShippingNote = arg.ShippingNote       // simple assign
 	out.Weight = arg.Weight                   // simple assign
+	out.HideAllComments = arg.HideAllComments // simple assign
 	out.CreatedAt = arg.CreatedAt             // simple assign
 	out.UpdatedAt = arg.UpdatedAt             // simple assign
 }
@@ -100,6 +101,7 @@ func convert_setting_ShopSetting_settingmodel_ShopSetting(arg *setting.ShopSetti
 	out.TryOn = arg.TryOn                     // simple assign
 	out.ShippingNote = arg.ShippingNote       // simple assign
 	out.Weight = arg.Weight                   // simple assign
+	out.HideAllComments = arg.HideAllComments // simple assign
 	out.CreatedAt = arg.CreatedAt             // simple assign
 	out.UpdatedAt = arg.UpdatedAt             // simple assign
 }
@@ -135,6 +137,7 @@ func apply_setting_UpdateShopSettingArgs_setting_ShopSetting(arg *setting.Update
 	out.TryOn = arg.TryOn.Apply(out.TryOn)                         // apply change
 	out.ShippingNote = arg.ShippingNote.Apply(out.ShippingNote)    // apply change
 	out.Weight = arg.Weight.Apply(out.Weight)                      // apply change
+	out.HideAllComments = arg.HideAllComments                      // simple assign
 	out.CreatedAt = out.CreatedAt                                  // no change
 	out.UpdatedAt = out.UpdatedAt                                  // no change
 }

@@ -44,12 +44,13 @@ func (s *SettingService) UpdateSetting(
 	ctx context.Context, req *api.UpdateSettingRequest,
 ) (*api.ShopSetting, error) {
 	updateShopSettingCmd := &setting.UpdateShopSettingCommand{
-		ShopID:        s.SS.Shop().ID,
-		ReturnAddress: convertpb.Convert_api_EtopAddress_To_core_Address(req.ReturnAddress),
-		PaymentTypeID: req.PaymentTypeID,
-		TryOn:         req.TryOn,
-		ShippingNote:  req.ShippingNote,
-		Weight:        req.Weight,
+		ShopID:          s.SS.Shop().ID,
+		ReturnAddress:   convertpb.Convert_api_EtopAddress_To_core_Address(req.ReturnAddress),
+		PaymentTypeID:   req.PaymentTypeID,
+		TryOn:           req.TryOn,
+		ShippingNote:    req.ShippingNote,
+		Weight:          req.Weight,
+		HideAllComments: req.HideAllComments,
 	}
 	if err := s.SettingAggr.Dispatch(ctx, updateShopSettingCmd); err != nil {
 		return nil, err

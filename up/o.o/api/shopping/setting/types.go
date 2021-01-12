@@ -10,13 +10,14 @@ import (
 )
 
 type ShopSetting struct {
-	ShopID          dot.ID
-	ReturnAddress   *address.Address
-	ReturnAddressID dot.ID
-	PaymentTypeID   shipping_payment_type.ShippingPaymentType
-	TryOn           try_on.TryOnCode
-	ShippingNote    string
-	Weight          int
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	ShopID          dot.ID                                    `json:"shop_id"`
+	ReturnAddress   *address.Address                          `json:"return_address"`
+	ReturnAddressID dot.ID                                    `json:"return_address_id"`
+	PaymentTypeID   shipping_payment_type.ShippingPaymentType `json:"payment_type_id"`
+	TryOn           try_on.TryOnCode                          `json:"try_on"`
+	ShippingNote    string                                    `json:"shipping_note"`
+	Weight          int                                       `json:"weight"`
+	HideAllComments dot.NullBool                              `json:"hide_all_comments"`
+	CreatedAt       time.Time                                 `json:"created_at"`
+	UpdatedAt       time.Time                                 `json:"updated_at"`
 }

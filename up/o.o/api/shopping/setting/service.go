@@ -28,10 +28,11 @@ type GetShopSettingArgs struct {
 
 // +convert:update=ShopSetting
 type UpdateShopSettingArgs struct {
-	ShopID        dot.ID
-	ReturnAddress *address.Address
-	PaymentTypeID shipping_payment_type.NullShippingPaymentType
-	TryOn         try_on.NullTryOnCode
-	ShippingNote  dot.NullString
-	Weight        dot.NullInt
+	ShopID          dot.ID
+	ReturnAddress   *address.Address
+	PaymentTypeID   shipping_payment_type.NullShippingPaymentType
+	TryOn           try_on.NullTryOnCode
+	ShippingNote    dot.NullString
+	Weight          dot.NullInt
+	HideAllComments dot.NullBool
 }

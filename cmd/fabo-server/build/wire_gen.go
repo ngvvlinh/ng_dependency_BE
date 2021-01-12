@@ -70,6 +70,7 @@ import (
 	query2 "o.o/backend/com/shopping/customering/query"
 	aggregate8 "o.o/backend/com/shopping/setting/aggregate"
 	query10 "o.o/backend/com/shopping/setting/query"
+	"o.o/backend/com/shopping/setting/util"
 	query11 "o.o/backend/com/summary/fabo/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
@@ -452,9 +453,10 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		ShippingAggregate: shippingCommandBus,
 		OrderStore:        orderStoreInterface,
 	}
-	shopSettingQuery := query10.NewShopSettingQuery(mainDB)
+	shopSettingUtil := util.NewShopSettingUtil(store)
+	shopSettingQuery := query10.NewShopSettingQuery(mainDB, shopSettingUtil)
 	settingQueryBus := query10.ShopSettingQueryMessageBus(shopSettingQuery)
-	shopSettingAggregate := aggregate8.NewShopSettingAggregate(mainDB, addressCommandBus)
+	shopSettingAggregate := aggregate8.NewShopSettingAggregate(mainDB, addressCommandBus, shopSettingUtil)
 	settingCommandBus := aggregate8.ShopSettingAggregateMessageBus(shopSettingAggregate)
 	settingService := &setting.SettingService{
 		Session:      session,
@@ -471,7 +473,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		AccountshipnowAggr: accountshipnowCommandBus,
 	}
 	shopServers := fabo2.NewServers(store, shopMiscService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, exportExportService, notificationService, authorizeService, shipmentService, settingService, connectionService)
-	fbPageQuery := fbpage.NewFbPageQuery(mainDB)
+	fbPageUtil := fbpage.NewFbPageUtil(store)
+	fbPageQuery := fbpage.NewFbPageQuery(mainDB, fbPageUtil)
 	fbpagingQueryBus := fbpage.FbPageQueryMessageBus(fbPageQuery)
 	fbUserQuery := fbuser.NewFbUserQuery(mainDB, customeringQueryBus)
 	fbuseringQueryBus := fbuser.FbUserQueryMessageBus(fbUserQuery)
@@ -479,7 +482,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FBPageQuery: fbpagingQueryBus,
 		FBUserQuery: fbuseringQueryBus,
 	}
-	fbExternalPageAggregate := fbpage.NewFbPageAggregate(mainDB)
+	fbExternalPageAggregate := fbpage.NewFbPageAggregate(mainDB, fbPageUtil, busBus)
 	fbpagingCommandBus := fbpage.FbExternalPageAggregateMessageBus(fbExternalPageAggregate)
 	fbUserAggregate := fbuser.NewFbUserAggregate(mainDB, fbpagingCommandBus, customeringQueryBus)
 	fbuseringCommandBus := fbuser.FbUserAggregateMessageBus(fbUserAggregate)
@@ -604,6 +607,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	processManager4 := pm5.New(busBus, fbuseringCommandBus)
 	fbmessagingProcessManager := fbmessaging.NewProcessManager(busBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
 	processManager5 := pm6.NewProcessManager(busBus, fbmessagetemplateCommandBus)
+	fbpageProcessManager := fbpage.NewProcessManager(busBus, fbPageUtil)
 	output := Output{
 		Servers:              v3,
 		EventStream:          eventStream,
@@ -618,6 +622,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		_fbuserPM:            processManager4,
 		_fbMessagingPM:       fbmessagingProcessManager,
 		_fbMessageTemplatePM: processManager5,
+		_fbPagePM:            fbpageProcessManager,
 	}
 	return output, func() {
 		cleanup5()

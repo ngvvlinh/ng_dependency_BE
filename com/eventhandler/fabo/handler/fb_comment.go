@@ -7,8 +7,11 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
+	"o.o/api/shopping/setting"
+	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/eventhandler/pgevent"
 	fbmessagingmodel "o.o/backend/com/fabo/main/fbmessaging/model"
+	"o.o/backend/com/fabo/pkg/fbclient"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/mq"
 	"o.o/common/l"
@@ -34,6 +37,13 @@ func (h *Handler) HandleFbCommentEvent(ctx context.Context, event *pgevent.PgEve
 		return mq.CodeIgnore, nil
 	}
 	fbExternalComment := query.Result
+
+	// hide comments have "Op" were "insert"
+	if event.Op == pgevent.OpInsert {
+		go func(externalComment *fbmessaging.FbExternalComment) {
+			h.hideComments(ctx, externalComment)
+		}(fbExternalComment)
+	}
 
 	if fbExternalComment.ExternalFrom != nil {
 		getFbExternalUserQuery := &fbusering.GetFbExternalUserByExternalIDQuery{
@@ -82,4 +92,64 @@ func (h *Handler) HandleFbCommentEvent(ctx context.Context, event *pgevent.PgEve
 
 	h.producer.SendJSON(topic, partition, event.EventKey, result)
 	return mq.CodeOK, nil
+}
+
+func (h *Handler) hideComments(ctx context.Context, externalComment *fbmessaging.FbExternalComment) {
+	externalPageID, externalCommentID := externalComment.ExternalPageID, externalComment.ExternalID
+	// ignore comment from page
+	if externalComment.ExternalFrom != nil && externalComment.ExternalFrom.ID == externalPageID {
+		return
+	}
+
+	// get shopSetting
+	getFbPageQuery := &fbpaging.GetFbExternalPageByExternalIDQuery{
+		ExternalID: externalPageID,
+	}
+
+	if err := h.fbPagingQuery.Dispatch(ctx, getFbPageQuery); err != nil {
+		ll.Warn("fb_page not found", l.String("external_id", externalPageID))
+		return
+	}
+	fbExternalPage := getFbPageQuery.Result
+	shopID := fbExternalPage.ShopID
+
+	if fbExternalPage.Status != status3.P {
+		return
+	}
+
+	getShopSettingQuery := &setting.GetShopSettingQuery{
+		ShopID: shopID,
+	}
+	if err := h.settingQuery.Dispatch(ctx, getShopSettingQuery); err != nil {
+		ll.Warn("shop_setting not found", l.Int64("id", shopID.Int64()))
+		return
+	}
+	shopSetting := getShopSettingQuery.Result
+
+	// Check field HideAllComments into shopSetting
+	if shopSetting.HideAllComments.Valid && !shopSetting.HideAllComments.Bool {
+		return
+	}
+
+	// Get accessToken of page
+	getFbPageInternalQuery := &fbpaging.GetFbExternalPageInternalByExternalIDQuery{
+		ExternalID: externalPageID,
+	}
+	if err := h.fbPagingQuery.Dispatch(ctx, getFbPageInternalQuery); err != nil {
+		ll.Warn("fb_page_internal not found", l.String("external_id", externalPageID))
+		return
+	}
+	accessToken := getFbPageInternalQuery.Result.Token
+
+	// Hide comment
+	hideCommentRequest := &fbclient.HideOrUnHideCommentRequest{
+		AccessToken: accessToken,
+		PageID:      externalPageID,
+		CommentID:   externalCommentID,
+		IsHidden:    true,
+	}
+	if _, err := h.fbClient.CallAPIHideAndUnHideComment(hideCommentRequest); err != nil {
+		ll.Warn("hide comment error", l.String("external_id", externalCommentID))
+		return
+	}
 }

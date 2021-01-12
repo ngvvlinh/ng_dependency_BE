@@ -1097,30 +1097,10 @@
       "type": "object",
       "properties": {
         "external_page_id": {
-          "allOf": [
-            {
-              "description": "New\n\nFilter by string value\n"
-            },
-            {
-              "$ref": "#/definitions/kfStrings"
-            }
-          ]
+          "$ref": "#/definitions/kfStrings"
         },
         "external_user_id": {
           "type": "string"
-        },
-        "fb_external_user_id": {
-          "type": "string"
-        },
-        "fb_page_id": {
-          "allOf": [
-            {
-              "description": "Old\n\nFilter by id value\n"
-            },
-            {
-              "$ref": "#/definitions/kfIDs"
-            }
-          ]
         },
         "is_read": {
           "type": "boolean"
@@ -2667,10 +2647,6 @@
           }
         }
       }
-    },
-    "kfIDs": {
-      "description": "Filter by id value\n",
-      "type": "string"
     },
     "kfStrings": {
       "description": "Filter by string value\n",

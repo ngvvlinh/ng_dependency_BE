@@ -28,12 +28,13 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type UpdateShopSettingCommand struct {
-	ShopID        dot.ID
-	ReturnAddress *address.Address
-	PaymentTypeID shipping_payment_type.NullShippingPaymentType
-	TryOn         try_on.NullTryOnCode
-	ShippingNote  dot.NullString
-	Weight        dot.NullInt
+	ShopID          dot.ID
+	ReturnAddress   *address.Address
+	PaymentTypeID   shipping_payment_type.NullShippingPaymentType
+	TryOn           try_on.NullTryOnCode
+	ShippingNote    dot.NullString
+	Weight          dot.NullInt
+	HideAllComments dot.NullBool
 
 	Result *ShopSetting `json:"-"`
 }
@@ -65,12 +66,13 @@ func (q *GetShopSettingQuery) query() {}
 func (q *UpdateShopSettingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopSettingArgs) {
 	return ctx,
 		&UpdateShopSettingArgs{
-			ShopID:        q.ShopID,
-			ReturnAddress: q.ReturnAddress,
-			PaymentTypeID: q.PaymentTypeID,
-			TryOn:         q.TryOn,
-			ShippingNote:  q.ShippingNote,
-			Weight:        q.Weight,
+			ShopID:          q.ShopID,
+			ReturnAddress:   q.ReturnAddress,
+			PaymentTypeID:   q.PaymentTypeID,
+			TryOn:           q.TryOn,
+			ShippingNote:    q.ShippingNote,
+			Weight:          q.Weight,
+			HideAllComments: q.HideAllComments,
 		}
 }
 
@@ -81,6 +83,7 @@ func (q *UpdateShopSettingCommand) SetUpdateShopSettingArgs(args *UpdateShopSett
 	q.TryOn = args.TryOn
 	q.ShippingNote = args.ShippingNote
 	q.Weight = args.Weight
+	q.HideAllComments = args.HideAllComments
 }
 
 func (q *GetShopSettingQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopSettingArgs) {

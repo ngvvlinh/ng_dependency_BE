@@ -9,9 +9,11 @@ import (
 	com "o.o/backend/com/main"
 	"o.o/backend/com/shopping/setting/convert"
 	"o.o/backend/com/shopping/setting/sqlstore"
+	"o.o/backend/com/shopping/setting/util"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
 )
 
@@ -19,16 +21,21 @@ var _ setting.Aggregate = &ShopSettingAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type ShopSettingAggregate struct {
+	db          *cmsql.Database
 	store       sqlstore.ShopSettingStoreFactory
 	addressAggr addressing.CommandBus
+	util        *util.ShopSettingUtil
 }
 
 func NewShopSettingAggregate(
 	db com.MainDB, addressA addressing.CommandBus,
+	util *util.ShopSettingUtil,
 ) *ShopSettingAggregate {
 	return &ShopSettingAggregate{
+		db:          db,
 		store:       sqlstore.NewShopSettingStore(db),
 		addressAggr: addressA,
+		util:        util,
 	}
 }
 
@@ -49,46 +56,57 @@ func (s *ShopSettingAggregate) UpdateShopSetting(
 		return nil, err
 	}
 
-	oldShopSetting, err := s.store(ctx).ShopID(args.ShopID).GetShopSetting()
-	switch cm.ErrorCode(err) {
-	case cm.NotFound:
-		// create new shopSetting
-		if args.ReturnAddress != nil {
-			returnAddress, err := s.createReturnAddress(ctx, args.ReturnAddress, args.ShopID)
-			if err != nil {
-				return nil, err
-			}
-
-			shopSetting.ReturnAddressID = returnAddress.ID
-		}
-
-		if err := s.store(ctx).CreateShopSetting(shopSetting); err != nil {
-			return nil, err
-		}
-	case cm.NoError:
-		// update shopSetting
-		if args.ReturnAddress != nil {
-			if oldShopSetting.ReturnAddressID == 0 {
+	if err := s.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		oldShopSetting, err := s.store(ctx).ShopID(args.ShopID).GetShopSetting()
+		switch cm.ErrorCode(err) {
+		case cm.NotFound:
+			// create new shopSetting
+			if args.ReturnAddress != nil {
 				returnAddress, err := s.createReturnAddress(ctx, args.ReturnAddress, args.ShopID)
 				if err != nil {
-					return nil, err
-				}
-
-				shopSetting.ReturnAddressID = returnAddress.ID
-			} else {
-				returnAddress, err := s.updateReturnAddress(ctx, oldShopSetting.ReturnAddressID, args.ReturnAddress)
-				if err != nil {
-					return nil, err
+					return err
 				}
 
 				shopSetting.ReturnAddressID = returnAddress.ID
 			}
+
+			if err := s.store(ctx).CreateShopSetting(shopSetting); err != nil {
+				return err
+			}
+		case cm.NoError:
+			// update shopSetting
+			if args.ReturnAddress != nil {
+				if oldShopSetting.ReturnAddressID == 0 {
+					returnAddress, err := s.createReturnAddress(ctx, args.ReturnAddress, args.ShopID)
+					if err != nil {
+						return err
+					}
+
+					shopSetting.ReturnAddressID = returnAddress.ID
+				} else {
+					returnAddress, err := s.updateReturnAddress(ctx, oldShopSetting.ReturnAddressID, args.ReturnAddress)
+					if err != nil {
+						return err
+					}
+
+					shopSetting.ReturnAddressID = returnAddress.ID
+				}
+			}
+
+			if err := s.store(ctx).UpdateShopSetting(shopSetting); err != nil {
+				return err
+			}
+		default:
+			return err
 		}
 
-		if err := s.store(ctx).UpdateShopSetting(shopSetting); err != nil {
-			return nil, err
+		// clear cached
+		if err := s.util.ClearShopSetting(shopSetting.ShopID); err != nil {
+			return err
 		}
-	default:
+
+		return nil
+	}); err != nil {
 		return nil, err
 	}
 

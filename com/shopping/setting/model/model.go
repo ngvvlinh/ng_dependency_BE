@@ -17,6 +17,7 @@ type ShopSetting struct {
 	TryOn           try_on.TryOnCode
 	ShippingNote    string
 	Weight          int
+	HideAllComments dot.NullBool
 	CreatedAt       time.Time `sq:"create"`
 	UpdatedAt       time.Time `sq:"update"`
 }

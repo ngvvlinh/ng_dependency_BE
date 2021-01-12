@@ -13,6 +13,7 @@ import (
 	"o.o/backend/com/eventhandler/handler"
 	fbmessagetemplatepm "o.o/backend/com/fabo/main/fbmessagetemplate/pm"
 	"o.o/backend/com/fabo/main/fbmessaging"
+	"o.o/backend/com/fabo/main/fbpage"
 	fbuserpm "o.o/backend/com/fabo/main/fbuser/pm"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbwebhook "o.o/backend/com/fabo/pkg/webhook"
@@ -67,6 +68,7 @@ type Output struct {
 	_fbuserPM            *fbuserpm.ProcessManager
 	_fbMessagingPM       *fbmessaging.ProcessManager
 	_fbMessageTemplatePM *fbmessagetemplatepm.ProcessManager
+	_fbPagePM            *fbpage.ProcessManager
 }
 
 func BuildServers(

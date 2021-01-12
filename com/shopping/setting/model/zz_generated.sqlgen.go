@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type ShopSettings []*ShopSetting
 
 const __sqlShopSetting_Table = "shop_setting"
-const __sqlShopSetting_ListCols = "\"shop_id\",\"payment_type_id\",\"return_address_id\",\"try_on\",\"shipping_note\",\"weight\",\"created_at\",\"updated_at\""
-const __sqlShopSetting_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"payment_type_id\" = EXCLUDED.\"payment_type_id\",\"return_address_id\" = EXCLUDED.\"return_address_id\",\"try_on\" = EXCLUDED.\"try_on\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"weight\" = EXCLUDED.\"weight\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlShopSetting_ListCols = "\"shop_id\",\"payment_type_id\",\"return_address_id\",\"try_on\",\"shipping_note\",\"weight\",\"hide_all_comments\",\"created_at\",\"updated_at\""
+const __sqlShopSetting_ListColsOnConflict = "\"shop_id\" = EXCLUDED.\"shop_id\",\"payment_type_id\" = EXCLUDED.\"payment_type_id\",\"return_address_id\" = EXCLUDED.\"return_address_id\",\"try_on\" = EXCLUDED.\"try_on\",\"shipping_note\" = EXCLUDED.\"shipping_note\",\"weight\" = EXCLUDED.\"weight\",\"hide_all_comments\" = EXCLUDED.\"hide_all_comments\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlShopSetting_Insert = "INSERT INTO \"shop_setting\" (" + __sqlShopSetting_ListCols + ") VALUES"
 const __sqlShopSetting_Select = "SELECT " + __sqlShopSetting_ListCols + " FROM \"shop_setting\""
 const __sqlShopSetting_Select_history = "SELECT " + __sqlShopSetting_ListCols + " FROM history.\"shop_setting\""
@@ -100,6 +100,13 @@ func (m *ShopSetting) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"hide_all_comments": {
+			ColumnName:       "hide_all_comments",
+			ColumnType:       "dot.NullBool",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"created_at": {
 			ColumnName:       "created_at",
 			ColumnType:       "time.Time",
@@ -133,6 +140,7 @@ func (m *ShopSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.TryOn,
 		core.String(m.ShippingNote),
 		core.Int(m.Weight),
+		m.HideAllComments,
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -146,6 +154,7 @@ func (m *ShopSetting) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.TryOn,
 		(*core.String)(&m.ShippingNote),
 		(*core.Int)(&m.Weight),
+		&m.HideAllComments,
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -185,7 +194,7 @@ func (_ *ShopSettings) SQLSelect(w SQLWriter) error {
 func (m *ShopSetting) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSetting_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -195,7 +204,7 @@ func (ms ShopSettings) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSetting_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(9)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -274,6 +283,14 @@ func (m *ShopSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Weight)
 	}
+	if m.HideAllComments.Valid {
+		flag = true
+		w.WriteName("hide_all_comments")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.HideAllComments)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -300,7 +317,7 @@ func (m *ShopSetting) SQLUpdate(w SQLWriter) error {
 func (m *ShopSetting) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSetting_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -332,35 +349,39 @@ func (m ShopSettingHistory) ReturnAddressID() core.Interface {
 func (m ShopSettingHistory) TryOn() core.Interface        { return core.Interface{m["try_on"]} }
 func (m ShopSettingHistory) ShippingNote() core.Interface { return core.Interface{m["shipping_note"]} }
 func (m ShopSettingHistory) Weight() core.Interface       { return core.Interface{m["weight"]} }
-func (m ShopSettingHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m ShopSettingHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m ShopSettingHistory) HideAllComments() core.Interface {
+	return core.Interface{m["hide_all_comments"]}
+}
+func (m ShopSettingHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ShopSettingHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *ShopSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopSettingHistory, 8)
+	res := make(ShopSettingHistory, 9)
 	res["shop_id"] = data[0]
 	res["payment_type_id"] = data[1]
 	res["return_address_id"] = data[2]
 	res["try_on"] = data[3]
 	res["shipping_note"] = data[4]
 	res["weight"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
+	res["hide_all_comments"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *ShopSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopSettingHistories, 0, 128)
@@ -375,8 +396,9 @@ func (ms *ShopSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["try_on"] = data[3]
 		m["shipping_note"] = data[4]
 		m["weight"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
+		m["hide_all_comments"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

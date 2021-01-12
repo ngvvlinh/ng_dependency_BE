@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/identity"
 	"o.o/api/main/ordering"
 	"o.o/api/main/shipping"
+	"o.o/api/shopping/setting"
 	"o.o/backend/com/eventhandler/pgevent"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	com "o.o/backend/com/main"
@@ -29,6 +30,7 @@ type Handler struct {
 	indentityQuery   identity.QueryBus
 	shippingQuery    shipping.QueryBus
 	orderQuery       ordering.QueryBus
+	settingQuery     setting.QueryBus
 	fbClient         *fbclient.FbClient
 }
 
@@ -42,6 +44,7 @@ func New(
 	indentityQuerybus identity.QueryBus,
 	shippingQ shipping.QueryBus,
 	orderQ ordering.QueryBus,
+	settingQ setting.QueryBus,
 	fbClient *fbclient.FbClient,
 ) *Handler {
 	h := &Handler{
@@ -55,6 +58,7 @@ func New(
 		indentityQuery:   indentityQuerybus,
 		shippingQuery:    shippingQ,
 		orderQuery:       orderQ,
+		settingQuery:     settingQ,
 		fbClient:         fbClient,
 	}
 	return h

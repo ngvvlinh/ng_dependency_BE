@@ -7,6 +7,7 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbpage/sqlstore"
 	com "o.o/backend/com/main"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -18,13 +19,15 @@ type FbPageQuery struct {
 	db                  *cmsql.Database
 	fbPageStore         sqlstore.FbExternalPageStoreFactory
 	fbPageInternalStore sqlstore.FbExternalPageInternalStoreFactory
+	fbPageUtil          *FbPageUtil
 }
 
-func NewFbPageQuery(database com.MainDB) *FbPageQuery {
+func NewFbPageQuery(database com.MainDB, fbPageUtil *FbPageUtil) *FbPageQuery {
 	return &FbPageQuery{
 		db:                  database,
 		fbPageStore:         sqlstore.NewFbExternalPageStore(database),
 		fbPageInternalStore: sqlstore.NewFbExternalPageInternalStore(database),
+		fbPageUtil:          fbPageUtil,
 	}
 }
 
@@ -36,37 +39,43 @@ func FbPageQueryMessageBus(q *FbPageQuery) fbpaging.QueryBus {
 func (q *FbPageQuery) GetFbExternalPageActiveByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbpaging.FbExternalPage, error) {
-	return q.fbPageStore(ctx).ExternalID(externalID).Status(status3.P).GetFbExternalPage()
-}
+	fbExternalPageCached, err := q.fbPageUtil.GetFbPage(externalID)
+	if err != nil {
+		return nil, err
+	}
+	if fbExternalPageCached != nil {
+		return fbExternalPageCached, nil
+	}
 
-func (q *FbPageQuery) GetFbExternalPageByID(
-	ctx context.Context, ID dot.ID,
-) (*fbpaging.FbExternalPage, error) {
-	return q.fbPageStore(ctx).ID(ID).GetFbExternalPage()
+	return q.fbPageStore(ctx).ExternalID(externalID).Status(status3.P).GetFbExternalPage()
 }
 
 func (q *FbPageQuery) GetFbExternalPageByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbpaging.FbExternalPage, error) {
-	return q.fbPageStore(ctx).ExternalID(externalID).GetFbExternalPage()
-}
+	fbExternalPageCached, err := q.fbPageUtil.GetFbPage(externalID)
+	if err != nil {
+		return nil, err
+	}
+	if fbExternalPageCached != nil {
+		return fbExternalPageCached, nil
+	}
 
-func (q *FbPageQuery) GetFbExternalPageInternalByID(
-	ctx context.Context, ID dot.ID,
-) (*fbpaging.FbExternalPageInternal, error) {
-	return q.fbPageInternalStore(ctx).ID(ID).GetFbExternalPageInternal()
+	return q.fbPageStore(ctx).ExternalID(externalID).GetFbExternalPage()
 }
 
 func (q *FbPageQuery) GetFbExternalPageInternalByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbpaging.FbExternalPageInternal, error) {
-	return q.fbPageInternalStore(ctx).ExternalID(externalID).GetFbExternalPageInternal()
-}
+	fbExternalPageInternalCached, err := q.fbPageUtil.GetFbPageInternal(externalID)
+	if err != nil {
+		return nil, err
+	}
+	if fbExternalPageInternalCached != nil {
+		return fbExternalPageInternalCached, nil
+	}
 
-func (q *FbPageQuery) ListFbExternalPagesByIDs(
-	ctx context.Context, IDs []dot.ID,
-) ([]*fbpaging.FbExternalPage, error) {
-	return q.fbPageStore(ctx).IDs(IDs).ListFbPages()
+	return q.fbPageInternalStore(ctx).ExternalID(externalID).GetFbExternalPageInternal()
 }
 
 func (q *FbPageQuery) ListFbExternalPagesByExternalIDs(
@@ -107,10 +116,29 @@ func (q *FbPageQuery) ListFbExternalPagesActiveByExternalIDs(
 func (q *FbPageQuery) GetFbExternalPageInternalActiveByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbpaging.FbExternalPageInternal, error) {
-	_, err := q.fbPageStore(ctx).ExternalID(externalID).Status(status3.P).GetFbExternalPage()
+	fbExternalPageCached, err := q.fbPageUtil.GetFbPage(externalID)
 	if err != nil {
 		return nil, err
 	}
+
+	if fbExternalPageCached != nil {
+		if fbExternalPageCached.Status != status3.P {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "FbExternalPage (%s) isn't active", externalID)
+		}
+	} else {
+		if _, err := q.fbPageStore(ctx).ExternalID(externalID).Status(status3.P).GetFbExternalPage(); err != nil {
+			return nil, err
+		}
+	}
+
+	fbExternalPageInternalCached, err := q.fbPageUtil.GetFbPageInternal(externalID)
+	if err != nil {
+		return nil, err
+	}
+	if fbExternalPageInternalCached != nil {
+		return fbExternalPageInternalCached, nil
+	}
+
 	fbExternalPageInternal, err := q.fbPageInternalStore(ctx).ExternalID(externalID).GetFbExternalPageInternal()
 	if err != nil {
 		return nil, err
@@ -127,5 +155,13 @@ func (q *FbPageQuery) ListActiveFbPagesByShopIDs(ctx context.Context, shopIDs []
 }
 
 func (q *FbPageQuery) GetPageAccessToken(ctx context.Context, externalID string) (string, error) {
+	fbExternalPageInternalCached, err := q.fbPageUtil.GetFbPageInternal(externalID)
+	if err != nil {
+		return "", err
+	}
+	if fbExternalPageInternalCached != nil {
+		return fbExternalPageInternalCached.Token, nil
+	}
+
 	return q.fbPageInternalStore(ctx).ExternalID(externalID).GetAccessToken()
 }

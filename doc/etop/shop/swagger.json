@@ -12345,6 +12345,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "hide_all_comments": {
+          "type": "boolean"
+        },
         "payment_type_id": {
           "$ref": "#/definitions/qeShippingPaymentType"
         },
@@ -13583,6 +13586,9 @@
     "paUpdateSettingRequest": {
       "type": "object",
       "properties": {
+        "hide_all_comments": {
+          "type": "boolean"
+        },
         "payment_type_id": {
           "$ref": "#/definitions/qeShippingPaymentType"
         },

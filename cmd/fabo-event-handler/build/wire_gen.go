@@ -32,6 +32,8 @@ import (
 	query4 "o.o/backend/com/main/shipping/query"
 	query3 "o.o/backend/com/main/shippingcode/query"
 	"o.o/backend/com/shopping/customering/query"
+	query5 "o.o/backend/com/shopping/setting/query"
+	"o.o/backend/com/shopping/setting/util"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
@@ -77,7 +79,8 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	fbuseringQueryBus := fbuser.FbUserQueryMessageBus(fbUserQuery)
 	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB)
 	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
-	fbPageQuery := fbpage.NewFbPageQuery(mainDB)
+	fbPageUtil := fbpage.NewFbPageUtil(store)
+	fbPageQuery := fbpage.NewFbPageQuery(mainDB, fbPageUtil)
 	fbpagingQueryBus := fbpage.FbPageQueryMessageBus(fbPageQuery)
 	queryService := ordering.NewQueryService(mainDB)
 	orderingQueryBus := ordering.QueryServiceMessageBus(queryService)
@@ -136,7 +139,10 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	shippingQueryBus := query4.QueryServiceMessageBus(queryService2)
 	appConfig := cfg.FacebookApp
 	fbClient := fbclient.New(appConfig)
-	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, fbuseringQueryBus, fbmessagingQueryBus, fbpagingQueryBus, orderingQueryBus, shippingQueryBus, fbClient, identityQueryBus)
+	shopSettingUtil := util.NewShopSettingUtil(store)
+	shopSettingQuery := query5.NewShopSettingQuery(mainDB, shopSettingUtil)
+	settingQueryBus := query5.ShopSettingQueryMessageBus(shopSettingQuery)
+	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, fbuseringQueryBus, fbmessagingQueryBus, fbpagingQueryBus, orderingQueryBus, shippingQueryBus, fbClient, identityQueryBus, settingQueryBus)
 	if err != nil {
 		return Output{}, nil, err
 	}

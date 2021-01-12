@@ -13,32 +13,32 @@ import (
 // +gen:event:topic=event/defaultaddress
 
 type Address struct {
-	ID           dot.ID
-	FullName     string
-	FirstName    string
-	LastName     string
-	Phone        string
-	Position     string
-	Email        string
-	Country      string
-	City         string
-	Province     string
-	District     string
-	Ward         string
-	Zip          string
-	DistrictCode string
-	ProvinceCode string
-	WardCode     string
-	Company      string
-	Address1     string
-	Address2     string
-	IsDefault    bool
-	Type         addresstype.AddressType
-	AccountID    dot.ID
-	CreatedAt    time.Time `sq:"create"`
-	UpdatedAt    time.Time `sq:"update"`
-	Coordinates  *orderv1types.Coordinates
-	Notes        *AddressNote
+	ID           dot.ID                    `json:"id"`
+	FullName     string                    `json:"full_name"`
+	FirstName    string                    `json:"first_name"`
+	LastName     string                    `json:"last_name"`
+	Phone        string                    `json:"phone"`
+	Position     string                    `json:"position"`
+	Email        string                    `json:"email"`
+	Country      string                    `json:"country"`
+	City         string                    `json:"city"`
+	Province     string                    `json:"province"`
+	District     string                    `json:"district"`
+	Ward         string                    `json:"ward"`
+	Zip          string                    `json:"zip"`
+	DistrictCode string                    `json:"district_code"`
+	ProvinceCode string                    `json:"province_code"`
+	WardCode     string                    `json:"ward_code"`
+	Company      string                    `json:"company"`
+	Address1     string                    `json:"address_1"`
+	Address2     string                    `json:"address_2"`
+	IsDefault    bool                      `json:"is_default"`
+	Type         addresstype.AddressType   `json:"type"`
+	AccountID    dot.ID                    `json:"account_id"`
+	CreatedAt    time.Time                 `json:"created_at"`
+	UpdatedAt    time.Time                 `json:"updated_at"`
+	Coordinates  *orderv1types.Coordinates `json:"coordinates"`
+	Notes        *AddressNote              `json:"notes"`
 }
 
 func (m *Address) String() string { return jsonx.MustMarshalToString(m) }
