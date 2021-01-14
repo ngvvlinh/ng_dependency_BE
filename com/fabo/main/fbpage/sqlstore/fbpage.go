@@ -68,6 +68,16 @@ func (s *FbExternalPageStore) ExternalID(externalID string) *FbExternalPageStore
 	return s
 }
 
+func (s *FbExternalPageStore) ExternalUserID(externalUserID string) *FbExternalPageStore {
+	s.preds = append(s.preds, s.ft.ByExternalUserID(externalUserID))
+	return s
+}
+
+func (s *FbExternalPageStore) ExternalUserIDNotSameOrNull(externalUserID string) *FbExternalPageStore {
+	s.preds = append(s.preds, sq.NewExpr("external_user_id != ? or external_user_id IS NULL", externalUserID))
+	return s
+}
+
 func (s *FbExternalPageStore) OptionalShopID(shopID dot.ID) *FbExternalPageStore {
 	s.preds = append(s.preds, s.ft.ByShopID(shopID).Optional())
 	return s
@@ -75,6 +85,11 @@ func (s *FbExternalPageStore) OptionalShopID(shopID dot.ID) *FbExternalPageStore
 
 func (s *FbExternalPageStore) ShopID(shopID dot.ID) *FbExternalPageStore {
 	s.preds = append(s.preds, s.ft.ByShopID(shopID))
+	return s
+}
+
+func (s *FbExternalPageStore) NotEqualShopID(shopID dot.ID) *FbExternalPageStore {
+	s.preds = append(s.preds, sq.NewExpr("shop_id != ?", shopID))
 	return s
 }
 

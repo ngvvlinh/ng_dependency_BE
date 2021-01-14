@@ -13,17 +13,17 @@ func PbFbUserCombined(m *fbusering.FbExternalUserCombined) *fabo.FbUserCombined 
 		return nil
 	}
 	return &fabo.FbUserCombined{
-		ExternalID: m.FbExternalUser.ExternalID,
+		ExternalID: m.FbExternalUserConnected.ExternalID,
 		ExternalInfo: &fabo.ExternalFbUserInfo{
-			Name:      m.FbExternalUser.ExternalInfo.Name,
-			FirstName: m.FbExternalUser.ExternalInfo.FirstName,
-			LastName:  m.FbExternalUser.ExternalInfo.LastName,
-			ShortName: m.FbExternalUser.ExternalInfo.ShortName,
-			ImageURL:  m.FbExternalUser.ExternalInfo.ImageURL,
+			Name:      m.FbExternalUserConnected.ExternalInfo.Name,
+			FirstName: m.FbExternalUserConnected.ExternalInfo.FirstName,
+			LastName:  m.FbExternalUserConnected.ExternalInfo.LastName,
+			ShortName: m.FbExternalUserConnected.ExternalInfo.ShortName,
+			ImageURL:  m.FbExternalUserConnected.ExternalInfo.ImageURL,
 		},
-		Status:    m.FbExternalUser.Status,
-		CreatedAt: m.FbExternalUser.CreatedAt,
-		UpdatedAt: m.FbExternalUser.UpdatedAt,
+		Status:    m.FbExternalUserConnected.Status,
+		CreatedAt: m.FbExternalUserConnected.CreatedAt,
+		UpdatedAt: m.FbExternalUserConnected.UpdatedAt,
 	}
 }
 

@@ -27,6 +27,16 @@ type FbExternalUserInfo struct {
 }
 
 // +sqlgen
+type FbExternalUserConnected struct {
+	ExternalID   string
+	ExternalInfo *FbExternalUserInfo
+	Status       status3.Status
+	ShopID       dot.ID
+	CreatedAt    time.Time `sq:"create"`
+	UpdatedAt    time.Time `sq:"update"`
+}
+
+// +sqlgen
 type FbExternalUserInternal struct {
 	ExternalID string
 	Token      string

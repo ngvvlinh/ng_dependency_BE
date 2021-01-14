@@ -81,7 +81,7 @@ func (s *FbExternalUserStore) Status(status status3.Status) *FbExternalUserStore
 
 func (s *FbExternalUserStore) UpdateStatus(status int) (int, error) {
 	query := s.query().Where(s.preds)
-	updateStatus, err := query.Table("fb_user").UpdateMap(map[string]interface{}{
+	updateStatus, err := query.Table("fb_external_user").UpdateMap(map[string]interface{}{
 		"status": status,
 	})
 	return updateStatus, err

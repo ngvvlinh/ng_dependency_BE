@@ -158,8 +158,8 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		mapFbPageActive[fbPage.ExternalID] = fbPage
 	}
 
-	createFbUserCombinedCmd := &fbusering.CreateFbExternalUserCombinedCommand{
-		FbUser: &fbusering.CreateFbExternalUserArgs{
+	createFbUserCombinedCmd := &fbusering.CreateOrUpdateFbExternalUserCombinedCommand{
+		FbUserConnected: &fbusering.CreateOrUpdateFbExternalUserConnectedArgs{
 			ExternalID: me.ID,
 			ExternalInfo: &fbusering.FbExternalUserInfo{
 				Name:      me.Name,
@@ -169,8 +169,9 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 				ImageURL:  me.Picture.Data.Url,
 			},
 			Status: status3.P,
+			ShopID: shopID,
 		},
-		FbUserInternal: &fbusering.CreateFbExternalUserInternalArgs{
+		FbUserInternal: &fbusering.CreateOrUpdateFbExternalUserInternalArgs{
 			ExternalID: me.ID,
 			Token:      longLivedAccessToken.AccessToken,
 			ExpiresIn:  fbclient.ExpiresInUserToken, // 60 days
@@ -209,6 +210,7 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		createFbPageCmd := &fbpaging.CreateFbExternalPageArgs{
 			ID:                   fbPageID,
 			ExternalID:           account.Id,
+			ExternalUserID:       me.ID,
 			ShopID:               shopID,
 			ExternalName:         account.Name,
 			ExternalCategory:     account.Category,

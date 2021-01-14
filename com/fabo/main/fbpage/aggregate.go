@@ -18,6 +18,7 @@ import (
 )
 
 var ll = l.New()
+var _ fbpaging.Aggregate = &FbExternalPageAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type FbExternalPageAggregate struct {
@@ -50,11 +51,9 @@ func (a *FbExternalPageAggregate) CreateFbExternalPage(
 	if err := scheme.Convert(args, fbPageResult); err != nil {
 		return nil, err
 	}
-
 	if err := a.fbExternalPageStore(ctx).CreateFbExternalPage(fbPageResult); err != nil {
 		return nil, err
 	}
-
 	return fbPageResult, nil
 }
 
@@ -65,17 +64,24 @@ func (a *FbExternalPageAggregate) CreateFbExternalPageInternal(
 	if err := scheme.Convert(args, fbPageInternalResult); err != nil {
 		return nil, err
 	}
-
 	if err := a.fbExternalPageInternalStore(ctx).CreateFbExternalPageInternal(fbPageInternalResult); err != nil {
 		return nil, err
 	}
-
 	return fbPageInternalResult, nil
+}
+
+func (a *FbExternalPageAggregate) CreateFbExternalPageCombined(
+	ctx context.Context, args *fbpaging.CreateFbExternalPageCombinedArgs,
+) (*fbpaging.FbExternalPageCombined, error) {
+	panic("implement me")
 }
 
 func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
 	ctx context.Context, args *fbpaging.CreateFbExternalPageCombinedsArgs,
 ) ([]*fbpaging.FbExternalPageCombined, error) {
+	shopID := args.FbPageCombineds[0].FbPage.ShopID
+	externalUserID := args.FbPageCombineds[0].FbPage.ExternalUserID
+
 	// create map arguments with external_id
 	mapExternalIDAndFbPageCombined := make(map[string]*fbpaging.CreateFbExternalPageCombinedArgs)
 	var externalIDs []string
@@ -152,6 +158,13 @@ func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
 			}
 		}
 
+		// purpose: keep all pages have same externalUserID and shopID
+		// disable all pages have same externalUserID but different shopID
+		// disable all pages have same shopID but different shopID
+		if err := a.disableFbExternalPages(ctx, shopID, externalUserID); err != nil {
+			return err
+		}
+
 		return nil
 	}); err != nil {
 		return nil, err
@@ -168,27 +181,22 @@ func (a *FbExternalPageAggregate) CreateFbExternalPageCombineds(
 	return fbPageCombineds, err
 }
 
-func (a *FbExternalPageAggregate) DisableFbExternalPagesByExternalIDs(
-	ctx context.Context, args *fbpaging.DisableFbExternalPagesByIDsArgs,
-) (result int, err error) {
-
-	if _err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		result, err = a.fbExternalPageStore(ctx).ShopID(args.ShopID).ExternalIDs(args.ExternalIDs).UpdateStatus(int(status3.N))
-		if err != nil {
-			return err
-		}
-
-		fbExternalPagesCreatedOrUpdatedEvent := &fbpaging.FbExternalPagesCreatedOrUpdatedEvent{
-			ExternalPageIDs: args.ExternalIDs,
-		}
-		if err := a.eventBus.Publish(ctx, fbExternalPagesCreatedOrUpdatedEvent); err != nil {
-			return err
-		}
-
-		return nil
-	}); _err != nil {
-		return 0, nil
+func (a *FbExternalPageAggregate) disableFbExternalPages(ctx context.Context, shopID dot.ID, externalUserID string) error {
+	// disable all pages have same externalUserID but different shopID
+	if _, err := a.fbExternalPageStore(ctx).NotEqualShopID(shopID).ExternalUserID(externalUserID).UpdateStatus(int(status3.N)); err != nil {
+		return err
 	}
 
-	return result, nil
+	// disable all pages have same shopID but different externalUserID
+	if _, err := a.fbExternalPageStore(ctx).ShopID(shopID).ExternalUserIDNotSameOrNull(externalUserID).UpdateStatus(int(status3.N)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *FbExternalPageAggregate) DisableFbExternalPagesByExternalIDs(
+	ctx context.Context, args *fbpaging.DisableFbExternalPagesByIDsArgs,
+) (int, error) {
+	return a.fbExternalPageStore(ctx).ShopID(args.ShopID).ExternalIDs(args.ExternalIDs).UpdateStatus(int(status3.N))
 }

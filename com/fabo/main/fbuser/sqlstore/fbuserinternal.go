@@ -43,7 +43,7 @@ func (s *FbExternalUserInternalStore) ExternalID(externalID string) *FbExternalU
 	return s
 }
 
-func (s *FbExternalUserInternalStore) CreateFbExternalUserInternal(fbExternalUserInternal *fbusering.FbExternalUserInternal) error {
+func (s *FbExternalUserInternalStore) CreateOrUpdateFbExternalUserInternal(fbExternalUserInternal *fbusering.FbExternalUserInternal) error {
 	sqlstore.MustNoPreds(s.preds)
 	fbExternalUserInternalDB := new(model.FbExternalUserInternal)
 	if err := scheme.Convert(fbExternalUserInternal, fbExternalUserInternalDB); err != nil {

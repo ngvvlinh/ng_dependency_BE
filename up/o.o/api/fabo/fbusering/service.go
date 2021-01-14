@@ -8,15 +8,14 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
+	"o.o/common/xerrors"
 )
 
 // +gen:api
 
 type Aggregate interface {
-	CreateFbExternalUser(context.Context, *CreateFbExternalUserArgs) (*FbExternalUser, error)
 	CreateFbExternalUsers(context.Context, *CreateFbExternalUsersArgs) ([]*FbExternalUser, error)
-	CreateFbExternalUserInternal(context.Context, *CreateFbExternalUserInternalArgs) (*FbExternalUserInternal, error)
-	CreateFbExternalUserCombined(context.Context, *CreateFbExternalUserCombinedArgs) (*FbExternalUserCombined, error)
+	CreateOrUpdateFbExternalUserCombined(context.Context, *CreateOrUpdateFbExternalUserCombinedArgs) (*FbExternalUserCombined, error)
 	CreateFbExternalUserShopCustomer(ctx context.Context, shopID dot.ID, externalID string, customerID dot.ID) (*FbExternalUserWithCustomer, error)
 	DeleteFbExternalUserShopCustomer(context.Context, *DeleteFbExternalUserShopCustomerArgs) error
 
@@ -78,20 +77,49 @@ type CreateFbExternalUserArgs struct {
 	Status         status3.Status
 }
 
+// +convert:create=FbExternalUserConnected
+type CreateOrUpdateFbExternalUserConnectedArgs struct {
+	ShopID         dot.ID
+	ExternalID     string
+	ExternalInfo   *FbExternalUserInfo
+	ExternalPageID string
+	Status         status3.Status
+}
+
 type CreateFbExternalUsersArgs struct {
 	FbExternalUsers []*CreateFbExternalUserArgs
 }
 
 // +convert:create=FbExternalUserInternal
-type CreateFbExternalUserInternalArgs struct {
+type CreateOrUpdateFbExternalUserInternalArgs struct {
 	ExternalID string
 	Token      string
 	ExpiresIn  int
 }
 
-type CreateFbExternalUserCombinedArgs struct {
-	FbUser         *CreateFbExternalUserArgs
-	FbUserInternal *CreateFbExternalUserInternalArgs
+type CreateOrUpdateFbExternalUserCombinedArgs struct {
+	FbUserConnected *CreateOrUpdateFbExternalUserConnectedArgs
+	FbUserInternal  *CreateOrUpdateFbExternalUserInternalArgs
+}
+
+func (c *CreateOrUpdateFbExternalUserCombinedArgs) Validate() error {
+	if c.FbUserConnected == nil && c.FbUserInternal == nil {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "FbUserConnected and FbUserInternal can't be null")
+	}
+
+	if c.FbUserConnected.ExternalID == "" || c.FbUserInternal.ExternalID == "" {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "external_id can't be null")
+	}
+
+	if c.FbUserConnected.ExternalID != c.FbUserInternal.ExternalID {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "external_id of FbUserConnected is not the same with FbUserInternal")
+	}
+
+	if c.FbUserConnected.ShopID == 0 {
+		return xerrors.Errorf(xerrors.FailedPrecondition, nil, "shop_id can't be null")
+	}
+
+	return nil
 }
 
 type FbExternalUserWithCustomer struct {

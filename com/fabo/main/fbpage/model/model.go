@@ -12,6 +12,7 @@ type FbExternalPage struct {
 	ID                   dot.ID
 	ShopID               dot.ID
 	ExternalID           string
+	ExternalUserID       string
 	ExternalName         string
 	ExternalTasks        []string
 	ExternalCategory     string

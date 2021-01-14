@@ -366,6 +366,333 @@ func (ms *FbExternalUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 	return nil
 }
 
+type FbExternalUserConnecteds []*FbExternalUserConnected
+
+const __sqlFbExternalUserConnected_Table = "fb_external_user_connected"
+const __sqlFbExternalUserConnected_ListCols = "\"external_id\",\"external_info\",\"status\",\"shop_id\",\"created_at\",\"updated_at\""
+const __sqlFbExternalUserConnected_ListColsOnConflict = "\"external_id\" = EXCLUDED.\"external_id\",\"external_info\" = EXCLUDED.\"external_info\",\"status\" = EXCLUDED.\"status\",\"shop_id\" = EXCLUDED.\"shop_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbExternalUserConnected_Insert = "INSERT INTO \"fb_external_user_connected\" (" + __sqlFbExternalUserConnected_ListCols + ") VALUES"
+const __sqlFbExternalUserConnected_Select = "SELECT " + __sqlFbExternalUserConnected_ListCols + " FROM \"fb_external_user_connected\""
+const __sqlFbExternalUserConnected_Select_history = "SELECT " + __sqlFbExternalUserConnected_ListCols + " FROM history.\"fb_external_user_connected\""
+const __sqlFbExternalUserConnected_UpdateAll = "UPDATE \"fb_external_user_connected\" SET (" + __sqlFbExternalUserConnected_ListCols + ")"
+const __sqlFbExternalUserConnected_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT fb_external_user_connected_pkey DO UPDATE SET"
+
+func (m *FbExternalUserConnected) SQLTableName() string  { return "fb_external_user_connected" }
+func (m *FbExternalUserConnecteds) SQLTableName() string { return "fb_external_user_connected" }
+func (m *FbExternalUserConnected) SQLListCols() string   { return __sqlFbExternalUserConnected_ListCols }
+
+func (m *FbExternalUserConnected) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlFbExternalUserConnected_ListCols + " FROM \"fb_external_user_connected\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *FbExternalUserConnected) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "fb_external_user_connected"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"external_id": {
+			ColumnName:       "external_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_info": {
+			ColumnName:       "external_info",
+			ColumnType:       "*FbExternalUserInfo",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status3.Status",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"shop_id": {
+			ColumnName:       "shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+	}
+	if err := migration.Compare(db, "fb_external_user_connected", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*FbExternalUserConnected)(nil))
+}
+
+func (m *FbExternalUserConnected) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.String(m.ExternalID),
+		core.JSON{m.ExternalInfo},
+		m.Status,
+		m.ShopID,
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *FbExternalUserConnected) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.String)(&m.ExternalID),
+		core.JSON{&m.ExternalInfo},
+		&m.Status,
+		&m.ShopID,
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *FbExternalUserConnected) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *FbExternalUserConnecteds) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(FbExternalUserConnecteds, 0, 128)
+	for rows.Next() {
+		m := new(FbExternalUserConnected)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *FbExternalUserConnected) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserConnected_Select)
+	return nil
+}
+
+func (_ *FbExternalUserConnecteds) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserConnected_Select)
+	return nil
+}
+
+func (m *FbExternalUserConnected) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserConnected_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(6)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms FbExternalUserConnecteds) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserConnected_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(6)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *FbExternalUserConnected) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlFbExternalUserConnected_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlFbExternalUserConnected_ListColsOnConflict)
+	return nil
+}
+
+func (ms FbExternalUserConnecteds) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlFbExternalUserConnected_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlFbExternalUserConnected_ListColsOnConflict)
+	return nil
+}
+
+func (m *FbExternalUserConnected) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("fb_external_user_connected")
+	w.WriteRawString(" SET ")
+	if m.ExternalID != "" {
+		flag = true
+		w.WriteName("external_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExternalID)
+	}
+	if m.ExternalInfo != nil {
+		flag = true
+		w.WriteName("external_info")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.ExternalInfo})
+	}
+	if m.Status != 0 {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Status)
+	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if true { // always update time
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *FbExternalUserConnected) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserConnected_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(6)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type FbExternalUserConnectedHistory map[string]interface{}
+type FbExternalUserConnectedHistories []map[string]interface{}
+
+func (m *FbExternalUserConnectedHistory) SQLTableName() string {
+	return "history.\"fb_external_user_connected\""
+}
+func (m FbExternalUserConnectedHistories) SQLTableName() string {
+	return "history.\"fb_external_user_connected\""
+}
+
+func (m *FbExternalUserConnectedHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserConnected_Select_history)
+	return nil
+}
+
+func (m FbExternalUserConnectedHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlFbExternalUserConnected_Select_history)
+	return nil
+}
+
+func (m FbExternalUserConnectedHistory) ExternalID() core.Interface {
+	return core.Interface{m["external_id"]}
+}
+func (m FbExternalUserConnectedHistory) ExternalInfo() core.Interface {
+	return core.Interface{m["external_info"]}
+}
+func (m FbExternalUserConnectedHistory) Status() core.Interface { return core.Interface{m["status"]} }
+func (m FbExternalUserConnectedHistory) ShopID() core.Interface { return core.Interface{m["shop_id"]} }
+func (m FbExternalUserConnectedHistory) CreatedAt() core.Interface {
+	return core.Interface{m["created_at"]}
+}
+func (m FbExternalUserConnectedHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
+
+func (m *FbExternalUserConnectedHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 6)
+	args := make([]interface{}, 6)
+	for i := 0; i < 6; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(FbExternalUserConnectedHistory, 6)
+	res["external_id"] = data[0]
+	res["external_info"] = data[1]
+	res["status"] = data[2]
+	res["shop_id"] = data[3]
+	res["created_at"] = data[4]
+	res["updated_at"] = data[5]
+	*m = res
+	return nil
+}
+
+func (ms *FbExternalUserConnectedHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 6)
+	args := make([]interface{}, 6)
+	for i := 0; i < 6; i++ {
+		args[i] = &data[i]
+	}
+	res := make(FbExternalUserConnectedHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(FbExternalUserConnectedHistory)
+		m["external_id"] = data[0]
+		m["external_info"] = data[1]
+		m["status"] = data[2]
+		m["shop_id"] = data[3]
+		m["created_at"] = data[4]
+		m["updated_at"] = data[5]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
 type FbExternalUserInternals []*FbExternalUserInternal
 
 const __sqlFbExternalUserInternal_Table = "fb_external_user_internal"

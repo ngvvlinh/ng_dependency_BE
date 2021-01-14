@@ -83,6 +83,25 @@ func (ft *FbExternalPageFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnF
 	}
 }
 
+func (ft *FbExternalPageFilters) ByExternalUserID(ExternalUserID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_user_id",
+		Value:  ExternalUserID,
+		IsNil:  ExternalUserID == "",
+	}
+}
+
+func (ft *FbExternalPageFilters) ByExternalUserIDPtr(ExternalUserID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_user_id",
+		Value:  ExternalUserID,
+		IsNil:  ExternalUserID == nil,
+		IsZero: ExternalUserID != nil && (*ExternalUserID) == "",
+	}
+}
+
 func (ft *FbExternalPageFilters) ByExternalName(ExternalName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

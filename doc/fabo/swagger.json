@@ -1796,6 +1796,9 @@
             "type": "string"
           }
         },
+        "external_user_id": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"

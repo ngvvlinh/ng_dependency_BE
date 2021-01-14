@@ -6,6 +6,7 @@ import (
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/shopping/customering"
+	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbuser/convert"
 	"o.o/backend/com/fabo/main/fbuser/sqlstore"
 	com "o.o/backend/com/main"
@@ -18,12 +19,14 @@ import (
 )
 
 var ll = l.New()
+var _ fbusering.Aggregate = &FbUserAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type FbUserAggregate struct {
 	db                              *cmsql.Database
 	fbShopUserTagStore              sqlstore.FbShopTagStoreFactory
 	fbUserStore                     sqlstore.FbExternalUserStoreFactory
+	fbUserConnectedStore            sqlstore.FbExternalUserConnectedStoreFactory
 	fbUserInternalStore             sqlstore.FbExternalUserInternalFactory
 	fbPageAggr                      fbpaging.CommandBus
 	customerQuery                   customering.QueryBus
@@ -37,6 +40,7 @@ func NewFbUserAggregate(
 		db:                              db,
 		fbShopUserTagStore:              sqlstore.NewFbShopTagStore(db),
 		fbUserStore:                     sqlstore.NewFbExternalUserStore(db),
+		fbUserConnectedStore:            sqlstore.NewFbExternalUserConnectedStore(db),
 		fbUserInternalStore:             sqlstore.NewFbExternalUserInternalStore(db),
 		fbExternalUserShopCustomerStore: sqlstore.NewFbExternalUserShopCustomerStore(db),
 		fbPageAggr:                      fbPageA,
@@ -73,51 +77,39 @@ func (a *FbUserAggregate) CreateFbExternalUsers(
 	return newFbExternalUsers, nil
 }
 
-func (a *FbUserAggregate) CreateFbExternalUser(
-	ctx context.Context, args *fbusering.CreateFbExternalUserArgs,
-) (*fbusering.FbExternalUser, error) {
-	fbUserResult := new(fbusering.FbExternalUser)
-	if err := scheme.Convert(args, fbUserResult); err != nil {
-		return nil, err
-	}
-	if err := a.fbUserStore(ctx).CreateFbExternalUser(fbUserResult); err != nil {
-		return nil, err
-	}
-	return fbUserResult, nil
-}
-
-func (a *FbUserAggregate) CreateFbExternalUserInternal(
-	ctx context.Context, args *fbusering.CreateFbExternalUserInternalArgs,
-) (*fbusering.FbExternalUserInternal, error) {
-	fbUserInternalResult := new(fbusering.FbExternalUserInternal)
-	if err := scheme.Convert(args, fbUserInternalResult); err != nil {
-		return nil, err
-	}
-	if err := a.fbUserInternalStore(ctx).CreateFbExternalUserInternal(fbUserInternalResult); err != nil {
-		return nil, err
-	}
-	return fbUserInternalResult, nil
-}
-
-func (a *FbUserAggregate) CreateFbExternalUserCombined(
-	ctx context.Context, args *fbusering.CreateFbExternalUserCombinedArgs,
+func (a *FbUserAggregate) CreateOrUpdateFbExternalUserCombined(
+	ctx context.Context, args *fbusering.CreateOrUpdateFbExternalUserCombinedArgs,
 ) (*fbusering.FbExternalUserCombined, error) {
-	fbUserResult := new(fbusering.FbExternalUser)
+
+	if err := args.Validate(); err != nil {
+		return nil, err
+	}
+
+	fbUserConnectedResult := new(fbusering.FbExternalUserConnected)
+	if err := scheme.Convert(args.FbUserConnected, fbUserConnectedResult); err != nil {
+		return nil, err
+	}
+
 	fbUserInternalResult := new(fbusering.FbExternalUserInternal)
+	if err := scheme.Convert(args.FbUserInternal, fbUserInternalResult); err != nil {
+		return nil, err
+	}
+
+	shopID := fbUserConnectedResult.ShopID
+
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		// create FbExternalUser
-		if err := scheme.Convert(args.FbUser, fbUserResult); err != nil {
-			return err
-		}
-		if err := a.fbUserStore(ctx).CreateFbExternalUser(fbUserResult); err != nil {
+		// disable all users are same shop_id
+		if _, err := a.fbUserConnectedStore(ctx).ShopID(shopID).UpdateStatus(int(status3.N)); err != nil {
 			return err
 		}
 
-		// create FbExternalUserInternal
-		if err := scheme.Convert(args.FbUserInternal, fbUserInternalResult); err != nil {
+		// create or update FbExternalUserConnected
+		if err := a.fbUserConnectedStore(ctx).CreateOrUpdateFbExternalUserConnected(fbUserConnectedResult); err != nil {
 			return err
 		}
-		if err := a.fbUserInternalStore(ctx).CreateFbExternalUserInternal(fbUserInternalResult); err != nil {
+
+		// create or update FbExternalUserInternal
+		if err := a.fbUserInternalStore(ctx).CreateOrUpdateFbExternalUserInternal(fbUserInternalResult); err != nil {
 			return err
 		}
 
@@ -127,8 +119,8 @@ func (a *FbUserAggregate) CreateFbExternalUserCombined(
 	}
 
 	return &fbusering.FbExternalUserCombined{
-		FbExternalUser:         fbUserResult,
-		FbExternalUserInternal: fbUserInternalResult,
+		FbExternalUserConnected: fbUserConnectedResult,
+		FbExternalUserInternal:  fbUserInternalResult,
 	}, nil
 }
 

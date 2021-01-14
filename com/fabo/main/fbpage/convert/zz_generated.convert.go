@@ -161,6 +161,7 @@ func Convert_fbpagemodel_FbExternalPage_fbpaging_FbExternalPage(arg *fbpagemodel
 func convert_fbpagemodel_FbExternalPage_fbpaging_FbExternalPage(arg *fbpagemodel.FbExternalPage, out *fbpaging.FbExternalPage) {
 	out.ID = arg.ID                             // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
+	out.ExternalUserID = arg.ExternalUserID     // simple assign
 	out.ShopID = arg.ShopID                     // simple assign
 	out.ExternalName = arg.ExternalName         // simple assign
 	out.ExternalCategory = arg.ExternalCategory // simple assign
@@ -201,6 +202,7 @@ func convert_fbpaging_FbExternalPage_fbpagemodel_FbExternalPage(arg *fbpaging.Fb
 	out.ID = arg.ID                             // simple assign
 	out.ShopID = arg.ShopID                     // simple assign
 	out.ExternalID = arg.ExternalID             // simple assign
+	out.ExternalUserID = arg.ExternalUserID     // simple assign
 	out.ExternalName = arg.ExternalName         // simple assign
 	out.ExternalTasks = arg.ExternalTasks       // simple assign
 	out.ExternalCategory = arg.ExternalCategory // simple assign
@@ -240,6 +242,7 @@ func Apply_fbpaging_CreateFbExternalPageArgs_fbpaging_FbExternalPage(arg *fbpagi
 func apply_fbpaging_CreateFbExternalPageArgs_fbpaging_FbExternalPage(arg *fbpaging.CreateFbExternalPageArgs, out *fbpaging.FbExternalPage) {
 	out.ID = arg.ID                                     // simple assign
 	out.ExternalID = arg.ExternalID                     // simple assign
+	out.ExternalUserID = arg.ExternalUserID             // simple assign
 	out.ShopID = arg.ShopID                             // simple assign
 	out.ExternalName = arg.ExternalName                 // simple assign
 	out.ExternalCategory = arg.ExternalCategory         // simple assign

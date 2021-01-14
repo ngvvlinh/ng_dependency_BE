@@ -14,6 +14,16 @@ var SortFbExternalUser = map[string]string{
 	"updated_at": "",
 }
 
+var FilterFbExternalUserConnected = sqlstore.FilterWhitelist{
+	Dates:  []string{"created_at", "updated_at"},
+	Equals: []string{"type", "external_id"},
+}
+
+var SortFbExternalUserConnected = map[string]string{
+	"created_at": "",
+	"updated_at": "",
+}
+
 var SortFbExternalUserShopCustomer = map[string]string{
 	"created_at": "",
 	"updated_at": "",

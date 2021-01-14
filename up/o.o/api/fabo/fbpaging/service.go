@@ -11,10 +11,7 @@ import (
 // +gen:api
 
 type Aggregate interface {
-	CreateFbExternalPage(context.Context, *CreateFbExternalPageArgs) (*FbExternalPage, error)
 	DisableFbExternalPagesByExternalIDs(context.Context, *DisableFbExternalPagesByIDsArgs) (int, error)
-
-	CreateFbExternalPageInternal(context.Context, *CreateFbExternalPageInternalArgs) (*FbExternalPageInternal, error)
 
 	CreateFbExternalPageCombineds(context.Context, *CreateFbExternalPageCombinedsArgs) ([]*FbExternalPageCombined, error)
 }
@@ -38,6 +35,7 @@ type QueryService interface {
 type CreateFbExternalPageArgs struct {
 	ID                   dot.ID
 	ExternalID           string
+	ExternalUserID       string
 	ShopID               dot.ID
 	ExternalName         string
 	ExternalCategory     string

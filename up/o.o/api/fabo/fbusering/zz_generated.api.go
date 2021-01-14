@@ -8,7 +8,6 @@ import (
 	context "context"
 
 	meta "o.o/api/meta"
-	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 	filter "o.o/capi/filter"
@@ -25,45 +24,6 @@ func (b CommandBus) Dispatch(ctx context.Context, msg interface{ command() }) er
 }
 func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error {
 	return b.bus.Dispatch(ctx, msg)
-}
-
-type CreateFbExternalUserCommand struct {
-	ExternalID     string
-	ExternalInfo   *FbExternalUserInfo
-	ExternalPageID string
-	Status         status3.Status
-
-	Result *FbExternalUser `json:"-"`
-}
-
-func (h AggregateHandler) HandleCreateFbExternalUser(ctx context.Context, msg *CreateFbExternalUserCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbExternalUser(msg.GetArgs(ctx))
-	return err
-}
-
-type CreateFbExternalUserCombinedCommand struct {
-	FbUser         *CreateFbExternalUserArgs
-	FbUserInternal *CreateFbExternalUserInternalArgs
-
-	Result *FbExternalUserCombined `json:"-"`
-}
-
-func (h AggregateHandler) HandleCreateFbExternalUserCombined(ctx context.Context, msg *CreateFbExternalUserCombinedCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbExternalUserCombined(msg.GetArgs(ctx))
-	return err
-}
-
-type CreateFbExternalUserInternalCommand struct {
-	ExternalID string
-	Token      string
-	ExpiresIn  int
-
-	Result *FbExternalUserInternal `json:"-"`
-}
-
-func (h AggregateHandler) HandleCreateFbExternalUserInternal(ctx context.Context, msg *CreateFbExternalUserInternalCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbExternalUserInternal(msg.GetArgs(ctx))
-	return err
 }
 
 type CreateFbExternalUserShopCustomerCommand struct {
@@ -87,6 +47,18 @@ type CreateFbExternalUsersCommand struct {
 
 func (h AggregateHandler) HandleCreateFbExternalUsers(ctx context.Context, msg *CreateFbExternalUsersCommand) (err error) {
 	msg.Result, err = h.inner.CreateFbExternalUsers(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateOrUpdateFbExternalUserCombinedCommand struct {
+	FbUserConnected *CreateOrUpdateFbExternalUserConnectedArgs
+	FbUserInternal  *CreateOrUpdateFbExternalUserInternalArgs
+
+	Result *FbExternalUserCombined `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateOrUpdateFbExternalUserCombined(ctx context.Context, msg *CreateOrUpdateFbExternalUserCombinedCommand) (err error) {
+	msg.Result, err = h.inner.CreateOrUpdateFbExternalUserCombined(msg.GetArgs(ctx))
 	return err
 }
 
@@ -318,16 +290,14 @@ func (h QueryServiceHandler) HandleListShopUserTags(ctx context.Context, msg *Li
 
 // implement interfaces
 
-func (q *CreateFbExternalUserCommand) command()             {}
-func (q *CreateFbExternalUserCombinedCommand) command()     {}
-func (q *CreateFbExternalUserInternalCommand) command()     {}
-func (q *CreateFbExternalUserShopCustomerCommand) command() {}
-func (q *CreateFbExternalUsersCommand) command()            {}
-func (q *CreateShopUserTagCommand) command()                {}
-func (q *DeleteFbExternalUserShopCustomerCommand) command() {}
-func (q *DeleteShopUserTagCommand) command()                {}
-func (q *UpdateShopUserTagCommand) command()                {}
-func (q *UpdateShopUserTagsCommand) command()               {}
+func (q *CreateFbExternalUserShopCustomerCommand) command()     {}
+func (q *CreateFbExternalUsersCommand) command()                {}
+func (q *CreateOrUpdateFbExternalUserCombinedCommand) command() {}
+func (q *CreateShopUserTagCommand) command()                    {}
+func (q *DeleteFbExternalUserShopCustomerCommand) command()     {}
+func (q *DeleteShopUserTagCommand) command()                    {}
+func (q *UpdateShopUserTagCommand) command()                    {}
+func (q *UpdateShopUserTagsCommand) command()                   {}
 
 func (q *GetFbExternalUserByExternalIDQuery) query()               {}
 func (q *GetFbExternalUserInternalByExternalIDQuery) query()       {}
@@ -346,51 +316,6 @@ func (q *ListShopUserTagsQuery) query()                            {}
 
 // implement conversion
 
-func (q *CreateFbExternalUserCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUserArgs) {
-	return ctx,
-		&CreateFbExternalUserArgs{
-			ExternalID:     q.ExternalID,
-			ExternalInfo:   q.ExternalInfo,
-			ExternalPageID: q.ExternalPageID,
-			Status:         q.Status,
-		}
-}
-
-func (q *CreateFbExternalUserCommand) SetCreateFbExternalUserArgs(args *CreateFbExternalUserArgs) {
-	q.ExternalID = args.ExternalID
-	q.ExternalInfo = args.ExternalInfo
-	q.ExternalPageID = args.ExternalPageID
-	q.Status = args.Status
-}
-
-func (q *CreateFbExternalUserCombinedCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUserCombinedArgs) {
-	return ctx,
-		&CreateFbExternalUserCombinedArgs{
-			FbUser:         q.FbUser,
-			FbUserInternal: q.FbUserInternal,
-		}
-}
-
-func (q *CreateFbExternalUserCombinedCommand) SetCreateFbExternalUserCombinedArgs(args *CreateFbExternalUserCombinedArgs) {
-	q.FbUser = args.FbUser
-	q.FbUserInternal = args.FbUserInternal
-}
-
-func (q *CreateFbExternalUserInternalCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalUserInternalArgs) {
-	return ctx,
-		&CreateFbExternalUserInternalArgs{
-			ExternalID: q.ExternalID,
-			Token:      q.Token,
-			ExpiresIn:  q.ExpiresIn,
-		}
-}
-
-func (q *CreateFbExternalUserInternalCommand) SetCreateFbExternalUserInternalArgs(args *CreateFbExternalUserInternalArgs) {
-	q.ExternalID = args.ExternalID
-	q.Token = args.Token
-	q.ExpiresIn = args.ExpiresIn
-}
-
 func (q *CreateFbExternalUserShopCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, externalID string, customerID dot.ID) {
 	return ctx,
 		q.ShopID,
@@ -407,6 +332,19 @@ func (q *CreateFbExternalUsersCommand) GetArgs(ctx context.Context) (_ context.C
 
 func (q *CreateFbExternalUsersCommand) SetCreateFbExternalUsersArgs(args *CreateFbExternalUsersArgs) {
 	q.FbExternalUsers = args.FbExternalUsers
+}
+
+func (q *CreateOrUpdateFbExternalUserCombinedCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateFbExternalUserCombinedArgs) {
+	return ctx,
+		&CreateOrUpdateFbExternalUserCombinedArgs{
+			FbUserConnected: q.FbUserConnected,
+			FbUserInternal:  q.FbUserInternal,
+		}
+}
+
+func (q *CreateOrUpdateFbExternalUserCombinedCommand) SetCreateOrUpdateFbExternalUserCombinedArgs(args *CreateOrUpdateFbExternalUserCombinedArgs) {
+	q.FbUserConnected = args.FbUserConnected
+	q.FbUserInternal = args.FbUserInternal
 }
 
 func (q *CreateShopUserTagCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopUserTagArgs) {
@@ -600,11 +538,9 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
-	b.AddHandler(h.HandleCreateFbExternalUser)
-	b.AddHandler(h.HandleCreateFbExternalUserCombined)
-	b.AddHandler(h.HandleCreateFbExternalUserInternal)
 	b.AddHandler(h.HandleCreateFbExternalUserShopCustomer)
 	b.AddHandler(h.HandleCreateFbExternalUsers)
+	b.AddHandler(h.HandleCreateOrUpdateFbExternalUserCombined)
 	b.AddHandler(h.HandleCreateShopUserTag)
 	b.AddHandler(h.HandleDeleteFbExternalUserShopCustomer)
 	b.AddHandler(h.HandleDeleteShopUserTag)

@@ -19,6 +19,16 @@ type FbExternalUser struct {
 	UpdatedAt      time.Time
 }
 
+type FbExternalUserConnected struct {
+	ExternalID     string
+	ShopID         dot.ID
+	ExternalInfo   *FbExternalUserInfo
+	Status         status3.Status
+	ExternalPageID string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+}
+
 type FbExternalUserInfo struct {
 	Name      string
 	FirstName string
@@ -35,8 +45,8 @@ type FbExternalUserInternal struct {
 }
 
 type FbExternalUserCombined struct {
-	FbExternalUser         *FbExternalUser
-	FbExternalUserInternal *FbExternalUserInternal
+	FbExternalUserConnected *FbExternalUserConnected
+	FbExternalUserInternal  *FbExternalUserInternal
 }
 
 type FbExternalUserShopCustomer struct {

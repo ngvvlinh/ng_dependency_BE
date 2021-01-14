@@ -10,19 +10,20 @@ import (
 // +gen:event:topic=event/fbpaging
 
 type FbExternalPage struct {
-	ID                   dot.ID              `json:"id"`
-	ExternalID           string              `json:"external_id"`
-	ShopID               dot.ID              `json:"shop_id"`
-	ExternalName         string              `json:"external_name"`
-	ExternalCategory     string              `json:"external_category"`
-	ExternalCategoryList []*ExternalCategory `json:"external_category_list"`
-	ExternalTasks        []string            `json:"external_tasks"`
-	ExternalPermissions  []string            `json:"external_permissions"`
-	ExternalImageURL     string              `json:"external_image_url"`
-	Status               status3.Status      `json:"status"`
-	ConnectionStatus     status3.Status      `json:"connection_status"`
-	CreatedAt            time.Time           `json:"created_at"`
-	UpdatedAt            time.Time           `json:"updated_at"`
+	ID                   dot.ID
+	ExternalID           string
+	ExternalUserID       string
+	ShopID               dot.ID
+	ExternalName         string
+	ExternalCategory     string
+	ExternalCategoryList []*ExternalCategory
+	ExternalTasks        []string
+	ExternalPermissions  []string
+	ExternalImageURL     string
+	Status               status3.Status
+	ConnectionStatus     status3.Status
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
 }
 
 type ExternalCategory struct {

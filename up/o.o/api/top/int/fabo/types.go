@@ -170,6 +170,7 @@ type ExternalFbUserInfo struct {
 type FbPageCombined struct {
 	ID                   dot.ID              `json:"id"`
 	ExternalID           string              `json:"external_id"`
+	ExternalUserID       string              `json:"external_user_id"`
 	ShopID               dot.ID              `json:"shop_id"`
 	ExternalName         string              `json:"external_name"`
 	ExternalCategory     string              `json:"external_category"`
