@@ -277,6 +277,7 @@ type ListShopsByIDsArgs struct {
 }
 
 type CreateShopArgs struct {
+	ID                          dot.ID
 	Name                        string
 	OwnerID                     dot.ID
 	AddressID                   dot.ID
@@ -296,6 +297,7 @@ type CreateShopArgs struct {
 }
 
 type CreateUserArgs struct {
+	UserID                  dot.ID
 	FullName                string
 	ShortName               string
 	Email                   string

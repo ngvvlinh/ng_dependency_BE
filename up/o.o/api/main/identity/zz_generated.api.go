@@ -81,6 +81,7 @@ func (h AggregateHandler) HandleCreateAffiliate(ctx context.Context, msg *Create
 }
 
 type CreateShopCommand struct {
+	ID                          dot.ID
 	Name                        string
 	OwnerID                     dot.ID
 	AddressID                   dot.ID
@@ -669,6 +670,7 @@ func (q *CreateAffiliateCommand) SetCreateAffiliateArgs(args *CreateAffiliateArg
 func (q *CreateShopCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopArgs) {
 	return ctx,
 		&CreateShopArgs{
+			ID:                          q.ID,
 			Name:                        q.Name,
 			OwnerID:                     q.OwnerID,
 			AddressID:                   q.AddressID,
@@ -689,6 +691,7 @@ func (q *CreateShopCommand) GetArgs(ctx context.Context) (_ context.Context, _ *
 }
 
 func (q *CreateShopCommand) SetCreateShopArgs(args *CreateShopArgs) {
+	q.ID = args.ID
 	q.Name = args.Name
 	q.OwnerID = args.OwnerID
 	q.AddressID = args.AddressID

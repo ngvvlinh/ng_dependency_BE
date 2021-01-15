@@ -354,7 +354,7 @@ func (a *Aggregate) RegisterSimplify(ctx context.Context, args *identity.Registe
 			PhoneVerifiedAt:         now,
 			PhoneVerificationSentAt: now,
 		}
-		user, err := a.createUser(ctx, userArgs)
+		user, err := a.CreateUser(ctx, userArgs)
 		if err != nil {
 			return err
 		}
@@ -372,7 +372,26 @@ func (a *Aggregate) RegisterSimplify(ctx context.Context, args *identity.Registe
 }
 
 func (a *Aggregate) CreateShop(ctx context.Context, args *identity.CreateShopArgs) (*identity.Shop, error) {
-	return nil, cm.ErrTODO
+	var err error
+	args.ID, err = checkShopID(args.ID)
+	if err != nil {
+		return nil, err
+	}
+	if err := a.createShop(ctx, args); err != nil {
+		return nil, err
+	}
+	return a.shopStore(ctx).ByID(args.ID).GetShop()
+}
+
+func checkShopID(id dot.ID) (dot.ID, error) {
+	if id == 0 {
+		id = idutil.NewShopID()
+	} else {
+		if !idutil.IsShopID(id) {
+			return 0, cm.Errorf(cm.InvalidArgument, nil, "invalid shop ID")
+		}
+	}
+	return id, nil
 }
 
 func (a *Aggregate) createShop(ctx context.Context, args *identity.CreateShopArgs) error {
@@ -381,7 +400,11 @@ func (a *Aggregate) createShop(ctx context.Context, args *identity.CreateShopArg
 		return cm.Error(cm.InvalidArgument, "invalid owner_id", nil)
 	}
 
-	id := idutil.NewShopID()
+	id, err := checkShopID(args.ID)
+	if err != nil {
+		return err
+	}
+
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		account := &identity.Account{
 			ID:       id,
@@ -456,7 +479,7 @@ func (a *Aggregate) createShop(ctx context.Context, args *identity.CreateShopArg
 	})
 }
 
-func (a *Aggregate) createUser(ctx context.Context, args *identity.CreateUserArgs) (*identity.User, error) {
+func (a *Aggregate) CreateUser(ctx context.Context, args *identity.CreateUserArgs) (*identity.User, error) {
 	switch args.Status {
 	case status3.P:
 	default:
@@ -464,7 +487,10 @@ func (a *Aggregate) createUser(ctx context.Context, args *identity.CreateUserArg
 	}
 
 	now := time.Now()
-	userID := cm.NewIDWithTag(account_tag.TagUser)
+	userID := args.UserID
+	if userID == 0 {
+		userID = cm.NewIDWithTag(account_tag.TagUser)
+	}
 	user := &identity.User{
 		ID:                      userID,
 		FullName:                args.FullName,

@@ -16,6 +16,7 @@ import (
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/etc/idutil"
 	"o.o/backend/pkg/etop/authorize/authkey"
 	"o.o/capi/dot"
 )
@@ -100,7 +101,13 @@ func (st *PartnerStore) CreatePartner(ctx context.Context, cmd *identitymodelx.C
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing OwnerID")
 	}
 
-	partner.ID = cm.NewIDWithTag(account_tag.TagPartner)
+	if partner.ID != 0 {
+		if !idutil.IsPartnerID(partner.ID) {
+			return cm.Errorf(cm.InvalidArgument, nil, "Invalid partner ID")
+		}
+	} else {
+		partner.ID = cm.NewIDWithTag(account_tag.TagPartner)
+	}
 	if err := partner.BeforeInsert(); err != nil {
 		return err
 	}
