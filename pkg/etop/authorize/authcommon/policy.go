@@ -4,7 +4,7 @@ const shopPolicy = `#connection
 	p, shop/connection:create, owner
 	p, shop/connection:update, owner
 	p, shop/connection:delete, owner
-	p, shop/connection:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+	p, shop/connection:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	# carrier
 	p, shop/carrier:create, admin, owner, salesman
 	p, shop/carrier:update, admin, owner, salesman
@@ -32,7 +32,7 @@ const shopPolicy = `#connection
 	p, shop/fulfillment:create, admin, owner, salesman
 	p, shop/fulfillment:update, admin, owner, salesman
 	p, shop/fulfillment:cancel, admin, owner, salesman
-	p, shop/fulfillment:view, admin, owner, salesman, accountant
+	p, shop/fulfillment:view, admin, owner, salesman, accountant, telecom_customerservice
 	p, shop/fulfillment:export, admin, owner, salesman
 	# inventory
 	p, shop/inventory:view, admin, owner, inventory_management, purchasing_management
@@ -57,7 +57,7 @@ const shopPolicy = `#connection
 	p, shop/order:import, admin, owner, salesman
 	p, shop/order:export, admin, owner, salesman, inventory_management
 	# order: hotfix, all users can access order page
-	p, shop/order:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+	p, shop/order:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	# purchase_order
 	p, shop/purchase_order:view, admin, owner, accountant, purchasing_management
 	p, shop/purchase_order:create, admin, owner, purchasing_management

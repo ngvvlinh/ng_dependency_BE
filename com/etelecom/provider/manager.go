@@ -171,11 +171,15 @@ func (m *TelecomManager) CreateExtension(ctx context.Context, ext *etelecom.Exte
 	}
 
 	genPass := gencode.GenerateCode(gencode.Alphabet54, ExtensionPasswordLength)
+	profileName := user.FullName
+	if hotline.Name != "" {
+		profileName = hotline.Name + " - " + profileName
+	}
 	cmd := &providertypes.CreateExtensionRequest{
 		ExtensionPassword: genPass,
 		ExtensionNumber:   extQuery.Result,
 		Profile: &providertypes.ProfileExtension{
-			FirstName: user.FullName,
+			FirstName: profileName,
 			// vht định danh extension theo email
 			// nên không thể tạo nhiều extension cho cùng 1 email được
 			// Email:       user.Email,

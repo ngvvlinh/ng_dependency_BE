@@ -139,11 +139,22 @@ func (v *VHTDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCallLo
 	}
 
 	for _, callLog := range getCallLogsResp.Sessions {
+		// Callee
+		// Không lấy trực tiếp từ callLog.Callee do nó có thể là ring group
+		// Workarround: bằng cách lấy callee từ callLog.CallTargets ra - luôn lấy thằng đầu tiên (bỏ qua trường hợp chuyển tiếp cuộc gọi)
+		callee := ""
+		if len(callLog.CallTargets) > 0 {
+			callee = callLog.CallTargets[0].TargetNumber.String()
+		}
+		if callee == "" {
+			callee = callLog.Callee.String()
+		}
+
 		callLogRes := &telecomtypes.CallLog{
 			CallID:     callLog.CallID.String(),
 			CallStatus: string(callLog.CallStatus),
 			Caller:     callLog.Caller.String(),
-			Callee:     callLog.Callee.String(),
+			Callee:     callee,
 			Direction:  callLog.Direction.String(),
 			StartedAt:  callLog.StartTime.ToTime(),
 			EndedAt:    callLog.EndedTime.ToTime(),

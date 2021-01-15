@@ -142,6 +142,7 @@ type SessionCallLog struct {
 	RecordingFileURL   String           `json:"recording_file_url"`
 	CallID             String           `json:"call_id"`             // "9a3thmvujh498hkv35m9-gw"
 	CallStatus         VHTCallStatus    `json:"call_status"`         // FAIL
+	CallTargets        []*CallTarget    `json:"call_targets"`        // người nhận cuộc gọi, sẽ có nhiều CallTarget nếu cuộc gọi chuyển tiếp
 	Callee             String           `json:"callee"`              // "0943630091"
 	CalleeDomain       String           `json:"callee_domain"`       // "etop-dev.vht.com.vn"
 	Caller             String           `json:"caller"`              // "2611"
@@ -159,6 +160,20 @@ type SessionCallLog struct {
 	TenantID           String           `json:"tenant_id"`     // "373302079663509504"
 	TenantName         String           `json:"tenant_name"`   // "Etop-dev"
 	Type               Int              `json:"type"`          // 1
+}
+
+type CallTarget struct {
+	AddTime      Time          `json:"add_time"`
+	AnsweredTime Time          `json:"answered_time"`
+	EndReason    String        `json:"end_reason"`
+	EndedTime    Time          `json:"ended_time"`
+	FailCode     Int           `json:"fail_code"`
+	RingDuration Int           `json:"ring_duration"`
+	RingTime     Int           `json:"ring_time"`
+	Status       VHTCallStatus `json:"status"`
+	TalkDuration Int           `json:"talk_duration"`
+	TargetNumber String        `json:"target_number"` // số callee
+	TrunkName    String        `json:"trunk_name"`
 }
 
 type CustomerSession struct {

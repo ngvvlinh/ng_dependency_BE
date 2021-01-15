@@ -180,6 +180,15 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 			*t = Time(tt)
 			return nil
 		}
+
+		// timestamp
+		timestamp := data[1 : len(data)-1]
+		if _time, err := strconv.ParseInt(string(timestamp), 10, 64); err == nil {
+			tt := time.Unix(_time, 0)
+			*t = Time(tt)
+			return nil
+		}
+
 		ll.Error("Unable to parse time", l.String("data", string(data)))
 		return fmt.Errorf(`unable to parse time %s`, data)
 	}
