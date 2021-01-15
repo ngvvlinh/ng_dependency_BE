@@ -174,12 +174,6 @@ func (wh *Webhook) validateDataAndGetFfm(ctx context.Context, msg vtpostclient.C
 	if cm.StringsContain(EndStatesCode, ffm.ExternalShippingStateCode) {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "This ffm was done. Cannot update it.").WithMeta("result", "ignore")
 	}
-
-	providerServiceID := ffm.ProviderServiceID
-	_, _, err = vtpost.ParseServiceID(providerServiceID)
-	if err != nil {
-		return nil, cm.Errorf(cm.FailedPrecondition, err, "VTPost: Can not parse ProviderServiceID in fulfillment.").WithMeta("result", "ignore")
-	}
 	return
 }
 
