@@ -271,7 +271,6 @@ func (d *GHNDriver) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fu
 	fromDistrict, fromWard := fromQuery.Result.District, fromQuery.Result.Ward
 	toDistrict, toWard := toQuery.Result.District, toQuery.Result.Ward
 
-	insuranceValue := ffm.InsuranceValue.Apply(0)
 	cmd := &ghnclient.UpdateOrderRequest{
 		OrderCode:      ffm.ShippingCode,
 		FromName:       ffm.AddressFrom.GetFullName(),
@@ -285,10 +284,15 @@ func (d *GHNDriver) UpdateFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fu
 		ToWardCode:     toWard.GhnCode,
 		ToDistrictID:   toDistrict.GhnId,
 		Weight:         ffm.GrossWeight,
-		InsuranceValue: &insuranceValue,
+		InsuranceValue: nil, // fill it later
 		Note:           note,
 		RequiredNote:   ghnNoteCode.String(),
 		PaymentTypeID:  ffm.ShippingPaymentType.Enum(),
+	}
+
+	if ffm.IncludeInsurance.Valid && ffm.IncludeInsurance.Bool {
+		insuranceValue := ffm.InsuranceValue.Apply(0)
+		cmd.InsuranceValue = &insuranceValue
 	}
 	if err := d.client.UpdateOrder(ctx, cmd); err != nil {
 		return err
