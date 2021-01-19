@@ -27,17 +27,18 @@ var (
 	ll               = l.New()
 	db               *cmsql.Database
 	identityAggr     *identity.Aggregate
+	identityQuery    *identity.QueryService
 	partnerStore     sqlstore.PartnerStoreFactory
 	accountAuthStore sqlstore.AccountAuthStoreFactory
 )
 
 func main() {
 	cfg := cc.DefaultPostgres()
-	cfg.Host = "127.0.0.1"
-	cfg.Port = 5432
-	cfg.Username = "postgres"
-	cfg.Password = "postgres"
-	cfg.Database = "etopv1.12"
+	cfg.Host = "103.143.142.225"
+	cfg.Port = 16435
+	cfg.Username = "etop"
+	cfg.Password = "Kng9vczxDfFTLJQp"
+	cfg.Database = "etopv1"
 
 	var err error
 	db, err = cmsql.Connect(cfg)
@@ -48,6 +49,7 @@ func main() {
 	_ = wl.Init(cmenv.EnvDev, wl.EtopServer)
 	evenBus := bus.New()
 	identityAggr = identity.NewAggregate(db, evenBus)
+	identityQuery = identity.NewQueryService(db)
 	partnerStore = sqlstore.NewPartnerStore(db)
 	accountAuthStore = sqlstore.NewAccountAuthStore(db)
 
@@ -124,6 +126,21 @@ func createPartner(ctx context.Context, tx cmsql.QueryInterface, partner *list.P
 }
 
 func createUser(ctx context.Context, tx cmsql.QueryInterface, partner *list.PartnerInfo) error {
+	if partner.OwnerID != 0 {
+		query := &identitycore.GetUserByIDQueryArgs{
+			UserID: partner.OwnerID,
+		}
+		_, err := identityQuery.GetUserByID(ctx, query)
+		if err == nil {
+			// user existed
+			// skip create
+			return nil
+		}
+		if err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+	}
+
 	password := partner.Password
 	if password == "" {
 		password = "123456789"
