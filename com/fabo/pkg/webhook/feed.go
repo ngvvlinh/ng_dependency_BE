@@ -16,7 +16,7 @@ import (
 
 // Facebook feed is any action on page (create or update a post, make comment,
 // any reaction ....)
-func (wh *Webhook) HandleFeed(
+func (wh *WebhookHandler) HandleFeed(
 	ctx context.Context, feed WebhookMessages,
 ) (mq.Code, error) {
 	// Ignore Create or Update action from page owner.
@@ -41,12 +41,9 @@ func (wh *Webhook) HandleFeed(
 			return mq.CodeIgnore, nil
 		}
 
-		accessToken, err := wh.getPageAccessToken(ctx, externalPageID)
-		if err != nil {
-			if cm.ErrorCode(err) == cm.NotFound {
-				return mq.CodeIgnore, nil
-			}
-			return mq.CodeStop, err
+		accessToken, returnCode, err := wh.getPageAccessToken(ctx, externalPageID)
+		if returnCode != mq.CodeOK {
+			return returnCode, err
 		}
 
 		for _, change := range entry.Changes {
@@ -63,7 +60,7 @@ func (wh *Webhook) HandleFeed(
 	return mq.CodeOK, nil
 }
 
-func (wh *Webhook) handleFeedEvent(
+func (wh *WebhookHandler) handleFeedEvent(
 	ctx context.Context, extPageID string,
 	feedChange FeedChange, createdTime time.Time,
 ) (mq.Code, error) {
@@ -79,7 +76,7 @@ func (wh *Webhook) handleFeedEvent(
 	return mq.CodeOK, nil
 }
 
-func (wh *Webhook) handleFeedPost(
+func (wh *WebhookHandler) handleFeedPost(
 	ctx context.Context, feedChange FeedChange,
 	createdTime time.Time, extPageID, accessToken string,
 ) (mq.Code, error) {
@@ -118,7 +115,7 @@ func (wh *Webhook) handleFeedPost(
 	return mq.CodeOK, nil
 }
 
-func (wh *Webhook) lockFeedPost(pageID, postID, fromID string) error {
+func (wh *WebhookHandler) lockFeedPost(pageID, postID, fromID string) error {
 	// Sometimes facebook may send many requests for one feed. E.g: If a
 	// user posts a post containing 4 images, facebook may calls more than 5
 	// requests at the same time. In this case, we can build full post and
@@ -134,7 +131,7 @@ func (wh *Webhook) lockFeedPost(pageID, postID, fromID string) error {
 	return nil
 }
 
-func (wh *Webhook) handleRemovePost(ctx context.Context, pageID, postID string) (mq.Code, error) {
+func (wh *WebhookHandler) handleRemovePost(ctx context.Context, pageID, postID string) (mq.Code, error) {
 	removeCmd := &fbmessaging.RemovePostCommand{
 		ExternalPostID: postID,
 		ExternalPageID: pageID,
@@ -145,7 +142,7 @@ func (wh *Webhook) handleRemovePost(ctx context.Context, pageID, postID string) 
 	return mq.CodeOK, nil
 }
 
-func (wh *Webhook) updateFeedPost(ctx context.Context, postID string, message string, externalPicture string) error {
+func (wh *WebhookHandler) updateFeedPost(ctx context.Context, postID string, message string, externalPicture string) error {
 	cmdUpdate := &fbmessaging.UpdateFbPostMessageAndPictureCommand{
 		ExternalPostID:  postID,
 		Message:         message,
@@ -154,7 +151,7 @@ func (wh *Webhook) updateFeedPost(ctx context.Context, postID string, message st
 	return wh.fbmessagingAggr.Dispatch(ctx, cmdUpdate)
 }
 
-func (wh *Webhook) updateParentAndChildPost(ctx context.Context, extPageID string, extPost *model.Post) error {
+func (wh *WebhookHandler) updateParentAndChildPost(ctx context.Context, extPageID string, extPost *model.Post) error {
 	createdTime := time.Unix(int64(extPost.CreatedTime), 0)
 	parentPost := convertModelPostToCreatePostArgs(extPageID, createdTime, extPost)
 	allPosts := []*fbmessaging.CreateFbExternalPostArgs{parentPost}
@@ -193,7 +190,7 @@ func (wh *Webhook) updateParentAndChildPost(ctx context.Context, extPageID strin
 	return nil
 }
 
-func (wh *Webhook) handleFeedComment(
+func (wh *WebhookHandler) handleFeedComment(
 	ctx context.Context, feedChange FeedChange,
 	createdTime time.Time, extPageID, accessToken string,
 ) (mq.Code, error) {
@@ -292,7 +289,7 @@ func (wh *Webhook) handleFeedComment(
 	return mq.CodeOK, nil
 }
 
-func (wh *Webhook) handleRemoveComment(ctx context.Context, commentID string) (mq.Code, error) {
+func (wh *WebhookHandler) handleRemoveComment(ctx context.Context, commentID string) (mq.Code, error) {
 	removeCommentArgs := &fbmessaging.RemoveCommentCommand{
 		ExternalCommentID: commentID,
 	}
@@ -302,7 +299,7 @@ func (wh *Webhook) handleRemoveComment(ctx context.Context, commentID string) (m
 	return mq.CodeOK, nil
 }
 
-func (wh *Webhook) getExternalPost(ctx context.Context, extPostID string) (*fbmessaging.FbExternalPost, error) {
+func (wh *WebhookHandler) getExternalPost(ctx context.Context, extPostID string) (*fbmessaging.FbExternalPost, error) {
 	getFbExternalPostQuery := &fbmessaging.GetFbExternalPostByExternalIDQuery{
 		ExternalID: extPostID,
 	}
@@ -312,7 +309,7 @@ func (wh *Webhook) getExternalPost(ctx context.Context, extPostID string) (*fbme
 	return getFbExternalPostQuery.Result, nil
 }
 
-func (wh *Webhook) getExternalComment(ctx context.Context, commentID string) (*fbmessaging.FbExternalComment, error) {
+func (wh *WebhookHandler) getExternalComment(ctx context.Context, commentID string) (*fbmessaging.FbExternalComment, error) {
 	getCommentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
 		ExternalID: commentID,
 	}
@@ -322,7 +319,7 @@ func (wh *Webhook) getExternalComment(ctx context.Context, commentID string) (*f
 	return getCommentQuery.Result, nil
 }
 
-func (wh *Webhook) createParentAndChildPosts(
+func (wh *WebhookHandler) createParentAndChildPosts(
 	ctx context.Context, externalPageID string,
 	createdTime time.Time, post *model.Post,
 ) (mq.Code, error) {

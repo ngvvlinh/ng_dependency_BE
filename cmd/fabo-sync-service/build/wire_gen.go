@@ -38,7 +38,8 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	busBus := bus.New()
 	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
 	commandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
-	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB)
+	faboRedis := redis2.NewFaboRedis(store)
+	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB, faboRedis)
 	queryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	fbPageUtil := fbpage.NewFbPageUtil(store)
 	fbExternalPageAggregate := fbpage.NewFbPageAggregate(mainDB, fbPageUtil, busBus)
@@ -49,7 +50,6 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	fbuseringCommandBus := fbuser.FbUserAggregateMessageBus(fbUserAggregate)
 	fbUserQuery := fbuser.NewFbUserQuery(mainDB, customeringQueryBus)
 	fbuseringQueryBus := fbuser.FbUserQueryMessageBus(fbUserQuery)
-	faboRedis := redis2.NewFaboRedis(store)
 	syncConfig := cfg.SyncConfig
 	synchronizer := sync.New(mainDB, fbClient, commandBus, queryBus, fbuseringCommandBus, fbuseringQueryBus, faboRedis, syncConfig)
 	fbPageQuery := fbpage.NewFbPageQuery(mainDB, fbPageUtil)

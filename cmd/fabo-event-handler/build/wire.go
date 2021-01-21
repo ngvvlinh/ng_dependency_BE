@@ -13,7 +13,7 @@ import (
 	handlerapi "o.o/backend/com/eventhandler/handler/api"
 	"o.o/backend/com/eventhandler/webhook/sender"
 	"o.o/backend/com/eventhandler/webhook/storage"
-	comfabo "o.o/backend/com/fabo"
+	comfabo "o.o/backend/com/fabo/cogs/_handler"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
@@ -36,8 +36,6 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 			"Databases",
 			"OneSignal",
 			"FacebookApp",
-			"Webhook",
-			"kafka",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
@@ -62,10 +60,8 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 
 		com.BuildDatabaseWebhook,
 		com.BuildDatabaseMain,
-		com.BuildDatabaseLogs,
 		com.BuildDatabaseNotifier,
 
-		BuildProducer,
 		BuildPgEventService,
 		BuildIntHandler,
 		BuildWebhookHandler,

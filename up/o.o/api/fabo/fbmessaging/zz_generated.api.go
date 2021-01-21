@@ -40,25 +40,14 @@ func (h AggregateHandler) HandleCreateFbCustomerConversations(ctx context.Contex
 	return err
 }
 
-type CreateFbExternalConversationsCommand struct {
-	FbExternalConversations []*CreateFbExternalConversationArgs
-
-	Result []*FbExternalConversation `json:"-"`
-}
-
-func (h AggregateHandler) HandleCreateFbExternalConversations(ctx context.Context, msg *CreateFbExternalConversationsCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbExternalConversations(msg.GetArgs(ctx))
-	return err
-}
-
-type CreateFbExternalMessagesCommand struct {
-	FbExternalMessages []*CreateFbExternalMessageArgs
+type CreateFbExternalMessagesFromSyncCommand struct {
+	FbExternalMessages []*FbExternalMessage
 
 	Result []*FbExternalMessage `json:"-"`
 }
 
-func (h AggregateHandler) HandleCreateFbExternalMessages(ctx context.Context, msg *CreateFbExternalMessagesCommand) (err error) {
-	msg.Result, err = h.inner.CreateFbExternalMessages(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleCreateFbExternalMessagesFromSync(ctx context.Context, msg *CreateFbExternalMessagesFromSyncCommand) (err error) {
+	msg.Result, err = h.inner.CreateFbExternalMessagesFromSync(msg.GetArgs(ctx))
 	return err
 }
 
@@ -105,6 +94,27 @@ type CreateOrUpdateFbExternalCommentsCommand struct {
 
 func (h AggregateHandler) HandleCreateOrUpdateFbExternalComments(ctx context.Context, msg *CreateOrUpdateFbExternalCommentsCommand) (err error) {
 	msg.Result, err = h.inner.CreateOrUpdateFbExternalComments(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateOrUpdateFbExternalConversationCommand struct {
+	ID                   dot.ID    `json:"id"`
+	ExternalPageID       string    `json:"external_page_id"`
+	ExternalID           string    `json:"external_id"`
+	PSID                 string    `json:"psid"`
+	ExternalUserID       string    `json:"external_user_id"`
+	ExternalUserName     string    `json:"external_user_name"`
+	ExternalLink         string    `json:"external_link"`
+	ExternalUpdatedTime  time.Time `json:"external_updated_time"`
+	ExternalMessageCount int       `json:"external_message_count"`
+	CreatedAt            time.Time `compare:"ignore" json:"created_at"`
+	UpdatedAt            time.Time `compare:"ignore" json:"updated_at"`
+
+	Result *FbExternalConversation `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateOrUpdateFbExternalConversation(ctx context.Context, msg *CreateOrUpdateFbExternalConversationCommand) (err error) {
+	msg.Result, err = h.inner.CreateOrUpdateFbExternalConversation(msg.GetArgs(ctx))
 	return err
 }
 
@@ -604,12 +614,12 @@ func (h QueryServiceHandler) HandleListLatestFbExternalMessages(ctx context.Cont
 // implement interfaces
 
 func (q *CreateFbCustomerConversationsCommand) command()         {}
-func (q *CreateFbExternalConversationsCommand) command()         {}
-func (q *CreateFbExternalMessagesCommand) command()              {}
+func (q *CreateFbExternalMessagesFromSyncCommand) command()      {}
 func (q *CreateFbExternalPostCommand) command()                  {}
 func (q *CreateFbExternalPostsCommand) command()                 {}
 func (q *CreateOrUpdateFbCustomerConversationsCommand) command() {}
 func (q *CreateOrUpdateFbExternalCommentsCommand) command()      {}
+func (q *CreateOrUpdateFbExternalConversationCommand) command()  {}
 func (q *CreateOrUpdateFbExternalConversationsCommand) command() {}
 func (q *CreateOrUpdateFbExternalMessagesCommand) command()      {}
 func (q *CreateOrUpdateFbExternalPostsCommand) command()         {}
@@ -666,25 +676,14 @@ func (q *CreateFbCustomerConversationsCommand) SetCreateFbCustomerConversationsA
 	q.FbCustomerConversations = args.FbCustomerConversations
 }
 
-func (q *CreateFbExternalConversationsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalConversationsArgs) {
+func (q *CreateFbExternalMessagesFromSyncCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalMessagesFromSyncArgs) {
 	return ctx,
-		&CreateFbExternalConversationsArgs{
-			FbExternalConversations: q.FbExternalConversations,
-		}
-}
-
-func (q *CreateFbExternalConversationsCommand) SetCreateFbExternalConversationsArgs(args *CreateFbExternalConversationsArgs) {
-	q.FbExternalConversations = args.FbExternalConversations
-}
-
-func (q *CreateFbExternalMessagesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFbExternalMessagesArgs) {
-	return ctx,
-		&CreateFbExternalMessagesArgs{
+		&CreateFbExternalMessagesFromSyncArgs{
 			FbExternalMessages: q.FbExternalMessages,
 		}
 }
 
-func (q *CreateFbExternalMessagesCommand) SetCreateFbExternalMessagesArgs(args *CreateFbExternalMessagesArgs) {
+func (q *CreateFbExternalMessagesFromSyncCommand) SetCreateFbExternalMessagesFromSyncArgs(args *CreateFbExternalMessagesFromSyncArgs) {
 	q.FbExternalMessages = args.FbExternalMessages
 }
 
@@ -734,6 +733,37 @@ func (q *CreateOrUpdateFbExternalCommentsCommand) GetArgs(ctx context.Context) (
 
 func (q *CreateOrUpdateFbExternalCommentsCommand) SetCreateOrUpdateFbExternalCommentsArgs(args *CreateOrUpdateFbExternalCommentsArgs) {
 	q.FbExternalComments = args.FbExternalComments
+}
+
+func (q *CreateOrUpdateFbExternalConversationCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbExternalConversation) {
+	return ctx,
+		&FbExternalConversation{
+			ID:                   q.ID,
+			ExternalPageID:       q.ExternalPageID,
+			ExternalID:           q.ExternalID,
+			PSID:                 q.PSID,
+			ExternalUserID:       q.ExternalUserID,
+			ExternalUserName:     q.ExternalUserName,
+			ExternalLink:         q.ExternalLink,
+			ExternalUpdatedTime:  q.ExternalUpdatedTime,
+			ExternalMessageCount: q.ExternalMessageCount,
+			CreatedAt:            q.CreatedAt,
+			UpdatedAt:            q.UpdatedAt,
+		}
+}
+
+func (q *CreateOrUpdateFbExternalConversationCommand) SetFbExternalConversation(args *FbExternalConversation) {
+	q.ID = args.ID
+	q.ExternalPageID = args.ExternalPageID
+	q.ExternalID = args.ExternalID
+	q.PSID = args.PSID
+	q.ExternalUserID = args.ExternalUserID
+	q.ExternalUserName = args.ExternalUserName
+	q.ExternalLink = args.ExternalLink
+	q.ExternalUpdatedTime = args.ExternalUpdatedTime
+	q.ExternalMessageCount = args.ExternalMessageCount
+	q.CreatedAt = args.CreatedAt
+	q.UpdatedAt = args.UpdatedAt
 }
 
 func (q *CreateOrUpdateFbExternalConversationsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateFbExternalConversationsArgs) {
@@ -1115,12 +1145,12 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleCreateFbCustomerConversations)
-	b.AddHandler(h.HandleCreateFbExternalConversations)
-	b.AddHandler(h.HandleCreateFbExternalMessages)
+	b.AddHandler(h.HandleCreateFbExternalMessagesFromSync)
 	b.AddHandler(h.HandleCreateFbExternalPost)
 	b.AddHandler(h.HandleCreateFbExternalPosts)
 	b.AddHandler(h.HandleCreateOrUpdateFbCustomerConversations)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalComments)
+	b.AddHandler(h.HandleCreateOrUpdateFbExternalConversation)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalConversations)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalMessages)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalPosts)

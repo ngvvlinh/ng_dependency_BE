@@ -49,6 +49,7 @@ func NewProcessManager(
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.HandleFbExternalMessagesCreatedEvent)
+	eventBus.AddEventListener(m.HandleFbExternalConversationsUpdatedEvent)
 	eventBus.AddEventListener(m.HandleFbExternalCommentCreatedOrUpdatedEvent)
 	eventBus.AddEventListener(m.HandleFbExternalConversationsCreatedEvent)
 }
@@ -340,6 +341,19 @@ func (m *ProcessManager) HandleFbExternalConversationsCreatedEvent(
 		return nil
 	}
 
+	// clear cache
+	{
+		var externalPageIDs, externalUserIDs []string
+		for _, fbExternalConversation := range event.FbExternalConversations {
+			externalPageIDs = append(externalPageIDs, fbExternalConversation.ExternalPageID)
+			externalUserIDs = append(externalUserIDs, fbExternalConversation.ExternalUserID)
+		}
+
+		if err := m.rd.ClearExternalConversations(externalPageIDs, externalUserIDs); err != nil {
+			return err
+		}
+	}
+
 	mapOldExternalConversationID := make(map[string]bool)
 	{
 		externalConversationIDsSet := NewSet()
@@ -384,6 +398,22 @@ func (m *ProcessManager) HandleFbExternalConversationsCreatedEvent(
 		}
 	}
 	return nil
+}
+
+func (m *ProcessManager) HandleFbExternalConversationsUpdatedEvent(
+	ctx context.Context, event *fbmessaging.FbExternalConversationsUpdatedEvent,
+) error {
+	if event == nil {
+		return nil
+	}
+	var externalPageIDs, externalUserIDs []string
+	for _, fbExternalConversation := range event.FbExternalConversations {
+		externalUserIDs = append(externalUserIDs, fbExternalConversation.ExternalUserID)
+		externalPageIDs = append(externalPageIDs, fbExternalConversation.ExternalPageID)
+	}
+
+	// clear cache FbExternalConversations
+	return m.rd.ClearExternalConversations(externalPageIDs, externalUserIDs)
 }
 
 func (m *ProcessManager) handleCreateExternalCustomerUser(

@@ -20,6 +20,7 @@ import (
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
+	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	emodel "o.o/backend/pkg/etop/model"
 	"o.o/common/jsonx"
@@ -306,17 +307,18 @@ func (wh *Webhook) forwardWebhook(c *httpx.Context, message WebhookMessages) {
 }
 
 // TODO(vu): cache, write a query for retrieving only the access token
-func (wh *Webhook) getPageAccessToken(ctx context.Context, extPageID string) (string, error) {
+func (wh *WebhookHandler) getPageAccessToken(ctx context.Context, extPageID string) (string, mq.Code, error) {
 	getAccessTokenQuery := &fbpaging.GetPageAccessTokenQuery{
 		ExternalID: extPageID,
 	}
 
 	if err := wh.fbPageQuery.Dispatch(ctx, getAccessTokenQuery); err != nil {
-		return "", cm.MapError(err).
-			Mapf(cm.NotFound, cm.FacebookWebhookIgnored, "external page with id %v not found", extPageID).
-			Throw()
+		if cm.ErrorCode(err) == cm.NotFound {
+			return "", mq.CodeIgnore, cm.Errorf(cm.FacebookWebhookIgnored, nil, "external page with id %v not found", extPageID)
+		}
+		return "", mq.CodeStop, nil
 	}
-	return getAccessTokenQuery.Result, nil
+	return getAccessTokenQuery.Result, mq.CodeOK, nil
 }
 
 func (wh *Webhook) saveLogsWebhook(msg WebhookMessages, err error) {
@@ -355,7 +357,7 @@ func (wh *Webhook) saveLogsWebhook(msg WebhookMessages, err error) {
 	}
 }
 
-func (wh *Webhook) getProfile(accessToken, externalPageID, PSID string, profileDefault *fbclientmodel.Profile) (*fbclientmodel.Profile, error) {
+func (wh *WebhookHandler) getProfile(accessToken, externalPageID, PSID string, profileDefault *fbclientmodel.Profile) (*fbclientmodel.Profile, error) {
 	profile, err := wh.faboRedis.LoadProfilePSID(externalPageID, PSID)
 	switch err {
 	// If profile not in redis then call api getProfileByPSID
@@ -380,7 +382,7 @@ func (wh *Webhook) getProfile(accessToken, externalPageID, PSID string, profileD
 	}
 }
 
-func (wh *Webhook) IsTestPage(ctx context.Context, externalPageID string) (bool, error) {
+func (wh *WebhookHandler) IsTestPage(ctx context.Context, externalPageID string) (bool, error) {
 	getExternalPageQuery := &fbpaging.GetFbExternalPageByExternalIDQuery{
 		ExternalID: externalPageID,
 	}

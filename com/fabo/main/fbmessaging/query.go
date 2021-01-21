@@ -7,6 +7,7 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/backend/com/fabo/main/fbmessaging/sqlstore"
+	faboRedis "o.o/backend/com/fabo/pkg/redis"
 	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -24,9 +25,10 @@ type FbMessagingQuery struct {
 	fbExternalConversationStateStore sqlstore.FbCustomerConversationStateStoreFactory
 	fbExternalMessagesStore          sqlstore.FbExternalMessageStoreFactory
 	fbCustomerConversationStore      sqlstore.FbCustomerConversationStoreFactory
+	rd                               *faboRedis.FaboRedis
 }
 
-func NewFbMessagingQuery(database com.MainDB) *FbMessagingQuery {
+func NewFbMessagingQuery(database com.MainDB, faboRedis *faboRedis.FaboRedis) *FbMessagingQuery {
 	return &FbMessagingQuery{
 		db:                               database,
 		fbExternalPostStore:              sqlstore.NewFbExternalPostStore(database),
@@ -35,6 +37,7 @@ func NewFbMessagingQuery(database com.MainDB) *FbMessagingQuery {
 		fbExternalConversationStateStore: sqlstore.NewFbCustomerConversationStateStore(database),
 		fbExternalMessagesStore:          sqlstore.NewFbExternalMessageStore(database),
 		fbCustomerConversationStore:      sqlstore.NewFbCustomerConversationStore(database),
+		rd:                               faboRedis,
 	}
 }
 

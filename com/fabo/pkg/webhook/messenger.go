@@ -3,48 +3,46 @@ package webhook
 import (
 	"context"
 	"fmt"
-	"o.o/backend/pkg/common/mq"
-	"strings"
 
 	"o.o/api/fabo/fbmessaging"
-	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cmenv"
-	"o.o/backend/pkg/common/redis"
-	"o.o/capi/dot"
+	"o.o/backend/pkg/common/mq"
 	"o.o/common/xerrors"
 )
 
-func (wh *Webhook) HandleMessenger(
+func (wh *WebhookHandler) HandleMessenger(
 	ctx context.Context, webhookMessages WebhookMessages,
 ) (mq.Code, error) {
 	entries := webhookMessages.Entry
 	for _, entry := range entries {
 		externalPageID := entry.ID
-		for _, message := range entry.Messaging {
-			if message.Message != nil {
-				PSID := message.Sender.ID
-				if PSID == externalPageID {
-					PSID = message.Recipient.ID
-				}
-				// message ID
-				mid := message.Message.Mid
-				timestamp := message.Timestamp
-				returnCode, err := wh.handleMessageReturned(ctx, int64(timestamp), externalPageID, PSID, mid)
-				if err == nil {
-					continue
-				}
-				facebookError := err.(*xerrors.APIError)
-				code := facebookError.Meta["code"]
-				if code == fbclient.AccessTokenHasExpired.String() {
-					continue
-				} else {
-					ll.SendMessage(err.Error())
-					return returnCode, err
-				}
+		for _, messaging := range entry.Messaging {
+			if messaging.Message == nil {
+				continue
+			}
+
+			externalUserID := messaging.Sender.ID
+			if externalUserID == externalPageID {
+				externalUserID = messaging.Recipient.ID
+			}
+
+			returnCode, err := wh.handleMessageReturned(ctx, messaging, externalPageID, externalUserID)
+			if err == nil {
+				continue
+			}
+
+			// handle error
+			facebookError := err.(*xerrors.APIError)
+			code := facebookError.Meta["code"]
+			if code == fbclient.AccessTokenHasExpired.String() {
+				continue
+			} else {
+				ll.SendMessage(err.Error())
+				return returnCode, err
 			}
 		}
 	}
@@ -52,259 +50,74 @@ func (wh *Webhook) HandleMessenger(
 }
 
 // TODO(ngoc): refactor
-func (wh *Webhook) handleMessageReturned(
-	ctx context.Context, externalTimestamp int64,
-	externalPageID, PSID, mid string,
+func (wh *WebhookHandler) handleMessageReturned(
+	ctx context.Context, messaging *Messaging,
+	externalPageID, externalUserID string,
 ) (mq.Code, error) {
-	isTestPage, _err := wh.IsTestPage(ctx, externalPageID)
-	if _err != nil {
-		if cm.ErrorCode(_err) == cm.NotFound {
+	if messaging == nil || messaging.Message == nil {
+		return mq.CodeIgnore, nil
+	}
+	externalTimestamp := messaging.Timestamp
+
+	// handle test page
+	if code, err := wh.handleTestPage(ctx, externalPageID); code != mq.CodeOK {
+		return code, err
+	}
+
+	// convert message webhook to message model
+	var messageData *fbclientmodel.MessageData
+	{
+		message := messaging.Message
+		messageData = message.ConvertToMessageData(messaging.Sender.ID, messaging.Recipient.ID, externalTimestamp)
+		if messageData == nil {
 			return mq.CodeIgnore, nil
 		}
-		return mq.CodeStop, _err
-	}
-	// ignore test page
-	if cmenv.IsProd() && isTestPage {
-		return mq.CodeOK, nil
 	}
 
-	accessToken, err := wh.getPageAccessToken(ctx, externalPageID)
-	if err != nil {
-		if cm.ErrorCode(_err) == cm.NotFound {
-			return mq.CodeIgnore, nil
-		}
-		return mq.CodeStop, err
+	pageAccessToken, returnCode, err := wh.getPageAccessToken(ctx, externalPageID)
+	if returnCode != mq.CodeOK {
+		return returnCode, err
 	}
 
-	// Get message
-	messageResp, err := wh.fbClient.CallAPIGetMessage(&fbclient.GetMessageRequest{
-		AccessToken: accessToken,
-		MessageID:   mid,
-		PageID:      externalPageID,
-	})
+	// Each message belongs to a conversation
+	// And conversation is defined by externalConversationID that unique on (externalPageID, externalUserID)
+	externalConversation, err := wh.getExternalConversation(ctx, externalPageID, externalUserID, pageAccessToken)
 	if err != nil {
 		return mq.CodeStop, err
 	}
 
-	externalUserID, err := wh.faboRedis.LoadPSID(externalPageID, PSID)
-	switch err {
-
-	// PSID not in redis then save
-	case redis.ErrNil:
-		{
-			externalUserID = messageResp.From.ID
-			if externalUserID == externalPageID {
-				externalUserID = messageResp.To.Data[0].ID
-			}
-
-			if err := wh.faboRedis.SavePSID(externalPageID, PSID, externalUserID); err != nil {
-				return mq.CodeStop, err
-			}
-		}
-
-	// PSID in redis then do nothing
-	case nil:
-		// no-op
-	default:
+	// Add information for From and To of messageData
+	if err := wh.addInfosForFromAndTo(pageAccessToken, externalConversation, messageData); err != nil {
 		return mq.CodeStop, err
-	}
-
-	var profileDefault *fbclientmodel.Profile
-	// Get externalConversationID (externalPageID, externalUserID) from redis
-	externalConversationID, err := wh.faboRedis.LoadExternalConversationID(externalPageID, externalUserID)
-	switch err {
-	// If externalConversationID not in redis then query database and save it into redis
-	case redis.ErrNil:
-		getExternalConversationQuery := &fbmessaging.GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery{
-			ExternalPageID: externalPageID,
-			ExternalUserID: externalUserID,
-		}
-		_err := wh.fbmessagingQuery.Dispatch(ctx, getExternalConversationQuery)
-		switch cm.ErrorCode(_err) {
-		case cm.NoError:
-			externalConversation := getExternalConversationQuery.Result
-			externalConversationID = externalConversation.ExternalID
-			profileDefault = &fbclientmodel.Profile{
-				ID:   externalConversation.ExternalUserID,
-				Name: externalConversation.ExternalUserName,
-			}
-		case cm.NotFound:
-			// if conversation not found then get externalConversation through call api
-			// and create new externalConversation
-			conversations, err := wh.fbClient.CallAPIGetConversationByUserID(&fbclient.GetConversationByUserIDRequest{
-				AccessToken: accessToken,
-				PageID:      externalPageID,
-				UserID:      PSID,
-			})
-			if err != nil {
-				return mq.CodeStop, err
-			}
-			if len(conversations.ConversationsData) == 0 {
-				return mq.CodeStop, cm.Errorf(cm.Internal, nil, fmt.Sprintf("Wrong PSID %s", PSID))
-			}
-			externalConversation := conversations.ConversationsData[0]
-			externalConversationID = externalConversation.ID
-
-			var externalUserName string
-			for _, sender := range externalConversation.Senders.Data {
-				if sender.ID != externalPageID {
-					externalUserName = sender.Name
-					break
-				}
-			}
-
-			if err := wh.fbmessagingAggr.Dispatch(ctx, &fbmessaging.CreateOrUpdateFbExternalConversationsCommand{
-				FbExternalConversations: []*fbmessaging.CreateFbExternalConversationArgs{
-					{
-						ID:                   cm.NewID(),
-						ExternalPageID:       externalPageID,
-						ExternalID:           externalConversation.ID,
-						PSID:                 PSID,
-						ExternalUserID:       externalUserID,
-						ExternalUserName:     externalUserName,
-						ExternalLink:         externalConversation.Link,
-						ExternalUpdatedTime:  externalConversation.UpdatedTime.ToTime(),
-						ExternalMessageCount: externalConversation.MessageCount,
-					},
-				},
-			}); err != nil {
-				return mq.CodeStop, err
-			}
-
-			profileDefault = &fbclientmodel.Profile{
-				ID:   externalUserID,
-				Name: externalUserName,
-			}
-		default:
-			return mq.CodeStop, _err
-		}
-
-		if _err := wh.faboRedis.SaveExternalConversationID(externalPageID, externalUserID, externalConversationID); _err != nil {
-			return mq.CodeStop, _err
-		}
-	case nil:
-		getExternalConversationQuery := &fbmessaging.GetFbExternalConversationByExternalIDAndExternalPageIDQuery{
-			ExternalPageID: externalPageID,
-			ExternalID:     externalConversationID,
-		}
-		if _err := wh.fbmessagingQuery.Dispatch(ctx, getExternalConversationQuery); _err != nil {
-			return mq.CodeStop, _err
-		}
-
-		externalConversation := getExternalConversationQuery.Result
-		profileDefault = &fbclientmodel.Profile{
-			ID:   externalUserID,
-			Name: externalConversation.ExternalUserName,
-		}
-
-	// no-op
-	default:
-		return mq.CodeStop, err
-	}
-
-	profile, err := wh.getProfile(accessToken, externalPageID, PSID, profileDefault)
-	if err != nil {
-		return mq.CodeStop, err
-	}
-	if profile.ProfilePic == "" {
-		profile.ProfilePic = fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", PSID)
-	}
-
-	if messageResp.From.ID == PSID {
-		messageResp.From.Picture = &fbclientmodel.Picture{
-			Data: fbclientmodel.PictureData{
-				Url: profile.ProfilePic,
-			},
-		}
-
-		messageResp.To.Data[0].Picture = &fbclientmodel.Picture{
-			Data: fbclientmodel.PictureData{
-				Url: fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", messageResp.To.Data[0].ID),
-			},
-		}
-	} else {
-		messageResp.From.Picture = &fbclientmodel.Picture{
-			Data: fbclientmodel.PictureData{
-				Url: fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", messageResp.From.ID),
-			},
-		}
-
-		messageResp.To.Data[0].Picture = &fbclientmodel.Picture{
-			Data: fbclientmodel.PictureData{
-				Url: profile.ProfilePic,
-			},
-		}
-	}
-
-	// Because we don't preventing message from owner of page like handle comments webhook,
-	// So in some cases webhook come after external_message are inserted.
-	// Make sure check `InternalSource` of messages, if it not set or message was not save,
-	// just create/update message with `facebook` (InternalSource field) value, otherwise
-	// hold old value.
-	getOldFbExternalMessageQuery := &fbmessaging.GetFbExternalMessageByExternalIDQuery{
-		ExternalID: messageResp.ID,
-	}
-	if err := wh.fbmessagingQuery.Dispatch(ctx, getOldFbExternalMessageQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
-		return mq.CodeStop, err
-	}
-	oldFbExternalMessage := getOldFbExternalMessageQuery.Result
-	internalSource := fb_internal_source.Facebook
-	var createdBy dot.ID
-	if oldFbExternalMessage != nil {
-		internalSource = oldFbExternalMessage.InternalSource
-		createdBy = oldFbExternalMessage.CreatedBy
 	}
 
 	// Create new message
 	var externalAttachments []*fbmessaging.FbMessageAttachment
 	var externalShares []*fbmessaging.FbMessageShare
-	if messageResp.Attachments != nil {
-		externalAttachments = fbclientconvert.ConvertMessageDataAttachments(messageResp.Attachments.Data)
+	if messageData.Attachments != nil {
+		externalAttachments = fbclientconvert.ConvertMessageDataAttachments(messageData.Attachments.Data)
 	}
-	if messageResp.Shares != nil {
-		externalShares = fbclientconvert.ConvertMessageShares(messageResp.Shares.Data)
+	if messageData.Shares != nil {
+		externalShares = fbclientconvert.ConvertMessageShares(messageData.Shares.Data)
 	}
 
-	currentMessage := messageResp.Message
-
-	// if `sticker` is available don't need to build external_message from
-	// share object, prevent for show duplicate sticker on client.
-	if messageResp.Sticker == "" {
-		var strs []string
-		if currentMessage != "" {
-			strs = append(strs, currentMessage)
-		}
-		// Get first share
-		if len(externalShares) > 0 {
-			if externalShares[0].Description != "" {
-				strs = append(strs, externalShares[0].Description)
-			}
-			if externalShares[0].Link != "" {
-				strs = append(strs, externalShares[0].Link)
-			} else {
-				strs = append(strs, externalShares[0].Name)
-			}
-		}
-		currentMessage = strings.Join(strs, "\n")
-	}
+	currentMessage := messageData.Message
 
 	if err := wh.fbmessagingAggr.Dispatch(ctx, &fbmessaging.CreateOrUpdateFbExternalMessagesCommand{
 		FbExternalMessages: []*fbmessaging.CreateFbExternalMessageArgs{
 			{
 				ID:                     cm.NewID(),
-				ExternalConversationID: externalConversationID,
+				ExternalConversationID: externalConversation.ExternalID,
 				ExternalPageID:         externalPageID,
-				ExternalID:             messageResp.ID,
+				ExternalID:             messageData.ID,
 				ExternalMessage:        currentMessage,
-				ExternalSticker:        messageResp.Sticker,
-				ExternalTo:             fbclientconvert.ConvertObjectsTo(messageResp.To),
-				ExternalFrom:           fbclientconvert.ConvertObjectFrom(messageResp.From),
+				ExternalSticker:        messageData.Sticker,
+				ExternalTo:             fbclientconvert.ConvertObjectsTo(messageData.To),
+				ExternalFrom:           fbclientconvert.ConvertObjectFrom(messageData.From),
 				ExternalAttachments:    externalAttachments,
 				ExternalMessageShares:  externalShares,
-				ExternalCreatedTime:    messageResp.CreatedTime.ToTime(),
-				ExternalTimestamp:      externalTimestamp,
-				InternalSource:         internalSource,
-				CreatedBy:              createdBy,
+				ExternalCreatedTime:    messageData.CreatedTime.WebhookTimeToTime(),
+				ExternalTimestamp:      int64(externalTimestamp),
 			},
 		},
 	}); err != nil {
@@ -312,4 +125,154 @@ func (wh *Webhook) handleMessageReturned(
 	}
 
 	return mq.CodeOK, nil
+}
+
+func (wh *WebhookHandler) addInfosForFromAndTo(
+	pageAccessToken string,
+	externalConversation *fbmessaging.FbExternalConversation, messageData *fbclientmodel.MessageData,
+) error {
+	externalPageID := externalConversation.ExternalPageID
+	externalUserID := externalConversation.ExternalUserID
+
+	profileUserDefault := &fbclientmodel.Profile{
+		ID:   externalConversation.ExternalUserID,
+		Name: externalConversation.ExternalUserName,
+	}
+	profile, err := wh.getProfile(pageAccessToken, externalPageID, externalUserID, profileUserDefault)
+	if err != nil {
+		return err
+	}
+	if profile.ProfilePic == "" {
+		profile.ProfilePic = defaultAvatar(externalUserID)
+	}
+
+	if messageData.From.ID == externalUserID {
+		messageData.From.Picture = &fbclientmodel.Picture{
+			Data: fbclientmodel.PictureData{
+				Url: profile.ProfilePic,
+			},
+		}
+
+		messageData.To.Data[0].Picture = &fbclientmodel.Picture{
+			Data: fbclientmodel.PictureData{
+				Url: defaultAvatar(externalPageID),
+			},
+		}
+	} else {
+		messageData.From.Picture = &fbclientmodel.Picture{
+			Data: fbclientmodel.PictureData{
+				Url: defaultAvatar(externalPageID),
+			},
+		}
+
+		messageData.To.Data[0].Picture = &fbclientmodel.Picture{
+			Data: fbclientmodel.PictureData{
+				Url: profile.ProfilePic,
+			},
+		}
+	}
+	return nil
+}
+
+func (wh *WebhookHandler) getExternalConversation(
+	ctx context.Context,
+	externalPageID, externalUserID, pageAccessToken string,
+) (*fbmessaging.FbExternalConversation, error) {
+	// Get externalConversationID (externalPageID, externalUserID) from redis
+	externalConversationCached, err := wh.faboRedis.LoadExternalConversation(externalPageID, externalUserID)
+	if err != nil {
+		return nil, err
+	}
+
+	// if ExternalConversation in cache
+	if externalConversationCached != nil {
+		return externalConversationCached, nil
+	}
+
+	// Query FbExternalConversation from DB
+	getOldExternalConversationQuery := &fbmessaging.GetFbExternalConversationByExternalPageIDAndExternalUserIDQuery{
+		ExternalPageID: externalPageID,
+		ExternalUserID: externalUserID,
+	}
+	_err := wh.fbmessagingQuery.Dispatch(ctx, getOldExternalConversationQuery)
+
+	var externalConversation *fbmessaging.FbExternalConversation
+	switch cm.ErrorCode(_err) {
+	case cm.NoError:
+		externalConversation = getOldExternalConversationQuery.Result
+	case cm.NotFound:
+		// if conversation not found then get externalConversation through call api
+		// and create new externalConversationFromAPI
+		conversations, err := wh.fbClient.CallAPIGetConversationByUserID(&fbclient.GetConversationByUserIDRequest{
+			AccessToken: pageAccessToken,
+			PageID:      externalPageID,
+			UserID:      externalUserID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if len(conversations.ConversationsData) == 0 {
+			return nil, cm.Errorf(cm.Internal, nil, fmt.Sprintf("Wrong externalUserID %s", externalUserID))
+		}
+		if len(conversations.ConversationsData) > 1 {
+			return nil, cm.Error(cm.Internal, "Something wrong", nil)
+		}
+
+		externalConversationFromAPI := conversations.ConversationsData[0]
+		var externalUserName string
+		for _, sender := range externalConversationFromAPI.Senders.Data {
+			if sender.ID != externalPageID {
+				externalUserName = sender.Name
+				break
+			}
+		}
+
+		// create new FbExternalConversation
+		createFbExternalConversationCommand := &fbmessaging.CreateOrUpdateFbExternalConversationCommand{
+			ID:                   cm.NewID(),
+			ExternalPageID:       externalPageID,
+			ExternalID:           externalConversationFromAPI.ID,
+			PSID:                 externalUserID,
+			ExternalUserID:       externalUserID,
+			ExternalUserName:     externalUserName,
+			ExternalLink:         externalConversationFromAPI.Link,
+			ExternalUpdatedTime:  externalConversationFromAPI.UpdatedTime.ToTime(),
+			ExternalMessageCount: externalConversationFromAPI.MessageCount,
+		}
+		if err := wh.fbmessagingAggr.Dispatch(ctx, createFbExternalConversationCommand); err != nil {
+			return nil, err
+		}
+
+		externalConversation = createFbExternalConversationCommand.Result
+	default:
+		return nil, _err
+	}
+	// cache externalConversation
+	if err := wh.faboRedis.SaveExternalConversation(externalPageID, externalUserID, *externalConversation); err != nil {
+		return nil, err
+	}
+
+	return externalConversation, nil
+}
+
+func (wh *WebhookHandler) handleTestPage(ctx context.Context, externalPageID string) (mq.Code, error) {
+	// check page is a test page
+	isTestPage, err := wh.IsTestPage(ctx, externalPageID)
+	if err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return mq.CodeIgnore, nil
+		}
+		return mq.CodeStop, err
+	}
+
+	// ignore test page on production
+	if cmenv.IsProd() && isTestPage {
+		return mq.CodeIgnore, nil
+	}
+
+	return mq.CodeOK, nil
+}
+
+func defaultAvatar(externalUserID string) string {
+	return fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", externalUserID)
 }

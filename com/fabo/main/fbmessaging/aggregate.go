@@ -54,16 +54,34 @@ func FbExternalMessagingAggregateMessageBus(a *FbExternalMessagingAggregate) fbm
 	return fbmessaging.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
-func (a *FbExternalMessagingAggregate) CreateFbExternalMessages(
-	ctx context.Context, args *fbmessaging.CreateFbExternalMessagesArgs,
+func (a *FbExternalMessagingAggregate) CreateFbExternalMessagesFromSync(
+	ctx context.Context, args *fbmessaging.CreateFbExternalMessagesFromSyncArgs,
 ) ([]*fbmessaging.FbExternalMessage, error) {
-	newFbExternalMessages := make([]*fbmessaging.FbExternalMessage, 0, len(args.FbExternalMessages))
+	var fbExternalMessageIDs []string
+	for _, fbExternalMessage := range args.FbExternalMessages {
+		fbExternalMessageIDs = append(fbExternalMessageIDs, fbExternalMessage.ExternalID)
+	}
+
+	oldFbExternalMessages, err := a.fbExternalMessageStore(ctx).ExternalIDs(fbExternalMessageIDs).ListFbExternalMessages()
+	if err != nil {
+		return nil, err
+	}
+	mapOldFbExternalMessage := make(map[string]*fbmessaging.FbExternalMessage)
+	for _, oldFbExternalMessage := range oldFbExternalMessages {
+		mapOldFbExternalMessage[oldFbExternalMessage.ExternalID] = oldFbExternalMessage
+	}
+
+	var newFbExternalMessages []*fbmessaging.FbExternalMessage
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		for _, fbExternalMessage := range args.FbExternalMessages {
+		for _, fbExternalMessageArg := range args.FbExternalMessages {
 			newFbExternalMessage := new(fbmessaging.FbExternalMessage)
-			if err := scheme.Convert(fbExternalMessage, newFbExternalMessage); err != nil {
-				return err
+			*newFbExternalMessage = *fbExternalMessageArg
+
+			// ignore old message
+			if _, ok := mapOldFbExternalMessage[fbExternalMessageArg.ExternalID]; ok {
+				continue
 			}
+
 			newFbExternalMessages = append(newFbExternalMessages, newFbExternalMessage)
 		}
 
@@ -71,6 +89,7 @@ func (a *FbExternalMessagingAggregate) CreateFbExternalMessages(
 			if err := a.fbExternalMessageStore(ctx).CreateFbExternalMessages(newFbExternalMessages); err != nil {
 				return err
 			}
+
 			event := &fbmessaging.FbExternalMessagesCreatedEvent{
 				FbExternalMessages: newFbExternalMessages,
 			}
@@ -79,6 +98,7 @@ func (a *FbExternalMessagingAggregate) CreateFbExternalMessages(
 			}
 		}
 		return nil
+
 	}); err != nil {
 		return nil, err
 	}
@@ -145,38 +165,6 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalMessages(
 	return resultFbExternalMessages, nil
 }
 
-func (a *FbExternalMessagingAggregate) CreateFbExternalConversations(
-	ctx context.Context, args *fbmessaging.CreateFbExternalConversationsArgs,
-) ([]*fbmessaging.FbExternalConversation, error) {
-	newFbExternalConversations := make([]*fbmessaging.FbExternalConversation, 0, len(args.FbExternalConversations))
-	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		for _, fbExternalConversation := range args.FbExternalConversations {
-			newFbExternalConversation := new(fbmessaging.FbExternalConversation)
-			if err := scheme.Convert(fbExternalConversation, newFbExternalConversation); err != nil {
-				return err
-			}
-			newFbExternalConversations = append(newFbExternalConversations, newFbExternalConversation)
-		}
-
-		if len(newFbExternalConversations) > 0 {
-			if err := a.fbExternalConversationStore(ctx).CreateFbExternalConversations(newFbExternalConversations); err != nil {
-				return err
-			}
-
-			event := &fbmessaging.FbExternalConversationsCreatedEvent{
-				FbExternalConversations: newFbExternalConversations,
-			}
-			if err := a.eventBus.Publish(ctx, event); err != nil {
-				return err
-			}
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	return newFbExternalConversations, nil
-}
-
 func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalConversations(
 	ctx context.Context, args *fbmessaging.CreateOrUpdateFbExternalConversationsArgs,
 ) ([]*fbmessaging.FbExternalConversation, error) {
@@ -236,6 +224,54 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalConversations(
 		return nil, err
 	}
 	return resultFbExternalConversations, nil
+}
+
+func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalConversation(
+	ctx context.Context, fbExternalConversationArgs *fbmessaging.FbExternalConversation,
+) (*fbmessaging.FbExternalConversation, error) {
+	fbExternalConversationID := fbExternalConversationArgs.ExternalID
+
+	oldFbExternalConversation, err := a.fbExternalConversationStore(ctx).ExternalID(fbExternalConversationID).GetFbExternalConversation()
+	if err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return nil, err
+	}
+
+	fbExternalConversation := new(fbmessaging.FbExternalConversation)
+	*fbExternalConversation = *fbExternalConversationArgs
+
+	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		if oldFbExternalConversation != nil {
+			// update fbExternalConversation
+			fbExternalConversation.ID = oldFbExternalConversation.ID
+			if err := a.fbExternalConversationStore(ctx).ExternalID(fbExternalConversationID).UpdateFbExternalConversation(fbExternalConversation); err != nil {
+				return err
+			}
+
+			event := &fbmessaging.FbExternalConversationsUpdatedEvent{
+				FbExternalConversations: []*fbmessaging.FbExternalConversation{fbExternalConversation},
+			}
+			if err := a.eventBus.Publish(ctx, event); err != nil {
+				return err
+			}
+		} else {
+			// create fbExternalConversation
+			if err := a.fbExternalConversationStore(ctx).CreateFbExternalConversation(fbExternalConversation); err != nil {
+				return err
+			}
+
+			event := &fbmessaging.FbExternalConversationsCreatedEvent{
+				FbExternalConversations: []*fbmessaging.FbExternalConversation{fbExternalConversation},
+			}
+			if err := a.eventBus.Publish(ctx, event); err != nil {
+				return err
+			}
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return fbExternalConversation, nil
 }
 
 func (a *FbExternalMessagingAggregate) CreateFbCustomerConversations(

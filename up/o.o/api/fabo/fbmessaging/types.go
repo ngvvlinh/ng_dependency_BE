@@ -131,17 +131,17 @@ type TargetDataSubAttachment struct {
 }
 
 type FbExternalConversation struct {
-	ID                   dot.ID
-	ExternalPageID       string
-	ExternalID           string
-	PSID                 string
-	ExternalUserID       string
-	ExternalUserName     string
-	ExternalLink         string
-	ExternalUpdatedTime  time.Time
-	ExternalMessageCount int
-	CreatedAt            time.Time `compare:"ignore"`
-	UpdatedAt            time.Time `compare:"ignore"`
+	ID                   dot.ID    `json:"id"`
+	ExternalPageID       string    `json:"external_page_id"`
+	ExternalID           string    `json:"external_id"`
+	PSID                 string    `json:"psid"`
+	ExternalUserID       string    `json:"external_user_id"`
+	ExternalUserName     string    `json:"external_user_name"`
+	ExternalLink         string    `json:"external_link"`
+	ExternalUpdatedTime  time.Time `json:"external_updated_time"`
+	ExternalMessageCount int       `json:"external_message_count"`
+	CreatedAt            time.Time `compare:"ignore" json:"created_at"`
+	UpdatedAt            time.Time `compare:"ignore" json:"updated_at"`
 }
 
 type FbExternalPosts []*FbExternalPost
@@ -238,5 +238,9 @@ type FbExternalCommentCreatedOrUpdatedEvent struct {
 }
 
 type FbExternalConversationsCreatedEvent struct {
+	FbExternalConversations []*FbExternalConversation
+}
+
+type FbExternalConversationsUpdatedEvent struct {
 	FbExternalConversations []*FbExternalConversation
 }

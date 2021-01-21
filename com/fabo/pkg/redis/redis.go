@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 
+	"o.o/api/fabo/fbmessaging"
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 	"o.o/backend/pkg/common/redis"
 	"o.o/common/l"
@@ -13,10 +14,11 @@ import (
 var ll = l.New()
 
 const (
-	PrefixPSID                 = "psid"
-	PrefixExternalConversation = "external_conversation"
-	PrefixProfilePSID          = "profile_psid"
-	PrefixLockCallAPI          = "lock_call_api"
+	PrefixPSID                  = "psid"
+	PrefixExternalConversation  = "external_conversation"
+	VersionExternalConversation = "v1.6"
+	PrefixProfilePSID           = "profile_psid"
+	PrefixLockCallAPI           = "lock_call_api"
 
 	page      = "page"
 	messenger = "messenger"
@@ -63,28 +65,43 @@ func (r *FaboRedis) GenerateProfilePSIDKey(externalPageID, PSID string) string {
 	return fmt.Sprintf("%s:%s:%s_%s", PrefixProfilePSID, r.version, externalPageID, PSID)
 }
 
-func (r *FaboRedis) LoadPSID(pageID, PSID string) (string, error) {
-	return r.redisStore.GetString(r.GeneratePSIDKey(pageID, PSID))
+func (r *FaboRedis) SaveExternalConversation(
+	externalPageID, externalUserID string,
+	fbExternalConversation fbmessaging.FbExternalConversation,
+) error {
+	key := r.GenerateExternalConversationKey(externalPageID, externalUserID)
+
+	return r.redisStore.Set(key, fbExternalConversation)
 }
 
-func (r *FaboRedis) SavePSID(pageID, PSID, externalUserID string) error {
-	return r.redisStore.SetString(r.GeneratePSIDKey(pageID, PSID), externalUserID)
+func (r *FaboRedis) LoadExternalConversation(externalPageID, externalUserID string) (*fbmessaging.FbExternalConversation, error) {
+	key := r.GenerateExternalConversationKey(externalPageID, externalUserID)
+
+	var fbExternalConversation fbmessaging.FbExternalConversation
+
+	err := r.redisStore.Get(key, &fbExternalConversation)
+	switch err {
+	case redis.ErrNil:
+		return nil, nil
+	case nil:
+		return &fbExternalConversation, nil
+	default:
+		return nil, err
+	}
 }
 
-func (r *FaboRedis) GeneratePSIDKey(externalPageID, psid string) string {
-	return fmt.Sprintf("%s:%s_%s", PrefixPSID, externalPageID, psid)
-}
+func (r *FaboRedis) ClearExternalConversations(externalPageIDs, externalUserIDs []string) error {
+	var keys []string
 
-func (r *FaboRedis) LoadExternalConversationID(externalPageID, externalUserID string) (string, error) {
-	return r.redisStore.GetString(r.GenerateExternalConversationKey(externalPageID, externalUserID))
-}
+	for idx, externalPageID := range externalPageIDs {
+		keys = append(keys, r.GenerateExternalConversationKey(externalPageID, externalUserIDs[idx]))
+	}
 
-func (r *FaboRedis) SaveExternalConversationID(externalPageID, externalUserID, externalConversationID string) error {
-	return r.redisStore.SetString(r.GenerateExternalConversationKey(externalPageID, externalUserID), externalConversationID)
+	return r.redisStore.Del(keys...)
 }
 
 func (r *FaboRedis) GenerateExternalConversationKey(externalPageID, externalUserID string) string {
-	return fmt.Sprintf("%s:%s_%s", PrefixExternalConversation, externalPageID, externalUserID)
+	return fmt.Sprintf("%s:%s:%s_%s", PrefixExternalConversation, VersionExternalConversation, externalPageID, externalUserID)
 }
 
 // in minutes

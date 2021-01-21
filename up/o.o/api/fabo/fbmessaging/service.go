@@ -16,13 +16,13 @@ import (
 // +gen:api
 
 type Aggregate interface {
-	CreateFbExternalMessages(context.Context, *CreateFbExternalMessagesArgs) ([]*FbExternalMessage, error)
+	CreateFbExternalMessagesFromSync(context.Context, *CreateFbExternalMessagesFromSyncArgs) ([]*FbExternalMessage, error)
 	CreateOrUpdateFbExternalMessages(context.Context, *CreateOrUpdateFbExternalMessagesArgs) ([]*FbExternalMessage, error)
 
 	CreateOrUpdateFbExternalComments(context.Context, *CreateOrUpdateFbExternalCommentsArgs) ([]*FbExternalComment, error)
 
 	CreateOrUpdateFbExternalConversations(context.Context, *CreateOrUpdateFbExternalConversationsArgs) ([]*FbExternalConversation, error)
-	CreateFbExternalConversations(context.Context, *CreateFbExternalConversationsArgs) ([]*FbExternalConversation, error)
+	CreateOrUpdateFbExternalConversation(context.Context, *FbExternalConversation) (*FbExternalConversation, error)
 	CreateFbCustomerConversations(context.Context, *CreateFbCustomerConversationsArgs) ([]*FbCustomerConversation, error)
 	CreateOrUpdateFbCustomerConversations(context.Context, *CreateOrUpdateFbCustomerConversationsArgs) ([]*FbCustomerConversation, error)
 	UpdateIsReadCustomerConversation(ctx context.Context, conversationCustomerID dot.ID, isRead bool) (int, error)
@@ -102,6 +102,10 @@ type CreateFbExternalMessagesArgs struct {
 
 type CreateOrUpdateFbExternalMessagesArgs struct {
 	FbExternalMessages []*CreateFbExternalMessageArgs
+}
+
+type CreateFbExternalMessagesFromSyncArgs struct {
+	FbExternalMessages []*FbExternalMessage
 }
 
 // +convert:create=FbExternalPost

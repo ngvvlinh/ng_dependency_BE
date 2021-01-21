@@ -147,7 +147,7 @@ func BuildWebhookHandler(
 	fbClient *fbclient.FbClient,
 	identityQuery identity.QueryBus,
 	shopSetting setting.QueryBus,
-	wh *webhook.Webhook,
+	wh *webhook.WebhookHandler,
 ) (*handler.Handler, error) {
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
@@ -192,12 +192,6 @@ func BuildOneSignal(cfg cc.OnesignalConfig) (*notifier.Notifier, error) {
 		ll.Fatal("Onesignal: No apikey")
 	}
 	return nil, nil
-}
-
-func BuildProducer(
-	ctx context.Context, cfg config.Config,
-) (*mq.KafkaProducer, error) {
-	return mq.NewKafkaProducer(ctx, cfg.Kafka.Brokers)
 }
 
 func BuildHandlers(

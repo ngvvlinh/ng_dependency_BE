@@ -1,17 +1,23 @@
 package webhook
 
 import (
+	"fmt"
 	"strings"
 
 	fbclientmodel "o.o/backend/com/fabo/pkg/fbclient/model"
 )
 
 type WebhookMessageType string
+type MessageAttachmentType string
 
 const (
 	WebhookFeed           WebhookMessageType = "feed"
 	WebhookMessage        WebhookMessageType = "message"
 	WebhookInvalidMessage WebhookMessageType = "invalid"
+
+	MessageAttachmentImage    MessageAttachmentType = "image"
+	MessageAttachmentFallback MessageAttachmentType = "fallback"
+	MessageAttachmentVideo    MessageAttachmentType = "video"
 
 	FeedComment  = "comment"
 	FeedEvent    = "event"
@@ -20,6 +26,8 @@ const (
 	FeedStatus   = "status"
 
 	EventPermalinkPrefix = "https://www.facebook.com/events/"
+
+	separator = "-"
 )
 
 // Model for Message
@@ -41,6 +49,59 @@ func (msg *WebhookMessages) MessageType() WebhookMessageType {
 		}
 	}
 	return WebhookInvalidMessage
+}
+
+func (msg *WebhookMessages) GetKey() string {
+
+	switch msg.MessageType() {
+	case WebhookMessage:
+		key := msg.Object
+		if len(msg.Entry) == 0 {
+			return key
+		}
+		entry := msg.Entry[0]
+		key += separator + entry.ID
+
+		if len(entry.Messaging) == 0 {
+			return key
+		}
+
+		messaging := entry.Messaging[0]
+		if messaging.Recipient != nil && messaging.Recipient.ID != entry.ID{
+			key += separator + messaging.Recipient.ID
+		}
+
+		if messaging.Sender != nil && messaging.Sender.ID != entry.ID {
+			key += separator + messaging.Sender.ID
+		}
+
+		return key
+	case WebhookFeed:
+		key := msg.Object
+		if len(msg.Entry) == 0 {
+			return key
+		}
+		entry := msg.Entry[0]
+		key += separator + entry.ID
+
+		if len(entry.Changes) == 0 {
+			return key
+		}
+
+		feedChange := entry.Changes[0]
+		key += separator + feedChange.Field
+		changeValue := feedChange.Value
+
+		key += separator + changeValue.PostID
+
+		if changeValue.CommentID == "" {
+			return key
+		}
+
+		return separator + changeValue.From.ID
+	default:
+		return ""
+	}
 }
 
 func (msg *WebhookMessages) IsCreateOrEditCommentFromPageOwner() bool {
@@ -101,15 +162,128 @@ type Recipient struct {
 type Message struct {
 	Mid         string               `json:"mid"`
 	Text        string               `json:"text"`
-	StickerID   string               `json:"sticher_id"`
+	StickerID   string               `json:"sticker_id"`
 	Attachments []*MessageAttachment `json:"attachments"`
 }
 
+func (m *Message) ConvertToMessageData(fromID, toID string, createdTime fbclientmodel.FacebookTime) *fbclientmodel.MessageData {
+	if m == nil {
+		return nil
+	}
+
+	var (
+		shares      []*fbclientmodel.MessageDataShare
+		attachments []*fbclientmodel.MessageDataAttachment
+		sticker     string
+	)
+
+	for _, attachment := range m.Attachments {
+		attachmentPayload := attachment.Payload
+		if attachmentPayload == nil {
+			continue
+		}
+
+		// type == 'image'
+		if attachment.Type == string(MessageAttachmentImage) {
+			// message is a sticker
+			if attachmentPayload.StickerID != 0 {
+				shares = append(shares, &fbclientmodel.MessageDataShare{
+					ID:   fmt.Sprintf("%d", attachmentPayload.StickerID),
+					Link: attachmentPayload.Url,
+				})
+				sticker = attachmentPayload.Url
+				continue
+			}
+
+			attachments = append(attachments, &fbclientmodel.MessageDataAttachment{
+				ImageData: &fbclientmodel.MessageDataAttachmentImage{
+					URL:        attachmentPayload.Url,
+					PreviewURL: attachmentPayload.Url,
+				},
+			})
+
+		}
+
+		// type == 'fallback'
+		// message is fallback (a post is shared or link is sent into messenger)
+		if attachment.Type == string(MessageAttachmentFallback) {
+			shares = append(shares, &fbclientmodel.MessageDataShare{
+				ID:   m.Mid,
+				Link: attachmentPayload.Url,
+				Name: attachmentPayload.Title,
+			})
+		}
+
+		// type == 'video'
+		if attachment.Type == string(MessageAttachmentVideo) {
+			attachments = append(attachments, &fbclientmodel.MessageDataAttachment{
+				VideoData: &fbclientmodel.MessageDataAttachmentVideoData{
+					URL:        attachmentPayload.Url,
+					PreviewURL: attachmentPayload.Url,
+				},
+			})
+		}
+	}
+
+	// handle case when user send link or share a post into messenger
+	{
+		var strs []string
+		if m.Text != "" {
+			strs = append(strs, m.Text)
+		}
+		// Get first share
+		if len(shares) > 0 {
+			if shares[0].Description != "" {
+				strs = append(strs, shares[0].Description)
+			}
+			if shares[0].Link != "" {
+				strs = append(strs, shares[0].Link)
+			} else {
+				strs = append(strs, shares[0].Name)
+			}
+		}
+		m.Text = strings.Join(strs, "\n")
+	}
+
+	messageData := &fbclientmodel.MessageData{
+		ID:          m.Mid,
+		CreatedTime: &createdTime,
+		Message:     m.Text,
+		To: &fbclientmodel.ObjectsTo{
+			Data: []*fbclientmodel.ObjectTo{
+				{
+					ID: toID,
+				},
+			},
+		},
+		From: &fbclientmodel.ObjectFrom{
+			ID: fromID,
+		},
+	}
+	if len(shares) != 0 {
+		messageData.Shares = &fbclientmodel.MessageDataShares{
+			Data: shares,
+		}
+	}
+	if len(attachments) != 0 {
+		messageData.Attachments = &fbclientmodel.MessageDataAttachments{
+			Data: attachments,
+		}
+	}
+	messageData.Sticker = sticker
+
+	return messageData
+}
+
 type MessageAttachment struct {
-	Title   string                 `json:"title"`
-	Url     string                 `json:"url"`
-	Type    string                 `json:"type"`
-	Payload map[string]interface{} `json:"payload"`
+	Type    string                    `json:"type"`
+	Payload *MessageAttachmentPayload `json:"payload"`
+}
+
+type MessageAttachmentPayload struct {
+	Title     string `json:"title"`
+	Url       string `json:"url"`
+	StickerID int64  `json:"sticker_id"`
 }
 
 type FeedEntry struct {

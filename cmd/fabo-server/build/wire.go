@@ -24,7 +24,7 @@ import (
 	fabopublisher "o.o/backend/com/eventhandler/fabo/publisher"
 	"o.o/backend/com/eventhandler/handler"
 	"o.o/backend/com/eventhandler/notifier"
-	comfabo "o.o/backend/com/fabo"
+	comfabo "o.o/backend/com/fabo/cogs/_publisher"
 	"o.o/backend/com/fabo/main/fbcustomerconversationsearch"
 	"o.o/backend/com/fabo/main/fbmessagetemplate"
 	"o.o/backend/com/fabo/main/fbmessaging"

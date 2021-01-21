@@ -501,7 +501,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:  session,
 		FBClient: fbClient,
 	}
-	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB)
+	faboRedis := redis2.NewFaboRedis(store)
+	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB, faboRedis)
 	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
 	fbmessagingCommandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
@@ -587,7 +588,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	v2Webhook := v2.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	ghnWebhookServer := v2_2.NewGHNWebhookServer(webhookConfig, shipmentManager, queryBus, shippingCommandBus, v2Webhook)
 	configWebhookConfig := cfg.Webhook
-	faboRedis := redis2.NewFaboRedis(store)
 	kafkaProducer, err := BuildPgProducer(ctx, cfg)
 	if err != nil {
 		cleanup5()
@@ -598,7 +598,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		return Output{}, nil, err
 	}
 	kafka := cfg.Kafka
-	webhookWebhook := webhook.New(mainDB, logDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, kafkaProducer, kafka)
+	webhookWebhook := webhook.New(logDB, store, configWebhookConfig, faboRedis, kafkaProducer, kafka)
 	fbWebhookServer := BuildWebhookServer(configWebhookConfig, webhookWebhook)
 	v3 := BuildServers(mainServer, ghnWebhookServer, fbWebhookServer)
 	handlerHandler := handler.New(consumer, kafka)

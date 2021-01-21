@@ -79,7 +79,8 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	queryBus := query.CustomerQueryMessageBus(customerQuery)
 	fbUserQuery := fbuser.NewFbUserQuery(mainDB, queryBus)
 	fbuseringQueryBus := fbuser.FbUserQueryMessageBus(fbUserQuery)
-	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB)
+	faboRedis := redis2.NewFaboRedis(store)
+	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB, faboRedis)
 	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	fbPageUtil := fbpage.NewFbPageUtil(store)
 	fbPageQuery := fbpage.NewFbPageQuery(mainDB, fbPageUtil)
@@ -144,21 +145,10 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	shopSettingUtil := util.NewShopSettingUtil(store)
 	shopSettingQuery := query5.NewShopSettingQuery(mainDB, shopSettingUtil)
 	settingQueryBus := query5.ShopSettingQueryMessageBus(shopSettingQuery)
-	logDB, err := com.BuildDatabaseLogs(databases)
-	if err != nil {
-		return Output{}, nil, err
-	}
-	webhookConfig := cfg.Webhook
-	faboRedis := redis2.NewFaboRedis(store)
 	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
 	fbmessagingCommandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
-	kafkaProducer, err := BuildProducer(ctx, cfg)
-	if err != nil {
-		return Output{}, nil, err
-	}
-	kafka := cfg.Kafka
-	webhookWebhook := webhook.New(mainDB, logDB, store, webhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, kafkaProducer, kafka)
-	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, fbuseringQueryBus, fbmessagingQueryBus, fbpagingQueryBus, orderingQueryBus, shippingQueryBus, fbClient, identityQueryBus, settingQueryBus, webhookWebhook)
+	webhookHandler := webhook.NewWebhookHandler(mainDB, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
+	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, fbuseringQueryBus, fbmessagingQueryBus, fbpagingQueryBus, orderingQueryBus, shippingQueryBus, fbClient, identityQueryBus, settingQueryBus, webhookHandler)
 	if err != nil {
 		return Output{}, nil, err
 	}

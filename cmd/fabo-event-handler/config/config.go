@@ -1,7 +1,6 @@
 package config
 
 import (
-	"o.o/backend/cmd/fabo-server/config"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	cc "o.o/backend/pkg/common/config"
 )
@@ -19,7 +18,6 @@ type Config struct {
 		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
 	FacebookApp fbclient.AppConfig   `yaml:"facebook_app"`
-	Webhook     config.WebhookConfig `yaml:"webhook"`
 }
 
 func Default() Config {
@@ -28,7 +26,6 @@ func Default() Config {
 		Databases: map[string]*cc.Postgres{
 			"postgres":          cc.PtrDefaultPostgres(),
 			"postgres_webhook":  cc.PtrDefaultPostgres(),
-			"postgres_logs":  cc.PtrDefaultPostgres(),
 			"postgres_notifier": cc.PtrDefaultPostgres(),
 		},
 		Redis: cc.DefaultRedis(),
@@ -54,7 +51,6 @@ func Load() (cfg Config, err error) {
 	}
 	cc.PostgresMustLoadEnv(cfg.Databases["postgres"])
 	cc.PostgresMustLoadEnv(cfg.Databases["postgres_webhook"], "ET_POSTGRES_WEBHOOK")
-	cc.PostgresMustLoadEnv(cfg.Databases["postgres_logs"], "ET_POSTGRES_LOGS")
 	cc.PostgresMustLoadEnv(cfg.Databases["postgres_notifier"], "ET_POSTGRES_NOTIFIER")
 	cc.RedisMustLoadEnv(&cfg.Redis)
 	cfg.TelegramBot.MustLoadEnv()

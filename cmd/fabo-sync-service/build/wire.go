@@ -9,7 +9,7 @@ import (
 
 	"o.o/backend/cmd/fabo-sync-service/config"
 	_base "o.o/backend/cogs/base"
-	"o.o/backend/com/fabo"
+	fabo_min"o.o/backend/com/fabo/cogs/_min"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
@@ -33,7 +33,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		fbuser.WireSet,
 		fbmessaging.WireSet,
 		fbpage.WireSet,
-		fabo.WireSet,
+		fabo_min.WireSet,
 		customering.WireSet,
 
 		com.BuildDatabaseMain,

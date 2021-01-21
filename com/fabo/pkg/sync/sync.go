@@ -362,7 +362,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 
 	var messagesData []*model.MessageData
 	mapPSIDAndProfile := make(map[string]*model.Profile)
-	var fbExternalMessagesArgs []*fbmessaging.CreateFbExternalMessageArgs
+	var newFbExternalMessages []*fbmessaging.FbExternalMessage
 	for _, fbMessage := range fbMessagesResp.Messages.MessagesData {
 		if time.Now().Sub(fbMessage.CreatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
 			isFinished = true
@@ -433,26 +433,6 @@ func (s *Synchronizer) handleTaskGetMessages(
 			}
 		}
 
-		// Try get old message (if it create by our api or webhook),
-		// if already exists do not change value of field `InternalSource`
-		// otherwise set is default to `fb_internal_source.Facebook`
-		messageQuery := &fbmessaging.GetFbExternalMessageByExternalIDQuery{
-			ExternalID: messageData.ID,
-		}
-		if err := s.fbMessagingQuery.Dispatch(ctx, messageQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
-			return err
-		}
-		oldFbExternalMessage := messageQuery.Result
-		internalSource := fb_internal_source.Facebook
-		var createdBy dot.ID
-		// timestamp in API * 1000 = timestamp in webhook
-		externalTimestamp := int64(*messageData.CreatedTime) * 1000
-		if oldFbExternalMessage != nil {
-			internalSource = oldFbExternalMessage.InternalSource
-			createdBy = oldFbExternalMessage.CreatedBy
-			externalTimestamp = oldFbExternalMessage.ExternalTimestamp
-		}
-
 		currentMessage := messageData.Message
 		{
 			var strs []string
@@ -473,7 +453,7 @@ func (s *Synchronizer) handleTaskGetMessages(
 			currentMessage = strings.Join(strs, "\n")
 		}
 
-		fbExternalMessagesArgs = append(fbExternalMessagesArgs, &fbmessaging.CreateFbExternalMessageArgs{
+		newFbExternalMessages = append(newFbExternalMessages, &fbmessaging.FbExternalMessage{
 			ID:                     cm.NewID(),
 			ExternalConversationID: externalConversationID,
 			ExternalPageID:         externalPageID,
@@ -485,15 +465,14 @@ func (s *Synchronizer) handleTaskGetMessages(
 			ExternalAttachments:    externalAttachments,
 			ExternalMessageShares:  externalShares,
 			ExternalCreatedTime:    messageData.CreatedTime.ToTime(),
-			ExternalTimestamp:      externalTimestamp,
-			InternalSource:         internalSource,
-			CreatedBy:              createdBy,
+			ExternalTimestamp:      int64(*messageData.CreatedTime) * 1000,
+			InternalSource:         fb_internal_source.Facebook,
 		})
 	}
 
-	if len(fbExternalMessagesArgs) > 0 {
-		if err := s.fbMessagingAggr.Dispatch(ctx, &fbmessaging.CreateOrUpdateFbExternalMessagesCommand{
-			FbExternalMessages: fbExternalMessagesArgs,
+	if len(newFbExternalMessages) > 0 {
+		if err := s.fbMessagingAggr.Dispatch(ctx, &fbmessaging.CreateFbExternalMessagesFromSyncCommand{
+			FbExternalMessages: newFbExternalMessages,
 		}); err != nil {
 			return err
 		}

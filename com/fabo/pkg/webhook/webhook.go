@@ -2,10 +2,8 @@ package webhook
 
 import (
 	"fmt"
+	"hash/fnv"
 	"io/ioutil"
-	cc "o.o/backend/pkg/common/config"
-	"o.o/backend/pkg/common/mq"
-	"o.o/common/jsonx"
 	"sync"
 	"time"
 
@@ -17,9 +15,12 @@ import (
 	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/etop/api/sadmin"
+	"o.o/common/jsonx"
 	"o.o/common/l"
 )
 
@@ -27,16 +28,40 @@ const oneHour = 1 * time.Hour
 
 var ll = l.New().WithChannel("webhook")
 
+type WebhookHandler struct {
+	db               com.MainDB
+	faboRedis        *faboredis.FaboRedis
+	fbClient         *fbclient.FbClient
+	fbmessagingQuery fbmessaging.QueryBus
+	fbmessagingAggr  fbmessaging.CommandBus
+	fbPageQuery      fbpaging.QueryBus
+}
+
+func NewWebhookHandler(
+	db com.MainDB,
+	faboRedis *faboredis.FaboRedis,
+	fbClient *fbclient.FbClient,
+	fbmessagingQuery fbmessaging.QueryBus,
+	fbmessagingAggregate fbmessaging.CommandBus,
+	fbPageQuery fbpaging.QueryBus,
+) *WebhookHandler {
+	wh := &WebhookHandler{
+		db:               db,
+		faboRedis:        faboRedis,
+		fbClient:         fbClient,
+		fbmessagingQuery: fbmessagingQuery,
+		fbmessagingAggr:  fbmessagingAggregate,
+		fbPageQuery:      fbPageQuery,
+	}
+	return wh
+}
+
 type Webhook struct {
-	db                     *cmsql.Database
+	//db                     *cmsql.Database
 	dbLog                  *cmsql.Database
 	webhookCallbackService *sadmin.WebhookCallbackService
 	verifyToken            string
 	faboRedis              *faboredis.FaboRedis
-	fbClient               *fbclient.FbClient
-	fbmessagingQuery       fbmessaging.QueryBus
-	fbmessagingAggr        fbmessaging.CommandBus
-	fbPageQuery            fbpaging.QueryBus
 	producer               *mq.KafkaProducer
 	prefix                 string
 
@@ -45,28 +70,18 @@ type Webhook struct {
 }
 
 func New(
-	db com.MainDB,
 	dbLog com.LogDB,
 	rd redis.Store,
 	cfg config.WebhookConfig,
 	faboRedis *faboredis.FaboRedis,
-	fbClient *fbclient.FbClient,
-	fbmessagingQuery fbmessaging.QueryBus,
-	fbmessagingAggregate fbmessaging.CommandBus,
-	fbPageQuery fbpaging.QueryBus,
 	producer *mq.KafkaProducer,
 	kafka cc.Kafka,
 ) *Webhook {
 	wh := &Webhook{
-		db:                     db,
 		dbLog:                  dbLog,
 		webhookCallbackService: sadmin.NewWebhookCallbackService(rd),
 		verifyToken:            cfg.VerifyToken,
 		faboRedis:              faboRedis,
-		fbClient:               fbClient,
-		fbmessagingQuery:       fbmessagingQuery,
-		fbmessagingAggr:        fbmessagingAggregate,
-		fbPageQuery:            fbPageQuery,
 		producer:               producer,
 		prefix:                 kafka.TopicPrefix + "_pgrid_",
 
@@ -134,11 +149,11 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	switch webhookMessages.MessageType() {
 	case WebhookMessage:
 		topic := wh.prefix + "facebook_webhook_message"
-		wh.produceMessage(topic, body)
+		wh.produceMessage(topic, webhookMessages.GetKey(), 64, body)
 		return nil
 	case WebhookFeed:
 		topic := wh.prefix + "facebook_webhook_feed"
-		wh.produceMessage(topic, body)
+		wh.produceMessage(topic, webhookMessages.GetKey(), 64, body)
 		return nil
 	case WebhookInvalidMessage:
 		return nil
@@ -147,10 +162,13 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	}
 }
 
-func (wh *Webhook) produceMessage(topic string, webhookMessages []byte) {
-	id := cm.NewID()
-	partition := id % 64
-	wh.producer.Send(topic, int(partition), id.String(), webhookMessages)
+func (wh *Webhook) produceMessage(topic, key string, partitions int, webhookMessages []byte) {
+	partition := hash(key, partitions)
+	wh.producer.Send(topic, int(partition), key, webhookMessages)
 }
 
-
+func hash(s string, modular int) int {
+	algorithm := fnv.New32()
+	algorithm.Write([]byte(s))
+	return int(algorithm.Sum32()) % modular
+}

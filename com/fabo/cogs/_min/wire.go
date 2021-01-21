@@ -1,6 +1,6 @@
 // +build wireinject
 
-package fabo
+package _all
 
 import (
 	"github.com/google/wire"
@@ -12,7 +12,6 @@ import (
 )
 
 var WireSet = wire.NewSet(
-	webhook.New,
 	fbclient.New,
 	redis.NewFaboRedis,
 	sync.New,

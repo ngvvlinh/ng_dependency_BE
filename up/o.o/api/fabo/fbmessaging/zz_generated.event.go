@@ -6,4 +6,5 @@ package fbmessaging
 
 func (e *FbExternalCommentCreatedOrUpdatedEvent) GetTopic() string { return "event/fbmessaging" }
 func (e *FbExternalConversationsCreatedEvent) GetTopic() string    { return "event/fbmessaging" }
+func (e *FbExternalConversationsUpdatedEvent) GetTopic() string    { return "event/fbmessaging" }
 func (e *FbExternalMessagesCreatedEvent) GetTopic() string         { return "event/fbmessaging" }

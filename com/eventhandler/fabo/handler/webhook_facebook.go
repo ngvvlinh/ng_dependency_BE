@@ -48,10 +48,10 @@ func WrapMapHandlers(handlers map[string]HandlerFunc) map[string]mq.EventHandler
 
 
 type WebhookFacebookHandler struct {
-	wh *webhook.Webhook
+	wh *webhook.WebhookHandler
 }
 
-func NewWebhookFacebookHandler(wh *webhook.Webhook) *WebhookFacebookHandler {
+func NewWebhookFacebookHandler(wh *webhook.WebhookHandler) *WebhookFacebookHandler {
 	h := &WebhookFacebookHandler{
 		wh: wh,
 	}
