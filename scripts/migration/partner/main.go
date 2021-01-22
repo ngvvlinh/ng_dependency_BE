@@ -34,11 +34,11 @@ var (
 
 func main() {
 	cfg := cc.DefaultPostgres()
-	cfg.Host = "103.143.142.225"
-	cfg.Port = 16435
-	cfg.Username = "etop"
-	cfg.Password = "Kng9vczxDfFTLJQp"
-	cfg.Database = "etopv1"
+	cfg.Host = "localhost"
+	cfg.Port = 5432
+	cfg.Username = "postgres"
+	cfg.Password = "postgres"
+	cfg.Database = "etopv1.12"
 
 	var err error
 	db, err = cmsql.Connect(cfg)
