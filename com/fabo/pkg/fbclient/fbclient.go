@@ -457,7 +457,7 @@ func (f *FbClient) CallAPICommentByID(req *GetCommentByIDRequest) (*model.Commen
 func (f *FbClient) CallAPIListLiveVideos(req *ListLiveVideosRequest) (*model.LiveVideosResponse, error) {
 	params := &ListLiveVideosParams{
 		AccessToken: req.AccessToken,
-		Fields:      "live_videos.limit(20){creation_time,video{id,picture,source},stream_url,id,comments.filter(stream).summary(total_count).limit(20){from{id,name,email,first_name,last_name,picture},created_time,id,message,attachment},permalink_url,from,embed_html,status}",
+		Fields:      "live_videos.limit(20){creation_time,title,description,video{id,picture,source},stream_url,id,comments.filter(stream).summary(total_count).limit(20){from{id,name,email,first_name,last_name,picture},created_time,id,message,attachment},permalink_url,from,embed_html,status}",
 		DateFormat:  UnixDateFormat,
 	}
 	path := "/me"

@@ -39,6 +39,8 @@ func (s *DemoService) ListLiveVideos(
 		for _, videoData := range videosData {
 			liveVideoUser := &fabo.LiveVideoUser{
 				ID:           videoData.ID,
+				Title:        videoData.Title,
+				Description:  videoData.Description,
 				PermalinkURL: videoData.PermalinkURL,
 				EmbedHTML:    videoData.EmbedHTML,
 				CreatedTime:  videoData.CreationTime.ToTime(),

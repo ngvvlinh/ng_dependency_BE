@@ -856,6 +856,8 @@ func (r *ListLiveVideosResponse) String() string { return jsonx.MustMarshalToStr
 
 type LiveVideoUser struct {
 	ID           string              `json:"id"`
+	Title        string              `json:"title"`
+	Description  string              `json:"description"`
 	Video        *LiveVideoVideo     `json:"video"`
 	PermalinkURL string              `json:"permalink_url"`
 	EmbedHTML    string              `json:"embed_html"`

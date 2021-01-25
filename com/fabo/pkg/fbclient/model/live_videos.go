@@ -10,6 +10,8 @@ type LiveVideos struct {
 
 type LiveVideo struct {
 	ID           string             `json:"id"`
+	Title        string             `json:"title"`
+	Description  string             `json:"description"`
 	Video        *LiveVideoVideo    `json:"video"`
 	PermalinkURL string             `json:"permalink_url"`
 	From         *ObjectFrom        `json:"from"`
