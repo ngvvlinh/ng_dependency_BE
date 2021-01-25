@@ -44,11 +44,13 @@ func (s *DemoService) ListLiveVideos(
 				PermalinkURL: videoData.PermalinkURL,
 				EmbedHTML:    videoData.EmbedHTML,
 				CreatedTime:  videoData.CreationTime.ToTime(),
-				From: &fabo.FbObjectFrom{
+			}
+			if videoData.From != nil {
+				liveVideoUser.From = &fabo.FbObjectFrom{
 					ID:    videoData.From.ID,
 					Name:  videoData.From.Name,
 					Email: videoData.From.Email,
-				},
+				}
 			}
 
 			if videoData.Comments != nil {
@@ -101,11 +103,7 @@ func (s *DemoService) ListFeeds(
 			feed := &fabo.PostWithComments{
 				Post: fabo.Post{
 					ID: feedData.ID,
-					From: &fabo.FbObjectFrom{
-						ID:    feedData.From.ID,
-						Name:  feedData.From.Name,
-						Email: feedData.From.Email,
-					},
+
 					FullPicture:  feedData.FullPicture,
 					Icon:         feedData.Icon,
 					IsExpired:    feedData.IsExpired,
@@ -120,6 +118,14 @@ func (s *DemoService) ListFeeds(
 					CreatedTime:  feedData.CreatedTime.ToTime(),
 					UpdatedTime:  feedData.UpdatedTime.ToTime(),
 				},
+			}
+
+			if feedData.From != nil {
+				feed.Post.From = &fabo.FbObjectFrom{
+					ID:    feedData.From.ID,
+					Name:  feedData.From.Name,
+					Email: feedData.From.Email,
+				}
 			}
 
 			if feedData.Attachments != nil {
