@@ -186,7 +186,7 @@ func (s *ConnectionService) UpdateShopConnection(ctx context.Context, r *types.U
 	}
 
 	identifier := cm.Coalesce(r.ExternalData.Email, r.ExternalData.Identifier)
-	cmd := &connectioning.UpdateShopConnectionCommand{
+	cmd := &connectioning.CreateOrUpdateShopConnectionCommand{
 		ShopID:       s.SS.Shop().ID,
 		ConnectionID: r.ConnectionID,
 		Token:        r.Token,

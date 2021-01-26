@@ -2201,6 +2201,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "description": {
+          "type": "string"
+        },
         "embed_html": {
           "type": "string"
         },
@@ -2211,6 +2214,9 @@
           "type": "string"
         },
         "permalink_url": {
+          "type": "string"
+        },
+        "title": {
           "type": "string"
         },
         "video": {
