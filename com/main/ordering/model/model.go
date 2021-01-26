@@ -229,6 +229,7 @@ func (m *Order) GetChargeableWeight() int {
 type OrderShipping struct {
 	ShopAddress         *OrderAddress                      `json:"shop_address"`
 	ReturnAddress       *OrderAddress                      `json:"return_address"`
+	ShippingAddress *OrderAddress `json:"shipping_address"`
 	ExternalServiceID   string                             `json:"external_service_id"`
 	ExternalShippingFee int                                `json:"external_shipping_fee"`
 	ExternalServiceName string                             `json:"external_service_name"`
@@ -256,6 +257,20 @@ func (s *OrderShipping) GetPickupAddress() *OrderAddress {
 		return nil
 	}
 	return s.ShopAddress
+}
+
+func (s *OrderShipping) GetReturnAddress() *OrderAddress {
+	if s == nil {
+		return nil
+	}
+	return s.ReturnAddress
+}
+
+func (s *OrderShipping) GetShippingAddress() *OrderAddress {
+	if s == nil {
+		return nil
+	}
+	return s.ShippingAddress
 }
 
 func (s *OrderShipping) GetShippingProvider() shipping_provider.ShippingProvider {

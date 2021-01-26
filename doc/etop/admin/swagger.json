@@ -6529,6 +6529,9 @@
             }
           ]
         },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
         "shipping_note": {
           "type": "string"
         },

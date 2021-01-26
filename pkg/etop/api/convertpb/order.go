@@ -225,6 +225,8 @@ func PbOrderShipping(m *ordermodel.Order) *types.OrderShipping {
 		XServiceName: item.ExternalServiceName,
 
 		PickupAddress:       PbOrderAddress(item.GetPickupAddress()),
+		ReturnAddress:       PbOrderAddress(item.GetReturnAddress()),
+		ShippingAddress:     PbOrderAddress(item.GetShippingAddress()),
 		ShippingServiceName: item.ExternalServiceName,
 		ShippingServiceCode: item.GetShippingServiceCode(),
 		ShippingServiceFee:  item.ExternalShippingFee,
@@ -449,7 +451,10 @@ func OrderShippingToModel(ctx context.Context, m *types.OrderShipping, mo *order
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ trả hàng không hợp lệ: %v", err)
 	}
-
+	modelShippingAddress, err := OrderAddressToModel(m.ShippingAddress)
+	if err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
+	}
 	carrier := m.ShippingProvider
 	if m.Carrier != 0 {
 		carrier = m.Carrier
@@ -475,6 +480,7 @@ func OrderShippingToModel(ctx context.Context, m *types.OrderShipping, mo *order
 	orderShipping := &ordermodel.OrderShipping{
 		ShopAddress:         modelPickupAddress,
 		ReturnAddress:       modelReturnAddress,
+		ShippingAddress:     modelShippingAddress,
 		ExternalServiceID:   shippingServiceCode,
 		ExternalShippingFee: cm.CoalesceInt(m.ShippingServiceFee, m.XShippingFee),
 		ExternalServiceName: m.ShippingServiceName,

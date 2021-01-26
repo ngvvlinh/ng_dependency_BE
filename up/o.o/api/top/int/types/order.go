@@ -312,6 +312,7 @@ type OrderShipping struct {
 	XServiceName        string        `json:"x_service_name"`
 	PickupAddress       *OrderAddress `json:"pickup_address"`
 	ReturnAddress       *OrderAddress `json:"return_address"`
+	ShippingAddress *OrderAddress `json:"shipping_address"`
 	ShippingServiceName string        `json:"shipping_service_name"`
 	ShippingServiceCode string        `json:"shipping_service_code"`
 	ShippingServiceFee  int           `json:"shipping_service_fee"`

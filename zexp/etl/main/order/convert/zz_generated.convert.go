@@ -804,6 +804,7 @@ func Convert_ordermodel_OrderShipping_orderingmodel_OrderShipping(arg *ordermode
 func convert_ordermodel_OrderShipping_orderingmodel_OrderShipping(arg *ordermodel.OrderShipping, out *orderingmodel.OrderShipping) {
 	out.ShopAddress = Convert_ordermodel_OrderAddress_orderingmodel_OrderAddress(arg.ShopAddress, nil)
 	out.ReturnAddress = Convert_ordermodel_OrderAddress_orderingmodel_OrderAddress(arg.ReturnAddress, nil)
+	out.ShippingAddress = nil                         // zero value
 	out.ExternalServiceID = arg.ExternalServiceID     // simple assign
 	out.ExternalShippingFee = arg.ExternalShippingFee // simple assign
 	out.ExternalServiceName = arg.ExternalServiceName // simple assign
