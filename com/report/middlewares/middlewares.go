@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"net/http"
+	"strings"
 
 	"o.o/backend/pkg/etop/authorize/auth"
 	"o.o/backend/pkg/etop/authorize/permission"
@@ -17,6 +18,12 @@ func Authorization(_ss session.Session) func(http.HandlerFunc) http.HandlerFunc 
 			ctx := r.Context()
 			ss := _ss
 			perms := permission.Decl{Type: permission.Shop}
+
+			header := r.Header
+			if values, ok := header["Authorization"]; ok && len(values) > 0{
+				authorization := values[0]
+				tokenStr = strings.TrimPrefix( authorization, "Bearer ")
+			}
 
 			cookies := r.Cookies()
 			for _, cookie := range cookies {

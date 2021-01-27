@@ -1092,7 +1092,8 @@ func (s *UserService) SwitchAccount(ctx context.Context, r *api.SwitchAccountReq
 	if resp.Account == nil {
 		return nil, cm.Error(cm.PermissionDenied, "Tài khoản không hợp lệ.", nil)
 	}
-
+	resp.Account.AccessToken = resp.AccessToken
+	
 	// set cookie for ecomify
 	setCookieForEcomify(ctx, resp.Account)
 	return resp, err
