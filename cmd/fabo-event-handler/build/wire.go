@@ -9,6 +9,7 @@ import (
 
 	"o.o/backend/cmd/fabo-event-handler/config"
 	_base "o.o/backend/cogs/base"
+	database_min "o.o/backend/cogs/database/_min"
 	shipment_fabo "o.o/backend/cogs/shipment/_fabo"
 	handlerapi "o.o/backend/com/eventhandler/handler/api"
 	"o.o/backend/com/eventhandler/webhook/sender"
@@ -17,7 +18,6 @@ import (
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
-	com "o.o/backend/com/main"
 	"o.o/backend/com/main/connectioning"
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/location"
@@ -36,9 +36,12 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 			"Databases",
 			"OneSignal",
 			"FacebookApp",
+			"Webhook",
+			"kafka",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
+		database_min.WireSet,
 		handlerapi.WireSet,
 		sender.WireSet,
 		storage.WireSet,
@@ -55,12 +58,10 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 		comfabo.WireSet,
 		setting.WireSet,
 
+		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
 
-		com.BuildDatabaseWebhook,
-		com.BuildDatabaseMain,
-		com.BuildDatabaseNotifier,
-
+		BuildProducer,
 		BuildPgEventService,
 		BuildIntHandler,
 		BuildWebhookHandler,

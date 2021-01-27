@@ -155,6 +155,7 @@ func Build(
 		wire.Value(accountshipnow.QueryBus{}),
 		wire.Value(credit.QueryBus{}),
 
+		BuildPgProducer,
 		BuildIntHandlers,
 		BuildMainServer,
 		BuildWebhookServer,

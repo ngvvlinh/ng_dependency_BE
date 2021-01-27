@@ -2,6 +2,10 @@ package webhook
 
 import (
 	"fmt"
+	"io/ioutil"
+	cc "o.o/backend/pkg/common/config"
+	"o.o/backend/pkg/common/mq"
+	"o.o/common/jsonx"
 	"sync"
 	"time"
 
@@ -33,6 +37,8 @@ type Webhook struct {
 	fbmessagingQuery       fbmessaging.QueryBus
 	fbmessagingAggr        fbmessaging.CommandBus
 	fbPageQuery            fbpaging.QueryBus
+	producer               *mq.KafkaProducer
+	prefix                 string
 
 	mu                               sync.RWMutex
 	mapCallbackURLAndLatestTimeError map[string]time.Time
@@ -48,6 +54,8 @@ func New(
 	fbmessagingQuery fbmessaging.QueryBus,
 	fbmessagingAggregate fbmessaging.CommandBus,
 	fbPageQuery fbpaging.QueryBus,
+	producer *mq.KafkaProducer,
+	kafka cc.Kafka,
 ) *Webhook {
 	wh := &Webhook{
 		db:                     db,
@@ -59,6 +67,8 @@ func New(
 		fbmessagingQuery:       fbmessagingQuery,
 		fbmessagingAggr:        fbmessagingAggregate,
 		fbPageQuery:            fbPageQuery,
+		producer:               producer,
+		prefix:                 kafka.TopicPrefix + "_pgrid_",
 
 		mapCallbackURLAndLatestTimeError: make(map[string]time.Time),
 	}
@@ -96,12 +106,16 @@ func (wh *Webhook) HandleWebhookVerification(c *httpx.Context) error {
 
 func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	var webhookMessages WebhookMessages
-	if err := c.DecodeJson(&webhookMessages); err != nil {
-		return err
+	body, err := ioutil.ReadAll(c.Req.Body)
+	if err != nil {
+		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
-	defer c.Req.Body.Close()
+	err = jsonx.Unmarshal(body, &webhookMessages)
+	if err != nil {
+		return cm.Error(cm.InvalidArgument, err.Error(), err)
+	}
+	ll.Info("->"+c.Req.URL.Path, l.String("data", string(body)))
 
-	ctx := c.Context()
 	go func() { defer cm.RecoverAndLog(); wh.forwardWebhook(c, webhookMessages) }()
 
 	defer func() {
@@ -119,12 +133,24 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 
 	switch webhookMessages.MessageType() {
 	case WebhookMessage:
-		return wh.handleMessenger(ctx, webhookMessages)
+		topic := wh.prefix + "facebook_webhook_message"
+		wh.produceMessage(topic, body)
+		return nil
 	case WebhookFeed:
-		return wh.handleFeed(ctx, webhookMessages)
+		topic := wh.prefix + "facebook_webhook_feed"
+		wh.produceMessage(topic, body)
+		return nil
 	case WebhookInvalidMessage:
 		return nil
 	default:
 		return nil
 	}
 }
+
+func (wh *Webhook) produceMessage(topic string, webhookMessages []byte) {
+	id := cm.NewID()
+	partition := id % 64
+	wh.producer.Send(topic, int(partition), id.String(), webhookMessages)
+}
+
+

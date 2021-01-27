@@ -1,7 +1,9 @@
 package build
 
 import (
+	"context"
 	"net/http"
+	"o.o/backend/pkg/common/mq"
 	"strings"
 
 	"o.o/backend/cmd/fabo-server/config"
@@ -182,6 +184,12 @@ func BuildWebhookServer(
 		Handler: mux,
 	}
 	return svr
+}
+
+func BuildPgProducer(
+	ctx context.Context, cfg config.Config,
+) (*mq.KafkaProducer, error) {
+	return mq.NewKafkaProducer(ctx, cfg.Kafka.Brokers)
 }
 
 func ProvidePolicy() auth.Policy { return authfabo.Policy }

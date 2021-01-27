@@ -41,6 +41,8 @@ func Topics() []eventhandler.TopicDef {
 	}
 }
 
+
+
 var mapTopics = eventhandler.MapTopics(Topics())
 
 func GetTopics(topics map[string]mq.EventHandler) []eventhandler.TopicDef {

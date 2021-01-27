@@ -23,7 +23,10 @@ import (
 	notihandler "o.o/backend/com/eventhandler/notifier/handler"
 	"o.o/backend/com/eventhandler/pgevent"
 	"o.o/backend/com/eventhandler/webhook/sender"
+	mainfbmessaging "o.o/backend/com/fabo/main/fbmessaging"
+	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/pkg/fbclient"
+	"o.o/backend/com/fabo/pkg/webhook"
 	com "o.o/backend/com/main"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -54,6 +57,10 @@ type Output struct {
 	Notifier  *notifier.Notifier
 	Handlers  []*handler.Handler
 	Health    *health.Service
+
+	// pm
+	_fbMessagingPM *mainfbmessaging.ProcessManager
+	_fbPagePM      *fbpage.ProcessManager
 }
 
 func BuildServers(
@@ -110,7 +117,7 @@ func BuildPgEventService(
 	if err != nil {
 		return nil, err
 	}
-	dbcfg := *cfg.Databases["postgres"]
+	dbcfg := cfg.Databases.Postgres
 	s, err := pgevent.NewService(ctx, dbdecl.DBMain, dbcfg, producer, cfg.Kafka.TopicPrefix, fabohandler.Topics())
 	return s, err
 }
@@ -140,6 +147,7 @@ func BuildWebhookHandler(
 	fbClient *fbclient.FbClient,
 	identityQuery identity.QueryBus,
 	shopSetting setting.QueryBus,
+	wh *webhook.Webhook,
 ) (*handler.Handler, error) {
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
@@ -160,9 +168,11 @@ func BuildWebhookHandler(
 	)
 	h := handler.New(consumer, cfg.Kafka)
 	h.StartConsuming(ctx, fabohandler.Topics(), faboHandler.TopicsAndHandlers())
+	webhookFaboHandler := fabohandler.NewWebhookFacebookHandler(wh)
+	h.StartConsuming(ctx, webhookFaboHandler.Topics(), webhookFaboHandler.TopicsAndHandlers())
+
 	return h, nil
 }
-
 func BuildWaiters(
 	intctlHandler *intctl.Handler,
 	h *handler.Handler,
@@ -184,11 +194,15 @@ func BuildOneSignal(cfg cc.OnesignalConfig) (*notifier.Notifier, error) {
 	return nil, nil
 }
 
+func BuildProducer(
+	ctx context.Context, cfg config.Config,
+) (*mq.KafkaProducer, error) {
+	return mq.NewKafkaProducer(ctx, cfg.Kafka.Brokers)
+}
+
 func BuildHandlers(
-	ctx context.Context,
-	cfg config.Config,
-	db com.MainDB,
-	notifierDB com.NotifierDB,
+	ctx context.Context, cfg config.Config,
+	db com.MainDB, notifierDB com.NotifierDB,
 ) ([]*handler.Handler, error) {
 	kafkaCfg := sarama.NewConfig()
 	kafkaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest

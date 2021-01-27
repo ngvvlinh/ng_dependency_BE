@@ -1,12 +1,14 @@
 package config
 
 import (
+	"o.o/backend/cmd/fabo-server/config"
+	database_min "o.o/backend/cogs/database/_min"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	cc "o.o/backend/pkg/common/config"
 )
 
 type Config struct {
-	Databases   cc.Databases       `yaml:",inline"`
+	Databases    database_min.Config        `yaml:",inline"`
 	Redis       cc.Redis           `yaml:"redis"`
 	HTTP        cc.HTTP            `yaml:"http"`
 	Kafka       cc.Kafka           `yaml:"kafka"`
@@ -18,16 +20,13 @@ type Config struct {
 		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
 	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
+	Webhook     config.WebhookConfig      `yaml:"webhook"`
 }
 
 func Default() Config {
 	cfg := Config{
 		// TODO(vu): automatically map default config
-		Databases: map[string]*cc.Postgres{
-			"postgres":          cc.PtrDefaultPostgres(),
-			"postgres_webhook":  cc.PtrDefaultPostgres(),
-			"postgres_notifier": cc.PtrDefaultPostgres(),
-		},
+		Databases:     database_min.DefaultConfig(),
 		Redis: cc.DefaultRedis(),
 		HTTP: cc.HTTP{
 			Host: "",
@@ -42,17 +41,12 @@ func Default() Config {
 		Secret: "secret",
 		Env:    "dev",
 	}
-	cfg.Databases["postgres"].Database = "etop_dev"
-	cfg.Databases["postgres_webhook"].Database = "etop_webhook"
-	cfg.Databases["postgres_notifier"].Database = "etop_notifier"
 	return cfg
 }
 
 func Load() (cfg Config, err error) {
 	err = cc.LoadWithDefault(&cfg, Default())
-	cc.PostgresMustLoadEnv(cfg.Databases["postgres"])
-	cc.PostgresMustLoadEnv(cfg.Databases["postgres_webhook"], "ET_POSTGRES_WEBHOOK")
-	cc.PostgresMustLoadEnv(cfg.Databases["postgres_notifier"], "ET_POSTGRES_NOTIFIER")
+	cfg.Databases.MustLoadEnv()
 	cc.RedisMustLoadEnv(&cfg.Redis)
 	cfg.TelegramBot.MustLoadEnv()
 	cfg.Onesignal.MustLoadEnv()

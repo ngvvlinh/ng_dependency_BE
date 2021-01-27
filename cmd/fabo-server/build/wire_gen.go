@@ -588,10 +588,19 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	ghnWebhookServer := v2_2.NewGHNWebhookServer(webhookConfig, shipmentManager, queryBus, shippingCommandBus, v2Webhook)
 	configWebhookConfig := cfg.Webhook
 	faboRedis := redis2.NewFaboRedis(store)
-	webhookWebhook := webhook.New(mainDB, logDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
+	kafkaProducer, err := BuildPgProducer(ctx, cfg)
+	if err != nil {
+		cleanup5()
+		cleanup4()
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return Output{}, nil, err
+	}
+	kafka := cfg.Kafka
+	webhookWebhook := webhook.New(mainDB, logDB, store, configWebhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, kafkaProducer, kafka)
 	fbWebhookServer := BuildWebhookServer(configWebhookConfig, webhookWebhook)
 	v3 := BuildServers(mainServer, ghnWebhookServer, fbWebhookServer)
-	kafka := cfg.Kafka
 	handlerHandler := handler.New(consumer, kafka)
 	publisherPublisher := publisher.New(eventStream)
 	processManager := pm.New(busBus, catalogQueryBus, catalogCommandBus)

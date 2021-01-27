@@ -8,6 +8,7 @@ package build
 import (
 	"context"
 	"o.o/backend/cmd/fabo-event-handler/config"
+	"o.o/backend/cogs/database/_min"
 	"o.o/backend/cogs/shipment/_fabo"
 	"o.o/backend/com/eventhandler/handler/api"
 	"o.o/backend/com/eventhandler/webhook/sender"
@@ -16,7 +17,8 @@ import (
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"
 	"o.o/backend/com/fabo/pkg/fbclient"
-	"o.o/backend/com/main"
+	redis2 "o.o/backend/com/fabo/pkg/redis"
+	"o.o/backend/com/fabo/pkg/webhook"
 	"o.o/backend/com/main/connectioning/aggregate"
 	"o.o/backend/com/main/connectioning/manager"
 	query2 "o.o/backend/com/main/connectioning/query"
@@ -47,15 +49,13 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	store := redis.Connect(redisRedis)
 	service := health.New(store)
 	miscService := &api.MiscService{}
-	databases := cfg.Databases
-	mainDB, err := com.BuildDatabaseMain(databases)
+	database_minConfig := cfg.Databases
+	databases, err := database_min.BuildDatabases(database_minConfig)
 	if err != nil {
 		return Output{}, nil, err
 	}
-	webhookDB, err := com.BuildDatabaseWebhook(databases)
-	if err != nil {
-		return Output{}, nil, err
-	}
+	mainDB := databases.Main
+	webhookDB := databases.Webhook
 	changesStore := storage.NewChangesStore(webhookDB)
 	partnerStore := sqlstore.BuildPartnerStore(mainDB)
 	partnerStoreInterface := sqlstore.BindPartnerStore(partnerStore)
@@ -142,7 +142,18 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	shopSettingUtil := util.NewShopSettingUtil(store)
 	shopSettingQuery := query5.NewShopSettingQuery(mainDB, shopSettingUtil)
 	settingQueryBus := query5.ShopSettingQueryMessageBus(shopSettingQuery)
-	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, fbuseringQueryBus, fbmessagingQueryBus, fbpagingQueryBus, orderingQueryBus, shippingQueryBus, fbClient, identityQueryBus, settingQueryBus)
+	logDB := databases.Log
+	webhookConfig := cfg.Webhook
+	faboRedis := redis2.NewFaboRedis(store)
+	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
+	fbmessagingCommandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
+	kafkaProducer, err := BuildProducer(ctx, cfg)
+	if err != nil {
+		return Output{}, nil, err
+	}
+	kafka := cfg.Kafka
+	webhookWebhook := webhook.New(mainDB, logDB, store, webhookConfig, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, kafkaProducer, kafka)
+	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, fbuseringQueryBus, fbmessagingQueryBus, fbpagingQueryBus, orderingQueryBus, shippingQueryBus, fbClient, identityQueryBus, settingQueryBus, webhookWebhook)
 	if err != nil {
 		return Output{}, nil, err
 	}
@@ -156,22 +167,27 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	if err != nil {
 		return Output{}, nil, err
 	}
-	notifierDB, err := com.BuildDatabaseNotifier(databases)
-	if err != nil {
-		return Output{}, nil, err
-	}
+	notifierDB := databases.Notifier
 	v3, err := BuildHandlers(ctx, cfg, mainDB, notifierDB)
 	if err != nil {
 		return Output{}, nil, err
 	}
+	fbExternalPageAggregate := fbpage.NewFbPageAggregate(mainDB, fbPageUtil, busBus)
+	fbpagingCommandBus := fbpage.FbExternalPageAggregateMessageBus(fbExternalPageAggregate)
+	fbUserAggregate := fbuser.NewFbUserAggregate(mainDB, fbpagingCommandBus, queryBus)
+	fbuseringCommandBus := fbuser.FbUserAggregateMessageBus(fbUserAggregate)
+	processManager := fbmessaging.NewProcessManager(busBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
+	fbpageProcessManager := fbpage.NewProcessManager(busBus, fbPageUtil)
 	output := Output{
-		Servers:   v,
-		Waiters:   v2,
-		PgService: pgeventService,
-		WhSender:  webhookSender,
-		Notifier:  notifier,
-		Handlers:  v3,
-		Health:    service,
+		Servers:        v,
+		Waiters:        v2,
+		PgService:      pgeventService,
+		WhSender:       webhookSender,
+		Notifier:       notifier,
+		Handlers:       v3,
+		Health:         service,
+		_fbMessagingPM: processManager,
+		_fbPagePM:      fbpageProcessManager,
 	}
 	return output, func() {
 	}, nil

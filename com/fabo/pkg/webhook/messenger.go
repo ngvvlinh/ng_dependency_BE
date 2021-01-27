@@ -3,6 +3,7 @@ package webhook
 import (
 	"context"
 	"fmt"
+	"o.o/backend/pkg/common/mq"
 	"strings"
 
 	"o.o/api/fabo/fbmessaging"
@@ -17,7 +18,9 @@ import (
 	"o.o/common/xerrors"
 )
 
-func (wh *Webhook) handleMessenger(ctx context.Context, webhookMessages WebhookMessages) error {
+func (wh *Webhook) HandleMessenger(
+	ctx context.Context, webhookMessages WebhookMessages,
+) (mq.Code, error) {
 	entries := webhookMessages.Entry
 	for _, entry := range entries {
 		externalPageID := entry.ID
@@ -30,7 +33,7 @@ func (wh *Webhook) handleMessenger(ctx context.Context, webhookMessages WebhookM
 				// message ID
 				mid := message.Message.Mid
 				timestamp := message.Timestamp
-				err := wh.handleMessageReturned(ctx, externalPageID, PSID, mid, int64(timestamp))
+				returnCode, err := wh.handleMessageReturned(ctx, int64(timestamp), externalPageID, PSID, mid)
 				if err == nil {
 					continue
 				}
@@ -40,34 +43,37 @@ func (wh *Webhook) handleMessenger(ctx context.Context, webhookMessages WebhookM
 					continue
 				} else {
 					ll.SendMessage(err.Error())
-					return err
+					return returnCode, err
 				}
 			}
 		}
 	}
-	return nil
+	return mq.CodeOK, nil
 }
 
 // TODO(ngoc): refactor
-func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PSID, mid string, externalTimestamp int64) error {
+func (wh *Webhook) handleMessageReturned(
+	ctx context.Context, externalTimestamp int64,
+	externalPageID, PSID, mid string,
+) (mq.Code, error) {
 	isTestPage, _err := wh.IsTestPage(ctx, externalPageID)
 	if _err != nil {
 		if cm.ErrorCode(_err) == cm.NotFound {
-			return nil
+			return mq.CodeIgnore, nil
 		}
-		return _err
+		return mq.CodeStop, _err
 	}
 	// ignore test page
 	if cmenv.IsProd() && isTestPage {
-		return nil
+		return mq.CodeOK, nil
 	}
 
 	accessToken, err := wh.getPageAccessToken(ctx, externalPageID)
 	if err != nil {
 		if cm.ErrorCode(_err) == cm.NotFound {
-			return nil
+			return mq.CodeIgnore, nil
 		}
-		return err
+		return mq.CodeStop, err
 	}
 
 	// Get message
@@ -77,7 +83,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		PageID:      externalPageID,
 	})
 	if err != nil {
-		return err
+		return mq.CodeStop, err
 	}
 
 	externalUserID, err := wh.faboRedis.LoadPSID(externalPageID, PSID)
@@ -92,7 +98,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			}
 
 			if err := wh.faboRedis.SavePSID(externalPageID, PSID, externalUserID); err != nil {
-				return err
+				return mq.CodeStop, err
 			}
 		}
 
@@ -100,7 +106,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 	case nil:
 		// no-op
 	default:
-		return err
+		return mq.CodeStop, err
 	}
 
 	var profileDefault *fbclientmodel.Profile
@@ -131,10 +137,10 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 				UserID:      PSID,
 			})
 			if err != nil {
-				return err
+				return mq.CodeStop, err
 			}
 			if len(conversations.ConversationsData) == 0 {
-				return cm.Errorf(cm.Internal, nil, fmt.Sprintf("Wrong PSID %s", PSID))
+				return mq.CodeStop, cm.Errorf(cm.Internal, nil, fmt.Sprintf("Wrong PSID %s", PSID))
 			}
 			externalConversation := conversations.ConversationsData[0]
 			externalConversationID = externalConversation.ID
@@ -162,7 +168,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 					},
 				},
 			}); err != nil {
-				return err
+				return mq.CodeStop, err
 			}
 
 			profileDefault = &fbclientmodel.Profile{
@@ -170,11 +176,11 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 				Name: externalUserName,
 			}
 		default:
-			return _err
+			return mq.CodeStop, _err
 		}
 
 		if _err := wh.faboRedis.SaveExternalConversationID(externalPageID, externalUserID, externalConversationID); _err != nil {
-			return _err
+			return mq.CodeStop, _err
 		}
 	case nil:
 		getExternalConversationQuery := &fbmessaging.GetFbExternalConversationByExternalIDAndExternalPageIDQuery{
@@ -182,7 +188,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			ExternalID:     externalConversationID,
 		}
 		if _err := wh.fbmessagingQuery.Dispatch(ctx, getExternalConversationQuery); _err != nil {
-			return _err
+			return mq.CodeStop, _err
 		}
 
 		externalConversation := getExternalConversationQuery.Result
@@ -193,12 +199,12 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 
 	// no-op
 	default:
-		return err
+		return mq.CodeStop, err
 	}
 
 	profile, err := wh.getProfile(accessToken, externalPageID, PSID, profileDefault)
 	if err != nil {
-		return err
+		return mq.CodeStop, err
 	}
 	if profile.ProfilePic == "" {
 		profile.ProfilePic = fmt.Sprintf("https://graph.facebook.com/%s/picture?height=200&width=200&type=normal", PSID)
@@ -239,7 +245,7 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 		ExternalID: messageResp.ID,
 	}
 	if err := wh.fbmessagingQuery.Dispatch(ctx, getOldFbExternalMessageQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
-		return err
+		return mq.CodeStop, err
 	}
 	oldFbExternalMessage := getOldFbExternalMessageQuery.Result
 	internalSource := fb_internal_source.Facebook
@@ -302,8 +308,8 @@ func (wh *Webhook) handleMessageReturned(ctx context.Context, externalPageID, PS
 			},
 		},
 	}); err != nil {
-		return err
+		return mq.CodeStop, err
 	}
 
-	return nil
+	return mq.CodeOK, nil
 }

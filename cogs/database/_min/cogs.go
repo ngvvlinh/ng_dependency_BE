@@ -10,6 +10,7 @@ type Config struct {
 	Postgres         cc.Postgres `yaml:"postgres"`
 	PostgresLogs     cc.Postgres `yaml:"postgres_logs"`
 	PostgresNotifier cc.Postgres `yaml:"postgres_notifier"`
+	PostgresWebhook cc.Postgres `yaml:"postgres_webhook"`
 }
 
 func DefaultConfig() Config {
@@ -17,6 +18,7 @@ func DefaultConfig() Config {
 		Postgres:         cc.DefaultPostgres(),
 		PostgresNotifier: cc.DefaultPostgres(),
 		PostgresLogs:     cc.DefaultPostgres(),
+		PostgresWebhook:  cc.DefaultPostgres(),
 	}
 	cfg.Postgres.Database = "etop_dev"
 	return cfg
@@ -26,6 +28,7 @@ func (cfg *Config) MustLoadEnv() {
 	cc.PostgresMustLoadEnv(&cfg.Postgres)
 	cc.PostgresMustLoadEnv(&cfg.PostgresLogs, "ET_POSTGRES_LOGS")
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
+	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_WEBHOOK")
 }
 
 type Databases struct {
@@ -45,6 +48,10 @@ func BuildDatabases(cfg Config) (dbs Databases, err error) {
 		return dbs, err
 	}
 	dbs.Notifier, err = cmsql.Connect(cfg.PostgresNotifier)
+	if err != nil {
+		return dbs, err
+	}
+	dbs.Webhook, err = cmsql.Connect(cfg.PostgresWebhook)
 	if err != nil {
 		return dbs, err
 	}
