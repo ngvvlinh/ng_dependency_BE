@@ -718,7 +718,7 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 		AddressTo:                          PbAddress(m.AddressTo),
 		AddressFrom:                        PbAddress(m.AddressFrom),
 		PickupAddress:                      PbOrderAddressFromAddress(m.AddressFrom),
-		ReturnAddress:                      PbOrderAddressFromAddress(m.AddressFrom),
+		ReturnAddress:                      PbOrderAddressFromAddress(m.AddressReturn),
 		ShippingAddress:                    PbOrderAddressFromAddress(m.AddressTo),
 		Shop:                               nil,
 		Order:                              nil,

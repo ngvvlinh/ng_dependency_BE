@@ -17,6 +17,7 @@ import (
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/capi/dot"
 )
 
 type ConnectionService struct {
@@ -70,10 +71,27 @@ func (s *ConnectionService) GetAvailableConnections(ctx context.Context, q *type
 	return result, nil
 }
 
-func (s *ConnectionService) GetShopConnections(ctx context.Context, q *pbcm.Empty) (*types.GetShopConnectionsResponse, error) {
+func (s *ConnectionService) GetShopConnections(ctx context.Context, q *types.GetShopConnectionsRequest) (*types.GetShopConnectionsResponse, error) {
+	// get connections
+	queryConn := &connectioning.ListConnectionsQuery{
+		Status:            status3.WrapStatus(status3.P),
+		ConnectionType:    q.ConnectionType,
+		ConnectionSubtype: q.ConnectionSubtype,
+		ConnectionMethod:  connection_type.ConnectionMethodDirect,
+	}
+	if err := s.ConnectionQuery.Dispatch(ctx, queryConn); err != nil {
+		return nil, err
+	}
+
+	var connectionIDs []dot.ID
+	for _, conn := range queryConn.Result {
+		connectionIDs = append(connectionIDs, conn.ID)
+	}
+
 	query := &connectioning.ListShopConnectionsQuery{
-		ShopID:  s.SS.Shop().ID,
-		OwnerID: s.SS.Shop().OwnerID,
+		ShopID:        s.SS.Shop().ID,
+		OwnerID:       s.SS.Shop().OwnerID,
+		ConnectionIDs: connectionIDs,
 	}
 	if err := s.ConnectionQuery.Dispatch(ctx, query); err != nil {
 		return nil, err

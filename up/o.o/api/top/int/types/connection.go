@@ -171,6 +171,15 @@ func (m *GetConnectionServicesResponse) String() string {
 	return jsonx.MustMarshalToString(m)
 }
 
+type GetShopConnectionsRequest struct {
+	ConnectionType    connection_type.ConnectionType    `json:"connection_type"`
+	ConnectionSubtype connection_type.ConnectionSubtype `json:"connection_subtype"`
+}
+
+func (m *GetShopConnectionsRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
 type GetShopConnectionsResponse struct {
 	ShopConnections []*ShopConnection `json:"shop_connections"`
 }

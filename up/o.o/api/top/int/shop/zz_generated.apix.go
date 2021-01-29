@@ -1066,7 +1066,7 @@ func (s *ConnectionServiceServer) parseRoute(path string, hooks httprpc.Hooks, i
 		}
 		return msg, fn, nil
 	case "/shop.Connection/GetShopConnections":
-		msg := &common.Empty{}
+		msg := &inttypes.GetShopConnectionsRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

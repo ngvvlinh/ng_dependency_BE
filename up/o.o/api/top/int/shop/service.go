@@ -362,7 +362,7 @@ type StocktakeService interface {
 type ConnectionService interface {
 	GetConnections(context.Context, *types.GetConnectionsRequest) (*types.GetConnectionsResponse, error)
 	GetAvailableConnections(context.Context, *types.GetAvailableConnectionsRequest) (*types.GetConnectionsResponse, error)
-	GetShopConnections(context.Context, *cm.Empty) (*types.GetShopConnectionsResponse, error)
+	GetShopConnections(context.Context, *types.GetShopConnectionsRequest) (*types.GetShopConnectionsResponse, error)
 	RegisterShopConnection(context.Context, *types.RegisterShopConnectionRequest) (*types.ShopConnection, error)
 	LoginShopConnection(context.Context, *types.LoginShopConnectionRequest) (*types.LoginShopConnectionResponse, error)
 	LoginShopConnectionWithOTP(context.Context, *types.LoginShopConnectionWithOTPRequest) (*types.LoginShopConnectionWithOTPResponse, error)

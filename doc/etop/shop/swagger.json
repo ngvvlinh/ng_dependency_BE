@@ -1056,7 +1056,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/qdGetShopConnectionsRequest"
             }
           }
         ],
@@ -15297,6 +15297,17 @@
           "items": {
             "$ref": "#/definitions/qdExternalShippingService"
           }
+        }
+      }
+    },
+    "qdGetShopConnectionsRequest": {
+      "type": "object",
+      "properties": {
+        "connection_subtype": {
+          "$ref": "#/definitions/cdConnectionSubtype"
+        },
+        "connection_type": {
+          "$ref": "#/definitions/cdConnectionType"
         }
       }
     },
