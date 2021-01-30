@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"o.o/api/etelecom"
-	cm "o.o/api/top/types/common"
+	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/code/gencode"
 )
 
@@ -19,14 +19,20 @@ func (q *QueryService) GetExtension(ctx context.Context, args *etelecom.GetExten
 }
 
 func (q *QueryService) ListExtensions(ctx context.Context, args *etelecom.ListExtensionsArgs) ([]*etelecom.Extension, error) {
-	query := q.extensionStore(ctx).OptionalHotlineID(args.HotlineID)
+	query := q.extensionStore(ctx)
+	if len(args.HotlineIDs) > 0 {
+		query = query.HotlineIDs(args.HotlineIDs...)
+	}
 	if len(args.AccountIDs) > 0 {
 		query = query.AccountIDs(args.AccountIDs...)
+	}
+	if len(args.ExtensionNumbers) > 0 {
+		query = query.ExtensionNumbers(args.ExtensionNumbers...)
 	}
 	return query.ListExtensions()
 }
 
-func (q *QueryService) GetPrivateExtensionNumber(ctx context.Context, _ *cm.Empty) (string, error) {
+func (q *QueryService) GetPrivateExtensionNumber(ctx context.Context, _ *pbcm.Empty) (string, error) {
 	var code int
 	if err := q.db.SQL(`SELECT nextval('extension_number')`).Scan(&code); err != nil {
 		return "", err

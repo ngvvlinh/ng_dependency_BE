@@ -7,7 +7,7 @@ package sqlstore
 import (
 	time "time"
 
-	call_log_direction "o.o/api/etelecom/call_log_direction"
+	call_direction "o.o/api/etelecom/call_direction"
 	call_state "o.o/api/etelecom/call_state"
 	connection_type "o.o/api/top/types/etc/connection_type"
 	status3 "o.o/api/top/types/etc/status3"
@@ -201,7 +201,7 @@ func (ft *CallLogFilters) ByExternalDirectionPtr(ExternalDirection *string) *sq.
 	}
 }
 
-func (ft *CallLogFilters) ByDirection(Direction call_log_direction.CallLogDirection) *sq.ColumnFilter {
+func (ft *CallLogFilters) ByDirection(Direction call_direction.CallDirection) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "direction",
@@ -210,7 +210,7 @@ func (ft *CallLogFilters) ByDirection(Direction call_log_direction.CallLogDirect
 	}
 }
 
-func (ft *CallLogFilters) ByDirectionPtr(Direction *call_log_direction.CallLogDirection) *sq.ColumnFilterPtr {
+func (ft *CallLogFilters) ByDirectionPtr(Direction *call_direction.CallDirection) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "direction",
@@ -407,6 +407,25 @@ func (ft *CallLogFilters) ByPostagePtr(Postage *int) *sq.ColumnFilterPtr {
 		Value:  Postage,
 		IsNil:  Postage == nil,
 		IsZero: Postage != nil && (*Postage) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByExternalSessionID(ExternalSessionID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_session_id",
+		Value:  ExternalSessionID,
+		IsNil:  ExternalSessionID == "",
+	}
+}
+
+func (ft *CallLogFilters) ByExternalSessionIDPtr(ExternalSessionID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_session_id",
+		Value:  ExternalSessionID,
+		IsNil:  ExternalSessionID == nil,
+		IsZero: ExternalSessionID != nil && (*ExternalSessionID) == "",
 	}
 }
 

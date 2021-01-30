@@ -41,8 +41,8 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*etelecom.CallLog) = out0
 		return nil
 	})
-	s.Register((*etelecom.CreateCallLogFromCDRArgs)(nil), (*etelecomtypes.CallLog)(nil), func(arg, out interface{}) error {
-		Apply_etelecom_CreateCallLogFromCDRArgs_etelecomtypes_CallLog(arg.(*etelecom.CreateCallLogFromCDRArgs), out.(*etelecomtypes.CallLog))
+	s.Register((*etelecom.CreateOrUpdateCallLogFromCDRArgs)(nil), (*etelecomtypes.CallLog)(nil), func(arg, out interface{}) error {
+		Apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecomtypes_CallLog(arg.(*etelecom.CreateOrUpdateCallLogFromCDRArgs), out.(*etelecomtypes.CallLog))
 		return nil
 	})
 	s.Register((*etelecom.CreateExtensionArgs)(nil), (*etelecomtypes.Extension)(nil), func(arg, out interface{}) error {
@@ -191,6 +191,7 @@ func convert_etelecomtypes_CallLog_etelecom_CallLog(arg *etelecomtypes.CallLog, 
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 	out.DurationPostage = arg.DurationPostage       // simple assign
 	out.Postage = arg.Postage                       // simple assign
+	out.ExternalSessionID = ""                      // zero value
 }
 
 func Convert_etelecomtypes_CallLogs_etelecom_CallLogs(args []*etelecomtypes.CallLog) (outs []*etelecom.CallLog) {
@@ -205,22 +206,22 @@ func Convert_etelecomtypes_CallLogs_etelecom_CallLogs(args []*etelecomtypes.Call
 	return outs
 }
 
-func Apply_etelecom_CreateCallLogFromCDRArgs_etelecomtypes_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *etelecomtypes.CallLog) *etelecomtypes.CallLog {
+func Apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecomtypes_CallLog(arg *etelecom.CreateOrUpdateCallLogFromCDRArgs, out *etelecomtypes.CallLog) *etelecomtypes.CallLog {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &etelecomtypes.CallLog{}
 	}
-	apply_etelecom_CreateCallLogFromCDRArgs_etelecomtypes_CallLog(arg, out)
+	apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecomtypes_CallLog(arg, out)
 	return out
 }
 
-func apply_etelecom_CreateCallLogFromCDRArgs_etelecomtypes_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *etelecomtypes.CallLog) {
+func apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecomtypes_CallLog(arg *etelecom.CreateOrUpdateCallLogFromCDRArgs, out *etelecomtypes.CallLog) {
 	out.ID = 0                                      // zero value
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = 0                               // zero value
-	out.HotlineID = 0                               // zero value
+	out.HotlineID = arg.HotlineID                   // simple assign
 	out.StartedAt = arg.StartedAt                   // simple assign
 	out.EndedAt = arg.EndedAt                       // simple assign
 	out.Duration = arg.Duration                     // simple assign
@@ -229,13 +230,13 @@ func apply_etelecom_CreateCallLogFromCDRArgs_etelecomtypes_CallLog(arg *etelecom
 	out.AudioURLs = arg.AudioURLs                   // simple assign
 	out.ExternalDirection = arg.ExternalDirection   // simple assign
 	out.Direction = arg.Direction                   // simple assign
-	out.ExtensionID = 0                             // zero value
+	out.ExtensionID = arg.ExtensionID               // simple assign
 	out.ExternalCallStatus = arg.ExternalCallStatus // simple assign
 	out.ContactID = 0                               // zero value
 	out.CreatedAt = time.Time{}                     // zero value
 	out.UpdatedAt = time.Time{}                     // zero value
 	out.CallState = arg.CallState                   // simple assign
-	out.CallStatus = arg.CallStatus                 // simple assign
+	out.CallStatus = 0                              // zero value
 	out.DurationPostage = 0                         // zero value
 	out.Postage = 0                                 // zero value
 }

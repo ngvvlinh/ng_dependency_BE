@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"o.o/api/etelecom/call_log_direction"
+	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/summary"
 	commonsummary "o.o/api/summary"
 	"o.o/backend/com/etelecom/model"
@@ -98,19 +98,19 @@ func buildTableCallLogTotal(dateFrom, dateTo time.Time) *smry.Table {
 	pred_tổng_thời_lượng_gọi := smry.Predicate{
 		Label: "Tổng thời lượng gọi",
 		Spec:  "Tổng thời lượng gọi",
-		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_log_direction.Out),
+		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_direction.Out),
 	}
 
 	pred_tổng_thời_lượng_gọi_làm_tròn := smry.Predicate{
 		Label: "Tổng thời lượng gọi làm tròn",
 		Spec:  "Tổng thời lượng gọi làm tròn",
-		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_log_direction.Out),
+		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_direction.Out),
 	}
 
 	pred_tổng_thời_lượng_nghe := smry.Predicate{
 		Label: "Tổng thời lượng nghe",
 		Spec:  "Tổng thời lượng nghe",
-		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_log_direction.In),
+		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_direction.In),
 	}
 
 	pred_tổng_số_cuộc_gọi_thành_công := smry.Predicate{
@@ -161,19 +161,19 @@ func buildTableCallLogPerExtension(dateFrom, dateTo time.Time, extensionIDs []do
 	pred_tổng_thời_lượng_gọi := smry.Predicate{
 		Label: "Thời lượng gọi",
 		Spec:  "Thời lượng gọi",
-		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_log_direction.Out),
+		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_direction.Out),
 	}
 
 	pred_tổng_thời_lượng_gọi_làm_tròn := smry.Predicate{
 		Label: "Tổng thời lượng gọi làm tròn",
 		Spec:  "Tổng thời lượng gọi làm tròn",
-		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_log_direction.Out),
+		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_direction.Out),
 	}
 
 	pred_tổng_thời_lượng_nghe := smry.Predicate{
 		Label: "Thời lượng nghe",
 		Spec:  "Thời lượng nghe",
-		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_log_direction.In),
+		Expr:  sq.NewExpr("duration != 0 and direction = ?", call_direction.In),
 	}
 
 	pred_tổng_số_cuộc_gọi_thành_công := smry.Predicate{

@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"o.o/api/etelecom/call_log_direction"
+	"o.o/api/etelecom/call_direction"
 )
 
 func TestCalcPostage(t *testing.T) {
 	args := CalcPostageArgs{
-		Direction: call_log_direction.Out,
+		Direction: call_direction.Out,
 	}
 	t.Run("Mobiphone", func(t *testing.T) {
 		args.Phone = "0931231230"

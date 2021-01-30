@@ -160,6 +160,11 @@ type SessionCallLog struct {
 	TenantID           String           `json:"tenant_id"`     // "373302079663509504"
 	TenantName         String           `json:"tenant_name"`   // "Etop-dev"
 	Type               Int              `json:"type"`          // 1
+	// DidCid: hotline number when direction = in
+	DidCid String `json:"did_cid"`
+	// OutboundCallerID: hotline number when direction = out
+	// Case direction = ext: can not recognize hotline number
+	OutboundCallerID String `json:"outbound_caller_id"`
 }
 
 type CallTarget struct {

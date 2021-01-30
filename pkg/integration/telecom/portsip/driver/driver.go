@@ -4,25 +4,26 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/etelecom/call_state"
 	telecomtypes "o.o/backend/com/etelecom/provider/types"
 	cm "o.o/backend/pkg/common"
-	vhtclient "o.o/backend/pkg/integration/telecom/portsip/client"
+	portsipclient "o.o/backend/pkg/integration/telecom/portsip/client"
 )
 
 var _ telecomtypes.TelecomDriver = &VHTDriver{}
 
 type VHTDriver struct {
-	client *vhtclient.Client
+	client *portsipclient.Client
 }
 
-func New(env string, cfg vhtclient.VHTAccountCfg) *VHTDriver {
-	client := vhtclient.New(env, cfg)
+func New(env string, cfg portsipclient.VHTAccountCfg) *VHTDriver {
+	client := portsipclient.New(env, cfg)
 	return &VHTDriver{
 		client: client,
 	}
 }
 
-func (v *VHTDriver) GetClient() *vhtclient.Client {
+func (v *VHTDriver) GetClient() *portsipclient.Client {
 	return v.client
 }
 
@@ -60,37 +61,37 @@ func (v *VHTDriver) CreateExtension(ctx context.Context, req *telecomtypes.Creat
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Extension number cannot be empty")
 	}
 
-	createExtensionReq := &vhtclient.CreateExtensionsRequest{
+	createExtensionReq := &portsipclient.CreateExtensionsRequest{
 		ExtensionNumber:   req.ExtensionNumber,
 		Password:          req.ExtensionPassword,
 		WebAccessPassword: req.ExtensionPassword,
-		Options: &vhtclient.OptionsCreateExtension{
+		Options: &portsipclient.OptionsCreateExtension{
 			EnableAudioRecordCalls: true,
 			EnableVideoRecordCalls: false,
 			EnableExtension:        true,
 			OutboundCallerID:       req.Hotline,
 		},
-		ForwardRules: &vhtclient.ForwardRulesCreateExtension{
-			Available: &vhtclient.AvailableForwardRules{
+		ForwardRules: &portsipclient.ForwardRulesCreateExtension{
+			Available: &portsipclient.AvailableForwardRules{
 				NoAnswerTimeval:     20,
 				NoAnswerAction:      "CONNECT_TO_VOICE_MAIL",
 				NoAnswerActionValue: "",
 				BusyAction:          "CONNECT_TO_VOICE",
 				BusyActionValue:     "",
 			},
-			Offline: &vhtclient.OfflineForwardRules{
+			Offline: &portsipclient.OfflineForwardRules{
 				OfficeHoursAction:             "CONNECT_TO_VOICE",
 				OfficeHoursActionValue:        "",
 				OutsideOfficeHoursAction:      "CONNECT_TO_VOICE",
 				OutsideOfficeHoursActionValue: "",
 			},
-			Dnd: &vhtclient.DndForwardRules{
+			Dnd: &portsipclient.DndForwardRules{
 				OfficeHoursAction:             "CONNECT_TO_VOICE",
 				OfficeHoursActionValue:        "",
 				OutsideOfficeHoursAction:      "CONNECT_TO_VOICE",
 				OutsideOfficeHoursActionValue: "",
 			},
-			Away: &vhtclient.AwayForwardRules{
+			Away: &portsipclient.AwayForwardRules{
 				OfficeHoursAction:             "CONNECT_TO_VOICE",
 				OfficeHoursActionValue:        "",
 				OutsideOfficeHoursAction:      "CONNECT_TO_VOICE",
@@ -99,7 +100,7 @@ func (v *VHTDriver) CreateExtension(ctx context.Context, req *telecomtypes.Creat
 		},
 	}
 	if req.Profile != nil {
-		createExtensionReq.Profile = &vhtclient.ProfileCreateExtension{
+		createExtensionReq.Profile = &portsipclient.ProfileCreateExtension{
 			FirstName:   req.Profile.FirstName,
 			LastName:    req.Profile.LastName,
 			Email:       req.Profile.Email,
@@ -119,7 +120,7 @@ func (v *VHTDriver) CreateExtension(ctx context.Context, req *telecomtypes.Creat
 }
 
 func (v *VHTDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCallLogsRequest) (res *telecomtypes.GetCallLogsResponse, _ error) {
-	getCallLogReq := &vhtclient.GetCallLogsRequest{
+	getCallLogReq := &portsipclient.GetCallLogsRequest{
 		ScrollID: req.ScrollID,
 	}
 	if !req.StartedAt.IsZero() {
@@ -139,30 +140,54 @@ func (v *VHTDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCallLo
 	}
 
 	for _, callLog := range getCallLogsResp.Sessions {
-		// Callee
-		// Không lấy trực tiếp từ callLog.Callee do nó có thể là ring group
-		// Workarround: bằng cách lấy callee từ callLog.CallTargets ra - luôn lấy thằng đầu tiên (bỏ qua trường hợp chuyển tiếp cuộc gọi)
-		callee := ""
-		if len(callLog.CallTargets) > 0 {
-			callee = callLog.CallTargets[0].TargetNumber.String()
+		tartgets := getCallTargets(callLog)
+		callState := callLog.CallStatus.ToCallState()
+		hotlineNumber := callLog.DidCid
+		if hotlineNumber == "" {
+			hotlineNumber = callLog.OutboundCallerID
 		}
-		if callee == "" {
-			callee = callLog.Callee.String()
-		}
-
 		callLogRes := &telecomtypes.CallLog{
-			CallID:     callLog.CallID.String(),
-			CallStatus: string(callLog.CallStatus),
-			Caller:     callLog.Caller.String(),
-			Callee:     callee,
-			Direction:  callLog.Direction.String(),
-			StartedAt:  callLog.StartTime.ToTime(),
-			EndedAt:    callLog.EndedTime.ToTime(),
-			Duration:   callLog.TalkDuration.Int(),
+			CallID:        callLog.CallID.String(),
+			CallStatus:    string(callLog.CallStatus),
+			Caller:        callLog.Caller.String(),
+			Callee:        callLog.Callee.String(),
+			Direction:     callLog.Direction.String(),
+			StartedAt:     callLog.StartTime.ToTime(),
+			EndedAt:       callLog.EndedTime.ToTime(),
+			Duration:      callLog.TalkDuration.Int(),
+			CallTargets:   tartgets,
+			CallState:     callState,
+			HotlineNumber: hotlineNumber.String(),
+			SessionID:     callLog.SessionID.String(),
 		}
 		callLogRes.AudioURLs = append(callLogRes.AudioURLs, callLog.RecordingFileURL.String())
 		res.CallLogs = append(res.CallLogs, callLogRes)
 	}
 
 	return res, nil
+}
+
+func getCallTargets(session *portsipclient.SessionCallLog) (res []*telecomtypes.CallTarget) {
+	callTargetsMap := make(map[string]*telecomtypes.CallTarget)
+
+	for _, target := range session.CallTargets {
+		targetNumber := target.TargetNumber.String()
+		callState := target.Status.ToCallState()
+
+		if _, ok := callTargetsMap[targetNumber]; !ok || callState == call_state.Answered {
+			// make sure target number is unique
+			callTargetsMap[targetNumber] = &telecomtypes.CallTarget{
+				TargetNumber: targetNumber,
+				TalkDuration: target.TalkDuration.Int(),
+				CallState:    callState,
+				AnsweredTime: target.AnsweredTime.ToTime(),
+				EndedTime:    target.EndedTime.ToTime(),
+			}
+		}
+	}
+
+	for _, target := range callTargetsMap {
+		res = append(res, target)
+	}
+	return res
 }

@@ -1,6 +1,8 @@
 package etelecom
 
 import (
+	"o.o/api/etelecom/call_direction"
+	"o.o/api/etelecom/call_state"
 	"o.o/api/top/int/shop"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
@@ -27,3 +29,17 @@ type CreateUserAndAssignExtensionRequest struct {
 }
 
 func (r *CreateUserAndAssignExtensionRequest) String() string { return jsonx.MustMarshalToString(r) }
+
+type CreateCallLogRequest struct {
+	ExternalSessionID string                       `json:"external_session_id"`
+	Direction         call_direction.CallDirection `json:"direction"`
+	Caller            string                       `json:"caller"`
+	Callee            string                       `json:"callee"`
+	ExtensionID       dot.ID                       `json:"extension_id"`
+	ContactID         dot.ID                       `json:"contact_id"`
+	CallState         call_state.CallState         `json:"call_state"`
+}
+
+func (r *CreateCallLogRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}

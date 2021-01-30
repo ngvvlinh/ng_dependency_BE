@@ -49,6 +49,11 @@ func (s *CallLogStore) ExternalID(externalID string) *CallLogStore {
 	return s
 }
 
+func (s *CallLogStore) ExternalSessionID(exSessionID string) *CallLogStore {
+	s.preds = append(s.preds, s.ft.ByExternalSessionID(exSessionID))
+	return s
+}
+
 func (s *CallLogStore) ExtensionIDs(extIDs ...dot.ID) *CallLogStore {
 	s.preds = append(s.preds, sq.In("extension_id", extIDs))
 	return s
@@ -56,6 +61,22 @@ func (s *CallLogStore) ExtensionIDs(extIDs ...dot.ID) *CallLogStore {
 
 func (s *CallLogStore) HotlineIDs(hotlineIDs ...dot.ID) *CallLogStore {
 	s.preds = append(s.preds, sq.In("hotline_id", hotlineIDs))
+	return s
+}
+
+func (s *CallLogStore) AccountIDAndHotlineIDs(accountID dot.ID, hotlineIDs []dot.ID) *CallLogStore {
+	var preds sq.WriterTo
+	preds = sq.Or{
+		sq.And{
+			s.ft.ByAccountID(accountID),
+			sq.In("hotline_id", hotlineIDs),
+		},
+		sq.And{
+			sq.In("hotline_id", hotlineIDs),
+			sq.NewIsNullPart("account_id", true),
+		},
+	}
+	s.preds = append(s.preds, preds)
 	return s
 }
 
@@ -77,7 +98,7 @@ func (s *CallLogStore) GetCallLog() (*etelecom.CallLog, error) {
 		return nil, err
 	}
 	var res etelecom.CallLog
-	if err := scheme.Convert(ext, &res); err != nil {
+	if err = scheme.Convert(ext, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -104,7 +125,7 @@ func (s *CallLogStore) ListCallLogs() (res []*etelecom.CallLog, _ error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := scheme.Convert(callLogsDB, &res); err != nil {
+	if err = scheme.Convert(callLogsDB, &res); err != nil {
 		return nil, err
 	}
 	return

@@ -57,6 +57,11 @@ func (s *ExtensionStore) ExtensionNumber(extensionNumber string) *ExtensionStore
 	return s
 }
 
+func (s *ExtensionStore) ExtensionNumbers(extNumbers ...string) *ExtensionStore {
+	s.preds = append(s.preds, sq.In("extension_number", extNumbers))
+	return s
+}
+
 func (s *ExtensionStore) OptionalUserID(id dot.ID) *ExtensionStore {
 	s.preds = append(s.preds, s.ft.ByUserID(id).Optional())
 	return s

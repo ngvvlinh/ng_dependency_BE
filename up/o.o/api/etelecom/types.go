@@ -3,7 +3,7 @@ package etelecom
 import (
 	"time"
 
-	"o.o/api/etelecom/call_log_direction"
+	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/call_state"
 	"o.o/api/etelecom/mobile_network"
 	"o.o/api/top/types/etc/connection_type"
@@ -74,20 +74,21 @@ type CallLog struct {
 	ExternalCallStatus string
 	CallState          call_state.CallState
 	CallStatus         status5.Status
-	Direction          call_log_direction.CallLogDirection
+	Direction          call_direction.CallDirection
 	ExtensionID        dot.ID
 	HotlineID          dot.ID
 	ContactID          dot.ID
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 	// DurationForPostage: minute
-	DurationPostage int
-	Postage         int
+	DurationPostage   int
+	Postage           int
+	ExternalSessionID string
 }
 
-type CallLogCreatedEvent struct {
+type CallLogCalcPostageEvent struct {
 	ID         dot.ID
-	Direction  call_log_direction.CallLogDirection
+	Direction  call_direction.CallDirection
 	Callee     string
 	Duration   int
 	CallStatus status5.Status

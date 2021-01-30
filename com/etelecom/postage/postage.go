@@ -3,34 +3,34 @@ package postage
 import (
 	"math"
 
-	"o.o/api/etelecom/call_log_direction"
+	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/mobile_network"
 )
 
 type PriceList struct {
-	Direction    call_log_direction.CallLogDirection
+	Direction    call_direction.CallDirection
 	Network      mobile_network.MobileNetwork
 	FeePerSecond float64
 }
 
 var PriceListCall = []PriceList{
 	{
-		Direction:    call_log_direction.Out,
+		Direction:    call_direction.Out,
 		Network:      mobile_network.Mobiphone,
 		FeePerSecond: 7.5,
 	},
 	{
-		Direction:    call_log_direction.Out,
+		Direction:    call_direction.Out,
 		Network:      mobile_network.Viettel,
 		FeePerSecond: 7.5,
 	},
 	{
-		Direction:    call_log_direction.Out,
+		Direction:    call_direction.Out,
 		Network:      mobile_network.Vinaphone,
 		FeePerSecond: 7.5,
 	},
 	{
-		Direction:    call_log_direction.Out,
+		Direction:    call_direction.Out,
 		Network:      mobile_network.Other,
 		FeePerSecond: 13.4,
 	},
@@ -48,7 +48,7 @@ func init() {
 
 type CalcPostageArgs struct {
 	Phone          string
-	Direction      call_log_direction.CallLogDirection
+	Direction      call_direction.CallDirection
 	DurationSecond int
 }
 

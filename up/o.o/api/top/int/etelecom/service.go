@@ -17,6 +17,7 @@ type EtelecomService interface {
 
 	GetHotlines(context.Context, *cm.Empty) (*types.GetHotLinesResponse, error)
 	GetCallLogs(context.Context, *types.GetCallLogsRequest) (*types.GetCallLogsResponse, error)
+	CreateCallLog(context.Context, *CreateCallLogRequest) (*types.CallLog, error)
 
 	SummaryEtelecom(context.Context, *SummaryEtelecomRequest) (*SummaryEtelecomResponse, error)
 

@@ -101,7 +101,24 @@ func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetC
 		query.ExtensionIDs = r.Filter.ExtensionIDs
 	}
 
-	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
+	// Tìm tất cả hotline của owner shop
+	// HotlineID dùng để lấy những call logs chỉ có thông tin hotline (trường hợp ko tìm ra được extension)
+	queryHotline := &etelecom.ListHotlinesQuery{
+		OwnerID: s.SS.Shop().OwnerID,
+	}
+	if err = s.EtelecomQuery.Dispatch(ctx, queryHotline); err != nil {
+		return nil, err
+	}
+	hotlinesOwner := queryHotline.Result
+	if len(hotlinesOwner) > 0 {
+		for _, hotline := range queryHotline.Result {
+			if !cm.IDsContain(query.HotlineIDs, hotline.ID) {
+				query.HotlineIDs = append(query.HotlineIDs, hotline.ID)
+			}
+		}
+	}
+
+	if err = s.EtelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	res := Convert_etelecom_CallLogs_etelecomtypes_CallLogs(query.Result.CallLogs)
@@ -109,6 +126,24 @@ func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetC
 		CallLogs: res,
 		Paging:   cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
 	}, nil
+}
+
+func (s *EtelecomService) CreateCallLog(ctx context.Context, r *etelecomapi.CreateCallLogRequest) (*etelecomtypes.CallLog, error) {
+	cmd := &etelecom.CreateCallLogCommand{
+		ExternalSessionID: r.ExternalSessionID,
+		Direction:         r.Direction,
+		Caller:            r.Caller,
+		Callee:            r.Callee,
+		ExtensionID:       r.ExtensionID,
+		AccountID:         s.SS.Shop().ID,
+		ContactID:         r.ContactID,
+		CallState:         r.CallState,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	res := Convert_etelecom_CallLog_etelecomtypes_CallLog(cmd.Result, nil)
+	return res, nil
 }
 
 func (s *EtelecomService) SummaryEtelecom(
@@ -128,7 +163,7 @@ func (s *EtelecomService) SummaryEtelecom(
 		DateFrom: dateFrom,
 		DateTo:   dateTo,
 	}
-	if err := s.SummaryQuery.Dispatch(ctx, query); err != nil {
+	if err = s.SummaryQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 

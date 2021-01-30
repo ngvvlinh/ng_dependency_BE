@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/etelecom/call_state"
 	"o.o/api/main/connectioning"
 )
 
@@ -66,13 +67,25 @@ type GetCallLogsResponse struct {
 }
 
 type CallLog struct {
-	CallID     string
-	CallStatus string
-	Caller     string
-	Callee     string
-	Direction  string
-	StartedAt  time.Time
-	EndedAt    time.Time
-	Duration   int
-	AudioURLs  []string
+	CallID        string
+	CallStatus    string
+	Caller        string
+	Callee        string
+	Direction     string
+	StartedAt     time.Time
+	EndedAt       time.Time
+	Duration      int
+	AudioURLs     []string
+	CallTargets   []*CallTarget
+	CallState     call_state.CallState
+	HotlineNumber string
+	SessionID     string
+}
+
+type CallTarget struct {
+	TargetNumber string
+	TalkDuration int
+	CallState    call_state.CallState
+	AnsweredTime time.Time
+	EndedTime    time.Time
 }

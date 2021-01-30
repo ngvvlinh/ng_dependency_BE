@@ -9,7 +9,8 @@ import (
 	"time"
 
 	"o.o/api/etelecom"
-	"o.o/api/etelecom/call_log_direction"
+	"o.o/api/etelecom/call_direction"
+	"o.o/api/etelecom/call_state"
 	"o.o/api/main/connectioning"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/connection_type"
@@ -22,13 +23,12 @@ import (
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
-	vhtclient "o.o/backend/pkg/integration/telecom/portsip/client"
 	"o.o/capi/dot"
 	"o.o/common/l"
 	"o.o/common/xerrors"
 )
 
-var _ providertypes.TelecomSync = &VHTSync{}
+var _ providertypes.TelecomSync = &PortsipSync{}
 
 var ll = l.New().WithChannel(meta.ChannelTelecomProvider)
 
@@ -43,7 +43,7 @@ type TaskCrawlLogArguments struct {
 	shopConnection *model.ShopConnection
 }
 
-type VHTSync struct {
+type PortsipSync struct {
 	dbMain         *cmsql.Database
 	telecomManager *telecomprovider.TelecomManager
 	telecomQuery   etelecom.QueryBus
@@ -65,8 +65,8 @@ func New(
 	db com.MainDB, telecomManager *telecomprovider.TelecomManager,
 	telecomQS etelecom.QueryBus, telecomA etelecom.CommandBus,
 	connectionA connectioning.CommandBus,
-) *VHTSync {
-	return &VHTSync{
+) *PortsipSync {
+	return &PortsipSync{
 		dbMain:                 db,
 		telecomManager:         telecomManager,
 		telecomQuery:           telecomQS,
@@ -79,76 +79,76 @@ func New(
 	}
 }
 
-func (v *VHTSync) Init(ctx context.Context) error {
+func (s *PortsipSync) Init(ctx context.Context) error {
 	return nil
 }
 
-func (v *VHTSync) Start(ctx context.Context) error {
-	v.schedulerCrawlCallLogs.Start()
+func (s *PortsipSync) Start(ctx context.Context) error {
+	s.schedulerCrawlCallLogs.Start()
 
-	v.addCrawlCallLogsTasks(ctx)
+	s.addCrawlCallLogsTasks(ctx)
 	for {
 		select {
-		case <-v.crawlCallLogsTicker.C:
-			v.addCrawlCallLogsTasks(ctx)
+		case <-s.crawlCallLogsTicker.C:
+			s.addCrawlCallLogsTasks(ctx)
 		}
 	}
 }
 
-func (v *VHTSync) Stop(ctx context.Context) error {
-	v.schedulerCrawlCallLogs.Stop()
+func (s *PortsipSync) Stop(ctx context.Context) error {
+	s.schedulerCrawlCallLogs.Stop()
 	return nil
 }
 
 // crawl for each shop_connection
 // in this context we define shopConnection as tenant
-func (v *VHTSync) addCrawlCallLogsTasks(ctx context.Context) error {
-	shopConnections, err := v.listShopConnections(ctx)
+func (s *PortsipSync) addCrawlCallLogsTasks(ctx context.Context) error {
+	shopConnections, err := s.listShopConnections(ctx)
 	if err != nil {
 		return err
 	}
 
 	var taskIDs []dot.ID
 
-	v.mutex.Lock()
+	s.mutex.Lock()
 	for _, shopConnection := range shopConnections {
-		keyTenant := v.getKeyTenantInProgress(shopConnection.ConnectionID, shopConnection.OwnerID)
+		keyTenant := s.getKeyTenantInProgress(shopConnection.ConnectionID, shopConnection.OwnerID)
 
 		// check tenant is in progress
-		if _, ok := v.mapTenantInProgress[keyTenant]; ok {
+		if _, ok := s.mapTenantInProgress[keyTenant]; ok {
 			continue
 		}
 
 		// add task
 		taskID := cm.NewID()
 		// add tenant in to progress
-		v.mapTenantInProgress[keyTenant] = taskID
+		s.mapTenantInProgress[keyTenant] = taskID
 
 		// add task with arguments
-		v.mapTaskCrawlCallLog[taskID] = &TaskCrawlLogArguments{
+		s.mapTaskCrawlCallLog[taskID] = &TaskCrawlLogArguments{
 			shopConnection: shopConnection,
 		}
 		taskIDs = append(taskIDs, taskID)
 	}
-	v.mutex.Unlock()
+	s.mutex.Unlock()
 
 	// add tasks
 	for _, taskID := range taskIDs {
 		t := rand.Intn(int(time.Second))
-		v.schedulerCrawlCallLogs.AddAfter(taskID, time.Duration(t), v.crawlCallLogs)
+		s.schedulerCrawlCallLogs.AddAfter(taskID, time.Duration(t), s.crawlCallLogs)
 	}
 
 	return nil
 }
 
-func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error) {
+func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error) {
 	ctx := bus.Ctx()
 
 	taskArgumentID := id.(dot.ID)
 
-	v.mutex.Lock()
-	taskArguments := v.mapTaskCrawlCallLog[taskArgumentID]
-	v.mutex.Unlock()
+	s.mutex.Lock()
+	taskArguments := s.mapTaskCrawlCallLog[taskArgumentID]
+	s.mutex.Unlock()
 
 	ownerID := taskArguments.shopConnection.OwnerID
 	connectionID := taskArguments.shopConnection.ConnectionID
@@ -156,20 +156,20 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 	// make sure we don't miss call logs (cdr) in 15 minutes
 	lastSyncAt = lastSyncAt.Add(-15 * time.Minute)
 
-	tenantKey := v.getKeyTenantInProgress(connectionID, ownerID)
+	tenantKey := s.getKeyTenantInProgress(connectionID, ownerID)
 
 	defer func() {
 		// remove tenant in mapTenantInProgress
-		v.mutex.Lock()
-		delete(v.mapTenantInProgress, tenantKey)
-		v.mutex.Unlock()
+		s.mutex.Lock()
+		delete(s.mapTenantInProgress, tenantKey)
+		s.mutex.Unlock()
 
 		if err != nil {
 			sendError(ownerID, connectionID, err)
 		}
 	}()
 
-	telecomDriver, err := v.telecomManager.GetTelecomDriver(ctx, connectionID, ownerID)
+	telecomDriver, err := s.telecomManager.GetTelecomDriver(ctx, connectionID, ownerID)
 	if err != nil {
 		return cm.Errorf(cm.Internal, err, "Get driver error: %v", err.Error())
 	}
@@ -179,7 +179,15 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 		getCallLogsResp *providertypes.GetCallLogsResponse
 	)
 	now := time.Now()
+	hotlines, err := s.getHotlines(ctx, connectionID, ownerID)
+	if err != nil {
+		return err
+	}
+	if len(hotlines) == 0 {
+		return cm.Errorf(cm.Internal, err, "Can not find any hotline from this connection: connection_id = %v, owner_id = %v", connectionID, ownerID)
+	}
 
+	var lastCallLogAt time.Time
 	for true {
 		getCallLogsReq := &providertypes.GetCallLogsRequest{
 			StartedAt: lastSyncAt,
@@ -196,60 +204,46 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 		if len(getCallLogsResp.CallLogs) == 0 {
 			break
 		}
+		if lastCallLogAt.IsZero() {
+			lastCallLogAt = getCallLogsResp.CallLogs[0].EndedAt
+		}
 
 		for _, callLogResp := range getCallLogsResp.CallLogs {
-			callState := vhtclient.VHTCallStatus(callLogResp.CallStatus).ToCallState()
-			cmdCreate := &etelecom.CreateCallLogFromCDRCommand{
-				ExternalID:         callLogResp.CallID,
-				StartedAt:          callLogResp.StartedAt,
-				EndedAt:            callLogResp.EndedAt,
-				Duration:           callLogResp.Duration,
-				Caller:             callLogResp.Caller,
-				Callee:             callLogResp.Callee,
-				AudioURLs:          callLogResp.AudioURLs,
-				ExternalDirection:  callLogResp.Direction,
-				ExternalCallStatus: callLogResp.CallStatus,
-				CallState:          callState,
-				CallStatus:         callState.ToStatus5(),
-				OwnerID:            ownerID,
-				ConnectionID:       connectionID,
-			}
-
 			if lastSyncAt.After(callLogResp.StartedAt) {
 				break
 			}
-			var createCallLogCmds []*etelecom.CreateCallLogFromCDRCommand
 
-			switch callLogResp.Direction {
-			case call_log_direction.In.String(),
-				call_log_direction.Out.String():
-				direction, _ := call_log_direction.ParseCallLogDirection(callLogResp.Direction)
-				cmd := *cmdCreate
-				cmd.Direction = direction
+			_callsInfo := s.getCallInfo(ctx, hotlines, callLogResp)
+			for _, info := range _callsInfo {
+				if info.HotlineID == 0 {
+					continue
+				}
+				cmdCreate := &etelecom.CreateOrUpdateCallLogFromCDRCommand{
+					ExternalID:         callLogResp.CallID,
+					StartedAt:          callLogResp.StartedAt,
+					EndedAt:            callLogResp.EndedAt,
+					Duration:           callLogResp.Duration,
+					AudioURLs:          callLogResp.AudioURLs,
+					ExternalDirection:  callLogResp.Direction,
+					ExternalCallStatus: callLogResp.CallStatus,
+					OwnerID:            ownerID,
+					ConnectionID:       connectionID,
+					ExternalSessionID:  info.SessionID,
+					Callee:             info.Callee,
+					Caller:             info.Caller,
+					Direction:          info.Direction,
+					CallState:          info.CallState,
+					ExtensionID:        info.ExtensionID,
+					HotlineID:          info.HotlineID,
+				}
 
-				createCallLogCmds = append(createCallLogCmds, &cmd)
-
-			case call_log_direction.Ext.String():
-				// Api chỉ trả về 1 call log
-				// để ghi nhận cuộc gọi từ extension -> extension thì cần tạo 2 call logs với direction (in, out)
-				cmdIn := *cmdCreate
-				cmdOut := *cmdCreate
-				cmdIn.Direction = call_log_direction.In
-				cmdOut.Direction = call_log_direction.Out
-				createCallLogCmds = append(createCallLogCmds,
-					&cmdIn, &cmdOut,
-				)
-			}
-
-			for _, createCallLogCmd := range createCallLogCmds {
-				if _err := v.telecomAggr.Dispatch(ctx, createCallLogCmd); _err != nil {
+				if _err := s.telecomAggr.Dispatch(ctx, cmdCreate); _err != nil {
 					if cm.ErrorCode(_err) == cm.NotFound {
 						// ignore if extension or any things not found
 						continue
 					}
 					if xerr, ok := _err.(*xerrors.APIError); ok && xerr.Err != nil {
 						errMsg := xerr.Err.Error()
-
 						if strings.Contains(errMsg, uniqueExternalIDCallLog) ||
 							strings.Contains(errMsg, uniqueExternalIDDirectionCallLog) {
 							// ignore if duplicate
@@ -265,29 +259,29 @@ func (v *VHTSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err error)
 	updateShopConnectionCmd := &connectioning.UpdateShopConnectionLastSyncAtCommand{
 		OwnerID:      ownerID,
 		ConnectionID: connectionID,
-		LastSyncAt:   now,
+		LastSyncAt:   lastCallLogAt,
 	}
-	if err := v.connectionAggr.Dispatch(ctx, updateShopConnectionCmd); err != nil {
+	if err = s.connectionAggr.Dispatch(ctx, updateShopConnectionCmd); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (v *VHTSync) getKeyTenantInProgress(connectionID, ownerID dot.ID) string {
+func (s *PortsipSync) getKeyTenantInProgress(connectionID, ownerID dot.ID) string {
 	if ownerID == 0 {
 		return fmt.Sprintf("%d", connectionID.Int64())
 	}
 	return fmt.Sprintf("%d-%d", connectionID.Int64(), ownerID.Int64())
 }
 
-func (v *VHTSync) listShopConnections(ctx context.Context) (shopConnections []*model.ShopConnection, err error) {
+func (s *PortsipSync) listShopConnections(ctx context.Context) (shopConnections []*model.ShopConnection, err error) {
 	// get connections of VHT
 	var connectionIDs []dot.ID
 	{
 		var _connections model.Connections
 
-		err = v.dbMain.
+		err = s.dbMain.
 			Where("connection_type = ?", connection_type.Telecom).
 			Where("connection_provider = ?", connection_type.ConnectionProviderPortSIP).
 			Where("status = ?", status3.P).
@@ -310,7 +304,7 @@ func (v *VHTSync) listShopConnections(ctx context.Context) (shopConnections []*m
 	for {
 		var _shopConnections model.ShopConnections
 
-		err = v.dbMain.
+		err = s.dbMain.
 			Where("created_at > ?", createdAt).
 			Where("status = ?", status3.P).
 			In("connection_id", connectionIDs).
@@ -338,4 +332,151 @@ func sendError(ownerID, connectionID dot.ID, err error) {
 		return
 	}
 	ll.SendMessagef("–––\n👹 Telecom-sync-service: VHT 👹\n- Method: Builtin\n- ConnectionID: %v\n- Error: %v\n---", connectionID, err.Error())
+}
+
+type callInfo struct {
+	Callee      string
+	Caller      string
+	CallState   call_state.CallState
+	ExtensionID dot.ID
+	HotlineID   dot.ID
+	Direction   call_direction.CallDirection
+	SessionID   string
+}
+
+func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etelecom.Hotline, callLog *providertypes.CallLog) (res []*callInfo) {
+	_callInfo := &callInfo{
+		Callee:    callLog.Callee,
+		Caller:    callLog.Caller,
+		CallState: callLog.CallState,
+		SessionID: callLog.SessionID,
+	}
+	if len(hotlines) == 0 {
+		return nil
+	}
+
+	hotlineIDs := []dot.ID{}
+	if hotline, ok := hotlines[callLog.HotlineNumber]; ok {
+		_callInfo.HotlineID = hotline.ID
+		hotlineIDs = []dot.ID{hotline.ID}
+	} else {
+		for _, h := range hotlines {
+			hotlineIDs = append(hotlineIDs, h.ID)
+		}
+	}
+	res = append(res, _callInfo)
+
+	switch callLog.Direction {
+	case call_direction.In.String():
+		// dựa vào call_targets để xác định ext nhận cuộc gọi
+		// call target sẽ trả về 1 mảng các giá trị của extension
+		// trường hợp porsip xài Queue hay Ring Group nó sẽ có tất cả ext của Queue hay Ring Group đó
+		// cần tìm ra 1 extension tương ứng để tạo call log
+		// Nếu ko tìm thấy ext => vẫn trả về kết quả
+		_callInfo.Direction = call_direction.In
+		extensionNumbersAnswered := []string{}
+		extensionNumbersNotAnswered := []string{}
+		targetsMap := make(map[string]*providertypes.CallTarget)
+		for _, target := range callLog.CallTargets {
+			targetsMap[target.TargetNumber] = target
+			if target.CallState == call_state.Answered {
+				extensionNumbersAnswered = append(extensionNumbersAnswered, target.TargetNumber)
+			} else {
+				extensionNumbersNotAnswered = append(extensionNumbersNotAnswered, target.TargetNumber)
+			}
+		}
+
+		// find extension: priority extension number answered first
+		ext, err := s.findExtension(ctx, extensionNumbersAnswered, hotlineIDs)
+		if err != nil {
+			ext, err = s.findExtension(ctx, extensionNumbersNotAnswered, hotlineIDs)
+			if err != nil || ext == nil {
+				return
+			}
+		}
+
+		target, ok := targetsMap[ext.ExtensionNumber]
+		if !ok {
+			return
+		}
+		_callInfo.Callee = target.TargetNumber
+		_callInfo.CallState = target.CallState
+		_callInfo.ExtensionID = ext.ID
+		_callInfo.HotlineID = ext.HotlineID
+		return res
+
+	case call_direction.Out.String():
+		_callInfo.Direction = call_direction.Out
+		extensionNumbers := []string{callLog.Caller}
+		ext, err := s.findExtension(ctx, extensionNumbers, hotlineIDs)
+		if err != nil {
+			return
+		}
+		_callInfo.ExtensionID = ext.ID
+		_callInfo.HotlineID = ext.HotlineID
+		return
+
+	case call_direction.Ext.String():
+		// tách làm 2 call log: gọi vào và gọi ra
+		// gọi vào
+		extensionCallerNumbers := []string{callLog.Caller}
+		extCaller, err := s.findExtension(ctx, extensionCallerNumbers, hotlineIDs)
+		if err != nil {
+			return
+		}
+		var result = []*callInfo{}
+		callInfoIn := *_callInfo
+		callInfoIn.Direction = call_direction.In
+		callInfoIn.ExtensionID = extCaller.ID
+		callInfoIn.HotlineID = extCaller.HotlineID
+
+		// gọi ra
+		extensionCalleeNumbers := []string{callLog.Callee}
+		extCallee, err := s.findExtension(ctx, extensionCalleeNumbers, hotlineIDs)
+		if err != nil {
+			return
+		}
+		callInfoOut := *_callInfo
+		callInfoOut.Direction = call_direction.Out
+		callInfoOut.ExtensionID = extCallee.ID
+		callInfoOut.HotlineID = extCallee.HotlineID
+		callInfoOut.SessionID += "-" + call_direction.Out.String()
+
+		result = append(result, &callInfoIn, &callInfoOut)
+		return result
+
+	default:
+		return
+	}
+}
+
+func (s *PortsipSync) findExtension(ctx context.Context, extNumbers []string, hotlineIDs []dot.ID) (ext *etelecom.Extension, err error) {
+	query := &etelecom.ListExtensionsQuery{
+		HotlineIDs:       hotlineIDs,
+		ExtensionNumbers: extNumbers,
+	}
+	if err = s.telecomQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	extensions := query.Result
+	if len(extensions) == 0 {
+		return nil, cm.Errorf(cm.NotFound, nil, "Extension not found: %v", extNumbers)
+	}
+	return extensions[0], nil
+}
+
+func (s *PortsipSync) getHotlines(ctx context.Context, connectionID, ownerID dot.ID) (map[string]*etelecom.Hotline, error) {
+	query := &etelecom.ListHotlinesQuery{
+		OwnerID:      ownerID,
+		ConnectionID: connectionID,
+	}
+	if err := s.telecomQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+
+	var hotlines = map[string]*etelecom.Hotline{}
+	for _, hotline := range query.Result {
+		hotlines[hotline.Hotline] = hotline
+	}
+	return hotlines, nil
 }

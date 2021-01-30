@@ -5,7 +5,7 @@ import (
 	"math"
 
 	"o.o/api/etelecom"
-	"o.o/api/etelecom/call_log_direction"
+	"o.o/api/etelecom/call_direction"
 	"o.o/api/top/types/etc/status5"
 	"o.o/backend/com/etelecom/postage"
 	"o.o/backend/pkg/common/bus"
@@ -31,11 +31,11 @@ func New(eventBus bus.EventRegistry,
 }
 
 func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
-	eventBus.AddEventListener(m.CallLogCreated)
+	eventBus.AddEventListener(m.CallLogCalcPostage)
 }
 
 // calc postage
-func (m *ProcessManager) CallLogCreated(ctx context.Context, event *etelecom.CallLogCreatedEvent) error {
+func (m *ProcessManager) CallLogCalcPostage(ctx context.Context, event *etelecom.CallLogCalcPostageEvent) error {
 	if event.CallStatus != status5.P {
 		return nil
 	}
@@ -65,7 +65,7 @@ func (m *ProcessManager) CallLogCreated(ctx context.Context, event *etelecom.Cal
 	defer func() error {
 		return m.etelecomAggr.Dispatch(ctx, update)
 	}()
-	if event.Direction != call_log_direction.Out {
+	if event.Direction != call_direction.Out {
 		return nil
 	}
 	phone := event.Callee

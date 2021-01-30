@@ -41,8 +41,8 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*etelecommodel.CallLog) = out0
 		return nil
 	})
-	s.Register((*etelecom.CreateCallLogFromCDRArgs)(nil), (*etelecom.CallLog)(nil), func(arg, out interface{}) error {
-		Apply_etelecom_CreateCallLogFromCDRArgs_etelecom_CallLog(arg.(*etelecom.CreateCallLogFromCDRArgs), out.(*etelecom.CallLog))
+	s.Register((*etelecom.CreateOrUpdateCallLogFromCDRArgs)(nil), (*etelecom.CallLog)(nil), func(arg, out interface{}) error {
+		Apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecom_CallLog(arg.(*etelecom.CreateOrUpdateCallLogFromCDRArgs), out.(*etelecom.CallLog))
 		return nil
 	})
 	s.Register((*etelecommodel.Extension)(nil), (*etelecom.Extension)(nil), func(arg, out interface{}) error {
@@ -144,6 +144,7 @@ func convert_etelecommodel_CallLog_etelecom_CallLog(arg *etelecommodel.CallLog, 
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 	out.DurationPostage = arg.DurationPostage       // simple assign
 	out.Postage = arg.Postage                       // simple assign
+	out.ExternalSessionID = arg.ExternalSessionID   // simple assign
 }
 
 func Convert_etelecommodel_CallLogs_etelecom_CallLogs(args []*etelecommodel.CallLog) (outs []*etelecom.CallLog) {
@@ -191,6 +192,7 @@ func convert_etelecom_CallLog_etelecommodel_CallLog(arg *etelecom.CallLog, out *
 	out.CallStatus = arg.CallStatus                 // simple assign
 	out.DurationPostage = arg.DurationPostage       // simple assign
 	out.Postage = arg.Postage                       // simple assign
+	out.ExternalSessionID = arg.ExternalSessionID   // simple assign
 }
 
 func Convert_etelecom_CallLogs_etelecommodel_CallLogs(args []*etelecom.CallLog) (outs []*etelecommodel.CallLog) {
@@ -205,18 +207,18 @@ func Convert_etelecom_CallLogs_etelecommodel_CallLogs(args []*etelecom.CallLog) 
 	return outs
 }
 
-func Apply_etelecom_CreateCallLogFromCDRArgs_etelecom_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *etelecom.CallLog) *etelecom.CallLog {
+func Apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecom_CallLog(arg *etelecom.CreateOrUpdateCallLogFromCDRArgs, out *etelecom.CallLog) *etelecom.CallLog {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &etelecom.CallLog{}
 	}
-	apply_etelecom_CreateCallLogFromCDRArgs_etelecom_CallLog(arg, out)
+	apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecom_CallLog(arg, out)
 	return out
 }
 
-func apply_etelecom_CreateCallLogFromCDRArgs_etelecom_CallLog(arg *etelecom.CreateCallLogFromCDRArgs, out *etelecom.CallLog) {
+func apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecom_CallLog(arg *etelecom.CreateOrUpdateCallLogFromCDRArgs, out *etelecom.CallLog) {
 	out.ID = 0                                      // zero value
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = 0                               // zero value
@@ -229,15 +231,16 @@ func apply_etelecom_CreateCallLogFromCDRArgs_etelecom_CallLog(arg *etelecom.Crea
 	out.ExternalDirection = arg.ExternalDirection   // simple assign
 	out.ExternalCallStatus = arg.ExternalCallStatus // simple assign
 	out.CallState = arg.CallState                   // simple assign
-	out.CallStatus = arg.CallStatus                 // simple assign
+	out.CallStatus = 0                              // zero value
 	out.Direction = arg.Direction                   // simple assign
-	out.ExtensionID = 0                             // zero value
-	out.HotlineID = 0                               // zero value
+	out.ExtensionID = arg.ExtensionID               // simple assign
+	out.HotlineID = arg.HotlineID                   // simple assign
 	out.ContactID = 0                               // zero value
 	out.CreatedAt = time.Time{}                     // zero value
 	out.UpdatedAt = time.Time{}                     // zero value
 	out.DurationPostage = 0                         // zero value
 	out.Postage = 0                                 // zero value
+	out.ExternalSessionID = arg.ExternalSessionID   // simple assign
 }
 
 //-- convert o.o/api/etelecom.Extension --//

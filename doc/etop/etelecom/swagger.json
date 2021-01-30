@@ -15,6 +15,33 @@
     "version": "v1"
   },
   "paths": {
+    "/api/shop.Etelecom/CreateCallLog": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "CreateCallLog",
+        "operationId": "shop.Etelecom-CreateCallLog",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/btCreateCallLogRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riCallLog"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/CreateExtension": {
       "post": {
         "tags": [
@@ -197,6 +224,34 @@
         "NS"
       ]
     },
+    "btCreateCallLogRequest": {
+      "type": "object",
+      "properties": {
+        "call_state": {
+          "$ref": "#/definitions/jwCallState"
+        },
+        "callee": {
+          "type": "string"
+        },
+        "caller": {
+          "type": "string"
+        },
+        "contact_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "direction": {
+          "$ref": "#/definitions/jfCallDirection"
+        },
+        "extension_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_session_id": {
+          "type": "string"
+        }
+      }
+    },
     "btCreateUserAndAssignExtensionRequest": {
       "type": "object",
       "properties": {
@@ -246,7 +301,7 @@
         "direct"
       ]
     },
-    "jfCallLogDirection": {
+    "jfCallDirection": {
       "type": "string",
       "enum": [
         "unknown",
@@ -424,7 +479,7 @@
           "format": "date-time"
         },
         "direction": {
-          "$ref": "#/definitions/jfCallLogDirection"
+          "$ref": "#/definitions/jfCallDirection"
         },
         "duration": {
           "type": "integer"

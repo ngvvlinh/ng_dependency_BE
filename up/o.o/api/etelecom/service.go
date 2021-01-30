@@ -4,13 +4,12 @@ import (
 	"context"
 	"time"
 
-	"o.o/api/etelecom/call_log_direction"
+	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/call_state"
 	"o.o/api/etelecom/mobile_network"
 	"o.o/api/meta"
 	cm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status3"
-	"o.o/api/top/types/etc/status5"
 	"o.o/capi/dot"
 	"o.o/common/xerrors"
 )
@@ -26,7 +25,8 @@ type Aggregate interface {
 	UpdateExternalExtensionInfo(context.Context, *UpdateExternalExtensionInfoArgs) error
 
 	UpdateCallLogPostage(context.Context, *UpdateCallLogPostageArgs) error
-	CreateCallLogFromCDR(context.Context, *CreateCallLogFromCDRArgs) (*CallLog, error)
+	CreateOrUpdateCallLogFromCDR(context.Context, *CreateOrUpdateCallLogFromCDRArgs) (*CallLog, error)
+	CreateCallLog(context.Context, *CreateCallLogArgs) (*CallLog, error)
 }
 
 type QueryService interface {
@@ -69,7 +69,7 @@ func (args *CreateExtensionArgs) Validate() error {
 }
 
 // +convert:create=CallLog
-type CreateCallLogFromCDRArgs struct {
+type CreateOrUpdateCallLogFromCDRArgs struct {
 	ExternalID         string
 	StartedAt          time.Time
 	EndedAt            time.Time
@@ -78,17 +78,19 @@ type CreateCallLogFromCDRArgs struct {
 	Callee             string
 	AudioURLs          []string
 	ExternalDirection  string
-	Direction          call_log_direction.CallLogDirection
+	Direction          call_direction.CallDirection
 	ExternalCallStatus string
 	CallState          call_state.CallState
-	CallStatus         status5.Status
+	ExternalSessionID  string
+	ExtensionID        dot.ID
+	HotlineID          dot.ID
 
 	// use for find hotline_id & extension_id
 	OwnerID      dot.ID
 	ConnectionID dot.ID
 }
 
-func (args *CreateCallLogFromCDRArgs) Validate() error {
+func (args *CreateOrUpdateCallLogFromCDRArgs) Validate() error {
 	if args.Callee == "" {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing callee")
 	}
@@ -97,6 +99,42 @@ func (args *CreateCallLogFromCDRArgs) Validate() error {
 	}
 	if args.ConnectionID == 0 {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing connection ID")
+	}
+	if args.HotlineID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing hotline ID")
+	}
+	if args.ExternalSessionID == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing external session ID")
+	}
+	return nil
+}
+
+type CreateCallLogArgs struct {
+	ExternalSessionID string
+	Direction         call_direction.CallDirection
+	Caller            string
+	Callee            string
+	ExtensionID       dot.ID
+	AccountID         dot.ID
+	ContactID         dot.ID
+	CallState         call_state.CallState
+}
+
+func (args *CreateCallLogArgs) Validate() error {
+	if args.ExtensionID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing extension ID")
+	}
+	if args.ExternalSessionID == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing external session ID")
+	}
+	if args.Direction == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing call direction")
+	}
+	if args.Callee == "" || args.Caller == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing caller or callee")
+	}
+	if args.AccountID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
 	}
 	return nil
 }
@@ -119,8 +157,9 @@ type GetExtensionArgs struct {
 }
 
 type ListExtensionsArgs struct {
-	AccountIDs []dot.ID
-	HotlineID  dot.ID
+	AccountIDs       []dot.ID
+	HotlineIDs       []dot.ID
+	ExtensionNumbers []string
 }
 
 type UpdateExternalExtensionInfoArgs struct {

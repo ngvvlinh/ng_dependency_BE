@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"o.o/api/etelecom/call_log_direction"
+	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/call_state"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/status3"
@@ -67,7 +67,7 @@ type CallLog struct {
 	// • out: means call from extension to trunk // từ tổng đài ra sim khách hàng
 	// • in2out: means a call is coming from trunk, but was forwarded to external number
 	ExternalDirection  string
-	Direction          call_log_direction.CallLogDirection
+	Direction          call_direction.CallDirection
 	ExtensionID        dot.ID
 	HotlineID          dot.ID
 	ExternalCallStatus string
@@ -78,6 +78,7 @@ type CallLog struct {
 	CallStatus         status5.Status
 	DurationPostage    int
 	Postage            int
+	ExternalSessionID  string
 
 	// depends on connectionID to get extension
 	// accountID get from extension (above)
