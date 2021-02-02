@@ -8,7 +8,6 @@ package build
 import (
 	"context"
 	"o.o/backend/cmd/fabo-event-handler/config"
-	"o.o/backend/cogs/database/_min"
 	"o.o/backend/cogs/shipment/_fabo"
 	"o.o/backend/com/eventhandler/handler/api"
 	"o.o/backend/com/eventhandler/webhook/sender"
@@ -19,6 +18,7 @@ import (
 	"o.o/backend/com/fabo/pkg/fbclient"
 	redis2 "o.o/backend/com/fabo/pkg/redis"
 	"o.o/backend/com/fabo/pkg/webhook"
+	"o.o/backend/com/main"
 	"o.o/backend/com/main/connectioning/aggregate"
 	"o.o/backend/com/main/connectioning/manager"
 	query2 "o.o/backend/com/main/connectioning/query"
@@ -49,13 +49,15 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	store := redis.Connect(redisRedis)
 	service := health.New(store)
 	miscService := &api.MiscService{}
-	database_minConfig := cfg.Databases
-	databases, err := database_min.BuildDatabases(database_minConfig)
+	databases := cfg.Databases
+	mainDB, err := com.BuildDatabaseMain(databases)
 	if err != nil {
 		return Output{}, nil, err
 	}
-	mainDB := databases.Main
-	webhookDB := databases.Webhook
+	webhookDB, err := com.BuildDatabaseWebhook(databases)
+	if err != nil {
+		return Output{}, nil, err
+	}
 	changesStore := storage.NewChangesStore(webhookDB)
 	partnerStore := sqlstore.BuildPartnerStore(mainDB)
 	partnerStoreInterface := sqlstore.BindPartnerStore(partnerStore)
@@ -142,7 +144,10 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	shopSettingUtil := util.NewShopSettingUtil(store)
 	shopSettingQuery := query5.NewShopSettingQuery(mainDB, shopSettingUtil)
 	settingQueryBus := query5.ShopSettingQueryMessageBus(shopSettingQuery)
-	logDB := databases.Log
+	logDB, err := com.BuildDatabaseLogs(databases)
+	if err != nil {
+		return Output{}, nil, err
+	}
 	webhookConfig := cfg.Webhook
 	faboRedis := redis2.NewFaboRedis(store)
 	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
@@ -167,7 +172,10 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	if err != nil {
 		return Output{}, nil, err
 	}
-	notifierDB := databases.Notifier
+	notifierDB, err := com.BuildDatabaseNotifier(databases)
+	if err != nil {
+		return Output{}, nil, err
+	}
 	v3, err := BuildHandlers(ctx, cfg, mainDB, notifierDB)
 	if err != nil {
 		return Output{}, nil, err

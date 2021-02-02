@@ -7,6 +7,6 @@ import (
 )
 
 var WireSet = wire.NewSet(
-	wire.FieldsOf(new(Databases), "main", "log", "notifier", "webhook"),
+	wire.FieldsOf(new(Databases), "main", "log", "notifier"),
 	BuildDatabases,
 )

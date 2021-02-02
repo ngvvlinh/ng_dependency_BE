@@ -117,8 +117,8 @@ func BuildPgEventService(
 	if err != nil {
 		return nil, err
 	}
-	dbcfg := cfg.Databases.Postgres
-	s, err := pgevent.NewService(ctx, dbdecl.DBMain, dbcfg, producer, cfg.Kafka.TopicPrefix, fabohandler.Topics())
+	dbcfg := cfg.Databases["postgres"]
+	s, err := pgevent.NewService(ctx, dbdecl.DBMain, *dbcfg, producer, cfg.Kafka.TopicPrefix, fabohandler.Topics())
 	return s, err
 }
 

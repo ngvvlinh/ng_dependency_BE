@@ -2,31 +2,35 @@ package config
 
 import (
 	"o.o/backend/cmd/fabo-server/config"
-	database_min "o.o/backend/cogs/database/_min"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	cc "o.o/backend/pkg/common/config"
 )
 
 type Config struct {
-	Databases    database_min.Config        `yaml:",inline"`
-	Redis       cc.Redis           `yaml:"redis"`
-	HTTP        cc.HTTP            `yaml:"http"`
-	Kafka       cc.Kafka           `yaml:"kafka"`
-	TelegramBot cc.TelegramBot     `yaml:"telegram_bot"`
-	Onesignal   cc.OnesignalConfig `yaml:"onesignal"`
-	Secret      string             `yaml:"secret"`
-	Env         string             `yaml:"env"`
+	Databases   cc.Databases       `yaml:",inline"`
+	Redis       cc.Redis            `yaml:"redis"`
+	HTTP        cc.HTTP             `yaml:"http"`
+	Kafka       cc.Kafka            `yaml:"kafka"`
+	TelegramBot cc.TelegramBot      `yaml:"telegram_bot"`
+	Onesignal   cc.OnesignalConfig  `yaml:"onesignal"`
+	Secret      string              `yaml:"secret"`
+	Env         string              `yaml:"env"`
 	URL         struct {
 		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
-	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
-	Webhook     config.WebhookConfig      `yaml:"webhook"`
+	FacebookApp fbclient.AppConfig   `yaml:"facebook_app"`
+	Webhook     config.WebhookConfig `yaml:"webhook"`
 }
 
 func Default() Config {
 	cfg := Config{
 		// TODO(vu): automatically map default config
-		Databases:     database_min.DefaultConfig(),
+		Databases: map[string]*cc.Postgres{
+			"postgres":          cc.PtrDefaultPostgres(),
+			"postgres_webhook":  cc.PtrDefaultPostgres(),
+			"postgres_logs":  cc.PtrDefaultPostgres(),
+			"postgres_notifier": cc.PtrDefaultPostgres(),
+		},
 		Redis: cc.DefaultRedis(),
 		HTTP: cc.HTTP{
 			Host: "",
@@ -45,8 +49,13 @@ func Default() Config {
 }
 
 func Load() (cfg Config, err error) {
-	err = cc.LoadWithDefault(&cfg, Default())
-	cfg.Databases.MustLoadEnv()
+	if err = cc.LoadWithDefault(&cfg, Default()); err != nil {
+		return Config{}, err
+	}
+	cc.PostgresMustLoadEnv(cfg.Databases["postgres"])
+	cc.PostgresMustLoadEnv(cfg.Databases["postgres_webhook"], "ET_POSTGRES_WEBHOOK")
+	cc.PostgresMustLoadEnv(cfg.Databases["postgres_logs"], "ET_POSTGRES_LOGS")
+	cc.PostgresMustLoadEnv(cfg.Databases["postgres_notifier"], "ET_POSTGRES_NOTIFIER")
 	cc.RedisMustLoadEnv(&cfg.Redis)
 	cfg.TelegramBot.MustLoadEnv()
 	cfg.Onesignal.MustLoadEnv()
