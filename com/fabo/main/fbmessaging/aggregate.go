@@ -133,16 +133,15 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalMessages(
 
 			if oldFbExternalMessage, ok := mapOldFbExternalMessage[fbExternalMessageArg.ExternalID]; ok {
 				newFbExternalMessage.ID = oldFbExternalMessage.ID
-				resultFbExternalMessages = append(resultFbExternalMessages, oldFbExternalMessage)
-
-				if isEqual := compare.CompareFbExternalMessages(oldFbExternalMessage, newFbExternalMessage); isEqual {
-					continue
+				if err := a.fbExternalMessageStore(ctx).ExternalID(newFbExternalMessage.ExternalID).UpdateFbExternalMessage(newFbExternalMessage); err != nil {
+					return err
 				}
+
+				resultFbExternalMessages = append(resultFbExternalMessages, newFbExternalMessage)
 			} else {
 				resultFbExternalMessages = append(resultFbExternalMessages, newFbExternalMessage)
+				newFbExternalMessages = append(newFbExternalMessages, newFbExternalMessage)
 			}
-
-			newFbExternalMessages = append(newFbExternalMessages, newFbExternalMessage)
 		}
 
 		if len(newFbExternalMessages) > 0 {
