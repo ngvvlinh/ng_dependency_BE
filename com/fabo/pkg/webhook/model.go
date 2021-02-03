@@ -231,8 +231,8 @@ func (m *Message) ConvertToMessageData(fromID, toID string, createdTime fbclient
 		if m.Text != "" {
 			strs = append(strs, m.Text)
 		}
-		// Get first share
-		if len(shares) > 0 {
+		// Get first share when sticker is empty
+		if len(shares) > 0 && sticker == "" {
 			if shares[0].Description != "" {
 				strs = append(strs, shares[0].Description)
 			}
