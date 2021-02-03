@@ -6,6 +6,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/capi/dot"
 )
 
@@ -167,7 +168,10 @@ type FbExternalPost struct {
 	CreatedAt           time.Time `sq:"create"`
 	UpdatedAt           time.Time `sq:"update"`
 	DeletedAt           time.Time
+	TotalComments       int
+	TotalReactions      int
 	FeedType            fb_feed_type.FbFeedType
+	StatusType          fb_status_type.FbStatusType
 }
 
 type Attachment struct {

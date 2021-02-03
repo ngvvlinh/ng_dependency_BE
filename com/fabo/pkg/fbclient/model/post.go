@@ -11,23 +11,25 @@ type PublishedPostsResponse struct {
 }
 
 type Post struct {
-	ID           string       `json:"id"`
-	From         *ObjectFrom  `json:"from"`
-	FullPicture  string       `json:"full_picture"`
-	Icon         string       `json:"icon"`
-	IsExpired    bool         `json:"is_expired"`
-	IsHidden     bool         `json:"is_hidden"`
-	IsPopular    bool         `json:"is_popular"`
-	IsPublished  bool         `json:"is_published"`
-	Message      string       `json:"message"`
-	Story        string       `json:"story"`
-	PermalinkURL string       `json:"permalink_url"`
-	Shares       *Shares      `json:"shares"`
-	StatusType   string       `json:"status_type"`
-	Picture      string       `json:"picture"`
-	Attachments  *Attachments `json:"attachments"`
-	CreatedTime  FacebookTime `json:"created_time"`
-	UpdatedTime  FacebookTime `json:"updated_time"`
+	ID               string            `json:"id"`
+	From             *ObjectFrom       `json:"from"`
+	FullPicture      string            `json:"full_picture"`
+	Icon             string            `json:"icon"`
+	IsExpired        bool              `json:"is_expired"`
+	IsHidden         bool              `json:"is_hidden"`
+	IsPopular        bool              `json:"is_popular"`
+	IsPublished      bool              `json:"is_published"`
+	Message          string            `json:"message"`
+	Story            string            `json:"story"`
+	PermalinkURL     string            `json:"permalink_url"`
+	Shares           *Shares           `json:"shares"`
+	StatusType       string            `json:"status_type"`
+	Picture          string            `json:"picture"`
+	Attachments      *Attachments      `json:"attachments"`
+	CommentsSummary  *CommentsSummary  `json:"comments"`
+	ReactionsSummary *ReactionsSummary `json:"reactions"`
+	CreatedTime      FacebookTime      `json:"created_time"`
+	UpdatedTime      FacebookTime      `json:"updated_time"`
 }
 
 // IsResourceFromCurrentPage check current post is share or not.

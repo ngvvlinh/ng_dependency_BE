@@ -166,6 +166,14 @@ func PbFbMessageAttachments(ms []*fbmessaging.FbMessageAttachment) []*fabo.FbMes
 	return res
 }
 
+func PbFbExternalPosts(ms []*fbmessaging.FbExternalPost) []*fabo.FbExternalPost {
+	res := make([]*fabo.FbExternalPost, len(ms))
+	for i, m := range ms {
+		res[i] = PbFbExternalPost(m)
+	}
+	return res
+}
+
 func PbFbExternalPost(m *fbmessaging.FbExternalPost) *fabo.FbExternalPost {
 	if m == nil {
 		return nil
@@ -182,6 +190,9 @@ func PbFbExternalPost(m *fbmessaging.FbExternalPost) *fabo.FbExternalPost {
 		ExternalParent:      PbFbExternalPost(m.ExternalParent),
 		ExternalAttachments: PbPostAttachments(m.ExternalAttachments),
 		ExternalCreatedTime: m.ExternalCreatedTime,
+		ExternalStatusType:  m.StatusType,
+		TotalComments:       m.TotalComments,
+		TotalReactions:      m.TotalReactions,
 		CreatedAt:           m.CreatedAt,
 		UpdatedAt:           m.UpdatedAt,
 	}

@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/top/external/types"
 	"o.o/api/top/int/shop"
 	"o.o/api/top/types/common"
@@ -414,6 +415,28 @@ type FbMessageDataAttachmentVideoData struct {
 	Rotation   int    `json:"rotation"`
 }
 
+type ListPostsRequest struct {
+	Filter *PostFilter          `json:"filter"`
+	Paging *common.CursorPaging `json:"paging"`
+}
+
+func (m *ListPostsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type PostFilter struct {
+	ExternalPostIDs    []string                        `json:"external_post_ids"`
+	ExternalPageID     string                          `json:"external_page_id"`
+	ExternalStatusType fb_status_type.NullFbStatusType `json:"external_status_type"`
+}
+
+func (m *PostFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListPostsResponse struct {
+	FbExternalPosts []*FbExternalPost      `json:"data"`
+	Paging          *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *ListPostsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
 type ListCommentsByExternalPostIDRequest struct {
 	Filter *CommentFilter       `json:"filter"`
 	Paging *common.CursorPaging `json:"paging"`
@@ -440,18 +463,21 @@ type FbCommentsResponse struct {
 }
 
 type FbExternalPost struct {
-	ID                  dot.ID            `json:"id"`
-	ExternalPageID      string            `json:"external_page_id"`
-	ExternalID          string            `json:"external_id"`
-	ExternalParentID    string            `json:"external_parent_id"`
-	ExternalFrom        *FbObjectFrom     `json:"external_from"`
-	ExternalPicture     string            `json:"external_picture"`
-	ExternalIcon        string            `json:"external_icon"`
-	ExternalMessage     string            `json:"external_message"`
-	ExternalAttachments []*PostAttachment `json:"external_attachments"`
-	ExternalCreatedTime time.Time         `json:"external_created_time"`
-	CreatedAt           time.Time         `json:"created_at"`
-	UpdatedAt           time.Time         `json:"updated_at"`
+	ID                  dot.ID                      `json:"id"`
+	ExternalPageID      string                      `json:"external_page_id"`
+	ExternalID          string                      `json:"external_id"`
+	ExternalParentID    string                      `json:"external_parent_id"`
+	ExternalFrom        *FbObjectFrom               `json:"external_from"`
+	ExternalPicture     string                      `json:"external_picture"`
+	ExternalIcon        string                      `json:"external_icon"`
+	ExternalMessage     string                      `json:"external_message"`
+	ExternalAttachments []*PostAttachment           `json:"external_attachments"`
+	ExternalCreatedTime time.Time                   `json:"external_created_time"`
+	TotalComments       int                         `json:"total_comments"`
+	TotalReactions      int                         `json:"total_reactions"`
+	CreatedAt           time.Time                   `json:"created_at"`
+	UpdatedAt           time.Time                   `json:"updated_at"`
+	ExternalStatusType  fb_status_type.FbStatusType `json:"external_status_type"`
 
 	ExternalParent *FbExternalPost `json:"external_parent"`
 }

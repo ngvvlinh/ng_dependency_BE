@@ -9,6 +9,7 @@ import (
 	"o.o/backend/com/fabo/main/fbmessaging/sqlstore"
 	faboRedis "o.o/backend/com/fabo/pkg/redis"
 	com "o.o/backend/com/main"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -182,6 +183,34 @@ func (q *FbMessagingQuery) ListFbExternalPostsByIDs(
 	return fbExternalPosts, nil
 }
 
+func (q *FbMessagingQuery) ListFbExternalPosts(
+	ctx context.Context, args *fbmessaging.LitFbExternalPostsArgs,
+) (*fbmessaging.FbExternalPostsResponse, error) {
+	query := q.fbExternalPostStore(ctx).WithPaging(args.Paging)
+
+	if args.ExternalStatusType.Valid {
+		query = query.ExternalStatusType(args.ExternalStatusType.Enum)
+	}
+	if len(args.ExternalIDs) > 0 {
+		query = query.ExternalIDs(args.ExternalIDs)
+	}
+	if len(args.ExternalPageIDs) == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "external_page_ids must not be null")
+	} else {
+		query = query.ExternalPageIDs(args.ExternalPageIDs)
+	}
+
+	fbExternalPosts, err := query.ListFbExternalPosts()
+	if err != nil {
+		return nil, err
+	}
+
+	return &fbmessaging.FbExternalPostsResponse{
+		FbExternalPosts: fbExternalPosts,
+		Paging:          query.GetPaging(),
+	}, nil
+}
+
 func (q *FbMessagingQuery) mapPostParent(ctx context.Context, posts []*fbmessaging.FbExternalPost) error {
 	var postParentIDs []string
 	mapPost := make(map[string]*fbmessaging.FbExternalPost)
@@ -234,14 +263,21 @@ func (q *FbMessagingQuery) ListFbExternalComments(
 		ExternalPostID(args.FbExternalPostID)
 
 	var fbExternalComments []*fbmessaging.FbExternalComment
-	if args.FbExternalPageID != args.FbExternalUserID {
-		query = query.ExternalPageIDAndExternalUserID(args.FbExternalPageID, args.FbExternalUserID)
-		fbExternalComments, err = query.ListFbExternalComments()
-		if err != nil {
-			return nil, err
+	if args.FbExternalUserID != "" {
+		if args.FbExternalPageID != args.FbExternalUserID {
+			query = query.ExternalPageIDAndExternalUserID(args.FbExternalPageID, args.FbExternalUserID)
+			fbExternalComments, err = query.ListFbExternalComments()
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			fbExternalComments, err = query.ListFbExternalCommentsOfPage(args.FbExternalPageID)
+			if err != nil {
+				return nil, err
+			}
 		}
 	} else {
-		fbExternalComments, err = query.ListFbExternalCommentsOfPage(args.FbExternalPageID)
+		fbExternalComments, err = query.ListFbExternalComments()
 		if err != nil {
 			return nil, err
 		}

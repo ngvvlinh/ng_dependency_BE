@@ -24,6 +24,8 @@ type PageService interface {
 	RemovePages(context.Context, *RemovePagesRequest) (*cm.Empty, error)
 	ListPages(context.Context, *ListPagesRequest) (*ListPagesResponse, error)
 	CheckPermissions(context.Context, *CheckPagePermissionsRequest) (*CheckPagePermissionsResponse, error)
+
+	ListPosts(context.Context, *ListPostsRequest) (*ListPostsResponse, error)
 }
 
 // +apix:path=/fabo.Demo

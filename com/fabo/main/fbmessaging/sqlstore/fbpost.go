@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/meta"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/model"
@@ -39,6 +40,11 @@ type FbExternalPostStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
+func (s *FbExternalPostStore) WithPaging(paging meta.Paging) *FbExternalPostStore {
+	s.Paging.WithPaging(paging)
+	return s
+}
+
 func (s *FbExternalPostStore) ID(ID dot.ID) *FbExternalPostStore {
 	s.preds = append(s.preds, s.ft.ByID(ID))
 	return s
@@ -46,6 +52,11 @@ func (s *FbExternalPostStore) ID(ID dot.ID) *FbExternalPostStore {
 
 func (s *FbExternalPostStore) IDs(IDs []dot.ID) *FbExternalPostStore {
 	s.preds = append(s.preds, sq.In("id", IDs))
+	return s
+}
+
+func (s *FbExternalPostStore) ExternalStatusType(statusType fb_status_type.FbStatusType) *FbExternalPostStore {
+	s.preds = append(s.preds, s.ft.ByStatusType(statusType))
 	return s
 }
 
@@ -69,7 +80,33 @@ func (s *FbExternalPostStore) ExternalIDs(externalIDs []string) *FbExternalPostS
 	return s
 }
 
+func (s *FbExternalPostStore) ExternalPageIDs(externalPageIDs []string) *FbExternalPostStore {
+	s.preds = append(s.preds, sq.In("external_page_id", externalPageIDs))
+	return s
+}
+
 func (s *FbExternalPostStore) CreateFbExternalPost(fbExternalPost *fbmessaging.FbExternalPost) error {
+	fbExternalPostDB := new(model.FbExternalPost)
+	if err := scheme.Convert(fbExternalPost, fbExternalPostDB); err != nil {
+		return err
+	}
+
+	_, err := s.query().Insert(fbExternalPostDB)
+	if err != nil {
+		return err
+	}
+
+	var tempFbExternalPost model.FbExternalPost
+	if err := s.query().Where(s.ft.ByID(fbExternalPost.ID)).ShouldGet(&tempFbExternalPost); err != nil {
+		return err
+	}
+	fbExternalPost.CreatedAt = tempFbExternalPost.CreatedAt
+	fbExternalPost.UpdatedAt = tempFbExternalPost.UpdatedAt
+
+	return nil
+}
+
+func (s *FbExternalPostStore) UpsertFbExternalPost(fbExternalPost *fbmessaging.FbExternalPost) error {
 	sqlstore.MustNoPreds(s.preds)
 	fbExternalPostDB := new(model.FbExternalPost)
 	if err := scheme.Convert(fbExternalPost, fbExternalPostDB); err != nil {
@@ -91,7 +128,7 @@ func (s *FbExternalPostStore) CreateFbExternalPost(fbExternalPost *fbmessaging.F
 	return nil
 }
 
-func (s *FbExternalPostStore) CreateFbExternalPosts(fbExternalPosts []*fbmessaging.FbExternalPost) error {
+func (s *FbExternalPostStore) UpsertFbExternalPosts(fbExternalPosts []*fbmessaging.FbExternalPost) error {
 	sqlstore.MustNoPreds(s.preds)
 	fbExternalPostsDB := model.FbExternalPosts(convert.Convert_fbmessaging_FbExternalPosts_fbmessagingmodel_FbExternalPosts(fbExternalPosts))
 
@@ -100,6 +137,15 @@ func (s *FbExternalPostStore) CreateFbExternalPosts(fbExternalPosts []*fbmessagi
 		return err
 	}
 	return nil
+}
+
+func (s *FbExternalPostStore) UpdateFbExternalPost(fbExternalPost *fbmessaging.FbExternalPost) error {
+	fbExternalPostDB := new(model.FbExternalPost)
+	if err := scheme.Convert(fbExternalPost, fbExternalPostDB); err != nil {
+		return err
+	}
+
+	return s.query().Where(s.preds).ShouldUpdate(fbExternalPostDB)
 }
 
 func (s *FbExternalPostStore) GetFbExternalPostDB() (*model.FbExternalPost, error) {

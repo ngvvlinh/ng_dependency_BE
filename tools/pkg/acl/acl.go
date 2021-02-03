@@ -1302,6 +1302,7 @@ var _acl = map[string]*permission.Decl{
 	"fabo.Page/RemovePages":                                  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbFanpageDelete)},
 	"fabo.Page/ListPages":                                    {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbFanpageView)},
 	"fabo.Page/CheckPermissions":                             {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbFanpageView)},
+	"fabo.Page/ListPosts":                                    {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbPostCreate)},
 	"fabo.CustomerConversation/ListCustomerConversations":    {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},
 	"fabo.CustomerConversation/SearchCustomerConversations":  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},
 	"fabo.CustomerConversation/GetCustomerConversationByID":  {Type: Shop, Auth: User, IncludeFaboInfo: true, Actions: actions(FbCommentView, FbMessageView)},

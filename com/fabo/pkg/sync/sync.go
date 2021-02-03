@@ -11,6 +11,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/top/types/etc/status3"
@@ -267,40 +268,42 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 			return
 		}
 
-		facebookError := _err.(*xerrors.APIError)
-		code := facebookError.Meta["code"]
-		switch code {
-		case fbclient.AccessTokenHasExpired.String():
-			// no-op
-			return
-		case fbclient.ApiTooManyCalls.String(), fbclient.ApplicationLimitReached.String():
-			s.scheduler.AddAfter(taskID, defaultRecurrentFacebookThrottling, s.syncCallbackLogs)
-			return
-		case fbclient.RateLimitCallWithPage.String():
-			xBusinessUseCaseUsage := facebookError.Meta[fbclient.XBusinessUseCaseUsage]
-			var xBusinessUseCaseUsageHeader fbclient.XBusinessUseCaseUsageHeader
-			if err := jsonx.Unmarshal([]byte(xBusinessUseCaseUsage), &xBusinessUseCaseUsageHeader); err != nil {
+		facebookError, ok := _err.(*xerrors.APIError)
+		if ok {
+			code := facebookError.Meta["code"]
+			switch code {
+			case fbclient.AccessTokenHasExpired.String():
+				// no-op
 				return
-			}
-
-			estimatedTimeToRegainAccess := xBusinessUseCaseUsageHeader.GetEstimatedTimeToRegainAccessOfPage(externalPageID)
-			_ = s.rd.LockCallAPIPage(externalPageID, estimatedTimeToRegainAccess)
-			return
-		case fbclient.RateLimitCallWithMessenger.String():
-			xBusinessUseCaseUsage := facebookError.Meta[fbclient.XBusinessUseCaseUsage]
-			var xBusinessUseCaseUsageHeader fbclient.XBusinessUseCaseUsageHeader
-			if err := jsonx.Unmarshal([]byte(xBusinessUseCaseUsage), &xBusinessUseCaseUsageHeader); err != nil {
+			case fbclient.ApiTooManyCalls.String(), fbclient.ApplicationLimitReached.String():
+				s.scheduler.AddAfter(taskID, defaultRecurrentFacebookThrottling, s.syncCallbackLogs)
 				return
-			}
-
-			estimatedTimeToRegainAccess := xBusinessUseCaseUsageHeader.GetEstimatedTimeToRegainAccessOfMessenger(externalPageID)
-			_ = s.rd.LockCallAPIMessenger(externalPageID, estimatedTimeToRegainAccess)
-			return
-		default:
-			if codeNum, err := strconv.ParseInt(code, 10, 64); err == nil {
-				if 200 <= codeNum && codeNum <= 299 {
-					// no-op
+			case fbclient.RateLimitCallWithPage.String():
+				xBusinessUseCaseUsage := facebookError.Meta[fbclient.XBusinessUseCaseUsage]
+				var xBusinessUseCaseUsageHeader fbclient.XBusinessUseCaseUsageHeader
+				if err := jsonx.Unmarshal([]byte(xBusinessUseCaseUsage), &xBusinessUseCaseUsageHeader); err != nil {
 					return
+				}
+
+				estimatedTimeToRegainAccess := xBusinessUseCaseUsageHeader.GetEstimatedTimeToRegainAccessOfPage(externalPageID)
+				_ = s.rd.LockCallAPIPage(externalPageID, estimatedTimeToRegainAccess)
+				return
+			case fbclient.RateLimitCallWithMessenger.String():
+				xBusinessUseCaseUsage := facebookError.Meta[fbclient.XBusinessUseCaseUsage]
+				var xBusinessUseCaseUsageHeader fbclient.XBusinessUseCaseUsageHeader
+				if err := jsonx.Unmarshal([]byte(xBusinessUseCaseUsage), &xBusinessUseCaseUsageHeader); err != nil {
+					return
+				}
+
+				estimatedTimeToRegainAccess := xBusinessUseCaseUsageHeader.GetEstimatedTimeToRegainAccessOfMessenger(externalPageID)
+				_ = s.rd.LockCallAPIMessenger(externalPageID, estimatedTimeToRegainAccess)
+				return
+			default:
+				if codeNum, err := strconv.ParseInt(code, 10, 64); err == nil {
+					if 200 <= codeNum && codeNum <= 299 {
+						// no-op
+						return
+					}
 				}
 			}
 		}
@@ -660,12 +663,11 @@ func (s *Synchronizer) handleTaskGetComments(
 		comment := commentQuery.Result
 		internalSource := fb_internal_source.Facebook
 		var createdBy dot.ID
-		var isLiked, isHidden, isPrivateReplied bool
+		var isLiked, isPrivateReplied bool
 		if comment != nil {
 			internalSource = comment.InternalSource
 			createdBy = comment.CreatedBy
 			isLiked = comment.IsLiked
-			isHidden = comment.IsHidden
 			isPrivateReplied = comment.IsPrivateReplied
 		}
 
@@ -685,7 +687,7 @@ func (s *Synchronizer) handleTaskGetComments(
 			ExternalCreatedTime:  fbExternalComment.CreatedTime.ToTime(),
 			InternalSource:       internalSource,
 			IsLiked:              isLiked,
-			IsHidden:             isHidden,
+			IsHidden:             fbExternalComment.IsHidden,
 			IsPrivateReplied:     isPrivateReplied,
 			CreatedBy:            createdBy,
 		})
@@ -725,9 +727,16 @@ func (s *Synchronizer) handleTaskGetChildPost(
 		return err
 	}
 
-	var createOrUpdateFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
+	var totalComments, totalReactions int
+	if fbExternalPostResp.CommentsSummary != nil && fbExternalPostResp.CommentsSummary.Summary != nil {
+		totalComments = fbExternalPostResp.CommentsSummary.Summary.TotalCount
+	}
+	if fbExternalPostResp.ReactionsSummary != nil && fbExternalPostResp.ReactionsSummary.Summary != nil {
+		totalReactions = fbExternalPostResp.ReactionsSummary.Summary.TotalCount
+	}
 
-	createOrUpdateFbExternalPostsArgs = append(createOrUpdateFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
+	var createFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
+	createFbExternalPostsArgs = append(createFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
 		ID:                  cm.NewID(),
 		ExternalPageID:      externalPageID,
 		ExternalID:          externalChildPostID,
@@ -739,15 +748,22 @@ func (s *Synchronizer) handleTaskGetChildPost(
 		ExternalAttachments: fbclientconvert.ConvertAttachments(fbExternalPostResp.Attachments),
 		ExternalCreatedTime: fbExternalPostResp.CreatedTime.ToTime(),
 		ExternalUpdatedTime: fbExternalPostResp.UpdatedTime.ToTime(),
+		TotalComments:       totalComments,
+		TotalReactions:      totalReactions,
+		StatusType:          fb_status_type.ParseFbStatusTypeWithDefault(fbExternalPostResp.StatusType, fb_status_type.Unknown),
 	})
 
-	createOrUpdateFbExternalPostsCmd := &fbmessaging.CreateOrUpdateFbExternalPostsCommand{
-		FbExternalPosts: createOrUpdateFbExternalPostsArgs,
+	updateOrCreateFbExternalPostsCmd := &fbmessaging.UpdateOrCreateFbExternalPostsFromSyncCommand{
+		FbExternalPosts: createFbExternalPostsArgs,
 	}
-	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalPostsCmd); err != nil {
+	if err := s.fbMessagingAggr.Dispatch(ctx, updateOrCreateFbExternalPostsCmd); err != nil {
 		return err
 	}
-	childPostID := createOrUpdateFbExternalPostsCmd.Result[0].ID
+	if len(updateOrCreateFbExternalPostsCmd.Result) == 0 {
+		return nil
+	}
+
+	childPostID := updateOrCreateFbExternalPostsCmd.Result[0].ID
 
 	s.addTask(&TaskArguments{
 		actionType:     GetComments,
@@ -794,7 +810,7 @@ func (s *Synchronizer) HandleTaskGetPosts(
 	// Get all child posts of each post
 	// Create and Update posts
 	mapExternalChildPostIDAndExternalPostID := make(map[string]string)
-	var createOrUpdateFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
+	var createFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
 	for _, fbPost := range fbExternalPostsResp.Data {
 		if fbPost.Attachments != nil {
 			for _, attachment := range fbPost.Attachments.Data {
@@ -809,7 +825,15 @@ func (s *Synchronizer) HandleTaskGetPosts(
 			}
 		}
 
-		createOrUpdateFbExternalPostsArgs = append(createOrUpdateFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
+		var totalComments, totalReactions int
+		if fbPost.CommentsSummary != nil && fbPost.CommentsSummary.Summary != nil {
+			totalComments = fbPost.CommentsSummary.Summary.TotalCount
+		}
+		if fbPost.ReactionsSummary != nil && fbPost.ReactionsSummary.Summary != nil {
+			totalReactions = fbPost.ReactionsSummary.Summary.TotalCount
+		}
+
+		createFbExternalPostsArgs = append(createFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
 			ID:                  cm.NewID(),
 			ExternalPageID:      externalPageID,
 			ExternalID:          fbPost.ID,
@@ -820,18 +844,21 @@ func (s *Synchronizer) HandleTaskGetPosts(
 			ExternalAttachments: fbclientconvert.ConvertAttachments(fbPost.Attachments),
 			ExternalCreatedTime: fbPost.CreatedTime.ToTime(),
 			ExternalUpdatedTime: fbPost.UpdatedTime.ToTime(),
+			TotalComments:       totalComments,
+			TotalReactions:      totalReactions,
+			StatusType:          fb_status_type.ParseFbStatusTypeWithDefault(fbPost.StatusType, fb_status_type.Unknown),
 		})
 	}
 
-	createOrUpdateFbExternalPostsCmd := &fbmessaging.CreateOrUpdateFbExternalPostsCommand{
-		FbExternalPosts: createOrUpdateFbExternalPostsArgs,
+	updateOrCreateFbExternalPostsCmd := &fbmessaging.UpdateOrCreateFbExternalPostsFromSyncCommand{
+		FbExternalPosts: createFbExternalPostsArgs,
 	}
-	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalPostsCmd); err != nil {
+	if err := s.fbMessagingAggr.Dispatch(ctx, updateOrCreateFbExternalPostsCmd); err != nil {
 		return err
 	}
 
 	mapExternalPostIDAndPostID := make(map[string]dot.ID)
-	for _, fbExternalPost := range createOrUpdateFbExternalPostsCmd.Result {
+	for _, fbExternalPost := range updateOrCreateFbExternalPostsCmd.Result {
 		mapExternalPostIDAndPostID[fbExternalPost.ExternalID] = fbExternalPost.ID
 	}
 
@@ -851,7 +878,7 @@ func (s *Synchronizer) HandleTaskGetPosts(
 	}
 
 	// Create tasks getComments
-	for _, fbExternalPost := range createOrUpdateFbExternalPostsCmd.Result {
+	for _, fbExternalPost := range updateOrCreateFbExternalPostsCmd.Result {
 		s.addTask(&TaskArguments{
 			actionType:     GetComments,
 			accessToken:    accessToken,

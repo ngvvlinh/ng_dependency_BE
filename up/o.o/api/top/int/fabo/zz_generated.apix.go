@@ -622,6 +622,7 @@ const PageServicePathPrefix = "/fabo.Page/"
 const Path_Page_CheckPermissions = "/fabo.Page/CheckPermissions"
 const Path_Page_ConnectPages = "/fabo.Page/ConnectPages"
 const Path_Page_ListPages = "/fabo.Page/ListPages"
+const Path_Page_ListPosts = "/fabo.Page/ListPosts"
 const Path_Page_RemovePages = "/fabo.Page/RemovePages"
 
 func (s *PageServiceServer) PathPrefix() string {
@@ -693,6 +694,19 @@ func (s *PageServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 				return
 			}
 			resp, err = inner.ListPages(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.Page/ListPosts":
+		msg := &ListPostsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ListPosts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

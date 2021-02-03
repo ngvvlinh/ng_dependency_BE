@@ -10,6 +10,7 @@ import (
 
 	fb_customer_conversation_type "o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
+	fb_status_type "o.o/api/fabo/fbmessaging/fb_status_type"
 	meta "o.o/api/meta"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -140,17 +141,6 @@ func (h AggregateHandler) HandleCreateOrUpdateFbExternalMessages(ctx context.Con
 	return err
 }
 
-type CreateOrUpdateFbExternalPostsCommand struct {
-	FbExternalPosts []*CreateFbExternalPostArgs
-
-	Result []*FbExternalPost `json:"-"`
-}
-
-func (h AggregateHandler) HandleCreateOrUpdateFbExternalPosts(ctx context.Context, msg *CreateOrUpdateFbExternalPostsCommand) (err error) {
-	msg.Result, err = h.inner.CreateOrUpdateFbExternalPosts(msg.GetArgs(ctx))
-	return err
-}
-
 type HideOrUnHideCommentCommand struct {
 	ExternalCommentID string
 	IsHidden          bool
@@ -209,6 +199,7 @@ type SaveFbExternalPostCommand struct {
 	ExternalCreatedTime time.Time
 	ExternalParentID    string
 	FeedType            fb_feed_type.FbFeedType
+	StatusType          fb_status_type.FbStatusType
 
 	Result *FbExternalPost `json:"-"`
 }
@@ -264,6 +255,17 @@ type UpdateIsReadCustomerConversationCommand struct {
 
 func (h AggregateHandler) HandleUpdateIsReadCustomerConversation(ctx context.Context, msg *UpdateIsReadCustomerConversationCommand) (err error) {
 	msg.Result, err = h.inner.UpdateIsReadCustomerConversation(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateOrCreateFbExternalPostsFromSyncCommand struct {
+	FbExternalPosts []*CreateFbExternalPostArgs
+
+	Result []*FbExternalPost `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateOrCreateFbExternalPostsFromSync(ctx context.Context, msg *UpdateOrCreateFbExternalPostsFromSyncCommand) (err error) {
+	msg.Result, err = h.inner.UpdateOrCreateFbExternalPostsFromSync(msg.GetArgs(ctx))
 	return err
 }
 
@@ -519,7 +521,6 @@ func (h QueryServiceHandler) HandleListFbExternalComments(ctx context.Context, m
 
 type ListFbExternalCommentsByExternalIDsQuery struct {
 	FbExternalPostID string
-	FbExternalUserID string
 	FbExternalPageID string
 	ExternalIDs      []string
 	Paging           meta.Paging
@@ -564,6 +565,20 @@ type ListFbExternalMessagesByExternalIDsQuery struct {
 
 func (h QueryServiceHandler) HandleListFbExternalMessagesByExternalIDs(ctx context.Context, msg *ListFbExternalMessagesByExternalIDsQuery) (err error) {
 	msg.Result, err = h.inner.ListFbExternalMessagesByExternalIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type ListFbExternalPostsQuery struct {
+	ExternalPageIDs    []string
+	ExternalStatusType fb_status_type.NullFbStatusType
+	ExternalIDs        []string
+	Paging             meta.Paging
+
+	Result *FbExternalPostsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListFbExternalPosts(ctx context.Context, msg *ListFbExternalPostsQuery) (err error) {
+	msg.Result, err = h.inner.ListFbExternalPosts(msg.GetArgs(ctx))
 	return err
 }
 
@@ -622,7 +637,6 @@ func (q *CreateOrUpdateFbExternalCommentsCommand) command()      {}
 func (q *CreateOrUpdateFbExternalConversationCommand) command()  {}
 func (q *CreateOrUpdateFbExternalConversationsCommand) command() {}
 func (q *CreateOrUpdateFbExternalMessagesCommand) command()      {}
-func (q *CreateOrUpdateFbExternalPostsCommand) command()         {}
 func (q *HideOrUnHideCommentCommand) command()                   {}
 func (q *LikeOrUnLikeCommentCommand) command()                   {}
 func (q *RemoveCommentCommand) command()                         {}
@@ -632,6 +646,7 @@ func (q *UpdateFbCommentMessageCommand) command()                {}
 func (q *UpdateFbPostMessageAndPictureCommand) command()         {}
 func (q *UpdateIsPrivateRepliedCommentCommand) command()         {}
 func (q *UpdateIsReadCustomerConversationCommand) command()      {}
+func (q *UpdateOrCreateFbExternalPostsFromSyncCommand) command() {}
 
 func (q *GetExternalPostByExternalIDWithExternalCreatedTimeQuery) query()         {}
 func (q *GetFbCustomerConversationQuery) query()                                  {}
@@ -658,6 +673,7 @@ func (q *ListFbExternalCommentsByExternalIDsQuery) query()                      
 func (q *ListFbExternalConversationsByExternalIDsQuery) query()                   {}
 func (q *ListFbExternalMessagesQuery) query()                                     {}
 func (q *ListFbExternalMessagesByExternalIDsQuery) query()                        {}
+func (q *ListFbExternalPostsQuery) query()                                        {}
 func (q *ListFbExternalPostsByExternalIDsQuery) query()                           {}
 func (q *ListFbExternalPostsByIDsQuery) query()                                   {}
 func (q *ListLatestCustomerFbExternalMessagesQuery) query()                       {}
@@ -788,17 +804,6 @@ func (q *CreateOrUpdateFbExternalMessagesCommand) SetCreateOrUpdateFbExternalMes
 	q.FbExternalMessages = args.FbExternalMessages
 }
 
-func (q *CreateOrUpdateFbExternalPostsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateFbExternalPostsArgs) {
-	return ctx,
-		&CreateOrUpdateFbExternalPostsArgs{
-			FbExternalPosts: q.FbExternalPosts,
-		}
-}
-
-func (q *CreateOrUpdateFbExternalPostsCommand) SetCreateOrUpdateFbExternalPostsArgs(args *CreateOrUpdateFbExternalPostsArgs) {
-	q.FbExternalPosts = args.FbExternalPosts
-}
-
 func (q *HideOrUnHideCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *HideOrUnHideCommentArgs) {
 	return ctx,
 		&HideOrUnHideCommentArgs{
@@ -862,6 +867,7 @@ func (q *SaveFbExternalPostCommand) GetArgs(ctx context.Context) (_ context.Cont
 			ExternalCreatedTime: q.ExternalCreatedTime,
 			ExternalParentID:    q.ExternalParentID,
 			FeedType:            q.FeedType,
+			StatusType:          q.StatusType,
 		}
 }
 
@@ -876,6 +882,7 @@ func (q *SaveFbExternalPostCommand) SetFbSavePostArgs(args *FbSavePostArgs) {
 	q.ExternalCreatedTime = args.ExternalCreatedTime
 	q.ExternalParentID = args.ExternalParentID
 	q.FeedType = args.FeedType
+	q.StatusType = args.StatusType
 }
 
 func (q *UpdateFbCommentMessageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdateCommentMessageArgs) {
@@ -923,6 +930,17 @@ func (q *UpdateIsReadCustomerConversationCommand) GetArgs(ctx context.Context) (
 	return ctx,
 		q.ConversationCustomerID,
 		q.IsRead
+}
+
+func (q *UpdateOrCreateFbExternalPostsFromSyncCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrCreateFbExternalPostsFromSyncArgs) {
+	return ctx,
+		&UpdateOrCreateFbExternalPostsFromSyncArgs{
+			FbExternalPosts: q.FbExternalPosts,
+		}
+}
+
+func (q *UpdateOrCreateFbExternalPostsFromSyncCommand) SetUpdateOrCreateFbExternalPostsFromSyncArgs(args *UpdateOrCreateFbExternalPostsFromSyncArgs) {
+	q.FbExternalPosts = args.FbExternalPosts
 }
 
 func (q *GetExternalPostByExternalIDWithExternalCreatedTimeQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string, time time.Time) {
@@ -1072,7 +1090,6 @@ func (q *ListFbExternalCommentsByExternalIDsQuery) GetArgs(ctx context.Context) 
 	return ctx,
 		&ListFbExternalCommentsByIDsArgs{
 			FbExternalPostID: q.FbExternalPostID,
-			FbExternalUserID: q.FbExternalUserID,
 			FbExternalPageID: q.FbExternalPageID,
 			ExternalIDs:      q.ExternalIDs,
 			Paging:           q.Paging,
@@ -1081,7 +1098,6 @@ func (q *ListFbExternalCommentsByExternalIDsQuery) GetArgs(ctx context.Context) 
 
 func (q *ListFbExternalCommentsByExternalIDsQuery) SetListFbExternalCommentsByIDsArgs(args *ListFbExternalCommentsByIDsArgs) {
 	q.FbExternalPostID = args.FbExternalPostID
-	q.FbExternalUserID = args.FbExternalUserID
 	q.FbExternalPageID = args.FbExternalPageID
 	q.ExternalIDs = args.ExternalIDs
 	q.Paging = args.Paging
@@ -1110,6 +1126,23 @@ func (q *ListFbExternalMessagesQuery) SetListFbExternalMessagesArgs(args *ListFb
 func (q *ListFbExternalMessagesByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs filter.Strings) {
 	return ctx,
 		q.ExternalIDs
+}
+
+func (q *ListFbExternalPostsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *LitFbExternalPostsArgs) {
+	return ctx,
+		&LitFbExternalPostsArgs{
+			ExternalPageIDs:    q.ExternalPageIDs,
+			ExternalStatusType: q.ExternalStatusType,
+			ExternalIDs:        q.ExternalIDs,
+			Paging:             q.Paging,
+		}
+}
+
+func (q *ListFbExternalPostsQuery) SetLitFbExternalPostsArgs(args *LitFbExternalPostsArgs) {
+	q.ExternalPageIDs = args.ExternalPageIDs
+	q.ExternalStatusType = args.ExternalStatusType
+	q.ExternalIDs = args.ExternalIDs
+	q.Paging = args.Paging
 }
 
 func (q *ListFbExternalPostsByExternalIDsQuery) GetArgs(ctx context.Context) (_ context.Context, externalIDs filter.Strings) {
@@ -1153,7 +1186,6 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalConversation)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalConversations)
 	b.AddHandler(h.HandleCreateOrUpdateFbExternalMessages)
-	b.AddHandler(h.HandleCreateOrUpdateFbExternalPosts)
 	b.AddHandler(h.HandleHideOrUnHideComment)
 	b.AddHandler(h.HandleLikeOrUnLikeComment)
 	b.AddHandler(h.HandleRemoveComment)
@@ -1163,6 +1195,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateFbPostMessageAndPicture)
 	b.AddHandler(h.HandleUpdateIsPrivateRepliedComment)
 	b.AddHandler(h.HandleUpdateIsReadCustomerConversation)
+	b.AddHandler(h.HandleUpdateOrCreateFbExternalPostsFromSync)
 	return CommandBus{b}
 }
 
@@ -1203,6 +1236,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListFbExternalConversationsByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalMessages)
 	b.AddHandler(h.HandleListFbExternalMessagesByExternalIDs)
+	b.AddHandler(h.HandleListFbExternalPosts)
 	b.AddHandler(h.HandleListFbExternalPostsByExternalIDs)
 	b.AddHandler(h.HandleListFbExternalPostsByIDs)
 	b.AddHandler(h.HandleListLatestCustomerFbExternalMessages)

@@ -12,6 +12,7 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/top/types/etc/webhook_type"
 	fblog "o.o/backend/com/fabo/main/fblog/model"
@@ -79,6 +80,7 @@ func convertModelPostToCreatePostArgs(pageID string, externalCreatedTime time.Ti
 		ExternalAttachments: extAttachments,
 		ExternalCreatedTime: externalCreatedTime,
 		ExternalUpdatedTime: time.Time{},
+		StatusType:          fb_status_type.ParseFbStatusTypeWithDefault(post.StatusType, fb_status_type.Unknown),
 	}
 	if post.From != nil {
 		res.ExternalFrom = &fbmessaging.FbObjectFrom{
@@ -124,6 +126,7 @@ func buildAllChildPost(post *fbmessaging.CreateFbExternalPostArgs) []*fbmessagin
 				ExternalCreatedTime: post.ExternalCreatedTime,
 				ExternalUpdatedTime: post.ExternalUpdatedTime,
 				FeedType:            fb_feed_type.Post,
+				StatusType:          post.StatusType,
 			}
 			res = append(res, childPost)
 		}

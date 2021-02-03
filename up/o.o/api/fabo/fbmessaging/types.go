@@ -7,6 +7,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/capi/dot"
 )
 
@@ -162,6 +163,9 @@ type FbExternalPost struct {
 	DeletedAt           time.Time `compare:"ignore"`
 	ExternalParent      *FbExternalPost
 	FeedType            fb_feed_type.FbFeedType
+	StatusType          fb_status_type.FbStatusType
+	TotalComments       int
+	TotalReactions      int
 }
 
 type FbCustomerConversation struct {

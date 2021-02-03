@@ -482,6 +482,9 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FBPageQuery: fbpagingQueryBus,
 		FBUserQuery: fbuseringQueryBus,
 	}
+	faboRedis := redis2.NewFaboRedis(store)
+	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB, faboRedis)
+	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	fbExternalPageAggregate := fbpage.NewFbPageAggregate(mainDB, fbPageUtil, busBus)
 	fbpagingCommandBus := fbpage.FbExternalPageAggregateMessageBus(fbExternalPageAggregate)
 	fbUserAggregate := fbuser.NewFbUserAggregate(mainDB, fbpagingCommandBus, customeringQueryBus)
@@ -491,6 +494,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	pageService := &fabo3.PageService{
 		Session:             session,
 		FaboInfo:            faboPagesKit,
+		FBMessagingQuery:    fbmessagingQueryBus,
 		FBExternalUserQuery: fbuseringQueryBus,
 		FBExternalUserAggr:  fbuseringCommandBus,
 		FBExternalPageQuery: fbpagingQueryBus,
@@ -501,9 +505,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:  session,
 		FBClient: fbClient,
 	}
-	faboRedis := redis2.NewFaboRedis(store)
-	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB, faboRedis)
-	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
 	fbmessagingCommandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
 	fbSearchService := fbcustomerconversationsearch.NewFbSearchServiceQuery(mainDB)

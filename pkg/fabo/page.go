@@ -6,6 +6,8 @@ import (
 	"strings"
 	"sync"
 
+	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/top/int/fabo"
@@ -35,6 +37,7 @@ type PageService struct {
 	session.Session
 
 	FaboInfo            *faboinfo.FaboPagesKit
+	FBMessagingQuery    fbmessaging.QueryBus
 	FBExternalUserQuery fbusering.QueryBus
 	FBExternalUserAggr  fbusering.CommandBus
 	FBExternalPageQuery fbpaging.QueryBus
@@ -250,6 +253,53 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		FbErrorPages: fbErrorPages,
 	}
 	return resp, nil
+}
+
+func (s *PageService) ListPosts(
+	ctx context.Context, req *fabo.ListPostsRequest,
+) (*fabo.ListPostsResponse, error) {
+	var (
+		externalStatusType fb_status_type.NullFbStatusType
+		externalPostIDs    []string
+	)
+
+	paging, err := cmapi.CMCursorPaging(req.Paging)
+	if err != nil {
+		return nil, err
+	}
+	faboInfo, err := s.FaboInfo.GetPages(ctx, s.SS.Shop().ID)
+	if err != nil {
+		return nil, err
+	}
+
+	externalPageIDs := faboInfo.ExternalPageIDs
+	if req.Filter != nil {
+		if req.Filter.ExternalPageID != "" {
+			for _, externalPageID := range faboInfo.ExternalPageIDs {
+				if externalPageID == req.Filter.ExternalPageID {
+					externalPageIDs = []string{externalPageID}
+					break
+				}
+			}
+		}
+		externalPostIDs = req.Filter.ExternalPostIDs
+		externalStatusType = req.Filter.ExternalStatusType
+	}
+
+	listFbExternalPostsQuery := &fbmessaging.ListFbExternalPostsQuery{
+		ExternalPageIDs:    externalPageIDs,
+		ExternalStatusType: externalStatusType,
+		ExternalIDs:        externalPostIDs,
+		Paging:             *paging,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, listFbExternalPostsQuery); err != nil {
+		return nil, err
+	}
+
+	return &fabo.ListPostsResponse{
+		FbExternalPosts: convertpb.PbFbExternalPosts(listFbExternalPostsQuery.Result.FbExternalPosts),
+		Paging:          cmapi.PbCursorPageInfo(paging, &listFbExternalPostsQuery.Result.Paging),
+	}, nil
 }
 
 func verifyScopes(appScopes map[string]string, scopes []string) error {

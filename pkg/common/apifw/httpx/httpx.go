@@ -80,7 +80,7 @@ func (c *Context) SetResult(v interface{}) {
 	c.hasResult = true
 }
 
-func (c *Context) DecodeJson(v interface{})  error {
+func (c *Context) DecodeJson(v interface{}) error {
 	body, err := ioutil.ReadAll(c.Req.Body)
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
@@ -98,11 +98,10 @@ func (c *Context) GetBody(v interface{}) ([]byte, error) {
 	defer c.Req.Body.Close()
 	body, err := ioutil.ReadAll(c.Req.Body)
 	if err != nil {
-		return nil,cm.Error(cm.InvalidArgument, err.Error(), err)
+		return nil, cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
 	return body, nil
 }
-
 
 const defaultMemory = 32 << 20 // 32 MB
 

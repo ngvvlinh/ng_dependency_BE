@@ -509,7 +509,6 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	}
 	listFbExternalCommentsParentQuery := &fbmessaging.ListFbExternalCommentsByExternalIDsQuery{
 		ExternalIDs:      commentParentExternalIDs,
-		FbExternalUserID: request.Filter.ExternalUserID,
 		FbExternalPageID: getFbExternalPostQuery.Result.ExternalPageID,
 	}
 	if err = s.FBMessagingQuery.Dispatch(ctx, listFbExternalCommentsParentQuery); err != nil {

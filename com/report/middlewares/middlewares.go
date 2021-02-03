@@ -20,9 +20,9 @@ func Authorization(_ss session.Session) func(http.HandlerFunc) http.HandlerFunc 
 			perms := permission.Decl{Type: permission.Shop}
 
 			header := r.Header
-			if values, ok := header["Authorization"]; ok && len(values) > 0{
+			if values, ok := header["Authorization"]; ok && len(values) > 0 {
 				authorization := values[0]
-				tokenStr = strings.TrimPrefix( authorization, "Bearer ")
+				tokenStr = strings.TrimPrefix(authorization, "Bearer ")
 			}
 
 			cookies := r.Cookies()

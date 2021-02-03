@@ -9,7 +9,7 @@ import (
 
 	"o.o/backend/cmd/fabo-sync-service/config"
 	_base "o.o/backend/cogs/base"
-	fabo_min"o.o/backend/com/fabo/cogs/_min"
+	fabo_min "o.o/backend/com/fabo/cogs/_min"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/fabo/main/fbpage"
 	"o.o/backend/com/fabo/main/fbuser"

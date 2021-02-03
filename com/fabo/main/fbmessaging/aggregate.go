@@ -458,7 +458,7 @@ func (a *FbExternalMessagingAggregate) CreateFbExternalPosts(
 		}
 
 		if len(newFbExternalPosts) > 0 {
-			if err := a.fbExternalPostStore(ctx).CreateFbExternalPosts(newFbExternalPosts); err != nil {
+			if err := a.fbExternalPostStore(ctx).UpsertFbExternalPosts(newFbExternalPosts); err != nil {
 				return err
 			}
 		}
@@ -471,8 +471,8 @@ func (a *FbExternalMessagingAggregate) CreateFbExternalPosts(
 	return newFbExternalPosts, nil
 }
 
-func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalPosts(
-	ctx context.Context, args *fbmessaging.CreateOrUpdateFbExternalPostsArgs,
+func (a *FbExternalMessagingAggregate) UpdateOrCreateFbExternalPostsFromSync(
+	ctx context.Context, args *fbmessaging.UpdateOrCreateFbExternalPostsFromSyncArgs,
 ) ([]*fbmessaging.FbExternalPost, error) {
 	fbExternalPostIDs := make([]string, 0, len(args.FbExternalPosts))
 	for _, fbExternalPost := range args.FbExternalPosts {
@@ -488,38 +488,29 @@ func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalPosts(
 		mapOldFbExternalPost[oldFbExternalPost.ExternalID] = oldFbExternalPost
 	}
 
-	resultFbExternalPosts := make([]*fbmessaging.FbExternalPost, 0, len(args.FbExternalPosts))
-	newFbExternalPosts := make([]*fbmessaging.FbExternalPost, 0, len(args.FbExternalPosts))
+	var resultFbExternalPosts []*fbmessaging.FbExternalPost
 	if err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		for _, fbExternalPostArg := range args.FbExternalPosts {
-
 			newFbExternalPost := new(fbmessaging.FbExternalPost)
 			if err := scheme.Convert(fbExternalPostArg, newFbExternalPost); err != nil {
 				return err
 			}
 
-			if oldFbExternalPost, ok := mapOldFbExternalPost[fbExternalPostArg.ExternalID]; ok {
-				newFbExternalPost.ID = oldFbExternalPost.ID
-				resultFbExternalPosts = append(resultFbExternalPosts, oldFbExternalPost)
-
-				if isEqual := compare.Compare(oldFbExternalPost, newFbExternalPost); isEqual {
-					continue
+			if oldFbExternalPost, ok := mapOldFbExternalPost[fbExternalPostArg.ExternalID]; !ok {
+				if err := a.fbExternalPostStore(ctx).CreateFbExternalPost(newFbExternalPost); err != nil {
+					return err
 				}
 			} else {
-				resultFbExternalPosts = append(resultFbExternalPosts, newFbExternalPost)
+				newFbExternalPost.ID = oldFbExternalPost.ID
+				if err := a.fbExternalPostStore(ctx).ExternalID(fbExternalPostArg.ExternalID).UpdateFbExternalPost(newFbExternalPost); err != nil {
+					return err
+				}
 			}
 
-			newFbExternalPosts = append(newFbExternalPosts, newFbExternalPost)
-		}
-
-		if len(newFbExternalPosts) > 0 {
-			if err := a.fbExternalPostStore(ctx).CreateFbExternalPosts(newFbExternalPosts); err != nil {
-				return err
-			}
+			resultFbExternalPosts = append(resultFbExternalPosts, newFbExternalPost)
 		}
 
 		return nil
-
 	}); err != nil {
 		return nil, err
 	}
@@ -628,7 +619,7 @@ func (a *FbExternalMessagingAggregate) SaveFbExternalPost(
 		ExternalParentID:    post.ExternalParentID,
 		FeedType:            post.FeedType,
 	}
-	if err := a.fbExternalPostStore(ctx).CreateFbExternalPost(extPost); err != nil {
+	if err := a.fbExternalPostStore(ctx).UpsertFbExternalPost(extPost); err != nil {
 		return nil, err
 	}
 	return extPost, nil
@@ -660,7 +651,7 @@ func (a *FbExternalMessagingAggregate) RemovePost(
 					ExternalID:     removeArgs.ExternalPostID,
 					DeletedAt:      time.Now(),
 				}
-				return a.fbExternalPostStore(ctx).CreateFbExternalPost(extPost)
+				return a.fbExternalPostStore(ctx).UpsertFbExternalPost(extPost)
 			}
 			return err
 		}

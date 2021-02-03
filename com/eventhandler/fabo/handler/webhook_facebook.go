@@ -46,7 +46,6 @@ func WrapMapHandlers(handlers map[string]HandlerFunc) map[string]mq.EventHandler
 	return m
 }
 
-
 type WebhookFacebookHandler struct {
 	wh *webhook.WebhookHandler
 }
@@ -60,7 +59,7 @@ func NewWebhookFacebookHandler(wh *webhook.WebhookHandler) *WebhookFacebookHandl
 
 func (h *WebhookFacebookHandler) TopicsAndHandlers() map[string]mq.EventHandler {
 	return WrapMapHandlers(map[string]HandlerFunc{
-		"facebook_webhook_feed": h.HandleWebhookFbFeedEvent,
+		"facebook_webhook_feed":    h.HandleWebhookFbFeedEvent,
 		"facebook_webhook_message": h.HandleWebhookFbMessageEvent,
 	})
 }

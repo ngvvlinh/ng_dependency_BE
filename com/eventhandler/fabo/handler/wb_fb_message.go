@@ -13,4 +13,3 @@ func (h *WebhookFacebookHandler) HandleWebhookFbMessageEvent(
 	ctx = bus.Ctx()
 	return h.wh.HandleMessenger(ctx, *webhookMessage)
 }
-

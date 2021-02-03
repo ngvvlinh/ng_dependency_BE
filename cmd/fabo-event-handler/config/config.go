@@ -7,17 +7,17 @@ import (
 
 type Config struct {
 	Databases   cc.Databases       `yaml:",inline"`
-	Redis       cc.Redis            `yaml:"redis"`
-	HTTP        cc.HTTP             `yaml:"http"`
-	Kafka       cc.Kafka            `yaml:"kafka"`
-	TelegramBot cc.TelegramBot      `yaml:"telegram_bot"`
-	Onesignal   cc.OnesignalConfig  `yaml:"onesignal"`
-	Secret      string              `yaml:"secret"`
-	Env         string              `yaml:"env"`
+	Redis       cc.Redis           `yaml:"redis"`
+	HTTP        cc.HTTP            `yaml:"http"`
+	Kafka       cc.Kafka           `yaml:"kafka"`
+	TelegramBot cc.TelegramBot     `yaml:"telegram_bot"`
+	Onesignal   cc.OnesignalConfig `yaml:"onesignal"`
+	Secret      string             `yaml:"secret"`
+	Env         string             `yaml:"env"`
 	URL         struct {
 		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
-	FacebookApp fbclient.AppConfig   `yaml:"facebook_app"`
+	FacebookApp fbclient.AppConfig `yaml:"facebook_app"`
 }
 
 func Default() Config {

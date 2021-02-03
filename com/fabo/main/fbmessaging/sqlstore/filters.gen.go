@@ -10,6 +10,7 @@ import (
 	fb_comment_source "o.o/api/fabo/fbmessaging/fb_comment_source"
 	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
 	fb_internal_source "o.o/api/fabo/fbmessaging/fb_internal_source"
+	fb_status_type "o.o/api/fabo/fbmessaging/fb_status_type"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
@@ -1504,6 +1505,44 @@ func (ft *FbExternalPostFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.Column
 	}
 }
 
+func (ft *FbExternalPostFilters) ByTotalComments(TotalComments int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "total_comments",
+		Value:  TotalComments,
+		IsNil:  TotalComments == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByTotalCommentsPtr(TotalComments *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "total_comments",
+		Value:  TotalComments,
+		IsNil:  TotalComments == nil,
+		IsZero: TotalComments != nil && (*TotalComments) == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByTotalReactions(TotalReactions int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "total_reactions",
+		Value:  TotalReactions,
+		IsNil:  TotalReactions == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByTotalReactionsPtr(TotalReactions *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "total_reactions",
+		Value:  TotalReactions,
+		IsNil:  TotalReactions == nil,
+		IsZero: TotalReactions != nil && (*TotalReactions) == 0,
+	}
+}
+
 func (ft *FbExternalPostFilters) ByFeedType(FeedType fb_feed_type.FbFeedType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1520,5 +1559,24 @@ func (ft *FbExternalPostFilters) ByFeedTypePtr(FeedType *fb_feed_type.FbFeedType
 		Value:  FeedType,
 		IsNil:  FeedType == nil,
 		IsZero: FeedType != nil && (*FeedType) == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByStatusType(StatusType fb_status_type.FbStatusType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status_type",
+		Value:  StatusType,
+		IsNil:  StatusType == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByStatusTypePtr(StatusType *fb_status_type.FbStatusType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status_type",
+		Value:  StatusType,
+		IsNil:  StatusType == nil,
+		IsZero: StatusType != nil && (*StatusType) == 0,
 	}
 }

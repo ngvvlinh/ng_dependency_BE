@@ -135,14 +135,12 @@ func (s *FbExternalMessageStore) CreateFbExternalMessages(fbExternalMessages []*
 }
 
 func (s *FbExternalMessageStore) UpdateFbExternalMessage(fbExternalMessage *fbmessaging.FbExternalMessage) error {
-	sqlstore.MustNoPreds(s.preds)
-
 	fbExternalMessageDB := new(model.FbExternalMessage)
 	if err := scheme.Convert(fbExternalMessage, fbExternalMessageDB); err != nil {
 		return err
 	}
 
-	return s.query().ShouldUpdate(fbExternalMessageDB)
+	return s.query().Where(s.preds).ShouldUpdate(fbExternalMessageDB)
 }
 
 func (s *FbExternalMessageStore) ListFbExternalMessagesDB() ([]*model.FbExternalMessage, error) {

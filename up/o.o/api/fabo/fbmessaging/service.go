@@ -8,6 +8,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/meta"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
@@ -33,7 +34,7 @@ type Aggregate interface {
 	HideOrUnHideComment(context.Context, *HideOrUnHideCommentArgs) error
 	UpdateIsPrivateRepliedComment(context.Context, *UpdateIsPrivateRepliedCommentArgs) error
 
-	CreateOrUpdateFbExternalPosts(context.Context, *CreateOrUpdateFbExternalPostsArgs) ([]*FbExternalPost, error)
+	UpdateOrCreateFbExternalPostsFromSync(context.Context, *UpdateOrCreateFbExternalPostsFromSyncArgs) ([]*FbExternalPost, error)
 	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
 	CreateFbExternalPost(context.Context, *FbCreatePostArgs) (*FbExternalPost, error)
 	UpdateFbPostMessageAndPicture(context.Context, *FbUpdatePostMessageArgs) error
@@ -62,6 +63,7 @@ type QueryService interface {
 	GetFbExternalConversationByID(_ context.Context, ID dot.ID) (*FbExternalConversation, error)
 	ListFbExternalPostsByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalPost, error)
 	ListFbExternalPostsByIDs(_ context.Context, IDs filter.IDs) ([]*FbExternalPost, error)
+	ListFbExternalPosts(context.Context, *LitFbExternalPostsArgs) (*FbExternalPostsResponse, error)
 
 	GetFbExternalConversationByExternalIDAndExternalPageID(_ context.Context, externalID, externalPageID string) (*FbExternalConversation, error)
 	GetFbExternalConversationByExternalPageIDAndExternalUserID(_ context.Context, externalPageID, externalUserID string) (*FbExternalConversation, error)
@@ -121,14 +123,17 @@ type CreateFbExternalPostArgs struct {
 	ExternalAttachments []*PostAttachment
 	ExternalCreatedTime time.Time
 	ExternalUpdatedTime time.Time
+	TotalComments       int
+	TotalReactions      int
 	FeedType            fb_feed_type.FbFeedType
+	StatusType          fb_status_type.FbStatusType
 }
 
 type CreateFbExternalPostsArgs struct {
 	FbExternalPosts []*CreateFbExternalPostArgs
 }
 
-type CreateOrUpdateFbExternalPostsArgs struct {
+type UpdateOrCreateFbExternalPostsFromSyncArgs struct {
 	FbExternalPosts []*CreateFbExternalPostArgs
 }
 
@@ -243,7 +248,6 @@ type ListFbExternalCommentsArgs struct {
 
 type ListFbExternalCommentsByIDsArgs struct {
 	FbExternalPostID string
-	FbExternalUserID string
 	FbExternalPageID string
 	ExternalIDs      []string
 	Paging           meta.Paging
@@ -252,6 +256,18 @@ type ListFbExternalCommentsByIDsArgs struct {
 type FbExternalCommentsResponse struct {
 	FbExternalComments []*FbExternalComment
 	Paging             meta.PageInfo
+}
+
+type LitFbExternalPostsArgs struct {
+	ExternalPageIDs    []string
+	ExternalStatusType fb_status_type.NullFbStatusType
+	ExternalIDs        []string
+	Paging             meta.Paging
+}
+
+type FbExternalPostsResponse struct {
+	FbExternalPosts []*FbExternalPost
+	Paging          meta.PageInfo
 }
 
 type FbCreatePostArgs struct {
@@ -271,6 +287,7 @@ type FbSavePostArgs struct {
 	ExternalCreatedTime time.Time
 	ExternalParentID    string
 	FeedType            fb_feed_type.FbFeedType
+	StatusType          fb_status_type.FbStatusType
 }
 
 type FbUpdatePostMessageArgs struct {

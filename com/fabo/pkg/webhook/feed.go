@@ -136,7 +136,7 @@ func (wh *WebhookHandler) handleRemovePost(ctx context.Context, pageID, postID s
 		ExternalPostID: postID,
 		ExternalPageID: pageID,
 	}
-	if err:= wh.fbmessagingAggr.Dispatch(ctx, removeCmd); err !=nil {
+	if err := wh.fbmessagingAggr.Dispatch(ctx, removeCmd); err != nil {
 		return mq.CodeStop, err
 	}
 	return mq.CodeOK, nil
@@ -177,6 +177,7 @@ func (wh *WebhookHandler) updateParentAndChildPost(ctx context.Context, extPageI
 					ExternalAttachments: post.ExternalAttachments,
 					ExternalCreatedTime: post.ExternalCreatedTime,
 					ExternalParentID:    parentPost.ExternalID,
+					StatusType:          post.StatusType,
 				}
 				if err := wh.fbmessagingAggr.Dispatch(ctx, createPostCmd); err != nil {
 					return err

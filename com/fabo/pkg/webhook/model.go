@@ -67,7 +67,7 @@ func (msg *WebhookMessages) GetKey() string {
 		}
 
 		messaging := entry.Messaging[0]
-		if messaging.Recipient != nil && messaging.Recipient.ID != entry.ID{
+		if messaging.Recipient != nil && messaging.Recipient.ID != entry.ID {
 			key += separator + messaging.Recipient.ID
 		}
 

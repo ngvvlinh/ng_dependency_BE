@@ -229,7 +229,7 @@ func (m *Order) GetChargeableWeight() int {
 type OrderShipping struct {
 	ShopAddress         *OrderAddress                      `json:"shop_address"`
 	ReturnAddress       *OrderAddress                      `json:"return_address"`
-	ShippingAddress *OrderAddress `json:"shipping_address"`
+	ShippingAddress     *OrderAddress                      `json:"shipping_address"`
 	ExternalServiceID   string                             `json:"external_service_id"`
 	ExternalShippingFee int                                `json:"external_shipping_fee"`
 	ExternalServiceName string                             `json:"external_service_name"`
