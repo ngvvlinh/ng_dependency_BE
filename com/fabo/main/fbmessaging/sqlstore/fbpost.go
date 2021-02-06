@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/lib/pq"
+
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
@@ -71,6 +73,11 @@ func (s *FbExternalPostStore) ExternalID(externalID string) *FbExternalPostStore
 	return s
 }
 
+func (s *FbExternalPostStore) ExternalUserID(externalUserID string) *FbExternalPostStore {
+	s.preds = append(s.preds, s.ft.ByExternalUserID(externalUserID))
+	return s
+}
+
 func (s *FbExternalPostStore) ExternalParentID(externalParentID string) *FbExternalPostStore {
 	s.preds = append(s.preds, s.ft.ByExternalParentID(externalParentID))
 	return s
@@ -81,6 +88,11 @@ func (s *FbExternalPostStore) ExternalCreatedTime(created time.Time) *FbExternal
 	return s
 }
 
+func (s *FbExternalPostStore) IsLiveVideo(isLiveVideo bool) *FbExternalPostStore {
+	s.preds = append(s.preds, s.ft.ByIsLiveVideo(isLiveVideo))
+	return s
+}
+
 func (s *FbExternalPostStore) ExternalIDs(externalIDs []string) *FbExternalPostStore {
 	s.preds = append(s.preds, sq.In("external_id", externalIDs))
 	return s
@@ -88,6 +100,11 @@ func (s *FbExternalPostStore) ExternalIDs(externalIDs []string) *FbExternalPostS
 
 func (s *FbExternalPostStore) ExternalPageIDs(externalPageIDs []string) *FbExternalPostStore {
 	s.preds = append(s.preds, sq.In("external_page_id", externalPageIDs))
+	return s
+}
+
+func (s *FbExternalPostStore) ExternalPageIDsOrExternalUserID(externalPageIDs []string, externalUserID string) *FbExternalPostStore {
+	s.preds = append(s.preds, sq.NewExpr("external_page_id IN (?) OR external_user_id = ?", pq.Array(externalPageIDs), externalUserID))
 	return s
 }
 

@@ -49,6 +49,8 @@ type FbExternalUserCombined struct {
 	FbExternalUserInternal  *FbExternalUserInternal
 }
 
+type FbExternalUserCombineds []*FbExternalUserCombined
+
 type FbExternalUserShopCustomer struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time

@@ -12,6 +12,7 @@ import (
 	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
 	fb_internal_source "o.o/api/fabo/fbmessaging/fb_internal_source"
 	fb_live_video_status "o.o/api/fabo/fbmessaging/fb_live_video_status"
+	fb_post_type "o.o/api/fabo/fbmessaging/fb_post_type"
 	fb_status_type "o.o/api/fabo/fbmessaging/fb_status_type"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
@@ -66,6 +67,25 @@ func (ft *FbCustomerConversationFilters) ByExternalPageIDPtr(ExternalPageID *str
 		Value:  ExternalPageID,
 		IsNil:  ExternalPageID == nil,
 		IsZero: ExternalPageID != nil && (*ExternalPageID) == "",
+	}
+}
+
+func (ft *FbCustomerConversationFilters) ByExternalOwnerPostID(ExternalOwnerPostID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_owner_post_id",
+		Value:  ExternalOwnerPostID,
+		IsNil:  ExternalOwnerPostID == "",
+	}
+}
+
+func (ft *FbCustomerConversationFilters) ByExternalOwnerPostIDPtr(ExternalOwnerPostID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_owner_post_id",
+		Value:  ExternalOwnerPostID,
+		IsNil:  ExternalOwnerPostID == nil,
+		IsZero: ExternalOwnerPostID != nil && (*ExternalOwnerPostID) == "",
 	}
 }
 
@@ -743,6 +763,44 @@ func (ft *FbExternalCommentFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.Column
 	}
 }
 
+func (ft *FbExternalCommentFilters) ByExternalOwnerPostID(ExternalOwnerPostID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_owner_post_id",
+		Value:  ExternalOwnerPostID,
+		IsNil:  ExternalOwnerPostID == "",
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByExternalOwnerPostIDPtr(ExternalOwnerPostID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_owner_post_id",
+		Value:  ExternalOwnerPostID,
+		IsNil:  ExternalOwnerPostID == nil,
+		IsZero: ExternalOwnerPostID != nil && (*ExternalOwnerPostID) == "",
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByPostType(PostType fb_post_type.FbPostType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "post_type",
+		Value:  PostType,
+		IsNil:  PostType == 0,
+	}
+}
+
+func (ft *FbExternalCommentFilters) ByPostTypePtr(PostType *fb_post_type.FbPostType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "post_type",
+		Value:  PostType,
+		IsNil:  PostType == nil,
+		IsZero: PostType != nil && (*PostType) == 0,
+	}
+}
+
 type FbExternalConversationFilters struct{ prefix string }
 
 func NewFbExternalConversationFilters(prefix string) FbExternalConversationFilters {
@@ -1317,6 +1375,25 @@ func (ft *FbExternalPostFilters) ByExternalPageIDPtr(ExternalPageID *string) *sq
 	}
 }
 
+func (ft *FbExternalPostFilters) ByExternalUserID(ExternalUserID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_user_id",
+		Value:  ExternalUserID,
+		IsNil:  ExternalUserID == "",
+	}
+}
+
+func (ft *FbExternalPostFilters) ByExternalUserIDPtr(ExternalUserID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_user_id",
+		Value:  ExternalUserID,
+		IsNil:  ExternalUserID == nil,
+		IsZero: ExternalUserID != nil && (*ExternalUserID) == "",
+	}
+}
+
 func (ft *FbExternalPostFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1542,6 +1619,25 @@ func (ft *FbExternalPostFilters) ByTotalReactionsPtr(TotalReactions *int) *sq.Co
 		Value:  TotalReactions,
 		IsNil:  TotalReactions == nil,
 		IsZero: TotalReactions != nil && (*TotalReactions) == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByType(Type fb_post_type.FbPostType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByTypePtr(Type *fb_post_type.FbPostType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == nil,
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 

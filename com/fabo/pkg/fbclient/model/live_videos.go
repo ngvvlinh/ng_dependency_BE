@@ -1,14 +1,14 @@
 package model
 
-type LiveVideosResponse struct {
-	LiveVideos *LiveVideos `json:"live_videos"`
+type LiveVideosWithCommentsResponse struct {
+	LiveVideos *LiveVideosWithComments `json:"live_videos"`
 }
 
-type LiveVideos struct {
-	Data []*LiveVideo `json:"data"`
+type LiveVideosWithComments struct {
+	Data []*LiveVideoWithComments `json:"data"`
 }
 
-type LiveVideo struct {
+type LiveVideoWithComments struct {
 	ID           string             `json:"id"`
 	Title        string             `json:"title"`
 	Description  string             `json:"description"`
@@ -21,20 +21,24 @@ type LiveVideo struct {
 	CreationTime *FacebookTime      `json:"creation_time"`
 }
 
-type SimplifyLiveVideosResponse struct {
-	Data   []*SimplifyLiveVideo    `json:"data"`
+type LiveVideosResponse struct {
+	Data   []*LiveVideo            `json:"data"`
 	Paging *FacebookPagingResponse `json:"paging"`
 }
 
-type SimplifyLiveVideo struct {
-	ID           string          `json:"id"`
-	Video        *LiveVideoVideo `json:"video"`
-	From         *ObjectFrom     `json:"from"`
-	Status       string          `json:"status"`
-	CreationTime *FacebookTime   `json:"creation_time"`
+type LiveVideo struct {
+	ID           string                     `json:"id"`
+	Title        string                     `json:"title"`
+	Description  string                     `json:"description"`
+	Video        *LiveVideoVideo            `json:"video"`
+	From         *ObjectFrom                `json:"from"`
+	Status       string                     `json:"status"`
+	Comments     *LiveVideoCommentsSummary  `json:"comments"`
+	Reactions    *LiveVideoReactionsSummary `json:"reactions"`
+	CreationTime *FacebookTime              `json:"creation_time"`
 }
 
-func (s SimplifyLiveVideo) GetExternalPostID() string {
+func (s LiveVideo) GetExternalPostID() string {
 	if s.Video == nil || s.From == nil {
 		return ""
 	}
@@ -49,10 +53,18 @@ type LiveVideoVideo struct {
 }
 
 type LiveVideoComments struct {
-	Data    []*Comment               `json:"data"`
-	Summary *LiveVideoCommentSummary `json:"summary"`
+	Data    []*Comment         `json:"data"`
+	Summary *SummaryTotalCount `json:"summary"`
 }
 
-type LiveVideoCommentSummary struct {
-	TotalCount int64 `json:"total_count"`
+type LiveVideoCommentsSummary struct {
+	Summary *SummaryTotalCount `json:"summary"`
+}
+
+type LiveVideoReactionsSummary struct {
+	Summary *SummaryTotalCount `json:"summary"`
+}
+
+type SummaryTotalCount struct {
+	TotalCount int `json:"total_count"`
 }

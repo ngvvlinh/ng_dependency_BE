@@ -190,6 +190,26 @@ func (f *FbClient) CallAPIListFeeds(req *ListFeedsRequest) (*model.PublishedPost
 	return &publishedPostsResponse, nil
 }
 
+func (f *FbClient) CallAPIListUserFeeds(req *ListUserFeedsRequest) (*model.PublishedPostsResponse, error) {
+	params := &ListFeedsParams{
+		AccessToken: req.AccessToken,
+		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments},comments.summary(total_count).limit(0),reactions.summary(total_count).limit(0)",
+		DateFormat:  UnixDateFormat,
+	}
+
+	if req.Pagination != nil {
+		req.Pagination.ApplyQueryParams(true, DefaultLimitGetPosts, params)
+	}
+
+	path := "/me/feed"
+	var publishedPostsResponse model.PublishedPostsResponse
+	if err := f.sendGetRequest(path, req.ExternalUserID, params, &publishedPostsResponse); err != nil {
+		return nil, err
+	}
+
+	return &publishedPostsResponse, nil
+}
+
 func (f *FbClient) CallAPIGetPost(req *GetPostRequest) (*model.Post, error) {
 	params := &GetPostParams{
 		AccessToken: req.AccessToken,
@@ -227,6 +247,33 @@ func (f *FbClient) CallAPIListComments(req *ListCommentsRequest) (*model.Comment
 	path := fmt.Sprintf("/%s", req.PostID)
 	var commentsResponse model.CommentsResponse
 	if err := f.sendGetRequest(path, req.PageID, params, &commentsResponse); err != nil {
+		return nil, err
+	}
+
+	return &commentsResponse, nil
+}
+
+func (f *FbClient) CallAPIListUserComments(req *ListUserCommentsRequest) (*model.CommentsResponse, error) {
+	pagination := req.Pagination
+
+	limit := DefaultLimitGetComments
+	if pagination != nil && pagination.Limit.Valid {
+		limit = pagination.Limit.Int
+	}
+
+	params := &ListCommentsParams{
+		AccessToken: req.AccessToken,
+		Fields:      fmt.Sprintf("comments.filter(stream).limit(%d){message,attachment,id,created_time,comment_count,parent,from{id,name,email,first_name,last_name,picture},is_hidden}", limit),
+		DateFormat:  UnixDateFormat,
+	}
+
+	if pagination != nil {
+		pagination.ApplyQueryParams(false, DefaultLimitGetPosts, params)
+	}
+
+	path := fmt.Sprintf("/%s", req.PostID)
+	var commentsResponse model.CommentsResponse
+	if err := f.sendGetRequest(path, req.ExternalUserID, params, &commentsResponse); err != nil {
 		return nil, err
 	}
 
@@ -454,24 +501,24 @@ func (f *FbClient) CallAPICommentByID(req *GetCommentByIDRequest) (*model.Commen
 	return &comment, nil
 }
 
-func (f *FbClient) CallAPIListLiveVideos(req *ListLiveVideosRequest) (*model.LiveVideosResponse, error) {
-	params := &ListLiveVideosParams{
+func (f *FbClient) CallAPIListLiveVideosWithComments(req *ListLiveVideosWithCommentsRequest) (*model.LiveVideosWithCommentsResponse, error) {
+	params := &ListLiveVideosWithCommentsParams{
 		AccessToken: req.AccessToken,
 		Fields:      "live_videos.limit(20){creation_time,title,description,video{id,picture,source},stream_url,id,comments.filter(stream).summary(total_count).limit(20){from{id,name,email,first_name,last_name,picture},created_time,id,message,attachment},permalink_url,from,embed_html,status}",
 		DateFormat:  UnixDateFormat,
 	}
 	path := "/me"
-	var resp model.LiveVideosResponse
+	var resp model.LiveVideosWithCommentsResponse
 	if err := f.sendGetRequest(path, "", params, &resp); err != nil {
 		return nil, err
 	}
 	return &resp, nil
 }
 
-func (f *FbClient) CallAPIListSimplifyLiveVideos(req *ListSimplifyLiveVideosRequest) (*model.SimplifyLiveVideosResponse, error) {
-	params := &ListSimplifyLiveVideosParams{
+func (f *FbClient) CallAPIListLiveVideos(req *ListLiveVideosRequest) (*model.LiveVideosResponse, error) {
+	params := &ListLiveVideosParams{
 		AccessToken: req.AccessToken,
-		Fields:      "video{id,picture,source},id,from,status,creation_time",
+		Fields:      "live_videos{id,creation_time,title,description,video{id,picture,source},from{id,name,email,first_name,last_name,picture},status,comments.summary(total_count).limit(0),reactions.summary(total_count).limit(0)}",
 		DateFormat:  UnixDateFormat,
 	}
 
@@ -479,8 +526,8 @@ func (f *FbClient) CallAPIListSimplifyLiveVideos(req *ListSimplifyLiveVideosRequ
 		req.Pagination.ApplyQueryParams(true, DefaultLimitGetPosts, params)
 	}
 
-	path := "/me/live_videos"
-	var resp model.SimplifyLiveVideosResponse
+	path := fmt.Sprintf("/%s", req.ObjectID)
+	var resp model.LiveVideosResponse
 	if err := f.sendGetRequest(path, "", params, &resp); err != nil {
 		return nil, err
 	}
@@ -527,19 +574,19 @@ func (f *FbClient) CallAPIGetProfileByPSID(req *GetProfileRequest) (*model.Profi
 	return req.ProfileDefault, nil
 }
 
-func (f *FbClient) sendGetRequest(path, pageID string, params, resp interface{}) error {
-	return f.sendRequest(GET, path, pageID, params, resp)
+func (f *FbClient) sendGetRequest(path, objectID string, params, resp interface{}) error {
+	return f.sendRequest(GET, path, objectID, params, resp)
 }
 
-func (f *FbClient) sendPostRequest(path, pageID string, params, resp interface{}) error {
-	return f.sendRequest(POST, path, pageID, params, resp)
+func (f *FbClient) sendPostRequest(path, objectID string, params, resp interface{}) error {
+	return f.sendRequest(POST, path, objectID, params, resp)
 }
 
-func (f *FbClient) sendDeleteRequest(path, pageID string, params, resp interface{}) error {
-	return f.sendRequest(DELETE, path, pageID, params, resp)
+func (f *FbClient) sendDeleteRequest(path, objectID string, params, resp interface{}) error {
+	return f.sendRequest(DELETE, path, objectID, params, resp)
 }
 
-func (f *FbClient) sendRequest(method RequestMethod, path, pageID string, params, resp interface{}) error {
+func (f *FbClient) sendRequest(method RequestMethod, path, objectID string, params, resp interface{}) error {
 	t0 := time.Now()
 
 	queryString := url.Values{}
@@ -574,7 +621,7 @@ func (f *FbClient) sendRequest(method RequestMethod, path, pageID string, params
 	status := res.StatusCode()
 
 	d := time.Now().Sub(t0)
-	metrics.FaboEgressRequest(req.RawRequest.URL, status, d, f.appInfo.Source, pageID)
+	metrics.FaboEgressRequest(req.RawRequest.URL, status, d, f.appInfo.Source, objectID)
 	switch {
 	case status >= 200 && status < 300:
 		if err = json.Unmarshal(res.Body(), resp); err != nil {

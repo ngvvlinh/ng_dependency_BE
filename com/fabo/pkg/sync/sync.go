@@ -9,15 +9,20 @@ import (
 	"sync"
 	"time"
 
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
+	fbusermodel "o.o/backend/com/fabo/main/fbuser/model"
+	"o.o/backend/pkg/common/cmenv"
+
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
-	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/fabo/main/fbpage/convert"
 	fbpagemodel "o.o/backend/com/fabo/main/fbpage/model"
+	fbuserconvert "o.o/backend/com/fabo/main/fbuser/convert"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	fbclientconvert "o.o/backend/com/fabo/pkg/fbclient/convert"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
@@ -26,7 +31,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
-	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -49,12 +53,14 @@ const (
 type TaskActionType int
 
 const (
-	GetPosts         TaskActionType = 737
-	GetChildPost     TaskActionType = 230
-	GetComments      TaskActionType = 655
-	GetConversations TaskActionType = 363
-	GetMessages      TaskActionType = 160
-	GetLiveVideos    TaskActionType = 897
+	GetPosts          TaskActionType = 737
+	GetChildPost      TaskActionType = 230
+	GetComments       TaskActionType = 655
+	GetUserComments   TaskActionType = 897
+	GetConversations  TaskActionType = 363
+	GetMessages       TaskActionType = 160
+	GetLiveVideos     TaskActionType = 911
+	GetUserLiveVideos TaskActionType = 369
 )
 
 type getCommentsArguments struct {
@@ -84,6 +90,8 @@ type TaskArguments struct {
 
 	pageID         dot.ID
 	externalPageID string
+
+	externalUserID string
 
 	getCommentsArgs  *getCommentsArguments
 	getChildPostArgs *getChildPostArguments
@@ -198,12 +206,12 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 	defer ticker.Stop()
 
 	for ; true; <-ticker.C {
+		// handle jobs with pages
 		fbPageCombineds, err := listAllFbPagesActive(s.db)
 		if err != nil {
 			return err
 		}
 
-		//now := time.Now()
 		for _, fbPageCombined := range fbPageCombineds {
 			// ignore Page test
 
@@ -234,6 +242,28 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 				})
 			}
 		}
+
+		// handle jobs with users
+		fbUserCombineds, err := listAllFbUsersActive(s.db)
+		if err != nil {
+			return err
+		}
+
+		for _, fbUserCombined := range fbUserCombineds {
+			// Task get user liveVideos
+			s.addTask(&TaskArguments{
+				actionType:     GetUserLiveVideos,
+				accessToken:    fbUserCombined.FbExternalUserInternal.Token,
+				shopID:         fbUserCombined.FbExternalUserConnected.ShopID,
+				externalUserID: fbUserCombined.FbExternalUserConnected.ExternalID,
+				fbPagingRequest: &model.FacebookPagingRequest{
+					Limit: dot.Int(fbclient.DefaultLimitGetConversations),
+					TimePagination: &model.TimePaginationRequest{
+						Since: time.Now().AddDate(0, 0, -s.timeLimit),
+					},
+				},
+			})
+		}
 	}
 	return nil
 }
@@ -262,7 +292,7 @@ func (s *Synchronizer) addTaskGetLiveVideos(fbPageCombined *fbpaging.FbExternalP
 		pageID:         fbPageCombined.FbExternalPage.ID,
 		externalPageID: fbPageCombined.FbExternalPage.ExternalID,
 		fbPagingRequest: &model.FacebookPagingRequest{
-			Limit: dot.Int(fbclient.DefaultLimitGetLiveVideos),
+			Limit: dot.Int(fbclient.DefaultLimitGetPosts),
 			TimePagination: &model.TimePaginationRequest{
 				Since: time.Now().AddDate(0, 0, -s.timeLimit),
 			},
@@ -278,6 +308,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 	accessToken := taskArgs.accessToken
 	shopID := taskArgs.shopID
 	pageID := taskArgs.pageID
+	externalUserID := taskArgs.externalUserID
 	externalPageID := taskArgs.externalPageID
 	fbPagingReq := taskArgs.fbPagingRequest
 
@@ -351,8 +382,16 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		if err := s.handleTaskGetMessages(ctx, shopID, pageID, accessToken, externalPageID, taskArgs, fbPagingReq); err != nil {
 			return err
 		}
+	case GetUserComments:
+		if err := s.handleTaskGetUserComments(ctx, accessToken, externalUserID, fbPagingReq, taskArgs); err != nil {
+			return err
+		}
 	case GetLiveVideos:
 		if err := s.HandleTaskGetLiveVideos(ctx, shopID, pageID, accessToken, externalPageID, fbPagingReq); err != nil {
+			return err
+		}
+	case GetUserLiveVideos:
+		if err := s.HandleTaskGetUserLiveVideos(ctx, shopID, externalUserID, accessToken, fbPagingReq); err != nil {
 			return err
 		}
 	}
@@ -709,6 +748,117 @@ func (s *Synchronizer) handleTaskGetComments(
 			IsHidden:             fbExternalComment.IsHidden,
 			IsPrivateReplied:     isPrivateReplied,
 			CreatedBy:            createdBy,
+			PostType:             fb_post_type.Page,
+		})
+	}
+
+	if len(createOrUpdateFbExternalCommentsArgs) == 0 {
+		return nil
+	}
+
+	createOrUpdateFbExternalCommentsCmd := &fbmessaging.CreateOrUpdateFbExternalCommentsCommand{
+		FbExternalComments: createOrUpdateFbExternalCommentsArgs,
+	}
+	if err := s.fbMessagingAggr.Dispatch(ctx, createOrUpdateFbExternalCommentsCmd); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Synchronizer) handleTaskGetUserComments(
+	ctx context.Context, accessToken, externalOwnerPostID string,
+	fbPagingReq *model.FacebookPagingRequest, taskArgs *TaskArguments,
+) error {
+	fmt.Println("GetUserComments")
+
+	// Get values from arguments
+	externalPostID := taskArgs.getCommentsArgs.externalPostID
+	//postID := taskArgs.getCommentsArgs.postID
+
+	// Call api list comments that depends on (externalPostID)
+	fbExternalCommentsResp, err := s.fbClient.CallAPIListUserComments(&fbclient.ListUserCommentsRequest{
+		AccessToken:    accessToken,
+		PostID:         externalPostID,
+		ExternalUserID: externalOwnerPostID,
+		Pagination:     fbPagingReq,
+	})
+	if err != nil {
+		return err
+	}
+
+	// Finish task when data response is empty
+	if fbExternalCommentsResp.Comments == nil ||
+		len(fbExternalCommentsResp.Comments.CommentData) == 0 ||
+		fbExternalCommentsResp.Comments.Paging.CompareFacebookPagingRequest(fbPagingReq) {
+		return nil
+	}
+
+	var createOrUpdateFbExternalCommentsArgs []*fbmessaging.CreateFbExternalCommentArgs
+	for _, fbExternalComment := range fbExternalCommentsResp.Comments.CommentData {
+		// Ignore comment is hidden
+		//if fbExternalComment.IsHidden {
+		//	continue
+		//}
+		if fbExternalComment.From == nil {
+			continue
+		}
+		if fbExternalComment.From.ID == externalOwnerPostID {
+			continue
+		}
+
+		// Map externalUserID (From)
+		// Map externalParentID (Parent)
+
+		var externalUserID, externalParentID, externalParentUserID string
+		externalUserID = fbExternalComment.From.ID
+		if fbExternalComment.Parent != nil {
+			externalParentID = fbExternalComment.Parent.ID
+			if fbExternalComment.Parent.From != nil {
+				externalParentUserID = fbExternalComment.Parent.From.ID
+			}
+		}
+
+		// Try get old message (if it create by our api or webhook),
+		// if already exists do not change value of field `InternalSource`
+		// otherwise set is default to `fb_internal_source.Facebook`
+		commentQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+			ExternalID: fbExternalComment.ID,
+		}
+		if err := s.fbMessagingQuery.Dispatch(ctx, commentQuery); err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+		comment := commentQuery.Result
+		internalSource := fb_internal_source.Facebook
+		var createdBy dot.ID
+		var isLiked, isPrivateReplied bool
+		if comment != nil {
+			internalSource = comment.InternalSource
+			createdBy = comment.CreatedBy
+			isLiked = comment.IsLiked
+			isPrivateReplied = comment.IsPrivateReplied
+		}
+
+		createOrUpdateFbExternalCommentsArgs = append(createOrUpdateFbExternalCommentsArgs, &fbmessaging.CreateFbExternalCommentArgs{
+			ID:                   cm.NewID(),
+			ExternalPostID:       externalPostID,
+			ExternalID:           fbExternalComment.ID,
+			ExternalUserID:       externalUserID,
+			ExternalParentID:     externalParentID,
+			ExternalParentUserID: externalParentUserID,
+			ExternalMessage:      fbExternalComment.Message,
+			ExternalCommentCount: fbExternalComment.CommentCount,
+			ExternalParent:       fbclientconvert.ConvertFbObjectParent(fbExternalComment.Parent),
+			ExternalFrom:         fbclientconvert.ConvertObjectFrom(fbExternalComment.From),
+			ExternalAttachment:   fbclientconvert.ConvertFbCommentAttachment(fbExternalComment.Attachment),
+			ExternalCreatedTime:  fbExternalComment.CreatedTime.ToTime(),
+			InternalSource:       internalSource,
+			IsLiked:              isLiked,
+			IsHidden:             fbExternalComment.IsHidden,
+			IsPrivateReplied:     isPrivateReplied,
+			CreatedBy:            createdBy,
+			ExternalOwnerPostID:  externalOwnerPostID,
+			PostType:             fb_post_type.User,
 		})
 	}
 
@@ -769,6 +919,7 @@ func (s *Synchronizer) handleTaskGetChildPost(
 		ExternalUpdatedTime: fbExternalPostResp.UpdatedTime.ToTime(),
 		TotalComments:       totalComments,
 		TotalReactions:      totalReactions,
+		Type:                fb_post_type.Page,
 		StatusType:          fb_status_type.ParseFbStatusTypeWithDefault(fbExternalPostResp.StatusType, fb_status_type.Unknown),
 	})
 
@@ -865,6 +1016,7 @@ func (s *Synchronizer) HandleTaskGetPosts(
 			ExternalUpdatedTime: fbPost.UpdatedTime.ToTime(),
 			TotalComments:       totalComments,
 			TotalReactions:      totalReactions,
+			Type:                fb_post_type.Page,
 			StatusType:          fb_status_type.ParseFbStatusTypeWithDefault(fbPost.StatusType, fb_status_type.Unknown),
 		})
 	}
@@ -924,7 +1076,8 @@ func (s *Synchronizer) HandleTaskGetLiveVideos(
 	fmt.Println("GetLiveVideos")
 
 	// Call api (facebook) listPublishedPosts from facebook
-	fbLiveVideosResp, err := s.fbClient.CallAPIListSimplifyLiveVideos(&fbclient.ListSimplifyLiveVideosRequest{
+	fbLiveVideosResp, err := s.fbClient.CallAPIListLiveVideos(&fbclient.ListLiveVideosRequest{
+		ObjectID:    externalPageID,
 		AccessToken: accessToken,
 		Pagination:  fbPagingReq,
 	})
@@ -947,6 +1100,93 @@ func (s *Synchronizer) HandleTaskGetLiveVideos(
 		if err := s.fbMessagingAggr.Dispatch(ctx, updateLiveVideoStatusCmd); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (s *Synchronizer) HandleTaskGetUserLiveVideos(
+	ctx context.Context, shopID dot.ID, externalUserID, accessToken string, fbPagingReq *model.FacebookPagingRequest,
+) error {
+	fmt.Println("GetUserLiveVideos")
+
+	// Call api (facebook) listPublishedPosts from facebook
+	fbLiveVideosResp, err := s.fbClient.CallAPIListLiveVideos(&fbclient.ListLiveVideosRequest{
+		ObjectID:    externalUserID,
+		AccessToken: accessToken,
+		Pagination:  fbPagingReq,
+	})
+	if err != nil {
+		return err
+	}
+
+	// Finish task when data is empty
+	if fbLiveVideosResp == nil || len(fbLiveVideosResp.Data) == 0 ||
+		fbLiveVideosResp.Paging.CompareFacebookPagingRequest(fbPagingReq) {
+		return nil
+	}
+
+	// Create and Update posts
+	var createFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
+	for _, fbLiveVideo := range fbLiveVideosResp.Data {
+		createFbExternalPostArgs := &fbmessaging.CreateFbExternalPostArgs{
+			ID:                      cm.NewID(),
+			ExternalUserID:          externalUserID,
+			ExternalID:              fbLiveVideo.GetExternalPostID(),
+			ExternalFrom:            fbclientconvert.ConvertObjectFrom(fbLiveVideo.From),
+			ExternalPicture:         fbLiveVideo.Video.Picture,
+			ExternalMessage:         fbLiveVideo.Description,
+			ExternalCreatedTime:     fbLiveVideo.CreationTime.ToTime(),
+			ExternalUpdatedTime:     fbLiveVideo.CreationTime.ToTime(),
+			Type:                    fb_post_type.User,
+			StatusType:              fb_status_type.AddedVideo,
+			ExternalLiveVideoStatus: fbLiveVideo.Status,
+			LiveVideoStatus:         fb_live_video_status.ConvertToFbLiveVideoStatus(fbLiveVideo.Status),
+		}
+		if fbLiveVideo.Comments != nil && fbLiveVideo.Comments.Summary != nil {
+			createFbExternalPostArgs.TotalComments = fbLiveVideo.Comments.Summary.TotalCount
+		}
+		if fbLiveVideo.Reactions != nil && fbLiveVideo.Comments.Summary != nil {
+			createFbExternalPostArgs.TotalReactions = fbLiveVideo.Reactions.Summary.TotalCount
+		}
+		if fbLiveVideo.Video != nil {
+			createFbExternalPostArgs.ExternalAttachments = []*fbmessaging.PostAttachment{
+				{
+					MediaType: "video",
+					Media: &fbmessaging.MediaPostAttachment{
+						Image: &fbmessaging.ImageMediaPostAttachment{
+							Src: fbLiveVideo.Video.Picture,
+						}},
+					Type: "video_autoplay",
+				},
+			}
+		}
+
+		createFbExternalPostsArgs = append(createFbExternalPostsArgs, createFbExternalPostArgs)
+	}
+
+	updateOrCreateFbExternalPostsCmd := &fbmessaging.UpdateOrCreateFbExternalPostsFromSyncCommand{
+		FbExternalPosts: createFbExternalPostsArgs,
+	}
+	if err := s.fbMessagingAggr.Dispatch(ctx, updateOrCreateFbExternalPostsCmd); err != nil {
+		return err
+	}
+
+	// Create tasks getComments
+	for _, fbExternalPost := range updateOrCreateFbExternalPostsCmd.Result {
+		s.addTask(&TaskArguments{
+			actionType:     GetUserComments,
+			accessToken:    accessToken,
+			shopID:         shopID,
+			externalUserID: externalUserID,
+			getCommentsArgs: &getCommentsArguments{
+				externalPostID: fbExternalPost.ExternalID,
+				postID:         fbExternalPost.ID,
+			},
+			fbPagingRequest: &model.FacebookPagingRequest{
+				Limit: dot.Int(fbclient.DefaultLimitGetComments),
+			},
+		})
 	}
 
 	return nil
@@ -1034,6 +1274,64 @@ func listAllFbPagesActive(db *cmsql.Database) (fbpaging.FbExternalPageCombineds,
 	}
 
 	return fbExternalPageCombineds, nil
+}
+
+func listAllFbUsersActive(db *cmsql.Database) (fbusering.FbExternalUserCombineds, error) {
+	fromExternalID := ""
+
+	// key is id
+	var fbExternalUserCombineds []*fbusering.FbExternalUserCombined
+
+	for {
+		var fbUserModels fbusermodel.FbExternalUserConnecteds
+
+		if err := db.
+			Where("external_id > ?", fromExternalID).
+			Where("status = ?", status3.P.Enum()).
+			Where("shop_id is not null").
+			OrderBy("updated_at desc, external_id asc").
+			Limit(1000).
+			Find(&fbUserModels); err != nil {
+			return nil, err
+		}
+
+		if len(fbUserModels) == 0 {
+			break
+		}
+
+		var listFbUserExternalIDs []string
+		fbExternalUserConnecteds := fbuserconvert.Convert_fbusermodel_FbExternalUserConnecteds_fbusering_FbExternalUserConnecteds(fbUserModels)
+		for _, fbExternalUserConnected := range fbExternalUserConnecteds {
+			listFbUserExternalIDs = append(listFbUserExternalIDs, fbExternalUserConnected.ExternalID)
+		}
+
+		var fbExternalUserInternalModels fbusermodel.FbExternalUserInternals
+
+		// TODO(ngoc): refactor
+		if err := db.
+			In("external_id", listFbUserExternalIDs).
+			OrderBy("external_id").
+			Limit(1000).
+			Find(&fbExternalUserInternalModels); err != nil {
+			return nil, err
+		}
+
+		fbExternalUserInternals := fbuserconvert.Convert_fbusermodel_FbExternalUserInternals_fbusering_FbExternalUserInternals(fbExternalUserInternalModels)
+		mapFbExternalUserInternal := make(map[string]*fbusering.FbExternalUserInternal)
+		for _, fbExternalUserInternal := range fbExternalUserInternals {
+			mapFbExternalUserInternal[fbExternalUserInternal.ExternalID] = fbExternalUserInternal
+		}
+
+		for _, fbExternalUserConnected := range fbExternalUserConnecteds {
+			fromExternalID = fbExternalUserConnected.ExternalID
+			fbExternalUserCombineds = append(fbExternalUserCombineds, &fbusering.FbExternalUserCombined{
+				FbExternalUserConnected: fbExternalUserConnected,
+				FbExternalUserInternal:  mapFbExternalUserInternal[fbExternalUserConnected.ExternalID],
+			})
+		}
+	}
+
+	return fbExternalUserCombineds, nil
 }
 
 func ternaryString(statement bool, a, b string) string {

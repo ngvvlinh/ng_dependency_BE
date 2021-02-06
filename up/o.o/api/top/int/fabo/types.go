@@ -4,10 +4,11 @@ import (
 	"strings"
 	"time"
 
+	"o.o/api/fabo/fbmessaging/fb_post_type"
+
 	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_live_video_status"
-	"o.o/api/fabo/fbmessaging/fb_post_source"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/top/external/types"
 	"o.o/api/top/int/shop"
@@ -448,9 +449,10 @@ type ListLiveVideosRequest struct {
 func (m *ListLiveVideosRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListLiveVideosFilter struct {
-	Type            fb_post_source.FbPostSource                `json:"type"` // user or page
+	Type            fb_post_type.FbPostType                    `json:"type"` // user or page
 	LiveVideoStatus fb_live_video_status.NullFbLiveVideoStatus `json:"live_video_status"`
 	ExternalPageIDs filter.Strings                             `json:"external_page_ids"`
+	IsLiveVideo     dot.NullBool                               `json:"is_live_video"`
 }
 
 func (m *ListLiveVideosFilter) String() string { return jsonx.MustMarshalToString(m) }
@@ -490,6 +492,7 @@ type FbCommentsResponse struct {
 type FbExternalPost struct {
 	ID                  dot.ID                      `json:"id"`
 	ExternalPageID      string                      `json:"external_page_id"`
+	ExternalUserID      string                      `json:"external_user_id"`
 	ExternalID          string                      `json:"external_id"`
 	ExternalParentID    string                      `json:"external_parent_id"`
 	ExternalFrom        *FbObjectFrom               `json:"external_from"`
@@ -498,13 +501,13 @@ type FbExternalPost struct {
 	ExternalMessage     string                      `json:"external_message"`
 	ExternalAttachments []*PostAttachment           `json:"external_attachments"`
 	ExternalCreatedTime time.Time                   `json:"external_created_time"`
-	TotalComments       int                         `json:"total_comments"`
-	TotalReactions      int                         `json:"total_reactions"`
 	CreatedAt           time.Time                   `json:"created_at"`
 	UpdatedAt           time.Time                   `json:"updated_at"`
+	TotalComments       int                         `json:"total_comments"`
+	TotalReactions      int                         `json:"total_reactions"`
+	Type                fb_post_type.FbPostType     `json:"type"`
 	ExternalStatusType  fb_status_type.FbStatusType `json:"external_status_type"`
-
-	ExternalParent *FbExternalPost `json:"external_parent"`
+	ExternalParent      *FbExternalPost             `json:"external_parent"`
 
 	IsLiveVideo             bool                                   `json:"is_live_video"`
 	ExternalLiveVideoStatus string                                 `json:"external_live_video_status"`

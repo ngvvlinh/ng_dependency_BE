@@ -12,6 +12,7 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/top/types/etc/webhook_type"
@@ -127,6 +128,7 @@ func buildAllChildPost(post *fbmessaging.CreateFbExternalPostArgs) []*fbmessagin
 				ExternalUpdatedTime: post.ExternalUpdatedTime,
 				FeedType:            fb_feed_type.Post,
 				StatusType:          post.StatusType,
+				Type:                fb_post_type.Page,
 			}
 			res = append(res, childPost)
 		}
@@ -146,6 +148,7 @@ func convertModelCommentToCreateCommentArgs(pageId string, postID string, create
 		ExternalCommentCount: comment.CommentCount,
 		ExternalCreatedTime:  createdTime,
 		InternalSource:       fb_internal_source.Facebook, // comment comes from webhook, by default create it with `Facebook`
+		PostType:             fb_post_type.Page,
 	}
 
 	if comment.From != nil {

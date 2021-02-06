@@ -23,10 +23,10 @@ func (s *DemoService) Clone() fabo.DemoService {
 func (s *DemoService) ListLiveVideos(
 	ctx context.Context, req *fabo.DemoListLiveVideosRequest,
 ) (*fabo.DemoListLiveVideosResponse, error) {
-	listLiveVideosReq := &fbclient.ListLiveVideosRequest{
+	listLiveVideosReq := &fbclient.ListLiveVideosWithCommentsRequest{
 		AccessToken: req.Token,
 	}
-	listLiveVideosResp, err := s.FBClient.CallAPIListLiveVideos(listLiveVideosReq)
+	listLiveVideosResp, err := s.FBClient.CallAPIListLiveVideosWithComments(listLiveVideosReq)
 	if err != nil {
 		return nil, cm.Errorf(cm.ExternalServiceError, err, "Error from Facebook: %s", err.Error())
 	}

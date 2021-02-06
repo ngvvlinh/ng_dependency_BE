@@ -2,13 +2,14 @@ package fbmessaging
 
 import (
 	context "context"
-	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"time"
 
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/meta"
 	"o.o/capi/dot"
@@ -51,6 +52,7 @@ type QueryService interface {
 	ListLatestCustomerFbExternalMessages(_ context.Context, externalConversationIDs filter.Strings) ([]*FbExternalMessage, error)
 
 	GetLatestFbExternalComment(_ context.Context, externalPageID, externalPostID, externalUserID string) (*FbExternalComment, error)
+	GetLatestFbExternalUserComment(_ context.Context, externalOwnerPostID, externalPostID, externalUserID string) (*FbExternalComment, error)
 	GetLatestCustomerExternalComment(_ context.Context, externalPostID, externalUserID, externalPageID string) (*FbExternalComment, error)
 	ListFbExternalComments(context.Context, *ListFbExternalCommentsArgs) (*FbExternalCommentsResponse, error)
 	ListFbExternalCommentsByExternalIDs(context.Context, *ListFbExternalCommentsByIDsArgs) (*FbExternalCommentsResponse, error)
@@ -114,21 +116,25 @@ type CreateFbExternalMessagesFromSyncArgs struct {
 
 // +convert:create=FbExternalPost
 type CreateFbExternalPostArgs struct {
-	ID                  dot.ID
-	ExternalPageID      string
-	ExternalID          string
-	ExternalParentID    string
-	ExternalFrom        *FbObjectFrom
-	ExternalPicture     string
-	ExternalIcon        string
-	ExternalMessage     string
-	ExternalAttachments []*PostAttachment
-	ExternalCreatedTime time.Time
-	ExternalUpdatedTime time.Time
-	TotalComments       int
-	TotalReactions      int
-	FeedType            fb_feed_type.FbFeedType
-	StatusType          fb_status_type.FbStatusType
+	ID                      dot.ID
+	ExternalPageID          string
+	ExternalUserID          string
+	ExternalID              string
+	ExternalParentID        string
+	ExternalFrom            *FbObjectFrom
+	ExternalPicture         string
+	ExternalIcon            string
+	ExternalMessage         string
+	ExternalAttachments     []*PostAttachment
+	ExternalCreatedTime     time.Time
+	ExternalUpdatedTime     time.Time
+	TotalComments           int
+	TotalReactions          int
+	Type                    fb_post_type.FbPostType
+	FeedType                fb_feed_type.FbFeedType
+	StatusType              fb_status_type.FbStatusType
+	ExternalLiveVideoStatus string
+	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus
 }
 
 type CreateFbExternalPostsArgs struct {
@@ -163,10 +169,14 @@ type CreateFbExternalCommentArgs struct {
 	ExternalCreatedTime  time.Time
 	Source               fb_comment_source.FbCommentSource
 	InternalSource       fb_internal_source.FbInternalSource
-	IsLiked              bool
-	IsHidden             bool
-	IsPrivateReplied     bool
-	CreatedBy            dot.ID
+
+	IsLiked          bool
+	IsHidden         bool
+	IsPrivateReplied bool
+	CreatedBy        dot.ID
+
+	ExternalOwnerPostID string
+	PostType            fb_post_type.FbPostType
 }
 
 type CreateOrUpdateFbExternalCommentsArgs struct {
@@ -198,6 +208,7 @@ type CreateOrUpdateFbExternalConversationsArgs struct {
 type CreateFbCustomerConversationArgs struct {
 	ID                         dot.ID
 	ExternalPageID             string
+	ExternalOwnerPostID        string
 	ExternalID                 string
 	ExternalUserID             string
 	ExternalUserName           string
@@ -248,9 +259,10 @@ type FbCustomerConversationsResponse struct {
 }
 
 type ListFbExternalCommentsArgs struct {
-	FbExternalPostID string
-	FbExternalUserID string
-	FbExternalPageID string
+	FbExternalPostID      string
+	FbExternalUserID      string
+	FbExternalPageID      string
+	FbExternalOwnerPostID string
 
 	Paging meta.Paging
 }
@@ -268,6 +280,8 @@ type FbExternalCommentsResponse struct {
 }
 
 type LitFbExternalPostsArgs struct {
+	IsLiveVideo        dot.NullBool
+	ExternalUserID     string
 	ExternalPageIDs    []string
 	ExternalStatusType fb_status_type.NullFbStatusType
 	LiveVideoStatus    fb_live_video_status.NullFbLiveVideoStatus
@@ -298,6 +312,7 @@ type FbSavePostArgs struct {
 	ExternalParentID    string
 	FeedType            fb_feed_type.FbFeedType
 	StatusType          fb_status_type.FbStatusType
+	Type                fb_post_type.FbPostType
 }
 
 type FbUpdatePostMessageArgs struct {

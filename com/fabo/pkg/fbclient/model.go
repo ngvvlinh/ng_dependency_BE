@@ -42,6 +42,12 @@ type DebugTokenParams struct {
 	InputToken  string `url:"input_token"`
 }
 
+type ListUserFeedsRequest struct {
+	AccessToken    string
+	ExternalUserID string
+	Pagination     *model.FacebookPagingRequest
+}
+
 type ListFeedsRequest struct {
 	AccessToken string
 	PageID      string
@@ -81,6 +87,13 @@ type ListCommentsRequest struct {
 	PostID      string
 	PageID      string
 	Pagination  *model.FacebookPagingRequest
+}
+
+type ListUserCommentsRequest struct {
+	AccessToken    string
+	PostID         string
+	ExternalUserID string
+	Pagination     *model.FacebookPagingRequest
 }
 
 type ListCommentsParams struct {
@@ -257,22 +270,23 @@ type GetProfileByPISDParams struct {
 	Fields      string `url:"fields"`
 }
 
-type ListLiveVideosRequest struct {
+type ListLiveVideosWithCommentsRequest struct {
 	AccessToken string
 }
 
-type ListSimplifyLiveVideosRequest struct {
+type ListLiveVideosRequest struct {
 	AccessToken string
+	ObjectID    string
 	Pagination  *model.FacebookPagingRequest
 }
 
-type ListSimplifyLiveVideosParams struct {
+type ListLiveVideosParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
 	DateFormat  string `url:"date_format"`
 }
 
-type ListLiveVideosParams struct {
+type ListLiveVideosWithCommentsParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
 	DateFormat  string `url:"date_format"`

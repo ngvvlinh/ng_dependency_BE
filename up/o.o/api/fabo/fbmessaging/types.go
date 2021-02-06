@@ -8,6 +8,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/api/fabo/fbmessaging/fb_live_video_status"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/capi/dot"
 )
@@ -112,6 +113,9 @@ type FbExternalComment struct {
 	DeletedAt            time.Time
 	InternalSource       fb_internal_source.FbInternalSource
 	CreatedBy            dot.ID
+
+	ExternalOwnerPostID string
+	PostType            fb_post_type.FbPostType
 }
 
 type FbObjectParent struct {
@@ -152,6 +156,7 @@ type FbExternalPost struct {
 	ID                      dot.ID
 	ExternalPageID          string
 	ExternalID              string
+	ExternalUserID          string
 	ExternalParentID        string
 	ExternalFrom            *FbObjectFrom
 	ExternalPicture         string
@@ -165,6 +170,7 @@ type FbExternalPost struct {
 	ExternalParent          *FbExternalPost
 	FeedType                fb_feed_type.FbFeedType
 	StatusType              fb_status_type.FbStatusType
+	Type                    fb_post_type.FbPostType
 	TotalComments           int
 	TotalReactions          int
 	IsLiveVideo             bool
@@ -175,6 +181,7 @@ type FbExternalPost struct {
 type FbCustomerConversation struct {
 	ID                         dot.ID
 	ExternalPageID             string
+	ExternalOwnerPostID        string
 	ExternalID                 string
 	ExternalUserID             string
 	ExternalUserName           string

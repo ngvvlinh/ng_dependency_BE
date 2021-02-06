@@ -3,15 +3,17 @@ package webhook
 import (
 	"context"
 	"fmt"
-	"o.o/backend/pkg/common/mq"
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	"o.o/backend/com/fabo/pkg/fbclient/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/cmenv"
+	"o.o/backend/pkg/common/mq"
 )
 
 // Facebook feed is any action on page (create or update a post, make comment,
@@ -69,6 +71,8 @@ func (wh *WebhookHandler) handleFeedEvent(
 		ExternalID:          feedChange.Value.PostID,
 		ExternalCreatedTime: createdTime,
 		FeedType:            fb_feed_type.Event,
+		StatusType:          fb_status_type.CreatedEvent,
+		Type:                fb_post_type.User,
 	}
 	if err := wh.fbmessagingAggr.Dispatch(ctx, saveEvent); err != nil {
 		return mq.CodeStop, err
@@ -178,6 +182,7 @@ func (wh *WebhookHandler) updateParentAndChildPost(ctx context.Context, extPageI
 					ExternalCreatedTime: post.ExternalCreatedTime,
 					ExternalParentID:    parentPost.ExternalID,
 					StatusType:          post.StatusType,
+					Type:                fb_post_type.Page,
 				}
 				if err := wh.fbmessagingAggr.Dispatch(ctx, createPostCmd); err != nil {
 					return err
@@ -336,6 +341,8 @@ func (wh *WebhookHandler) createParentAndChildPosts(
 		ExternalFrom:        parentPost.ExternalFrom,
 		ExternalParentID:    "",
 		FeedType:            fb_feed_type.Post,
+		Type:                fb_post_type.Page,
+		StatusType:          parentPost.StatusType,
 	}
 	if err := wh.fbmessagingAggr.Dispatch(ctx, createParentCmd); err != nil {
 		return mq.CodeStop, err

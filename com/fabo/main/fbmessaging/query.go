@@ -9,7 +9,6 @@ import (
 	"o.o/backend/com/fabo/main/fbmessaging/sqlstore"
 	faboRedis "o.o/backend/com/fabo/pkg/redis"
 	com "o.o/backend/com/main"
-	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -197,10 +196,19 @@ func (q *FbMessagingQuery) ListFbExternalPosts(
 	if len(args.ExternalIDs) > 0 {
 		query = query.ExternalIDs(args.ExternalIDs)
 	}
-	if len(args.ExternalPageIDs) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "external_page_ids must not be null")
+	if args.IsLiveVideo.Valid {
+		query = query.IsLiveVideo(args.IsLiveVideo.Bool)
+	}
+
+	if len(args.ExternalPageIDs) != 0 && args.ExternalUserID != "" {
+		query = query.ExternalPageIDsOrExternalUserID(args.ExternalPageIDs, args.ExternalUserID)
 	} else {
-		query = query.ExternalPageIDs(args.ExternalPageIDs)
+		if len(args.ExternalPageIDs) != 0 {
+			query = query.ExternalPageIDs(args.ExternalPageIDs)
+		}
+		if args.ExternalUserID != "" {
+			query = query.ExternalUserID(args.ExternalUserID)
+		}
 	}
 
 	fbExternalPosts, err := query.ListFbExternalPosts()
@@ -253,6 +261,12 @@ func (q *FbMessagingQuery) GetLatestFbExternalComment(
 	return q.fbExternalCommentStore(ctx).GetLatestExternalComment(externalPageID, externalPostID, externalUserID)
 }
 
+func (q *FbMessagingQuery) GetLatestFbExternalUserComment(
+	ctx context.Context, externalOwnerPostID, externalPostID, externalUserID string,
+) (*fbmessaging.FbExternalComment, error) {
+	return q.fbExternalCommentStore(ctx).GetLatestExternalComment(externalOwnerPostID, externalPostID, externalUserID)
+}
+
 func (q *FbMessagingQuery) GetLatestCustomerExternalComment(
 	ctx context.Context, externalPostID, externalUserID, externalPageID string,
 ) (*fbmessaging.FbExternalComment, error) {
@@ -267,18 +281,36 @@ func (q *FbMessagingQuery) ListFbExternalComments(
 
 	var fbExternalComments []*fbmessaging.FbExternalComment
 	if args.FbExternalUserID != "" {
-		if args.FbExternalPageID != args.FbExternalUserID {
-			query = query.ExternalPageIDAndExternalUserID(args.FbExternalPageID, args.FbExternalUserID)
-			fbExternalComments, err = query.ListFbExternalComments()
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			fbExternalComments, err = query.ListFbExternalCommentsOfPage(args.FbExternalPageID)
-			if err != nil {
-				return nil, err
+		if args.FbExternalPageID != "" {
+			if args.FbExternalPageID != args.FbExternalUserID {
+				query = query.ExternalPageIDAndExternalUserID(args.FbExternalPageID, args.FbExternalUserID)
+				fbExternalComments, err = query.ListFbExternalComments()
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				fbExternalComments, err = query.ListFbExternalCommentsOfPage(args.FbExternalPageID)
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
+
+		if args.FbExternalOwnerPostID != "" {
+			if args.FbExternalOwnerPostID != args.FbExternalUserID {
+				query = query.ExternalPageIDAndExternalUserID(args.FbExternalOwnerPostID, args.FbExternalUserID)
+				fbExternalComments, err = query.ListFbExternalComments()
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				fbExternalComments, err = query.ListFbExternalCommentsOfUserOwnerPost(args.FbExternalOwnerPostID)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+
 	} else {
 		fbExternalComments, err = query.ListFbExternalComments()
 		if err != nil {

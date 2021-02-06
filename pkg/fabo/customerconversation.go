@@ -14,8 +14,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
-	"o.o/api/fabo/fbmessaging/fb_live_video_status"
-	"o.o/api/fabo/fbmessaging/fb_post_source"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
@@ -451,24 +450,35 @@ func (s *CustomerConversationService) ListCommentsByExternalPostID(
 	}
 	fbExternalPost := getFbExternalPostQuery.Result
 
-	haveExternalPageID := false
-	for _, externalPageID := range faboInfo.ExternalPageIDs {
-		if externalPageID == fbExternalPost.ExternalPageID {
-			haveExternalPageID = true
-			break
-		}
-	}
-	//// TODO: Ngoc add message
-	if !haveExternalPageID {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "")
-	}
-
 	listFbExternalCommentsQuery := &fbmessaging.ListFbExternalCommentsQuery{
 		FbExternalPostID: request.Filter.ExternalPostID,
 		FbExternalUserID: request.Filter.ExternalUserID,
-		FbExternalPageID: fbExternalPost.ExternalPageID,
 		Paging:           *paging,
 	}
+
+	if fbExternalPost.Type == fb_post_type.Page || fbExternalPost.Type == fb_post_type.Unknown { // backward compatible
+		haveExternalPageID := false
+		for _, externalPageID := range faboInfo.ExternalPageIDs {
+			if externalPageID == fbExternalPost.ExternalPageID {
+				haveExternalPageID = true
+				break
+			}
+		}
+		if !haveExternalPageID {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "external_page_ids not found")
+		}
+		listFbExternalCommentsQuery.FbExternalPageID = fbExternalPost.ExternalPageID
+	} else {
+		getFbExternalUserConnectedQuery := &fbusering.GetFbExternalUserConnectedByShopIDQuery{
+			ShopID: s.SS.Shop().ID,
+		}
+		if err := s.FBUserQuery.Dispatch(ctx, getFbExternalUserConnectedQuery); err != nil {
+			return nil, err
+		}
+		fbExternalUserConnected := getFbExternalUserConnectedQuery.Result
+		listFbExternalCommentsQuery.FbExternalOwnerPostID = fbExternalUserConnected.ExternalID
+	}
+
 	if err := s.FBMessagingQuery.Dispatch(ctx, listFbExternalCommentsQuery); err != nil {
 		return nil, err
 	}
@@ -706,6 +716,7 @@ func (s *CustomerConversationService) SendComment(
 				Source:               fb_comment_source.Web,
 				InternalSource:       fb_internal_source.Fabo, // message through our api, set it is `Fabo`
 				CreatedBy:            s.SS.User().ID,
+				PostType:             fb_post_type.Page,
 			},
 		},
 	}
@@ -1163,51 +1174,67 @@ func (s *CustomerConversationService) SendPrivateReply(
 func (s *CustomerConversationService) ListLiveVideos(
 	ctx context.Context, req *fabo.ListLiveVideosRequest,
 ) (*fabo.ListLiveVideosResponse, error) {
-	var filterExternalPageIDs []string
-	var externalPageIDsArgs []string
-	var liveVideoStatus fb_live_video_status.NullFbLiveVideoStatus
+	var filterExternalPageIDs, externalPageIDsArgs, externalPageIDs []string
 
-	if req.Filter != nil {
-		if req.Filter.Type != fb_post_source.Page {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "unsupported type %v", req.Filter.Type)
-		}
-		filterExternalPageIDs = req.Filter.ExternalPageIDs
-		liveVideoStatus = req.Filter.LiveVideoStatus
-	}
 	paging, err := cmapi.CMCursorPaging(req.Paging)
 	if err != nil {
 		return nil, err
 	}
+
+	getFbExternalUserConnectedQuery := &fbusering.GetFbExternalUserConnectedByShopIDQuery{
+		ShopID: s.SS.Shop().ID,
+	}
+	if err := s.FBUserQuery.Dispatch(ctx, getFbExternalUserConnectedQuery); err != nil {
+		return nil, err
+	}
+	externalUserID := getFbExternalUserConnectedQuery.Result.ExternalID
+
 	faboInfo, err := s.FaboPagesKit.GetPages(ctx, s.SS.Shop().ID)
 	if err != nil {
 		return nil, err
 	}
 
-	externalPageIDs := faboInfo.ExternalPageIDs
-	if len(externalPageIDs) != 0 {
-		mExternalPageIDs := map[string]bool{}
-
-		for _, externalPageID := range externalPageIDs {
-			mExternalPageIDs[externalPageID] = true
-		}
-
-		for _, filterExternalPageID := range filterExternalPageIDs {
-			if _, ok := mExternalPageIDs[filterExternalPageID]; ok {
-				externalPageIDsArgs = append(externalPageIDsArgs, filterExternalPageID)
-			}
-		}
-	}
-
-	if len(externalPageIDsArgs) == 0 {
-		externalPageIDsArgs = externalPageIDs
-	}
-
 	listFbExternalPostsQuery := &fbmessaging.ListFbExternalPostsQuery{
-		ExternalPageIDs:    externalPageIDsArgs,
 		ExternalStatusType: fb_status_type.AddedVideo.Wrap(),
-		LiveVideoStatus:    liveVideoStatus,
 		Paging:             *paging,
 	}
+
+	if req.Filter != nil {
+		switch req.Filter.Type {
+		case fb_post_type.Page:
+			filterExternalPageIDs = req.Filter.ExternalPageIDs
+
+			externalPageIDs = faboInfo.ExternalPageIDs
+			if len(externalPageIDs) != 0 {
+				mExternalPageIDs := map[string]bool{}
+
+				for _, externalPageID := range externalPageIDs {
+					mExternalPageIDs[externalPageID] = true
+				}
+
+				for _, filterExternalPageID := range filterExternalPageIDs {
+					if _, ok := mExternalPageIDs[filterExternalPageID]; ok {
+						externalPageIDsArgs = append(externalPageIDsArgs, filterExternalPageID)
+					}
+				}
+			}
+
+			if len(externalPageIDsArgs) == 0 {
+				externalPageIDsArgs = externalPageIDs
+			}
+
+			listFbExternalPostsQuery.ExternalPageIDs = externalPageIDsArgs
+		case fb_post_type.User:
+			listFbExternalPostsQuery.ExternalUserID = externalUserID
+		default:
+			listFbExternalPostsQuery.ExternalPageIDs = faboInfo.ExternalPageIDs
+			listFbExternalPostsQuery.ExternalUserID = externalUserID
+		}
+
+		listFbExternalPostsQuery.LiveVideoStatus = req.Filter.LiveVideoStatus
+		listFbExternalPostsQuery.IsLiveVideo = req.Filter.IsLiveVideo
+	}
+
 	if err := s.FBMessagingQuery.Dispatch(ctx, listFbExternalPostsQuery); err != nil {
 		return nil, err
 	}

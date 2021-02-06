@@ -24,6 +24,7 @@ type FbUserQuery struct {
 
 	fbShopUserTagStore              sqlstore.FbShopTagStoreFactory
 	fbUserStore                     sqlstore.FbExternalUserStoreFactory
+	fbUserConnectedStore            sqlstore.FbExternalUserConnectedStoreFactory
 	fbUserInternalStore             sqlstore.FbExternalUserInternalFactory
 	fbExternalUserShopCustomerStore sqlstore.FbExternalUserShopCustomerStoreFactory
 	customerQuery                   customering.QueryBus
@@ -36,6 +37,7 @@ func NewFbUserQuery(database com.MainDB, customerQ customering.QueryBus) *FbUser
 		db:                              database,
 		fbShopUserTagStore:              sqlstore.NewFbShopTagStore(database),
 		fbUserStore:                     sqlstore.NewFbExternalUserStore(database),
+		fbUserConnectedStore:            sqlstore.NewFbExternalUserConnectedStore(database),
 		fbExternalUserShopCustomerStore: sqlstore.NewFbExternalUserShopCustomerStore(database),
 		customerQuery:                   customerQ,
 		defaultAvatarLink:               _defaultAvatarLink,
@@ -65,6 +67,12 @@ func (q *FbUserQuery) GetFbExternalUserByExternalID(
 	replaceDefaultAvatar(fbUser, q.defaultAvatarLink)
 
 	return fbUser, nil
+}
+
+func (q *FbUserQuery) GetFbExternalUserConnectedByShopID(
+	ctx context.Context, shopID dot.ID,
+) (*fbusering.FbExternalUserConnected, error) {
+	return q.fbUserConnectedStore(ctx).ShopID(shopID).GetFbExternalUserConnected()
 }
 
 func (q *FbUserQuery) ListFbExternalUsersByExternalIDs(

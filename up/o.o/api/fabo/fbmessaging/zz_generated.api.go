@@ -11,6 +11,7 @@ import (
 	fb_customer_conversation_type "o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
 	fb_live_video_status "o.o/api/fabo/fbmessaging/fb_live_video_status"
+	fb_post_type "o.o/api/fabo/fbmessaging/fb_post_type"
 	fb_status_type "o.o/api/fabo/fbmessaging/fb_status_type"
 	meta "o.o/api/meta"
 	capi "o.o/capi"
@@ -201,6 +202,7 @@ type SaveFbExternalPostCommand struct {
 	ExternalParentID    string
 	FeedType            fb_feed_type.FbFeedType
 	StatusType          fb_status_type.FbStatusType
+	Type                fb_post_type.FbPostType
 
 	Result *FbExternalPost `json:"-"`
 }
@@ -435,6 +437,19 @@ func (h QueryServiceHandler) HandleGetLatestFbExternalComment(ctx context.Contex
 	return err
 }
 
+type GetLatestFbExternalUserCommentQuery struct {
+	ExternalOwnerPostID string
+	ExternalPostID      string
+	ExternalUserID      string
+
+	Result *FbExternalComment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetLatestFbExternalUserComment(ctx context.Context, msg *GetLatestFbExternalUserCommentQuery) (err error) {
+	msg.Result, err = h.inner.GetLatestFbExternalUserComment(msg.GetArgs(ctx))
+	return err
+}
+
 type GetLatestUpdateActiveCommentQuery struct {
 	ExtPostID string
 	ExtUserID string
@@ -520,10 +535,11 @@ func (h QueryServiceHandler) HandleListFbCustomerConversationsByIDs(ctx context.
 }
 
 type ListFbExternalCommentsQuery struct {
-	FbExternalPostID string
-	FbExternalUserID string
-	FbExternalPageID string
-	Paging           meta.Paging
+	FbExternalPostID      string
+	FbExternalUserID      string
+	FbExternalPageID      string
+	FbExternalOwnerPostID string
+	Paging                meta.Paging
 
 	Result *FbExternalCommentsResponse `json:"-"`
 }
@@ -583,6 +599,8 @@ func (h QueryServiceHandler) HandleListFbExternalMessagesByExternalIDs(ctx conte
 }
 
 type ListFbExternalPostsQuery struct {
+	IsLiveVideo        dot.NullBool
+	ExternalUserID     string
 	ExternalPageIDs    []string
 	ExternalStatusType fb_status_type.NullFbStatusType
 	LiveVideoStatus    fb_live_video_status.NullFbLiveVideoStatus
@@ -677,6 +695,7 @@ func (q *GetFbExternalMessageByIDQuery) query()                                 
 func (q *GetFbExternalPostByExternalIDQuery) query()                              {}
 func (q *GetLatestCustomerExternalCommentQuery) query()                           {}
 func (q *GetLatestFbExternalCommentQuery) query()                                 {}
+func (q *GetLatestFbExternalUserCommentQuery) query()                             {}
 func (q *GetLatestUpdateActiveCommentQuery) query()                               {}
 func (q *ListFbCustomerConversationStatesQuery) query()                           {}
 func (q *ListFbCustomerConversationsQuery) query()                                {}
@@ -884,6 +903,7 @@ func (q *SaveFbExternalPostCommand) GetArgs(ctx context.Context) (_ context.Cont
 			ExternalParentID:    q.ExternalParentID,
 			FeedType:            q.FeedType,
 			StatusType:          q.StatusType,
+			Type:                q.Type,
 		}
 }
 
@@ -899,6 +919,7 @@ func (q *SaveFbExternalPostCommand) SetFbSavePostArgs(args *FbSavePostArgs) {
 	q.ExternalParentID = args.ExternalParentID
 	q.FeedType = args.FeedType
 	q.StatusType = args.StatusType
+	q.Type = args.Type
 }
 
 func (q *UpdateFbCommentMessageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdateCommentMessageArgs) {
@@ -1048,6 +1069,13 @@ func (q *GetLatestFbExternalCommentQuery) GetArgs(ctx context.Context) (_ contex
 		q.ExternalUserID
 }
 
+func (q *GetLatestFbExternalUserCommentQuery) GetArgs(ctx context.Context) (_ context.Context, externalOwnerPostID string, externalPostID string, externalUserID string) {
+	return ctx,
+		q.ExternalOwnerPostID,
+		q.ExternalPostID,
+		q.ExternalUserID
+}
+
 func (q *GetLatestUpdateActiveCommentQuery) GetArgs(ctx context.Context) (_ context.Context, extPostID string, extUserID string) {
 	return ctx,
 		q.ExtPostID,
@@ -1103,10 +1131,11 @@ func (q *ListFbCustomerConversationsByIDsQuery) GetArgs(ctx context.Context) (_ 
 func (q *ListFbExternalCommentsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListFbExternalCommentsArgs) {
 	return ctx,
 		&ListFbExternalCommentsArgs{
-			FbExternalPostID: q.FbExternalPostID,
-			FbExternalUserID: q.FbExternalUserID,
-			FbExternalPageID: q.FbExternalPageID,
-			Paging:           q.Paging,
+			FbExternalPostID:      q.FbExternalPostID,
+			FbExternalUserID:      q.FbExternalUserID,
+			FbExternalPageID:      q.FbExternalPageID,
+			FbExternalOwnerPostID: q.FbExternalOwnerPostID,
+			Paging:                q.Paging,
 		}
 }
 
@@ -1114,6 +1143,7 @@ func (q *ListFbExternalCommentsQuery) SetListFbExternalCommentsArgs(args *ListFb
 	q.FbExternalPostID = args.FbExternalPostID
 	q.FbExternalUserID = args.FbExternalUserID
 	q.FbExternalPageID = args.FbExternalPageID
+	q.FbExternalOwnerPostID = args.FbExternalOwnerPostID
 	q.Paging = args.Paging
 }
 
@@ -1162,6 +1192,8 @@ func (q *ListFbExternalMessagesByExternalIDsQuery) GetArgs(ctx context.Context) 
 func (q *ListFbExternalPostsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *LitFbExternalPostsArgs) {
 	return ctx,
 		&LitFbExternalPostsArgs{
+			IsLiveVideo:        q.IsLiveVideo,
+			ExternalUserID:     q.ExternalUserID,
 			ExternalPageIDs:    q.ExternalPageIDs,
 			ExternalStatusType: q.ExternalStatusType,
 			LiveVideoStatus:    q.LiveVideoStatus,
@@ -1171,6 +1203,8 @@ func (q *ListFbExternalPostsQuery) GetArgs(ctx context.Context) (_ context.Conte
 }
 
 func (q *ListFbExternalPostsQuery) SetLitFbExternalPostsArgs(args *LitFbExternalPostsArgs) {
+	q.IsLiveVideo = args.IsLiveVideo
+	q.ExternalUserID = args.ExternalUserID
 	q.ExternalPageIDs = args.ExternalPageIDs
 	q.ExternalStatusType = args.ExternalStatusType
 	q.LiveVideoStatus = args.LiveVideoStatus
@@ -1258,6 +1292,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetFbExternalPostByExternalID)
 	b.AddHandler(h.HandleGetLatestCustomerExternalComment)
 	b.AddHandler(h.HandleGetLatestFbExternalComment)
+	b.AddHandler(h.HandleGetLatestFbExternalUserComment)
 	b.AddHandler(h.HandleGetLatestUpdateActiveComment)
 	b.AddHandler(h.HandleListFbCustomerConversationStates)
 	b.AddHandler(h.HandleListFbCustomerConversations)

@@ -990,12 +990,14 @@
     }
   },
   "definitions": {
-    "asFbPostSource": {
+    "asFbCustomerConversationType": {
       "type": "string",
       "enum": [
         "unknown",
-        "page",
-        "user"
+        "message",
+        "comment",
+        "live_video",
+        "all"
       ]
     },
     "blStatus": {
@@ -1015,14 +1017,22 @@
         "direct"
       ]
     },
-    "crFbCustomerConversationType": {
+    "crFbStatusType": {
       "type": "string",
       "enum": [
         "unknown",
-        "message",
-        "comment",
-        "live_video",
-        "all"
+        "added_photos",
+        "added_video",
+        "app_created_story",
+        "approved_friend",
+        "created_event",
+        "created_group",
+        "created_note",
+        "mobile_status_update",
+        "published_story",
+        "shared_story",
+        "tagged_in_photo",
+        "wall_posst"
       ]
     },
     "cvCheckPagePermissionsRequest": {
@@ -1178,12 +1188,12 @@
           "type": "boolean"
         },
         "type": {
-          "$ref": "#/definitions/crFbCustomerConversationType"
+          "$ref": "#/definitions/asFbCustomerConversationType"
         },
         "types": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/crFbCustomerConversationType"
+            "$ref": "#/definitions/asFbCustomerConversationType"
           }
         }
       }
@@ -1661,7 +1671,10 @@
           "type": "string"
         },
         "external_status_type": {
-          "$ref": "#/definitions/lxFbStatusType"
+          "$ref": "#/definitions/crFbStatusType"
+        },
+        "external_user_id": {
+          "type": "string"
         },
         "id": {
           "type": "string",
@@ -1678,6 +1691,9 @@
         },
         "total_reactions": {
           "type": "integer"
+        },
+        "type": {
+          "$ref": "#/definitions/lxFbPostType"
         },
         "updated_at": {
           "type": "string",
@@ -2236,11 +2252,14 @@
         "external_page_ids": {
           "$ref": "#/definitions/kfStrings"
         },
+        "is_live_video": {
+          "type": "boolean"
+        },
         "live_video_status": {
           "$ref": "#/definitions/llFbLiveVideoStatus"
         },
         "type": {
-          "$ref": "#/definitions/asFbPostSource"
+          "$ref": "#/definitions/lxFbPostType"
         }
       }
     },
@@ -2612,7 +2631,7 @@
           }
         },
         "external_status_type": {
-          "$ref": "#/definitions/lxFbStatusType"
+          "$ref": "#/definitions/crFbStatusType"
         }
       }
     },
@@ -2967,22 +2986,12 @@
         "cancelled"
       ]
     },
-    "lxFbStatusType": {
+    "lxFbPostType": {
       "type": "string",
       "enum": [
         "unknown",
-        "added_photos",
-        "added_video",
-        "app_created_story",
-        "approved_friend",
-        "created_event",
-        "created_group",
-        "created_note",
-        "mobile_status_update",
-        "published_story",
-        "shared_story",
-        "tagged_in_photo",
-        "wall_posst"
+        "page",
+        "user"
       ]
     },
     "mrCustomer": {

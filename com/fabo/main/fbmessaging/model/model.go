@@ -8,6 +8,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/api/fabo/fbmessaging/fb_live_video_status"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/capi/dot"
 )
@@ -133,6 +134,9 @@ type FbExternalComment struct {
 	UpdatedAt            time.Time `sq:"update"`
 	DeletedAt            time.Time
 	CreatedBy            dot.ID
+
+	ExternalOwnerPostID string // user create post
+	PostType            fb_post_type.FbPostType
 }
 
 type CommentAttachment struct {
@@ -157,7 +161,8 @@ type FbObjectParent struct {
 // +sqlgen
 type FbExternalPost struct {
 	ID                  dot.ID
-	ExternalPageID      string
+	ExternalPageID      string // external_page_id when post was created by page
+	ExternalUserID      string // external_user_id when post was created by user
 	ExternalID          string
 	ExternalParentID    string
 	ExternalFrom        *FbObjectFrom
@@ -172,6 +177,7 @@ type FbExternalPost struct {
 	DeletedAt           time.Time
 	TotalComments       int
 	TotalReactions      int
+	Type                fb_post_type.FbPostType
 	FeedType            fb_feed_type.FbFeedType
 	StatusType          fb_status_type.FbStatusType
 
@@ -208,6 +214,7 @@ type TargetDataSubAttachment struct {
 type FbCustomerConversation struct {
 	ID                         dot.ID `paging:"id"`
 	ExternalPageID             string
+	ExternalOwnerPostID        string // user create post
 	ExternalID                 string
 	ExternalUserID             string
 	ExternalUserName           string
