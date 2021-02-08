@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/api/fabo/fbmessaging/fb_post_source"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/top/external/types"
 	"o.o/api/top/int/shop"
@@ -436,6 +437,27 @@ type ListPostsResponse struct {
 }
 
 func (m *ListPostsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListLiveVideosRequest struct {
+	Filter *ListLiveVideosFilter `json:"filter"`
+	Paging *common.CursorPaging  `json:"paging"`
+}
+
+func (m *ListLiveVideosRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListLiveVideosFilter struct {
+	Type            fb_post_source.FbPostSource `json:"type"` // user or page
+	ExternalPageIDs filter.Strings              `json:"external_page_ids"`
+}
+
+func (m *ListLiveVideosFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListLiveVideosResponse struct {
+	FbExternalPosts []*FbExternalPost      `json:"live_videos"`
+	Paging          *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *ListLiveVideosResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListCommentsByExternalPostIDRequest struct {
 	Filter *CommentFilter       `json:"filter"`
@@ -868,17 +890,17 @@ type SummaryShopResponse struct {
 
 func (r *SummaryShopResponse) String() string { return jsonx.MustMarshalToString(r) }
 
-type ListLiveVideosRequest struct {
+type DemoListLiveVideosRequest struct {
 	Token string `json:"token"`
 }
 
-func (r *ListLiveVideosRequest) String() string { return jsonx.MustMarshalToString(r) }
+func (r *DemoListLiveVideosRequest) String() string { return jsonx.MustMarshalToString(r) }
 
-type ListLiveVideosResponse struct {
+type DemoListLiveVideosResponse struct {
 	Videos []*LiveVideoUser `json:"videos"`
 }
 
-func (r *ListLiveVideosResponse) String() string { return jsonx.MustMarshalToString(r) }
+func (r *DemoListLiveVideosResponse) String() string { return jsonx.MustMarshalToString(r) }
 
 type LiveVideoUser struct {
 	ID           string              `json:"id"`

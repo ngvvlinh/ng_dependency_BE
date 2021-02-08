@@ -13,6 +13,8 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_post_source"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
 	"o.o/api/top/int/fabo"
@@ -1149,6 +1151,61 @@ func (s *CustomerConversationService) SendPrivateReply(
 	}
 
 	return &common.Empty{}, nil
+}
+
+func (s *CustomerConversationService) ListLiveVideos(
+	ctx context.Context, req *fabo.ListLiveVideosRequest,
+) (*fabo.ListLiveVideosResponse, error) {
+	var filterExternalPageIDs []string
+	var externalPageIDsArgs []string
+
+	if req.Filter != nil {
+		if req.Filter.Type != fb_post_source.Page {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "unsupported type %v", req.Filter.Type)
+		}
+		filterExternalPageIDs = req.Filter.ExternalPageIDs
+	}
+	paging, err := cmapi.CMCursorPaging(req.Paging)
+	if err != nil {
+		return nil, err
+	}
+	faboInfo, err := s.FaboPagesKit.GetPages(ctx, s.SS.Shop().ID)
+	if err != nil {
+		return nil, err
+	}
+
+	externalPageIDs := faboInfo.ExternalPageIDs
+	if len(externalPageIDs) != 0 {
+		mExternalPageIDs := map[string]bool{}
+
+		for _, externalPageID := range externalPageIDs {
+			mExternalPageIDs[externalPageID] = true
+		}
+
+		for _, filterExternalPageID := range filterExternalPageIDs {
+			if _, ok := mExternalPageIDs[filterExternalPageID]; ok {
+				externalPageIDsArgs = append(externalPageIDsArgs, filterExternalPageID)
+			}
+		}
+	}
+
+	if len(externalPageIDsArgs) == 0 {
+		externalPageIDsArgs = externalPageIDs
+	}
+
+	listFbExternalPostsQuery := &fbmessaging.ListFbExternalPostsQuery{
+		ExternalPageIDs:    externalPageIDsArgs,
+		ExternalStatusType: fb_status_type.AddedVideo.Wrap(),
+		Paging:             *paging,
+	}
+	if err := s.FBMessagingQuery.Dispatch(ctx, listFbExternalPostsQuery); err != nil {
+		return nil, err
+	}
+
+	return &fabo.ListLiveVideosResponse{
+		FbExternalPosts: convertpb.PbFbExternalPosts(listFbExternalPostsQuery.Result.FbExternalPosts),
+		Paging:          cmapi.PbCursorPageInfo(paging, &listFbExternalPostsQuery.Result.Paging),
+	}, nil
 }
 
 func (s *CustomerConversationService) handleErrorWhenSendPrivateReplies(err error) (changeIsPrivateReplies bool, _ error) {

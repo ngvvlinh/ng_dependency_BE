@@ -6723,13 +6723,6 @@
         "purchase_refund"
       ]
     },
-    "asRefAction": {
-      "type": "string",
-      "enum": [
-        "create",
-        "cancel"
-      ]
-    },
     "baAddress": {
       "type": "object",
       "properties": {
@@ -11151,7 +11144,7 @@
           "type": "string"
         },
         "ref_action": {
-          "$ref": "#/definitions/asRefAction"
+          "$ref": "#/definitions/rmRefAction"
         },
         "ref_code": {
           "type": "string"
@@ -17137,6 +17130,13 @@
         "stocktake",
         "purchase_order",
         "order"
+      ]
+    },
+    "rmRefAction": {
+      "type": "string",
+      "enum": [
+        "create",
+        "cancel"
       ]
     },
     "rtAutoInventoryVoucher": {

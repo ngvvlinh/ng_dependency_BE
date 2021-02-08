@@ -30,7 +30,7 @@ type PageService interface {
 
 // +apix:path=/fabo.Demo
 type DemoService interface {
-	ListLiveVideos(context.Context, *ListLiveVideosRequest) (*ListLiveVideosResponse, error)
+	ListLiveVideos(context.Context, *DemoListLiveVideosRequest) (*DemoListLiveVideosResponse, error)
 	ListFeeds(context.Context, *ListFeedsRequest) (*ListFeedsResponse, error)
 }
 
@@ -60,6 +60,8 @@ type CustomerConversationService interface {
 	CreateMessageTemplate(context.Context, *CreateMessageTemplateRequest) (*MessageTemplate, error)
 	UpdateMessageTemplate(context.Context, *UpdateMessageTemplateRequest) (*cm.Empty, error)
 	DeleteMessageTemplate(context.Context, *DeleteMessageTemplateRequest) (*cm.Empty, error)
+
+	ListLiveVideos(context.Context, *ListLiveVideosRequest) (*ListLiveVideosResponse, error)
 }
 
 // +apix:path=/fabo.Customer

@@ -61,6 +61,7 @@ const Path_CustomerConversation_HideOrUnHideComment = "/fabo.CustomerConversatio
 const Path_CustomerConversation_LikeOrUnLikeComment = "/fabo.CustomerConversation/LikeOrUnLikeComment"
 const Path_CustomerConversation_ListCommentsByExternalPostID = "/fabo.CustomerConversation/ListCommentsByExternalPostID"
 const Path_CustomerConversation_ListCustomerConversations = "/fabo.CustomerConversation/ListCustomerConversations"
+const Path_CustomerConversation_ListLiveVideos = "/fabo.CustomerConversation/ListLiveVideos"
 const Path_CustomerConversation_ListMessages = "/fabo.CustomerConversation/ListMessages"
 const Path_CustomerConversation_MessageTemplateVariables = "/fabo.CustomerConversation/MessageTemplateVariables"
 const Path_CustomerConversation_MessageTemplates = "/fabo.CustomerConversation/MessageTemplates"
@@ -205,6 +206,19 @@ func (s *CustomerConversationServiceServer) parseRoute(path string, hooks httprp
 				return
 			}
 			resp, err = inner.ListCustomerConversations(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/fabo.CustomerConversation/ListLiveVideos":
+		msg := &ListLiveVideosRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ListLiveVideos(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -519,7 +533,7 @@ func (s *DemoServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *h
 		}
 		return msg, fn, nil
 	case "/fabo.Demo/ListLiveVideos":
-		msg := &ListLiveVideosRequest{}
+		msg := &DemoListLiveVideosRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

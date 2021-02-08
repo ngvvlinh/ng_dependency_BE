@@ -21,8 +21,8 @@ func (s *DemoService) Clone() fabo.DemoService {
 }
 
 func (s *DemoService) ListLiveVideos(
-	ctx context.Context, req *fabo.ListLiveVideosRequest,
-) (*fabo.ListLiveVideosResponse, error) {
+	ctx context.Context, req *fabo.DemoListLiveVideosRequest,
+) (*fabo.DemoListLiveVideosResponse, error) {
 	listLiveVideosReq := &fbclient.ListLiveVideosRequest{
 		AccessToken: req.Token,
 	}
@@ -79,7 +79,7 @@ func (s *DemoService) ListLiveVideos(
 
 	}
 
-	return &fabo.ListLiveVideosResponse{
+	return &fabo.DemoListLiveVideosResponse{
 		Videos: videos,
 	}, nil
 }

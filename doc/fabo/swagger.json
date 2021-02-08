@@ -367,6 +367,33 @@
         }
       }
     },
+    "/api/fabo.CustomerConversation/ListLiveVideos": {
+      "post": {
+        "tags": [
+          "CustomerConversation"
+        ],
+        "summary": "ListLiveVideos",
+        "operationId": "fabo.CustomerConversation-ListLiveVideos",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cvListLiveVideosRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/cvListLiveVideosResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/fabo.CustomerConversation/ListMessages": {
       "post": {
         "tags": [
@@ -650,7 +677,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cvListLiveVideosRequest"
+              "$ref": "#/definitions/cvDemoListLiveVideosRequest"
             }
           }
         ],
@@ -658,7 +685,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/cvListLiveVideosResponse"
+              "$ref": "#/definitions/cvDemoListLiveVideosResponse"
             }
           }
         }
@@ -963,6 +990,14 @@
     }
   },
   "definitions": {
+    "asFbPostSource": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "page",
+        "user"
+      ]
+    },
     "blStatus": {
       "type": "string",
       "enum": [
@@ -1276,6 +1311,25 @@
         "id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "cvDemoListLiveVideosRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "cvDemoListLiveVideosResponse": {
+      "type": "object",
+      "properties": {
+        "videos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cvLiveVideoUser"
+          }
         }
       }
     },
@@ -2160,22 +2214,39 @@
         }
       }
     },
+    "cvListLiveVideosFilter": {
+      "type": "object",
+      "properties": {
+        "external_page_ids": {
+          "$ref": "#/definitions/kfStrings"
+        },
+        "type": {
+          "$ref": "#/definitions/asFbPostSource"
+        }
+      }
+    },
     "cvListLiveVideosRequest": {
       "type": "object",
       "properties": {
-        "token": {
-          "type": "string"
+        "filter": {
+          "$ref": "#/definitions/cvListLiveVideosFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
         }
       }
     },
     "cvListLiveVideosResponse": {
       "type": "object",
       "properties": {
-        "videos": {
+        "live_videos": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/cvLiveVideoUser"
+            "$ref": "#/definitions/cvFbExternalPost"
           }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
         }
       }
     },
