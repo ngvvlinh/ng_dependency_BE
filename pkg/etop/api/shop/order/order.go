@@ -3,6 +3,7 @@ package order
 import (
 	"context"
 	"fmt"
+	"o.o/api/fabo/fbmessaging"
 	"strings"
 	"time"
 
@@ -34,11 +35,12 @@ import (
 type OrderService struct {
 	session.Session
 
-	OrderAggr     ordering.CommandBus
-	CustomerQuery customering.QueryBus
-	OrderQuery    ordering.QueryBus
-	ReceiptQuery  receipting.QueryBus
-	OrderLogic    *logicorder.OrderLogic
+	OrderAggr        ordering.CommandBus
+	CustomerQuery    customering.QueryBus
+	OrderQuery       ordering.QueryBus
+	ReceiptQuery     receipting.QueryBus
+	OrderLogic       *logicorder.OrderLogic
+	FbMessagingQuery fbmessaging.QueryBus
 
 	OrderStore sqlstore.OrderStoreInterface
 }
@@ -272,6 +274,89 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *types.CreateOrderRequ
 func (s *OrderService) createOrder(ctx context.Context, q *types.CreateOrderRequest) (*types.Order, error) {
 	result, err := s.OrderLogic.CreateOrder(ctx, s.SS.Shop(), s.SS.CtxPartner(), q, nil, s.SS.Claim().UserID)
 	return result, err
+}
+
+func (s *OrderService) CreateOrderSimplify(ctx context.Context, q *types.CreateOrderSimplifyRequest) (result *types.Order, err error) {
+	if q.CustomerId == 0 && q.Customer == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin tên khách hàng, vui lòng kiểm tra lại.")
+	}
+	customerKey := q.CustomerId.String()
+	if q.Customer != nil {
+		customerKey = q.Customer.FullName
+		if phone := strings.TrimSpace(q.Customer.Phone); phone != "" {
+			customerKey = phone
+		}
+	}
+
+	var variantIDs []dot.ID
+	for _, line := range q.Lines {
+		variantIDs = append(variantIDs, line.VariantId)
+	}
+	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v-%v",
+		s.SS.Shop().ID, customerKey,
+		q.TotalAmount, q.BasketValue, q.ShopCod, dot.JoinIDs(variantIDs))
+
+	res, cached, err := shop2.Idempgroup.DoAndWrap(
+		ctx, key, 30*time.Second, "tạo đơn hàng",
+		func() (interface{}, error) { return s.createOrderSimplify(ctx, q) })
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() { result = res.(*types.Order) }()
+	if !cached {
+		return result, nil
+	}
+
+	// FIX(vu): https://github.com/etopvn/one/issues/1910
+	//
+	// User may want to retry when an order is cancelled by external events. We
+	// allow recreating the order when the response is cached and the previous
+	// order has status = N
+
+	key2 := key + "/retry"
+	res, _, err = shop2.Idempgroup.DoAndWrap(
+		ctx, key2, 5*time.Second, "tạo đơn hàng",
+		func() (interface{}, error) {
+			query := &ordermodelx.GetOrderQuery{
+				OrderID:            res.(*types.Order).Id,
+				ShopID:             s.SS.Shop().ID,
+				PartnerID:          s.SS.CtxPartner().GetID(),
+				IncludeFulfillment: true,
+			}
+			if _err := s.OrderStore.GetOrder(ctx, query); _err != nil {
+				return res, _err // keep the response
+			}
+			if query.Result.Order.Status != status5.N {
+				return res, nil // keep the response
+			}
+			// release the old key and retry
+			shop2.Idempgroup.ReleaseKey(key, "")
+			_res, _, _err := shop2.Idempgroup.DoAndWrap(
+				ctx, key, 30*time.Second, "tạo đơn hàng",
+				func() (interface{}, error) { return s.createOrderSimplify(ctx, q) })
+			return _res, _err // keep the response
+		})
+	return result, nil
+}
+
+func (s *OrderService) createOrderSimplify(ctx context.Context, q *types.CreateOrderSimplifyRequest) (*types.Order, error) {
+	if q.ExternalCommentID != "" {
+		getCommentByExternalIDQuery := &fbmessaging.GetFbExternalCommentByExternalIDQuery{
+			ExternalID: q.ExternalCommentID,
+		}
+		if err := s.FbMessagingQuery.Dispatch(ctx, getCommentByExternalIDQuery); err != nil {
+			return nil, err
+		}
+		q.ExternalPostID = getCommentByExternalIDQuery.Result.ExternalPostID
+	}
+
+	order, err := s.OrderLogic.CreateOrderSimplify(ctx, s.SS.Shop(), s.SS.CtxPartner(), q, nil, s.SS.Claim().UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return order, err
 }
 
 func (s *OrderService) UpdateOrder(ctx context.Context, q *types.UpdateOrderRequest) (*types.Order, error) {

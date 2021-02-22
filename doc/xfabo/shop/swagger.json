@@ -1123,6 +1123,33 @@
         }
       }
     },
+    "/api/shop.Order/CreateOrderSimplify": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "summary": "CreateOrderSimplify",
+        "operationId": "shop.Order-CreateOrderSimplify",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateOrderSimplifyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdOrder"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Order/GetOrder": {
       "post": {
         "tags": [
@@ -5013,6 +5040,9 @@
         "external_code": {
           "type": "string"
         },
+        "external_comment_id": {
+          "type": "string"
+        },
         "external_id": {
           "type": "string"
         },
@@ -5021,6 +5051,169 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "external_post_id": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderFeeLine"
+          }
+        },
+        "ghn_note_code": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shop_shipping.try_on instead\n"
+            },
+            {
+              "$ref": "#/definitions/pjGHNNoteCode"
+            }
+          ]
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdCreateOrderLine"
+          }
+        },
+        "order_discount": {
+          "type": "integer"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "payment_method": {
+          "$ref": "#/definitions/yiPaymentMethod"
+        },
+        "pre_order": {
+          "type": "boolean"
+        },
+        "reference_url": {
+          "type": "string"
+        },
+        "referral_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "shipping": {
+          "$ref": "#/definitions/qdOrderShipping"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shop_address": {
+          "allOf": [
+            {
+              "description": "If there are products from shop, this field should be set.\nOtherwise, use shop default address.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderAddress"
+            }
+          ]
+        },
+        "shop_cod": {
+          "description": "**Deprecated:** use shipping.cod_amount instead\n",
+          "type": "integer"
+        },
+        "shop_shipping": {
+          "allOf": [
+            {
+              "description": "**Deprecated:** use shipping instead\n\nOrderShipping provides shipping information for an order to be shipped.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderShipping"
+            }
+          ]
+        },
+        "shop_shipping_fee": {
+          "description": "**Deprecated:** use fee_lines.shipping instead\n",
+          "type": "integer"
+        },
+        "source": {
+          "$ref": "#/definitions/xjSource"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "total_discount": {
+          "type": "integer"
+        },
+        "total_fee": {
+          "type": "integer"
+        },
+        "total_items": {
+          "type": "integer"
+        },
+        "total_weight": {
+          "description": "**Deprecated:** use shipping.gross_weight, shipping.chargeable_weight\n",
+          "type": "integer"
+        },
+        "try_on": {
+          "$ref": "#/definitions/csTryOnCode"
+        }
+      }
+    },
+    "qdCreateOrderSimplifyRequest": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "customer": {
+          "allOf": [
+            {
+              "description": "If order_source is self, customer must be shop information\nand customer_address, shipping_address must be shop address.\n"
+            },
+            {
+              "$ref": "#/definitions/qdOrderCustomer"
+            }
+          ]
+        },
+        "customer_address": {
+          "$ref": "#/definitions/qdOrderAddress"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "discounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdOrderDiscount"
+          }
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_comment_id": {
+          "type": "string"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "external_post_id": {
+          "type": "string"
         },
         "external_url": {
           "type": "string"
@@ -5969,7 +6162,13 @@
         "external_code": {
           "type": "string"
         },
+        "external_comment_id": {
+          "type": "string"
+        },
         "external_id": {
+          "type": "string"
+        },
+        "external_post_id": {
           "type": "string"
         },
         "external_url": {

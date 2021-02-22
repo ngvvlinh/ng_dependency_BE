@@ -114,6 +114,9 @@ type Order struct {
 	PaymentStatus  status4.Status `json:"payment_status"`
 	CreatedBy      dot.ID         `json:"created_by"`
 	PreOrder       bool           `json:"pre_order"`
+
+	ExternalCommentID string `json:"external_comment_id"`
+	ExternalPostID    string `json:"external_post_id"`
 }
 
 func (m *Order) String() string { return jsonx.MustMarshalToString(m) }
@@ -263,9 +266,64 @@ type CreateOrderRequest struct {
 	PreOrder     bool                      `json:"pre_order"`
 
 	TryOn try_on.NullTryOnCode `json:"try_on"`
+
+	ExternalCommentID string `json:"external_comment_id"`
+	ExternalPostID    string `json:"external_post_id"`
 }
 
 func (m *CreateOrderRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateOrderSimplifyRequest struct {
+	Source        source.Source                `json:"source"`
+	ExternalId    string                       `json:"external_id"`
+	ExternalCode  string                       `json:"external_code"`
+	ExternalUrl   string                       `json:"external_url"`
+	PaymentMethod payment_method.PaymentMethod `json:"payment_method"`
+	// If order_source is self, customer must be shop information
+	// and customer_address, shipping_address must be shop address.
+	Customer        *OrderCustomer `json:"customer"`
+	CustomerAddress *OrderAddress  `json:"customer_address"`
+	BillingAddress  *OrderAddress  `json:"billing_address"`
+	ShippingAddress *OrderAddress  `json:"shipping_address"`
+	// If there are products from shop, this field should be set.
+	// Otherwise, use shop default address.
+	ShopAddress *OrderAddress      `json:"shop_address"`
+	ShConfirm   status3.NullStatus `json:"sh_confirm"`
+	Lines       []*CreateOrderLine `json:"lines"`
+	Discounts   []*OrderDiscount   `json:"discounts"`
+	TotalItems  int                `json:"total_items"`
+	BasketValue int                `json:"basket_value"`
+	// @deprecated use shipping.gross_weight, shipping.chargeable_weight
+	TotalWeight   int             `json:"total_weight"`
+	OrderDiscount int             `json:"order_discount"`
+	TotalFee      int             `json:"total_fee"`
+	FeeLines      []*OrderFeeLine `json:"fee_lines"`
+	TotalDiscount dot.NullInt     `json:"total_discount"`
+	TotalAmount   int             `json:"total_amount"`
+	OrderNote     string          `json:"order_note"`
+	ShippingNote  string          `json:"shipping_note"`
+	// @deprecated use fee_lines.shipping instead
+	ShopShippingFee int `json:"shop_shipping_fee"`
+	// @deprecated use shipping.cod_amount instead
+	ShopCod      int    `json:"shop_cod"`
+	ReferenceUrl string `json:"reference_url"`
+	// @deprecated use shipping instead
+	ShopShipping *OrderShipping `json:"shop_shipping"`
+	Shipping     *OrderShipping `json:"shipping"`
+	// @deprecated use shop_shipping.try_on instead
+	GhnNoteCode  ghn_note_code.GHNNoteCode `json:"ghn_note_code"`
+	ExternalMeta map[string]string         `json:"external_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ReferralMeta map[string]string         `json:"referral_meta" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	CustomerId   dot.ID                    `json:"customer_id"`
+	PreOrder     bool                      `json:"pre_order"`
+
+	TryOn try_on.NullTryOnCode `json:"try_on"`
+
+	ExternalCommentID string `json:"external_comment_id"` // comment_id (fabo)
+	ExternalPostID    string `json:"external_post_id"`
+}
+
+func (m *CreateOrderSimplifyRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateOrderRequest struct {
 	// @required

@@ -1059,6 +1059,44 @@ func (ft *OrderFilters) ByPreOrderPtr(PreOrder *bool) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *OrderFilters) ByExternalCommentID(ExternalCommentID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_comment_id",
+		Value:  ExternalCommentID,
+		IsNil:  ExternalCommentID == "",
+	}
+}
+
+func (ft *OrderFilters) ByExternalCommentIDPtr(ExternalCommentID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_comment_id",
+		Value:  ExternalCommentID,
+		IsNil:  ExternalCommentID == nil,
+		IsZero: ExternalCommentID != nil && (*ExternalCommentID) == "",
+	}
+}
+
+func (ft *OrderFilters) ByExternalPostID(ExternalPostID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_post_id",
+		Value:  ExternalPostID,
+		IsNil:  ExternalPostID == "",
+	}
+}
+
+func (ft *OrderFilters) ByExternalPostIDPtr(ExternalPostID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_post_id",
+		Value:  ExternalPostID,
+		IsNil:  ExternalPostID == nil,
+		IsZero: ExternalPostID != nil && (*ExternalPostID) == "",
+	}
+}
+
 type OrderLineFilters struct{ prefix string }
 
 func NewOrderLineFilters(prefix string) OrderLineFilters {

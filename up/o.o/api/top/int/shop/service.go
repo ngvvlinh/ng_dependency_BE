@@ -177,6 +177,7 @@ type ProductSourceService interface {
 // +apix:path:2=/shop.Order
 type OrderService interface {
 	CreateOrder(context.Context, *types.CreateOrderRequest) (*types.Order, error)
+	CreateOrderSimplify(context.Context, *types.CreateOrderSimplifyRequest) (*types.Order, error)
 	GetOrder(context.Context, *cm.IDRequest) (*types.Order, error)
 	GetOrders(context.Context, *GetOrdersRequest) (*types.OrdersResponse, error)
 	GetOrdersByIDs(context.Context, *etop.IDsRequest) (*types.OrdersResponse, error)

@@ -2589,6 +2589,7 @@ const Path_Order_CompleteOrder = "/shop.Order/CompleteOrder"
 const Path_Order_ConfirmOrder = "/shop.Order/ConfirmOrder"
 const Path_Order_ConfirmOrderAndCreateFulfillments = "/shop.Order/ConfirmOrderAndCreateFulfillments"
 const Path_Order_CreateOrder = "/shop.Order/CreateOrder"
+const Path_Order_CreateOrderSimplify = "/shop.Order/CreateOrderSimplify"
 const Path_Order_GetOrder = "/shop.Order/GetOrder"
 const Path_Order_GetOrders = "/shop.Order/GetOrders"
 const Path_Order_GetOrdersByIDs = "/shop.Order/GetOrdersByIDs"
@@ -2693,6 +2694,19 @@ func (s *OrderServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *
 				return
 			}
 			resp, err = inner.CreateOrder(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Order/CreateOrderSimplify":
+		msg := &inttypes.CreateOrderSimplifyRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateOrderSimplify(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

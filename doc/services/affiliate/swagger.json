@@ -2537,7 +2537,13 @@
         "external_code": {
           "type": "string"
         },
+        "external_comment_id": {
+          "type": "string"
+        },
         "external_id": {
+          "type": "string"
+        },
+        "external_post_id": {
           "type": "string"
         },
         "external_url": {

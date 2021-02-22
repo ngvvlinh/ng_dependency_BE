@@ -27,6 +27,8 @@ import (
 	_uploader "o.o/backend/cogs/uploader"
 	"o.o/backend/com/eventhandler/notifier"
 	paymentmanager "o.o/backend/com/external/payment/manager"
+	minfabo "o.o/backend/com/fabo/cogs/_min"
+	"o.o/backend/com/fabo/main/fbmessaging"
 	"o.o/backend/com/main/address"
 	"o.o/backend/com/main/catalog"
 	"o.o/backend/com/main/connectioning"
@@ -192,6 +194,8 @@ func Build(
 		logicsummary.WireSet,
 		reporting.WireSet,
 		report.WireSet,
+		minfabo.WireSet,
+		fbmessaging.WireSet,
 		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
 		wire.Bind(new(eventstream.Publisher), new(*eventstream.EventStream)),

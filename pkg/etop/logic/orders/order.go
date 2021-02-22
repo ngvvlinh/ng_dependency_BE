@@ -41,6 +41,59 @@ func (s *OrderLogic) CreateOrder(
 	ctx context.Context, shop *identitymodel.Shop,
 	authPartner *identitymodel.Partner, r *types.CreateOrderRequest,
 	tradingShopID *dot.ID, userID dot.ID) (*types.Order, error) {
+	return s.createOrder(ctx, shop, authPartner, r, tradingShopID, userID, false)
+}
+
+func (s *OrderLogic) CreateOrderSimplify(
+	ctx context.Context, shop *identitymodel.Shop,
+	authPartner *identitymodel.Partner, r *types.CreateOrderSimplifyRequest,
+	tradingShopID *dot.ID, userID dot.ID) (*types.Order, error) {
+
+	createOrderRequest := &types.CreateOrderRequest{
+		Source:            r.Source,
+		ExternalId:        r.ExternalId,
+		ExternalCode:      r.ExternalCode,
+		ExternalUrl:       r.ExternalUrl,
+		PaymentMethod:     r.PaymentMethod,
+		Customer:          r.Customer,
+		CustomerAddress:   r.CustomerAddress,
+		BillingAddress:    r.BillingAddress,
+		ShippingAddress:   r.ShippingAddress,
+		ShopAddress:       r.ShopAddress,
+		ShConfirm:         r.ShConfirm,
+		Lines:             r.Lines,
+		Discounts:         r.Discounts,
+		TotalItems:        r.TotalItems,
+		BasketValue:       r.BasketValue,
+		TotalWeight:       r.TotalItems,
+		OrderDiscount:     r.OrderDiscount,
+		TotalFee:          r.TotalFee,
+		FeeLines:          r.FeeLines,
+		TotalDiscount:     r.TotalDiscount,
+		TotalAmount:       r.TotalAmount,
+		OrderNote:         r.OrderNote,
+		ShippingNote:      r.ShippingNote,
+		ShopShippingFee:   r.ShopShippingFee,
+		ShopCod:           r.ShopCod,
+		ReferenceUrl:      r.ReferenceUrl,
+		ShopShipping:      r.ShopShipping,
+		Shipping:          r.Shipping,
+		GhnNoteCode:       r.GhnNoteCode,
+		ExternalMeta:      r.ExternalMeta,
+		ReferralMeta:      r.ReferralMeta,
+		CustomerId:        r.CustomerId,
+		PreOrder:          r.PreOrder,
+		TryOn:             r.TryOn,
+		ExternalCommentID: r.ExternalCommentID,
+		ExternalPostID:    r.ExternalPostID,
+	}
+	return s.createOrder(ctx, shop, authPartner, createOrderRequest, tradingShopID, userID, true)
+}
+
+func (s *OrderLogic) createOrder(
+	ctx context.Context, shop *identitymodel.Shop,
+	authPartner *identitymodel.Partner, r *types.CreateOrderRequest,
+	tradingShopID *dot.ID, userID dot.ID, simplify bool) (*types.Order, error) {
 	shipping := r.ShopShipping
 	if r.Shipping != nil {
 		shipping = r.Shipping
@@ -208,15 +261,42 @@ func (s *OrderLogic) CreateOrder(
 		}
 		r.Customer = s.getCustomerByID(ctx, shop.ID, r.CustomerId)
 	}
+
 	if r.CustomerId == 0 && r.ShippingAddress == nil {
-		cmd := &customering.GetCustomerIndependentQuery{}
-		if err := s.CustomerQuery.Dispatch(ctx, cmd); err != nil {
-			return nil, err
-		}
-		r.CustomerId = cmd.Result.ID
-		r.Customer = &types.OrderCustomer{
-			FullName: cmd.Result.FullName,
-			Type:     cmd.Result.Type,
+		// create order with fullName and phone
+		if simplify {
+			getCustomerByPhone := &customering.GetCustomerByPhoneQuery{
+				Phone:  r.Customer.Phone,
+				ShopID: shop.ID,
+			}
+			if err := s.CustomerQuery.Dispatch(ctx, getCustomerByPhone); err != nil && cm.ErrorCode(err) != cm.NotFound {
+				return nil, err
+			}
+
+			if getCustomerByPhone.Result != nil {
+				r.CustomerId = getCustomerByPhone.Result.ID
+			} else {
+				createCustomerCmd := &customering.CreateCustomerCommand{
+					ShopID:   shop.ID,
+					FullName: r.Customer.FullName,
+					Type:     customer_type.Individual,
+					Phone:    r.Customer.Phone,
+				}
+				if err := s.CustomerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
+					return nil, err
+				}
+				r.CustomerId = createCustomerCmd.Result.ID
+			}
+		} else {
+			cmd := &customering.GetCustomerIndependentQuery{}
+			if err := s.CustomerQuery.Dispatch(ctx, cmd); err != nil {
+				return nil, err
+			}
+			r.CustomerId = cmd.Result.ID
+			r.Customer = &types.OrderCustomer{
+				FullName: cmd.Result.FullName,
+				Type:     cmd.Result.Type,
+			}
 		}
 	}
 	lines, err := s.PrepareOrderLines(ctx, shop.ID, r.Lines)
@@ -976,6 +1056,8 @@ func (s *OrderLogic) PrepareOrder(ctx context.Context, shopID dot.ID, m *types.C
 		ReferralMeta:               referralMeta,
 		CustomerID:                 m.CustomerId,
 		PreOrder:                   m.PreOrder,
+		ExternalCommentID:          m.ExternalCommentID,
+		ExternalPostID:             m.ExternalPostID,
 	}
 	if err = convertpb.OrderShippingToModel(ctx, shipping, order); err != nil {
 		return nil, err

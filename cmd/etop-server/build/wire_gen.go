@@ -40,6 +40,8 @@ import (
 	vtpay2 "o.o/backend/com/external/payment/vtpay"
 	aggregate25 "o.o/backend/com/external/payment/vtpay/gateway/aggregate"
 	"o.o/backend/com/external/payment/vtpay/gateway/server"
+	"o.o/backend/com/fabo/main/fbmessaging"
+	redis2 "o.o/backend/com/fabo/pkg/redis"
 	aggregate6 "o.o/backend/com/main/accountshipnow/aggregate"
 	query14 "o.o/backend/com/main/accountshipnow/query"
 	"o.o/backend/com/main/address"
@@ -545,14 +547,18 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		OrderStore:                            orderStoreInterface,
 		FlagFaboOrderUpdatePaymentSatusConfig: flagFaboOrderAutoConfirmPaymentStatus,
 	}
+	faboRedis := redis2.NewFaboRedis(store)
+	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB, faboRedis)
+	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	orderService := &order.OrderService{
-		Session:       session,
-		OrderAggr:     orderingCommandBus,
-		CustomerQuery: customeringQueryBus,
-		OrderQuery:    orderingQueryBus,
-		ReceiptQuery:  receiptingQueryBus,
-		OrderLogic:    orderLogic,
-		OrderStore:    orderStoreInterface,
+		Session:          session,
+		OrderAggr:        orderingCommandBus,
+		CustomerQuery:    customeringQueryBus,
+		OrderQuery:       orderingQueryBus,
+		ReceiptQuery:     receiptingQueryBus,
+		OrderLogic:       orderLogic,
+		FbMessagingQuery: fbmessagingQueryBus,
+		OrderStore:       orderStoreInterface,
 	}
 	queryService4 := query17.NewQueryService(mainDB, shipmentManager, connectioningQueryBus)
 	shippingQueryBus := query17.QueryServiceMessageBus(queryService4)

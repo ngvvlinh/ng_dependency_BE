@@ -393,14 +393,18 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		OrderStore:                            orderStoreInterface,
 		FlagFaboOrderUpdatePaymentSatusConfig: flagFaboOrderAutoConfirmPaymentStatus,
 	}
+	faboRedis := redis2.NewFaboRedis(store)
+	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB, faboRedis)
+	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	orderService := &order.OrderService{
-		Session:       session,
-		OrderAggr:     orderingCommandBus,
-		CustomerQuery: customeringQueryBus,
-		OrderQuery:    orderingQueryBus,
-		ReceiptQuery:  receiptingQueryBus,
-		OrderLogic:    orderLogic,
-		OrderStore:    orderStoreInterface,
+		Session:          session,
+		OrderAggr:        orderingCommandBus,
+		CustomerQuery:    customeringQueryBus,
+		OrderQuery:       orderingQueryBus,
+		ReceiptQuery:     receiptingQueryBus,
+		OrderLogic:       orderLogic,
+		FbMessagingQuery: fbmessagingQueryBus,
+		OrderStore:       orderStoreInterface,
 	}
 	queryService3 := query9.NewQueryService(mainDB, shipmentManager, connectioningQueryBus)
 	shippingQueryBus := query9.QueryServiceMessageBus(queryService3)
@@ -482,9 +486,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		FBPageQuery: fbpagingQueryBus,
 		FBUserQuery: fbuseringQueryBus,
 	}
-	faboRedis := redis2.NewFaboRedis(store)
-	fbMessagingQuery := fbmessaging.NewFbMessagingQuery(mainDB, faboRedis)
-	fbmessagingQueryBus := fbmessaging.FbMessagingQueryMessageBus(fbMessagingQuery)
 	fbExternalPageAggregate := fbpage.NewFbPageAggregate(mainDB, fbPageUtil, busBus)
 	fbpagingCommandBus := fbpage.FbExternalPageAggregateMessageBus(fbExternalPageAggregate)
 	fbUserAggregate := fbuser.NewFbUserAggregate(mainDB, fbpagingCommandBus, customeringQueryBus)

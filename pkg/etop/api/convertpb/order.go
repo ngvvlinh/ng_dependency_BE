@@ -127,6 +127,8 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		FulfillmentIds:            m.FulfillmentIDs,
 		CustomerId:                m.CustomerID,
 		PreOrder:                  m.PreOrder,
+		ExternalCommentID:         m.ExternalCommentID,
+		ExternalPostID:            m.ExternalPostID,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping
@@ -194,6 +196,8 @@ func XPbOrder(m *ordermodel.Order, fulfillments []*ordermodelx.Fulfillment, accT
 		CustomerId:                m.CustomerID,
 		CreatedBy:                 m.CreatedBy,
 		PreOrder:                  m.PreOrder,
+		ExternalCommentID:         m.ExternalCommentID,
+		ExternalPostID:            m.ExternalPostID,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping

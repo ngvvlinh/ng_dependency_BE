@@ -958,6 +958,7 @@ var _acl = map[string]*permission.Decl{
 	"shop.Price/UpdatePriceRules": {Type: Shop},
 
 	"shop.Order/CreateOrder":                        {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderCreate)},
+	"shop.Order/CreateOrderSimplify":                {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderCreate)},
 	"shop.Order/GetOrder":                           {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderView)},
 	"shop.Order/GetOrders":                          {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderView)},
 	"shop.Order/GetOrdersByIDs":                     {Type: Shop, AuthPartner: Opt, Actions: actions(ShopOrderView)},

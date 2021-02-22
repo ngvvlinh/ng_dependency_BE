@@ -129,6 +129,9 @@ type Order struct {
 
 	Rid      dot.ID
 	PreOrder bool
+
+	ExternalCommentID string
+	ExternalPostID    string
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {

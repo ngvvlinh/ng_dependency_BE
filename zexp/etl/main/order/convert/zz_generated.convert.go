@@ -312,6 +312,8 @@ func convert_ordermodel_Order_orderingmodel_Order(arg *ordermodel.Order, out *or
 	out.CreatedBy = arg.CreatedBy             // simple assign
 	out.Rid = arg.Rid                         // simple assign
 	out.PreOrder = false                      // zero value
+	out.ExternalCommentID = ""                // zero value
+	out.ExternalPostID = ""                   // zero value
 }
 
 func Convert_ordermodel_Orders_orderingmodel_Orders(args []*ordermodel.Order) (outs []*orderingmodel.Order) {
