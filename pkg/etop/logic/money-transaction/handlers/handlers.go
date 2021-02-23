@@ -22,6 +22,7 @@ import (
 	moneytxtypes "o.o/backend/pkg/etop/logic/money-transaction/handlers/types"
 	"o.o/backend/pkg/etop/logic/money-transaction/jtexpressimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/njvimport"
+	"o.o/backend/pkg/etop/logic/money-transaction/snappyimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	"o.o/capi/dot"
 )
@@ -36,10 +37,12 @@ type ImportService struct {
 	JTExpressImporter *jtexpressimport.JTImporter
 	DHLImporter       *dhlimport.DHLImporter
 	NJVImporter       *njvimport.NJVImporter
+	SnappyImporter    *snappyimport.SnappyImporter
 }
 
 var (
-	JTExpressNameNormContains = []string{"jt", "j t", "jtexpress"}
+	JTExpressNameNormContains     = []string{"jt", "j t", "jtexpress"}
+	SnappyExpressNameNormContains = []string{"snappy"}
 )
 
 func (s *ImportService) HandleImportMoneyTxs(c *httpx.Context) error {
@@ -108,7 +111,7 @@ func (s *ImportService) HandleImportMoneyTxs(c *httpx.Context) error {
 		},
 	}
 
-	if err := s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
+	if err = s.MoneyTxAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
 	c.SetResult(convertpball.PbMoneyTxShippingExternalFtLine(cmd.Result))
@@ -140,9 +143,17 @@ func (s *ImportService) getCarrierImporter(ctx context.Context, connectionID dot
 		return s.DHLImporter, shipping_provider.DHL, nil
 	case connection_type.ConnectionProviderPartner:
 		nameNorm := validate.NormalizeSearchSimple(query.Result.Name)
-		if checkJTExpress(nameNorm) {
+		// checkJTExpress
+		if checkContains(nameNorm, JTExpressNameNormContains) {
 			return s.JTExpressImporter, shipping_provider.Partner, nil
 		}
+
+		// check snappy express
+		if checkContains(nameNorm, SnappyExpressNameNormContains) {
+			return s.SnappyImporter, shipping_provider.Partner, nil
+		}
+
+		// not found
 		return nil, 0, cm.Errorf(cm.InvalidArgument, nil, "Connection ID does not valid")
 	default:
 		return nil, 0, cm.Errorf(cm.InvalidArgument, nil, "Connection ID does not valid")
@@ -156,8 +167,8 @@ func GetFormValue(ss []string) string {
 	return ss[0]
 }
 
-func checkJTExpress(connNameNorm string) bool {
-	for _, name := range JTExpressNameNormContains {
+func checkContains(connNameNorm string, contains []string) bool {
+	for _, name := range contains {
 		if strings.Contains(connNameNorm, name) {
 			return true
 		}

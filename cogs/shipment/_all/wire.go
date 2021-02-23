@@ -16,6 +16,7 @@ import (
 	imhandlers "o.o/backend/pkg/etop/logic/money-transaction/handlers"
 	"o.o/backend/pkg/etop/logic/money-transaction/jtexpressimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/njvimport"
+	"o.o/backend/pkg/etop/logic/money-transaction/snappyimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/vtpostimport"
 	directwebhook "o.o/backend/pkg/integration/shipping/direct/webhook"
 )
@@ -32,6 +33,7 @@ var WireSet = wire.NewSet(
 	jtexpressimport.WireSet,
 	njvimport.WireSet,
 	dhlimport.WireSet,
+	snappyimport.WireSet,
 	imhandlers.WireSet,
 	directwebhook.WireSet,
 	shippingcode.WireSet,
