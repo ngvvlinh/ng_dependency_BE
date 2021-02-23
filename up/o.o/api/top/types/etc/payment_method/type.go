@@ -37,4 +37,7 @@ const (
 
 	// +enum=manual
 	Manual PaymentMethod = 7
+
+	// +enum=balance
+	Balance PaymentMethod = 8
 )

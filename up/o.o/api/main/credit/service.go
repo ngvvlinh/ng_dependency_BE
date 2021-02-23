@@ -20,9 +20,6 @@ type Aggregate interface {
 type QueryService interface {
 	GetCredit(context.Context, *GetCreditArgs) (*CreditExtended, error)
 	ListCredits(context.Context, *ListCreditsArgs) (*ListCreditsResponse, error)
-
-	GetTelecomUserBalance(ctx context.Context, UserID dot.ID) (int, error)
-	GetShippingUserBalance(ctx context.Context, UserID dot.ID) (*GetShippingUserBalanceResponse, error)
 }
 
 // +convert:create=Credit
@@ -63,9 +60,4 @@ type GetTotalCreditArgs struct {
 	UserID   dot.ID
 	ShopIDs  []dot.ID
 	Classify credit_type.CreditClassify
-}
-
-type GetShippingUserBalanceResponse struct {
-	ShippingActualUserBalance    int
-	ShippingAvailableUserBalance int
 }

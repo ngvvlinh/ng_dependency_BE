@@ -38,11 +38,13 @@ type Extension struct {
 	ExtensionNumber   string
 	ExtensionPassword string
 	// Dùng để đăng nhập vào SIP
-	TenantDomain string
-	ExternalData *ExtensionExternalData
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    time.Time
+	TenantDomain   string
+	ExternalData   *ExtensionExternalData
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	DeletedAt      time.Time
+	SubscriptionID dot.ID
+	ExpiresAt      time.Time
 }
 
 type ExtensionExternalData struct {
@@ -93,4 +95,9 @@ type CallLogCalcPostageEvent struct {
 	Duration   int
 	CallStatus status5.Status
 	HotlineID  dot.ID
+}
+
+type ExtensionCreatingEvent struct {
+	OwnerID   dot.ID
+	AccountID dot.ID
 }

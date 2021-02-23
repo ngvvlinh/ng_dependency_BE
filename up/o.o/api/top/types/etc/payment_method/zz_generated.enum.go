@@ -23,6 +23,7 @@ var enumPaymentMethodName = map[int]string{
 	5: "momo",
 	6: "bankdeposit",
 	7: "manual",
+	8: "balance",
 }
 
 var enumPaymentMethodValue = map[string]int{
@@ -34,6 +35,7 @@ var enumPaymentMethodValue = map[string]int{
 	"momo":        5,
 	"bankdeposit": 6,
 	"manual":      7,
+	"balance":     8,
 }
 
 func ParsePaymentMethod(s string) (PaymentMethod, bool) {

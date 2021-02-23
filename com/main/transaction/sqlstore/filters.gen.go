@@ -7,8 +7,10 @@ package sqlstore
 import (
 	time "time"
 
-	transaction "o.o/api/main/transaction"
+	service_classify "o.o/api/top/types/etc/service_classify"
 	status3 "o.o/api/top/types/etc/status3"
+	subject_referral "o.o/api/top/types/etc/subject_referral"
+	transaction_type "o.o/api/top/types/etc/transaction_type"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
@@ -25,6 +27,25 @@ func (ft *TransactionFilters) Filter(pred string, args ...interface{}) sq.Writer
 
 func (ft TransactionFilters) Prefix() string {
 	return ft.prefix
+}
+
+func (ft *TransactionFilters) ByName(Name string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == "",
+	}
+}
+
+func (ft *TransactionFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == nil,
+		IsZero: Name != nil && (*Name) == "",
+	}
 }
 
 func (ft *TransactionFilters) ByID(ID dot.ID) *sq.ColumnFilter {
@@ -103,22 +124,41 @@ func (ft *TransactionFilters) ByStatusPtr(Status *status3.Status) *sq.ColumnFilt
 	}
 }
 
-func (ft *TransactionFilters) ByType(Type transaction.TransactionType) *sq.ColumnFilter {
+func (ft *TransactionFilters) ByType(Type transaction_type.TransactionType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
-		IsNil:  Type == "",
+		IsNil:  Type == 0,
 	}
 }
 
-func (ft *TransactionFilters) ByTypePtr(Type *transaction.TransactionType) *sq.ColumnFilterPtr {
+func (ft *TransactionFilters) ByTypePtr(Type *transaction_type.TransactionType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
 		IsNil:  Type == nil,
-		IsZero: Type != nil && (*Type) == "",
+		IsZero: Type != nil && (*Type) == 0,
+	}
+}
+
+func (ft *TransactionFilters) ByClassify(Classify service_classify.ServiceClassify) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "classify",
+		Value:  Classify,
+		IsNil:  Classify == 0,
+	}
+}
+
+func (ft *TransactionFilters) ByClassifyPtr(Classify *service_classify.ServiceClassify) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "classify",
+		Value:  Classify,
+		IsNil:  Classify == nil,
+		IsZero: Classify != nil && (*Classify) == 0,
 	}
 }
 
@@ -138,6 +178,25 @@ func (ft *TransactionFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 		Value:  Note,
 		IsNil:  Note == nil,
 		IsZero: Note != nil && (*Note) == "",
+	}
+}
+
+func (ft *TransactionFilters) ByReferralType(ReferralType subject_referral.SubjectReferral) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "referral_type",
+		Value:  ReferralType,
+		IsNil:  ReferralType == 0,
+	}
+}
+
+func (ft *TransactionFilters) ByReferralTypePtr(ReferralType *subject_referral.SubjectReferral) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "referral_type",
+		Value:  ReferralType,
+		IsNil:  ReferralType == nil,
+		IsZero: ReferralType != nil && (*ReferralType) == 0,
 	}
 }
 

@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/wire"
 
-	"o.o/api/main/credit"
+	"o.o/api/main/transaction"
 	"o.o/backend/cmd/shipment-sync-service/config"
 	_base "o.o/backend/cogs/base"
 	_shipment "o.o/backend/cogs/shipment"
@@ -49,7 +49,7 @@ func Build(
 		sqlstore.WireSet,
 
 		// use for shipping pm
-		wire.Value(credit.QueryBus{}),
+		wire.Value(transaction.QueryBus{}),
 
 		shipment_all.SupportedShipmentServices,
 		shipment_all.SupportedCarrierDriver,

@@ -4633,6 +4633,8 @@ func NewSubscriptionServiceServer(builder func() SubscriptionService, hooks ...h
 const SubscriptionServicePathPrefix = "/shop.Subscription/"
 
 const Path_Subscription_GetSubscription = "/shop.Subscription/GetSubscription"
+const Path_Subscription_GetSubscriptionPlans = "/shop.Subscription/GetSubscriptionPlans"
+const Path_Subscription_GetSubscriptionProducts = "/shop.Subscription/GetSubscriptionProducts"
 const Path_Subscription_GetSubscriptions = "/shop.Subscription/GetSubscriptions"
 
 func (s *SubscriptionServiceServer) PathPrefix() string {
@@ -4678,6 +4680,32 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 				return
 			}
 			resp, err = inner.GetSubscription(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Subscription/GetSubscriptionPlans":
+		msg := &inttypes.GetSubrPlansRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetSubscriptionPlans(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Subscription/GetSubscriptionProducts":
+		msg := &inttypes.GetSubrProductsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetSubscriptionProducts(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

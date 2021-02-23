@@ -9,6 +9,8 @@ import (
 	"o.o/capi/dot"
 )
 
+// +gen:event:topic=event/credit
+
 type Credit struct {
 	ID        dot.ID
 	Amount    int
@@ -25,4 +27,9 @@ type Credit struct {
 type CreditExtended struct {
 	*Credit
 	Shop *identity.Shop
+}
+
+type CreditConfirmedEvent struct {
+	CreditID dot.ID
+	ShopID   dot.ID
 }

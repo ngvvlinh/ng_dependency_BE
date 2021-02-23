@@ -24,6 +24,7 @@ import (
 	"o.o/api/top/types/etc/receipt_ref"
 	"o.o/api/top/types/etc/receipt_type"
 	"o.o/api/top/types/etc/ref_action"
+	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_payment_type"
 	"o.o/api/top/types/etc/status3"
@@ -1400,7 +1401,10 @@ type ImportProductsResponse struct {
 func (m *ImportProductsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CalcBalanceUserRequest struct {
+	// @deprecated: use service_classify instead
 	CreditClassify credit_type.NullCreditClassify `json:"credit_classify"`
+
+	ServiceClassify service_classify.NullServiceClassify `json:"service_classify"`
 }
 
 func (m *CalcBalanceUserRequest) String() string { return jsonx.MustMarshalToString(m) }

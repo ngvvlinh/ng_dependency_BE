@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"o.o/api/main/connectioning"
-	"o.o/api/main/credit"
 	"o.o/api/main/moneytx"
 	"o.o/api/main/shipping"
 	shippingtypes "o.o/api/main/shipping/types"
+	"o.o/api/main/transaction"
 	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/service_classify"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	shippingsubstate "o.o/api/top/types/etc/shipping/substate"
 	"o.o/api/top/types/etc/shipping_fee_type"
@@ -32,8 +33,8 @@ type ProcessManager struct {
 	redisStore      redis.Store
 	connectionQuery connectioning.QueryBus
 
-	ShopStore   sqlstore.ShopStoreInterface
-	CreditQuery credit.QueryBus
+	ShopStore        sqlstore.ShopStoreInterface
+	TransactionQuery transaction.QueryBus
 }
 
 func New(
@@ -43,16 +44,16 @@ func New(
 	redisS redis.Store,
 	connectionQ connectioning.QueryBus,
 	ShopStore sqlstore.ShopStoreInterface,
-	CreditQ credit.QueryBus,
+	TransactionQ transaction.QueryBus,
 ) *ProcessManager {
 	p := &ProcessManager{
-		eventBus:        eventBus,
-		shippingQuery:   shippingQ,
-		shippingAggr:    shippingA,
-		redisStore:      redisS,
-		connectionQuery: connectionQ,
-		ShopStore:       ShopStore,
-		CreditQuery:     CreditQ,
+		eventBus:         eventBus,
+		shippingQuery:    shippingQ,
+		shippingAggr:     shippingA,
+		redisStore:       redisS,
+		connectionQuery:  connectionQ,
+		ShopStore:        ShopStore,
+		TransactionQuery: TransactionQ,
 	}
 	p.registerEventHandlers(eventBus)
 	return p
@@ -293,13 +294,15 @@ func (m *ProcessManager) SingleFulfillmentCreatingEvent(ctx context.Context, eve
 	if err := m.ShopStore.GetShop(ctx, queryShop); err != nil {
 		return err
 	}
-	query := &credit.GetShippingUserBalanceQuery{
-		UserID: queryShop.Result.OwnerID,
+
+	query := &transaction.GetBalanceUserQuery{
+		UserID:   queryShop.Result.OwnerID,
+		Classify: service_classify.Shipping,
 	}
-	if err := m.CreditQuery.Dispatch(ctx, query); err != nil {
+	if err := m.TransactionQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	actualBalance := query.Result.ShippingActualUserBalance
+	actualBalance := query.Result.ActualBalance
 
 	// HCM, HN
 	if cm.StringsContain(provinces, fromAddress.ProvinceCode) {

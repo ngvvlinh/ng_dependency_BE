@@ -5532,6 +5532,60 @@
         }
       }
     },
+    "/api/shop.Subscription/GetSubscriptionPlans": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscriptionPlans",
+        "operationId": "shop.Subscription-GetSubscriptionPlans",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetSubrPlansRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetSubrPlansResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Subscription/GetSubscriptionProducts": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "GetSubscriptionProducts",
+        "operationId": "shop.Subscription-GetSubscriptionProducts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetSubrProductsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetSubrProductsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Subscription/GetSubscriptions": {
       "post": {
         "tags": [
@@ -7385,6 +7439,14 @@
         }
       }
     },
+    "bdServiceClassify": {
+      "type": "string",
+      "enum": [
+        "shipping",
+        "telecom",
+        "all"
+      ]
+    },
     "bjState": {
       "type": "string",
       "enum": [
@@ -8169,7 +8231,17 @@
       "type": "object",
       "properties": {
         "credit_classify": {
-          "$ref": "#/definitions/aeCreditClassify"
+          "allOf": [
+            {
+              "description": "**Deprecated:** use service_classify instead\n"
+            },
+            {
+              "$ref": "#/definitions/aeCreditClassify"
+            }
+          ]
+        },
+        "service_classify": {
+          "$ref": "#/definitions/bdServiceClassify"
         }
       }
     },
@@ -15508,6 +15580,45 @@
         }
       }
     },
+    "qdGetSubrPlansRequest": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdGetSubrPlansResponse": {
+      "type": "object",
+      "properties": {
+        "subscription_plans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionPlan"
+          }
+        }
+      }
+    },
+    "qdGetSubrProductsRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/vmProductSubscriptionType"
+        }
+      }
+    },
+    "qdGetSubrProductsResponse": {
+      "type": "object",
+      "properties": {
+        "subscription_products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionProduct"
+          }
+        }
+      }
+    },
     "qdGetSubscriptionsRequest": {
       "type": "object",
       "properties": {
@@ -16761,6 +16872,77 @@
         }
       }
     },
+    "qdSubscriptionPlan": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "interval": {
+          "$ref": "#/definitions/skSubscriptionPlanInterval"
+        },
+        "interval_count": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdSubscriptionProduct": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/vmProductSubscriptionType"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "qdTradingCreateOrderRequest": {
       "type": "object",
       "properties": {
@@ -17380,6 +17562,16 @@
         "undeliverable"
       ]
     },
+    "skSubscriptionPlanInterval": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "day",
+        "week",
+        "month",
+        "year"
+      ]
+    },
     "soShipnowCarrier": {
       "type": "string",
       "enum": [
@@ -17400,6 +17592,14 @@
         "unknown",
         "manual",
         "auto"
+      ]
+    },
+    "vmProductSubscriptionType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "ecomify",
+        "telecom-extension"
       ]
     },
     "wdNotifierEntity": {
@@ -17438,7 +17638,8 @@
         "vtpay",
         "momo",
         "bankdeposit",
-        "manual"
+        "manual",
+        "balance"
       ]
     },
     "ywPaymentProvider": {

@@ -47,6 +47,7 @@ import (
 	"o.o/backend/com/main/reporting"
 	"o.o/backend/com/main/shipnow"
 	"o.o/backend/com/main/stocktaking"
+	"o.o/backend/com/main/transaction"
 	"o.o/backend/com/report"
 	"o.o/backend/com/services/affiliate"
 	"o.o/backend/com/shopping/carrying"
@@ -202,6 +203,7 @@ func Build(
 		sqlstore.WireSet,
 		captcha.WireSet,
 		credit.WireSet,
+		transaction.WireSet,
 		ticket.WireSet,
 		contact.WireSet,
 

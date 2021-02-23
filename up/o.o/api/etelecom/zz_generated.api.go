@@ -13,6 +13,7 @@ import (
 	mobile_network "o.o/api/etelecom/mobile_network"
 	meta "o.o/api/meta"
 	common "o.o/api/top/types/common"
+	payment_method "o.o/api/top/types/etc/payment_method"
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -56,12 +57,31 @@ type CreateExtensionCommand struct {
 	ExtensionPassword string
 	HotlineID         dot.ID
 	OwnerID           dot.ID
+	SubscriptionID    dot.ID
+	ExpiresAt         time.Time
 
 	Result *Extension `json:"-"`
 }
 
 func (h AggregateHandler) HandleCreateExtension(ctx context.Context, msg *CreateExtensionCommand) (err error) {
 	msg.Result, err = h.inner.CreateExtension(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateExtensionBySubscriptionCommand struct {
+	SubscriptionID     dot.ID
+	SubscriptionPlanID dot.ID
+	PaymentMethod      payment_method.PaymentMethod
+	AccountID          dot.ID
+	UserID             dot.ID
+	HotlineID          dot.ID
+	OwnerID            dot.ID
+
+	Result *Extension `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateExtensionBySubscription(ctx context.Context, msg *CreateExtensionBySubscriptionCommand) (err error) {
+	msg.Result, err = h.inner.CreateExtensionBySubscription(msg.GetArgs(ctx))
 	return err
 }
 
@@ -118,6 +138,22 @@ type DeleteExtensionCommand struct {
 
 func (h AggregateHandler) HandleDeleteExtension(ctx context.Context, msg *DeleteExtensionCommand) (err error) {
 	return h.inner.DeleteExtension(msg.GetArgs(ctx))
+}
+
+type ExtendExtensionCommand struct {
+	ExtensionID        dot.ID
+	UserID             dot.ID
+	AccountID          dot.ID
+	SubscriptionID     dot.ID
+	SubscriptionPlanID dot.ID
+	PaymentMethod      payment_method.PaymentMethod
+
+	Result *Extension `json:"-"`
+}
+
+func (h AggregateHandler) HandleExtendExtension(ctx context.Context, msg *ExtendExtensionCommand) (err error) {
+	msg.Result, err = h.inner.ExtendExtension(msg.GetArgs(ctx))
+	return err
 }
 
 type UpdateCallLogPostageCommand struct {
@@ -187,10 +223,11 @@ func (h QueryServiceHandler) HandleGetCallLogByExternalID(ctx context.Context, m
 }
 
 type GetExtensionQuery struct {
-	ID        dot.ID
-	UserID    dot.ID
-	AccountID dot.ID
-	HotlineID dot.ID
+	ID             dot.ID
+	UserID         dot.ID
+	AccountID      dot.ID
+	HotlineID      dot.ID
+	SubscriptionID dot.ID
 
 	Result *Extension `json:"-"`
 }
@@ -271,14 +308,16 @@ func (h QueryServiceHandler) HandleListHotlines(ctx context.Context, msg *ListHo
 
 // implement interfaces
 
-func (q *CreateCallLogCommand) command()                {}
-func (q *CreateExtensionCommand) command()              {}
-func (q *CreateHotlineCommand) command()                {}
-func (q *CreateOrUpdateCallLogFromCDRCommand) command() {}
-func (q *DeleteExtensionCommand) command()              {}
-func (q *UpdateCallLogPostageCommand) command()         {}
-func (q *UpdateExternalExtensionInfoCommand) command()  {}
-func (q *UpdateHotlineInfoCommand) command()            {}
+func (q *CreateCallLogCommand) command()                 {}
+func (q *CreateExtensionCommand) command()               {}
+func (q *CreateExtensionBySubscriptionCommand) command() {}
+func (q *CreateHotlineCommand) command()                 {}
+func (q *CreateOrUpdateCallLogFromCDRCommand) command()  {}
+func (q *DeleteExtensionCommand) command()               {}
+func (q *ExtendExtensionCommand) command()               {}
+func (q *UpdateCallLogPostageCommand) command()          {}
+func (q *UpdateExternalExtensionInfoCommand) command()   {}
+func (q *UpdateHotlineInfoCommand) command()             {}
 
 func (q *GetCallLogQuery) query()                {}
 func (q *GetCallLogByExternalIDQuery) query()    {}
@@ -326,6 +365,8 @@ func (q *CreateExtensionCommand) GetArgs(ctx context.Context) (_ context.Context
 			ExtensionPassword: q.ExtensionPassword,
 			HotlineID:         q.HotlineID,
 			OwnerID:           q.OwnerID,
+			SubscriptionID:    q.SubscriptionID,
+			ExpiresAt:         q.ExpiresAt,
 		}
 }
 
@@ -334,6 +375,31 @@ func (q *CreateExtensionCommand) SetCreateExtensionArgs(args *CreateExtensionArg
 	q.UserID = args.UserID
 	q.AccountID = args.AccountID
 	q.ExtensionPassword = args.ExtensionPassword
+	q.HotlineID = args.HotlineID
+	q.OwnerID = args.OwnerID
+	q.SubscriptionID = args.SubscriptionID
+	q.ExpiresAt = args.ExpiresAt
+}
+
+func (q *CreateExtensionBySubscriptionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateExtenstionBySubscriptionArgs) {
+	return ctx,
+		&CreateExtenstionBySubscriptionArgs{
+			SubscriptionID:     q.SubscriptionID,
+			SubscriptionPlanID: q.SubscriptionPlanID,
+			PaymentMethod:      q.PaymentMethod,
+			AccountID:          q.AccountID,
+			UserID:             q.UserID,
+			HotlineID:          q.HotlineID,
+			OwnerID:            q.OwnerID,
+		}
+}
+
+func (q *CreateExtensionBySubscriptionCommand) SetCreateExtenstionBySubscriptionArgs(args *CreateExtenstionBySubscriptionArgs) {
+	q.SubscriptionID = args.SubscriptionID
+	q.SubscriptionPlanID = args.SubscriptionPlanID
+	q.PaymentMethod = args.PaymentMethod
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
 	q.HotlineID = args.HotlineID
 	q.OwnerID = args.OwnerID
 }
@@ -407,6 +473,27 @@ func (q *CreateOrUpdateCallLogFromCDRCommand) SetCreateOrUpdateCallLogFromCDRArg
 func (q *DeleteExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, id dot.ID) {
 	return ctx,
 		q.Id
+}
+
+func (q *ExtendExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ExtendExtensionArgs) {
+	return ctx,
+		&ExtendExtensionArgs{
+			ExtensionID:        q.ExtensionID,
+			UserID:             q.UserID,
+			AccountID:          q.AccountID,
+			SubscriptionID:     q.SubscriptionID,
+			SubscriptionPlanID: q.SubscriptionPlanID,
+			PaymentMethod:      q.PaymentMethod,
+		}
+}
+
+func (q *ExtendExtensionCommand) SetExtendExtensionArgs(args *ExtendExtensionArgs) {
+	q.ExtensionID = args.ExtensionID
+	q.UserID = args.UserID
+	q.AccountID = args.AccountID
+	q.SubscriptionID = args.SubscriptionID
+	q.SubscriptionPlanID = args.SubscriptionPlanID
+	q.PaymentMethod = args.PaymentMethod
 }
 
 func (q *UpdateCallLogPostageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCallLogPostageArgs) {
@@ -483,10 +570,11 @@ func (q *GetCallLogByExternalIDQuery) SetGetCallLogByExternalIDArgs(args *GetCal
 func (q *GetExtensionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExtensionArgs) {
 	return ctx,
 		&GetExtensionArgs{
-			ID:        q.ID,
-			UserID:    q.UserID,
-			AccountID: q.AccountID,
-			HotlineID: q.HotlineID,
+			ID:             q.ID,
+			UserID:         q.UserID,
+			AccountID:      q.AccountID,
+			HotlineID:      q.HotlineID,
+			SubscriptionID: q.SubscriptionID,
 		}
 }
 
@@ -495,6 +583,7 @@ func (q *GetExtensionQuery) SetGetExtensionArgs(args *GetExtensionArgs) {
 	q.UserID = args.UserID
 	q.AccountID = args.AccountID
 	q.HotlineID = args.HotlineID
+	q.SubscriptionID = args.SubscriptionID
 }
 
 func (q *GetHotlineQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetHotlineArgs) {
@@ -585,9 +674,11 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleCreateCallLog)
 	b.AddHandler(h.HandleCreateExtension)
+	b.AddHandler(h.HandleCreateExtensionBySubscription)
 	b.AddHandler(h.HandleCreateHotline)
 	b.AddHandler(h.HandleCreateOrUpdateCallLogFromCDR)
 	b.AddHandler(h.HandleDeleteExtension)
+	b.AddHandler(h.HandleExtendExtension)
 	b.AddHandler(h.HandleUpdateCallLogPostage)
 	b.AddHandler(h.HandleUpdateExternalExtensionInfo)
 	b.AddHandler(h.HandleUpdateHotlineInfo)

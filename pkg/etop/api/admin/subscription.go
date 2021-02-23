@@ -3,8 +3,8 @@ package admin
 import (
 	"context"
 
+	"o.o/api/subscripting/invoice"
 	"o.o/api/subscripting/subscription"
-	"o.o/api/subscripting/subscriptionbill"
 	"o.o/api/subscripting/subscriptionplan"
 	"o.o/api/subscripting/subscriptionproduct"
 	"o.o/api/top/int/admin"
@@ -13,6 +13,7 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/capi/dot"
 )
 
 type SubscriptionService struct {
@@ -24,8 +25,8 @@ type SubscriptionService struct {
 	SubrPlanQuery     subscriptionplan.QueryBus
 	SubscriptionQuery subscription.QueryBus
 	SubscriptionAggr  subscription.CommandBus
-	SubrBillAggr      subscriptionbill.CommandBus
-	SubrBillQuery     subscriptionbill.QueryBus
+	InvoiceAggr       invoice.CommandBus
+	InvoiceQuery      invoice.QueryBus
 }
 
 func (s *SubscriptionService) Clone() admin.SubscriptionService {
@@ -103,8 +104,11 @@ func (s *SubscriptionService) UpdateSubscriptionPlan(ctx context.Context, r *typ
 	return result, nil
 }
 
-func (s *SubscriptionService) GetSubscriptionPlans(ctx context.Context, r *pbcm.Empty) (*types.GetSubrPlansResponse, error) {
+func (s *SubscriptionService) GetSubscriptionPlans(ctx context.Context, r *types.GetSubrPlansRequest) (*types.GetSubrPlansResponse, error) {
 	query := &subscriptionplan.ListSubrPlansQuery{}
+	if r.ProductID != 0 {
+		query.ProductIDs = []dot.ID{r.ProductID}
+	}
 	if err := s.SubrPlanQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
@@ -215,64 +219,6 @@ func (s *SubscriptionService) DeleteSubscription(ctx context.Context, r *types.S
 		AccountID: r.AccountID,
 	}
 	if err := s.SubscriptionAggr.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
-	result := &pbcm.DeletedResponse{Deleted: 1}
-	return result, nil
-}
-
-func (s *SubscriptionService) GetSubscriptionBills(ctx context.Context, r *types.GetSubscriptionBillsRequest) (*types.GetSubscriptionBillsResponse, error) {
-	paging := cmapi.CMPaging(r.Paging)
-	query := &subscriptionbill.ListSubscriptionBillsQuery{
-		AccountID: r.AccountID,
-		Paging:    *paging,
-		Filters:   cmapi.ToFilters(r.Filters),
-	}
-	if err := s.SubrBillQuery.Dispatch(ctx, query); err != nil {
-		return nil, err
-	}
-	res := convertpball.PbSubrBills(query.Result.SubscriptionBills)
-	result := &types.GetSubscriptionBillsResponse{
-		SubscriptionBills: res,
-		Paging:            cmapi.PbMetaPageInfo(query.Result.Paging),
-	}
-	return result, nil
-}
-
-func (s *SubscriptionService) CreateSubscriptionBill(ctx context.Context, r *types.CreateSubscriptionBillRequest) (*types.SubscriptionBill, error) {
-	cmd := &subscriptionbill.CreateSubscriptionBillBySubrIDCommand{
-		SubscriptionID: r.SubscriptionID,
-		AccountID:      r.AccountID,
-		TotalAmount:    r.TotalAmount,
-		Customer:       convertpball.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
-		Description:    r.Description,
-	}
-	if err := s.SubrBillAggr.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
-	result := convertpball.PbSubrBill(cmd.Result)
-	return result, nil
-}
-
-func (s *SubscriptionService) ManualPaymentSubscriptionBill(ctx context.Context, r *types.ManualPaymentSubscriptionBillRequest) (*pbcm.UpdatedResponse, error) {
-	cmd := &subscriptionbill.ManualPaymentSubscriptionBillCommand{
-		ID:          r.SubscriptionBillID,
-		AccountID:   r.AccountID,
-		TotalAmount: r.TotalAmount,
-	}
-	if err := s.SubrBillAggr.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
-	result := &pbcm.UpdatedResponse{Updated: 1}
-	return result, nil
-}
-
-func (s *SubscriptionService) DeleteSubscriptionBill(ctx context.Context, r *types.SubscriptionIDRequest) (*pbcm.DeletedResponse, error) {
-	cmd := &subscriptionbill.DeleteSubsciptionBillCommand{
-		ID:        r.ID,
-		AccountID: r.AccountID,
-	}
-	if err := s.SubrBillAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	result := &pbcm.DeletedResponse{Deleted: 1}

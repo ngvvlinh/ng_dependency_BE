@@ -436,6 +436,9 @@ type WebServerService interface {
 
 // +apix:path=/shop.Subscription
 type SubscriptionService interface {
+	GetSubscriptionProducts(context.Context, *types.GetSubrProductsRequest) (*types.GetSubrProductsResponse, error)
+	GetSubscriptionPlans(context.Context, *types.GetSubrPlansRequest) (*types.GetSubrPlansResponse, error)
+
 	GetSubscription(context.Context, *types.SubscriptionIDRequest) (*types.Subscription, error)
 	GetSubscriptions(context.Context, *types.GetSubscriptionsRequest) (*types.GetSubscriptionsResponse, error)
 }

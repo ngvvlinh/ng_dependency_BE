@@ -4605,7 +4605,8 @@
         "vtpay",
         "momo",
         "bankdeposit",
-        "manual"
+        "manual",
+        "balance"
       ]
     }
   },

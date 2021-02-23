@@ -15,6 +15,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
 	"o.o/backend/pkg/etop/api/shop/etelecom"
+	"o.o/backend/pkg/etop/api/shop/etelecom/etelecomuser"
 	"o.o/backend/pkg/etop/api/shop/export"
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
@@ -83,6 +84,7 @@ func NewServers(
 	contactService *contact.ContactService,
 	settingService *setting.SettingService,
 	etelecomService *etelecom.EtelecomService,
+	etelecomUserService *etelecomuser.EtelecomUserService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -129,6 +131,7 @@ func NewServers(
 		contactService.Clone,
 		settingService.Close,
 		etelecomService.Clone,
+		etelecomUserService.Clone,
 	)
 	return servers
 }

@@ -167,6 +167,10 @@ const shopPolicy = `#connection
 	p, shop/shop_ticket_comment:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/shop_ticket_comment:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/shop_ticket_comment:delete, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	# subscription
+	p, shop/subscription_product:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/subscription_plan:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/subscription:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 `
 
 const adminPolicy = `
@@ -261,10 +265,10 @@ const adminPolicy = `
 	p, admin/subscription:cancel, admin
 	p, admin/subscription:active, admin
 	p, admin/subscription:delete, admin
-	p, admin/subscription_bill:view, admin
-	p, admin/subscription_bill:create, admin
-	p, admin/subscription_bill_manual_payment:create, admin
-	p, admin/subscription_bill:delete, admin
+	p, admin/invoice:view, admin
+	p, admin/invoice:create, admin
+	p, admin/invoice_manual_payment:create, admin
+	p, admin/invoice:delete, admin
 	# admin misc
 	p, admin/misc_account:login, admin
 	# admin partner

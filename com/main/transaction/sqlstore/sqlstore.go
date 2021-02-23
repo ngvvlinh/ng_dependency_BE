@@ -5,11 +5,15 @@ import (
 
 	"o.o/api/main/transaction"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/subject_referral"
+	"o.o/api/top/types/etc/transaction_type"
 	"o.o/backend/com/main/transaction/convert"
 	transactionmodel "o.o/backend/com/main/transaction/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
+	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
@@ -48,13 +52,33 @@ func (s *TransactionStore) AccountID(id dot.ID) *TransactionStore {
 	return s
 }
 
+func (s *TransactionStore) AccountIDs(ids ...dot.ID) *TransactionStore {
+	s.preds = append(s.preds, sq.In("account_id", ids))
+	return s
+}
+
+func (s *TransactionStore) Classify(classify service_classify.ServiceClassify) *TransactionStore {
+	s.preds = append(s.preds, s.ft.ByClassifyPtr(&classify))
+	return s
+}
+
 func (s *TransactionStore) ByConfirmedTransaction() *TransactionStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status3.P))
 	return s
 }
 
-func (s *TransactionStore) OptionalTransactionType(transactionType transaction.TransactionType) *TransactionStore {
+func (s *TransactionStore) OptionalTransactionType(transactionType transaction_type.TransactionType) *TransactionStore {
 	s.preds = append(s.preds, s.ft.ByType(transactionType).Optional())
+	return s
+}
+
+func (s *TransactionStore) ReferralType(_type subject_referral.SubjectReferral) *TransactionStore {
+	s.preds = append(s.preds, s.ft.ByReferralType(_type))
+	return s
+}
+
+func (s *TransactionStore) ReferralID(id dot.ID) *TransactionStore {
+	s.preds = append(s.preds, sq.NewExpr("referral_ids @> ?", core.Array{V: []dot.ID{id}}))
 	return s
 }
 
@@ -70,11 +94,12 @@ func (s *TransactionStore) GetTransactionDB() (*transactionmodel.Transaction, er
 }
 
 func (s *TransactionStore) GetTransaction() (*transaction.Transaction, error) {
-	transaction, err := s.GetTransactionDB()
+	trx, err := s.GetTransactionDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.Transaction(transaction), nil
+	res := convert.Convert_transactionmodel_Transaction_transaction_Transaction(trx, nil)
+	return res, nil
 }
 
 func (s *TransactionStore) ListTransactionsDB() ([]*transactionmodel.Transaction, error) {
@@ -93,7 +118,7 @@ func (s *TransactionStore) ListTransactions() ([]*transaction.Transaction, error
 	if err != nil {
 		return nil, err
 	}
-	return convert.Transactions(transactions), err
+	return convert.Convert_transactionmodel_Transactions_transaction_Transactions(transactions), err
 }
 
 func (s *TransactionStore) Count() (int, error) {
@@ -102,14 +127,17 @@ func (s *TransactionStore) Count() (int, error) {
 	return count, err
 }
 
+func (s *TransactionStore) CreateTransactionDB(trxn *transactionmodel.Transaction) error {
+	return s.query().ShouldInsert(trxn)
+}
+
 func (s *TransactionStore) CreateTransaction(trxn *transaction.Transaction) (*transaction.Transaction, error) {
 	sqlstore.MustNoPreds(s.preds)
-	trxnDB := convert.TransactionDB(trxn)
+	trxnDB := convert.Convert_transaction_Transaction_transactionmodel_Transaction(trxn, nil)
 	if trxnDB.ID == 0 {
 		trxnDB.ID = cm.NewID()
 	}
-	_, err := s.query().Insert(trxnDB)
-	if err != nil {
+	if err := s.CreateTransactionDB(trxnDB); err != nil {
 		return nil, err
 	}
 	return s.ID(trxnDB.ID).GetTransaction()
@@ -135,8 +163,12 @@ func (s *TransactionStore) UpdateTransactionStatus(args *UpdateTransactionStatus
 
 func (s *TransactionStore) GetBalance() (int, error) {
 	var totalAmount core.Int
-	if err := s.query().SQL("SELECT SUM(amount) from transaction").Where(s.preds).Scan(&totalAmount); err != nil {
+	if err := s.query().SQL("SELECT SUM(amount) from transaction").Where(s.preds).Where("status = ?", status3.P).Scan(&totalAmount); err != nil {
 		return 0, err
 	}
 	return int(totalAmount), nil
+}
+
+func (s *TransactionStore) DeleteTransaction() error {
+	return s.query().Where(s.preds).ShouldDelete(&transactionmodel.Transaction{})
 }

@@ -10,10 +10,11 @@ import (
 	"o.o/backend/cmd/telecom-sync-service/config"
 	"o.o/backend/cogs/shipment/_all"
 	"o.o/backend/cogs/telecom/_all"
-	aggregate2 "o.o/backend/com/etelecom/aggregate"
+	aggregate3 "o.o/backend/com/etelecom/aggregate"
 	pm2 "o.o/backend/com/etelecom/pm"
 	"o.o/backend/com/etelecom/provider"
 	query2 "o.o/backend/com/etelecom/query"
+	aggregate2 "o.o/backend/com/external/payment/payment/aggregate"
 	"o.o/backend/com/main"
 	"o.o/backend/com/main/connectioning/aggregate"
 	"o.o/backend/com/main/connectioning/manager"
@@ -21,6 +22,10 @@ import (
 	"o.o/backend/com/main/connectioning/query"
 	query3 "o.o/backend/com/main/contact/query"
 	"o.o/backend/com/main/identity"
+	"o.o/backend/com/subscripting/invoice"
+	"o.o/backend/com/subscripting/subscription"
+	"o.o/backend/com/subscripting/subscriptionplan"
+	"o.o/backend/com/subscripting/subscriptionproduct"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/redis"
@@ -60,8 +65,20 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	}
 	contactQuery := query3.NewContactQuery(mainDB)
 	contactQueryBus := query3.ContactQueryMessageBus(contactQuery)
-	etelecomAggregate := aggregate2.NewEtelecomAggregate(etelecomDB, busBus, contactQueryBus, telecomManager, queryBus, identityQueryBus)
-	etelecomCommandBus := aggregate2.AggregateMessageBus(etelecomAggregate)
+	subrProductQuery := subscriptionproduct.NewSubrProductQuery(mainDB)
+	subscriptionproductQueryBus := subscriptionproduct.SubrProductQueryMessageBus(subrProductQuery)
+	subrPlanQuery := subscriptionplan.NewSubrPlanQuery(mainDB, subscriptionproductQueryBus)
+	subscriptionplanQueryBus := subscriptionplan.SubrPlanQueryMessageBus(subrPlanQuery)
+	subscriptionQuery := subscription.NewSubscriptionQuery(mainDB, subscriptionplanQueryBus, subscriptionproductQueryBus)
+	subscriptionQueryBus := subscription.SubscriptionQueryMessageBus(subscriptionQuery)
+	subscriptionAggregate := subscription.NewSubscriptionAggregate(mainDB, subscriptionplanQueryBus)
+	subscriptionCommandBus := subscription.SubscriptionAggregateMessageBus(subscriptionAggregate)
+	aggregateAggregate := aggregate2.NewAggregate(mainDB)
+	paymentCommandBus := aggregate2.AggregateMessageBus(aggregateAggregate)
+	invoiceAggregate := invoice.NewInvoiceAggregate(mainDB, busBus, paymentCommandBus, subscriptionQueryBus, subscriptionplanQueryBus)
+	invoiceCommandBus := invoice.InvoiceAggregateMessageBus(invoiceAggregate)
+	etelecomAggregate := aggregate3.NewEtelecomAggregate(mainDB, etelecomDB, busBus, contactQueryBus, telecomManager, queryBus, identityQueryBus, subscriptionplanQueryBus, subscriptionQueryBus, subscriptionCommandBus, invoiceCommandBus)
+	etelecomCommandBus := aggregate3.AggregateMessageBus(etelecomAggregate)
 	v2 := BuildSyncs(ctx, mainDB, telecomManager, etelecomQueryBus, etelecomCommandBus, commandBus)
 	processManager := pm.New(busBus, commandBus, queryBus)
 	pmProcessManager := pm2.New(busBus, etelecomCommandBus, etelecomQueryBus)

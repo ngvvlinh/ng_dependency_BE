@@ -43,6 +43,8 @@ type Extension struct {
 	CreatedAt         time.Time              `sq:"create"`
 	UpdatedAt         time.Time              `sq:"update"`
 	DeletedAt         time.Time
+	SubscriptionID    dot.ID
+	ExpiresAt         time.Time
 }
 
 type ExtensionExternalData struct {

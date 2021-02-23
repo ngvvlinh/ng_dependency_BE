@@ -9,6 +9,7 @@ import (
 	"o.o/api/etelecom/mobile_network"
 	"o.o/api/meta"
 	cm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
 	"o.o/common/xerrors"
@@ -21,6 +22,8 @@ type Aggregate interface {
 	UpdateHotlineInfo(context.Context, *UpdateHotlineInfoArgs) error
 
 	CreateExtension(context.Context, *CreateExtensionArgs) (*Extension, error)
+	CreateExtensionBySubscription(context.Context, *CreateExtenstionBySubscriptionArgs) (*Extension, error)
+	ExtendExtension(context.Context, *ExtendExtensionArgs) (*Extension, error)
 	DeleteExtension(ctx context.Context, id dot.ID) error
 	UpdateExternalExtensionInfo(context.Context, *UpdateExternalExtensionInfoArgs) error
 
@@ -53,6 +56,8 @@ type CreateExtensionArgs struct {
 	ExtensionPassword string
 	HotlineID         dot.ID
 	OwnerID           dot.ID
+	SubscriptionID    dot.ID
+	ExpiresAt         time.Time
 }
 
 func (args *CreateExtensionArgs) Validate() error {
@@ -150,10 +155,11 @@ type ListHotlinesArgs struct {
 }
 
 type GetExtensionArgs struct {
-	ID        dot.ID
-	UserID    dot.ID
-	AccountID dot.ID
-	HotlineID dot.ID
+	ID             dot.ID
+	UserID         dot.ID
+	AccountID      dot.ID
+	HotlineID      dot.ID
+	SubscriptionID dot.ID
 }
 
 type ListExtensionsArgs struct {
@@ -224,4 +230,57 @@ type UpdateHotlineInfoArgs struct {
 	Name         string
 	Description  string
 	Status       status3.NullStatus
+}
+
+type CreateExtenstionBySubscriptionArgs struct {
+	SubscriptionID     dot.ID
+	SubscriptionPlanID dot.ID
+	PaymentMethod      payment_method.PaymentMethod
+	AccountID          dot.ID
+
+	UserID    dot.ID
+	HotlineID dot.ID
+	OwnerID   dot.ID
+}
+
+func (args *CreateExtenstionBySubscriptionArgs) Validate() error {
+	if args.UserID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing user ID")
+	}
+	if args.AccountID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
+	}
+	if args.HotlineID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing hotline ID")
+	}
+	if args.SubscriptionID == 0 && args.SubscriptionPlanID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Please provide subscription_id or subscription_plan_id ")
+	}
+	return nil
+}
+
+type ExtendExtensionArgs struct {
+	ExtensionID dot.ID
+	UserID      dot.ID
+	AccountID   dot.ID
+
+	SubscriptionID     dot.ID
+	SubscriptionPlanID dot.ID
+	PaymentMethod      payment_method.PaymentMethod
+}
+
+func (args *ExtendExtensionArgs) Validate() error {
+	if args.UserID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing user ID")
+	}
+	if args.AccountID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
+	}
+	if args.ExtensionID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing extension ID")
+	}
+	if args.PaymentMethod != payment_method.Balance {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Phương thức thanh toán không hợp lệ. Chỉ hỗ trợ thanh toán bằng số dư.")
+	}
+	return nil
 }

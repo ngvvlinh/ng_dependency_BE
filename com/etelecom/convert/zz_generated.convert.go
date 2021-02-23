@@ -265,9 +265,11 @@ func convert_etelecommodel_Extension_etelecom_Extension(arg *etelecommodel.Exten
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
 	out.TenantDomain = arg.TenantDomain           // simple assign
 	out.ExternalData = Convert_etelecommodel_ExtensionExternalData_etelecom_ExtensionExternalData(arg.ExternalData, nil)
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = arg.DeletedAt // simple assign
+	out.CreatedAt = arg.CreatedAt           // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
+	out.DeletedAt = arg.DeletedAt           // simple assign
+	out.SubscriptionID = arg.SubscriptionID // simple assign
+	out.ExpiresAt = arg.ExpiresAt           // simple assign
 }
 
 func Convert_etelecommodel_Extensions_etelecom_Extensions(args []*etelecommodel.Extension) (outs []*etelecom.Extension) {
@@ -302,9 +304,11 @@ func convert_etelecom_Extension_etelecommodel_Extension(arg *etelecom.Extension,
 	out.ExtensionPassword = arg.ExtensionPassword // simple assign
 	out.TenantDomain = arg.TenantDomain           // simple assign
 	out.ExternalData = Convert_etelecom_ExtensionExternalData_etelecommodel_ExtensionExternalData(arg.ExternalData, nil)
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = arg.DeletedAt // simple assign
+	out.CreatedAt = arg.CreatedAt           // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
+	out.DeletedAt = arg.DeletedAt           // simple assign
+	out.SubscriptionID = arg.SubscriptionID // simple assign
+	out.ExpiresAt = arg.ExpiresAt           // simple assign
 }
 
 func Convert_etelecom_Extensions_etelecommodel_Extensions(args []*etelecom.Extension) (outs []*etelecommodel.Extension) {
@@ -342,6 +346,8 @@ func apply_etelecom_CreateExtensionArgs_etelecom_Extension(arg *etelecom.CreateE
 	out.CreatedAt = time.Time{}                   // zero value
 	out.UpdatedAt = time.Time{}                   // zero value
 	out.DeletedAt = time.Time{}                   // zero value
+	out.SubscriptionID = arg.SubscriptionID       // simple assign
+	out.ExpiresAt = arg.ExpiresAt                 // simple assign
 }
 
 //-- convert o.o/api/etelecom.ExtensionExternalData --//

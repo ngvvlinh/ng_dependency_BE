@@ -33,6 +33,8 @@ func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Serv
 		return NewEtelecomServiceServer(builder, hooks...), true
 	case func() FulfillmentService:
 		return NewFulfillmentServiceServer(builder, hooks...), true
+	case func() InvoiceService:
+		return NewInvoiceServiceServer(builder, hooks...), true
 	case func() LocationService:
 		return NewLocationServiceServer(builder, hooks...), true
 	case func() MiscService:
@@ -697,6 +699,116 @@ func (s *FulfillmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 				return
 			}
 			resp, err = inner.UpdateFulfillmentShippingState(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type InvoiceServiceServer struct {
+	hooks   httprpc.HooksBuilder
+	builder func() InvoiceService
+}
+
+func NewInvoiceServiceServer(builder func() InvoiceService, hooks ...httprpc.HooksBuilder) httprpc.Server {
+	return &InvoiceServiceServer{
+		hooks:   httprpc.ChainHooks(hooks...),
+		builder: builder,
+	}
+}
+
+const InvoiceServicePathPrefix = "/admin.Invoice/"
+
+const Path_Invoice_CreateInvoice = "/admin.Invoice/CreateInvoice"
+const Path_Invoice_DeleteInvoice = "/admin.Invoice/DeleteInvoice"
+const Path_Invoice_GetInvoices = "/admin.Invoice/GetInvoices"
+const Path_Invoice_ManualPaymentInvoice = "/admin.Invoice/ManualPaymentInvoice"
+
+func (s *InvoiceServiceServer) PathPrefix() string {
+	return InvoiceServicePathPrefix
+}
+
+func (s *InvoiceServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
+func (s *InvoiceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	hooks := httprpc.WrapHooks(s.hooks)
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.RequestReceived(ctx, *info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
+}
+
+func (s *InvoiceServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/admin.Invoice/CreateInvoice":
+		msg := &inttypes.CreateInvoiceRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateInvoice(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Invoice/DeleteInvoice":
+		msg := &inttypes.SubscriptionIDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteInvoice(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Invoice/GetInvoices":
+		msg := &inttypes.GetInvoicesRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetInvoices(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Invoice/ManualPaymentInvoice":
+		msg := &inttypes.ManualPaymentInvoiceRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ManualPaymentInvoice(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1983,19 +2095,15 @@ const SubscriptionServicePathPrefix = "/admin.Subscription/"
 const Path_Subscription_ActivateSubscription = "/admin.Subscription/ActivateSubscription"
 const Path_Subscription_CancelSubscription = "/admin.Subscription/CancelSubscription"
 const Path_Subscription_CreateSubscription = "/admin.Subscription/CreateSubscription"
-const Path_Subscription_CreateSubscriptionBill = "/admin.Subscription/CreateSubscriptionBill"
 const Path_Subscription_CreateSubscriptionPlan = "/admin.Subscription/CreateSubscriptionPlan"
 const Path_Subscription_CreateSubscriptionProduct = "/admin.Subscription/CreateSubscriptionProduct"
 const Path_Subscription_DeleteSubscription = "/admin.Subscription/DeleteSubscription"
-const Path_Subscription_DeleteSubscriptionBill = "/admin.Subscription/DeleteSubscriptionBill"
 const Path_Subscription_DeleteSubscriptionPlan = "/admin.Subscription/DeleteSubscriptionPlan"
 const Path_Subscription_DeleteSubscriptionProduct = "/admin.Subscription/DeleteSubscriptionProduct"
 const Path_Subscription_GetSubscription = "/admin.Subscription/GetSubscription"
-const Path_Subscription_GetSubscriptionBills = "/admin.Subscription/GetSubscriptionBills"
 const Path_Subscription_GetSubscriptionPlans = "/admin.Subscription/GetSubscriptionPlans"
 const Path_Subscription_GetSubscriptionProducts = "/admin.Subscription/GetSubscriptionProducts"
 const Path_Subscription_GetSubscriptions = "/admin.Subscription/GetSubscriptions"
-const Path_Subscription_ManualPaymentSubscriptionBill = "/admin.Subscription/ManualPaymentSubscriptionBill"
 const Path_Subscription_UpdateSubscriptionInfo = "/admin.Subscription/UpdateSubscriptionInfo"
 const Path_Subscription_UpdateSubscriptionPlan = "/admin.Subscription/UpdateSubscriptionPlan"
 
@@ -2071,19 +2179,6 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 			return
 		}
 		return msg, fn, nil
-	case "/admin.Subscription/CreateSubscriptionBill":
-		msg := &inttypes.CreateSubscriptionBillRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.RequestRouted(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.CreateSubscriptionBill(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
 	case "/admin.Subscription/CreateSubscriptionPlan":
 		msg := &inttypes.CreateSubrPlanRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -2120,19 +2215,6 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 				return
 			}
 			resp, err = inner.DeleteSubscription(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
-	case "/admin.Subscription/DeleteSubscriptionBill":
-		msg := &inttypes.SubscriptionIDRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.RequestRouted(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.DeleteSubscriptionBill(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -2175,21 +2257,8 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 			return
 		}
 		return msg, fn, nil
-	case "/admin.Subscription/GetSubscriptionBills":
-		msg := &inttypes.GetSubscriptionBillsRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.RequestRouted(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.GetSubscriptionBills(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
 	case "/admin.Subscription/GetSubscriptionPlans":
-		msg := &common.Empty{}
+		msg := &inttypes.GetSubrPlansRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
@@ -2224,19 +2293,6 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 				return
 			}
 			resp, err = inner.GetSubscriptions(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
-	case "/admin.Subscription/ManualPaymentSubscriptionBill":
-		msg := &inttypes.ManualPaymentSubscriptionBillRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.RequestRouted(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.ManualPaymentSubscriptionBill(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

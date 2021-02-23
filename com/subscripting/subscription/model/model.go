@@ -10,8 +10,9 @@ import (
 
 // +sqlgen
 type Subscription struct {
-	ID                   dot.ID
-	AccountID            dot.ID
+	ID        dot.ID
+	AccountID dot.ID
+	// CancelAtPeriodEnd: hủy/ngưng subscription khi hết hạn
 	CancelAtPeriodEnd    bool
 	CurrentPeriodEndAt   time.Time
 	CurrentPeriodStartAt time.Time

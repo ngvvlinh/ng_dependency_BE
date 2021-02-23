@@ -744,6 +744,114 @@
         }
       }
     },
+    "/api/admin.Invoice/CreateInvoice": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "CreateInvoice",
+        "operationId": "admin.Invoice-CreateInvoice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateInvoiceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdInvoice"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Invoice/DeleteInvoice": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "DeleteInvoice",
+        "operationId": "admin.Invoice-DeleteInvoice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdSubscriptionIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Invoice/GetInvoices": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "GetInvoices",
+        "operationId": "admin.Invoice-GetInvoices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetInvoicesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetInvoicesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Invoice/ManualPaymentInvoice": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "ManualPaymentInvoice",
+        "operationId": "admin.Invoice-ManualPaymentInvoice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdManualPaymentInvoiceRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Location/CreateCustomRegion": {
       "post": {
         "tags": [
@@ -2526,33 +2634,6 @@
         }
       }
     },
-    "/api/admin.Subscription/CreateSubscriptionBill": {
-      "post": {
-        "tags": [
-          "Subscription"
-        ],
-        "summary": "CreateSubscriptionBill",
-        "operationId": "admin.Subscription-CreateSubscriptionBill",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/qdCreateSubscriptionBillRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/qdSubscriptionBill"
-            }
-          }
-        }
-      }
-    },
     "/api/admin.Subscription/CreateSubscriptionPlan": {
       "post": {
         "tags": [
@@ -2614,33 +2695,6 @@
         ],
         "summary": "DeleteSubscription",
         "operationId": "admin.Subscription-DeleteSubscription",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/qdSubscriptionIDRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktDeletedResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/admin.Subscription/DeleteSubscriptionBill": {
-      "post": {
-        "tags": [
-          "Subscription"
-        ],
-        "summary": "DeleteSubscriptionBill",
-        "operationId": "admin.Subscription-DeleteSubscriptionBill",
         "parameters": [
           {
             "name": "body",
@@ -2742,33 +2796,6 @@
         }
       }
     },
-    "/api/admin.Subscription/GetSubscriptionBills": {
-      "post": {
-        "tags": [
-          "Subscription"
-        ],
-        "summary": "GetSubscriptionBills",
-        "operationId": "admin.Subscription-GetSubscriptionBills",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/qdGetSubscriptionBillsRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/qdGetSubscriptionBillsResponse"
-            }
-          }
-        }
-      }
-    },
     "/api/admin.Subscription/GetSubscriptionPlans": {
       "post": {
         "tags": [
@@ -2782,7 +2809,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/qdGetSubrPlansRequest"
             }
           }
         ],
@@ -2845,33 +2872,6 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/qdGetSubscriptionsResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/admin.Subscription/ManualPaymentSubscriptionBill": {
-      "post": {
-        "tags": [
-          "Subscription"
-        ],
-        "summary": "ManualPaymentSubscriptionBill",
-        "operationId": "admin.Subscription-ManualPaymentSubscriptionBill",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/qdManualPaymentSubscriptionBillRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -4350,14 +4350,12 @@
         "NS"
       ]
     },
-    "bqSubscriptionPlanInterval": {
+    "bqSubjectReferral": {
       "type": "string",
       "enum": [
-        "unknown",
-        "day",
-        "week",
-        "month",
-        "year"
+        "credit",
+        "invoice",
+        "subscription"
       ]
     },
     "bwShippingProvider": {
@@ -5039,6 +5037,28 @@
         }
       }
     },
+    "qdCreateInvoiceRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "integer"
+        }
+      }
+    },
     "qdCreateSubrPlanRequest": {
       "type": "object",
       "properties": {
@@ -5046,7 +5066,7 @@
           "type": "string"
         },
         "interval": {
-          "$ref": "#/definitions/bqSubscriptionPlanInterval"
+          "$ref": "#/definitions/skSubscriptionPlanInterval"
         },
         "interval_count": {
           "type": "integer"
@@ -5077,28 +5097,6 @@
         },
         "type": {
           "$ref": "#/definitions/vmProductSubscriptionType"
-        }
-      }
-    },
-    "qdCreateSubscriptionBillRequest": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "customer": {
-          "$ref": "#/definitions/qdSubrCustomer"
-        },
-        "description": {
-          "type": "string"
-        },
-        "subscription_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "total_amount": {
-          "type": "integer"
         }
       }
     },
@@ -5615,6 +5613,38 @@
         }
       }
     },
+    "qdGetInvoicesRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "qdGetInvoicesResponse": {
+      "type": "object",
+      "properties": {
+        "invoices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdInvoice"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktPageInfo"
+        }
+      }
+    },
     "qdGetShippingServicesResponse": {
       "type": "object",
       "properties": {
@@ -5637,6 +5667,15 @@
         }
       }
     },
+    "qdGetSubrPlansRequest": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "qdGetSubrPlansResponse": {
       "type": "object",
       "properties": {
@@ -5655,38 +5694,6 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/qdSubscriptionProduct"
-          }
-        }
-      }
-    },
-    "qdGetSubscriptionBillsRequest": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ktFilter"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/ktPaging"
-        }
-      }
-    },
-    "qdGetSubscriptionBillsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/ktPageInfo"
-        },
-        "subscription_bills": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/qdSubscriptionBill"
           }
         }
       }
@@ -5723,14 +5730,110 @@
         }
       }
     },
-    "qdManualPaymentSubscriptionBillRequest": {
+    "qdInvoice": {
       "type": "object",
       "properties": {
         "account_id": {
           "type": "string",
           "format": "int64"
         },
-        "subscription_bill_id": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdInvoiceLine"
+          }
+        },
+        "payment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payment_status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "referral_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "referral_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        },
+        "status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdInvoiceLine": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "invoice_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "line_amount": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "referral_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "referral_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdManualPaymentInvoiceRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "invoice_id": {
           "type": "string",
           "format": "int64"
         },
@@ -6840,55 +6943,6 @@
         }
       }
     },
-    "qdSubrBillLine": {
-      "type": "object",
-      "properties": {
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "line_amount": {
-          "type": "integer"
-        },
-        "period_end_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "period_start_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "price": {
-          "type": "integer"
-        },
-        "quantity": {
-          "type": "integer"
-        },
-        "subscription_bill_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "subscription_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "subscription_line_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "qdSubrCustomer": {
       "type": "object",
       "properties": {
@@ -6955,56 +7009,6 @@
         }
       }
     },
-    "qdSubscriptionBill": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "customer": {
-          "$ref": "#/definitions/qdSubrCustomer"
-        },
-        "description": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "lines": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/qdSubrBillLine"
-          }
-        },
-        "payment_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "payment_status": {
-          "$ref": "#/definitions/bmStatus"
-        },
-        "status": {
-          "$ref": "#/definitions/bmStatus"
-        },
-        "subscription_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "total_amount": {
-          "type": "integer"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "qdSubscriptionIDRequest": {
       "type": "object",
       "properties": {
@@ -7061,7 +7065,7 @@
           "format": "int64"
         },
         "interval": {
-          "$ref": "#/definitions/bqSubscriptionPlanInterval"
+          "$ref": "#/definitions/skSubscriptionPlanInterval"
         },
         "interval_count": {
           "type": "integer"
@@ -7158,7 +7162,7 @@
           "format": "int64"
         },
         "interval": {
-          "$ref": "#/definitions/bqSubscriptionPlanInterval"
+          "$ref": "#/definitions/skSubscriptionPlanInterval"
         },
         "interval_count": {
           "type": "integer"
@@ -7653,6 +7657,16 @@
         "undeliverable"
       ]
     },
+    "skSubscriptionPlanInterval": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "day",
+        "week",
+        "month",
+        "year"
+      ]
+    },
     "tcMobileNetwork": {
       "type": "string",
       "enum": [
@@ -7682,7 +7696,8 @@
       "type": "string",
       "enum": [
         "unknown",
-        "ecomify"
+        "ecomify",
+        "telecom-extension"
       ]
     },
     "wdNotifierEntity": {
@@ -10068,7 +10083,8 @@
         "vtpay",
         "momo",
         "bankdeposit",
-        "manual"
+        "manual",
+        "balance"
       ]
     },
     "yjPriceModifierType": {
@@ -10094,6 +10110,9 @@
     },
     {
       "name": "Fulfillment"
+    },
+    {
+      "name": "Invoice"
     },
     {
       "name": "Location"

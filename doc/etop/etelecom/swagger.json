@@ -15,6 +15,60 @@
     "version": "v1"
   },
   "paths": {
+    "/api/etelecom.User/GetUserSetting": {
+      "post": {
+        "tags": [
+          "EtelecomUser"
+        ],
+        "summary": "GetUserSetting",
+        "operationId": "etelecom.User-GetUserSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/btEtelecomUserSetting"
+            }
+          }
+        }
+      }
+    },
+    "/api/etelecom.User/UpdateUserSetting": {
+      "post": {
+        "tags": [
+          "EtelecomUser"
+        ],
+        "summary": "UpdateUserSetting",
+        "operationId": "etelecom.User-UpdateUserSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/btUpdateUserSettingRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/CreateCallLog": {
       "post": {
         "tags": [
@@ -69,6 +123,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/CreateExtensionBySubscription": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "CreateExtensionBySubscription",
+        "operationId": "shop.Etelecom-CreateExtensionBySubscription",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riCreateExtensionBySubscriptionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riExtension"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/CreateUserAndAssignExtension": {
       "post": {
         "tags": [
@@ -91,6 +172,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ktMessageResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Etelecom/ExtendExtension": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "ExtendExtension",
+        "operationId": "shop.Etelecom-ExtendExtension",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riExtendExtensionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riExtension"
             }
           }
         }
@@ -270,6 +378,27 @@
         }
       }
     },
+    "btEtelecomUserSetting": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extension_charge_type": {
+          "$ref": "#/definitions/fmChargeType"
+        },
+        "id": {
+          "description": "User ID\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "btSummaryEtelecomRequest": {
       "type": "object",
       "properties": {
@@ -292,6 +421,14 @@
         }
       }
     },
+    "btUpdateUserSettingRequest": {
+      "type": "object",
+      "properties": {
+        "extension_charge_type": {
+          "$ref": "#/definitions/fmChargeType"
+        }
+      }
+    },
     "cdConnectionMethod": {
       "description": "Deprecated values: \"topship\"\\n",
       "type": "string",
@@ -299,6 +436,14 @@
         "unknown",
         "builtin",
         "direct"
+      ]
+    },
+    "fmChargeType": {
+      "type": "string",
+      "enum": [
+        "prepaid",
+        "postpaid",
+        "free"
       ]
     },
     "jfCallDirection": {
@@ -369,6 +514,14 @@
         },
         "msg": {
           "type": "string"
+        }
+      }
+    },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
         }
       }
     },
@@ -545,6 +698,31 @@
         }
       }
     },
+    "riCreateExtensionBySubscriptionRequest": {
+      "type": "object",
+      "properties": {
+        "hotline_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payment_method": {
+          "$ref": "#/definitions/yiPaymentMethod"
+        },
+        "subscription_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "subscription_plan_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "description": "Nhân viên của shop, người được gán vào extension\n",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "riCreateExtensionRequest": {
       "type": "object",
       "properties": {
@@ -554,6 +732,33 @@
         },
         "user_id": {
           "description": "user_id: nhân viên của shop, người được gán vào extension\n",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "riExtendExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "extension_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payment_method": {
+          "$ref": "#/definitions/yiPaymentMethod"
+        },
+        "subscription_id": {
+          "description": "Bỏ trống nếu muốn gia hạn gói cũ\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "subscription_plan_id": {
+          "description": "Bỏ trống nếu muốn gia hạn gói cũ\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "description": "Nhân viên của shop, người được gán vào extension\n",
           "type": "string",
           "format": "int64"
         }
@@ -570,6 +775,10 @@
           "type": "string",
           "format": "date-time"
         },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "extension_number": {
           "type": "string"
         },
@@ -581,6 +790,10 @@
           "format": "int64"
         },
         "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "subscription_id": {
           "type": "string",
           "format": "int64"
         },
@@ -708,11 +921,28 @@
         "viettel",
         "other"
       ]
+    },
+    "yiPaymentMethod": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "cod",
+        "bank",
+        "other",
+        "vtpay",
+        "momo",
+        "bankdeposit",
+        "manual",
+        "balance"
+      ]
     }
   },
   "tags": [
     {
       "name": "Etelecom"
+    },
+    {
+      "name": "EtelecomUser"
     }
   ]
 }

@@ -8,7 +8,10 @@ import (
 	context "context"
 
 	meta "o.o/api/meta"
+	service_classify "o.o/api/top/types/etc/service_classify"
 	status3 "o.o/api/top/types/etc/status3"
+	subject_referral "o.o/api/top/types/etc/subject_referral"
+	transaction_type "o.o/api/top/types/etc/transaction_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
@@ -51,13 +54,16 @@ func (h AggregateHandler) HandleConfirmTransaction(ctx context.Context, msg *Con
 }
 
 type CreateTransactionCommand struct {
-	ID        dot.ID
-	Amount    int
-	AccountID dot.ID
-	Status    status3.Status
-	Type      TransactionType
-	Note      string
-	Metadata  *TransactionMetadata
+	ID           dot.ID
+	Name         string
+	Amount       int
+	AccountID    dot.ID
+	Status       status3.Status
+	Type         transaction_type.TransactionType
+	Classify     service_classify.ServiceClassify
+	Note         string
+	ReferralType subject_referral.SubjectReferral
+	ReferralIDs  []dot.ID
 
 	Result *Transaction `json:"-"`
 }
@@ -67,15 +73,27 @@ func (h AggregateHandler) HandleCreateTransaction(ctx context.Context, msg *Crea
 	return err
 }
 
-type GetBalanceQuery struct {
-	AccountID       dot.ID
-	TransactionType TransactionType
+type DeleteTransactionCommand struct {
+	TrxnID    dot.ID
+	AccountID dot.ID
 
-	Result int `json:"-"`
+	Result struct {
+	} `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetBalance(ctx context.Context, msg *GetBalanceQuery) (err error) {
-	msg.Result, err = h.inner.GetBalance(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleDeleteTransaction(ctx context.Context, msg *DeleteTransactionCommand) (err error) {
+	return h.inner.DeleteTransaction(msg.GetArgs(ctx))
+}
+
+type GetBalanceUserQuery struct {
+	UserID   dot.ID
+	Classify service_classify.ServiceClassify
+
+	Result *GetBalanceUserResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetBalanceUser(ctx context.Context, msg *GetBalanceUserQuery) (err error) {
+	msg.Result, err = h.inner.GetBalanceUser(msg.GetArgs(ctx))
 	return err
 }
 
@@ -88,6 +106,18 @@ type GetTransactionByIDQuery struct {
 
 func (h QueryServiceHandler) HandleGetTransactionByID(ctx context.Context, msg *GetTransactionByIDQuery) (err error) {
 	msg.Result, err = h.inner.GetTransactionByID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetTransactionByReferralQuery struct {
+	ReferralType subject_referral.SubjectReferral
+	ReferralID   dot.ID
+
+	Result *Transaction `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetTransactionByReferral(ctx context.Context, msg *GetTransactionByReferralQuery) (err error) {
+	msg.Result, err = h.inner.GetTransactionByReferral(msg.GetArgs(ctx))
 	return err
 }
 
@@ -108,10 +138,12 @@ func (h QueryServiceHandler) HandleListTransactions(ctx context.Context, msg *Li
 func (q *CancelTransactionCommand) command()  {}
 func (q *ConfirmTransactionCommand) command() {}
 func (q *CreateTransactionCommand) command()  {}
+func (q *DeleteTransactionCommand) command()  {}
 
-func (q *GetBalanceQuery) query()         {}
-func (q *GetTransactionByIDQuery) query() {}
-func (q *ListTransactionsQuery) query()   {}
+func (q *GetBalanceUserQuery) query()           {}
+func (q *GetTransactionByIDQuery) query()       {}
+func (q *GetTransactionByReferralQuery) query() {}
+func (q *ListTransactionsQuery) query()         {}
 
 // implement conversion
 
@@ -130,43 +162,68 @@ func (q *ConfirmTransactionCommand) GetArgs(ctx context.Context) (_ context.Cont
 func (q *CreateTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateTransactionArgs) {
 	return ctx,
 		&CreateTransactionArgs{
-			ID:        q.ID,
-			Amount:    q.Amount,
-			AccountID: q.AccountID,
-			Status:    q.Status,
-			Type:      q.Type,
-			Note:      q.Note,
-			Metadata:  q.Metadata,
+			ID:           q.ID,
+			Name:         q.Name,
+			Amount:       q.Amount,
+			AccountID:    q.AccountID,
+			Status:       q.Status,
+			Type:         q.Type,
+			Classify:     q.Classify,
+			Note:         q.Note,
+			ReferralType: q.ReferralType,
+			ReferralIDs:  q.ReferralIDs,
 		}
 }
 
 func (q *CreateTransactionCommand) SetCreateTransactionArgs(args *CreateTransactionArgs) {
 	q.ID = args.ID
+	q.Name = args.Name
 	q.Amount = args.Amount
 	q.AccountID = args.AccountID
 	q.Status = args.Status
 	q.Type = args.Type
+	q.Classify = args.Classify
 	q.Note = args.Note
-	q.Metadata = args.Metadata
+	q.ReferralType = args.ReferralType
+	q.ReferralIDs = args.ReferralIDs
 }
 
-func (q *GetBalanceQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetBalanceArgs) {
+func (q *DeleteTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, trxnID dot.ID, accountID dot.ID) {
 	return ctx,
-		&GetBalanceArgs{
-			AccountID:       q.AccountID,
-			TransactionType: q.TransactionType,
+		q.TrxnID,
+		q.AccountID
+}
+
+func (q *GetBalanceUserQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetBalanceUserArgs) {
+	return ctx,
+		&GetBalanceUserArgs{
+			UserID:   q.UserID,
+			Classify: q.Classify,
 		}
 }
 
-func (q *GetBalanceQuery) SetGetBalanceArgs(args *GetBalanceArgs) {
-	q.AccountID = args.AccountID
-	q.TransactionType = args.TransactionType
+func (q *GetBalanceUserQuery) SetGetBalanceUserArgs(args *GetBalanceUserArgs) {
+	q.UserID = args.UserID
+	q.Classify = args.Classify
 }
 
 func (q *GetTransactionByIDQuery) GetArgs(ctx context.Context) (_ context.Context, trxnID dot.ID, accountID dot.ID) {
 	return ctx,
 		q.TrxnID,
 		q.AccountID
+}
+
+func (q *GetTransactionByReferralQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTrxnByReferralArgs) {
+	return ctx,
+		&GetTrxnByReferralArgs{
+			ReferralType: q.ReferralType,
+			ReferralID:   q.ReferralID,
+		}
+}
+
+func (q *GetTransactionByReferralQuery) SetGetTrxnByReferralArgs(args *GetTrxnByReferralArgs) {
+	q.ReferralType = args.ReferralType
+	q.ReferralID = args.ReferralID
 }
 
 func (q *ListTransactionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTransactionsArgs) {
@@ -197,6 +254,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCancelTransaction)
 	b.AddHandler(h.HandleConfirmTransaction)
 	b.AddHandler(h.HandleCreateTransaction)
+	b.AddHandler(h.HandleDeleteTransaction)
 	return CommandBus{b}
 }
 
@@ -212,8 +270,9 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
-	b.AddHandler(h.HandleGetBalance)
+	b.AddHandler(h.HandleGetBalanceUser)
 	b.AddHandler(h.HandleGetTransactionByID)
+	b.AddHandler(h.HandleGetTransactionByReferral)
 	b.AddHandler(h.HandleListTransactions)
 	return QueryBus{b}
 }

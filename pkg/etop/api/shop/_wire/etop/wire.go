@@ -4,7 +4,6 @@ package etop
 
 import (
 	"github.com/google/wire"
-
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/api/shop/account"
 	"o.o/backend/pkg/etop/api/shop/accountshipnow"
@@ -18,6 +17,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
 	"o.o/backend/pkg/etop/api/shop/etelecom"
+	"o.o/backend/pkg/etop/api/shop/etelecom/etelecomuser"
 	"o.o/backend/pkg/etop/api/shop/export"
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
@@ -84,4 +84,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(contact.ContactService), "*"),
 	wire.Struct(new(setting.SettingService), "*"),
 	wire.Struct(new(etelecom.EtelecomService), "*"),
+	wire.Struct(new(etelecomuser.EtelecomUserService), "*"),
 )

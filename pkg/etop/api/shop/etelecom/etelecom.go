@@ -2,6 +2,7 @@ package etelecom
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/summary"
@@ -45,7 +46,8 @@ func (s *EtelecomService) GetExtensions(ctx context.Context, r *etelecomtypes.Ge
 
 	// censor extension password
 	for _, ext := range res {
-		if ext.UserID != s.SS.User().ID {
+		if ext.UserID != s.SS.User().ID ||
+			(!ext.ExpiresAt.IsZero() && ext.ExpiresAt.Sub(time.Now()) <= 0) {
 			ext.ExtensionPassword = ""
 		}
 	}
@@ -58,6 +60,41 @@ func (s *EtelecomService) CreateExtension(ctx context.Context, r *etelecomtypes.
 		AccountID: s.SS.Shop().ID,
 		HotlineID: r.HotlineID,
 		OwnerID:   s.SS.User().ID,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	var res etelecomtypes.Extension
+	Convert_etelecom_Extension_etelecomtypes_Extension(cmd.Result, &res)
+	return &res, nil
+}
+
+func (s *EtelecomService) CreateExtensionBySubscription(ctx context.Context, r *etelecomtypes.CreateExtensionBySubscriptionRequest) (*etelecomtypes.Extension, error) {
+	cmd := &etelecom.CreateExtensionBySubscriptionCommand{
+		SubscriptionID:     r.SubscriptionID,
+		SubscriptionPlanID: r.SubscriptionPlanID,
+		PaymentMethod:      r.PaymentMethod,
+		AccountID:          s.SS.Shop().ID,
+		UserID:             r.UserID,
+		HotlineID:          r.HotlineID,
+		OwnerID:            s.SS.User().ID,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	var res etelecomtypes.Extension
+	Convert_etelecom_Extension_etelecomtypes_Extension(cmd.Result, &res)
+	return &res, nil
+}
+
+func (s *EtelecomService) ExtendExtension(ctx context.Context, r *etelecomtypes.ExtendExtensionRequest) (*etelecomtypes.Extension, error) {
+	cmd := &etelecom.ExtendExtensionCommand{
+		ExtensionID:        r.ExtensionID,
+		UserID:             r.UserID,
+		AccountID:          s.SS.Shop().ID,
+		SubscriptionID:     r.SubscriptionID,
+		SubscriptionPlanID: r.SubscriptionPlanID,
+		PaymentMethod:      r.PaymentMethod,
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

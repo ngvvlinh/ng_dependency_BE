@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Transactions []*Transaction
 
 const __sqlTransaction_Table = "transaction"
-const __sqlTransaction_ListCols = "\"id\",\"amount\",\"account_id\",\"status\",\"type\",\"note\",\"metadata\",\"created_at\",\"updated_at\""
-const __sqlTransaction_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"amount\" = EXCLUDED.\"amount\",\"account_id\" = EXCLUDED.\"account_id\",\"status\" = EXCLUDED.\"status\",\"type\" = EXCLUDED.\"type\",\"note\" = EXCLUDED.\"note\",\"metadata\" = EXCLUDED.\"metadata\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlTransaction_ListCols = "\"name\",\"id\",\"amount\",\"account_id\",\"status\",\"type\",\"classify\",\"note\",\"referral_type\",\"referral_ids\",\"created_at\",\"updated_at\""
+const __sqlTransaction_ListColsOnConflict = "\"name\" = EXCLUDED.\"name\",\"id\" = EXCLUDED.\"id\",\"amount\" = EXCLUDED.\"amount\",\"account_id\" = EXCLUDED.\"account_id\",\"status\" = EXCLUDED.\"status\",\"type\" = EXCLUDED.\"type\",\"classify\" = EXCLUDED.\"classify\",\"note\" = EXCLUDED.\"note\",\"referral_type\" = EXCLUDED.\"referral_type\",\"referral_ids\" = EXCLUDED.\"referral_ids\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlTransaction_Insert = "INSERT INTO \"transaction\" (" + __sqlTransaction_ListCols + ") VALUES"
 const __sqlTransaction_Select = "SELECT " + __sqlTransaction_ListCols + " FROM \"transaction\""
 const __sqlTransaction_Select_history = "SELECT " + __sqlTransaction_ListCols + " FROM history.\"transaction\""
@@ -58,6 +58,13 @@ func (m *Transaction) Migration(db *cmsql.Database) {
 		mDBColumnNameAndType = val
 	}
 	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"name": {
+			ColumnName:       "name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"id": {
 			ColumnName:       "id",
 			ColumnType:       "dot.ID",
@@ -88,10 +95,17 @@ func (m *Transaction) Migration(db *cmsql.Database) {
 		},
 		"type": {
 			ColumnName:       "type",
-			ColumnType:       "transaction.TransactionType",
-			ColumnDBType:     "string",
+			ColumnType:       "transaction_type.TransactionType",
+			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{},
+			ColumnEnumValues: []string{"credit", "invoice"},
+		},
+		"classify": {
+			ColumnName:       "classify",
+			ColumnType:       "service_classify.ServiceClassify",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"shipping", "telecom", "all"},
 		},
 		"note": {
 			ColumnName:       "note",
@@ -100,10 +114,17 @@ func (m *Transaction) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
-		"metadata": {
-			ColumnName:       "metadata",
-			ColumnType:       "*TransactionMetadata",
-			ColumnDBType:     "*struct",
+		"referral_type": {
+			ColumnName:       "referral_type",
+			ColumnType:       "subject_referral.SubjectReferral",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"credit", "invoice", "subscription"},
+		},
+		"referral_ids": {
+			ColumnName:       "referral_ids",
+			ColumnType:       "[]dot.ID",
+			ColumnDBType:     "[]int64",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -134,13 +155,16 @@ func init() {
 func (m *Transaction) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
+		core.String(m.Name),
 		m.ID,
 		core.Int(m.Amount),
 		m.AccountID,
 		m.Status,
-		core.String(m.Type),
+		m.Type,
+		m.Classify,
 		core.String(m.Note),
-		core.JSON{m.Metadata},
+		m.ReferralType,
+		core.Array{m.ReferralIDs, opts},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -148,13 +172,16 @@ func (m *Transaction) SQLArgs(opts core.Opts, create bool) []interface{} {
 
 func (m *Transaction) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
+		(*core.String)(&m.Name),
 		&m.ID,
 		(*core.Int)(&m.Amount),
 		&m.AccountID,
 		&m.Status,
-		(*core.String)(&m.Type),
+		&m.Type,
+		&m.Classify,
 		(*core.String)(&m.Note),
-		core.JSON{&m.Metadata},
+		&m.ReferralType,
+		core.Array{&m.ReferralIDs, opts},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -194,7 +221,7 @@ func (_ *Transactions) SQLSelect(w SQLWriter) error {
 func (m *Transaction) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlTransaction_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -204,7 +231,7 @@ func (ms Transactions) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlTransaction_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(9)
+		w.WriteMarkers(12)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -235,6 +262,14 @@ func (m *Transaction) SQLUpdate(w SQLWriter) error {
 	w.WriteRawString("UPDATE ")
 	w.WriteName("transaction")
 	w.WriteRawString(" SET ")
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
 	if m.ID != 0 {
 		flag = true
 		w.WriteName("id")
@@ -267,13 +302,21 @@ func (m *Transaction) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Status)
 	}
-	if m.Type != "" {
+	if m.Type != 0 {
 		flag = true
 		w.WriteName("type")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.Type))
+		w.WriteArg(m.Type)
+	}
+	if m.Classify != 0 {
+		flag = true
+		w.WriteName("classify")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Classify)
 	}
 	if m.Note != "" {
 		flag = true
@@ -283,13 +326,21 @@ func (m *Transaction) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Note)
 	}
-	if m.Metadata != nil {
+	if m.ReferralType != 0 {
 		flag = true
-		w.WriteName("metadata")
+		w.WriteName("referral_type")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.Metadata})
+		w.WriteArg(m.ReferralType)
+	}
+	if m.ReferralIDs != nil {
+		flag = true
+		w.WriteName("referral_ids")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.ReferralIDs, opts})
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -317,7 +368,7 @@ func (m *Transaction) SQLUpdate(w SQLWriter) error {
 func (m *Transaction) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlTransaction_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -339,43 +390,49 @@ func (m TransactionHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m TransactionHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m TransactionHistory) Amount() core.Interface    { return core.Interface{m["amount"]} }
-func (m TransactionHistory) AccountID() core.Interface { return core.Interface{m["account_id"]} }
-func (m TransactionHistory) Status() core.Interface    { return core.Interface{m["status"]} }
-func (m TransactionHistory) Type() core.Interface      { return core.Interface{m["type"]} }
-func (m TransactionHistory) Note() core.Interface      { return core.Interface{m["note"]} }
-func (m TransactionHistory) Metadata() core.Interface  { return core.Interface{m["metadata"]} }
-func (m TransactionHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m TransactionHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m TransactionHistory) Name() core.Interface         { return core.Interface{m["name"]} }
+func (m TransactionHistory) ID() core.Interface           { return core.Interface{m["id"]} }
+func (m TransactionHistory) Amount() core.Interface       { return core.Interface{m["amount"]} }
+func (m TransactionHistory) AccountID() core.Interface    { return core.Interface{m["account_id"]} }
+func (m TransactionHistory) Status() core.Interface       { return core.Interface{m["status"]} }
+func (m TransactionHistory) Type() core.Interface         { return core.Interface{m["type"]} }
+func (m TransactionHistory) Classify() core.Interface     { return core.Interface{m["classify"]} }
+func (m TransactionHistory) Note() core.Interface         { return core.Interface{m["note"]} }
+func (m TransactionHistory) ReferralType() core.Interface { return core.Interface{m["referral_type"]} }
+func (m TransactionHistory) ReferralIDs() core.Interface  { return core.Interface{m["referral_ids"]} }
+func (m TransactionHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
+func (m TransactionHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 
 func (m *TransactionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(TransactionHistory, 9)
-	res["id"] = data[0]
-	res["amount"] = data[1]
-	res["account_id"] = data[2]
-	res["status"] = data[3]
-	res["type"] = data[4]
-	res["note"] = data[5]
-	res["metadata"] = data[6]
-	res["created_at"] = data[7]
-	res["updated_at"] = data[8]
+	res := make(TransactionHistory, 12)
+	res["name"] = data[0]
+	res["id"] = data[1]
+	res["amount"] = data[2]
+	res["account_id"] = data[3]
+	res["status"] = data[4]
+	res["type"] = data[5]
+	res["classify"] = data[6]
+	res["note"] = data[7]
+	res["referral_type"] = data[8]
+	res["referral_ids"] = data[9]
+	res["created_at"] = data[10]
+	res["updated_at"] = data[11]
 	*m = res
 	return nil
 }
 
 func (ms *TransactionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	res := make(TransactionHistories, 0, 128)
@@ -384,15 +441,18 @@ func (ms *TransactionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 			return err
 		}
 		m := make(TransactionHistory)
-		m["id"] = data[0]
-		m["amount"] = data[1]
-		m["account_id"] = data[2]
-		m["status"] = data[3]
-		m["type"] = data[4]
-		m["note"] = data[5]
-		m["metadata"] = data[6]
-		m["created_at"] = data[7]
-		m["updated_at"] = data[8]
+		m["name"] = data[0]
+		m["id"] = data[1]
+		m["amount"] = data[2]
+		m["account_id"] = data[3]
+		m["status"] = data[4]
+		m["type"] = data[5]
+		m["classify"] = data[6]
+		m["note"] = data[7]
+		m["referral_type"] = data[8]
+		m["referral_ids"] = data[9]
+		m["created_at"] = data[10]
+		m["updated_at"] = data[11]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

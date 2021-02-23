@@ -77,7 +77,7 @@ func (m *SubscriptionProduct) Migration(db *cmsql.Database) {
 			ColumnType:       "subscription_product_type.ProductSubscriptionType",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "ecomify"},
+			ColumnEnumValues: []string{"unknown", "ecomify", "telecom-extension"},
 		},
 		"description": {
 			ColumnName:       "description",

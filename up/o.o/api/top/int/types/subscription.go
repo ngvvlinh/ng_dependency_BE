@@ -4,6 +4,7 @@ import (
 	"o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
+	"o.o/api/top/types/etc/subject_referral"
 	"o.o/api/top/types/etc/subscription_plan_interval"
 	"o.o/api/top/types/etc/subscription_product_type"
 	"o.o/capi/dot"
@@ -22,6 +23,12 @@ type SubscriptionProduct struct {
 }
 
 func (m *SubscriptionProduct) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetSubrProductsRequest struct {
+	Type subscription_product_type.ProductSubscriptionType `json:"type"`
+}
+
+func (m *GetSubrProductsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateSubrProductRequest struct {
 	Name        string                                            `json:"name"`
@@ -63,6 +70,12 @@ type CreateSubrPlanRequest struct {
 }
 
 func (m *CreateSubrPlanRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetSubrPlansRequest struct {
+	ProductID dot.ID `json:"product_id"`
+}
+
+func (m *GetSubrPlansRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateSubrPlanRequest struct {
 	ID            dot.ID                                              `json:"id"`
@@ -118,39 +131,38 @@ type SubscriptionLine struct {
 
 func (m *SubscriptionLine) String() string { return jsonx.MustMarshalToString(m) }
 
-type SubscriptionBill struct {
-	ID             dot.ID          `json:"id"`
-	AccountID      dot.ID          `json:"account_id"`
-	SubscriptionID dot.ID          `json:"subscription_id"`
-	TotalAmount    int             `json:"total_amount"`
-	Description    string          `json:"description"`
-	PaymentID      dot.ID          `json:"payment_id"`
-	Status         status4.Status  `json:"status"`
-	PaymentStatus  status4.Status  `json:"payment_status"`
-	Customer       *SubrCustomer   `json:"customer"`
-	Lines          []*SubrBillLine `json:"lines"`
-	CreatedAt      dot.Time        `json:"created_at"`
-	UpdatedAt      dot.Time        `json:"updated_at"`
+type Invoice struct {
+	ID            dot.ID                           `json:"id"`
+	AccountID     dot.ID                           `json:"account_id"`
+	TotalAmount   int                              `json:"total_amount"`
+	Description   string                           `json:"description"`
+	PaymentID     dot.ID                           `json:"payment_id"`
+	Status        status4.Status                   `json:"status"`
+	PaymentStatus status4.Status                   `json:"payment_status"`
+	Customer      *SubrCustomer                    `json:"customer"`
+	Lines         []*InvoiceLine                   `json:"lines"`
+	CreatedAt     dot.Time                         `json:"created_at"`
+	UpdatedAt     dot.Time                         `json:"updated_at"`
+	ReferralType  subject_referral.SubjectReferral `json:"referral_type"`
+	ReferralIDs   []dot.ID                         `json:"referral_ids"`
 }
 
-func (m *SubscriptionBill) String() string { return jsonx.MustMarshalToString(m) }
+func (m *Invoice) String() string { return jsonx.MustMarshalToString(m) }
 
-type SubrBillLine struct {
-	ID                 dot.ID   `json:"id"`
-	LineAmount         int      `json:"line_amount"`
-	Price              int      `json:"price"`
-	Quantity           int      `json:"quantity"`
-	Description        string   `json:"description"`
-	PeriodStartAt      dot.Time `json:"period_start_at"`
-	PeriodEndAt        dot.Time `json:"period_end_at"`
-	SubscriptionID     dot.ID   `json:"subscription_id"`
-	SubscriptionBillID dot.ID   `json:"subscription_bill_id"`
-	SubscriptionLineID dot.ID   `json:"subscription_line_id"`
-	CreatedAt          dot.Time `json:"created_at"`
-	UpdatedAt          dot.Time `json:"updated_at"`
+type InvoiceLine struct {
+	ID           dot.ID                           `json:"id"`
+	LineAmount   int                              `json:"line_amount"`
+	Price        int                              `json:"price"`
+	Quantity     int                              `json:"quantity"`
+	Description  string                           `json:"description"`
+	InvoiceID    dot.ID                           `json:"invoice_id"`
+	ReferralType subject_referral.SubjectReferral `json:"referral_type"`
+	ReferralID   dot.ID                           `json:"referral_id"`
+	CreatedAt    dot.Time                         `json:"created_at"`
+	UpdatedAt    dot.Time                         `json:"updated_at"`
 }
 
-func (m *SubrBillLine) String() string { return jsonx.MustMarshalToString(m) }
+func (m *InvoiceLine) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetSubscriptionsRequest struct {
 	AccountID dot.ID           `json:"account_id"`
@@ -195,7 +207,7 @@ type SubscriptionIDRequest struct {
 
 func (m *SubscriptionIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type CreateSubscriptionBillRequest struct {
+type CreateInvoiceRequest struct {
 	AccountID      dot.ID        `json:"account_id"`
 	SubscriptionID dot.ID        `json:"subscription_id"`
 	TotalAmount    int           `json:"total_amount"`
@@ -203,27 +215,27 @@ type CreateSubscriptionBillRequest struct {
 	Customer       *SubrCustomer `json:"customer"`
 }
 
-func (m *CreateSubscriptionBillRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *CreateInvoiceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type ManualPaymentSubscriptionBillRequest struct {
-	SubscriptionBillID dot.ID `json:"subscription_bill_id"`
-	AccountID          dot.ID `json:"account_id"`
-	TotalAmount        int    `json:"total_amount"`
+type ManualPaymentInvoiceRequest struct {
+	InvoiceID   dot.ID `json:"invoice_id"`
+	AccountID   dot.ID `json:"account_id"`
+	TotalAmount int    `json:"total_amount"`
 }
 
-func (m *ManualPaymentSubscriptionBillRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *ManualPaymentInvoiceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type GetSubscriptionBillsRequest struct {
+type GetInvoicesRequest struct {
 	AccountID dot.ID           `json:"account_id"`
 	Paging    *common.Paging   `json:"paging"`
 	Filters   []*common.Filter `json:"filters"`
 }
 
-func (m *GetSubscriptionBillsRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *GetInvoicesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
-type GetSubscriptionBillsResponse struct {
-	SubscriptionBills []*SubscriptionBill `json:"subscription_bills"`
-	Paging            *common.PageInfo    `json:"paging"`
+type GetInvoicesResponse struct {
+	Invoices []*Invoice       `json:"invoices"`
+	Paging   *common.PageInfo `json:"paging"`
 }
 
-func (m *GetSubscriptionBillsResponse) String() string { return jsonx.MustMarshalToString(m) }
+func (m *GetInvoicesResponse) String() string { return jsonx.MustMarshalToString(m) }

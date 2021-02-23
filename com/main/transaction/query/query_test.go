@@ -6,9 +6,12 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"o.o/api/main/identity"
 	"o.o/api/main/transaction"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/transaction_type"
 	transactionmodel "o.o/backend/com/main/transaction/model"
 	cm "o.o/backend/pkg/common"
 	cc "o.o/backend/pkg/common/config"
@@ -30,13 +33,16 @@ func init() {
 	db.MustExec(`
 		DROP TABLE IF EXISTS transaction;
 		CREATE TABLE transaction (
-			id INT,
+			id BIGINT,
 			amount INT,
+			name TEXT,
 			account_id INT,
 			status INT2,
 			type TEXT,
-			metadata JSONB,
+			classify TEXT,
 			note TEXT,
+			referral_type TEXT,
+			referral_ids INT8[],
 			created_at TIMESTAMP WITH TIME ZONE,
 			updated_at TIMESTAMP WITH TIME ZONE
 		);
@@ -49,17 +55,14 @@ func TestTransactionQueryService(t *testing.T) {
 			db.MustExec("truncate transaction")
 		})
 		_tran := &transactionmodel.Transaction{
-			ID:        tranID,
-			Amount:    amount,
-			AccountID: accountID,
-			Status:    status3.P,
-			Type:      transaction.TransactionTypeAffiliate,
-			Metadata: &transactionmodel.TransactionMetadata{
-				ReferralType: transaction.ReferralTypeOrder.String(),
-				ReferralIDs:  []dot.ID{555555},
-			},
+			ID:          tranID,
+			Amount:      amount,
+			AccountID:   accountID,
+			Status:      status3.P,
+			Type:        transaction_type.Credit,
+			ReferralIDs: []dot.ID{555555},
 		}
-		QS := QueryServiceMessageBus(NewQueryService(db))
+		QS := QueryServiceMessageBus(NewQueryService(db, db, identity.QueryBus{}))
 		ctx := context.Background()
 		_, err := db.Insert(_tran)
 		So(err, ShouldBeNil)
@@ -69,7 +72,7 @@ func TestTransactionQueryService(t *testing.T) {
 				TrxnID:    tranID,
 				AccountID: accountID,
 			}
-			err := QS.Dispatch(ctx, query)
+			err = QS.Dispatch(ctx, query)
 			So(err, ShouldBeNil)
 			tran := query.Result
 			So(tran.ID, ShouldEqual, tranID)
@@ -84,29 +87,19 @@ func TestTransactionQueryService(t *testing.T) {
 					Sort:   []string{"-created_at"},
 				},
 			}
-			err := QS.Dispatch(ctx, query)
+			err = QS.Dispatch(ctx, query)
 			So(err, ShouldBeNil)
 			trans := query.Result.Transactions
 			So(query.Result.Count, ShouldEqual, 1)
 			So(trans[0].ID, ShouldEqual, tranID)
 		})
 
-		Convey("GetBalance Success", func() {
-			query := &transaction.GetBalanceQuery{
-				AccountID:       accountID,
-				TransactionType: transaction.TransactionTypeAffiliate,
+		Convey("GetBalanceUser Missing UserID", func() {
+			query := &transaction.GetBalanceUserQuery{
+				Classify: service_classify.Shipping,
 			}
-			err := QS.Dispatch(ctx, query)
-			So(err, ShouldBeNil)
-			So(query.Result, ShouldEqual, amount)
-		})
-
-		Convey("GetBalance Missing AccountID", func() {
-			query := &transaction.GetBalanceQuery{
-				TransactionType: transaction.TransactionTypeAffiliate,
-			}
-			err := QS.Dispatch(ctx, query)
-			So(err, ShouldCMError, cm.InvalidArgument, "Missing AccountID")
+			err = QS.Dispatch(ctx, query)
+			So(err, ShouldCMError, cm.InvalidArgument, "Missing UserID")
 		})
 	})
 }

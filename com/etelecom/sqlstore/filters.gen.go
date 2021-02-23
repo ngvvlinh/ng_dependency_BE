@@ -633,6 +633,44 @@ func (ft *ExtensionFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilte
 	}
 }
 
+func (ft *ExtensionFilters) BySubscriptionID(SubscriptionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "subscription_id",
+		Value:  SubscriptionID,
+		IsNil:  SubscriptionID == 0,
+	}
+}
+
+func (ft *ExtensionFilters) BySubscriptionIDPtr(SubscriptionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "subscription_id",
+		Value:  SubscriptionID,
+		IsNil:  SubscriptionID == nil,
+		IsZero: SubscriptionID != nil && (*SubscriptionID) == 0,
+	}
+}
+
+func (ft *ExtensionFilters) ByExpiresAt(ExpiresAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "expires_at",
+		Value:  ExpiresAt,
+		IsNil:  ExpiresAt.IsZero(),
+	}
+}
+
+func (ft *ExtensionFilters) ByExpiresAtPtr(ExpiresAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "expires_at",
+		Value:  ExpiresAt,
+		IsNil:  ExpiresAt == nil,
+		IsZero: ExpiresAt != nil && (*ExpiresAt).IsZero(),
+	}
+}
+
 type HotlineFilters struct{ prefix string }
 
 func NewHotlineFilters(prefix string) HotlineFilters {

@@ -9,12 +9,14 @@ import (
 
 	"o.o/backend/cmd/telecom-sync-service/config"
 	_base "o.o/backend/cogs/base"
+	payment_all "o.o/backend/cogs/payment/_all"
 	shipment_all "o.o/backend/cogs/shipment/_all"
 	telecom_all "o.o/backend/cogs/telecom/_all"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/connectioning"
 	"o.o/backend/com/main/contact"
 	"o.o/backend/com/main/identity"
+	"o.o/backend/com/subscripting"
 	"o.o/backend/pkg/common/bus"
 	"o.o/capi"
 )
@@ -33,6 +35,8 @@ func Build(
 		identity.WireSet,
 		connectioning.WireSet,
 		contact.WireSet,
+		payment_all.WireSet,
+		subscripting.WireSet,
 		telecom_all.WireSet,
 
 		com.BuildDatabaseEtelecomDB,

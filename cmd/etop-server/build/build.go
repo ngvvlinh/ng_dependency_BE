@@ -18,6 +18,7 @@ import (
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
 	etelecompm "o.o/backend/com/etelecom/pm"
+	etelecomusersettingpm "o.o/backend/com/etelecom/usersetting/pm"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	connectioningpm "o.o/backend/com/main/connectioning/pm"
 	identitypm "o.o/backend/com/main/identity/pm"
@@ -33,10 +34,13 @@ import (
 	pricelistpm "o.o/backend/com/main/shipmentpricing/pricelist/pm"
 	shipnowpm "o.o/backend/com/main/shipnow/pm"
 	shippingpm "o.o/backend/com/main/shipping/pm"
+	transactionpm "o.o/backend/com/main/transaction/pm"
 	"o.o/backend/com/report/reportserver"
 	affiliatepm "o.o/backend/com/services/affiliate/pm"
 	customerpm "o.o/backend/com/shopping/customering/pm"
 	traderpm "o.o/backend/com/shopping/tradering/pm"
+	invoicepm "o.o/backend/com/subscripting/invoice/pm"
+	subscriptionpm "o.o/backend/com/subscripting/subscription/pm"
 	"o.o/backend/com/web/ecom/webserver"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -65,25 +69,29 @@ type Output struct {
 	Health  *health.Service
 
 	// pm
-	_identityPM       *identitypm.ProcessManager
-	_inventoryPM      *inventorypm.ProcessManager
-	_invitationPM     *invitationpm.ProcessManager
-	_catalogPM        *catalogpm.ProcessManager
-	_ledgerPM         *ledgerpm.ProcessManager
-	_moneytxPM        *moneytxpm.ProcessManager
-	_orderPM          *orderingpm.ProcessManager
-	_purchaseOrderPM  *purchaseorderpm.ProcessManager
-	_purchaseRefundPM *purchaserefundpm.ProcessManager
-	_receiptPM        *receiptpm.ProcessManager
-	_refundPM         *refundpm.ProcessManager
-	_shipnowPM        *shipnowpm.ProcessManager
-	_shippingPM       *shippingpm.ProcessManager
-	_affiliatePM      *affiliatepm.ProcessManager
-	_traderPM         *traderpm.ProcessManager
-	_connectionPM     *connectioningpm.ProcessManager
-	_pricelistPM      *pricelistpm.ProcessManager
-	_customerPM       *customerpm.ProcessManager
-	_etelecomPM       *etelecompm.ProcessManager
+	_identityPM            *identitypm.ProcessManager
+	_inventoryPM           *inventorypm.ProcessManager
+	_invitationPM          *invitationpm.ProcessManager
+	_catalogPM             *catalogpm.ProcessManager
+	_ledgerPM              *ledgerpm.ProcessManager
+	_moneytxPM             *moneytxpm.ProcessManager
+	_orderPM               *orderingpm.ProcessManager
+	_purchaseOrderPM       *purchaseorderpm.ProcessManager
+	_purchaseRefundPM      *purchaserefundpm.ProcessManager
+	_receiptPM             *receiptpm.ProcessManager
+	_refundPM              *refundpm.ProcessManager
+	_shipnowPM             *shipnowpm.ProcessManager
+	_shippingPM            *shippingpm.ProcessManager
+	_affiliatePM           *affiliatepm.ProcessManager
+	_traderPM              *traderpm.ProcessManager
+	_connectionPM          *connectioningpm.ProcessManager
+	_pricelistPM           *pricelistpm.ProcessManager
+	_customerPM            *customerpm.ProcessManager
+	_etelecomPM            *etelecompm.ProcessManager
+	_subscriptionPM        *subscriptionpm.ProcessManager
+	_invoicePM             *invoicepm.ProcessManager
+	_transactionPM         *transactionpm.ProcessManager
+	_etelecomUserSettingPM *etelecomusersettingpm.ProcessManager
 }
 
 func BuildServers(

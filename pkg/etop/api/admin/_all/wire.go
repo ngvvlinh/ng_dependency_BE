@@ -29,6 +29,7 @@ func NewServers(
 	userService admin.UserService,
 	ticketService admin.TicketService,
 	etelecomService admin.EtelecomService,
+	invoiceService admin.InvoiceService,
 ) admin.Servers {
 	admin.InitIdemp(rd)
 	servers := httprpc.MustNewServers(
@@ -47,6 +48,7 @@ func NewServers(
 		userService.Clone,
 		ticketService.Clone,
 		etelecomService.Clone,
+		invoiceService.Clone,
 	)
 	return servers
 }

@@ -70,7 +70,7 @@ func (m *TelecomManager) GetTelecomDriver(ctx context.Context, connectionID, own
 	}
 
 	// update token
-	if err := m.generateToken(ctx, shopConnection, telecomDriver); err != nil {
+	if err = m.generateToken(ctx, shopConnection, telecomDriver); err != nil {
 		return nil, err
 	}
 
@@ -135,7 +135,7 @@ func (m *TelecomManager) generateToken(ctx context.Context, shopConnection *conn
 		TokenExpiresAt: generateTokenResp.ExpiresAt,
 		ExternalData:   shopConnection.ExternalData,
 	}
-	if err := m.connectionAggr.Dispatch(ctx, &updateShopConnectionCmd); err != nil {
+	if err = m.connectionAggr.Dispatch(ctx, &updateShopConnectionCmd); err != nil {
 		return err
 	}
 	*shopConnection = *updateShopConnectionCmd.Result
@@ -159,14 +159,14 @@ func (m *TelecomManager) CreateExtension(ctx context.Context, ext *etelecom.Exte
 	userQuery := &identity.GetUserByIDQuery{
 		UserID: ext.UserID,
 	}
-	if err := m.identityQS.Dispatch(ctx, userQuery); err != nil {
+	if err = m.identityQS.Dispatch(ctx, userQuery); err != nil {
 		return nil, err
 	}
 	user := userQuery.Result
 
 	// get extension number
 	extQuery := &etelecom.GetPrivateExtensionNumberQuery{}
-	if err := m.etelecomQS.Dispatch(ctx, extQuery); err != nil {
+	if err = m.etelecomQS.Dispatch(ctx, extQuery); err != nil {
 		return nil, err
 	}
 

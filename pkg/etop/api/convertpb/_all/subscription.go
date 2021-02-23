@@ -1,8 +1,8 @@
 package _all
 
 import (
+	"o.o/api/subscripting/invoice"
 	"o.o/api/subscripting/subscription"
-	"o.o/api/subscripting/subscriptionbill"
 	"o.o/api/subscripting/subscriptionplan"
 	"o.o/api/subscripting/subscriptionproduct"
 	subscriptingtypes "o.o/api/subscripting/types"
@@ -154,84 +154,83 @@ func Convert_api_SubscriptionLines_To_core_SubscriptionLines(items []*types.Subs
 	return result
 }
 
-func PbSubrBill(in *subscriptionbill.SubscriptionBillFtLine) *types.SubscriptionBill {
+func PbInvoice(in *invoice.InvoiceFtLine) *types.Invoice {
 	if in == nil {
 		return nil
 	}
-	return &types.SubscriptionBill{
-		ID:             in.ID,
-		AccountID:      in.AccountID,
-		SubscriptionID: in.SubscriptionID,
-		TotalAmount:    in.TotalAmount,
-		Description:    in.Description,
-		PaymentID:      in.PaymentID,
-		Status:         in.Status,
-		PaymentStatus:  in.PaymentStatus,
-		Customer:       PbSubscriptionCustomer(in.Customer),
-		Lines:          PbSubrBillLines(in.Lines),
-		CreatedAt:      cmapi.PbTime(in.CreatedAt),
-		UpdatedAt:      cmapi.PbTime(in.UpdatedAt),
+	return &types.Invoice{
+		ID:            in.ID,
+		AccountID:     in.AccountID,
+		TotalAmount:   in.TotalAmount,
+		Description:   in.Description,
+		PaymentID:     in.PaymentID,
+		Status:        in.Status,
+		PaymentStatus: in.PaymentStatus,
+		Customer:      PbSubscriptionCustomer(in.Customer),
+		Lines:         PbInvoiceLines(in.Lines),
+		CreatedAt:     cmapi.PbTime(in.CreatedAt),
+		UpdatedAt:     cmapi.PbTime(in.UpdatedAt),
+		ReferralType:  in.ReferralType,
+		ReferralIDs:   in.ReferralIDs,
 	}
 }
 
-func PbSubrBills(items []*subscriptionbill.SubscriptionBillFtLine) []*types.SubscriptionBill {
-	result := make([]*types.SubscriptionBill, len(items))
+func PbInvoices(items []*invoice.InvoiceFtLine) []*types.Invoice {
+	result := make([]*types.Invoice, len(items))
 	for i, item := range items {
-		result[i] = PbSubrBill(item)
+		result[i] = PbInvoice(item)
 	}
 	return result
 }
 
-func PbSubrBillLine(in *subscriptionbill.SubscriptionBillLine) *types.SubrBillLine {
+func PbInvoiceLine(in *invoice.InvoiceLine) *types.InvoiceLine {
 	if in == nil {
 		return nil
 	}
-	return &types.SubrBillLine{
-		ID:                 in.ID,
-		LineAmount:         in.LineAmount,
-		Price:              in.Price,
-		Quantity:           in.Quantity,
-		Description:        in.Description,
-		PeriodStartAt:      cmapi.PbTime(in.PeriodStartAt),
-		PeriodEndAt:        cmapi.PbTime(in.PeriodEndAt),
-		SubscriptionID:     in.SubscriptionID,
-		SubscriptionBillID: in.SubscriptionBillID,
-		CreatedAt:          cmapi.PbTime(in.CreatedAt),
-		UpdatedAt:          cmapi.PbTime(in.UpdatedAt),
+	return &types.InvoiceLine{
+		ID:           in.ID,
+		LineAmount:   in.LineAmount,
+		Price:        in.Price,
+		Quantity:     in.Quantity,
+		Description:  in.Description,
+		InvoiceID:    in.InvoiceID,
+		ReferralType: in.ReferralType,
+		ReferralID:   in.ReferralID,
+		CreatedAt:    cmapi.PbTime(in.CreatedAt),
+		UpdatedAt:    cmapi.PbTime(in.UpdatedAt),
 	}
 }
 
-func PbSubrBillLines(items []*subscriptionbill.SubscriptionBillLine) []*types.SubrBillLine {
-	result := make([]*types.SubrBillLine, len(items))
+func PbInvoiceLines(items []*invoice.InvoiceLine) []*types.InvoiceLine {
+	result := make([]*types.InvoiceLine, len(items))
 	for i, item := range items {
-		result[i] = PbSubrBillLine(item)
+		result[i] = PbInvoiceLine(item)
 	}
 	return result
 }
 
-func Convert_api_SubrBillLine_To_core_SubrBillLine(in *types.SubrBillLine) *subscriptionbill.SubscriptionBillLine {
+func Convert_api_InvoiceLine_To_core_InvoiceLine(in *types.InvoiceLine) *invoice.InvoiceLine {
 	if in == nil {
 		return nil
 	}
-	return &subscriptionbill.SubscriptionBillLine{
-		ID:                 in.ID,
-		LineAmount:         in.LineAmount,
-		Price:              in.Price,
-		Quantity:           in.Quantity,
-		Description:        in.Description,
-		PeriodStartAt:      in.PeriodStartAt.ToTime(),
-		PeriodEndAt:        in.PeriodEndAt.ToTime(),
-		SubscriptionBillID: in.SubscriptionBillID,
-		SubscriptionID:     in.SubscriptionID,
-		CreatedAt:          in.CreatedAt.ToTime(),
-		UpdatedAt:          in.UpdatedAt.ToTime(),
+	return &invoice.InvoiceLine{
+		ID:           in.ID,
+		LineAmount:   in.LineAmount,
+		Price:        in.Price,
+		Quantity:     in.Quantity,
+		Description:  in.Description,
+		InvoiceID:    in.InvoiceID,
+		ReferralType: in.ReferralType,
+		ReferralID:   in.ReferralID,
+		CreatedAt:    in.CreatedAt.ToTime(),
+		UpdatedAt:    in.UpdatedAt.ToTime(),
 	}
 }
 
-func Convert_api_SubrBillLines_To_core_SubrBillLines(items []*types.SubrBillLine) []*subscriptionbill.SubscriptionBillLine {
-	result := make([]*subscriptionbill.SubscriptionBillLine, len(items))
+func Convert_api_InvoiceLines_To_core_InvoiceLines(items []*types.InvoiceLine) []*invoice.InvoiceLine {
+	result := make([]*invoice.InvoiceLine, len(items))
 	for i, item := range items {
-		result[i] = Convert_api_SubrBillLine_To_core_SubrBillLine(item)
+		result[i] = Convert_api_InvoiceLine_To_core_InvoiceLine(item)
 	}
 	return result
 }

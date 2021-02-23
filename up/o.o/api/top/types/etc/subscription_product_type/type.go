@@ -15,4 +15,7 @@ const (
 
 	// +enum=ecomify
 	Ecomify ProductSubscriptionType = 1
+
+	// +enum=telecom-extension
+	TelecomExtension ProductSubscriptionType = 4
 )

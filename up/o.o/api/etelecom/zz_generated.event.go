@@ -5,3 +5,4 @@
 package etelecom
 
 func (e *CallLogCalcPostageEvent) GetTopic() string { return "event/etelecom" }
+func (e *ExtensionCreatingEvent) GetTopic() string  { return "event/etelecom" }

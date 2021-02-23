@@ -8,6 +8,7 @@ import (
 	"o.o/api/etelecom/mobile_network"
 	"o.o/api/top/types/common"
 	"o.o/api/top/types/etc/connection_type"
+	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
 	"o.o/capi/dot"
@@ -47,6 +48,8 @@ type Extension struct {
 	HotlineID         dot.ID    `json:"hotline_id"`
 	CreatedAt         time.Time `json:"created_at"`
 	UpdatedAt         time.Time `json:"updated_at"`
+	ExpiresAt         time.Time `json:"expires_at"`
+	SubscriptionID    dot.ID    `json:"subscription_id"`
 }
 
 func (m *Extension) String() string { return jsonx.MustMarshalToString(m) }
@@ -74,6 +77,33 @@ type CreateExtensionRequest struct {
 }
 
 func (m *CreateExtensionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateExtensionBySubscriptionRequest struct {
+	// Nhân viên của shop, người được gán vào extension
+	UserID    dot.ID `json:"user_id"`
+	HotlineID dot.ID `json:"hotline_id"`
+
+	SubscriptionID     dot.ID                       `json:"subscription_id"`
+	SubscriptionPlanID dot.ID                       `json:"subscription_plan_id"`
+	PaymentMethod      payment_method.PaymentMethod `json:"payment_method"`
+}
+
+func (m *CreateExtensionBySubscriptionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ExtendExtensionRequest struct {
+	ExtensionID dot.ID `json:"extension_id"`
+	// Nhân viên của shop, người được gán vào extension
+	UserID dot.ID `json:"user_id"`
+
+	// Bỏ trống nếu muốn gia hạn gói cũ
+	SubscriptionID dot.ID `json:"subscription_id"`
+
+	// Bỏ trống nếu muốn gia hạn gói cũ
+	SubscriptionPlanID dot.ID                       `json:"subscription_plan_id"`
+	PaymentMethod      payment_method.PaymentMethod `json:"payment_method"`
+}
+
+func (m *ExtendExtensionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CallLog struct {
 	ID                 dot.ID                       `json:"id"`

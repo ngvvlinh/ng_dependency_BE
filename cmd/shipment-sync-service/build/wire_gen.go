@@ -7,7 +7,7 @@ package build
 
 import (
 	"context"
-	"o.o/api/main/credit"
+	"o.o/api/main/transaction"
 	"o.o/backend/cmd/shipment-sync-service/config"
 	"o.o/backend/cogs/shipment/_all"
 	"o.o/backend/com/main"
@@ -106,8 +106,8 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	aggregateAggregate := aggregate2.NewAggregate(mainDB, busBus, queryBus, orderingQueryBus, shipmentManager, connectioningQueryBus, identityQueryBus, addressQueryBus)
 	shippingCommandBus := aggregate2.AggregateMessageBus(aggregateAggregate)
 	dhlSync := BuildSyncs(ctx, mainDB, shipmentManager, shippingQueryBus, shippingCommandBus)
-	creditQueryBus := _wireQueryBusValue
-	processManager := pm.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, creditQueryBus)
+	transactionQueryBus := _wireQueryBusValue
+	processManager := pm.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, transactionQueryBus)
 	output := Output{
 		Servers:     v,
 		Health:      service,
@@ -119,5 +119,5 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 }
 
 var (
-	_wireQueryBusValue = credit.QueryBus{}
+	_wireQueryBusValue = transaction.QueryBus{}
 )

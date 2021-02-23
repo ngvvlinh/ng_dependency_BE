@@ -15,6 +15,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
+	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi"
 	"o.o/common/l"
 )
@@ -25,6 +26,7 @@ var scheme = conversion.Build(convert.RegisterConversions)
 var zeroTime = time.Unix(0, 0)
 
 type CreditAggregate struct {
+	dbTx          cmsql.Transactioner
 	CreditStore   sqlstore.CreditFactory
 	eventBus      capi.EventBus
 	identityQuery identity.QueryBus
@@ -36,6 +38,7 @@ func NewAggregateCredit(
 	identityQ identity.QueryBus,
 ) *CreditAggregate {
 	return &CreditAggregate{
+		dbTx:          (*cmsql.Database)(db),
 		identityQuery: identityQ,
 		eventBus:      bus,
 		CreditStore:   sqlstore.NewCreditStore(db),
@@ -119,17 +122,29 @@ func (a CreditAggregate) ConfirmCredit(ctx context.Context, args *credit.Confirm
 	if shopCreditAmount+creditValue.Amount < 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Shop balance is not enough", nil)
 	}
-	var updateModel = &model.Credit{
-		Status: status3.P,
-	}
-	if err = query.UpdateCreditDB(updateModel); err != nil {
-		return nil, err
-	}
-	creditValue.Status = status3.P
+
 	getShopQuery := &identity.GetShopByIDQuery{
 		ID: creditValue.ShopID,
 	}
 	if err = a.identityQuery.Dispatch(ctx, getShopQuery); err != nil {
+		return nil, err
+	}
+	err = a.dbTx.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		var updateModel = &model.Credit{
+			Status: status3.P,
+		}
+		if err = query.UpdateCreditDB(updateModel); err != nil {
+			return err
+		}
+		creditValue.Status = status3.P
+
+		event := &credit.CreditConfirmedEvent{
+			CreditID: args.ID,
+			ShopID:   creditValue.ShopID,
+		}
+		return a.eventBus.Publish(ctx, event)
+	})
+	if err != nil {
 		return nil, err
 	}
 	return &credit.CreditExtended{

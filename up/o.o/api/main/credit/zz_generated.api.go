@@ -78,28 +78,6 @@ func (h QueryServiceHandler) HandleGetCredit(ctx context.Context, msg *GetCredit
 	return err
 }
 
-type GetShippingUserBalanceQuery struct {
-	UserID dot.ID
-
-	Result *GetShippingUserBalanceResponse `json:"-"`
-}
-
-func (h QueryServiceHandler) HandleGetShippingUserBalance(ctx context.Context, msg *GetShippingUserBalanceQuery) (err error) {
-	msg.Result, err = h.inner.GetShippingUserBalance(msg.GetArgs(ctx))
-	return err
-}
-
-type GetTelecomUserBalanceQuery struct {
-	UserID dot.ID
-
-	Result int `json:"-"`
-}
-
-func (h QueryServiceHandler) HandleGetTelecomUserBalance(ctx context.Context, msg *GetTelecomUserBalanceQuery) (err error) {
-	msg.Result, err = h.inner.GetTelecomUserBalance(msg.GetArgs(ctx))
-	return err
-}
-
 type ListCreditsQuery struct {
 	ShopID dot.ID
 	Paging *meta.Paging
@@ -118,10 +96,8 @@ func (q *ConfirmCreditCommand) command() {}
 func (q *CreateCreditCommand) command()  {}
 func (q *DeleteCreditCommand) command()  {}
 
-func (q *GetCreditQuery) query()              {}
-func (q *GetShippingUserBalanceQuery) query() {}
-func (q *GetTelecomUserBalanceQuery) query()  {}
-func (q *ListCreditsQuery) query()            {}
+func (q *GetCreditQuery) query()   {}
+func (q *ListCreditsQuery) query() {}
 
 // implement conversion
 
@@ -183,16 +159,6 @@ func (q *GetCreditQuery) SetGetCreditArgs(args *GetCreditArgs) {
 	q.ShopID = args.ShopID
 }
 
-func (q *GetShippingUserBalanceQuery) GetArgs(ctx context.Context) (_ context.Context, UserID dot.ID) {
-	return ctx,
-		q.UserID
-}
-
-func (q *GetTelecomUserBalanceQuery) GetArgs(ctx context.Context) (_ context.Context, UserID dot.ID) {
-	return ctx,
-		q.UserID
-}
-
 func (q *ListCreditsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCreditsArgs) {
 	return ctx,
 		&ListCreditsArgs{
@@ -237,8 +203,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetCredit)
-	b.AddHandler(h.HandleGetShippingUserBalance)
-	b.AddHandler(h.HandleGetTelecomUserBalance)
 	b.AddHandler(h.HandleListCredits)
 	return QueryBus{b}
 }

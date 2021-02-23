@@ -5,6 +5,9 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/contact"
 	"o.o/api/main/identity"
+	"o.o/api/subscripting/invoice"
+	"o.o/api/subscripting/subscription"
+	"o.o/api/subscripting/subscriptionplan"
 	"o.o/backend/com/etelecom/convert"
 	telecomprovider "o.o/backend/com/etelecom/provider"
 	"o.o/backend/com/etelecom/sqlstore"
@@ -22,7 +25,7 @@ var _ etelecom.Aggregate = &EtelecomAggregate{}
 var ll = l.New()
 
 type EtelecomAggregate struct {
-	txDB            cmsql.Transactioner
+	txDBMain        cmsql.Transactioner
 	eventBus        capi.EventBus
 	hotlineStore    sqlstore.HotlineStoreFactory
 	extensionStore  sqlstore.ExtensionStoreFactory
@@ -31,16 +34,26 @@ type EtelecomAggregate struct {
 	identityQuery   identity.QueryBus
 	telecomManager  *telecomprovider.TelecomManager
 	connectionQuery connectioning.QueryBus
+	subrPlanQuery   subscriptionplan.QueryBus
+	subrQuery       subscription.QueryBus
+	subrAggr        subscription.CommandBus
+	invoiceAggr     invoice.CommandBus
 }
 
 func NewEtelecomAggregate(
+	dbMain com.MainDB,
 	dbEtelecom com.EtelecomDB, eventBus capi.EventBus,
 	contactQS contact.QueryBus, telecomManager *telecomprovider.TelecomManager,
 	connectionQ connectioning.QueryBus,
 	identityQ identity.QueryBus,
+	subrPlanQ subscriptionplan.QueryBus,
+	subrQ subscription.QueryBus,
+	subrA subscription.CommandBus,
+	invoiceA invoice.CommandBus,
 ) *EtelecomAggregate {
 	return &EtelecomAggregate{
-		txDB:            (*cmsql.Database)(dbEtelecom),
+		// use dbMain for transaction
+		txDBMain:        (*cmsql.Database)(dbMain),
 		eventBus:        eventBus,
 		contactQuery:    contactQS,
 		hotlineStore:    sqlstore.NewHotlineStore(dbEtelecom),
@@ -49,6 +62,10 @@ func NewEtelecomAggregate(
 		telecomManager:  telecomManager,
 		connectionQuery: connectionQ,
 		identityQuery:   identityQ,
+		subrQuery:       subrQ,
+		subrAggr:        subrA,
+		invoiceAggr:     invoiceA,
+		subrPlanQuery:   subrPlanQ,
 	}
 }
 

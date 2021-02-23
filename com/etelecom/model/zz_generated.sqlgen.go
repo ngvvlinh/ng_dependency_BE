@@ -673,8 +673,8 @@ func (ms *CallLogHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type Extensions []*Extension
 
 const __sqlExtension_Table = "extension"
-const __sqlExtension_ListCols = "\"id\",\"user_id\",\"account_id\",\"hotline_id\",\"extension_number\",\"extension_password\",\"tenant_domain\",\"external_data\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlExtension_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"extension_number\" = EXCLUDED.\"extension_number\",\"extension_password\" = EXCLUDED.\"extension_password\",\"tenant_domain\" = EXCLUDED.\"tenant_domain\",\"external_data\" = EXCLUDED.\"external_data\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlExtension_ListCols = "\"id\",\"user_id\",\"account_id\",\"hotline_id\",\"extension_number\",\"extension_password\",\"tenant_domain\",\"external_data\",\"created_at\",\"updated_at\",\"deleted_at\",\"subscription_id\",\"expires_at\""
+const __sqlExtension_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"user_id\" = EXCLUDED.\"user_id\",\"account_id\" = EXCLUDED.\"account_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"extension_number\" = EXCLUDED.\"extension_number\",\"extension_password\" = EXCLUDED.\"extension_password\",\"tenant_domain\" = EXCLUDED.\"tenant_domain\",\"external_data\" = EXCLUDED.\"external_data\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"subscription_id\" = EXCLUDED.\"subscription_id\",\"expires_at\" = EXCLUDED.\"expires_at\""
 const __sqlExtension_Insert = "INSERT INTO \"extension\" (" + __sqlExtension_ListCols + ") VALUES"
 const __sqlExtension_Select = "SELECT " + __sqlExtension_ListCols + " FROM \"extension\""
 const __sqlExtension_Select_history = "SELECT " + __sqlExtension_ListCols + " FROM history.\"extension\""
@@ -778,6 +778,20 @@ func (m *Extension) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"subscription_id": {
+			ColumnName:       "subscription_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"expires_at": {
+			ColumnName:       "expires_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "extension", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -802,6 +816,8 @@ func (m *Extension) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		m.SubscriptionID,
+		core.Time(m.ExpiresAt),
 	}
 }
 
@@ -818,6 +834,8 @@ func (m *Extension) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		&m.SubscriptionID,
+		(*core.Time)(&m.ExpiresAt),
 	}
 }
 
@@ -855,7 +873,7 @@ func (_ *Extensions) SQLSelect(w SQLWriter) error {
 func (m *Extension) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(13)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -865,7 +883,7 @@ func (ms Extensions) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(11)
+		w.WriteMarkers(13)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -984,6 +1002,22 @@ func (m *Extension) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.SubscriptionID != 0 {
+		flag = true
+		w.WriteName("subscription_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SubscriptionID)
+	}
+	if !m.ExpiresAt.IsZero() {
+		flag = true
+		w.WriteName("expires_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExpiresAt)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -994,7 +1028,7 @@ func (m *Extension) SQLUpdate(w SQLWriter) error {
 func (m *Extension) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlExtension_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(11)
+	w.WriteMarkers(13)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1031,17 +1065,21 @@ func (m ExtensionHistory) ExternalData() core.Interface { return core.Interface{
 func (m ExtensionHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
 func (m ExtensionHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 func (m ExtensionHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
+func (m ExtensionHistory) SubscriptionID() core.Interface {
+	return core.Interface{m["subscription_id"]}
+}
+func (m ExtensionHistory) ExpiresAt() core.Interface { return core.Interface{m["expires_at"]} }
 
 func (m *ExtensionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 13)
+	args := make([]interface{}, 13)
+	for i := 0; i < 13; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ExtensionHistory, 11)
+	res := make(ExtensionHistory, 13)
 	res["id"] = data[0]
 	res["user_id"] = data[1]
 	res["account_id"] = data[2]
@@ -1053,14 +1091,16 @@ func (m *ExtensionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[8]
 	res["updated_at"] = data[9]
 	res["deleted_at"] = data[10]
+	res["subscription_id"] = data[11]
+	res["expires_at"] = data[12]
 	*m = res
 	return nil
 }
 
 func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 11)
-	args := make([]interface{}, 11)
-	for i := 0; i < 11; i++ {
+	data := make([]interface{}, 13)
+	args := make([]interface{}, 13)
+	for i := 0; i < 13; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ExtensionHistories, 0, 128)
@@ -1080,6 +1120,8 @@ func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[8]
 		m["updated_at"] = data[9]
 		m["deleted_at"] = data[10]
+		m["subscription_id"] = data[11]
+		m["expires_at"] = data[12]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

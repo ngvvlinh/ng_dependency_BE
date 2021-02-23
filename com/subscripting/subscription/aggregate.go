@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"o.o/api/subscripting/subscription"
+	"o.o/api/subscripting/subscriptionplan"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/subscripting/subscription/convert"
@@ -23,13 +24,15 @@ type SubscriptionAggregate struct {
 	db                    *cmsql.Database
 	subscriptionStore     sqlstore.SubscriptionStoreFactory
 	subscriptionLineStore sqlstore.SubscriptionLineStoreFactory
+	subrPlanQuery         subscriptionplan.QueryBus
 }
 
-func NewSubscriptionAggregate(db com.MainDB) *SubscriptionAggregate {
+func NewSubscriptionAggregate(db com.MainDB, subrPlanQ subscriptionplan.QueryBus) *SubscriptionAggregate {
 	return &SubscriptionAggregate{
 		db:                    db,
 		subscriptionStore:     sqlstore.NewSubscriptionStore(db),
 		subscriptionLineStore: sqlstore.NewSubscriptionLineStore(db),
+		subrPlanQuery:         subrPlanQ,
 	}
 }
 
@@ -47,7 +50,7 @@ func (a *SubscriptionAggregate) CreateSubscription(ctx context.Context, args *su
 	}
 	var planIDs []dot.ID
 	for _, line := range args.Lines {
-		if err := verifySubscriptionLine(line); err != nil {
+		if err := a.verifySubscriptionLine(ctx, line); err != nil {
 			return nil, err
 		}
 		if !cm.IDsContain(planIDs, line.PlanID) {
@@ -82,12 +85,18 @@ func (a *SubscriptionAggregate) CreateSubscription(ctx context.Context, args *su
 	return a.subscriptionStore(ctx).ID(subrID).GetSubscriptionFtLine()
 }
 
-func verifySubscriptionLine(line *subscription.SubscriptionLine) error {
+func (a *SubscriptionAggregate) verifySubscriptionLine(ctx context.Context, line *subscription.SubscriptionLine) error {
 	if line.PlanID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing plan ID in subscription line")
 	}
 	if line.Quantity <= 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing quantity in subscription line")
+	}
+	query := &subscriptionplan.GetSubrPlanByIDQuery{
+		ID: line.PlanID,
+	}
+	if err := a.subrPlanQuery.Dispatch(ctx, query); err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "Subscription Plan ID does not valid")
 	}
 	return nil
 }
@@ -125,7 +134,7 @@ func (a *SubscriptionAggregate) UpdateSubscriptionInfo(ctx context.Context, args
 
 	var planIDs []dot.ID
 	for _, line := range args.Lines {
-		if err := verifySubscriptionLine(line); err != nil {
+		if err = a.verifySubscriptionLine(ctx, line); err != nil {
 			return err
 		}
 		if !cm.IDsContain(planIDs, line.PlanID) {
@@ -140,7 +149,7 @@ func (a *SubscriptionAggregate) UpdateSubscriptionInfo(ctx context.Context, args
 		PlanIDs:              planIDs,
 	}
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		if err := a.subscriptionStore(ctx).ID(args.ID).AccountID(args.AccountID).UpdateSubscriptionDB(update); err != nil {
+		if err = a.subscriptionStore(ctx).ID(args.ID).AccountID(args.AccountID).UpdateSubscriptionDB(update); err != nil {
 			return err
 		}
 		if len(args.Lines) == 0 {
@@ -150,13 +159,13 @@ func (a *SubscriptionAggregate) UpdateSubscriptionInfo(ctx context.Context, args
 		// update subscription line
 		for i, line := range args.Lines {
 			if line.ID != 0 {
-				if err := a.subscriptionLineStore(ctx).SubscriptionID(subr.ID).ID(line.ID).UpdateSubscriptionLine(line); err != nil {
+				if err = a.subscriptionLineStore(ctx).SubscriptionID(subr.ID).ID(line.ID).UpdateSubscriptionLine(line); err != nil {
 					return err
 				}
 				lineIDs = append(lineIDs[:i], lineIDs[i+1:]...)
 			} else {
 				line.SubscriptionID = subr.ID
-				if err := a.subscriptionLineStore(ctx).CreateSubscriptionLine(line); err != nil {
+				if err = a.subscriptionLineStore(ctx).CreateSubscriptionLine(line); err != nil {
 					return err
 				}
 			}

@@ -1,9 +1,12 @@
 package etelecom
 
 import (
+	"time"
+
 	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/call_state"
 	"o.o/api/top/int/shop"
+	"o.o/api/top/types/etc/charge_type"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
@@ -41,5 +44,25 @@ type CreateCallLogRequest struct {
 }
 
 func (r *CreateCallLogRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type EtelecomUserSetting struct {
+	// User ID
+	ID                  dot.ID                 `json:"id"`
+	ExtensionChargeType charge_type.ChargeType `json:"extension_charge_type"`
+	CreatedAt           time.Time              `json:"created_at"`
+	UpdatedAt           time.Time              `json:"updated_at"`
+}
+
+func (r *EtelecomUserSetting) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type UpdateUserSettingRequest struct {
+	ExtensionChargeType charge_type.ChargeType `json:"extension_charge_type"`
+}
+
+func (r *UpdateUserSettingRequest) String() string {
 	return jsonx.MustMarshalToString(r)
 }

@@ -3,25 +3,25 @@ package model
 import (
 	"time"
 
-	"o.o/api/main/transaction"
+	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/subject_referral"
+	"o.o/api/top/types/etc/transaction_type"
 	"o.o/capi/dot"
 )
 
 // +sqlgen
 type Transaction struct {
-	ID        dot.ID
-	Amount    int
-	AccountID dot.ID
-	Status    status3.Status
-	Type      transaction.TransactionType
-	Note      string
-	Metadata  *TransactionMetadata
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-}
-
-type TransactionMetadata struct {
-	ReferralType string
+	Name         string
+	ID           dot.ID
+	Amount       int
+	AccountID    dot.ID
+	Status       status3.Status
+	Type         transaction_type.TransactionType
+	Classify     service_classify.ServiceClassify
+	Note         string
+	ReferralType subject_referral.SubjectReferral
 	ReferralIDs  []dot.ID
+	CreatedAt    time.Time `sq:"create"`
+	UpdatedAt    time.Time `sq:"update"`
 }

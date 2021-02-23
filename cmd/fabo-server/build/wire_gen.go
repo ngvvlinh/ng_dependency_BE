@@ -8,7 +8,7 @@ package build
 import (
 	"context"
 	"o.o/api/main/accountshipnow"
-	"o.o/api/main/credit"
+	"o.o/api/main/transaction"
 	"o.o/api/services/affiliate"
 	"o.o/backend/cmd/fabo-server/config"
 	"o.o/backend/cogs/config/_server"
@@ -613,8 +613,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	shipnowQueryService := shipnow.NewQueryService(mainDB)
 	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
 	processManager2 := pm3.New(busBus, orderingCommandBus, affiliateCommandBus, receiptingQueryBus, inventoryCommandBus, orderingQueryBus, customeringQueryBus, shipnowQueryBus)
-	creditQueryBus := _wireCreditQueryBusValue
-	processManager3 := pm4.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, creditQueryBus)
+	transactionQueryBus := _wireTransactionQueryBusValue
+	processManager3 := pm4.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, transactionQueryBus)
 	processManager4 := pm5.New(busBus, fbuseringCommandBus)
 	fbmessagingProcessManager := fbmessaging.NewProcessManager(busBus, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus, fbuseringCommandBus, faboRedis)
 	processManager5 := pm6.NewProcessManager(busBus, fbmessagetemplateCommandBus)
@@ -648,5 +648,5 @@ var (
 	_wireQueryBusValue            = accountshipnow.QueryBus{}
 	_wireCommandBusValue          = accountshipnow.CommandBus{}
 	_wireAffiliateCommandBusValue = affiliate.CommandBus{}
-	_wireCreditQueryBusValue      = credit.QueryBus{}
+	_wireTransactionQueryBusValue = transaction.QueryBus{}
 )

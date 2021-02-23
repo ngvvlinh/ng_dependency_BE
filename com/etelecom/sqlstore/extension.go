@@ -87,6 +87,11 @@ func (s *ExtensionStore) OptionalHotlineID(hotlineID dot.ID) *ExtensionStore {
 	return s
 }
 
+func (s *ExtensionStore) OptionalSubscriptionID(subrID dot.ID) *ExtensionStore {
+	s.preds = append(s.preds, s.ft.BySubscriptionID(subrID).Optional())
+	return s
+}
+
 func (s *ExtensionStore) GetExtensionDB() (*model.Extension, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

@@ -13,7 +13,8 @@ import (
 )
 
 /*
-Custom conversions: (none)
+Custom conversions:
+    Convert_usersetting_UserSetting_api_UserSetting    // not use, no conversions between params
 
 Ignored functions: (none)
 */
@@ -264,6 +265,8 @@ func apply_etelecom_CreateExtensionArgs_etelecomtypes_Extension(arg *etelecom.Cr
 	out.HotlineID = arg.HotlineID                 // simple assign
 	out.CreatedAt = time.Time{}                   // zero value
 	out.UpdatedAt = time.Time{}                   // zero value
+	out.ExpiresAt = arg.ExpiresAt                 // simple assign
+	out.SubscriptionID = arg.SubscriptionID       // simple assign
 }
 
 func Convert_etelecom_Extension_etelecomtypes_Extension(arg *etelecom.Extension, out *etelecomtypes.Extension) *etelecomtypes.Extension {
@@ -287,6 +290,8 @@ func convert_etelecom_Extension_etelecomtypes_Extension(arg *etelecom.Extension,
 	out.HotlineID = arg.HotlineID                 // simple assign
 	out.CreatedAt = arg.CreatedAt                 // simple assign
 	out.UpdatedAt = arg.UpdatedAt                 // simple assign
+	out.ExpiresAt = arg.ExpiresAt                 // simple assign
+	out.SubscriptionID = arg.SubscriptionID       // simple assign
 }
 
 func Convert_etelecom_Extensions_etelecomtypes_Extensions(args []*etelecom.Extension) (outs []*etelecomtypes.Extension) {
@@ -324,6 +329,8 @@ func convert_etelecomtypes_Extension_etelecom_Extension(arg *etelecomtypes.Exten
 	out.CreatedAt = arg.CreatedAt                 // simple assign
 	out.UpdatedAt = arg.UpdatedAt                 // simple assign
 	out.DeletedAt = time.Time{}                   // zero value
+	out.SubscriptionID = arg.SubscriptionID       // simple assign
+	out.ExpiresAt = arg.ExpiresAt                 // simple assign
 }
 
 func Convert_etelecomtypes_Extensions_etelecom_Extensions(args []*etelecomtypes.Extension) (outs []*etelecom.Extension) {

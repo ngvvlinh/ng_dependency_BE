@@ -173,7 +173,7 @@ type SubscriptionService interface {
 
 	CreateSubscriptionPlan(context.Context, *types.CreateSubrPlanRequest) (*types.SubscriptionPlan, error)
 	UpdateSubscriptionPlan(context.Context, *types.UpdateSubrPlanRequest) (*cm.UpdatedResponse, error)
-	GetSubscriptionPlans(context.Context, *cm.Empty) (*types.GetSubrPlansResponse, error)
+	GetSubscriptionPlans(context.Context, *types.GetSubrPlansRequest) (*types.GetSubrPlansResponse, error)
 	DeleteSubscriptionPlan(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 
 	GetSubscription(context.Context, *types.SubscriptionIDRequest) (*types.Subscription, error)
@@ -183,11 +183,14 @@ type SubscriptionService interface {
 	CancelSubscription(context.Context, *types.SubscriptionIDRequest) (*cm.UpdatedResponse, error)
 	ActivateSubscription(context.Context, *types.SubscriptionIDRequest) (*cm.UpdatedResponse, error)
 	DeleteSubscription(context.Context, *types.SubscriptionIDRequest) (*cm.DeletedResponse, error)
+}
 
-	GetSubscriptionBills(context.Context, *types.GetSubscriptionBillsRequest) (*types.GetSubscriptionBillsResponse, error)
-	CreateSubscriptionBill(context.Context, *types.CreateSubscriptionBillRequest) (*types.SubscriptionBill, error)
-	ManualPaymentSubscriptionBill(context.Context, *types.ManualPaymentSubscriptionBillRequest) (*cm.UpdatedResponse, error)
-	DeleteSubscriptionBill(context.Context, *types.SubscriptionIDRequest) (*cm.DeletedResponse, error)
+// +apix:path=/admin.Invoice
+type InvoiceService interface {
+	GetInvoices(context.Context, *types.GetInvoicesRequest) (*types.GetInvoicesResponse, error)
+	CreateInvoice(context.Context, *types.CreateInvoiceRequest) (*types.Invoice, error)
+	ManualPaymentInvoice(context.Context, *types.ManualPaymentInvoiceRequest) (*cm.UpdatedResponse, error)
+	DeleteInvoice(context.Context, *types.SubscriptionIDRequest) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/admin.Ticket

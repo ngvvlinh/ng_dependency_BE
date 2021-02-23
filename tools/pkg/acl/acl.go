@@ -232,6 +232,15 @@ const (
 	ShopCallLogView     permission.ActionType = "shop/calllog:view"
 	ShopCallLogCreate   permission.ActionType = "shop/calllog:create"
 
+	// etelecom user setting
+	ShopEtelecomUserSettingUpdate permission.ActionType = "shop/etelecom_user_setting:update"
+	ShopEtelecomUserSettingView   permission.ActionType = "shop/etelecom_user_setting:view"
+
+	// shop subscription
+	ShopSubscriptionProductView permission.ActionType = "shop/subscription_product:view"
+	ShopSubscriptionPlanView    permission.ActionType = "shop/subscription_plan:view"
+	ShopSubscriptionView        permission.ActionType = "shop/subscription:view"
+
 	WsWebsiteCreate permission.ActionType = "shop/webserver/wswebsite:create"
 	WsWebsiteUpdate permission.ActionType = "shop/webserver/wswebsite:update"
 	WsWebsiteView   permission.ActionType = "shop/webserver/wswebsite:view"
@@ -377,16 +386,16 @@ const (
 	AdminSubscriptionPlanView      permission.ActionType = "admin/subscription_plan:view"
 	AdminSubscriptionPlanDelete    permission.ActionType = "admin/subscription_plan:delete"
 
-	AdminSubscriptionView                    permission.ActionType = "admin/subscription:view"
-	AdminSubscriptionCreate                  permission.ActionType = "admin/subscription:create"
-	AdminSubscriptionUpdate                  permission.ActionType = "admin/subscription:update"
-	AdminSubscriptionCancel                  permission.ActionType = "admin/subscription:cancel"
-	AdminSubscriptionActive                  permission.ActionType = "admin/subscription:active"
-	AdminSubscriptionDelete                  permission.ActionType = "admin/subscription:delete"
-	AdminSubscriptionBillView                permission.ActionType = "admin/subscription_bill:view"
-	AdminSubscriptionBillCreate              permission.ActionType = "admin/subscription_bill:create"
-	AdminManualPaymentSubscriptionBillCreate permission.ActionType = "admin/subscription_bill_manual_payment:create"
-	AdminSubscriptionBillDelete              permission.ActionType = "admin/subscription_bill:delete"
+	AdminSubscriptionView           permission.ActionType = "admin/subscription:view"
+	AdminSubscriptionCreate         permission.ActionType = "admin/subscription:create"
+	AdminSubscriptionUpdate         permission.ActionType = "admin/subscription:update"
+	AdminSubscriptionCancel         permission.ActionType = "admin/subscription:cancel"
+	AdminSubscriptionActive         permission.ActionType = "admin/subscription:active"
+	AdminSubscriptionDelete         permission.ActionType = "admin/subscription:delete"
+	AdminInvoiceView                permission.ActionType = "admin/invoice:view"
+	AdminInvoiceCreate              permission.ActionType = "admin/invoice:create"
+	AdminManualPaymentInvoiceCreate permission.ActionType = "admin/invoice_manual_payment:create"
+	AdminInvoiceDelete              permission.ActionType = "admin/invoice:delete"
 
 	// AdminMisc
 	AdminMiscLoginAccount permission.ActionType = "admin/misc_account:login"
@@ -834,17 +843,18 @@ var _acl = map[string]*permission.Decl{
 	"admin.Subscription/GetSubscriptionPlans":      {Type: EtopAdmin, Actions: actions(AdminSubscriptionPlanView)},
 	"admin.Subscription/DeleteSubscriptionPlan":    {Type: EtopAdmin, Actions: actions(AdminSubscriptionPlanDelete)},
 
-	"admin.Subscription/GetSubscription":               {Type: EtopAdmin, Actions: actions(AdminSubscriptionView)},
-	"admin.Subscription/GetSubscriptions":              {Type: EtopAdmin, Actions: actions(AdminSubscriptionView)},
-	"admin.Subscription/CreateSubscription":            {Type: EtopAdmin, Actions: actions(AdminSubscriptionCreate)},
-	"admin.Subscription/UpdateSubscriptionInfo":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionUpdate)},
-	"admin.Subscription/CancelSubscription":            {Type: EtopAdmin, Actions: actions(AdminSubscriptionCancel)},
-	"admin.Subscription/ActivateSubscription":          {Type: EtopAdmin, Actions: actions(AdminSubscriptionActive)},
-	"admin.Subscription/DeleteSubscription":            {Type: EtopAdmin, Actions: actions(AdminSubscriptionDelete)},
-	"admin.Subscription/GetSubscriptionBills":          {Type: EtopAdmin, Actions: actions(AdminSubscriptionBillView)},
-	"admin.Subscription/CreateSubscriptionBill":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionBillCreate)},
-	"admin.Subscription/ManualPaymentSubscriptionBill": {Type: EtopAdmin, Actions: actions(AdminManualPaymentSubscriptionBillCreate)},
-	"admin.Subscription/DeleteSubscriptionBill":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionBillDelete)},
+	"admin.Subscription/GetSubscription":        {Type: EtopAdmin, Actions: actions(AdminSubscriptionView)},
+	"admin.Subscription/GetSubscriptions":       {Type: EtopAdmin, Actions: actions(AdminSubscriptionView)},
+	"admin.Subscription/CreateSubscription":     {Type: EtopAdmin, Actions: actions(AdminSubscriptionCreate)},
+	"admin.Subscription/UpdateSubscriptionInfo": {Type: EtopAdmin, Actions: actions(AdminSubscriptionUpdate)},
+	"admin.Subscription/CancelSubscription":     {Type: EtopAdmin, Actions: actions(AdminSubscriptionCancel)},
+	"admin.Subscription/ActivateSubscription":   {Type: EtopAdmin, Actions: actions(AdminSubscriptionActive)},
+	"admin.Subscription/DeleteSubscription":     {Type: EtopAdmin, Actions: actions(AdminSubscriptionDelete)},
+
+	"admin.Invoice/GetInvoices":          {Type: EtopAdmin, Actions: actions(AdminInvoiceView)},
+	"admin.Invoice/CreateInvoice":        {Type: EtopAdmin, Actions: actions(AdminInvoiceCreate)},
+	"admin.Invoice/ManualPaymentInvoice": {Type: EtopAdmin, Actions: actions(AdminManualPaymentInvoiceCreate)},
+	"admin.Invoice/DeleteInvoice":        {Type: EtopAdmin, Actions: actions(AdminInvoiceDelete)},
 
 	"admin.Etelecom/CreateHotline": {Type: EtopAdmin, Actions: actions(AdminHotlineCreate)},
 	"admin.Etelecom/UpdateHotline": {Type: EtopAdmin, Actions: actions(AdminHotlineUpdate)},
@@ -1074,8 +1084,11 @@ var _acl = map[string]*permission.Decl{
 	"shop.Connection/DeleteShopConnection":       {Type: Shop, Actions: actions(ShopConnectionDelete)},
 	"shop.Connection/UpdateShopConnection":       {Type: Shop, Actions: actions(ShopConnectionUpdate)},
 
-	"shop.Subscription/GetSubscription":  {Type: Shop},
-	"shop.Subscription/GetSubscriptions": {Type: Shop},
+	"shop.Subscription/GetSubscriptionProducts": {Type: Shop, Actions: actions(ShopSubscriptionProductView)},
+	"shop.Subscription/GetSubscriptionPlans":    {Type: Shop, Actions: actions(ShopSubscriptionPlanView)},
+	"shop.Subscription/GetSubscription":         {Type: Shop, Actions: actions(ShopSubscriptionView)},
+	"shop.Subscription/GetSubscriptions":        {Type: Shop, Actions: actions(ShopSubscriptionView)},
+
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},
 	"pgevent.Event/GenerateEvents": {Type: Secret},
@@ -1284,9 +1297,11 @@ var _acl = map[string]*permission.Decl{
 	"shop.WebServer/GetWsPagesByIDs": {Type: Shop, Actions: actions(WsPageView)},
 
 	// Etelecom
-	"shop.Etelecom/CreateExtension":              {Type: Shop, Actions: actions(ShopExtensionCreate)},
-	"shop.Etelecom/GetExtensions":                {Type: Shop, Actions: actions(ShopExtensionView)},
-	"shop.Etelecom/CreateUserAndAssignExtension": {Type: Shop, Actions: actions(ShopExtensionCreate)},
+	"shop.Etelecom/CreateExtension":               {Type: Shop, Actions: actions(ShopExtensionCreate)},
+	"shop.Etelecom/CreateExtensionBySubscription": {Type: Shop, Actions: actions(ShopExtensionCreate)},
+	"shop.Etelecom/ExtendExtension":               {Type: Shop, Actions: actions(ShopExtensionCreate)},
+	"shop.Etelecom/GetExtensions":                 {Type: Shop, Actions: actions(ShopExtensionView)},
+	"shop.Etelecom/CreateUserAndAssignExtension":  {Type: Shop, Actions: actions(ShopExtensionCreate)},
 
 	"shop.Etelecom/GetHotlines": {Type: Shop, Actions: actions(ShopHotlineView)},
 
@@ -1294,6 +1309,10 @@ var _acl = map[string]*permission.Decl{
 	"shop.Etelecom/CreateCallLog": {Type: Shop, Actions: actions(ShopCallLogCreate)},
 
 	"shop.Etelecom/SummaryEtelecom": {Type: Shop, Actions: actions(ShopDashboardView)},
+
+	// Etelecom User Setting
+	"etelecom.User/GetUserSetting":    {Type: Shop, Actions: actions(ShopEtelecomUserSettingView)},
+	"etelecom.User/UpdateUserSetting": {Type: Shop, Actions: actions(ShopEtelecomUserSettingUpdate)},
 
 	// Setting
 	"shop.Setting/CreateSetting": {Type: Shop},

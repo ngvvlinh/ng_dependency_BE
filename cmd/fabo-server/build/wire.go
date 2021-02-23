@@ -8,7 +8,7 @@ import (
 	"github.com/google/wire"
 
 	"o.o/api/main/accountshipnow"
-	"o.o/api/main/credit"
+	"o.o/api/main/transaction"
 	"o.o/api/services/affiliate"
 	"o.o/backend/cmd/fabo-server/config"
 	_base "o.o/backend/cogs/base"
@@ -153,7 +153,7 @@ func Build(
 		wire.Value(affiliate.CommandBus{}),
 		wire.Value(accountshipnow.CommandBus{}),
 		wire.Value(accountshipnow.QueryBus{}),
-		wire.Value(credit.QueryBus{}),
+		wire.Value(transaction.QueryBus{}),
 
 		BuildPgProducer,
 		BuildIntHandlers,

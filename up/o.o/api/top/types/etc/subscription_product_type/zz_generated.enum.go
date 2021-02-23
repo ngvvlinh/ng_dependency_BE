@@ -17,11 +17,13 @@ var __jsonNull = []byte("null")
 var enumProductSubscriptionTypeName = map[int]string{
 	0: "unknown",
 	1: "ecomify",
+	4: "telecom-extension",
 }
 
 var enumProductSubscriptionTypeValue = map[string]int{
-	"unknown": 0,
-	"ecomify": 1,
+	"unknown":           0,
+	"ecomify":           1,
+	"telecom-extension": 4,
 }
 
 func ParseProductSubscriptionType(s string) (ProductSubscriptionType, bool) {
