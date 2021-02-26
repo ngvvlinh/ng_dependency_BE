@@ -12,7 +12,9 @@ import (
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
+	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"o.o/api/fabo/fbmessaging/fb_post_source"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
@@ -110,7 +112,12 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		if request.Filter.ExternalUserID.Valid {
 			listCustomerConversationsQuery.ExternalUserID = request.Filter.ExternalUserID
 		}
-		listCustomerConversationsQuery.Type = request.Filter.Type
+
+		if request.Filter.Type.Valid {
+			listCustomerConversationsQuery.Types = []fb_customer_conversation_type.FbCustomerConversationType{request.Filter.Type.Enum}
+		} else {
+			listCustomerConversationsQuery.Types = request.Filter.Types
+		}
 	}
 
 	if len(listCustomerConversationsQuery.ExternalPageIDs) == 0 {
@@ -1158,12 +1165,14 @@ func (s *CustomerConversationService) ListLiveVideos(
 ) (*fabo.ListLiveVideosResponse, error) {
 	var filterExternalPageIDs []string
 	var externalPageIDsArgs []string
+	var liveVideoStatus fb_live_video_status.NullFbLiveVideoStatus
 
 	if req.Filter != nil {
 		if req.Filter.Type != fb_post_source.Page {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "unsupported type %v", req.Filter.Type)
 		}
 		filterExternalPageIDs = req.Filter.ExternalPageIDs
+		liveVideoStatus = req.Filter.LiveVideoStatus
 	}
 	paging, err := cmapi.CMCursorPaging(req.Paging)
 	if err != nil {
@@ -1196,6 +1205,7 @@ func (s *CustomerConversationService) ListLiveVideos(
 	listFbExternalPostsQuery := &fbmessaging.ListFbExternalPostsQuery{
 		ExternalPageIDs:    externalPageIDsArgs,
 		ExternalStatusType: fb_status_type.AddedVideo.Wrap(),
+		LiveVideoStatus:    liveVideoStatus,
 		Paging:             *paging,
 	}
 	if err := s.FBMessagingQuery.Dispatch(ctx, listFbExternalPostsQuery); err != nil {

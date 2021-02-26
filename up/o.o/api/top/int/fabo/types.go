@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"o.o/api/fabo/fbmessaging/fb_post_source"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/top/external/types"
@@ -257,6 +258,7 @@ type CustomerConversationFilter struct {
 
 	IsRead dot.NullBool                                                 `json:"is_read"`
 	Type   fb_customer_conversation_type.NullFbCustomerConversationType `json:"type"`
+	Types  []fb_customer_conversation_type.FbCustomerConversationType   `json:"types"`
 }
 
 type FbCustomerConversation struct {
@@ -446,8 +448,9 @@ type ListLiveVideosRequest struct {
 func (m *ListLiveVideosRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type ListLiveVideosFilter struct {
-	Type            fb_post_source.FbPostSource `json:"type"` // user or page
-	ExternalPageIDs filter.Strings              `json:"external_page_ids"`
+	Type            fb_post_source.FbPostSource                `json:"type"` // user or page
+	LiveVideoStatus fb_live_video_status.NullFbLiveVideoStatus `json:"live_video_status"`
+	ExternalPageIDs filter.Strings                             `json:"external_page_ids"`
 }
 
 func (m *ListLiveVideosFilter) String() string { return jsonx.MustMarshalToString(m) }
@@ -502,6 +505,10 @@ type FbExternalPost struct {
 	ExternalStatusType  fb_status_type.FbStatusType `json:"external_status_type"`
 
 	ExternalParent *FbExternalPost `json:"external_parent"`
+
+	IsLiveVideo             bool                                   `json:"is_live_video"`
+	ExternalLiveVideoStatus string                                 `json:"external_live_video_status"`
+	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus `json:"live_video_status"`
 }
 
 type FbExternalComment struct {

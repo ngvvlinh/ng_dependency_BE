@@ -10,6 +10,7 @@ import (
 
 	fb_customer_conversation_type "o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
+	fb_live_video_status "o.o/api/fabo/fbmessaging/fb_live_video_status"
 	fb_status_type "o.o/api/fabo/fbmessaging/fb_status_type"
 	meta "o.o/api/meta"
 	capi "o.o/capi"
@@ -258,6 +259,19 @@ func (h AggregateHandler) HandleUpdateIsReadCustomerConversation(ctx context.Con
 	return err
 }
 
+type UpdateLiveVideoStatusFromSyncCommand struct {
+	ExternalID              string
+	ExternalLiveVideoStatus string
+	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus
+
+	Result *FbExternalPost `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateLiveVideoStatusFromSync(ctx context.Context, msg *UpdateLiveVideoStatusFromSyncCommand) (err error) {
+	msg.Result, err = h.inner.UpdateLiveVideoStatusFromSync(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateOrCreateFbExternalPostsFromSyncCommand struct {
 	FbExternalPosts []*CreateFbExternalPostArgs
 
@@ -448,7 +462,7 @@ type ListFbCustomerConversationsQuery struct {
 	ExternalPageIDs []string
 	ExternalUserID  dot.NullString
 	IsRead          dot.NullBool
-	Type            fb_customer_conversation_type.NullFbCustomerConversationType
+	Types           []fb_customer_conversation_type.FbCustomerConversationType
 	Paging          meta.Paging
 
 	Result *FbCustomerConversationsResponse `json:"-"`
@@ -571,6 +585,7 @@ func (h QueryServiceHandler) HandleListFbExternalMessagesByExternalIDs(ctx conte
 type ListFbExternalPostsQuery struct {
 	ExternalPageIDs    []string
 	ExternalStatusType fb_status_type.NullFbStatusType
+	LiveVideoStatus    fb_live_video_status.NullFbLiveVideoStatus
 	ExternalIDs        []string
 	Paging             meta.Paging
 
@@ -646,6 +661,7 @@ func (q *UpdateFbCommentMessageCommand) command()                {}
 func (q *UpdateFbPostMessageAndPictureCommand) command()         {}
 func (q *UpdateIsPrivateRepliedCommentCommand) command()         {}
 func (q *UpdateIsReadCustomerConversationCommand) command()      {}
+func (q *UpdateLiveVideoStatusFromSyncCommand) command()         {}
 func (q *UpdateOrCreateFbExternalPostsFromSyncCommand) command() {}
 
 func (q *GetExternalPostByExternalIDWithExternalCreatedTimeQuery) query()         {}
@@ -932,6 +948,21 @@ func (q *UpdateIsReadCustomerConversationCommand) GetArgs(ctx context.Context) (
 		q.IsRead
 }
 
+func (q *UpdateLiveVideoStatusFromSyncCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateLiveVideoStatusFromSyncArgs) {
+	return ctx,
+		&UpdateLiveVideoStatusFromSyncArgs{
+			ExternalID:              q.ExternalID,
+			ExternalLiveVideoStatus: q.ExternalLiveVideoStatus,
+			LiveVideoStatus:         q.LiveVideoStatus,
+		}
+}
+
+func (q *UpdateLiveVideoStatusFromSyncCommand) SetUpdateLiveVideoStatusFromSyncArgs(args *UpdateLiveVideoStatusFromSyncArgs) {
+	q.ExternalID = args.ExternalID
+	q.ExternalLiveVideoStatus = args.ExternalLiveVideoStatus
+	q.LiveVideoStatus = args.LiveVideoStatus
+}
+
 func (q *UpdateOrCreateFbExternalPostsFromSyncCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrCreateFbExternalPostsFromSyncArgs) {
 	return ctx,
 		&UpdateOrCreateFbExternalPostsFromSyncArgs{
@@ -1034,7 +1065,7 @@ func (q *ListFbCustomerConversationsQuery) GetArgs(ctx context.Context) (_ conte
 			ExternalPageIDs: q.ExternalPageIDs,
 			ExternalUserID:  q.ExternalUserID,
 			IsRead:          q.IsRead,
-			Type:            q.Type,
+			Types:           q.Types,
 			Paging:          q.Paging,
 		}
 }
@@ -1043,7 +1074,7 @@ func (q *ListFbCustomerConversationsQuery) SetListFbCustomerConversationsArgs(ar
 	q.ExternalPageIDs = args.ExternalPageIDs
 	q.ExternalUserID = args.ExternalUserID
 	q.IsRead = args.IsRead
-	q.Type = args.Type
+	q.Types = args.Types
 	q.Paging = args.Paging
 }
 
@@ -1133,6 +1164,7 @@ func (q *ListFbExternalPostsQuery) GetArgs(ctx context.Context) (_ context.Conte
 		&LitFbExternalPostsArgs{
 			ExternalPageIDs:    q.ExternalPageIDs,
 			ExternalStatusType: q.ExternalStatusType,
+			LiveVideoStatus:    q.LiveVideoStatus,
 			ExternalIDs:        q.ExternalIDs,
 			Paging:             q.Paging,
 		}
@@ -1141,6 +1173,7 @@ func (q *ListFbExternalPostsQuery) GetArgs(ctx context.Context) (_ context.Conte
 func (q *ListFbExternalPostsQuery) SetLitFbExternalPostsArgs(args *LitFbExternalPostsArgs) {
 	q.ExternalPageIDs = args.ExternalPageIDs
 	q.ExternalStatusType = args.ExternalStatusType
+	q.LiveVideoStatus = args.LiveVideoStatus
 	q.ExternalIDs = args.ExternalIDs
 	q.Paging = args.Paging
 }
@@ -1195,6 +1228,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateFbPostMessageAndPicture)
 	b.AddHandler(h.HandleUpdateIsPrivateRepliedComment)
 	b.AddHandler(h.HandleUpdateIsReadCustomerConversation)
+	b.AddHandler(h.HandleUpdateLiveVideoStatusFromSync)
 	b.AddHandler(h.HandleUpdateOrCreateFbExternalPostsFromSync)
 	return CommandBus{b}
 }

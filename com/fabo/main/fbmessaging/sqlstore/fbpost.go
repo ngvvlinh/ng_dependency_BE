@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/meta"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
@@ -57,6 +58,11 @@ func (s *FbExternalPostStore) IDs(IDs []dot.ID) *FbExternalPostStore {
 
 func (s *FbExternalPostStore) ExternalStatusType(statusType fb_status_type.FbStatusType) *FbExternalPostStore {
 	s.preds = append(s.preds, s.ft.ByStatusType(statusType))
+	return s
+}
+
+func (s *FbExternalPostStore) LiveVideoStatus(liveVideoStatus fb_live_video_status.FbLiveVideoStatus) *FbExternalPostStore {
+	s.preds = append(s.preds, s.ft.ByLiveVideoStatus(liveVideoStatus))
 	return s
 }
 

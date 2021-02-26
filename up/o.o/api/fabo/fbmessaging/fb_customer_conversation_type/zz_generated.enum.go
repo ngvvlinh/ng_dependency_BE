@@ -18,14 +18,16 @@ var enumFbCustomerConversationTypeName = map[int]string{
 	0:   "unknown",
 	872: "message",
 	90:  "comment",
+	176: "live_video",
 	585: "all",
 }
 
 var enumFbCustomerConversationTypeValue = map[string]int{
-	"unknown": 0,
-	"message": 872,
-	"comment": 90,
-	"all":     585,
+	"unknown":    0,
+	"message":    872,
+	"comment":    90,
+	"live_video": 176,
+	"all":        585,
 }
 
 func ParseFbCustomerConversationType(s string) (FbCustomerConversationType, bool) {
@@ -81,7 +83,7 @@ func (e FbCustomerConversationType) Value() (driver.Value, error) {
 	if e == 0 {
 		return nil, nil
 	}
-	return e.String(), nil
+	return int64(e), nil
 }
 
 func (e *FbCustomerConversationType) Scan(src interface{}) error {

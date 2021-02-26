@@ -4,8 +4,10 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
+	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/capi/dot"
 )
@@ -172,6 +174,10 @@ type FbExternalPost struct {
 	TotalReactions      int
 	FeedType            fb_feed_type.FbFeedType
 	StatusType          fb_status_type.FbStatusType
+
+	IsLiveVideo             bool
+	ExternalLiveVideoStatus string
+	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus
 }
 
 type Attachment struct {
@@ -209,7 +215,7 @@ type FbCustomerConversation struct {
 	ExternalPostAttachments    []*PostAttachment
 	ExternalCommentAttachment  *CommentAttachment
 	ExternalMessageAttachments []*FbMessageAttachment
-	Type                       int
+	Type                       fb_customer_conversation_type.FbCustomerConversationType
 	LastMessage                string
 	LastMessageAt              time.Time `paging:"last_message_at"`
 	LastCustomerMessageAt      time.Time

@@ -517,6 +517,27 @@ func (a *FbExternalMessagingAggregate) UpdateOrCreateFbExternalPostsFromSync(
 	return resultFbExternalPosts, nil
 }
 
+func (a *FbExternalMessagingAggregate) UpdateLiveVideoStatusFromSync(
+	ctx context.Context, args *fbmessaging.UpdateLiveVideoStatusFromSyncArgs,
+) (*fbmessaging.FbExternalPost, error) {
+	updatedFbExternalPost := new(fbmessaging.FbExternalPost)
+	if err := scheme.Convert(args, updatedFbExternalPost); err != nil {
+		return nil, err
+	}
+	updatedFbExternalPost.IsLiveVideo = true
+
+	if err := a.fbExternalPostStore(ctx).ExternalID(args.ExternalID).UpdateFbExternalPost(updatedFbExternalPost); err != nil {
+		return nil, err
+	}
+
+	// update type of fbCustomerConversation to live_video
+	if _, err := a.fbCustomerConversationStore(ctx).ExternalID(args.ExternalID).UpdateType(fb_customer_conversation_type.LiveVideo); err != nil {
+		return nil, err
+	}
+
+	return a.fbExternalPostStore(ctx).ExternalID(args.ExternalID).GetFbExternalPost()
+}
+
 func (a *FbExternalMessagingAggregate) CreateOrUpdateFbExternalComments(
 	ctx context.Context, args *fbmessaging.CreateOrUpdateFbExternalCommentsArgs,
 ) ([]*fbmessaging.FbExternalComment, error) {

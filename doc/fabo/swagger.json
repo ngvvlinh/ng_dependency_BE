@@ -1021,6 +1021,7 @@
         "unknown",
         "message",
         "comment",
+        "live_video",
         "all"
       ]
     },
@@ -1178,6 +1179,12 @@
         },
         "type": {
           "$ref": "#/definitions/crFbCustomerConversationType"
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/crFbCustomerConversationType"
+          }
         }
       }
     },
@@ -1635,6 +1642,9 @@
         "external_id": {
           "type": "string"
         },
+        "external_live_video_status": {
+          "type": "string"
+        },
         "external_message": {
           "type": "string"
         },
@@ -1656,6 +1666,12 @@
         "id": {
           "type": "string",
           "format": "int64"
+        },
+        "is_live_video": {
+          "type": "boolean"
+        },
+        "live_video_status": {
+          "$ref": "#/definitions/llFbLiveVideoStatus"
         },
         "total_comments": {
           "type": "integer"
@@ -2219,6 +2235,9 @@
       "properties": {
         "external_page_ids": {
           "$ref": "#/definitions/kfStrings"
+        },
+        "live_video_status": {
+          "$ref": "#/definitions/llFbLiveVideoStatus"
         },
         "type": {
           "$ref": "#/definitions/asFbPostSource"
@@ -2936,6 +2955,16 @@
         "individual",
         "organization",
         "anonymous"
+      ]
+    },
+    "llFbLiveVideoStatus": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "created",
+        "live",
+        "live_stopped",
+        "cancelled"
       ]
     },
     "lxFbStatusType": {

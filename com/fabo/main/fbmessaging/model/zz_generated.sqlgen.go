@@ -123,10 +123,10 @@ func (m *FbCustomerConversation) Migration(db *cmsql.Database) {
 		},
 		"type": {
 			ColumnName:       "type",
-			ColumnType:       "int",
-			ColumnDBType:     "int",
+			ColumnType:       "fb_customer_conversation_type.FbCustomerConversationType",
+			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{},
+			ColumnEnumValues: []string{"unknown", "message", "comment", "live_video", "all"},
 		},
 		"last_message": {
 			ColumnName:       "last_message",
@@ -199,7 +199,7 @@ func (m *FbCustomerConversation) SQLArgs(opts core.Opts, create bool) []interfac
 		core.JSON{m.ExternalPostAttachments},
 		core.JSON{m.ExternalCommentAttachment},
 		core.JSON{m.ExternalMessageAttachments},
-		core.Int(m.Type),
+		m.Type,
 		core.String(m.LastMessage),
 		core.Time(m.LastMessageAt),
 		core.Time(m.LastCustomerMessageAt),
@@ -221,7 +221,7 @@ func (m *FbCustomerConversation) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.ExternalPostAttachments},
 		core.JSON{&m.ExternalCommentAttachment},
 		core.JSON{&m.ExternalMessageAttachments},
-		(*core.Int)(&m.Type),
+		&m.Type,
 		(*core.String)(&m.LastMessage),
 		(*core.Time)(&m.LastMessageAt),
 		(*core.Time)(&m.LastCustomerMessageAt),
@@ -2589,8 +2589,8 @@ func (ms *FbExternalMessageHistories) SQLScan(opts core.Opts, rows *sql.Rows) er
 type FbExternalPosts []*FbExternalPost
 
 const __sqlFbExternalPost_Table = "fb_external_post"
-const __sqlFbExternalPost_ListCols = "\"id\",\"external_page_id\",\"external_id\",\"external_parent_id\",\"external_from\",\"external_picture\",\"external_icon\",\"external_message\",\"external_attachments\",\"external_created_time\",\"external_updated_time\",\"created_at\",\"updated_at\",\"deleted_at\",\"total_comments\",\"total_reactions\",\"feed_type\",\"status_type\""
-const __sqlFbExternalPost_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_parent_id\" = EXCLUDED.\"external_parent_id\",\"external_from\" = EXCLUDED.\"external_from\",\"external_picture\" = EXCLUDED.\"external_picture\",\"external_icon\" = EXCLUDED.\"external_icon\",\"external_message\" = EXCLUDED.\"external_message\",\"external_attachments\" = EXCLUDED.\"external_attachments\",\"external_created_time\" = EXCLUDED.\"external_created_time\",\"external_updated_time\" = EXCLUDED.\"external_updated_time\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"total_comments\" = EXCLUDED.\"total_comments\",\"total_reactions\" = EXCLUDED.\"total_reactions\",\"feed_type\" = EXCLUDED.\"feed_type\",\"status_type\" = EXCLUDED.\"status_type\""
+const __sqlFbExternalPost_ListCols = "\"id\",\"external_page_id\",\"external_id\",\"external_parent_id\",\"external_from\",\"external_picture\",\"external_icon\",\"external_message\",\"external_attachments\",\"external_created_time\",\"external_updated_time\",\"created_at\",\"updated_at\",\"deleted_at\",\"total_comments\",\"total_reactions\",\"feed_type\",\"status_type\",\"is_live_video\",\"external_live_video_status\",\"live_video_status\""
+const __sqlFbExternalPost_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_id\" = EXCLUDED.\"external_id\",\"external_parent_id\" = EXCLUDED.\"external_parent_id\",\"external_from\" = EXCLUDED.\"external_from\",\"external_picture\" = EXCLUDED.\"external_picture\",\"external_icon\" = EXCLUDED.\"external_icon\",\"external_message\" = EXCLUDED.\"external_message\",\"external_attachments\" = EXCLUDED.\"external_attachments\",\"external_created_time\" = EXCLUDED.\"external_created_time\",\"external_updated_time\" = EXCLUDED.\"external_updated_time\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"total_comments\" = EXCLUDED.\"total_comments\",\"total_reactions\" = EXCLUDED.\"total_reactions\",\"feed_type\" = EXCLUDED.\"feed_type\",\"status_type\" = EXCLUDED.\"status_type\",\"is_live_video\" = EXCLUDED.\"is_live_video\",\"external_live_video_status\" = EXCLUDED.\"external_live_video_status\",\"live_video_status\" = EXCLUDED.\"live_video_status\""
 const __sqlFbExternalPost_Insert = "INSERT INTO \"fb_external_post\" (" + __sqlFbExternalPost_ListCols + ") VALUES"
 const __sqlFbExternalPost_Select = "SELECT " + __sqlFbExternalPost_ListCols + " FROM \"fb_external_post\""
 const __sqlFbExternalPost_Select_history = "SELECT " + __sqlFbExternalPost_ListCols + " FROM history.\"fb_external_post\""
@@ -2743,6 +2743,27 @@ func (m *FbExternalPost) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{"unknown", "added_photos", "added_video", "app_created_story", "approved_friend", "created_event", "created_group", "created_note", "mobile_status_update", "published_story", "shared_story", "tagged_in_photo", "wall_posst"},
 		},
+		"is_live_video": {
+			ColumnName:       "is_live_video",
+			ColumnType:       "bool",
+			ColumnDBType:     "bool",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_live_video_status": {
+			ColumnName:       "external_live_video_status",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"live_video_status": {
+			ColumnName:       "live_video_status",
+			ColumnType:       "fb_live_video_status.FbLiveVideoStatus",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "created", "live", "live_stopped", "cancelled"},
+		},
 	}
 	if err := migration.Compare(db, "fb_external_post", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -2774,6 +2795,9 @@ func (m *FbExternalPost) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.TotalReactions),
 		m.FeedType,
 		m.StatusType,
+		core.Bool(m.IsLiveVideo),
+		core.String(m.ExternalLiveVideoStatus),
+		m.LiveVideoStatus,
 	}
 }
 
@@ -2797,6 +2821,9 @@ func (m *FbExternalPost) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.TotalReactions),
 		&m.FeedType,
 		&m.StatusType,
+		(*core.Bool)(&m.IsLiveVideo),
+		(*core.String)(&m.ExternalLiveVideoStatus),
+		&m.LiveVideoStatus,
 	}
 }
 
@@ -2834,7 +2861,7 @@ func (_ *FbExternalPosts) SQLSelect(w SQLWriter) error {
 func (m *FbExternalPost) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalPost_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(18)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -2844,7 +2871,7 @@ func (ms FbExternalPosts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalPost_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(18)
+		w.WriteMarkers(21)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3019,6 +3046,30 @@ func (m *FbExternalPost) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.StatusType)
 	}
+	if m.IsLiveVideo {
+		flag = true
+		w.WriteName("is_live_video")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.IsLiveVideo)
+	}
+	if m.ExternalLiveVideoStatus != "" {
+		flag = true
+		w.WriteName("external_live_video_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExternalLiveVideoStatus)
+	}
+	if m.LiveVideoStatus != 0 {
+		flag = true
+		w.WriteName("live_video_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.LiveVideoStatus)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -3029,7 +3080,7 @@ func (m *FbExternalPost) SQLUpdate(w SQLWriter) error {
 func (m *FbExternalPost) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbExternalPost_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(18)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3091,17 +3142,26 @@ func (m FbExternalPostHistory) TotalReactions() core.Interface {
 }
 func (m FbExternalPostHistory) FeedType() core.Interface   { return core.Interface{m["feed_type"]} }
 func (m FbExternalPostHistory) StatusType() core.Interface { return core.Interface{m["status_type"]} }
+func (m FbExternalPostHistory) IsLiveVideo() core.Interface {
+	return core.Interface{m["is_live_video"]}
+}
+func (m FbExternalPostHistory) ExternalLiveVideoStatus() core.Interface {
+	return core.Interface{m["external_live_video_status"]}
+}
+func (m FbExternalPostHistory) LiveVideoStatus() core.Interface {
+	return core.Interface{m["live_video_status"]}
+}
 
 func (m *FbExternalPostHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 18)
-	args := make([]interface{}, 18)
-	for i := 0; i < 18; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbExternalPostHistory, 18)
+	res := make(FbExternalPostHistory, 21)
 	res["id"] = data[0]
 	res["external_page_id"] = data[1]
 	res["external_id"] = data[2]
@@ -3120,14 +3180,17 @@ func (m *FbExternalPostHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["total_reactions"] = data[15]
 	res["feed_type"] = data[16]
 	res["status_type"] = data[17]
+	res["is_live_video"] = data[18]
+	res["external_live_video_status"] = data[19]
+	res["live_video_status"] = data[20]
 	*m = res
 	return nil
 }
 
 func (ms *FbExternalPostHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 18)
-	args := make([]interface{}, 18)
-	for i := 0; i < 18; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FbExternalPostHistories, 0, 128)
@@ -3154,6 +3217,9 @@ func (ms *FbExternalPostHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 		m["total_reactions"] = data[15]
 		m["feed_type"] = data[16]
 		m["status_type"] = data[17]
+		m["is_live_video"] = data[18]
+		m["external_live_video_status"] = data[19]
+		m["live_video_status"] = data[20]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

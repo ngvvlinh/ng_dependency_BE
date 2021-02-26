@@ -7,6 +7,7 @@ import (
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/capi/dot"
 )
@@ -148,24 +149,27 @@ type FbExternalConversation struct {
 type FbExternalPosts []*FbExternalPost
 
 type FbExternalPost struct {
-	ID                  dot.ID
-	ExternalPageID      string
-	ExternalID          string
-	ExternalParentID    string
-	ExternalFrom        *FbObjectFrom
-	ExternalPicture     string
-	ExternalIcon        string
-	ExternalMessage     string
-	ExternalAttachments []*PostAttachment `compare:"ignore"`
-	ExternalCreatedTime time.Time
-	CreatedAt           time.Time `compare:"ignore"`
-	UpdatedAt           time.Time `compare:"ignore"`
-	DeletedAt           time.Time `compare:"ignore"`
-	ExternalParent      *FbExternalPost
-	FeedType            fb_feed_type.FbFeedType
-	StatusType          fb_status_type.FbStatusType
-	TotalComments       int
-	TotalReactions      int
+	ID                      dot.ID
+	ExternalPageID          string
+	ExternalID              string
+	ExternalParentID        string
+	ExternalFrom            *FbObjectFrom
+	ExternalPicture         string
+	ExternalIcon            string
+	ExternalMessage         string
+	ExternalAttachments     []*PostAttachment `compare:"ignore"`
+	ExternalCreatedTime     time.Time
+	CreatedAt               time.Time `compare:"ignore"`
+	UpdatedAt               time.Time `compare:"ignore"`
+	DeletedAt               time.Time `compare:"ignore"`
+	ExternalParent          *FbExternalPost
+	FeedType                fb_feed_type.FbFeedType
+	StatusType              fb_status_type.FbStatusType
+	TotalComments           int
+	TotalReactions          int
+	IsLiveVideo             bool
+	ExternalLiveVideoStatus string
+	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus
 }
 
 type FbCustomerConversation struct {

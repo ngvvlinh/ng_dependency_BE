@@ -2,6 +2,7 @@ package fbmessaging
 
 import (
 	context "context"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"time"
 
 	"o.o/api/fabo/fbmessaging/fb_comment_source"
@@ -35,6 +36,7 @@ type Aggregate interface {
 	UpdateIsPrivateRepliedComment(context.Context, *UpdateIsPrivateRepliedCommentArgs) error
 
 	UpdateOrCreateFbExternalPostsFromSync(context.Context, *UpdateOrCreateFbExternalPostsFromSyncArgs) ([]*FbExternalPost, error)
+	UpdateLiveVideoStatusFromSync(context.Context, *UpdateLiveVideoStatusFromSyncArgs) (*FbExternalPost, error)
 	SaveFbExternalPost(context.Context, *FbSavePostArgs) (*FbExternalPost, error)
 	CreateFbExternalPost(context.Context, *FbCreatePostArgs) (*FbExternalPost, error)
 	UpdateFbPostMessageAndPicture(context.Context, *FbUpdatePostMessageArgs) error
@@ -137,6 +139,13 @@ type UpdateOrCreateFbExternalPostsFromSyncArgs struct {
 	FbExternalPosts []*CreateFbExternalPostArgs
 }
 
+// +convert:update=FbExternalPost
+type UpdateLiveVideoStatusFromSyncArgs struct {
+	ExternalID              string
+	ExternalLiveVideoStatus string
+	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus
+}
+
 // +convert:create=FbExternalComment
 type CreateFbExternalCommentArgs struct {
 	ID                   dot.ID
@@ -228,7 +237,7 @@ type ListFbCustomerConversationsArgs struct {
 	ExternalPageIDs []string
 	ExternalUserID  dot.NullString
 	IsRead          dot.NullBool
-	Type            fb_customer_conversation_type.NullFbCustomerConversationType
+	Types           []fb_customer_conversation_type.FbCustomerConversationType
 
 	Paging meta.Paging
 }
@@ -261,6 +270,7 @@ type FbExternalCommentsResponse struct {
 type LitFbExternalPostsArgs struct {
 	ExternalPageIDs    []string
 	ExternalStatusType fb_status_type.NullFbStatusType
+	LiveVideoStatus    fb_live_video_status.NullFbLiveVideoStatus
 	ExternalIDs        []string
 	Paging             meta.Paging
 }

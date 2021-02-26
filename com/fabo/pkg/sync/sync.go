@@ -11,6 +11,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/fabo/fbpaging"
 	"o.o/api/fabo/fbusering"
@@ -53,6 +54,7 @@ const (
 	GetComments      TaskActionType = 655
 	GetConversations TaskActionType = 363
 	GetMessages      TaskActionType = 160
+	GetLiveVideos    TaskActionType = 897
 )
 
 type getCommentsArguments struct {
@@ -212,6 +214,7 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 			if !s.rd.IsLockCallAPIPage(fbPageCombined.FbExternalPage.ExternalID) {
 				// Task get post
 				s.addTaskGetPosts(fbPageCombined)
+				s.addTaskGetLiveVideos(fbPageCombined)
 			}
 
 			if !s.rd.IsLockCallAPIMessenger(fbPageCombined.FbExternalPage.ExternalID) {
@@ -244,6 +247,22 @@ func (s *Synchronizer) addTaskGetPosts(fbPageCombined *fbpaging.FbExternalPageCo
 		externalPageID: fbPageCombined.FbExternalPage.ExternalID,
 		fbPagingRequest: &model.FacebookPagingRequest{
 			Limit: dot.Int(fbclient.DefaultLimitGetPosts),
+			TimePagination: &model.TimePaginationRequest{
+				Since: time.Now().AddDate(0, 0, -s.timeLimit),
+			},
+		},
+	})
+}
+
+func (s *Synchronizer) addTaskGetLiveVideos(fbPageCombined *fbpaging.FbExternalPageCombined) dot.ID {
+	return s.addTask(&TaskArguments{
+		actionType:     GetLiveVideos,
+		accessToken:    fbPageCombined.FbExternalPageInternal.Token,
+		shopID:         fbPageCombined.FbExternalPage.ShopID,
+		pageID:         fbPageCombined.FbExternalPage.ID,
+		externalPageID: fbPageCombined.FbExternalPage.ExternalID,
+		fbPagingRequest: &model.FacebookPagingRequest{
+			Limit: dot.Int(fbclient.DefaultLimitGetLiveVideos),
 			TimePagination: &model.TimePaginationRequest{
 				Since: time.Now().AddDate(0, 0, -s.timeLimit),
 			},
@@ -330,6 +349,10 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		}
 	case GetMessages:
 		if err := s.handleTaskGetMessages(ctx, shopID, pageID, accessToken, externalPageID, taskArgs, fbPagingReq); err != nil {
+			return err
+		}
+	case GetLiveVideos:
+		if err := s.HandleTaskGetLiveVideos(ctx, shopID, pageID, accessToken, externalPageID, fbPagingReq); err != nil {
 			return err
 		}
 	}
@@ -628,10 +651,6 @@ func (s *Synchronizer) handleTaskGetComments(
 
 	var createOrUpdateFbExternalCommentsArgs []*fbmessaging.CreateFbExternalCommentArgs
 	for _, fbExternalComment := range fbExternalCommentsResp.Comments.CommentData {
-		// Ignore comment is hidden
-		if fbExternalComment.IsHidden {
-			continue
-		}
 		if fbExternalComment.From == nil {
 			continue
 		}
@@ -893,6 +912,41 @@ func (s *Synchronizer) HandleTaskGetPosts(
 				Limit: dot.Int(fbclient.DefaultLimitGetComments),
 			},
 		})
+	}
+
+	return nil
+}
+
+func (s *Synchronizer) HandleTaskGetLiveVideos(
+	ctx context.Context, shopID, pageID dot.ID,
+	accessToken, externalPageID string, fbPagingReq *model.FacebookPagingRequest,
+) error {
+	fmt.Println("GetLiveVideos")
+
+	// Call api (facebook) listPublishedPosts from facebook
+	fbLiveVideosResp, err := s.fbClient.CallAPIListSimplifyLiveVideos(&fbclient.ListSimplifyLiveVideosRequest{
+		AccessToken: accessToken,
+		Pagination:  fbPagingReq,
+	})
+	if err != nil {
+		return err
+	}
+
+	// Finish task when data is empty
+	if fbLiveVideosResp == nil || len(fbLiveVideosResp.Data) == 0 ||
+		fbLiveVideosResp.Paging.CompareFacebookPagingRequest(fbPagingReq) {
+		return nil
+	}
+
+	for _, fbLiveVideo := range fbLiveVideosResp.Data {
+		updateLiveVideoStatusCmd := &fbmessaging.UpdateLiveVideoStatusFromSyncCommand{
+			ExternalID:              fbLiveVideo.GetExternalPostID(),
+			ExternalLiveVideoStatus: fbLiveVideo.Status,
+			LiveVideoStatus:         fb_live_video_status.ConvertToFbLiveVideoStatus(fbLiveVideo.Status),
+		}
+		if err := s.fbMessagingAggr.Dispatch(ctx, updateLiveVideoStatusCmd); err != nil {
+			return err
+		}
 	}
 
 	return nil

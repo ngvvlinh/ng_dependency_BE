@@ -468,6 +468,25 @@ func (f *FbClient) CallAPIListLiveVideos(req *ListLiveVideosRequest) (*model.Liv
 	return &resp, nil
 }
 
+func (f *FbClient) CallAPIListSimplifyLiveVideos(req *ListSimplifyLiveVideosRequest) (*model.SimplifyLiveVideosResponse, error) {
+	params := &ListSimplifyLiveVideosParams{
+		AccessToken: req.AccessToken,
+		Fields:      "video{id,picture,source},id,from,status,creation_time",
+		DateFormat:  UnixDateFormat,
+	}
+
+	if req.Pagination != nil {
+		req.Pagination.ApplyQueryParams(true, DefaultLimitGetPosts, params)
+	}
+
+	path := "/me/live_videos"
+	var resp model.SimplifyLiveVideosResponse
+	if err := f.sendGetRequest(path, "", params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
 func (f *FbClient) CallAPIListFeedsWithComments(req *ListFeedsWithCommentsRequest) (*model.PostsWithCommentsResponse, error) {
 	params := &ListFeedsWithCommentsParams{
 		AccessToken: req.AccessToken,

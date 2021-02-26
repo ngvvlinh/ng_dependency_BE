@@ -26,6 +26,7 @@ const (
 	DefaultLimitGetComments      = 100
 	DefaultLimitGetConversations = 100
 	DefaultLimitGetMessages      = 100
+	DefaultLimitGetLiveVideos    = 100
 	MaximumIDs                   = 1
 
 	// ConversationParameters

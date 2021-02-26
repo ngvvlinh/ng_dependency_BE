@@ -261,6 +261,17 @@ type ListLiveVideosRequest struct {
 	AccessToken string
 }
 
+type ListSimplifyLiveVideosRequest struct {
+	AccessToken string
+	Pagination  *model.FacebookPagingRequest
+}
+
+type ListSimplifyLiveVideosParams struct {
+	AccessToken string `url:"access_token"`
+	Fields      string `url:"fields"`
+	DateFormat  string `url:"date_format"`
+}
+
 type ListLiveVideosParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`

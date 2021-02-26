@@ -54,8 +54,8 @@ func (q *FbMessagingQuery) ListFbCustomerConversations(
 	if len(args.ExternalPageIDs) != 0 {
 		query = query.ExternalPageIDs(args.ExternalPageIDs)
 	}
-	if args.Type.Valid && args.Type.Enum != fb_customer_conversation_type.All {
-		query = query.Type(args.Type.Enum)
+	if len(args.Types) != 0 {
+		query = query.Types(args.Types)
 	}
 	if args.ExternalUserID.Valid {
 		query = query.FbExternalID(args.ExternalUserID.String)
@@ -190,6 +190,9 @@ func (q *FbMessagingQuery) ListFbExternalPosts(
 
 	if args.ExternalStatusType.Valid {
 		query = query.ExternalStatusType(args.ExternalStatusType.Enum)
+	}
+	if args.LiveVideoStatus.Valid {
+		query = query.LiveVideoStatus(args.LiveVideoStatus.Enum)
 	}
 	if len(args.ExternalIDs) > 0 {
 		query = query.ExternalIDs(args.ExternalIDs)

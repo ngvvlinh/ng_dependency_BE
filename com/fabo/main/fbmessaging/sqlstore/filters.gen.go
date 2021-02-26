@@ -8,8 +8,10 @@ import (
 	time "time"
 
 	fb_comment_source "o.o/api/fabo/fbmessaging/fb_comment_source"
+	fb_customer_conversation_type "o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	fb_feed_type "o.o/api/fabo/fbmessaging/fb_feed_type"
 	fb_internal_source "o.o/api/fabo/fbmessaging/fb_internal_source"
+	fb_live_video_status "o.o/api/fabo/fbmessaging/fb_live_video_status"
 	fb_status_type "o.o/api/fabo/fbmessaging/fb_status_type"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
@@ -124,7 +126,7 @@ func (ft *FbCustomerConversationFilters) ByExternalUserNamePtr(ExternalUserName 
 	}
 }
 
-func (ft *FbCustomerConversationFilters) ByType(Type int) *sq.ColumnFilter {
+func (ft *FbCustomerConversationFilters) ByType(Type fb_customer_conversation_type.FbCustomerConversationType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
@@ -133,7 +135,7 @@ func (ft *FbCustomerConversationFilters) ByType(Type int) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FbCustomerConversationFilters) ByTypePtr(Type *int) *sq.ColumnFilterPtr {
+func (ft *FbCustomerConversationFilters) ByTypePtr(Type *fb_customer_conversation_type.FbCustomerConversationType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
@@ -1578,5 +1580,62 @@ func (ft *FbExternalPostFilters) ByStatusTypePtr(StatusType *fb_status_type.FbSt
 		Value:  StatusType,
 		IsNil:  StatusType == nil,
 		IsZero: StatusType != nil && (*StatusType) == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByIsLiveVideo(IsLiveVideo bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "is_live_video",
+		Value:  IsLiveVideo,
+		IsNil:  bool(!IsLiveVideo),
+	}
+}
+
+func (ft *FbExternalPostFilters) ByIsLiveVideoPtr(IsLiveVideo *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "is_live_video",
+		Value:  IsLiveVideo,
+		IsNil:  IsLiveVideo == nil,
+		IsZero: IsLiveVideo != nil && bool(!(*IsLiveVideo)),
+	}
+}
+
+func (ft *FbExternalPostFilters) ByExternalLiveVideoStatus(ExternalLiveVideoStatus string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_live_video_status",
+		Value:  ExternalLiveVideoStatus,
+		IsNil:  ExternalLiveVideoStatus == "",
+	}
+}
+
+func (ft *FbExternalPostFilters) ByExternalLiveVideoStatusPtr(ExternalLiveVideoStatus *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_live_video_status",
+		Value:  ExternalLiveVideoStatus,
+		IsNil:  ExternalLiveVideoStatus == nil,
+		IsZero: ExternalLiveVideoStatus != nil && (*ExternalLiveVideoStatus) == "",
+	}
+}
+
+func (ft *FbExternalPostFilters) ByLiveVideoStatus(LiveVideoStatus fb_live_video_status.FbLiveVideoStatus) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "live_video_status",
+		Value:  LiveVideoStatus,
+		IsNil:  LiveVideoStatus == 0,
+	}
+}
+
+func (ft *FbExternalPostFilters) ByLiveVideoStatusPtr(LiveVideoStatus *fb_live_video_status.FbLiveVideoStatus) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "live_video_status",
+		Value:  LiveVideoStatus,
+		IsNil:  LiveVideoStatus == nil,
+		IsZero: LiveVideoStatus != nil && (*LiveVideoStatus) == 0,
 	}
 }

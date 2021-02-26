@@ -8,7 +8,6 @@ import (
 	time "time"
 
 	fbmessaging "o.o/api/fabo/fbmessaging"
-	fb_customer_conversation_type "o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	fbmessagingmodel "o.o/backend/com/fabo/main/fbmessaging/model"
 	conversion "o.o/backend/pkg/common/conversion"
 )
@@ -170,6 +169,10 @@ func registerConversions(s *conversion.Scheme) {
 	})
 	s.Register((*fbmessaging.CreateFbExternalPostArgs)(nil), (*fbmessaging.FbExternalPost)(nil), func(arg, out interface{}) error {
 		Apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg.(*fbmessaging.CreateFbExternalPostArgs), out.(*fbmessaging.FbExternalPost))
+		return nil
+	})
+	s.Register((*fbmessaging.UpdateLiveVideoStatusFromSyncArgs)(nil), (*fbmessaging.FbExternalPost)(nil), func(arg, out interface{}) error {
+		Apply_fbmessaging_UpdateLiveVideoStatusFromSyncArgs_fbmessaging_FbExternalPost(arg.(*fbmessaging.UpdateLiveVideoStatusFromSyncArgs), out.(*fbmessaging.FbExternalPost))
 		return nil
 	})
 	s.Register((*fbmessagingmodel.FbMessageAttachment)(nil), (*fbmessaging.FbMessageAttachment)(nil), func(arg, out interface{}) error {
@@ -510,9 +513,9 @@ func convert_fbmessagingmodel_FbCustomerConversation_fbmessaging_FbCustomerConve
 	out.ExternalUserID = arg.ExternalUserID     // simple assign
 	out.ExternalUserName = arg.ExternalUserName // simple assign
 	out.ExternalFrom = Convert_fbmessagingmodel_FbObjectFrom_fbmessaging_FbObjectFrom(arg.ExternalFrom, nil)
-	out.IsRead = false                                                            // zero value
-	out.Type = fb_customer_conversation_type.FbCustomerConversationType(arg.Type) // simple conversion
-	out.ExternalUserPictureURL = ""                                               // zero value
+	out.IsRead = false              // zero value
+	out.Type = arg.Type             // simple assign
+	out.ExternalUserPictureURL = "" // zero value
 	out.ExternalPostAttachments = Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(arg.ExternalPostAttachments)
 	out.ExternalCommentAttachment = Convert_fbmessagingmodel_CommentAttachment_fbmessaging_CommentAttachment(arg.ExternalCommentAttachment, nil)
 	out.ExternalMessageAttachments = Convert_fbmessagingmodel_FbMessageAttachments_fbmessaging_FbMessageAttachments(arg.ExternalMessageAttachments)
@@ -557,7 +560,7 @@ func convert_fbmessaging_FbCustomerConversation_fbmessagingmodel_FbCustomerConve
 	out.ExternalPostAttachments = Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(arg.ExternalPostAttachments)
 	out.ExternalCommentAttachment = Convert_fbmessaging_CommentAttachment_fbmessagingmodel_CommentAttachment(arg.ExternalCommentAttachment, nil)
 	out.ExternalMessageAttachments = Convert_fbmessaging_FbMessageAttachments_fbmessagingmodel_FbMessageAttachments(arg.ExternalMessageAttachments)
-	out.Type = int(arg.Type)                              // simple conversion
+	out.Type = arg.Type                                   // simple assign
 	out.LastMessage = arg.LastMessage                     // simple assign
 	out.LastMessageAt = arg.LastMessageAt                 // simple assign
 	out.LastCustomerMessageAt = arg.LastCustomerMessageAt // simple assign
@@ -1036,15 +1039,18 @@ func convert_fbmessagingmodel_FbExternalPost_fbmessaging_FbExternalPost(arg *fbm
 	out.ExternalIcon = arg.ExternalIcon       // simple assign
 	out.ExternalMessage = arg.ExternalMessage // simple assign
 	out.ExternalAttachments = Convert_fbmessagingmodel_PostAttachments_fbmessaging_PostAttachments(arg.ExternalAttachments)
-	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
-	out.CreatedAt = arg.CreatedAt                     // simple assign
-	out.UpdatedAt = arg.UpdatedAt                     // simple assign
-	out.DeletedAt = arg.DeletedAt                     // simple assign
-	out.ExternalParent = nil                          // zero value
-	out.FeedType = arg.FeedType                       // simple assign
-	out.StatusType = arg.StatusType                   // simple assign
-	out.TotalComments = arg.TotalComments             // simple assign
-	out.TotalReactions = arg.TotalReactions           // simple assign
+	out.ExternalCreatedTime = arg.ExternalCreatedTime         // simple assign
+	out.CreatedAt = arg.CreatedAt                             // simple assign
+	out.UpdatedAt = arg.UpdatedAt                             // simple assign
+	out.DeletedAt = arg.DeletedAt                             // simple assign
+	out.ExternalParent = nil                                  // zero value
+	out.FeedType = arg.FeedType                               // simple assign
+	out.StatusType = arg.StatusType                           // simple assign
+	out.TotalComments = arg.TotalComments                     // simple assign
+	out.TotalReactions = arg.TotalReactions                   // simple assign
+	out.IsLiveVideo = arg.IsLiveVideo                         // simple assign
+	out.ExternalLiveVideoStatus = arg.ExternalLiveVideoStatus // simple assign
+	out.LiveVideoStatus = arg.LiveVideoStatus                 // simple assign
 }
 
 func Convert_fbmessagingmodel_FbExternalPosts_fbmessaging_FbExternalPosts(args []*fbmessagingmodel.FbExternalPost) (outs []*fbmessaging.FbExternalPost) {
@@ -1080,15 +1086,18 @@ func convert_fbmessaging_FbExternalPost_fbmessagingmodel_FbExternalPost(arg *fbm
 	out.ExternalIcon = arg.ExternalIcon       // simple assign
 	out.ExternalMessage = arg.ExternalMessage // simple assign
 	out.ExternalAttachments = Convert_fbmessaging_PostAttachments_fbmessagingmodel_PostAttachments(arg.ExternalAttachments)
-	out.ExternalCreatedTime = arg.ExternalCreatedTime // simple assign
-	out.ExternalUpdatedTime = time.Time{}             // zero value
-	out.CreatedAt = arg.CreatedAt                     // simple assign
-	out.UpdatedAt = arg.UpdatedAt                     // simple assign
-	out.DeletedAt = arg.DeletedAt                     // simple assign
-	out.TotalComments = arg.TotalComments             // simple assign
-	out.TotalReactions = arg.TotalReactions           // simple assign
-	out.FeedType = arg.FeedType                       // simple assign
-	out.StatusType = arg.StatusType                   // simple assign
+	out.ExternalCreatedTime = arg.ExternalCreatedTime         // simple assign
+	out.ExternalUpdatedTime = time.Time{}                     // zero value
+	out.CreatedAt = arg.CreatedAt                             // simple assign
+	out.UpdatedAt = arg.UpdatedAt                             // simple assign
+	out.DeletedAt = arg.DeletedAt                             // simple assign
+	out.TotalComments = arg.TotalComments                     // simple assign
+	out.TotalReactions = arg.TotalReactions                   // simple assign
+	out.FeedType = arg.FeedType                               // simple assign
+	out.StatusType = arg.StatusType                           // simple assign
+	out.IsLiveVideo = arg.IsLiveVideo                         // simple assign
+	out.ExternalLiveVideoStatus = arg.ExternalLiveVideoStatus // simple assign
+	out.LiveVideoStatus = arg.LiveVideoStatus                 // simple assign
 }
 
 func Convert_fbmessaging_FbExternalPosts_fbmessagingmodel_FbExternalPosts(args []*fbmessaging.FbExternalPost) (outs []*fbmessagingmodel.FbExternalPost) {
@@ -1133,6 +1142,44 @@ func apply_fbmessaging_CreateFbExternalPostArgs_fbmessaging_FbExternalPost(arg *
 	out.StatusType = arg.StatusType                   // simple assign
 	out.TotalComments = arg.TotalComments             // simple assign
 	out.TotalReactions = arg.TotalReactions           // simple assign
+	out.IsLiveVideo = false                           // zero value
+	out.ExternalLiveVideoStatus = ""                  // zero value
+	out.LiveVideoStatus = 0                           // zero value
+}
+
+func Apply_fbmessaging_UpdateLiveVideoStatusFromSyncArgs_fbmessaging_FbExternalPost(arg *fbmessaging.UpdateLiveVideoStatusFromSyncArgs, out *fbmessaging.FbExternalPost) *fbmessaging.FbExternalPost {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &fbmessaging.FbExternalPost{}
+	}
+	apply_fbmessaging_UpdateLiveVideoStatusFromSyncArgs_fbmessaging_FbExternalPost(arg, out)
+	return out
+}
+
+func apply_fbmessaging_UpdateLiveVideoStatusFromSyncArgs_fbmessaging_FbExternalPost(arg *fbmessaging.UpdateLiveVideoStatusFromSyncArgs, out *fbmessaging.FbExternalPost) {
+	out.ID = out.ID                                           // no change
+	out.ExternalPageID = out.ExternalPageID                   // no change
+	out.ExternalID = arg.ExternalID                           // simple assign
+	out.ExternalParentID = out.ExternalParentID               // no change
+	out.ExternalFrom = out.ExternalFrom                       // no change
+	out.ExternalPicture = out.ExternalPicture                 // no change
+	out.ExternalIcon = out.ExternalIcon                       // no change
+	out.ExternalMessage = out.ExternalMessage                 // no change
+	out.ExternalAttachments = out.ExternalAttachments         // no change
+	out.ExternalCreatedTime = out.ExternalCreatedTime         // no change
+	out.CreatedAt = out.CreatedAt                             // no change
+	out.UpdatedAt = out.UpdatedAt                             // no change
+	out.DeletedAt = out.DeletedAt                             // no change
+	out.ExternalParent = out.ExternalParent                   // no change
+	out.FeedType = out.FeedType                               // no change
+	out.StatusType = out.StatusType                           // no change
+	out.TotalComments = out.TotalComments                     // no change
+	out.TotalReactions = out.TotalReactions                   // no change
+	out.IsLiveVideo = out.IsLiveVideo                         // no change
+	out.ExternalLiveVideoStatus = arg.ExternalLiveVideoStatus // simple assign
+	out.LiveVideoStatus = arg.LiveVideoStatus                 // simple assign
 }
 
 //-- convert o.o/api/fabo/fbmessaging.FbMessageAttachment --//

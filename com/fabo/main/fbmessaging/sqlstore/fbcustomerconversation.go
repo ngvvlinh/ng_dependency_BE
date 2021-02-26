@@ -102,7 +102,12 @@ func (s *FbCustomerConversationStore) FbExternalUserID(fbExternalUserID string) 
 }
 
 func (s *FbCustomerConversationStore) Type(typ fb_customer_conversation_type.FbCustomerConversationType) *FbCustomerConversationStore {
-	s.preds = append(s.preds, s.ft.ByType(typ.Enum()))
+	s.preds = append(s.preds, s.ft.ByType(typ))
+	return s
+}
+
+func (s *FbCustomerConversationStore) Types(types []fb_customer_conversation_type.FbCustomerConversationType) *FbCustomerConversationStore {
+	s.preds = append(s.preds, sq.In("type", types))
 	return s
 }
 
@@ -233,6 +238,14 @@ func (s *FbCustomerConversationStore) SoftDelete() (int, error) {
 	return query.Table("fb_customer_conversation").UpdateMap(map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
+}
+
+func (s *FbCustomerConversationStore) UpdateType(typ fb_customer_conversation_type.FbCustomerConversationType) (int, error) {
+	query := s.query().Where(s.preds)
+	updateType, err := query.Table("fb_customer_conversation").UpdateMap(map[string]interface{}{
+		"type": typ,
+	})
+	return updateType, err
 }
 
 func normalizeText(s string) string {

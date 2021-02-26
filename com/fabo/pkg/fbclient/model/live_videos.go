@@ -21,6 +21,27 @@ type LiveVideo struct {
 	CreationTime *FacebookTime      `json:"creation_time"`
 }
 
+type SimplifyLiveVideosResponse struct {
+	Data   []*SimplifyLiveVideo    `json:"data"`
+	Paging *FacebookPagingResponse `json:"paging"`
+}
+
+type SimplifyLiveVideo struct {
+	ID           string          `json:"id"`
+	Video        *LiveVideoVideo `json:"video"`
+	From         *ObjectFrom     `json:"from"`
+	Status       string          `json:"status"`
+	CreationTime *FacebookTime   `json:"creation_time"`
+}
+
+func (s SimplifyLiveVideo) GetExternalPostID() string {
+	if s.Video == nil || s.From == nil {
+		return ""
+	}
+
+	return s.From.ID + "_" + s.Video.ID
+}
+
 type LiveVideoVideo struct {
 	ID      string `json:"id"`
 	Picture string `json:"picture"`
