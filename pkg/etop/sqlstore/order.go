@@ -40,7 +40,7 @@ var filterOrderWhitelist = sqlstore.FilterWhitelist{
 	Dates:    []string{"created_at", "updated_at"},
 	Equals:   []string{"shop.id", "code", "source", "external_code", "external_id", "customer.phone", "customer.id", "pre_order", "external_comment_id", "external_post_id"},
 	Numbers:  []string{"total_amount", "chargeable_weight"},
-	Status:   []string{"status", "confirm_status", "fulfillment.shipping_status", "etop_payment_status"},
+	Status:   []string{"status", "confirm_status", "fulfillment.shipping_status", "etop_payment_status", "sh_confirm"},
 	PrefixOrRename: map[string]string{
 		"fulfillment.shipping_code":   `"order".fulfillment_shipping_codes`,
 		"fulfillment.shipping_state":  `"order".fulfillment_shipping_states`,
@@ -57,6 +57,7 @@ var filterOrderWhitelist = sqlstore.FilterWhitelist{
 		"chargeable_weight": `"order".total_weight`,
 		"status":            `"order".status`,
 		"fulfillment.ids":   `"order".fulfillment_ids`,
+		"sh_confirm":        `"order".shop_confirm`,
 	},
 }
 
