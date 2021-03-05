@@ -208,6 +208,14 @@ func (m *DeleteTicketLabelRequest) String() string {
 	return jsonx.MustMarshalToString(m)
 }
 
+type GetTicketLabelsRequest struct {
+	Tree bool `json:"tree"`
+}
+
+func (m *GetTicketLabelsRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
 type CreateTicketLabelRequest struct {
 	ParentID dot.ID `json:"parent_id"`
 	Name     string `json:"name"`

@@ -6,6 +6,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
@@ -33,12 +34,14 @@ type TicketComment struct {
 func (m *TicketComment) String() string { return jsonx.MustMarshalToString(m) }
 
 type TicketLabel struct {
-	ID       dot.ID         `json:"id"`
-	Name     string         `json:"name"`
-	Code     string         `json:"code"`
-	Color    string         `json:"color"`
-	ParentID dot.ID         `json:"parent_id"`
-	Children []*TicketLabel `json:"children"`
+	ID       dot.ID                 `json:"id"`
+	ShopID   dot.ID                 `json:"shop_id"`
+	Type     ticket_type.TicketType `json:"type"`
+	Name     string                 `json:"name"`
+	Code     string                 `json:"code"`
+	Color    string                 `json:"color"`
+	ParentID dot.ID                 `json:"parent_id"`
+	Children []*TicketLabel         `json:"children"`
 }
 
 func (m *TicketLabel) String() string { return jsonx.MustMarshalToString(m) }
@@ -76,6 +79,8 @@ type Ticket struct {
 	ClosedAt    dot.Time `json:"closed_at"`
 
 	From *TicketFrom `json:"from"`
+
+	Type ticket_type.TicketType `json:"type"`
 }
 
 func (m *Ticket) String() string { return jsonx.MustMarshalToString(m) }

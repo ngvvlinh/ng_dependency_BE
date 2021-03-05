@@ -8,6 +8,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/capi/dot"
 )
 
@@ -50,6 +51,8 @@ type Ticket struct {
 	ClosedAt    time.Time
 
 	ConnectionID dot.ID
+
+	Type ticket_type.TicketType
 }
 
 type TicketComment struct {
@@ -73,14 +76,16 @@ type TicketComment struct {
 }
 
 type TicketLabel struct {
-	ID        dot.ID         `json:"id"`
-	Name      string         `json:"name"`
-	Code      string         `json:"code"`
-	ParentID  dot.ID         `json:"parent_id"`
-	Color     string         `json:"color"`
-	Children  []*TicketLabel `json:"children"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	ID        dot.ID                 `json:"id"`
+	ShopID    dot.ID                 `json:"shop_id"`
+	Type      ticket_type.TicketType `json:"type"`
+	Name      string                 `json:"name"`
+	Code      string                 `json:"code"`
+	ParentID  dot.ID                 `json:"parent_id"`
+	Color     string                 `json:"color"`
+	Children  []*TicketLabel         `json:"children"`
+	CreatedAt time.Time              `json:"created_at"`
+	UpdatedAt time.Time              `json:"updated_at"`
 }
 
 type TicketLabelExternal struct {

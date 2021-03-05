@@ -2,9 +2,9 @@ package aggregate
 
 import (
 	"context"
-	"sort"
 
 	"o.o/api/supporting/ticket"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/backend/com/supporting/ticket/convert"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/conversion"
@@ -40,12 +40,16 @@ func (a TicketAggregate) CreateTicketLabel(ctx context.Context, args *ticket.Cre
 			return err
 		}
 
-		result, err := a.TicketLabelStore(ctx).ListTicketLabels()
+		query := a.TicketLabelStore(ctx).Type(args.Type)
+		if args.Type == ticket_type.Internal {
+			query = query.ShopID(args.ShopID)
+		}
+		result, err := query.ListTicketLabels()
 		if err != nil {
 			return err
 		}
 
-		if err := a.SetTicketLabels(ctx, &result); err != nil {
+		if err := a.SetTicketLabels(ctx, args.ShopID, args.Type, &result); err != nil {
 			return err
 		}
 		return nil
@@ -57,7 +61,7 @@ func (a TicketAggregate) CreateTicketLabel(ctx context.Context, args *ticket.Cre
 }
 
 func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.UpdateTicketLabelArgs) (*ticket.TicketLabel, error) {
-	ticketLabelCore, err := a.TicketLabelStore(ctx).ID(args.ID).GetTicketLabel()
+	ticketLabelCore, err := a.TicketLabelStore(ctx).ID(args.ID).Type(args.Type).GetTicketLabel()
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +95,7 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 			return err
 		}
 
-		return a.SetTicketLabels(ctx, &result)
+		return a.SetTicketLabels(ctx, args.ShopID, ticketLabelCore.Type, &result)
 	})
 	if err != nil {
 		return nil, err
@@ -102,7 +106,7 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 		return nil, err
 	}
 
-	if err = a.SetTicketLabels(ctx, &result); err != nil {
+	if err = a.SetTicketLabels(ctx, args.ShopID, args.Type, &result); err != nil {
 		return nil, err
 	}
 
@@ -111,11 +115,15 @@ func (a TicketAggregate) UpdateTicketLabel(ctx context.Context, args *ticket.Upd
 }
 
 func (a TicketAggregate) DeleteTicketLabel(ctx context.Context, args *ticket.DeleteTicketLabelArgs) (int, error) {
-	if _, err := a.TicketLabelStore(ctx).ID(args.ID).GetTicketLabel(); err != nil {
+	ticketLabel, err := a.TicketLabelStore(ctx).ID(args.ID).Type(args.Type).GetTicketLabel()
+	if err != nil {
 		return 0, err
 	}
 
-	labels, err := a.listTicketLabels(ctx)
+	labels, err := a.listTicketLabels(ctx, listTicketLabelsArgs{
+		Type:   ticketLabel.Type,
+		ShopID: args.ShopID,
+	})
 	if err != nil {
 		return 0, err
 	}
@@ -143,7 +151,7 @@ func (a TicketAggregate) DeleteTicketLabel(ctx context.Context, args *ticket.Del
 			return err
 		}
 
-		return a.SetTicketLabels(ctx, &result)
+		return a.SetTicketLabels(ctx, args.ShopID, ticketLabel.Type, &result)
 	})
 	if err != nil {
 		return 0, err
@@ -205,42 +213,32 @@ func getLabel(id dot.ID, a []*ticket.TicketLabel) *ticket.TicketLabel {
 }
 
 func MakeTreeLabel(ticketLabels []*ticket.TicketLabel) []*ticket.TicketLabel {
-	sort.Slice(ticketLabels, func(i, j int) bool {
-		return ticketLabels[i].ParentID < ticketLabels[j].ParentID
-	})
-	var result []*ticket.TicketLabel
-	var ok bool
+	var (
+		result []*ticket.TicketLabel
+		queue  []*ticket.TicketLabel
+	)
+
+	mapParentIDAndTicketLabels := make(map[dot.ID][]*ticket.TicketLabel)
+
 	for _, ticketLabel := range ticketLabels {
 		if ticketLabel.ParentID == 0 {
 			result = append(result, ticketLabel)
-			continue
+			queue = append(queue, ticketLabel)
 		}
-		result, ok = addToTreeLabel(ticketLabel, result)
-		if ok {
-			// error or something else
-		}
+		mapParentIDAndTicketLabels[ticketLabel.ParentID] = append(mapParentIDAndTicketLabels[ticketLabel.ParentID], ticketLabel)
 	}
-	return result
-}
 
-func addToTreeLabel(child *ticket.TicketLabel, father []*ticket.TicketLabel) ([]*ticket.TicketLabel, bool) {
-	if len(father) == 0 {
-		return father, false
+	start := 0
+
+	for start < len(queue) {
+		ticketLabel := queue[start]
+
+		ticketLabel.Children = mapParentIDAndTicketLabels[ticketLabel.ID]
+		queue = append(queue, mapParentIDAndTicketLabels[ticketLabel.ID]...)
+		start += 1
 	}
-	for k, v := range father {
-		if child.ParentID == v.ID {
-			father[k].Children = append(father[k].Children, child)
-			return father, true
-		}
-	}
-	for k, _ := range father {
-		var found bool
-		father[k].Children, found = addToTreeLabel(child, father[k].Children)
-		if found {
-			return father, true
-		}
-	}
-	return father, false
+
+	return result
 }
 
 // get all label_ids from this id to father have id = 0

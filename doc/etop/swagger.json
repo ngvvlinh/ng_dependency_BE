@@ -3880,8 +3880,23 @@
         "parent_id": {
           "type": "string",
           "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "$ref": "#/definitions/iyTicketType"
         }
       }
+    },
+    "iyTicketType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "internal",
+        "system"
+      ]
     },
     "jiAuthenticationMethod": {
       "type": "string",

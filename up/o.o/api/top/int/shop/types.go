@@ -34,6 +34,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/api/top/types/etc/try_on"
 	"o.o/api/top/types/etc/ws_banner_show_style"
 	"o.o/api/top/types/etc/ws_list_product_show_style"
@@ -49,13 +50,17 @@ type GetTicketCommentsResponse struct {
 
 func (m *GetTicketCommentsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
+type GetTicketLabelsResponse struct {
+	TicketLabels []*shoptypes.TicketLabel `json:"ticket_labels"`
+}
+
+func (m *GetTicketLabelsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
 type GetTicketCommentsRequest struct {
 	TicketID dot.ID                  `json:"ticket_id"`
 	Filter   *FilterGetTicketComment `json:"filter"`
 	Paging   *common.Paging          `json:"paging"`
 }
-
-func (m *GetTicketCommentsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type FilterGetTicketComment struct {
 	IDs       []dot.ID `json:"ids"`
@@ -65,6 +70,8 @@ type FilterGetTicketComment struct {
 }
 
 func (m *FilterGetTicketComment) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *GetTicketCommentsRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateTicketCommentRequest struct {
 	ID        dot.ID   `json:"id"`
@@ -109,6 +116,7 @@ type FilterShopGetTicket struct {
 	State     ticket_state.TicketState      `json:"state"`
 	Title     filter.FullTextSearch         `json:"title"`
 	Code      string                        `json:"code"`
+	Types     []ticket_type.TicketType      `json:"types"`
 }
 
 func (m *FilterShopGetTicket) String() string { return jsonx.MustMarshalToString(m) }
@@ -133,6 +141,43 @@ type GetTicketsResponse struct {
 
 func (m *GetTicketsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
+type ConfirmTicketRequest struct {
+	TicketID dot.ID `json:"ticket_id"`
+	Note     string `json:"note"`
+}
+
+func (m *ConfirmTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type ReopenTicketRequest struct {
+	TicketID dot.ID `json:"ticket_id"`
+	Note     string `json:"note"`
+}
+
+func (m *ReopenTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CloseTicketRequest struct {
+	TicketID dot.ID `json:"ticket_id"`
+	Note     string `json:"note"`
+	// @required
+	State ticket_state.TicketState `json:"state"`
+}
+
+func (m *CloseTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UnassignTicketRequest struct {
+	AssignedUserIDs []dot.ID `json:"assigned_user_ids"`
+	TicketID        dot.ID   `json:"ticket_id"`
+}
+
+func (m *UnassignTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type AssignTicketRequest struct {
+	AssignedUserIDs []dot.ID `json:"assigned_user_ids"`
+	TicketID        dot.ID   `json:"ticket_id"`
+}
+
+func (m *AssignTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type CreateTicketRequest struct {
 	LabelIDs []dot.ID `json:"label_ids"`
 
@@ -146,9 +191,68 @@ type CreateTicketRequest struct {
 	RefType ticket_ref_type.TicketRefType `json:"ref_type"`
 	RefCode string                        `json:"ref_code"`
 	Source  ticket_source.TicketSource    `json:"source"`
+
+	Type ticket_type.NullTicketType `json:"type"`
 }
 
 func (m *CreateTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateTicketRefTicketIDRequest struct {
+	ID dot.ID `json:"id"`
+	// Truyền lên 0 để xóa ref_ticket_id
+	RefTicketID dot.NullID `json:"ref_ticket_id"`
+}
+
+func (m *UpdateTicketRefTicketIDRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteTicketLabelRequest struct {
+	ID          dot.ID `json:"id"`
+	DeleteChild bool   `json:"delete_child"`
+}
+
+func (m *DeleteTicketLabelRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type GetTicketLabelsRequest struct {
+	Filter *FilterGetTicketLabels `json:"filter"`
+	Tree   bool                   `json:"tree"`
+}
+
+func (m *GetTicketLabelsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterGetTicketLabels struct {
+	Type ticket_type.NullTicketType `json:"type"`
+}
+
+func (m *FilterGetTicketLabels) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateTicketLabelRequest struct {
+	ParentID dot.ID `json:"parent_id"`
+	Name     string `json:"name"`
+	Color    string `json:"color"`
+	Code     string `json:"code"`
+}
+
+func (m *CreateTicketLabelRequest) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type UpdateTicketLabelRequest struct {
+	ID       dot.ID         `json:"id"`
+	Name     dot.NullString `json:"name"`
+	Color    string         `json:"color"`
+	Code     dot.NullString `json:"code"`
+	ParentID dot.NullID     `json:"parent_id"`
+}
+
+func (m *UpdateTicketLabelRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteTicketLabelResponse struct {
+	Count int `json:"deleted"`
+}
+
+func (m *DeleteTicketLabelResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetWsCategoriesByIDsResponse struct {
 	WsCategories []*WsCategory `json:"ws_categorys"`

@@ -447,13 +447,26 @@ type SubscriptionService interface {
 type TicketService interface {
 	CreateTicket(context.Context, *CreateTicketRequest) (*shoptypes.Ticket, error)
 	GetTickets(context.Context, *GetTicketsRequest) (*GetTicketsResponse, error)
-	GetTicketsByRefTicketID(context.Context, *shoptypes.GetTicketsByRefTicketIDRequest) (*shoptypes.GetTicketsByRefTicketIDResponse, error)
 	GetTicket(context.Context, *GetTicketRequest) (*shoptypes.Ticket, error)
+	GetTicketsByRefTicketID(context.Context, *shoptypes.GetTicketsByRefTicketIDRequest) (*shoptypes.GetTicketsByRefTicketIDResponse, error)
+	AssignTicket(context.Context, *AssignTicketRequest) (*shoptypes.Ticket, error)
+	UnassignTicket(context.Context, *AssignTicketRequest) (*shoptypes.Ticket, error)
+	ConfirmTicket(context.Context, *ConfirmTicketRequest) (*shoptypes.Ticket, error)
+	CloseTicket(context.Context, *CloseTicketRequest) (*shoptypes.Ticket, error)
+	ReopenTicket(context.Context, *ReopenTicketRequest) (*shoptypes.Ticket, error)
+	UpdateTicketRefTicketID(context.Context, *UpdateTicketRefTicketIDRequest) (*cm.UpdatedResponse, error)
 
+	// ticket comment
 	CreateTicketComment(context.Context, *CreateTicketCommentRequest) (*shoptypes.TicketComment, error)
 	UpdateTicketComment(context.Context, *UpdateTicketCommentRequest) (*shoptypes.TicketComment, error)
 	DeleteTicketComment(context.Context, *DeleteTicketCommentRequest) (*DeleteTicketCommentResponse, error)
 	GetTicketComments(context.Context, *GetTicketCommentsRequest) (*GetTicketCommentsResponse, error)
+
+	// ticket label
+	CreateTicketLabel(context.Context, *CreateTicketLabelRequest) (*shoptypes.TicketLabel, error)
+	UpdateTicketLabel(context.Context, *UpdateTicketLabelRequest) (*shoptypes.TicketLabel, error)
+	DeleteTicketLabel(context.Context, *DeleteTicketLabelRequest) (*DeleteTicketLabelResponse, error)
+	GetTicketLabels(context.Context, *GetTicketLabelsRequest) (*GetTicketLabelsResponse, error)
 }
 
 // +apix:path=/shop.Contact

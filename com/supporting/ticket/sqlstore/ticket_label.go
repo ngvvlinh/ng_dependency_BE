@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/supporting/ticket"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/backend/com/supporting/ticket/convert"
 	"o.o/backend/com/supporting/ticket/model"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
@@ -60,6 +61,21 @@ func (s *TicketLabelStore) ID(id dot.ID) *TicketLabelStore {
 
 func (s *TicketLabelStore) IDs(ids ...dot.ID) *TicketLabelStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
+	return s
+}
+
+func (s *TicketLabelStore) ShopID(shopID dot.ID) *TicketLabelStore {
+	s.preds = append(s.preds, s.ft.ByShopID(shopID))
+	return s
+}
+
+func (s *TicketLabelStore) Type(typ ticket_type.TicketType) *TicketLabelStore {
+	s.preds = append(s.preds, s.ft.ByType(typ))
+	return s
+}
+
+func (s *TicketLabelStore) InternalAndSystem(shopID dot.ID) *TicketLabelStore {
+	s.preds = append(s.preds, sq.NewExpr("type = $1 OR shop_id = $2", ticket_type.System, shopID))
 	return s
 }
 

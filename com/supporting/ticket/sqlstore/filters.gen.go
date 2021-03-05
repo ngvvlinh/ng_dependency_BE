@@ -12,6 +12,7 @@ import (
 	ticket_ref_type "o.o/api/top/types/etc/ticket/ticket_ref_type"
 	ticket_source "o.o/api/top/types/etc/ticket/ticket_source"
 	ticket_state "o.o/api/top/types/etc/ticket/ticket_state"
+	ticket_type "o.o/api/top/types/etc/ticket/ticket_type"
 	sq "o.o/backend/pkg/common/sql/sq"
 	dot "o.o/capi/dot"
 )
@@ -505,6 +506,25 @@ func (ft *TicketFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilte
 	}
 }
 
+func (ft *TicketFilters) ByType(Type ticket_type.TicketType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == 0,
+	}
+}
+
+func (ft *TicketFilters) ByTypePtr(Type *ticket_type.TicketType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == nil,
+		IsZero: Type != nil && (*Type) == 0,
+	}
+}
+
 type TicketCommentFilters struct{ prefix string }
 
 func NewTicketCommentFilters(prefix string) TicketCommentFilters {
@@ -815,6 +835,44 @@ func (ft *TicketLabelFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 		Value:  ID,
 		IsNil:  ID == nil,
 		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *TicketLabelFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *TicketLabelFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *TicketLabelFilters) ByType(Type ticket_type.TicketType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == 0,
+	}
+}
+
+func (ft *TicketLabelFilters) ByTypePtr(Type *ticket_type.TicketType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == nil,
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 

@@ -104,6 +104,9 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 		if args.Filter.RefCode != "" {
 			query = query.State(args.Filter.State)
 		}
+		if len(args.Filter.Types) != 0 {
+			query = query.Types(args.Filter.Types)
+		}
 	}
 	tickets, err := query.WithPaging(args.Paging).ListTickets()
 	if err != nil {

@@ -213,6 +213,7 @@ const (
 	// shop ticket
 	ShopTicketCreate permission.ActionType = "shop/shop_ticket:create"
 	ShopTicketUpdate permission.ActionType = "shop/shop_ticket:update"
+	ShopTicketAssign permission.ActionType = "shop/shop_ticket:assign"
 	ShopTicketView   permission.ActionType = "shop/shop_ticket:view"
 
 	// shop ticket comment
@@ -220,6 +221,11 @@ const (
 	ShopTicketCommentUpdate permission.ActionType = "shop/shop_ticket_comment:update"
 	ShopTicketCommentView   permission.ActionType = "shop/shop_ticket_comment:view"
 	ShopTicketCommentDelete permission.ActionType = "shop/shop_ticket_comment:delete"
+
+	// shop ticket label
+	ShopTicketLabelCreate permission.ActionType = "shop/shop_ticket_label:create"
+	ShopTicketLabelUpdate permission.ActionType = "shop/shop_ticket_label:update"
+	ShopTicketLabelView   permission.ActionType = "shop/shop_ticket_label:view"
 
 	ShopPaymentCreate permission.ActionType = "shop/payment:create"
 	ShopPaymentView   permission.ActionType = "shop/payment:view"
@@ -316,6 +322,7 @@ const (
 
 	AdminTicketLabelCreate permission.ActionType = "admin/admin_ticket_label:create"
 	AdminTicketLabelUpdate permission.ActionType = "admin/admin_ticket_label:update"
+	AdminTicketLabelView   permission.ActionType = "admin/admin_ticket_label:view"
 
 	// Admin MoneyTransaction
 	AdminMoneyTransactionCreate  permission.ActionType = "admin/money_transaction:create"
@@ -1106,10 +1113,19 @@ var _acl = map[string]*permission.Decl{
 	"shop.Ticket/GetTickets":              {Type: Shop, Actions: actions(ShopTicketView)},
 	"shop.Ticket/GetTicketsByRefTicketID": {Type: Shop, Actions: actions(ShopTicketView)},
 	"shop.Ticket/GetTicket":               {Type: Shop, Actions: actions(ShopTicketView)},
-	"shop.Ticket/GetTicketComments":       {Type: Shop, Actions: actions(ShopTicketCommentView)},
+	"shop.Ticket/AssignTicket":            {Type: Shop, Actions: actions(ShopTicketAssign)},
+	"shop.Ticket/ConfirmTicket":           {Type: Shop, Actions: actions(ShopTicketUpdate)},
+	"shop.Ticket/CloseTicket":             {Type: Shop, Actions: actions(ShopTicketUpdate)},
+	"shop.Ticket/ReopenTicket":            {Type: Shop, Actions: actions(ShopTicketUpdate)},
+	"shop.Ticket/UpdateTicketRefTicketID": {Type: Shop, Actions: actions(ShopTicketUpdate)},
 	"shop.Ticket/CreateTicketComment":     {Type: Shop, Actions: actions(ShopTicketCommentCreate)},
 	"shop.Ticket/UpdateTicketComment":     {Type: Shop, Actions: actions(ShopTicketCommentUpdate)},
 	"shop.Ticket/DeleteTicketComment":     {Type: Shop, Actions: actions(ShopTicketCommentDelete)},
+	"shop.Ticket/GetTicketComments":       {Type: Shop, Actions: actions(ShopTicketCommentView)},
+	"shop.Ticket/CreateTicketLabel":       {Type: Shop, Actions: actions(ShopTicketLabelCreate)},
+	"shop.Ticket/UpdateTicketLabel":       {Type: Shop, Actions: actions(ShopTicketLabelUpdate)},
+	"shop.Ticket/DeleteTicketLabel":       {Type: Shop, Actions: actions(ShopTicketLabelUpdate)},
+	"shop.Ticket/GetTicketLabels":         {Type: Shop, Actions: actions(ShopTicketLabelView)},
 
 	"admin.Ticket/CreateTicket":            {Type: EtopAdmin, Actions: actions(AdminTicketCreate)},
 	"admin.Ticket/GetTickets":              {Type: EtopAdmin, Actions: actions(AdminTicketView)},
@@ -1129,7 +1145,9 @@ var _acl = map[string]*permission.Decl{
 	"admin.Ticket/CreateTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelCreate)},
 	"admin.Ticket/UpdateTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelUpdate)},
 	"admin.Ticket/DeleteTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelUpdate)},
-	"etop.Ticket/GetTicketLabels":    {Type: Public},
+	"admin.Ticket/GetTicketLabels":   {Type: EtopAdmin, Actions: actions(AdminTicketLabelView)},
+
+	"etop.Ticket/GetTicketLabels": {Type: Public},
 
 	// -- contact -- //
 	"shop.Contact/GetContact":    {Type: Shop},

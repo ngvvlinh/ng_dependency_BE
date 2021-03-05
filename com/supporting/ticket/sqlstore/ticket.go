@@ -5,9 +5,11 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/supporting/ticket"
+	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/backend/com/supporting/ticket/convert"
 	"o.o/backend/com/supporting/ticket/model"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
@@ -119,6 +121,16 @@ func (s *TicketStore) RefID(refID dot.ID) *TicketStore {
 	return s
 }
 
+func (s *TicketStore) Type(typ ticket_type.TicketType) *TicketStore {
+	s.preds = append(s.preds, s.ft.ByType(typ).Optional())
+	return s
+}
+
+func (s *TicketStore) Types(types []ticket_type.TicketType) *TicketStore {
+	s.preds = append(s.preds, sq.In("type", types))
+	return s
+}
+
 func (s *TicketStore) Code(code string) *TicketStore {
 	s.preds = append(s.preds, s.ft.ByCode(code).Optional())
 	return s
@@ -196,6 +208,14 @@ func (s *TicketStore) UpdateTicketDB(args *model.Ticket) error {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	return query.ShouldUpdate(args)
+}
+
+func (s *TicketStore) UpdateTicketStatus(status status5.Status) error {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	return query.Table("ticket").ShouldUpdateMap(map[string]interface{}{
+		"status": status,
+	})
 }
 
 func (s *TicketStore) Create(args *ticket.Ticket) error {

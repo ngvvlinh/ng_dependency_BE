@@ -5004,14 +5004,24 @@ func NewTicketServiceServer(builder func() TicketService, hooks ...httprpc.Hooks
 
 const TicketServicePathPrefix = "/shop.Ticket/"
 
+const Path_Ticket_AssignTicket = "/shop.Ticket/AssignTicket"
+const Path_Ticket_CloseTicket = "/shop.Ticket/CloseTicket"
+const Path_Ticket_ConfirmTicket = "/shop.Ticket/ConfirmTicket"
 const Path_Ticket_CreateTicket = "/shop.Ticket/CreateTicket"
 const Path_Ticket_CreateTicketComment = "/shop.Ticket/CreateTicketComment"
+const Path_Ticket_CreateTicketLabel = "/shop.Ticket/CreateTicketLabel"
 const Path_Ticket_DeleteTicketComment = "/shop.Ticket/DeleteTicketComment"
+const Path_Ticket_DeleteTicketLabel = "/shop.Ticket/DeleteTicketLabel"
 const Path_Ticket_GetTicket = "/shop.Ticket/GetTicket"
 const Path_Ticket_GetTicketComments = "/shop.Ticket/GetTicketComments"
+const Path_Ticket_GetTicketLabels = "/shop.Ticket/GetTicketLabels"
 const Path_Ticket_GetTickets = "/shop.Ticket/GetTickets"
 const Path_Ticket_GetTicketsByRefTicketID = "/shop.Ticket/GetTicketsByRefTicketID"
+const Path_Ticket_ReopenTicket = "/shop.Ticket/ReopenTicket"
+const Path_Ticket_UnassignTicket = "/shop.Ticket/UnassignTicket"
 const Path_Ticket_UpdateTicketComment = "/shop.Ticket/UpdateTicketComment"
+const Path_Ticket_UpdateTicketLabel = "/shop.Ticket/UpdateTicketLabel"
+const Path_Ticket_UpdateTicketRefTicketID = "/shop.Ticket/UpdateTicketRefTicketID"
 
 func (s *TicketServiceServer) PathPrefix() string {
 	return TicketServicePathPrefix
@@ -5046,6 +5056,45 @@ func (s *TicketServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Requ
 
 func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/shop.Ticket/AssignTicket":
+		msg := &AssignTicketRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.AssignTicket(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/CloseTicket":
+		msg := &CloseTicketRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CloseTicket(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/ConfirmTicket":
+		msg := &ConfirmTicketRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ConfirmTicket(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Ticket/CreateTicket":
 		msg := &CreateTicketRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -5072,6 +5121,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			return
 		}
 		return msg, fn, nil
+	case "/shop.Ticket/CreateTicketLabel":
+		msg := &CreateTicketLabelRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateTicketLabel(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Ticket/DeleteTicketComment":
 		msg := &DeleteTicketCommentRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -5082,6 +5144,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 				return
 			}
 			resp, err = inner.DeleteTicketComment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/DeleteTicketLabel":
+		msg := &DeleteTicketLabelRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteTicketLabel(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -5111,6 +5186,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			return
 		}
 		return msg, fn, nil
+	case "/shop.Ticket/GetTicketLabels":
+		msg := &GetTicketLabelsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetTicketLabels(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Ticket/GetTickets":
 		msg := &GetTicketsRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -5137,6 +5225,32 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 			return
 		}
 		return msg, fn, nil
+	case "/shop.Ticket/ReopenTicket":
+		msg := &ReopenTicketRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ReopenTicket(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/UnassignTicket":
+		msg := &AssignTicketRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UnassignTicket(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Ticket/UpdateTicketComment":
 		msg := &UpdateTicketCommentRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -5147,6 +5261,32 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 				return
 			}
 			resp, err = inner.UpdateTicketComment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/UpdateTicketLabel":
+		msg := &UpdateTicketLabelRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateTicketLabel(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/UpdateTicketRefTicketID":
+		msg := &UpdateTicketRefTicketIDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateTicketRefTicketID(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

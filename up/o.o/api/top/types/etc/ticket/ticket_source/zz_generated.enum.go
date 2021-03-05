@@ -15,21 +15,30 @@ import (
 var __jsonNull = []byte("null")
 
 var enumTicketSourceName = map[int]string{
-	65: "pos_web",
-	12: "pos_app",
-	74: "shipment_app",
-	38: "admin",
-	42: "system",
-	98: "webphone",
+	65:  "pos_web",
+	12:  "pos_app",
+	74:  "shipment_app",
+	101: "telecom_app_call",
+	77:  "telecom_web",
+	79:  "telecom_ext_call",
+	42:  "telecom_web_call",
+	85:  "shipment_web",
+	38:  "admin",
+	98:  "webphone",
 }
 
 var enumTicketSourceValue = map[string]int{
-	"pos_web":      65,
-	"pos_app":      12,
-	"shipment_app": 74,
-	"admin":        38,
-	"system":       42,
-	"webphone":     98,
+	"pos_web":          65,
+	"pos_app":          12,
+	"shipment_app":     74,
+	"telecom_app_call": 101,
+	"telecom_web":      77,
+	"telecom_ext_call": 79,
+	"telecom_web_call": 42,
+	"shipment_web":     85,
+	"admin":            38,
+	"system":           42,
+	"webphone":         98,
 }
 
 func ParseTicketSource(s string) (TicketSource, bool) {

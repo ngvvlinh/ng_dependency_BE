@@ -10,6 +10,7 @@ import (
 	shoptypes "o.o/api/top/int/shop/types"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/account_type"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -172,6 +173,7 @@ func (s *TicketService) CreateTicket(ctx context.Context, request *api.CreateTic
 		CreatedName:   s.SS.User().FullName,
 		CreatedSource: account_type.Etop,
 		RefTicketID:   request.RefTicketID,
+		Type:          ticket_type.System,
 	}
 	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -205,6 +207,7 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 		}
 
 	}
+	filter.Types = []ticket_type.TicketType{ticket_type.System}
 	paging := cmapi.CMPaging(request.Paging)
 	query := &ticket.ListTicketsQuery{
 		Filter: filter,
@@ -296,8 +299,24 @@ func (s *TicketService) CloseTicket(ctx context.Context, request *api.CloseTicke
 	return convertpball.Convert_core_Ticket_to_api_Ticket(cmd.Result), nil
 }
 
+func (s *TicketService) GetTicketLabels(ctx context.Context, req *api.GetTicketLabelsRequest) (*api.GetTicketLabelsResponse, error) {
+	query := &ticket.ListTicketLabelsQuery{
+		Tree: req.Tree,
+		Type: ticket_type.System.Wrap(),
+	}
+
+	err := s.TicketQuery.Dispatch(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	return &api.GetTicketLabelsResponse{
+		TicketLabels: convertpball.Convert_core_TicketLabels_to_api_TicketLabels(query.Result.TicketLabels),
+	}, nil
+}
+
 func (s *TicketService) CreateTicketLabel(ctx context.Context, request *api.CreateTicketLabelRequest) (*shoptypes.TicketLabel, error) {
 	cmd := &ticket.CreateTicketLabelCommand{
+		Type:     ticket_type.System,
 		Name:     request.Name,
 		Code:     request.Code,
 		Color:    request.Color,
@@ -313,6 +332,7 @@ func (s *TicketService) CreateTicketLabel(ctx context.Context, request *api.Crea
 func (s *TicketService) UpdateTicketLabel(ctx context.Context, request *api.UpdateTicketLabelRequest) (*shoptypes.TicketLabel, error) {
 	cmd := &ticket.UpdateTicketLabelCommand{
 		ID:       request.ID,
+		Type:     ticket_type.System,
 		Name:     request.Name,
 		Color:    request.Color,
 		Code:     request.Code,
@@ -328,6 +348,7 @@ func (s *TicketService) UpdateTicketLabel(ctx context.Context, request *api.Upda
 func (s *TicketService) DeleteTicketLabel(ctx context.Context, request *api.DeleteTicketLabelRequest) (*api.DeleteTicketLabelResponse, error) {
 	cmd := &ticket.DeleteTicketLabelCommand{
 		ID:          request.ID,
+		Type:        ticket_type.System,
 		DeleteChild: request.DeleteChild,
 	}
 	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {

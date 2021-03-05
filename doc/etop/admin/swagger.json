@@ -3204,6 +3204,33 @@
         }
       }
     },
+    "/api/admin.Ticket/GetTicketLabels": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "GetTicketLabels",
+        "operationId": "admin.Ticket-GetTicketLabels",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetTicketLabelsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetTicketLabelsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Ticket/GetTickets": {
       "post": {
         "tags": [
@@ -4582,6 +4609,9 @@
         "title": {
           "type": "string"
         },
+        "type": {
+          "$ref": "#/definitions/iyTicketType"
+        },
         "updated_at": {
           "type": "string",
           "format": "date-time"
@@ -4688,18 +4718,38 @@
         "parent_id": {
           "type": "string",
           "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "$ref": "#/definitions/iyTicketType"
         }
       }
     },
     "fpTicketSource": {
+      "description": "Deprecated values: \"system\"\\n",
       "type": "string",
       "enum": [
         "pos_web",
         "pos_app",
         "shipment_app",
+        "telecom_app_call",
+        "telecom_web",
+        "telecom_ext_call",
+        "telecom_web_call",
+        "shipment_web",
         "admin",
-        "system",
         "webphone"
+      ]
+    },
+    "iyTicketType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "internal",
+        "system"
       ]
     },
     "jjAccountType": {
@@ -9044,6 +9094,25 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/flTicketComment"
+          }
+        }
+      }
+    },
+    "xuGetTicketLabelsRequest": {
+      "type": "object",
+      "properties": {
+        "tree": {
+          "type": "boolean"
+        }
+      }
+    },
+    "xuGetTicketLabelsResponse": {
+      "type": "object",
+      "properties": {
+        "ticket_labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flTicketLabel"
           }
         }
       }

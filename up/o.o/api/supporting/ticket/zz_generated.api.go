@@ -14,6 +14,7 @@ import (
 	ticket_ref_type "o.o/api/top/types/etc/ticket/ticket_ref_type"
 	ticket_source "o.o/api/top/types/etc/ticket/ticket_source"
 	ticket_state "o.o/api/top/types/etc/ticket/ticket_state"
+	ticket_type "o.o/api/top/types/etc/ticket/ticket_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 )
@@ -90,6 +91,7 @@ type CreateTicketCommand struct {
 	CreatedBy       dot.ID
 	CreatedSource   account_type.AccountType
 	CreatedName     string
+	Type            ticket_type.TicketType
 
 	Result *Ticket `json:"-"`
 }
@@ -120,6 +122,8 @@ func (h AggregateHandler) HandleCreateTicketComment(ctx context.Context, msg *Cr
 }
 
 type CreateTicketLabelCommand struct {
+	ShopID   dot.ID
+	Type     ticket_type.TicketType
 	Name     string
 	Code     string
 	Color    string
@@ -162,6 +166,8 @@ func (h AggregateHandler) HandleDeleteTicketComment(ctx context.Context, msg *De
 
 type DeleteTicketLabelCommand struct {
 	ID          dot.ID
+	ShopID      dot.ID
+	Type        ticket_type.TicketType
 	DeleteChild bool
 
 	Result int `json:"-"`
@@ -247,6 +253,8 @@ func (h AggregateHandler) HandleUpdateTicketInfo(ctx context.Context, msg *Updat
 
 type UpdateTicketLabelCommand struct {
 	ID       dot.ID
+	ShopID   dot.ID
+	Type     ticket_type.TicketType
 	Color    string
 	Name     dot.NullString
 	Code     dot.NullString
@@ -343,7 +351,9 @@ func (h QueryServiceHandler) HandleListTicketComments(ctx context.Context, msg *
 }
 
 type ListTicketLabelsQuery struct {
-	Tree bool
+	Type   ticket_type.NullTicketType
+	ShopID dot.ID
+	Tree   bool
 
 	Result *GetTicketLabelsResponse `json:"-"`
 }
@@ -479,6 +489,7 @@ func (q *CreateTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _
 			CreatedBy:       q.CreatedBy,
 			CreatedSource:   q.CreatedSource,
 			CreatedName:     q.CreatedName,
+			Type:            q.Type,
 		}
 }
 
@@ -498,6 +509,7 @@ func (q *CreateTicketCommand) SetCreateTicketArgs(args *CreateTicketArgs) {
 	q.CreatedBy = args.CreatedBy
 	q.CreatedSource = args.CreatedSource
 	q.CreatedName = args.CreatedName
+	q.Type = args.Type
 }
 
 func (q *CreateTicketCommentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateTicketCommentArgs) {
@@ -532,6 +544,8 @@ func (q *CreateTicketCommentCommand) SetCreateTicketCommentArgs(args *CreateTick
 func (q *CreateTicketLabelCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateTicketLabelArgs) {
 	return ctx,
 		&CreateTicketLabelArgs{
+			ShopID:   q.ShopID,
+			Type:     q.Type,
 			Name:     q.Name,
 			Code:     q.Code,
 			Color:    q.Color,
@@ -540,6 +554,8 @@ func (q *CreateTicketLabelCommand) GetArgs(ctx context.Context) (_ context.Conte
 }
 
 func (q *CreateTicketLabelCommand) SetCreateTicketLabelArgs(args *CreateTicketLabelArgs) {
+	q.ShopID = args.ShopID
+	q.Type = args.Type
 	q.Name = args.Name
 	q.Code = args.Code
 	q.Color = args.Color
@@ -582,12 +598,16 @@ func (q *DeleteTicketLabelCommand) GetArgs(ctx context.Context) (_ context.Conte
 	return ctx,
 		&DeleteTicketLabelArgs{
 			ID:          q.ID,
+			ShopID:      q.ShopID,
+			Type:        q.Type,
 			DeleteChild: q.DeleteChild,
 		}
 }
 
 func (q *DeleteTicketLabelCommand) SetDeleteTicketLabelArgs(args *DeleteTicketLabelArgs) {
 	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Type = args.Type
 	q.DeleteChild = args.DeleteChild
 }
 
@@ -686,6 +706,8 @@ func (q *UpdateTicketLabelCommand) GetArgs(ctx context.Context) (_ context.Conte
 	return ctx,
 		&UpdateTicketLabelArgs{
 			ID:       q.ID,
+			ShopID:   q.ShopID,
+			Type:     q.Type,
 			Color:    q.Color,
 			Name:     q.Name,
 			Code:     q.Code,
@@ -695,6 +717,8 @@ func (q *UpdateTicketLabelCommand) GetArgs(ctx context.Context) (_ context.Conte
 
 func (q *UpdateTicketLabelCommand) SetUpdateTicketLabelArgs(args *UpdateTicketLabelArgs) {
 	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Type = args.Type
 	q.Color = args.Color
 	q.Name = args.Name
 	q.Code = args.Code
@@ -791,11 +815,15 @@ func (q *ListTicketCommentsQuery) SetGetTicketCommentsArgs(args *GetTicketCommen
 func (q *ListTicketLabelsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTicketLabelsArgs) {
 	return ctx,
 		&GetTicketLabelsArgs{
-			Tree: q.Tree,
+			Type:   q.Type,
+			ShopID: q.ShopID,
+			Tree:   q.Tree,
 		}
 }
 
 func (q *ListTicketLabelsQuery) SetGetTicketLabelsArgs(args *GetTicketLabelsArgs) {
+	q.Type = args.Type
+	q.ShopID = args.ShopID
 	q.Tree = args.Tree
 }
 

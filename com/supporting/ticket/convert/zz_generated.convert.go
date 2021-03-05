@@ -180,6 +180,7 @@ func convert_ticketmodel_Ticket_ticket_Ticket(arg *ticketmodel.Ticket, out *tick
 	out.ConfirmedAt = arg.ConfirmedAt         // simple assign
 	out.ClosedAt = arg.ClosedAt               // simple assign
 	out.ConnectionID = arg.ConnectionID       // simple assign
+	out.Type = arg.Type                       // simple assign
 }
 
 func Convert_ticketmodel_Tickets_ticket_Tickets(args []*ticketmodel.Ticket) (outs []*ticket.Ticket) {
@@ -234,6 +235,7 @@ func convert_ticket_Ticket_ticketmodel_Ticket(arg *ticket.Ticket, out *ticketmod
 	out.ClosedAt = arg.ClosedAt               // simple assign
 	out.WLPartnerID = 0                       // zero value
 	out.ConnectionID = arg.ConnectionID       // simple assign
+	out.Type = arg.Type                       // simple assign
 }
 
 func Convert_ticket_Tickets_ticketmodel_Tickets(args []*ticket.Ticket) (outs []*ticketmodel.Ticket) {
@@ -289,6 +291,7 @@ func apply_ticket_CreateTicketArgs_ticket_Ticket(arg *ticket.CreateTicketArgs, o
 	out.ConfirmedAt = time.Time{}             // zero value
 	out.ClosedAt = time.Time{}                // zero value
 	out.ConnectionID = 0                      // zero value
+	out.Type = arg.Type                       // simple assign
 }
 
 func Apply_ticket_UpdateTicketInfoArgs_ticket_Ticket(arg *ticket.UpdateTicketInfoArgs, out *ticket.Ticket) *ticket.Ticket {
@@ -332,6 +335,7 @@ func apply_ticket_UpdateTicketInfoArgs_ticket_Ticket(arg *ticket.UpdateTicketInf
 	out.ConfirmedAt = out.ConfirmedAt                        // no change
 	out.ClosedAt = out.ClosedAt                              // no change
 	out.ConnectionID = out.ConnectionID                      // no change
+	out.Type = out.Type                                      // no change
 }
 
 //-- convert o.o/api/supporting/ticket.TicketComment --//
@@ -516,6 +520,8 @@ func Convert_ticketmodel_TicketLabel_ticket_TicketLabel(arg *ticketmodel.TicketL
 
 func convert_ticketmodel_TicketLabel_ticket_TicketLabel(arg *ticketmodel.TicketLabel, out *ticket.TicketLabel) {
 	out.ID = arg.ID               // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.Type = arg.Type           // simple assign
 	out.Name = arg.Name           // simple assign
 	out.Code = arg.Code           // simple assign
 	out.ParentID = arg.ParentID   // simple assign
@@ -550,6 +556,8 @@ func Convert_ticket_TicketLabel_ticketmodel_TicketLabel(arg *ticket.TicketLabel,
 
 func convert_ticket_TicketLabel_ticketmodel_TicketLabel(arg *ticket.TicketLabel, out *ticketmodel.TicketLabel) {
 	out.ID = arg.ID               // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.Type = arg.Type           // simple assign
 	out.Name = arg.Name           // simple assign
 	out.Code = arg.Code           // simple assign
 	out.Color = arg.Color         // simple assign
@@ -585,6 +593,8 @@ func Apply_ticket_CreateTicketLabelArgs_ticket_TicketLabel(arg *ticket.CreateTic
 
 func apply_ticket_CreateTicketLabelArgs_ticket_TicketLabel(arg *ticket.CreateTicketLabelArgs, out *ticket.TicketLabel) {
 	out.ID = 0                  // zero value
+	out.ShopID = arg.ShopID     // simple assign
+	out.Type = arg.Type         // simple assign
 	out.Name = arg.Name         // simple assign
 	out.Code = arg.Code         // simple assign
 	out.ParentID = arg.ParentID // simple assign
@@ -607,6 +617,8 @@ func Apply_ticket_UpdateTicketLabelArgs_ticket_TicketLabel(arg *ticket.UpdateTic
 
 func apply_ticket_UpdateTicketLabelArgs_ticket_TicketLabel(arg *ticket.UpdateTicketLabelArgs, out *ticket.TicketLabel) {
 	out.ID = out.ID                                 // identifier
+	out.ShopID = arg.ShopID                         // simple assign
+	out.Type = arg.Type                             // simple assign
 	out.Name = arg.Name.Apply(out.Name)             // apply change
 	out.Code = arg.Code.Apply(out.Code)             // apply change
 	out.ParentID = arg.ParentID.Apply(out.ParentID) // apply change

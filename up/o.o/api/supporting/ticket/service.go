@@ -11,6 +11,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 	"o.o/common/xerrors"
@@ -69,11 +70,15 @@ type GetTicketLabelByIDArgs struct {
 }
 
 type GetTicketLabelsArgs struct {
-	Tree bool
+	Type   ticket_type.NullTicketType
+	ShopID dot.ID
+	Tree   bool
 }
 
 // +convert:create=TicketLabel
 type CreateTicketLabelArgs struct {
+	ShopID   dot.ID
+	Type     ticket_type.TicketType
 	Name     string
 	Code     string
 	Color    string
@@ -83,6 +88,8 @@ type CreateTicketLabelArgs struct {
 // +convert:update=TicketLabel(ID)
 type UpdateTicketLabelArgs struct {
 	ID       dot.ID
+	ShopID   dot.ID
+	Type     ticket_type.TicketType
 	Color    string
 	Name     dot.NullString
 	Code     dot.NullString
@@ -91,6 +98,8 @@ type UpdateTicketLabelArgs struct {
 
 type DeleteTicketLabelArgs struct {
 	ID          dot.ID
+	ShopID      dot.ID
+	Type        ticket_type.TicketType
 	DeleteChild bool
 }
 
@@ -172,6 +181,7 @@ type FilterGetTicket struct {
 	Code            string
 	State           ticket_state.TicketState
 	RefCode         string
+	Types           []ticket_type.TicketType
 }
 
 type DeleteTicketCommentArgs struct {
@@ -230,7 +240,7 @@ type UnassignTicketArgs struct {
 type AssignedTicketArgs struct {
 	ID              dot.ID
 	UpdatedBy       dot.ID
-	IsLeader        bool
+	IsLeader        bool // for ticket: system
 	AssignedUserIDs []dot.ID
 }
 
@@ -240,7 +250,7 @@ type ReopenTicketArgs struct {
 }
 
 type CloseTicketArgs struct {
-	IsLeader bool
+	IsLeader bool // for ticket: system
 	ID       dot.ID
 	ClosedBy dot.ID
 	Note     string
@@ -248,7 +258,7 @@ type CloseTicketArgs struct {
 }
 
 type ConfirmTicketArgs struct {
-	IsLeader  bool
+	IsLeader  bool // for ticket: system
 	ID        dot.ID
 	ConfirmBy dot.ID
 	Note      string
@@ -299,6 +309,8 @@ type CreateTicketArgs struct {
 	CreatedBy     dot.ID
 	CreatedSource account_type.AccountType
 	CreatedName   string
+
+	Type ticket_type.TicketType
 }
 
 type UpdateTicketRefTicketIDArgs struct {

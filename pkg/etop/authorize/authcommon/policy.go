@@ -162,11 +162,16 @@ const shopPolicy = `#connection
 	# ticket
 	p, shop/shop_ticket:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/shop_ticket:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket:assign, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket:reopen, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/shop_ticket:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/shop_ticket_comment:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/shop_ticket_comment:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/shop_ticket_comment:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/shop_ticket_comment:delete, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket_label:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket_label:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/shop_ticket_label:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	# subscription
 	p, shop/subscription_product:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/subscription_plan:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
@@ -189,6 +194,7 @@ const adminPolicy = `
 	# ticket_label
 	p, admin/admin_ticket_label:create, admin, ad_salelead, ad_customerservice_lead
 	p, admin/admin_ticket_label:update, admin, ad_salelead, ad_customerservice_lead
+	p, admin/admin_ticket_label:view, admin, ad_salelead, ad_customerservice_lead
 	# credit
 	p, admin/credit:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
 	p, admin/credit:update, admin, ad_accountant

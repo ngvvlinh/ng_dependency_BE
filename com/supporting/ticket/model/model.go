@@ -8,6 +8,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/capi/dot"
 )
 
@@ -47,6 +48,8 @@ type Ticket struct {
 
 	WLPartnerID  dot.ID
 	ConnectionID dot.ID
+
+	Type ticket_type.TicketType
 }
 
 // +sqlgen:           Ticket    as t
@@ -88,6 +91,8 @@ type TicketComment struct {
 // +sqlgen
 type TicketLabel struct {
 	ID        dot.ID
+	ShopID    dot.ID
+	Type      ticket_type.TicketType
 	Name      string
 	Code      string
 	Color     string

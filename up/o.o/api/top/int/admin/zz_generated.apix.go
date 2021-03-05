@@ -2352,6 +2352,7 @@ const Path_Ticket_DeleteTicketComment = "/admin.Ticket/DeleteTicketComment"
 const Path_Ticket_DeleteTicketLabel = "/admin.Ticket/DeleteTicketLabel"
 const Path_Ticket_GetTicket = "/admin.Ticket/GetTicket"
 const Path_Ticket_GetTicketComments = "/admin.Ticket/GetTicketComments"
+const Path_Ticket_GetTicketLabels = "/admin.Ticket/GetTicketLabels"
 const Path_Ticket_GetTickets = "/admin.Ticket/GetTickets"
 const Path_Ticket_GetTicketsByRefTicketID = "/admin.Ticket/GetTicketsByRefTicketID"
 const Path_Ticket_ReopenTicket = "/admin.Ticket/ReopenTicket"
@@ -2520,6 +2521,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 				return
 			}
 			resp, err = inner.GetTicketComments(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Ticket/GetTicketLabels":
+		msg := &GetTicketLabelsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetTicketLabels(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

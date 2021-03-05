@@ -48,6 +48,8 @@ func Convert_core_TicketLabel_to_api_TicketLabel(in *ticket.TicketLabel) *types.
 	}
 	return &types.TicketLabel{
 		ID:       in.ID,
+		ShopID:   in.ShopID,
+		Type:     in.Type,
 		Name:     in.Name,
 		Code:     in.Code,
 		Color:    in.Color,
@@ -99,6 +101,7 @@ func Convert_core_Ticket_to_api_Ticket(in *ticket.Ticket) *types.Ticket {
 			Name:   in.CreatedName,
 			Source: in.CreatedSource,
 		},
+		Type: in.Type,
 	}
 }
 

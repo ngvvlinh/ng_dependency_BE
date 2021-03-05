@@ -19,6 +19,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/supporting/ticket/model"
 	"o.o/backend/com/supporting/ticket/provider"
@@ -33,7 +34,7 @@ import (
 )
 
 const (
-	ticketLabelsVersion = "v1"
+	ticketLabelsVersion = "v1.5"
 )
 
 var _ ticket.Aggregate = &TicketAggregate{}
@@ -92,9 +93,12 @@ func TicketAggregateMessageBus(q *TicketAggregate) ticket.CommandBus {
 	return ticket.NewAggregateHandler(q).RegisterHandlers(b)
 }
 
-func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateTicketArgs) (*ticket.Ticket, error) {
+func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateTicketArgs) (_ *ticket.Ticket, err error) {
 	if args.AccountID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing AccountID")
+	}
+	if args.Type != ticket_type.System && args.Type != ticket_type.Internal {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Unsupported type %v", args.Type)
 	}
 
 	ticketCore := &ticket.Ticket{}
@@ -102,20 +106,26 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 		return nil, err
 	}
 
-	labels, err := a.listTicketLabels(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// get all father label_ids of all labels
-	for _, labelID := range args.LabelIDs {
-		listLabelIDs := getListLabelFatherID(labelID, labels)
-		if len(listLabelIDs) == 0 {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Label không tồn tại (id = %d)", labelID)
+	if len(args.LabelIDs) != 0 {
+		var labels []*ticket.TicketLabel
+		labels, err = a.listTicketLabels(ctx, listTicketLabelsArgs{
+			Type:   args.Type,
+			ShopID: args.AccountID,
+		})
+		if err != nil {
+			return nil, err
 		}
-		for _, labelID := range listLabelIDs {
-			if !cm.IDsContain(ticketCore.LabelIDs, labelID) {
-				ticketCore.LabelIDs = append(ticketCore.LabelIDs, labelID)
+
+		// get all father label_ids of all labels
+		for _, labelID := range args.LabelIDs {
+			listLabelIDs := getListLabelFatherID(labelID, labels)
+			if len(listLabelIDs) == 0 {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Label không tồn tại (id = %d)", labelID)
+			}
+			for _, _labelID := range listLabelIDs {
+				if !cm.IDsContain(ticketCore.LabelIDs, _labelID) {
+					ticketCore.LabelIDs = append(ticketCore.LabelIDs, _labelID)
+				}
 			}
 		}
 	}
@@ -145,6 +155,7 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 			refCode = getFfmQuery.Result.ShippingCode
 			connectionID = getFfmQuery.Result.ConnectionID
 		case ticket_ref_type.MoneyTransaction:
+			// type system
 			getMoneyTxQuery := &moneytx.GetMoneyTxShippingByIDQuery{
 				MoneyTxShippingID: args.RefID,
 				ShopID:            args.AccountID,
@@ -157,6 +168,7 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 			}
 			refCode = getMoneyTxQuery.Result.Code
 		case ticket_ref_type.OrderTrading:
+			// type system
 			getOrderQuery := &ordering.GetOrderByIDQuery{
 				ID: args.RefID,
 			}
@@ -255,9 +267,9 @@ func (a *TicketAggregate) ConfirmTicket(ctx context.Context, args *ticket.Confir
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Ticket đã đóng")
 	}
 
-	// leader có thể confirm mọi ticket
+	// system: leader có thể confirm mọi ticket
 	// những người được assign vào ticker có thể confirm ticket
-	if !args.IsLeader {
+	if ticketCore.Type == ticket_type.System && !args.IsLeader {
 		isPermission := false
 		for _, v := range ticketCore.AssignedUserIDs {
 			if v == args.ConfirmBy {
@@ -297,8 +309,9 @@ func (a *TicketAggregate) CloseTicket(ctx context.Context, args *ticket.CloseTic
 		return nil, err
 	}
 
-	// chỉ leader hoặc người confirm mới được close ticket
-	if !args.IsLeader && args.ClosedBy != ticketCore.ConfirmedBy {
+	// system: chỉ leader hoặc người confirm mới được close ticket
+	// internal: không phân quyền chỗ này
+	if ticketCore.Type == ticket_type.System && !args.IsLeader && args.ClosedBy != ticketCore.ConfirmedBy {
 		return nil, cm.Errorf(cm.PermissionDenied, nil, "Ticket không thuộc sự quản lí của bạn")
 	}
 
@@ -354,11 +367,14 @@ func (a *TicketAggregate) ReopenTicket(ctx context.Context, args *ticket.ReopenT
 	}
 
 	var ticketModel = &model.Ticket{
-		Note:   args.Note,
-		State:  state,
-		Status: state.ToStatus5(),
+		Note:  args.Note,
+		State: state,
 	}
 	if err = a.TicketStore(ctx).ID(args.ID).UpdateTicketDB(ticketModel); err != nil {
+		return nil, err
+	}
+
+	if err = a.TicketStore(ctx).ID(args.ID).UpdateTicketStatus(state.ToStatus5()); err != nil {
 		return nil, err
 	}
 
@@ -376,8 +392,9 @@ func (a *TicketAggregate) AssignTicket(ctx context.Context, args *ticket.Assigne
 	}
 
 	assignedUserIDs := ticketCore.AssignedUserIDs
-	if !args.IsLeader {
-		// if not leader user will add themselves
+
+	// system: if not leader user will add themselves
+	if ticketCore.Type == ticket_type.System && !args.IsLeader {
 		for _, v := range assignedUserIDs {
 			if v == args.UpdatedBy {
 				return nil, cm.Errorf(cm.InvalidArgument, nil, "Bạn đã được thêm vào ticket này rồi.")
@@ -458,9 +475,14 @@ func (a *TicketAggregate) UnassignTicket(ctx context.Context, args *ticket.Unass
 	return a.TicketStore(ctx).ID(args.ID).GetTicket()
 }
 
-func (a *TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.TicketLabel, error) {
+type listTicketLabelsArgs struct {
+	Type   ticket_type.TicketType
+	ShopID dot.ID
+}
+
+func (a *TicketAggregate) listTicketLabels(ctx context.Context, args listTicketLabelsArgs) ([]*ticket.TicketLabel, error) {
 	var labels []*ticket.TicketLabel
-	err := a.RedisStore.Get(generateTicketLabelKey(ctx), &labels)
+	err := a.RedisStore.Get(generateTicketLabelKey(ctx, args.ShopID), &labels)
 	switch err {
 	case redis.ErrNil:
 		// no-op
@@ -469,20 +491,30 @@ func (a *TicketAggregate) listTicketLabels(ctx context.Context) ([]*ticket.Ticke
 	default:
 		return nil, err
 	}
-	labels, err = a.TicketLabelStore(ctx).ListTicketLabels()
+	query := a.TicketLabelStore(ctx).Type(args.Type)
+
+	if args.Type == ticket_type.Internal {
+		query = query.ShopID(args.ShopID)
+	}
+	labels, err = query.ListTicketLabels()
 	if err != nil {
 		return nil, err
 	}
 
-	if err := a.SetTicketLabels(ctx, &labels); err != nil {
+	if err := a.SetTicketLabels(ctx, args.ShopID, args.Type, &labels); err != nil {
 		return nil, err
 	}
 	return labels, nil
 }
 
-func (a *TicketAggregate) SetTicketLabels(ctx context.Context, labels *[]*ticket.TicketLabel) error {
+func (a *TicketAggregate) SetTicketLabels(
+	ctx context.Context, shopID dot.ID,
+	typ ticket_type.TicketType, labels *[]*ticket.TicketLabel) error {
 	*labels = MakeTreeLabel(*labels)
-	return a.RedisStore.SetWithTTL(generateTicketLabelKey(ctx), labels, 1*24*60*60)
+	if typ == ticket_type.System {
+		return a.RedisStore.SetWithTTL(generateTicketLabelKey(ctx, 0), labels, 1*24*60*60)
+	}
+	return a.RedisStore.SetWithTTL(generateTicketLabelKey(ctx, shopID), labels, 1*24*60*60)
 }
 
 func (a *TicketAggregate) UpdateTicketRefTicketID(ctx context.Context, args *ticket.UpdateTicketRefTicketIDArgs) (*pbcm.UpdatedResponse, error) {
@@ -501,6 +533,6 @@ func (a *TicketAggregate) UpdateTicketRefTicketID(ctx context.Context, args *tic
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }
 
-func generateTicketLabelKey(ctx context.Context) string {
-	return fmt.Sprintf("ticket_labels:%s:wl%s", ticketLabelsVersion, wl.GetWLPartnerID(ctx))
+func generateTicketLabelKey(ctx context.Context, shopID dot.ID) string {
+	return fmt.Sprintf("ticket_labels:%s:wl%s:sh%s", ticketLabelsVersion, wl.GetWLPartnerID(ctx), shopID.String())
 }

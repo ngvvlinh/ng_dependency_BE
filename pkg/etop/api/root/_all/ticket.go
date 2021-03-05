@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/supporting/ticket"
 	api "o.o/api/top/int/etop"
+	"o.o/api/top/types/etc/ticket/ticket_type"
 	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
 )
@@ -22,6 +23,7 @@ func (s *TicketService) Clone() api.TicketService {
 
 func (s *TicketService) GetTicketLabels(ctx context.Context, request *api.GetTicketLabelsRequest) (*api.GetTicketLabelsResponse, error) {
 	query := &ticket.ListTicketLabelsQuery{
+		Type: ticket_type.System.Wrap(),
 		Tree: request.Tree,
 	}
 	err := s.TicketQuery.Dispatch(ctx, query)
