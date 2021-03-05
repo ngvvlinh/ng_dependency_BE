@@ -265,27 +265,16 @@ func (s *OrderLogic) createOrder(
 	if r.CustomerId == 0 && r.ShippingAddress == nil {
 		// create order with fullName and phone
 		if simplify {
-			getCustomerByPhone := &customering.GetCustomerByPhoneQuery{
-				Phone:  r.Customer.Phone,
-				ShopID: shop.ID,
-			}
-			if err := s.CustomerQuery.Dispatch(ctx, getCustomerByPhone); err != nil && cm.ErrorCode(err) != cm.NotFound {
-				return nil, err
+			if r.Customer.Phone == "" && r.Customer.FullName == "" {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "thiếu thông tin SĐT hoặc tên khách hàng")
 			}
 
-			if getCustomerByPhone.Result != nil {
-				r.CustomerId = getCustomerByPhone.Result.ID
-			} else {
-				createCustomerCmd := &customering.CreateCustomerCommand{
-					ShopID:   shop.ID,
-					FullName: r.Customer.FullName,
-					Type:     customer_type.Individual,
-					Phone:    r.Customer.Phone,
+			if r.Customer.Phone != "" {
+				phone, isPhone := validate.NormalizePhone(r.Customer.Phone)
+				if isPhone != true {
+					return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng số điện thoại", nil)
 				}
-				if err := s.CustomerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
-					return nil, err
-				}
-				r.CustomerId = createCustomerCmd.Result.ID
+				r.Customer.Phone = phone.String()
 			}
 		} else {
 			cmd := &customering.GetCustomerIndependentQuery{}
