@@ -4,11 +4,10 @@ import (
 	"strings"
 	"time"
 
-	"o.o/api/fabo/fbmessaging/fb_post_type"
-
 	"o.o/api/fabo/fbmessaging/fb_comment_action"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
 	"o.o/api/fabo/fbmessaging/fb_live_video_status"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
 	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/api/top/external/types"
 	"o.o/api/top/int/shop"

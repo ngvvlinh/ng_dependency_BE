@@ -3,10 +3,10 @@ package order
 import (
 	"context"
 	"fmt"
-	"o.o/api/fabo/fbmessaging"
 	"strings"
 	"time"
 
+	"o.o/api/fabo/fbmessaging"
 	"o.o/api/main/ordering"
 	"o.o/api/main/receipting"
 	"o.o/api/shopping/customering"
@@ -292,12 +292,13 @@ func (s *OrderService) CreateOrderSimplify(ctx context.Context, q *types.CreateO
 	for _, line := range q.Lines {
 		variantIDs = append(variantIDs, line.VariantId)
 	}
-	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v-%v",
+	key := fmt.Sprintf("CreateOrder %v-%v-%v-%v-%v-%v-%v-%v-%v",
 		s.SS.Shop().ID, customerKey,
-		q.TotalAmount, q.BasketValue, q.ShopCod, dot.JoinIDs(variantIDs))
+		q.TotalAmount, q.BasketValue, q.ShopCod, dot.JoinIDs(variantIDs),
+		q.ExternalId, q.ExternalPostID, q.ExternalCommentID)
 
 	res, cached, err := shop2.Idempgroup.DoAndWrap(
-		ctx, key, 30*time.Second, "tạo đơn hàng",
+		ctx, key, 30*time.Second, "tạo đơn hàng simplify",
 		func() (interface{}, error) { return s.createOrderSimplify(ctx, q) })
 	if err != nil {
 		return nil, err
