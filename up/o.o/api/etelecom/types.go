@@ -100,4 +100,5 @@ type CallLogCalcPostageEvent struct {
 type ExtensionCreatingEvent struct {
 	OwnerID   dot.ID
 	AccountID dot.ID
+	UserID    dot.ID
 }

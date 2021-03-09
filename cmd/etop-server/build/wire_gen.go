@@ -1384,7 +1384,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager19 := pm20.New(busBus, invoiceQueryBus, invoiceCommandBus, subscriptionQueryBus, subscriptionCommandBus, subscriptionplanQueryBus, queryBus, creditCommandBus, transactionCommandBus)
 	processManager20 := pm21.New(busBus, transactionQueryBus)
 	processManager21 := pm22.New(busBus, transactionQueryBus, transactionCommandBus, creditQueryBus)
-	processManager22 := pm23.New(busBus, usersettingQueryBus)
+	processManager22 := pm23.New(busBus, usersettingQueryBus, queryBus)
 	output := Output{
 		Servers:                v4,
 		Health:                 service,

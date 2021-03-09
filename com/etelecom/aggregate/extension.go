@@ -17,24 +17,10 @@ import (
 )
 
 func (a *EtelecomAggregate) CreateExtension(ctx context.Context, args *etelecom.CreateExtensionArgs) (*etelecom.Extension, error) {
-	// only owner shop can create free extension
-	ownerID := args.OwnerID
-	if ownerID == 0 {
-		shopQuery := &identity.GetShopByIDQuery{
-			ID: args.AccountID,
-		}
-		if err := a.identityQuery.Dispatch(ctx, shopQuery); err != nil {
-			return nil, err
-		}
-		ownerID = shopQuery.Result.OwnerID
-	}
-	if ownerID != args.UserID {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể tạo extension cho người dùng này. Chỉ chủ shop mới được dùng tính năng này.")
-	}
-
 	event := &etelecom.ExtensionCreatingEvent{
 		OwnerID:   args.OwnerID,
 		AccountID: args.AccountID,
+		UserID:    args.UserID,
 	}
 	if err := a.eventBus.Publish(ctx, event); err != nil {
 		return nil, err

@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/usersetting"
+	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/charge_type"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -12,13 +13,18 @@ import (
 
 type ProcessManager struct {
 	userSettingQuery usersetting.QueryBus
+	identityQuery    identity.QueryBus
 }
 
 func New(
 	eventBus bus.EventRegistry,
 	userSettingQ usersetting.QueryBus,
+	identityQ identity.QueryBus,
 ) *ProcessManager {
-	p := &ProcessManager{userSettingQuery: userSettingQ}
+	p := &ProcessManager{
+		userSettingQuery: userSettingQ,
+		identityQuery:    identityQ,
+	}
 	p.registerEventHandlers(eventBus)
 	return p
 }
@@ -28,6 +34,22 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 }
 
 func (m *ProcessManager) ExtensionCreating(ctx context.Context, event *etelecom.ExtensionCreatingEvent) error {
+	ownerID := event.OwnerID
+	if ownerID == 0 {
+		shopQuery := &identity.GetShopByIDQuery{
+			ID: event.AccountID,
+		}
+		if err := m.identityQuery.Dispatch(ctx, shopQuery); err != nil {
+			return err
+		}
+		ownerID = shopQuery.Result.OwnerID
+	}
+
+	// Luon cho phép tạo ext cho chủ shop
+	if ownerID == event.UserID {
+		return nil
+	}
+
 	query := &usersetting.GetUserSettingQuery{
 		UserID: event.OwnerID,
 	}
@@ -38,6 +60,9 @@ func (m *ProcessManager) ExtensionCreating(ctx context.Context, event *etelecom.
 	if setting == nil {
 		return nil
 	}
+
+	// Cho phép tạo ext đối với user có setting: miễn phí hoặc trả sau
+	// Trường hợp trả trước phải tạo thông qua subscription
 	if setting.ExtensionChargeType == charge_type.Prepaid {
 		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn gói dịch vụ để tạo extension.")
 	}
