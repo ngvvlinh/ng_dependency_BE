@@ -7,7 +7,6 @@ import (
 	"o.o/api/top/types/etc/order_source"
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/shipping"
-	"o.o/api/top/types/etc/shipping_provider"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
@@ -162,17 +161,6 @@ func VerifyPaymentMethod(s payment_method.PaymentMethod) bool {
 func VerifyOrderSource(s order_source.Source) bool {
 	switch s {
 	case order_source.EtopPOS, order_source.EtopPXS, order_source.EtopCMX, order_source.TSApp, order_source.API, order_source.Import, order_source.EtopApp, order_source.Ecomify:
-		return true
-	}
-	return false
-}
-
-func VerifyShippingProvider(s shipping_provider.ShippingProvider) bool {
-	if s == 0 {
-		return true
-	}
-	switch s {
-	case shipping_provider.GHN, shipping_provider.GHTK, shipping_provider.VTPost, shipping_provider.Manual:
 		return true
 	}
 	return false

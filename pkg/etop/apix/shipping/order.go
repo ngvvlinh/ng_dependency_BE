@@ -14,6 +14,7 @@ import (
 	"o.o/api/top/int/types"
 	"o.o/api/top/types/etc/inventory_auto"
 	pbsource "o.o/api/top/types/etc/order_source"
+	"o.o/api/top/types/etc/shipping_provider"
 	identitymodel "o.o/backend/com/main/identity/model"
 	"o.o/backend/com/main/ordering/modelx"
 	ordersqlstore "o.o/backend/com/main/ordering/sqlstore"
@@ -169,8 +170,7 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, sho
 			ShippingServiceName: "", // TODO: be filled when confirm
 			ShippingServiceCode: serviceCode,
 			ShippingServiceFee:  shipping.ShippingServiceFee.Apply(0),
-			ShippingProvider:    0,
-			Carrier:             shipping.Carrier,
+			Carrier:             0, // filled later
 			IncludeInsurance:    shipping.IncludeInsurance.Apply(false),
 			TryOn:               shipping.TryOn,
 			ShippingNote:        shipping.ShippingNote.Apply(""),
@@ -182,14 +182,20 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, sho
 			ChargeableWeight:    shipping.ChargeableWeight,
 		},
 	}
+	if conn != nil {
+		// backward compatible
+		if shippingProvider, ok := shipping_provider.ParseShippingProvider(conn.ConnectionProvider.String()); ok {
+			req.Shipping.Carrier = shippingProvider
+		}
+	}
 
-	if err := validateAddress(req.CustomerAddress); err != nil {
+	if err = validateAddress(req.CustomerAddress); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ khách hàng không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.ShippingAddress); err != nil {
+	if err = validateAddress(req.ShippingAddress); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ người nhận không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.Shipping.PickupAddress); err != nil {
+	if err = validateAddress(req.Shipping.PickupAddress); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
 	resp, err := s.OrderLogic.CreateOrder(ctx, shop, partner, req, nil, userID)
@@ -205,7 +211,7 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, sho
 			if partner != nil {
 				partnerID = partner.ID
 			}
-			_, err := s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
+			_, err = s.OrderLogic.CancelOrder(ctx, userID, shop.ID, partnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), inventory_auto.Unknown)
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
@@ -244,7 +250,7 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, sho
 		ShippingNote: shipping.ShippingNote.Apply(""),
 		ConnectionID: conn.ID,
 	}
-	if err := s.ShippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
+	if err = s.ShippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
 		return nil, err
 	}
 
@@ -252,7 +258,7 @@ func (s *Shipping) CreateAndConfirmOrder(ctx context.Context, userID dot.ID, sho
 		OrderID:            orderID,
 		IncludeFulfillment: true,
 	}
-	if err := s.OrderStoreIface.GetOrder(ctx, orderQuery); err != nil {
+	if err = s.OrderStoreIface.GetOrder(ctx, orderQuery); err != nil {
 		return nil, cm.MapError(err).
 			Map(cm.NotFound, cm.Internal, "").
 			Throw()
@@ -296,7 +302,7 @@ func (s *Shipping) CancelOrder(ctx context.Context, userID dot.ID, shopID dot.ID
 		OrderID:            orderID,
 		IncludeFulfillment: true,
 	}
-	if err := s.OrderStoreIface.GetOrder(ctx, orderQuery); err != nil {
+	if err = s.OrderStoreIface.GetOrder(ctx, orderQuery); err != nil {
 		return nil, err
 	}
 	resp2 := convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments)
@@ -371,14 +377,14 @@ func (s *Shipping) CreateFulfillment(ctx context.Context, shopID dot.ID, r *extt
 		ConnectionID:  conn.ID,
 		ShopCarrierID: r.ShopCarrierID,
 	}
-	if err := s.ShippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
+	if err = s.ShippingAggr.Dispatch(ctx, createFfmArgs); err != nil {
 		return nil, err
 	}
 
 	query := &shippingcore.GetFulfillmentByIDOrShippingCodeQuery{
 		ID: createFfmArgs.Result[0],
 	}
-	if err := s.ShippingQuery.Dispatch(ctx, query); err != nil {
+	if err = s.ShippingQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	ffm, err := s.FulfillmentStore(ctx).ShopID(shopID).ID(createFfmArgs.Result[0]).GetFfmDB()

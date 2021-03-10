@@ -3608,16 +3608,6 @@
     "mrOrderShipping": {
       "type": "object",
       "properties": {
-        "carrier": {
-          "allOf": [
-            {
-              "description": "**Deprecated:** use connection_id instead\n"
-            },
-            {
-              "$ref": "#/definitions/bwShippingProvider"
-            }
-          ]
-        },
         "chargeable_weight": {
           "type": "integer"
         },
@@ -3635,6 +3625,7 @@
           "type": "integer"
         },
         "include_insurance": {
+          "description": "**Deprecated:** use connection_id instead\nCarrier          shipping_provider.ShippingProvider `json:\"carrier\"`\n",
           "type": "boolean"
         },
         "length": {

@@ -22,7 +22,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etc/typeutil"
-	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
 
@@ -182,11 +181,6 @@ func (m *Order) BeforeInsert() error {
 	if m.TryOn == 0 && m.GhnNoteCode != 0 {
 		m.TryOn = typeutil.TryOnFromGHNNoteCode(m.GhnNoteCode)
 	}
-	if m.ShopShipping != nil {
-		if err := m.ShopShipping.Validate(); err != nil {
-			return err
-		}
-	}
 
 	m.CustomerName = m.Customer.GetFullName()
 	m.CustomerNameNorm = validate.NormalizeSearch(m.CustomerName)
@@ -204,11 +198,6 @@ func (m *Order) BeforeInsert() error {
 func (m *Order) BeforeUpdate() error {
 	if m.TryOn == 0 && m.GhnNoteCode != 0 {
 		m.TryOn = typeutil.TryOnFromGHNNoteCode(m.GhnNoteCode)
-	}
-	if m.ShopShipping != nil && m.ShopShipping.ShippingProvider != 0 {
-		if err := m.ShopShipping.Validate(); err != nil {
-			return err
-		}
 	}
 
 	if m.Customer != nil {
@@ -246,13 +235,6 @@ type OrderShipping struct {
 
 	GrossWeight      int `json:"gross_weight"`
 	ChargeableWeight int `json:"chargeable_weight"`
-}
-
-func (s *OrderShipping) Validate() error {
-	if !model.VerifyShippingProvider(s.ShippingProvider) {
-		return cm.Errorf(cm.InvalidArgument, nil, "Nhà vận chuyển không hợp lệ")
-	}
-	return nil
 }
 
 func (s *OrderShipping) GetPickupAddress() *OrderAddress {

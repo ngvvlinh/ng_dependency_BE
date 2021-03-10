@@ -370,7 +370,7 @@ type OrderShipping struct {
 	XServiceName        string        `json:"x_service_name"`
 	PickupAddress       *OrderAddress `json:"pickup_address"`
 	ReturnAddress       *OrderAddress `json:"return_address"`
-	ShippingAddress *OrderAddress `json:"shipping_address"`
+	ShippingAddress     *OrderAddress `json:"shipping_address"`
 	ShippingServiceName string        `json:"shipping_service_name"`
 	ShippingServiceCode string        `json:"shipping_service_code"`
 	ShippingServiceFee  int           `json:"shipping_service_fee"`
@@ -470,6 +470,7 @@ type Fulfillment struct {
 	XShippingLogs                      []*ExternalShippingLog `json:"x_shipping_logs"`
 	XShippingNote                      string                 `json:"x_shipping_note"`
 	XShippingSubState                  string                 `json:"x_shipping_sub_state"`
+	XSortCode                          string                 `json:"x_sort_code"`
 	Code                               string                 `json:"code"`
 	ActualCompensationAmount           int                    `json:"actual_compensation_amount"`
 	AdminNote                          string                 `json:"admin_note"`

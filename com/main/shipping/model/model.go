@@ -180,6 +180,7 @@ type Fulfillment struct {
 	LinesContent     string
 	EdCode           string
 	ShippingSubstate shippingsubstate.NullSubstate
+	ExternalSortCode string
 
 	Rid dot.ID
 }

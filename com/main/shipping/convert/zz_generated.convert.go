@@ -296,6 +296,7 @@ func convert_shippingmodel_Fulfillment_shipping_Fulfillment(arg *shippingmodel.F
 	out.EdCode = arg.EdCode                       // simple assign
 	out.ShippingSubstate = arg.ShippingSubstate   // simple assign
 	out.IsPartialDelivery = arg.IsPartialDelivery // simple assign
+	out.ExternalSortCode = arg.ExternalSortCode   // simple assign
 }
 
 func Convert_shippingmodel_Fulfillments_shipping_Fulfillments(args []*shippingmodel.Fulfillment) (outs []*shipping.Fulfillment) {
@@ -435,6 +436,7 @@ func convert_shipping_Fulfillment_shippingmodel_Fulfillment(arg *shipping.Fulfil
 	out.LinesContent = arg.LinesContent         // simple assign
 	out.EdCode = arg.EdCode                     // simple assign
 	out.ShippingSubstate = arg.ShippingSubstate // simple assign
+	out.ExternalSortCode = arg.ExternalSortCode // simple assign
 	out.Rid = 0                                 // zero value
 }
 
@@ -538,6 +540,7 @@ func apply_shipping_UpdateFulfillmentInfoArgs_shipping_Fulfillment(arg *shipping
 	out.EdCode = out.EdCode                                                          // no change
 	out.ShippingSubstate = out.ShippingSubstate                                      // no change
 	out.IsPartialDelivery = out.IsPartialDelivery                                    // no change
+	out.ExternalSortCode = out.ExternalSortCode                                      // no change
 }
 
 //-- convert o.o/api/main/shipping.FulfillmentExtended --//

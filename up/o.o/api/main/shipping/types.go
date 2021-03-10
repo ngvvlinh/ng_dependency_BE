@@ -133,6 +133,7 @@ type Fulfillment struct {
 
 	// giao một phần
 	IsPartialDelivery bool
+	ExternalSortCode  string
 }
 
 type FulfillmentSyncStates struct {

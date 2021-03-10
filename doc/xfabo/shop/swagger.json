@@ -5752,6 +5752,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "x_sort_code": {
+          "type": "string"
+        },
         "x_sync_states": {
           "$ref": "#/definitions/qdFulfillmentSyncStates"
         },

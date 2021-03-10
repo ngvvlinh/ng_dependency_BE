@@ -24,6 +24,7 @@ require (
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
 	github.com/dustin/go-humanize v1.0.0
 	github.com/garyburd/redigo v1.6.2
+	github.com/gin-gonic/gin v1.6.3
 	github.com/go-bindata/go-bindata/v3 v3.1.3
 	github.com/go-openapi/jsonreference v0.19.4
 	github.com/go-openapi/spec v0.19.9

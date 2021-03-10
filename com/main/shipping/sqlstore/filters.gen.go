@@ -1878,6 +1878,25 @@ func (ft *FulfillmentFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *FulfillmentFilters) ByExternalSortCode(ExternalSortCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_sort_code",
+		Value:  ExternalSortCode,
+		IsNil:  ExternalSortCode == "",
+	}
+}
+
+func (ft *FulfillmentFilters) ByExternalSortCodePtr(ExternalSortCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_sort_code",
+		Value:  ExternalSortCode,
+		IsNil:  ExternalSortCode == nil,
+		IsZero: ExternalSortCode != nil && (*ExternalSortCode) == "",
+	}
+}
+
 func (ft *FulfillmentFilters) ByRid(Rid dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

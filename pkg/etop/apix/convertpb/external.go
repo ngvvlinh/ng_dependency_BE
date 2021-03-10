@@ -171,7 +171,6 @@ func PbOrderShipping(m *ordermodel.Order) *exttypes.OrderShipping {
 		ShippingServiceName: dot.String(shipping.ExternalServiceName),
 		ShippingServiceCode: shipping.GetPtrShippingServiceCode(),
 		ShippingServiceFee:  cmapi.PbPtrInt(shipping.ExternalShippingFee),
-		Carrier:             shipping.GetShippingProvider(),
 		IncludeInsurance:    dot.Bool(shipping.IncludeInsurance),
 		TryOn:               m.GetTryOn(),
 		ShippingNote:        dot.String(m.ShippingNote),

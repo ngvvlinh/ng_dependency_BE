@@ -719,6 +719,7 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *identitymodel.Sh
 		XShippingStatus:                    m.ExternalShippingStatus,
 		XSyncStatus:                        m.SyncStatus,
 		XSyncStates:                        PbFulfillmentSyncStates(m.SyncStates),
+		XSortCode:                          m.ExternalSortCode,
 		AddressTo:                          PbAddress(m.AddressTo),
 		AddressFrom:                        PbAddress(m.AddressFrom),
 		PickupAddress:                      PbOrderAddressFromAddress(m.AddressFrom),

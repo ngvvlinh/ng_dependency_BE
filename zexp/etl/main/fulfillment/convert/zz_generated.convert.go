@@ -171,6 +171,7 @@ func convert_fulfillmentmodel_Fulfillment_shippingmodel_Fulfillment(arg *fulfill
 	out.LinesContent = ""                                                           // zero value
 	out.EdCode = ""                                                                 // zero value
 	out.ShippingSubstate = substate.NullSubstate{}                                  // zero value
+	out.ExternalSortCode = ""                                                       // zero value
 	out.Rid = arg.Rid                                                               // simple assign
 }
 

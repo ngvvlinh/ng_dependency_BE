@@ -135,6 +135,7 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 		IncludeInsurance:    ffm.IncludeInsurance.Apply(false),
 		ShippingServiceCode: service.ProviderServiceID,
 		ShippingFee:         service.ServiceFee,
+		TryOn:               ffm.TryOn,
 	}
 
 	// `service.ServiceFee`: giá đã makeup của TopShip
@@ -157,6 +158,7 @@ func (d *DirectShipmentDriver) CreateFulfillment(
 		ShippingFeeShop: resp.ShippingFee.Int(),
 
 		ShippingCode:              resp.ShippingCode.String(),
+		ExternalSortCode:          resp.SortCode.String(),
 		ExternalShippingName:      service.Name,
 		ExternalShippingID:        resp.FulfillmentID.String(),
 		ExternalShippingCode:      resp.ShippingCode.String(),

@@ -8,7 +8,6 @@ import (
 	"o.o/api/top/types/etc/inventory_auto"
 	"o.o/api/top/types/etc/inventory_policy"
 	"o.o/api/top/types/etc/payment_method"
-	shipping_provider "o.o/api/top/types/etc/shipping_provider"
 	status3 "o.o/api/top/types/etc/status3"
 	status4 "o.o/api/top/types/etc/status4"
 	status5 "o.o/api/top/types/etc/status5"
@@ -164,17 +163,17 @@ type OrderShipping struct {
 	ShippingServiceCode dot.NullString `json:"shipping_service_code"`
 	ShippingServiceFee  dot.NullInt    `json:"shipping_service_fee"`
 	// @Deprecated use connection_id instead
-	Carrier          shipping_provider.ShippingProvider `json:"carrier"`
-	IncludeInsurance dot.NullBool                       `json:"include_insurance"`
-	TryOn            try_on.TryOnCode                   `json:"try_on"`
-	ShippingNote     dot.NullString                     `json:"shipping_note"`
-	CodAmount        dot.NullInt                        `json:"cod_amount"`
-	GrossWeight      dot.NullInt                        `json:"gross_weight"`
-	Length           dot.NullInt                        `json:"length"`
-	Width            dot.NullInt                        `json:"width"`
-	Height           dot.NullInt                        `json:"height"`
-	ChargeableWeight dot.NullInt                        `json:"chargeable_weight"`
-	ConnectionID     dot.ID                             `json:"connection_id"`
+	// Carrier          shipping_provider.ShippingProvider `json:"carrier"`
+	IncludeInsurance dot.NullBool     `json:"include_insurance"`
+	TryOn            try_on.TryOnCode `json:"try_on"`
+	ShippingNote     dot.NullString   `json:"shipping_note"`
+	CodAmount        dot.NullInt      `json:"cod_amount"`
+	GrossWeight      dot.NullInt      `json:"gross_weight"`
+	Length           dot.NullInt      `json:"length"`
+	Width            dot.NullInt      `json:"width"`
+	Height           dot.NullInt      `json:"height"`
+	ChargeableWeight dot.NullInt      `json:"chargeable_weight"`
+	ConnectionID     dot.ID           `json:"connection_id"`
 }
 
 func (m *OrderShipping) String() string { return jsonx.MustMarshalToString(m) }

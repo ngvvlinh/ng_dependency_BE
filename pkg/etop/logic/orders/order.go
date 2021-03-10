@@ -105,10 +105,6 @@ func (s *OrderLogic) createOrder(
 	if shipping.Carrier == 0 {
 		shipping.Carrier = shipping.ShippingProvider
 	}
-	if (r.Shipping != nil || r.ShopShipping != nil) &&
-		!model.VerifyShippingProvider(shipping.Carrier) {
-		return nil, cm.Error(cm.InvalidArgument, "Nhà vận chuyển không hợp lệ", nil)
-	}
 	if r.ExternalUrl != "" {
 		recognizedHosts := shop.RecognizedHosts
 		if authPartner != nil {

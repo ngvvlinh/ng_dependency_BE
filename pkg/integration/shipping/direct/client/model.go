@@ -5,6 +5,7 @@ import (
 	"o.o/api/top/types/etc/connection_type"
 	shippingstate "o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_fee_type"
+	"o.o/api/top/types/etc/try_on"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpreq"
 )
@@ -103,13 +104,14 @@ type CreateFulfillmentRequest struct {
 	TotalWeight     int           `json:"total_weight"`
 	BasketValue     int           `json:"basket_value"`
 	// @Deprecated use CODAmount instead
-	TotalCODAmount      int    `json:"total_cod_amount"`
-	CODAmount           int    `json:"cod_amount"`
-	ShippingNote        string `json:"shipping_note"`
-	IncludeInsurance    bool   `json:"include_insurance"`
-	ShippingServiceCode string `json:"shipping_service_code"`
-	ShippingFee         int    `json:"shipping_fee"`
-	AffiliateID         string `json:"affiliate_id"`
+	TotalCODAmount      int              `json:"total_cod_amount"`
+	CODAmount           int              `json:"cod_amount"`
+	ShippingNote        string           `json:"shipping_note"`
+	IncludeInsurance    bool             `json:"include_insurance"`
+	ShippingServiceCode string           `json:"shipping_service_code"`
+	ShippingFee         int              `json:"shipping_fee"`
+	AffiliateID         string           `json:"affiliate_id"`
+	TryOn               try_on.TryOnCode `json:"try_on"`
 }
 
 type ItemLine struct {
@@ -126,12 +128,14 @@ type CreateFulfillmentResponse struct {
 type Fulfillment struct {
 	FulfillmentID      String              `json:"fulfillment_id"`
 	ShippingCode       String              `json:"shipping_code"`
+	SortCode           String              `json:"sort_code"`
 	ShippingFee        Int                 `json:"shipping_fee"`
 	TrackingURL        String              `json:"tracking_url"`
 	ExpectedPickAt     Time                `json:"expected_pick_at"`
 	ExpectedDeliveryAt Time                `json:"expected_delivery_at"`
 	ShippingFeeLines   []*ShippingFeeLine  `json:"shipping_fee_lines"`
 	ShippingState      shippingstate.State `json:"shipping_state"`
+	TryOn              try_on.TryOnCode    `json:"try_on"`
 }
 
 type ShippingFeeLine struct {
