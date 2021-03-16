@@ -30,7 +30,16 @@ func NewFacebookErrorService() *FacebookErrorService {
 func (s *FacebookErrorService) HandleErrorFacebookAPI(res *resty.Response, currentURL string) error {
 	var bodyJson interface{}
 
-	if err := json.Unmarshal(res.Body(), &bodyJson); err != nil {
+	// handle "Sorry, this content isn't available right now"
+	body := res.Body()
+	if string(body) == "Sorry, this content isn't available right now" {
+		return cm.Errorf(cm.FacebookError, nil, "").
+			WithMeta("code", fmt.Sprintf("%v", 1)).
+			WithMeta("sub_code", fmt.Sprintf("%d", 1357046)).
+			WithMeta("message", "Received Invalid JSON reply.")
+	}
+
+	if err := json.Unmarshal(body, &bodyJson); err != nil {
 		return err
 	}
 

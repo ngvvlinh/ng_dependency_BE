@@ -83,12 +83,12 @@ func (wh *WebhookHandler) handleMessageReturned(
 	// And conversation is defined by externalConversationID that unique on (externalPageID, externalUserID)
 	externalConversation, err := wh.getExternalConversation(ctx, externalPageID, externalUserID, pageAccessToken)
 	if err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	// Add information for From and To of messageData
 	if err := wh.addInfosForFromAndTo(pageAccessToken, externalConversation, messageData); err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	// Create new message
@@ -121,7 +121,7 @@ func (wh *WebhookHandler) handleMessageReturned(
 			},
 		},
 	}); err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	return mq.CodeOK, nil
@@ -262,7 +262,7 @@ func (wh *WebhookHandler) handleTestPage(ctx context.Context, externalPageID str
 		if cm.ErrorCode(err) == cm.NotFound {
 			return mq.CodeIgnore, nil
 		}
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	// ignore test page on production

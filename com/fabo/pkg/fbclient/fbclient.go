@@ -173,7 +173,7 @@ func (f *FbClient) CallAPICheckAccessToken(accessToken string) (*model.UserToken
 func (f *FbClient) CallAPIListFeeds(req *ListFeedsRequest) (*model.PublishedPostsResponse, error) {
 	params := &ListFeedsParams{
 		AccessToken: req.AccessToken,
-		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments},comments.summary(total_count).limit(0),reactions.summary(total_count).limit(0)",
+		Fields:      "id,created_time,from,full_picture,icon,is_expired,is_hidden,is_popular,is_published,message,story,permalink_url,shares,status_type,updated_time,picture,attachments{media_type,media,type,subattachments,target},comments.summary(total_count).limit(0),reactions.summary(total_count).limit(0)",
 		DateFormat:  UnixDateFormat,
 	}
 

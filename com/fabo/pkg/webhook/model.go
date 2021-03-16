@@ -162,7 +162,7 @@ type Recipient struct {
 type Message struct {
 	Mid         string               `json:"mid"`
 	Text        string               `json:"text"`
-	StickerID   string               `json:"sticker_id"`
+	StickerID   int                  `json:"sticker_id"`
 	Attachments []*MessageAttachment `json:"attachments"`
 }
 

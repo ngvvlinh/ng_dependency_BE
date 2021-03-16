@@ -14,11 +14,14 @@ import (
 var ll = l.New()
 
 const (
-	PrefixPSID                  = "psid"
-	PrefixExternalConversation  = "external_conversation"
-	VersionExternalConversation = "v1.6"
-	PrefixProfilePSID           = "profile_psid"
-	PrefixLockCallAPI           = "lock_call_api"
+	PrefixPSID                       = "psid"
+	PrefixExternalConversation       = "external_conversation"
+	VersionCached                    = "v1.6"
+	PrefixProfilePSID                = "profile_psid"
+	PrefixLockCallAPI                = "lock_call_api"
+	PrefixExistsExternalPost         = "exists_external_post"
+	PrefixExistsExternalConversation = "exists_external_conversation"
+	PrefixExistsExternalMessage      = "exists_external_message"
 
 	page      = "page"
 	messenger = "messenger"
@@ -101,7 +104,7 @@ func (r *FaboRedis) ClearExternalConversations(externalPageIDs, externalUserIDs 
 }
 
 func (r *FaboRedis) GenerateExternalConversationKey(externalPageID, externalUserID string) string {
-	return fmt.Sprintf("%s:%s:%s_%s", PrefixExternalConversation, VersionExternalConversation, externalPageID, externalUserID)
+	return fmt.Sprintf("%s:%s:%s_%s", PrefixExternalConversation, VersionCached, externalPageID, externalUserID)
 }
 
 // in minutes
@@ -110,7 +113,7 @@ func (r *FaboRedis) LockCallAPI(externalPageID string, TTL int) error {
 		return nil
 	}
 
-	ll.SendMessagef("lock call apis with page (%s)", externalPageID)
+	//ll.SendMessagef("lock call apis with page (%s)", externalPageID)
 	key := r.generateKeyLockCallAPI(externalPageID, "")
 	return r.redisStore.SetStringWithTTL(key, externalPageID, TTL*60)
 }
@@ -125,7 +128,7 @@ func (r *FaboRedis) LockCallAPIPage(externalPageID string, TTL int) error {
 		return nil
 	}
 
-	ll.SendMessagef("lock call apis (page) with page (%s)", externalPageID)
+	//ll.SendMessagef("lock call apis (page) with page (%s)", externalPageID)
 	key := r.generateKeyLockCallAPI(externalPageID, page)
 	return r.redisStore.SetStringWithTTL(key, externalPageID, TTL*60)
 }
@@ -140,7 +143,7 @@ func (r *FaboRedis) LockCallAPIMessenger(externalPageID string, TTL int) error {
 		return nil
 	}
 
-	ll.SendMessagef("lock call apis (messenger) with page (%s)", externalPageID)
+	//ll.SendMessagef("lock call apis (messenger) with page (%s)", externalPageID)
 	key := r.generateKeyLockCallAPI(externalPageID, messenger)
 	return r.redisStore.SetStringWithTTL(key, externalPageID, TTL*60)
 }
@@ -148,6 +151,63 @@ func (r *FaboRedis) LockCallAPIMessenger(externalPageID string, TTL int) error {
 func (r *FaboRedis) IsLockCallAPIMessenger(externalPageID string) bool {
 	key := r.generateKeyLockCallAPI(externalPageID, messenger)
 	return r.redisStore.IsExist(key)
+}
+
+// external post exists
+func (r *FaboRedis) SetExternalPostExists(externalPostID string) error {
+	if r.ExistsExternalPost(externalPostID) {
+		return nil
+	}
+
+	key := r.generateExternalPostExistsKey(externalPostID)
+	return r.redisStore.SetString(key, externalPostID)
+}
+
+func (r *FaboRedis) ExistsExternalPost(externalPostID string) bool {
+	key := r.generateExternalPostExistsKey(externalPostID)
+	return r.redisStore.IsExist(key)
+}
+
+func (r *FaboRedis) generateExternalPostExistsKey(externalPostID string) string {
+	return fmt.Sprintf("%s:%s:%s", PrefixExistsExternalPost, VersionCached, externalPostID)
+}
+
+// external conversation exists
+func (r *FaboRedis) SetExternalConversationExists(externalPageID, externalConversationID string) error {
+	if r.ExistsExternalConversation(externalPageID, externalConversationID) {
+		return nil
+	}
+
+	key := r.generateExternalConversationExistsKey(externalPageID, externalConversationID)
+	return r.redisStore.SetString(key, externalConversationID)
+}
+
+func (r *FaboRedis) ExistsExternalConversation(externalPageID, externalConversationID string) bool {
+	key := r.generateExternalConversationExistsKey(externalPageID, externalConversationID)
+	return r.redisStore.IsExist(key)
+}
+
+func (r *FaboRedis) generateExternalConversationExistsKey(externalPageID, externalConversationID string) string {
+	return fmt.Sprintf("%s:%s:%s_%s", PrefixExistsExternalConversation, VersionCached, externalPageID, externalConversationID)
+}
+
+// external message exists
+func (r *FaboRedis) SetExternalMessageExists(externalPageID, externalMessageID string) error {
+	if r.ExistsExternalMessage(externalPageID, externalMessageID) {
+		return nil
+	}
+
+	key := r.generateExternalMessageExistsKey(externalPageID, externalMessageID)
+	return r.redisStore.SetString(key, externalMessageID)
+}
+
+func (r *FaboRedis) ExistsExternalMessage(externalPageID, externalMessageID string) bool {
+	key := r.generateExternalMessageExistsKey(externalPageID, externalMessageID)
+	return r.redisStore.IsExist(key)
+}
+
+func (r *FaboRedis) generateExternalMessageExistsKey(externalPageID, externalMessageID string) string {
+	return fmt.Sprintf("%s:%s:%s_%s", PrefixExistsExternalMessage, VersionCached, externalPageID, externalMessageID)
 }
 
 func (r *FaboRedis) generateKeyLockCallAPI(externalPageID, typ string) string {

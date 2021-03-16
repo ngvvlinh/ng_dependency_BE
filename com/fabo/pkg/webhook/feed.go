@@ -36,7 +36,7 @@ func (wh *WebhookHandler) HandleFeed(
 			if cm.ErrorCode(_err) == cm.NotFound {
 				return mq.CodeIgnore, nil
 			}
-			return mq.CodeStop, _err
+			return mq.CodeRetry, _err
 		}
 		// ignore test page
 		if cmenv.IsProd() && isTestPage {
@@ -75,7 +75,7 @@ func (wh *WebhookHandler) handleFeedEvent(
 		Type:                fb_post_type.User,
 	}
 	if err := wh.fbmessagingAggr.Dispatch(ctx, saveEvent); err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 	return mq.CodeOK, nil
 }
@@ -87,7 +87,7 @@ func (wh *WebhookHandler) handleFeedPost(
 	postID := feedChange.Value.PostID
 	fromID := feedChange.Value.From.ID
 	if err := wh.lockFeedPost(extPageID, postID, fromID); err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	if feedChange.IsRemove() {
@@ -96,7 +96,7 @@ func (wh *WebhookHandler) handleFeedPost(
 
 	externalPost, err := wh.getExternalPost(ctx, postID)
 	if err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	post, err := wh.fbClient.CallAPIGetPost(&fbclient.GetPostRequest{
@@ -105,7 +105,7 @@ func (wh *WebhookHandler) handleFeedPost(
 		PageID:      extPageID,
 	})
 	if err != nil {
-		return mq.CodeStop, err
+		return mq.CodeIgnore, err
 	}
 
 	// if post does not exist in db, create it
@@ -114,7 +114,7 @@ func (wh *WebhookHandler) handleFeedPost(
 	}
 
 	if err := wh.updateParentAndChildPost(ctx, extPageID, post); err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 	return mq.CodeOK, nil
 }
@@ -141,7 +141,7 @@ func (wh *WebhookHandler) handleRemovePost(ctx context.Context, pageID, postID s
 		ExternalPageID: pageID,
 	}
 	if err := wh.fbmessagingAggr.Dispatch(ctx, removeCmd); err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 	return mq.CodeOK, nil
 }
@@ -212,7 +212,7 @@ func (wh *WebhookHandler) handleFeedComment(
 
 	externalPost, err := wh.getExternalPost(ctx, postID)
 	if err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	if externalPost == nil {
@@ -222,7 +222,7 @@ func (wh *WebhookHandler) handleFeedComment(
 			PageID:      extPageID,
 		})
 		if err != nil {
-			return mq.CodeOK, err
+			return mq.CodeIgnore, err
 		}
 
 		if code, err := wh.createParentAndChildPosts(ctx, extPageID, createdTime, post); err != nil {
@@ -232,7 +232,7 @@ func (wh *WebhookHandler) handleFeedComment(
 
 	externalCmt, err := wh.getExternalComment(ctx, commentID)
 	if err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	if externalCmt == nil {
@@ -242,7 +242,7 @@ func (wh *WebhookHandler) handleFeedComment(
 			PageID:      extPageID,
 		})
 		if err != nil {
-			return mq.CodeStop, err
+			return mq.CodeRetry, err
 		}
 
 		createCmtCmd := convertModelCommentToCreateCommentArgs(extPageID, postID, createdTime, comment)
@@ -256,7 +256,7 @@ func (wh *WebhookHandler) handleFeedComment(
 		if err := wh.fbmessagingAggr.Dispatch(ctx, &fbmessaging.CreateOrUpdateFbExternalCommentsCommand{
 			FbExternalComments: []*fbmessaging.CreateFbExternalCommentArgs{createCmtCmd},
 		}); err != nil {
-			return mq.CodeStop, err
+			return mq.CodeRetry, err
 		}
 		return mq.CodeOK, nil
 	}
@@ -268,7 +268,7 @@ func (wh *WebhookHandler) handleFeedComment(
 			ExternalCommentID: externalCmt.ExternalID,
 			IsLiked:           !externalCmt.IsLiked,
 		}); err != nil {
-			return mq.CodeStop, err
+			return mq.CodeRetry, err
 		}
 	}
 
@@ -279,7 +279,7 @@ func (wh *WebhookHandler) handleFeedComment(
 			ExternalCommentID: externalCmt.ExternalID,
 			IsHidden:          !externalCmt.IsHidden,
 		}); err != nil {
-			return mq.CodeStop, err
+			return mq.CodeRetry, err
 		}
 	}
 
@@ -289,7 +289,7 @@ func (wh *WebhookHandler) handleFeedComment(
 			Message:           feedChange.Value.Message,
 		}
 		if err := wh.fbmessagingAggr.Dispatch(ctx, updateCommentMsgCmd); err != nil {
-			return mq.CodeStop, err
+			return mq.CodeRetry, err
 		}
 	}
 	return mq.CodeOK, nil
@@ -300,7 +300,7 @@ func (wh *WebhookHandler) handleRemoveComment(ctx context.Context, commentID str
 		ExternalCommentID: commentID,
 	}
 	if err := wh.fbmessagingAggr.Dispatch(ctx, removeCommentArgs); err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 	return mq.CodeOK, nil
 }
@@ -345,7 +345,7 @@ func (wh *WebhookHandler) createParentAndChildPosts(
 		StatusType:          parentPost.StatusType,
 	}
 	if err := wh.fbmessagingAggr.Dispatch(ctx, createParentCmd); err != nil {
-		return mq.CodeStop, err
+		return mq.CodeRetry, err
 	}
 
 	// If all attachments is not from other build all child posts.
@@ -354,7 +354,7 @@ func (wh *WebhookHandler) createParentAndChildPosts(
 			FbExternalPosts: buildAllChildPost(parentPost),
 		}
 		if err := wh.fbmessagingAggr.Dispatch(ctx, createChildPostCmd); err != nil {
-			return mq.CodeStop, err
+			return mq.CodeRetry, err
 		}
 	}
 	return mq.CodeOK, nil

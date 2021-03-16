@@ -7,6 +7,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/backend/com/fabo/main/compare"
 	"o.o/backend/com/fabo/main/fbmessaging/convert"
 	"o.o/backend/com/fabo/main/fbmessaging/sqlstore"
@@ -454,6 +455,10 @@ func (a *FbExternalMessagingAggregate) CreateFbExternalPosts(
 				return err
 			}
 
+			if fbExternalPost.StatusType == fb_status_type.AddedVideo {
+				newFbExternalPost.IsLiveVideo = true
+			}
+
 			newFbExternalPosts = append(newFbExternalPosts, newFbExternalPost)
 		}
 
@@ -494,6 +499,9 @@ func (a *FbExternalMessagingAggregate) UpdateOrCreateFbExternalPostsFromSync(
 			newFbExternalPost := new(fbmessaging.FbExternalPost)
 			if err := scheme.Convert(fbExternalPostArg, newFbExternalPost); err != nil {
 				return err
+			}
+			if fbExternalPostArg.StatusType == fb_status_type.AddedVideo {
+				newFbExternalPost.IsLiveVideo = true
 			}
 
 			if oldFbExternalPost, ok := mapOldFbExternalPost[fbExternalPostArg.ExternalID]; !ok {

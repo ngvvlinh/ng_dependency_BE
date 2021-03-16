@@ -64,7 +64,6 @@ const (
 
 type getCommentsArguments struct {
 	externalPostID string
-	postID         dot.ID
 }
 
 type getChildPostArguments struct {
@@ -73,7 +72,6 @@ type getChildPostArguments struct {
 }
 
 type getMessagesArguments struct {
-	conversationID         dot.ID
 	externalConversationID string
 }
 
@@ -228,7 +226,7 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 				if !s.rd.IsLockCallAPIPage(fbPageCombined.FbExternalPage.ExternalID) {
 					// Task get post
 					s.addTaskGetPosts(fbPageCombined)
-					s.addTaskGetLiveVideos(fbPageCombined)
+					//s.addTaskGetLiveVideos(fbPageCombined)
 				}
 
 				if !s.rd.IsLockCallAPIMessenger(fbPageCombined.FbExternalPage.ExternalID) {
@@ -331,7 +329,9 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		if ok {
 			code := facebookError.Meta["code"]
 			switch code {
-			case fbclient.AccessTokenHasExpired.String():
+			case fbclient.AccessTokenHasExpired.String(), fbclient.ApiUnknown.String():
+				_ = s.rd.LockCallAPIPage(externalPageID, 30)      // lock 30 mins feed
+				_ = s.rd.LockCallAPIMessenger(externalPageID, 30) // lock 30 mins messenger
 				// no-op
 				return
 			case fbclient.ApiTooManyCalls.String(), fbclient.ApplicationLimitReached.String():
@@ -366,7 +366,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 				}
 			}
 		}
-		go ll.SendMessage(_err.Error())
+		go ll.SendMessagef("Sync-service: \n" + _err.Error())
 		s.scheduler.AddAfter(taskID, defaultRecurrentFacebook, s.syncCallbackLogs)
 	}()
 
@@ -413,7 +413,6 @@ func (s *Synchronizer) handleTaskGetMessages(
 ) error {
 	fmt.Println("GetMessages")
 
-	conversationID := taskArgs.getMessagesArgs.conversationID
 	externalConversationID := taskArgs.getMessagesArgs.externalConversationID
 
 	fbMessagesResp, err := s.fbClient.CallAPIListMessages(&fbclient.ListMessagesRequest{
@@ -542,6 +541,10 @@ func (s *Synchronizer) handleTaskGetMessages(
 			ExternalTimestamp:      int64(*messageData.CreatedTime) * 1000,
 			InternalSource:         fb_internal_source.Facebook,
 		})
+
+		if !isFinished && s.rd.ExistsExternalMessage(externalPageID, messageData.ID) {
+			isFinished = true
+		}
 	}
 
 	if len(newFbExternalMessages) > 0 {
@@ -549,6 +552,10 @@ func (s *Synchronizer) handleTaskGetMessages(
 			FbExternalMessages: newFbExternalMessages,
 		}); err != nil {
 			return err
+		}
+
+		for _, newFbExternalMessage := range newFbExternalMessages {
+			s.rd.ExistsExternalMessage(externalPageID, newFbExternalMessage.ExternalID)
 		}
 	}
 
@@ -560,7 +567,6 @@ func (s *Synchronizer) handleTaskGetMessages(
 			externalPageID: externalPageID,
 			pageID:         pageID,
 			getMessagesArgs: &getMessagesArguments{
-				conversationID:         conversationID,
 				externalConversationID: externalConversationID,
 			},
 			fbPagingRequest: fbMessagesResp.Messages.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetMessages),
@@ -620,9 +626,12 @@ func (s *Synchronizer) handleTaskGetConversations(
 			ExternalMessageCount: fbConversation.MessageCount,
 			PSID:                 externalUserID,
 		})
+		if !isFinished && s.rd.ExistsExternalConversation(externalPageID, fbConversation.ID) {
+			isFinished = true
+		}
 	}
 
-	mapExternalIDAndID := make(map[string]dot.ID)
+	// create external conversations
 	if len(fbExternalConversationsArgs) > 0 {
 		createOrUpdateFbExternalConversationsCmd := &fbmessaging.CreateOrUpdateFbExternalConversationsCommand{
 			FbExternalConversations: fbExternalConversationsArgs,
@@ -631,8 +640,9 @@ func (s *Synchronizer) handleTaskGetConversations(
 			return err
 		}
 
-		for _, fbConversation := range createOrUpdateFbExternalConversationsCmd.Result {
-			mapExternalIDAndID[fbConversation.ExternalID] = fbConversation.ID
+		// cached external conversation was crawled
+		for _, fbExternalConversation := range createOrUpdateFbExternalConversationsCmd.Result {
+			s.rd.ExistsExternalConversation(externalPageID, fbExternalConversation.ExternalID)
 		}
 	}
 
@@ -647,7 +657,6 @@ func (s *Synchronizer) handleTaskGetConversations(
 			externalPageID: externalPageID,
 			pageID:         pageID,
 			getMessagesArgs: &getMessagesArguments{
-				conversationID:         mapExternalIDAndID[fbConversation.ID],
 				externalConversationID: fbConversation.ID,
 			},
 			fbPagingRequest: &model.FacebookPagingRequest{
@@ -893,56 +902,60 @@ func (s *Synchronizer) handleTaskGetChildPost(
 
 	// Get values from arguments
 	externalChildPostID := taskArgs.getChildPostArgs.externalChildPostID
-	externalPostID := taskArgs.getChildPostArgs.externalPostID
 
-	// Call api get (child) post that depends on postID
-	fbExternalPostResp, err := s.fbClient.CallAPIGetPost(&fbclient.GetPostRequest{
-		AccessToken: accessToken,
-		PostID:      externalChildPostID,
-		PageID:      externalPageID,
-	})
-	if err != nil {
-		return err
-	}
+	if !s.rd.ExistsExternalPost(externalChildPostID) {
+		externalPostID := taskArgs.getChildPostArgs.externalPostID
 
-	var totalComments, totalReactions int
-	if fbExternalPostResp.CommentsSummary != nil && fbExternalPostResp.CommentsSummary.Summary != nil {
-		totalComments = fbExternalPostResp.CommentsSummary.Summary.TotalCount
-	}
-	if fbExternalPostResp.ReactionsSummary != nil && fbExternalPostResp.ReactionsSummary.Summary != nil {
-		totalReactions = fbExternalPostResp.ReactionsSummary.Summary.TotalCount
-	}
+		// Call api get (child) post that depends on postID
+		fbExternalPostResp, err := s.fbClient.CallAPIGetPost(&fbclient.GetPostRequest{
+			AccessToken: accessToken,
+			PostID:      externalChildPostID,
+			PageID:      externalPageID,
+		})
+		if err != nil {
+			return err
+		}
 
-	var createFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
-	createFbExternalPostsArgs = append(createFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
-		ID:                  cm.NewID(),
-		ExternalPageID:      externalPageID,
-		ExternalID:          externalChildPostID,
-		ExternalParentID:    externalPostID,
-		ExternalFrom:        fbclientconvert.ConvertObjectFrom(fbExternalPostResp.From),
-		ExternalPicture:     fbExternalPostResp.FullPicture,
-		ExternalIcon:        fbExternalPostResp.Icon,
-		ExternalMessage:     ternaryString(fbExternalPostResp.Message != "", fbExternalPostResp.Message, fbExternalPostResp.Story),
-		ExternalAttachments: fbclientconvert.ConvertAttachments(fbExternalPostResp.Attachments),
-		ExternalCreatedTime: fbExternalPostResp.CreatedTime.ToTime(),
-		ExternalUpdatedTime: fbExternalPostResp.UpdatedTime.ToTime(),
-		TotalComments:       totalComments,
-		TotalReactions:      totalReactions,
-		Type:                fb_post_type.Page,
-		StatusType:          fb_status_type.ParseFbStatusTypeWithDefault(fbExternalPostResp.StatusType, fb_status_type.Unknown),
-	})
+		var totalComments, totalReactions int
+		if fbExternalPostResp.CommentsSummary != nil && fbExternalPostResp.CommentsSummary.Summary != nil {
+			totalComments = fbExternalPostResp.CommentsSummary.Summary.TotalCount
+		}
+		if fbExternalPostResp.ReactionsSummary != nil && fbExternalPostResp.ReactionsSummary.Summary != nil {
+			totalReactions = fbExternalPostResp.ReactionsSummary.Summary.TotalCount
+		}
 
-	updateOrCreateFbExternalPostsCmd := &fbmessaging.UpdateOrCreateFbExternalPostsFromSyncCommand{
-		FbExternalPosts: createFbExternalPostsArgs,
-	}
-	if err := s.fbMessagingAggr.Dispatch(ctx, updateOrCreateFbExternalPostsCmd); err != nil {
-		return err
-	}
-	if len(updateOrCreateFbExternalPostsCmd.Result) == 0 {
-		return nil
-	}
+		var createFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
+		createFbExternalPostsArgs = append(createFbExternalPostsArgs, &fbmessaging.CreateFbExternalPostArgs{
+			ID:                  cm.NewID(),
+			ExternalPageID:      externalPageID,
+			ExternalID:          externalChildPostID,
+			ExternalParentID:    externalPostID,
+			ExternalFrom:        fbclientconvert.ConvertObjectFrom(fbExternalPostResp.From),
+			ExternalPicture:     fbExternalPostResp.FullPicture,
+			ExternalIcon:        fbExternalPostResp.Icon,
+			ExternalMessage:     ternaryString(fbExternalPostResp.Message != "", fbExternalPostResp.Message, fbExternalPostResp.Story),
+			ExternalAttachments: fbclientconvert.ConvertAttachments(fbExternalPostResp.Attachments),
+			ExternalCreatedTime: fbExternalPostResp.CreatedTime.ToTime(),
+			ExternalUpdatedTime: fbExternalPostResp.UpdatedTime.ToTime(),
+			TotalComments:       totalComments,
+			TotalReactions:      totalReactions,
+			Type:                fb_post_type.Page,
+			StatusType:          fb_status_type.ParseFbStatusTypeWithDefault(fbExternalPostResp.StatusType, fb_status_type.Unknown),
+		})
 
-	childPostID := updateOrCreateFbExternalPostsCmd.Result[0].ID
+		updateOrCreateFbExternalPostsCmd := &fbmessaging.UpdateOrCreateFbExternalPostsFromSyncCommand{
+			FbExternalPosts: createFbExternalPostsArgs,
+		}
+		if err := s.fbMessagingAggr.Dispatch(ctx, updateOrCreateFbExternalPostsCmd); err != nil {
+			return err
+		}
+		if len(updateOrCreateFbExternalPostsCmd.Result) == 0 {
+			return nil
+		}
+
+		// cached external child post was crawled
+		s.rd.ExistsExternalPost(externalChildPostID)
+	}
 
 	s.addTask(&TaskArguments{
 		actionType:     GetComments,
@@ -952,7 +965,6 @@ func (s *Synchronizer) handleTaskGetChildPost(
 		externalPageID: externalPageID,
 		getCommentsArgs: &getCommentsArguments{
 			externalPostID: externalChildPostID,
-			postID:         childPostID,
 		},
 		fbPagingRequest: &model.FacebookPagingRequest{
 			Limit: dot.Int(fbclient.DefaultLimitGetComments),
@@ -990,9 +1002,18 @@ func (s *Synchronizer) HandleTaskGetPosts(
 	// Create and Update posts
 	mapExternalChildPostIDAndExternalPostID := make(map[string]string)
 	var createFbExternalPostsArgs []*fbmessaging.CreateFbExternalPostArgs
+
 	for _, fbPost := range fbExternalPostsResp.Data {
 		if fbPost.Attachments != nil {
 			for _, attachment := range fbPost.Attachments.Data {
+				// ignore bài viết share abum bài khác
+				// vì nếu bài viết khác thì bài đó tự quan tâm comment. Ko cần get về để tạo children posts
+				if attachment.Target != nil {
+					if fbPost.ID != fmt.Sprintf("%v_%v", externalPageID, attachment.Target.ID) {
+						continue
+					}
+				}
+
 				// TODO: Ngoc add enum
 				if attachment.Type == "album" {
 					for _, subAttachment := range attachment.SubAttachments.Data {
@@ -1039,6 +1060,9 @@ func (s *Synchronizer) HandleTaskGetPosts(
 
 	mapExternalPostIDAndPostID := make(map[string]dot.ID)
 	for _, fbExternalPost := range updateOrCreateFbExternalPostsCmd.Result {
+		// cached external post was crawled
+		s.rd.SetExternalPostExists(fbExternalPost.ExternalID)
+
 		mapExternalPostIDAndPostID[fbExternalPost.ExternalID] = fbExternalPost.ID
 	}
 
@@ -1067,7 +1091,6 @@ func (s *Synchronizer) HandleTaskGetPosts(
 			externalPageID: externalPageID,
 			getCommentsArgs: &getCommentsArguments{
 				externalPostID: fbExternalPost.ExternalID,
-				postID:         mapExternalPostIDAndPostID[fbExternalPost.ExternalID],
 			},
 			fbPagingRequest: &model.FacebookPagingRequest{
 				Limit: dot.Int(fbclient.DefaultLimitGetComments),
@@ -1190,7 +1213,6 @@ func (s *Synchronizer) HandleTaskGetUserLiveVideos(
 			externalUserID: externalUserID,
 			getCommentsArgs: &getCommentsArguments{
 				externalPostID: fbExternalPost.ExternalID,
-				postID:         fbExternalPost.ID,
 			},
 			fbPagingRequest: &model.FacebookPagingRequest{
 				Limit: dot.Int(fbclient.DefaultLimitGetComments),
