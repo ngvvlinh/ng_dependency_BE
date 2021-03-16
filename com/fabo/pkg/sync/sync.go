@@ -126,13 +126,17 @@ type Synchronizer struct {
 
 	mapExternalPageAndTimeStart map[string]time.Time
 
-	timeLimit   int
-	timeToCrawl int
+	timeLimit       int
+	timeToCrawl     int
+	disableSyncUser bool
+	disableSyncPage bool
 }
 
 type Config struct {
-	TimeLimit   int `yaml:"time_limit"`    // days
-	TimeToCrawl int `yaml:"time_to_crawl"` // mins
+	TimeLimit       int  `yaml:"time_limit"`    // days
+	TimeToCrawl     int  `yaml:"time_to_crawl"` // mins
+	DisableSyncUser bool `yaml:"disable_sync_user"`
+	DisableSyncPage bool `yaml:"disable_sync_page"`
 }
 
 func New(
@@ -156,6 +160,8 @@ func New(
 		rd:                          fbRedis,
 		timeLimit:                   cfg.TimeLimit,
 		timeToCrawl:                 cfg.TimeToCrawl,
+		disableSyncUser:             cfg.DisableSyncUser,
+		disableSyncPage:             cfg.DisableSyncPage,
 	}
 	return s
 }
@@ -206,32 +212,58 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 
 	for ; true; <-ticker.C {
 		// handle jobs with pages
-		fbPageCombineds, err := listAllFbPagesActive(s.db)
-		if err != nil {
-			return err
+		if !s.disableSyncPage {
+			fbPageCombineds, err := listAllFbPagesActive(s.db)
+			if err != nil {
+				return err
+			}
+
+			for _, fbPageCombined := range fbPageCombineds {
+				// ignore Page test
+
+				isTestPage := strings.HasPrefix(fbPageCombined.FbExternalPage.ExternalName, fbclient.PrefixFanPageNameTest)
+				if cmenv.IsProd() && isTestPage {
+					continue
+				}
+				if !s.rd.IsLockCallAPIPage(fbPageCombined.FbExternalPage.ExternalID) {
+					// Task get post
+					s.addTaskGetPosts(fbPageCombined)
+					s.addTaskGetLiveVideos(fbPageCombined)
+				}
+
+				if !s.rd.IsLockCallAPIMessenger(fbPageCombined.FbExternalPage.ExternalID) {
+					// Task get conversation
+					s.addTask(&TaskArguments{
+						actionType:     GetConversations,
+						accessToken:    fbPageCombined.FbExternalPageInternal.Token,
+						shopID:         fbPageCombined.FbExternalPage.ShopID,
+						pageID:         fbPageCombined.FbExternalPage.ID,
+						externalPageID: fbPageCombined.FbExternalPage.ExternalID,
+						fbPagingRequest: &model.FacebookPagingRequest{
+							Limit: dot.Int(fbclient.DefaultLimitGetConversations),
+							TimePagination: &model.TimePaginationRequest{
+								Since: time.Now().AddDate(0, 0, -s.timeLimit),
+							},
+						},
+					})
+				}
+			}
 		}
 
-		for _, fbPageCombined := range fbPageCombineds {
-			// ignore Page test
-
-			isTestPage := strings.HasPrefix(fbPageCombined.FbExternalPage.ExternalName, fbclient.PrefixFanPageNameTest)
-			if cmenv.IsProd() && isTestPage {
-				continue
-			}
-			if !s.rd.IsLockCallAPIPage(fbPageCombined.FbExternalPage.ExternalID) {
-				// Task get post
-				s.addTaskGetPosts(fbPageCombined)
-				s.addTaskGetLiveVideos(fbPageCombined)
+		// handle jobs with users
+		if !s.disableSyncUser {
+			fbUserCombineds, err := listAllFbUsersActive(s.db)
+			if err != nil {
+				return err
 			}
 
-			if !s.rd.IsLockCallAPIMessenger(fbPageCombined.FbExternalPage.ExternalID) {
-				// Task get conversation
+			for _, fbUserCombined := range fbUserCombineds {
+				// Task get user liveVideos
 				s.addTask(&TaskArguments{
-					actionType:     GetConversations,
-					accessToken:    fbPageCombined.FbExternalPageInternal.Token,
-					shopID:         fbPageCombined.FbExternalPage.ShopID,
-					pageID:         fbPageCombined.FbExternalPage.ID,
-					externalPageID: fbPageCombined.FbExternalPage.ExternalID,
+					actionType:     GetUserLiveVideos,
+					accessToken:    fbUserCombined.FbExternalUserInternal.Token,
+					shopID:         fbUserCombined.FbExternalUserConnected.ShopID,
+					externalUserID: fbUserCombined.FbExternalUserConnected.ExternalID,
 					fbPagingRequest: &model.FacebookPagingRequest{
 						Limit: dot.Int(fbclient.DefaultLimitGetConversations),
 						TimePagination: &model.TimePaginationRequest{
@@ -240,28 +272,6 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 					},
 				})
 			}
-		}
-
-		// handle jobs with users
-		fbUserCombineds, err := listAllFbUsersActive(s.db)
-		if err != nil {
-			return err
-		}
-
-		for _, fbUserCombined := range fbUserCombineds {
-			// Task get user liveVideos
-			s.addTask(&TaskArguments{
-				actionType:     GetUserLiveVideos,
-				accessToken:    fbUserCombined.FbExternalUserInternal.Token,
-				shopID:         fbUserCombined.FbExternalUserConnected.ShopID,
-				externalUserID: fbUserCombined.FbExternalUserConnected.ExternalID,
-				fbPagingRequest: &model.FacebookPagingRequest{
-					Limit: dot.Int(fbclient.DefaultLimitGetConversations),
-					TimePagination: &model.TimePaginationRequest{
-						Since: time.Now().AddDate(0, 0, -s.timeLimit),
-					},
-				},
-			})
 		}
 	}
 	return nil
