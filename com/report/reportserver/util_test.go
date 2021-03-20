@@ -8,8 +8,8 @@ import (
 
 func TestValidateSchema(t *testing.T) {
 	Convey("convertColName", t, func() {
-		So(convertColName(1), ShouldEqual, "A")
-		So(convertColName(27), ShouldEqual, "AA")
-		So(convertColName(52), ShouldEqual, "AZ")
+		So(convertColName(1), ShouldEqual, "B")
+		So(convertColName(27), ShouldEqual, "AB")
+		So(convertColName(52), ShouldEqual, "BA")
 	})
 }

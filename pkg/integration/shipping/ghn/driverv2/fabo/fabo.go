@@ -60,7 +60,7 @@ func (f *FaboSupportedGHNDriver) GetPromotionCoupon(args *driverv2.GetPromotionC
 	current := args.CurrentTime
 	currentEnv := cmenv.Env()
 	for _, c := range promotionCoupons {
-		if c.Env != currentEnv {
+		if currentEnv == cmenv.EnvProd && c.Env != currentEnv {
 			continue
 		}
 		if c.Date.From.ToTime().After(current) ||

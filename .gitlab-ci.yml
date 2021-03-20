@@ -16,7 +16,7 @@ before_script:
 
 report-gerrit-changes-running:
   stage: build
-  tags: [go]
+#  tags: [go]
   image: olvrng/alpine-toolbox
   before_script: []
   script:
@@ -24,7 +24,7 @@ report-gerrit-changes-running:
 
 build:
   stage: build
-  tags: [go]
+#  tags: [go]
   image: olvrng/golang-toolbox
   services:
   - postgres:9.6-alpine
@@ -36,7 +36,7 @@ build:
   - time scripts/ci/verify-generate.sh
   - time go run ./scripts/init_testdb/main.go -drop
   - time scripts/ci/test-all.sh simple
-  - time scripts/ci/test-all.sh e2e
+#  - time scripts/ci/test-all.sh e2e
   - touch artifacts/BUILD_SUCCESS
   after_script:
   - scripts/ci/report-gerrit.sh

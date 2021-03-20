@@ -26,3 +26,4 @@ rules:
   - o.o/common
   # TODO: remove this
   - o.o/backend/tools/pkg/acl
+  - o.o/backend/cogs

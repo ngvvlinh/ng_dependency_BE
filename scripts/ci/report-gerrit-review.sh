@@ -46,6 +46,5 @@ body=$(
     --argjson labels "$labels" \
     '{ tag: $tag, message: $msg, labels: $labels }'
 )
-
 request -d "${body}" \
   "https://g.meta.etop.vn/a/changes/${change_number}/revisions/${revision}/review"

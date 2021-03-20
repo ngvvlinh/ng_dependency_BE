@@ -1,7 +1,3 @@
--- Create new database `etop_log`
--- Run sql below in this database 
-CREATE DATABASE etop_log;
-
 CREATE TYPE shipping_provider AS ENUM (
     'ghn',
     'ghtk',

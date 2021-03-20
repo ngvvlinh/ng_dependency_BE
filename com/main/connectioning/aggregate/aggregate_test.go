@@ -68,7 +68,9 @@ func init() {
 			, updated_at TIMESTAMPTZ
 			, deleted_at TIMESTAMPTZ
 			, external_data JSONB
+			, telecom_data JSONB
 			, owner_id INT8
+			, last_sync_at TIMESTAMPTZ
 		);
 	`)
 
@@ -197,7 +199,7 @@ func TestShopConnectionAggregate(t *testing.T) {
 		})
 
 		Convey("Update Token", func() {
-			cmd := &connectioning.UpdateShopConnectionTokenCommand{
+			cmd := &connectioning.UpdateShopConnectionCommand{
 				ShopID:       shopID,
 				ConnectionID: connID,
 				Token:        "token update",

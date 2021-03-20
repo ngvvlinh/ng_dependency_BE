@@ -80,3 +80,4 @@
   - o.o/backend/res/dl
   - o.o/backend/tools/pkg/acl
   - o.o/backend/zexp/api
+  - o.o/backend/cogs

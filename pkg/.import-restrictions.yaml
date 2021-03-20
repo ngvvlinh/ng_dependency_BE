@@ -11,3 +11,4 @@ rules:
   - o.o/common
   - o.o/backend/zexp/api
   - o.o/backend/tools/pkg/acl # TODO: remove this
+  - o.o/backend/cogs

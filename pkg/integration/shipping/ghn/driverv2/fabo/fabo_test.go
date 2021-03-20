@@ -29,7 +29,7 @@ func TestGetPromotionCoupon(t *testing.T) {
 	}
 	invalidDateArgs2 := &driverv2.GetPromotionCouponArgs{
 		FromProvinceCode: "79",
-		CurrentTime:      time.Date(2020, 11, 29, 12, 15, 0, 0, time.Local),
+		CurrentTime:      time.Date(2020, 11, 30, 12, 15, 0, 0, time.Local),
 	}
 
 	t.Run("Case invalid date", func(t *testing.T) {

@@ -41,10 +41,10 @@ func init() {
 			info jsonb
 		);`)
 	db.MustExec(`
-		INSERT INTO account 
+		INSERT INTO account
 		VALUES(
-			101, 
-			ARRAY[102, 103], 
+			101,
+			ARRAY[102, 103],
 			ARRAY['a', 'bc', 'def'],
 			'nguyen van a',
 			'sad',

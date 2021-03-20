@@ -59,29 +59,37 @@ func runTest(m *testing.M) int {
 	cfg.Databases.PostgresAffiliate.Database = "test"
 	cfg.Databases.PostgresNotifier.Database = "test"
 	cfg.Databases.PostgresWebServer.Database = "test"
-	cfg.Databases.PostgresLogs.Database = "test"
+	cfg.Databases.PostgresLogs.Database = "etop_dev_logs"
+	cfg.Databases.PostgresEtelecom.Database = "test"
 	db := cmsql.MustConnect(cfg.Databases.Postgres)
 
 	_, _ = db.Exec(`DROP DATABASE IF EXISTS etop_dev_test;`)
+	_, _ = db.Exec(`DROP DATABASE IF EXISTS etop_dev_logs;`)
 	_, _ = db.Exec(`CREATE DATABASE etop_dev_test;`)
+	_, _ = db.Exec(`CREATE DATABASE etop_dev_logs;`)
 
 	pathDB := filepath.Join(gen.ProjectPath(), "/db/main/")
+	pathDBLogging := filepath.Join(gen.ProjectPath(), "/com/etc/logging/db/")
 
 	pathDBMigration := filepath.Join(gen.ProjectPath(), "/tests/main/shop/")
 
 	contents := e2e.LoadContentPath(pathDB)
-
 	contents = append(contents, e2e.LoadContentPath(pathDBMigration)...)
 
 	cfg.Databases.Postgres.Database = "etop_dev_test"
 
 	db = cmsql.MustConnect(cfg.Databases.Postgres)
+	dbLog := cmsql.MustConnect(cfg.Databases.PostgresLogs)
 
 	err := e2e.LoadDataWithContents(db, contents)
-
 	if err != nil {
 		ll.Fatal(err.Error())
 	}
+	err = e2e.LoadDataWithContents(dbLog, e2e.LoadContentPath(pathDBLogging))
+	if err != nil {
+		ll.Fatal(err.Error())
+	}
+
 	serverHost := cfg.SharedConfig.HTTP.Host
 	if serverHost == "" {
 		serverHost = "127.0.0.1"
