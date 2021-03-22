@@ -13,11 +13,8 @@ import (
 	"o.o/api/main/shipping"
 	"o.o/api/supporting/ticket"
 	pbcm "o.o/api/top/types/common"
-	"o.o/api/top/types/etc/connection_type"
-	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
-	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
 	"o.o/api/top/types/etc/ticket/ticket_type"
 	com "o.o/backend/com/main"
@@ -204,14 +201,6 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 		ticketCore.ConnectionID = connectionID
 	}
 
-	if ticketCore.ConnectionID == 0 {
-		connID, err := a.getTicketConnectionID(ctx, ticketCore)
-		if err != nil {
-			return nil, err
-		}
-		ticketCore.ConnectionID = connID
-	}
-
 	ticketCore, err = a.TicketManager.CreateTicket(ctx, ticketCore)
 	if err != nil {
 		return nil, err
@@ -221,29 +210,6 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 		return nil, err
 	}
 	return a.TicketStore(ctx).ID(ticketCore.ID).GetTicket()
-}
-
-func (a *TicketAggregate) getTicketConnectionID(ctx context.Context, ticket *ticket.Ticket) (connID dot.ID, _ error) {
-	// Xử lý trường hợp ticket tạo ra từ webphone
-	// webphone => suite crm
-	if ticket.Source == ticket_source.WebPhone {
-		listConnectionQuery := &connectioning.ListConnectionsQuery{
-			Status:             status3.P.Wrap(),
-			ConnectionType:     connection_type.CRM,
-			ConnectionMethod:   connection_type.ConnectionMethodBuiltin,
-			ConnectionProvider: connection_type.ConnectionProviderSuiteCRM,
-		}
-		if err := a.ConnectionQuery.Dispatch(ctx, listConnectionQuery); err != nil {
-			return 0, err
-		}
-		connections := listConnectionQuery.Result
-
-		if len(connections) == 0 {
-			return 0, cm.Errorf(cm.InvalidArgument, nil, "connection suite crm not found")
-		}
-		connID = connections[0].ID
-	}
-	return
 }
 
 func (a *TicketAggregate) UpdateTicketInfo(ctx context.Context, args *ticket.UpdateTicketInfoArgs) (*ticket.Ticket, error) {
