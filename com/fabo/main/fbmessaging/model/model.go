@@ -170,7 +170,7 @@ type FbExternalPost struct {
 	ExternalIcon        string
 	ExternalMessage     string
 	ExternalAttachments []*PostAttachment
-	ExternalCreatedTime time.Time
+	ExternalCreatedTime time.Time `paging:"external_created_time"`
 	ExternalUpdatedTime time.Time
 	CreatedAt           time.Time `sq:"create"`
 	UpdatedAt           time.Time `sq:"update"`
