@@ -201,11 +201,6 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 		ticketCore.ConnectionID = connectionID
 	}
 
-	ticketCore, err = a.TicketManager.CreateTicket(ctx, ticketCore)
-	if err != nil {
-		return nil, err
-	}
-
 	if err = a.TicketStore(ctx).Create(ticketCore); err != nil {
 		return nil, err
 	}

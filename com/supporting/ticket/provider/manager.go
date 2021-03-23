@@ -78,13 +78,12 @@ func (m *TicketManager) GetTicketDriver(ctx context.Context, connectionID dot.ID
 	return m.ticketDriver.GetTicketDriver(m.env, connection, shopConnection)
 }
 
-func (m *TicketManager) CreateTicket(ctx context.Context, ticketCore *ticket.Ticket) (_ *ticket.Ticket, err error) {
+func (m *TicketManager) CreateTicket(ctx context.Context, ticketCore *ticket.Ticket) (*ticket.Ticket,  error) {
+	if ticketCore.ConnectionID == 0 {
+		return ticketCore, nil
+	}
 	switch ticketCore.Source {
 	case ticket_source.WebPhone:
-		if ticketCore.ConnectionID == 0 {
-			return nil, cm.Error(cm.InvalidArgument, "connection_id must not be null", nil)
-		}
-
 		driver, err := m.GetTicketDriver(ctx, ticketCore.ConnectionID)
 		if err != nil {
 			return nil, err
