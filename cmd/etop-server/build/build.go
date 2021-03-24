@@ -41,6 +41,7 @@ import (
 	traderpm "o.o/backend/com/shopping/tradering/pm"
 	invoicepm "o.o/backend/com/subscripting/invoice/pm"
 	subscriptionpm "o.o/backend/com/subscripting/subscription/pm"
+	ticketpm "o.o/backend/com/supporting/ticket/pm"
 	"o.o/backend/com/web/ecom/webserver"
 	"o.o/backend/pkg/common/apifw/health"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -92,6 +93,7 @@ type Output struct {
 	_invoicePM             *invoicepm.ProcessManager
 	_transactionPM         *transactionpm.ProcessManager
 	_etelecomUserSettingPM *etelecomusersettingpm.ProcessManager
+	_ticketPM              *ticketpm.ProcessManager
 }
 
 func BuildServers(

@@ -132,6 +132,7 @@ import (
 	query26 "o.o/backend/com/summary/etelecom/query"
 	query19 "o.o/backend/com/summary/etop/query"
 	aggregate19 "o.o/backend/com/supporting/ticket/aggregate"
+	pm24 "o.o/backend/com/supporting/ticket/pm"
 	"o.o/backend/com/supporting/ticket/provider"
 	query3 "o.o/backend/com/supporting/ticket/query"
 	aggregate18 "o.o/backend/com/web/webserver/aggregate"
@@ -1385,6 +1386,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager20 := pm21.New(busBus, transactionQueryBus)
 	processManager21 := pm22.New(busBus, transactionQueryBus, transactionCommandBus, creditQueryBus)
 	processManager22 := pm23.New(busBus, usersettingQueryBus, queryBus)
+	processManager23 := pm24.NewProcessManager(busBus, ticketCommandBus)
 	output := Output{
 		Servers:                v4,
 		Health:                 service,
@@ -1411,6 +1413,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		_invoicePM:             processManager20,
 		_transactionPM:         processManager21,
 		_etelecomUserSettingPM: processManager22,
+		_ticketPM:              processManager23,
 	}
 	return output, func() {
 		cleanup9()

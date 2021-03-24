@@ -165,9 +165,13 @@ func (a TicketAggregate) validateTicketLabelBeforeCreateOrUpdate(ctx context.Con
 		return cm.Errorf(cm.InvalidArgument, nil, "Tên label không hợp lệ")
 	}
 	if label.Code == "" {
-		return cm.Errorf(cm.InvalidArgument, nil, "Mã label không hợp lệ")
+		return nil
 	}
-	ticketCore, err := a.TicketLabelStore(ctx).Code(label.Code).GetTicketLabel()
+	query := a.TicketLabelStore(ctx).Code(label.Code).Type(label.Type)
+	if label.Type == ticket_type.Internal {
+		query = query.ShopID(label.ShopID)
+	}
+	ticketCore, err := query.GetTicketLabel()
 	switch cm.ErrorCode(err) {
 	case cm.NoError:
 		if ticketCore.ID != label.ID {
