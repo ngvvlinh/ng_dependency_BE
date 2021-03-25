@@ -74,6 +74,7 @@ func convert_invitationmodel1_Invitation_invitationmodel_Invitation(arg *invitat
 	out.UpdatedAt = arg.UpdatedAt   // simple assign
 	out.DeletedAt = time.Time{}     // zero value
 	out.Rid = arg.Rid               // simple assign
+	out.InvitationURL = ""          // zero value
 }
 
 func Convert_invitationmodel1_Invitations_invitationmodel_Invitations(args []*invitationmodel1.Invitation) (outs []*invitationmodel.Invitation) {

@@ -58,6 +58,8 @@ type CreateInvitationArgs struct {
 	Status    status3.Status
 	InvitedBy dot.ID
 	CreatedBy time.Time
+	// OriginURL: use to generate invite URL
+	OriginURL string
 }
 
 type ResendInvitationArgs struct {
@@ -65,4 +67,6 @@ type ResendInvitationArgs struct {
 	ResendBy  dot.ID
 	Email     string
 	Phone     string
+	// OriginURL: use to generate invite URL
+	OriginURL string
 }

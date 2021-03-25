@@ -14,6 +14,7 @@ type authKey struct{}
 type debugKey struct{}
 type headerKey struct{}
 type CookieKey struct{}
+type OriginKey struct{}
 
 func ForwardHeadersX(configs ...Config) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

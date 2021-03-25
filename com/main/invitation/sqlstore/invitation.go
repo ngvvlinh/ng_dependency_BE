@@ -199,6 +199,9 @@ func (s *InvitationStore) CreateInvitation(invitation *invitation.Invitation) er
 func (s *InvitationStore) ListInvitationsDB() ([]*model.Invitation, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	if !s.Paging.IsCursorPaging() && len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
 	query, err := sqlstore.LimitSort(query, &s.Paging, SortInvitation)
 	if err != nil {
 		return nil, err

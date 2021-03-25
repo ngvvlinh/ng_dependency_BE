@@ -68,23 +68,23 @@ func Convert_invitationmodel_Invitation_invitation_Invitation(arg *invitationmod
 }
 
 func convert_invitationmodel_Invitation_invitation_Invitation(arg *invitationmodel.Invitation, out *invitation.Invitation) {
-	out.ID = arg.ID                 // simple assign
-	out.AccountID = arg.AccountID   // simple assign
-	out.Email = arg.Email           // simple assign
-	out.Phone = arg.Phone           // simple assign
-	out.FullName = arg.FullName     // simple assign
-	out.ShortName = arg.ShortName   // simple assign
-	out.Position = ""               // zero value
-	out.Roles = nil                 // types do not match
-	out.Token = arg.Token           // simple assign
-	out.Status = arg.Status         // simple assign
-	out.InvitedBy = arg.InvitedBy   // simple assign
-	out.AcceptedAt = arg.AcceptedAt // simple assign
-	out.RejectedAt = arg.RejectedAt // simple assign
-	out.ExpiresAt = arg.ExpiresAt   // simple assign
-	out.CreatedAt = arg.CreatedAt   // simple assign
-	out.UpdatedAt = arg.UpdatedAt   // simple assign
-	out.InvitationURL = ""          // zero value
+	out.ID = arg.ID                       // simple assign
+	out.AccountID = arg.AccountID         // simple assign
+	out.Email = arg.Email                 // simple assign
+	out.Phone = arg.Phone                 // simple assign
+	out.FullName = arg.FullName           // simple assign
+	out.ShortName = arg.ShortName         // simple assign
+	out.Position = ""                     // zero value
+	out.Roles = nil                       // types do not match
+	out.Token = arg.Token                 // simple assign
+	out.Status = arg.Status               // simple assign
+	out.InvitedBy = arg.InvitedBy         // simple assign
+	out.AcceptedAt = arg.AcceptedAt       // simple assign
+	out.RejectedAt = arg.RejectedAt       // simple assign
+	out.ExpiresAt = arg.ExpiresAt         // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
+	out.InvitationURL = arg.InvitationURL // simple assign
 }
 
 func Convert_invitationmodel_Invitations_invitation_Invitations(args []*invitationmodel.Invitation) (outs []*invitation.Invitation) {
@@ -111,23 +111,24 @@ func Convert_invitation_Invitation_invitationmodel_Invitation(arg *invitation.In
 }
 
 func convert_invitation_Invitation_invitationmodel_Invitation(arg *invitation.Invitation, out *invitationmodel.Invitation) {
-	out.ID = arg.ID                 // simple assign
-	out.AccountID = arg.AccountID   // simple assign
-	out.Email = arg.Email           // simple assign
-	out.Phone = arg.Phone           // simple assign
-	out.FullName = arg.FullName     // simple assign
-	out.ShortName = arg.ShortName   // simple assign
-	out.Roles = nil                 // types do not match
-	out.Token = arg.Token           // simple assign
-	out.Status = arg.Status         // simple assign
-	out.InvitedBy = arg.InvitedBy   // simple assign
-	out.AcceptedAt = arg.AcceptedAt // simple assign
-	out.RejectedAt = arg.RejectedAt // simple assign
-	out.ExpiresAt = arg.ExpiresAt   // simple assign
-	out.CreatedAt = arg.CreatedAt   // simple assign
-	out.UpdatedAt = arg.UpdatedAt   // simple assign
-	out.DeletedAt = time.Time{}     // zero value
-	out.Rid = 0                     // zero value
+	out.ID = arg.ID                       // simple assign
+	out.AccountID = arg.AccountID         // simple assign
+	out.Email = arg.Email                 // simple assign
+	out.Phone = arg.Phone                 // simple assign
+	out.FullName = arg.FullName           // simple assign
+	out.ShortName = arg.ShortName         // simple assign
+	out.Roles = nil                       // types do not match
+	out.Token = arg.Token                 // simple assign
+	out.Status = arg.Status               // simple assign
+	out.InvitedBy = arg.InvitedBy         // simple assign
+	out.AcceptedAt = arg.AcceptedAt       // simple assign
+	out.RejectedAt = arg.RejectedAt       // simple assign
+	out.ExpiresAt = arg.ExpiresAt         // simple assign
+	out.CreatedAt = arg.CreatedAt         // simple assign
+	out.UpdatedAt = arg.UpdatedAt         // simple assign
+	out.DeletedAt = time.Time{}           // zero value
+	out.Rid = 0                           // zero value
+	out.InvitationURL = arg.InvitationURL // simple assign
 }
 
 func Convert_invitation_Invitations_invitationmodel_Invitations(args []*invitation.Invitation) (outs []*invitationmodel.Invitation) {

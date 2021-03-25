@@ -3,7 +3,7 @@ package _all
 import (
 	"context"
 	"net/http"
-
+	
 	"o.o/backend/pkg/common/apifw/idemp"
 	"o.o/backend/pkg/common/bus"
 	cc "o.o/backend/pkg/common/config"
@@ -71,10 +71,30 @@ func NewServers(
 			},
 		}
 	}
+	
+	// Get Origin URL for generate invitation url
+	var accountRelationshipHooks httprpc.HooksFunc = func() httprpc.Hooks {
+		return httprpc.Hooks{
+			RequestReceived: func(ctx context.Context, info httprpc.HookInfo) (context.Context, error) {
+				reqHeaders := info.HTTPRequest.Header
+				origin := reqHeaders.Get("Origin")
+				if origin == "" {
+					protocol := reqHeaders.Get("X-Forwarded-Proto")
+					host := reqHeaders.Get("X-Forwarded-Host")
+					if protocol != "" && host != "" {
+						origin = protocol + "://" + host
+					}
+				}
+				if origin != "" {
+					ctx = context.WithValue(ctx, headers.OriginKey{}, origin)
+				}
+				return ctx, nil
+			},
+		}
+	}
 
 	servers := httprpc.MustNewServers(
 		ticketService.Clone,
-		accountRelationshipService.Clone,
 		accountService.Clone,
 		addressService.Clone,
 		bankService.Clone,
@@ -85,6 +105,7 @@ func NewServers(
 	)
 	servers = append(servers,
 		httprpc.MustNewServer(userService.Clone, cookieHooks),
+		httprpc.MustNewServer(accountRelationshipService.Clone, accountRelationshipHooks),
 	)
 
 	var result []httprpc.Server

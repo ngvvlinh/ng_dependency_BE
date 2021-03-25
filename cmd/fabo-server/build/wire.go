@@ -86,7 +86,6 @@ func Build(
 			"FacebookApp",
 			"SharedConfig",
 			"Webhook",
-			"FlagEnableNewLinkInvitation",
 			"FlagFaboOrderAutoConfirmPaymentStatus",
 			"WebphonePublicKey",
 		),

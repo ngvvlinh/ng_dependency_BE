@@ -329,3 +329,22 @@ func (ft *InvitationFilters) ByRidPtr(Rid *dot.ID) *sq.ColumnFilterPtr {
 		IsZero: Rid != nil && (*Rid) == 0,
 	}
 }
+
+func (ft *InvitationFilters) ByInvitationURL(InvitationURL string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "invitation_url",
+		Value:  InvitationURL,
+		IsNil:  InvitationURL == "",
+	}
+}
+
+func (ft *InvitationFilters) ByInvitationURLPtr(InvitationURL *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "invitation_url",
+		Value:  InvitationURL,
+		IsNil:  InvitationURL == nil,
+		IsZero: InvitationURL != nil && (*InvitationURL) == "",
+	}
+}

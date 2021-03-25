@@ -3,8 +3,9 @@ package root
 import (
 	"context"
 	"fmt"
+	"o.o/backend/pkg/common/headers"
 	"time"
-
+	
 	"o.o/api/main/authorization"
 	"o.o/api/main/invitation"
 	api "o.o/api/top/int/etop"
@@ -77,7 +78,8 @@ func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *ap
 	for _, role := range q.Roles {
 		roles = append(roles, authorization.Role(role))
 	}
-
+	
+	originURL := ctx.Value(headers.OriginKey{})
 	cmd := &invitation.CreateInvitationCommand{
 		AccountID: s.SS.Shop().ID,
 		Email:     q.Email,
@@ -88,6 +90,9 @@ func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *ap
 		Roles:     roles,
 		Status:    status3.Z,
 		InvitedBy: s.SS.Claim().UserID,
+	}
+	if originURL != nil {
+		cmd.OriginURL = originURL.(string)
 	}
 	if err := s.InvitationAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

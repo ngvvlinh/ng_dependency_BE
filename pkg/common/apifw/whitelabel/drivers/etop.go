@@ -20,7 +20,6 @@ func ETop(env cmenv.EnvType) *whitelabel.WL {
 			Host:                 "shop." + baseHost(env),
 			RootURL:              "https://shop." + baseHost(env) + "/register",
 			AuthURL:              "https://auth." + baseHost(env),
-			TelecomURL:           getTelecomURL(env),
 			InviteUserURLByEmail: "https://shop." + baseHost(env) + "/invitation",
 			InviteUserURLByPhone: "https://shop." + baseHost(env) + "/i",
 			SiteName:             "eTop",
@@ -39,11 +38,4 @@ func ETop(env cmenv.EnvType) *whitelabel.WL {
 }
 
 type etopDriver struct {
-}
-
-func getTelecomURL(env cmenv.EnvType) string {
-	if env == cmenv.EnvProd {
-		return "https://shop.etelecom.vn"
-	}
-	return "https://shop-etelecom." + baseHost(env)
 }

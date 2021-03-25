@@ -3,7 +3,7 @@ package config
 import (
 	"errors"
 	"strings"
-
+	
 	"o.o/api/main/invitation"
 	_telebot "o.o/backend/cogs/base/telebot"
 	config_server "o.o/backend/cogs/config/_server"
@@ -11,7 +11,6 @@ import (
 	shipment_all "o.o/backend/cogs/shipment/_all"
 	storage_all "o.o/backend/cogs/storage/_all"
 	_uploader "o.o/backend/cogs/uploader"
-	"o.o/backend/com/main/invitation/aggregate"
 	ecomconfig "o.o/backend/com/web/ecom/config"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/cmenv"
@@ -65,7 +64,6 @@ type Config struct {
 
 	WhiteLabel cc.WhiteLabel `yaml:"white_label"`
 
-	FlagEnableNewLinkInvitation           aggregate.FlagEnableNewLinkInvitation        `yaml:"flag_enable_new_link_invitation"`
 	FlagFaboOrderAutoConfirmPaymentStatus orderS.FlagFaboOrderAutoConfirmPaymentStatus `yaml:"flag_fabo_auto_confirm_payment_status"`
 	WebphonePublicKey                     config_server.WebphonePublicKey              `yaml:"webphone_public_key"`
 }

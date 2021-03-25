@@ -9,7 +9,6 @@ import (
 	storage_all "o.o/backend/cogs/storage/_all"
 	_uploader "o.o/backend/cogs/uploader"
 	"o.o/backend/com/fabo/pkg/fbclient"
-	"o.o/backend/com/main/invitation/aggregate"
 	"o.o/backend/pkg/common/apifw/captcha"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/storage"
@@ -46,7 +45,6 @@ type Config struct {
 
 	Invitation invitation.Config
 
-	FlagEnableNewLinkInvitation           aggregate.FlagEnableNewLinkInvitation        `yaml:"flag_enable_new_link_invitation"`
 	FlagFaboOrderAutoConfirmPaymentStatus orderS.FlagFaboOrderAutoConfirmPaymentStatus `yaml:"flag_fabo_auto_confirm_payment_status"`
 	WebphonePublicKey                     config_server.WebphonePublicKey              `yaml:"webphone_public_key"`
 

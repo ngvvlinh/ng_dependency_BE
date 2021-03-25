@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
+	
 	"o.o/api/main/authorization"
 	"o.o/api/main/identity"
 	"o.o/api/main/invitation"
@@ -34,8 +34,6 @@ import (
 	"o.o/capi/dot"
 )
 
-type FlagEnableNewLinkInvitation bool
-
 var _ invitation.Aggregate = &InvitationAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
@@ -48,7 +46,6 @@ type InvitationAggregate struct {
 	identityQuery identity.QueryBus
 	smsClient     *sms.Client
 	emailClient   *email.Client
-	flagNewLink   FlagEnableNewLinkInvitation
 	redisStore    redis.Store
 
 	AccountUserStore sqlstore.AccountUserStoreInterface
@@ -64,7 +61,6 @@ func NewInvitationAggregate(
 	eventBus capi.EventBus,
 	smsClient *sms.Client,
 	emailClient *email.Client,
-	flagNewLink FlagEnableNewLinkInvitation,
 	AccountUserStore sqlstore.AccountUserStoreInterface,
 	ShopStore sqlstore.ShopStoreInterface,
 	UserStore sqlstore.UserStoreInterface,
@@ -79,7 +75,6 @@ func NewInvitationAggregate(
 		identityQuery:    identityQ,
 		smsClient:        smsClient,
 		emailClient:      emailClient,
-		flagNewLink:      flagNewLink,
 		AccountUserStore: AccountUserStore,
 		ShopStore:        ShopStore,
 		UserStore:        UserStore,
@@ -123,7 +118,7 @@ func (a *InvitationAggregate) CreateInvitation(
 	}
 
 	invitationItem := new(invitation.Invitation)
-	if err := scheme.Convert(args, invitationItem); err != nil {
+	if err = scheme.Convert(args, invitationItem); err != nil {
 		return nil, err
 	}
 
@@ -134,18 +129,18 @@ func (a *InvitationAggregate) CreateInvitation(
 	invitationItem.ExpiresAt = expiresAt
 	invitationItem.Token = token
 
-	URL, err := GetInvitationURL(ctx, invitationItem, a.flagNewLink)
+	URL, err := GetInvitationURL(ctx, invitationItem, args.OriginURL)
 	if err != nil {
 		return nil, err
 	}
 	invitationItem.InvitationURL = URL.String()
 
-	if err := a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
+	if err = a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
 		// create invitation
-		if err := a.store(ctx).CreateInvitation(invitationItem); err != nil {
+		if err = a.store(ctx).CreateInvitation(invitationItem); err != nil {
 			return err
 		}
-		err := a.sendInvitation(ctx, invitationItem)
+		err = a.sendInvitation(ctx, invitationItem)
 		return err
 	}); err != nil {
 		return nil, err
@@ -226,7 +221,7 @@ func (a *InvitationAggregate) ResendInvitation(ctx context.Context, args *invita
 		return nil, err
 	}
 
-	URL, err := GetInvitationURL(ctx, invitationCore, a.flagNewLink)
+	URL, err := GetInvitationURL(ctx, invitationCore, args.OriginURL)
 	if err != nil {
 		return nil, err
 	}
@@ -291,14 +286,14 @@ func (a *InvitationAggregate) sendInvitation(ctx context.Context, args *invitati
 			countSend = 1
 		}
 		if countSend == 1 {
-			if err := templatemessages.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
+			if err = templatemessages.PhoneInvitationTpl.Execute(&b, map[string]interface{}{
 				"URL":      args.InvitationURL,
 				"ShopName": util.ModifyMsgPhone(shopName),
 			}); err != nil {
 				return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ phone").WithMeta("reason", "can not generate phone content")
 			}
 		} else {
-			if err := templatemessages.PhoneInvitationTplRepeat.Execute(&b, map[string]interface{}{
+			if err = templatemessages.PhoneInvitationTplRepeat.Execute(&b, map[string]interface{}{
 				"URL":      args.InvitationURL,
 				"ShopName": util.ModifyMsgPhone(shopName),
 				"SendTime": countSend,
@@ -310,13 +305,13 @@ func (a *InvitationAggregate) sendInvitation(ctx context.Context, args *invitati
 			Phone:   args.Phone,
 			Content: b.String(),
 		}
-		if err := a.smsClient.SendSMS(ctx, cmd); err != nil {
+		if err = a.smsClient.SendSMS(ctx, cmd); err != nil {
 			return err
 		}
 
 		// update countSend
 		countSend += 1
-		if err := a.redisStore.Set(redisKey, countSend); err != nil {
+		if err = a.redisStore.Set(redisKey, countSend); err != nil {
 			return err
 		}
 	}
@@ -389,11 +384,11 @@ func (a *InvitationAggregate) AcceptInvitation(
 			Wrapf(cm.NotFound, "Không tìm thấy lời mời").
 			Throw()
 	}
-	if err := a.checkStatusInvitation(invitationDB); err != nil {
+	if err = a.checkStatusInvitation(invitationDB); err != nil {
 		return 0, err
 	}
 
-	if err := a.checkTokenBelongsToUser(ctx, userID, invitationDB.Email, invitationDB.Phone); err != nil {
+	if err = a.checkTokenBelongsToUser(ctx, userID, invitationDB.Email, invitationDB.Phone); err != nil {
 		return 0, err
 	}
 
@@ -405,7 +400,7 @@ func (a *InvitationAggregate) AcceptInvitation(
 	event := &invitation.InvitationAcceptedEvent{
 		ID: invitationDB.ID,
 	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
+	if err = a.eventBus.Publish(ctx, event); err != nil {
 		return 0, err
 	}
 	return updated, err
@@ -420,11 +415,11 @@ func (a *InvitationAggregate) RejectInvitation(
 			Wrapf(cm.NotFound, "Không tìm thấy lời mời").
 			Throw()
 	}
-	if err := a.checkStatusInvitation(invitationDB); err != nil {
+	if err = a.checkStatusInvitation(invitationDB); err != nil {
 		return 0, err
 	}
 
-	if err := a.checkTokenBelongsToUser(ctx, userID, invitationDB.Email, invitationDB.Phone); err != nil {
+	if err = a.checkTokenBelongsToUser(ctx, userID, invitationDB.Email, invitationDB.Phone); err != nil {
 		return 0, err
 	}
 
@@ -490,12 +485,10 @@ func (a *InvitationAggregate) DeleteInvitation(
 	return updated, err
 }
 
-func GetInvitationURL(ctx context.Context, args *invitation.Invitation, flag FlagEnableNewLinkInvitation) (*url.URL, error) {
-	var invitationUrl string
-	if isRoleForTelecom(ctx, args) {
-		invitationUrl = getInvitationURLForTelecom(ctx, args, flag)
-	} else {
-		invitationUrl = getInvitationURL(ctx, args, flag)
+func GetInvitationURL(ctx context.Context, args *invitation.Invitation, originDomainURL string) (*url.URL, error) {
+	invitationUrl, err := getInvitationURL(ctx, args, originDomainURL)
+	if err != nil {
+		return nil, err
 	}
 
 	URL, err := url.Parse(invitationUrl)
@@ -503,29 +496,31 @@ func GetInvitationURL(ctx context.Context, args *invitation.Invitation, flag Fla
 		return nil, cm.Errorf(cm.Internal, err, "Can not parse url")
 	}
 	urlQuery := URL.Query()
-	if args.Email != "" || (args.Phone != "" && !flag) {
+	if args.Email != "" {
 		urlQuery.Set("t", args.Token)
 	}
 	URL.RawQuery = urlQuery.Encode()
 	return URL, nil
 }
 
-func getInvitationURLForTelecom(ctx context.Context, args *invitation.Invitation, flag FlagEnableNewLinkInvitation) string {
+func getInvitationURL(ctx context.Context, args *invitation.Invitation, originDomainURL string) (string, error) {
 	wlPartner := wl.X(ctx)
-	if args.Email != "" || (args.Phone != "" && !flag) {
-		return wlPartner.Config.GetTelecomInviteUserURLByEmail(wlPartner.TelecomURL)
+	inviteURL := ""
+	if args.Email != "" {
+		inviteURL = wlPartner.InviteUserURLByEmail
+	} else {
+		inviteURL = wlPartner.InviteUserURLByPhone + "/p" + args.Phone
 	}
-	return wlPartner.Config.GetTelecomInviteUserURLByPhone(wlPartner.TelecomURL, args.Phone)
-}
-
-func getInvitationURL(ctx context.Context, args *invitation.Invitation, flag FlagEnableNewLinkInvitation) string {
-	wlPartner := wl.X(ctx)
-	if args.Email != "" || (args.Phone != "" && !flag) {
-		return wlPartner.InviteUserURLByEmail
+	if originDomainURL == "" {
+		return inviteURL, nil
 	}
-	return wlPartner.InviteUserURLByPhone + "/p" + args.Phone
-}
-
-func isRoleForTelecom(ctx context.Context, args *invitation.Invitation) bool {
-	return authorization.IsContainsRole(args.Roles, authorization.RoleTelecomCustomerService)
+	
+	oldURL, err := url.Parse(inviteURL)
+	if err != nil {
+		return "", err
+	}
+	if strings.HasSuffix(originDomainURL, "/") {
+		return originDomainURL[:len(originDomainURL) - 1] + oldURL.Path, nil
+	}
+	return originDomainURL + oldURL.Path, nil
 }

@@ -53,6 +53,7 @@ type CreateInvitationCommand struct {
 	Status    status3.Status
 	InvitedBy dot.ID
 	CreatedBy time.Time
+	OriginURL string
 
 	Result *Invitation `json:"-"`
 }
@@ -92,6 +93,7 @@ type ResendInvitationCommand struct {
 	ResendBy  dot.ID
 	Email     string
 	Phone     string
+	OriginURL string
 
 	Result *Invitation `json:"-"`
 }
@@ -197,6 +199,7 @@ func (q *CreateInvitationCommand) GetArgs(ctx context.Context) (_ context.Contex
 			Status:    q.Status,
 			InvitedBy: q.InvitedBy,
 			CreatedBy: q.CreatedBy,
+			OriginURL: q.OriginURL,
 		}
 }
 
@@ -211,6 +214,7 @@ func (q *CreateInvitationCommand) SetCreateInvitationArgs(args *CreateInvitation
 	q.Status = args.Status
 	q.InvitedBy = args.InvitedBy
 	q.CreatedBy = args.CreatedBy
+	q.OriginURL = args.OriginURL
 }
 
 func (q *DeleteInvitationCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, accountID dot.ID, token string) {
@@ -233,6 +237,7 @@ func (q *ResendInvitationCommand) GetArgs(ctx context.Context) (_ context.Contex
 			ResendBy:  q.ResendBy,
 			Email:     q.Email,
 			Phone:     q.Phone,
+			OriginURL: q.OriginURL,
 		}
 }
 
@@ -241,6 +246,7 @@ func (q *ResendInvitationCommand) SetResendInvitationArgs(args *ResendInvitation
 	q.ResendBy = args.ResendBy
 	q.Email = args.Email
 	q.Phone = args.Phone
+	q.OriginURL = args.OriginURL
 }
 
 func (q *GetInvitationQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {

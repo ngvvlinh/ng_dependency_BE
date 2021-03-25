@@ -292,8 +292,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	session := config_server.NewSession(authorizer, sessionStarter, userStoreInterface, accountUserStoreInterface, sharedConfig, store)
 	identityAggregate := identity.NewAggregate(mainDB, busBus)
 	commandBus := identity.AggregateMessageBus(identityAggregate)
-	flagEnableNewLinkInvitation := cfg.FlagEnableNewLinkInvitation
-	invitationQuery := query.NewInvitationQuery(mainDB, flagEnableNewLinkInvitation)
+	invitationQuery := query.NewInvitationQuery(mainDB)
 	invitationQueryBus := query.InvitationQueryMessageBus(invitationQuery)
 	notifierQueryService := notifier.NewQueryService(mainDB)
 	notifyQueryBus := notifier.QueryServiceNotifyBus(notifierQueryService)
@@ -364,7 +363,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	invitationConfig := cfg.Invitation
 	customerQuery := query2.NewCustomerQuery(mainDB)
 	customeringQueryBus := query2.CustomerQueryMessageBus(customerQuery)
-	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, smsClient, emailClient, flagEnableNewLinkInvitation, accountUserStoreInterface, shopStoreInterface, userStoreInterface, store)
+	invitationAggregate := aggregate2.NewInvitationAggregate(mainDB, invitationConfig, customeringQueryBus, queryBus, busBus, smsClient, emailClient, accountUserStoreInterface, shopStoreInterface, userStoreInterface, store)
 	invitationCommandBus := aggregate2.InvitationAggregateMessageBus(invitationAggregate)
 	authorizationAggregate := &aggregate3.AuthorizationAggregate{
 		Auth:             authorizer,

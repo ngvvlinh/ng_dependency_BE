@@ -2,11 +2,10 @@ package query
 
 import (
 	"context"
-
+	
 	"o.o/api/main/invitation"
 	"o.o/api/shopping"
 	com "o.o/backend/com/main"
-	"o.o/backend/com/main/invitation/aggregate"
 	"o.o/backend/com/main/invitation/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -20,17 +19,14 @@ var _ invitation.QueryService = &InvitationQuery{}
 type InvitationQuery struct {
 	db          *cmsql.Database
 	store       sqlstore.InvitationStoreFactory
-	flagNewLink aggregate.FlagEnableNewLinkInvitation
 }
 
 func NewInvitationQuery(
 	db com.MainDB,
-	flagNewLink aggregate.FlagEnableNewLinkInvitation,
 ) *InvitationQuery {
 	return &InvitationQuery{
 		db:          db,
 		store:       sqlstore.NewInvitationStore(db),
-		flagNewLink: flagNewLink,
 	}
 }
 
@@ -48,11 +44,9 @@ func (q *InvitationQuery) GetInvitation(
 			Wrap(cm.NotFound, "Không tìm thấy lời mời").
 			Throw()
 	}
-	URL, err := aggregate.GetInvitationURL(ctx, invitation, q.flagNewLink)
 	if err != nil {
 		return nil, err
 	}
-	invitation.InvitationURL = URL.String()
 	return invitation, nil
 }
 
@@ -65,11 +59,9 @@ func (q *InvitationQuery) GetInvitationByToken(
 			Wrap(cm.NotFound, "Không tìm thấy lời mời").
 			Throw()
 	}
-	URL, err := aggregate.GetInvitationURL(ctx, invitation, q.flagNewLink)
 	if err != nil {
 		return nil, err
 	}
-	invitation.InvitationURL = URL.String()
 	return invitation, nil
 }
 
@@ -78,10 +70,6 @@ func (q *InvitationQuery) ListInvitationsByEmailAndPhone(
 ) (*invitation.InvitationsResponse, error) {
 	query := q.store(ctx).PhoneOrEmail(args.Phone, args.Email).Filters(args.Filters)
 	invitations, err := query.WithPaging(args.Paging).ListInvitations()
-	if err != nil {
-		return nil, err
-	}
-	invitations, err = PopulateInvitationURL(ctx, invitations, q.flagNewLink)
 	if err != nil {
 		return nil, err
 	}
@@ -95,10 +83,6 @@ func (q *InvitationQuery) ListInvitations(
 ) (*invitation.InvitationsResponse, error) {
 	query := q.store(ctx).AccountID(args.ShopID).Filters(args.Filters)
 	invitations, err := query.WithPaging(args.Paging).ListInvitations()
-	if err != nil {
-		return nil, err
-	}
-	invitations, err = PopulateInvitationURL(ctx, invitations, q.flagNewLink)
 	if err != nil {
 		return nil, err
 	}
@@ -119,22 +103,7 @@ func (q *InvitationQuery) ListInvitationsAcceptedByEmail(
 	if err != nil {
 		return nil, err
 	}
-	invitations, err = PopulateInvitationURL(ctx, invitations, q.flagNewLink)
-	if err != nil {
-		return nil, err
-	}
 	return &invitation.InvitationsResponse{
 		Invitations: invitations,
 	}, nil
-}
-
-func PopulateInvitationURL(ctx context.Context, invitations []*invitation.Invitation, flag aggregate.FlagEnableNewLinkInvitation) ([]*invitation.Invitation, error) {
-	for k, v := range invitations {
-		URL, err := aggregate.GetInvitationURL(ctx, v, flag)
-		invitations[k].InvitationURL = URL.String()
-		if err != nil {
-			return nil, err
-		}
-	}
-	return invitations, nil
 }

@@ -26,4 +26,5 @@ type Invitation struct {
 	UpdatedAt  time.Time `sq:"update"`
 	DeletedAt  time.Time
 	Rid        dot.ID
+	InvitationURL string
 }
