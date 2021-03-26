@@ -2,7 +2,7 @@ package _all
 
 import (
 	"net/http"
-
+	
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/integration/shipping/ghn"
 	ghnwebhookv1 "o.o/backend/pkg/integration/shipping/ghn/webhook/v1"
@@ -27,6 +27,13 @@ func NewShipmentWebhookServer(
 	ghnwebhookv2.Register(rt)
 	// ninjavan
 	njvwh.Register(rt)
+	
+	// test callback url for payment
+	rt.GET("/callback-url/payment/payme", func(c *httpx.Context) error {
+		r := c.Req
+		c.SetResult(r.URL.Query())
+		return nil
+	})
 
 	svr := &http.Server{
 		Addr:    cfg.Address(),
