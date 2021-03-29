@@ -31,7 +31,6 @@ verify:
     - time scripts/verify-imports.sh
     - time scripts/ci/verify-lint.sh
     - time scripts/ci/verify-generate.sh
-    - time scripts/ci/cache-save.sh
 
 report-gerrit-changes-running:
   stage: build
