@@ -16,7 +16,7 @@ before_script:
 
 report-gerrit-changes-running:
   stage: build
-#  tags: [go]
+  tags: [go]
   image: olvrng/alpine-toolbox
   before_script: []
   script:
@@ -24,7 +24,7 @@ report-gerrit-changes-running:
 
 build:
   stage: build
-#  tags: [go]
+  tags: [go]
   image: olvrng/golang-toolbox
   services:
   - postgres:9.6-alpine
