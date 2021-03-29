@@ -1,6 +1,6 @@
 stages:
+- verify
 - build
-- report
 
 variables:
   PROJECT_DIR: /o.o
@@ -14,6 +14,25 @@ before_script:
 - mkdir -p /o.o
 - ln -s $PWD /o.o/backend
 
+.go-cache:
+  cache:
+    key: "ci:build-1"
+    paths:
+    - .mod
+
+verify:
+  stage: verify
+  tags: [go]
+  image: olvrng/golang-toolbox
+  extends: .go-cache
+  script:
+    - go version
+    - time scripts/ci/cache-load.sh
+    - time scripts/verify-imports.sh
+    - time scripts/ci/verify-lint.sh
+    - time scripts/ci/verify-generate.sh
+    - time scripts/ci/cache-save.sh
+
 report-gerrit-changes-running:
   stage: build
   tags: [go]
@@ -26,17 +45,17 @@ build:
   stage: build
   tags: [go]
   image: olvrng/golang-toolbox
+  extends: .go-cache
   services:
   - postgres:9.6-alpine
   - redis:alpine
   script:
   - go version
-  - time scripts/verify-imports.sh
-  - time scripts/ci/verify-lint.sh
-  - time scripts/ci/verify-generate.sh
+  - time scripts/ci/cache-load.sh
   - time go run ./scripts/init_testdb/main.go -drop
   - time scripts/ci/test-all.sh simple
 #  - time scripts/ci/test-all.sh e2e
+  - time scripts/ci/cache-save.sh
   - touch artifacts/BUILD_SUCCESS
   after_script:
   - scripts/ci/report-gerrit.sh

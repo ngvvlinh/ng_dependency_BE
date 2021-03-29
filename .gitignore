@@ -12,3 +12,4 @@ debug*
 vendor
 zz_release.*.go
 ~*
+.mod
