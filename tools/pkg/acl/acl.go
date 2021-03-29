@@ -239,8 +239,7 @@ const (
 	ShopCallLogCreate   permission.ActionType = "shop/calllog:create"
 
 	// etelecom user setting
-	ShopEtelecomUserSettingUpdate permission.ActionType = "shop/etelecom_user_setting:update"
-	ShopEtelecomUserSettingView   permission.ActionType = "shop/etelecom_user_setting:view"
+	ShopEtelecomUserSettingView permission.ActionType = "shop/etelecom_user_setting:view"
 
 	// shop subscription
 	ShopSubscriptionProductView permission.ActionType = "shop/subscription_product:view"
@@ -425,6 +424,10 @@ const (
 	// admin extension etelecom
 	AdminHotlineCreate permission.ActionType = "admin/hotline:create"
 	AdminHotlineUpdate permission.ActionType = "admin/hotline:update"
+
+	// admin etelecom user setting
+	AdminEtelecomUserSettingUpdate permission.ActionType = "admin/etelecom_user_setting:update"
+	AdminEtelecomUserSettingView   permission.ActionType = "admin/etelecom_user_setting:view"
 )
 
 // ACL declares access control list
@@ -1147,6 +1150,10 @@ var _acl = map[string]*permission.Decl{
 	"admin.Ticket/DeleteTicketLabel": {Type: EtopAdmin, Actions: actions(AdminTicketLabelUpdate)},
 	"admin.Ticket/GetTicketLabels":   {Type: EtopAdmin, Actions: actions(AdminTicketLabelView)},
 
+	// Etelecom User Setting
+	"admin.Etelecom/GetUserSettings":   {Type: EtopAdmin, Actions: actions(AdminEtelecomUserSettingView)},
+	"admin.Etelecom/UpdateUserSetting": {Type: EtopAdmin, Actions: actions(AdminEtelecomUserSettingUpdate)},
+
 	"etop.Ticket/GetTicketLabels": {Type: Public},
 
 	// -- contact -- //
@@ -1329,8 +1336,7 @@ var _acl = map[string]*permission.Decl{
 	"shop.Etelecom/SummaryEtelecom": {Type: Shop, Actions: actions(ShopDashboardView)},
 
 	// Etelecom User Setting
-	"etelecom.User/GetUserSetting":    {Type: Shop, Actions: actions(ShopEtelecomUserSettingView)},
-	"etelecom.User/UpdateUserSetting": {Type: Shop, Actions: actions(ShopEtelecomUserSettingUpdate)},
+	"etelecom.User/GetUserSetting": {Type: Shop, Actions: actions(ShopEtelecomUserSettingView)},
 
 	// Setting
 	"shop.Setting/CreateSetting": {Type: Shop},

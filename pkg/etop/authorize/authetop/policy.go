@@ -18,5 +18,6 @@ const Policy auth.Policy = authcommon.CommonPolicy + `
 	# dashboard
 	p, shop/dashboard:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
 	p, shop/etelecom_user_setting:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
-	p, shop/etelecom_user_setting:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management
+	p, admin/etelecom_user_setting:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
+	p, admin/etelecom_user_setting:update, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
 `

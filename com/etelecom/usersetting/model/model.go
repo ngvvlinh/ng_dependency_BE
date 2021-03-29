@@ -9,8 +9,8 @@ import (
 
 // +sqlgen
 type UserSetting struct {
-	ID                  dot.ID
+	ID                  dot.ID `paging:"id"`
 	ExtensionChargeType charge_type.ChargeType
-	CreatedAt           time.Time `sq:"create"`
+	CreatedAt           time.Time `sq:"create" paging:"created_at"`
 	UpdatedAt           time.Time `sq:"update"`
 }

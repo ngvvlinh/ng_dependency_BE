@@ -5,8 +5,9 @@ import (
 
 	"o.o/api/etelecom/usersetting"
 	etelecomapi "o.o/api/top/int/etelecom"
+	etelecomtypes "o.o/api/top/int/etelecom/types"
 	pbcm "o.o/api/top/types/common"
-	"o.o/backend/pkg/etop/api/shop/etelecom"
+	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 )
 
@@ -22,24 +23,13 @@ func (s *EtelecomUserService) Clone() etelecomapi.EtelecomUserService {
 	return &res
 }
 
-func (s *EtelecomUserService) UpdateUserSetting(ctx context.Context, r *etelecomapi.UpdateUserSettingRequest) (*pbcm.UpdatedResponse, error) {
-	cmd := &usersetting.UpdateUserSettingCommand{
-		UserID:              s.SS.Shop().OwnerID,
-		ExtensionChargeType: r.ExtensionChargeType,
-	}
-	if err := s.UserSettingAggr.Dispatch(ctx, cmd); err != nil {
-		return nil, err
-	}
-	return &pbcm.UpdatedResponse{Updated: 1}, nil
-}
-
-func (s *EtelecomUserService) GetUserSetting(ctx context.Context, empty *pbcm.Empty) (*etelecomapi.EtelecomUserSetting, error) {
+func (s *EtelecomUserService) GetUserSetting(ctx context.Context, empty *pbcm.Empty) (*etelecomtypes.EtelecomUserSetting, error) {
 	query := &usersetting.GetUserSettingQuery{
 		UserID: s.SS.Shop().OwnerID,
 	}
 	if err := s.UserSettingQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	res := etelecom.Convert_usersetting_UserSetting_api_UserSetting(query.Result)
+	res := convertpb.Convert_usersetting_UserSetting_api_UserSetting(query.Result)
 	return res, nil
 }

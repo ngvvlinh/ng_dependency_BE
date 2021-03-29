@@ -528,6 +528,33 @@
         }
       }
     },
+    "/api/admin.Etelecom/GetUserSettings": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "GetUserSettings",
+        "operationId": "admin.Etelecom-GetUserSettings",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riGetUserSettingsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riUserSettingsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Etelecom/UpdateHotline": {
       "post": {
         "tags": [
@@ -542,6 +569,33 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/riUpdateHotlineRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Etelecom/UpdateUserSetting": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "UpdateUserSetting",
+        "operationId": "admin.Etelecom-UpdateUserSetting",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riUpdateUserSettingRequest"
             }
           }
         ],
@@ -4728,6 +4782,14 @@
         }
       }
     },
+    "fmChargeType": {
+      "type": "string",
+      "enum": [
+        "prepaid",
+        "postpaid",
+        "free"
+      ]
+    },
     "fpTicketSource": {
       "description": "Deprecated values: \"system\"\\n",
       "type": "string",
@@ -4791,6 +4853,23 @@
         },
         "prev": {
           "type": "string"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "ktCursorPaging": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "type": "string"
+        },
+        "before": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer"
         },
         "sort": {
           "type": "string"
@@ -7609,6 +7688,42 @@
         }
       }
     },
+    "riEtelecomUserSetting": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extension_charge_type": {
+          "$ref": "#/definitions/fmChargeType"
+        },
+        "id": {
+          "description": "User ID\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "riGetUserSettingsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        },
+        "user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
     "riHotline": {
       "type": "object",
       "properties": {
@@ -7673,6 +7788,32 @@
         },
         "status": {
           "$ref": "#/definitions/blStatus"
+        }
+      }
+    },
+    "riUpdateUserSettingRequest": {
+      "type": "object",
+      "properties": {
+        "extension_charge_type": {
+          "$ref": "#/definitions/fmChargeType"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "riUserSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "user_settings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/riEtelecomUserSetting"
+          }
         }
       }
     },

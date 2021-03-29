@@ -28,6 +28,5 @@ type EtelecomService interface {
 
 // +apix:path=/etelecom.User
 type EtelecomUserService interface {
-	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*cm.UpdatedResponse, error)
-	GetUserSetting(context.Context, *cm.Empty) (*EtelecomUserSetting, error)
+	GetUserSetting(context.Context, *cm.Empty) (*types.EtelecomUserSetting, error)
 }

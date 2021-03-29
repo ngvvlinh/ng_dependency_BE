@@ -7,6 +7,7 @@ import (
 	"o.o/api/etelecom/call_state"
 	"o.o/api/etelecom/mobile_network"
 	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/charge_type"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/status3"
@@ -174,3 +175,38 @@ type UpdateHotlineRequest struct {
 }
 
 func (m *UpdateHotlineRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type EtelecomUserSetting struct {
+	// User ID
+	ID                  dot.ID                 `json:"id"`
+	ExtensionChargeType charge_type.ChargeType `json:"extension_charge_type"`
+	CreatedAt           time.Time              `json:"created_at"`
+	UpdatedAt           time.Time              `json:"updated_at"`
+}
+
+func (r *EtelecomUserSetting) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type UserSettingsResponse struct {
+	UserSettings []*EtelecomUserSetting `json:"user_settings"`
+	Paging       *common.CursorPageInfo `json:"paging"`
+}
+
+func (r *UserSettingsResponse) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+type GetUserSettingsRequest struct {
+	UserIDs []dot.ID             `json:"user_ids"`
+	Paging  *common.CursorPaging `json:"paging"`
+}
+
+func (m *GetUserSettingsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateUserSettingRequest struct {
+	UserID              dot.ID                 `json:"user_id"`
+	ExtensionChargeType charge_type.ChargeType `json:"extension_charge_type"`
+}
+
+func (m *UpdateUserSettingRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -224,4 +224,7 @@ type TicketService interface {
 type EtelecomService interface {
 	CreateHotline(context.Context, *etelecomtypes.CreateHotlineRequest) (*etelecomtypes.Hotline, error)
 	UpdateHotline(context.Context, *etelecomtypes.UpdateHotlineRequest) (*cm.UpdatedResponse, error)
+
+	GetUserSettings(context.Context, *etelecomtypes.GetUserSettingsRequest) (*etelecomtypes.UserSettingsResponse, error)
+	UpdateUserSetting(context.Context, *etelecomtypes.UpdateUserSettingRequest) (*cm.UpdatedResponse, error)
 }

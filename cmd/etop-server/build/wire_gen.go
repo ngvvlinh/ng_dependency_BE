@@ -969,9 +969,11 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		IndentityQuery: queryBus,
 	}
 	adminEtelecomService := admin.EtelecomService{
-		Session:       session,
-		EtelecomAggr:  etelecomCommandBus,
-		EtelecomQuery: etelecomQueryBus,
+		Session:          session,
+		EtelecomAggr:     etelecomCommandBus,
+		EtelecomQuery:    etelecomQueryBus,
+		UserSettingAggr:  usersettingCommandBus,
+		UserSettingQuery: usersettingQueryBus,
 	}
 	invoiceService := admin.InvoiceService{
 		Session:      session,

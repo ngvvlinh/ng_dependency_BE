@@ -36,34 +36,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/btEtelecomUserSetting"
-            }
-          }
-        }
-      }
-    },
-    "/api/etelecom.User/UpdateUserSetting": {
-      "post": {
-        "tags": [
-          "EtelecomUser"
-        ],
-        "summary": "UpdateUserSetting",
-        "operationId": "etelecom.User-UpdateUserSetting",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/btUpdateUserSettingRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ktUpdatedResponse"
+              "$ref": "#/definitions/riEtelecomUserSetting"
             }
           }
         }
@@ -378,27 +351,6 @@
         }
       }
     },
-    "btEtelecomUserSetting": {
-      "type": "object",
-      "properties": {
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "extension_charge_type": {
-          "$ref": "#/definitions/fmChargeType"
-        },
-        "id": {
-          "description": "User ID\n",
-          "type": "string",
-          "format": "int64"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "btSummaryEtelecomRequest": {
       "type": "object",
       "properties": {
@@ -418,14 +370,6 @@
           "items": {
             "$ref": "#/definitions/paSummaryTable"
           }
-        }
-      }
-    },
-    "btUpdateUserSettingRequest": {
-      "type": "object",
-      "properties": {
-        "extension_charge_type": {
-          "$ref": "#/definitions/fmChargeType"
         }
       }
     },
@@ -514,14 +458,6 @@
         },
         "msg": {
           "type": "string"
-        }
-      }
-    },
-    "ktUpdatedResponse": {
-      "type": "object",
-      "properties": {
-        "updated": {
-          "type": "integer"
         }
       }
     },
@@ -738,6 +674,27 @@
           "description": "user_id: nhân viên của shop, người được gán vào extension\n",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "riEtelecomUserSetting": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extension_charge_type": {
+          "$ref": "#/definitions/fmChargeType"
+        },
+        "id": {
+          "description": "User ID\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

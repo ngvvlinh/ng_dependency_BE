@@ -13,8 +13,7 @@ import (
 )
 
 /*
-Custom conversions:
-    Convert_usersetting_UserSetting_api_UserSetting    // not use, no conversions between params
+Custom conversions: (none)
 
 Ignored functions: (none)
 */

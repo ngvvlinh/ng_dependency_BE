@@ -7,6 +7,7 @@ package usersetting
 import (
 	context "context"
 
+	meta "o.o/api/meta"
 	charge_type "o.o/api/top/types/etc/charge_type"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -48,11 +49,24 @@ func (h QueryServiceHandler) HandleGetUserSetting(ctx context.Context, msg *GetU
 	return err
 }
 
+type ListUserSettingsQuery struct {
+	UserIDs []dot.ID
+	Paging  meta.Paging
+
+	Result *ListUserSettingsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListUserSettings(ctx context.Context, msg *ListUserSettingsQuery) (err error) {
+	msg.Result, err = h.inner.ListUserSettings(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *UpdateUserSettingCommand) command() {}
 
-func (q *GetUserSettingQuery) query() {}
+func (q *GetUserSettingQuery) query()   {}
+func (q *ListUserSettingsQuery) query() {}
 
 // implement conversion
 
@@ -72,6 +86,19 @@ func (q *UpdateUserSettingCommand) SetUpdateUserSettingArgs(args *UpdateUserSett
 func (q *GetUserSettingQuery) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
 	return ctx,
 		q.UserID
+}
+
+func (q *ListUserSettingsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListUserSettingsArgs) {
+	return ctx,
+		&ListUserSettingsArgs{
+			UserIDs: q.UserIDs,
+			Paging:  q.Paging,
+		}
+}
+
+func (q *ListUserSettingsQuery) SetListUserSettingsArgs(args *ListUserSettingsArgs) {
+	q.UserIDs = args.UserIDs
+	q.Paging = args.Paging
 }
 
 // implement dispatching
@@ -103,5 +130,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetUserSetting)
+	b.AddHandler(h.HandleListUserSettings)
 	return QueryBus{b}
 }

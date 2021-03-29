@@ -489,7 +489,9 @@ func NewEtelecomServiceServer(builder func() EtelecomService, hooks ...httprpc.H
 const EtelecomServicePathPrefix = "/admin.Etelecom/"
 
 const Path_Etelecom_CreateHotline = "/admin.Etelecom/CreateHotline"
+const Path_Etelecom_GetUserSettings = "/admin.Etelecom/GetUserSettings"
 const Path_Etelecom_UpdateHotline = "/admin.Etelecom/UpdateHotline"
+const Path_Etelecom_UpdateUserSetting = "/admin.Etelecom/UpdateUserSetting"
 
 func (s *EtelecomServiceServer) PathPrefix() string {
 	return EtelecomServicePathPrefix
@@ -537,6 +539,19 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			return
 		}
 		return msg, fn, nil
+	case "/admin.Etelecom/GetUserSettings":
+		msg := &etelecomtypes.GetUserSettingsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetUserSettings(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.Etelecom/UpdateHotline":
 		msg := &etelecomtypes.UpdateHotlineRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -547,6 +562,19 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.UpdateHotline(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Etelecom/UpdateUserSetting":
+		msg := &etelecomtypes.UpdateUserSettingRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateUserSetting(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

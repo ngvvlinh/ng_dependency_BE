@@ -225,7 +225,6 @@ func NewEtelecomUserServiceServer(builder func() EtelecomUserService, hooks ...h
 const EtelecomUserServicePathPrefix = "/etelecom.User/"
 
 const Path_EtelecomUser_GetUserSetting = "/etelecom.User/GetUserSetting"
-const Path_EtelecomUser_UpdateUserSetting = "/etelecom.User/UpdateUserSetting"
 
 func (s *EtelecomUserServiceServer) PathPrefix() string {
 	return EtelecomUserServicePathPrefix
@@ -270,19 +269,6 @@ func (s *EtelecomUserServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 				return
 			}
 			resp, err = inner.GetUserSetting(newCtx, msg)
-			return
-		}
-		return msg, fn, nil
-	case "/etelecom.User/UpdateUserSetting":
-		msg := &UpdateUserSettingRequest{}
-		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
-			inner := s.builder()
-			info.Request, info.Inner = msg, inner
-			newCtx, err = hooks.RequestRouted(ctx, *info)
-			if err != nil {
-				return
-			}
-			resp, err = inner.UpdateUserSetting(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

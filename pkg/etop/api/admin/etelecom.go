@@ -4,9 +4,12 @@ import (
 	"context"
 
 	"o.o/api/etelecom"
+	"o.o/api/etelecom/usersetting"
 	"o.o/api/top/int/admin"
 	etelecomtypes "o.o/api/top/int/etelecom/types"
 	pbcm "o.o/api/top/types/common"
+	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/etop/api/convertpb"
 	shopetelecom "o.o/backend/pkg/etop/api/shop/etelecom"
 	"o.o/backend/pkg/etop/authorize/session"
 )
@@ -14,8 +17,10 @@ import (
 type EtelecomService struct {
 	session.Session
 
-	EtelecomAggr  etelecom.CommandBus
-	EtelecomQuery etelecom.QueryBus
+	EtelecomAggr     etelecom.CommandBus
+	EtelecomQuery    etelecom.QueryBus
+	UserSettingAggr  usersetting.CommandBus
+	UserSettingQuery usersetting.QueryBus
 }
 
 func (s *EtelecomService) Clone() admin.EtelecomService {
@@ -51,5 +56,36 @@ func (s *EtelecomService) UpdateHotline(ctx context.Context, r *etelecomtypes.Up
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func (s *EtelecomService) GetUserSettings(ctx context.Context, r *etelecomtypes.GetUserSettingsRequest) (*etelecomtypes.UserSettingsResponse, error) {
+	paging, err := cmapi.CMCursorPaging(r.Paging)
+	if err != nil {
+		return nil, err
+	}
+	query := &usersetting.ListUserSettingsQuery{
+		UserIDs: r.UserIDs,
+		Paging:  *paging,
+	}
+	if err = s.UserSettingQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	res := &etelecomtypes.UserSettingsResponse{
+		UserSettings: convertpb.Convert_usersetting_UserSettings_api_UserSettings(query.Result.UserSettings),
+		Paging:       cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
+	}
+	return res, nil
+}
+
+func (s *EtelecomService) UpdateUserSetting(ctx context.Context, r *etelecomtypes.UpdateUserSettingRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &usersetting.UpdateUserSettingCommand{
+		UserID:              r.UserID,
+		ExtensionChargeType: r.ExtensionChargeType,
+	}
+	if err := s.UserSettingAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }
