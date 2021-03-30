@@ -31,7 +31,7 @@ import (
 )
 
 const (
-	ticketLabelsVersion = "v1.5"
+	ticketLabelsVersion = "v1.6"
 )
 
 var _ ticket.Aggregate = &TicketAggregate{}
@@ -443,7 +443,11 @@ type listTicketLabelsArgs struct {
 
 func (a *TicketAggregate) listTicketLabels(ctx context.Context, args listTicketLabelsArgs) ([]*ticket.TicketLabel, error) {
 	var labels []*ticket.TicketLabel
-	err := a.RedisStore.Get(generateTicketLabelKey(ctx, args.ShopID), &labels)
+	redisKey := generateTicketLabelKey(ctx, args.ShopID)
+	if args.Type == ticket_type.System {
+		redisKey = generateTicketLabelKey(ctx, 0)
+	}
+	err := a.RedisStore.Get(redisKey, &labels)
 	switch err {
 	case redis.ErrNil:
 		// no-op
