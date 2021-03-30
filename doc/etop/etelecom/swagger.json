@@ -682,6 +682,10 @@
     "riCallLogsFilter": {
       "type": "object",
       "properties": {
+        "call_number": {
+          "description": "Caller or callee\n",
+          "type": "string"
+        },
         "extension_ids": {
           "type": "array",
           "items": {

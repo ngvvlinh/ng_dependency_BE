@@ -64,6 +64,15 @@ func (s *CallLogStore) HotlineIDs(hotlineIDs ...dot.ID) *CallLogStore {
 	return s
 }
 
+// phone number or extension_number
+func (s *CallLogStore) CallerOrCallee(num string) *CallLogStore {
+	s.preds = append(s.preds, sq.Or{
+		s.ft.ByCallee(num),
+		s.ft.ByCaller(num),
+	})
+	return s
+}
+
 func (s *CallLogStore) AccountIDAndHotlineIDs(accountID dot.ID, hotlineIDs []dot.ID) *CallLogStore {
 	var preds sq.WriterTo
 	preds = sq.Or{

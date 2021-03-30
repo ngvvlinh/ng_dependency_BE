@@ -182,10 +182,11 @@ type GetCallLogByExternalIDArgs struct {
 }
 
 type ListCallLogsArgs struct {
-	HotlineIDs   []dot.ID
-	ExtensionIDs []dot.ID
-	AccountID    dot.ID
-	Paging       meta.Paging
+	HotlineIDs     []dot.ID
+	ExtensionIDs   []dot.ID
+	AccountID      dot.ID
+	CallerOrCallee string
+	Paging         meta.Paging
 }
 
 type ListCallLogsResponse struct {

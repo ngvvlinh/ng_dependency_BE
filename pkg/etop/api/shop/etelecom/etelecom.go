@@ -133,7 +133,9 @@ func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetC
 		AccountID: s.SS.Shop().ID,
 		Paging:    *paging,
 	}
-	if r.Filter != nil && (len(r.Filter.ExtensionIDs) > 0 || len(r.Filter.HotlineIDs) > 0) {
+
+	if r.Filter != nil {
+		query.CallerOrCallee = r.Filter.CallNumber
 		query.HotlineIDs = r.Filter.HotlineIDs
 		query.ExtensionIDs = r.Filter.ExtensionIDs
 	}

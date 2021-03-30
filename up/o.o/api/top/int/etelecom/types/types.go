@@ -142,6 +142,8 @@ func (m *GetCallLogsRequest) String() string { return jsonx.MustMarshalToString(
 type CallLogsFilter struct {
 	HotlineIDs   []dot.ID `json:"hotline_ids"`
 	ExtensionIDs []dot.ID `json:"extension_ids"`
+	// Caller or callee
+	CallNumber string `json:"call_number"`
 }
 
 type GetCallLogsResponse struct {

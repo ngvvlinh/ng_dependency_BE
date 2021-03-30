@@ -268,10 +268,11 @@ func (h QueryServiceHandler) HandleListBuiltinHotlines(ctx context.Context, msg 
 }
 
 type ListCallLogsQuery struct {
-	HotlineIDs   []dot.ID
-	ExtensionIDs []dot.ID
-	AccountID    dot.ID
-	Paging       meta.Paging
+	HotlineIDs     []dot.ID
+	ExtensionIDs   []dot.ID
+	AccountID      dot.ID
+	CallerOrCallee string
+	Paging         meta.Paging
 
 	Result *ListCallLogsResponse `json:"-"`
 }
@@ -618,10 +619,11 @@ func (q *ListBuiltinHotlinesQuery) SetEmpty(args *common.Empty) {
 func (q *ListCallLogsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCallLogsArgs) {
 	return ctx,
 		&ListCallLogsArgs{
-			HotlineIDs:   q.HotlineIDs,
-			ExtensionIDs: q.ExtensionIDs,
-			AccountID:    q.AccountID,
-			Paging:       q.Paging,
+			HotlineIDs:     q.HotlineIDs,
+			ExtensionIDs:   q.ExtensionIDs,
+			AccountID:      q.AccountID,
+			CallerOrCallee: q.CallerOrCallee,
+			Paging:         q.Paging,
 		}
 }
 
@@ -629,6 +631,7 @@ func (q *ListCallLogsQuery) SetListCallLogsArgs(args *ListCallLogsArgs) {
 	q.HotlineIDs = args.HotlineIDs
 	q.ExtensionIDs = args.ExtensionIDs
 	q.AccountID = args.AccountID
+	q.CallerOrCallee = args.CallerOrCallee
 	q.Paging = args.Paging
 }
 
