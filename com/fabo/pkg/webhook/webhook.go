@@ -94,9 +94,13 @@ func (wh *Webhook) Register(rt *httpx.Router) {
 	rt.GET("/webhook/fbmessenger/:id", wh.HandleWebhookVerification)
 	rt.POST("/webhook/fbmessenger/:id", wh.Callback)
 
+	rt.GET("/webhook/fbuser/:id", wh.HandleWebhookVerification)
+	rt.POST("/webhook/fbuser/:id", wh.CallbackForUser)
+
 	// backward-compatible
 	rt.GET("/webhook/fbmessager/:id", wh.HandleWebhookVerification)
 	rt.POST("/webhook/fbmessager/:id", wh.Callback)
+
 }
 
 func (wh *Webhook) HandleWebhookVerification(c *httpx.Context) error {
@@ -125,11 +129,12 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
+	ll.Info("->"+c.Req.URL.Path, l.String("data", string(body)))
+
 	err = jsonx.Unmarshal(body, &webhookMessages)
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
-	ll.Info("->"+c.Req.URL.Path, l.String("data", string(body)))
 
 	go func() { defer cm.RecoverAndLog(); wh.forwardWebhook(c, webhookMessages) }()
 
@@ -160,6 +165,24 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 	default:
 		return nil
 	}
+}
+
+func (wh *Webhook) CallbackForUser(c *httpx.Context) (_err error) {
+	body, err := ioutil.ReadAll(c.Req.Body)
+	if err != nil {
+		return cm.Error(cm.InvalidArgument, err.Error(), err)
+	}
+	ll.Info("->"+c.Req.URL.Path, l.String("data", string(body)))
+	ll.SendMessage("FbUser: " + string(body))
+
+	defer func() {
+		writer := c.SetResultRaw()
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Write([]byte("oke"))
+		writer.WriteHeader(200)
+	}()
+
+	return nil
 }
 
 func (wh *Webhook) produceMessage(topic, key string, partitions int, webhookMessages []byte) {
