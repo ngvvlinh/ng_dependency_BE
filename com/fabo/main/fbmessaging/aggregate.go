@@ -647,6 +647,10 @@ func (a *FbExternalMessagingAggregate) SaveFbExternalPost(
 		ExternalCreatedTime: post.ExternalCreatedTime,
 		ExternalParentID:    post.ExternalParentID,
 		FeedType:            post.FeedType,
+		StatusType:          post.StatusType,
+	}
+	if extPost.StatusType == fb_status_type.AddedVideo {
+		extPost.IsLiveVideo = true
 	}
 	if err := a.fbExternalPostStore(ctx).UpsertFbExternalPost(extPost); err != nil {
 		return nil, err
