@@ -6,6 +6,15 @@ import (
 )
 
 const Policy auth.Policy = authcommon.CommonPolicy + `
+	# product
+	p, shop/product:create, admin, owner, purchasing_management
+	p, shop/product/basic_info:update, admin, owner, purchasing_management
+	p, shop/product:delete, admin, owner, purchasing_management
+	p, shop/product:import, admin, owner, purchasing_management
+	p, shop/product/basic_info:view, admin, owner, salesman, purchasing_management, inventory_management
+	p, shop/product/cost_price:view, admin, owner, purchasing_management
+	p, shop/product/cost_price:update, admin, owner, purchasing_management
+	p, shop/product/retail_price:update, admin, owner
 	# etelecom
 	p, shop/extension:create, admin, owner, staff_management
 	p, shop/extension:delete, admin, owner, staff_management
