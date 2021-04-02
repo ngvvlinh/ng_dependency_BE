@@ -64,25 +64,6 @@ func (ft *SubscriptionFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilte
 	}
 }
 
-func (ft *SubscriptionFilters) ByCancelAtPeriodEnd(CancelAtPeriodEnd bool) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "cancel_at_period_end",
-		Value:  CancelAtPeriodEnd,
-		IsNil:  bool(!CancelAtPeriodEnd),
-	}
-}
-
-func (ft *SubscriptionFilters) ByCancelAtPeriodEndPtr(CancelAtPeriodEnd *bool) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "cancel_at_period_end",
-		Value:  CancelAtPeriodEnd,
-		IsNil:  CancelAtPeriodEnd == nil,
-		IsZero: CancelAtPeriodEnd != nil && bool(!(*CancelAtPeriodEnd)),
-	}
-}
-
 func (ft *SubscriptionFilters) ByCurrentPeriodEndAt(CurrentPeriodEndAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

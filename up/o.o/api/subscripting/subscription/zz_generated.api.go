@@ -98,7 +98,7 @@ func (h AggregateHandler) HandleUpdateSubscripionStatus(ctx context.Context, msg
 type UpdateSubscriptionInfoCommand struct {
 	ID                   dot.ID
 	AccountID            dot.ID
-	CancelAtPeriodEnd    bool
+	CancelAtPeriodEnd    dot.NullBool
 	BillingCycleAnchorAt time.Time
 	Customer             *subscriptingtypes.CustomerInfo
 	Lines                []*SubscriptionLine

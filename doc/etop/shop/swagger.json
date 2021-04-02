@@ -5505,6 +5505,33 @@
         }
       }
     },
+    "/api/shop.Subscription/CreateSubscription": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "CreateSubscription",
+        "operationId": "shop.Subscription-CreateSubscription",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdCreateSubscriptionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdSubscription"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Subscription/GetSubscription": {
       "post": {
         "tags": [
@@ -5608,6 +5635,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/qdGetSubscriptionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Subscription/UpdateSubscriptionInfo": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "summary": "UpdateSubscriptionInfo",
+        "operationId": "shop.Subscription-UpdateSubscriptionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdUpdateSubscriptionInfoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -15283,6 +15337,34 @@
         }
       }
     },
+    "qdCreateSubscriptionRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "description": "Bỏ trống field này nếu shop tạo subscription\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "billing_cycle_anchor_at": {
+          "description": "thời điểm phát sinh hóa đơn (trường hợp tự động gia hạn)\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_at_period_end": {
+          "description": "Hủy subscription khi hết hạn\n",
+          "type": "boolean"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionLine"
+          }
+        }
+      }
+    },
     "qdDeleteShopConnectionRequest": {
       "type": "object",
       "properties": {
@@ -17668,6 +17750,37 @@
         "token_expires_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "qdUpdateSubscriptionInfoRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "billing_cycle_anchor_at": {
+          "description": "thời điểm phát sinh hóa đơn (trường hợp tự động gia hạn)\n",
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_at_period_end": {
+          "description": "Hủy subscription khi hết hạn\n",
+          "type": "boolean"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdSubscriptionLine"
+          }
         }
       }
     },

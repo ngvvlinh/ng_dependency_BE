@@ -98,7 +98,7 @@ func (m *GetSubrPlansResponse) String() string { return jsonx.MustMarshalToStrin
 type Subscription struct {
 	ID                   dot.ID              `json:"id"`
 	AccountID            dot.ID              `json:"account_id"`
-	CancelAtPeriodEnd    bool                `json:"cancel_at_period_end"`
+	CancelAtPeriodEnd    dot.NullBool        `json:"cancel_at_period_end"`
 	CurrentPeriodStartAt dot.Time            `json:"current_period_start_at"`
 	CurrentPeriodEndAt   dot.Time            `json:"current_period_end_at"`
 	Status               status3.Status      `json:"status"`
@@ -180,8 +180,11 @@ type GetSubscriptionsResponse struct {
 func (m *GetSubscriptionsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateSubscriptionRequest struct {
-	AccountID            dot.ID              `json:"account_id"`
-	CancelAtPeriodEnd    bool                `json:"cancel_at_period_end"`
+	// Bỏ trống field này nếu shop tạo subscription
+	AccountID dot.ID `json:"account_id"`
+	// Hủy subscription khi hết hạn
+	CancelAtPeriodEnd bool `json:"cancel_at_period_end"`
+	// thời điểm phát sinh hóa đơn (trường hợp tự động gia hạn)
 	BillingCycleAnchorAt dot.Time            `json:"billing_cycle_anchor_at"`
 	Lines                []*SubscriptionLine `json:"lines"`
 	Customer             *SubrCustomer       `json:"customer"`
@@ -190,9 +193,11 @@ type CreateSubscriptionRequest struct {
 func (m *CreateSubscriptionRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateSubscriptionInfoRequest struct {
-	ID                   dot.ID              `json:"id"`
-	AccountID            dot.ID              `json:"account_id"`
-	CancelAtPeriodEnd    bool                `json:"cancel_at_period_end"`
+	ID        dot.ID `json:"id"`
+	AccountID dot.ID `json:"account_id"`
+	// Hủy subscription khi hết hạn
+	CancelAtPeriodEnd dot.NullBool `json:"cancel_at_period_end"`
+	// thời điểm phát sinh hóa đơn (trường hợp tự động gia hạn)
 	BillingCycleAnchorAt dot.Time            `json:"billing_cycle_anchor_at"`
 	Customer             *SubrCustomer       `json:"customer"`
 	Lines                []*SubscriptionLine `json:"lines"`

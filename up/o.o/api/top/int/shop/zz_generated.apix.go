@@ -4632,10 +4632,12 @@ func NewSubscriptionServiceServer(builder func() SubscriptionService, hooks ...h
 
 const SubscriptionServicePathPrefix = "/shop.Subscription/"
 
+const Path_Subscription_CreateSubscription = "/shop.Subscription/CreateSubscription"
 const Path_Subscription_GetSubscription = "/shop.Subscription/GetSubscription"
 const Path_Subscription_GetSubscriptionPlans = "/shop.Subscription/GetSubscriptionPlans"
 const Path_Subscription_GetSubscriptionProducts = "/shop.Subscription/GetSubscriptionProducts"
 const Path_Subscription_GetSubscriptions = "/shop.Subscription/GetSubscriptions"
+const Path_Subscription_UpdateSubscriptionInfo = "/shop.Subscription/UpdateSubscriptionInfo"
 
 func (s *SubscriptionServiceServer) PathPrefix() string {
 	return SubscriptionServicePathPrefix
@@ -4670,6 +4672,19 @@ func (s *SubscriptionServiceServer) ServeHTTP(resp http.ResponseWriter, req *htt
 
 func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/shop.Subscription/CreateSubscription":
+		msg := &inttypes.CreateSubscriptionRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateSubscription(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Subscription/GetSubscription":
 		msg := &inttypes.SubscriptionIDRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -4719,6 +4734,19 @@ func (s *SubscriptionServiceServer) parseRoute(path string, hooks httprpc.Hooks,
 				return
 			}
 			resp, err = inner.GetSubscriptions(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Subscription/UpdateSubscriptionInfo":
+		msg := &inttypes.UpdateSubscriptionInfoRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateSubscriptionInfo(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

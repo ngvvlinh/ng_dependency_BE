@@ -74,8 +74,8 @@ func (m *Subscription) Migration(db *cmsql.Database) {
 		},
 		"cancel_at_period_end": {
 			ColumnName:       "cancel_at_period_end",
-			ColumnType:       "bool",
-			ColumnDBType:     "bool",
+			ColumnType:       "dot.NullBool",
+			ColumnDBType:     "struct",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
@@ -171,7 +171,7 @@ func (m *Subscription) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		m.ID,
 		m.AccountID,
-		core.Bool(m.CancelAtPeriodEnd),
+		m.CancelAtPeriodEnd,
 		core.Time(m.CurrentPeriodEndAt),
 		core.Time(m.CurrentPeriodStartAt),
 		m.Status,
@@ -190,7 +190,7 @@ func (m *Subscription) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
 		&m.AccountID,
-		(*core.Bool)(&m.CancelAtPeriodEnd),
+		&m.CancelAtPeriodEnd,
 		(*core.Time)(&m.CurrentPeriodEndAt),
 		(*core.Time)(&m.CurrentPeriodStartAt),
 		&m.Status,
@@ -296,7 +296,7 @@ func (m *Subscription) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.AccountID)
 	}
-	if m.CancelAtPeriodEnd {
+	if m.CancelAtPeriodEnd.Valid {
 		flag = true
 		w.WriteName("cancel_at_period_end")
 		w.WriteByte('=')

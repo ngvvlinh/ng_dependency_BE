@@ -167,6 +167,8 @@ const shopPolicy = `#connection
 	p, shop/subscription_product:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/subscription_plan:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/subscription:view, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/subscription:create, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
+	p, shop/subscription:update, admin, owner, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 `
 
 const adminPolicy = `

@@ -195,7 +195,7 @@ func (a *EtelecomAggregate) CreateExtensionBySubscription(ctx context.Context, a
 		}
 		subr := query.Result
 		if subr.CurrentPeriodEndAt.Before(time.Now()) {
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Subscription đã hết hạn.")
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Subscription đã hết hạn. Vui lòng gia hạn trước khi khởi tạo extension.")
 		}
 
 		cmd := &etelecom.CreateExtensionArgs{

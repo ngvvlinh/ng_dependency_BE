@@ -11,7 +11,7 @@ import (
 type Subscription struct {
 	ID                   dot.ID
 	AccountID            dot.ID
-	CancelAtPeriodEnd    bool
+	CancelAtPeriodEnd    dot.NullBool
 	CurrentPeriodEndAt   time.Time
 	CurrentPeriodStartAt time.Time
 	Status               status3.Status

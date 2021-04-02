@@ -5233,14 +5233,17 @@
       "type": "object",
       "properties": {
         "account_id": {
+          "description": "Bỏ trống field này nếu shop tạo subscription\n",
           "type": "string",
           "format": "int64"
         },
         "billing_cycle_anchor_at": {
+          "description": "thời điểm phát sinh hóa đơn (trường hợp tự động gia hạn)\n",
           "type": "string",
           "format": "date-time"
         },
         "cancel_at_period_end": {
+          "description": "Hủy subscription khi hết hạn\n",
           "type": "boolean"
         },
         "customer": {
@@ -7319,10 +7322,12 @@
           "format": "int64"
         },
         "billing_cycle_anchor_at": {
+          "description": "thời điểm phát sinh hóa đơn (trường hợp tự động gia hạn)\n",
           "type": "string",
           "format": "date-time"
         },
         "cancel_at_period_end": {
+          "description": "Hủy subscription khi hết hạn\n",
           "type": "boolean"
         },
         "customer": {

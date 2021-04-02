@@ -12,6 +12,7 @@ import (
 	sharemodel "o.o/backend/com/subscripting/sharemodel"
 	subscriptionmodel "o.o/backend/com/subscripting/subscription/model"
 	conversion "o.o/backend/pkg/common/conversion"
+	dot "o.o/capi/dot"
 )
 
 /*
@@ -203,7 +204,7 @@ func Apply_subscription_CreateSubscriptionArgs_subscription_Subscription(arg *su
 func apply_subscription_CreateSubscriptionArgs_subscription_Subscription(arg *subscription.CreateSubscriptionArgs, out *subscription.Subscription) {
 	out.ID = 0                                          // zero value
 	out.AccountID = arg.AccountID                       // simple assign
-	out.CancelAtPeriodEnd = arg.CancelAtPeriodEnd       // simple assign
+	out.CancelAtPeriodEnd = dot.NullBool{}              // types do not match
 	out.CurrentPeriodEndAt = arg.CurrentPeriodEndAt     // simple assign
 	out.CurrentPeriodStartAt = arg.CurrentPeriodStartAt // simple assign
 	out.Status = 0                                      // zero value
@@ -231,7 +232,7 @@ func Apply_subscription_UpdateSubscriptionPeriodArgs_subscription_Subscription(a
 func apply_subscription_UpdateSubscriptionPeriodArgs_subscription_Subscription(arg *subscription.UpdateSubscriptionPeriodArgs, out *subscription.Subscription) {
 	out.ID = out.ID                                     // identifier
 	out.AccountID = out.AccountID                       // identifier
-	out.CancelAtPeriodEnd = arg.CancelAtPeriodEnd       // simple assign
+	out.CancelAtPeriodEnd = out.CancelAtPeriodEnd       // types do not match
 	out.CurrentPeriodEndAt = arg.CurrentPeriodEndAt     // simple assign
 	out.CurrentPeriodStartAt = arg.CurrentPeriodStartAt // simple assign
 	out.Status = out.Status                             // no change

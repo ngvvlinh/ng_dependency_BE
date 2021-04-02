@@ -770,9 +770,12 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	subscriptionplanQueryBus := subscriptionplan.SubrPlanQueryMessageBus(subrPlanQuery)
 	subscriptionQuery := subscription.NewSubscriptionQuery(mainDB, subscriptionplanQueryBus, subscriptionproductQueryBus)
 	subscriptionQueryBus := subscription.SubscriptionQueryMessageBus(subscriptionQuery)
+	subscriptionAggregate := subscription.NewSubscriptionAggregate(mainDB, subscriptionplanQueryBus)
+	subscriptionCommandBus := subscription.SubscriptionAggregateMessageBus(subscriptionAggregate)
 	subscriptionService := &subscription2.SubscriptionService{
 		Session:           session,
 		SubscriptionQuery: subscriptionQueryBus,
+		SubscriptionAggr:  subscriptionCommandBus,
 		SubrProductQuery:  subscriptionproductQueryBus,
 		SubrPlanQuery:     subscriptionplanQueryBus,
 	}
@@ -823,8 +826,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		cleanup()
 		return Output{}, nil, err
 	}
-	subscriptionAggregate := subscription.NewSubscriptionAggregate(mainDB, subscriptionplanQueryBus)
-	subscriptionCommandBus := subscription.SubscriptionAggregateMessageBus(subscriptionAggregate)
 	aggregate31 := aggregate22.NewAggregate(mainDB)
 	paymentCommandBus := aggregate22.AggregateMessageBus(aggregate31)
 	invoiceAggregate := invoice.NewInvoiceAggregate(mainDB, busBus, paymentCommandBus, subscriptionQueryBus, subscriptionplanQueryBus)

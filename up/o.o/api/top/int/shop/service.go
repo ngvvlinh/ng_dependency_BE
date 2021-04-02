@@ -441,6 +441,9 @@ type SubscriptionService interface {
 
 	GetSubscription(context.Context, *types.SubscriptionIDRequest) (*types.Subscription, error)
 	GetSubscriptions(context.Context, *types.GetSubscriptionsRequest) (*types.GetSubscriptionsResponse, error)
+
+	CreateSubscription(context.Context, *types.CreateSubscriptionRequest) (*types.Subscription, error)
+	UpdateSubscriptionInfo(context.Context, *types.UpdateSubscriptionInfoRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Ticket

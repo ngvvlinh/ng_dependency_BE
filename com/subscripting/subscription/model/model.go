@@ -13,7 +13,7 @@ type Subscription struct {
 	ID        dot.ID
 	AccountID dot.ID
 	// CancelAtPeriodEnd: hủy/ngưng subscription khi hết hạn
-	CancelAtPeriodEnd    bool
+	CancelAtPeriodEnd    dot.NullBool
 	CurrentPeriodEndAt   time.Time
 	CurrentPeriodStartAt time.Time
 	Status               status3.Status

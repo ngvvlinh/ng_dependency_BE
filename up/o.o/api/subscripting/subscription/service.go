@@ -60,7 +60,7 @@ type UpdateSubscriptionStatusArgs struct {
 type UpdateSubscriptionInfoArgs struct {
 	ID                   dot.ID
 	AccountID            dot.ID
-	CancelAtPeriodEnd    bool
+	CancelAtPeriodEnd    dot.NullBool
 	BillingCycleAnchorAt time.Time
 	Customer             *types.CustomerInfo
 	Lines                []*SubscriptionLine

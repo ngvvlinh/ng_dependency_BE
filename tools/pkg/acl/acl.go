@@ -245,6 +245,8 @@ const (
 	ShopSubscriptionProductView permission.ActionType = "shop/subscription_product:view"
 	ShopSubscriptionPlanView    permission.ActionType = "shop/subscription_plan:view"
 	ShopSubscriptionView        permission.ActionType = "shop/subscription:view"
+	ShopSubscriptionCreate      permission.ActionType = "shop/subscription:create"
+	ShopSubscriptionUpdate      permission.ActionType = "shop/subscription:update"
 
 	WsWebsiteCreate permission.ActionType = "shop/webserver/wswebsite:create"
 	WsWebsiteUpdate permission.ActionType = "shop/webserver/wswebsite:update"
@@ -1098,6 +1100,8 @@ var _acl = map[string]*permission.Decl{
 	"shop.Subscription/GetSubscriptionPlans":    {Type: Shop, Actions: actions(ShopSubscriptionPlanView)},
 	"shop.Subscription/GetSubscription":         {Type: Shop, Actions: actions(ShopSubscriptionView)},
 	"shop.Subscription/GetSubscriptions":        {Type: Shop, Actions: actions(ShopSubscriptionView)},
+	"shop.Subscription/CreateSubscription":      {Type: Shop, Actions: actions(ShopSubscriptionCreate)},
+	"shop.Subscription/UpdateSubscriptionInfo":  {Type: Shop, Actions: actions(ShopSubscriptionUpdate)},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},
