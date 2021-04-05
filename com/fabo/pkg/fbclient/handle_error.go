@@ -231,6 +231,7 @@ const (
 	TemporarilyBlockedForPoliciesViolations = Code(368)
 	DuplicatePost                           = Code(506)
 	ErrorPostingLink                        = Code(1609005)
+	HighMPS                                 = Code(1893007)
 	PageLevelThrottling                     = Code(32)
 	CustomLevelThrottling                   = Code(613)
 	RateLimitCallWithPage                   = Code(80001)

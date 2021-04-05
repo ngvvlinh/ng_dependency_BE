@@ -341,7 +341,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 				estimatedTimeToRegainAccess := xBusinessUseCaseUsageHeader.GetEstimatedTimeToRegainAccessOfPage(externalPageID)
 				_ = s.rd.LockCallAPIPage(externalPageID, estimatedTimeToRegainAccess)
 				return
-			case fbclient.RateLimitCallWithMessenger.String():
+			case fbclient.RateLimitCallWithMessenger.String(), fbclient.HighMPS.String():
 				xBusinessUseCaseUsage := facebookError.Meta[fbclient.XBusinessUseCaseUsage]
 				var xBusinessUseCaseUsageHeader fbclient.XBusinessUseCaseUsageHeader
 				if err := jsonx.Unmarshal([]byte(xBusinessUseCaseUsage), &xBusinessUseCaseUsageHeader); err != nil {
