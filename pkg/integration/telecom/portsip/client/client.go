@@ -68,14 +68,14 @@ func New(env string, cfg VHTAccountCfg) *Client {
 
 	switch env {
 	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
-		c.baseUrl = "https://sip.vht.com.vn:8900/api"
+		c.baseUrl = "https://sip.etelecom.vn:8900/api"
 		if c.tenantHost == "" {
-			c.tenantHost = "https://api-dev.vht.com.vn"
+			c.tenantHost = "https://api-sandbox.etelecom.vn"
 		}
 	case cmenv.PartnerEnvProd:
-		c.baseUrl = "https://sip.vht.com.vn:8900/api"
+		c.baseUrl = "https://sip.etelecom.vn:8900/api"
 	default:
-		ll.Fatal("VHT: Invalid env")
+		ll.Fatal("Portsip: Invalid env")
 	}
 
 	return c
