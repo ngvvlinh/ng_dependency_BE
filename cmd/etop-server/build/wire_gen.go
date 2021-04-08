@@ -31,6 +31,7 @@ import (
 	"o.o/backend/com/etc/logging/smslog/aggregate"
 	aggregate23 "o.o/backend/com/etelecom/aggregate"
 	pm19 "o.o/backend/com/etelecom/pm"
+	"o.o/backend/com/etelecom/pm/portsip_pm"
 	provider2 "o.o/backend/com/etelecom/provider"
 	query25 "o.o/backend/com/etelecom/query"
 	"o.o/backend/com/etelecom/usersetting"
@@ -828,7 +829,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	driver3 := _all2.SupportedTelecomDriver(busBus)
 	queryService6 := query25.NewQueryService(etelecomDB, connectioningQueryBus)
 	etelecomQueryBus := query25.QueryServiceMessageBus(queryService6)
-	telecomManager, err := provider2.NewTelecomManager(busBus, connectionManager, driver3, connectioningQueryBus, connectioningCommandBus, queryBus, etelecomQueryBus)
+	adminPortsipConfig := cfg.AdminPortsip
+	administratorTelecom := _all2.SupportAdminPortsipDriver(adminPortsipConfig)
+	telecomManager, err := provider2.NewTelecomManager(busBus, connectionManager, driver3, connectioningQueryBus, connectioningCommandBus, queryBus, etelecomQueryBus, administratorTelecom)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -843,12 +846,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	summaryQuery := query26.NewSummaryQuery(etelecomDB, store)
 	queryBus2 := query26.SummaryQueryMessageBus(summaryQuery)
 	etelecomService := &etelecom.EtelecomService{
-		Session:       session,
-		EtelecomAggr:  etelecomCommandBus,
-		EtelecomQuery: etelecomQueryBus,
-		SummaryQuery:  queryBus2,
-		IdentityAggr:  commandBus,
-		IdentityQuery: queryBus,
+		Session:         session,
+		EtelecomAggr:    etelecomCommandBus,
+		EtelecomQuery:   etelecomQueryBus,
+		SummaryQuery:    queryBus2,
+		IdentityAggr:    commandBus,
+		IdentityQuery:   queryBus,
+		ConnectionQuery: connectioningQueryBus,
 	}
 	userSettingAggregate := usersetting.NewUserSettingAggregate(etelecomDB)
 	usersettingCommandBus := usersetting.AggerateMessageBus(userSettingAggregate)
@@ -987,6 +991,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		EtelecomQuery:    etelecomQueryBus,
 		UserSettingAggr:  usersettingCommandBus,
 		UserSettingQuery: usersettingQueryBus,
+		IdentityQuery:    queryBus,
 	}
 	invoiceService := admin.InvoiceService{
 		Session:      session,
@@ -1400,6 +1405,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager21 := pm22.New(busBus, transactionQueryBus, transactionCommandBus, creditQueryBus)
 	processManager22 := pm23.New(busBus, usersettingQueryBus, queryBus)
 	processManager23 := pm24.NewProcessManager(busBus, ticketCommandBus)
+	portsip_pmProcessManager := portsip_pm.New(busBus, connectionManager, connectioningQueryBus, connectioningCommandBus, telecomManager, etelecomQueryBus, etelecomCommandBus, accountAuthStoreFactory)
 	output := Output{
 		Servers:                v4,
 		Health:                 service,
@@ -1427,6 +1433,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		_transactionPM:         processManager21,
 		_etelecomUserSettingPM: processManager22,
 		_ticketPM:              processManager23,
+		_portsipPM:             portsip_pmProcessManager,
 	}
 	return output, func() {
 		cleanup9()

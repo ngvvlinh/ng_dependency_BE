@@ -28,6 +28,7 @@ type Hotline struct {
 	Status           status3.Status
 	Description      string
 	IsFreeCharge     dot.NullBool
+	TenantID         dot.ID
 }
 
 type Extension struct {
@@ -49,17 +50,6 @@ type Extension struct {
 
 type ExtensionExternalData struct {
 	ID string
-}
-
-type Summary struct {
-	ID             dot.ID
-	ExtensionID    dot.ID
-	Date           string
-	TotalPhoneCall int
-	TotalCallTime  int
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	DeletedAt      time.Time
 }
 
 type CallLog struct {
@@ -101,4 +91,30 @@ type ExtensionCreatingEvent struct {
 	OwnerID   dot.ID
 	AccountID dot.ID
 	UserID    dot.ID
+}
+
+type Tenant struct {
+	ID               dot.ID
+	OwnerID          dot.ID
+	Name             string
+	Domain           string
+	Password         string
+	ExternalData     *TenantExternalData
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	DeletedAt        time.Time
+	Status           status3.NullStatus
+	ConnectionID     dot.ID
+	ConnectionMethod connection_type.ConnectionMethod
+}
+
+type TenantExternalData struct {
+	ID string
+}
+
+type TenantActivingEvent struct {
+	TenantID  dot.ID
+	OwnerID   dot.ID
+	AccountID dot.ID
+	HotlineID dot.ID
 }

@@ -501,6 +501,33 @@
         }
       }
     },
+    "/api/admin.Etelecom/ActivateTenant": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "ActivateTenant",
+        "operationId": "admin.Etelecom-ActivateTenant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riActivateTenantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Etelecom/CreateHotline": {
       "post": {
         "tags": [
@@ -523,6 +550,87 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/riHotline"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Etelecom/CreateTenant": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "CreateTenant",
+        "operationId": "admin.Etelecom-CreateTenant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riAdminCreateTenantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riTenant"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Etelecom/GetHotlines": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "GetHotlines",
+        "operationId": "admin.Etelecom-GetHotlines",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riGetHotLinesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riGetHotLinesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Etelecom/GetTenants": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "GetTenants",
+        "operationId": "admin.Etelecom-GetTenants",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riGetTenantsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riGetTenantsResponse"
             }
           }
         }
@@ -7665,13 +7773,48 @@
         "buyer"
       ]
     },
-    "riCreateHotlineRequest": {
+    "riActivateTenantRequest": {
       "type": "object",
+      "required": [
+        "account_id",
+        "hotline_id"
+      ],
       "properties": {
-        "connection_id": {
+        "account_id": {
           "type": "string",
           "format": "int64"
         },
+        "hotline_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tenant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "riAdminCreateTenantRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "description": "Support connection portsip direct\n",
+          "type": "string",
+          "format": "int64"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "riCreateHotlineRequest": {
+      "type": "object",
+      "properties": {
         "description": {
           "type": "string"
         },
@@ -7711,6 +7854,57 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "riGetHotLinesRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "allOf": [
+            {
+              "description": "Paging *common.CursorPaging `json:\"paging\"`\n"
+            },
+            {
+              "$ref": "#/definitions/riHotlinesFilter"
+            }
+          ]
+        }
+      }
+    },
+    "riGetHotLinesResponse": {
+      "type": "object",
+      "properties": {
+        "hotlines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/riHotline"
+          }
+        }
+      }
+    },
+    "riGetTenantsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/riTenantsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "riGetTenantsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "tenants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/riTenant"
+          }
         }
       }
     },
@@ -7775,6 +7969,65 @@
         }
       }
     },
+    "riHotlinesFilter": {
+      "type": "object",
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tenant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "riTenant": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "riTenantsFilter": {
+      "type": "object",
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "riUpdateHotlineRequest": {
       "type": "object",
       "properties": {
@@ -7790,6 +8043,9 @@
         },
         "name": {
           "type": "string"
+        },
+        "network": {
+          "$ref": "#/definitions/tcMobileNetwork"
         },
         "status": {
           "$ref": "#/definitions/blStatus"

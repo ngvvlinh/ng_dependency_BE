@@ -52,3 +52,11 @@ type UpdateUserSettingRequest struct {
 func (r *UpdateUserSettingRequest) String() string {
 	return jsonx.MustMarshalToString(r)
 }
+
+type CreateTenantRequest struct {
+	ConnectionID dot.ID `json:"connection_id"`
+}
+
+func (r *CreateTenantRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}

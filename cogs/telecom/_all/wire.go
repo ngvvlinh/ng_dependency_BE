@@ -14,4 +14,5 @@ var WireSet = wire.NewSet(
 	usersetting.WireSet,
 	etelecomprovider.WireSet,
 	SupportedTelecomDriver,
+	SupportAdminPortsipDriver,
 )

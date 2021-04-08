@@ -121,6 +121,7 @@ func Build(
 			"AhamoveWebhook",
 			"FlagFaboOrderAutoConfirmPaymentStatus",
 			"WebphonePublicKey",
+			"AdminPortsip",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,

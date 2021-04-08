@@ -90,6 +90,8 @@ const (
 	FacebookPermissionMissing = Code(3002)
 	Facebook                  = Code(3005)
 	FacebookWebhookIgnored    = Code(3006)
+
+	PortsipNameOrDomainIncorrect = Code(4001)
 )
 
 var (
@@ -601,6 +603,19 @@ func ErrorCode(err error) Code {
 	}
 	if err, ok := err.(*APIError); ok {
 		return err.Code
+	}
+	if v := reflect.ValueOf(err); v.Kind() == reflect.Ptr && v.IsNil() {
+		return NoError
+	}
+	return Unknown
+}
+
+func ErrorXCode(err error) Code {
+	if err == nil {
+		return NoError
+	}
+	if err, ok := err.(*APIError); ok {
+		return err.XCode
 	}
 	if v := reflect.ValueOf(err); v.Kind() == reflect.Ptr && v.IsNil() {
 		return NoError

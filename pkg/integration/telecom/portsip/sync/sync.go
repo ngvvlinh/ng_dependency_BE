@@ -283,7 +283,7 @@ func (s *PortsipSync) listShopConnections(ctx context.Context) (shopConnections 
 
 		err = s.dbMain.
 			Where("connection_type = ?", connection_type.Telecom).
-			Where("connection_provider = ?", connection_type.ConnectionProviderPortSIP).
+			Where("connection_provider = ?", connection_type.ConnectionProviderPortsip).
 			Where("status = ?", status3.P).
 			Limit(1000).
 			Find(&_connections)

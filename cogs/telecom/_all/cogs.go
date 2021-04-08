@@ -5,8 +5,8 @@ import (
 	"o.o/api/top/types/etc/connection_type"
 	telecomtypes "o.o/backend/com/etelecom/provider/types"
 	cm "o.o/backend/pkg/common"
-	vhtclient "o.o/backend/pkg/integration/telecom/portsip/client"
-	vhtdriver "o.o/backend/pkg/integration/telecom/portsip/driver"
+	portsipclient "o.o/backend/pkg/integration/telecom/portsip/client"
+	portsipdriver "o.o/backend/pkg/integration/telecom/portsip/driver"
 	"o.o/capi"
 	"o.o/common/l"
 )
@@ -26,11 +26,11 @@ func SupportedTelecomDriver(
 }
 
 func (t TelecomDriver) GetTelecomDriver(
-	env string, connection *connectioning.Connection,
+	connection *connectioning.Connection,
 	shopConnection *connectioning.ShopConnection,
 ) (telecomtypes.TelecomDriver, error) {
 	switch connection.ConnectionProvider {
-	case connection_type.ConnectionProviderPortSIP:
+	case connection_type.ConnectionProviderPortsip:
 		if shopConnection.Token == "" {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "token must not be null")
 		}
@@ -48,14 +48,14 @@ func (t TelecomDriver) GetTelecomDriver(
 		if exData.TenantDomain == "" {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "ShopConnection Telecom missing tenant domain. connection_id = %v, owner_id = %v", shopConnection.ConnectionID, shopConnection.OwnerID)
 		}
-		cfg := vhtclient.VHTAccountCfg{
+		cfg := portsipclient.PortsipAccountCfg{
 			Password:    shopConnection.TelecomData.Password,
 			Token:       shopConnection.Token,
 			Username:    shopConnection.TelecomData.Username,
 			TenantHost:  shopConnection.TelecomData.TenantHost,
 			TenantToken: shopConnection.TelecomData.TenantToken,
 		}
-		driver := vhtdriver.New(env, cfg)
+		driver := portsipdriver.New(cfg)
 		return driver, nil
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Connection không hợp lệ")

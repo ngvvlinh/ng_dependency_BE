@@ -38,6 +38,8 @@ const (
 	FacebookPermissionMissing = xerrors.FacebookPermissionMissing
 	FacebookError             = xerrors.Facebook
 	FacebookWebhookIgnored    = xerrors.FacebookWebhookIgnored
+
+	PortsipNameOrDomainIncorrect = xerrors.PortsipNameOrDomainIncorrect
 )
 
 var (
@@ -55,6 +57,7 @@ var (
 	ErrorTracef = xerrors.ErrorTracef
 	NSErrorf    = xerrors.NSErrorf
 	ErrorCode   = xerrors.ErrorCode
+	ErrorXCode  = xerrors.ErrorXCode
 	ToError     = xerrors.ToError
 	MapError    = xerrors.MapError
 )

@@ -70,6 +70,8 @@ func main() {
 			if err2 != nil {
 				return err2
 			}
+
+			partner.AuthToken = accountAuth.AuthKey
 		}
 		return nil
 	})

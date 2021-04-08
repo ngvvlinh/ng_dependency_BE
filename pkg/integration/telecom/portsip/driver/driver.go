@@ -7,32 +7,33 @@ import (
 	"o.o/api/etelecom/call_state"
 	telecomtypes "o.o/backend/com/etelecom/provider/types"
 	cm "o.o/backend/pkg/common"
+	"o.o/backend/pkg/common/apifw/httpreq"
 	portsipclient "o.o/backend/pkg/integration/telecom/portsip/client"
 )
 
-var _ telecomtypes.TelecomDriver = &VHTDriver{}
+var _ telecomtypes.TelecomDriver = &PortsipDriver{}
 
-type VHTDriver struct {
+type PortsipDriver struct {
 	client *portsipclient.Client
 }
 
-func New(env string, cfg portsipclient.VHTAccountCfg) *VHTDriver {
-	client := portsipclient.New(env, cfg)
-	return &VHTDriver{
+func New(cfg portsipclient.PortsipAccountCfg) *PortsipDriver {
+	client := portsipclient.New(cfg)
+	return &PortsipDriver{
 		client: client,
 	}
 }
 
-func (v *VHTDriver) GetClient() *portsipclient.Client {
-	return v.client
+func (d *PortsipDriver) GetClient() *portsipclient.Client {
+	return d.client
 }
 
-func (v *VHTDriver) Ping(ctx context.Context) error {
+func (d *PortsipDriver) Ping(ctx context.Context) error {
 	return nil
 }
 
-func (v *VHTDriver) GenerateToken(ctx context.Context) (*telecomtypes.GenerateTokenResponse, error) {
-	loginResp, err := v.client.Login(ctx)
+func (d *PortsipDriver) GenerateToken(ctx context.Context) (*telecomtypes.GenerateTokenResponse, error) {
+	loginResp, err := d.client.Login(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +42,7 @@ func (v *VHTDriver) GenerateToken(ctx context.Context) (*telecomtypes.GenerateTo
 	expiresIn := loginResp.Expires.Int()
 	expiresAt := time.Now().Add(time.Duration(expiresIn) * time.Second)
 
-	v.client.UpdateToken(token)
+	d.client.UpdateToken(token)
 
 	return &telecomtypes.GenerateTokenResponse{
 		AccessToken: token,
@@ -50,7 +51,7 @@ func (v *VHTDriver) GenerateToken(ctx context.Context) (*telecomtypes.GenerateTo
 	}, nil
 }
 
-func (v *VHTDriver) CreateExtension(ctx context.Context, req *telecomtypes.CreateExtensionRequest) (*telecomtypes.CreateExtensionResponse, error) {
+func (d *PortsipDriver) CreateExtension(ctx context.Context, req *telecomtypes.CreateExtensionRequest) (*telecomtypes.CreateExtensionResponse, error) {
 	if req.ExtensionPassword == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "password cannot be empty")
 	}
@@ -100,7 +101,7 @@ func (v *VHTDriver) CreateExtension(ctx context.Context, req *telecomtypes.Creat
 		},
 	}
 	if req.Profile != nil {
-		createExtensionReq.Profile = &portsipclient.ProfileCreateExtension{
+		createExtensionReq.Profile = &portsipclient.ExtensionProfile{
 			FirstName:   req.Profile.FirstName,
 			LastName:    req.Profile.LastName,
 			Email:       req.Profile.Email,
@@ -109,7 +110,7 @@ func (v *VHTDriver) CreateExtension(ctx context.Context, req *telecomtypes.Creat
 		}
 	}
 
-	createExtensionResp, err := v.client.CreateExtension(ctx, createExtensionReq)
+	createExtensionResp, err := d.client.CreateExtension(ctx, createExtensionReq)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +120,7 @@ func (v *VHTDriver) CreateExtension(ctx context.Context, req *telecomtypes.Creat
 	}, nil
 }
 
-func (v *VHTDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCallLogsRequest) (res *telecomtypes.GetCallLogsResponse, _ error) {
+func (d *PortsipDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCallLogsRequest) (res *telecomtypes.GetCallLogsResponse, _ error) {
 	getCallLogReq := &portsipclient.GetCallLogsRequest{
 		ScrollID: req.ScrollID,
 	}
@@ -130,7 +131,7 @@ func (v *VHTDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCallLo
 		getCallLogReq.EndTime = req.EndedAt.Unix()
 	}
 
-	getCallLogsResp, err := v.client.GetCallLogs(ctx, getCallLogReq)
+	getCallLogsResp, err := d.client.GetCallLogs(ctx, getCallLogReq)
 	if err != nil {
 		return nil, err
 	}
@@ -190,4 +191,50 @@ func getCallTargets(session *portsipclient.SessionCallLog) (res []*telecomtypes.
 		res = append(res, target)
 	}
 	return res
+}
+
+const PortsipDefaultGroupName = "__DEFAULT__"
+
+func (d *PortsipDriver) CreateOutboundRule(ctx context.Context, args *telecomtypes.CreateOutboundRuleRequest) error {
+	//  Portsip create outbound rule need:
+	//  Extension group default
+	reqExtensionGroups := &portsipclient.GetExtensionGroupsRequest{
+		Pagination: 1,
+		Pagesize:   1000,
+	}
+	respExtensionGroups, err := d.client.GetExtensionGroups(ctx, reqExtensionGroups)
+	if err != nil {
+		return err
+	}
+
+	tenantExtensionGroupDefaultID := ""
+	for _, group := range respExtensionGroups.Groups {
+		if group.GroupName == PortsipDefaultGroupName {
+			tenantExtensionGroupDefaultID = group.ID.String()
+			break
+		}
+	}
+	if tenantExtensionGroupDefaultID == "" {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Can not create outbound rules. Portsip Extension Group default not found")
+	}
+
+	// create outbound
+	reqOutboundRule := &portsipclient.CreateOutboundRuleRequest{
+		Name:         "eB2B Outbound Rule",
+		NumberPrefix: "",
+		FromExtensionGroups: &portsipclient.ExtensionGroup{
+			ID:        httpreq.String(tenantExtensionGroupDefaultID),
+			GroupName: PortsipDefaultGroupName,
+		},
+		Routes: []*portsipclient.OutboundRuleRoute{
+			{
+				ID: args.TrunkProviderID,
+			},
+		},
+	}
+	_, err = d.client.CreateOutboundRule(ctx, reqOutboundRule)
+	if err != nil {
+		return err
+	}
+	return nil
 }

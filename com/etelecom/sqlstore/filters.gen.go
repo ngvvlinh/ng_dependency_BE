@@ -912,3 +912,226 @@ func (ft *HotlineFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilter
 		IsZero: Description != nil && (*Description) == "",
 	}
 }
+
+func (ft *HotlineFilters) ByTenantID(TenantID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "tenant_id",
+		Value:  TenantID,
+		IsNil:  TenantID == 0,
+	}
+}
+
+func (ft *HotlineFilters) ByTenantIDPtr(TenantID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "tenant_id",
+		Value:  TenantID,
+		IsNil:  TenantID == nil,
+		IsZero: TenantID != nil && (*TenantID) == 0,
+	}
+}
+
+type TenantFilters struct{ prefix string }
+
+func NewTenantFilters(prefix string) TenantFilters {
+	return TenantFilters{prefix}
+}
+
+func (ft *TenantFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft TenantFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *TenantFilters) ByID(ID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *TenantFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *TenantFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == 0,
+	}
+}
+
+func (ft *TenantFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == nil,
+		IsZero: OwnerID != nil && (*OwnerID) == 0,
+	}
+}
+
+func (ft *TenantFilters) ByName(Name string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == "",
+	}
+}
+
+func (ft *TenantFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == nil,
+		IsZero: Name != nil && (*Name) == "",
+	}
+}
+
+func (ft *TenantFilters) ByDomain(Domain string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "domain",
+		Value:  Domain,
+		IsNil:  Domain == "",
+	}
+}
+
+func (ft *TenantFilters) ByDomainPtr(Domain *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "domain",
+		Value:  Domain,
+		IsNil:  Domain == nil,
+		IsZero: Domain != nil && (*Domain) == "",
+	}
+}
+
+func (ft *TenantFilters) ByPassword(Password string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "password",
+		Value:  Password,
+		IsNil:  Password == "",
+	}
+}
+
+func (ft *TenantFilters) ByPasswordPtr(Password *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "password",
+		Value:  Password,
+		IsNil:  Password == nil,
+		IsZero: Password != nil && (*Password) == "",
+	}
+}
+
+func (ft *TenantFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *TenantFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *TenantFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *TenantFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *TenantFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt.IsZero(),
+	}
+}
+
+func (ft *TenantFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt == nil,
+		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+func (ft *TenantFilters) ByConnectionID(ConnectionID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == 0,
+	}
+}
+
+func (ft *TenantFilters) ByConnectionIDPtr(ConnectionID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_id",
+		Value:  ConnectionID,
+		IsNil:  ConnectionID == nil,
+		IsZero: ConnectionID != nil && (*ConnectionID) == 0,
+	}
+}
+
+func (ft *TenantFilters) ByConnectionMethod(ConnectionMethod connection_type.ConnectionMethod) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "connection_method",
+		Value:  ConnectionMethod,
+		IsNil:  ConnectionMethod == 0,
+	}
+}
+
+func (ft *TenantFilters) ByConnectionMethodPtr(ConnectionMethod *connection_type.ConnectionMethod) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "connection_method",
+		Value:  ConnectionMethod,
+		IsNil:  ConnectionMethod == nil,
+		IsZero: ConnectionMethod != nil && (*ConnectionMethod) == 0,
+	}
+}

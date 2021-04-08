@@ -159,7 +159,6 @@ type CreateHotlineRequest struct {
 	Name         string                       `json:"name"`
 	Hotline      string                       `json:"hotline"`
 	Network      mobile_network.MobileNetwork `json:"network"`
-	ConnectionID dot.ID                       `json:"connection_id"`
 	Description  string                       `json:"description"`
 	IsFreeCharge dot.NullBool                 `json:"is_free_charge"`
 }
@@ -167,14 +166,27 @@ type CreateHotlineRequest struct {
 func (m *CreateHotlineRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type UpdateHotlineRequest struct {
-	ID           dot.ID             `json:"id"`
-	Name         string             `json:"name"`
-	Description  string             `json:"description"`
-	Status       status3.NullStatus `json:"status"`
-	IsFreeCharge dot.NullBool       `json:"is_free_charge"`
+	ID           dot.ID                       `json:"id"`
+	Name         string                       `json:"name"`
+	Description  string                       `json:"description"`
+	Status       status3.NullStatus           `json:"status"`
+	IsFreeCharge dot.NullBool                 `json:"is_free_charge"`
+	Network      mobile_network.MobileNetwork `json:"network"`
 }
 
 func (m *UpdateHotlineRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetHotLinesRequest struct {
+	// Paging *common.CursorPaging `json:"paging"`
+	Filter *HotlinesFilter `json:"filter"`
+}
+
+func (m *GetHotLinesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type HotlinesFilter struct {
+	OwnerID  dot.ID `json:"owner_id"`
+	TenantID dot.ID `json:"tenant_id"`
+}
 
 type EtelecomUserSetting struct {
 	// User ID
@@ -210,3 +222,56 @@ type UpdateUserSettingRequest struct {
 }
 
 func (m *UpdateUserSettingRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type Tenant struct {
+	ID               dot.ID                           `json:"id"`
+	OwnerID          dot.ID                           `json:"owner_id"`
+	Name             string                           `json:"name"`
+	Domain           string                           `json:"domain"`
+	CreatedAt        time.Time                        `json:"created_at"`
+	UpdatedAt        time.Time                        `json:"updated_at"`
+	Status           status3.NullStatus               `json:"status"`
+	ConnectionID     dot.ID                           `json:"connection_id"`
+	ConnectionMethod connection_type.ConnectionMethod `json:"connection_method"`
+}
+
+func (m *Tenant) String() string {
+	return jsonx.MustMarshalToString(m)
+}
+
+type ActivateTenantRequest struct {
+	OwnerID  dot.ID `json:"owner_id"`
+	TenantID dot.ID `json:"tenant_id"`
+	// @required
+	AccountID dot.ID `json:"account_id"`
+	// @required
+	HotlineID dot.ID `json:"hotline_id"`
+}
+
+func (m *ActivateTenantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type AdminCreateTenantRequest struct {
+	OwnerID dot.ID `json:"owner_id"`
+	// Support connection portsip direct
+	ConnectionID dot.ID `json:"connection_id"`
+}
+
+func (m *AdminCreateTenantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetTenantsRequest struct {
+	Paging *common.CursorPaging `json:"paging"`
+	Filter *TenantsFilter       `json:"filter"`
+}
+
+func (m *GetTenantsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type TenantsFilter struct {
+	OwnerID dot.ID `json:"owner_id"`
+}
+
+type GetTenantsResponse struct {
+	Tenants []*Tenant              `json:"tenants"`
+	Paging  *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *GetTenantsResponse) String() string { return jsonx.MustMarshalToString(m) }

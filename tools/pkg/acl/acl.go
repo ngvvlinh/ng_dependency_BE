@@ -237,6 +237,8 @@ const (
 	ShopHotlineView     permission.ActionType = "shop/hotline:view"
 	ShopCallLogView     permission.ActionType = "shop/calllog:view"
 	ShopCallLogCreate   permission.ActionType = "shop/calllog:create"
+	ShopTenantCreate    permission.ActionType = "shop/tenant:create"
+	ShopTenantView      permission.ActionType = "shop/tenant:view"
 
 	// shop credit
 	ShopCreditCreate permission.ActionType = "shop/credit:create"
@@ -432,10 +434,16 @@ const (
 	// admin extension etelecom
 	AdminHotlineCreate permission.ActionType = "admin/hotline:create"
 	AdminHotlineUpdate permission.ActionType = "admin/hotline:update"
+	AdminHotlineView   permission.ActionType = "admin/hotline:view"
 
 	// admin etelecom user setting
 	AdminEtelecomUserSettingUpdate permission.ActionType = "admin/etelecom_user_setting:update"
 	AdminEtelecomUserSettingView   permission.ActionType = "admin/etelecom_user_setting:view"
+
+	// admin etelecom tenant
+	AdminTenantCreate permission.ActionType = "admin/tenant:create"
+	AdminTenantView   permission.ActionType = "admin/tenant:view"
+	AdminTenantUpdate permission.ActionType = "admin/tenant:update"
 )
 
 // ACL declares access control list
@@ -874,8 +882,12 @@ var _acl = map[string]*permission.Decl{
 	"admin.Invoice/ManualPaymentInvoice": {Type: EtopAdmin, Actions: actions(AdminManualPaymentInvoiceCreate)},
 	"admin.Invoice/DeleteInvoice":        {Type: EtopAdmin, Actions: actions(AdminInvoiceDelete)},
 
-	"admin.Etelecom/CreateHotline": {Type: EtopAdmin, Actions: actions(AdminHotlineCreate)},
-	"admin.Etelecom/UpdateHotline": {Type: EtopAdmin, Actions: actions(AdminHotlineUpdate)},
+	"admin.Etelecom/CreateHotline":  {Type: EtopAdmin, Actions: actions(AdminHotlineCreate)},
+	"admin.Etelecom/UpdateHotline":  {Type: EtopAdmin, Actions: actions(AdminHotlineUpdate)},
+	"admin.Etelecom/GetHotlines":    {Type: EtopAdmin, Actions: actions(AdminHotlineView)},
+	"admin.Etelecom/GetTenants":     {Type: EtopAdmin, Actions: actions(AdminTenantView)},
+	"admin.Etelecom/CreateTenant":   {Type: EtopAdmin, Actions: actions(AdminTenantCreate)},
+	"admin.Etelecom/ActivateTenant": {Type: EtopAdmin, Actions: actions(AdminTenantUpdate)},
 
 	//-- shop --//
 
@@ -1349,6 +1361,9 @@ var _acl = map[string]*permission.Decl{
 
 	"shop.Etelecom/GetCallLogs":   {Type: Shop, Actions: actions(ShopCallLogView)},
 	"shop.Etelecom/CreateCallLog": {Type: Shop, Actions: actions(ShopCallLogCreate)},
+
+	"shop.Etelecom/CreateTenant": {Type: Shop, Actions: actions(ShopTenantCreate)},
+	"shop.Etelecom/GetTenant":    {Type: Shop, Actions: actions(ShopTenantView)},
 
 	"shop.Etelecom/SummaryEtelecom": {Type: Shop, Actions: actions(ShopDashboardView)},
 

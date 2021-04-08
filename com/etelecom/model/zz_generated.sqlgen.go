@@ -1134,8 +1134,8 @@ func (ms *ExtensionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 type Hotlines []*Hotline
 
 const __sqlHotline_Table = "hotline"
-const __sqlHotline_ListCols = "\"id\",\"owner_id\",\"name\",\"hotline\",\"network\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\",\"status\",\"description\",\"is_free_charge\""
-const __sqlHotline_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"hotline\" = EXCLUDED.\"hotline\",\"network\" = EXCLUDED.\"network\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"status\" = EXCLUDED.\"status\",\"description\" = EXCLUDED.\"description\",\"is_free_charge\" = EXCLUDED.\"is_free_charge\""
+const __sqlHotline_ListCols = "\"id\",\"owner_id\",\"name\",\"hotline\",\"network\",\"connection_id\",\"connection_method\",\"created_at\",\"updated_at\",\"deleted_at\",\"status\",\"description\",\"is_free_charge\",\"tenant_id\""
+const __sqlHotline_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"hotline\" = EXCLUDED.\"hotline\",\"network\" = EXCLUDED.\"network\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"status\" = EXCLUDED.\"status\",\"description\" = EXCLUDED.\"description\",\"is_free_charge\" = EXCLUDED.\"is_free_charge\",\"tenant_id\" = EXCLUDED.\"tenant_id\""
 const __sqlHotline_Insert = "INSERT INTO \"hotline\" (" + __sqlHotline_ListCols + ") VALUES"
 const __sqlHotline_Select = "SELECT " + __sqlHotline_ListCols + " FROM \"hotline\""
 const __sqlHotline_Select_history = "SELECT " + __sqlHotline_ListCols + " FROM history.\"hotline\""
@@ -1253,6 +1253,13 @@ func (m *Hotline) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"tenant_id": {
+			ColumnName:       "tenant_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "hotline", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -1279,6 +1286,7 @@ func (m *Hotline) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.Status,
 		core.String(m.Description),
 		m.IsFreeCharge,
+		m.TenantID,
 	}
 }
 
@@ -1297,6 +1305,7 @@ func (m *Hotline) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.Status,
 		(*core.String)(&m.Description),
 		&m.IsFreeCharge,
+		&m.TenantID,
 	}
 }
 
@@ -1334,7 +1343,7 @@ func (_ *Hotlines) SQLSelect(w SQLWriter) error {
 func (m *Hotline) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1344,7 +1353,7 @@ func (ms Hotlines) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(13)
+		w.WriteMarkers(14)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1479,6 +1488,14 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.IsFreeCharge)
 	}
+	if m.TenantID != 0 {
+		flag = true
+		w.WriteName("tenant_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.TenantID)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1489,7 +1506,7 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 func (m *Hotline) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlHotline_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1526,17 +1543,18 @@ func (m HotlineHistory) DeletedAt() core.Interface    { return core.Interface{m[
 func (m HotlineHistory) Status() core.Interface       { return core.Interface{m["status"]} }
 func (m HotlineHistory) Description() core.Interface  { return core.Interface{m["description"]} }
 func (m HotlineHistory) IsFreeCharge() core.Interface { return core.Interface{m["is_free_charge"]} }
+func (m HotlineHistory) TenantID() core.Interface     { return core.Interface{m["tenant_id"]} }
 
 func (m *HotlineHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(HotlineHistory, 13)
+	res := make(HotlineHistory, 14)
 	res["id"] = data[0]
 	res["owner_id"] = data[1]
 	res["name"] = data[2]
@@ -1550,14 +1568,15 @@ func (m *HotlineHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["status"] = data[10]
 	res["description"] = data[11]
 	res["is_free_charge"] = data[12]
+	res["tenant_id"] = data[13]
 	*m = res
 	return nil
 }
 
 func (ms *HotlineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	res := make(HotlineHistories, 0, 128)
@@ -1579,6 +1598,444 @@ func (ms *HotlineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["status"] = data[10]
 		m["description"] = data[11]
 		m["is_free_charge"] = data[12]
+		m["tenant_id"] = data[13]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+type Tenants []*Tenant
+
+const __sqlTenant_Table = "tenant"
+const __sqlTenant_ListCols = "\"id\",\"owner_id\",\"name\",\"domain\",\"password\",\"external_data\",\"created_at\",\"updated_at\",\"deleted_at\",\"status\",\"connection_id\",\"connection_method\""
+const __sqlTenant_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"domain\" = EXCLUDED.\"domain\",\"password\" = EXCLUDED.\"password\",\"external_data\" = EXCLUDED.\"external_data\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"status\" = EXCLUDED.\"status\",\"connection_id\" = EXCLUDED.\"connection_id\",\"connection_method\" = EXCLUDED.\"connection_method\""
+const __sqlTenant_Insert = "INSERT INTO \"tenant\" (" + __sqlTenant_ListCols + ") VALUES"
+const __sqlTenant_Select = "SELECT " + __sqlTenant_ListCols + " FROM \"tenant\""
+const __sqlTenant_Select_history = "SELECT " + __sqlTenant_ListCols + " FROM history.\"tenant\""
+const __sqlTenant_UpdateAll = "UPDATE \"tenant\" SET (" + __sqlTenant_ListCols + ")"
+const __sqlTenant_UpdateOnConflict = " ON CONFLICT ON CONSTRAINT tenant_pkey DO UPDATE SET"
+
+func (m *Tenant) SQLTableName() string  { return "tenant" }
+func (m *Tenants) SQLTableName() string { return "tenant" }
+func (m *Tenant) SQLListCols() string   { return __sqlTenant_ListCols }
+
+func (m *Tenant) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlTenant_ListCols + " FROM \"tenant\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func (m *Tenant) Migration(db *cmsql.Database) {
+	var mDBColumnNameAndType map[string]string
+	if val, err := migration.GetColumnNamesAndTypes(db, "tenant"); err != nil {
+		db.RecordError(err)
+		return
+	} else {
+		mDBColumnNameAndType = val
+	}
+	mModelColumnNameAndType := map[string]migration.ColumnDef{
+		"id": {
+			ColumnName:       "id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"owner_id": {
+			ColumnName:       "owner_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"name": {
+			ColumnName:       "name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"domain": {
+			ColumnName:       "domain",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"password": {
+			ColumnName:       "password",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_data": {
+			ColumnName:       "external_data",
+			ColumnType:       "*TenantExternalData",
+			ColumnDBType:     "*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"created_at": {
+			ColumnName:       "created_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"updated_at": {
+			ColumnName:       "updated_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"deleted_at": {
+			ColumnName:       "deleted_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"status": {
+			ColumnName:       "status",
+			ColumnType:       "status3.NullStatus",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"Z", "P", "N"},
+		},
+		"connection_id": {
+			ColumnName:       "connection_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"connection_method": {
+			ColumnName:       "connection_method",
+			ColumnType:       "connection_type.ConnectionMethod",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"unknown", "builtin", "topship", "direct"},
+		},
+	}
+	if err := migration.Compare(db, "tenant", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Tenant)(nil))
+}
+
+func (m *Tenant) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		m.ID,
+		m.OwnerID,
+		core.String(m.Name),
+		core.String(m.Domain),
+		core.String(m.Password),
+		core.JSON{m.ExternalData},
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.DeletedAt),
+		m.Status,
+		m.ConnectionID,
+		m.ConnectionMethod,
+	}
+}
+
+func (m *Tenant) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		&m.ID,
+		&m.OwnerID,
+		(*core.String)(&m.Name),
+		(*core.String)(&m.Domain),
+		(*core.String)(&m.Password),
+		core.JSON{&m.ExternalData},
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.DeletedAt),
+		&m.Status,
+		&m.ConnectionID,
+		&m.ConnectionMethod,
+	}
+}
+
+func (m *Tenant) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *Tenants) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(Tenants, 0, 128)
+	for rows.Next() {
+		m := new(Tenant)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *Tenant) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlTenant_Select)
+	return nil
+}
+
+func (_ *Tenants) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlTenant_Select)
+	return nil
+}
+
+func (m *Tenant) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlTenant_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(12)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms Tenants) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlTenant_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(12)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *Tenant) SQLUpsert(w SQLWriter) error {
+	m.SQLInsert(w)
+	w.WriteQueryString(__sqlTenant_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlTenant_ListColsOnConflict)
+	return nil
+}
+
+func (ms Tenants) SQLUpsert(w SQLWriter) error {
+	ms.SQLInsert(w)
+	w.WriteQueryString(__sqlTenant_UpdateOnConflict)
+	w.WriteQueryString(" ")
+	w.WriteQueryString(__sqlTenant_ListColsOnConflict)
+	return nil
+}
+
+func (m *Tenant) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("tenant")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.OwnerID != 0 {
+		flag = true
+		w.WriteName("owner_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OwnerID)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
+	if m.Domain != "" {
+		flag = true
+		w.WriteName("domain")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Domain)
+	}
+	if m.Password != "" {
+		flag = true
+		w.WriteName("password")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Password)
+	}
+	if m.ExternalData != nil {
+		flag = true
+		w.WriteName("external_data")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.ExternalData})
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if true { // always update time
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !m.DeletedAt.IsZero() {
+		flag = true
+		w.WriteName("deleted_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeletedAt)
+	}
+	if m.Status.Valid {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Status)
+	}
+	if m.ConnectionID != 0 {
+		flag = true
+		w.WriteName("connection_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ConnectionID)
+	}
+	if m.ConnectionMethod != 0 {
+		flag = true
+		w.WriteName("connection_method")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ConnectionMethod)
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *Tenant) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlTenant_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(12)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type TenantHistory map[string]interface{}
+type TenantHistories []map[string]interface{}
+
+func (m *TenantHistory) SQLTableName() string  { return "history.\"tenant\"" }
+func (m TenantHistories) SQLTableName() string { return "history.\"tenant\"" }
+
+func (m *TenantHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlTenant_Select_history)
+	return nil
+}
+
+func (m TenantHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlTenant_Select_history)
+	return nil
+}
+
+func (m TenantHistory) ID() core.Interface           { return core.Interface{m["id"]} }
+func (m TenantHistory) OwnerID() core.Interface      { return core.Interface{m["owner_id"]} }
+func (m TenantHistory) Name() core.Interface         { return core.Interface{m["name"]} }
+func (m TenantHistory) Domain() core.Interface       { return core.Interface{m["domain"]} }
+func (m TenantHistory) Password() core.Interface     { return core.Interface{m["password"]} }
+func (m TenantHistory) ExternalData() core.Interface { return core.Interface{m["external_data"]} }
+func (m TenantHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
+func (m TenantHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m TenantHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
+func (m TenantHistory) Status() core.Interface       { return core.Interface{m["status"]} }
+func (m TenantHistory) ConnectionID() core.Interface { return core.Interface{m["connection_id"]} }
+func (m TenantHistory) ConnectionMethod() core.Interface {
+	return core.Interface{m["connection_method"]}
+}
+
+func (m *TenantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(TenantHistory, 12)
+	res["id"] = data[0]
+	res["owner_id"] = data[1]
+	res["name"] = data[2]
+	res["domain"] = data[3]
+	res["password"] = data[4]
+	res["external_data"] = data[5]
+	res["created_at"] = data[6]
+	res["updated_at"] = data[7]
+	res["deleted_at"] = data[8]
+	res["status"] = data[9]
+	res["connection_id"] = data[10]
+	res["connection_method"] = data[11]
+	*m = res
+	return nil
+}
+
+func (ms *TenantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
+		args[i] = &data[i]
+	}
+	res := make(TenantHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(TenantHistory)
+		m["id"] = data[0]
+		m["owner_id"] = data[1]
+		m["name"] = data[2]
+		m["domain"] = data[3]
+		m["password"] = data[4]
+		m["external_data"] = data[5]
+		m["created_at"] = data[6]
+		m["updated_at"] = data[7]
+		m["deleted_at"] = data[8]
+		m["status"] = data[9]
+		m["connection_id"] = data[10]
+		m["connection_method"] = data[11]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

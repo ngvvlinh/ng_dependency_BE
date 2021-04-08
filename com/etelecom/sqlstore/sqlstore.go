@@ -57,6 +57,11 @@ func (s *HotlineStore) OptionalConnectionID(connID dot.ID) *HotlineStore {
 	return s
 }
 
+func (s *HotlineStore) OptionalTenantID(tenantID dot.ID) *HotlineStore {
+	s.preds = append(s.preds, s.ft.ByTenantID(tenantID).Optional())
+	return s
+}
+
 func (s *HotlineStore) ConnectionID(connID dot.ID) *HotlineStore {
 	s.preds = append(s.preds, s.ft.ByConnectionID(connID))
 	return s

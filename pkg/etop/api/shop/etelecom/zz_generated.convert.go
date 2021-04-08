@@ -107,6 +107,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*etelecom.Hotline) = out0
 		return nil
 	})
+	s.Register((*etelecom.Tenant)(nil), (*etelecomtypes.Tenant)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_Tenant_etelecomtypes_Tenant(arg.(*etelecom.Tenant), out.(*etelecomtypes.Tenant))
+		return nil
+	})
+	s.Register(([]*etelecom.Tenant)(nil), (*[]*etelecomtypes.Tenant)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_Tenants_etelecomtypes_Tenants(arg.([]*etelecom.Tenant))
+		*out.(*[]*etelecomtypes.Tenant) = out0
+		return nil
+	})
+	s.Register((*etelecomtypes.Tenant)(nil), (*etelecom.Tenant)(nil), func(arg, out interface{}) error {
+		Convert_etelecomtypes_Tenant_etelecom_Tenant(arg.(*etelecomtypes.Tenant), out.(*etelecom.Tenant))
+		return nil
+	})
+	s.Register(([]*etelecomtypes.Tenant)(nil), (*[]*etelecom.Tenant)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecomtypes_Tenants_etelecom_Tenants(arg.([]*etelecomtypes.Tenant))
+		*out.(*[]*etelecom.Tenant) = out0
+		return nil
+	})
 }
 
 //-- convert o.o/api/top/int/etelecom/types.CallLog --//
@@ -491,6 +509,7 @@ func convert_etelecomtypes_Hotline_etelecom_Hotline(arg *etelecomtypes.Hotline, 
 	out.Status = arg.Status                     // simple assign
 	out.Description = arg.Description           // simple assign
 	out.IsFreeCharge = arg.IsFreeCharge         // simple assign
+	out.TenantID = 0                            // zero value
 }
 
 func Convert_etelecomtypes_Hotlines_etelecom_Hotlines(args []*etelecomtypes.Hotline) (outs []*etelecom.Hotline) {
@@ -501,6 +520,81 @@ func Convert_etelecomtypes_Hotlines_etelecom_Hotlines(args []*etelecomtypes.Hotl
 	outs = make([]*etelecom.Hotline, len(args))
 	for i := range tmps {
 		outs[i] = Convert_etelecomtypes_Hotline_etelecom_Hotline(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/top/int/etelecom/types.Tenant --//
+
+func Convert_etelecom_Tenant_etelecomtypes_Tenant(arg *etelecom.Tenant, out *etelecomtypes.Tenant) *etelecomtypes.Tenant {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecomtypes.Tenant{}
+	}
+	convert_etelecom_Tenant_etelecomtypes_Tenant(arg, out)
+	return out
+}
+
+func convert_etelecom_Tenant_etelecomtypes_Tenant(arg *etelecom.Tenant, out *etelecomtypes.Tenant) {
+	out.ID = arg.ID                             // simple assign
+	out.OwnerID = arg.OwnerID                   // simple assign
+	out.Name = arg.Name                         // simple assign
+	out.Domain = arg.Domain                     // simple assign
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.Status = arg.Status                     // simple assign
+	out.ConnectionID = arg.ConnectionID         // simple assign
+	out.ConnectionMethod = arg.ConnectionMethod // simple assign
+}
+
+func Convert_etelecom_Tenants_etelecomtypes_Tenants(args []*etelecom.Tenant) (outs []*etelecomtypes.Tenant) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecomtypes.Tenant, len(args))
+	outs = make([]*etelecomtypes.Tenant, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecom_Tenant_etelecomtypes_Tenant(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_etelecomtypes_Tenant_etelecom_Tenant(arg *etelecomtypes.Tenant, out *etelecom.Tenant) *etelecom.Tenant {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecom.Tenant{}
+	}
+	convert_etelecomtypes_Tenant_etelecom_Tenant(arg, out)
+	return out
+}
+
+func convert_etelecomtypes_Tenant_etelecom_Tenant(arg *etelecomtypes.Tenant, out *etelecom.Tenant) {
+	out.ID = arg.ID                             // simple assign
+	out.OwnerID = arg.OwnerID                   // simple assign
+	out.Name = arg.Name                         // simple assign
+	out.Domain = arg.Domain                     // simple assign
+	out.Password = ""                           // zero value
+	out.ExternalData = nil                      // zero value
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.DeletedAt = time.Time{}                 // zero value
+	out.Status = arg.Status                     // simple assign
+	out.ConnectionID = arg.ConnectionID         // simple assign
+	out.ConnectionMethod = arg.ConnectionMethod // simple assign
+}
+
+func Convert_etelecomtypes_Tenants_etelecom_Tenants(args []*etelecomtypes.Tenant) (outs []*etelecom.Tenant) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecom.Tenant, len(args))
+	outs = make([]*etelecom.Tenant, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecomtypes_Tenant_etelecom_Tenant(args[i], &tmps[i])
 	}
 	return outs
 }

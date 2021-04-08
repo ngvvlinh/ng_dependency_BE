@@ -22,6 +22,7 @@ type QueryService struct {
 	hotlineStore   sqlstore.HotlineStoreFactory
 	extensionStore sqlstore.ExtensionStoreFactory
 	callLogStore   sqlstore.CallLogStoreFactory
+	tenantStore    sqlstore.TenantStoreFactory
 	connectionQS   connectioning.QueryBus
 }
 
@@ -31,6 +32,7 @@ func NewQueryService(dbEtelecom com.EtelecomDB, connectionQ connectioning.QueryB
 		hotlineStore:   sqlstore.NewHotlineStore(dbEtelecom),
 		extensionStore: sqlstore.NewExtensionStore(dbEtelecom),
 		callLogStore:   sqlstore.NewCallLogStore(dbEtelecom),
+		tenantStore:    sqlstore.NewTenantStore(dbEtelecom),
 		connectionQS:   connectionQ,
 	}
 }
@@ -45,7 +47,7 @@ func (q *QueryService) GetHotline(ctx context.Context, args *etelecom.GetHotline
 }
 
 func (q *QueryService) ListHotlines(ctx context.Context, args *etelecom.ListHotlinesArgs) ([]*etelecom.Hotline, error) {
-	return q.hotlineStore(ctx).OptionalOwnerID(args.OwnerID).OptionalConnectionID(args.ConnectionID).ListHotlines()
+	return q.hotlineStore(ctx).OptionalOwnerID(args.OwnerID).OptionalConnectionID(args.ConnectionID).OptionalTenantID(args.TenantID).ListHotlines()
 }
 
 func (q *QueryService) ListBuiltinHotlines(ctx context.Context, _ *cm.Empty) (res []*etelecom.Hotline, _ error) {

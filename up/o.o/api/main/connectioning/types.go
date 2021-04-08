@@ -21,7 +21,8 @@ const (
 	DefaultDirectAhamoveConnectionID  = dot.ID(1000212023297494791)
 
 	// etelecom
-	DefaultBuiltinVHTEtelecomConnectionID = dot.ID(100085369475949390)
+	DefaultBuiltinPortsipConnectionID = dot.ID(100085369475949390)
+	DefaultDirectPortsipConnectionID  = dot.ID(1000632092361806111)
 )
 
 type Connection struct {

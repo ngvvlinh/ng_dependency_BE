@@ -10,7 +10,6 @@ import (
 
 type Driver interface {
 	GetTelecomDriver(
-		env string,
 		connection *connectioning.Connection,
 		shopConnection *connectioning.ShopConnection,
 	) (TelecomDriver, error)
@@ -21,12 +20,30 @@ type TelecomDriver interface {
 	GenerateToken(ctx context.Context) (*GenerateTokenResponse, error)
 	CreateExtension(ctx context.Context, req *CreateExtensionRequest) (*CreateExtensionResponse, error)
 	GetCallLogs(ctx context.Context, req *GetCallLogsRequest) (*GetCallLogsResponse, error)
+
+	CreateOutboundRule(context.Context, *CreateOutboundRuleRequest) error
 }
 
 type TelecomSync interface {
 	Init(ctx context.Context) error
 	Start(ctx context.Context) error
 	Stop(ctx context.Context) error
+}
+
+// use for account admin
+type TelecomAdminDriver interface {
+	GenerateToken(ctx context.Context) (*GenerateTokenResponse, error)
+
+	CreateTenant(ctx context.Context, req *CreateTenantRequest) (*CreateTenantResponse, error)
+
+	// gán tenant vào trunk provider (aaranet) để biết tenant này trunk qua provider nào
+	AddTenantToTrunkProvider(context.Context, *AddTenantToTrunkProviderRequest) error
+}
+
+type AdministratorTelecom struct {
+	Driver                 TelecomAdminDriver
+	TokenExpiresAt         time.Time
+	TrunkProviderDefaultID string
 }
 
 type GenerateTokenResponse struct {
@@ -88,4 +105,36 @@ type CallTarget struct {
 	CallState    call_state.CallState
 	AnsweredTime time.Time
 	EndedTime    time.Time
+}
+
+type CreateTenantRequest struct {
+	Name     string
+	Domain   string
+	Password string
+	Enable   bool
+	Profile  TenantProfile
+}
+
+type TenantProfile struct {
+	FirstName string
+	LastName  string
+	Email     string
+}
+
+type CreateTenantResponse struct {
+	ID string
+}
+
+type CreateOutboundRuleRequest struct {
+	// trunk provider: aarenat provider id in portsip
+	TrunkProviderID string
+}
+
+type AddTenantToTrunkProviderRequest struct {
+	// trunk provider: aarenat provider id in portsip
+	TrunkProviderID string
+	// external tenant ID
+	TenantID string
+	// hotline number
+	Hotline string
 }

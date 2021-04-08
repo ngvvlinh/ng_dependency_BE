@@ -2,6 +2,7 @@ package config
 
 import (
 	_telebot "o.o/backend/cogs/base/telebot"
+	telecom_all "o.o/backend/cogs/telecom/_all"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 )
@@ -9,10 +10,11 @@ import (
 type Config struct {
 	Databases cc.Databases `yaml:",inline"`
 
-	Redis       cc.Redis       `yaml:"redis"`
-	HTTP        cc.HTTP        `yaml:"http"`
-	TelegramBot cc.TelegramBot `yaml:"telegram_bot"`
-	Env         string         `yaml:"env"`
+	Redis        cc.Redis                       `yaml:"redis"`
+	HTTP         cc.HTTP                        `yaml:"http"`
+	TelegramBot  cc.TelegramBot                 `yaml:"telegram_bot"`
+	Env          string                         `yaml:"env"`
+	AdminPortsip telecom_all.AdminPortsipConfig `yaml:"admin_portsip"`
 }
 
 func Default() Config {

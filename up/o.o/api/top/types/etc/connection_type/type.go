@@ -107,5 +107,5 @@ const (
 	ConnectionProviderSuiteCRM ConnectionProvider = 8
 
 	// +enum=portsip
-	ConnectionProviderPortSIP ConnectionProvider = 9
+	ConnectionProviderPortsip ConnectionProvider = 9
 )

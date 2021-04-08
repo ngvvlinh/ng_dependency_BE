@@ -18,6 +18,7 @@ import (
 	_vtpost "o.o/backend/cogs/shipment/vtpost"
 	shipmentwebhookall "o.o/backend/cogs/shipment/webhook/_all"
 	etelecompm "o.o/backend/com/etelecom/pm"
+	portsippm "o.o/backend/com/etelecom/pm/portsip_pm"
 	etelecomusersettingpm "o.o/backend/com/etelecom/usersetting/pm"
 	catalogpm "o.o/backend/com/main/catalog/pm"
 	connectioningpm "o.o/backend/com/main/connectioning/pm"
@@ -94,6 +95,7 @@ type Output struct {
 	_transactionPM         *transactionpm.ProcessManager
 	_etelecomUserSettingPM *etelecomusersettingpm.ProcessManager
 	_ticketPM              *ticketpm.ProcessManager
+	_portsipPM             *portsippm.ProcessManager
 }
 
 func BuildServers(

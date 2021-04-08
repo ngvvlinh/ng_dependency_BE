@@ -59,7 +59,9 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	}
 	queryQueryService := query2.NewQueryService(etelecomDB, queryBus)
 	etelecomQueryBus := query2.QueryServiceMessageBus(queryQueryService)
-	telecomManager, err := provider.NewTelecomManager(busBus, connectionManager, driver, queryBus, commandBus, identityQueryBus, etelecomQueryBus)
+	adminPortsipConfig := cfg.AdminPortsip
+	administratorTelecom := _all.SupportAdminPortsipDriver(adminPortsipConfig)
+	telecomManager, err := provider.NewTelecomManager(busBus, connectionManager, driver, queryBus, commandBus, identityQueryBus, etelecomQueryBus, administratorTelecom)
 	if err != nil {
 		return Output{}, nil, err
 	}

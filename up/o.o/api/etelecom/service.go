@@ -9,6 +9,7 @@ import (
 	"o.o/api/etelecom/mobile_network"
 	"o.o/api/meta"
 	cm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/status3"
 	"o.o/capi/dot"
@@ -30,6 +31,10 @@ type Aggregate interface {
 	UpdateCallLogPostage(context.Context, *UpdateCallLogPostageArgs) error
 	CreateOrUpdateCallLogFromCDR(context.Context, *CreateOrUpdateCallLogFromCDRArgs) (*CallLog, error)
 	CreateCallLog(context.Context, *CreateCallLogArgs) (*CallLog, error)
+
+	CreateTenant(context.Context, *CreateTenantArgs) (*Tenant, error)
+	DeleteTenant(ctx context.Context, id dot.ID) error
+	ActivateTenant(context.Context, *ActivateTenantArgs) (*Tenant, error)
 }
 
 type QueryService interface {
@@ -46,6 +51,9 @@ type QueryService interface {
 	GetCallLogByExternalID(context.Context, *GetCallLogByExternalIDArgs) (*CallLog, error)
 	ListCallLogs(context.Context, *ListCallLogsArgs) (*ListCallLogsResponse, error)
 	GetCallLog(ctx context.Context, ID dot.ID) (*CallLog, error)
+
+	ListTenants(context.Context, *ListTenantsArgs) (*ListTenantsResponse, error)
+	GetTenant(context.Context, *GetTenantArgs) (*Tenant, error)
 }
 
 // +convert:create=Extension
@@ -151,6 +159,7 @@ type GetHotlineArgs struct {
 
 type ListHotlinesArgs struct {
 	OwnerID      dot.ID
+	TenantID     dot.ID
 	ConnectionID dot.ID
 }
 
@@ -216,21 +225,20 @@ func (args *CreateHotlineArgs) Validate() error {
 	if args.Hotline == "" {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing hotline number")
 	}
-	if args.ConnectionID == 0 {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing connection ID")
-	}
-	if args.Network == 0 {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing network")
-	}
 	return nil
 }
 
 type UpdateHotlineInfoArgs struct {
-	ID           dot.ID
-	IsFreeCharge dot.NullBool
-	Name         string
-	Description  string
-	Status       status3.NullStatus
+	ID               dot.ID
+	IsFreeCharge     dot.NullBool
+	Name             string
+	Description      string
+	Status           status3.NullStatus
+	TenantID         dot.ID
+	ConnectionID     dot.ID
+	ConnectionMethod connection_type.ConnectionMethod
+	OwnerID          dot.ID
+	Network          mobile_network.MobileNetwork
 }
 
 type CreateExtenstionBySubscriptionArgs struct {
@@ -284,4 +292,35 @@ func (args *ExtendExtensionArgs) Validate() error {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Phương thức thanh toán không hợp lệ. Chỉ hỗ trợ thanh toán bằng số dư.")
 	}
 	return nil
+}
+
+type CreateTenantArgs struct {
+	OwnerID      dot.ID
+	ConnectionID dot.ID
+}
+
+type GetTenantArgs struct {
+	ID           dot.ID
+	OwnerID      dot.ID
+	ConnectionID dot.ID
+}
+
+type ActivateTenantArgs struct {
+	OwnerID            dot.ID
+	AccountID          dot.ID
+	TenantID           dot.ID
+	HotlineID          dot.ID
+	ConnectionID       dot.ID
+	ConnectionProvider connection_type.ConnectionProvider
+}
+
+type ListTenantsArgs struct {
+	OwnerID      dot.ID
+	ConnectionID dot.ID
+	Paging       meta.Paging
+}
+
+type ListTenantsResponse struct {
+	Tenants []*Tenant
+	Paging  meta.PageInfo
 }

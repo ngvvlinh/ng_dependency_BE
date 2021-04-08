@@ -3,13 +3,14 @@ package config
 import (
 	"errors"
 	"strings"
-	
+
 	"o.o/api/main/invitation"
 	_telebot "o.o/backend/cogs/base/telebot"
 	config_server "o.o/backend/cogs/config/_server"
 	database_all "o.o/backend/cogs/database/_all"
 	shipment_all "o.o/backend/cogs/shipment/_all"
 	storage_all "o.o/backend/cogs/storage/_all"
+	telecom_all "o.o/backend/cogs/telecom/_all"
 	_uploader "o.o/backend/cogs/uploader"
 	ecomconfig "o.o/backend/com/web/ecom/config"
 	"o.o/backend/pkg/common/apifw/captcha"
@@ -66,6 +67,8 @@ type Config struct {
 
 	FlagFaboOrderAutoConfirmPaymentStatus orderS.FlagFaboOrderAutoConfirmPaymentStatus `yaml:"flag_fabo_auto_confirm_payment_status"`
 	WebphonePublicKey                     config_server.WebphonePublicKey              `yaml:"webphone_public_key"`
+
+	AdminPortsip telecom_all.AdminPortsipConfig `yaml:"admin_portsip"`
 }
 
 // Default ...

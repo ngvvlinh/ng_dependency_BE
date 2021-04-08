@@ -29,6 +29,7 @@ func Build(
 		wire.FieldsOf(&cfg,
 			"Redis",
 			"Databases",
+			"AdminPortsip",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,

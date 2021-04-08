@@ -5,6 +5,8 @@ import (
 
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/usersetting"
+	"o.o/api/main/connectioning"
+	"o.o/api/main/identity"
 	"o.o/api/top/int/admin"
 	etelecomtypes "o.o/api/top/int/etelecom/types"
 	pbcm "o.o/api/top/types/common"
@@ -21,6 +23,7 @@ type EtelecomService struct {
 	EtelecomQuery    etelecom.QueryBus
 	UserSettingAggr  usersetting.CommandBus
 	UserSettingQuery usersetting.QueryBus
+	IdentityQuery    identity.QueryBus
 }
 
 func (s *EtelecomService) Clone() admin.EtelecomService {
@@ -34,7 +37,6 @@ func (s *EtelecomService) CreateHotline(ctx context.Context, r *etelecomtypes.Cr
 		Name:         r.Name,
 		Hotline:      r.Hotline,
 		Network:      r.Network,
-		ConnectionID: r.ConnectionID,
 		Description:  r.Description,
 		IsFreeCharge: r.IsFreeCharge,
 	}
@@ -52,11 +54,27 @@ func (s *EtelecomService) UpdateHotline(ctx context.Context, r *etelecomtypes.Up
 		Name:         r.Name,
 		Description:  r.Description,
 		Status:       r.Status,
+		Network:      r.Network,
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func (s *EtelecomService) GetHotlines(ctx context.Context, r *etelecomtypes.GetHotLinesRequest) (*etelecomtypes.GetHotLinesResponse, error) {
+	query := &etelecom.ListHotlinesQuery{}
+	if r.Filter != nil {
+		query.OwnerID = r.Filter.OwnerID
+		query.TenantID = r.Filter.TenantID
+	}
+	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	res := shopetelecom.Convert_etelecom_Hotlines_etelecomtypes_Hotlines(query.Result)
+	return &etelecomtypes.GetHotLinesResponse{
+		Hotlines: res,
+	}, nil
 }
 
 func (s *EtelecomService) GetUserSettings(ctx context.Context, r *etelecomtypes.GetUserSettingsRequest) (*etelecomtypes.UserSettingsResponse, error) {
@@ -87,5 +105,55 @@ func (s *EtelecomService) UpdateUserSetting(ctx context.Context, r *etelecomtype
 		return nil, err
 	}
 
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func (s *EtelecomService) GetTenants(ctx context.Context, r *etelecomtypes.GetTenantsRequest) (*etelecomtypes.GetTenantsResponse, error) {
+	paging, err := cmapi.CMCursorPaging(r.Paging)
+	if err != nil {
+		return nil, err
+	}
+	query := &etelecom.ListTenantsQuery{
+		Paging: *paging,
+	}
+	if r.Filter != nil {
+		query.OwnerID = r.Filter.OwnerID
+	}
+	if err = s.EtelecomQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	res := shopetelecom.Convert_etelecom_Tenants_etelecomtypes_Tenants(query.Result.Tenants)
+	return &etelecomtypes.GetTenantsResponse{
+		Tenants: res,
+		Paging:  cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
+	}, nil
+}
+
+func (s *EtelecomService) CreateTenant(ctx context.Context, r *etelecomtypes.AdminCreateTenantRequest) (*etelecomtypes.Tenant, error) {
+	cmd := &etelecom.CreateTenantCommand{
+		OwnerID:      r.OwnerID,
+		ConnectionID: r.ConnectionID,
+	}
+	if cmd.ConnectionID == 0 {
+		cmd.ConnectionID = connectioning.DefaultDirectPortsipConnectionID
+	}
+
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	res := shopetelecom.Convert_etelecom_Tenant_etelecomtypes_Tenant(cmd.Result, nil)
+	return res, nil
+}
+
+func (s *EtelecomService) ActivateTenant(ctx context.Context, r *etelecomtypes.ActivateTenantRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &etelecom.ActivateTenantCommand{
+		AccountID:    r.AccountID,
+		TenantID:     r.TenantID,
+		HotlineID:    r.HotlineID,
+		ConnectionID: connectioning.DefaultDirectPortsipConnectionID,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }

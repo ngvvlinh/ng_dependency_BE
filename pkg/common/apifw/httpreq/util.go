@@ -14,6 +14,14 @@ import (
 
 var ll = l.New()
 
+type RequestMethod string
+
+var (
+	MethodPost RequestMethod = "POST"
+	MethodGet  RequestMethod = "GET"
+	MethodPut  RequestMethod = "PUT"
+)
+
 func IsNullJsonRaw(data json.RawMessage) bool {
 	return len(data) == 0 ||
 		len(data) == 4 && string(data) == "null"

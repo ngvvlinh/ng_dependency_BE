@@ -224,7 +224,12 @@ type TicketService interface {
 type EtelecomService interface {
 	CreateHotline(context.Context, *etelecomtypes.CreateHotlineRequest) (*etelecomtypes.Hotline, error)
 	UpdateHotline(context.Context, *etelecomtypes.UpdateHotlineRequest) (*cm.UpdatedResponse, error)
+	GetHotlines(context.Context, *etelecomtypes.GetHotLinesRequest) (*etelecomtypes.GetHotLinesResponse, error)
 
 	GetUserSettings(context.Context, *etelecomtypes.GetUserSettingsRequest) (*etelecomtypes.UserSettingsResponse, error)
 	UpdateUserSetting(context.Context, *etelecomtypes.UpdateUserSettingRequest) (*cm.UpdatedResponse, error)
+
+	GetTenants(context.Context, *etelecomtypes.GetTenantsRequest) (*etelecomtypes.GetTenantsResponse, error)
+	CreateTenant(context.Context, *etelecomtypes.AdminCreateTenantRequest) (*etelecomtypes.Tenant, error)
+	ActivateTenant(context.Context, *etelecomtypes.ActivateTenantRequest) (*cm.UpdatedResponse, error)
 }

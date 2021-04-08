@@ -35,11 +35,11 @@ func main() {
 	}
 
 	postgres := cfg.Databases.Postgres
-	postgres.Host = "127.0.0.1"
+	postgres.Host = "localhost"
 	postgres.Port = 5432
 	postgres.Username = "postgres"
 	postgres.Password = "postgres"
-	postgres.Database = "etopv1.12"
+	postgres.Database = "etop_dev"
 	if db, err = cmsql.Connect(postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}

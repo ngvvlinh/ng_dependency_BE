@@ -48,7 +48,7 @@ const (
 
 var encoder = schema.NewEncoder()
 
-func New(env string, cfg VHTAccountCfg) *Client {
+func New(cfg PortsipAccountCfg) *Client {
 	encoder.SetAliasTag("url")
 	client := &http.Client{
 		Timeout: 60 * time.Second,
@@ -66,13 +66,18 @@ func New(env string, cfg VHTAccountCfg) *Client {
 		rclient:     httpreq.NewResty(rcfg),
 	}
 
-	switch env {
-	case cmenv.PartnerEnvTest, cmenv.PartnerEnvDev:
+	switch cmenv.Env() {
+	case cmenv.EnvDev:
+		c.baseUrl = "https://portsip.vht.com.vn:8900/api"
+		if c.tenantHost == "" {
+			c.tenantHost = "https://api-dev.etelecom.vn"
+		}
+	case cmenv.EnvSandbox, cmenv.EnvStag:
 		c.baseUrl = "https://sip.etelecom.vn:8900/api"
 		if c.tenantHost == "" {
 			c.tenantHost = "https://api-sandbox.etelecom.vn"
 		}
-	case cmenv.PartnerEnvProd:
+	case cmenv.EnvProd:
 		c.baseUrl = "https://sip.etelecom.vn:8900/api"
 	default:
 		ll.Fatal("Portsip: Invalid env")
@@ -119,6 +124,63 @@ func (c *Client) CreateExtension(ctx context.Context, req *CreateExtensionsReque
 	return &resp, nil
 }
 
+// This feature is available to admin user only
+// Doc: https://www.portsip.com/pbx-rest-api/pbx/account.html#add_account
+func (c *Client) CreateTenant(ctx context.Context, req *CreateTenantRequest) (*CreateTenantResponse, error) {
+	var resp CreateTenantResponse
+	err := c.sendPostRequest(ctx, sendRequestArgs{
+		url:   URL(c.baseUrl, "/account/create"),
+		token: c.token,
+		req:   req,
+		resp:  &resp,
+	})
+	return &resp, err
+}
+
+// This feature is available to admin user only
+func (c *Client) UpdateTrunkProvider(ctx context.Context, req *UpdateTrunkProviderRequest) error {
+	err := c.sendPostRequest(ctx, sendRequestArgs{
+		url:   URL(c.baseUrl, "/providers/update"),
+		token: c.token,
+		req:   req,
+		resp:  nil,
+	})
+	return err
+}
+
+func (c *Client) GetTrunkProvider(ctx context.Context, req *GetTrunkProviderRequest) (*TrunkProvider, error) {
+	var resp TrunkProvider
+	err := c.sendGetRequest(ctx, sendRequestArgs{
+		url:   URL(c.baseUrl, "/providers/show"),
+		token: c.token,
+		req:   req,
+		resp:  &resp,
+	})
+	return &resp, err
+}
+
+func (c *Client) CreateOutboundRule(ctx context.Context, req *CreateOutboundRuleRequest) (*CreateOutboundRuleResponse, error) {
+	var resp CreateOutboundRuleResponse
+	err := c.sendPostRequest(ctx, sendRequestArgs{
+		url:   URL(c.baseUrl, "/outbound_rules/create"),
+		token: c.token,
+		req:   req,
+		resp:  &resp,
+	})
+	return &resp, err
+}
+
+func (c *Client) GetExtensionGroups(ctx context.Context, req *GetExtensionGroupsRequest) (*GetExtensionGroupsResponse, error) {
+	var resp GetExtensionGroupsResponse
+	err := c.sendGetRequest(ctx, sendRequestArgs{
+		url:   URL(c.baseUrl, "/extensions/group/list"),
+		token: c.token,
+		req:   req,
+		resp:  &resp,
+	})
+	return &resp, err
+}
+
 func (c *Client) GetCallLogs(ctx context.Context, req *GetCallLogsRequest) (*GetCallLogsResponse, error) {
 	var resp GetCallLogsResponse
 
@@ -162,7 +224,7 @@ func (c *Client) sendRequest(ctx context.Context, method Method, args sendReques
 	case GetMethod:
 		queryString := url.Values{}
 		if args.req != nil {
-			err := encoder.Encode(args.req, queryString)
+			err = encoder.Encode(args.req, queryString)
 			if err != nil {
 				return cm.Error(cm.Internal, "", err)
 			}
@@ -173,22 +235,30 @@ func (c *Client) sendRequest(ctx context.Context, method Method, args sendReques
 		panic(fmt.Sprintf("unsupported method %v", method))
 	}
 	if err != nil {
-		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với VHT", err)
+		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với Portsip", err)
 	}
 
 	status := res.StatusCode()
 	switch {
 	case status == 200:
-		if err := jsonx.Unmarshal(res.Body(), &args.resp); err != nil {
-			return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ VHT: %v. Chúng tôi đang liên hệ với VHT để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
+		if args.resp == nil {
+			return nil
+		}
+		if err = jsonx.Unmarshal(res.Body(), &args.resp); err != nil {
+			return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Portsip: %v. Chúng tôi đang liên hệ với Portsip để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
 		}
 		return nil
 	case status >= 400:
 		if err = jsonx.Unmarshal(res.Body(), &errResp); err != nil {
-			return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ VHT: %v. Chúng tôi đang liên hệ với VHT để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
+			return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Portsip: %v. Chúng tôi đang liên hệ với Portsip để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", err, wl.X(ctx).CSEmail)
 		}
-		return cm.Errorf(cm.ExternalServiceError, &errResp, "Lỗi từ VHT: %v. Nếu cần thêm thông tin vui lòng liên hệ %v.", errResp.Error(), wl.X(ctx).CSEmail)
+
+		code := cm.ExternalServiceError
+		if errResp.ErrCode.String() == string(NameOrDomainIncorrect) {
+			code = cm.PortsipNameOrDomainIncorrect
+		}
+		return cm.Errorf(code, &errResp, "Lỗi từ Portsip: %v. Nếu cần thêm thông tin vui lòng liên hệ %v.", errResp.Error(), wl.X(ctx).CSEmail)
 	default:
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ VHT: Invalid status (%v). Chúng tôi đang liên hệ với VHT để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", status, wl.X(ctx).CSEmail)
+		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Portsip: Invalid status (%v). Chúng tôi đang liên hệ với Portsip để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ %v.", status, wl.X(ctx).CSEmail)
 	}
 }

@@ -12,7 +12,6 @@ import (
 	providertypes "o.o/backend/com/etelecom/provider/types"
 	connectionmanager "o.o/backend/com/main/connectioning/manager"
 	cm "o.o/backend/pkg/common"
-	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/common/code/gencode"
 	"o.o/capi"
 	"o.o/capi/dot"
@@ -27,7 +26,6 @@ const (
 )
 
 type TelecomManager struct {
-	env               string
 	eventBus          capi.EventBus
 	connectionManager *connectionmanager.ConnectionManager
 	telecomDriver     providertypes.Driver
@@ -35,6 +33,7 @@ type TelecomManager struct {
 	connectionAggr    connectioning.CommandBus
 	identityQS        identity.QueryBus
 	etelecomQS        etelecom.QueryBus
+	AdminPortsip      providertypes.AdministratorTelecom
 }
 
 func NewTelecomManager(
@@ -45,9 +44,9 @@ func NewTelecomManager(
 	connectionAggr connectioning.CommandBus,
 	identityQuery identity.QueryBus,
 	etelecomQuery etelecom.QueryBus,
+	adminPortsip providertypes.AdministratorTelecom,
 ) (*TelecomManager, error) {
 	return &TelecomManager{
-		env:               cmenv.PartnerEnv(),
 		connectionManager: connectionManager,
 		eventBus:          eventBus,
 		telecomDriver:     telecomDriver,
@@ -55,6 +54,7 @@ func NewTelecomManager(
 		connectionAggr:    connectionAggr,
 		identityQS:        identityQuery,
 		etelecomQS:        etelecomQuery,
+		AdminPortsip:      adminPortsip,
 	}, nil
 }
 
@@ -64,7 +64,7 @@ func (m *TelecomManager) GetTelecomDriver(ctx context.Context, connectionID, own
 		return nil, err
 	}
 
-	telecomDriver, err := m.telecomDriver.GetTelecomDriver(m.env, connection, shopConnection)
+	telecomDriver, err := m.telecomDriver.GetTelecomDriver(connection, shopConnection)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +225,7 @@ func (m *TelecomManager) getHotLine(ctx context.Context, args getHotlineArgs) (r
 			ID:      args.HotlineID,
 			OwnerID: ownerID,
 		}
-		if err := m.etelecomQS.Dispatch(ctx, hotlineQuery); err != nil {
+		if err = m.etelecomQS.Dispatch(ctx, hotlineQuery); err != nil {
 			return nil, err
 		}
 		return hotlineQuery.Result, nil
@@ -235,7 +235,7 @@ func (m *TelecomManager) getHotLine(ctx context.Context, args getHotlineArgs) (r
 		OwnerID:      ownerID,
 		ConnectionID: args.ConnectionID,
 	}
-	if err := m.etelecomQS.Dispatch(ctx, hotlineQuery); err != nil {
+	if err = m.etelecomQS.Dispatch(ctx, hotlineQuery); err != nil {
 		return nil, err
 	}
 	hotlines := hotlineQuery.Result
@@ -254,4 +254,77 @@ func (m *TelecomManager) getHotLine(ctx context.Context, args getHotlineArgs) (r
 		return nil, cm.Errorf(cm.Internal, nil, "Vui lòng đăng ký số hotline")
 	}
 	return
+}
+
+func (m *TelecomManager) CreateOutboundRule(ctx context.Context, args *CreateOutboundRuleRequest) error {
+	driver, err := m.GetTelecomDriver(ctx, args.ConnectionID, args.OwnerID)
+	if err != nil {
+		return err
+	}
+	req := &providertypes.CreateOutboundRuleRequest{
+		TrunkProviderID: args.TrunkProviderID,
+	}
+	return driver.CreateOutboundRule(ctx, req)
+}
+
+func (m *TelecomManager) CreateTenantPortsip(ctx context.Context, tenant *etelecom.Tenant) (*CreateTenantResponse, error) {
+	if tenant.Name == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing name")
+	}
+	if tenant.Password == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing password")
+	}
+	if tenant.Domain == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing domain")
+	}
+
+	userQuery := &identity.GetUserByIDQuery{
+		UserID: tenant.OwnerID,
+	}
+	if err := m.identityQS.Dispatch(ctx, userQuery); err != nil {
+		return nil, err
+	}
+	user := userQuery.Result
+
+	req := &providertypes.CreateTenantRequest{
+		Name:     tenant.Name,
+		Domain:   tenant.Domain,
+		Password: tenant.Password,
+		Enable:   true,
+		Profile: providertypes.TenantProfile{
+			FirstName: "",
+			LastName:  user.FullName,
+			Email:     user.Email,
+		},
+	}
+
+	driver, err := m.GetAdministratorPortsipDriver(ctx)
+	if err != nil {
+		return nil, err
+	}
+	tenantResp, err := driver.CreateTenant(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateTenantResponse{
+		TenantID:         tenant.ID,
+		ExternalTenantID: tenantResp.ID,
+	}, nil
+}
+
+func (m *TelecomManager) GetAdministratorPortsipDriver(ctx context.Context) (providertypes.TelecomAdminDriver, error) {
+	expiresAt := m.AdminPortsip.TokenExpiresAt
+	now := time.Now()
+	// 5p trước khi hết hạn
+	expiresAt.Add(-FiveMinutes)
+	if expiresAt.After(now) {
+		return m.AdminPortsip.Driver, nil
+	}
+
+	genTokenResp, err := m.AdminPortsip.Driver.GenerateToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	m.AdminPortsip.TokenExpiresAt = genTokenResp.ExpiresAt
+	return m.AdminPortsip.Driver, nil
 }

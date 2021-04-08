@@ -24,6 +24,9 @@ type EtelecomService interface {
 	SummaryEtelecom(context.Context, *SummaryEtelecomRequest) (*SummaryEtelecomResponse, error)
 
 	CreateUserAndAssignExtension(context.Context, *CreateUserAndAssignExtensionRequest) (*cm.MessageResponse, error)
+
+	CreateTenant(context.Context, *CreateTenantRequest) (*types.Tenant, error)
+	GetTenant(context.Context, *cm.Empty) (*types.Tenant, error)
 }
 
 // +apix:path=/etelecom.User

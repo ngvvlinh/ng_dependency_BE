@@ -7,6 +7,7 @@ import (
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/summary"
 	"o.o/api/main/authorization"
+	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	etelecomapi "o.o/api/top/int/etelecom"
 	etelecomtypes "o.o/api/top/int/etelecom/types"
@@ -23,11 +24,12 @@ import (
 type EtelecomService struct {
 	session.Session
 
-	EtelecomAggr  etelecom.CommandBus
-	EtelecomQuery etelecom.QueryBus
-	SummaryQuery  summary.QueryBus
-	IdentityAggr  identity.CommandBus
-	IdentityQuery identity.QueryBus
+	EtelecomAggr    etelecom.CommandBus
+	EtelecomQuery   etelecom.QueryBus
+	SummaryQuery    summary.QueryBus
+	IdentityAggr    identity.CommandBus
+	IdentityQuery   identity.QueryBus
+	ConnectionQuery connectioning.QueryBus
 }
 
 func (s *EtelecomService) Clone() etelecomapi.EtelecomService {
@@ -303,4 +305,31 @@ func (s *EtelecomService) createEtelecomAccountUserAndAddRoleCS(ctx context.Cont
 	default:
 		return err
 	}
+}
+
+func (s *EtelecomService) CreateTenant(ctx context.Context, r *etelecomapi.CreateTenantRequest) (*etelecomtypes.Tenant, error) {
+	cmd := &etelecom.CreateTenantCommand{
+		OwnerID:      s.SS.Shop().OwnerID,
+		ConnectionID: r.ConnectionID,
+	}
+	if cmd.ConnectionID == 0 {
+		cmd.ConnectionID = connectioning.DefaultDirectPortsipConnectionID
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	res := Convert_etelecom_Tenant_etelecomtypes_Tenant(cmd.Result, nil)
+	return res, nil
+}
+
+func (s *EtelecomService) GetTenant(ctx context.Context, r *pbcm.Empty) (*etelecomtypes.Tenant, error) {
+	query := &etelecom.GetTenantQuery{
+		OwnerID:      s.SS.Shop().OwnerID,
+		ConnectionID: connectioning.DefaultDirectPortsipConnectionID,
+	}
+	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	res := Convert_etelecom_Tenant_etelecomtypes_Tenant(query.Result, nil)
+	return res, nil
 }

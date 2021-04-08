@@ -27,6 +27,7 @@ type Hotline struct {
 	Status           status3.Status
 	Description      string
 	IsFreeCharge     dot.NullBool
+	TenantID         dot.ID
 }
 
 // +sqlgen
@@ -85,4 +86,24 @@ type CallLog struct {
 	// depends on connectionID to get extension
 	// accountID get from extension (above)
 	// get contactID from caller/callee + accountID
+}
+
+// +sqlgen
+type Tenant struct {
+	ID               dot.ID `paging:"id"`
+	OwnerID          dot.ID
+	Name             string
+	Domain           string
+	Password         string
+	ExternalData     *TenantExternalData
+	CreatedAt        time.Time `sq:"create" paging:"created_at"`
+	UpdatedAt        time.Time `sq:"update" paging:"updated_at"`
+	DeletedAt        time.Time
+	Status           status3.NullStatus
+	ConnectionID     dot.ID
+	ConnectionMethod connection_type.ConnectionMethod
+}
+
+type TenantExternalData struct {
+	ID string `json:"id"`
 }

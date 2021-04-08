@@ -488,7 +488,11 @@ func NewEtelecomServiceServer(builder func() EtelecomService, hooks ...httprpc.H
 
 const EtelecomServicePathPrefix = "/admin.Etelecom/"
 
+const Path_Etelecom_ActivateTenant = "/admin.Etelecom/ActivateTenant"
 const Path_Etelecom_CreateHotline = "/admin.Etelecom/CreateHotline"
+const Path_Etelecom_CreateTenant = "/admin.Etelecom/CreateTenant"
+const Path_Etelecom_GetHotlines = "/admin.Etelecom/GetHotlines"
+const Path_Etelecom_GetTenants = "/admin.Etelecom/GetTenants"
 const Path_Etelecom_GetUserSettings = "/admin.Etelecom/GetUserSettings"
 const Path_Etelecom_UpdateHotline = "/admin.Etelecom/UpdateHotline"
 const Path_Etelecom_UpdateUserSetting = "/admin.Etelecom/UpdateUserSetting"
@@ -526,6 +530,19 @@ func (s *EtelecomServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/admin.Etelecom/ActivateTenant":
+		msg := &etelecomtypes.ActivateTenantRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ActivateTenant(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.Etelecom/CreateHotline":
 		msg := &etelecomtypes.CreateHotlineRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -536,6 +553,45 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.CreateHotline(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Etelecom/CreateTenant":
+		msg := &etelecomtypes.AdminCreateTenantRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateTenant(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Etelecom/GetHotlines":
+		msg := &etelecomtypes.GetHotLinesRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetHotlines(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Etelecom/GetTenants":
+		msg := &etelecomtypes.GetTenantsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetTenants(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

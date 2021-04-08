@@ -123,6 +123,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/CreateTenant": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "CreateTenant",
+        "operationId": "shop.Etelecom-CreateTenant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/btCreateTenantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riTenant"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/CreateUserAndAssignExtension": {
       "post": {
         "tags": [
@@ -258,6 +285,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/GetTenant": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "GetTenant",
+        "operationId": "shop.Etelecom-GetTenant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/riTenant"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/SummaryEtelecom": {
       "post": {
         "tags": [
@@ -330,6 +384,15 @@
         },
         "external_session_id": {
           "type": "string"
+        }
+      }
+    },
+    "btCreateTenantRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -859,6 +922,43 @@
         },
         "network": {
           "$ref": "#/definitions/tcMobileNetwork"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "riTenant": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "connection_method": {
+          "$ref": "#/definitions/cdConnectionMethod"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "domain": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
         },
         "owner_id": {
           "type": "string",

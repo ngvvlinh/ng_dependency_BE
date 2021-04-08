@@ -30,6 +30,7 @@ type EtelecomAggregate struct {
 	hotlineStore    sqlstore.HotlineStoreFactory
 	extensionStore  sqlstore.ExtensionStoreFactory
 	callLogStore    sqlstore.CallLogStoreFactory
+	tenantStore     sqlstore.TenantStoreFactory
 	contactQuery    contact.QueryBus
 	identityQuery   identity.QueryBus
 	telecomManager  *telecomprovider.TelecomManager
@@ -59,6 +60,7 @@ func NewEtelecomAggregate(
 		hotlineStore:    sqlstore.NewHotlineStore(dbEtelecom),
 		extensionStore:  sqlstore.NewExtensionStore(dbEtelecom),
 		callLogStore:    sqlstore.NewCallLogStore(dbEtelecom),
+		tenantStore:     sqlstore.NewTenantStore(dbEtelecom),
 		telecomManager:  telecomManager,
 		connectionQuery: connectionQ,
 		identityQuery:   identityQ,

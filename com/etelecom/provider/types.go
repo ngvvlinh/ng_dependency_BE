@@ -9,3 +9,15 @@ type CreateExtensionResponse struct {
 	ExternalID        string
 	HotlineID         dot.ID
 }
+
+type CreateTenantResponse struct {
+	TenantID         dot.ID
+	ExternalTenantID string
+}
+
+type CreateOutboundRuleRequest struct {
+	// trunk provider: aarenat provider id in portsip
+	TrunkProviderID string
+	OwnerID         dot.ID
+	ConnectionID    dot.ID
+}

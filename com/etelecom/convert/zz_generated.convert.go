@@ -107,6 +107,42 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_etelecom_CreateHotlineArgs_etelecom_Hotline(arg.(*etelecom.CreateHotlineArgs), out.(*etelecom.Hotline))
 		return nil
 	})
+	s.Register((*etelecommodel.Tenant)(nil), (*etelecom.Tenant)(nil), func(arg, out interface{}) error {
+		Convert_etelecommodel_Tenant_etelecom_Tenant(arg.(*etelecommodel.Tenant), out.(*etelecom.Tenant))
+		return nil
+	})
+	s.Register(([]*etelecommodel.Tenant)(nil), (*[]*etelecom.Tenant)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecommodel_Tenants_etelecom_Tenants(arg.([]*etelecommodel.Tenant))
+		*out.(*[]*etelecom.Tenant) = out0
+		return nil
+	})
+	s.Register((*etelecom.Tenant)(nil), (*etelecommodel.Tenant)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_Tenant_etelecommodel_Tenant(arg.(*etelecom.Tenant), out.(*etelecommodel.Tenant))
+		return nil
+	})
+	s.Register(([]*etelecom.Tenant)(nil), (*[]*etelecommodel.Tenant)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_Tenants_etelecommodel_Tenants(arg.([]*etelecom.Tenant))
+		*out.(*[]*etelecommodel.Tenant) = out0
+		return nil
+	})
+	s.Register((*etelecommodel.TenantExternalData)(nil), (*etelecom.TenantExternalData)(nil), func(arg, out interface{}) error {
+		Convert_etelecommodel_TenantExternalData_etelecom_TenantExternalData(arg.(*etelecommodel.TenantExternalData), out.(*etelecom.TenantExternalData))
+		return nil
+	})
+	s.Register(([]*etelecommodel.TenantExternalData)(nil), (*[]*etelecom.TenantExternalData)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecommodel_TenantExternalDatas_etelecom_TenantExternalDatas(arg.([]*etelecommodel.TenantExternalData))
+		*out.(*[]*etelecom.TenantExternalData) = out0
+		return nil
+	})
+	s.Register((*etelecom.TenantExternalData)(nil), (*etelecommodel.TenantExternalData)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_TenantExternalData_etelecommodel_TenantExternalData(arg.(*etelecom.TenantExternalData), out.(*etelecommodel.TenantExternalData))
+		return nil
+	})
+	s.Register(([]*etelecom.TenantExternalData)(nil), (*[]*etelecommodel.TenantExternalData)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_TenantExternalDatas_etelecommodel_TenantExternalDatas(arg.([]*etelecom.TenantExternalData))
+		*out.(*[]*etelecommodel.TenantExternalData) = out0
+		return nil
+	})
 }
 
 //-- convert o.o/api/etelecom.CallLog --//
@@ -433,6 +469,7 @@ func convert_etelecommodel_Hotline_etelecom_Hotline(arg *etelecommodel.Hotline, 
 	out.Status = arg.Status                     // simple assign
 	out.Description = arg.Description           // simple assign
 	out.IsFreeCharge = arg.IsFreeCharge         // simple assign
+	out.TenantID = arg.TenantID                 // simple assign
 }
 
 func Convert_etelecommodel_Hotlines_etelecom_Hotlines(args []*etelecommodel.Hotline) (outs []*etelecom.Hotline) {
@@ -472,6 +509,7 @@ func convert_etelecom_Hotline_etelecommodel_Hotline(arg *etelecom.Hotline, out *
 	out.Status = arg.Status                     // simple assign
 	out.Description = arg.Description           // simple assign
 	out.IsFreeCharge = arg.IsFreeCharge         // simple assign
+	out.TenantID = arg.TenantID                 // simple assign
 }
 
 func Convert_etelecom_Hotlines_etelecommodel_Hotlines(args []*etelecom.Hotline) (outs []*etelecommodel.Hotline) {
@@ -511,4 +549,139 @@ func apply_etelecom_CreateHotlineArgs_etelecom_Hotline(arg *etelecom.CreateHotli
 	out.Status = arg.Status             // simple assign
 	out.Description = arg.Description   // simple assign
 	out.IsFreeCharge = arg.IsFreeCharge // simple assign
+	out.TenantID = 0                    // zero value
+}
+
+//-- convert o.o/api/etelecom.Tenant --//
+
+func Convert_etelecommodel_Tenant_etelecom_Tenant(arg *etelecommodel.Tenant, out *etelecom.Tenant) *etelecom.Tenant {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecom.Tenant{}
+	}
+	convert_etelecommodel_Tenant_etelecom_Tenant(arg, out)
+	return out
+}
+
+func convert_etelecommodel_Tenant_etelecom_Tenant(arg *etelecommodel.Tenant, out *etelecom.Tenant) {
+	out.ID = arg.ID             // simple assign
+	out.OwnerID = arg.OwnerID   // simple assign
+	out.Name = arg.Name         // simple assign
+	out.Domain = arg.Domain     // simple assign
+	out.Password = arg.Password // simple assign
+	out.ExternalData = Convert_etelecommodel_TenantExternalData_etelecom_TenantExternalData(arg.ExternalData, nil)
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.DeletedAt = arg.DeletedAt               // simple assign
+	out.Status = arg.Status                     // simple assign
+	out.ConnectionID = arg.ConnectionID         // simple assign
+	out.ConnectionMethod = arg.ConnectionMethod // simple assign
+}
+
+func Convert_etelecommodel_Tenants_etelecom_Tenants(args []*etelecommodel.Tenant) (outs []*etelecom.Tenant) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecom.Tenant, len(args))
+	outs = make([]*etelecom.Tenant, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecommodel_Tenant_etelecom_Tenant(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_etelecom_Tenant_etelecommodel_Tenant(arg *etelecom.Tenant, out *etelecommodel.Tenant) *etelecommodel.Tenant {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecommodel.Tenant{}
+	}
+	convert_etelecom_Tenant_etelecommodel_Tenant(arg, out)
+	return out
+}
+
+func convert_etelecom_Tenant_etelecommodel_Tenant(arg *etelecom.Tenant, out *etelecommodel.Tenant) {
+	out.ID = arg.ID             // simple assign
+	out.OwnerID = arg.OwnerID   // simple assign
+	out.Name = arg.Name         // simple assign
+	out.Domain = arg.Domain     // simple assign
+	out.Password = arg.Password // simple assign
+	out.ExternalData = Convert_etelecom_TenantExternalData_etelecommodel_TenantExternalData(arg.ExternalData, nil)
+	out.CreatedAt = arg.CreatedAt               // simple assign
+	out.UpdatedAt = arg.UpdatedAt               // simple assign
+	out.DeletedAt = arg.DeletedAt               // simple assign
+	out.Status = arg.Status                     // simple assign
+	out.ConnectionID = arg.ConnectionID         // simple assign
+	out.ConnectionMethod = arg.ConnectionMethod // simple assign
+}
+
+func Convert_etelecom_Tenants_etelecommodel_Tenants(args []*etelecom.Tenant) (outs []*etelecommodel.Tenant) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecommodel.Tenant, len(args))
+	outs = make([]*etelecommodel.Tenant, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecom_Tenant_etelecommodel_Tenant(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/etelecom.TenantExternalData --//
+
+func Convert_etelecommodel_TenantExternalData_etelecom_TenantExternalData(arg *etelecommodel.TenantExternalData, out *etelecom.TenantExternalData) *etelecom.TenantExternalData {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecom.TenantExternalData{}
+	}
+	convert_etelecommodel_TenantExternalData_etelecom_TenantExternalData(arg, out)
+	return out
+}
+
+func convert_etelecommodel_TenantExternalData_etelecom_TenantExternalData(arg *etelecommodel.TenantExternalData, out *etelecom.TenantExternalData) {
+	out.ID = arg.ID // simple assign
+}
+
+func Convert_etelecommodel_TenantExternalDatas_etelecom_TenantExternalDatas(args []*etelecommodel.TenantExternalData) (outs []*etelecom.TenantExternalData) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecom.TenantExternalData, len(args))
+	outs = make([]*etelecom.TenantExternalData, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecommodel_TenantExternalData_etelecom_TenantExternalData(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_etelecom_TenantExternalData_etelecommodel_TenantExternalData(arg *etelecom.TenantExternalData, out *etelecommodel.TenantExternalData) *etelecommodel.TenantExternalData {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecommodel.TenantExternalData{}
+	}
+	convert_etelecom_TenantExternalData_etelecommodel_TenantExternalData(arg, out)
+	return out
+}
+
+func convert_etelecom_TenantExternalData_etelecommodel_TenantExternalData(arg *etelecom.TenantExternalData, out *etelecommodel.TenantExternalData) {
+	out.ID = arg.ID // simple assign
+}
+
+func Convert_etelecom_TenantExternalDatas_etelecommodel_TenantExternalDatas(args []*etelecom.TenantExternalData) (outs []*etelecommodel.TenantExternalData) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecommodel.TenantExternalData, len(args))
+	outs = make([]*etelecommodel.TenantExternalData, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecom_TenantExternalData_etelecommodel_TenantExternalData(args[i], &tmps[i])
+	}
+	return outs
 }
