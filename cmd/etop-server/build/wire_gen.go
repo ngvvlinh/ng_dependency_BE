@@ -161,6 +161,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/collection"
 	"o.o/backend/pkg/etop/api/shop/connection"
 	"o.o/backend/pkg/etop/api/shop/contact"
+	credit2 "o.o/backend/pkg/etop/api/shop/credit"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
 	"o.o/backend/pkg/etop/api/shop/etelecom"
@@ -806,6 +807,12 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ContactQuery: contactQueryBus,
 		ContactAggr:  contactCommandBus,
 	}
+	creditAggregate := credit.NewAggregateCredit(busBus, mainDB, queryBus)
+	creditCommandBus := credit.CreditAggregateMessageBus(creditAggregate)
+	creditService := &credit2.CreditService{
+		Session:    session,
+		CreditAggr: creditCommandBus,
+	}
 	shopSettingUtil := util.NewShopSettingUtil(store)
 	shopSettingQuery := query24.NewShopSettingQuery(mainDB, shopSettingUtil)
 	settingQueryBus := query24.ShopSettingQueryMessageBus(shopSettingQuery)
@@ -851,7 +858,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		UserSettingAggr:  usersettingCommandBus,
 		UserSettingQuery: usersettingQueryBus,
 	}
-	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, settingService, etelecomService, etelecomUserService)
+	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, creditService, settingService, etelecomService, etelecomUserService)
 	adminMiscService := admin.MiscService{
 		Session: session,
 		Login:   loginInterface,
@@ -891,11 +898,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ShopStore:     shopStoreInterface,
 		MoneyTxQuery:  moneytxQueryBus,
 	}
-	creditAggregate := credit.NewAggregateCredit(busBus, mainDB, queryBus)
-	creditCommandBus := credit.CreditAggregateMessageBus(creditAggregate)
 	creditQueryService := credit.NewQueryCredit(busBus, mainDB, etelecomDB, queryBus)
 	creditQueryBus := credit.CreditQueryServiceMessageBus(creditQueryService)
-	creditService := admin.CreditService{
+	adminCreditService := admin.CreditService{
 		Session:     session,
 		CreditAggr:  creditCommandBus,
 		CreditQuery: creditQueryBus,
@@ -980,7 +985,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		InvoiceAggr:  invoiceCommandBus,
 		InvoiceQuery: invoiceQueryBus,
 	}
-	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, creditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, adminEtelecomService, invoiceService)
+	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, adminCreditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, adminEtelecomService, invoiceService)
 	sadminMiscService := &sadmin.MiscService{
 		Session: session,
 	}

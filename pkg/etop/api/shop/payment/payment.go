@@ -76,3 +76,8 @@ func (s *PaymentService) PaymentCheckReturnData(ctx context.Context, q *api.Paym
 	}
 	return result, nil
 }
+
+func (s *PaymentService) GetExternalPaymentUrl(ctx context.Context, req *api.GetExternalPaymenUrlRequest) (res *api.GetExternalPaymentUrlResponse, err error) {
+
+	return nil, err
+}

@@ -1313,6 +1313,33 @@
         }
       }
     },
+    "/api/shop.Credit/CreateCredit": {
+      "post": {
+        "tags": [
+          "Credit"
+        ],
+        "summary": "CreateCredit",
+        "operationId": "shop.Credit-CreateCredit",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateCreditRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baCredit"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Customer/AddCustomersToGroup": {
       "post": {
         "description": "-- group --//\n",
@@ -3174,6 +3201,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Payment/GetExternalPaymentUrl": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "GetExternalPaymentUrl",
+        "operationId": "shop.Payment-GetExternalPaymentUrl",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetExternalPaymenUrlRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetExternalPaymentUrlResponse"
             }
           }
         }
@@ -7119,6 +7173,12 @@
         "telecom"
       ]
     },
+    "aeCreditType": {
+      "type": "string",
+      "enum": [
+        "shop"
+      ]
+    },
     "akReceiptRef": {
       "type": "string",
       "enum": [
@@ -7302,6 +7362,46 @@
         },
         "external_device_id": {
           "type": "string"
+        }
+      }
+    },
+    "baCredit": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "classify": {
+          "$ref": "#/definitions/aeCreditClassify"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paid_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shop": {
+          "$ref": "#/definitions/baShop"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/aeCreditType"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -7814,6 +7914,14 @@
         "S",
         "N",
         "NS"
+      ]
+    },
+    "bqSubjectReferral": {
+      "type": "string",
+      "enum": [
+        "credit",
+        "invoice",
+        "subscription"
       ]
     },
     "bwShippingProvider": {
@@ -9094,6 +9202,20 @@
         },
         "phone": {
           "type": "string"
+        }
+      }
+    },
+    "paCreateCreditRequest": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "classify": {
+          "$ref": "#/definitions/aeCreditClassify"
+        },
+        "type": {
+          "$ref": "#/definitions/aeCreditType"
         }
       }
     },
@@ -10825,6 +10947,29 @@
           "items": {
             "$ref": "#/definitions/paExportItem"
           }
+        }
+      }
+    },
+    "paGetExternalPaymenUrlRequest": {
+      "type": "object",
+      "properties": {
+        "payment_method": {
+          "$ref": "#/definitions/yiPaymentMethod"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        }
+      }
+    },
+    "paGetExternalPaymentUrlResponse": {
+      "type": "object",
+      "properties": {
+        "payment_url": {
+          "type": "string"
         }
       }
     },
@@ -18298,6 +18443,9 @@
     },
     {
       "name": "Contact"
+    },
+    {
+      "name": "Credit"
     },
     {
       "name": "Customer"

@@ -1058,9 +1058,9 @@ type HistoryResponse struct {
 func (m *HistoryResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type Credit struct {
-	Id        dot.ID                     `json:"id"`
+	ID        dot.ID                     `json:"id"`
 	Amount    int                        `json:"amount"`
-	ShopId    dot.ID                     `json:"shop_id"`
+	ShopID    dot.ID                     `json:"shop_id"`
 	Type      credit_type.CreditType     `json:"type"`
 	Shop      *Shop                      `json:"shop"`
 	CreatedAt dot.Time                   `json:"created_at"`

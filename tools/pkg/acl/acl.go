@@ -238,6 +238,9 @@ const (
 	ShopCallLogView     permission.ActionType = "shop/calllog:view"
 	ShopCallLogCreate   permission.ActionType = "shop/calllog:create"
 
+	// shop credit
+	ShopCreditCreate permission.ActionType = "shop/credit:create"
+
 	// etelecom user setting
 	ShopEtelecomUserSettingView permission.ActionType = "shop/etelecom_user_setting:view"
 
@@ -935,6 +938,8 @@ var _acl = map[string]*permission.Decl{
 	"shop.Category/UpdateCategory": {Type: Shop, Actions: actions(ShopCategoryUpdate)},
 	"shop.Category/DeleteCategory": {Type: Shop, Actions: actions(ShopCategoryDelete)},
 
+	"shop.Credit/CreateCredit": {Type: Shop, Actions: actions(ShopCreditCreate)},
+
 	"shop.Product/GetProduct":              {Type: Shop, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
 	"shop.Product/GetProducts":             {Type: Shop, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
 	"shop.Product/GetProductsByIDs":        {Type: Shop, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
@@ -1064,6 +1069,7 @@ var _acl = map[string]*permission.Decl{
 
 	"shop.Payment/PaymentTradingOrder":    {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
 	"shop.Payment/PaymentCheckReturnData": {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
+	"shop.Payment/GetExternalPaymentUrl":  {Type: Shop},
 
 	"shop.Inventory/CreateInventoryVoucher":          {Type: Shop, Actions: actions(ShopInventoryCreate)},
 	"shop.Inventory/ConfirmInventoryVoucher":         {Type: Shop, Actions: actions(ShopInventoryConfirm)},

@@ -18,6 +18,7 @@ import (
 	"o.o/api/top/types/etc/inventory_type"
 	"o.o/api/top/types/etc/inventory_voucher_ref"
 	"o.o/api/top/types/etc/ledger_type"
+	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/payment_provider"
 	"o.o/api/top/types/etc/product_type"
 	"o.o/api/top/types/etc/receipt_mode"
@@ -31,6 +32,7 @@ import (
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
 	"o.o/api/top/types/etc/stocktake_type"
+	"o.o/api/top/types/etc/subject_referral"
 	"o.o/api/top/types/etc/ticket/ticket_ref_type"
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
@@ -519,6 +521,14 @@ type WsWebsite struct {
 }
 
 func (m *WsWebsite) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateCreditRequest struct {
+	Amount   int                        `json:"amount"`
+	Type     credit_type.CreditType     `json:"type"`
+	Classify credit_type.CreditClassify `json:"classify"`
+}
+
+func (m *CreateCreditRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateWsWebsiteRequest struct {
 	MainColor          string          `json:"main_color"`
@@ -1430,6 +1440,20 @@ type SummarizeFulfillmentsRequest struct {
 	DateFrom string `json:"date_from"`
 	DateTo   string `json:"date_to"`
 }
+
+type GetExternalPaymenUrlRequest struct {
+	Type          subject_referral.SubjectReferral `json:"type"`
+	RefID         dot.ID                           `json:"ref_id"`
+	PaymentMethod payment_method.PaymentMethod     `json:"payment_method"`
+}
+
+func (m *GetExternalPaymenUrlRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetExternalPaymentUrlResponse struct {
+	PaymentUrl string `json:"payment_url"`
+}
+
+func (m *GetExternalPaymentUrlResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 func (m *SummarizeFulfillmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
 

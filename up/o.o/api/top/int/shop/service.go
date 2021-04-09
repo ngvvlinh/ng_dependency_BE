@@ -158,6 +158,11 @@ type CategoryService interface {
 	DeleteCategory(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }
 
+// +apix:path=/shop.Credit
+type CreditService interface {
+	CreateCredit(ctx context.Context, request *CreateCreditRequest) (*etop.Credit, error)
+}
+
 // +apix:path=/shop.ProductSource
 // deprecated: 2018.07.31+14
 type ProductSourceService interface {
@@ -290,6 +295,7 @@ type TradingService interface {
 type PaymentService interface {
 	PaymentTradingOrder(context.Context, *PaymentTradingOrderRequest) (*PaymentTradingOrderResponse, error)
 	PaymentCheckReturnData(context.Context, *PaymentCheckReturnDataRequest) (*cm.MessageResponse, error)
+	GetExternalPaymentUrl(context.Context, *GetExternalPaymenUrlRequest) (*GetExternalPaymentUrlResponse, error)
 }
 
 // +apix:path=/shop.Receipt

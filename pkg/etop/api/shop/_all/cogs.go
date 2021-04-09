@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/collection"
 	"o.o/backend/pkg/etop/api/shop/connection"
 	"o.o/backend/pkg/etop/api/shop/contact"
+	"o.o/backend/pkg/etop/api/shop/credit"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
 	"o.o/backend/pkg/etop/api/shop/etelecom"
@@ -82,6 +83,7 @@ func NewServers(
 	ticketService *ticket.TicketService,
 	accountshipnowService *accountshipnow.AccountShipnowService,
 	contactService *contact.ContactService,
+	creditService *credit.CreditService,
 	settingService *setting.SettingService,
 	etelecomService *etelecom.EtelecomService,
 	etelecomUserService *etelecomuser.EtelecomUserService,
@@ -102,6 +104,7 @@ func NewServers(
 		connectionService.Clone,
 		customerGroupService.Clone,
 		customerService.Clone,
+		creditService.Clone,
 		exportService.Clone,
 		fulfillmentService.Clone,
 		historyService.Clone,
