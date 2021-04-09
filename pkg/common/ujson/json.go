@@ -6,7 +6,7 @@
 //
 // Caution: Behaviour is undefined on invalid json. Use on trusted input only.
 
-package µjson
+package ujson
 
 import (
 	"fmt"

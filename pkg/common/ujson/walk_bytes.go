@@ -1,4 +1,4 @@
-package µjson
+package ujson
 
 func Walk(s []byte, i int, fn func(pos, st int, key, value string) bool) error {
 	var si, ei, st int

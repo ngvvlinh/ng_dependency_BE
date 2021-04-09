@@ -1,4 +1,4 @@
-package µjson
+package ujson
 
 import (
 	"fmt"
