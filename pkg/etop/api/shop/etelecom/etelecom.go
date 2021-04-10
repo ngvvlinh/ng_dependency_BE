@@ -59,7 +59,7 @@ func (s *EtelecomService) CreateExtension(ctx context.Context, r *etelecomtypes.
 		UserID:    r.UserID,
 		AccountID: s.SS.Shop().ID,
 		HotlineID: r.HotlineID,
-		OwnerID:   s.SS.User().ID,
+		OwnerID:   s.SS.Shop().OwnerID,
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
