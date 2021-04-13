@@ -50,16 +50,29 @@ func (q *QueryService) GetTransactionByID(ctx context.Context, tranID dot.ID, us
 
 func (q *QueryService) ListTransactions(ctx context.Context, args *transaction.GetTransactionsArgs) (*transaction.TransactionResponse, error) {
 	query := q.store(ctx).AccountID(args.AccountID)
+
+	if args.DateTo.Before(args.DateFrom) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "date_to must be after date_from")
+	}
+	if args.DateFrom.IsZero() != args.DateTo.IsZero() {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "must provide both DateFrom and DateTo")
+	}
+	if !args.DateFrom.IsZero() {
+		query = query.BetweenDateFromAndDateTo(args.DateFrom, args.DateTo)
+	}
+
+	if args.RefID != 0 {
+		query = query.ReferralID(args.RefID)
+	}
+	if args.RefType != 0 {
+		query = query.ReferralType(args.RefType)
+	}
+
 	transactions, err := query.WithPaging(args.Paging).ListTransactions()
 	if err != nil {
 		return nil, err
 	}
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
 	return &transaction.TransactionResponse{
-		Count:        count,
 		Paging:       query.GetPaging(),
 		Transactions: transactions,
 	}, nil

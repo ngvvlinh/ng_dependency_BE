@@ -13,7 +13,7 @@ import (
 // +sqlgen
 type Transaction struct {
 	Name         string
-	ID           dot.ID
+	ID           dot.ID `paging:"id"`
 	Amount       int
 	AccountID    dot.ID
 	Status       status3.Status
@@ -22,6 +22,6 @@ type Transaction struct {
 	Note         string
 	ReferralType subject_referral.SubjectReferral
 	ReferralIDs  []dot.ID
-	CreatedAt    time.Time `sq:"create"`
-	UpdatedAt    time.Time `sq:"update"`
+	CreatedAt    time.Time `sq:"create" paging:"created_at"`
+	UpdatedAt    time.Time `sq:"update" paging:"updated_at"`
 }

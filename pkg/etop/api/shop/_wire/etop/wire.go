@@ -43,6 +43,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/supplier"
 	"o.o/backend/pkg/etop/api/shop/ticket"
 	"o.o/backend/pkg/etop/api/shop/trading"
+	"o.o/backend/pkg/etop/api/shop/transaction"
 	"o.o/backend/pkg/etop/api/shop/ws"
 )
 
@@ -87,4 +88,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(setting.SettingService), "*"),
 	wire.Struct(new(etelecom.EtelecomService), "*"),
 	wire.Struct(new(etelecomuser.EtelecomUserService), "*"),
+	wire.Struct(new(transaction.TransactionService), "*"),
 )

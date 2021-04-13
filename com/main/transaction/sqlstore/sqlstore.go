@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/main/transaction"
 	"o.o/api/meta"
@@ -38,8 +39,9 @@ type TransactionStore struct {
 }
 
 var SortTransaction = map[string]string{
-	"created_at": "",
-	"updated_at": "",
+	"id":         "id",
+	"created_at": "created_at",
+	"updated_at": "updated_at",
 }
 
 func (s *TransactionStore) ID(id dot.ID) *TransactionStore {
@@ -82,6 +84,11 @@ func (s *TransactionStore) ReferralID(id dot.ID) *TransactionStore {
 	return s
 }
 
+func (s *TransactionStore) BetweenDateFromAndDateTo(dateFrom time.Time, dateTo time.Time) *TransactionStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at BETWEEN ? AND ?", dateFrom, dateTo))
+	return s
+}
+
 func (s *TransactionStore) WithPaging(paging meta.Paging) *TransactionStore {
 	s.Paging.WithPaging(paging)
 	return s
@@ -102,15 +109,20 @@ func (s *TransactionStore) GetTransaction() (*transaction.Transaction, error) {
 	return res, nil
 }
 
-func (s *TransactionStore) ListTransactionsDB() ([]*transactionmodel.Transaction, error) {
+func (s *TransactionStore) ListTransactionsDB() (res []*transactionmodel.Transaction, err error) {
 	query := s.query().Where(s.preds)
-	query, err := sqlstore.LimitSort(query, &s.Paging, SortTransaction)
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
+	query, err = sqlstore.LimitSort(query, &s.Paging, SortTransaction)
 	if err != nil {
 		return nil, err
 	}
-	var transactions transactionmodel.Transactions
-	err = query.Find(&transactions)
-	return transactions, err
+	if err = query.Find((*transactionmodel.Transactions)(&res)); err != nil {
+		return nil, err
+	}
+	s.Paging.Apply(res)
+	return
 }
 
 func (s *TransactionStore) ListTransactions() ([]*transaction.Transaction, error) {

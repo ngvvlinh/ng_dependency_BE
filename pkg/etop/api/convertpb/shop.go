@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"o.o/api/main/location"
+	"o.o/api/main/transaction"
 	"o.o/api/shopping/addressing"
 	"o.o/api/shopping/customering"
 	"o.o/api/summary"
@@ -245,4 +246,35 @@ func PbShopAddresses(ctx context.Context, ms []*addressing.ShopTraderAddress, lo
 		}
 	}
 	return res, nil
+}
+
+func Convert_core_Transaction_To_api_Transaction(in *transaction.Transaction) *apishop.Transaction {
+	if in == nil {
+		return nil
+	}
+	return &apishop.Transaction{
+		Name:         in.Name,
+		ID:           in.ID,
+		Amount:       in.Amount,
+		AccountID:    in.AccountID,
+		Status:       in.Status,
+		Type:         in.Type,
+		Classify:     in.Classify,
+		Note:         in.Note,
+		ReferralType: in.ReferralType,
+		ReferralIDs:  in.ReferralIDs,
+		CreatedAt:    in.CreatedAt,
+		UpdatedAt:    in.UpdatedAt,
+	}
+}
+
+func Convert_core_Transactions_To_api_Transactions(in []*transaction.Transaction) []*apishop.Transaction {
+	if in == nil {
+		return nil
+	}
+	res := make([]*apishop.Transaction, len(in))
+	for i, tran := range in {
+		res[i] = Convert_core_Transaction_To_api_Transaction(tran)
+	}
+	return res
 }

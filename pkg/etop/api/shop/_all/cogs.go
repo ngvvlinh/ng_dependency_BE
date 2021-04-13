@@ -41,6 +41,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/supplier"
 	"o.o/backend/pkg/etop/api/shop/ticket"
 	"o.o/backend/pkg/etop/api/shop/trading"
+	"o.o/backend/pkg/etop/api/shop/transaction"
 	"o.o/backend/pkg/etop/api/shop/ws"
 	"o.o/capi/httprpc"
 )
@@ -87,6 +88,7 @@ func NewServers(
 	settingService *setting.SettingService,
 	etelecomService *etelecom.EtelecomService,
 	etelecomUserService *etelecomuser.EtelecomUserService,
+	transactionService *transaction.TransactionService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -135,6 +137,7 @@ func NewServers(
 		settingService.Close,
 		etelecomService.Clone,
 		etelecomUserService.Clone,
+		transactionService.Clone,
 	)
 	return servers
 }

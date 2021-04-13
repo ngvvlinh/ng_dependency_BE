@@ -24,6 +24,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/shipment"
 	"o.o/backend/pkg/etop/api/shop/stocktake"
 	"o.o/backend/pkg/etop/api/shop/summary"
+	"o.o/backend/pkg/etop/api/shop/transaction"
 	"o.o/capi/httprpc"
 )
 
@@ -51,6 +52,7 @@ func NewServers(
 	shipmentService *shipment.ShipmentService,
 	settingService *setting.SettingService,
 	connectionService *connection.ConnectionService,
+	transactionService *transaction.TransactionService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -81,6 +83,7 @@ func NewServers(
 		stocktakeService.Clone,
 		summaryService.Clone,
 		settingService.Close,
+		transactionService.Clone,
 	)
 	return servers
 }

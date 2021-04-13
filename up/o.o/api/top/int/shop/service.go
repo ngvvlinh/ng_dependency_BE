@@ -493,3 +493,9 @@ type SettingService interface {
 	GetSetting(context.Context, *cm.Empty) (*ShopSetting, error)
 	UpdateSetting(context.Context, *UpdateSettingRequest) (*ShopSetting, error)
 }
+
+// +apix:path=/shop.Transaction
+type TransactionService interface {
+	GetTransactions(context.Context, *GetTransactionsRequest) (*GetTransactionsResponse, error)
+	GetTransaction(context.Context, *GetTransactionRequest) (*Transaction, error)
+}

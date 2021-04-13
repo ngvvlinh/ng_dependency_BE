@@ -26,7 +26,7 @@ import (
 	_all2 "o.o/backend/cogs/telecom/_all"
 	"o.o/backend/cogs/ticket/_all"
 	"o.o/backend/cogs/uploader"
-	aggregate26 "o.o/backend/com/etc/logging/payment/aggregate"
+	aggregate27 "o.o/backend/com/etc/logging/payment/aggregate"
 	"o.o/backend/com/etc/logging/shippingwebhook"
 	"o.o/backend/com/etc/logging/smslog/aggregate"
 	aggregate23 "o.o/backend/com/etelecom/aggregate"
@@ -40,7 +40,7 @@ import (
 	manager2 "o.o/backend/com/external/payment/manager"
 	aggregate22 "o.o/backend/com/external/payment/payment/aggregate"
 	vtpay2 "o.o/backend/com/external/payment/vtpay"
-	aggregate25 "o.o/backend/com/external/payment/vtpay/gateway/aggregate"
+	aggregate26 "o.o/backend/com/external/payment/vtpay/gateway/aggregate"
 	"o.o/backend/com/external/payment/vtpay/gateway/server"
 	"o.o/backend/com/fabo/main/fbmessaging"
 	redis2 "o.o/backend/com/fabo/pkg/redis"
@@ -70,7 +70,7 @@ import (
 	pm5 "o.o/backend/com/main/ledgering/pm"
 	query21 "o.o/backend/com/main/ledgering/query"
 	"o.o/backend/com/main/location"
-	aggregate24 "o.o/backend/com/main/moneytx/aggregate"
+	aggregate25 "o.o/backend/com/main/moneytx/aggregate"
 	pm6 "o.o/backend/com/main/moneytx/pm"
 	query18 "o.o/backend/com/main/moneytx/query"
 	"o.o/backend/com/main/ordering"
@@ -104,7 +104,7 @@ import (
 	query16 "o.o/backend/com/main/shippingcode/query"
 	aggregate14 "o.o/backend/com/main/stocktaking/aggregate"
 	query8 "o.o/backend/com/main/stocktaking/query"
-	aggregate28 "o.o/backend/com/main/transaction/aggregate"
+	aggregate24 "o.o/backend/com/main/transaction/aggregate"
 	pm22 "o.o/backend/com/main/transaction/pm"
 	query20 "o.o/backend/com/main/transaction/query"
 	"o.o/backend/com/report/reportserver"
@@ -120,7 +120,7 @@ import (
 	"o.o/backend/com/shopping/setting/util"
 	aggregate10 "o.o/backend/com/shopping/suppliering/aggregate"
 	query6 "o.o/backend/com/shopping/suppliering/query"
-	aggregate27 "o.o/backend/com/shopping/tradering/aggregate"
+	aggregate28 "o.o/backend/com/shopping/tradering/aggregate"
 	pm15 "o.o/backend/com/shopping/tradering/pm"
 	query7 "o.o/backend/com/shopping/tradering/query"
 	"o.o/backend/com/subscripting/invoice"
@@ -190,6 +190,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/supplier"
 	"o.o/backend/pkg/etop/api/shop/ticket"
 	"o.o/backend/pkg/etop/api/shop/trading"
+	"o.o/backend/pkg/etop/api/shop/transaction"
 	"o.o/backend/pkg/etop/api/shop/ws"
 	"o.o/backend/pkg/etop/apix/authx"
 	"o.o/backend/pkg/etop/apix/mc/vht"
@@ -858,7 +859,14 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		UserSettingAggr:  usersettingCommandBus,
 		UserSettingQuery: usersettingQueryBus,
 	}
-	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, creditService, settingService, etelecomService, etelecomUserService)
+	aggregate32 := aggregate24.NewAggregate(mainDB)
+	transactionCommandBus := aggregate24.AggregateMessageBus(aggregate32)
+	transactionService := &transaction.TransactionService{
+		Session:          session,
+		TransactionAggr:  transactionCommandBus,
+		TransactionQuery: transactionQueryBus,
+	}
+	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, creditService, settingService, etelecomService, etelecomUserService, transactionService)
 	adminMiscService := admin.MiscService{
 		Session: session,
 		Login:   loginInterface,
@@ -884,8 +892,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		ShippingQuery: shippingQueryBus,
 		OrderStore:    orderStoreInterface,
 	}
-	moneyTxAggregate := aggregate24.NewMoneyTxAggregate(mainDB, shippingQueryBus, queryBus, busBus)
-	moneytxCommandBus := aggregate24.MoneyTxAggregateMessageBus(moneyTxAggregate)
+	moneyTxAggregate := aggregate25.NewMoneyTxAggregate(mainDB, shippingQueryBus, queryBus, busBus)
+	moneytxCommandBus := aggregate25.MoneyTxAggregateMessageBus(moneyTxAggregate)
 	adminMoneyTransactionService := admin.MoneyTransactionService{
 		Session:      session,
 		MoneyTxQuery: moneytxQueryBus,
@@ -1331,10 +1339,10 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	clientClient := client.New(clientConfig)
 	vtpayAggregate := vtpay2.NewAggregate(mainDB, orderingQueryBus, orderingCommandBus, paymentCommandBus, clientClient)
 	vtpayCommandBus := vtpay2.AggregateMessageBus(vtpayAggregate)
-	aggregate32 := aggregate25.NewAggregate(orderingQueryBus, orderingCommandBus, vtpayCommandBus, clientClient)
-	gatewayCommandBus := aggregate25.AggregateMessageBus(aggregate32)
-	aggregate33 := aggregate26.New(logDB)
-	serverServer := server.New(gatewayCommandBus, aggregate33)
+	aggregate33 := aggregate26.NewAggregate(orderingQueryBus, orderingCommandBus, vtpayCommandBus, clientClient)
+	gatewayCommandBus := aggregate26.AggregateMessageBus(aggregate33)
+	aggregate34 := aggregate27.New(logDB)
+	serverServer := server.New(gatewayCommandBus, aggregate34)
 	vtPayHandler := server_vtpay.BuildVTPayHandler(serverServer)
 	reportQuery := query27.NewReportQuery(orderingQueryBus, queryBus, receiptingQueryBus, catalogQueryBus, stocktakingQueryBus)
 	reportingQueryBus := query27.ReportQueryMessageBus(reportQuery)
@@ -1380,15 +1388,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager11 := pm12.New(busBus, shipnowQueryBus, shipnowCommandBus, orderingCommandBus, shipnowManager, queryBus, addressQueryBus, accountshipnowQueryBus, accountshipnowCommandBus, connectioningCommandBus)
 	processManager12 := pm13.New(busBus, shippingQueryBus, shippingCommandBus, store, connectioningQueryBus, shopStoreInterface, transactionQueryBus)
 	processManager13 := pm14.New(busBus, affiliateCommandBus)
-	traderAgg := aggregate27.NewTraderAgg(mainDB)
-	traderingCommandBus := aggregate27.TraderAggMessageBus(traderAgg)
+	traderAgg := aggregate28.NewTraderAgg(mainDB)
+	traderingCommandBus := aggregate28.TraderAggMessageBus(traderAgg)
 	processManager14 := pm15.New(busBus, traderingCommandBus)
 	processManager15 := pm16.New(busBus, connectioningCommandBus, connectioningQueryBus)
 	processManager16 := pm17.New(store, busBus, pricelistQueryBus, shopshipmentpricelistQueryBus)
 	processManager17 := pm18.New(busBus, customeringQueryBus, customeringCommandBus, shippingQueryBus)
 	processManager18 := pm19.New(busBus, etelecomCommandBus, etelecomQueryBus)
-	aggregate34 := aggregate28.NewAggregate(mainDB)
-	transactionCommandBus := aggregate28.AggregateMessageBus(aggregate34)
 	processManager19 := pm20.New(busBus, invoiceQueryBus, invoiceCommandBus, subscriptionQueryBus, subscriptionCommandBus, subscriptionplanQueryBus, queryBus, creditCommandBus, transactionCommandBus)
 	processManager20 := pm21.New(busBus, transactionQueryBus)
 	processManager21 := pm22.New(busBus, transactionQueryBus, transactionCommandBus, creditQueryBus)

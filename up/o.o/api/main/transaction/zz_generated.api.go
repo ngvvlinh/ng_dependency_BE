@@ -6,6 +6,7 @@ package transaction
 
 import (
 	context "context"
+	time "time"
 
 	meta "o.o/api/meta"
 	service_classify "o.o/api/top/types/etc/service_classify"
@@ -123,6 +124,10 @@ func (h QueryServiceHandler) HandleGetTransactionByReferral(ctx context.Context,
 
 type ListTransactionsQuery struct {
 	AccountID dot.ID
+	RefID     dot.ID
+	RefType   subject_referral.SubjectReferral
+	DateFrom  time.Time
+	DateTo    time.Time
 	Paging    meta.Paging
 
 	Result *TransactionResponse `json:"-"`
@@ -230,12 +235,20 @@ func (q *ListTransactionsQuery) GetArgs(ctx context.Context) (_ context.Context,
 	return ctx,
 		&GetTransactionsArgs{
 			AccountID: q.AccountID,
+			RefID:     q.RefID,
+			RefType:   q.RefType,
+			DateFrom:  q.DateFrom,
+			DateTo:    q.DateTo,
 			Paging:    q.Paging,
 		}
 }
 
 func (q *ListTransactionsQuery) SetGetTransactionsArgs(args *GetTransactionsArgs) {
 	q.AccountID = args.AccountID
+	q.RefID = args.RefID
+	q.RefType = args.RefType
+	q.DateFrom = args.DateFrom
+	q.DateTo = args.DateTo
 	q.Paging = args.Paging
 }
 

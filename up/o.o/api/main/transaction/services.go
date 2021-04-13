@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/service_classify"
@@ -71,11 +72,14 @@ type GetBalanceUserResponse struct {
 
 type GetTransactionsArgs struct {
 	AccountID dot.ID
+	RefID     dot.ID
+	RefType   subject_referral.SubjectReferral
+	DateFrom  time.Time
+	DateTo    time.Time
 	Paging    meta.Paging
 }
 
 type TransactionResponse struct {
-	Count        int
 	Paging       meta.PageInfo
 	Transactions []*Transaction
 }

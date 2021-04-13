@@ -268,6 +268,9 @@ const (
 	WsPageDelete permission.ActionType = "shop/webserver/wspage:delete"
 	WsPageView   permission.ActionType = "shop/webserver/wspage:view"
 
+	// shop transaction
+	ShopTransactionView permission.ActionType = "shop/transaction:view"
+
 	// Fabo
 	FbCommentView   permission.ActionType = "facebook/comment:view"
 	FbCommentCreate permission.ActionType = "facebook/comment:create"
@@ -1330,6 +1333,10 @@ var _acl = map[string]*permission.Decl{
 	"shop.WebServer/GetWsPage":       {Type: Shop, Actions: actions(WsPageView)},
 	"shop.WebServer/GetWsPages":      {Type: Shop, Actions: actions(WsPageView)},
 	"shop.WebServer/GetWsPagesByIDs": {Type: Shop, Actions: actions(WsPageView)},
+
+	// Transaction
+	"shop.Transaction/GetTransactions": {Type: Shop, Actions: actions(ShopTransactionView)},
+	"shop.Transaction/GetTransaction":  {Type: Shop, Actions: actions(ShopTransactionView)},
 
 	// Etelecom
 	"shop.Etelecom/CreateExtension":               {Type: Shop, Actions: actions(ShopExtensionCreate)},
