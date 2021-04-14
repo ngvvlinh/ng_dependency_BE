@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/main/invoicing"
 	"o.o/api/meta"
-	"o.o/api/subscripting/invoice"
 	"o.o/api/top/types/etc/subject_referral"
-	"o.o/backend/com/subscripting/invoice/convert"
-	"o.o/backend/com/subscripting/invoice/model"
+	"o.o/backend/com/main/invoicing/convert"
+	"o.o/backend/com/main/invoicing/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/conversion"
@@ -89,6 +89,11 @@ func (s *InvoiceStore) ID(id dot.ID) *InvoiceStore {
 	return s
 }
 
+func (s *InvoiceStore) ReferralIDs(referralIDs []dot.ID) *InvoiceStore {
+	s.preds = append(s.preds, sq.NewExpr("referral_ids @> ?", core.Array{V: referralIDs}))
+	return s
+}
+
 func (s *InvoiceStore) AccountID(id dot.ID) *InvoiceStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
@@ -97,6 +102,34 @@ func (s *InvoiceStore) AccountID(id dot.ID) *InvoiceStore {
 func (s *InvoiceStore) OptionalAccountID(id dot.ID) *InvoiceStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id).Optional())
 	return s
+}
+
+func (s *InvoiceStore) PaymentID(id dot.ID) *InvoiceStore {
+	s.preds = append(s.preds, s.ft.ByPaymentID(id))
+	return s
+}
+
+func (s *InvoiceStore) GetInvoiceDB() (*model.Invoice, error) {
+	query := s.query().Where(s.preds)
+	query = s.ByWhiteLabelPartner(s.ctx, query)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	var inv model.Invoice
+	if err := query.ShouldGet(&inv); err != nil {
+		return nil, err
+	}
+	return &inv, nil
+}
+
+func (s *InvoiceStore) GetInvoice() (*invoicing.Invoice, error) {
+	inv, err := s.GetInvoiceDB()
+	if err != nil {
+		return nil, err
+	}
+	var res invoicing.Invoice
+	if err = scheme.Convert(inv, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
 
 func (s *InvoiceStore) GetInvoiceFtLineDB() (*model.InvoiceFtLine, error) {
@@ -119,13 +152,13 @@ func (s *InvoiceStore) GetInvoiceFtLineDB() (*model.InvoiceFtLine, error) {
 	}, nil
 }
 
-func (s *InvoiceStore) GetInvoiceFtLine() (*invoice.InvoiceFtLine, error) {
-	subr, err := s.GetInvoiceFtLineDB()
+func (s *InvoiceStore) GetInvoiceFtLine() (*invoicing.InvoiceFtLine, error) {
+	inv, err := s.GetInvoiceFtLineDB()
 	if err != nil {
 		return nil, err
 	}
-	var res invoice.InvoiceFtLine
-	if err = scheme.Convert(subr, &res); err != nil {
+	var res invoicing.InvoiceFtLine
+	if err = scheme.Convert(inv, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -175,7 +208,7 @@ func (s *InvoiceStore) ListInvoiceFtLinesDB() ([]*model.InvoiceFtLine, error) {
 	return res, nil
 }
 
-func (s *InvoiceStore) ListInvoiceFtLines() (res []*invoice.InvoiceFtLine, err error) {
+func (s *InvoiceStore) ListInvoiceFtLines() (res []*invoicing.InvoiceFtLine, err error) {
 	invs, err := s.ListInvoiceFtLinesDB()
 	if err != nil {
 		return nil, err
@@ -195,7 +228,7 @@ func (s *InvoiceStore) CreateInvoiceDB(inv *model.Invoice) error {
 	return s.query().ShouldInsert(inv)
 }
 
-func (s *InvoiceStore) CreateInvoice(inv *invoice.Invoice) error {
+func (s *InvoiceStore) CreateInvoice(inv *invoicing.Invoice) error {
 	var invDB model.Invoice
 	if err := scheme.Convert(inv, &invDB); err != nil {
 		return err

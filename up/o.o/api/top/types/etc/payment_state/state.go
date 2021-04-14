@@ -30,4 +30,10 @@ const (
 
 	// +enum=cancelled
 	Cancelled PaymentState = 6
+
+	// +enum=expired
+	Expired PaymentState = 7
+
+	// +enum=refunded
+	Refunded PaymentState = 8
 )

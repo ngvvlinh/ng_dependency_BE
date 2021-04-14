@@ -1,4 +1,4 @@
-package invoice
+package invoicing
 
 import (
 	"context"
@@ -6,11 +6,13 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/subscripting/types"
+	"o.o/api/top/types/etc/invoice_type"
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/subject_referral"
 	"o.o/capi/dot"
+	"o.o/common/xerrors"
 )
 
 // +gen:api
@@ -19,15 +21,15 @@ type Aggregate interface {
 	CreateInvoice(context.Context, *CreateInvoiceArgs) (*InvoiceFtLine, error)
 	CreateInvoiceBySubrID(context.Context, *CreateInvoiceBySubrIDArgs) (*InvoiceFtLine, error)
 	UpdateInvoicePaymentInfo(context.Context, *UpdateInvoicePaymentInfoArgs) error
-	UpdateInvoiceStatus(context.Context, *UpdateInvoiceStatusArgs) error
 	DeleteInvoice(context.Context, *DeleteInvoiceArgs) error
-	ManualPaymentInvoice(context.Context, *ManualPaymentInvoiceArgs) error
 
 	PaymentInvoice(context.Context, *PaymentInvoiceArgs) error
 }
 
 type QueryService interface {
 	GetInvoiceByID(ctx context.Context, ID dot.ID, AccountID dot.ID) (*InvoiceFtLine, error)
+	GetInvoiceByPaymentID(ctx context.Context, paymentID dot.ID) (*InvoiceFtLine, error)
+	GetInvoiceByReferral(ctx context.Context, _ *GetInvoiceByReferralArgs) (*InvoiceFtLine, error)
 	ListInvoices(context.Context, *ListInvoicesArgs) (*ListInvoicesResponse, error)
 }
 
@@ -39,6 +41,27 @@ type CreateInvoiceArgs struct {
 	Description  string
 	Customer     *types.CustomerInfo
 	ReferralType subject_referral.SubjectReferral
+	Classify     service_classify.ServiceClassify
+	Type         invoice_type.InvoiceType
+}
+
+func (args *CreateInvoiceArgs) Validate() error {
+	if args.AccountID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
+	}
+	if args.Customer == nil || args.Customer.FullName == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing customer")
+	}
+	if len(args.Lines) == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing lines")
+	}
+	if args.Type == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing invoice type")
+	}
+	if args.TotalAmount <= 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Total amount must be >= 0")
+	}
+	return nil
 }
 
 type UpdateInvoicePaymentInfoArgs struct {
@@ -66,6 +89,12 @@ type CreateInvoiceBySubrIDArgs struct {
 	TotalAmount    int
 	Customer       *types.CustomerInfo
 	Description    string
+	Classify       service_classify.ServiceClassify
+}
+
+type GetInvoiceByReferralArgs struct {
+	ReferralType subject_referral.SubjectReferral
+	ReferralIDs  []dot.ID
 }
 
 type ListInvoicesArgs struct {

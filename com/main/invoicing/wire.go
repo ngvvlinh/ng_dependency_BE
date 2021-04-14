@@ -1,14 +1,14 @@
 // +build wireinject
 
-package invoice
+package invoicing
 
 import (
 	"github.com/google/wire"
-	invoicepm "o.o/backend/com/subscripting/invoice/pm"
+	invoicingpm "o.o/backend/com/main/invoicing/pm"
 )
 
 var WireSet = wire.NewSet(
-	invoicepm.New,
+	invoicingpm.New,
 	NewInvoiceAggregate, InvoiceAggregateMessageBus,
 	NewInvoiceQuery, InvoiceQueryMessageBus,
 )

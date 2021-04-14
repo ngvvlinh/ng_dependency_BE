@@ -15,15 +15,19 @@ import (
 var __jsonNull = []byte("null")
 
 var enumSubjectReferralName = map[int]string{
-	3: "credit",
-	7: "invoice",
-	9: "subscription",
+	0:  "unknown",
+	3:  "credit",
+	7:  "invoice",
+	9:  "subscription",
+	11: "order",
 }
 
 var enumSubjectReferralValue = map[string]int{
+	"unknown":      0,
 	"credit":       3,
 	"invoice":      7,
 	"subscription": 9,
+	"order":        11,
 }
 
 func ParseSubjectReferral(s string) (SubjectReferral, bool) {

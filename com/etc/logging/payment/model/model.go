@@ -11,6 +11,7 @@ import (
 type PaymentAction string
 
 var (
+	PaymentActionUnknown  PaymentAction = "unknown"
 	PaymentActionValidate PaymentAction = "validate"
 	PaymentActionResult   PaymentAction = "result"
 )

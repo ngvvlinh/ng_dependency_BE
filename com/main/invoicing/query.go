@@ -1,17 +1,17 @@
-package invoice
+package invoicing
 
 import (
 	"context"
 
-	"o.o/api/subscripting/invoice"
+	"o.o/api/main/invoicing"
 	com "o.o/backend/com/main"
-	"o.o/backend/com/subscripting/invoice/sqlstore"
+	"o.o/backend/com/main/invoicing/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/capi/dot"
 )
 
-var _ invoice.QueryService = &InvoiceQuery{}
+var _ invoicing.QueryService = &InvoiceQuery{}
 
 type InvoiceQuery struct {
 	invoiceStore sqlstore.InvoiceStoreFactory
@@ -23,16 +23,26 @@ func NewInvoiceQuery(db com.MainDB) *InvoiceQuery {
 	}
 }
 
-func InvoiceQueryMessageBus(q *InvoiceQuery) invoice.QueryBus {
+func InvoiceQueryMessageBus(q *InvoiceQuery) invoicing.QueryBus {
 	b := bus.New()
-	return invoice.NewQueryServiceHandler(q).RegisterHandlers(b)
+	return invoicing.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q *InvoiceQuery) GetInvoiceByID(ctx context.Context, id dot.ID, accountID dot.ID) (*invoice.InvoiceFtLine, error) {
+func (q *InvoiceQuery) GetInvoiceByID(ctx context.Context, id dot.ID, accountID dot.ID) (*invoicing.InvoiceFtLine, error) {
 	return q.invoiceStore(ctx).ID(id).OptionalAccountID(accountID).GetInvoiceFtLine()
 }
 
-func (q *InvoiceQuery) ListInvoices(ctx context.Context, args *invoice.ListInvoicesArgs) (*invoice.ListInvoicesResponse, error) {
+func (q *InvoiceQuery) GetInvoiceByPaymentID(ctx context.Context, paymentID dot.ID) (*invoicing.InvoiceFtLine, error) {
+	return q.invoiceStore(ctx).PaymentID(paymentID).GetInvoiceFtLine()
+}
+
+func (q *InvoiceQuery) GetInvoiceByReferral(
+	ctx context.Context, args *invoicing.GetInvoiceByReferralArgs,
+) (*invoicing.InvoiceFtLine, error) {
+	return q.invoiceStore(ctx).ReferralType(args.ReferralType).ReferralIDs(args.ReferralIDs).GetInvoiceFtLine()
+}
+
+func (q *InvoiceQuery) ListInvoices(ctx context.Context, args *invoicing.ListInvoicesArgs) (*invoicing.ListInvoicesResponse, error) {
 	query := q.invoiceStore(ctx).OptionalAccountID(args.AccountID).WithPaging(args.Paging).Filters(args.Filters)
 	res, err := query.ListInvoiceFtLines()
 
@@ -56,7 +66,7 @@ func (q *InvoiceQuery) ListInvoices(ctx context.Context, args *invoice.ListInvoi
 	if err != nil {
 		return nil, err
 	}
-	return &invoice.ListInvoicesResponse{
+	return &invoicing.ListInvoicesResponse{
 		Invoices: res,
 		Paging:   query.GetPaging(),
 	}, nil

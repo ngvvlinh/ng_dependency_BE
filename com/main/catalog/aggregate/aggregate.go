@@ -637,7 +637,7 @@ func (a *Aggregate) CreateBrand(ctx context.Context, brand *catalog.CreateBrandA
 
 func (a *Aggregate) UpdateBrandInfo(ctx context.Context, brand *catalog.UpdateBrandArgs) (*catalog.ShopBrand, error) {
 	if brand.ShopID == 0 && brand.ID == 0 {
-		return nil, cm.Error(cm.InvalidArgument, "Invalid Argument ShopId or ID ", nil)
+		return nil, cm.Error(cm.InvalidArgument, "Invalid Argument ShopID or ID ", nil)
 	}
 	brandDb, err := a.shopBrand(ctx).ShopID(brand.ShopID).ID(brand.ID).GetShopBrand()
 	if err != nil {

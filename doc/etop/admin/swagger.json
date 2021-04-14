@@ -4577,9 +4577,11 @@
     "bqSubjectReferral": {
       "type": "string",
       "enum": [
+        "unknown",
         "credit",
         "invoice",
-        "subscription"
+        "subscription",
+        "order"
       ]
     },
     "bwShippingProvider": {
@@ -5322,6 +5324,9 @@
         "account_id": {
           "type": "string",
           "format": "int64"
+        },
+        "classify": {
+          "$ref": "#/definitions/bdServiceClassify"
         },
         "customer": {
           "$ref": "#/definitions/qdSubrCustomer"

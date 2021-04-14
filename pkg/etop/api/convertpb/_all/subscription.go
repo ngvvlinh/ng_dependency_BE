@@ -1,7 +1,7 @@
 package _all
 
 import (
-	"o.o/api/subscripting/invoice"
+	"o.o/api/main/invoicing"
 	"o.o/api/subscripting/subscription"
 	"o.o/api/subscripting/subscriptionplan"
 	"o.o/api/subscripting/subscriptionproduct"
@@ -154,7 +154,7 @@ func Convert_api_SubscriptionLines_To_core_SubscriptionLines(items []*types.Subs
 	return result
 }
 
-func PbInvoice(in *invoice.InvoiceFtLine) *types.Invoice {
+func PbInvoice(in *invoicing.InvoiceFtLine) *types.Invoice {
 	if in == nil {
 		return nil
 	}
@@ -175,7 +175,7 @@ func PbInvoice(in *invoice.InvoiceFtLine) *types.Invoice {
 	}
 }
 
-func PbInvoices(items []*invoice.InvoiceFtLine) []*types.Invoice {
+func PbInvoices(items []*invoicing.InvoiceFtLine) []*types.Invoice {
 	result := make([]*types.Invoice, len(items))
 	for i, item := range items {
 		result[i] = PbInvoice(item)
@@ -183,7 +183,7 @@ func PbInvoices(items []*invoice.InvoiceFtLine) []*types.Invoice {
 	return result
 }
 
-func PbInvoiceLine(in *invoice.InvoiceLine) *types.InvoiceLine {
+func PbInvoiceLine(in *invoicing.InvoiceLine) *types.InvoiceLine {
 	if in == nil {
 		return nil
 	}
@@ -201,7 +201,7 @@ func PbInvoiceLine(in *invoice.InvoiceLine) *types.InvoiceLine {
 	}
 }
 
-func PbInvoiceLines(items []*invoice.InvoiceLine) []*types.InvoiceLine {
+func PbInvoiceLines(items []*invoicing.InvoiceLine) []*types.InvoiceLine {
 	result := make([]*types.InvoiceLine, len(items))
 	for i, item := range items {
 		result[i] = PbInvoiceLine(item)
@@ -209,11 +209,11 @@ func PbInvoiceLines(items []*invoice.InvoiceLine) []*types.InvoiceLine {
 	return result
 }
 
-func Convert_api_InvoiceLine_To_core_InvoiceLine(in *types.InvoiceLine) *invoice.InvoiceLine {
+func Convert_api_InvoiceLine_To_core_InvoiceLine(in *types.InvoiceLine) *invoicing.InvoiceLine {
 	if in == nil {
 		return nil
 	}
-	return &invoice.InvoiceLine{
+	return &invoicing.InvoiceLine{
 		ID:           in.ID,
 		LineAmount:   in.LineAmount,
 		Price:        in.Price,
@@ -227,8 +227,8 @@ func Convert_api_InvoiceLine_To_core_InvoiceLine(in *types.InvoiceLine) *invoice
 	}
 }
 
-func Convert_api_InvoiceLines_To_core_InvoiceLines(items []*types.InvoiceLine) []*invoice.InvoiceLine {
-	result := make([]*invoice.InvoiceLine, len(items))
+func Convert_api_InvoiceLines_To_core_InvoiceLines(items []*types.InvoiceLine) []*invoicing.InvoiceLine {
+	result := make([]*invoicing.InvoiceLine, len(items))
 	for i, item := range items {
 		result[i] = Convert_api_InvoiceLine_To_core_InvoiceLine(item)
 	}

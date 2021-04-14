@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"o.o/api/top/types/etc/payment_provider"
-	"o.o/api/top/types/etc/payment_source"
 	"o.o/api/top/types/etc/payment_state"
+	"o.o/api/top/types/etc/subject_referral"
 )
 
 // +gen:api
@@ -34,8 +34,9 @@ type ConnectPaymentGatewayArgs struct {
 }
 
 type GetTransactionArgs struct {
-	OrderID  string
-	Provider payment_provider.PaymentProvider
+	OrderID               string
+	ExternalTransactionID string
+	Provider              payment_provider.PaymentProvider
 }
 
 type GetTransactionResult struct {
@@ -58,8 +59,8 @@ type CancelTransactionResult struct {
 }
 
 type GenerateCodeArgs struct {
-	PaymentSource payment_source.PaymentSource
-	ID            string
+	ReferralType subject_referral.SubjectReferral
+	ID           string
 }
 
 type CheckReturnDataArgs struct {

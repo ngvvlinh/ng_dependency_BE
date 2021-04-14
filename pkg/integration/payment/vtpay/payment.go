@@ -28,7 +28,9 @@ func (p *Provider) Code() payment_provider.PaymentProvider {
 	return payment_provider.VTPay
 }
 
-func (p *Provider) BuildUrlConnectPaymentGateway(ctx context.Context, args *paymentmanager.ConnectPaymentGatewayArgs) (string, error) {
+func (p *Provider) BuildUrlConnectPaymentGateway(
+	ctx context.Context, args *paymentmanager.ConnectPaymentGatewayArgs,
+) (string, error) {
 	req := &vtpayclient.ConnectPaymentGatewayRequest{
 		BillCode:    args.OrderID,
 		Desc:        args.Desc,
@@ -37,7 +39,12 @@ func (p *Provider) BuildUrlConnectPaymentGateway(ctx context.Context, args *paym
 		CancelURL:   args.CancelURL,
 		TransAmount: args.TransactionAmount,
 	}
-	return p.client.BuildUrlConnectPaymentGateway(ctx, req)
+	url, err := p.client.BuildUrlConnectPaymentGateway(ctx, req)
+	if err != nil {
+		return "", err
+	}
+	// TODO(ngoc): get externalTransactionID
+	return url, nil
 }
 
 func (p *Provider) GetTransaction(ctx context.Context, args *paymentmanager.GetTransactionArgs) (*paymentmanager.GetTransactionResult, error) {

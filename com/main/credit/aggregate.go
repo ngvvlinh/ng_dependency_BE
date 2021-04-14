@@ -76,16 +76,30 @@ func (a CreditAggregate) CreateCredit(ctx context.Context, args *credit.CreateCr
 	if err != nil {
 		return nil, err
 	}
-	err = a.CreditStore(ctx).Create(result)
-	if err != nil {
-		return nil, err
-	}
+
 	getAccountQuery := &identity.GetShopByIDQuery{
 		ID: args.ShopID,
 	}
 	if err = a.identityQuery.Dispatch(ctx, getAccountQuery); err != nil {
 		return nil, err
 	}
+
+	err = a.dbTx.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		err = a.CreditStore(ctx).Create(result)
+		if err != nil {
+			return err
+		}
+
+		event := &credit.CreditCreatedEvent{
+			CreditID: result.ID,
+			ShopID:   result.ShopID,
+		}
+		return a.eventBus.Publish(ctx, event)
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &credit.CreditExtended{
 		Credit: result,
 		Shop:   getAccountQuery.Result,

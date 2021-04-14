@@ -11,6 +11,7 @@ import (
 	"o.o/backend/cmd/etop-server/config"
 	config_server "o.o/backend/cogs/config/_server"
 	server_admin "o.o/backend/cogs/server/admin"
+	server_kpay "o.o/backend/cogs/server/kpay"
 	_main "o.o/backend/cogs/server/main"
 	server_shop "o.o/backend/cogs/server/shop"
 	server_vtpay "o.o/backend/cogs/server/vtpay"
@@ -25,6 +26,7 @@ import (
 	identitypm "o.o/backend/com/main/identity/pm"
 	inventorypm "o.o/backend/com/main/inventory/pm"
 	invitationpm "o.o/backend/com/main/invitation/pm"
+	invoicingpm "o.o/backend/com/main/invoicing/pm"
 	ledgerpm "o.o/backend/com/main/ledgering/pm"
 	moneytxpm "o.o/backend/com/main/moneytx/pm"
 	orderingpm "o.o/backend/com/main/ordering/pm"
@@ -40,7 +42,6 @@ import (
 	affiliatepm "o.o/backend/com/services/affiliate/pm"
 	customerpm "o.o/backend/com/shopping/customering/pm"
 	traderpm "o.o/backend/com/shopping/tradering/pm"
-	invoicepm "o.o/backend/com/subscripting/invoice/pm"
 	subscriptionpm "o.o/backend/com/subscripting/subscription/pm"
 	ticketpm "o.o/backend/com/supporting/ticket/pm"
 	"o.o/backend/com/web/ecom/webserver"
@@ -91,7 +92,7 @@ type Output struct {
 	_customerPM            *customerpm.ProcessManager
 	_etelecomPM            *etelecompm.ProcessManager
 	_subscriptionPM        *subscriptionpm.ProcessManager
-	_invoicePM             *invoicepm.ProcessManager
+	_invoicingPM           *invoicingpm.ProcessManager
 	_transactionPM         *transactionpm.ProcessManager
 	_etelecomUserSettingPM *etelecomusersettingpm.ProcessManager
 	_ticketPM              *ticketpm.ProcessManager
@@ -131,6 +132,7 @@ func BuildMainServer(
 	eventStream server_shop.EventStreamHandler,
 	downloadHandler server_shop.DownloadHandler,
 	vtpayServer server_vtpay.VTPayHandler,
+	kpayServer server_kpay.KPayHandler,
 	reportServer reportserver.ReportServer,
 ) MainServer {
 	mux := http.NewServeMux()
@@ -161,6 +163,7 @@ func BuildMainServer(
 	mux.Handle(eventStream.PathPrefix(), eventStream)
 	mux.Handle(downloadHandler.PathPrefix(), downloadHandler)
 	mux.Handle(vtpayServer.PathPrefix(), vtpayServer)
+	mux.Handle(kpayServer.PathPrefix(), kpayServer)
 	mux.Handle(reportServer.PathPrefix(), mwares(reportServer))
 	mux.Handle(authxHandler.PathPrefix(), mwares(authxHandler))
 

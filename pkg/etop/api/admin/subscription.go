@@ -3,7 +3,7 @@ package admin
 import (
 	"context"
 
-	"o.o/api/subscripting/invoice"
+	"o.o/api/main/invoicing"
 	"o.o/api/subscripting/subscription"
 	"o.o/api/subscripting/subscriptionplan"
 	"o.o/api/subscripting/subscriptionproduct"
@@ -25,8 +25,8 @@ type SubscriptionService struct {
 	SubrPlanQuery     subscriptionplan.QueryBus
 	SubscriptionQuery subscription.QueryBus
 	SubscriptionAggr  subscription.CommandBus
-	InvoiceAggr       invoice.CommandBus
-	InvoiceQuery      invoice.QueryBus
+	InvoiceAggr       invoicing.CommandBus
+	InvoiceQuery      invoicing.QueryBus
 }
 
 func (s *SubscriptionService) Clone() admin.SubscriptionService {

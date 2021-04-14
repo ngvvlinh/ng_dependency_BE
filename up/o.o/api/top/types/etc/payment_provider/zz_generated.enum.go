@@ -19,6 +19,7 @@ var enumPaymentProviderName = map[int]string{
 	1: "vtpay",
 	2: "bank",
 	3: "manual",
+	4: "kpay",
 }
 
 var enumPaymentProviderValue = map[string]int{
@@ -26,6 +27,7 @@ var enumPaymentProviderValue = map[string]int{
 	"vtpay":   1,
 	"bank":    2,
 	"manual":  3,
+	"kpay":    4,
 }
 
 func ParsePaymentProvider(s string) (PaymentProvider, bool) {

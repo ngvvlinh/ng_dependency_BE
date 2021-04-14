@@ -47,6 +47,25 @@ func (ft *PaymentFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *PaymentFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *PaymentFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
 func (ft *PaymentFilters) ByAmount(Amount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

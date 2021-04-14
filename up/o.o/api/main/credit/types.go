@@ -33,3 +33,8 @@ type CreditConfirmedEvent struct {
 	CreditID dot.ID
 	ShopID   dot.ID
 }
+
+type CreditCreatedEvent struct {
+	CreditID dot.ID
+	ShopID   dot.ID
+}

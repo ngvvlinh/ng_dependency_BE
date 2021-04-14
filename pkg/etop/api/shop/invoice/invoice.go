@@ -3,7 +3,7 @@ package invoice
 import (
 	"context"
 
-	"o.o/api/subscripting/invoice"
+	"o.o/api/main/invoicing"
 	api "o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
 	"o.o/backend/pkg/common/apifw/cmapi"
@@ -13,8 +13,8 @@ import (
 
 type InvoiceService struct {
 	session.Session
-	InvoiceAggr  invoice.CommandBus
-	InvoiceQuery invoice.QueryBus
+	InvoiceAggr  invoicing.CommandBus
+	InvoiceQuery invoicing.QueryBus
 }
 
 func (s *InvoiceService) Clone() api.InvoiceService { res := *s; return &res }
@@ -25,7 +25,7 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetShopInvoic
 		return nil, err
 	}
 
-	query := &invoice.ListInvoicesQuery{
+	query := &invoicing.ListInvoicesQuery{
 		AccountID: s.SS.Shop().ID,
 		Paging:    *paging,
 		Filters:   cmapi.ToFilters(r.Filters),

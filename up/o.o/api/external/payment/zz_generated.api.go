@@ -7,7 +7,6 @@ package payment
 import (
 	context "context"
 	json "encoding/json"
-	time "time"
 
 	payment_provider "o.o/api/top/types/etc/payment_provider"
 	payment_state "o.o/api/top/types/etc/payment_state"
@@ -30,14 +29,13 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 }
 
 type CreateOrUpdatePaymentCommand struct {
+	ShopID          dot.ID
 	Amount          int
 	Status          status4.Status
 	State           payment_state.PaymentState
 	PaymentProvider payment_provider.PaymentProvider
 	ExternalTransID string
 	ExternalData    json.RawMessage
-	CreatedAt       time.Time `sq:"create"`
-	UpdatedAt       time.Time `sq:"update"`
 
 	Result *Payment `json:"-"`
 }
@@ -48,14 +46,13 @@ func (h AggregateHandler) HandleCreateOrUpdatePayment(ctx context.Context, msg *
 }
 
 type CreatePaymentCommand struct {
+	ShopID          dot.ID
 	Amount          int
 	Status          status4.Status
 	State           payment_state.PaymentState
 	PaymentProvider payment_provider.PaymentProvider
 	ExternalTransID string
 	ExternalData    json.RawMessage
-	CreatedAt       time.Time `sq:"create"`
-	UpdatedAt       time.Time `sq:"update"`
 
 	Result *Payment `json:"-"`
 }
@@ -117,51 +114,47 @@ func (q *GetPaymentByIDQuery) query()              {}
 func (q *CreateOrUpdatePaymentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreatePaymentArgs) {
 	return ctx,
 		&CreatePaymentArgs{
+			ShopID:          q.ShopID,
 			Amount:          q.Amount,
 			Status:          q.Status,
 			State:           q.State,
 			PaymentProvider: q.PaymentProvider,
 			ExternalTransID: q.ExternalTransID,
 			ExternalData:    q.ExternalData,
-			CreatedAt:       q.CreatedAt,
-			UpdatedAt:       q.UpdatedAt,
 		}
 }
 
 func (q *CreateOrUpdatePaymentCommand) SetCreatePaymentArgs(args *CreatePaymentArgs) {
+	q.ShopID = args.ShopID
 	q.Amount = args.Amount
 	q.Status = args.Status
 	q.State = args.State
 	q.PaymentProvider = args.PaymentProvider
 	q.ExternalTransID = args.ExternalTransID
 	q.ExternalData = args.ExternalData
-	q.CreatedAt = args.CreatedAt
-	q.UpdatedAt = args.UpdatedAt
 }
 
 func (q *CreatePaymentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreatePaymentArgs) {
 	return ctx,
 		&CreatePaymentArgs{
+			ShopID:          q.ShopID,
 			Amount:          q.Amount,
 			Status:          q.Status,
 			State:           q.State,
 			PaymentProvider: q.PaymentProvider,
 			ExternalTransID: q.ExternalTransID,
 			ExternalData:    q.ExternalData,
-			CreatedAt:       q.CreatedAt,
-			UpdatedAt:       q.UpdatedAt,
 		}
 }
 
 func (q *CreatePaymentCommand) SetCreatePaymentArgs(args *CreatePaymentArgs) {
+	q.ShopID = args.ShopID
 	q.Amount = args.Amount
 	q.Status = args.Status
 	q.State = args.State
 	q.PaymentProvider = args.PaymentProvider
 	q.ExternalTransID = args.ExternalTransID
 	q.ExternalData = args.ExternalData
-	q.CreatedAt = args.CreatedAt
-	q.UpdatedAt = args.UpdatedAt
 }
 
 func (q *UpdateExternalPaymentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalPaymentInfoArgs) {

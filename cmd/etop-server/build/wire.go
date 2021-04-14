@@ -15,6 +15,7 @@ import (
 	database_all "o.o/backend/cogs/database/_all"
 	payment_all "o.o/backend/cogs/payment/_all"
 	server_admin "o.o/backend/cogs/server/admin"
+	server_kpay "o.o/backend/cogs/server/kpay"
 	server_max "o.o/backend/cogs/server/main/_max"
 	server_shop "o.o/backend/cogs/server/shop"
 	server_vtpay "o.o/backend/cogs/server/vtpay"
@@ -36,6 +37,7 @@ import (
 	credit "o.o/backend/com/main/credit"
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/inventory"
+	"o.o/backend/com/main/invoicing"
 	"o.o/backend/com/main/ledgering"
 	"o.o/backend/com/main/location"
 	"o.o/backend/com/main/moneytx"
@@ -111,6 +113,7 @@ func Build(
 			"shipment",
 			"ahamove",
 			"vtpay",
+			"kpay",
 			"redis",
 			"captcha",
 			"ExportDirs",
@@ -136,6 +139,7 @@ func Build(
 		_core.WireSet,
 		server_max.WireSet,
 		server_vtpay.WireSet,
+		server_kpay.WireSet,
 		server_shop.WireSet,
 		server_admin.WireSet,
 		shop_wire.WireSet,
@@ -179,6 +183,7 @@ func Build(
 		shipnow.WireSet,
 		webserver.WireSet,
 		subscripting.WireSet,
+		invoicing.WireSet,
 		saffapi.WireSet,
 		affapi.WireSet,
 		partner.WireSet,

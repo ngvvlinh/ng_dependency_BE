@@ -92,7 +92,7 @@ func fnPlural(n int, word string) string {
 
 func fnToTitle(s string) string {
 	s = strs.ToTitle(s)
-	s = strings.Replace(s, "Id", "ID", -1)
+	s = strings.Replace(s, "ID", "ID", -1)
 	return s
 }
 

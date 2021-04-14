@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/subject_referral"
@@ -215,11 +216,12 @@ type SubscriptionIDRequest struct {
 func (m *SubscriptionIDRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type CreateInvoiceRequest struct {
-	AccountID      dot.ID        `json:"account_id"`
-	SubscriptionID dot.ID        `json:"subscription_id"`
-	TotalAmount    int           `json:"total_amount"`
-	Description    string        `json:"description"`
-	Customer       *SubrCustomer `json:"customer"`
+	AccountID      dot.ID                           `json:"account_id"`
+	SubscriptionID dot.ID                           `json:"subscription_id"`
+	TotalAmount    int                              `json:"total_amount"`
+	Description    string                           `json:"description"`
+	Customer       *SubrCustomer                    `json:"customer"`
+	Classify       service_classify.ServiceClassify `json:"classify"`
 }
 
 func (m *CreateInvoiceRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Invoices []*Invoice
 
 const __sqlInvoice_Table = "invoice"
-const __sqlInvoice_ListCols = "\"id\",\"account_id\",\"total_amount\",\"description\",\"payment_id\",\"payment_status\",\"status\",\"customer\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"referral_type\",\"referral_ids\""
-const __sqlInvoice_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"total_amount\" = EXCLUDED.\"total_amount\",\"description\" = EXCLUDED.\"description\",\"payment_id\" = EXCLUDED.\"payment_id\",\"payment_status\" = EXCLUDED.\"payment_status\",\"status\" = EXCLUDED.\"status\",\"customer\" = EXCLUDED.\"customer\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"referral_type\" = EXCLUDED.\"referral_type\",\"referral_ids\" = EXCLUDED.\"referral_ids\""
+const __sqlInvoice_ListCols = "\"id\",\"account_id\",\"total_amount\",\"description\",\"payment_id\",\"payment_status\",\"status\",\"customer\",\"created_at\",\"updated_at\",\"deleted_at\",\"wl_partner_id\",\"referral_type\",\"referral_ids\",\"classify\",\"type\""
+const __sqlInvoice_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"total_amount\" = EXCLUDED.\"total_amount\",\"description\" = EXCLUDED.\"description\",\"payment_id\" = EXCLUDED.\"payment_id\",\"payment_status\" = EXCLUDED.\"payment_status\",\"status\" = EXCLUDED.\"status\",\"customer\" = EXCLUDED.\"customer\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"referral_type\" = EXCLUDED.\"referral_type\",\"referral_ids\" = EXCLUDED.\"referral_ids\",\"classify\" = EXCLUDED.\"classify\",\"type\" = EXCLUDED.\"type\""
 const __sqlInvoice_Insert = "INSERT INTO \"invoice\" (" + __sqlInvoice_ListCols + ") VALUES"
 const __sqlInvoice_Select = "SELECT " + __sqlInvoice_ListCols + " FROM \"invoice\""
 const __sqlInvoice_Select_history = "SELECT " + __sqlInvoice_ListCols + " FROM history.\"invoice\""
@@ -147,7 +147,7 @@ func (m *Invoice) Migration(db *cmsql.Database) {
 			ColumnType:       "subject_referral.SubjectReferral",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"credit", "invoice", "subscription"},
+			ColumnEnumValues: []string{"unknown", "credit", "invoice", "subscription", "order"},
 		},
 		"referral_ids": {
 			ColumnName:       "referral_ids",
@@ -155,6 +155,20 @@ func (m *Invoice) Migration(db *cmsql.Database) {
 			ColumnDBType:     "[]int64",
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
+		},
+		"classify": {
+			ColumnName:       "classify",
+			ColumnType:       "service_classify.ServiceClassify",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"shipping", "telecom", "all"},
+		},
+		"type": {
+			ColumnName:       "type",
+			ColumnType:       "invoice_type.InvoiceType",
+			ColumnDBType:     "enum",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{"default", "in", "out"},
 		},
 	}
 	if err := migration.Compare(db, "invoice", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
@@ -183,6 +197,8 @@ func (m *Invoice) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.WLPartnerID,
 		m.ReferralType,
 		core.Array{m.ReferralIDs, opts},
+		m.Classify,
+		m.Type,
 	}
 }
 
@@ -202,6 +218,8 @@ func (m *Invoice) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.WLPartnerID,
 		&m.ReferralType,
 		core.Array{&m.ReferralIDs, opts},
+		&m.Classify,
+		&m.Type,
 	}
 }
 
@@ -239,7 +257,7 @@ func (_ *Invoices) SQLSelect(w SQLWriter) error {
 func (m *Invoice) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvoice_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -249,7 +267,7 @@ func (ms Invoices) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvoice_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(16)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -392,6 +410,22 @@ func (m *Invoice) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.ReferralIDs, opts})
 	}
+	if m.Classify != 0 {
+		flag = true
+		w.WriteName("classify")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Classify)
+	}
+	if m.Type != 0 {
+		flag = true
+		w.WriteName("type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Type)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -402,7 +436,7 @@ func (m *Invoice) SQLUpdate(w SQLWriter) error {
 func (m *Invoice) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlInvoice_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -438,17 +472,19 @@ func (m InvoiceHistory) DeletedAt() core.Interface     { return core.Interface{m
 func (m InvoiceHistory) WLPartnerID() core.Interface   { return core.Interface{m["wl_partner_id"]} }
 func (m InvoiceHistory) ReferralType() core.Interface  { return core.Interface{m["referral_type"]} }
 func (m InvoiceHistory) ReferralIDs() core.Interface   { return core.Interface{m["referral_ids"]} }
+func (m InvoiceHistory) Classify() core.Interface      { return core.Interface{m["classify"]} }
+func (m InvoiceHistory) Type() core.Interface          { return core.Interface{m["type"]} }
 
 func (m *InvoiceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(InvoiceHistory, 14)
+	res := make(InvoiceHistory, 16)
 	res["id"] = data[0]
 	res["account_id"] = data[1]
 	res["total_amount"] = data[2]
@@ -463,14 +499,16 @@ func (m *InvoiceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["wl_partner_id"] = data[11]
 	res["referral_type"] = data[12]
 	res["referral_ids"] = data[13]
+	res["classify"] = data[14]
+	res["type"] = data[15]
 	*m = res
 	return nil
 }
 
 func (ms *InvoiceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	res := make(InvoiceHistories, 0, 128)
@@ -493,6 +531,8 @@ func (ms *InvoiceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["wl_partner_id"] = data[11]
 		m["referral_type"] = data[12]
 		m["referral_ids"] = data[13]
+		m["classify"] = data[14]
+		m["type"] = data[15]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -580,7 +620,7 @@ func (m *InvoiceLine) Migration(db *cmsql.Database) {
 			ColumnType:       "subject_referral.SubjectReferral",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"credit", "invoice", "subscription"},
+			ColumnEnumValues: []string{"unknown", "credit", "invoice", "subscription", "order"},
 		},
 		"referral_id": {
 			ColumnName:       "referral_id",

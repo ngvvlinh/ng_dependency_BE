@@ -296,6 +296,7 @@ type PaymentService interface {
 	PaymentTradingOrder(context.Context, *PaymentTradingOrderRequest) (*PaymentTradingOrderResponse, error)
 	PaymentCheckReturnData(context.Context, *PaymentCheckReturnDataRequest) (*cm.MessageResponse, error)
 	GetExternalPaymentUrl(context.Context, *GetExternalPaymenUrlRequest) (*GetExternalPaymentUrlResponse, error)
+	UpdatePaymentStatus(context.Context, *UpdatePaymentStatusRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Receipt

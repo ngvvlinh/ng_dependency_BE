@@ -6,27 +6,25 @@ import (
 
 	"o.o/api/main/credit"
 	"o.o/api/main/identity"
+	"o.o/api/main/invoicing"
 	"o.o/api/main/transaction"
-	"o.o/api/subscripting/invoice"
 	"o.o/api/subscripting/subscription"
 	"o.o/api/subscripting/subscriptionplan"
 	subscriptingtypes "o.o/api/subscripting/types"
 	"o.o/api/top/types/etc/payment_method"
-	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/subject_referral"
 	"o.o/api/top/types/etc/subscription_product_type"
-	"o.o/api/top/types/etc/transaction_type"
 	"o.o/api/webserver"
 	subrplanutils "o.o/backend/com/subscripting/subscriptionplan/utils"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
-	"o.o/capi/dot"
 )
 
 type ProcessManager struct {
-	invoiceQuery    invoice.QueryBus
-	invoiceAggr     invoice.CommandBus
+	invoiceQuery    invoicing.QueryBus
+	invoiceAggr     invoicing.CommandBus
 	subrQuery       subscription.QueryBus
 	subrAggr        subscription.CommandBus
 	subrPlanQuery   subscriptionplan.QueryBus
@@ -37,8 +35,8 @@ type ProcessManager struct {
 
 func New(
 	eventBus bus.EventRegistry,
-	invoiceQuery invoice.QueryBus,
-	invoiceAggr invoice.CommandBus,
+	invoiceQuery invoicing.QueryBus,
+	invoiceAggr invoicing.CommandBus,
 	subrQuery subscription.QueryBus,
 	subrAggr subscription.CommandBus,
 	subrPlanQuery subscriptionplan.QueryBus,
@@ -65,8 +63,8 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.WsWebsiteCreated)
 }
 
-func (m *ProcessManager) InvoicePaid(ctx context.Context, event *invoice.InvoicePaidEvent) (_err error) {
-	queryInv := &invoice.GetInvoiceByIDQuery{
+func (m *ProcessManager) InvoicePaid(ctx context.Context, event *invoicing.InvoicePaidEvent) (_err error) {
+	queryInv := &invoicing.GetInvoiceByIDQuery{
 		ID:        event.ID,
 		AccountID: event.AccountID,
 	}
@@ -80,13 +78,13 @@ func (m *ProcessManager) InvoicePaid(ctx context.Context, event *invoice.Invoice
 
 	switch inv.ReferralType {
 	case subject_referral.Subscription:
-		return m.extendSubscription(ctx, event, inv)
+		return m.extendSubscription(ctx, inv)
 	default:
 		return nil
 	}
 }
 
-func (m *ProcessManager) extendSubscription(ctx context.Context, event *invoice.InvoicePaidEvent, inv *invoice.InvoiceFtLine) (_err error) {
+func (m *ProcessManager) extendSubscription(ctx context.Context, inv *invoicing.InvoiceFtLine) (_err error) {
 	for _, invLine := range inv.Lines {
 		querySubr := &subscription.GetSubscriptionByIDQuery{
 			ID:        invLine.ReferralID,
@@ -132,26 +130,6 @@ func (m *ProcessManager) extendSubscription(ctx context.Context, event *invoice.
 			update.StartedAt = periodStartAt
 		}
 		if err := m.subrAggr.Dispatch(ctx, update); err != nil {
-			return err
-		}
-	}
-
-	// create transaction if needed
-	if event.PaymentMethod == payment_method.Balance {
-		if !event.ServiceClassify.Valid {
-			return cm.Errorf(cm.Internal, nil, "Thanh toán lỗi. Vui lòng kiểm tra lại.").WithMeta("err", "missing service classify")
-		}
-		cmdTrxn := &transaction.CreateTransactionCommand{
-			Name:         "Thanh toán subscription",
-			Amount:       -1 * inv.TotalAmount,
-			AccountID:    inv.AccountID,
-			Status:       status3.P,
-			Type:         transaction_type.Invoice,
-			ReferralType: subject_referral.Invoice,
-			ReferralIDs:  []dot.ID{inv.ID},
-			Classify:     event.ServiceClassify.Enum,
-		}
-		if err := m.transactionAggr.Dispatch(ctx, cmdTrxn); err != nil {
 			return err
 		}
 	}
@@ -212,20 +190,22 @@ func (m *ProcessManager) WsWebsiteCreated(ctx context.Context, event *webserver.
 	subr := cmd.Result
 
 	// create subr bill & confirm to active trial product
-	billCmd := &invoice.CreateInvoiceBySubrIDCommand{
+	billCmd := &invoicing.CreateInvoiceBySubrIDCommand{
 		SubscriptionID: subr.ID,
 		AccountID:      shop.ID,
 		TotalAmount:    0,
 		Description:    "Trial",
+		Classify:       service_classify.Shipping,
 	}
 	if err := m.invoiceAggr.Dispatch(ctx, billCmd); err != nil {
 		return err
 	}
 
-	billConfirmCmd := &invoice.ManualPaymentInvoiceCommand{
-		ID:          billCmd.Result.ID,
-		AccountID:   shop.ID,
-		TotalAmount: 0,
+	billConfirmCmd := &invoicing.PaymentInvoiceCommand{
+		InvoiceID:     billCmd.Result.ID,
+		AccountID:     shop.ID,
+		TotalAmount:   0,
+		PaymentMethod: payment_method.Manual,
 	}
 	if err := m.invoiceAggr.Dispatch(ctx, billConfirmCmd); err != nil {
 		return err

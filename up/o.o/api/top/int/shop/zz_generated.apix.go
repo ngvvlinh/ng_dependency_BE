@@ -2979,6 +2979,7 @@ const PaymentServicePathPrefix = "/shop.Payment/"
 const Path_Payment_GetExternalPaymentUrl = "/shop.Payment/GetExternalPaymentUrl"
 const Path_Payment_PaymentCheckReturnData = "/shop.Payment/PaymentCheckReturnData"
 const Path_Payment_PaymentTradingOrder = "/shop.Payment/PaymentTradingOrder"
+const Path_Payment_UpdatePaymentStatus = "/shop.Payment/UpdatePaymentStatus"
 
 func (s *PaymentServiceServer) PathPrefix() string {
 	return PaymentServicePathPrefix
@@ -3049,6 +3050,19 @@ func (s *PaymentServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 				return
 			}
 			resp, err = inner.PaymentTradingOrder(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Payment/UpdatePaymentStatus":
+		msg := &UpdatePaymentStatusRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdatePaymentStatus(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

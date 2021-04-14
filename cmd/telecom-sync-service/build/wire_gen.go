@@ -22,7 +22,7 @@ import (
 	"o.o/backend/com/main/connectioning/query"
 	query3 "o.o/backend/com/main/contact/query"
 	"o.o/backend/com/main/identity"
-	"o.o/backend/com/subscripting/invoice"
+	"o.o/backend/com/main/invoicing"
 	"o.o/backend/com/subscripting/subscription"
 	"o.o/backend/com/subscripting/subscriptionplan"
 	"o.o/backend/com/subscripting/subscriptionproduct"
@@ -75,11 +75,11 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	subscriptionQueryBus := subscription.SubscriptionQueryMessageBus(subscriptionQuery)
 	subscriptionAggregate := subscription.NewSubscriptionAggregate(mainDB, subscriptionplanQueryBus)
 	subscriptionCommandBus := subscription.SubscriptionAggregateMessageBus(subscriptionAggregate)
-	aggregateAggregate := aggregate2.NewAggregate(mainDB)
+	aggregateAggregate := aggregate2.NewAggregate(mainDB, busBus)
 	paymentCommandBus := aggregate2.AggregateMessageBus(aggregateAggregate)
-	invoiceAggregate := invoice.NewInvoiceAggregate(mainDB, busBus, paymentCommandBus, subscriptionQueryBus, subscriptionplanQueryBus)
-	invoiceCommandBus := invoice.InvoiceAggregateMessageBus(invoiceAggregate)
-	etelecomAggregate := aggregate3.NewEtelecomAggregate(mainDB, etelecomDB, busBus, contactQueryBus, telecomManager, queryBus, identityQueryBus, subscriptionplanQueryBus, subscriptionQueryBus, subscriptionCommandBus, invoiceCommandBus)
+	invoiceAggregate := invoicing.NewInvoiceAggregate(mainDB, busBus, paymentCommandBus, subscriptionQueryBus, subscriptionplanQueryBus)
+	invoicingCommandBus := invoicing.InvoiceAggregateMessageBus(invoiceAggregate)
+	etelecomAggregate := aggregate3.NewEtelecomAggregate(mainDB, etelecomDB, busBus, contactQueryBus, telecomManager, queryBus, identityQueryBus, subscriptionplanQueryBus, subscriptionQueryBus, subscriptionCommandBus, invoicingCommandBus)
 	etelecomCommandBus := aggregate3.AggregateMessageBus(etelecomAggregate)
 	v2 := BuildSyncs(ctx, mainDB, telecomManager, etelecomQueryBus, etelecomCommandBus, commandBus)
 	processManager := pm.New(busBus, commandBus, queryBus)

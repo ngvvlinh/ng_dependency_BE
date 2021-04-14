@@ -8,7 +8,7 @@ import (
 	context "context"
 
 	payment_provider "o.o/api/top/types/etc/payment_provider"
-	payment_source "o.o/api/top/types/etc/payment_source"
+	subject_referral "o.o/api/top/types/etc/subject_referral"
 	capi "o.o/capi"
 )
 
@@ -68,8 +68,8 @@ func (h AggregateHandler) HandleCheckReturnData(ctx context.Context, msg *CheckR
 }
 
 type GenerateCodeCommand struct {
-	PaymentSource payment_source.PaymentSource
-	ID            string
+	ReferralType subject_referral.SubjectReferral
+	ID           string
 
 	Result string `json:"-"`
 }
@@ -80,8 +80,9 @@ func (h AggregateHandler) HandleGenerateCode(ctx context.Context, msg *GenerateC
 }
 
 type GetTransactionCommand struct {
-	OrderID  string
-	Provider payment_provider.PaymentProvider
+	OrderID               string
+	ExternalTransactionID string
+	Provider              payment_provider.PaymentProvider
 
 	Result *GetTransactionResult `json:"-"`
 }
@@ -165,26 +166,28 @@ func (q *CheckReturnDataCommand) SetCheckReturnDataArgs(args *CheckReturnDataArg
 func (q *GenerateCodeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GenerateCodeArgs) {
 	return ctx,
 		&GenerateCodeArgs{
-			PaymentSource: q.PaymentSource,
-			ID:            q.ID,
+			ReferralType: q.ReferralType,
+			ID:           q.ID,
 		}
 }
 
 func (q *GenerateCodeCommand) SetGenerateCodeArgs(args *GenerateCodeArgs) {
-	q.PaymentSource = args.PaymentSource
+	q.ReferralType = args.ReferralType
 	q.ID = args.ID
 }
 
 func (q *GetTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetTransactionArgs) {
 	return ctx,
 		&GetTransactionArgs{
-			OrderID:  q.OrderID,
-			Provider: q.Provider,
+			OrderID:               q.OrderID,
+			ExternalTransactionID: q.ExternalTransactionID,
+			Provider:              q.Provider,
 		}
 }
 
 func (q *GetTransactionCommand) SetGetTransactionArgs(args *GetTransactionArgs) {
 	q.OrderID = args.OrderID
+	q.ExternalTransactionID = args.ExternalTransactionID
 	q.Provider = args.Provider
 }
 

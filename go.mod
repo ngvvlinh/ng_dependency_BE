@@ -13,6 +13,7 @@ require (
 	cloud.google.com/go/storage v1.6.0
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.17.0
+	github.com/Luzifer/go-openssl/v4 v4.1.0
 	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/SebastiaanKlippert/go-wkhtmltopdf v1.6.0
 	github.com/Shopify/sarama v1.26.4

@@ -8,6 +8,7 @@ import (
 	"o.o/api/main/ordering"
 	"o.o/api/top/types/etc/payment_provider"
 	"o.o/api/top/types/etc/payment_source"
+	"o.o/api/top/types/etc/subject_referral"
 	paymentutil "o.o/backend/com/external/payment"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
@@ -54,19 +55,21 @@ func (ctrl *PaymentManager) GetPaymentProviderDriver(provider payment_provider.P
 }
 
 func (ctrl *PaymentManager) GenerateCode(ctx context.Context, args *paymentmanager.GenerateCodeArgs) (string, error) {
-	switch args.PaymentSource {
-	case payment_source.PaymentSourceOrder:
-		// nothing
-	default:
+	switch args.ReferralType {
+	case subject_referral.Unknown:
 		return "", cm.Errorf(cm.InvalidArgument, nil, "PaymentSource không hợp lệ. Vui lòng kiểm tra lại.")
+	default:
+		// nothing
 	}
 	if args.ID == "" {
 		return "", cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
-	return fmt.Sprintf("%v_%v", args.PaymentSource.String(), args.ID), nil
+	return fmt.Sprintf("%v_%v", args.ReferralType.String(), args.ID), nil
 }
 
-func (ctrl *PaymentManager) BuildUrlConnectPaymentGateway(ctx context.Context, args *paymentmanager.ConnectPaymentGatewayArgs) (string, error) {
+func (ctrl *PaymentManager) BuildUrlConnectPaymentGateway(
+	ctx context.Context, args *paymentmanager.ConnectPaymentGatewayArgs,
+) (string, error) {
 	provider, err := ctrl.GetPaymentProviderDriver(args.Provider)
 	if err != nil {
 		return "", err

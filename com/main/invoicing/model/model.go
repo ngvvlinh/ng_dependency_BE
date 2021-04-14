@@ -1,35 +1,37 @@
-package invoice
+package model
 
 import (
 	"time"
 
-	"o.o/api/subscripting/types"
-	"o.o/api/top/types/etc/payment_method"
+	"o.o/api/top/types/etc/invoice_type"
 	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/subject_referral"
+	subcriptingsharemodel "o.o/backend/com/subscripting/sharemodel"
 	"o.o/capi/dot"
 )
 
-// +gen:event:topic=event/invoice
-
+// +sqlgen
 type Invoice struct {
-	ID            dot.ID
+	ID            dot.ID `paging:"id"`
 	AccountID     dot.ID
 	TotalAmount   int
 	Description   string
 	PaymentID     dot.ID
 	PaymentStatus status4.Status
 	Status        status4.Status
-	Customer      *types.CustomerInfo
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	Customer      *subcriptingsharemodel.CustomerInfo
+	CreatedAt     time.Time `sq:"create" paging:"created_at"`
+	UpdatedAt     time.Time `sq:"create" paging:"updated_at"`
 	DeletedAt     time.Time
 	WLPartnerID   dot.ID
 	ReferralType  subject_referral.SubjectReferral
 	ReferralIDs   []dot.ID
+	Classify      service_classify.ServiceClassify
+	Type          invoice_type.InvoiceType
 }
 
+// +sqlgen
 type InvoiceLine struct {
 	ID           dot.ID
 	LineAmount   int
@@ -39,29 +41,11 @@ type InvoiceLine struct {
 	InvoiceID    dot.ID
 	ReferralType subject_referral.SubjectReferral
 	ReferralID   dot.ID
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	CreatedAt    time.Time `sq:"create"`
+	UpdatedAt    time.Time `sq:"update"`
 }
 
 type InvoiceFtLine struct {
 	*Invoice
 	Lines []*InvoiceLine
-}
-
-type InvoicePaidEvent struct {
-	ID              dot.ID
-	AccountID       dot.ID
-	PaymentMethod   payment_method.PaymentMethod
-	ServiceClassify service_classify.NullServiceClassify
-}
-
-type InvoicePayingEvent struct {
-	PaymentMethod   payment_method.PaymentMethod
-	ServiceClassify service_classify.NullServiceClassify
-	OwnerID         dot.ID
-	TotalAmount     int
-}
-
-type InvoiceDeletedEvent struct {
-	InvoinceID dot.ID
 }

@@ -16,6 +16,7 @@ import (
 	"o.o/backend/com/main/connectioning"
 	"o.o/backend/com/main/contact"
 	"o.o/backend/com/main/identity"
+	"o.o/backend/com/main/invoicing"
 	"o.o/backend/com/subscripting"
 	"o.o/backend/pkg/common/bus"
 	"o.o/capi"
@@ -38,6 +39,7 @@ func Build(
 		contact.WireSet,
 		payment_all.WireSet,
 		subscripting.WireSet,
+		invoicing.WireSet,
 		telecom_all.WireSet,
 
 		com.BuildDatabaseEtelecomDB,

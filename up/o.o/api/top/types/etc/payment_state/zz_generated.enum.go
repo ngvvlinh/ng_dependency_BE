@@ -22,6 +22,8 @@ var enumPaymentStateName = map[int]string{
 	4: "success",
 	5: "failed",
 	6: "cancelled",
+	7: "expired",
+	8: "refunded",
 }
 
 var enumPaymentStateValue = map[string]int{
@@ -32,6 +34,8 @@ var enumPaymentStateValue = map[string]int{
 	"success":   4,
 	"failed":    5,
 	"cancelled": 6,
+	"expired":   7,
+	"refunded":  8,
 }
 
 func ParsePaymentState(s string) (PaymentState, bool) {

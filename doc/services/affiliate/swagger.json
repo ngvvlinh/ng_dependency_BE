@@ -1710,6 +1710,14 @@
         "cancelling"
       ]
     },
+    "neProductType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "services",
+        "goods"
+      ]
+    },
     "ojFeeType": {
       "type": "string",
       "enum": [
@@ -1899,7 +1907,7 @@
           "format": "int64"
         },
         "product_type": {
-          "$ref": "#/definitions/pdProductType"
+          "$ref": "#/definitions/neProductType"
         },
         "retail_price": {
           "type": "integer"
@@ -2061,14 +2069,6 @@
           "type": "string"
         }
       }
-    },
-    "pdProductType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "services",
-        "goods"
-      ]
     },
     "pjGHNNoteCode": {
       "type": "string",

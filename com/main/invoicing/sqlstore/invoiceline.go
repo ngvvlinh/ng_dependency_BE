@@ -3,8 +3,8 @@ package sqlstore
 import (
 	"context"
 
-	"o.o/api/subscripting/invoice"
-	"o.o/backend/com/subscripting/invoice/model"
+	"o.o/api/main/invoicing"
+	"o.o/backend/com/main/invoicing/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
@@ -52,7 +52,7 @@ func (s *InvoiceLineStore) CreateInvoiceLineDB(line *model.InvoiceLine) error {
 	return s.query().ShouldInsert(line)
 }
 
-func (s *InvoiceLineStore) CreateInvoiceLine(args *invoice.InvoiceLine) error {
+func (s *InvoiceLineStore) CreateInvoiceLine(args *invoicing.InvoiceLine) error {
 	var line model.InvoiceLine
 	if err := scheme.Convert(args, &line); err != nil {
 		return err

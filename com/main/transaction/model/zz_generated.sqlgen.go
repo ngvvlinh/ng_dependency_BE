@@ -119,7 +119,7 @@ func (m *Transaction) Migration(db *cmsql.Database) {
 			ColumnType:       "subject_referral.SubjectReferral",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"credit", "invoice", "subscription"},
+			ColumnEnumValues: []string{"unknown", "credit", "invoice", "subscription", "order"},
 		},
 		"referral_ids": {
 			ColumnName:       "referral_ids",

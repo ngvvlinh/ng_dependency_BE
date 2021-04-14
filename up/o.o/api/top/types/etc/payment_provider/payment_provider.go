@@ -21,4 +21,7 @@ const (
 
 	// +enum=manual
 	Manual PaymentProvider = 3
+
+	// +enum=kpay
+	KPay PaymentProvider = 4
 )

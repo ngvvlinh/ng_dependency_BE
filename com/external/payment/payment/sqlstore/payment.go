@@ -67,6 +67,7 @@ func (s *PaymentStore) GetPayment() (*payment.Payment, error) {
 }
 
 type CreatePaymentArgs struct {
+	ShopID          dot.ID
 	Amount          int
 	Status          status4.Status
 	State           payment_state.PaymentState
@@ -79,6 +80,7 @@ func (s *PaymentStore) CreatePayment(args *CreatePaymentArgs) (*payment.Payment,
 	id := cm.NewID()
 	payment := &model.Payment{
 		ID:              id,
+		ShopID:          args.ShopID,
 		Amount:          args.Amount,
 		Status:          args.Status,
 		State:           args.State,

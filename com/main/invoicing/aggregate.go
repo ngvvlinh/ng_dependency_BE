@@ -1,21 +1,22 @@
-package invoice
+package invoicing
 
 import (
 	"context"
 
 	"o.o/api/external/payment"
-	"o.o/api/subscripting/invoice"
+	"o.o/api/main/invoicing"
 	"o.o/api/subscripting/subscription"
 	"o.o/api/subscripting/subscriptionplan"
+	"o.o/api/top/types/etc/invoice_type"
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/payment_provider"
 	"o.o/api/top/types/etc/payment_state"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/subject_referral"
 	com "o.o/backend/com/main"
-	"o.o/backend/com/subscripting/invoice/convert"
-	"o.o/backend/com/subscripting/invoice/model"
-	"o.o/backend/com/subscripting/invoice/sqlstore"
+	"o.o/backend/com/main/invoicing/convert"
+	"o.o/backend/com/main/invoicing/model"
+	"o.o/backend/com/main/invoicing/sqlstore"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/conversion"
@@ -24,7 +25,7 @@ import (
 	"o.o/capi/dot"
 )
 
-var _ invoice.Aggregate = &InvoiceAggregate{}
+var _ invoicing.Aggregate = &InvoiceAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type InvoiceAggregate struct {
@@ -49,20 +50,14 @@ func NewInvoiceAggregate(db com.MainDB, eventB capi.EventBus, paymentA payment.C
 	}
 }
 
-func InvoiceAggregateMessageBus(a *InvoiceAggregate) invoice.CommandBus {
+func InvoiceAggregateMessageBus(a *InvoiceAggregate) invoicing.CommandBus {
 	b := bus.New()
-	return invoice.NewAggregateHandler(a).RegisterHandlers(b)
+	return invoicing.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
-func (a *InvoiceAggregate) CreateInvoice(ctx context.Context, args *invoice.CreateInvoiceArgs) (*invoice.InvoiceFtLine, error) {
-	if args.AccountID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing account ID").WithMetap("func", "CreateInvoice")
-	}
-	if args.Customer == nil || args.Customer.FullName == "" {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing customer").WithMetap("func", "CreateInvoice")
-	}
-	if len(args.Lines) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing lines").WithMetap("func", "CreateInvoice")
+func (a *InvoiceAggregate) CreateInvoice(ctx context.Context, args *invoicing.CreateInvoiceArgs) (*invoicing.InvoiceFtLine, error) {
+	if err := args.Validate(); err != nil {
+		return nil, cm.Errorf(cm.ErrorCode(err), err, err.Error()).WithMetap("func", "CreateInvoice")
 	}
 	amount := 0
 	for _, line := range args.Lines {
@@ -85,7 +80,7 @@ func (a *InvoiceAggregate) CreateInvoice(ctx context.Context, args *invoice.Crea
 		}
 	}
 
-	var inv invoice.Invoice
+	var inv invoicing.Invoice
 	if err := scheme.Convert(args, &inv); err != nil {
 		return nil, err
 	}
@@ -114,7 +109,7 @@ func (a *InvoiceAggregate) CreateInvoice(ctx context.Context, args *invoice.Crea
 	return a.invoiceStore(ctx).ID(invoiceID).GetInvoiceFtLine()
 }
 
-func verifyInvoiceLine(line *invoice.InvoiceLine, refType subject_referral.SubjectReferral) error {
+func verifyInvoiceLine(line *invoicing.InvoiceLine, refType subject_referral.SubjectReferral) error {
 	if line.Quantity <= 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Quantity does not valid in invoice line").WithMeta("func", "verifyInvoiceLine")
 	}
@@ -124,7 +119,7 @@ func verifyInvoiceLine(line *invoice.InvoiceLine, refType subject_referral.Subje
 	return nil
 }
 
-func (a *InvoiceAggregate) CreateInvoiceBySubrID(ctx context.Context, args *invoice.CreateInvoiceBySubrIDArgs) (*invoice.InvoiceFtLine, error) {
+func (a *InvoiceAggregate) CreateInvoiceBySubrID(ctx context.Context, args *invoicing.CreateInvoiceBySubrIDArgs) (*invoicing.InvoiceFtLine, error) {
 	if args.SubscriptionID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing subscription ID").WithMetap("func", "CreateInvoiceBySubrID")
 	}
@@ -139,19 +134,21 @@ func (a *InvoiceAggregate) CreateInvoiceBySubrID(ctx context.Context, args *invo
 		return nil, err
 	}
 	inv := query.Result
-	invArgs := &invoice.CreateInvoiceArgs{
+	invArgs := &invoicing.CreateInvoiceArgs{
 		AccountID:    inv.AccountID,
 		TotalAmount:  0,   // filled below
 		Lines:        nil, // filled below
 		Description:  args.Description,
 		Customer:     inv.Customer,
 		ReferralType: subject_referral.Subscription,
+		Classify:     args.Classify,
+		Type:         invoice_type.Out,
 	}
 	if args.Customer != nil {
 		invArgs.Customer = args.Customer
 	}
 
-	var invLines = make([]*invoice.InvoiceLine, len(inv.Lines))
+	var invLines = make([]*invoicing.InvoiceLine, len(inv.Lines))
 	totalAmount := 0
 	for i, line := range inv.Lines {
 		if line.PlanID == 0 {
@@ -166,7 +163,7 @@ func (a *InvoiceAggregate) CreateInvoiceBySubrID(ctx context.Context, args *invo
 		plan := queryPlan.Result
 		lineAmount := line.Quantity * plan.Price
 		totalAmount += lineAmount
-		bLine := &invoice.InvoiceLine{
+		bLine := &invoicing.InvoiceLine{
 			ID:           cm.NewID(),
 			LineAmount:   lineAmount,
 			Price:        plan.Price,
@@ -185,7 +182,7 @@ func (a *InvoiceAggregate) CreateInvoiceBySubrID(ctx context.Context, args *invo
 	return a.CreateInvoice(ctx, invArgs)
 }
 
-func (a *InvoiceAggregate) UpdateInvoicePaymentInfo(ctx context.Context, args *invoice.UpdateInvoicePaymentInfoArgs) error {
+func (a *InvoiceAggregate) UpdateInvoicePaymentInfo(ctx context.Context, args *invoicing.UpdateInvoicePaymentInfoArgs) error {
 	update := &model.Invoice{
 		PaymentID:     args.PaymentID,
 		PaymentStatus: args.PaymentStatus,
@@ -193,20 +190,26 @@ func (a *InvoiceAggregate) UpdateInvoicePaymentInfo(ctx context.Context, args *i
 	if args.PaymentStatus == status4.P {
 		update.Status = status4.P
 	}
-	return a.invoiceStore(ctx).ID(args.ID).OptionalAccountID(args.AccountID).UpdateInvoiceDB(update)
+	if err := a.invoiceStore(ctx).ID(args.ID).OptionalAccountID(args.AccountID).UpdateInvoiceDB(update); err != nil {
+		return err
+	}
+	inv, err := a.invoiceStore(ctx).ID(args.ID).OptionalAccountID(args.AccountID).GetInvoice()
+	if err != nil {
+		return err
+	}
+	if update.Status == status4.P {
+		paidEvent := &invoicing.InvoicePaidEvent{
+			ID:              args.ID,
+			PaymentID:       args.PaymentID,
+			AccountID:       args.AccountID,
+			ServiceClassify: inv.Classify.Wrap(),
+		}
+		return a.eventBus.Publish(ctx, paidEvent)
+	}
+	return nil
 }
 
-func (a *InvoiceAggregate) UpdateInvoiceStatus(ctx context.Context, args *invoice.UpdateInvoiceStatusArgs) error {
-	if !args.Status.Valid {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing invoice status")
-	}
-	update := &model.Invoice{
-		Status: args.Status.Enum,
-	}
-	return a.invoiceStore(ctx).ID(args.ID).OptionalAccountID(args.AccountID).UpdateInvoiceDB(update)
-}
-
-func (a *InvoiceAggregate) DeleteInvoice(ctx context.Context, args *invoice.DeleteInvoiceArgs) error {
+func (a *InvoiceAggregate) DeleteInvoice(ctx context.Context, args *invoicing.DeleteInvoiceArgs) error {
 	inv, err := a.invoiceStore(ctx).ID(args.ID).AccountID(args.AccountID).GetInvoiceFtLine()
 	if err != nil {
 		return err
@@ -219,63 +222,15 @@ func (a *InvoiceAggregate) DeleteInvoice(ctx context.Context, args *invoice.Dele
 		return err
 	}
 
-	event := &invoice.InvoiceDeletedEvent{InvoinceID: args.ID}
+	event := &invoicing.InvoiceDeletedEvent{InvoinceID: args.ID}
 	return a.eventBus.Publish(ctx, event)
 }
 
-/*
-	ManualPaymentInvoice: thanh toán thủ công invoice (admin gọi)
-	- Tạo payment
-	- Gắn payment_id vào invoice
-	- Cập nhật trạng thái thanh toán invoice
-*/
-func (a *InvoiceAggregate) ManualPaymentInvoice(ctx context.Context, args *invoice.ManualPaymentInvoiceArgs) error {
-	inv, err := a.invoiceStore(ctx).ID(args.ID).OptionalAccountID(args.AccountID).GetInvoiceFtLine()
-	if err != nil {
-		return err
-	}
-	if inv.Status == status4.N {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Invoice was cancelled")
-	}
-	if inv.Status == status4.P {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Invoice was completed")
-	}
-	if inv.TotalAmount != args.TotalAmount {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Total amount does not match")
-	}
-
-	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		// Create manual payment and assign payment ID to invoice
-		cmd := &payment.CreatePaymentCommand{
-			Amount:          args.TotalAmount,
-			Status:          status4.P,
-			State:           payment_state.Success,
-			PaymentProvider: payment_provider.Manual,
-		}
-		if err = a.paymentAggr.Dispatch(ctx, cmd); err != nil {
-			return err
-		}
-		paymentID := cmd.Result.ID
-
-		update := &invoice.UpdateInvoicePaymentInfoArgs{
-			ID:            args.ID,
-			AccountID:     args.AccountID,
-			PaymentID:     paymentID,
-			PaymentStatus: status4.P,
-		}
-		err = a.UpdateInvoicePaymentInfo(ctx, update)
-		if err != nil {
-			return err
-		}
-		event := &invoice.InvoicePaidEvent{
-			ID:        args.ID,
-			AccountID: args.AccountID,
-		}
-		return a.eventBus.Publish(ctx, event)
-	})
-}
-
-func (a *InvoiceAggregate) PaymentInvoice(ctx context.Context, args *invoice.PaymentInvoiceArgs) error {
+// Handle case payment invoice by balance or manual (admin confirm)
+// - Tạo payment
+// - Gắn payment_id vào invoice
+// - Cập nhật trạng thái thanh toán invoice
+func (a *InvoiceAggregate) PaymentInvoice(ctx context.Context, args *invoicing.PaymentInvoiceArgs) error {
 	inv, err := a.invoiceStore(ctx).ID(args.InvoiceID).OptionalAccountID(args.AccountID).GetInvoiceFtLine()
 	if err != nil {
 		return err
@@ -291,7 +246,7 @@ func (a *InvoiceAggregate) PaymentInvoice(ctx context.Context, args *invoice.Pay
 	}
 
 	// check credit balance
-	event := &invoice.InvoicePayingEvent{
+	event := &invoicing.InvoicePayingEvent{
 		PaymentMethod:   args.PaymentMethod,
 		ServiceClassify: args.ServiceClassify,
 		OwnerID:         args.OwnerID,
@@ -306,6 +261,7 @@ func (a *InvoiceAggregate) PaymentInvoice(ctx context.Context, args *invoice.Pay
 		case payment_method.Manual,
 			payment_method.Balance:
 			cmd := &payment.CreatePaymentCommand{
+				ShopID:          args.AccountID,
 				Amount:          args.TotalAmount,
 				Status:          status4.P,
 				State:           payment_state.Success,
@@ -316,26 +272,15 @@ func (a *InvoiceAggregate) PaymentInvoice(ctx context.Context, args *invoice.Pay
 			}
 			paymentID := cmd.Result.ID
 
-			update := &invoice.UpdateInvoicePaymentInfoArgs{
+			update := &invoicing.UpdateInvoicePaymentInfoArgs{
 				ID:            args.InvoiceID,
 				AccountID:     args.AccountID,
 				PaymentID:     paymentID,
 				PaymentStatus: status4.P,
 			}
-			err = a.UpdateInvoicePaymentInfo(ctx, update)
-			if err != nil {
-				return err
-			}
-			event2 := &invoice.InvoicePaidEvent{
-				ID:              args.InvoiceID,
-				AccountID:       args.AccountID,
-				PaymentMethod:   args.PaymentMethod,
-				ServiceClassify: args.ServiceClassify,
-			}
-			return a.eventBus.Publish(ctx, event2)
+			return a.UpdateInvoicePaymentInfo(ctx, update)
 		default:
 			return cm.Errorf(cm.InvalidArgument, nil, "Phương thức thanh toán không hợp lệ")
 		}
-
 	})
 }

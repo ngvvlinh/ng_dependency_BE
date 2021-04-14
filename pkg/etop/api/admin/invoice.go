@@ -3,10 +3,11 @@ package admin
 import (
 	"context"
 
-	"o.o/api/subscripting/invoice"
+	"o.o/api/main/invoicing"
 	"o.o/api/top/int/admin"
 	"o.o/api/top/int/types"
 	pbcm "o.o/api/top/types/common"
+	"o.o/api/top/types/etc/payment_method"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -15,8 +16,8 @@ import (
 type InvoiceService struct {
 	session.Session
 
-	InvoiceAggr  invoice.CommandBus
-	InvoiceQuery invoice.QueryBus
+	InvoiceAggr  invoicing.CommandBus
+	InvoiceQuery invoicing.QueryBus
 }
 
 func (s *InvoiceService) Clone() admin.InvoiceService {
@@ -29,12 +30,12 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetInvoicesRe
 	if err != nil {
 		return nil, err
 	}
-	query := &invoice.ListInvoicesQuery{
+	query := &invoicing.ListInvoicesQuery{
 		AccountID: r.AccountID,
 		Paging:    *paging,
 		Filters:   cmapi.ToFilters(r.Filters),
 	}
-	if err := s.InvoiceQuery.Dispatch(ctx, query); err != nil {
+	if err = s.InvoiceQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 	res := convertpball.PbInvoices(query.Result.Invoices)
@@ -46,12 +47,13 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetInvoicesRe
 }
 
 func (s *InvoiceService) CreateInvoice(ctx context.Context, r *types.CreateInvoiceRequest) (*types.Invoice, error) {
-	cmd := &invoice.CreateInvoiceBySubrIDCommand{
+	cmd := &invoicing.CreateInvoiceBySubrIDCommand{
 		SubscriptionID: r.SubscriptionID,
 		AccountID:      r.AccountID,
 		TotalAmount:    r.TotalAmount,
 		Customer:       convertpball.Convert_api_SubrCustomer_To_core_SubrCustomer(r.Customer),
 		Description:    r.Description,
+		Classify:       r.Classify,
 	}
 	if err := s.InvoiceAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -61,10 +63,11 @@ func (s *InvoiceService) CreateInvoice(ctx context.Context, r *types.CreateInvoi
 }
 
 func (s *InvoiceService) ManualPaymentInvoice(ctx context.Context, r *types.ManualPaymentInvoiceRequest) (*pbcm.UpdatedResponse, error) {
-	cmd := &invoice.ManualPaymentInvoiceCommand{
-		ID:          r.InvoiceID,
-		AccountID:   r.AccountID,
-		TotalAmount: r.TotalAmount,
+	cmd := &invoicing.PaymentInvoiceCommand{
+		InvoiceID:     r.InvoiceID,
+		AccountID:     r.AccountID,
+		TotalAmount:   r.TotalAmount,
+		PaymentMethod: payment_method.Manual,
 	}
 	if err := s.InvoiceAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -74,7 +77,7 @@ func (s *InvoiceService) ManualPaymentInvoice(ctx context.Context, r *types.Manu
 }
 
 func (s *InvoiceService) DeleteInvoice(ctx context.Context, r *types.SubscriptionIDRequest) (*pbcm.DeletedResponse, error) {
-	cmd := &invoice.DeleteInvoiceCommand{
+	cmd := &invoicing.DeleteInvoiceCommand{
 		ID:        r.ID,
 		AccountID: r.AccountID,
 	}

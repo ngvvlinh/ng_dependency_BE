@@ -6,7 +6,7 @@ import (
 
 	"o.o/api/etelecom"
 	"o.o/api/main/identity"
-	"o.o/api/subscripting/invoice"
+	"o.o/api/main/invoicing"
 	"o.o/api/subscripting/subscription"
 	subscriptingtypes "o.o/api/subscripting/types"
 	"o.o/api/top/types/etc/payment_method"
@@ -118,7 +118,7 @@ func (a *EtelecomAggregate) CreateExtensionBySubscription(ctx context.Context, a
 			}
 			shop := queryShop.Result
 
-			cmdInvoice := &invoice.CreateInvoiceBySubrIDCommand{
+			cmdInvoice := &invoicing.CreateInvoiceBySubrIDCommand{
 				SubscriptionID: subrID,
 				AccountID:      args.AccountID,
 				Customer: &subscriptingtypes.CustomerInfo{
@@ -127,13 +127,14 @@ func (a *EtelecomAggregate) CreateExtensionBySubscription(ctx context.Context, a
 					Email:    shop.Email,
 				},
 				Description: "Thanh toán phí khởi tạo extension",
+				Classify:    service_classify.Telecom,
 			}
 			if err = a.invoiceAggr.Dispatch(ctx, cmdInvoice); err != nil {
 				return err
 			}
 
 			invoiceID = cmdInvoice.Result.ID
-			cmdPayment := &invoice.PaymentInvoiceCommand{
+			cmdPayment := &invoicing.PaymentInvoiceCommand{
 				InvoiceID:       invoiceID,
 				AccountID:       args.AccountID,
 				OwnerID:         args.OwnerID,
@@ -267,7 +268,7 @@ func (a *EtelecomAggregate) ExtendExtension(ctx context.Context, args *etelecom.
 			return err
 		}
 		shop := queryShop.Result
-		cmdInvoice := &invoice.CreateInvoiceBySubrIDCommand{
+		cmdInvoice := &invoicing.CreateInvoiceBySubrIDCommand{
 			SubscriptionID: subrID,
 			AccountID:      args.AccountID,
 			Customer: &subscriptingtypes.CustomerInfo{
@@ -276,13 +277,14 @@ func (a *EtelecomAggregate) ExtendExtension(ctx context.Context, args *etelecom.
 				Email:    shop.Email,
 			},
 			Description: "Thanh toán gia hạn extension",
+			Classify:    service_classify.Telecom,
 		}
 		if err = a.invoiceAggr.Dispatch(ctx, cmdInvoice); err != nil {
 			return err
 		}
 
 		inv := cmdInvoice.Result
-		cmdPayment := &invoice.PaymentInvoiceCommand{
+		cmdPayment := &invoicing.PaymentInvoiceCommand{
 			InvoiceID:       inv.ID,
 			AccountID:       args.AccountID,
 			OwnerID:         shop.OwnerID,

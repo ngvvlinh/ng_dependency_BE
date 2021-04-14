@@ -7,6 +7,8 @@ package sqlstore
 import (
 	time "time"
 
+	invoice_type "o.o/api/top/types/etc/invoice_type"
+	service_classify "o.o/api/top/types/etc/service_classify"
 	status4 "o.o/api/top/types/etc/status4"
 	subject_referral "o.o/api/top/types/etc/subject_referral"
 	sq "o.o/backend/pkg/common/sql/sq"
@@ -252,6 +254,44 @@ func (ft *InvoiceFilters) ByReferralTypePtr(ReferralType *subject_referral.Subje
 		Value:  ReferralType,
 		IsNil:  ReferralType == nil,
 		IsZero: ReferralType != nil && (*ReferralType) == 0,
+	}
+}
+
+func (ft *InvoiceFilters) ByClassify(Classify service_classify.ServiceClassify) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "classify",
+		Value:  Classify,
+		IsNil:  Classify == 0,
+	}
+}
+
+func (ft *InvoiceFilters) ByClassifyPtr(Classify *service_classify.ServiceClassify) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "classify",
+		Value:  Classify,
+		IsNil:  Classify == nil,
+		IsZero: Classify != nil && (*Classify) == 0,
+	}
+}
+
+func (ft *InvoiceFilters) ByType(Type invoice_type.InvoiceType) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == 0,
+	}
+}
+
+func (ft *InvoiceFilters) ByTypePtr(Type *invoice_type.InvoiceType) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == nil,
+		IsZero: Type != nil && (*Type) == 0,
 	}
 }
 

@@ -21,6 +21,7 @@ import (
 	"o.o/backend/pkg/etop/apix/partner"
 	orderS "o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/integration/email"
+	kpayclient "o.o/backend/pkg/integration/payment/kpay/client"
 	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
 	ahamoveclient "o.o/backend/pkg/integration/shipnow/ahamove/client"
 	ahamoveserver "o.o/backend/pkg/integration/shipnow/ahamove/server"
@@ -52,6 +53,7 @@ type Config struct {
 	Ecom           ecomconfig.Config           `yaml:"ecom"`
 
 	VTPay vtpayclient.Config `yaml:"vtpay"`
+	KPay  kpayclient.Config  `yaml:"kpay"`
 
 	URL struct {
 		Auth     partner.AuthURL `yaml:"auth"`
@@ -100,6 +102,8 @@ func Default() Config {
 			MainSite: "http://localhost:8100",
 		},
 		VTPay: vtpayclient.DefaultConfig(),
+		KPay:  kpayclient.DefaultConfig(),
+
 		SMS: sms.Config{
 			Mock:    true,
 			Enabled: true,
@@ -156,6 +160,7 @@ func Load(isTest bool) (Config, error) {
 	cfg.Shipment.VTPost.MustLoadEnv()
 	cfg.Ahamove.MustLoadEnv()
 	cfg.VTPay.MustLoadEnv()
+	cfg.KPay.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
 
 	if cfg.ThirdPartyHost == "" && cfg.SharedConfig.Env != cmenv.EnvDev.String() {

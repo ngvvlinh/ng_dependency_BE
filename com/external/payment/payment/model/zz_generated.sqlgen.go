@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Payments []*Payment
 
 const __sqlPayment_Table = "payment"
-const __sqlPayment_ListCols = "\"id\",\"amount\",\"status\",\"state\",\"payment_provider\",\"external_trans_id\",\"external_data\",\"created_at\",\"updated_at\""
-const __sqlPayment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"amount\" = EXCLUDED.\"amount\",\"status\" = EXCLUDED.\"status\",\"state\" = EXCLUDED.\"state\",\"payment_provider\" = EXCLUDED.\"payment_provider\",\"external_trans_id\" = EXCLUDED.\"external_trans_id\",\"external_data\" = EXCLUDED.\"external_data\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlPayment_ListCols = "\"id\",\"shop_id\",\"amount\",\"status\",\"state\",\"payment_provider\",\"external_trans_id\",\"external_data\",\"created_at\",\"updated_at\""
+const __sqlPayment_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"amount\" = EXCLUDED.\"amount\",\"status\" = EXCLUDED.\"status\",\"state\" = EXCLUDED.\"state\",\"payment_provider\" = EXCLUDED.\"payment_provider\",\"external_trans_id\" = EXCLUDED.\"external_trans_id\",\"external_data\" = EXCLUDED.\"external_data\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlPayment_Insert = "INSERT INTO \"payment\" (" + __sqlPayment_ListCols + ") VALUES"
 const __sqlPayment_Select = "SELECT " + __sqlPayment_ListCols + " FROM \"payment\""
 const __sqlPayment_Select_history = "SELECT " + __sqlPayment_ListCols + " FROM history.\"payment\""
@@ -65,6 +65,13 @@ func (m *Payment) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"shop_id": {
+			ColumnName:       "shop_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"amount": {
 			ColumnName:       "amount",
 			ColumnType:       "int",
@@ -84,14 +91,14 @@ func (m *Payment) Migration(db *cmsql.Database) {
 			ColumnType:       "payment_state.PaymentState",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "default", "created", "pending", "success", "failed", "cancelled"},
+			ColumnEnumValues: []string{"unknown", "default", "created", "pending", "success", "failed", "cancelled", "expired", "refunded"},
 		},
 		"payment_provider": {
 			ColumnName:       "payment_provider",
 			ColumnType:       "payment_provider.PaymentProvider",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "vtpay", "bank", "manual"},
+			ColumnEnumValues: []string{"unknown", "vtpay", "bank", "manual", "kpay"},
 		},
 		"external_trans_id": {
 			ColumnName:       "external_trans_id",
@@ -135,6 +142,7 @@ func (m *Payment) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		m.ID,
+		m.ShopID,
 		core.Int(m.Amount),
 		m.Status,
 		m.State,
@@ -149,6 +157,7 @@ func (m *Payment) SQLArgs(opts core.Opts, create bool) []interface{} {
 func (m *Payment) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
+		&m.ShopID,
 		(*core.Int)(&m.Amount),
 		&m.Status,
 		&m.State,
@@ -194,7 +203,7 @@ func (_ *Payments) SQLSelect(w SQLWriter) error {
 func (m *Payment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPayment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(10)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -204,7 +213,7 @@ func (ms Payments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPayment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(9)
+		w.WriteMarkers(10)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -242,6 +251,14 @@ func (m *Payment) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ID)
+	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
 	}
 	if m.Amount != 0 {
 		flag = true
@@ -317,7 +334,7 @@ func (m *Payment) SQLUpdate(w SQLWriter) error {
 func (m *Payment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlPayment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(10)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -340,6 +357,7 @@ func (m PaymentHistories) SQLSelect(w SQLWriter) error {
 }
 
 func (m PaymentHistory) ID() core.Interface     { return core.Interface{m["id"]} }
+func (m PaymentHistory) ShopID() core.Interface { return core.Interface{m["shop_id"]} }
 func (m PaymentHistory) Amount() core.Interface { return core.Interface{m["amount"]} }
 func (m PaymentHistory) Status() core.Interface { return core.Interface{m["status"]} }
 func (m PaymentHistory) State() core.Interface  { return core.Interface{m["state"]} }
@@ -354,32 +372,33 @@ func (m PaymentHistory) CreatedAt() core.Interface    { return core.Interface{m[
 func (m PaymentHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 
 func (m *PaymentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(PaymentHistory, 9)
+	res := make(PaymentHistory, 10)
 	res["id"] = data[0]
-	res["amount"] = data[1]
-	res["status"] = data[2]
-	res["state"] = data[3]
-	res["payment_provider"] = data[4]
-	res["external_trans_id"] = data[5]
-	res["external_data"] = data[6]
-	res["created_at"] = data[7]
-	res["updated_at"] = data[8]
+	res["shop_id"] = data[1]
+	res["amount"] = data[2]
+	res["status"] = data[3]
+	res["state"] = data[4]
+	res["payment_provider"] = data[5]
+	res["external_trans_id"] = data[6]
+	res["external_data"] = data[7]
+	res["created_at"] = data[8]
+	res["updated_at"] = data[9]
 	*m = res
 	return nil
 }
 
 func (ms *PaymentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
 		args[i] = &data[i]
 	}
 	res := make(PaymentHistories, 0, 128)
@@ -389,14 +408,15 @@ func (ms *PaymentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		}
 		m := make(PaymentHistory)
 		m["id"] = data[0]
-		m["amount"] = data[1]
-		m["status"] = data[2]
-		m["state"] = data[3]
-		m["payment_provider"] = data[4]
-		m["external_trans_id"] = data[5]
-		m["external_data"] = data[6]
-		m["created_at"] = data[7]
-		m["updated_at"] = data[8]
+		m["shop_id"] = data[1]
+		m["amount"] = data[2]
+		m["status"] = data[3]
+		m["state"] = data[4]
+		m["payment_provider"] = data[5]
+		m["external_trans_id"] = data[6]
+		m["external_data"] = data[7]
+		m["created_at"] = data[8]
+		m["updated_at"] = data[9]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

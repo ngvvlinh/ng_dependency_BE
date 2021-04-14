@@ -3314,6 +3314,33 @@
         }
       }
     },
+    "/api/shop.Payment/UpdatePaymentStatus": {
+      "post": {
+        "tags": [
+          "Payment"
+        ],
+        "summary": "UpdatePaymentStatus",
+        "operationId": "shop.Payment-UpdatePaymentStatus",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdatePaymentStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Product/AddProductCollection": {
       "post": {
         "description": "-- collection --//\n",
@@ -8000,9 +8027,11 @@
     "bqSubjectReferral": {
       "type": "string",
       "enum": [
+        "unknown",
         "credit",
         "invoice",
-        "subscription"
+        "subscription",
+        "order"
       ]
     },
     "bwShippingProvider": {
@@ -8656,6 +8685,14 @@
         "devivery_giveup",
         "return_fail",
         "cancelling"
+      ]
+    },
+    "neProductType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "services",
+        "goods"
       ]
     },
     "ojFeeType": {
@@ -9753,7 +9790,7 @@
           "type": "string"
         },
         "product_type": {
-          "$ref": "#/definitions/pdProductType"
+          "$ref": "#/definitions/neProductType"
         },
         "retail_price": {
           "type": "integer"
@@ -11081,12 +11118,18 @@
     "paGetExternalPaymenUrlRequest": {
       "type": "object",
       "properties": {
-        "payment_method": {
-          "$ref": "#/definitions/yiPaymentMethod"
+        "cancel_url": {
+          "type": "string"
+        },
+        "payment_provider": {
+          "$ref": "#/definitions/ywPaymentProvider"
         },
         "ref_id": {
           "type": "string",
           "format": "int64"
+        },
+        "return_url": {
+          "type": "string"
         },
         "type": {
           "$ref": "#/definitions/bqSubjectReferral"
@@ -13165,7 +13208,7 @@
           "format": "int64"
         },
         "product_type": {
-          "$ref": "#/definitions/pdProductType"
+          "$ref": "#/definitions/neProductType"
         },
         "retail_price": {
           "type": "integer"
@@ -14132,6 +14175,21 @@
         }
       }
     },
+    "paUpdatePaymentStatusRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "state": {
+          "$ref": "#/definitions/pdPaymentState"
+        },
+        "status": {
+          "$ref": "#/definitions/bmStatus"
+        }
+      }
+    },
     "paUpdateProductCategoryRequest": {
       "type": "object",
       "properties": {
@@ -14206,7 +14264,7 @@
           "type": "string"
         },
         "product_type": {
-          "$ref": "#/definitions/pdProductType"
+          "$ref": "#/definitions/neProductType"
         },
         "retail_price": {
           "type": "integer"
@@ -15096,12 +15154,18 @@
         }
       }
     },
-    "pdProductType": {
+    "pdPaymentState": {
       "type": "string",
       "enum": [
         "unknown",
-        "services",
-        "goods"
+        "default",
+        "created",
+        "pending",
+        "success",
+        "failed",
+        "cancelled",
+        "expired",
+        "refunded"
       ]
     },
     "peReceiptType": {
@@ -18781,7 +18845,8 @@
         "unknown",
         "vtpay",
         "bank",
-        "manual"
+        "manual",
+        "kpay"
       ]
     },
     "zmWsListProductShowStyle": {

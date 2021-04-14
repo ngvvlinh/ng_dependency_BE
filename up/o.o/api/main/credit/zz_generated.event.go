@@ -5,3 +5,4 @@
 package credit
 
 func (e *CreditConfirmedEvent) GetTopic() string { return "event/credit" }
+func (e *CreditCreatedEvent) GetTopic() string   { return "event/credit" }

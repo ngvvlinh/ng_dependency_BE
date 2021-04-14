@@ -1092,6 +1092,7 @@ var _acl = map[string]*permission.Decl{
 	"shop.Payment/PaymentTradingOrder":    {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
 	"shop.Payment/PaymentCheckReturnData": {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
 	"shop.Payment/GetExternalPaymentUrl":  {Type: Shop},
+	"shop.Payment/UpdatePaymentStatus":    {Type: Shop},
 
 	"shop.Inventory/CreateInventoryVoucher":          {Type: Shop, Actions: actions(ShopInventoryCreate)},
 	"shop.Inventory/ConfirmInventoryVoucher":         {Type: Shop, Actions: actions(ShopInventoryConfirm)},

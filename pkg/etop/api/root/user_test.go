@@ -30,7 +30,7 @@ func TestCreateLoginResponse(t *testing.T) {
 			AccessToken: token,
 			ExpiresIn:   tokens.DefaultAccessTokenTTL,
 			User: &pb.User{
-				Id:       userID,
+				ID:       userID,
 				FullName: "Josie",
 			},
 			AvailableAccounts: []*pb.LoginAccount{},
@@ -68,12 +68,12 @@ func TestCreateLoginResponse(t *testing.T) {
 
 		accountsResp := []*pb.LoginAccount{
 			{
-				Id:   accounts[0].Account.ID,
+				ID:   accounts[0].Account.ID,
 				Name: "Alice",
 				Type: pb.AccountType_supplier,
 			},
 			{
-				Id:   accounts[1].Account.ID,
+				ID:   accounts[1].Account.ID,
 				Name: "Johny",
 				Type: pb.AccountType_shop,
 			},
@@ -111,13 +111,13 @@ func TestCreateLoginResponse(t *testing.T) {
 
 			loginResp.AvailableAccounts = accountsResp
 			loginResp.Account = &pb.LoginAccount{
-				Id:   shop.ID,
+				ID:   shop.ID,
 				Name: "Johny",
 				Type: pb.AccountType_shop,
 			}
 
 			loginResp.Shop = &pb.Shop{
-				Id:     shop.ID,
+				ID:     shop.ID,
 				Name:   "Johny",
 				Status: status3.Status_P,
 			}
@@ -145,12 +145,12 @@ func TestCreateLoginResponse(t *testing.T) {
 
 			loginResp.AvailableAccounts = accountsResp
 			loginResp.Account = &pb.LoginAccount{
-				Id:   supplier.ID,
+				ID:   supplier.ID,
 				Name: "Alice",
 				Type: pb.AccountType_supplier,
 			}
 			loginResp.Supplier = &pb.Supplier{
-				Id:             supplier.ID,
+				ID:             supplier.ID,
 				Name:           "Alice",
 				Status:         status3.Status_P,
 				ContactPersons: []*pb.ContactPerson{},

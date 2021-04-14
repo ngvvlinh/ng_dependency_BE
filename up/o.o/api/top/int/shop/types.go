@@ -18,8 +18,8 @@ import (
 	"o.o/api/top/types/etc/inventory_type"
 	"o.o/api/top/types/etc/inventory_voucher_ref"
 	"o.o/api/top/types/etc/ledger_type"
-	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/payment_provider"
+	"o.o/api/top/types/etc/payment_state"
 	"o.o/api/top/types/etc/product_type"
 	"o.o/api/top/types/etc/receipt_mode"
 	"o.o/api/top/types/etc/receipt_ref"
@@ -1442,12 +1442,22 @@ type SummarizeFulfillmentsRequest struct {
 }
 
 type GetExternalPaymenUrlRequest struct {
-	Type          subject_referral.SubjectReferral `json:"type"`
-	RefID         dot.ID                           `json:"ref_id"`
-	PaymentMethod payment_method.PaymentMethod     `json:"payment_method"`
+	Type            subject_referral.SubjectReferral `json:"type"`
+	RefID           dot.ID                           `json:"ref_id"`
+	ReturnURL       string                           `json:"return_url"`
+	CancelURL       string                           `json:"cancel_url"`
+	PaymentProvider payment_provider.PaymentProvider `json:"payment_provider"`
 }
 
 func (m *GetExternalPaymenUrlRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdatePaymentStatusRequest struct {
+	ID     dot.ID                     `json:"id"`
+	State  payment_state.PaymentState `json:"state"`
+	Status status4.Status             `json:"status"`
+}
+
+func (m *UpdatePaymentStatusRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetExternalPaymentUrlResponse struct {
 	PaymentUrl string `json:"payment_url"`

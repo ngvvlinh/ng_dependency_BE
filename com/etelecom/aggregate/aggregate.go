@@ -5,7 +5,7 @@ import (
 	"o.o/api/main/connectioning"
 	"o.o/api/main/contact"
 	"o.o/api/main/identity"
-	"o.o/api/subscripting/invoice"
+	"o.o/api/main/invoicing"
 	"o.o/api/subscripting/subscription"
 	"o.o/api/subscripting/subscriptionplan"
 	"o.o/backend/com/etelecom/convert"
@@ -38,7 +38,7 @@ type EtelecomAggregate struct {
 	subrPlanQuery   subscriptionplan.QueryBus
 	subrQuery       subscription.QueryBus
 	subrAggr        subscription.CommandBus
-	invoiceAggr     invoice.CommandBus
+	invoiceAggr     invoicing.CommandBus
 }
 
 func NewEtelecomAggregate(
@@ -50,7 +50,7 @@ func NewEtelecomAggregate(
 	subrPlanQ subscriptionplan.QueryBus,
 	subrQ subscription.QueryBus,
 	subrA subscription.CommandBus,
-	invoiceA invoice.CommandBus,
+	invoiceA invoicing.CommandBus,
 ) *EtelecomAggregate {
 	return &EtelecomAggregate{
 		// use dbMain for transaction
