@@ -55,6 +55,8 @@ func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Serv
 		return NewHistoryServiceServer(builder, hooks...), true
 	case func() InventoryService:
 		return NewInventoryServiceServer(builder, hooks...), true
+	case func() InvoiceService:
+		return NewInvoiceServiceServer(builder, hooks...), true
 	case func() LedgerService:
 		return NewLedgerServiceServer(builder, hooks...), true
 	case func() MiscService:
@@ -2235,6 +2237,74 @@ func (s *InventoryServiceServer) parseRoute(path string, hooks httprpc.Hooks, in
 				return
 			}
 			resp, err = inner.UpdateInventoryVoucher(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type InvoiceServiceServer struct {
+	hooks   httprpc.HooksBuilder
+	builder func() InvoiceService
+}
+
+func NewInvoiceServiceServer(builder func() InvoiceService, hooks ...httprpc.HooksBuilder) httprpc.Server {
+	return &InvoiceServiceServer{
+		hooks:   httprpc.ChainHooks(hooks...),
+		builder: builder,
+	}
+}
+
+const InvoiceServicePathPrefix = "/shop.Invoice/"
+
+const Path_Invoice_GetInvoices = "/shop.Invoice/GetInvoices"
+
+func (s *InvoiceServiceServer) PathPrefix() string {
+	return InvoiceServicePathPrefix
+}
+
+func (s *InvoiceServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
+func (s *InvoiceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	hooks := httprpc.WrapHooks(s.hooks)
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.RequestReceived(ctx, *info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
+}
+
+func (s *InvoiceServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Invoice/GetInvoices":
+		msg := &inttypes.GetShopInvoicesRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetInvoices(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

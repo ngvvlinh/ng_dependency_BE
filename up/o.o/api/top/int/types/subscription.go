@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
@@ -231,16 +233,40 @@ type ManualPaymentInvoiceRequest struct {
 func (m *ManualPaymentInvoiceRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInvoicesRequest struct {
-	AccountID dot.ID           `json:"account_id"`
-	Paging    *common.Paging   `json:"paging"`
-	Filters   []*common.Filter `json:"filters"`
+	AccountID dot.ID               `json:"account_id"`
+	Paging    *common.CursorPaging `json:"paging"`
+	Filters   []*common.Filter     `json:"filters"`
 }
 
 func (m *GetInvoicesRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInvoicesResponse struct {
-	Invoices []*Invoice       `json:"invoices"`
-	Paging   *common.PageInfo `json:"paging"`
+	Invoices []*Invoice             `json:"invoices"`
+	Paging   *common.CursorPageInfo `json:"paging"`
 }
 
 func (m *GetInvoicesResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetShopInvoicesRequest struct {
+	Paging  *common.CursorPaging   `json:"paging"`
+	Filter  *GetShopInvoicesFilter `json:"filter"`
+	Filters []*common.Filter       `json:"filters"`
+}
+
+func (m *GetShopInvoicesRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetShopInvoicesFilter struct {
+	RefID    dot.ID                           `json:"ref_id"`
+	RefType  subject_referral.SubjectReferral `json:"ref_type"`
+	DateFrom time.Time                        `json:"date_from"`
+	DateTo   time.Time                        `json:"date_to"`
+}
+
+func (m *GetShopInvoicesFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetShopInvoicesResponse struct {
+	Invoices []*Invoice             `json:"invoices"`
+	Paging   *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *GetShopInvoicesResponse) String() string { return jsonx.MustMarshalToString(m) }

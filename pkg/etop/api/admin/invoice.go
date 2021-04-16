@@ -25,7 +25,10 @@ func (s *InvoiceService) Clone() admin.InvoiceService {
 }
 
 func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetInvoicesRequest) (*types.GetInvoicesResponse, error) {
-	paging := cmapi.CMPaging(r.Paging)
+	paging, err := cmapi.CMCursorPaging(r.Paging)
+	if err != nil {
+		return nil, err
+	}
 	query := &invoice.ListInvoicesQuery{
 		AccountID: r.AccountID,
 		Paging:    *paging,
@@ -37,7 +40,7 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetInvoicesRe
 	res := convertpball.PbInvoices(query.Result.Invoices)
 	result := &types.GetInvoicesResponse{
 		Invoices: res,
-		Paging:   cmapi.PbMetaPageInfo(query.Result.Paging),
+		Paging:   cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
 	}
 	return result, nil
 }

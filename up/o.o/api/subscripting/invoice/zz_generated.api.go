@@ -6,6 +6,7 @@ package invoice
 
 import (
 	context "context"
+	time "time"
 
 	meta "o.o/api/meta"
 	subscriptingtypes "o.o/api/subscripting/types"
@@ -146,6 +147,10 @@ type ListInvoicesQuery struct {
 	AccountID dot.ID
 	Paging    meta.Paging
 	Filters   meta.Filters
+	RefID     dot.ID
+	RefType   subject_referral.SubjectReferral
+	DateFrom  time.Time
+	DateTo    time.Time
 
 	Result *ListInvoicesResponse `json:"-"`
 }
@@ -305,6 +310,10 @@ func (q *ListInvoicesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 			AccountID: q.AccountID,
 			Paging:    q.Paging,
 			Filters:   q.Filters,
+			RefID:     q.RefID,
+			RefType:   q.RefType,
+			DateFrom:  q.DateFrom,
+			DateTo:    q.DateTo,
 		}
 }
 
@@ -312,6 +321,10 @@ func (q *ListInvoicesQuery) SetListInvoicesArgs(args *ListInvoicesArgs) {
 	q.AccountID = args.AccountID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
+	q.RefID = args.RefID
+	q.RefType = args.RefType
+	q.DateFrom = args.DateFrom
+	q.DateTo = args.DateTo
 }
 
 // implement dispatching

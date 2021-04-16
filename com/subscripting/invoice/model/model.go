@@ -11,7 +11,7 @@ import (
 
 // +sqlgen
 type Invoice struct {
-	ID            dot.ID
+	ID            dot.ID `paging:"id"`
 	AccountID     dot.ID
 	TotalAmount   int
 	Description   string
@@ -19,8 +19,8 @@ type Invoice struct {
 	PaymentStatus status4.Status
 	Status        status4.Status
 	Customer      *subcriptingsharemodel.CustomerInfo
-	CreatedAt     time.Time `sq:"create"`
-	UpdatedAt     time.Time `sq:"create"`
+	CreatedAt     time.Time `sq:"create" paging:"created_at"`
+	UpdatedAt     time.Time `sq:"create" paging:"updated_at"`
 	DeletedAt     time.Time
 	WLPartnerID   dot.ID
 	ReferralType  subject_referral.SubjectReferral

@@ -2475,6 +2475,33 @@
         }
       }
     },
+    "/api/shop.Invoice/GetInvoices": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "GetInvoices",
+        "operationId": "shop.Invoice-GetInvoices",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetShopInvoicesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetShopInvoicesResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Ledger/CreateLedger": {
       "post": {
         "tags": [
@@ -16405,6 +16432,57 @@
         }
       }
     },
+    "qdGetShopInvoicesFilter": {
+      "type": "object",
+      "properties": {
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        }
+      }
+    },
+    "qdGetShopInvoicesRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/qdGetShopInvoicesFilter"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ktFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "qdGetShopInvoicesResponse": {
+      "type": "object",
+      "properties": {
+        "invoices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdInvoice"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
     "qdGetSubrPlansRequest": {
       "type": "object",
       "properties": {
@@ -16527,6 +16605,102 @@
           "items": {
             "$ref": "#/definitions/qdTransaction"
           }
+        }
+      }
+    },
+    "qdInvoice": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customer": {
+          "$ref": "#/definitions/qdSubrCustomer"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdInvoiceLine"
+          }
+        },
+        "payment_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "payment_status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "referral_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "referral_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        },
+        "status": {
+          "$ref": "#/definitions/bmStatus"
+        },
+        "total_amount": {
+          "type": "integer"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdInvoiceLine": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "invoice_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "line_amount": {
+          "type": "integer"
+        },
+        "price": {
+          "type": "integer"
+        },
+        "quantity": {
+          "type": "integer"
+        },
+        "referral_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "referral_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -18668,6 +18842,9 @@
     },
     {
       "name": "Inventory"
+    },
+    {
+      "name": "Invoice"
     },
     {
       "name": "Ledger"

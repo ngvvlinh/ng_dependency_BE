@@ -4,6 +4,8 @@ import "o.o/backend/pkg/common/sql/sqlstore"
 
 var SortInvoice = map[string]string{
 	"created_at": "created_at",
+	"id":         "id",
+	"updated_at": "updated_at",
 }
 
 var FilterInvoice = sqlstore.FilterWhitelist{

@@ -21,6 +21,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
 	"o.o/backend/pkg/etop/api/shop/inventory"
+	"o.o/backend/pkg/etop/api/shop/invoice"
 	"o.o/backend/pkg/etop/api/shop/ledger"
 	"o.o/backend/pkg/etop/api/shop/money_transaction"
 	"o.o/backend/pkg/etop/api/shop/notification"
@@ -89,6 +90,7 @@ func NewServers(
 	etelecomService *etelecom.EtelecomService,
 	etelecomUserService *etelecomuser.EtelecomUserService,
 	transactionService *transaction.TransactionService,
+	invoiceService *invoice.InvoiceService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -138,6 +140,7 @@ func NewServers(
 		etelecomService.Clone,
 		etelecomUserService.Clone,
 		transactionService.Clone,
+		invoiceService.Clone,
 	)
 	return servers
 }

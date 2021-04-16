@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/meta"
 	"o.o/api/subscripting/invoice"
+	"o.o/api/top/types/etc/subject_referral"
 	"o.o/backend/com/subscripting/invoice/convert"
 	"o.o/backend/com/subscripting/invoice/model"
 	cm "o.o/backend/pkg/common"
@@ -13,6 +14,7 @@ import (
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
 )
@@ -64,6 +66,21 @@ func (s *InvoiceStore) Filters(filters meta.Filters) *InvoiceStore {
 	} else {
 		s.filters = append(s.filters, filters...)
 	}
+	return s
+}
+
+func (s *InvoiceStore) ReferralType(_type subject_referral.SubjectReferral) *InvoiceStore {
+	s.preds = append(s.preds, s.ft.ByReferralType(_type))
+	return s
+}
+
+func (s *InvoiceStore) ReferralID(id dot.ID) *InvoiceStore {
+	s.preds = append(s.preds, sq.NewExpr("referral_ids @> ?", core.Array{V: []dot.ID{id}}))
+	return s
+}
+
+func (s *InvoiceStore) BetweenDateFromAndDateTo(dateFrom time.Time, dateTo time.Time) *InvoiceStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at BETWEEN ? AND ?", dateFrom, dateTo))
 	return s
 }
 
@@ -134,6 +151,7 @@ func (s *InvoiceStore) ListInvoiceFtLinesDB() ([]*model.InvoiceFtLine, error) {
 	if err = query.Find(&invoices); err != nil {
 		return nil, err
 	}
+	s.Paging.Apply(invoices)
 	invoiceIDs := make([]dot.ID, len(invoices))
 	for i, inv := range invoices {
 		invoiceIDs[i] = inv.ID

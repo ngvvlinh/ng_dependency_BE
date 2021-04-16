@@ -240,6 +240,9 @@ const (
 	ShopTenantCreate    permission.ActionType = "shop/tenant:create"
 	ShopTenantView      permission.ActionType = "shop/tenant:view"
 
+	// shop invoice
+	ShopInvoiceView permission.ActionType = "shop/invoice:view"
+
 	// shop credit
 	ShopCreditCreate permission.ActionType = "shop/credit:create"
 
@@ -1127,6 +1130,8 @@ var _acl = map[string]*permission.Decl{
 	"shop.Subscription/GetSubscriptions":        {Type: Shop, Actions: actions(ShopSubscriptionView)},
 	"shop.Subscription/CreateSubscription":      {Type: Shop, Actions: actions(ShopSubscriptionCreate)},
 	"shop.Subscription/UpdateSubscriptionInfo":  {Type: Shop, Actions: actions(ShopSubscriptionUpdate)},
+
+	"shop.Invoice/GetInvoices": {Type: Shop, Actions: actions(ShopInvoiceView)},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},

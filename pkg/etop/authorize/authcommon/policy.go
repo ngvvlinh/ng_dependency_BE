@@ -173,6 +173,8 @@ const shopPolicy = `#connection
 	p, shop/credit:create, admin, owner, accountant, staff_management, telecom_customerservice
 	# transaction
 	p, shop/transaction:view, admin, owner, salesman, accountant, purchasing_management
+	# invoice
+	p, shop/invoice:view, admin, owner, accountant, salesman
 `
 
 const adminPolicy = `

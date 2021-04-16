@@ -2,6 +2,7 @@ package invoice
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/meta"
 	"o.o/api/subscripting/types"
@@ -71,6 +72,10 @@ type ListInvoicesArgs struct {
 	AccountID dot.ID
 	Paging    meta.Paging
 	Filters   meta.Filters
+	RefID     dot.ID
+	RefType   subject_referral.SubjectReferral
+	DateFrom  time.Time
+	DateTo    time.Time
 }
 
 type ListInvoicesResponse struct {

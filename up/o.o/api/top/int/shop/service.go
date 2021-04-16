@@ -499,3 +499,8 @@ type TransactionService interface {
 	GetTransactions(context.Context, *types.GetTransactionsRequest) (*types.GetTransactionsResponse, error)
 	GetTransaction(context.Context, *types.GetTransactionRequest) (*types.Transaction, error)
 }
+
+// +apix:path=/shop.Invoice
+type InvoiceService interface {
+	GetInvoices(context.Context, *types.GetShopInvoicesRequest) (*types.GetShopInvoicesResponse, error)
+}

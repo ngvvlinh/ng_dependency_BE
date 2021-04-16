@@ -17,6 +17,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
 	"o.o/backend/pkg/etop/api/shop/inventory"
+	"o.o/backend/pkg/etop/api/shop/invoice"
 	"o.o/backend/pkg/etop/api/shop/notification"
 	"o.o/backend/pkg/etop/api/shop/order"
 	"o.o/backend/pkg/etop/api/shop/product"
@@ -53,6 +54,7 @@ func NewServers(
 	settingService *setting.SettingService,
 	connectionService *connection.ConnectionService,
 	transactionService *transaction.TransactionService,
+	invoiceService *invoice.InvoiceService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -84,6 +86,7 @@ func NewServers(
 		summaryService.Clone,
 		settingService.Close,
 		transactionService.Clone,
+		invoiceService.Clone,
 	)
 	return servers
 }
