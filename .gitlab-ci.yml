@@ -1,5 +1,5 @@
 stages:
-- verify
+#- verify
 - test
 
 workflow:
@@ -28,21 +28,21 @@ before_script:
 
 .go-cache:
   cache:
-    key: "ci:build-1"
+    key: "ci:build-2"
     paths:
     - .mod
 
-verify:
-  stage: verify
-  tags: [go]
-  image: olvrng/golang-toolbox
-  extends: .go-cache
-  script:
-    - go version
-    - time scripts/ci/cache-load.sh
-    - time scripts/verify-imports.sh
-    - time scripts/ci/verify-lint.sh
-    - time scripts/ci/verify-generate.sh
+#verify:
+#  stage: verify
+#  tags: [go]
+#  image: olvrng/golang-toolbox
+#  extends: .go-cache
+#  script:
+#    - go version
+#    - time scripts/ci/cache-load.sh
+#    - time scripts/verify-imports.sh
+#    - time scripts/ci/verify-lint.sh
+#    - time scripts/ci/verify-generate.sh
 
 report-gerrit-changes-running:
   stage: test
@@ -63,6 +63,9 @@ build:
   script:
   - go version
   - time scripts/ci/cache-load.sh
+  - time scripts/verify-imports.sh
+  - time scripts/ci/verify-lint.sh
+  - time scripts/ci/verify-generate.sh
   - time go run ./scripts/init_testdb/main.go -drop
   - time scripts/ci/test-all.sh simple
 #  - time scripts/ci/test-all.sh e2e

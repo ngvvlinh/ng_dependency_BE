@@ -148,30 +148,16 @@ func (a *EtelecomAggregate) ActivateTenant(ctx context.Context, args *etelecom.A
 	//    - Update Trunk provider
 	//    - Create outbound rules
 
-	// accountID required: use to create api_key for this shop
-	if args.AccountID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing account_id")
-	}
 	if args.HotlineID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing hotline ID")
 	}
-	queryAccount := &identity.GetAccountByIDQuery{
-		ID: args.AccountID,
-	}
-	if err := a.identityQuery.Dispatch(ctx, queryAccount); err != nil {
-		return nil, err
-	}
-	ownerID := queryAccount.Result.OwnerID
-	if args.OwnerID != 0 && args.OwnerID != ownerID {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "account_id does not belong to this user")
+	if args.TenantID != 0 && args.OwnerID != 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Please provide at least owner_id or tenant_id")
 	}
 
-	tenant, err := a.tenantStore(ctx).OwnerID(ownerID).ConnectionID(args.ConnectionID).GetTenant()
+	tenant, err := a.tenantStore(ctx).OptionalID(args.TenantID).OptionalOwnerID(args.OwnerID).ConnectionID(args.ConnectionID).GetTenant()
 	if err != nil {
 		return nil, err
-	}
-	if args.TenantID != 0 && tenant.ID != args.TenantID {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "tenant_id does not belong to this user")
 	}
 	tenantID := tenant.ID
 	if tenant.Status.Enum == status3.P {
@@ -180,8 +166,7 @@ func (a *EtelecomAggregate) ActivateTenant(ctx context.Context, args *etelecom.A
 
 	event := &etelecom.TenantActivingEvent{
 		TenantID:  tenantID,
-		OwnerID:   ownerID,
-		AccountID: args.AccountID,
+		OwnerID:   args.OwnerID,
 		HotlineID: args.HotlineID,
 	}
 	if err = a.eventBus.Publish(ctx, event); err != nil {

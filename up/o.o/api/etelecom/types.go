@@ -115,6 +115,5 @@ type TenantExternalData struct {
 type TenantActivingEvent struct {
 	TenantID  dot.ID
 	OwnerID   dot.ID
-	AccountID dot.ID
 	HotlineID dot.ID
 }

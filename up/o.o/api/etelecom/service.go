@@ -307,7 +307,6 @@ type GetTenantArgs struct {
 
 type ActivateTenantArgs struct {
 	OwnerID            dot.ID
-	AccountID          dot.ID
 	TenantID           dot.ID
 	HotlineID          dot.ID
 	ConnectionID       dot.ID

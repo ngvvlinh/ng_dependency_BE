@@ -509,6 +509,7 @@ type ListShopExtendedsQuery struct {
 	Filters              meta.Filters
 	Name                 filter.FullTextSearch
 	ShopIDs              []dot.ID
+	OwnerID              dot.ID
 	IncludeWLPartnerShop bool
 
 	Result *ListShopExtendedsResponse `json:"-"`
@@ -1073,6 +1074,7 @@ func (q *ListShopExtendedsQuery) GetArgs(ctx context.Context) (_ context.Context
 			Filters:              q.Filters,
 			Name:                 q.Name,
 			ShopIDs:              q.ShopIDs,
+			OwnerID:              q.OwnerID,
 			IncludeWLPartnerShop: q.IncludeWLPartnerShop,
 		}
 }
@@ -1082,6 +1084,7 @@ func (q *ListShopExtendedsQuery) SetListShopQuery(args *ListShopQuery) {
 	q.Filters = args.Filters
 	q.Name = args.Name
 	q.ShopIDs = args.ShopIDs
+	q.OwnerID = args.OwnerID
 	q.IncludeWLPartnerShop = args.IncludeWLPartnerShop
 }
 

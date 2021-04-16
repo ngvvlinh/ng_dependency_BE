@@ -243,9 +243,9 @@ type ActivateTenantRequest struct {
 	OwnerID  dot.ID `json:"owner_id"`
 	TenantID dot.ID `json:"tenant_id"`
 	// @required
-	AccountID dot.ID `json:"account_id"`
-	// @required
 	HotlineID dot.ID `json:"hotline_id"`
+	// Portsip direct connection (defautl value)
+	ConnectionID dot.ID `json:"connection_id"`
 }
 
 func (m *ActivateTenantRequest) String() string { return jsonx.MustMarshalToString(m) }

@@ -35,7 +35,6 @@ func (b QueryBus) Dispatch(ctx context.Context, msg interface{ query() }) error 
 
 type ActivateTenantCommand struct {
 	OwnerID            dot.ID
-	AccountID          dot.ID
 	TenantID           dot.ID
 	HotlineID          dot.ID
 	ConnectionID       dot.ID
@@ -413,7 +412,6 @@ func (q *ActivateTenantCommand) GetArgs(ctx context.Context) (_ context.Context,
 	return ctx,
 		&ActivateTenantArgs{
 			OwnerID:            q.OwnerID,
-			AccountID:          q.AccountID,
 			TenantID:           q.TenantID,
 			HotlineID:          q.HotlineID,
 			ConnectionID:       q.ConnectionID,
@@ -423,7 +421,6 @@ func (q *ActivateTenantCommand) GetArgs(ctx context.Context) (_ context.Context,
 
 func (q *ActivateTenantCommand) SetActivateTenantArgs(args *ActivateTenantArgs) {
 	q.OwnerID = args.OwnerID
-	q.AccountID = args.AccountID
 	q.TenantID = args.TenantID
 	q.HotlineID = args.HotlineID
 	q.ConnectionID = args.ConnectionID

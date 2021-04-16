@@ -6,6 +6,8 @@ import (
 
 	"o.o/api/etelecom"
 	"o.o/api/main/connectioning"
+	"o.o/api/main/identity"
+	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/etelecom/provider"
 	providertypes "o.o/backend/com/etelecom/provider/types"
@@ -31,6 +33,7 @@ type ProcessManager struct {
 	etelecomQS        etelecom.QueryBus
 	etelecomAggr      etelecom.CommandBus
 	accountAuthStore  sqlstore.AccountAuthStoreFactory
+	identityQS        identity.QueryBus
 }
 
 func New(
@@ -42,6 +45,7 @@ func New(
 	etelecomQ etelecom.QueryBus,
 	etelecomA etelecom.CommandBus,
 	accountAuthStore sqlstore.AccountAuthStoreFactory,
+	identityQ identity.QueryBus,
 ) *ProcessManager {
 	p := &ProcessManager{
 		connectionManager: connManager,
@@ -51,6 +55,7 @@ func New(
 		etelecomQS:        etelecomQ,
 		etelecomAggr:      etelecomA,
 		accountAuthStore:  accountAuthStore,
+		identityQS:        identityQ,
 	}
 	p.registerEventHandlers(evenBus)
 	return p
@@ -68,9 +73,6 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	//      - Call portsip api: updateTrunkProvider
 	//      - Create outbound rule
 
-	if event.AccountID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing account ID")
-	}
 	if event.HotlineID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing hotline_id")
 	}
@@ -100,7 +102,20 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	}
 
 	// get auth_key
-	authKey, err := m.getShopPartnerAPIKey(ctx, event.AccountID)
+	// it's needed account_id to generate api_key
+	// use api_key to call extenal etelecom service to config CDR
+	queryAccountUser := &identity.GetAllAccountsByUsersQuery{
+		UserIDs: []dot.ID{event.OwnerID},
+		Type:    account_type.Shop.Wrap(),
+	}
+	if err := m.identityQS.Dispatch(ctx, queryAccountUser); err != nil {
+		return err
+	}
+	if len(queryAccountUser.Result) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "User does not valid. Please create shop for this user")
+	}
+	accountID := queryAccountUser.Result[0].AccountID
+	authKey, err := m.getShopPartnerAPIKey(ctx, accountID)
 	if err != nil {
 		return err
 	}

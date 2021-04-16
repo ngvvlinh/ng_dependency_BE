@@ -1405,7 +1405,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	processManager21 := pm22.New(busBus, transactionQueryBus, transactionCommandBus, creditQueryBus)
 	processManager22 := pm23.New(busBus, usersettingQueryBus, queryBus)
 	processManager23 := pm24.NewProcessManager(busBus, ticketCommandBus)
-	portsip_pmProcessManager := portsip_pm.New(busBus, connectionManager, connectioningQueryBus, connectioningCommandBus, telecomManager, etelecomQueryBus, etelecomCommandBus, accountAuthStoreFactory)
+	portsip_pmProcessManager := portsip_pm.New(busBus, connectionManager, connectioningQueryBus, connectioningCommandBus, telecomManager, etelecomQueryBus, etelecomCommandBus, accountAuthStoreFactory, queryBus)
 	output := Output{
 		Servers:                v4,
 		Health:                 service,

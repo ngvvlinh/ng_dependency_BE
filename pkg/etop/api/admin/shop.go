@@ -47,10 +47,6 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 	paging := cmapi.CMPaging(q.Paging)
 	var fullTextSearch filter.FullTextSearch = ""
 	var shopIDs []dot.ID
-	if q.Filter != nil {
-		fullTextSearch = q.Filter.Name
-		shopIDs = q.Filter.ShopIDs
-	}
 	query := &identity.ListShopExtendedsQuery{
 		Paging:               *paging,
 		Filters:              cmapi.ToFilters(q.Filters),
@@ -58,6 +54,13 @@ func (s *ShopService) GetShops(ctx context.Context, q *admin.GetShopsRequest) (*
 		ShopIDs:              shopIDs,
 		IncludeWLPartnerShop: true,
 	}
+	if q.Filter != nil {
+		// full-text search
+		query.Name = q.Filter.Name
+		query.ShopIDs = q.Filter.ShopIDs
+		query.OwnerID = q.Filter.OwnerID
+	}
+
 	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}

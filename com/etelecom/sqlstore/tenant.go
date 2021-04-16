@@ -43,8 +43,18 @@ func (s *TenantStore) ID(id dot.ID) *TenantStore {
 	return s
 }
 
+func (s *TenantStore) OptionalID(id dot.ID) *TenantStore {
+	s.preds = append(s.preds, s.ft.ByID(id).Optional())
+	return s
+}
+
 func (s *TenantStore) OwnerID(id dot.ID) *TenantStore {
 	s.preds = append(s.preds, s.ft.ByOwnerID(id))
+	return s
+}
+
+func (s *TenantStore) OptionalOwnerID(ownerID dot.ID) *TenantStore {
+	s.preds = append(s.preds, s.ft.ByOwnerID(ownerID).Optional())
 	return s
 }
 

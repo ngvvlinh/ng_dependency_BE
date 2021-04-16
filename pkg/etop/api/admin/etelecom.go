@@ -147,10 +147,13 @@ func (s *EtelecomService) CreateTenant(ctx context.Context, r *etelecomtypes.Adm
 
 func (s *EtelecomService) ActivateTenant(ctx context.Context, r *etelecomtypes.ActivateTenantRequest) (*pbcm.UpdatedResponse, error) {
 	cmd := &etelecom.ActivateTenantCommand{
-		AccountID:    r.AccountID,
+		OwnerID:      r.OwnerID,
 		TenantID:     r.TenantID,
 		HotlineID:    r.HotlineID,
-		ConnectionID: connectioning.DefaultDirectPortsipConnectionID,
+		ConnectionID: r.ConnectionID,
+	}
+	if cmd.ConnectionID == 0 {
+		cmd.ConnectionID = connectioning.DefaultDirectPortsipConnectionID
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

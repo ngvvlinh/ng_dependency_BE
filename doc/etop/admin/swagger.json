@@ -7776,11 +7776,11 @@
     "riActivateTenantRequest": {
       "type": "object",
       "required": [
-        "account_id",
         "hotline_id"
       ],
       "properties": {
-        "account_id": {
+        "connection_id": {
+          "description": "Portsip direct connection (defautl value)\n",
           "type": "string",
           "format": "int64"
         },
@@ -9050,6 +9050,10 @@
       "properties": {
         "name": {
           "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
         },
         "shop_ids": {
           "type": "array",

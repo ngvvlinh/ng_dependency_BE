@@ -247,6 +247,7 @@ type ListShopQuery struct {
 	Filters              meta.Filters
 	Name                 filter.FullTextSearch
 	ShopIDs              []dot.ID
+	OwnerID              dot.ID
 	IncludeWLPartnerShop bool
 }
 

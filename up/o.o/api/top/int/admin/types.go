@@ -354,6 +354,7 @@ func (m *DeleteMoneyTransactionRequest) String() string { return jsonx.MustMarsh
 type FilterShopRequest struct {
 	Name    filter.FullTextSearch `json:"name"`
 	ShopIDs []dot.ID              `json:"shop_ids"`
+	OwnerID dot.ID                `json:"owner_id"`
 }
 
 func (m *FilterShopRequest) String() string { return jsonx.MustMarshalToString(m) }
