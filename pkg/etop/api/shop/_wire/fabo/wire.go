@@ -7,9 +7,7 @@ import (
 
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/api/shop/account"
-	"o.o/backend/pkg/etop/api/shop/accountshipnow"
 	"o.o/backend/pkg/etop/api/shop/authorize"
-	"o.o/backend/pkg/etop/api/shop/brand"
 	"o.o/backend/pkg/etop/api/shop/category"
 	"o.o/backend/pkg/etop/api/shop/collection"
 	"o.o/backend/pkg/etop/api/shop/connection"
@@ -21,17 +19,14 @@ import (
 	"o.o/backend/pkg/etop/api/shop/notification"
 	"o.o/backend/pkg/etop/api/shop/order"
 	"o.o/backend/pkg/etop/api/shop/product"
-	"o.o/backend/pkg/etop/api/shop/product_source"
 	"o.o/backend/pkg/etop/api/shop/setting"
 	"o.o/backend/pkg/etop/api/shop/shipment"
-	"o.o/backend/pkg/etop/api/shop/shipnow"
 )
 
 // TODO(ngoc): remove unnecessary services
 var WireSet = wire.NewSet(
 	wire.Struct(new(account.AccountService), "*"),
 	wire.Struct(new(authorize.AuthorizeService), "*"),
-	wire.Struct(new(brand.BrandService), "*"),
 	wire.Struct(new(category.CategoryService), "*"),
 	wire.Struct(new(collection.CollectionService), "*"),
 	wire.Struct(new(connection.ConnectionService), "*"),
@@ -44,9 +39,6 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(notification.NotificationService), "*"),
 	wire.Struct(new(order.OrderService), "*"),
 	wire.Struct(new(product.ProductService), "*"),
-	wire.Struct(new(product_source.ProductSourceService), "*"),
 	wire.Struct(new(shipment.ShipmentService), "*"),
-	wire.Struct(new(shipnow.ShipnowService), "*"),
-	wire.Struct(new(accountshipnow.AccountShipnowService), "*"),
 	wire.Struct(new(setting.SettingService), "*"),
 )

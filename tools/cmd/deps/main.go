@@ -15,13 +15,15 @@ import (
 )
 
 var (
-	flStdlib     = flag.Bool("stdlib", false, "include stdlib")
-	flExternal   = flag.Bool("external", false, "include external libs")
-	flFlat       = flag.Bool("flat", false, "flatten dependencies")
-	flParent     = flag.Bool("parent", false, "include parent on the right")
-	flPrintFiles = flag.Bool("print-files", false, "print list of source files")
-	flCopyFiles  = flag.String("copy-files", "", "copy source code to directory")
-	flTags       = flag.String("tags", "release", "Go build tags (comma separated)")
+	flStdlib               = flag.Bool("stdlib", false, "include stdlib")
+	flExternal             = flag.Bool("external", false, "include external libs")
+	flFlat                 = flag.Bool("flat", false, "flatten dependencies")
+	flParent               = flag.Bool("parent", false, "include parent on the right")
+	flPrintFiles           = flag.Bool("print-files", false, "print list of source files")
+	flCopyFiles            = flag.String("copy-files", "", "copy source code to directory")
+	flTags                 = flag.String("tags", "release", "Go build tags (comma separated)")
+	flRemoveComments       = flag.Bool("remove-comments", false, "Remove comments")
+	flRenameGeneratedFiles = flag.Bool("rename-generated-fields", false, "Rename generated files")
 )
 
 func usage() {
@@ -196,10 +198,14 @@ func copyFile(srcPath, dstPath string) error {
 		return err
 	}
 	body = cleanup(body)
+
 	return ioutil.WriteFile(filepath.Join(dstDir, rename(dstName)), body, 0755)
 }
 
 func rename(name string) string {
+	if !*flRenameGeneratedFiles {
+		return name
+	}
 	name = strings.Replace(name, "zz_generated.", "g", 1)
 	name = strings.Replace(name, "zz_release.", "r", 1)
 	name = strings.Replace(name, "_gen.go", "g.go", 1)
@@ -214,6 +220,9 @@ var rePR = regexp.MustCompile(`{\s*\n(\s*\n)+`)
 
 // remove comments
 func cleanup(body []byte) []byte {
+	if !*flRemoveComments {
+		return body
+	}
 	body = reCmt1.ReplaceAll(body, []byte{'\n'})
 	body = reCmt2.ReplaceAll(body, []byte{'\n'})
 	body = reNL.ReplaceAll(body, []byte{'\n', '\n'})
