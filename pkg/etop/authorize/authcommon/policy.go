@@ -289,6 +289,8 @@ const adminPolicy = `
 	p, admin/custom_region:update, admin, ad_salelead
 	p, admin/custom_region:delete, admin, ad_salelead
 	p, admin/custom_region:view, admin, ad_salelead
+	# admin transaction
+	p, admin/transaction:view, admin, ad_salelead, ad_accountant
 `
 
 const CommonPolicy = shopPolicy + adminPolicy

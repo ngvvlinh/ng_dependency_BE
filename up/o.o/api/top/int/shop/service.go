@@ -496,6 +496,6 @@ type SettingService interface {
 
 // +apix:path=/shop.Transaction
 type TransactionService interface {
-	GetTransactions(context.Context, *GetTransactionsRequest) (*GetTransactionsResponse, error)
-	GetTransaction(context.Context, *GetTransactionRequest) (*Transaction, error)
+	GetTransactions(context.Context, *types.GetTransactionsRequest) (*types.GetTransactionsResponse, error)
+	GetTransaction(context.Context, *types.GetTransactionRequest) (*types.Transaction, error)
 }

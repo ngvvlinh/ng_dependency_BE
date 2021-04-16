@@ -3582,6 +3582,33 @@
         }
       }
     },
+    "/api/admin.Transaction/GetTransactions": {
+      "post": {
+        "tags": [
+          "Transaction"
+        ],
+        "summary": "GetTransactions",
+        "operationId": "admin.Transaction-GetTransactions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/qdGetAdminTransactionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdGetTransactionsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.User/BlockUser": {
       "post": {
         "tags": [
@@ -4496,6 +4523,14 @@
         }
       }
     },
+    "bdServiceClassify": {
+      "type": "string",
+      "enum": [
+        "shipping",
+        "telecom",
+        "all"
+      ]
+    },
     "bjState": {
       "type": "string",
       "enum": [
@@ -4602,6 +4637,13 @@
         "shipping",
         "crm",
         "telecom"
+      ]
+    },
+    "cjTransactionType": {
+      "type": "string",
+      "enum": [
+        "credit",
+        "invoice"
       ]
     },
     "csTryOnCode": {
@@ -5823,6 +5865,41 @@
         }
       }
     },
+    "qdGetAdminTransactionsFilter": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        }
+      }
+    },
+    "qdGetAdminTransactionsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/qdGetAdminTransactionsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
     "qdGetConnectionServicesResponse": {
       "type": "object",
       "properties": {
@@ -5969,6 +6046,20 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/qdSubscription"
+          }
+        }
+      }
+    },
+    "qdGetTransactionsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdTransaction"
           }
         }
       }
@@ -7357,6 +7448,55 @@
         },
         "type": {
           "$ref": "#/definitions/vmProductSubscriptionType"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "qdTransaction": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount": {
+          "type": "integer"
+        },
+        "classify": {
+          "$ref": "#/definitions/bdServiceClassify"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "referral_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "referral_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/cjTransactionType"
         },
         "updated_at": {
           "type": "string",
@@ -10618,6 +10758,9 @@
     },
     {
       "name": "Ticket"
+    },
+    {
+      "name": "Transaction"
     },
     {
       "name": "User"

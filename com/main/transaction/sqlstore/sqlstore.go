@@ -64,6 +64,11 @@ func (s *TransactionStore) Classify(classify service_classify.ServiceClassify) *
 	return s
 }
 
+func (s *TransactionStore) OptionalAccountID(id dot.ID) *TransactionStore {
+	s.preds = append(s.preds, s.ft.ByAccountID(id).Optional())
+	return s
+}
+
 func (s *TransactionStore) ByConfirmedTransaction() *TransactionStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status3.P))
 	return s

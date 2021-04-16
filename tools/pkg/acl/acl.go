@@ -413,6 +413,9 @@ const (
 	AdminManualPaymentInvoiceCreate permission.ActionType = "admin/invoice_manual_payment:create"
 	AdminInvoiceDelete              permission.ActionType = "admin/invoice:delete"
 
+	// AdminTransaction
+	AdminTransactionView permission.ActionType = "admin/transaction:view"
+
 	// AdminMisc
 	AdminMiscLoginAccount permission.ActionType = "admin/misc_account:login"
 
@@ -889,6 +892,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.Etelecom/CreateTenant":   {Type: EtopAdmin, Actions: actions(AdminTenantCreate)},
 	"admin.Etelecom/ActivateTenant": {Type: EtopAdmin, Actions: actions(AdminTenantUpdate)},
 
+	"admin.Transaction/GetTransactions": {Type: EtopAdmin, Actions: actions(AdminTransactionView)},
 	//-- shop --//
 
 	"shop.Account/RegisterShop": {Type: CurUsr, AuthPartner: Opt},

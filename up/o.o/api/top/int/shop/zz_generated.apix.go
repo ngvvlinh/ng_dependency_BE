@@ -5585,7 +5585,7 @@ func (s *TransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 func (s *TransactionServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Transaction/GetTransaction":
-		msg := &GetTransactionRequest{}
+		msg := &inttypes.GetTransactionRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
@@ -5598,7 +5598,7 @@ func (s *TransactionServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 		}
 		return msg, fn, nil
 	case "/shop.Transaction/GetTransactions":
-		msg := &GetTransactionsRequest{}
+		msg := &inttypes.GetTransactionsRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

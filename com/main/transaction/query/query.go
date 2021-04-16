@@ -49,7 +49,7 @@ func (q *QueryService) GetTransactionByID(ctx context.Context, tranID dot.ID, us
 }
 
 func (q *QueryService) ListTransactions(ctx context.Context, args *transaction.GetTransactionsArgs) (*transaction.TransactionResponse, error) {
-	query := q.store(ctx).AccountID(args.AccountID)
+	query := q.store(ctx).OptionalAccountID(args.AccountID)
 
 	if args.DateTo.Before(args.DateFrom) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "date_to must be after date_from")

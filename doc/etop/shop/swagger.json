@@ -6654,7 +6654,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/paGetTransactionRequest"
+              "$ref": "#/definitions/qdGetTransactionRequest"
             }
           }
         ],
@@ -6662,7 +6662,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/paTransaction"
+              "$ref": "#/definitions/qdTransaction"
             }
           }
         }
@@ -6681,7 +6681,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/paGetTransactionsRequest"
+              "$ref": "#/definitions/qdGetTransactionsRequest"
             }
           }
         ],
@@ -6689,7 +6689,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/paGetTransactionsResponse"
+              "$ref": "#/definitions/qdGetTransactionsResponse"
             }
           }
         }
@@ -11602,60 +11602,6 @@
         }
       }
     },
-    "paGetTransactionRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "paGetTransactionsFilter": {
-      "type": "object",
-      "properties": {
-        "date_from": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "date_to": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "ref_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "ref_type": {
-          "$ref": "#/definitions/bqSubjectReferral"
-        }
-      }
-    },
-    "paGetTransactionsRequest": {
-      "type": "object",
-      "properties": {
-        "filter": {
-          "$ref": "#/definitions/paGetTransactionsFilter"
-        },
-        "paging": {
-          "$ref": "#/definitions/ktCursorPaging"
-        }
-      }
-    },
-    "paGetTransactionsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/ktCursorPageInfo"
-        },
-        "transactions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/paTransaction"
-          }
-        }
-      }
-    },
     "paGetVariantRequest": {
       "type": "object",
       "properties": {
@@ -13783,55 +13729,6 @@
         },
         "type": {
           "type": "string"
-        }
-      }
-    },
-    "paTransaction": {
-      "type": "object",
-      "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "amount": {
-          "type": "integer"
-        },
-        "classify": {
-          "$ref": "#/definitions/bdServiceClassify"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        },
-        "referral_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "referral_type": {
-          "$ref": "#/definitions/bqSubjectReferral"
-        },
-        "status": {
-          "$ref": "#/definitions/blStatus"
-        },
-        "type": {
-          "$ref": "#/definitions/cjTransactionType"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
         }
       }
     },
@@ -16579,6 +16476,60 @@
         }
       }
     },
+    "qdGetTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "qdGetTransactionsFilter": {
+      "type": "object",
+      "properties": {
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        }
+      }
+    },
+    "qdGetTransactionsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/qdGetTransactionsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "qdGetTransactionsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/qdTransaction"
+          }
+        }
+      }
+    },
     "qdLoginShopConnectionRequest": {
       "type": "object",
       "properties": {
@@ -17940,6 +17891,55 @@
         },
         "total_items": {
           "type": "integer"
+        }
+      }
+    },
+    "qdTransaction": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount": {
+          "type": "integer"
+        },
+        "classify": {
+          "$ref": "#/definitions/bdServiceClassify"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "referral_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "referral_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        },
+        "status": {
+          "$ref": "#/definitions/blStatus"
+        },
+        "type": {
+          "$ref": "#/definitions/cjTransactionType"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

@@ -10,6 +10,7 @@ import (
 	"o.o/api/shopping/customering"
 	"o.o/api/summary"
 	apishop "o.o/api/top/int/shop"
+	"o.o/api/top/int/types"
 	identitymodel "o.o/backend/com/main/identity/model"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/model"
@@ -248,11 +249,11 @@ func PbShopAddresses(ctx context.Context, ms []*addressing.ShopTraderAddress, lo
 	return res, nil
 }
 
-func Convert_core_Transaction_To_api_Transaction(in *transaction.Transaction) *apishop.Transaction {
+func Convert_core_Transaction_To_api_Transaction(in *transaction.Transaction) *types.Transaction {
 	if in == nil {
 		return nil
 	}
-	return &apishop.Transaction{
+	return &types.Transaction{
 		Name:         in.Name,
 		ID:           in.ID,
 		Amount:       in.Amount,
@@ -268,11 +269,11 @@ func Convert_core_Transaction_To_api_Transaction(in *transaction.Transaction) *a
 	}
 }
 
-func Convert_core_Transactions_To_api_Transactions(in []*transaction.Transaction) []*apishop.Transaction {
+func Convert_core_Transactions_To_api_Transactions(in []*transaction.Transaction) []*types.Transaction {
 	if in == nil {
 		return nil
 	}
-	res := make([]*apishop.Transaction, len(in))
+	res := make([]*types.Transaction, len(in))
 	for i, tran := range in {
 		res[i] = Convert_core_Transaction_To_api_Transaction(tran)
 	}

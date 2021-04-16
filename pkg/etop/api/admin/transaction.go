@@ -1,10 +1,10 @@
-package transaction
+package admin
 
 import (
 	"context"
 
-	transactioning "o.o/api/main/transaction"
-	api "o.o/api/top/int/shop"
+	"o.o/api/main/transaction"
+	api "o.o/api/top/int/admin"
 	"o.o/api/top/int/types"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/api/convertpb"
@@ -13,39 +13,28 @@ import (
 
 type TransactionService struct {
 	session.Session
-	TransactionAggr  transactioning.CommandBus
-	TransactionQuery transactioning.QueryBus
-}
-
-func (s *TransactionService) GetTransaction(ctx context.Context, request *types.GetTransactionRequest) (*types.Transaction, error) {
-	query := &transactioning.GetTransactionByIDQuery{
-		TrxnID:    request.ID,
-		AccountID: s.SS.Shop().ID,
-	}
-	if err := s.TransactionQuery.Dispatch(ctx, query); err != nil {
-		return nil, err
-	}
-	result := convertpb.Convert_core_Transaction_To_api_Transaction(query.Result)
-	return result, nil
+	TransactionQuery transaction.QueryBus
+	TransactionAggr  transaction.CommandBus
 }
 
 func (s *TransactionService) Clone() api.TransactionService { res := *s; return &res }
 
-func (s *TransactionService) GetTransactions(ctx context.Context, r *types.GetTransactionsRequest) (*types.GetTransactionsResponse, error) {
+func (s *TransactionService) GetTransactions(ctx context.Context, r *types.GetAdminTransactionsRequest) (*types.GetTransactionsResponse, error) {
 	paging, err := cmapi.CMCursorPaging(r.Paging)
 	if err != nil {
 		return nil, err
 	}
 
-	query := &transactioning.ListTransactionsQuery{
-		AccountID: s.SS.Shop().ID,
-		Paging:    *paging,
+	query := &transaction.ListTransactionsQuery{
+		Paging: *paging,
 	}
+
 	if r.Filter != nil {
 		query.RefID = r.Filter.RefID
 		query.RefType = r.Filter.RefType
 		query.DateTo = r.Filter.DateTo
 		query.DateFrom = r.Filter.DateFrom
+		query.AccountID = r.Filter.AccountID
 	}
 
 	if err := s.TransactionQuery.Dispatch(ctx, query); err != nil {

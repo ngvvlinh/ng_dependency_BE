@@ -998,7 +998,12 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		InvoiceAggr:  invoiceCommandBus,
 		InvoiceQuery: invoiceQueryBus,
 	}
-	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, adminCreditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, adminEtelecomService, invoiceService)
+	adminTransactionService := admin.TransactionService{
+		Session:          session,
+		TransactionQuery: transactionQueryBus,
+		TransactionAggr:  transactionCommandBus,
+	}
+	adminServers := admin_all.NewServers(store, adminMiscService, adminAccountService, adminOrderService, adminFulfillmentService, adminMoneyTransactionService, shopService, adminCreditService, adminNotificationService, adminConnectionService, shipmentPriceService, adminLocationService, adminSubscriptionService, adminUserService, adminTicketService, adminEtelecomService, invoiceService, adminTransactionService)
 	sadminMiscService := &sadmin.MiscService{
 		Session: session,
 	}

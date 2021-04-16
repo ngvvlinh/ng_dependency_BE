@@ -233,3 +233,8 @@ type EtelecomService interface {
 	CreateTenant(context.Context, *etelecomtypes.AdminCreateTenantRequest) (*etelecomtypes.Tenant, error)
 	ActivateTenant(context.Context, *etelecomtypes.ActivateTenantRequest) (*cm.UpdatedResponse, error)
 }
+
+// +apix:path=/admin.Transaction
+type TransactionService interface {
+	GetTransactions(context.Context, *types.GetAdminTransactionsRequest) (*types.GetTransactionsResponse, error)
+}

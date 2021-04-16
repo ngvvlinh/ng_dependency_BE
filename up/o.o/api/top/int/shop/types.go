@@ -37,7 +37,6 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_source"
 	"o.o/api/top/types/etc/ticket/ticket_state"
 	"o.o/api/top/types/etc/ticket/ticket_type"
-	"o.o/api/top/types/etc/transaction_type"
 	"o.o/api/top/types/etc/try_on"
 	"o.o/api/top/types/etc/ws_banner_show_style"
 	"o.o/api/top/types/etc/ws_list_product_show_style"
@@ -1410,50 +1409,6 @@ type GetMoneyTransactionsRequest struct {
 }
 
 func (m *GetMoneyTransactionsRequest) String() string { return jsonx.MustMarshalToString(m) }
-
-type Transaction struct {
-	Name         string                           `json:"name"`
-	ID           dot.ID                           `json:"id"`
-	Amount       int                              `json:"amount"`
-	AccountID    dot.ID                           `json:"account_id"`
-	Status       status3.Status                   `json:"status"`
-	Type         transaction_type.TransactionType `json:"type"`
-	Classify     service_classify.ServiceClassify `json:"classify"`
-	Note         string                           `json:"note"`
-	ReferralType subject_referral.SubjectReferral `json:"referral_type"`
-	ReferralIDs  []dot.ID                         `json:"referral_ids"'`
-	CreatedAt    time.Time                        `json:"created_at"`
-	UpdatedAt    time.Time                        `json:"updated_at"`
-}
-
-func (m *Transaction) String() string { return jsonx.MustMarshalToString(m) }
-
-type GetTransactionRequest struct {
-	ID dot.ID `json:"id"`
-}
-
-func (m *GetTransactionRequest) String() string { return jsonx.MustMarshalToString(m) }
-
-type GetTransactionsRequest struct {
-	Paging *common.CursorPaging   `json:"paging"`
-	Filter *GetTransactionsFilter `json:"filter"`
-}
-
-func (m *GetTransactionsRequest) String() string { return jsonx.MustMarshalToString(m) }
-
-type GetTransactionsResponse struct {
-	Transactions []*Transaction         `json:"transactions"`
-	Paging       *common.CursorPageInfo `json:"paging"`
-}
-
-func (m *GetTransactionsResponse) String() string { return jsonx.MustMarshalToString(m) }
-
-type GetTransactionsFilter struct {
-	RefID    dot.ID                           `json:"ref_id"`
-	RefType  subject_referral.SubjectReferral `json:"ref_type"`
-	DateFrom time.Time                        `json:"date_from"`
-	DateTo   time.Time                        `json:"date_to"`
-}
 
 type GetPublicFulfillmentRequest struct {
 	// @Required
