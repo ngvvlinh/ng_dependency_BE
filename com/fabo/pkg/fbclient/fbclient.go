@@ -290,7 +290,8 @@ func (f *FbClient) CallAPIListConversations(req *ListConversationsRequest) (*mod
 
 	params := &ListConversationsParams{
 		AccessToken: req.AccessToken,
-		Fields:      fmt.Sprintf("conversations.limit(%d){id,message_count,updated_time,link,senders}", defaultPaging),
+		Fields:      fmt.Sprintf("id,message_count,updated_time,link,senders"),
+		Limit:       defaultPaging,
 		DateFormat:  UnixDateFormat,
 	}
 
@@ -298,7 +299,7 @@ func (f *FbClient) CallAPIListConversations(req *ListConversationsRequest) (*mod
 		pagination.ApplyQueryParams(false, defaultPaging, params)
 	}
 
-	path := fmt.Sprintf("/%s", req.PageID)
+	path := fmt.Sprintf("/%s/conversations", req.PageID)
 	var conversationsResponse model.ConversationsResponse
 	if err := f.sendGetRequest(path, req.PageID, params, &conversationsResponse); err != nil {
 		return nil, err
@@ -307,7 +308,7 @@ func (f *FbClient) CallAPIListConversations(req *ListConversationsRequest) (*mod
 	return &conversationsResponse, nil
 }
 
-func (f *FbClient) CallAPIGetConversationByUserID(req *GetConversationByUserIDRequest) (*model.Conversations, error) {
+func (f *FbClient) CallAPIGetConversationByUserID(req *GetConversationByUserIDRequest) (*model.ConversationsResponse, error) {
 	if req.UserID == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "user_id must not be null")
 	}
@@ -319,7 +320,7 @@ func (f *FbClient) CallAPIGetConversationByUserID(req *GetConversationByUserIDRe
 		UserID:      req.UserID,
 	}
 	path := fmt.Sprintf("/%s/conversations", req.PageID)
-	var conversations model.Conversations
+	var conversations model.ConversationsResponse
 	if err := f.sendGetRequest(path, req.PageID, params, &conversations); err != nil {
 		return nil, err
 	}

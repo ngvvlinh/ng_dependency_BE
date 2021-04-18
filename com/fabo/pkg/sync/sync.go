@@ -237,12 +237,6 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 						shopID:         fbPageCombined.FbExternalPage.ShopID,
 						pageID:         fbPageCombined.FbExternalPage.ID,
 						externalPageID: fbPageCombined.FbExternalPage.ExternalID,
-						fbPagingRequest: &model.FacebookPagingRequest{
-							Limit: dot.Int(fbclient.DefaultLimitGetConversations),
-							TimePagination: &model.TimePaginationRequest{
-								Since: time.Now().AddDate(0, 0, -s.timeLimit),
-							},
-						},
 					})
 				}
 			}
@@ -580,6 +574,7 @@ func (s *Synchronizer) handleTaskGetConversations(
 	accessToken string, externalPageID string, fbPagingReq *model.FacebookPagingRequest,
 ) error {
 	fmt.Println("GetConversations")
+	timeLimit := time.Now().Add(-time.Duration(s.timeLimit) * 24 * time.Hour)
 
 	// Call api list conversations that depends on externalPageID
 	fbConversationsResp, err := s.fbClient.CallAPIListConversations(&fbclient.ListConversationsRequest{
@@ -593,16 +588,15 @@ func (s *Synchronizer) handleTaskGetConversations(
 	}
 
 	// Finish task when data response is empty
-	if fbConversationsResp.Conversations == nil ||
-		len(fbConversationsResp.Conversations.ConversationsData) == 0 ||
-		fbConversationsResp.Conversations.Paging.CompareFacebookPagingRequest(fbPagingReq) {
+	if len(fbConversationsResp.ConversationsData) == 0 ||
+		fbConversationsResp.Paging.CompareFacebookPagingRequest(fbPagingReq) {
 		return nil
 	}
 
 	isFinished := false
 	var fbExternalConversationsArgs []*fbmessaging.CreateFbExternalConversationArgs
-	for _, fbConversation := range fbConversationsResp.Conversations.ConversationsData {
-		if time.Now().Sub(fbConversation.UpdatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
+	for _, fbConversation := range fbConversationsResp.ConversationsData {
+		if fbConversation.UpdatedTime.ToTime().Before(timeLimit) {
 			isFinished = true
 			continue
 		}
@@ -646,8 +640,8 @@ func (s *Synchronizer) handleTaskGetConversations(
 		}
 	}
 
-	for _, fbConversation := range fbConversationsResp.Conversations.ConversationsData {
-		if time.Now().Sub(fbConversation.UpdatedTime.ToTime()) > time.Duration(s.timeLimit)*24*time.Hour {
+	for _, fbConversation := range fbConversationsResp.ConversationsData {
+		if fbConversation.UpdatedTime.ToTime().Before(timeLimit) {
 			continue
 		}
 		s.addTask(&TaskArguments{
@@ -672,7 +666,7 @@ func (s *Synchronizer) handleTaskGetConversations(
 			shopID:          shopID,
 			externalPageID:  externalPageID,
 			pageID:          pageID,
-			fbPagingRequest: fbConversationsResp.Conversations.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetConversations),
+			fbPagingRequest: fbConversationsResp.Paging.ToPagingRequestAfter(fbclient.DefaultLimitGetConversations),
 		})
 	}
 	return nil

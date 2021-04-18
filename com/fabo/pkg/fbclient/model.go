@@ -122,6 +122,7 @@ type ListConversationsRequest struct {
 type ListConversationsParams struct {
 	AccessToken string `url:"access_token"`
 	Fields      string `url:"fields"`
+	Limit       int    `url:"limit"`
 	DateFormat  string `url:"date_format"`
 
 	Pagination

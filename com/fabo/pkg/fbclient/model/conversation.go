@@ -1,11 +1,6 @@
 package model
 
 type ConversationsResponse struct {
-	Conversations *Conversations `json:"conversations"`
-	ID            string         `json:"id"`
-}
-
-type Conversations struct {
 	ConversationsData []*Conversation         `json:"data"`
 	Paging            *FacebookPagingResponse `json:"paging"`
 }
