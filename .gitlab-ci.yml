@@ -56,20 +56,20 @@ build:
   stage: test
   tags: [go]
   image: olvrng/golang-toolbox
-  extends: .go-cache
+#  extends: .go-cache
   services:
   - postgres:9.6-alpine
   - redis:alpine
   script:
   - go version
-  - time scripts/ci/cache-load.sh
+#  - time scripts/ci/cache-load.sh
   - time scripts/verify-imports.sh
   - time scripts/ci/verify-lint.sh
   - time scripts/ci/verify-generate.sh
   - time go run ./scripts/init_testdb/main.go -drop
   - time scripts/ci/test-all.sh simple
 #  - time scripts/ci/test-all.sh e2e
-  - time scripts/ci/cache-save.sh
+#  - time scripts/ci/cache-save.sh
   - touch artifacts/BUILD_SUCCESS
   after_script:
   - scripts/ci/report-gerrit.sh
