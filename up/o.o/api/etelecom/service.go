@@ -131,6 +131,8 @@ type CreateCallLogArgs struct {
 	AccountID         dot.ID
 	ContactID         dot.ID
 	CallState         call_state.CallState
+	StartedAt         time.Time
+	EndedAt           time.Time
 }
 
 func (args *CreateCallLogArgs) Validate() error {
@@ -148,6 +150,12 @@ func (args *CreateCallLogArgs) Validate() error {
 	}
 	if args.AccountID == 0 {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
+	}
+	if args.StartedAt.IsZero() != args.EndedAt.IsZero() {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Please provide both started_at and ended_at")
+	}
+	if args.StartedAt.After(args.EndedAt) {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Invalid started_at, ended_at")
 	}
 	return nil
 }

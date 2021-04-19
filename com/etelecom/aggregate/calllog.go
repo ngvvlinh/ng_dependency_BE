@@ -3,6 +3,7 @@ package aggregate
 import (
 	"context"
 	"strings"
+	"time"
 
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/call_direction"
@@ -43,6 +44,12 @@ func (a *EtelecomAggregate) CreateCallLog(ctx context.Context, args *etelecom.Cr
 		CallState:         callState,
 		CallStatus:        callState.ToStatus5(),
 		ExternalSessionID: args.ExternalSessionID,
+		StartedAt:         args.StartedAt,
+		EndedAt:           args.EndedAt,
+	}
+	if callLog.StartedAt.IsZero() {
+		// workaround
+		callLog.StartedAt = time.Now()
 	}
 	res, err := a.callLogStore(ctx).CreateCallLog(callLog)
 	if err == nil {

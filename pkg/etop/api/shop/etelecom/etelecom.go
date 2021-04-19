@@ -179,6 +179,8 @@ func (s *EtelecomService) CreateCallLog(ctx context.Context, r *etelecomapi.Crea
 		AccountID:         s.SS.Shop().ID,
 		ContactID:         r.ContactID,
 		CallState:         r.CallState,
+		StartedAt:         r.StartedAt,
+		EndedAt:           r.EndedAt,
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

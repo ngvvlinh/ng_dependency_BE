@@ -378,12 +378,20 @@
         "direction": {
           "$ref": "#/definitions/jfCallDirection"
         },
+        "ended_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "extension_id": {
           "type": "string",
           "format": "int64"
         },
         "external_session_id": {
           "type": "string"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

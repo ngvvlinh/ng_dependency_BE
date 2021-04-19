@@ -1,6 +1,8 @@
 package etelecom
 
 import (
+	"time"
+
 	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/call_state"
 	"o.o/api/top/int/shop"
@@ -39,6 +41,8 @@ type CreateCallLogRequest struct {
 	ExtensionID       dot.ID                       `json:"extension_id"`
 	ContactID         dot.ID                       `json:"contact_id"`
 	CallState         call_state.CallState         `json:"call_state"`
+	StartedAt         time.Time                    `json:"started_at"`
+	EndedAt           time.Time                    `json:"ended_at"`
 }
 
 func (r *CreateCallLogRequest) String() string {
