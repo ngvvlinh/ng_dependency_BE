@@ -151,7 +151,7 @@ func (a *EtelecomAggregate) ActivateTenant(ctx context.Context, args *etelecom.A
 	if args.HotlineID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing hotline ID")
 	}
-	if args.TenantID != 0 && args.OwnerID != 0 {
+	if args.TenantID == 0 && args.OwnerID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Please provide at least owner_id or tenant_id")
 	}
 
@@ -166,7 +166,7 @@ func (a *EtelecomAggregate) ActivateTenant(ctx context.Context, args *etelecom.A
 
 	event := &etelecom.TenantActivingEvent{
 		TenantID:  tenantID,
-		OwnerID:   args.OwnerID,
+		OwnerID:   tenant.OwnerID,
 		HotlineID: args.HotlineID,
 	}
 	if err = a.eventBus.Publish(ctx, event); err != nil {
