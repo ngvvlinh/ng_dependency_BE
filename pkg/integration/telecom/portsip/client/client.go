@@ -79,6 +79,11 @@ func New(cfg PortsipAccountCfg) *Client {
 		}
 	case cmenv.EnvProd:
 		c.baseUrl = "https://sip.etelecom.vn:8900/api"
+		if c.tenantHost == "" {
+			// TODO: use etelecom external service instead
+			// Remove tenant host, tenant token
+			c.tenantHost = "https://api.etelecom.vn"
+		}
 	default:
 		ll.Fatal("Portsip: Invalid env")
 	}
