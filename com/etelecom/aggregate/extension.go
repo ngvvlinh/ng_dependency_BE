@@ -32,18 +32,38 @@ func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.
 	if err := args.Validate(); err != nil {
 		return nil, err
 	}
-	tenantDomain, err := a.getTenantDomain(ctx, args)
+	if args.UserID != 0 {
+		queryUser := &identity.GetAccountUserQuery{
+			UserID:    args.UserID,
+			AccountID: args.AccountID,
+		}
+		if err := a.identityQuery.Dispatch(ctx, queryUser); err != nil {
+			return nil, cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
+		}
+	}
+	tenant, err := a.getTenant(ctx, args)
 	if err != nil {
 		return nil, err
 	}
 
-	ext, err := a.extensionStore(ctx).UserID(args.UserID).AccountID(args.AccountID).HotlineID(args.HotlineID).GetExtension()
-	switch cm.ErrorCode(err) {
-	case cm.NoError:
-		if ext.ExtensionNumber != "" {
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Extension đã được tạo cho người dùng này.")
+	var ext *etelecom.Extension
+	if args.UserID != 0 {
+		ext, err = a.extensionStore(ctx).OptionalUserID(args.UserID).AccountID(args.AccountID).HotlineID(args.HotlineID).GetExtension()
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			if ext.ExternalData != nil && ext.ExternalData.ID != "" {
+				return nil, cm.Errorf(cm.FailedPrecondition, nil, "Extension đã được tạo cho người dùng này.")
+			}
+		case cm.NotFound:
+		default:
+			return nil, err
 		}
-	case cm.NotFound:
+	}
+
+	if err := a.checkDuplicateExtensionNumber(ctx, tenant.ID, args.ExtensionNumber); err != nil {
+		return nil, err
+	}
+	if ext == nil {
 		// create new one
 		var extension etelecom.Extension
 		if err = scheme.Convert(args, &extension); err != nil {
@@ -51,12 +71,11 @@ func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.
 		}
 
 		extension.ID = cm.NewID()
+		extension.TenantID = tenant.ID
 		ext, err = a.extensionStore(ctx).CreateExtension(&extension)
 		if err != nil {
 			return nil, err
 		}
-	default:
-		return nil, err
 	}
 
 	externalExtensionResp, err := a.telecomManager.CreateExtension(ctx, ext)
@@ -69,13 +88,30 @@ func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.
 		ExternalID:        externalExtensionResp.ExternalID,
 		ExtensionNumber:   externalExtensionResp.ExtensionNumber,
 		ExtensionPassword: externalExtensionResp.ExtensionPassword,
-		TenantDomain:      tenantDomain,
+		TenantDomain:      tenant.Domain,
 	}
 	if err = a.UpdateExternalExtensionInfo(ctx, updateExt); err != nil {
 		return nil, err
 	}
 
 	return a.extensionStore(ctx).ID(ext.ID).GetExtension()
+}
+
+func (a *EtelecomAggregate) checkDuplicateExtensionNumber(ctx context.Context, tenantID dot.ID, extNumber string) error {
+	if extNumber == "" {
+		return nil
+	}
+	// make sure extension number does not duplicate in the same tenant
+	_, err := a.extensionStore(ctx).TenantID(tenantID).ExtensionNumber(extNumber).GetExtension()
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Số máy nhánh đã tồn tại")
+	case cm.NotFound:
+		return nil
+	default:
+		return err
+	}
+
 }
 
 func (a *EtelecomAggregate) CreateExtensionBySubscription(ctx context.Context, args *etelecom.CreateExtenstionBySubscriptionArgs) (_ *etelecom.Extension, _err error) {
@@ -317,10 +353,10 @@ func (a *EtelecomAggregate) ExtendExtension(ctx context.Context, args *etelecom.
 	return a.extensionStore(ctx).ID(args.ExtensionID).AccountID(args.AccountID).GetExtension()
 }
 
-func (a *EtelecomAggregate) getTenantDomain(ctx context.Context, args *etelecom.CreateExtensionArgs) (tenantDomain string, _ error) {
+func (a *EtelecomAggregate) getTenant(ctx context.Context, args *etelecom.CreateExtensionArgs) (*etelecom.Tenant, error) {
 	hotline, err := a.hotlineStore(ctx).ID(args.HotlineID).GetHotline()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// get ownerID
@@ -330,16 +366,16 @@ func (a *EtelecomAggregate) getTenantDomain(ctx context.Context, args *etelecom.
 			ID: args.AccountID,
 		}
 		if err = a.identityQuery.Dispatch(ctx, shopQuery); err != nil {
-			return "", err
+			return nil, err
 		}
 		ownerID = shopQuery.Result.OwnerID
 	}
 
-	_, shopConn, err := a.telecomManager.GetTelecomConnection(ctx, hotline.ConnectionID, ownerID)
+	tenant, err := a.tenantStore(ctx).OwnerID(ownerID).ConnectionID(hotline.ConnectionID).GetTenant()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return shopConn.TelecomData.TenantDomain, nil
+	return tenant, nil
 }
 
 func (a *EtelecomAggregate) DeleteExtension(ctx context.Context, id dot.ID) error {
@@ -358,4 +394,49 @@ func (a *EtelecomAggregate) UpdateExternalExtensionInfo(ctx context.Context, arg
 		},
 	}
 	return a.extensionStore(ctx).ID(args.ID).UpdateExtension(update)
+}
+
+func (a *EtelecomAggregate) RemoveUserOfExtension(ctx context.Context, args *etelecom.RemoveUserOfExtensionArgs) (int, error) {
+	query := a.extensionStore(ctx).ID(args.ExtensionID).AccountID(args.AccountID)
+	ext, err := query.GetExtension()
+	if ext == nil || err != nil {
+		return 0, cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy máy nhánh")
+	}
+
+	queryUser := &identity.GetAccountUserQuery{
+		UserID:    args.UserID,
+		AccountID: args.AccountID,
+	}
+	if err := a.identityQuery.Dispatch(ctx, queryUser); err != nil {
+		return 0, cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
+	}
+	update, err := a.extensionStore(ctx).AccountID(args.AccountID).UserID(args.UserID).RemoveUserID()
+	return update, err
+}
+
+func (a *EtelecomAggregate) AssignUserToExtension(ctx context.Context, args *etelecom.AssignUserToExtensionArgs) error {
+	query := a.extensionStore(ctx).ID(args.ExtensionID).AccountID(args.AccountID)
+	ext, err := query.GetExtension()
+	if err != nil && cm.ErrorCode(err) == cm.NotFound {
+		return cm.Errorf(cm.NotFound, nil, "Không tìm thấy máy nhánh")
+	}
+	if err != nil {
+		return err
+	}
+	if ext.UserID != 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Máy nhánh đã được gán với người dùng khác")
+	}
+
+	queryUser := &identity.GetAccountUserQuery{
+		UserID:    args.UserID,
+		AccountID: args.AccountID,
+	}
+	if err := a.identityQuery.Dispatch(ctx, queryUser); err != nil {
+		return cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
+	}
+
+	update := &etelecom.Extension{
+		UserID: args.UserID,
+	}
+	return query.UpdateExtension(update)
 }

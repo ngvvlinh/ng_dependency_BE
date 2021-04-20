@@ -26,7 +26,9 @@ type Aggregate interface {
 	CreateExtensionBySubscription(context.Context, *CreateExtenstionBySubscriptionArgs) (*Extension, error)
 	ExtendExtension(context.Context, *ExtendExtensionArgs) (*Extension, error)
 	DeleteExtension(ctx context.Context, id dot.ID) error
+	RemoveUserOfExtension(context.Context, *RemoveUserOfExtensionArgs) (int, error)
 	UpdateExternalExtensionInfo(context.Context, *UpdateExternalExtensionInfoArgs) error
+	AssignUserToExtension(context.Context, *AssignUserToExtensionArgs) error
 
 	UpdateCallLogPostage(context.Context, *UpdateCallLogPostageArgs) error
 	CreateOrUpdateCallLogFromCDR(context.Context, *CreateOrUpdateCallLogFromCDRArgs) (*CallLog, error)
@@ -69,9 +71,6 @@ type CreateExtensionArgs struct {
 }
 
 func (args *CreateExtensionArgs) Validate() error {
-	if args.UserID == 0 {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing user ID")
-	}
 	if args.AccountID == 0 {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
 	}
@@ -192,6 +191,7 @@ type UpdateExternalExtensionInfoArgs struct {
 	ExtensionNumber   string
 	ExtensionPassword string
 	TenantDomain      string
+	TenantID          dot.ID
 }
 
 type GetCallLogByExternalIDArgs struct {
@@ -261,9 +261,6 @@ type CreateExtenstionBySubscriptionArgs struct {
 }
 
 func (args *CreateExtenstionBySubscriptionArgs) Validate() error {
-	if args.UserID == 0 {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing user ID")
-	}
 	if args.AccountID == 0 {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
 	}
@@ -330,4 +327,16 @@ type ListTenantsArgs struct {
 type ListTenantsResponse struct {
 	Tenants []*Tenant
 	Paging  meta.PageInfo
+}
+
+type RemoveUserOfExtensionArgs struct {
+	AccountID   dot.ID
+	ExtensionID dot.ID
+	UserID      dot.ID
+}
+
+type AssignUserToExtensionArgs struct {
+	AccountID   dot.ID
+	UserID      dot.ID
+	ExtensionID dot.ID
 }

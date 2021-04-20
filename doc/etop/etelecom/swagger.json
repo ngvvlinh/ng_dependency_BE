@@ -42,6 +42,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/AssignUserToExtension": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "AssignUserToExtension",
+        "operationId": "shop.Etelecom-AssignUserToExtension",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/btAssignUserToExtensionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/CreateCallLog": {
       "post": {
         "tags": [
@@ -312,6 +339,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/RemoveUserOfExtension": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "RemoveUserOfExtension",
+        "operationId": "shop.Etelecom-RemoveUserOfExtension",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/btRemoveUserOfExtensionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/SummaryEtelecom": {
       "post": {
         "tags": [
@@ -358,6 +412,19 @@
         "N",
         "NS"
       ]
+    },
+    "btAssignUserToExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "extension_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
     },
     "btCreateCallLogRequest": {
       "type": "object",
@@ -419,6 +486,19 @@
         },
         "phone": {
           "type": "string"
+        }
+      }
+    },
+    "btRemoveUserOfExtensionRequest": {
+      "type": "object",
+      "properties": {
+        "extension_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -529,6 +609,14 @@
         },
         "msg": {
           "type": "string"
+        }
+      }
+    },
+    "ktUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer"
         }
       }
     },
@@ -737,6 +825,9 @@
     "riCreateExtensionRequest": {
       "type": "object",
       "properties": {
+        "extension_number": {
+          "type": "integer"
+        },
         "hotline_id": {
           "type": "string",
           "format": "int64"
@@ -831,6 +922,10 @@
         },
         "tenant_domain": {
           "type": "string"
+        },
+        "tenant_id": {
+          "type": "string",
+          "format": "int64"
         },
         "updated_at": {
           "type": "string",

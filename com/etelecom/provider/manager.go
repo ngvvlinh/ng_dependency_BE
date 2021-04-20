@@ -156,34 +156,43 @@ func (m *TelecomManager) CreateExtension(ctx context.Context, ext *etelecom.Exte
 		return nil, err
 	}
 
-	userQuery := &identity.GetUserByIDQuery{
-		UserID: ext.UserID,
+	var user *identity.User
+	if ext.UserID != 0 {
+		userQuery := &identity.GetUserByIDQuery{
+			UserID: ext.UserID,
+		}
+		if err = m.identityQS.Dispatch(ctx, userQuery); err != nil {
+			return nil, err
+		}
+		user = userQuery.Result
 	}
-	if err = m.identityQS.Dispatch(ctx, userQuery); err != nil {
-		return nil, err
-	}
-	user := userQuery.Result
 
 	// get extension number
-	extQuery := &etelecom.GetPrivateExtensionNumberQuery{}
-	if err = m.etelecomQS.Dispatch(ctx, extQuery); err != nil {
-		return nil, err
+	extensionNumber := ext.ExtensionNumber
+	if extensionNumber == "" {
+		extQuery := &etelecom.GetPrivateExtensionNumberQuery{}
+		if err = m.etelecomQS.Dispatch(ctx, extQuery); err != nil {
+			return nil, err
+		}
+		extensionNumber = extQuery.Result
+	}
+	genPass := gencode.GenerateCode(gencode.Alphabet54, ExtensionPasswordLength)
+	var profilePhone string
+	profileName := hotline.Name
+	if user != nil {
+		profileName += " - " + user.FullName
+		profilePhone = user.Phone
 	}
 
-	genPass := gencode.GenerateCode(gencode.Alphabet54, ExtensionPasswordLength)
-	profileName := user.FullName
-	if hotline.Name != "" {
-		profileName = hotline.Name + " - " + profileName
-	}
 	cmd := &providertypes.CreateExtensionRequest{
 		ExtensionPassword: genPass,
-		ExtensionNumber:   extQuery.Result,
+		ExtensionNumber:   extensionNumber,
 		Profile: &providertypes.ProfileExtension{
 			FirstName: profileName,
 			// vht định danh extension theo email
 			// nên không thể tạo nhiều extension cho cùng 1 email được
 			// Email:       user.Email,
-			Phone:       user.Phone,
+			Phone:       profilePhone,
 			Description: "",
 		},
 		Hotline: hotline.Hotline,

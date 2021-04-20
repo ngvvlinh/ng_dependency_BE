@@ -27,6 +27,9 @@ type EtelecomService interface {
 
 	CreateTenant(context.Context, *CreateTenantRequest) (*types.Tenant, error)
 	GetTenant(context.Context, *cm.Empty) (*types.Tenant, error)
+
+	RemoveUserOfExtension(context.Context, *RemoveUserOfExtensionRequest) (*cm.UpdatedResponse, error)
+	AssignUserToExtension(context.Context, *AssignUserToExtensionRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/etelecom.User

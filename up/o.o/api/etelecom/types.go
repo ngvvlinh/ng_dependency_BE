@@ -40,6 +40,7 @@ type Extension struct {
 	ExtensionPassword string
 	// Dùng để đăng nhập vào SIP
 	TenantDomain   string
+	TenantID       dot.ID
 	ExternalData   *ExtensionExternalData
 	CreatedAt      time.Time
 	UpdatedAt      time.Time

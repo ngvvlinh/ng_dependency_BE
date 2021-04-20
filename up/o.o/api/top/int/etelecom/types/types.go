@@ -45,6 +45,7 @@ type Extension struct {
 	AccountID         dot.ID    `json:"account_id"`
 	ExtensionNumber   string    `json:"extension_number"`
 	ExtensionPassword string    `json:"extension_password"`
+	TenantID          dot.ID    `json:"tenant_id"`
 	TenantDomain      string    `json:"tenant_domain"`
 	HotlineID         dot.ID    `json:"hotline_id"`
 	CreatedAt         time.Time `json:"created_at"`
@@ -73,8 +74,9 @@ func (m *GetExtensionsResponse) String() string { return jsonx.MustMarshalToStri
 
 type CreateExtensionRequest struct {
 	// user_id: nhân viên của shop, người được gán vào extension
-	UserID    dot.ID `json:"user_id"`
-	HotlineID dot.ID `json:"hotline_id"`
+	UserID          dot.ID `json:"user_id"`
+	HotlineID       dot.ID `json:"hotline_id"`
+	ExtensionNumber int    `json:"extension_number"`
 }
 
 func (m *CreateExtensionRequest) String() string { return jsonx.MustMarshalToString(m) }

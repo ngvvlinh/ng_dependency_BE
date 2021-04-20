@@ -48,6 +48,19 @@ func (h AggregateHandler) HandleActivateTenant(ctx context.Context, msg *Activat
 	return err
 }
 
+type AssignUserToExtensionCommand struct {
+	AccountID   dot.ID
+	UserID      dot.ID
+	ExtensionID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleAssignUserToExtension(ctx context.Context, msg *AssignUserToExtensionCommand) (err error) {
+	return h.inner.AssignUserToExtension(msg.GetArgs(ctx))
+}
+
 type CreateCallLogCommand struct {
 	ExternalSessionID string
 	Direction         call_direction.CallDirection
@@ -197,6 +210,19 @@ func (h AggregateHandler) HandleExtendExtension(ctx context.Context, msg *Extend
 	return err
 }
 
+type RemoveUserOfExtensionCommand struct {
+	AccountID   dot.ID
+	ExtensionID dot.ID
+	UserID      dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveUserOfExtension(ctx context.Context, msg *RemoveUserOfExtensionCommand) (err error) {
+	msg.Result, err = h.inner.RemoveUserOfExtension(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateCallLogPostageCommand struct {
 	ID                 dot.ID
 	DurationForPostage int
@@ -217,6 +243,7 @@ type UpdateExternalExtensionInfoCommand struct {
 	ExtensionNumber   string
 	ExtensionPassword string
 	TenantDomain      string
+	TenantID          dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -383,6 +410,7 @@ func (h QueryServiceHandler) HandleListTenants(ctx context.Context, msg *ListTen
 // implement interfaces
 
 func (q *ActivateTenantCommand) command()                {}
+func (q *AssignUserToExtensionCommand) command()         {}
 func (q *CreateCallLogCommand) command()                 {}
 func (q *CreateExtensionCommand) command()               {}
 func (q *CreateExtensionBySubscriptionCommand) command() {}
@@ -392,6 +420,7 @@ func (q *CreateTenantCommand) command()                  {}
 func (q *DeleteExtensionCommand) command()               {}
 func (q *DeleteTenantCommand) command()                  {}
 func (q *ExtendExtensionCommand) command()               {}
+func (q *RemoveUserOfExtensionCommand) command()         {}
 func (q *UpdateCallLogPostageCommand) command()          {}
 func (q *UpdateExternalExtensionInfoCommand) command()   {}
 func (q *UpdateHotlineInfoCommand) command()             {}
@@ -427,6 +456,21 @@ func (q *ActivateTenantCommand) SetActivateTenantArgs(args *ActivateTenantArgs) 
 	q.HotlineID = args.HotlineID
 	q.ConnectionID = args.ConnectionID
 	q.ConnectionProvider = args.ConnectionProvider
+}
+
+func (q *AssignUserToExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *AssignUserToExtensionArgs) {
+	return ctx,
+		&AssignUserToExtensionArgs{
+			AccountID:   q.AccountID,
+			UserID:      q.UserID,
+			ExtensionID: q.ExtensionID,
+		}
+}
+
+func (q *AssignUserToExtensionCommand) SetAssignUserToExtensionArgs(args *AssignUserToExtensionArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
+	q.ExtensionID = args.ExtensionID
 }
 
 func (q *CreateCallLogCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCallLogArgs) {
@@ -616,6 +660,21 @@ func (q *ExtendExtensionCommand) SetExtendExtensionArgs(args *ExtendExtensionArg
 	q.PaymentMethod = args.PaymentMethod
 }
 
+func (q *RemoveUserOfExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveUserOfExtensionArgs) {
+	return ctx,
+		&RemoveUserOfExtensionArgs{
+			AccountID:   q.AccountID,
+			ExtensionID: q.ExtensionID,
+			UserID:      q.UserID,
+		}
+}
+
+func (q *RemoveUserOfExtensionCommand) SetRemoveUserOfExtensionArgs(args *RemoveUserOfExtensionArgs) {
+	q.AccountID = args.AccountID
+	q.ExtensionID = args.ExtensionID
+	q.UserID = args.UserID
+}
+
 func (q *UpdateCallLogPostageCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCallLogPostageArgs) {
 	return ctx,
 		&UpdateCallLogPostageArgs{
@@ -640,6 +699,7 @@ func (q *UpdateExternalExtensionInfoCommand) GetArgs(ctx context.Context) (_ con
 			ExtensionNumber:   q.ExtensionNumber,
 			ExtensionPassword: q.ExtensionPassword,
 			TenantDomain:      q.TenantDomain,
+			TenantID:          q.TenantID,
 		}
 }
 
@@ -650,6 +710,7 @@ func (q *UpdateExternalExtensionInfoCommand) SetUpdateExternalExtensionInfoArgs(
 	q.ExtensionNumber = args.ExtensionNumber
 	q.ExtensionPassword = args.ExtensionPassword
 	q.TenantDomain = args.TenantDomain
+	q.TenantID = args.TenantID
 }
 
 func (q *UpdateHotlineInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateHotlineInfoArgs) {
@@ -837,6 +898,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleActivateTenant)
+	b.AddHandler(h.HandleAssignUserToExtension)
 	b.AddHandler(h.HandleCreateCallLog)
 	b.AddHandler(h.HandleCreateExtension)
 	b.AddHandler(h.HandleCreateExtensionBySubscription)
@@ -846,6 +908,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDeleteExtension)
 	b.AddHandler(h.HandleDeleteTenant)
 	b.AddHandler(h.HandleExtendExtension)
+	b.AddHandler(h.HandleRemoveUserOfExtension)
 	b.AddHandler(h.HandleUpdateCallLogPostage)
 	b.AddHandler(h.HandleUpdateExternalExtensionInfo)
 	b.AddHandler(h.HandleUpdateHotlineInfo)

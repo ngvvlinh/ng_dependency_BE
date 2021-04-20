@@ -576,6 +576,25 @@ func (ft *ExtensionFilters) ByTenantDomainPtr(TenantDomain *string) *sq.ColumnFi
 	}
 }
 
+func (ft *ExtensionFilters) ByTenantID(TenantID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "tenant_id",
+		Value:  TenantID,
+		IsNil:  TenantID == 0,
+	}
+}
+
+func (ft *ExtensionFilters) ByTenantIDPtr(TenantID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "tenant_id",
+		Value:  TenantID,
+		IsNil:  TenantID == nil,
+		IsZero: TenantID != nil && (*TenantID) == 0,
+	}
+}
+
 func (ft *ExtensionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

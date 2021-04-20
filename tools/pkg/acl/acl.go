@@ -234,6 +234,7 @@ const (
 	ShopExtensionCreate permission.ActionType = "shop/extension:create"
 	ShopExtensionDelete permission.ActionType = "shop/extension:delete"
 	ShopExtensionView   permission.ActionType = "shop/extension:view"
+	ShopExtensionUpdate permission.ActionType = "shop/extension:update"
 	ShopHotlineView     permission.ActionType = "shop/hotline:view"
 	ShopCallLogView     permission.ActionType = "shop/calllog:view"
 	ShopCallLogCreate   permission.ActionType = "shop/calllog:create"
@@ -1366,6 +1367,8 @@ var _acl = map[string]*permission.Decl{
 	"shop.Etelecom/ExtendExtension":               {Type: Shop, Actions: actions(ShopExtensionCreate)},
 	"shop.Etelecom/GetExtensions":                 {Type: Shop, Actions: actions(ShopExtensionView)},
 	"shop.Etelecom/CreateUserAndAssignExtension":  {Type: Shop, Actions: actions(ShopExtensionCreate)},
+	"shop.Etelecom/RemoveUserOfExtension":         {Type: Shop, Actions: actions(ShopExtensionUpdate)},
+	"shop.Etelecom/AssignUserToExtension":         {Type: Shop, Actions: actions(ShopExtensionUpdate)},
 
 	"shop.Etelecom/GetHotlines": {Type: Shop, Actions: actions(ShopHotlineView)},
 

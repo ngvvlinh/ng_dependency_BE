@@ -18,6 +18,7 @@ const Policy auth.Policy = authcommon.CommonPolicy + `
 	# etelecom
 	p, shop/extension:create, admin, owner, staff_management
 	p, shop/extension:delete, admin, owner, staff_management
+	p, shop/extension:update, admin, owner, staff_management
 	p, shop/extension:view, admin, owner, analyst, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, shop/hotline:view, admin, owner, staff_management
 	p, shop/calllog:view, admin, owner, staff_management, telecom_customerservice

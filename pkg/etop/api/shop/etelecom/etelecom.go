@@ -2,6 +2,7 @@ package etelecom
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"o.o/api/etelecom"
@@ -37,6 +38,35 @@ func (s *EtelecomService) Clone() etelecomapi.EtelecomService {
 	return &res
 }
 
+func (s *EtelecomService) AssignUserToExtension(ctx context.Context, r *etelecomapi.AssignUserToExtensionRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &etelecom.AssignUserToExtensionCommand{
+		AccountID:   s.SS.Shop().ID,
+		UserID:      r.UserID,
+		ExtensionID: r.ExtensionID,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	return &pbcm.UpdatedResponse{
+		Updated: 1,
+	}, nil
+}
+
+func (s *EtelecomService) RemoveUserOfExtension(ctx context.Context, r *etelecomapi.RemoveUserOfExtensionRequest) (*pbcm.UpdatedResponse, error) {
+	cmd := &etelecom.RemoveUserOfExtensionCommand{
+		AccountID:   s.SS.Shop().ID,
+		ExtensionID: r.ExtensionID,
+		UserID:      r.UserID,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{
+		Updated: cmd.Result,
+	}, nil
+}
+
 func (s *EtelecomService) GetExtensions(ctx context.Context, r *etelecomtypes.GetExtensionsRequest) (*etelecomtypes.GetExtensionsResponse, error) {
 	query := &etelecom.ListExtensionsQuery{
 		AccountIDs: []dot.ID{s.SS.Shop().ID},
@@ -57,11 +87,16 @@ func (s *EtelecomService) GetExtensions(ctx context.Context, r *etelecomtypes.Ge
 }
 
 func (s *EtelecomService) CreateExtension(ctx context.Context, r *etelecomtypes.CreateExtensionRequest) (*etelecomtypes.Extension, error) {
+	extNumber := ""
+	if r.ExtensionNumber != 0 {
+		extNumber = strconv.Itoa(r.ExtensionNumber)
+	}
 	cmd := &etelecom.CreateExtensionCommand{
-		UserID:    r.UserID,
-		AccountID: s.SS.Shop().ID,
-		HotlineID: r.HotlineID,
-		OwnerID:   s.SS.Shop().OwnerID,
+		UserID:          r.UserID,
+		AccountID:       s.SS.Shop().ID,
+		HotlineID:       r.HotlineID,
+		OwnerID:         s.SS.Shop().OwnerID,
+		ExtensionNumber: extNumber,
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
