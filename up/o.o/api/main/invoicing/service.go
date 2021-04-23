@@ -105,6 +105,7 @@ type ListInvoicesArgs struct {
 	RefType   subject_referral.SubjectReferral
 	DateFrom  time.Time
 	DateTo    time.Time
+	Type      invoice_type.InvoiceType
 }
 
 type ListInvoicesResponse struct {

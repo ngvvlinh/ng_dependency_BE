@@ -6,6 +6,7 @@ import (
 
 	"o.o/api/main/invoicing"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/invoice_type"
 	"o.o/api/top/types/etc/subject_referral"
 	"o.o/backend/com/main/invoicing/convert"
 	"o.o/backend/com/main/invoicing/model"
@@ -71,6 +72,11 @@ func (s *InvoiceStore) Filters(filters meta.Filters) *InvoiceStore {
 
 func (s *InvoiceStore) ReferralType(_type subject_referral.SubjectReferral) *InvoiceStore {
 	s.preds = append(s.preds, s.ft.ByReferralType(_type))
+	return s
+}
+
+func (s *InvoiceStore) ByType(_type invoice_type.InvoiceType) *InvoiceStore {
+	s.preds = append(s.preds, s.ft.ByType(_type))
 	return s
 }
 

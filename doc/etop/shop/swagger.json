@@ -8400,6 +8400,14 @@
         "discard"
       ]
     },
+    "idInventoryVoucherType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "in",
+        "out"
+      ]
+    },
     "iyTicketType": {
       "type": "string",
       "enum": [
@@ -9657,7 +9665,7 @@
               "description": "enum \"in\" or \"out\" only for ref_type = \"order\"\n"
             },
             {
-              "$ref": "#/definitions/rjInventoryVoucherType"
+              "$ref": "#/definitions/idInventoryVoucherType"
             }
           ]
         }
@@ -16499,6 +16507,10 @@
     "qdGetShopInvoicesFilter": {
       "type": "object",
       "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "date_from": {
           "type": "string",
           "format": "date-time"
@@ -16513,6 +16525,9 @@
         },
         "ref_type": {
           "$ref": "#/definitions/bqSubjectReferral"
+        },
+        "type": {
+          "$ref": "#/definitions/rjInvoiceType"
         }
       }
     },
@@ -16521,12 +16536,6 @@
       "properties": {
         "filter": {
           "$ref": "#/definitions/qdGetShopInvoicesFilter"
-        },
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ktFilter"
-          }
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
@@ -16679,6 +16688,9 @@
           "type": "string",
           "format": "int64"
         },
+        "classify": {
+          "$ref": "#/definitions/bdServiceClassify"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -16721,6 +16733,9 @@
         },
         "total_amount": {
           "type": "integer"
+        },
+        "type": {
+          "$ref": "#/definitions/rjInvoiceType"
         },
         "updated_at": {
           "type": "string",
@@ -18691,10 +18706,10 @@
         "buyer"
       ]
     },
-    "rjInventoryVoucherType": {
+    "rjInvoiceType": {
       "type": "string",
       "enum": [
-        "unknown",
+        "default",
         "in",
         "out"
       ]

@@ -31,10 +31,17 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetInvoicesRe
 		return nil, err
 	}
 	query := &invoicing.ListInvoicesQuery{
-		AccountID: r.AccountID,
-		Paging:    *paging,
-		Filters:   cmapi.ToFilters(r.Filters),
+		Paging: *paging,
 	}
+	if r.Filter != nil {
+		query.AccountID = r.Filter.AccountID
+		query.RefID = r.Filter.RefID
+		query.RefType = r.Filter.RefType
+		query.DateFrom = r.Filter.DateFrom
+		query.DateTo = r.Filter.DateTo
+		query.Type = r.Filter.Type
+	}
+
 	if err = s.InvoiceQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
@@ -46,7 +53,7 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetInvoicesRe
 	return result, nil
 }
 
-func (s *InvoiceService) CreateInvoice(ctx context.Context, r *types.CreateInvoiceRequest) (*types.Invoice, error) {
+func (s *InvoiceService) CreateInvoiceForSubscription(ctx context.Context, r *types.CreateInvoiceForSubscriptionRequest) (*types.Invoice, error) {
 	cmd := &invoicing.CreateInvoiceBySubrIDCommand{
 		SubscriptionID: r.SubscriptionID,
 		AccountID:      r.AccountID,

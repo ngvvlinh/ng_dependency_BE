@@ -152,6 +152,7 @@ type ListInvoicesQuery struct {
 	RefType   subject_referral.SubjectReferral
 	DateFrom  time.Time
 	DateTo    time.Time
+	Type      invoice_type.InvoiceType
 
 	Result *ListInvoicesResponse `json:"-"`
 }
@@ -309,6 +310,7 @@ func (q *ListInvoicesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 			RefType:   q.RefType,
 			DateFrom:  q.DateFrom,
 			DateTo:    q.DateTo,
+			Type:      q.Type,
 		}
 }
 
@@ -320,6 +322,7 @@ func (q *ListInvoicesQuery) SetListInvoicesArgs(args *ListInvoicesArgs) {
 	q.RefType = args.RefType
 	q.DateFrom = args.DateFrom
 	q.DateTo = args.DateTo
+	q.Type = args.Type
 }
 
 // implement dispatching

@@ -28,7 +28,6 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetShopInvoic
 	query := &invoicing.ListInvoicesQuery{
 		AccountID: s.SS.Shop().ID,
 		Paging:    *paging,
-		Filters:   cmapi.ToFilters(r.Filters),
 	}
 
 	if r.Filter != nil {
@@ -36,8 +35,9 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetShopInvoic
 		query.RefType = r.Filter.RefType
 		query.DateFrom = r.Filter.DateFrom
 		query.DateTo = r.Filter.DateTo
+		query.Type = r.Filter.Type
 	}
-	if err := s.InvoiceQuery.Dispatch(ctx, query); err != nil {
+	if err = s.InvoiceQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
 

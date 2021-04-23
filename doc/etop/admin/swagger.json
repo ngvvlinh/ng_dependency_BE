@@ -906,20 +906,20 @@
         }
       }
     },
-    "/api/admin.Invoice/CreateInvoice": {
+    "/api/admin.Invoice/CreateInvoiceForSubscription": {
       "post": {
         "tags": [
           "Invoice"
         ],
-        "summary": "CreateInvoice",
-        "operationId": "admin.Invoice-CreateInvoice",
+        "summary": "CreateInvoiceForSubscription",
+        "operationId": "admin.Invoice-CreateInvoiceForSubscription",
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/qdCreateInvoiceRequest"
+              "$ref": "#/definitions/qdCreateInvoiceForSubscriptionRequest"
             }
           }
         ],
@@ -5318,7 +5318,7 @@
         }
       }
     },
-    "qdCreateInvoiceRequest": {
+    "qdCreateInvoiceForSubscriptionRequest": {
       "type": "object",
       "properties": {
         "account_id": {
@@ -5941,15 +5941,8 @@
     "qdGetInvoicesRequest": {
       "type": "object",
       "properties": {
-        "account_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ktFilter"
-          }
+        "filter": {
+          "$ref": "#/definitions/qdGetShopInvoicesFilter"
         },
         "paging": {
           "$ref": "#/definitions/ktCursorPaging"
@@ -5989,6 +5982,33 @@
           "items": {
             "$ref": "#/definitions/qdShopConnection"
           }
+        }
+      }
+    },
+    "qdGetShopInvoicesFilter": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "$ref": "#/definitions/bqSubjectReferral"
+        },
+        "type": {
+          "$ref": "#/definitions/rjInvoiceType"
         }
       }
     },
@@ -6076,6 +6096,9 @@
           "type": "string",
           "format": "int64"
         },
+        "classify": {
+          "$ref": "#/definitions/bdServiceClassify"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -6118,6 +6141,9 @@
         },
         "total_amount": {
           "type": "integer"
+        },
+        "type": {
+          "$ref": "#/definitions/rjInvoiceType"
         },
         "updated_at": {
           "type": "string",
@@ -8222,6 +8248,14 @@
           }
         }
       }
+    },
+    "rjInvoiceType": {
+      "type": "string",
+      "enum": [
+        "default",
+        "in",
+        "out"
+      ]
     },
     "sdShippingFeeType": {
       "type": "string",

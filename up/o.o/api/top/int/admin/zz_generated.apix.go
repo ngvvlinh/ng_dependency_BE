@@ -808,7 +808,7 @@ func NewInvoiceServiceServer(builder func() InvoiceService, hooks ...httprpc.Hoo
 
 const InvoiceServicePathPrefix = "/admin.Invoice/"
 
-const Path_Invoice_CreateInvoice = "/admin.Invoice/CreateInvoice"
+const Path_Invoice_CreateInvoiceForSubscription = "/admin.Invoice/CreateInvoiceForSubscription"
 const Path_Invoice_DeleteInvoice = "/admin.Invoice/DeleteInvoice"
 const Path_Invoice_GetInvoices = "/admin.Invoice/GetInvoices"
 const Path_Invoice_ManualPaymentInvoice = "/admin.Invoice/ManualPaymentInvoice"
@@ -846,8 +846,8 @@ func (s *InvoiceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *InvoiceServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/admin.Invoice/CreateInvoice":
-		msg := &inttypes.CreateInvoiceRequest{}
+	case "/admin.Invoice/CreateInvoiceForSubscription":
+		msg := &inttypes.CreateInvoiceForSubscriptionRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner
@@ -855,7 +855,7 @@ func (s *InvoiceServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 			if err != nil {
 				return
 			}
-			resp, err = inner.CreateInvoice(newCtx, msg)
+			resp, err = inner.CreateInvoiceForSubscription(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

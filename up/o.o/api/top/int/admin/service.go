@@ -188,7 +188,7 @@ type SubscriptionService interface {
 // +apix:path=/admin.Invoice
 type InvoiceService interface {
 	GetInvoices(context.Context, *types.GetInvoicesRequest) (*types.GetInvoicesResponse, error)
-	CreateInvoice(context.Context, *types.CreateInvoiceRequest) (*types.Invoice, error)
+	CreateInvoiceForSubscription(context.Context, *types.CreateInvoiceForSubscriptionRequest) (*types.Invoice, error)
 	ManualPaymentInvoice(context.Context, *types.ManualPaymentInvoiceRequest) (*cm.UpdatedResponse, error)
 	DeleteInvoice(context.Context, *types.SubscriptionIDRequest) (*cm.DeletedResponse, error)
 }
