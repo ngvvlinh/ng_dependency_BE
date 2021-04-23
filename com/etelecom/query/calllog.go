@@ -30,6 +30,12 @@ func (q *QueryService) ListCallLogs(ctx context.Context, args *etelecom.ListCall
 	if len(args.ExtensionIDs) > 0 {
 		query = query.ExtensionIDs(args.ExtensionIDs...)
 	}
+	if args.UserID != 0 {
+		query = query.UserID(args.UserID)
+	}
+	if args.OwnerID != 0 {
+		query = query.OwnerID(args.OwnerID)
+	}
 	if args.CallerOrCallee != "" {
 		query = query.CallerOrCallee(args.CallerOrCallee)
 	}

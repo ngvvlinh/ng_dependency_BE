@@ -186,6 +186,8 @@ func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetC
 		query.CallerOrCallee = r.Filter.CallNumber
 		query.HotlineIDs = r.Filter.HotlineIDs
 		query.ExtensionIDs = r.Filter.ExtensionIDs
+		query.UserID = r.Filter.UserID
+		query.OwnerID = r.Filter.OwnerID
 	}
 
 	// Tìm tất cả hotline của owner shop

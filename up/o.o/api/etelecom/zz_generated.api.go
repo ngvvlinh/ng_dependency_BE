@@ -151,6 +151,7 @@ type CreateOrUpdateCallLogFromCDRCommand struct {
 	ExtensionID        dot.ID
 	HotlineID          dot.ID
 	OwnerID            dot.ID
+	UserID             dot.ID
 	ConnectionID       dot.ID
 
 	Result *CallLog `json:"-"`
@@ -367,6 +368,8 @@ func (h QueryServiceHandler) HandleListBuiltinHotlines(ctx context.Context, msg 
 type ListCallLogsQuery struct {
 	HotlineIDs     []dot.ID
 	ExtensionIDs   []dot.ID
+	UserID         dot.ID
+	OwnerID        dot.ID
 	AccountID      dot.ID
 	CallerOrCallee string
 	Paging         meta.Paging
@@ -607,6 +610,7 @@ func (q *CreateOrUpdateCallLogFromCDRCommand) GetArgs(ctx context.Context) (_ co
 			ExtensionID:        q.ExtensionID,
 			HotlineID:          q.HotlineID,
 			OwnerID:            q.OwnerID,
+			UserID:             q.UserID,
 			ConnectionID:       q.ConnectionID,
 		}
 }
@@ -627,6 +631,7 @@ func (q *CreateOrUpdateCallLogFromCDRCommand) SetCreateOrUpdateCallLogFromCDRArg
 	q.ExtensionID = args.ExtensionID
 	q.HotlineID = args.HotlineID
 	q.OwnerID = args.OwnerID
+	q.UserID = args.UserID
 	q.ConnectionID = args.ConnectionID
 }
 
@@ -843,6 +848,8 @@ func (q *ListCallLogsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 		&ListCallLogsArgs{
 			HotlineIDs:     q.HotlineIDs,
 			ExtensionIDs:   q.ExtensionIDs,
+			UserID:         q.UserID,
+			OwnerID:        q.OwnerID,
 			AccountID:      q.AccountID,
 			CallerOrCallee: q.CallerOrCallee,
 			Paging:         q.Paging,
@@ -852,6 +859,8 @@ func (q *ListCallLogsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 func (q *ListCallLogsQuery) SetListCallLogsArgs(args *ListCallLogsArgs) {
 	q.HotlineIDs = args.HotlineIDs
 	q.ExtensionIDs = args.ExtensionIDs
+	q.UserID = args.UserID
+	q.OwnerID = args.OwnerID
 	q.AccountID = args.AccountID
 	q.CallerOrCallee = args.CallerOrCallee
 	q.Paging = args.Paging

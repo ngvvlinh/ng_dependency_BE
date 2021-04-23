@@ -55,9 +55,11 @@ type ExtensionExternalData struct {
 
 // +sqlgen
 type CallLog struct {
-	ID         dot.ID    `paging:"id"`
-	ExternalID string    // sessionID
-	AccountID  dot.ID    // shopID from extension
+	ID         dot.ID `paging:"id"`
+	ExternalID string // sessionID
+	AccountID  dot.ID // shopID from extension
+	OwnerID    dot.ID
+	UserID     dot.ID
 	StartedAt  time.Time `paging:"started_at"`
 	EndedAt    time.Time
 	Duration   int      // second

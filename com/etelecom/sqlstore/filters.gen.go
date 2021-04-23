@@ -87,6 +87,44 @@ func (ft *CallLogFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr 
 	}
 }
 
+func (ft *CallLogFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == nil,
+		IsZero: OwnerID != nil && (*OwnerID) == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "user_id",
+		Value:  UserID,
+		IsNil:  UserID == 0,
+	}
+}
+
+func (ft *CallLogFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "user_id",
+		Value:  UserID,
+		IsNil:  UserID == nil,
+		IsZero: UserID != nil && (*UserID) == 0,
+	}
+}
+
 func (ft *CallLogFilters) ByStartedAt(StartedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -100,6 +100,7 @@ type CreateOrUpdateCallLogFromCDRArgs struct {
 
 	// use for find hotline_id & extension_id
 	OwnerID      dot.ID
+	UserID       dot.ID
 	ConnectionID dot.ID
 }
 
@@ -202,6 +203,8 @@ type GetCallLogByExternalIDArgs struct {
 type ListCallLogsArgs struct {
 	HotlineIDs     []dot.ID
 	ExtensionIDs   []dot.ID
+	UserID         dot.ID
+	OwnerID        dot.ID
 	AccountID      dot.ID
 	CallerOrCallee string
 	Paging         meta.Paging

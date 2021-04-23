@@ -1,0 +1,26 @@
+postgres:
+  protocol: ""
+  host: postgres
+  port: 5432
+  username: postgres
+  password: postgres
+  database: postgres
+  sslmode: ""
+  timeout: 15
+  max_open_conns: 0
+  max_idle_conns: 0
+  max_conn_lifetime: 0
+  google_auth_file: ""
+postgres_etelecom:
+  protocol: ""
+  host: postgres
+  port: 5432
+  username: postgres
+  password: postgres
+  database: etop_etelecom
+  sslmode: ""
+  timeout: 15
+  max_open_conns: 0
+  max_idle_conns: 0
+  max_conn_lifetime: 0
+  google_auth_file: ""

@@ -145,6 +145,8 @@ func convert_etelecom_CallLog_etelecomtypes_CallLog(arg *etelecom.CallLog, out *
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = arg.AccountID                   // simple assign
 	out.HotlineID = arg.HotlineID                   // simple assign
+	out.OwnerID = arg.OwnerID                       // simple assign
+	out.UserID = arg.UserID                         // simple assign
 	out.StartedAt = arg.StartedAt                   // simple assign
 	out.EndedAt = arg.EndedAt                       // simple assign
 	out.Duration = arg.Duration                     // simple assign
@@ -191,6 +193,8 @@ func convert_etelecomtypes_CallLog_etelecom_CallLog(arg *etelecomtypes.CallLog, 
 	out.ID = arg.ID                                 // simple assign
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = arg.AccountID                   // simple assign
+	out.OwnerID = arg.OwnerID                       // simple assign
+	out.UserID = arg.UserID                         // simple assign
 	out.StartedAt = arg.StartedAt                   // simple assign
 	out.EndedAt = arg.EndedAt                       // simple assign
 	out.Duration = arg.Duration                     // simple assign
@@ -240,6 +244,8 @@ func apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecomtypes_CallLog(arg *
 	out.ExternalID = arg.ExternalID                 // simple assign
 	out.AccountID = 0                               // zero value
 	out.HotlineID = arg.HotlineID                   // simple assign
+	out.OwnerID = arg.OwnerID                       // simple assign
+	out.UserID = arg.UserID                         // simple assign
 	out.StartedAt = arg.StartedAt                   // simple assign
 	out.EndedAt = arg.EndedAt                       // simple assign
 	out.Duration = arg.Duration                     // simple assign

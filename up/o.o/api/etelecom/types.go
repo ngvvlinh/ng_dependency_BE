@@ -57,6 +57,8 @@ type CallLog struct {
 	ID                 dot.ID
 	ExternalID         string
 	AccountID          dot.ID
+	OwnerID            dot.ID
+	UserID             dot.ID
 	StartedAt          time.Time
 	EndedAt            time.Time
 	Duration           int
