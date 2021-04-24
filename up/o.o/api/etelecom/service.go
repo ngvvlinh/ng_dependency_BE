@@ -284,9 +284,6 @@ type ExtendExtensionArgs struct {
 }
 
 func (args *ExtendExtensionArgs) Validate() error {
-	if args.UserID == 0 {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing user ID")
-	}
 	if args.AccountID == 0 {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
 	}

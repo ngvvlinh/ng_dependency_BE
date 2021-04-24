@@ -11,6 +11,7 @@ import (
 	subscriptingtypes "o.o/api/subscripting/types"
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/service_classify"
+	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -48,7 +49,7 @@ func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.
 
 	var ext *etelecom.Extension
 	if args.UserID != 0 {
-		ext, err = a.extensionStore(ctx).OptionalUserID(args.UserID).AccountID(args.AccountID).HotlineID(args.HotlineID).GetExtension()
+		ext, err = a.extensionStore(ctx).UserID(args.UserID).AccountID(args.AccountID).GetExtension()
 		switch cm.ErrorCode(err) {
 		case cm.NoError:
 			if ext.ExternalData != nil && ext.ExternalData.ID != "" {
@@ -60,7 +61,7 @@ func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.
 		}
 	}
 
-	if err := a.checkDuplicateExtensionNumber(ctx, tenant.ID, args.ExtensionNumber); err != nil {
+	if err = a.checkDuplicateExtensionNumber(ctx, tenant.ID, args.ExtensionNumber); err != nil {
 		return nil, err
 	}
 	if ext == nil {
@@ -252,7 +253,7 @@ func (a *EtelecomAggregate) ExtendExtension(ctx context.Context, args *etelecom.
 	if err := args.Validate(); err != nil {
 		return nil, err
 	}
-	ext, err := a.extensionStore(ctx).ID(args.ExtensionID).AccountID(args.AccountID).UserID(args.UserID).GetExtension()
+	ext, err := a.extensionStore(ctx).ID(args.ExtensionID).AccountID(args.AccountID).OptionalUserID(args.UserID).GetExtension()
 	if err != nil {
 		return nil, err
 	}
@@ -358,6 +359,9 @@ func (a *EtelecomAggregate) getTenant(ctx context.Context, args *etelecom.Create
 	if err != nil {
 		return nil, err
 	}
+	if hotline.Status != status3.P {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Hotline does not valid")
+	}
 
 	// get ownerID
 	ownerID := args.OwnerID
@@ -407,7 +411,7 @@ func (a *EtelecomAggregate) RemoveUserOfExtension(ctx context.Context, args *ete
 		UserID:    args.UserID,
 		AccountID: args.AccountID,
 	}
-	if err := a.identityQuery.Dispatch(ctx, queryUser); err != nil {
+	if err = a.identityQuery.Dispatch(ctx, queryUser); err != nil {
 		return 0, cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
 	}
 	update, err := a.extensionStore(ctx).AccountID(args.AccountID).UserID(args.UserID).RemoveUserID()
@@ -431,7 +435,7 @@ func (a *EtelecomAggregate) AssignUserToExtension(ctx context.Context, args *ete
 		UserID:    args.UserID,
 		AccountID: args.AccountID,
 	}
-	if err := a.identityQuery.Dispatch(ctx, queryUser); err != nil {
+	if err = a.identityQuery.Dispatch(ctx, queryUser); err != nil {
 		return cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
 	}
 
