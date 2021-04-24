@@ -59,6 +59,7 @@ type QueryService interface {
 
 	GetExternalPostByExternalIDWithExternalCreatedTime(_ context.Context, externalID string, time time.Time) (*FbExternalPost, error)
 	GetFbExternalPostByExternalID(_ context.Context, externalID string) (*FbExternalPost, error)
+	GetFbExternalPostByExternalIDAndExternalUserID(_ context.Context, externalID, externalUserID string) (*FbExternalPost, error)
 	GetFbExternalMessageByID(_ context.Context, ID dot.ID) (*FbExternalMessage, error)
 	GetFbExternalMessageByExternalID(_ context.Context, externalID string) (*FbExternalMessage, error)
 	GetFbExternalCommentByID(_ context.Context, ID dot.ID) (*FbExternalComment, error)

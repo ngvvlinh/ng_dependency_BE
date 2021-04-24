@@ -73,15 +73,35 @@ func (h *Handler) HandleFbCommentEvent(ctx context.Context, event *pgevent.PgEve
 	}
 
 	result := PbFbExternalCommentEvent(fbExternalComment, fbParentExternalComment, event.Op.String())
-	queryPage := &fbpaging.GetFbExternalPageByExternalIDQuery{
-		ExternalID: query.Result.ExternalPageID,
+	// Have two types of comment: comment on personal page and fan page.
+	// With comment on fan page that has external_page_id
+	// With comment on personal page that has external_owner_post_id (external_user_id created post)
+	if query.Result.ExternalPageID != "" {
+		queryPage := &fbpaging.GetFbExternalPageByExternalIDQuery{
+			ExternalID: query.Result.ExternalPageID,
+		}
+		if err := h.fbPagingQuery.Dispatch(ctx, queryPage); err != nil {
+			ll.Warn("fb_page not found", l.Int64("rid", event.RID), l.ID("id", id))
+			return mq.CodeIgnore, nil
+		}
+		result.FbPageID = queryPage.Result.ID
+		result.ShopID = queryPage.Result.ShopID
+	} else {
+		queryUserConnected := &fbusering.GetFbExternalUserConnectedByExternalIDQuery{
+			ExternalID: query.Result.ExternalOwnerPostID,
+		}
+		if err := h.fbuserQuery.Dispatch(ctx, queryUserConnected); err != nil {
+			ll.Warn("fb_external_user_connected not found", l.Int64("rid", event.RID), l.ID("id", id))
+			return mq.CodeIgnore, nil
+		}
+
+		if queryUserConnected.Result.ShopID == 0 {
+			ll.Warn("shop_id is empty", l.Int64("rid", event.RID), l.ID("id", id))
+			return mq.CodeIgnore, nil
+		}
+
+		result.ShopID = queryUserConnected.Result.ShopID
 	}
-	if err := h.fbPagingQuery.Dispatch(ctx, queryPage); err != nil {
-		ll.Warn("fb_page not found", l.Int64("rid", event.RID), l.ID("id", id))
-		return mq.CodeIgnore, nil
-	}
-	result.FbPageID = queryPage.Result.ID
-	result.ShopID = queryPage.Result.ShopID
 
 	topic := h.prefix + event.Table + "_fabo"
 	d, ok := mapTopics[event.Table]

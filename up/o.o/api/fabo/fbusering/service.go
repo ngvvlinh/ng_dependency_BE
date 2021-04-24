@@ -34,6 +34,7 @@ type QueryService interface {
 	ListFbExternalUsersByExternalIDs(_ context.Context, externalIDs filter.Strings, externalPageID dot.NullString) ([]*FbExternalUser, error)
 	GetFbExternalUserInternalByExternalID(_ context.Context, externalID string) (*FbExternalUserInternal, error)
 	GetFbExternalUserConnectedByShopID(_ context.Context, shopID dot.ID) (*FbExternalUserConnected, error)
+	GetFbExternalUserConnectedByExternalID(_ context.Context, externalID string) (*FbExternalUserConnected, error)
 
 	// -- FbExternalUser with ShopCustomer --
 	GetFbExternalUserWithCustomerByExternalID(_ context.Context, shopID dot.ID, externalID string) (*FbExternalUserWithCustomer, error)

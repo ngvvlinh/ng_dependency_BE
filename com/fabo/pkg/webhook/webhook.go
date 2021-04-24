@@ -9,6 +9,7 @@ import (
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbpaging"
+	"o.o/api/fabo/fbusering"
 	"o.o/backend/cmd/fabo-server/config"
 	"o.o/backend/com/fabo/pkg/fbclient"
 	faboredis "o.o/backend/com/fabo/pkg/redis"
@@ -35,6 +36,8 @@ type WebhookHandler struct {
 	fbmessagingQuery fbmessaging.QueryBus
 	fbmessagingAggr  fbmessaging.CommandBus
 	fbPageQuery      fbpaging.QueryBus
+	fbUserQuery      fbusering.QueryBus
+	jobKeeper        *JobKeeper
 }
 
 func NewWebhookHandler(
@@ -44,6 +47,7 @@ func NewWebhookHandler(
 	fbmessagingQuery fbmessaging.QueryBus,
 	fbmessagingAggregate fbmessaging.CommandBus,
 	fbPageQuery fbpaging.QueryBus,
+	fbUserQuery fbusering.QueryBus,
 ) *WebhookHandler {
 	wh := &WebhookHandler{
 		db:               db,
@@ -52,6 +56,8 @@ func NewWebhookHandler(
 		fbmessagingQuery: fbmessagingQuery,
 		fbmessagingAggr:  fbmessagingAggregate,
 		fbPageQuery:      fbPageQuery,
+		fbUserQuery:      fbUserQuery,
+		jobKeeper:        NewJobKeeper(),
 	}
 	return wh
 }
@@ -168,12 +174,16 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 }
 
 func (wh *Webhook) CallbackForUser(c *httpx.Context) (_err error) {
+	var webhookUser WebhookUser
 	body, err := ioutil.ReadAll(c.Req.Body)
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
 	ll.Info("->"+c.Req.URL.Path, l.String("data", string(body)))
-	ll.SendMessage("FbUser: " + string(body))
+
+	if err := jsonx.Unmarshal(body, &webhookUser); err != nil {
+		return cm.Error(cm.InvalidArgument, err.Error(), err)
+	}
 
 	defer func() {
 		writer := c.SetResultRaw()
@@ -182,12 +192,22 @@ func (wh *Webhook) CallbackForUser(c *httpx.Context) (_err error) {
 		writer.WriteHeader(200)
 	}()
 
+	if webhookUser.Object != "user" {
+		return nil
+	}
+
+	switch webhookUser.Type() {
+	case WebhookUserLiveVideos:
+		topic := wh.prefix + "facebook_webhook_user_live_video"
+		wh.produceMessage(topic, webhookUser.GetKey(), 64, body)
+		return nil
+	}
 	return nil
 }
 
-func (wh *Webhook) produceMessage(topic, key string, partitions int, webhookMessages []byte) {
+func (wh *Webhook) produceMessage(topic, key string, partitions int, message []byte) {
 	partition := hash(key, partitions)
-	wh.producer.Send(topic, int(partition), key, webhookMessages)
+	wh.producer.Send(topic, int(partition), key, message)
 }
 
 func hash(s string, modular int) int {

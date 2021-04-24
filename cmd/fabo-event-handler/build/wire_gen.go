@@ -147,7 +147,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	settingQueryBus := query5.ShopSettingQueryMessageBus(shopSettingQuery)
 	fbExternalMessagingAggregate := fbmessaging.NewFbExternalMessagingAggregate(mainDB, busBus, fbClient)
 	fbmessagingCommandBus := fbmessaging.FbExternalMessagingAggregateMessageBus(fbExternalMessagingAggregate)
-	webhookHandler := webhook.NewWebhookHandler(mainDB, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus)
+	webhookHandler := webhook.NewWebhookHandler(mainDB, faboRedis, fbClient, fbmessagingQueryBus, fbmessagingCommandBus, fbpagingQueryBus, fbuseringQueryBus)
 	handlerHandler, err := BuildWebhookHandler(ctx, cfg, mainDB, fbuseringQueryBus, fbmessagingQueryBus, fbpagingQueryBus, orderingQueryBus, shippingQueryBus, fbClient, identityQueryBus, settingQueryBus, webhookHandler)
 	if err != nil {
 		return Output{}, nil, err

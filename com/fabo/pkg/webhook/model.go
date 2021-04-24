@@ -10,6 +10,9 @@ import (
 type WebhookMessageType string
 type MessageAttachmentType string
 
+type WebhookUserType string
+type LiveVideoStatus string
+
 const (
 	WebhookFeed           WebhookMessageType = "feed"
 	WebhookMessage        WebhookMessageType = "message"
@@ -26,6 +29,14 @@ const (
 	FeedStatus   = "status"
 
 	EventPermalinkPrefix = "https://www.facebook.com/events/"
+
+	WebhookUserFeed       WebhookUserType = "feed"
+	WebhookUserLiveVideos WebhookUserType = "live_videos"
+
+	UnpublishedStatus LiveVideoStatus = "unpublished"
+	LiveStatus        LiveVideoStatus = "live"
+	LiveStoppedStatus LiveVideoStatus = "live_stopped"
+	VodStatus         LiveVideoStatus = "vod"
 
 	separator = "-"
 )
@@ -432,4 +443,65 @@ type FeedPost struct {
 	UpdatedTime     string `json:"updated_time"`
 	PermalinkUrl    string `json:"permalink_url"`
 	PromotionStatus string `json:"promotion_status"`
+}
+
+// FbUser:
+// {
+//		"object": "user",
+//		"entry": [
+//			{
+//				"id": "1616082448555860",
+//				"uid": "1616082448555860",
+//				"time": 1619265393,
+//				"changes": [
+//					{
+//						"field": "feed"
+//					}
+//				]
+//			}
+//		]
+// }
+
+type WebhookUser struct {
+	Object string       `json:"object"`
+	Entry  []*UserEntry `json:"entry"`
+}
+
+func (m *WebhookUser) Type() WebhookUserType {
+	if m == nil || len(m.Entry) == 0 || len(m.Entry[0].Changes) == 0 {
+		return ""
+	}
+	return m.Entry[0].Changes[0].Field
+}
+
+func (m *WebhookUser) GetKey() string {
+	switch m.Type() {
+	case WebhookUserLiveVideos:
+		return string(m.Type()) + separator + m.Entry[0].ID
+	default:
+		return string(m.Type())
+	}
+}
+
+type UserEntry struct {
+	ID      string                     `json:"id"`
+	UID     string                     `json:"uid"`
+	Time    fbclientmodel.FacebookTime `json:"time"`
+	Changes []*UserEntryChange         `json:"changes"`
+}
+
+type UserEntryChange struct {
+	Field WebhookUserType       `json:"field"`
+	Value *UserEntryChangeValue `json:"value"`
+}
+
+type UserEntryChangeValue struct {
+	ID     string          `json:"id"`
+	Status LiveVideoStatus `json:"status"`
+}
+
+type LiveVideoComment struct {
+	ID      string                    `json:"id"`
+	Message string                    `json:"message"`
+	From    *fbclientmodel.ObjectFrom `json:"from"`
 }

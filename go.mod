@@ -48,6 +48,7 @@ require (
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.7.1
+	github.com/r3labs/sse v0.0.0-20210224172625-26fe804710bc
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/smartystreets/assertions v1.1.1 // indirect

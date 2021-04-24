@@ -37,6 +37,7 @@ func NewFbUserQuery(database com.MainDB, customerQ customering.QueryBus) *FbUser
 		db:                              database,
 		fbShopUserTagStore:              sqlstore.NewFbShopTagStore(database),
 		fbUserStore:                     sqlstore.NewFbExternalUserStore(database),
+		fbUserInternalStore:             sqlstore.NewFbExternalUserInternalStore(database),
 		fbUserConnectedStore:            sqlstore.NewFbExternalUserConnectedStore(database),
 		fbExternalUserShopCustomerStore: sqlstore.NewFbExternalUserShopCustomerStore(database),
 		customerQuery:                   customerQ,
@@ -73,6 +74,12 @@ func (q *FbUserQuery) GetFbExternalUserConnectedByShopID(
 	ctx context.Context, shopID dot.ID,
 ) (*fbusering.FbExternalUserConnected, error) {
 	return q.fbUserConnectedStore(ctx).ShopID(shopID).GetFbExternalUserConnected()
+}
+
+func (q *FbUserQuery) GetFbExternalUserConnectedByExternalID(
+	ctx context.Context, externalID string,
+) (*fbusering.FbExternalUserConnected, error) {
+	return q.fbUserConnectedStore(ctx).ExternalID(externalID).GetFbExternalUserConnected()
 }
 
 func (q *FbUserQuery) ListFbExternalUsersByExternalIDs(

@@ -575,6 +575,21 @@ func (f *FbClient) CallAPIGetProfileByPSID(req *GetProfileRequest) (*model.Profi
 	return req.ProfileDefault, nil
 }
 
+func (f *FbClient) CallAPIGetLiveVideo(req *GetLiveVideoRequest) (*model.LiveVideo, error) {
+	params := &GetLiveVideoParams{
+		AccessToken: req.AccessToken,
+		Fields:      "id,from{id,name,email,first_name,last_name,picture},video{id,picture,source},status,creation_time,permalink_url,targeting,title,description",
+		DateFormat:  UnixDateFormat,
+	}
+
+	path := fmt.Sprintf("/%s", req.LiveVideoID)
+	var resp model.LiveVideo
+	if err := f.sendGetRequest(path, req.UserID, params, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
 func (f *FbClient) sendGetRequest(path, objectID string, params, resp interface{}) error {
 	return f.sendRequest(GET, path, objectID, params, resp)
 }

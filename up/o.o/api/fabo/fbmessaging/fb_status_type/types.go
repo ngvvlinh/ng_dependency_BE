@@ -47,6 +47,6 @@ const (
 	// +enum=tagged_in_photo
 	TaggedInPhoto FbStatusType = 73
 
-	// +enum=wall_posst
+	// +enum=wall_post
 	WallPost FbStatusType = 78
 )

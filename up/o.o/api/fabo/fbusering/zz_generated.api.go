@@ -137,6 +137,17 @@ func (h QueryServiceHandler) HandleGetFbExternalUserByExternalID(ctx context.Con
 	return err
 }
 
+type GetFbExternalUserConnectedByExternalIDQuery struct {
+	ExternalID string
+
+	Result *FbExternalUserConnected `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFbExternalUserConnectedByExternalID(ctx context.Context, msg *GetFbExternalUserConnectedByExternalIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalUserConnectedByExternalID(msg.GetArgs(ctx))
+	return err
+}
+
 type GetFbExternalUserConnectedByShopIDQuery struct {
 	ShopID dot.ID
 
@@ -311,6 +322,7 @@ func (q *UpdateShopUserTagCommand) command()                    {}
 func (q *UpdateShopUserTagsCommand) command()                   {}
 
 func (q *GetFbExternalUserByExternalIDQuery) query()               {}
+func (q *GetFbExternalUserConnectedByExternalIDQuery) query()      {}
 func (q *GetFbExternalUserConnectedByShopIDQuery) query()          {}
 func (q *GetFbExternalUserInternalByExternalIDQuery) query()       {}
 func (q *GetFbExternalUserWithCustomerByExternalIDQuery) query()   {}
@@ -433,6 +445,11 @@ func (q *UpdateShopUserTagsCommand) SetUpdateShopUserTagsArgs(args *UpdateShopUs
 }
 
 func (q *GetFbExternalUserByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
+	return ctx,
+		q.ExternalID
+}
+
+func (q *GetFbExternalUserConnectedByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
 	return ctx,
 		q.ExternalID
 }
@@ -579,6 +596,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetFbExternalUserByExternalID)
+	b.AddHandler(h.HandleGetFbExternalUserConnectedByExternalID)
 	b.AddHandler(h.HandleGetFbExternalUserConnectedByShopID)
 	b.AddHandler(h.HandleGetFbExternalUserInternalByExternalID)
 	b.AddHandler(h.HandleGetFbExternalUserWithCustomerByExternalID)

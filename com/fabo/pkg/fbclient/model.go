@@ -271,6 +271,18 @@ type GetProfileByPISDParams struct {
 	Fields      string `url:"fields"`
 }
 
+type GetLiveVideoRequest struct {
+	AccessToken string
+	LiveVideoID string
+	UserID      string
+}
+
+type GetLiveVideoParams struct {
+	AccessToken string `url:"access_token"`
+	Fields      string `url:"fields"`
+	DateFormat  string `url:"date_format"`
+}
+
 type ListLiveVideosWithCommentsRequest struct {
 	AccessToken string
 }

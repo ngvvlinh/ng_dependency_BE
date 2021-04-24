@@ -648,6 +648,7 @@ func (a *FbExternalMessagingAggregate) SaveFbExternalPost(
 		ExternalParentID:    post.ExternalParentID,
 		FeedType:            post.FeedType,
 		StatusType:          post.StatusType,
+		Type:                post.Type,
 	}
 	if extPost.StatusType == fb_status_type.AddedVideo {
 		extPost.IsLiveVideo = true

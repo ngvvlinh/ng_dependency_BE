@@ -84,6 +84,12 @@ func (q *FbMessagingQuery) GetFbExternalConversationByExternalIDAndExternalPageI
 	return q.fbExternalConversationStore(ctx).ExternalID(externalID).ExternalPageID(externalPageID).GetFbExternalConversation()
 }
 
+func (q *FbMessagingQuery) GetFbExternalPostByExternalIDAndExternalUserID(
+	ctx context.Context, externalID, externalUserID string,
+) (*fbmessaging.FbExternalPost, error) {
+	return q.fbExternalPostStore(ctx).ExternalID(externalID).ExternalUserID(externalUserID).GetFbExternalPost()
+}
+
 func (q *FbMessagingQuery) ListFbExternalConversationsByExternalIDs(
 	ctx context.Context, externalIDs filter.Strings,
 ) ([]*fbmessaging.FbExternalConversation, error) {

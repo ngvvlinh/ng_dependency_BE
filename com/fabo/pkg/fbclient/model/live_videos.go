@@ -32,6 +32,7 @@ type LiveVideo struct {
 	Description  string                     `json:"description"`
 	Video        *LiveVideoVideo            `json:"video"`
 	From         *ObjectFrom                `json:"from"`
+	PermalinkURL string                     `json:"permalink_url"`
 	Status       string                     `json:"status"`
 	Comments     *LiveVideoCommentsSummary  `json:"comments"`
 	Reactions    *LiveVideoReactionsSummary `json:"reactions"`

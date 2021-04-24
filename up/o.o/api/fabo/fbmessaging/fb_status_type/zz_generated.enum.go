@@ -27,7 +27,7 @@ var enumFbStatusTypeName = map[int]string{
 	57: "published_story",
 	68: "shared_story",
 	73: "tagged_in_photo",
-	78: "wall_posst",
+	78: "wall_post",
 }
 
 var enumFbStatusTypeValue = map[string]int{
@@ -43,7 +43,7 @@ var enumFbStatusTypeValue = map[string]int{
 	"published_story":      57,
 	"shared_story":         68,
 	"tagged_in_photo":      73,
-	"wall_posst":           78,
+	"wall_post":            78,
 }
 
 func ParseFbStatusType(s string) (FbStatusType, bool) {

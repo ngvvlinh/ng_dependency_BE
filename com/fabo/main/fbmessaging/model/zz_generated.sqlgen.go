@@ -2819,7 +2819,7 @@ func (m *FbExternalPost) Migration(db *cmsql.Database) {
 			ColumnType:       "fb_status_type.FbStatusType",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "added_photos", "added_video", "app_created_story", "approved_friend", "created_event", "created_group", "created_note", "mobile_status_update", "published_story", "shared_story", "tagged_in_photo", "wall_posst"},
+			ColumnEnumValues: []string{"unknown", "added_photos", "added_video", "app_created_story", "approved_friend", "created_event", "created_group", "created_note", "mobile_status_update", "published_story", "shared_story", "tagged_in_photo", "wall_post"},
 		},
 		"is_live_video": {
 			ColumnName:       "is_live_video",
