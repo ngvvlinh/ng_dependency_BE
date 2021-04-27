@@ -254,10 +254,10 @@ type CreateExtenstionBySubscriptionArgs struct {
 	SubscriptionPlanID dot.ID
 	PaymentMethod      payment_method.PaymentMethod
 	AccountID          dot.ID
-
-	UserID    dot.ID
-	HotlineID dot.ID
-	OwnerID   dot.ID
+	ExtensionNumber    string
+	UserID             dot.ID
+	HotlineID          dot.ID
+	OwnerID            dot.ID
 }
 
 func (args *CreateExtenstionBySubscriptionArgs) Validate() error {

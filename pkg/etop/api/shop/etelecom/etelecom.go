@@ -107,6 +107,10 @@ func (s *EtelecomService) CreateExtension(ctx context.Context, r *etelecomtypes.
 }
 
 func (s *EtelecomService) CreateExtensionBySubscription(ctx context.Context, r *etelecomtypes.CreateExtensionBySubscriptionRequest) (*etelecomtypes.Extension, error) {
+	extNumber := ""
+	if r.ExtensionNumber != 0 {
+		extNumber = strconv.Itoa(r.ExtensionNumber)
+	}
 	cmd := &etelecom.CreateExtensionBySubscriptionCommand{
 		SubscriptionID:     r.SubscriptionID,
 		SubscriptionPlanID: r.SubscriptionPlanID,
@@ -115,6 +119,7 @@ func (s *EtelecomService) CreateExtensionBySubscription(ctx context.Context, r *
 		UserID:             r.UserID,
 		HotlineID:          r.HotlineID,
 		OwnerID:            s.SS.User().ID,
+		ExtensionNumber:    extNumber,
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

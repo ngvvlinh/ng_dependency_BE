@@ -192,12 +192,13 @@ func (a *EtelecomAggregate) CreateExtensionBySubscription(ctx context.Context, a
 				return err
 			}
 			cmdExt := &etelecom.CreateExtensionArgs{
-				UserID:         args.UserID,
-				AccountID:      args.AccountID,
-				HotlineID:      args.HotlineID,
-				OwnerID:        args.OwnerID,
-				SubscriptionID: subrID,
-				ExpiresAt:      querySubr.Result.CurrentPeriodEndAt,
+				UserID:          args.UserID,
+				AccountID:       args.AccountID,
+				HotlineID:       args.HotlineID,
+				OwnerID:         args.OwnerID,
+				SubscriptionID:  subrID,
+				ExpiresAt:       querySubr.Result.CurrentPeriodEndAt,
+				ExtensionNumber: args.ExtensionNumber,
 			}
 			res, err = a.createExtension(ctx, cmdExt)
 			if err != nil {
@@ -237,12 +238,13 @@ func (a *EtelecomAggregate) CreateExtensionBySubscription(ctx context.Context, a
 		}
 
 		cmd := &etelecom.CreateExtensionArgs{
-			UserID:         args.UserID,
-			AccountID:      args.AccountID,
-			HotlineID:      args.HotlineID,
-			OwnerID:        args.OwnerID,
-			SubscriptionID: subr.ID,
-			ExpiresAt:      subr.CurrentPeriodEndAt,
+			UserID:          args.UserID,
+			AccountID:       args.AccountID,
+			HotlineID:       args.HotlineID,
+			OwnerID:         args.OwnerID,
+			SubscriptionID:  subr.ID,
+			ExpiresAt:       subr.CurrentPeriodEndAt,
+			ExtensionNumber: args.ExtensionNumber,
 		}
 		return a.createExtension(ctx, cmd)
 	}
@@ -419,6 +421,15 @@ func (a *EtelecomAggregate) RemoveUserOfExtension(ctx context.Context, args *ete
 }
 
 func (a *EtelecomAggregate) AssignUserToExtension(ctx context.Context, args *etelecom.AssignUserToExtensionArgs) error {
+	queryUserExtension := a.extensionStore(ctx).AccountID(args.AccountID).UserID(args.UserID)
+	_, err := queryUserExtension.GetExtension()
+	switch cm.ErrorCode(err) {
+	case cm.NotFound:
+	case cm.NoError:
+		return cm.Errorf(cm.InvalidArgument, nil, "Nhân viên này đã có máy nhánh")
+	default:
+		return err
+	}
 	query := a.extensionStore(ctx).ID(args.ExtensionID).AccountID(args.AccountID)
 	ext, err := query.GetExtension()
 	if err != nil && cm.ErrorCode(err) == cm.NotFound {

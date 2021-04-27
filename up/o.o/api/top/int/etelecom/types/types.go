@@ -89,6 +89,7 @@ type CreateExtensionBySubscriptionRequest struct {
 	SubscriptionID     dot.ID                       `json:"subscription_id"`
 	SubscriptionPlanID dot.ID                       `json:"subscription_plan_id"`
 	PaymentMethod      payment_method.PaymentMethod `json:"payment_method"`
+	ExtensionNumber    int                          `json:"extension_number"`
 }
 
 func (m *CreateExtensionBySubscriptionRequest) String() string { return jsonx.MustMarshalToString(m) }

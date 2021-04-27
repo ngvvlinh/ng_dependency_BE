@@ -104,6 +104,7 @@ type CreateExtensionBySubscriptionCommand struct {
 	SubscriptionPlanID dot.ID
 	PaymentMethod      payment_method.PaymentMethod
 	AccountID          dot.ID
+	ExtensionNumber    string
 	UserID             dot.ID
 	HotlineID          dot.ID
 	OwnerID            dot.ID
@@ -534,6 +535,7 @@ func (q *CreateExtensionBySubscriptionCommand) GetArgs(ctx context.Context) (_ c
 			SubscriptionPlanID: q.SubscriptionPlanID,
 			PaymentMethod:      q.PaymentMethod,
 			AccountID:          q.AccountID,
+			ExtensionNumber:    q.ExtensionNumber,
 			UserID:             q.UserID,
 			HotlineID:          q.HotlineID,
 			OwnerID:            q.OwnerID,
@@ -545,6 +547,7 @@ func (q *CreateExtensionBySubscriptionCommand) SetCreateExtenstionBySubscription
 	q.SubscriptionPlanID = args.SubscriptionPlanID
 	q.PaymentMethod = args.PaymentMethod
 	q.AccountID = args.AccountID
+	q.ExtensionNumber = args.ExtensionNumber
 	q.UserID = args.UserID
 	q.HotlineID = args.HotlineID
 	q.OwnerID = args.OwnerID
