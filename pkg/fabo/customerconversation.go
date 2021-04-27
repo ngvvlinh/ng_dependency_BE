@@ -117,6 +117,10 @@ func (s *CustomerConversationService) ListCustomerConversations(
 		} else {
 			listCustomerConversationsQuery.Types = request.Filter.Types
 		}
+
+		if request.Filter.ExternalUserID.Valid {
+			listCustomerConversationsQuery.ExternalUserID = request.Filter.ExternalUserID
+		}
 	}
 
 	if len(listCustomerConversationsQuery.ExternalPageIDs) == 0 {
