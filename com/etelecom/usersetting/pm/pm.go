@@ -53,18 +53,15 @@ func (m *ProcessManager) ExtensionCreating(ctx context.Context, event *etelecom.
 	query := &usersetting.GetUserSettingQuery{
 		UserID: event.OwnerID,
 	}
-	if err := m.userSettingQuery.Dispatch(ctx, query); err != nil && cm.ErrorCode(err) != cm.NotFound {
-		return err
+	if err := m.userSettingQuery.Dispatch(ctx, query); err != nil {
+		return cm.Errorf(cm.FailedPrecondition, err, "Không thể sử dụng api này để tạo extension")
 	}
 	setting := query.Result
-	if setting == nil {
-		return nil
-	}
 
 	// Cho phép tạo ext đối với user có setting: miễn phí hoặc trả sau
 	// Trường hợp trả trước phải tạo thông qua subscription
 	if setting.ExtensionChargeType == charge_type.Prepaid {
-		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn gói dịch vụ để tạo extension.")
+		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn gói dịch vụ để tạo extension")
 	}
 	return nil
 }

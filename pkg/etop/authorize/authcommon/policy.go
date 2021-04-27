@@ -195,11 +195,11 @@ const adminPolicy = `
 	p, admin/admin_ticket_label:update, admin, ad_salelead, ad_customerservice_lead
 	p, admin/admin_ticket_label:view, admin, ad_salelead, ad_customerservice_lead
 	# credit
-	p, admin/credit:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
-	p, admin/credit:update, admin, ad_accountant
-	p, admin/credit:create, admin, ad_accountant
-	p, admin/credit:confirm, admin, ad_accountant
-	p, admin/credit:delete, admin, ad_accountant
+	p, admin/credit:view, admin, ad_accountant, ad_customerservice, ad_customerservice_lead, ad_voip
+	p, admin/credit:update, admin, ad_accountant, ad_voip
+	p, admin/credit:create, admin, ad_accountant, ad_voip
+	p, admin/credit:confirm, admin, ad_accountant, ad_voip
+	p, admin/credit:delete, admin, ad_accountant, ad_voip
 	# fulfillment
 	p, admin/fulfillment:view, admin, ad_accountant, ad_salelead, ad_sale, ad_customerservice, ad_customerservice_lead
 	p, admin/fulfillment:create, admin, ad_accountant, ad_customerservice, ad_customerservice_lead
@@ -250,30 +250,30 @@ const adminPolicy = `
 	p, admin/shipment_price:delete, admin, ad_salelead
 	p, admin/shipment_price:view, admin, ad_salelead
 	# admin shop
-	p, admin/shop:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant
-	p, admin/shop:update, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale
+	p, admin/shop:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant, ad_voip
+	p, admin/shop:update, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_voip
 	# admin user
-	p, admin/user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant
-	p, admin/user:block, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale
-	p, admin/user_ref:update, admin, ad_salelead
+	p, admin/user:view, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_accountant, ad_voip
+	p, admin/user:block, admin, ad_customerservice, ad_customerservice_lead, ad_salelead, ad_sale, ad_voip
+	p, admin/user_ref:update, admin, ad_salelead, ad_voip
 	# admin subscription
-	p, admin/subscription_product:create, admin
-	p, admin/subscription_product:view, admin
-	p, admin/subscription_product:delete, admin
-	p, admin/subscription_plan:create, admin
-	p, admin/subscription_plan:update, admin
-	p, admin/subscription_plan:view, admin
-	p, admin/subscription_plan:delete, admin
-	p, admin/subscription:view, admin
-	p, admin/subscription:create, admin
-	p, admin/subscription:update, admin
-	p, admin/subscription:cancel, admin
-	p, admin/subscription:active, admin
-	p, admin/subscription:delete, admin
-	p, admin/invoice:view, admin
-	p, admin/invoice:create, admin
-	p, admin/invoice_manual_payment:create, admin
-	p, admin/invoice:delete, admin
+	p, admin/subscription_product:create, admin, ad_voip
+	p, admin/subscription_product:view, admin, ad_voip
+	p, admin/subscription_product:delete, admin, ad_voip
+	p, admin/subscription_plan:create, admin, ad_voip
+	p, admin/subscription_plan:update, admin, ad_voip
+	p, admin/subscription_plan:view, admin, ad_voip
+	p, admin/subscription_plan:delete, admin, ad_voip
+	p, admin/subscription:view, admin, ad_voip
+	p, admin/subscription:create, admin, ad_voip
+	p, admin/subscription:update, admin, ad_voip
+	p, admin/subscription:cancel, admin, ad_voip
+	p, admin/subscription:active, admin, ad_voip
+	p, admin/subscription:delete, admin, ad_voip
+	p, admin/invoice:view, admin, ad_voip
+	p, admin/invoice:create, admin, ad_voip
+	p, admin/invoice_manual_payment:create, admin, ad_voip
+	p, admin/invoice:delete, admin, ad_voip
 	# admin misc
 	p, admin/misc_account:login, admin
 	# admin partner

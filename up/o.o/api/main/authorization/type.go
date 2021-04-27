@@ -8,7 +8,11 @@ type Action string
 func (r Role) String() string   { return string(r) }
 func (a Action) String() string { return string(a) }
 
-var InternalRoles = []Role{RoleAdmin, RoleAdminSaleLead, RoleAdminSale, RoleAdminCustomerService, RoleAdminAccountant, RoleAdminCustomerServiceLead}
+var InternalRoles = []Role{
+	RoleAdmin, RoleAdminSaleLead, RoleAdminSale,
+	RoleAdminCustomerService, RoleAdminAccountant,
+	RoleAdminCustomerServiceLead, RoleAdminVoip,
+}
 
 const (
 	RoleAdmin                    Role = "admin"
@@ -17,6 +21,7 @@ const (
 	RoleAdminCustomerService     Role = "ad_customerservice"
 	RoleAdminAccountant          Role = "ad_accountant"
 	RoleAdminCustomerServiceLead Role = "ad_customerservice_lead"
+	RoleAdminVoip                Role = "ad_voip"
 
 	RoleInventoryManagement  Role = "inventory_management"
 	RoleSalesMan             Role = "salesman"
@@ -29,13 +34,14 @@ const (
 	RoleTelecomCustomerService Role = "telecom_customerservice"
 )
 
-var Roles = [14]Role{
+var Roles = [15]Role{
 	RoleAdmin,
 	RoleAdminSaleLead,
 	RoleAdminSale,
 	RoleAdminAccountant,
 	RoleAdminCustomerService,
 	RoleAdminCustomerServiceLead,
+	RoleAdminVoip,
 	RoleInventoryManagement,
 	RoleSalesMan,
 	RoleShopOwner,
@@ -53,6 +59,7 @@ var roleLabels = map[Role]string{
 	RoleAdminAccountant:          "Kế Toán",
 	RoleAdminCustomerService:     "Chăm Sóc Khách Hàng",
 	RoleAdminCustomerServiceLead: "Chăm Sóc Khách Hàng - Trưởng",
+	RoleAdminVoip:                "Voip",
 	RoleShopOwner:                "Chủ sở hữu",
 	RoleStaffManagement:          "Quản lý nhân viên",
 	RoleAnalyst:                  "Phân tích",

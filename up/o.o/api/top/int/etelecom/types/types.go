@@ -61,10 +61,14 @@ type ExtensionExternalData struct {
 }
 
 type GetExtensionsRequest struct {
-	HotlineID dot.ID `json:"hotline_id"`
+	Filter *GetExtensionsFilter `json:"filter"`
 }
 
 func (m *GetExtensionsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetExtensionsFilter struct {
+	HotlineID dot.ID `json:"hotline_id"`
+}
 
 type GetExtensionsResponse struct {
 	Extensions []*Extension `json:"extensions"`

@@ -47,8 +47,9 @@ type GetCreditArgs struct {
 }
 
 type ListCreditsArgs struct {
-	ShopID dot.ID
-	Paging *meta.Paging
+	ShopID   dot.ID
+	Classify credit_type.NullCreditClassify
+	Paging   *meta.Paging
 }
 
 type ListCreditsResponse struct {

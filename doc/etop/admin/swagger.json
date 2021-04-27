@@ -9053,6 +9053,18 @@
         }
       }
     },
+    "xuCreditsFilter": {
+      "type": "object",
+      "properties": {
+        "classify": {
+          "$ref": "#/definitions/aeCreditClassify"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "xuCustomRegion": {
       "type": "object",
       "properties": {
@@ -9299,10 +9311,14 @@
     "xuGetCreditsRequest": {
       "type": "object",
       "properties": {
+        "filter": {
+          "$ref": "#/definitions/xuCreditsFilter"
+        },
         "paging": {
           "$ref": "#/definitions/ktPaging"
         },
         "shop_id": {
+          "description": "**Deprecated:** use Filter instead\n",
           "type": "string",
           "format": "int64"
         }

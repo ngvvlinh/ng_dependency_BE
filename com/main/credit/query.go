@@ -74,6 +74,9 @@ func (q *CreditQueryService) ListCredits(ctx context.Context, args *credit.ListC
 	if args.ShopID != 0 {
 		query = query.ShopID(args.ShopID)
 	}
+	if args.Classify.Valid {
+		query = query.Classify(args.Classify.Enum)
+	}
 	creditValues, err := query.WithPaging(args.Paging).ListCredit()
 	if err != nil {
 		return nil, err

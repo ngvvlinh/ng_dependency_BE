@@ -79,8 +79,9 @@ func (h QueryServiceHandler) HandleGetCredit(ctx context.Context, msg *GetCredit
 }
 
 type ListCreditsQuery struct {
-	ShopID dot.ID
-	Paging *meta.Paging
+	ShopID   dot.ID
+	Classify credit_type.NullCreditClassify
+	Paging   *meta.Paging
 
 	Result *ListCreditsResponse `json:"-"`
 }
@@ -162,13 +163,15 @@ func (q *GetCreditQuery) SetGetCreditArgs(args *GetCreditArgs) {
 func (q *ListCreditsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCreditsArgs) {
 	return ctx,
 		&ListCreditsArgs{
-			ShopID: q.ShopID,
-			Paging: q.Paging,
+			ShopID:   q.ShopID,
+			Classify: q.Classify,
+			Paging:   q.Paging,
 		}
 }
 
 func (q *ListCreditsQuery) SetListCreditsArgs(args *ListCreditsArgs) {
 	q.ShopID = args.ShopID
+	q.Classify = args.Classify
 	q.Paging = args.Paging
 }
 

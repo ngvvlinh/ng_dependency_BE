@@ -965,12 +965,20 @@
         }
       }
     },
-    "riGetExtensionsRequest": {
+    "riGetExtensionsFilter": {
       "type": "object",
       "properties": {
         "hotline_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "riGetExtensionsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/riGetExtensionsFilter"
         }
       }
     },

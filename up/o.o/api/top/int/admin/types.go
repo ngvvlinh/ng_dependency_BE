@@ -400,11 +400,18 @@ type GetCreditRequest struct {
 func (m *GetCreditRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCreditsRequest struct {
+	// @deprecated: use Filter instead
 	ShopId dot.ID         `json:"shop_id"`
 	Paging *common.Paging `json:"paging"`
+	Filter *CreditsFilter `json:"filter"`
 }
 
 func (m *GetCreditsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreditsFilter struct {
+	ShopID   dot.ID                         `json:"shop_id"`
+	Classify credit_type.NullCreditClassify `json:"classify"`
+}
 
 type CreateCreditRequest struct {
 	Amount   int                            `json:"amount"`

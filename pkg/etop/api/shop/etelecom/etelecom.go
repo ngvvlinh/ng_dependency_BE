@@ -71,6 +71,12 @@ func (s *EtelecomService) GetExtensions(ctx context.Context, r *etelecomtypes.Ge
 	query := &etelecom.ListExtensionsQuery{
 		AccountIDs: []dot.ID{s.SS.Shop().ID},
 	}
+	if r.Filter != nil {
+		if r.Filter.HotlineID != 0 {
+			query.HotlineIDs = []dot.ID{r.Filter.HotlineID}
+		}
+	}
+
 	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
