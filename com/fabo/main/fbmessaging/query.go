@@ -57,7 +57,7 @@ func (q *FbMessagingQuery) ListFbCustomerConversations(
 		query = query.Types(args.Types)
 	}
 	if args.ExternalUserID.Valid {
-		query = query.FbExternalID(args.ExternalUserID.String)
+		query = query.FbExternalUserID(args.ExternalUserID.String)
 	}
 	fbCustomerConversations, err := query.WithPaging(args.Paging).ListFbCustomerConversations()
 
