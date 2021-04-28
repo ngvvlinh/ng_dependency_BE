@@ -382,6 +382,26 @@ func (m *ShipmentManager) GetShippingServices(ctx context.Context, args *GetShip
 }
 
 func (m *ShipmentManager) GetAllShopConnections(ctx context.Context, shopID dot.ID, connectionIDs []dot.ID) ([]*connectioning.ShopConnection, error) {
+	if len(connectionIDs) == 0 {
+		// Chỉ lấy những connection type shipping, subtype shipment
+		queryConn := &connectioning.ListConnectionsQuery{
+			IDs:               connectionIDs,
+			Status:            status3.P.Wrap(),
+			ConnectionType:    connection_type.Shipping,
+			ConnectionSubtype: connection_type.ConnectionSubtypeShipment,
+		}
+		if err := m.connectionQS.Dispatch(ctx, queryConn); err != nil {
+			return nil, err
+		}
+		conns := queryConn.Result
+		if len(conns) == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Không có nhà vận chuyển hợp lệ")
+		}
+		for _, conn := range conns {
+			connectionIDs = append(connectionIDs, conn.ID)
+		}
+	}
+
 	// Get all shop_connection & global shop_connection
 	query := &connectioning.ListShopConnectionsQuery{
 		ShopID:        shopID,
