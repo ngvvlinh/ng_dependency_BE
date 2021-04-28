@@ -110,7 +110,7 @@ func getTenantInfo(user *identity.User, identity int) *TenantInfo {
 	if identity != 0 {
 		name += "-" + strconv.Itoa(identity)
 	}
-	name += "-" + cmenv.EnvDev.String()
+	name += "-" + cmenv.Env().String()
 
 	domain := name + ".eb2b.vn"
 	password := "eB2B@" + gencode.GenerateCode(gencode.Alphabet54, 8)
