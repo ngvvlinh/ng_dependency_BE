@@ -60,8 +60,13 @@ func (m *ProcessManager) ExtensionCreating(ctx context.Context, event *etelecom.
 
 	// Cho phép tạo ext đối với user có setting: miễn phí hoặc trả sau
 	// Trường hợp trả trước phải tạo thông qua subscription
-	if setting.ExtensionChargeType == charge_type.Prepaid {
+	switch setting.ExtensionChargeType {
+	case charge_type.Prepaid:
 		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn gói dịch vụ để tạo extension")
+	case charge_type.Postpaid, charge_type.Free:
+	// Pass
+	default:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể sử dụng api này để tạo extension")
 	}
 	return nil
 }

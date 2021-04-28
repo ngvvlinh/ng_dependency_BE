@@ -6,7 +6,6 @@ import (
 	"o.o/api/etelecom/usersetting"
 	"o.o/backend/com/etelecom/usersetting/sqlstore"
 	com "o.o/backend/com/main"
-	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
 	"o.o/capi/dot"
 )
@@ -29,15 +28,7 @@ func QueryServiceMessageBus(s *QueryService) usersetting.QueryBus {
 }
 
 func (q *QueryService) GetUserSetting(ctx context.Context, userID dot.ID) (*usersetting.UserSetting, error) {
-	setting, err := q.userSettingStore(ctx).ID(userID).GetUserSetting()
-	switch cm.ErrorCode(err) {
-	case cm.NotFound:
-		return &usersetting.UserSetting{ID: userID}, nil
-	case cm.NoError:
-		return setting, nil
-	default:
-		return nil, err
-	}
+	return q.userSettingStore(ctx).ID(userID).GetUserSetting()
 }
 
 func (q *QueryService) ListUserSettings(ctx context.Context, args *usersetting.ListUserSettingsArgs) (*usersetting.ListUserSettingsResponse, error) {

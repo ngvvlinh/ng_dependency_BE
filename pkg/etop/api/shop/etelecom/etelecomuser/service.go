@@ -7,6 +7,7 @@ import (
 	etelecomapi "o.o/api/top/int/etelecom"
 	etelecomtypes "o.o/api/top/int/etelecom/types"
 	pbcm "o.o/api/top/types/common"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 )
@@ -24,12 +25,20 @@ func (s *EtelecomUserService) Clone() etelecomapi.EtelecomUserService {
 }
 
 func (s *EtelecomUserService) GetUserSetting(ctx context.Context, empty *pbcm.Empty) (*etelecomtypes.EtelecomUserSetting, error) {
+	userID := s.SS.Shop().OwnerID
 	query := &usersetting.GetUserSettingQuery{
-		UserID: s.SS.Shop().OwnerID,
+		UserID: userID,
 	}
-	if err := s.UserSettingQuery.Dispatch(ctx, query); err != nil {
+	err := s.UserSettingQuery.Dispatch(ctx, query)
+	userSetting := &usersetting.UserSetting{}
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		userSetting = query.Result
+	case cm.NotFound:
+		userSetting = &usersetting.UserSetting{ID: userID}
+	default:
 		return nil, err
 	}
-	res := convertpb.Convert_usersetting_UserSetting_api_UserSetting(query.Result)
+	res := convertpb.Convert_usersetting_UserSetting_api_UserSetting(userSetting)
 	return res, nil
 }
