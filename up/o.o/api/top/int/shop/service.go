@@ -505,3 +505,9 @@ type TransactionService interface {
 type InvoiceService interface {
 	GetInvoices(context.Context, *types.GetShopInvoicesRequest) (*types.GetShopInvoicesResponse, error)
 }
+
+// +apix:path=/shop.Jira
+type JiraService interface {
+	GetJiraCustomFields(context.Context, *cm.Empty) (*GetCustomFieldsResponse, error)
+	CreateJiraIssue(context.Context, *CreateJiraIssueRequest) (*cm.Empty, error)
+}

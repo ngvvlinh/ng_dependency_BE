@@ -3160,3 +3160,40 @@ type UpdateSettingRequest struct {
 }
 
 func (m *UpdateSettingRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type JiraCustomField struct {
+	Name string `json:"name"`
+	Key  string `json:"key"`
+}
+
+func (m *JiraCustomField) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetCustomFieldsResponse struct {
+	CustomFields []*JiraCustomField `json:"custom_fields"`
+}
+
+func (m *GetCustomFieldsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateJiraIssueRequest struct {
+	Summary     string `json:"summary"`
+	Description string `json:"description"`
+	// CustomField lấy từ api: GetJiraCustomFields
+	CustomFields []CreateCustomField `json:"custom_fields"`
+}
+
+func (m *CreateJiraIssueRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateCustomField struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+func (m *CreateCustomField) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateIssueResponse struct {
+	ID   string `json:"id"`
+	Key  string `json:"key"`
+	Self string `json:"self"`
+}
+
+func (m *CreateIssueResponse) String() string { return jsonx.MustMarshalToString(m) }

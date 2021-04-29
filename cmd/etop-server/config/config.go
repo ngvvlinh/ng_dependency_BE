@@ -21,6 +21,7 @@ import (
 	"o.o/backend/pkg/etop/apix/partner"
 	orderS "o.o/backend/pkg/etop/logic/orders"
 	"o.o/backend/pkg/integration/email"
+	jiraclient "o.o/backend/pkg/integration/jira/client"
 	kpayclient "o.o/backend/pkg/integration/payment/kpay/client"
 	vtpayclient "o.o/backend/pkg/integration/payment/vtpay/client"
 	ahamoveclient "o.o/backend/pkg/integration/shipnow/ahamove/client"
@@ -71,6 +72,7 @@ type Config struct {
 	WebphonePublicKey                     config_server.WebphonePublicKey              `yaml:"webphone_public_key"`
 
 	AdminPortsip telecom_all.AdminPortsipConfig `yaml:"admin_portsip"`
+	Jira         jiraclient.Config              `yaml:"jira"`
 }
 
 // Default ...
@@ -118,6 +120,11 @@ func Default() Config {
 		Invitation: invitation.Config{
 			Secret: "IBVEhECSHtJiBoxQKOVafHW58zt9qRK7",
 		},
+
+		Jira: jiraclient.Config{
+			UserEmail: "kimhai.ngvan@gmail.com",
+			APIKey:    "63aiaN3wd5OgsSW77VYjCB17",
+		},
 	}
 	cfg.Email = cc.EmailConfig{
 		Enabled:              false,
@@ -161,6 +168,7 @@ func Load(isTest bool) (Config, error) {
 	cfg.Ahamove.MustLoadEnv()
 	cfg.VTPay.MustLoadEnv()
 	cfg.KPay.MustLoadEnv()
+	cfg.Jira.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SharedConfig.SAdminToken)
 
 	if cfg.ThirdPartyHost == "" && cfg.SharedConfig.Env != cmenv.EnvDev.String() {

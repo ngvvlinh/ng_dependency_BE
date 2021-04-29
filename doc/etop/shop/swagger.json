@@ -2502,6 +2502,60 @@
         }
       }
     },
+    "/api/shop.Jira/CreateJiraIssue": {
+      "post": {
+        "tags": [
+          "Jira"
+        ],
+        "summary": "CreateJiraIssue",
+        "operationId": "shop.Jira-CreateJiraIssue",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateJiraIssueRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Jira/GetJiraCustomFields": {
+      "post": {
+        "tags": [
+          "Jira"
+        ],
+        "summary": "GetJiraCustomFields",
+        "operationId": "shop.Jira-GetJiraCustomFields",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetCustomFieldsResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Ledger/CreateLedger": {
       "post": {
         "tags": [
@@ -9392,6 +9446,17 @@
         }
       }
     },
+    "paCreateCustomField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "paCreateCustomerAddressRequest": {
       "type": "object",
       "properties": {
@@ -9679,6 +9744,24 @@
           "items": {
             "$ref": "#/definitions/paInventoryVoucher"
           }
+        }
+      }
+    },
+    "paCreateJiraIssueRequest": {
+      "type": "object",
+      "properties": {
+        "custom_fields": {
+          "description": "CustomField lấy từ api: GetJiraCustomFields\n",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paCreateCustomField"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
         }
       }
     },
@@ -11063,6 +11146,17 @@
         }
       }
     },
+    "paGetCustomFieldsResponse": {
+      "type": "object",
+      "properties": {
+        "custom_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/paJiraCustomField"
+          }
+        }
+      }
+    },
     "paGetCustomerAddressesRequest": {
       "type": "object",
       "properties": {
@@ -12148,6 +12242,17 @@
           "format": "int64"
         },
         "variant_name": {
+          "type": "string"
+        }
+      }
+    },
+    "paJiraCustomField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "name": {
           "type": "string"
         }
       }
@@ -18925,6 +19030,9 @@
     },
     {
       "name": "Invoice"
+    },
+    {
+      "name": "Jira"
     },
     {
       "name": "Ledger"

@@ -175,6 +175,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/history"
 	"o.o/backend/pkg/etop/api/shop/inventory"
 	"o.o/backend/pkg/etop/api/shop/invoice"
+	"o.o/backend/pkg/etop/api/shop/jira"
 	"o.o/backend/pkg/etop/api/shop/ledger"
 	"o.o/backend/pkg/etop/api/shop/money_transaction"
 	"o.o/backend/pkg/etop/api/shop/notification"
@@ -227,6 +228,7 @@ import (
 	"o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/email"
+	"o.o/backend/pkg/integration/jira/driver"
 	"o.o/backend/pkg/integration/payment/kpay"
 	"o.o/backend/pkg/integration/payment/vtpay"
 	"o.o/backend/pkg/integration/payment/vtpay/client"
@@ -540,9 +542,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shipmentpriceQueryBus := shipmentprice.QueryServiceMessageBus(shipmentpriceQueryService)
 	pricelistpromotionQueryService := pricelistpromotion.NewQueryService(mainDB, store, locationQueryBus, queryBus, shopshipmentpricelistQueryBus, pricelistQueryBus)
 	pricelistpromotionQueryBus := pricelistpromotion.QueryServiceMessageBus(pricelistpromotionQueryService)
-	driver := shipment_all.SupportedCarrierDriver(busBus)
+	typesDriver := shipment_all.SupportedCarrierDriver(busBus)
 	connectionManager := manager.NewConnectionManager(store, connectioningQueryBus)
-	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, driver, connectionManager, orderStoreInterface)
+	shipmentManager, err := carrier.NewShipmentManager(busBus, locationQueryBus, queryBus, connectioningQueryBus, connectioningCommandBus, shippingcodeQueryBus, shipmentserviceQueryBus, shipmentpriceQueryBus, pricelistpromotionQueryBus, typesDriver, connectionManager, orderStoreInterface)
 	if err != nil {
 		cleanup()
 		return Output{}, nil, err
@@ -587,8 +589,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	shipnowQueryService := shipnow.NewQueryService(mainDB)
 	shipnowQueryBus := shipnow.QueryServiceMessageBus(shipnowQueryService)
 	typesConfig := shipnow_all.SupportedShipnowCarrierConfig(cfg)
-	typesDriver := shipnow_all.SupportedShipnowCarrierDriver()
-	shipnowManager := carrier2.NewShipnowManager(locationQueryBus, connectioningQueryBus, connectioningCommandBus, store, connectionManager, queryBus, shipnowQueryBus, accountshipnowQueryBus, accountshipnowCommandBus, typesConfig, typesDriver)
+	driver2 := shipnow_all.SupportedShipnowCarrierDriver()
+	shipnowManager := carrier2.NewShipnowManager(locationQueryBus, connectioningQueryBus, connectioningCommandBus, store, connectionManager, queryBus, shipnowQueryBus, accountshipnowQueryBus, accountshipnowCommandBus, typesConfig, driver2)
 	shipnowAggregate := shipnow.NewAggregate(busBus, mainDB, locationQueryBus, queryBus, addressQueryBus, connectioningQueryBus, orderingQueryBus, shipnowManager)
 	shipnowCommandBus := shipnow.AggregateMessageBus(shipnowAggregate)
 	shipnowService := &shipnow2.ShipnowService{
@@ -797,8 +799,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	contactQuery := query23.NewContactQuery(mainDB)
 	contactQueryBus := query23.ContactQueryMessageBus(contactQuery)
-	driver2 := ticket_all.SupportedTicketDriver(busBus, shippingQueryBus, contactQueryBus)
-	ticketManager, err := provider.NewTicketManager(connectionManager, busBus, driver2, connectioningQueryBus)
+	driver3 := ticket_all.SupportedTicketDriver(busBus, shippingQueryBus, contactQueryBus)
+	ticketManager, err := provider.NewTicketManager(connectionManager, busBus, driver3, connectioningQueryBus)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -839,12 +841,12 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SettingAggr:  settingCommandBus,
 		AddressQ:     addressQueryBus,
 	}
-	driver3 := _all2.SupportedTelecomDriver(busBus)
+	driver4 := _all2.SupportedTelecomDriver(busBus)
 	queryService6 := query25.NewQueryService(etelecomDB, connectioningQueryBus)
 	etelecomQueryBus := query25.QueryServiceMessageBus(queryService6)
 	adminPortsipConfig := cfg.AdminPortsip
 	administratorTelecom := _all2.SupportAdminPortsipDriver(adminPortsipConfig)
-	telecomManager, err := provider2.NewTelecomManager(busBus, connectionManager, driver3, connectioningQueryBus, connectioningCommandBus, queryBus, etelecomQueryBus, administratorTelecom)
+	telecomManager, err := provider2.NewTelecomManager(busBus, connectionManager, driver4, connectioningQueryBus, connectioningCommandBus, queryBus, etelecomQueryBus, administratorTelecom)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -888,7 +890,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		InvoiceAggr:  invoicingCommandBus,
 		InvoiceQuery: invoicingQueryBus,
 	}
-	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, creditService, settingService, etelecomService, etelecomUserService, transactionService, invoiceService)
+	config3 := cfg.Jira
+	jiraDriver := driver.New(config3)
+	jiraService := &jira.JiraService{
+		Session: session,
+		Driver:  jiraDriver,
+	}
+	shopServers := shop_all.NewServers(store, shopMiscService, brandService, inventoryService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, productSourceService, orderService, fulfillmentService, shipnowService, historyService, moneyTransactionService, summaryService, exportExportService, notificationService, authorizeService, tradingService, paymentService, receiptService, supplierService, carrierService, ledgerService, purchaseOrderService, stocktakeService, shipmentService, connectionService, refundService, purchaseRefundService, webServerService, subscriptionService, ticketTicketService, accountShipnowService, contactService, creditService, settingService, etelecomService, etelecomUserService, transactionService, invoiceService, jiraService)
 	adminMiscService := admin.MiscService{
 		Session: session,
 		Login:   loginInterface,
@@ -1394,8 +1402,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	webhook9 := webhook5.New(mainDB, shipmentManager, queryBus, shippingCommandBus, shippingwebhookAggregate, orderStoreInterface)
 	vtPostWebhookServer := _vtpost.NewVTPostWebhookServer(_vtpostWebhookConfig, shipmentManager, queryBus, shippingCommandBus, webhook9)
 	serverWebhookConfig := cfg.AhamoveWebhook
-	config3 := cfg.Ahamove
-	client3 := client2.New(config3)
+	config4 := cfg.Ahamove
+	client3 := client2.New(config4)
 	urlConfig := shipnow_all.AhamoveConfig(cfg)
 	ahamoveCarrier := ahamove.New(client3, urlConfig, locationQueryBus, queryBus, accountshipnowQueryBus)
 	ahamoveVerificationFileServer := server3.NewAhamoveVerificationFileServer(ctx, accountshipnowQueryBus)

@@ -1,7 +1,6 @@
 package cm
 
 import (
-	"fmt"
 	"runtime/debug"
 	"sort"
 	"strconv"
@@ -12,7 +11,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 
 	"o.o/capi/dot"
-	"o.o/common/jsonx"
 )
 
 func Coalesce(ss ...string) string {
@@ -133,17 +131,6 @@ func FormatCurrency(num int) string {
 		str = str[:index]
 	}
 	return sign + strings.Join(res, ".")
-}
-
-func ConvertStructToMapStringString(data interface{}) map[string]string {
-	_data, _ := jsonx.Marshal(data)
-	var metaX map[string]interface{}
-	_ = jsonx.Unmarshal(_data, &metaX)
-	meta := make(map[string]string)
-	for k, v := range metaX {
-		meta[k] = fmt.Sprint(v)
-	}
-	return meta
 }
 
 var llHigh = ll.WithChannel("high")

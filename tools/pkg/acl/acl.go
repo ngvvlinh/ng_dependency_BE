@@ -247,6 +247,10 @@ const (
 	// shop credit
 	ShopCreditCreate permission.ActionType = "shop/credit:create"
 
+	// shop jira
+	ShopJiraCustomFieldView permission.ActionType = "shop/jira:view"
+	ShopJiraIssueCreate     permission.ActionType = "shop/jira:create"
+
 	// etelecom user setting
 	ShopEtelecomUserSettingView permission.ActionType = "shop/etelecom_user_setting:view"
 
@@ -1134,6 +1138,9 @@ var _acl = map[string]*permission.Decl{
 	"shop.Subscription/UpdateSubscriptionInfo":  {Type: Shop, Actions: actions(ShopSubscriptionUpdate)},
 
 	"shop.Invoice/GetInvoices": {Type: Shop, Actions: actions(ShopInvoiceView)},
+
+	"shop.Jira/GetJiraCustomFields": {Type: Shop, Actions: actions(ShopJiraCustomFieldView)},
+	"shop.Jira/CreateJiraIssue":     {Type: Shop, Actions: actions(ShopJiraIssueCreate)},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},

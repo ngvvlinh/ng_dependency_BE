@@ -93,6 +93,7 @@ import (
 	logicsummary "o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
 	"o.o/backend/pkg/integration/email"
+	"o.o/backend/pkg/integration/jira"
 	saffapi "o.o/backend/pkg/services/affiliate/api"
 	"o.o/capi"
 )
@@ -125,6 +126,7 @@ func Build(
 			"FlagFaboOrderAutoConfirmPaymentStatus",
 			"WebphonePublicKey",
 			"AdminPortsip",
+			"Jira",
 		),
 		wire.Struct(new(Output), "*"),
 		_base.WireSet,
@@ -216,6 +218,8 @@ func Build(
 		shop_all.WireSet,
 		ticket_all.WireSet,
 		telecom_all.WireSet,
+
+		jira.WireSet,
 
 		ProvidePolicy,
 		auth.WireSet,

@@ -175,6 +175,9 @@ const shopPolicy = `#connection
 	p, shop/transaction:view, admin, owner, salesman, accountant, purchasing_management
 	# invoice
 	p, shop/invoice:view, admin, owner, accountant, salesman
+	# jira
+	p, shop/jira:view, admin, owner, staff_management, salesman
+	p, shop/jira:create, admin, owner, staff_management, salesman
 `
 
 const adminPolicy = `

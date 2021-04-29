@@ -67,10 +67,12 @@ build:
   - time scripts/ci/verify-lint.sh
   - time scripts/ci/verify-generate.sh
   - time go run ./scripts/init_testdb/main.go -drop
+  - echo "Run test all simple"
   - time scripts/ci/test-all.sh simple
-#  - time scripts/ci/test-all.sh e2e
-#  - time scripts/ci/cache-save.sh
+  - echo "Done test all simple"
   - touch artifacts/BUILD_SUCCESS
+  #  - time scripts/ci/test-all.sh e2e
+  #  - time scripts/ci/cache-save.sh
   after_script:
   - scripts/ci/report-gerrit.sh
   artifacts:

@@ -18,6 +18,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/history"
 	"o.o/backend/pkg/etop/api/shop/inventory"
 	"o.o/backend/pkg/etop/api/shop/invoice"
+	"o.o/backend/pkg/etop/api/shop/jira"
 	"o.o/backend/pkg/etop/api/shop/notification"
 	"o.o/backend/pkg/etop/api/shop/order"
 	"o.o/backend/pkg/etop/api/shop/product"
@@ -55,6 +56,7 @@ func NewServers(
 	connectionService *connection.ConnectionService,
 	transactionService *transaction.TransactionService,
 	invoiceService *invoice.InvoiceService,
+	jiraService *jira.JiraService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -87,6 +89,7 @@ func NewServers(
 		settingService.Close,
 		transactionService.Clone,
 		invoiceService.Clone,
+		jiraService.Clone,
 	)
 	return servers
 }
