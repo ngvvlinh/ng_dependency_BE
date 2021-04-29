@@ -26,7 +26,7 @@ type EtelecomService interface {
 	CreateUserAndAssignExtension(context.Context, *CreateUserAndAssignExtensionRequest) (*cm.MessageResponse, error)
 
 	CreateTenant(context.Context, *CreateTenantRequest) (*types.Tenant, error)
-	GetTenant(context.Context, *cm.Empty) (*types.Tenant, error)
+	GetTenant(context.Context, *GetTenantRequest) (*types.Tenant, error)
 
 	RemoveUserOfExtension(context.Context, *RemoveUserOfExtensionRequest) (*cm.UpdatedResponse, error)
 	AssignUserToExtension(context.Context, *AssignUserToExtensionRequest) (*cm.UpdatedResponse, error)

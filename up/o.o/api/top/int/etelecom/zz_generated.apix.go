@@ -222,7 +222,7 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 		}
 		return msg, fn, nil
 	case "/shop.Etelecom/GetTenant":
-		msg := &common.Empty{}
+		msg := &GetTenantRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
 			inner := s.builder()
 			info.Request, info.Inner = msg, inner

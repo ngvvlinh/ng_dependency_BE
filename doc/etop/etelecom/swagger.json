@@ -325,7 +325,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/btGetTenantRequest"
             }
           }
         ],
@@ -486,6 +486,15 @@
         },
         "phone": {
           "type": "string"
+        }
+      }
+    },
+    "btGetTenantRequest": {
+      "type": "object",
+      "properties": {
+        "connection_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

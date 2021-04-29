@@ -370,11 +370,15 @@ func (s *EtelecomService) CreateTenant(ctx context.Context, r *etelecomapi.Creat
 	return res, nil
 }
 
-func (s *EtelecomService) GetTenant(ctx context.Context, r *pbcm.Empty) (*etelecomtypes.Tenant, error) {
-	query := &etelecom.GetTenantQuery{
+func (s *EtelecomService) GetTenant(ctx context.Context, r *etelecomapi.GetTenantRequest) (*etelecomtypes.Tenant, error) {
+	query := &etelecom.GetTenantByConnectionQuery{
 		OwnerID:      s.SS.Shop().OwnerID,
-		ConnectionID: connectioning.DefaultDirectPortsipConnectionID,
+		ConnectionID: r.ConnectionID,
 	}
+	if query.ConnectionID == 0 {
+		query.ConnectionID = connectioning.DefaultDirectPortsipConnectionID
+	}
+
 	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}

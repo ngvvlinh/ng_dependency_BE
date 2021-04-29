@@ -279,7 +279,7 @@ const adminPolicy = `
 	# admin partner
 	p, admin/partner:create, admin
 	# admin connection
-	p, admin/connection:view, admin, ad_sale, ad_salelead, ad_customerservice, ad_accountant, ad_customerservice_lead
+	p, admin/connection:view, admin, ad_sale, ad_salelead, ad_customerservice, ad_accountant, ad_customerservice_lead, ad_voip
 	p, admin/connection:confirm, admin
 	p, admin/connection:disable, admin
 	p, admin/connection_builtin:create, admin

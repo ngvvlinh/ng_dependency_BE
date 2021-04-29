@@ -76,7 +76,7 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	if event.HotlineID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing hotline_id")
 	}
-	queryTenant := &etelecom.GetTenantQuery{
+	queryTenant := &etelecom.GetTenantByIDQuery{
 		ID: event.TenantID,
 	}
 	if err := m.etelecomQS.Dispatch(ctx, queryTenant); err != nil {

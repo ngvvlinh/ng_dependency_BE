@@ -63983,7 +63983,7 @@ var Wards = []*types.Ward{
 		VTPostID:     491,
 		HaravanCode:  "00625",
 		GhnCode:      "13004",
-		Alias:        []string{"1"}},
+		Alias:        []string{"Phường Mỹ Đình I"}},
 	{
 		Code:         "00626",
 		DistrictCode: "019",
@@ -63991,7 +63991,7 @@ var Wards = []*types.Ward{
 		VTPostID:     494,
 		HaravanCode:  "00626",
 		GhnCode:      "13005",
-		Alias:        []string{"2", "Phường Mỹ Đình II"}},
+		Alias:        []string{"Phường Mỹ Đình II"}},
 	{
 		Code:         "00628",
 		DistrictCode: "019",

@@ -4,29 +4,40 @@ import (
 	"context"
 
 	"o.o/api/etelecom"
+	"o.o/api/main/connectioning"
+	"o.o/api/top/types/etc/connection_type"
 	cm "o.o/backend/pkg/common"
+	"o.o/capi/dot"
 )
 
-func (q *QueryService) GetTenant(ctx context.Context, args *etelecom.GetTenantArgs) (*etelecom.Tenant, error) {
-	query := q.tenantStore(ctx)
-	count := 0
-	if args.ID != 0 {
-		query = query.ID(args.ID)
-		count++
+func (q *QueryService) GetTenantByConnection(ctx context.Context, args *etelecom.GetTenantByConnectionArgs) (*etelecom.Tenant, error) {
+	if args.ConnectionID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing connection ID")
 	}
-	if args.OwnerID != 0 {
+	query := q.tenantStore(ctx).ConnectionID(args.ConnectionID)
+
+	queryConn := &connectioning.GetConnectionByIDQuery{
+		ID: args.ConnectionID,
+	}
+	if err := q.connectionQS.Dispatch(ctx, queryConn); err != nil {
+		return nil, err
+	}
+	conn := queryConn.Result
+	if conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
+		if args.OwnerID == 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing owner ID")
+		}
 		query = query.OwnerID(args.OwnerID)
-		count++
-	}
-	if args.ConnectionID != 0 {
-		query = query.ConnectionID(args.ConnectionID)
-		count++
-	}
-	if args.ID == 0 && count < 2 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing required params")
 	}
 
 	return query.GetTenant()
+}
+
+func (q *QueryService) GetTenantByID(ctx context.Context, id dot.ID) (*etelecom.Tenant, error) {
+	if id == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing tenant ID")
+	}
+	return q.tenantStore(ctx).ID(id).GetTenant()
 }
 
 func (q *QueryService) ListTenants(ctx context.Context, args *etelecom.ListTenantsArgs) (*etelecom.ListTenantsResponse, error) {

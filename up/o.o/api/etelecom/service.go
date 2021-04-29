@@ -55,7 +55,8 @@ type QueryService interface {
 	GetCallLog(ctx context.Context, ID dot.ID) (*CallLog, error)
 
 	ListTenants(context.Context, *ListTenantsArgs) (*ListTenantsResponse, error)
-	GetTenant(context.Context, *GetTenantArgs) (*Tenant, error)
+	GetTenantByID(ctx context.Context, ID dot.ID) (*Tenant, error)
+	GetTenantByConnection(context.Context, *GetTenantByConnectionArgs) (*Tenant, error)
 }
 
 // +convert:create=Extension
@@ -336,4 +337,9 @@ type AssignUserToExtensionArgs struct {
 	AccountID   dot.ID
 	UserID      dot.ID
 	ExtensionID dot.ID
+}
+
+type GetTenantByConnectionArgs struct {
+	OwnerID      dot.ID
+	ConnectionID dot.ID
 }

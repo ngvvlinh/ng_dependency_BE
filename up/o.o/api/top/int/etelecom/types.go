@@ -65,6 +65,14 @@ func (r *CreateTenantRequest) String() string {
 	return jsonx.MustMarshalToString(r)
 }
 
+type GetTenantRequest struct {
+	ConnectionID dot.ID `json:"connection_id"`
+}
+
+func (r *GetTenantRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
 type RemoveUserOfExtensionRequest struct {
 	UserID      dot.ID `json:"user_id"`
 	ExtensionID dot.ID `json:"extension_id"`

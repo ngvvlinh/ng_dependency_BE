@@ -332,16 +332,26 @@ func (h QueryServiceHandler) HandleGetPrivateExtensionNumber(ctx context.Context
 	return err
 }
 
-type GetTenantQuery struct {
-	ID           dot.ID
+type GetTenantByConnectionQuery struct {
 	OwnerID      dot.ID
 	ConnectionID dot.ID
 
 	Result *Tenant `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetTenant(ctx context.Context, msg *GetTenantQuery) (err error) {
-	msg.Result, err = h.inner.GetTenant(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetTenantByConnection(ctx context.Context, msg *GetTenantByConnectionQuery) (err error) {
+	msg.Result, err = h.inner.GetTenantByConnection(msg.GetArgs(ctx))
+	return err
+}
+
+type GetTenantByIDQuery struct {
+	ID dot.ID
+
+	Result *Tenant `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetTenantByID(ctx context.Context, msg *GetTenantByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetTenantByID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -431,7 +441,8 @@ func (q *GetCallLogByExternalIDQuery) query()    {}
 func (q *GetExtensionQuery) query()              {}
 func (q *GetHotlineQuery) query()                {}
 func (q *GetPrivateExtensionNumberQuery) query() {}
-func (q *GetTenantQuery) query()                 {}
+func (q *GetTenantByConnectionQuery) query()     {}
+func (q *GetTenantByIDQuery) query()             {}
 func (q *ListBuiltinHotlinesQuery) query()       {}
 func (q *ListCallLogsQuery) query()              {}
 func (q *ListExtensionsQuery) query()            {}
@@ -801,19 +812,22 @@ func (q *GetPrivateExtensionNumberQuery) GetArgs(ctx context.Context) (_ context
 func (q *GetPrivateExtensionNumberQuery) SetEmpty(args *common.Empty) {
 }
 
-func (q *GetTenantQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTenantArgs) {
+func (q *GetTenantByConnectionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTenantByConnectionArgs) {
 	return ctx,
-		&GetTenantArgs{
-			ID:           q.ID,
+		&GetTenantByConnectionArgs{
 			OwnerID:      q.OwnerID,
 			ConnectionID: q.ConnectionID,
 		}
 }
 
-func (q *GetTenantQuery) SetGetTenantArgs(args *GetTenantArgs) {
-	q.ID = args.ID
+func (q *GetTenantByConnectionQuery) SetGetTenantByConnectionArgs(args *GetTenantByConnectionArgs) {
 	q.OwnerID = args.OwnerID
 	q.ConnectionID = args.ConnectionID
+}
+
+func (q *GetTenantByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
 }
 
 func (q *ListBuiltinHotlinesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *common.Empty) {
@@ -935,7 +949,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetExtension)
 	b.AddHandler(h.HandleGetHotline)
 	b.AddHandler(h.HandleGetPrivateExtensionNumber)
-	b.AddHandler(h.HandleGetTenant)
+	b.AddHandler(h.HandleGetTenantByConnection)
+	b.AddHandler(h.HandleGetTenantByID)
 	b.AddHandler(h.HandleListBuiltinHotlines)
 	b.AddHandler(h.HandleListCallLogs)
 	b.AddHandler(h.HandleListExtensions)

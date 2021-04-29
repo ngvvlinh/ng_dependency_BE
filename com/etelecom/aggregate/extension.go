@@ -5,10 +5,12 @@ import (
 	"time"
 
 	"o.o/api/etelecom"
+	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	"o.o/api/main/invoicing"
 	"o.o/api/subscripting/subscription"
 	subscriptingtypes "o.o/api/subscripting/types"
+	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/payment_method"
 	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/status3"
@@ -362,26 +364,37 @@ func (a *EtelecomAggregate) getTenant(ctx context.Context, args *etelecom.Create
 		return nil, err
 	}
 	if hotline.Status != status3.P {
-		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Hotline does not valid")
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Hotline không hợp lệ")
 	}
 
-	// get ownerID
-	ownerID := args.OwnerID
-	if ownerID == 0 {
-		shopQuery := &identity.GetShopByIDQuery{
-			ID: args.AccountID,
-		}
-		if err = a.identityQuery.Dispatch(ctx, shopQuery); err != nil {
-			return nil, err
-		}
-		ownerID = shopQuery.Result.OwnerID
-	}
+	query := a.tenantStore(ctx).ConnectionID(hotline.ConnectionID)
 
-	tenant, err := a.tenantStore(ctx).OwnerID(ownerID).ConnectionID(hotline.ConnectionID).GetTenant()
-	if err != nil {
+	queryConn := &connectioning.GetConnectionByIDQuery{
+		ID: hotline.ConnectionID,
+	}
+	if err = a.connectionQuery.Dispatch(ctx, queryConn); err != nil {
 		return nil, err
 	}
-	return tenant, nil
+	conn := queryConn.Result
+
+	ownerID := args.OwnerID
+	if conn.ConnectionMethod != connection_type.ConnectionMethodBuiltin {
+		if ownerID == 0 {
+			queryShop := &identity.GetShopByIDQuery{
+				ID: args.AccountID,
+			}
+			if err = a.identityQuery.Dispatch(ctx, queryShop); err != nil {
+				return nil, err
+			}
+			ownerID = queryShop.Result.OwnerID
+		}
+		if hotline.OwnerID != ownerID {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Hotline không thuộc chủ shop này")
+		}
+
+		query = query.OwnerID(args.OwnerID)
+	}
+	return query.GetTenant()
 }
 
 func (a *EtelecomAggregate) DeleteExtension(ctx context.Context, id dot.ID) error {

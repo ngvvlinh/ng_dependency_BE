@@ -68,7 +68,7 @@ func (d *PortsipDriver) CreateExtension(ctx context.Context, req *telecomtypes.C
 		WebAccessPassword: req.ExtensionPassword,
 		Options: &portsipclient.OptionsCreateExtension{
 			EnableAudioRecordCalls: true,
-			EnableVideoRecordCalls: false,
+			EnableVideoRecordCalls: true,
 			EnableExtension:        true,
 			OutboundCallerID:       req.Hotline,
 		},
