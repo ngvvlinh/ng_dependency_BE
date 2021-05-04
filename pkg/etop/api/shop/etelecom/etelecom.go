@@ -124,7 +124,7 @@ func (s *EtelecomService) CreateExtensionBySubscription(ctx context.Context, r *
 		AccountID:          s.SS.Shop().ID,
 		UserID:             r.UserID,
 		HotlineID:          r.HotlineID,
-		OwnerID:            s.SS.User().ID,
+		OwnerID:            s.SS.Shop().OwnerID,
 		ExtensionNumber:    extNumber,
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
