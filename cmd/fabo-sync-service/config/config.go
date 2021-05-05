@@ -37,8 +37,8 @@ func Default() Config {
 		},
 		Env: cmenv.EnvDev.String(),
 		SyncConfig: sync.Config{
-			TimeLimit:   3,
-			TimeToCrawl: 60,
+			TimeLimit: 3,
+			TimeToRun: "0 0 * * *", // 00:00 everyday
 		},
 	}
 	return cfg

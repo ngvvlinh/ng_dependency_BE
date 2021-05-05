@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"gopkg.in/robfig/cron.v2"
+
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_internal_source"
 	"o.o/api/fabo/fbmessaging/fb_live_video_status"
@@ -126,15 +128,16 @@ type Synchronizer struct {
 
 	timeLimit       int
 	timeToCrawl     int
+	timeToRun       string
 	disableSyncUser bool
 	disableSyncPage bool
 }
 
 type Config struct {
-	TimeLimit       int  `yaml:"time_limit"`    // days
-	TimeToCrawl     int  `yaml:"time_to_crawl"` // mins
-	DisableSyncUser bool `yaml:"disable_sync_user"`
-	DisableSyncPage bool `yaml:"disable_sync_page"`
+	TimeLimit       int    `yaml:"time_limit"`  // days
+	TimeToRun       string `yaml:"time_to_run"` //
+	DisableSyncUser bool   `yaml:"disable_sync_user"`
+	DisableSyncPage bool   `yaml:"disable_sync_page"`
 }
 
 func New(
@@ -157,7 +160,7 @@ func New(
 		fbUseringQuery:              fbUseringQuery,
 		rd:                          fbRedis,
 		timeLimit:                   cfg.TimeLimit,
-		timeToCrawl:                 cfg.TimeToCrawl,
+		timeToRun:                   cfg.TimeToRun,
 		disableSyncUser:             cfg.DisableSyncUser,
 		disableSyncPage:             cfg.DisableSyncPage,
 	}
@@ -205,15 +208,13 @@ func (s *Synchronizer) getTaskArguments(taskID dot.ID) (taskArguments *TaskArgum
 }
 
 func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error) {
-	ticker := time.NewTicker(time.Duration(s.timeToCrawl) * time.Minute)
-	defer ticker.Stop()
-
-	for ; true; <-ticker.C {
+	c := cron.New()
+	c.AddFunc(s.timeToRun, func() {
 		// handle jobs with pages
 		if !s.disableSyncPage {
 			fbPageCombineds, err := listAllFbPagesActive(s.db)
 			if err != nil {
-				return err
+				return
 			}
 
 			for _, fbPageCombined := range fbPageCombineds {
@@ -246,7 +247,7 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 		if !s.disableSyncUser {
 			fbUserCombineds, err := listAllFbUsersActive(s.db)
 			if err != nil {
-				return err
+				return
 			}
 
 			for _, fbUserCombined := range fbUserCombineds {
@@ -265,7 +266,9 @@ func (s *Synchronizer) addJobs(id interface{}, p scheduler.Planner) (_err error)
 				})
 			}
 		}
-	}
+	})
+	c.Start()
+
 	return nil
 }
 
