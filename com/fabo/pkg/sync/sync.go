@@ -364,7 +364,6 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 			}
 		}
 		go ll.SendMessagef("Sync-service: \n" + _err.Error())
-		s.scheduler.AddAfter(taskID, defaultRecurrentFacebook, s.syncCallbackLogs)
 	}()
 
 	switch taskArgs.actionType {
