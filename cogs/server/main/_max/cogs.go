@@ -45,10 +45,9 @@ func BuildIntHandlers(
 	hs = append(hs, adminServers...)
 	hs = append(hs, sadminServers...)
 	hs = append(hs, integrationServers...)
-	hs = httprpc.WithHooks(hs, ssHooks, logging)
-
 	hs = append(hs, affServer...)
 	hs = append(hs, saffServer...)
+	hs = httprpc.WithHooks(hs, ssHooks, logging)
 	return
 }
 
