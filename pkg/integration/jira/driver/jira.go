@@ -104,12 +104,12 @@ func (d *JiraDriver) ListCustomFields() (res []*CustomField) {
 func (c *JiraDriver) CreateIssue(ctx context.Context, req *CreateIssueRequest) (res *client.CreateIssueResponse, _err error) {
 	mapCustomField := make(map[string]string)
 	for _, field := range req.CustomFields {
-		if _, ok := mapCustomField[field.Key]; ok {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Duplicate custom field key: %v", field.Key)
-		}
 		cField, ok := JiraProjectCustomFields[field.Key]
 		if !ok {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Custom field key %v does not exist", field.Key)
+		}
+		if _, ok := mapCustomField[cField.KeyJira]; ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Duplicate custom field key: %v", field.Key)
 		}
 		mapCustomField[cField.KeyJira] = field.Value
 	}
