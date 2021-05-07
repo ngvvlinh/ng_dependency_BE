@@ -49,15 +49,21 @@ func PbFbCommentAttachment(fbcommentattachment *fbmessaging.CommentAttachment) *
 	if fbcommentattachment == nil {
 		return nil
 	}
-	return &exttypes.CommentAttachment{
-		Media: &exttypes.ImageMediaDataSubAttachment{
-			Image: PbFbMediaDataSubAttachment(fbcommentattachment.Media.Image),
-		},
+
+	commentAttachment := &exttypes.CommentAttachment{
 		Target: PbFbTargetDataSubAttachment(fbcommentattachment.Target),
 		Title:  dot.String(fbcommentattachment.Title),
 		Type:   dot.String(fbcommentattachment.Type),
 		URL:    dot.String(fbcommentattachment.URL),
 	}
+
+	if fbcommentattachment.Media != nil {
+		commentAttachment.Media = &exttypes.ImageMediaDataSubAttachment{
+			Image: PbFbMediaDataSubAttachment(fbcommentattachment.Media.Image),
+		}
+	}
+
+	return commentAttachment
 }
 
 func PbFbExternalParent(fbExternalParent *fbmessaging.FbObjectParent) *exttypes.FbObjectParent {

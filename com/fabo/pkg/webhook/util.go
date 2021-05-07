@@ -50,20 +50,26 @@ func convertModelPostToCreatePostArgs(pageID string, externalCreatedTime time.Ti
 			if att.SubAttachments != nil {
 				pAtt.SubAttachments = []*fbmessaging.SubAttachment{}
 				for _, v := range att.SubAttachments.Data {
-					pAtt.SubAttachments = append(pAtt.SubAttachments, &fbmessaging.SubAttachment{
-						Media: &fbmessaging.MediaDataSubAttachment{
-							Height: v.Media.Image.Height,
-							Width:  v.Media.Image.Width,
-							Src:    v.Media.Image.Src,
-						},
-						Target: &fbmessaging.TargetDataSubAttachment{
-							ID:  v.Target.ID,
-							URL: v.Target.URL,
-						},
+					subAttachment := &fbmessaging.SubAttachment{
 						Type:        v.Type,
 						URL:         v.URL,
 						Description: v.Description,
-					})
+					}
+					if v.Target != nil {
+						subAttachment.Target = &fbmessaging.TargetDataSubAttachment{
+							ID:  v.Target.ID,
+							URL: v.Target.URL,
+						}
+					}
+
+					if v.Media != nil && v.Media.Image != nil {
+						subAttachment.Media = &fbmessaging.MediaDataSubAttachment{
+							Height: v.Media.Image.Height,
+							Width:  v.Media.Image.Width,
+							Src:    v.Media.Image.Src,
+						}
+					}
+					pAtt.SubAttachments = append(pAtt.SubAttachments, subAttachment)
 				}
 			}
 			extAttachments = append(extAttachments, pAtt)

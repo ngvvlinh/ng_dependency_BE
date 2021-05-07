@@ -36,14 +36,16 @@ func (wh *WebhookHandler) HandleMessenger(
 			}
 
 			// handle error
-			facebookError := err.(*xerrors.APIError)
-			code := facebookError.Meta["code"]
-			if code == fbclient.AccessTokenHasExpired.String() {
-				continue
-			} else {
-				ll.SendMessage(err.Error())
-				return returnCode, err
+			facebookError, ok := err.(*xerrors.APIError)
+			if ok {
+				code := facebookError.Meta["code"]
+				if code == fbclient.AccessTokenHasExpired.String() {
+					continue
+				}
 			}
+
+			ll.SendMessage(err.Error())
+			return returnCode, err
 		}
 	}
 	return mq.CodeOK, nil
