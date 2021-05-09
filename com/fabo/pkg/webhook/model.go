@@ -467,6 +467,30 @@ type WebhookUser struct {
 	Entry  []*UserEntry `json:"entry"`
 }
 
+func (m *WebhookUser) ExternalUserID() string {
+	if len(m.Entry) == 0 {
+		return ""
+	}
+
+	return m.Entry[0].ID
+}
+
+func (m *WebhookUser) ExternalID() string {
+	if len(m.Entry) == 0 || len(m.Entry[0].Changes) == 0 {
+		return ""
+	}
+
+	if m.Entry[0].Changes[0].Field != WebhookUserLiveVideos {
+		return ""
+	}
+
+	if m.Entry[0].Changes[0].Value == nil {
+		return ""
+	}
+
+	return m.Entry[0].Changes[0].Value.ID
+}
+
 func (m *WebhookUser) Type() WebhookUserType {
 	if m == nil || len(m.Entry) == 0 || len(m.Entry[0].Changes) == 0 {
 		return ""

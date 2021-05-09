@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type FbWebhookLogs []*FbWebhookLog
 
 const __sqlFbWebhookLog_Table = "fb_webhook_log"
-const __sqlFbWebhookLog_ListCols = "\"id\",\"page_id\",\"type\",\"external_id\",\"data\",\"error\",\"created_at\",\"updated_at\""
-const __sqlFbWebhookLog_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"page_id\" = EXCLUDED.\"page_id\",\"type\" = EXCLUDED.\"type\",\"external_id\" = EXCLUDED.\"external_id\",\"data\" = EXCLUDED.\"data\",\"error\" = EXCLUDED.\"error\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
+const __sqlFbWebhookLog_ListCols = "\"id\",\"external_page_id\",\"external_user_id\",\"type\",\"external_id\",\"data\",\"error\",\"created_at\",\"updated_at\""
+const __sqlFbWebhookLog_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_page_id\" = EXCLUDED.\"external_page_id\",\"external_user_id\" = EXCLUDED.\"external_user_id\",\"type\" = EXCLUDED.\"type\",\"external_id\" = EXCLUDED.\"external_id\",\"data\" = EXCLUDED.\"data\",\"error\" = EXCLUDED.\"error\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\""
 const __sqlFbWebhookLog_Insert = "INSERT INTO \"fb_webhook_log\" (" + __sqlFbWebhookLog_ListCols + ") VALUES"
 const __sqlFbWebhookLog_Select = "SELECT " + __sqlFbWebhookLog_ListCols + " FROM \"fb_webhook_log\""
 const __sqlFbWebhookLog_Select_history = "SELECT " + __sqlFbWebhookLog_ListCols + " FROM history.\"fb_webhook_log\""
@@ -65,8 +65,15 @@ func (m *FbWebhookLog) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
-		"page_id": {
-			ColumnName:       "page_id",
+		"external_page_id": {
+			ColumnName:       "external_page_id",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"external_user_id": {
+			ColumnName:       "external_user_id",
 			ColumnType:       "string",
 			ColumnDBType:     "string",
 			ColumnTag:        "",
@@ -128,7 +135,8 @@ func (m *FbWebhookLog) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		m.ID,
-		core.String(m.PageID),
+		core.String(m.ExternalPageID),
+		core.String(m.ExternalUserID),
 		core.String(m.Type),
 		core.String(m.ExternalID),
 		core.JSON{m.Data},
@@ -141,7 +149,8 @@ func (m *FbWebhookLog) SQLArgs(opts core.Opts, create bool) []interface{} {
 func (m *FbWebhookLog) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		&m.ID,
-		(*core.String)(&m.PageID),
+		(*core.String)(&m.ExternalPageID),
+		(*core.String)(&m.ExternalUserID),
 		(*core.String)(&m.Type),
 		(*core.String)(&m.ExternalID),
 		core.JSON{&m.Data},
@@ -185,7 +194,7 @@ func (_ *FbWebhookLogs) SQLSelect(w SQLWriter) error {
 func (m *FbWebhookLog) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbWebhookLog_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -195,7 +204,7 @@ func (ms FbWebhookLogs) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbWebhookLog_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(9)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -234,13 +243,21 @@ func (m *FbWebhookLog) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ID)
 	}
-	if m.PageID != "" {
+	if m.ExternalPageID != "" {
 		flag = true
-		w.WriteName("page_id")
+		w.WriteName("external_page_id")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.PageID)
+		w.WriteArg(m.ExternalPageID)
+	}
+	if m.ExternalUserID != "" {
+		flag = true
+		w.WriteName("external_user_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExternalUserID)
 	}
 	if m.Type != "" {
 		flag = true
@@ -300,7 +317,7 @@ func (m *FbWebhookLog) SQLUpdate(w SQLWriter) error {
 func (m *FbWebhookLog) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFbWebhookLog_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -322,8 +339,13 @@ func (m FbWebhookLogHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m FbWebhookLogHistory) ID() core.Interface         { return core.Interface{m["id"]} }
-func (m FbWebhookLogHistory) PageID() core.Interface     { return core.Interface{m["page_id"]} }
+func (m FbWebhookLogHistory) ID() core.Interface { return core.Interface{m["id"]} }
+func (m FbWebhookLogHistory) ExternalPageID() core.Interface {
+	return core.Interface{m["external_page_id"]}
+}
+func (m FbWebhookLogHistory) ExternalUserID() core.Interface {
+	return core.Interface{m["external_user_id"]}
+}
 func (m FbWebhookLogHistory) Type() core.Interface       { return core.Interface{m["type"]} }
 func (m FbWebhookLogHistory) ExternalID() core.Interface { return core.Interface{m["external_id"]} }
 func (m FbWebhookLogHistory) Data() core.Interface       { return core.Interface{m["data"]} }
@@ -332,31 +354,32 @@ func (m FbWebhookLogHistory) CreatedAt() core.Interface  { return core.Interface
 func (m FbWebhookLogHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
 
 func (m *FbWebhookLogHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FbWebhookLogHistory, 8)
+	res := make(FbWebhookLogHistory, 9)
 	res["id"] = data[0]
-	res["page_id"] = data[1]
-	res["type"] = data[2]
-	res["external_id"] = data[3]
-	res["data"] = data[4]
-	res["error"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
+	res["external_page_id"] = data[1]
+	res["external_user_id"] = data[2]
+	res["type"] = data[3]
+	res["external_id"] = data[4]
+	res["data"] = data[5]
+	res["error"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *FbWebhookLogHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FbWebhookLogHistories, 0, 128)
@@ -366,13 +389,14 @@ func (ms *FbWebhookLogHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		}
 		m := make(FbWebhookLogHistory)
 		m["id"] = data[0]
-		m["page_id"] = data[1]
-		m["type"] = data[2]
-		m["external_id"] = data[3]
-		m["data"] = data[4]
-		m["error"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
+		m["external_page_id"] = data[1]
+		m["external_user_id"] = data[2]
+		m["type"] = data[3]
+		m["external_id"] = data[4]
+		m["data"] = data[5]
+		m["error"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

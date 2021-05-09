@@ -333,7 +333,7 @@ func (wh *WebhookHandler) getPageAccessToken(ctx context.Context, extPageID stri
 	return getAccessTokenQuery.Result, mq.CodeOK, nil
 }
 
-func (wh *Webhook) saveLogsWebhook(msg WebhookMessages, err error) {
+func (wh *Webhook) saveLogsWebhookPage(msg WebhookMessages, err error) {
 	buf := new(bytes.Buffer)
 	enc := json.NewEncoder(buf)
 	enc.SetEscapeHTML(false)
@@ -348,12 +348,39 @@ func (wh *Webhook) saveLogsWebhook(msg WebhookMessages, err error) {
 	}
 
 	logData := &fblog.FbWebhookLog{
-		ID:         cm.NewID(),
-		PageID:     pageID,
-		ExternalID: externalID,
-		Data:       nil,
-		Error:      nil,
-		Type:       string(msg.MessageType()),
+		ID:             cm.NewID(),
+		ExternalPageID: pageID,
+		ExternalID:     externalID,
+		Data:           nil,
+		Error:          nil,
+		Type:           string(msg.MessageType()),
+	}
+
+	if err != nil {
+		logData.Error = emodel.ToError(err)
+	}
+
+	if err := enc.Encode(msg); err == nil {
+		logData.Data = buf.Bytes()
+	}
+
+	if _, _err := wh.dbLog.Insert(logData); _err != nil {
+		ll.SendMessagef("Insert db etop_log error %v", _err.Error())
+	}
+}
+
+func (wh *Webhook) saveLogsWebhookUser(msg WebhookUser, err error) {
+	buf := new(bytes.Buffer)
+	enc := json.NewEncoder(buf)
+	enc.SetEscapeHTML(false)
+
+	logData := &fblog.FbWebhookLog{
+		ID:             cm.NewID(),
+		ExternalUserID: msg.ExternalUserID(),
+		ExternalID:     msg.ExternalID(),
+		Data:           nil,
+		Error:          nil,
+		Type:           string(msg.Type()),
 	}
 
 	if err != nil {

@@ -10,12 +10,13 @@ import (
 
 // +sqlgen
 type FbWebhookLog struct {
-	ID         dot.ID
-	PageID     string
-	Type       string
-	ExternalID string
-	Data       json.RawMessage
-	Error      *model.Error
-	CreatedAt  time.Time `sq:"create"`
-	UpdatedAt  time.Time `sq:"update"`
+	ID             dot.ID
+	ExternalPageID string
+	ExternalUserID string
+	Type           string
+	ExternalID     string
+	Data           json.RawMessage
+	Error          *model.Error
+	CreatedAt      time.Time `sq:"create"`
+	UpdatedAt      time.Time `sq:"update"`
 }

@@ -150,7 +150,7 @@ func (wh *Webhook) Callback(c *httpx.Context) (_err error) {
 		writer.Write([]byte("oke"))
 		writer.WriteHeader(200)
 
-		wh.saveLogsWebhook(webhookMessages, _err)
+		wh.saveLogsWebhookPage(webhookMessages, _err)
 	}()
 
 	if webhookMessages.Object != "page" {
@@ -185,11 +185,15 @@ func (wh *Webhook) CallbackForUser(c *httpx.Context) (_err error) {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
 
+	ll.SendMessagef("fbUser: %v", string(body))
+
 	defer func() {
 		writer := c.SetResultRaw()
 		writer.Header().Set("Content-Type", "application/json")
 		writer.Write([]byte("oke"))
 		writer.WriteHeader(200)
+
+		wh.saveLogsWebhookUser(webhookUser, _err)
 	}()
 
 	if webhookUser.Object != "user" {
