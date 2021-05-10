@@ -229,6 +229,13 @@ func (m *ProcessManager) HandleFbExternalCommentCreatedOrUpdatedEvent(
 	externalOwnerPostID := fbExternalComment.ExternalOwnerPostID
 	externalFrom := fbExternalComment.ExternalFrom
 
+	cmd := &fbmessaging.UpdateFbExternalPostTotalCommentsCommand{
+		ExternalID: externalPostID,
+	}
+	if err := m.fbmessagingA.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
 	if postType == fb_post_type.Page {
 		return m.handleFbExternalCommentCreatedOrUpdatedFromPage(ctx, fbExternalComment, externalPageID, externalPostID, externalFrom)
 	}

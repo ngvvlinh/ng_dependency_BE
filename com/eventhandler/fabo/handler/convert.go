@@ -231,26 +231,6 @@ func PbFbMessageAttachmentImage(fbmessageomage *fbmessaging.FbMessageAttachmentI
 	}
 }
 
-func PbFbExternalPost(fbpost *fbmessaging.FbExternalPost) *exttypes.FbExternalPost {
-	if fbpost == nil {
-		return nil
-	}
-	return &exttypes.FbExternalPost{
-		Id:                  fbpost.ID,
-		ExternalID:          dot.String(fbpost.ExternalID),
-		ExternalParentID:    dot.String(fbpost.ExternalParentID),
-		ExternalFrom:        PbFbExternalFrom(fbpost.ExternalFrom),
-		ExternalPicture:     dot.String(fbpost.ExternalPicture),
-		ExternalPageID:      dot.String(fbpost.ExternalPageID),
-		ExternalIcon:        dot.String(fbpost.ExternalIcon),
-		ExternalMessage:     dot.String(fbpost.ExternalMessage),
-		ExternalAttachments: PbFbPostAttachments(fbpost.ExternalAttachments),
-		ExternalCreatedTime: fbpost.ExternalCreatedTime,
-		CreatedAt:           dot.Time(fbpost.CreatedAt),
-		UpdatedAt:           dot.Time(fbpost.UpdatedAt),
-	}
-}
-
 func PbFbExternalConversationEvent(fbConversation *fbmessaging.FbExternalConversation, op string) *types.PgEventConversation {
 	if fbConversation == nil {
 		return nil
@@ -343,5 +323,44 @@ func PbFbExternalMessageEvent(fbmessage *fbmessaging.FbExternalMessage, op strin
 	return &types.PgEventMessage{
 		Op:             op,
 		FbEventMessage: PbFbExternalMessage(fbmessage),
+	}
+}
+
+func PbFbExternalPostEvent(fbPost *fbmessaging.FbExternalPost, op string) *types.PgEventPost {
+	if fbPost == nil {
+		return nil
+	}
+	return &types.PgEventPost{
+		Op:          op,
+		FbEventPost: PbFbExternalPost(fbPost),
+	}
+}
+
+func PbFbExternalPost(fbPost *fbmessaging.FbExternalPost) *exttypes.FbExternalPost {
+	if fbPost == nil {
+		return nil
+	}
+	return &exttypes.FbExternalPost{
+		Id:                      fbPost.ID,
+		ExternalPageID:          dot.String(fbPost.ExternalPageID),
+		ExternalID:              dot.String(fbPost.ExternalID),
+		ExternalUserID:          dot.String(fbPost.ExternalUserID),
+		ExternalParentID:        dot.String(fbPost.ExternalParentID),
+		ExternalFrom:            PbFbExternalFrom(fbPost.ExternalFrom),
+		ExternalPicture:         dot.String(fbPost.ExternalPicture),
+		ExternalIcon:            dot.String(fbPost.ExternalIcon),
+		ExternalMessage:         dot.String(fbPost.ExternalMessage),
+		ExternalAttachments:     PbFbPostAttachments(fbPost.ExternalAttachments),
+		ExternalCreatedTime:     fbPost.ExternalCreatedTime,
+		CreatedAt:               dot.Time(fbPost.CreatedAt),
+		UpdatedAt:               dot.Time(fbPost.UpdatedAt),
+		FeedType:                fbPost.FeedType,
+		StatusType:              fbPost.StatusType,
+		Type:                    fbPost.Type,
+		TotalComments:           dot.Int(fbPost.TotalComments),
+		TotalReactions:          dot.Int(fbPost.TotalReactions),
+		IsLiveVideo:             dot.Bool(fbPost.IsLiveVideo),
+		ExternalLiveVideoStatus: dot.String(fbPost.ExternalLiveVideoStatus),
+		LiveVideoStatus:         fbPost.LiveVideoStatus,
 	}
 }

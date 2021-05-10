@@ -43,6 +43,7 @@ type Aggregate interface {
 	UpdateFbPostMessageAndPicture(context.Context, *FbUpdatePostMessageArgs) error
 	CreateFbExternalPosts(context.Context, *CreateFbExternalPostsArgs) ([]*FbExternalPost, error)
 	RemovePost(context.Context, *RemovePostArgs) error
+	UpdateFbExternalPostTotalComments(ctx context.Context, externalID string) error
 }
 
 type QueryService interface {
@@ -66,6 +67,7 @@ type QueryService interface {
 	GetFbExternalCommentByExternalID(_ context.Context, externalID string) (*FbExternalComment, error)
 	GetLatestUpdateActiveComment(_ context.Context, extPostID string, extUserID string) (*FbExternalComment, error)
 	GetFbExternalConversationByID(_ context.Context, ID dot.ID) (*FbExternalConversation, error)
+	GetFbExternalPostByID(_ context.Context, ID dot.ID) (*FbExternalPost, error)
 	ListFbExternalPostsByExternalIDs(_ context.Context, externalIDs filter.Strings) ([]*FbExternalPost, error)
 	ListFbExternalPostsByIDs(_ context.Context, IDs filter.IDs) ([]*FbExternalPost, error)
 	ListFbExternalPosts(context.Context, *LitFbExternalPostsArgs) (*FbExternalPostsResponse, error)

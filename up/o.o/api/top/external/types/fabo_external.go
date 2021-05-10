@@ -4,23 +4,36 @@ import (
 	"time"
 
 	"o.o/api/fabo/fbmessaging/fb_customer_conversation_type"
+	"o.o/api/fabo/fbmessaging/fb_feed_type"
+	"o.o/api/fabo/fbmessaging/fb_live_video_status"
+	"o.o/api/fabo/fbmessaging/fb_post_type"
+	"o.o/api/fabo/fbmessaging/fb_status_type"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 )
 
 type FbExternalPost struct {
-	Id                  dot.ID            `json:"id"`
-	ExternalID          dot.NullString    `json:"external_id"`
-	ExternalPageID      dot.NullString    `json:"external_page_id"`
-	ExternalParentID    dot.NullString    `json:"external_parent_id"`
-	ExternalFrom        *FbObjectFrom     `json:"external_from"`
-	ExternalPicture     dot.NullString    `json:"external_picture"`
-	ExternalIcon        dot.NullString    `json:"external_icon"`
-	ExternalMessage     dot.NullString    `json:"external_message"`
-	ExternalAttachments []*PostAttachment `json:"external_attachment"`
-	ExternalCreatedTime time.Time         `json:"external_created_time"`
-	CreatedAt           dot.Time          `json:"created_at"`
-	UpdatedAt           dot.Time          `json:"updated_at"`
+	Id                      dot.ID                                 `json:"id"`
+	ExternalPageID          dot.NullString                         `json:"external_page_id"`
+	ExternalID              dot.NullString                         `json:"external_id"`
+	ExternalUserID          dot.NullString                         `json:"external_user_id"`
+	ExternalParentID        dot.NullString                         `json:"external_parent_id"`
+	ExternalFrom            *FbObjectFrom                          `json:"external_from"`
+	ExternalPicture         dot.NullString                         `json:"external_picture"`
+	ExternalIcon            dot.NullString                         `json:"external_icon"`
+	ExternalMessage         dot.NullString                         `json:"external_message"`
+	ExternalAttachments     []*PostAttachment                      `json:"external_attachment"`
+	ExternalCreatedTime     time.Time                              `json:"external_created_time"`
+	CreatedAt               dot.Time                               `json:"created_at"`
+	UpdatedAt               dot.Time                               `json:"updated_at"`
+	FeedType                fb_feed_type.FbFeedType                `json:"feed_type"`
+	StatusType              fb_status_type.FbStatusType            `json:"status_type"`
+	Type                    fb_post_type.FbPostType                `json:"type"`
+	TotalComments           dot.NullInt                            `json:"total_comments"`
+	TotalReactions          dot.NullInt                            `json:"total_reactions"`
+	IsLiveVideo             dot.NullBool                           `json:"is_live_video"`
+	ExternalLiveVideoStatus dot.NullString                         `json:"external_live_video_status"`
+	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus `json:"live_video_status"`
 }
 
 func (m *FbExternalPost) String() string { return jsonx.MustMarshalToString(m) }

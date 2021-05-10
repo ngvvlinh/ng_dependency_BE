@@ -578,7 +578,7 @@ func (f *FbClient) CallAPIGetProfileByPSID(req *GetProfileRequest) (*model.Profi
 func (f *FbClient) CallAPIGetLiveVideo(req *GetLiveVideoRequest) (*model.LiveVideo, error) {
 	params := &GetLiveVideoParams{
 		AccessToken: req.AccessToken,
-		Fields:      "id,from{id,name,email,first_name,last_name,picture},video{id,picture,source},status,creation_time,permalink_url,targeting,title,description",
+		Fields:      "id,from{id,name,email,first_name,last_name,picture},video{id,picture,source,thumbnails},status,creation_time,permalink_url,targeting,title,description",
 		DateFormat:  UnixDateFormat,
 	}
 

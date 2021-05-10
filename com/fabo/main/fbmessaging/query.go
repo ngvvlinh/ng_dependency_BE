@@ -347,8 +347,21 @@ func (q *FbMessagingQuery) ListFbExternalCommentsByExternalIDs(
 func (q *FbMessagingQuery) GetFbExternalPostByExternalID(
 	ctx context.Context, externalID string,
 ) (*fbmessaging.FbExternalPost, error) {
-
 	fbExternalPost, err := q.fbExternalPostStore(ctx).ExternalID(externalID).GetFbExternalPost()
+	if err != nil {
+		return nil, err
+	}
+	err = q.mapPostParent(ctx, []*fbmessaging.FbExternalPost{fbExternalPost})
+	if err != nil {
+		return nil, err
+	}
+	return fbExternalPost, nil
+}
+
+func (q *FbMessagingQuery) GetFbExternalPostByID(
+	ctx context.Context, ID dot.ID,
+) (*fbmessaging.FbExternalPost, error) {
+	fbExternalPost, err := q.fbExternalPostStore(ctx).ID(ID).GetFbExternalPost()
 	if err != nil {
 		return nil, err
 	}

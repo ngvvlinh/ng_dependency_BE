@@ -52,3 +52,14 @@ func (h *Publisher) HandleFbMessageFaboEvent(ctx context.Context, event *types.F
 	h.publisher.Publish(eventMessage)
 	return mq.CodeOK, nil
 }
+
+func (h *Publisher) HandleFbPostFaboEvent(ctx context.Context, event *types.FaboEvent) (mq.Code, error) {
+	title := "fabo/post/" + strings.ToLower(event.PgEventPost.Op)
+	eventMessage := eventstream.Event{
+		Type:      title,
+		AccountID: event.PgEventPost.ShopID,
+		Payload:   event.PgEventPost.FbEventPost,
+	}
+	h.publisher.Publish(eventMessage)
+	return mq.CodeOK, nil
+}

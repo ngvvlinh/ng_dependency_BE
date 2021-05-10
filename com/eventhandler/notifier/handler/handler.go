@@ -79,6 +79,7 @@ func TopicsAndHandlersFabo() map[string]mq.EventHandler {
 		"fulfillment":         HandleFulfillmentEvent,
 		"fb_external_comment": HandleCommentEvent,
 		"fb_external_message": HandleMessageEvent,
+		"fb_external_post":    HandleCommentEvent,
 	})
 }
 

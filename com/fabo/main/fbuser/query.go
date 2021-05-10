@@ -73,7 +73,7 @@ func (q *FbUserQuery) GetFbExternalUserByExternalID(
 func (q *FbUserQuery) GetFbExternalUserConnectedByShopID(
 	ctx context.Context, shopID dot.ID,
 ) (*fbusering.FbExternalUserConnected, error) {
-	return q.fbUserConnectedStore(ctx).ShopID(shopID).GetFbExternalUserConnected()
+	return q.fbUserConnectedStore(ctx).ShopID(shopID).Status(status3.P).GetFbExternalUserConnected()
 }
 
 func (q *FbUserQuery) GetFbExternalUserConnectedByExternalID(

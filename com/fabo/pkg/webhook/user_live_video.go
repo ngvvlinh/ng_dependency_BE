@@ -52,7 +52,6 @@ func (wh *WebhookHandler) HandleUserLiveVideo(
 				return mq.CodeIgnore, err
 			}
 			fbUserToken := getFbUserQuery.Result.Token
-			extPostID := fmt.Sprintf("%s-%s", extUserID, extLiveVideoID)
 
 			getLiveVideoReq := &fbclient.GetLiveVideoRequest{
 				AccessToken: fbUserToken,
@@ -64,6 +63,8 @@ func (wh *WebhookHandler) HandleUserLiveVideo(
 				return mq.CodeIgnore, err
 			}
 
+			extPostID := fmt.Sprintf("%s_%s", extUserID, liveVideoResp.Video.ID)
+
 			getFbExtPostQuery := &fbmessaging.GetFbExternalPostByExternalIDAndExternalUserIDQuery{
 				ExternalID:     extPostID,
 				ExternalUserID: extUserID,
@@ -73,19 +74,33 @@ func (wh *WebhookHandler) HandleUserLiveVideo(
 			case cm.NoError:
 			// no-op
 			case cm.NotFound:
+				externalAttachment := &fbmessaging.PostAttachment{
+					Media: &fbmessaging.MediaPostAttachment{
+						Image: &fbmessaging.ImageMediaPostAttachment{
+							Src: liveVideoResp.Video.Picture,
+						},
+					},
+					Type:      "video_autoplay",
+					MediaType: "video",
+				}
+
 				saveFbExtPostCmd := &fbmessaging.CreateFbExternalPostsCommand{
 					FbExternalPosts: []*fbmessaging.CreateFbExternalPostArgs{
 						{
-							ID:                  cm.NewID(),
-							ExternalUserID:      extUserID,
-							ExternalID:          extPostID,
-							ExternalFrom:        convert.ConvertObjectFrom(liveVideoResp.From),
-							ExternalMessage:     cm.Coalesce(liveVideoResp.Title, liveVideoResp.Description),
-							ExternalPicture:     liveVideoResp.Video.Picture,
-							ExternalCreatedTime: liveVideoResp.CreationTime.ToTime(),
-							FeedType:            fb_feed_type.Post,
-							StatusType:          fb_status_type.AddedVideo,
-							Type:                fb_post_type.User,
+							ID:                      cm.NewID(),
+							ExternalUserID:          extUserID,
+							ExternalID:              extPostID,
+							ExternalFrom:            convert.ConvertObjectFrom(liveVideoResp.From),
+							ExternalPicture:         liveVideoResp.Video.Picture,
+							ExternalMessage:         cm.Coalesce(liveVideoResp.Title, liveVideoResp.Description),
+							ExternalAttachments:     []*fbmessaging.PostAttachment{externalAttachment},
+							ExternalCreatedTime:     liveVideoResp.CreationTime.ToTime(),
+							ExternalUpdatedTime:     liveVideoResp.CreationTime.ToTime(),
+							Type:                    fb_post_type.User,
+							FeedType:                fb_feed_type.Post,
+							StatusType:              fb_status_type.AddedVideo,
+							ExternalLiveVideoStatus: liveVideoResp.Status,
+							LiveVideoStatus:         fb_live_video_status.ConvertToFbLiveVideoStatus(liveVideoResp.Status),
 						},
 					},
 				}

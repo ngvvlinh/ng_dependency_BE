@@ -40,6 +40,7 @@ func (h *Publisher) TopicsAndHandlers() map[string]mq.EventHandler {
 		"fb_external_comment_fabo":      wrapHandler(h.HandleFbCommentFaboEvent),
 		"fb_external_message_fabo":      wrapHandler(h.HandleFbMessageFaboEvent),
 		"fb_customer_conversation_fabo": wrapHandler(h.HandleFbCustomerConversationFaboEvent),
+		"fb_external_post_fabo":         wrapHandler(h.HandleFbPostFaboEvent),
 	}
 }
 
@@ -54,6 +55,8 @@ func wrapHandler(fn HandlerFunc) mq.EventHandler {
 			err = jsonx.Unmarshal(msg.Value, &event.PgEventMessage)
 		case strings.Contains(msg.Topic, "customer") == true:
 			err = jsonx.Unmarshal(msg.Value, &event.PgEventCustomerConversation)
+		case strings.Contains(msg.Topic, "post") == true:
+			err = jsonx.Unmarshal(msg.Value, &event.PgEventPost)
 		case strings.Contains(msg.Topic, "conversation") == true:
 			err = jsonx.Unmarshal(msg.Value, &event.PgEventConversation)
 		default:

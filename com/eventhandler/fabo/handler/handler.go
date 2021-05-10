@@ -72,5 +72,6 @@ func (h *Handler) TopicsAndHandlers() map[string]mq.EventHandler {
 		"fb_external_comment":      h.HandleFbCommentEvent,
 		"fb_external_message":      h.HandleFbMessageEvent,
 		"fb_customer_conversation": h.HandleFbCustomerConversationEvent,
+		"fb_external_post":         h.HandleFbPostEvent,
 	})
 }

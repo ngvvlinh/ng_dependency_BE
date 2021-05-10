@@ -171,6 +171,18 @@ func (s *FbExternalPostStore) UpdateFbExternalPost(fbExternalPost *fbmessaging.F
 	return s.query().Where(s.preds).ShouldUpdate(fbExternalPostDB)
 }
 
+func (s *FbExternalPostStore) UpdateTotalComments(externalID string) error {
+	sql := `UPDATE fb_external_post 
+SET total_comments = (
+	SELECT count(external_id)
+	FROM fb_external_comment
+	WHERE external_post_id = ?
+)
+WHERE external_id = ?`
+	_, err := s.query().SQL(sql, externalID, externalID).Exec()
+	return err
+}
+
 func (s *FbExternalPostStore) GetFbExternalPostDB() (*model.FbExternalPost, error) {
 	query := s.query().Where(s.preds)
 

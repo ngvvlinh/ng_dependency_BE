@@ -48,9 +48,22 @@ func (s LiveVideo) GetExternalPostID() string {
 }
 
 type LiveVideoVideo struct {
-	ID      string `json:"id"`
-	Picture string `json:"picture"`
-	Source  string `json:"source"`
+	ID         string           `json:"id"`
+	Picture    string           `json:"picture"`
+	Source     string           `json:"source"`
+	Thumbnails *VideoThumbnails `json:"thumbnails"`
+}
+
+type VideoThumbnails struct {
+	Data []*VideoThumbnailsData `json:"data"`
+}
+
+type VideoThumbnailsData struct {
+	ID     string `json:"id"`
+	Height int    `json:"height"`
+	Scale  int    `json:"scale"`
+	URI    string `json:"uri"`
+	Width  int    `json:"width"`
 }
 
 type LiveVideoComments struct {

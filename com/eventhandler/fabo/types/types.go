@@ -10,6 +10,7 @@ type FaboEvent struct {
 	PgEventConversation         *PgEventConversation
 	PgEventMessage              *PgEventMessage
 	PgEventCustomerConversation *PgEventCustomerConversation
+	PgEventPost                 *PgEventPost
 	Timestamp                   int64 `json:"t"`
 }
 
@@ -32,6 +33,13 @@ type PgEventMessage struct {
 	FbPageID       dot.ID                      `json:"fb_page_id"`
 	ShopID         dot.ID                      `json:"shop_id"`
 	FbEventMessage *exttypes.FbExternalMessage `json:"fb_message"`
+}
+
+type PgEventPost struct {
+	Op          string                   `json:"op"`
+	FbPageID    dot.ID                   `json:"fb_page_id"`
+	ShopID      dot.ID                   `json:"shop_id"`
+	FbEventPost *exttypes.FbExternalPost `json:"fb_post"`
 }
 
 type PgEventCustomerConversation struct {

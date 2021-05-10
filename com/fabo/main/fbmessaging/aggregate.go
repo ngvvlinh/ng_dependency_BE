@@ -761,3 +761,9 @@ func (a *FbExternalMessagingAggregate) UpdateIsPrivateRepliedComment(
 	}
 	return nil
 }
+
+func (a *FbExternalMessagingAggregate) UpdateFbExternalPostTotalComments(
+	ctx context.Context, externalID string,
+) error {
+	return a.fbExternalPostStore(ctx).UpdateTotalComments(externalID)
+}

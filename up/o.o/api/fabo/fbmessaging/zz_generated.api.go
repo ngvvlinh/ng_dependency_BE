@@ -224,6 +224,17 @@ func (h AggregateHandler) HandleUpdateFbCommentMessage(ctx context.Context, msg 
 	return err
 }
 
+type UpdateFbExternalPostTotalCommentsCommand struct {
+	ExternalID string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateFbExternalPostTotalComments(ctx context.Context, msg *UpdateFbExternalPostTotalCommentsCommand) (err error) {
+	return h.inner.UpdateFbExternalPostTotalComments(msg.GetArgs(ctx))
+}
+
 type UpdateFbPostMessageAndPictureCommand struct {
 	ExternalPostID  string
 	Message         string
@@ -420,6 +431,17 @@ type GetFbExternalPostByExternalIDAndExternalUserIDQuery struct {
 
 func (h QueryServiceHandler) HandleGetFbExternalPostByExternalIDAndExternalUserID(ctx context.Context, msg *GetFbExternalPostByExternalIDAndExternalUserIDQuery) (err error) {
 	msg.Result, err = h.inner.GetFbExternalPostByExternalIDAndExternalUserID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetFbExternalPostByIDQuery struct {
+	ID dot.ID
+
+	Result *FbExternalPost `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetFbExternalPostByID(ctx context.Context, msg *GetFbExternalPostByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetFbExternalPostByID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -688,6 +710,7 @@ func (q *RemoveCommentCommand) command()                         {}
 func (q *RemovePostCommand) command()                            {}
 func (q *SaveFbExternalPostCommand) command()                    {}
 func (q *UpdateFbCommentMessageCommand) command()                {}
+func (q *UpdateFbExternalPostTotalCommentsCommand) command()     {}
 func (q *UpdateFbPostMessageAndPictureCommand) command()         {}
 func (q *UpdateIsPrivateRepliedCommentCommand) command()         {}
 func (q *UpdateIsReadCustomerConversationCommand) command()      {}
@@ -706,6 +729,7 @@ func (q *GetFbExternalMessageByExternalIDQuery) query()                         
 func (q *GetFbExternalMessageByIDQuery) query()                                   {}
 func (q *GetFbExternalPostByExternalIDQuery) query()                              {}
 func (q *GetFbExternalPostByExternalIDAndExternalUserIDQuery) query()             {}
+func (q *GetFbExternalPostByIDQuery) query()                                      {}
 func (q *GetLatestCustomerExternalCommentQuery) query()                           {}
 func (q *GetLatestFbExternalCommentQuery) query()                                 {}
 func (q *GetLatestFbExternalUserCommentQuery) query()                             {}
@@ -948,6 +972,11 @@ func (q *UpdateFbCommentMessageCommand) SetFbUpdateCommentMessageArgs(args *FbUp
 	q.Message = args.Message
 }
 
+func (q *UpdateFbExternalPostTotalCommentsCommand) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
+	return ctx,
+		q.ExternalID
+}
+
 func (q *UpdateFbPostMessageAndPictureCommand) GetArgs(ctx context.Context) (_ context.Context, _ *FbUpdatePostMessageArgs) {
 	return ctx,
 		&FbUpdatePostMessageArgs{
@@ -1072,6 +1101,11 @@ func (q *GetFbExternalPostByExternalIDAndExternalUserIDQuery) GetArgs(ctx contex
 	return ctx,
 		q.ExternalID,
 		q.ExternalUserID
+}
+
+func (q *GetFbExternalPostByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
+	return ctx,
+		q.ID
 }
 
 func (q *GetLatestCustomerExternalCommentQuery) GetArgs(ctx context.Context) (_ context.Context, externalPostID string, externalUserID string, externalPageID string) {
@@ -1278,6 +1312,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleRemovePost)
 	b.AddHandler(h.HandleSaveFbExternalPost)
 	b.AddHandler(h.HandleUpdateFbCommentMessage)
+	b.AddHandler(h.HandleUpdateFbExternalPostTotalComments)
 	b.AddHandler(h.HandleUpdateFbPostMessageAndPicture)
 	b.AddHandler(h.HandleUpdateIsPrivateRepliedComment)
 	b.AddHandler(h.HandleUpdateIsReadCustomerConversation)
@@ -1310,6 +1345,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetFbExternalMessageByID)
 	b.AddHandler(h.HandleGetFbExternalPostByExternalID)
 	b.AddHandler(h.HandleGetFbExternalPostByExternalIDAndExternalUserID)
+	b.AddHandler(h.HandleGetFbExternalPostByID)
 	b.AddHandler(h.HandleGetLatestCustomerExternalComment)
 	b.AddHandler(h.HandleGetLatestFbExternalComment)
 	b.AddHandler(h.HandleGetLatestFbExternalUserComment)

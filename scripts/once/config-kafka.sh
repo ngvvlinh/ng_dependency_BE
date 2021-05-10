@@ -53,6 +53,8 @@ create_topic 64 pgrid_shipnow_fulfillment
 create_topic 64 pgrid_facebook_webhook_message
 create_topic 64 pgrid_facebook_webhook_feed
 create_topic 64 pgrid_facebook_webhook_user_live_video
+create_topic 64 pgrid_fb_external_post
+create_topic 64 pgrid_fb_external_post_fabo
 
 # UpdateInfo 2018-06-12
 

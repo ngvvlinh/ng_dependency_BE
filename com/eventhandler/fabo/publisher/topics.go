@@ -33,6 +33,11 @@ func Topics() []eventhandler.TopicDef {
 			Partitions: 64,
 			DBName:     dbdecl.DBMain,
 		},
+		{
+			Name:       "fb_external_post_fabo",
+			Partitions: 64,
+			DBName:     dbdecl.DBMain,
+		},
 	}
 }
 
