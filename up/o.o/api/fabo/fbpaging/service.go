@@ -12,7 +12,7 @@ import (
 
 type Aggregate interface {
 	DisableFbExternalPagesByExternalIDs(context.Context, *DisableFbExternalPagesByIDsArgs) (int, error)
-
+	DisableFbExternalPagesByShopIDAndExternalUserID(_ context.Context, shopID dot.ID, externalUserID string) error
 	CreateFbExternalPageCombineds(context.Context, *CreateFbExternalPageCombinedsArgs) ([]*FbExternalPageCombined, error)
 }
 

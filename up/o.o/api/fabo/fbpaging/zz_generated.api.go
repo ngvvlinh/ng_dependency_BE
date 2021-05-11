@@ -48,6 +48,18 @@ func (h AggregateHandler) HandleDisableFbExternalPagesByExternalIDs(ctx context.
 	return err
 }
 
+type DisableFbExternalPagesByShopIDAndExternalUserIDCommand struct {
+	ShopID         dot.ID
+	ExternalUserID string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleDisableFbExternalPagesByShopIDAndExternalUserID(ctx context.Context, msg *DisableFbExternalPagesByShopIDAndExternalUserIDCommand) (err error) {
+	return h.inner.DisableFbExternalPagesByShopIDAndExternalUserID(msg.GetArgs(ctx))
+}
+
 type GetFbExternalPageActiveByExternalIDQuery struct {
 	ExternalID string
 
@@ -162,8 +174,9 @@ func (h QueryServiceHandler) HandleListFbPagesByShop(ctx context.Context, msg *L
 
 // implement interfaces
 
-func (q *CreateFbExternalPageCombinedsCommand) command()       {}
-func (q *DisableFbExternalPagesByExternalIDsCommand) command() {}
+func (q *CreateFbExternalPageCombinedsCommand) command()                   {}
+func (q *DisableFbExternalPagesByExternalIDsCommand) command()             {}
+func (q *DisableFbExternalPagesByShopIDAndExternalUserIDCommand) command() {}
 
 func (q *GetFbExternalPageActiveByExternalIDQuery) query()         {}
 func (q *GetFbExternalPageByExternalIDQuery) query()               {}
@@ -200,6 +213,12 @@ func (q *DisableFbExternalPagesByExternalIDsCommand) GetArgs(ctx context.Context
 func (q *DisableFbExternalPagesByExternalIDsCommand) SetDisableFbExternalPagesByIDsArgs(args *DisableFbExternalPagesByIDsArgs) {
 	q.ExternalIDs = args.ExternalIDs
 	q.ShopID = args.ShopID
+}
+
+func (q *DisableFbExternalPagesByShopIDAndExternalUserIDCommand) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, externalUserID string) {
+	return ctx,
+		q.ShopID,
+		q.ExternalUserID
 }
 
 func (q *GetFbExternalPageActiveByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, externalID string) {
@@ -276,6 +295,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleCreateFbExternalPageCombineds)
 	b.AddHandler(h.HandleDisableFbExternalPagesByExternalIDs)
+	b.AddHandler(h.HandleDisableFbExternalPagesByShopIDAndExternalUserID)
 	return CommandBus{b}
 }
 

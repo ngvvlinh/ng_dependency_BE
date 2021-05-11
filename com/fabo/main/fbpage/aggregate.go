@@ -200,3 +200,12 @@ func (a *FbExternalPageAggregate) DisableFbExternalPagesByExternalIDs(
 ) (int, error) {
 	return a.fbExternalPageStore(ctx).ShopID(args.ShopID).ExternalIDs(args.ExternalIDs).UpdateStatus(int(status3.N))
 }
+
+func (a *FbExternalPageAggregate) DisableFbExternalPagesByShopIDAndExternalUserID(
+	ctx context.Context, shopID dot.ID, externalUserID string,
+) error {
+	if _, err := a.fbExternalPageStore(ctx).ShopID(shopID).ExternalUserID(externalUserID).UpdateStatus(int(status3.N)); err != nil {
+		return err
+	}
+	return nil
+}

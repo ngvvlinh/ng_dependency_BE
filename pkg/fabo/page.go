@@ -87,16 +87,16 @@ func (s *PageService) ListPages(ctx context.Context, r *fabo.ListPagesRequest) (
 }
 
 func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequest) (*fabo.ConnectPagesResponse, error) {
+	var (
+		fbErrorPages          []*fabo.FbErrorPage
+		fbPageCombinedsResult []*fabo.FbPageCombined
+	)
+
 	shopID := s.SS.Shop().ID
 
 	// Check accessToken is alive
 	userToken, err := s.FBClient.CallAPICheckAccessToken(r.AccessToken)
 	if err != nil {
-		return nil, err
-	}
-
-	// Verify permissions
-	if err := verifyScopes(appScopes, userToken.Data.Scopes); err != nil {
 		return nil, err
 	}
 
@@ -119,46 +119,6 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 	accounts, err := s.FBClient.CallAPIGetAccounts(longLivedAccessToken.AccessToken)
 	if err != nil {
 		return nil, err
-	}
-
-	// Get externalIDs
-	var externalIDs []string
-	for _, account := range accounts.Accounts.Data {
-		externalIDs = append(externalIDs, account.Id)
-	}
-
-	// Subcribe app (enable webhook messager)
-	if contains(userToken.Data.Scopes, "pages_messaging") {
-		var wg sync.WaitGroup
-		wg.Add(len(accounts.Accounts.Data))
-		for _, account := range accounts.Accounts.Data {
-			go func(accessToken, externalPageID string) {
-				defer wg.Done()
-				// TODO: Ngoc handle err
-				if _, err := s.FBClient.CallAPICreateSubscribedApps(&fbclient.CreateSubscribedAppsRequest{
-					AccessToken: accessToken,
-					Fields:      []string{fbclient.MessagesField, fbclient.MessageEchoesField, fbclient.FeedField},
-					PageID:      externalPageID,
-				}); err != nil {
-					return
-				}
-			}(account.AccessToken, account.Id)
-		}
-		wg.Wait()
-	}
-
-	// Get fbPages active from externalIDs (accounts)
-	listFbPagesActiveQuery := &fbpaging.ListFbExternalPagesActiveByExternalIDsQuery{
-		ExternalIDs: externalIDs,
-	}
-	if err := s.FBExternalPageQuery.Dispatch(ctx, listFbPagesActiveQuery); err != nil {
-		return nil, err
-	}
-
-	// key externalID
-	mapFbPageActive := make(map[string]*fbpaging.FbExternalPage)
-	for _, fbPage := range listFbPagesActiveQuery.Result {
-		mapFbPageActive[fbPage.ExternalID] = fbPage
 	}
 
 	createFbUserCombinedCmd := &fbusering.CreateOrUpdateFbExternalUserCombinedCommand{
@@ -184,67 +144,99 @@ func (s *PageService) ConnectPages(ctx context.Context, r *fabo.ConnectPagesRequ
 		return nil, err
 	}
 
-	var fbErrorPages []*fabo.FbErrorPage
-
-	permissionsGranted := getPermissionsGranted(accounts.Permissions)
-
-	listCreateFbPageCombinedCmd := make([]*fbpaging.CreateFbExternalPageCombinedArgs, 0, len(accounts.Accounts.Data))
-	for _, account := range accounts.Accounts.Data {
-		// Verify role (Admin)
-		currRole := fbclient.GetRole(account.Tasks)
-		if currRole != fbclient.ADMIN && currRole != fbclient.EDITOR {
-			fbErrorPages = append(fbErrorPages, &fabo.FbErrorPage{
-				ExternalID:       account.Id,
-				ExternalName:     account.Name,
-				ExternalImageURL: account.Picture.Data.Url,
-				Reason:           "Tài khoản Facebook cần có quyền Admin hoặc Editor trên Fanpage để kết nối.",
-			})
-			continue
-		}
-
-		fbPageID := cm.NewID()
-		categories := make([]*fbpaging.ExternalCategory, 0, len(account.CategoryList))
-		for _, category := range account.CategoryList {
-			categories = append(categories, &fbpaging.ExternalCategory{
-				ID:   category.ID,
-				Name: category.Name,
-			})
-		}
-		createFbPageCmd := &fbpaging.CreateFbExternalPageArgs{
-			ID:                   fbPageID,
-			ExternalID:           account.Id,
-			ExternalUserID:       me.ID,
-			ShopID:               shopID,
-			ExternalName:         account.Name,
-			ExternalCategory:     account.Category,
-			ExternalCategoryList: categories,
-			ExternalTasks:        account.Tasks,
-			ExternalPermissions:  permissionsGranted,
-			ExternalImageURL:     account.Picture.Data.Url,
-			Status:               status3.P,
-			ConnectionStatus:     status3.P,
-		}
-		createFbPageInternalCmd := &fbpaging.CreateFbExternalPageInternalArgs{
-			ID:         fbPageID,
-			ExternalID: account.Id,
-			Token:      account.AccessToken,
-		}
-		listCreateFbPageCombinedCmd = append(listCreateFbPageCombinedCmd, &fbpaging.CreateFbExternalPageCombinedArgs{
-			FbPage:         createFbPageCmd,
-			FbPageInternal: createFbPageInternalCmd,
-		})
-	}
-	var fbPageCombinedsResult []*fabo.FbPageCombined
-
-	if len(listCreateFbPageCombinedCmd) > 0 {
-		createFbExternalPageCombinedsCmd := &fbpaging.CreateFbExternalPageCombinedsCommand{
-			FbPageCombineds: listCreateFbPageCombinedCmd,
-		}
-		if err := s.FBExternalPageAggr.Dispatch(ctx, createFbExternalPageCombinedsCmd); err != nil {
+	if len(accounts.Accounts.Data) != 0 {
+		// Verify permissions
+		if err := verifyScopes(appScopes, userToken.Data.Scopes); err != nil {
 			return nil, err
 		}
 
-		fbPageCombinedsResult = convertpb.PbFbPageCombineds(createFbExternalPageCombinedsCmd.Result)
+		// Subcribe app (enable webhook messager)
+		if contains(userToken.Data.Scopes, "pages_messaging") {
+			var wg sync.WaitGroup
+			wg.Add(len(accounts.Accounts.Data))
+			for _, account := range accounts.Accounts.Data {
+				go func(accessToken, externalPageID string) {
+					defer wg.Done()
+					// TODO: Ngoc handle err
+					if _, err := s.FBClient.CallAPICreateSubscribedApps(&fbclient.CreateSubscribedAppsRequest{
+						AccessToken: accessToken,
+						Fields:      []string{fbclient.MessagesField, fbclient.MessageEchoesField, fbclient.FeedField},
+						PageID:      externalPageID,
+					}); err != nil {
+						return
+					}
+				}(account.AccessToken, account.Id)
+			}
+			wg.Wait()
+		}
+
+		permissionsGranted := getPermissionsGranted(accounts.Permissions)
+
+		listCreateFbPageCombinedCmd := make([]*fbpaging.CreateFbExternalPageCombinedArgs, 0, len(accounts.Accounts.Data))
+		for _, account := range accounts.Accounts.Data {
+			// Verify role (Admin)
+			currRole := fbclient.GetRole(account.Tasks)
+			if currRole != fbclient.ADMIN && currRole != fbclient.EDITOR {
+				fbErrorPages = append(fbErrorPages, &fabo.FbErrorPage{
+					ExternalID:       account.Id,
+					ExternalName:     account.Name,
+					ExternalImageURL: account.Picture.Data.Url,
+					Reason:           "Tài khoản Facebook cần có quyền Admin hoặc Editor trên Fanpage để kết nối.",
+				})
+				continue
+			}
+
+			fbPageID := cm.NewID()
+			categories := make([]*fbpaging.ExternalCategory, 0, len(account.CategoryList))
+			for _, category := range account.CategoryList {
+				categories = append(categories, &fbpaging.ExternalCategory{
+					ID:   category.ID,
+					Name: category.Name,
+				})
+			}
+			createFbPageCmd := &fbpaging.CreateFbExternalPageArgs{
+				ID:                   fbPageID,
+				ExternalID:           account.Id,
+				ExternalUserID:       me.ID,
+				ShopID:               shopID,
+				ExternalName:         account.Name,
+				ExternalCategory:     account.Category,
+				ExternalCategoryList: categories,
+				ExternalTasks:        account.Tasks,
+				ExternalPermissions:  permissionsGranted,
+				ExternalImageURL:     account.Picture.Data.Url,
+				Status:               status3.P,
+				ConnectionStatus:     status3.P,
+			}
+			createFbPageInternalCmd := &fbpaging.CreateFbExternalPageInternalArgs{
+				ID:         fbPageID,
+				ExternalID: account.Id,
+				Token:      account.AccessToken,
+			}
+			listCreateFbPageCombinedCmd = append(listCreateFbPageCombinedCmd, &fbpaging.CreateFbExternalPageCombinedArgs{
+				FbPage:         createFbPageCmd,
+				FbPageInternal: createFbPageInternalCmd,
+			})
+		}
+
+		if len(listCreateFbPageCombinedCmd) > 0 {
+			createFbExternalPageCombinedsCmd := &fbpaging.CreateFbExternalPageCombinedsCommand{
+				FbPageCombineds: listCreateFbPageCombinedCmd,
+			}
+			if err := s.FBExternalPageAggr.Dispatch(ctx, createFbExternalPageCombinedsCmd); err != nil {
+				return nil, err
+			}
+
+			fbPageCombinedsResult = convertpb.PbFbPageCombineds(createFbExternalPageCombinedsCmd.Result)
+		}
+	} else {
+		disableFbExternalPagesCmd := &fbpaging.DisableFbExternalPagesByShopIDAndExternalUserIDCommand{
+			ShopID:         shopID,
+			ExternalUserID: me.ID,
+		}
+		if err := s.FBExternalPageAggr.Dispatch(ctx, disableFbExternalPagesCmd); err != nil {
+			return nil, err
+		}
 	}
 
 	resp := &fabo.ConnectPagesResponse{
