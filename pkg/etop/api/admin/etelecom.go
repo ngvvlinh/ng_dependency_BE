@@ -62,6 +62,16 @@ func (s *EtelecomService) UpdateHotline(ctx context.Context, r *etelecomtypes.Up
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }
 
+func (s *EtelecomService) DeleteHotline(ctx context.Context, r *pbcm.IDRequest) (*pbcm.DeletedResponse, error) {
+	cmd := &etelecom.DeleteHotlineCommand{
+		Id: r.Id,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.DeletedResponse{Deleted: 1}, nil
+}
+
 func (s *EtelecomService) GetHotlines(ctx context.Context, r *etelecomtypes.GetHotLinesRequest) (*etelecomtypes.GetHotLinesResponse, error) {
 	query := &etelecom.ListHotlinesQuery{}
 	if r.Filter != nil {
@@ -159,4 +169,15 @@ func (s *EtelecomService) ActivateTenant(ctx context.Context, r *etelecomtypes.A
 		return nil, err
 	}
 	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}
+
+func (s *EtelecomService) RemoveHotlineOutOfTenant(ctx context.Context, r *etelecomtypes.RemoveHotlineOutOfTenantRequest) (*pbcm.RemovedResponse, error) {
+	cmd := &etelecom.RemoveHotlineOutOfTenantCommand{
+		HotlineID: r.HotlineID,
+		OwnerID:   r.OwnerID,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.RemovedResponse{Removed: 1}, nil
 }

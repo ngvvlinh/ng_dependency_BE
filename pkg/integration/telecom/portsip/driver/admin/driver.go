@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	telecomtypes "o.o/backend/com/etelecom/provider/types"
@@ -83,7 +84,7 @@ func (d *PortsipAdminDriver) CreateTenant(ctx context.Context, req *telecomtypes
 	return &telecomtypes.CreateTenantResponse{ID: resp.ID.String()}, nil
 }
 
-func (d *PortsipAdminDriver) AddTenantToTrunkProvider(ctx context.Context, req *telecomtypes.AddTenantToTrunkProviderRequest) error {
+func (d *PortsipAdminDriver) AddHotlineToTenantInTrunkProvider(ctx context.Context, req *telecomtypes.AddHotlineToTenantInTrunkProviderRequest) error {
 	if req.TrunkProviderID == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing trunk provider ID")
 	}
@@ -107,14 +108,20 @@ func (d *PortsipAdminDriver) AddTenantToTrunkProvider(ctx context.Context, req *
 	var added bool
 	for _, pool := range pools {
 		if pool.TenantID == req.TenantID {
-			if pool.NumberMask == req.Hotline {
-				// tenant & hotline existed in provider
+			if pool.NumberMask == "" {
+				continue
+			}
+			if strings.Contains(pool.NumberMask, req.Hotline) {
+				// tenant & hotline existed in trunk provider
 				// do nothing
 				return nil
 			}
+			hotlines := strings.Split(pool.NumberMask, ";")
+			hotlines = append(hotlines, req.Hotline)
+
 			updatePools = append(updatePools, &portsipclient.TrunkProviderDidPool{
 				TenantID:   req.TenantID,
-				NumberMask: req.Hotline,
+				NumberMask: strings.Join(hotlines, ";"),
 			})
 			added = true
 		} else {
@@ -130,6 +137,64 @@ func (d *PortsipAdminDriver) AddTenantToTrunkProvider(ctx context.Context, req *
 	}
 
 	if len(updatePools) == 0 {
+		return nil
+	}
+	update := &portsipclient.UpdateTrunkProviderRequest{
+		ID:      req.TrunkProviderID,
+		DidPool: updatePools,
+	}
+	return d.client.UpdateTrunkProvider(ctx, update)
+}
+
+func (d *PortsipAdminDriver) RemoveHotlineOutOfTenantInTrunkProvider(ctx context.Context, req *telecomtypes.RemoveHotlineOutOfTenantInTrunkProviderRequest) error {
+	if req.TrunkProviderID == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing trunk provider ID")
+	}
+	if req.Hotline == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing hotline number")
+	}
+	if req.TenantID == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing tenant id")
+	}
+
+	query := &portsipclient.GetTrunkProviderRequest{
+		ID: req.TrunkProviderID,
+	}
+	trunkProvider, err := d.client.GetTrunkProvider(ctx, query)
+	if err != nil {
+		return err
+	}
+	pools := trunkProvider.DidPool
+
+	var updatePools []*portsipclient.TrunkProviderDidPool
+	var removed bool
+	for _, pool := range pools {
+		if pool.TenantID == req.TenantID {
+			// NumberMask is list hotlines, split by semicolon
+			if pool.NumberMask == "" {
+				return nil
+			}
+
+			hotlines := strings.Split(pool.NumberMask, ";")
+			newHotlines := make([]string, 0, len(hotlines))
+			for _, hotline := range hotlines {
+				if hotline == req.Hotline {
+					removed = true
+					continue
+				}
+				newHotlines = append(newHotlines, hotline)
+			}
+
+			updatePools = append(updatePools, &portsipclient.TrunkProviderDidPool{
+				TenantID:   req.TenantID,
+				NumberMask: strings.Join(newHotlines, ";"),
+			})
+		} else {
+			updatePools = append(updatePools, pool)
+		}
+	}
+
+	if !removed || len(updatePools) == 0 {
 		return nil
 	}
 	update := &portsipclient.UpdateTrunkProviderRequest{

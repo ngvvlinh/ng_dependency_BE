@@ -261,6 +261,13 @@ type ActivateTenantRequest struct {
 
 func (m *ActivateTenantRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type RemoveHotlineOutOfTenantRequest struct {
+	OwnerID   dot.ID `json:"owner_id"`
+	HotlineID dot.ID `json:"hotline_id"`
+}
+
+func (m *RemoveHotlineOutOfTenantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
 type AdminCreateTenantRequest struct {
 	OwnerID dot.ID `json:"owner_id"`
 	// Support connection portsip direct

@@ -36,8 +36,11 @@ type TelecomAdminDriver interface {
 
 	CreateTenant(ctx context.Context, req *CreateTenantRequest) (*CreateTenantResponse, error)
 
-	// gán tenant vào trunk provider (aaranet) để biết tenant này trunk qua provider nào
-	AddTenantToTrunkProvider(context.Context, *AddTenantToTrunkProviderRequest) error
+	// gán tenant vào trunk provider (aaranet) để biết tenant này trunk qua provider nào và với số hotline nào
+	AddHotlineToTenantInTrunkProvider(context.Context, *AddHotlineToTenantInTrunkProviderRequest) error
+
+	// find Trunk provider with tenant_id, then remove hotline out of this tenant
+	RemoveHotlineOutOfTenantInTrunkProvider(context.Context, *RemoveHotlineOutOfTenantInTrunkProviderRequest) error
 }
 
 type AdministratorTelecom struct {
@@ -130,7 +133,16 @@ type CreateOutboundRuleRequest struct {
 	TrunkProviderID string
 }
 
-type AddTenantToTrunkProviderRequest struct {
+type AddHotlineToTenantInTrunkProviderRequest struct {
+	// trunk provider: aarenat provider id in portsip
+	TrunkProviderID string
+	// external tenant ID
+	TenantID string
+	// hotline number
+	Hotline string
+}
+
+type RemoveHotlineOutOfTenantInTrunkProviderRequest struct {
 	// trunk provider: aarenat provider id in portsip
 	TrunkProviderID string
 	// external tenant ID

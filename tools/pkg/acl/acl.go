@@ -446,6 +446,7 @@ const (
 	AdminHotlineCreate permission.ActionType = "admin/hotline:create"
 	AdminHotlineUpdate permission.ActionType = "admin/hotline:update"
 	AdminHotlineView   permission.ActionType = "admin/hotline:view"
+	AdminHotlineDelete permission.ActionType = "admin/hotline:delete"
 
 	// admin etelecom user setting
 	AdminEtelecomUserSettingUpdate permission.ActionType = "admin/etelecom_user_setting:update"
@@ -893,12 +894,14 @@ var _acl = map[string]*permission.Decl{
 	"admin.Invoice/ManualPaymentInvoice": {Type: EtopAdmin, Actions: actions(AdminManualPaymentInvoiceCreate)},
 	"admin.Invoice/DeleteInvoice":        {Type: EtopAdmin, Actions: actions(AdminInvoiceDelete)},
 
-	"admin.Etelecom/CreateHotline":  {Type: EtopAdmin, Actions: actions(AdminHotlineCreate)},
-	"admin.Etelecom/UpdateHotline":  {Type: EtopAdmin, Actions: actions(AdminHotlineUpdate)},
-	"admin.Etelecom/GetHotlines":    {Type: EtopAdmin, Actions: actions(AdminHotlineView)},
-	"admin.Etelecom/GetTenants":     {Type: EtopAdmin, Actions: actions(AdminTenantView)},
-	"admin.Etelecom/CreateTenant":   {Type: EtopAdmin, Actions: actions(AdminTenantCreate)},
-	"admin.Etelecom/ActivateTenant": {Type: EtopAdmin, Actions: actions(AdminTenantUpdate)},
+	"admin.Etelecom/CreateHotline":            {Type: EtopAdmin, Actions: actions(AdminHotlineCreate)},
+	"admin.Etelecom/UpdateHotline":            {Type: EtopAdmin, Actions: actions(AdminHotlineUpdate)},
+	"admin.Etelecom/GetHotlines":              {Type: EtopAdmin, Actions: actions(AdminHotlineView)},
+	"admin.Etelecom/DeleteHotline":            {Type: EtopAdmin, Actions: actions(AdminHotlineDelete)},
+	"admin.Etelecom/GetTenants":               {Type: EtopAdmin, Actions: actions(AdminTenantView)},
+	"admin.Etelecom/CreateTenant":             {Type: EtopAdmin, Actions: actions(AdminTenantCreate)},
+	"admin.Etelecom/ActivateTenant":           {Type: EtopAdmin, Actions: actions(AdminTenantUpdate)},
+	"admin.Etelecom/RemoveHotlineOutOfTenant": {Type: EtopAdmin, Actions: actions(AdminTenantUpdate)},
 
 	"admin.Transaction/GetTransactions": {Type: EtopAdmin, Actions: actions(AdminTransactionView)},
 	//-- shop --//

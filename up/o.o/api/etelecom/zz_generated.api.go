@@ -185,6 +185,17 @@ func (h AggregateHandler) HandleDeleteExtension(ctx context.Context, msg *Delete
 	return h.inner.DeleteExtension(msg.GetArgs(ctx))
 }
 
+type DeleteHotlineCommand struct {
+	Id dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteHotline(ctx context.Context, msg *DeleteHotlineCommand) (err error) {
+	return h.inner.DeleteHotline(msg.GetArgs(ctx))
+}
+
 type DeleteTenantCommand struct {
 	Id dot.ID
 
@@ -224,6 +235,18 @@ type ImportExtensionsCommand struct {
 
 func (h AggregateHandler) HandleImportExtensions(ctx context.Context, msg *ImportExtensionsCommand) (err error) {
 	return h.inner.ImportExtensions(msg.GetArgs(ctx))
+}
+
+type RemoveHotlineOutOfTenantCommand struct {
+	HotlineID dot.ID
+	OwnerID   dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveHotlineOutOfTenant(ctx context.Context, msg *RemoveHotlineOutOfTenantCommand) (err error) {
+	return h.inner.RemoveHotlineOutOfTenant(msg.GetArgs(ctx))
 }
 
 type RemoveUserOfExtensionCommand struct {
@@ -459,9 +482,11 @@ func (q *CreateHotlineCommand) command()                 {}
 func (q *CreateOrUpdateCallLogFromCDRCommand) command()  {}
 func (q *CreateTenantCommand) command()                  {}
 func (q *DeleteExtensionCommand) command()               {}
+func (q *DeleteHotlineCommand) command()                 {}
 func (q *DeleteTenantCommand) command()                  {}
 func (q *ExtendExtensionCommand) command()               {}
 func (q *ImportExtensionsCommand) command()              {}
+func (q *RemoveHotlineOutOfTenantCommand) command()      {}
 func (q *RemoveUserOfExtensionCommand) command()         {}
 func (q *UpdateCallLogPostageCommand) command()          {}
 func (q *UpdateExternalExtensionInfoCommand) command()   {}
@@ -682,6 +707,11 @@ func (q *DeleteExtensionCommand) GetArgs(ctx context.Context) (_ context.Context
 		q.Id
 }
 
+func (q *DeleteHotlineCommand) GetArgs(ctx context.Context) (_ context.Context, id dot.ID) {
+	return ctx,
+		q.Id
+}
+
 func (q *DeleteTenantCommand) GetArgs(ctx context.Context) (_ context.Context, id dot.ID) {
 	return ctx,
 		q.Id
@@ -723,6 +753,19 @@ func (q *ImportExtensionsCommand) SetImportExtensionsArgs(args *ImportExtensions
 	q.OwnerID = args.OwnerID
 	q.AccountID = args.AccountID
 	q.Extensions = args.Extensions
+}
+
+func (q *RemoveHotlineOutOfTenantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveHotlineOutOfTenantArgs) {
+	return ctx,
+		&RemoveHotlineOutOfTenantArgs{
+			HotlineID: q.HotlineID,
+			OwnerID:   q.OwnerID,
+		}
+}
+
+func (q *RemoveHotlineOutOfTenantCommand) SetRemoveHotlineOutOfTenantArgs(args *RemoveHotlineOutOfTenantArgs) {
+	q.HotlineID = args.HotlineID
+	q.OwnerID = args.OwnerID
 }
 
 func (q *RemoveUserOfExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveUserOfExtensionArgs) {
@@ -993,9 +1036,11 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateOrUpdateCallLogFromCDR)
 	b.AddHandler(h.HandleCreateTenant)
 	b.AddHandler(h.HandleDeleteExtension)
+	b.AddHandler(h.HandleDeleteHotline)
 	b.AddHandler(h.HandleDeleteTenant)
 	b.AddHandler(h.HandleExtendExtension)
 	b.AddHandler(h.HandleImportExtensions)
+	b.AddHandler(h.HandleRemoveHotlineOutOfTenant)
 	b.AddHandler(h.HandleRemoveUserOfExtension)
 	b.AddHandler(h.HandleUpdateCallLogPostage)
 	b.AddHandler(h.HandleUpdateExternalExtensionInfo)

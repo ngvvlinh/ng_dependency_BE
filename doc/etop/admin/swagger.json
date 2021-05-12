@@ -582,6 +582,33 @@
         }
       }
     },
+    "/api/admin.Etelecom/DeleteHotline": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "DeleteHotline",
+        "operationId": "admin.Etelecom-DeleteHotline",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Etelecom/GetHotlines": {
       "post": {
         "tags": [
@@ -658,6 +685,33 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/riUserSettingsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Etelecom/RemoveHotlineOutOfTenant": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "RemoveHotlineOutOfTenant",
+        "operationId": "admin.Etelecom-RemoveHotlineOutOfTenant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riRemoveHotlineOutOfTenantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktRemovedResponse"
             }
           }
         }
@@ -8148,6 +8202,19 @@
           "format": "int64"
         },
         "tenant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "riRemoveHotlineOutOfTenantRequest": {
+      "type": "object",
+      "properties": {
+        "hotline_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "owner_id": {
           "type": "string",
           "format": "int64"
         }

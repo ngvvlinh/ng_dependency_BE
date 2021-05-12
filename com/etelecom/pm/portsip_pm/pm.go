@@ -63,6 +63,7 @@ func New(
 
 func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.TenantActivating)
+	eventBus.AddEventListener(m.RemovedHotlineOutOfTenant)
 }
 
 func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.TenantActivingEvent) error {
@@ -152,7 +153,7 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	}
 
 	// step 2: update portsip trunk provider
-	update := &providertypes.AddTenantToTrunkProviderRequest{
+	update := &providertypes.AddHotlineToTenantInTrunkProviderRequest{
 		TrunkProviderID: m.telecomManager.AdminPortsip.TrunkProviderDefaultID,
 		TenantID:        tenant.ExternalData.ID,
 		Hotline:         hotline.Hotline,
@@ -163,7 +164,10 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 
 	// step 3: create outbound rule
 	if err = m.createOutboundRule(ctx, tenant.OwnerID, tenant.ConnectionID); err != nil {
-		return cm.Errorf(cm.ErrorCode(err), nil, "Error when create outbound rule: %v", err.Error())
+		// Ignore error
+		// Case Database Unique violation => outbound rule was existed
+		// If create error => voip team can fix it
+		ll.Error("Create Outbound error", l.String("err", err.Error()))
 	}
 
 	// step 4: setting tenant to get CDR
@@ -189,13 +193,13 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	return m.etelecomAggr.Dispatch(ctx, updateHotline)
 }
 
-func (m *ProcessManager) updateTrunkProvider(ctx context.Context, args *providertypes.AddTenantToTrunkProviderRequest) error {
+func (m *ProcessManager) updateTrunkProvider(ctx context.Context, args *providertypes.AddHotlineToTenantInTrunkProviderRequest) error {
 	portsipAdminDriver, err := m.telecomManager.GetAdministratorPortsipDriver(ctx)
 	if err != nil {
 		return cm.Errorf(cm.ErrorCode(err), err, "Please check Portsip admin account")
 	}
 
-	return portsipAdminDriver.AddTenantToTrunkProvider(ctx, args)
+	return portsipAdminDriver.AddHotlineToTenantInTrunkProvider(ctx, args)
 }
 
 func (m *ProcessManager) createOutboundRule(ctx context.Context, ownerID, connID dot.ID) error {
@@ -222,4 +226,31 @@ func (m *ProcessManager) getShopPartnerAPIKey(ctx context.Context, accountID dot
 	default:
 		return "", err
 	}
+}
+
+func (m *ProcessManager) RemovedHotlineOutOfTenant(ctx context.Context, event *etelecom.RemovedHotlineOutOfTenantEvent) error {
+	// update portsip trunk provider
+	portsipAdminDriver, err := m.telecomManager.GetAdministratorPortsipDriver(ctx)
+	if err != nil {
+		return cm.Errorf(cm.ErrorCode(err), err, "Please check Portsip admin account")
+	}
+
+	queryTenant := &etelecom.GetTenantByIDQuery{
+		ID: event.TenantID,
+	}
+	if err = m.etelecomQS.Dispatch(ctx, queryTenant); err != nil {
+		return err
+	}
+	tenant := queryTenant.Result
+	if tenant.ExternalData == nil || tenant.ExternalData.ID == "" {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Tenant does not exist in Portsip PBX")
+	}
+
+	args := &providertypes.RemoveHotlineOutOfTenantInTrunkProviderRequest{
+		TrunkProviderID: m.telecomManager.AdminPortsip.TrunkProviderDefaultID,
+		TenantID:        tenant.ExternalData.ID,
+		Hotline:         event.HotlineNumber,
+	}
+
+	return portsipAdminDriver.RemoveHotlineOutOfTenantInTrunkProvider(ctx, args)
 }

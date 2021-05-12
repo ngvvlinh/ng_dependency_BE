@@ -493,9 +493,11 @@ const EtelecomServicePathPrefix = "/admin.Etelecom/"
 const Path_Etelecom_ActivateTenant = "/admin.Etelecom/ActivateTenant"
 const Path_Etelecom_CreateHotline = "/admin.Etelecom/CreateHotline"
 const Path_Etelecom_CreateTenant = "/admin.Etelecom/CreateTenant"
+const Path_Etelecom_DeleteHotline = "/admin.Etelecom/DeleteHotline"
 const Path_Etelecom_GetHotlines = "/admin.Etelecom/GetHotlines"
 const Path_Etelecom_GetTenants = "/admin.Etelecom/GetTenants"
 const Path_Etelecom_GetUserSettings = "/admin.Etelecom/GetUserSettings"
+const Path_Etelecom_RemoveHotlineOutOfTenant = "/admin.Etelecom/RemoveHotlineOutOfTenant"
 const Path_Etelecom_UpdateHotline = "/admin.Etelecom/UpdateHotline"
 const Path_Etelecom_UpdateUserSetting = "/admin.Etelecom/UpdateUserSetting"
 
@@ -571,6 +573,19 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 			return
 		}
 		return msg, fn, nil
+	case "/admin.Etelecom/DeleteHotline":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteHotline(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/admin.Etelecom/GetHotlines":
 		msg := &etelecomtypes.GetHotLinesRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
@@ -607,6 +622,19 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.GetUserSettings(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Etelecom/RemoveHotlineOutOfTenant":
+		msg := &etelecomtypes.RemoveHotlineOutOfTenantRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.RemoveHotlineOutOfTenant(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

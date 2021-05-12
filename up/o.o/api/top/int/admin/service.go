@@ -225,6 +225,7 @@ type EtelecomService interface {
 	CreateHotline(context.Context, *etelecomtypes.CreateHotlineRequest) (*etelecomtypes.Hotline, error)
 	UpdateHotline(context.Context, *etelecomtypes.UpdateHotlineRequest) (*cm.UpdatedResponse, error)
 	GetHotlines(context.Context, *etelecomtypes.GetHotLinesRequest) (*etelecomtypes.GetHotLinesResponse, error)
+	DeleteHotline(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 
 	GetUserSettings(context.Context, *etelecomtypes.GetUserSettingsRequest) (*etelecomtypes.UserSettingsResponse, error)
 	UpdateUserSetting(context.Context, *etelecomtypes.UpdateUserSettingRequest) (*cm.UpdatedResponse, error)
@@ -232,6 +233,7 @@ type EtelecomService interface {
 	GetTenants(context.Context, *etelecomtypes.GetTenantsRequest) (*etelecomtypes.GetTenantsResponse, error)
 	CreateTenant(context.Context, *etelecomtypes.AdminCreateTenantRequest) (*etelecomtypes.Tenant, error)
 	ActivateTenant(context.Context, *etelecomtypes.ActivateTenantRequest) (*cm.UpdatedResponse, error)
+	RemoveHotlineOutOfTenant(context.Context, *etelecomtypes.RemoveHotlineOutOfTenantRequest) (*cm.RemovedResponse, error)
 }
 
 // +apix:path=/admin.Transaction

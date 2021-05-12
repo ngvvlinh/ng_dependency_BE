@@ -8,6 +8,7 @@ import (
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/etelecom/convert"
 	"o.o/backend/com/etelecom/model"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/conversion"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
@@ -39,6 +40,11 @@ func NewHotlineStore(db *cmsql.Database) HotlineStoreFactory {
 
 func (s *HotlineStore) ID(id dot.ID) *HotlineStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *HotlineStore) Hotline(number string) *HotlineStore {
+	s.preds = append(s.preds, s.ft.ByHotline(number))
 	return s
 }
 
@@ -139,6 +145,16 @@ func (s *HotlineStore) UpdateHotline(hotline *etelecom.Hotline) error {
 	}
 	query := s.query().Where(s.preds)
 	return query.ShouldUpdate(&hotlineDB)
+}
+
+func (s *HotlineStore) UpdateHotlineStatus(status status3.Status) error {
+	if len(s.preds) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Must provide preds")
+	}
+	query := s.query().Table("hotline").Where(s.preds)
+	return query.ShouldUpdateMap(map[string]interface{}{
+		"status": status.Enum(),
+	})
 }
 
 func (s *HotlineStore) SoftDelete() (int, error) {

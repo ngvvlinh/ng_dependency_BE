@@ -6,7 +6,9 @@ import (
 
 	"o.o/api/etelecom"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/etelecom/model"
+	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/capi/dot"
@@ -131,6 +133,16 @@ func (s *TenantStore) UpdateTenant(tenant *etelecom.Tenant) error {
 	}
 	query := s.query().Where(s.preds)
 	return query.ShouldUpdate(&tenantDB)
+}
+
+func (s *TenantStore) UpdateTenantStatus(status status3.Status) error {
+	if len(s.preds) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Must provide preds")
+	}
+	query := s.query().Table("tenant").Where(s.preds)
+	return query.ShouldUpdateMap(map[string]interface{}{
+		"status": status.Enum(),
+	})
 }
 
 func (s *TenantStore) SoftDelete() (int, error) {

@@ -28,6 +28,7 @@ const Policy auth.Policy = authcommon.CommonPolicy + `
 	p, admin/hotline:create, admin, ad_voip
 	p, admin/hotline:update, admin, ad_voip
 	p, admin/hotline:view, admin, ad_voip
+	p, admin/hotline:delete, admin, ad_voip
 	p, admin/tenant:create, admin, ad_voip
 	p, admin/tenant:update, admin, ad_voip
 	p, admin/tenant:view, admin, ad_voip

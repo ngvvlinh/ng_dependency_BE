@@ -120,3 +120,9 @@ type TenantActivingEvent struct {
 	OwnerID   dot.ID
 	HotlineID dot.ID
 }
+
+type RemovedHotlineOutOfTenantEvent struct {
+	OwnerID       dot.ID
+	TenantID      dot.ID
+	HotlineNumber string
+}

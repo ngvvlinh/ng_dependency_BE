@@ -21,6 +21,8 @@ import (
 type Aggregate interface {
 	CreateHotline(context.Context, *CreateHotlineArgs) (*Hotline, error)
 	UpdateHotlineInfo(context.Context, *UpdateHotlineInfoArgs) error
+	DeleteHotline(ctx context.Context, id dot.ID) error
+	RemoveHotlineOutOfTenant(context.Context, *RemoveHotlineOutOfTenantArgs) error
 
 	CreateExtension(context.Context, *CreateExtensionArgs) (*Extension, error)
 	CreateExtensionBySubscription(context.Context, *CreateExtenstionBySubscriptionArgs) (*Extension, error)
@@ -39,6 +41,7 @@ type Aggregate interface {
 
 	CreateTenant(context.Context, *CreateTenantArgs) (*Tenant, error)
 	DeleteTenant(ctx context.Context, id dot.ID) error
+	// active tenant and assign hotline to tenant
 	ActivateTenant(context.Context, *ActivateTenantArgs) (*Tenant, error)
 }
 
@@ -368,4 +371,19 @@ type ImportExtensionInfo struct {
 	ExtensionNumber string
 	ExpiresAt       time.Time
 	HotlineID       dot.ID
+}
+
+type RemoveHotlineOutOfTenantArgs struct {
+	HotlineID dot.ID
+	OwnerID   dot.ID
+}
+
+func (args *RemoveHotlineOutOfTenantArgs) Validate() error {
+	if args.HotlineID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing hotline ID")
+	}
+	if args.OwnerID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing owner ID")
+	}
+	return nil
 }
