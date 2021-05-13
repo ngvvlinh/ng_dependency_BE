@@ -147,7 +147,7 @@ func (h *Handler) hideComments(ctx context.Context, externalComment *fbmessaging
 	shopSetting := getShopSettingQuery.Result
 
 	// Check field HideAllComments into shopSetting
-	if shopSetting.HideAllComments.Valid && !shopSetting.HideAllComments.Bool {
+	if !shopSetting.HideAllComments.Valid || !shopSetting.HideAllComments.Bool {
 		return
 	}
 
