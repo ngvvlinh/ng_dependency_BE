@@ -342,6 +342,7 @@ func (h QueryServiceHandler) HandleGetAffiliatesByOwnerID(ctx context.Context, m
 type GetAllAccountsByUsersQuery struct {
 	UserIDs []dot.ID
 	Type    account_type.NullAccountType
+	Roles   []string
 
 	Result []*AccountUser `json:"-"`
 }
@@ -925,12 +926,14 @@ func (q *GetAllAccountsByUsersQuery) GetArgs(ctx context.Context) (_ context.Con
 		&GetAllAccountUsersArg{
 			UserIDs: q.UserIDs,
 			Type:    q.Type,
+			Roles:   q.Roles,
 		}
 }
 
 func (q *GetAllAccountsByUsersQuery) SetGetAllAccountUsersArg(args *GetAllAccountUsersArg) {
 	q.UserIDs = args.UserIDs
 	q.Type = args.Type
+	q.Roles = args.Roles
 }
 
 func (q *GetPartnerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetPartnerByIDArgs) {

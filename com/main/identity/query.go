@@ -170,7 +170,11 @@ func (q *QueryService) GetAllAccountsByUsers(ctx context.Context, args *identity
 		return nil, cm.Error(cm.InvalidArgument, "Missing UserIDs", nil)
 	}
 
-	accUser, err := q.accountUserStore(ctx).ByUserIDs(args.UserIDs).ListAccountUserDBs()
+	queryAccountUser := q.accountUserStore(ctx).ByUserIDs(args.UserIDs)
+	if len(args.Roles) > 0 {
+		queryAccountUser = queryAccountUser.ByRoles(args.Roles...)
+	}
+	accUser, err := queryAccountUser.ListAccountUserDBs()
 	if err != nil {
 		return nil, err
 	}

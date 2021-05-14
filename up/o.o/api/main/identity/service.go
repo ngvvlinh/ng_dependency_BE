@@ -146,6 +146,7 @@ type GetUserByIDQueryArgs struct {
 type GetAllAccountUsersArg struct {
 	UserIDs []dot.ID
 	Type    account_type.NullAccountType
+	Roles   []string
 }
 
 type GetUserByPhoneOrEmailArgs struct {

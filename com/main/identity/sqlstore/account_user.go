@@ -10,6 +10,7 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq"
+	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
@@ -46,6 +47,11 @@ func (s *AccountUserStore) ByUserIDs(ids []dot.ID) *AccountUserStore {
 
 func (s *AccountUserStore) ByUserID(id dot.ID) *AccountUserStore {
 	s.preds = append(s.preds, s.ft.ByUserID(id))
+	return s
+}
+
+func (s *AccountUserStore) ByRoles(roles ...string) *AccountUserStore {
+	s.preds = append(s.preds, sq.NewExpr("roles @> ?", core.Array{V: roles}))
 	return s
 }
 

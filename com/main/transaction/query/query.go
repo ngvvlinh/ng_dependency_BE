@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"o.o/api/main/authorization"
 	"o.o/api/main/identity"
 	"o.o/api/main/transaction"
 	"o.o/api/top/types/etc/account_type"
@@ -117,6 +118,7 @@ func (q *QueryService) GetTelecomUserBalance(ctx context.Context, userID dot.ID)
 	queryAccounts := &identity.GetAllAccountsByUsersQuery{
 		UserIDs: []dot.ID{userID},
 		Type:    account_type.Shop.Wrap(),
+		Roles:   []string{authorization.RoleShopOwner.String()},
 	}
 	if err := q.identityQuery.Dispatch(ctx, queryAccounts); err != nil {
 		return nil, err
@@ -164,6 +166,7 @@ func (q *QueryService) GetShippingUserBalance(ctx context.Context, userID dot.ID
 	queryAccounts := &identity.GetAllAccountsByUsersQuery{
 		UserIDs: []dot.ID{userID},
 		Type:    account_type.Shop.Wrap(),
+		Roles:   []string{authorization.RoleShopOwner.String()},
 	}
 	if err := q.identityQuery.Dispatch(ctx, queryAccounts); err != nil {
 		return nil, err
