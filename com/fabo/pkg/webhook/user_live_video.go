@@ -70,28 +70,43 @@ func (wh *WebhookHandler) HandleUserLiveVideo(
 				ExternalUserID: extUserID,
 			}
 			_err := wh.fbmessagingQuery.Dispatch(ctx, getFbExtPostQuery)
-			switch cm.ErrorCode(_err) {
-			case cm.NoError:
-			// no-op
-			case cm.NotFound:
-				externalAttachment := &fbmessaging.PostAttachment{
-					Media: &fbmessaging.MediaPostAttachment{
-						Image: &fbmessaging.ImageMediaPostAttachment{
-							Src: liveVideoResp.Video.Picture,
+			errCode := cm.ErrorCode(_err)
+
+			if errCode == cm.NotFound || (errCode == cm.NoError && extStatus == LiveStatus) {
+				var (
+					externalPicture    string
+					externalAttachment *fbmessaging.PostAttachment
+				)
+
+				id := cm.NewID()
+				fbExternalPost := getFbExtPostQuery.Result
+				if fbExternalPost != nil {
+					id = fbExternalPost.ID
+				}
+
+				if liveVideoResp.Video.Thumbnails != nil && len(liveVideoResp.Video.Thumbnails.Data) != 0 {
+					externalPicture = liveVideoResp.Video.Thumbnails.Data[0].URI
+					externalAttachment = &fbmessaging.PostAttachment{
+						Media: &fbmessaging.MediaPostAttachment{
+							Image: &fbmessaging.ImageMediaPostAttachment{
+								Src:    externalPicture,
+								Height: liveVideoResp.Video.Thumbnails.Data[0].Height,
+								Width:  liveVideoResp.Video.Thumbnails.Data[0].Width,
+							},
 						},
-					},
-					Type:      "video_autoplay",
-					MediaType: "video",
+						Type:      "video_autoplay",
+						MediaType: "video",
+					}
 				}
 
 				saveFbExtPostCmd := &fbmessaging.CreateFbExternalPostsCommand{
 					FbExternalPosts: []*fbmessaging.CreateFbExternalPostArgs{
 						{
-							ID:                      cm.NewID(),
+							ID:                      id,
 							ExternalUserID:          extUserID,
 							ExternalID:              extPostID,
 							ExternalFrom:            convert.ConvertObjectFrom(liveVideoResp.From),
-							ExternalPicture:         liveVideoResp.Video.Picture,
+							ExternalPicture:         externalPicture,
 							ExternalMessage:         cm.Coalesce(liveVideoResp.Title, liveVideoResp.Description),
 							ExternalAttachments:     []*fbmessaging.PostAttachment{externalAttachment},
 							ExternalCreatedTime:     liveVideoResp.CreationTime.ToTime(),
@@ -107,7 +122,7 @@ func (wh *WebhookHandler) HandleUserLiveVideo(
 				if err := wh.fbmessagingAggr.Dispatch(ctx, saveFbExtPostCmd); err != nil {
 					return mq.CodeIgnore, err
 				}
-			default:
+			} else if _err != nil {
 				return mq.CodeIgnore, err
 			}
 
