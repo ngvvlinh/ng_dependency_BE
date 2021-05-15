@@ -30,6 +30,9 @@ type Aggregate interface {
 	UpdateExternalExtensionInfo(context.Context, *UpdateExternalExtensionInfoArgs) error
 	AssignUserToExtension(context.Context, *AssignUserToExtensionArgs) error
 
+	// use to import extension with expiresAt
+	ImportExtensions(context.Context, *ImportExtensionsArgs) error
+
 	UpdateCallLogPostage(context.Context, *UpdateCallLogPostageArgs) error
 	CreateOrUpdateCallLogFromCDR(context.Context, *CreateOrUpdateCallLogFromCDRArgs) (*CallLog, error)
 	CreateCallLog(context.Context, *CreateCallLogArgs) (*CallLog, error)
@@ -43,6 +46,7 @@ type QueryService interface {
 	GetHotline(context.Context, *GetHotlineArgs) (*Hotline, error)
 	ListHotlines(context.Context, *ListHotlinesArgs) ([]*Hotline, error)
 	ListBuiltinHotlines(context.Context, *cm.Empty) ([]*Hotline, error)
+	GetHotlineByHotlineNumber(context.Context, *GetHotlineByHotlineNumberArgs) (*Hotline, error)
 
 	GetExtension(context.Context, *GetExtensionArgs) (*Extension, error)
 	ListExtensions(context.Context, *ListExtensionsArgs) ([]*Extension, error)
@@ -345,4 +349,22 @@ type AssignUserToExtensionArgs struct {
 type GetTenantByConnectionArgs struct {
 	OwnerID      dot.ID
 	ConnectionID dot.ID
+}
+
+type GetHotlineByHotlineNumberArgs struct {
+	Hotline string
+	OwnerID dot.ID
+}
+
+type ImportExtensionsArgs struct {
+	TenantID   dot.ID
+	OwnerID    dot.ID
+	AccountID  dot.ID
+	Extensions []*ImportExtensionInfo
+}
+
+type ImportExtensionInfo struct {
+	ExtensionNumber string
+	ExpiresAt       time.Time
+	HotlineID       dot.ID
 }

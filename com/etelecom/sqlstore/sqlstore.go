@@ -52,6 +52,11 @@ func (s *HotlineStore) OptionalOwnerID(userid dot.ID) *HotlineStore {
 	return s
 }
 
+func (s *HotlineStore) OwnerID(userid dot.ID) *HotlineStore {
+	s.preds = append(s.preds, s.ft.ByOwnerID(userid))
+	return s
+}
+
 func (s *HotlineStore) OptionalConnectionID(connID dot.ID) *HotlineStore {
 	s.preds = append(s.preds, s.ft.ByConnectionID(connID).Optional())
 	return s
@@ -72,6 +77,11 @@ func (s *HotlineStore) ConnectionIDs(connIDs ...dot.ID) *HotlineStore {
 	return s
 }
 
+func (s *HotlineStore) HotlineNumber(number string) *HotlineStore {
+	s.preds = append(s.preds, s.ft.ByHotline(number))
+	return s
+}
+
 func (s *HotlineStore) GetHotlineDB() (*model.Hotline, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
@@ -86,7 +96,7 @@ func (s *HotlineStore) GetHotline() (*etelecom.Hotline, error) {
 		return nil, err
 	}
 	var res etelecom.Hotline
-	if err := scheme.Convert(hotline, &res); err != nil {
+	if err = scheme.Convert(hotline, &res); err != nil {
 		return nil, err
 	}
 	return &res, nil
@@ -105,7 +115,7 @@ func (s *HotlineStore) ListHotlines() (res []*etelecom.Hotline, _ error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := scheme.Convert(hotlinesDB, &res); err != nil {
+	if err = scheme.Convert(hotlinesDB, &res); err != nil {
 		return nil, err
 	}
 	return

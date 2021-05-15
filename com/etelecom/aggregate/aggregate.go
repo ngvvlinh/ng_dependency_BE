@@ -26,6 +26,7 @@ var ll = l.New()
 
 type EtelecomAggregate struct {
 	txDBMain        cmsql.Transactioner
+	txDBEtelecom    cmsql.Transactioner
 	eventBus        capi.EventBus
 	hotlineStore    sqlstore.HotlineStoreFactory
 	extensionStore  sqlstore.ExtensionStoreFactory
@@ -55,6 +56,7 @@ func NewEtelecomAggregate(
 	return &EtelecomAggregate{
 		// use dbMain for transaction
 		txDBMain:        (*cmsql.Database)(dbMain),
+		txDBEtelecom:    (*cmsql.Database)(dbEtelecom),
 		eventBus:        eventBus,
 		contactQuery:    contactQS,
 		hotlineStore:    sqlstore.NewHotlineStore(dbEtelecom),

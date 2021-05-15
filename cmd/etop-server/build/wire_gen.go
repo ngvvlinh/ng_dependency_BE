@@ -213,7 +213,8 @@ import (
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
 	imcsv3 "o.o/backend/pkg/etop/logic/fulfillments/imcsv"
-	"o.o/backend/pkg/etop/logic/hotfix"
+	"o.o/backend/pkg/etop/logic/hotfix/extension"
+	"o.o/backend/pkg/etop/logic/hotfix/moneytx"
 	"o.o/backend/pkg/etop/logic/money-transaction/dhlimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
@@ -1347,8 +1348,9 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		NJVImporter:       njvImporter,
 		SnappyImporter:    snappyImporter,
 	}
-	hotFixMoneyTxService := hotfix.New(mainDB)
-	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, hotFixMoneyTxService, session)
+	hotFixMoneyTxService := moneytx.New(mainDB)
+	extensionService := extension.New(etelecomCommandBus, etelecomQueryBus, etelecomDB)
+	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, hotFixMoneyTxService, extensionService, session)
 	dirConfigs := cfg.UploadDirs
 	uploader, err := _uploader.NewUploader(ctx, dirConfigs, bucket)
 	if err != nil {

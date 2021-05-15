@@ -212,6 +212,20 @@ func (h AggregateHandler) HandleExtendExtension(ctx context.Context, msg *Extend
 	return err
 }
 
+type ImportExtensionsCommand struct {
+	TenantID   dot.ID
+	OwnerID    dot.ID
+	AccountID  dot.ID
+	Extensions []*ImportExtensionInfo
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleImportExtensions(ctx context.Context, msg *ImportExtensionsCommand) (err error) {
+	return h.inner.ImportExtensions(msg.GetArgs(ctx))
+}
+
 type RemoveUserOfExtensionCommand struct {
 	AccountID   dot.ID
 	ExtensionID dot.ID
@@ -321,6 +335,18 @@ type GetHotlineQuery struct {
 
 func (h QueryServiceHandler) HandleGetHotline(ctx context.Context, msg *GetHotlineQuery) (err error) {
 	msg.Result, err = h.inner.GetHotline(msg.GetArgs(ctx))
+	return err
+}
+
+type GetHotlineByHotlineNumberQuery struct {
+	Hotline string
+	OwnerID dot.ID
+
+	Result *Hotline `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetHotlineByHotlineNumber(ctx context.Context, msg *GetHotlineByHotlineNumberQuery) (err error) {
+	msg.Result, err = h.inner.GetHotlineByHotlineNumber(msg.GetArgs(ctx))
 	return err
 }
 
@@ -434,6 +460,7 @@ func (q *CreateTenantCommand) command()                  {}
 func (q *DeleteExtensionCommand) command()               {}
 func (q *DeleteTenantCommand) command()                  {}
 func (q *ExtendExtensionCommand) command()               {}
+func (q *ImportExtensionsCommand) command()              {}
 func (q *RemoveUserOfExtensionCommand) command()         {}
 func (q *UpdateCallLogPostageCommand) command()          {}
 func (q *UpdateExternalExtensionInfoCommand) command()   {}
@@ -443,6 +470,7 @@ func (q *GetCallLogQuery) query()                {}
 func (q *GetCallLogByExternalIDQuery) query()    {}
 func (q *GetExtensionQuery) query()              {}
 func (q *GetHotlineQuery) query()                {}
+func (q *GetHotlineByHotlineNumberQuery) query() {}
 func (q *GetPrivateExtensionNumberQuery) query() {}
 func (q *GetTenantByConnectionQuery) query()     {}
 func (q *GetTenantByIDQuery) query()             {}
@@ -679,6 +707,23 @@ func (q *ExtendExtensionCommand) SetExtendExtensionArgs(args *ExtendExtensionArg
 	q.PaymentMethod = args.PaymentMethod
 }
 
+func (q *ImportExtensionsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ImportExtensionsArgs) {
+	return ctx,
+		&ImportExtensionsArgs{
+			TenantID:   q.TenantID,
+			OwnerID:    q.OwnerID,
+			AccountID:  q.AccountID,
+			Extensions: q.Extensions,
+		}
+}
+
+func (q *ImportExtensionsCommand) SetImportExtensionsArgs(args *ImportExtensionsArgs) {
+	q.TenantID = args.TenantID
+	q.OwnerID = args.OwnerID
+	q.AccountID = args.AccountID
+	q.Extensions = args.Extensions
+}
+
 func (q *RemoveUserOfExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveUserOfExtensionArgs) {
 	return ctx,
 		&RemoveUserOfExtensionArgs{
@@ -809,6 +854,19 @@ func (q *GetHotlineQuery) SetGetHotlineArgs(args *GetHotlineArgs) {
 	q.OwnerID = args.OwnerID
 }
 
+func (q *GetHotlineByHotlineNumberQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetHotlineByHotlineNumberArgs) {
+	return ctx,
+		&GetHotlineByHotlineNumberArgs{
+			Hotline: q.Hotline,
+			OwnerID: q.OwnerID,
+		}
+}
+
+func (q *GetHotlineByHotlineNumberQuery) SetGetHotlineByHotlineNumberArgs(args *GetHotlineByHotlineNumberArgs) {
+	q.Hotline = args.Hotline
+	q.OwnerID = args.OwnerID
+}
+
 func (q *GetPrivateExtensionNumberQuery) GetArgs(ctx context.Context) (_ context.Context, _ *common.Empty) {
 	return ctx,
 		&common.Empty{}
@@ -934,6 +992,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDeleteExtension)
 	b.AddHandler(h.HandleDeleteTenant)
 	b.AddHandler(h.HandleExtendExtension)
+	b.AddHandler(h.HandleImportExtensions)
 	b.AddHandler(h.HandleRemoveUserOfExtension)
 	b.AddHandler(h.HandleUpdateCallLogPostage)
 	b.AddHandler(h.HandleUpdateExternalExtensionInfo)
@@ -957,6 +1016,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetCallLogByExternalID)
 	b.AddHandler(h.HandleGetExtension)
 	b.AddHandler(h.HandleGetHotline)
+	b.AddHandler(h.HandleGetHotlineByHotlineNumber)
 	b.AddHandler(h.HandleGetPrivateExtensionNumber)
 	b.AddHandler(h.HandleGetTenantByConnection)
 	b.AddHandler(h.HandleGetTenantByID)

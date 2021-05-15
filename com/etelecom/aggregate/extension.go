@@ -468,3 +468,56 @@ func (a *EtelecomAggregate) AssignUserToExtension(ctx context.Context, args *ete
 	}
 	return query.UpdateExtension(update)
 }
+
+func (a *EtelecomAggregate) ImportExtensions(ctx context.Context, args *etelecom.ImportExtensionsArgs) error {
+	tenant, err := a.tenantStore(ctx).ID(args.TenantID).OwnerID(args.OwnerID).GetTenant()
+	if err != nil {
+		return err
+	}
+
+	queryUser := &identity.GetAccountUserQuery{
+		UserID:    args.OwnerID,
+		AccountID: args.AccountID,
+	}
+	if err = a.identityQuery.Dispatch(ctx, queryUser); err != nil {
+		return cm.Errorf(cm.ErrorCode(err), err, "Account ID does not belongs to owner")
+	}
+
+	created := 0
+	err = a.txDBEtelecom.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		for _, imExt := range args.Extensions {
+			cmd := &etelecom.Extension{
+				ID:              cm.NewID(),
+				AccountID:       args.AccountID,
+				HotlineID:       imExt.HotlineID,
+				ExtensionNumber: imExt.ExtensionNumber,
+				TenantID:        args.TenantID,
+				ExpiresAt:       imExt.ExpiresAt,
+			}
+			ext, _err := a.extensionStore(ctx).CreateExtension(cmd)
+			if _err != nil {
+				return _err
+			}
+
+			externalExtensionResp, _err := a.telecomManager.CreateExtension(ctx, ext)
+			if _err != nil {
+				return _err
+			}
+			updateExt := &etelecom.UpdateExternalExtensionInfoArgs{
+				ID:                externalExtensionResp.ExtensionID,
+				HotlineID:         externalExtensionResp.HotlineID,
+				ExternalID:        externalExtensionResp.ExternalID,
+				ExtensionNumber:   externalExtensionResp.ExtensionNumber,
+				ExtensionPassword: externalExtensionResp.ExtensionPassword,
+				TenantDomain:      tenant.Domain,
+			}
+			if err = a.UpdateExternalExtensionInfo(ctx, updateExt); err != nil {
+				return err
+			}
+			created++
+		}
+		return nil
+	})
+	ll.S.Infof("Import extension success: %v/%v", created, len(args.Extensions))
+	return err
+}

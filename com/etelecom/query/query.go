@@ -46,6 +46,10 @@ func (q *QueryService) GetHotline(ctx context.Context, args *etelecom.GetHotline
 	return q.hotlineStore(ctx).ID(args.ID).OptionalOwnerID(args.OwnerID).GetHotline()
 }
 
+func (q *QueryService) GetHotlineByHotlineNumber(ctx context.Context, args *etelecom.GetHotlineByHotlineNumberArgs) (*etelecom.Hotline, error) {
+	return q.hotlineStore(ctx).OwnerID(args.OwnerID).HotlineNumber(args.Hotline).GetHotline()
+}
+
 func (q *QueryService) ListHotlines(ctx context.Context, args *etelecom.ListHotlinesArgs) ([]*etelecom.Hotline, error) {
 	return q.hotlineStore(ctx).OptionalOwnerID(args.OwnerID).OptionalConnectionID(args.ConnectionID).OptionalTenantID(args.TenantID).ListHotlines()
 }

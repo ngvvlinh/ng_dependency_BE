@@ -1,4 +1,4 @@
-package hotfix
+package moneytx
 
 import (
 	"bytes"

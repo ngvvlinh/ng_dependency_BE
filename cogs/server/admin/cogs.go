@@ -4,7 +4,8 @@ import (
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/etop/authorize/permission"
 	"o.o/backend/pkg/etop/authorize/session"
-	"o.o/backend/pkg/etop/logic/hotfix"
+	hotfixextension "o.o/backend/pkg/etop/logic/hotfix/extension"
+	hotfixmoneytx "o.o/backend/pkg/etop/logic/hotfix/moneytx"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghnimport"
 	"o.o/backend/pkg/etop/logic/money-transaction/ghtkimport"
 	moneytxhandlers "o.o/backend/pkg/etop/logic/money-transaction/handlers"
@@ -18,7 +19,8 @@ func BuildImportHandlers(
 	ghtkIm ghtkimport.Import,
 	vtpostIm vtpostimport.Import,
 	importer moneytxhandlers.ImportService,
-	hotfixMoneyTx *hotfix.HotFixMoneyTxService,
+	hotfixMoneyTx *hotfixmoneytx.HotFixMoneyTxService,
+	hotfixExtension *hotfixextension.ExtensionService,
 	ss session.Session,
 ) ImportServer {
 	rt := httpx.New()
@@ -35,5 +37,7 @@ func BuildImportHandlers(
 	//
 	// create money tx shipping
 	rt.POST("/api/admin.Import/CreateMoneyTransactionShipping", hotfixMoneyTx.HandleImportMoneyTransactionManual)
+	// import extension portsip
+	rt.POST("/api/admin.Import/Extensions", hotfixExtension.HandleImportExtension)
 	return httpx.MakeServer("/api/admin.Import/", rt)
 }

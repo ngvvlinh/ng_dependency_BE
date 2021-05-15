@@ -86,7 +86,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/middleware"
 	"o.o/backend/pkg/etop/eventstream"
 	fulfillmentcsv "o.o/backend/pkg/etop/logic/fulfillments/imcsv"
-	hotfixmoneytx "o.o/backend/pkg/etop/logic/hotfix"
+	hotfix "o.o/backend/pkg/etop/logic/hotfix"
 	logicorder "o.o/backend/pkg/etop/logic/orders"
 	orderimcsv "o.o/backend/pkg/etop/logic/orders/imcsv"
 	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
@@ -133,7 +133,7 @@ func Build(
 		payment_all.WireSet,
 		database_all.WireSet,
 		storage_all.WireSet,
-		hotfixmoneytx.WireSet,
+		hotfix.WireSet,
 		sms_all.WireSet,
 		config_server.WireSet,
 		_producer.WireSet,

@@ -12,6 +12,7 @@ replace (
 require (
 	cloud.google.com/go/storage v1.6.0
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
+	github.com/360EntSecGroup-Skylar/excelize/v2 v2.4.0
 	github.com/GoogleCloudPlatform/cloudsql-proxy v1.17.0
 	github.com/Luzifer/go-openssl/v4 v4.1.0
 	github.com/PuerkitoBio/goquery v1.5.1
@@ -58,13 +59,11 @@ require (
 	github.com/valyala/tsvreader v1.0.0
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/mod v0.3.0 // indirect
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381
+	golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/sys v0.0.0-20200803210538-64077c9b5642 // indirect
-	golang.org/x/text v0.3.3
+	golang.org/x/text v0.3.6
 	golang.org/x/tools v0.0.0-20200519205726-57a9e4404bf7
 	google.golang.org/api v0.21.0
 	google.golang.org/appengine v1.6.6 // indirect
