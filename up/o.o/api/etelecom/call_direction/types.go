@@ -22,4 +22,10 @@ const (
 
 	// +enum=ext
 	Ext CallDirection = 15
+
+	// +enum=ext_in
+	ExtIn CallDirection = 17
+
+	// +enum=ext_out
+	ExtOut CallDirection = 21
 )

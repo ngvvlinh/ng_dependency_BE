@@ -186,6 +186,10 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 	if len(hotlines) == 0 {
 		return cm.Errorf(cm.Internal, err, "Can not find any hotline from this connection: connection_id = %v, owner_id = %v", connectionID, ownerID)
 	}
+	tenant, err := s.getTenant(ctx, connectionID, ownerID)
+	if err != nil {
+		return err
+	}
 
 	var lastCallLogAt time.Time
 	for true {
@@ -213,7 +217,7 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 				break
 			}
 
-			_callsInfo := s.getCallInfo(ctx, hotlines, callLogResp)
+			_callsInfo := s.getCallInfo(ctx, hotlines, tenant.ID, callLogResp)
 			for _, info := range _callsInfo {
 				if info.HotlineID == 0 {
 					continue
@@ -344,7 +348,7 @@ type callInfo struct {
 	SessionID   string
 }
 
-func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etelecom.Hotline, callLog *providertypes.CallLog) (res []*callInfo) {
+func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etelecom.Hotline, tenantID dot.ID, callLog *providertypes.CallLog) (res []*callInfo) {
 	_callInfo := &callInfo{
 		Callee:    callLog.Callee,
 		Caller:    callLog.Caller,
@@ -355,14 +359,8 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 		return nil
 	}
 
-	hotlineIDs := []dot.ID{}
 	if hotline, ok := hotlines[callLog.HotlineNumber]; ok {
 		_callInfo.HotlineID = hotline.ID
-		hotlineIDs = []dot.ID{hotline.ID}
-	} else {
-		for _, h := range hotlines {
-			hotlineIDs = append(hotlineIDs, h.ID)
-		}
 	}
 	res = append(res, _callInfo)
 
@@ -387,9 +385,9 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 		}
 
 		// find extension: priority extension number answered first
-		ext, err := s.findExtension(ctx, extensionNumbersAnswered, hotlineIDs)
+		ext, err := s.findExtension(ctx, extensionNumbersAnswered, tenantID)
 		if err != nil {
-			ext, err = s.findExtension(ctx, extensionNumbersNotAnswered, hotlineIDs)
+			ext, err = s.findExtension(ctx, extensionNumbersNotAnswered, tenantID)
 			if err != nil || ext == nil {
 				return
 			}
@@ -408,7 +406,7 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 	case call_direction.Out.String():
 		_callInfo.Direction = call_direction.Out
 		extensionNumbers := []string{callLog.Caller}
-		ext, err := s.findExtension(ctx, extensionNumbers, hotlineIDs)
+		ext, err := s.findExtension(ctx, extensionNumbers, tenantID)
 		if err != nil {
 			return
 		}
@@ -420,7 +418,7 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 		// tách làm 2 call log: gọi vào và gọi ra
 		// gọi vào
 		extensionCallerNumbers := []string{callLog.Caller}
-		extCaller, err := s.findExtension(ctx, extensionCallerNumbers, hotlineIDs)
+		extCaller, err := s.findExtension(ctx, extensionCallerNumbers, tenantID)
 		if err != nil {
 			return
 		}
@@ -432,7 +430,7 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 
 		// gọi ra
 		extensionCalleeNumbers := []string{callLog.Callee}
-		extCallee, err := s.findExtension(ctx, extensionCalleeNumbers, hotlineIDs)
+		extCallee, err := s.findExtension(ctx, extensionCalleeNumbers, tenantID)
 		if err != nil {
 			return
 		}
@@ -450,9 +448,9 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 	}
 }
 
-func (s *PortsipSync) findExtension(ctx context.Context, extNumbers []string, hotlineIDs []dot.ID) (ext *etelecom.Extension, err error) {
+func (s *PortsipSync) findExtension(ctx context.Context, extNumbers []string, tenantID dot.ID) (ext *etelecom.Extension, err error) {
 	query := &etelecom.ListExtensionsQuery{
-		HotlineIDs:       hotlineIDs,
+		TenantID:         tenantID,
 		ExtensionNumbers: extNumbers,
 	}
 	if err = s.telecomQuery.Dispatch(ctx, query); err != nil {
@@ -479,4 +477,15 @@ func (s *PortsipSync) getHotlines(ctx context.Context, connectionID, ownerID dot
 		hotlines[hotline.Hotline] = hotline
 	}
 	return hotlines, nil
+}
+
+func (s *PortsipSync) getTenant(ctx context.Context, connID, ownerID dot.ID) (*etelecom.Tenant, error) {
+	query := &etelecom.GetTenantByConnectionQuery{
+		OwnerID:      ownerID,
+		ConnectionID: connID,
+	}
+	if err := s.telecomQuery.Dispatch(ctx, query); err != nil {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Tenant not found").WithMetap("query", query)
+	}
+	return query.Result, nil
 }

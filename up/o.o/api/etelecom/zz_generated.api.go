@@ -411,6 +411,7 @@ func (h QueryServiceHandler) HandleListCallLogs(ctx context.Context, msg *ListCa
 type ListExtensionsQuery struct {
 	AccountIDs       []dot.ID
 	HotlineIDs       []dot.ID
+	TenantID         dot.ID
 	ExtensionNumbers []string
 
 	Result []*Extension `json:"-"`
@@ -929,6 +930,7 @@ func (q *ListExtensionsQuery) GetArgs(ctx context.Context) (_ context.Context, _
 		&ListExtensionsArgs{
 			AccountIDs:       q.AccountIDs,
 			HotlineIDs:       q.HotlineIDs,
+			TenantID:         q.TenantID,
 			ExtensionNumbers: q.ExtensionNumbers,
 		}
 }
@@ -936,6 +938,7 @@ func (q *ListExtensionsQuery) GetArgs(ctx context.Context) (_ context.Context, _
 func (q *ListExtensionsQuery) SetListExtensionsArgs(args *ListExtensionsArgs) {
 	q.AccountIDs = args.AccountIDs
 	q.HotlineIDs = args.HotlineIDs
+	q.TenantID = args.TenantID
 	q.ExtensionNumbers = args.ExtensionNumbers
 }
 

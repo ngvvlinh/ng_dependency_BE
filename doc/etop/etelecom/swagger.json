@@ -556,7 +556,9 @@
         "unknown",
         "in",
         "out",
-        "ext"
+        "ext",
+        "ext_in",
+        "ext_out"
       ]
     },
     "jwCallState": {

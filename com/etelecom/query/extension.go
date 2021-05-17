@@ -29,6 +29,9 @@ func (q *QueryService) ListExtensions(ctx context.Context, args *etelecom.ListEx
 	if len(args.ExtensionNumbers) > 0 {
 		query = query.ExtensionNumbers(args.ExtensionNumbers...)
 	}
+	if args.TenantID != 0 {
+		query = query.TenantID(args.TenantID)
+	}
 	return query.ListExtensions()
 }
 

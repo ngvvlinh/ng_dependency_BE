@@ -147,7 +147,7 @@ func (m *CallLog) Migration(db *cmsql.Database) {
 			ColumnType:       "call_direction.CallDirection",
 			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{"unknown", "in", "out", "ext"},
+			ColumnEnumValues: []string{"unknown", "in", "out", "ext", "ext_in", "ext_out"},
 		},
 		"extension_id": {
 			ColumnName:       "extension_id",

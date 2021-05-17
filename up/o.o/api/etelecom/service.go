@@ -187,6 +187,7 @@ type GetExtensionArgs struct {
 type ListExtensionsArgs struct {
 	AccountIDs       []dot.ID
 	HotlineIDs       []dot.ID
+	TenantID         dot.ID
 	ExtensionNumbers []string
 }
 

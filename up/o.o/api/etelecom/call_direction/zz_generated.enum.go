@@ -19,6 +19,8 @@ var enumCallDirectionName = map[int]string{
 	3:  "in",
 	9:  "out",
 	15: "ext",
+	17: "ext_in",
+	21: "ext_out",
 }
 
 var enumCallDirectionValue = map[string]int{
@@ -26,6 +28,8 @@ var enumCallDirectionValue = map[string]int{
 	"in":      3,
 	"out":     9,
 	"ext":     15,
+	"ext_in":  17,
+	"ext_out": 21,
 }
 
 func ParseCallDirection(s string) (CallDirection, bool) {
