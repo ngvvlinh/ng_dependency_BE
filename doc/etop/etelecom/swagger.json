@@ -454,6 +454,7 @@
           "format": "int64"
         },
         "external_session_id": {
+          "description": "Create call log unique by external_session_id.\nIf external_session_id is existed:\n   - If old call log had state `answered` =\u003e do not update\n   - Else update call log\n",
           "type": "string"
         },
         "started_at": {

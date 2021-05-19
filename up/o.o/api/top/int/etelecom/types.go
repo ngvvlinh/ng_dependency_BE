@@ -34,6 +34,10 @@ type CreateUserAndAssignExtensionRequest struct {
 func (r *CreateUserAndAssignExtensionRequest) String() string { return jsonx.MustMarshalToString(r) }
 
 type CreateCallLogRequest struct {
+	// Create call log unique by external_session_id.
+	// If external_session_id is existed:
+	//    - If old call log had state `answered` => do not update
+	//    - Else update call log
 	ExternalSessionID string                       `json:"external_session_id"`
 	Direction         call_direction.CallDirection `json:"direction"`
 	Caller            string                       `json:"caller"`

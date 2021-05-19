@@ -2,7 +2,6 @@ package aggregate
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"o.o/api/etelecom"
@@ -12,11 +11,6 @@ import (
 	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
 	"o.o/common/l"
-	"o.o/common/xerrors"
-)
-
-const (
-	uniqueSessionIDCallLog = "call_log_external_session_id_key"
 )
 
 func (a *EtelecomAggregate) CreateCallLog(ctx context.Context, args *etelecom.CreateCallLogArgs) (*etelecom.CallLog, error) {
@@ -33,7 +27,6 @@ func (a *EtelecomAggregate) CreateCallLog(ctx context.Context, args *etelecom.Cr
 		callState = call_state.Answered
 	}
 	callLog := &etelecom.CallLog{
-		ID:                cm.NewID(),
 		AccountID:         args.AccountID,
 		Caller:            args.Caller,
 		Callee:            args.Callee,
@@ -51,17 +44,27 @@ func (a *EtelecomAggregate) CreateCallLog(ctx context.Context, args *etelecom.Cr
 		// workaround
 		callLog.StartedAt = time.Now()
 	}
-	res, err := a.callLogStore(ctx).CreateCallLog(callLog)
-	if err == nil {
-		return res, nil
-	}
-	if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
-		errMsg := xerr.Err.Error()
-		if strings.Contains(errMsg, uniqueSessionIDCallLog) {
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "External session ID is existed")
+
+	cLog, err := a.callLogStore(ctx).ExternalSessionID(args.ExternalSessionID).GetCallLog()
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		// update call log
+		if cLog.CallState == call_state.Answered {
+			// do not update. Keep the call log
+			return cLog, nil
 		}
+		err = a.callLogStore(ctx).ID(cLog.ID).UpdateCallLog(callLog)
+		if err != nil {
+			return nil, err
+		}
+		return a.callLogStore(ctx).ID(cLog.ID).GetCallLog()
+	case cm.NotFound:
+		// create call log
+		callLog.ID = cm.NewID()
+		return a.callLogStore(ctx).CreateCallLog(callLog)
+	default:
+		return nil, err
 	}
-	return nil, err
 }
 
 func (a *EtelecomAggregate) CreateOrUpdateCallLogFromCDR(
