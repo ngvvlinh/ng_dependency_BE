@@ -504,6 +504,7 @@ type TransactionService interface {
 // +apix:path=/shop.Invoice
 type InvoiceService interface {
 	GetInvoices(context.Context, *types.GetShopInvoicesRequest) (*types.GetShopInvoicesResponse, error)
+	GetInvoice(context.Context, *cm.IDRequest) (*types.Invoice, error)
 }
 
 // +apix:path=/shop.Jira

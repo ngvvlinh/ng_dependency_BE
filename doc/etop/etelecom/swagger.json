@@ -815,10 +815,6 @@
             "format": "int64"
           }
         },
-        "owner_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "user_id": {
           "type": "string",
           "format": "int64"

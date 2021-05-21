@@ -2262,6 +2262,7 @@ func NewInvoiceServiceServer(builder func() InvoiceService, hooks ...httprpc.Hoo
 
 const InvoiceServicePathPrefix = "/shop.Invoice/"
 
+const Path_Invoice_GetInvoice = "/shop.Invoice/GetInvoice"
 const Path_Invoice_GetInvoices = "/shop.Invoice/GetInvoices"
 
 func (s *InvoiceServiceServer) PathPrefix() string {
@@ -2297,6 +2298,19 @@ func (s *InvoiceServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *InvoiceServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
+	case "/shop.Invoice/GetInvoice":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetInvoice(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
 	case "/shop.Invoice/GetInvoices":
 		msg := &inttypes.GetShopInvoicesRequest{}
 		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {

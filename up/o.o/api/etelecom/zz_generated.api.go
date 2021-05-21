@@ -68,6 +68,7 @@ type CreateCallLogCommand struct {
 	Callee            string
 	ExtensionID       dot.ID
 	AccountID         dot.ID
+	OwnerID           dot.ID
 	ContactID         dot.ID
 	CallState         call_state.CallState
 	StartedAt         time.Time
@@ -551,6 +552,7 @@ func (q *CreateCallLogCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Callee:            q.Callee,
 			ExtensionID:       q.ExtensionID,
 			AccountID:         q.AccountID,
+			OwnerID:           q.OwnerID,
 			ContactID:         q.ContactID,
 			CallState:         q.CallState,
 			StartedAt:         q.StartedAt,
@@ -565,6 +567,7 @@ func (q *CreateCallLogCommand) SetCreateCallLogArgs(args *CreateCallLogArgs) {
 	q.Callee = args.Callee
 	q.ExtensionID = args.ExtensionID
 	q.AccountID = args.AccountID
+	q.OwnerID = args.OwnerID
 	q.ContactID = args.ContactID
 	q.CallState = args.CallState
 	q.StartedAt = args.StartedAt

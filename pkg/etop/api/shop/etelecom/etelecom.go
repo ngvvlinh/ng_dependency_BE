@@ -180,6 +180,7 @@ func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetC
 	query := &etelecom.ListCallLogsQuery{
 		AccountID: s.SS.Shop().ID,
 		Paging:    *paging,
+		OwnerID:   s.SS.Shop().OwnerID,
 	}
 
 	if r.Filter != nil {
@@ -187,24 +188,6 @@ func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetC
 		query.HotlineIDs = r.Filter.HotlineIDs
 		query.ExtensionIDs = r.Filter.ExtensionIDs
 		query.UserID = r.Filter.UserID
-		query.OwnerID = r.Filter.OwnerID
-	}
-
-	// Tìm tất cả hotline của owner shop
-	// HotlineID dùng để lấy những call logs chỉ có thông tin hotline (trường hợp ko tìm ra được extension)
-	queryHotline := &etelecom.ListHotlinesQuery{
-		OwnerID: s.SS.Shop().OwnerID,
-	}
-	if err = s.EtelecomQuery.Dispatch(ctx, queryHotline); err != nil {
-		return nil, err
-	}
-	hotlinesOwner := queryHotline.Result
-	if len(hotlinesOwner) > 0 {
-		for _, hotline := range queryHotline.Result {
-			if !cm.IDsContain(query.HotlineIDs, hotline.ID) {
-				query.HotlineIDs = append(query.HotlineIDs, hotline.ID)
-			}
-		}
 	}
 
 	if err = s.EtelecomQuery.Dispatch(ctx, query); err != nil {
@@ -225,6 +208,7 @@ func (s *EtelecomService) CreateCallLog(ctx context.Context, r *etelecomapi.Crea
 		Callee:            r.Callee,
 		ExtensionID:       r.ExtensionID,
 		AccountID:         s.SS.Shop().ID,
+		OwnerID:           s.SS.Shop().OwnerID,
 		ContactID:         r.ContactID,
 		CallState:         r.CallState,
 		StartedAt:         r.StartedAt,

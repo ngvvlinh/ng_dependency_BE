@@ -1141,6 +1141,7 @@ var _acl = map[string]*permission.Decl{
 	"shop.Subscription/UpdateSubscriptionInfo":  {Type: Shop, Actions: actions(ShopSubscriptionUpdate)},
 
 	"shop.Invoice/GetInvoices": {Type: Shop, Actions: actions(ShopInvoiceView)},
+	"shop.Invoice/GetInvoice":  {Type: Shop, Actions: actions(ShopInvoiceView)},
 
 	"shop.Jira/GetJiraCustomFields": {Type: Shop, Actions: actions(ShopJiraCustomFieldView)},
 	"shop.Jira/CreateJiraIssue":     {Type: Shop, Actions: actions(ShopJiraIssueCreate)},

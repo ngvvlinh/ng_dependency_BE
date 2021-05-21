@@ -2475,6 +2475,33 @@
         }
       }
     },
+    "/api/shop.Invoice/GetInvoice": {
+      "post": {
+        "tags": [
+          "Invoice"
+        ],
+        "summary": "GetInvoice",
+        "operationId": "shop.Invoice-GetInvoice",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/qdInvoice"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Invoice/GetInvoices": {
       "post": {
         "tags": [

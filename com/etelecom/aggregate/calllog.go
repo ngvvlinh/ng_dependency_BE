@@ -39,6 +39,8 @@ func (a *EtelecomAggregate) CreateCallLog(ctx context.Context, args *etelecom.Cr
 		ExternalSessionID: args.ExternalSessionID,
 		StartedAt:         args.StartedAt,
 		EndedAt:           args.EndedAt,
+		UserID:            extension.UserID,
+		OwnerID:           args.OwnerID,
 	}
 	if callLog.StartedAt.IsZero() {
 		// workaround
@@ -103,6 +105,7 @@ func (a *EtelecomAggregate) CreateOrUpdateCallLogFromCDR(
 			callLog.ContactID = contacts[0].ID
 		}
 		callLog.AccountID = extension.AccountID
+		callLog.UserID = extension.UserID
 	}
 
 	oldCallLog, err := a.callLogStore(ctx).ExternalSessionID(args.ExternalSessionID).GetCallLog()

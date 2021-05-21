@@ -22,19 +22,19 @@ func (q *QueryService) ListCallLogs(ctx context.Context, args *etelecom.ListCall
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing account_id")
 	}
 	query := q.callLogStore(ctx).WithPaging(args.Paging)
-	if len(args.HotlineIDs) > 0 {
-		query = query.AccountIDAndHotlineIDs(args.AccountID, args.HotlineIDs)
+	if args.OwnerID != 0 {
+		query = query.AccountIDOrOwnerID(args.AccountID, args.OwnerID)
 	} else {
 		query = query.AccountID(args.AccountID)
+	}
+	if len(args.HotlineIDs) > 0 {
+		query = query.HotlineIDs(args.HotlineIDs...)
 	}
 	if len(args.ExtensionIDs) > 0 {
 		query = query.ExtensionIDs(args.ExtensionIDs...)
 	}
 	if args.UserID != 0 {
 		query = query.UserID(args.UserID)
-	}
-	if args.OwnerID != 0 {
-		query = query.OwnerID(args.OwnerID)
 	}
 	if args.CallerOrCallee != "" {
 		query = query.CallerOrCallee(args.CallerOrCallee)

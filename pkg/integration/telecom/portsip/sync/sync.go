@@ -424,7 +424,7 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 		}
 		var result = []*callInfo{}
 		callInfoIn := *_callInfo
-		callInfoIn.Direction = call_direction.In
+		callInfoIn.Direction = call_direction.ExtIn
 		callInfoIn.ExtensionID = extCaller.ID
 		callInfoIn.HotlineID = extCaller.HotlineID
 
@@ -435,7 +435,7 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 			return
 		}
 		callInfoOut := *_callInfo
-		callInfoOut.Direction = call_direction.Out
+		callInfoOut.Direction = call_direction.ExtOut
 		callInfoOut.ExtensionID = extCallee.ID
 		callInfoOut.HotlineID = extCallee.HotlineID
 		callInfoOut.SessionID += "-" + call_direction.Out.String()

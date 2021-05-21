@@ -137,6 +137,7 @@ type CreateCallLogArgs struct {
 	Callee            string
 	ExtensionID       dot.ID
 	AccountID         dot.ID
+	OwnerID           dot.ID
 	ContactID         dot.ID
 	CallState         call_state.CallState
 	StartedAt         time.Time

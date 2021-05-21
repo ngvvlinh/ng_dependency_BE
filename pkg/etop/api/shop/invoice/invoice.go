@@ -6,6 +6,7 @@ import (
 	"o.o/api/main/invoicing"
 	api "o.o/api/top/int/shop"
 	"o.o/api/top/int/types"
+	pbcm "o.o/api/top/types/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
@@ -47,4 +48,16 @@ func (s *InvoiceService) GetInvoices(ctx context.Context, r *types.GetShopInvoic
 		Paging:   cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
 	}
 	return result, nil
+}
+
+func (s *InvoiceService) GetInvoice(ctx context.Context, r *pbcm.IDRequest) (*types.Invoice, error) {
+	query := &invoicing.GetInvoiceByIDQuery{
+		ID:        r.Id,
+		AccountID: s.SS.Shop().ID,
+	}
+	if err := s.InvoiceQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	res := convertpball.PbInvoice(query.Result)
+	return res, nil
 }

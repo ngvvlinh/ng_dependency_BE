@@ -153,7 +153,6 @@ type CallLogsFilter struct {
 	HotlineIDs   []dot.ID `json:"hotline_ids"`
 	ExtensionIDs []dot.ID `json:"extension_ids"`
 	UserID       dot.ID   `json:"user_id"`
-	OwnerID      dot.ID   `json:"owner_id"`
 	// Caller or callee
 	CallNumber string `json:"call_number"`
 }

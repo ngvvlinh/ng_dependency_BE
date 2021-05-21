@@ -83,15 +83,14 @@ func (s *CallLogStore) CallerOrCallee(num string) *CallLogStore {
 	return s
 }
 
-func (s *CallLogStore) AccountIDAndHotlineIDs(accountID dot.ID, hotlineIDs []dot.ID) *CallLogStore {
+func (s *CallLogStore) AccountIDOrOwnerID(accountID dot.ID, ownerID dot.ID) *CallLogStore {
 	var preds sq.WriterTo
 	preds = sq.Or{
 		sq.And{
 			s.ft.ByAccountID(accountID),
-			sq.In("hotline_id", hotlineIDs),
 		},
 		sq.And{
-			sq.In("hotline_id", hotlineIDs),
+			s.ft.ByOwnerID(ownerID),
 			sq.NewIsNullPart("account_id", true),
 		},
 	}
