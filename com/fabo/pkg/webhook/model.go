@@ -525,7 +525,8 @@ type UserEntryChangeValue struct {
 }
 
 type LiveVideoComment struct {
-	ID      string                    `json:"id"`
-	Message string                    `json:"message"`
-	From    *fbclientmodel.ObjectFrom `json:"from"`
+	ID          string                    `json:"id"`
+	Message     string                    `json:"message"`
+	From        *fbclientmodel.ObjectFrom `json:"from"`
+	CreatedTime string                    `json:"created_time"`
 }

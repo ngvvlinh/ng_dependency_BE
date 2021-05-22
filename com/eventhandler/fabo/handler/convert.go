@@ -87,10 +87,13 @@ func PbFbExternalFrom(fbfrom *fbmessaging.FbObjectFrom) *exttypes.FbObjectFrom {
 		Name:  dot.String(fbfrom.Name),
 		Email: dot.String(fbfrom.Email),
 	}
-	if fbfrom.ImageURL == "" {
-		result.ExternalUserPictureURL = dot.String(fbclientconvert.GenerateFacebookUserPicture(fbfrom.ID))
-	} else {
-		result.ExternalUserPictureURL = dot.String(fbfrom.ImageURL)
+
+	if fbfrom.Name != "" {
+		if fbfrom.ImageURL == "" {
+			result.ExternalUserPictureURL = dot.String(fbclientconvert.GenerateFacebookUserPicture(fbfrom.ID))
+		} else {
+			result.ExternalUserPictureURL = dot.String(fbfrom.ImageURL)
+		}
 	}
 	return result
 }

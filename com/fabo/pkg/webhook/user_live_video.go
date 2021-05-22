@@ -1,12 +1,12 @@
 package webhook
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/r3labs/sse"
-	"golang.org/x/net/context"
 
 	"o.o/api/fabo/fbmessaging"
 	"o.o/api/fabo/fbmessaging/fb_feed_type"
@@ -22,6 +22,8 @@ import (
 	"o.o/backend/pkg/common/mq"
 	"o.o/common/jsonx"
 )
+
+const timeLayoutComment = "2006-01-02T15:04:05-0700"
 
 func (wh *WebhookHandler) HandleUserLiveVideo(
 	ctx context.Context, webhookUser WebhookUser,
@@ -170,7 +172,7 @@ func (wh *WebhookHandler) handleLiveVideo(ctx context.Context, _args interface{}
 	extUserID := liveVideoArguments.ExtUserID
 	token := liveVideoArguments.Token
 
-	url := fmt.Sprintf("https://streaming-graph.facebook.com/%s/live_comments?access_token=%s&comment_rate=ten_per_second&fields=from{name,id,email,first_name,last_name,picture},message,attachment", extLiveVideoID, token)
+	url := fmt.Sprintf("https://streaming-graph.facebook.com/%s/live_comments?access_token=%s&comment_rate=ten_per_second&fields=from{name,id,email,first_name,last_name,picture},message,attachment,created_time", extLiveVideoID, token)
 	client := sse.NewClient(url)
 
 	go func(_ctx context.Context, _extPostID, _extUserID string) {
@@ -182,12 +184,13 @@ func (wh *WebhookHandler) handleLiveVideo(ctx context.Context, _args interface{}
 				return
 			}
 
+			externalCreatedTime, _ := time.Parse(timeLayoutComment, comment.CreatedTime)
 			fbExternalComment := &fbmessaging.CreateFbExternalCommentArgs{
 				ID:                  cm.NewID(),
 				ExternalPostID:      _extPostID,
 				ExternalID:          comment.ID,
 				ExternalMessage:     comment.Message,
-				ExternalCreatedTime: time.Time{},
+				ExternalCreatedTime: externalCreatedTime,
 				InternalSource:      fb_internal_source.Facebook,
 				ExternalOwnerPostID: _extUserID,
 				PostType:            fb_post_type.User,

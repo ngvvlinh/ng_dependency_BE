@@ -83,10 +83,13 @@ func PbFbObjectTo(m *fbmessaging.FbObjectTo) *fabo.FbObjectTo {
 		Name:  m.Name,
 		Email: m.Email,
 	}
-	if m.ImageURL == "" {
-		result.ExternalUserPictureURL = fbclientconvert.GenerateFacebookUserPicture(m.ID)
-	} else {
-		result.ExternalUserPictureURL = m.ImageURL
+
+	if m.Name != "" {
+		if m.ImageURL == "" {
+			result.ExternalUserPictureURL = fbclientconvert.GenerateFacebookUserPicture(m.ID)
+		} else {
+			result.ExternalUserPictureURL = m.ImageURL
+		}
 	}
 	return result
 }
@@ -108,10 +111,13 @@ func PbFbObjectFrom(m *fbmessaging.FbObjectFrom) *fabo.FbObjectFrom {
 		Name:  m.Name,
 		Email: m.Email,
 	}
-	if m.ImageURL == "" {
-		result.ExternalUserPictureURL = fbclientconvert.GenerateFacebookUserPicture(m.ID)
-	} else {
-		result.ExternalUserPictureURL = m.ImageURL
+
+	if m.Name != "" {
+		if m.ImageURL == "" {
+			result.ExternalUserPictureURL = fbclientconvert.GenerateFacebookUserPicture(m.ID)
+		} else {
+			result.ExternalUserPictureURL = m.ImageURL
+		}
 	}
 	return result
 }
