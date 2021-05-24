@@ -31,7 +31,7 @@ func (a *EtelecomAggregate) CreateExtension(ctx context.Context, args *etelecom.
 	return a.createExtension(ctx, args)
 }
 
-func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.CreateExtensionArgs) (*etelecom.Extension, error) {
+func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.CreateExtensionArgs) (_ *etelecom.Extension, _err error) {
 	if err := args.Validate(); err != nil {
 		return nil, err
 	}
@@ -62,6 +62,14 @@ func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.
 			return nil, err
 		}
 	}
+
+	defer func() {
+		if _err != nil && ext != nil {
+			// delete extension
+			a.extensionStore(ctx).ID(ext.ID).SoftDelete()
+		}
+		return
+	}()
 
 	if err = a.checkDuplicateExtensionNumber(ctx, tenant.ID, args.ExtensionNumber); err != nil {
 		return nil, err
