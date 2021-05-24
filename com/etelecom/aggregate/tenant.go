@@ -68,8 +68,22 @@ func (a *EtelecomAggregate) CreateTenant(ctx context.Context, args *etelecom.Cre
 		return nil, err
 	}
 
-	for indent := 0; indent < MaxTenantRetry; indent++ {
-		info := getTenantInfo(user, indent)
+	var shop *identity.Shop
+	if args.AccountID != 0 {
+		queryShop := &identity.GetShopByIDQuery{
+			ID: args.AccountID,
+		}
+		if err = a.identityQuery.Dispatch(ctx, queryShop); err != nil {
+			return nil, cm.Errorf(cm.InvalidArgument, err, "Account ID không hợp lệ")
+		}
+		shop = queryShop.Result
+		if shop.OwnerID != args.OwnerID {
+			return nil, cm.Errorf(cm.InvalidArgument, err, "account_id không thuộc owner_id")
+		}
+	}
+
+	for index := 0; index < MaxTenantRetry; index++ {
+		info := getTenantInfo(user, shop, index)
 		tenant.Name = info.Name
 		tenant.Domain = info.Domain
 		tenant.Password = info.Password
@@ -101,14 +115,18 @@ type TenantInfo struct {
 	Password string
 }
 
-func getTenantInfo(user *identity.User, identity int) *TenantInfo {
+func getTenantInfo(user *identity.User, shop *identity.Shop, index int) *TenantInfo {
 	fullname := validate.NormalizeUnaccent(user.FullName)
+	if shop != nil {
+		fullname = validate.NormalizeUnaccent(shop.Name)
+	}
 	fullname = strings.ReplaceAll(fullname, " ", "-")
+
 	userID := user.ID.String()
 	idx := userID[len(userID)-4:]
 	name := fullname + "-" + idx
-	if identity != 0 {
-		name += "-" + strconv.Itoa(identity)
+	if index != 0 {
+		name += "-" + strconv.Itoa(index)
 	}
 	name += "-" + cmenv.Env().String()
 

@@ -142,6 +142,7 @@ func (s *EtelecomService) GetTenants(ctx context.Context, r *etelecomtypes.GetTe
 func (s *EtelecomService) CreateTenant(ctx context.Context, r *etelecomtypes.AdminCreateTenantRequest) (*etelecomtypes.Tenant, error) {
 	cmd := &etelecom.CreateTenantCommand{
 		OwnerID:      r.OwnerID,
+		AccountID:    r.AccountID,
 		ConnectionID: r.ConnectionID,
 	}
 	if cmd.ConnectionID == 0 {

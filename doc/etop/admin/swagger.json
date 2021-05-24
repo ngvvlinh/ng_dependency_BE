@@ -8026,6 +8026,10 @@
     "riAdminCreateTenantRequest": {
       "type": "object",
       "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "connection_id": {
           "description": "Support connection portsip direct\n",
           "type": "string",

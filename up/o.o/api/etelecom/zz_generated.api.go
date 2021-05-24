@@ -165,6 +165,7 @@ func (h AggregateHandler) HandleCreateOrUpdateCallLogFromCDR(ctx context.Context
 
 type CreateTenantCommand struct {
 	OwnerID      dot.ID
+	AccountID    dot.ID
 	ConnectionID dot.ID
 
 	Result *Tenant `json:"-"`
@@ -696,12 +697,14 @@ func (q *CreateTenantCommand) GetArgs(ctx context.Context) (_ context.Context, _
 	return ctx,
 		&CreateTenantArgs{
 			OwnerID:      q.OwnerID,
+			AccountID:    q.AccountID,
 			ConnectionID: q.ConnectionID,
 		}
 }
 
 func (q *CreateTenantCommand) SetCreateTenantArgs(args *CreateTenantArgs) {
 	q.OwnerID = args.OwnerID
+	q.AccountID = args.AccountID
 	q.ConnectionID = args.ConnectionID
 }
 

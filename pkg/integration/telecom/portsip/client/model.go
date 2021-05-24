@@ -306,6 +306,19 @@ type CreateOutboundRuleResponse struct {
 	ID String `json:"id"` // portsip Outbound Rule ID
 }
 
+type ListOutboundRulesResponse struct {
+	CommonResponse
+	Rules []*OutboundRule `json:"rules"`
+}
+
+type OutboundRule struct {
+	ID                  String            `json:"id"`
+	Name                String            `json:"name"`
+	Enable              Bool              `json:"enable"`
+	FromExtension       String            `json:"from_extension"`
+	FromExtensionGroups []*ExtensionGroup `json:"from_extension_groups"`
+}
+
 type UpdateTrunkProviderRequest struct {
 	// id trunk provider: aarenet
 	ID string `json:"id"`
@@ -344,11 +357,6 @@ type TrunkProvider struct {
 	DidPool            []*TrunkProviderDidPool `json:"did_pool"`
 }
 
-type GetExtensionGroupsRequest struct {
-	Pagination int `json:"pagination"`
-	Pagesize   int `json:"pagesize,omitempty"`
-}
-
 type CommonResponse struct {
 	Pagination Int    `json:"pagination"`
 	Pagesize   Int    `json:"pagesize"`
@@ -359,4 +367,9 @@ type CommonResponse struct {
 type GetExtensionGroupsResponse struct {
 	CommonResponse
 	Groups []*ExtensionGroup `json:"groups"`
+}
+
+type CommonListRequest struct {
+	Pagination int `json:"pagination"`
+	Pagesize   int `json:"pagesize,omitempty"`
 }

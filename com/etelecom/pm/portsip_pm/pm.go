@@ -15,6 +15,7 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/bus"
+	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/etop/sqlstore"
 	etelecomxserviceclient "o.o/backend/pkg/integration/telecom/etelecom_xservice/client"
 	"o.o/capi/dot"
@@ -122,34 +123,21 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	}
 
 	// prepair shop_connection for get portsip driver
-	queryShopConn := &connectioning.GetShopConnectionQuery{
+	cmdShopConn := &connectioning.CreateOrUpdateShopConnectionCommand{
 		OwnerID:      event.OwnerID,
 		ConnectionID: tenant.ConnectionID,
-		IsGlobal:     false,
+		Token:        "default_token",
+		// expires_at will update when call api portsip
+		TokenExpiresAt: time.Now(),
+		TelecomData: &connectioning.ShopConnectionTelecomData{
+			Username:     tenant.Name,
+			Password:     tenant.Password,
+			TenantToken:  authKey,
+			TenantDomain: tenant.Domain,
+		},
 	}
-	err = m.connectionQS.Dispatch(ctx, queryShopConn)
-	switch cm.ErrorCode(err) {
-	case cm.NoError:
-	case cm.NotFound:
-		// create shop_connection
-		cmdShopConn := &connectioning.CreateShopConnectionCommand{
-			OwnerID:      event.OwnerID,
-			ConnectionID: tenant.ConnectionID,
-			Token:        "default_token",
-			// expires_at will update when call api portsip
-			TokenExpiresAt: time.Now(),
-			TelecomData: &connectioning.ShopConnectionTelecomData{
-				Username:     tenant.Name,
-				Password:     tenant.Password,
-				TenantToken:  authKey,
-				TenantDomain: tenant.Domain,
-			},
-		}
-		if _err := m.connectionAggr.Dispatch(ctx, cmdShopConn); _err != nil {
-			return _err
-		}
-	default:
-		return err
+	if _err := m.connectionAggr.Dispatch(ctx, cmdShopConn); _err != nil {
+		return _err
 	}
 
 	// step 2: update portsip trunk provider
@@ -164,10 +152,7 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 
 	// step 3: create outbound rule
 	if err = m.createOutboundRule(ctx, tenant.OwnerID, tenant.ConnectionID); err != nil {
-		// Ignore error
-		// Case Database Unique violation => outbound rule was existed
-		// If create error => voip team can fix it
-		ll.Error("Create Outbound error", l.String("err", err.Error()))
+		return cm.Errorf(cm.ErrorCode(err), nil, "Error when create outbound rule: %v", err.Error())
 	}
 
 	// step 4: setting tenant to get CDR
@@ -178,6 +163,9 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	}
 	_, err = xClient.ConfigTenantCDR(ctx, xReq)
 	if err != nil {
+		if cmenv.Env() != cmenv.EnvDev {
+			return cm.Errorf(cm.ErrorCode(err), nil, "xService config tenant error: %v", err.Error())
+		}
 		ll.Error("xService config tenant error", l.Error(err))
 	}
 

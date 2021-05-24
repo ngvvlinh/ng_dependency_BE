@@ -344,6 +344,7 @@ func (s *EtelecomService) createEtelecomAccountUserAndAddRoleCS(ctx context.Cont
 func (s *EtelecomService) CreateTenant(ctx context.Context, r *etelecomapi.CreateTenantRequest) (*etelecomtypes.Tenant, error) {
 	cmd := &etelecom.CreateTenantCommand{
 		OwnerID:      s.SS.Shop().OwnerID,
+		AccountID:    s.SS.Shop().ID,
 		ConnectionID: r.ConnectionID,
 	}
 	if cmd.ConnectionID == 0 {

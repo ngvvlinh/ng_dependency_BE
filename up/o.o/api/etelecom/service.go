@@ -311,6 +311,7 @@ func (args *ExtendExtensionArgs) Validate() error {
 
 type CreateTenantArgs struct {
 	OwnerID      dot.ID
+	AccountID    dot.ID
 	ConnectionID dot.ID
 }
 

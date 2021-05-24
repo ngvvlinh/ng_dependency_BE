@@ -268,7 +268,8 @@ type RemoveHotlineOutOfTenantRequest struct {
 func (m *RemoveHotlineOutOfTenantRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AdminCreateTenantRequest struct {
-	OwnerID dot.ID `json:"owner_id"`
+	OwnerID   dot.ID `json:"owner_id"`
+	AccountID dot.ID `json:"account_id"`
 	// Support connection portsip direct
 	ConnectionID dot.ID `json:"connection_id"`
 }

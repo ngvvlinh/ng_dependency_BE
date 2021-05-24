@@ -164,6 +164,17 @@ func (c *Client) GetTrunkProvider(ctx context.Context, req *GetTrunkProviderRequ
 	return &resp, err
 }
 
+func (c *Client) ListOutboundRules(ctx context.Context, req *CommonListRequest) (*ListOutboundRulesResponse, error) {
+	var resp ListOutboundRulesResponse
+	err := c.sendGetRequest(ctx, sendRequestArgs{
+		url:   URL(c.baseUrl, "/outbound_rules/list"),
+		token: c.token,
+		req:   req,
+		resp:  &resp,
+	})
+	return &resp, err
+}
+
 func (c *Client) CreateOutboundRule(ctx context.Context, req *CreateOutboundRuleRequest) (*CreateOutboundRuleResponse, error) {
 	var resp CreateOutboundRuleResponse
 	err := c.sendPostRequest(ctx, sendRequestArgs{
@@ -175,7 +186,7 @@ func (c *Client) CreateOutboundRule(ctx context.Context, req *CreateOutboundRule
 	return &resp, err
 }
 
-func (c *Client) GetExtensionGroups(ctx context.Context, req *GetExtensionGroupsRequest) (*GetExtensionGroupsResponse, error) {
+func (c *Client) GetExtensionGroups(ctx context.Context, req *CommonListRequest) (*GetExtensionGroupsResponse, error) {
 	var resp GetExtensionGroupsResponse
 	err := c.sendGetRequest(ctx, sendRequestArgs{
 		url:   URL(c.baseUrl, "/extensions/group/list"),

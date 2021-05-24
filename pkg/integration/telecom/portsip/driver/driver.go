@@ -194,11 +194,27 @@ func getCallTargets(session *portsipclient.SessionCallLog) (res []*telecomtypes.
 }
 
 const PortsipDefaultGroupName = "__DEFAULT__"
+const OutboundRuleDefaultName = "eB2B Outbound Rule"
 
 func (d *PortsipDriver) CreateOutboundRule(ctx context.Context, args *telecomtypes.CreateOutboundRuleRequest) error {
+	reqListOutboundRules := &portsipclient.CommonListRequest{
+		Pagination: 1,
+		Pagesize:   1000,
+	}
+	respListOutboundRule, err := d.client.ListOutboundRules(ctx, reqListOutboundRules)
+	if err != nil {
+		return err
+	}
+	for _, rule := range respListOutboundRule.Rules {
+		if rule.Name == OutboundRuleDefaultName {
+			// outbound rule default was created
+			return nil
+		}
+	}
+
 	//  Portsip create outbound rule need:
 	//  Extension group default
-	reqExtensionGroups := &portsipclient.GetExtensionGroupsRequest{
+	reqExtensionGroups := &portsipclient.CommonListRequest{
 		Pagination: 1,
 		Pagesize:   1000,
 	}
@@ -220,7 +236,7 @@ func (d *PortsipDriver) CreateOutboundRule(ctx context.Context, args *telecomtyp
 
 	// create outbound
 	reqOutboundRule := &portsipclient.CreateOutboundRuleRequest{
-		Name:         "eB2B Outbound Rule",
+		Name:         OutboundRuleDefaultName,
 		NumberPrefix: "",
 		FromExtensionGroups: &portsipclient.ExtensionGroup{
 			ID:        httpreq.String(tenantExtensionGroupDefaultID),
