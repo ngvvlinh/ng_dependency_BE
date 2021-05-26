@@ -57,8 +57,11 @@ type Aggregate interface {
 
 	UpdateShopInfo(context.Context, *UpdateShopInfoArgs) error
 
+	DeleteAccount(context.Context, *DeleteAccountArgs) error
+
 	// -- Account User -- //
 	CreateAccountUser(context.Context, *CreateAccountUserArgs) (*AccountUser, error)
+	DeleteAccountUsers(context.Context, *DeleteAccountUsersArgs) (int, error)
 
 	UpdateAccountUserPermission(context.Context, *UpdateAccountUserPermissionArgs) error
 }
@@ -92,6 +95,14 @@ type QueryService interface {
 
 	GetUserByPhoneOrEmail(context.Context, *GetUserByPhoneOrEmailArgs) (*User, error)
 
+	GetUsers(context.Context, *ListUsersArgs) (*UsersResponse, error)
+
+	GetUserFtRefSaffs(context.Context, *ListUserFtRefSaffsArgs) (*UserFtRefSaffsResponse, error)
+
+	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
+
+	ListUsersByIDsAndNameNorm(context.Context, *ListUsersByIDsAndNameNormArgs) ([]*User, error)
+
 	// -- Affiliate -- //
 
 	GetAffiliateByID(ctx context.Context, ID dot.ID) (*Affiliate, error)
@@ -106,17 +117,13 @@ type QueryService interface {
 
 	GetPartnerByID(context.Context, *GetPartnerByIDArgs) (*Partner, error)
 
-	GetUsers(context.Context, *ListUsersArgs) (*UsersResponse, error)
+	// -- Account User -- //
 
-	GetUserFtRefSaffs(context.Context, *ListUserFtRefSaffsArgs) (*UserFtRefSaffsResponse, error)
+	GetAccountUser(ctx context.Context, UserID, AccountID dot.ID) (*AccountUser, error)
 
 	GetAllAccountsByUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
 
-	ListUsersByWLPartnerID(context.Context, *ListUsersByWLPartnerID) ([]*User, error)
-
-	ListUsersByIDsAndNameNorm(context.Context, *ListUsersByIDsAndNameNormArgs) ([]*User, error)
-
-	GetAccountUser(ctx context.Context, UserID, AccountID dot.ID) (*AccountUser, error)
+	ListAccountUsers(context.Context, *ListAccountUsersArgs) ([]*AccountUser, error)
 
 	ListPartnerRelationsBySubjectIDs(context.Context, *ListPartnerRelationsBySubjectIDsArgs) ([]*PartnerRelation, error)
 }
@@ -373,4 +380,21 @@ type UpdateAccountUserPermissionArgs struct {
 	AccountID dot.ID
 	UserID    dot.ID
 	Permission
+}
+
+type DeleteAccountArgs struct {
+	AccountID dot.ID
+	// OwnerID: chủ tài khoản
+	// Chỉ có chủ tài khoản mới được quyền xóa account
+	OwnerID dot.ID
+}
+
+type ListAccountUsersArgs struct {
+	AccountID dot.ID
+	UserID    dot.ID
+}
+
+type DeleteAccountUsersArgs struct {
+	AccountID dot.ID
+	UserID    dot.ID
 }

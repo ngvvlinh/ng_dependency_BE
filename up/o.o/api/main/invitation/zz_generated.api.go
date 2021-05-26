@@ -164,6 +164,17 @@ func (h QueryServiceHandler) HandleListInvitationsByEmailAndPhone(ctx context.Co
 	return err
 }
 
+type ListInvitationsNotAcceptedYetByAccountIDQuery struct {
+	AccountID dot.ID
+
+	Result []*Invitation `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListInvitationsNotAcceptedYetByAccountID(ctx context.Context, msg *ListInvitationsNotAcceptedYetByAccountIDQuery) (err error) {
+	msg.Result, err = h.inner.ListInvitationsNotAcceptedYetByAccountID(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *AcceptInvitationCommand) command() {}
@@ -172,11 +183,12 @@ func (q *DeleteInvitationCommand) command() {}
 func (q *RejectInvitationCommand) command() {}
 func (q *ResendInvitationCommand) command() {}
 
-func (q *GetInvitationQuery) query()                  {}
-func (q *GetInvitationByTokenQuery) query()           {}
-func (q *ListInvitationsQuery) query()                {}
-func (q *ListInvitationsAcceptedByEmailQuery) query() {}
-func (q *ListInvitationsByEmailAndPhoneQuery) query() {}
+func (q *GetInvitationQuery) query()                            {}
+func (q *GetInvitationByTokenQuery) query()                     {}
+func (q *ListInvitationsQuery) query()                          {}
+func (q *ListInvitationsAcceptedByEmailQuery) query()           {}
+func (q *ListInvitationsByEmailAndPhoneQuery) query()           {}
+func (q *ListInvitationsNotAcceptedYetByAccountIDQuery) query() {}
 
 // implement conversion
 
@@ -298,6 +310,11 @@ func (q *ListInvitationsByEmailAndPhoneQuery) SetListInvitationsByEmailAndPhoneA
 	q.Filters = args.Filters
 }
 
+func (q *ListInvitationsNotAcceptedYetByAccountIDQuery) GetArgs(ctx context.Context) (_ context.Context, accountID dot.ID) {
+	return ctx,
+		q.AccountID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -335,5 +352,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListInvitations)
 	b.AddHandler(h.HandleListInvitationsAcceptedByEmail)
 	b.AddHandler(h.HandleListInvitationsByEmailAndPhone)
+	b.AddHandler(h.HandleListInvitationsNotAcceptedYetByAccountID)
 	return QueryBus{b}
 }

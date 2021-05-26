@@ -132,15 +132,23 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *api.UpdateShopReques
 	return result, nil
 }
 
-func (s *AccountService) DeleteShop(ctx context.Context, q *pbcm.IDRequest) (*pbcm.Empty, error) {
-	cmd := &identitymodelx.DeleteShopCommand{
-		ID:      q.Id,
-		OwnerID: s.SS.Claim().UserID,
+func (s *AccountService) DeleteShop(ctx context.Context, q *pbcm.IDRequest) (*pbcm.DeletedResponse, error) {
+	shop := s.SS.Shop()
+	if q.Id == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng truyền account ID cần xóa")
 	}
-	if err := s.AccountStore.DeleteShop(ctx, cmd); err != nil {
+	if q.Id != shop.ID {
+		return nil, cm.Errorf(cm.PermissionDenied, nil, "Token không hợp lệ. Vui lòng sử dụng đúng token của account cần xóa")
+	}
+	cmd := &identity.DeleteAccountCommand{
+		AccountID: shop.ID,
+		OwnerID:   shop.OwnerID,
+	}
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	result := &pbcm.Empty{}
+
+	result := &pbcm.DeletedResponse{Deleted: 1}
 	return result, nil
 }
 

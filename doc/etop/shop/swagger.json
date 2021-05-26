@@ -63,7 +63,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/ktDeletedResponse"
             }
           }
         }

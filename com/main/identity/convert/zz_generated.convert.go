@@ -461,6 +461,7 @@ func convert_identity_Account_identitymodel_Account(arg *identity.Account, out *
 	out.Type = arg.Type         // simple assign
 	out.ImageURL = arg.ImageURL // simple assign
 	out.URLSlug = arg.URLSlug   // simple assign
+	out.DeletedAt = time.Time{} // zero value
 	out.Rid = arg.Rid           // simple assign
 }
 

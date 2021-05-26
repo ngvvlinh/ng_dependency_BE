@@ -98,6 +98,11 @@ func (s *AccountUserStore) DeleteAccountUser(args DeleteAccountUserArgs) error {
 	return nil
 }
 
+func (s *AccountUserStore) SoftDeleteAccountUsers() (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Update(&identitymodel.AccountUser{DeletedAt: time.Now()})
+}
+
 func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, error) {
 	query := s.query().Where(s.preds)
 
@@ -106,7 +111,7 @@ func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, e
 	return accountUser, err
 }
 
-func (s *AccountUserStore) ListAccountUser() ([]*identity.AccountUser, error) {
+func (s *AccountUserStore) ListAccountUsers() ([]*identity.AccountUser, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 

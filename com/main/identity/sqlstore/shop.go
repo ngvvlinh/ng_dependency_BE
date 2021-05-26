@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/main/identity"
 	"o.o/api/meta"
@@ -228,4 +229,9 @@ func (s *ShopStore) UpdateShipFromAddressID(shipFromAddressID dot.ID) (int, erro
 		map[string]interface{}{
 			"ship_from_address_id": shipFromAddressID,
 		})
+}
+
+func (s *ShopStore) SoftDelete() error {
+	query := s.query().Where(s.preds)
+	return query.ShouldUpdate(&identitymodel.Shop{DeletedAt: time.Now()})
 }

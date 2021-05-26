@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/address"
 	"o.o/api/main/identity"
 	"o.o/api/main/invitation"
+	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/address_type"
 	"o.o/backend/com/main/authorization/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
@@ -51,6 +52,7 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.InvitationAccepted)
 	eventBus.AddEventListener(m.AddressCreated)
 	eventBus.AddEventListener(m.DefaultAddressUpdated)
+	eventBus.AddEventListener(m.AccountDeleting)
 }
 
 func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitation.InvitationAcceptedEvent) error {
@@ -197,6 +199,37 @@ func (m *ProcessManager) DefaultAddressUpdated(ctx context.Context, event *addre
 
 	if err := m.identityAggr.Dispatch(ctx, cmdUpdateShipFromAddressID); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *ProcessManager) AccountDeleting(ctx context.Context, event *identity.AccountDeletingEvent) error {
+	// shop chỉ được delete khi:
+	// 1. Xoá hết nhân viên
+	// 2. Xoá hết invite còn chưa đc chấp nhận
+	if event.AccountType != account_type.Shop {
+		return cm.Errorf(cm.InvalidArgument, nil, "Does not support delete this account (type: %v, id: %v)", event.AccountType.Name(), event.AccountID)
+	}
+
+	queryAccountUsers := &identity.ListAccountUsersQuery{
+		AccountID: event.AccountID,
+	}
+	if err := m.identityQuery.Dispatch(ctx, queryAccountUsers); err != nil {
+		return err
+	}
+	if len(queryAccountUsers.Result) >= 2 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng gỡ các nhân viên đang có quyền quản trị")
+	}
+
+	queryInvitations := &invitation.ListInvitationsNotAcceptedYetByAccountIDQuery{
+		AccountID: event.AccountID,
+	}
+	if err := m.invitationQuery.Dispatch(ctx, queryInvitations); err != nil {
+		return err
+	}
+	if len(queryInvitations.Result) > 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng xóa các lời mời quản trị chưa được chấp nhận")
 	}
 
 	return nil

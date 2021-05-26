@@ -107,6 +107,30 @@ func (h AggregateHandler) HandleCreateShop(ctx context.Context, msg *CreateShopC
 	return err
 }
 
+type DeleteAccountCommand struct {
+	AccountID dot.ID
+	OwnerID   dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteAccount(ctx context.Context, msg *DeleteAccountCommand) (err error) {
+	return h.inner.DeleteAccount(msg.GetArgs(ctx))
+}
+
+type DeleteAccountUsersCommand struct {
+	AccountID dot.ID
+	UserID    dot.ID
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteAccountUsers(ctx context.Context, msg *DeleteAccountUsersCommand) (err error) {
+	msg.Result, err = h.inner.DeleteAccountUsers(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteAffiliateCommand struct {
 	ID      dot.ID
 	OwnerID dot.ID
@@ -484,6 +508,18 @@ func (h QueryServiceHandler) HandleGetUsersByIDs(ctx context.Context, msg *GetUs
 	return err
 }
 
+type ListAccountUsersQuery struct {
+	AccountID dot.ID
+	UserID    dot.ID
+
+	Result []*AccountUser `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListAccountUsers(ctx context.Context, msg *ListAccountUsersQuery) (err error) {
+	msg.Result, err = h.inner.ListAccountUsers(msg.GetArgs(ctx))
+	return err
+}
+
 type ListPartnerRelationsBySubjectIDsQuery struct {
 	SubjectIDs  []dot.ID
 	SubjectType SubjectType
@@ -563,6 +599,8 @@ func (q *BlockUserCommand) command()                   {}
 func (q *CreateAccountUserCommand) command()           {}
 func (q *CreateAffiliateCommand) command()             {}
 func (q *CreateShopCommand) command()                  {}
+func (q *DeleteAccountCommand) command()               {}
+func (q *DeleteAccountUsersCommand) command()          {}
 func (q *DeleteAffiliateCommand) command()             {}
 func (q *RegisterSimplifyCommand) command()            {}
 func (q *UnblockUserCommand) command()                 {}
@@ -595,6 +633,7 @@ func (q *GetUserFtRefSaffsQuery) query()                {}
 func (q *GetUsersQuery) query()                         {}
 func (q *GetUsersByAccountQuery) query()                {}
 func (q *GetUsersByIDsQuery) query()                    {}
+func (q *ListAccountUsersQuery) query()                 {}
 func (q *ListPartnerRelationsBySubjectIDsQuery) query() {}
 func (q *ListPartnersForWhiteLabelQuery) query()        {}
 func (q *ListShopExtendedsQuery) query()                {}
@@ -710,6 +749,32 @@ func (q *CreateShopCommand) SetCreateShopArgs(args *CreateShopArgs) {
 	q.MoneyTransactionRRule = args.MoneyTransactionRRule
 	q.SurveyInfo = args.SurveyInfo
 	q.ShippingServicePickStrategy = args.ShippingServicePickStrategy
+}
+
+func (q *DeleteAccountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteAccountArgs) {
+	return ctx,
+		&DeleteAccountArgs{
+			AccountID: q.AccountID,
+			OwnerID:   q.OwnerID,
+		}
+}
+
+func (q *DeleteAccountCommand) SetDeleteAccountArgs(args *DeleteAccountArgs) {
+	q.AccountID = args.AccountID
+	q.OwnerID = args.OwnerID
+}
+
+func (q *DeleteAccountUsersCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteAccountUsersArgs) {
+	return ctx,
+		&DeleteAccountUsersArgs{
+			AccountID: q.AccountID,
+			UserID:    q.UserID,
+		}
+}
+
+func (q *DeleteAccountUsersCommand) SetDeleteAccountUsersArgs(args *DeleteAccountUsersArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
 }
 
 func (q *DeleteAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteAffiliateArgs) {
@@ -1049,6 +1114,19 @@ func (q *GetUsersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, ID
 		q.IDs
 }
 
+func (q *ListAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListAccountUsersArgs) {
+	return ctx,
+		&ListAccountUsersArgs{
+			AccountID: q.AccountID,
+			UserID:    q.UserID,
+		}
+}
+
+func (q *ListAccountUsersQuery) SetListAccountUsersArgs(args *ListAccountUsersArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
+}
+
 func (q *ListPartnerRelationsBySubjectIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListPartnerRelationsBySubjectIDsArgs) {
 	return ctx,
 		&ListPartnerRelationsBySubjectIDsArgs{
@@ -1146,6 +1224,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateAccountUser)
 	b.AddHandler(h.HandleCreateAffiliate)
 	b.AddHandler(h.HandleCreateShop)
+	b.AddHandler(h.HandleDeleteAccount)
+	b.AddHandler(h.HandleDeleteAccountUsers)
 	b.AddHandler(h.HandleDeleteAffiliate)
 	b.AddHandler(h.HandleRegisterSimplify)
 	b.AddHandler(h.HandleUnblockUser)
@@ -1192,6 +1272,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUsers)
 	b.AddHandler(h.HandleGetUsersByAccount)
 	b.AddHandler(h.HandleGetUsersByIDs)
+	b.AddHandler(h.HandleListAccountUsers)
 	b.AddHandler(h.HandleListPartnerRelationsBySubjectIDs)
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)
 	b.AddHandler(h.HandleListShopExtendeds)

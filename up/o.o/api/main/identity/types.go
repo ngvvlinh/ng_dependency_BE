@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/address"
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/meta"
+	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/ghn_note_code"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/try_on"
@@ -165,6 +166,11 @@ type UserCreatedEvent struct {
 	UserID dot.ID
 
 	Invitation *UserInvitation
+}
+
+type AccountDeletingEvent struct {
+	AccountID   dot.ID
+	AccountType account_type.AccountType
 }
 
 type UserInvitation struct {

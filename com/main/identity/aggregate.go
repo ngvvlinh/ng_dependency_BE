@@ -584,3 +584,66 @@ func (a *Aggregate) UpdateAccountUserPermission(ctx context.Context, args *ident
 	}
 	return nil
 }
+
+func (a *Aggregate) DeleteAccount(ctx context.Context, args *identity.DeleteAccountArgs) error {
+	if args.AccountID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing account_id")
+	}
+	if args.OwnerID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing owner_id")
+	}
+
+	account, err := a.accountStore(ctx).ByID(args.AccountID).ByOwnerID(args.OwnerID).GetAccount()
+	if err != nil {
+		return err
+	}
+	switch account.Type {
+	case account_type.Shop:
+	default:
+		return cm.Errorf(cm.InvalidArgument, nil, "Does not support delete this account (type: %v)", account.Type.Name())
+	}
+
+	event := &identity.AccountDeletingEvent{
+		AccountID:   args.AccountID,
+		AccountType: account.Type,
+	}
+	if err = a.eventBus.Publish(ctx, event); err != nil {
+		return err
+	}
+
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		_, err = a.accountStore(ctx).ByID(args.AccountID).ByOwnerID(args.OwnerID).SoftDelete()
+		if err != nil {
+			return err
+		}
+		switch account.Type {
+		case account_type.Shop:
+			// delete shop
+			if err = a.shopStore(ctx).ByID(args.AccountID).ByOwnerID(args.OwnerID).SoftDelete(); err != nil {
+				return err
+			}
+		default:
+
+		}
+
+		_, err = a.accountUserStore(ctx).ByAccountID(args.AccountID).ByUserID(args.OwnerID).SoftDeleteAccountUsers()
+		return err
+	})
+}
+
+func (a *Aggregate) DeleteAccountUsers(ctx context.Context, args *identity.DeleteAccountUsersArgs) (int, error) {
+	count := 0
+	query := a.accountUserStore(ctx)
+	if args.AccountID != 0 {
+		query = query.ByAccountID(args.AccountID)
+		count++
+	}
+	if args.UserID != 0 {
+		query = query.ByUserID(args.UserID)
+		count++
+	}
+	if count == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Please provide either user_id or account_id")
+	}
+	return query.SoftDeleteAccountUsers()
+}

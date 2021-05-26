@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/main/identity"
 	"o.o/api/meta"
@@ -67,6 +68,11 @@ func (s *AccountStore) ByID(id dot.ID) *AccountStore {
 	return s
 }
 
+func (s *AccountStore) ByOwnerID(owner_id dot.ID) *AccountStore {
+	s.preds = append(s.preds, s.accountFt.ByOwnerID(owner_id))
+	return s
+}
+
 func (s *AccountStore) ListAccountDBs() ([]*identitymodel.Account, error) {
 	var accounts identitymodel.Accounts
 	err := s.query().Where(s.preds).Find(&accounts)
@@ -99,4 +105,11 @@ func (s *AccountStore) CreateAccount(account *identity.Account) error {
 		return err
 	}
 	return s.query().ShouldInsert(&accountDB)
+}
+
+func (s *AccountStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	return query.Update(&identitymodel.Account{
+		DeletedAt: time.Now(),
+	})
 }

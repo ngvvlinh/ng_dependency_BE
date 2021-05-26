@@ -4,5 +4,6 @@
 
 package identity
 
-func (e *AccountCreatedEvent) GetTopic() string { return "event/identity" }
-func (e *UserCreatedEvent) GetTopic() string    { return "event/identity" }
+func (e *AccountCreatedEvent) GetTopic() string  { return "event/identity" }
+func (e *AccountDeletingEvent) GetTopic() string { return "event/identity" }
+func (e *UserCreatedEvent) GetTopic() string     { return "event/identity" }

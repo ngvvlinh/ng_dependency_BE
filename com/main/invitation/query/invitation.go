@@ -2,9 +2,10 @@ package query
 
 import (
 	"context"
-	
+
 	"o.o/api/main/invitation"
 	"o.o/api/shopping"
+	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	"o.o/backend/com/main/invitation/sqlstore"
 	cm "o.o/backend/pkg/common"
@@ -17,16 +18,16 @@ import (
 var _ invitation.QueryService = &InvitationQuery{}
 
 type InvitationQuery struct {
-	db          *cmsql.Database
-	store       sqlstore.InvitationStoreFactory
+	db    *cmsql.Database
+	store sqlstore.InvitationStoreFactory
 }
 
 func NewInvitationQuery(
 	db com.MainDB,
 ) *InvitationQuery {
 	return &InvitationQuery{
-		db:          db,
-		store:       sqlstore.NewInvitationStore(db),
+		db:    db,
+		store: sqlstore.NewInvitationStore(db),
 	}
 }
 
@@ -106,4 +107,8 @@ func (q *InvitationQuery) ListInvitationsAcceptedByEmail(
 	return &invitation.InvitationsResponse{
 		Invitations: invitations,
 	}, nil
+}
+
+func (q *InvitationQuery) ListInvitationsNotAcceptedYetByAccountID(ctx context.Context, accountID dot.ID) ([]*invitation.Invitation, error) {
+	return q.store(ctx).AccountID(accountID).Status(status3.Z.Wrap()).ListInvitations()
 }

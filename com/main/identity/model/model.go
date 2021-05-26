@@ -49,12 +49,13 @@ func (s *Affiliate) GetAccount() *Account {
 
 // +sqlgen
 type Account struct {
-	ID       dot.ID
-	OwnerID  dot.ID
-	Name     string
-	Type     account_type.AccountType
-	ImageURL string
-	URLSlug  string
+	ID        dot.ID
+	OwnerID   dot.ID
+	Name      string
+	Type      account_type.AccountType
+	ImageURL  string
+	URLSlug   string
+	DeletedAt time.Time
 
 	Rid dot.ID
 }

@@ -52,7 +52,7 @@ type InventoryService interface {
 type AccountService interface {
 	RegisterShop(context.Context, *RegisterShopRequest) (*RegisterShopResponse, error)
 	UpdateShop(context.Context, *UpdateShopRequest) (*UpdateShopResponse, error)
-	DeleteShop(context.Context, *cm.IDRequest) (*cm.Empty, error)
+	DeleteShop(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 	SetDefaultAddress(context.Context, *etop.SetDefaultAddressRequest) (*cm.UpdatedResponse, error)
 
 	CreateExternalAccountAhamove(context.Context, *cm.Empty) (*ExternalAccountAhamove, error)

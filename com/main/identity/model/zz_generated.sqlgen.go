@@ -31,8 +31,8 @@ type SQLWriter = core.SQLWriter
 type Accounts []*Account
 
 const __sqlAccount_Table = "account"
-const __sqlAccount_ListCols = "\"id\",\"owner_id\",\"name\",\"type\",\"image_url\",\"url_slug\",\"rid\""
-const __sqlAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"type\" = EXCLUDED.\"type\",\"image_url\" = EXCLUDED.\"image_url\",\"url_slug\" = EXCLUDED.\"url_slug\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlAccount_ListCols = "\"id\",\"owner_id\",\"name\",\"type\",\"image_url\",\"url_slug\",\"deleted_at\",\"rid\""
+const __sqlAccount_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"name\" = EXCLUDED.\"name\",\"type\" = EXCLUDED.\"type\",\"image_url\" = EXCLUDED.\"image_url\",\"url_slug\" = EXCLUDED.\"url_slug\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlAccount_Insert = "INSERT INTO \"account\" (" + __sqlAccount_ListCols + ") VALUES"
 const __sqlAccount_Select = "SELECT " + __sqlAccount_ListCols + " FROM \"account\""
 const __sqlAccount_Select_history = "SELECT " + __sqlAccount_ListCols + " FROM history.\"account\""
@@ -101,6 +101,13 @@ func (m *Account) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"deleted_at": {
+			ColumnName:       "deleted_at",
+			ColumnType:       "time.Time",
+			ColumnDBType:     "struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 		"rid": {
 			ColumnName:       "rid",
 			ColumnType:       "dot.ID",
@@ -126,6 +133,7 @@ func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.Type,
 		core.String(m.ImageURL),
 		core.String(m.URLSlug),
+		core.Time(m.DeletedAt),
 		m.Rid,
 	}
 }
@@ -138,6 +146,7 @@ func (m *Account) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.Type,
 		(*core.String)(&m.ImageURL),
 		(*core.String)(&m.URLSlug),
+		(*core.Time)(&m.DeletedAt),
 		&m.Rid,
 	}
 }
@@ -176,7 +185,7 @@ func (_ *Accounts) SQLSelect(w SQLWriter) error {
 func (m *Account) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -186,7 +195,7 @@ func (ms Accounts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(7)
+		w.WriteMarkers(8)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -265,6 +274,14 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.URLSlug)
 	}
+	if !m.DeletedAt.IsZero() {
+		flag = true
+		w.WriteName("deleted_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeletedAt)
+	}
 	if m.Rid != 0 {
 		flag = true
 		w.WriteName("rid")
@@ -283,7 +300,7 @@ func (m *Account) SQLUpdate(w SQLWriter) error {
 func (m *Account) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccount_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -305,39 +322,41 @@ func (m AccountHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m AccountHistory) ID() core.Interface       { return core.Interface{m["id"]} }
-func (m AccountHistory) OwnerID() core.Interface  { return core.Interface{m["owner_id"]} }
-func (m AccountHistory) Name() core.Interface     { return core.Interface{m["name"]} }
-func (m AccountHistory) Type() core.Interface     { return core.Interface{m["type"]} }
-func (m AccountHistory) ImageURL() core.Interface { return core.Interface{m["image_url"]} }
-func (m AccountHistory) URLSlug() core.Interface  { return core.Interface{m["url_slug"]} }
-func (m AccountHistory) Rid() core.Interface      { return core.Interface{m["rid"]} }
+func (m AccountHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m AccountHistory) OwnerID() core.Interface   { return core.Interface{m["owner_id"]} }
+func (m AccountHistory) Name() core.Interface      { return core.Interface{m["name"]} }
+func (m AccountHistory) Type() core.Interface      { return core.Interface{m["type"]} }
+func (m AccountHistory) ImageURL() core.Interface  { return core.Interface{m["image_url"]} }
+func (m AccountHistory) URLSlug() core.Interface   { return core.Interface{m["url_slug"]} }
+func (m AccountHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m AccountHistory) Rid() core.Interface       { return core.Interface{m["rid"]} }
 
 func (m *AccountHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AccountHistory, 7)
+	res := make(AccountHistory, 8)
 	res["id"] = data[0]
 	res["owner_id"] = data[1]
 	res["name"] = data[2]
 	res["type"] = data[3]
 	res["image_url"] = data[4]
 	res["url_slug"] = data[5]
-	res["rid"] = data[6]
+	res["deleted_at"] = data[6]
+	res["rid"] = data[7]
 	*m = res
 	return nil
 }
 
 func (ms *AccountHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AccountHistories, 0, 128)
@@ -352,7 +371,8 @@ func (ms *AccountHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["type"] = data[3]
 		m["image_url"] = data[4]
 		m["url_slug"] = data[5]
-		m["rid"] = data[6]
+		m["deleted_at"] = data[6]
+		m["rid"] = data[7]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

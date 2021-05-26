@@ -111,7 +111,7 @@ func getCustomerConversation(ctx context.Context, externalID string, externalUse
 }
 
 func filterRecipient(ctx context.Context, shopID dot.ID, roles []authorization.Role) ([]dot.ID, error) {
-	accUsers, err := accountUserStore(ctx).ByAccountID(shopID).ListAccountUser()
+	accUsers, err := accountUserStore(ctx).ByAccountID(shopID).ListAccountUsers()
 	if err != nil {
 		return nil, err
 	}

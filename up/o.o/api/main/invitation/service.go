@@ -28,6 +28,7 @@ type QueryService interface {
 	ListInvitations(context.Context, *shopping.ListQueryShopArgs) (*InvitationsResponse, error)
 	ListInvitationsByEmailAndPhone(context.Context, *ListInvitationsByEmailAndPhoneArgs) (*InvitationsResponse, error)
 	ListInvitationsAcceptedByEmail(ctx context.Context, email string) (*InvitationsResponse, error)
+	ListInvitationsNotAcceptedYetByAccountID(ctx context.Context, accountID dot.ID) ([]*Invitation, error)
 }
 
 //-- queries --//

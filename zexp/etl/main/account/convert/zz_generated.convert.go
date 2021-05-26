@@ -5,6 +5,8 @@
 package convert
 
 import (
+	time "time"
+
 	identitymodel "o.o/backend/com/main/identity/model"
 	conversion "o.o/backend/pkg/common/conversion"
 	accountmodel "o.o/backend/zexp/etl/main/account/model"
@@ -61,6 +63,7 @@ func convert_accountmodel_Account_identitymodel_Account(arg *accountmodel.Accoun
 	out.Type = arg.Type         // simple assign
 	out.ImageURL = arg.ImageURL // simple assign
 	out.URLSlug = arg.URLSlug   // simple assign
+	out.DeletedAt = time.Time{} // zero value
 	out.Rid = arg.Rid           // simple assign
 }
 

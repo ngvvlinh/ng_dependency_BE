@@ -80,7 +80,7 @@ func isDisableTopicNotify(ctx context.Context, notify *notifiermodel.Notificatio
 
 func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) error {
 	if noti.UserID == 0 {
-		accUsers, err := accountUserStore(ctx).ListAccountUser()
+		accUsers, err := accountUserStore(ctx).ListAccountUsers()
 		if err != nil {
 			return err
 		}

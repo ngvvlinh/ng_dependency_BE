@@ -313,6 +313,17 @@ func (q *QueryService) GetAccountUser(ctx context.Context, userID, accountID dot
 	return q.accountUserStore(ctx).ByUserID(userID).ByAccountID(accountID).GetAccountUser()
 }
 
+func (q *QueryService) ListAccountUsers(ctx context.Context, args *identity.ListAccountUsersArgs) ([]*identity.AccountUser, error) {
+	query := q.accountUserStore(ctx)
+	if args.UserID != 0 {
+		query = query.ByUserID(args.UserID)
+	}
+	if args.AccountID != 0 {
+		query = query.ByAccountID(args.AccountID)
+	}
+	return query.ListAccountUsers()
+}
+
 func (q *QueryService) ListPartnerRelationsBySubjectIDs(ctx context.Context, args *identity.ListPartnerRelationsBySubjectIDsArgs) ([]*identity.PartnerRelation, error) {
 	return q.partnerRelationStore(ctx).BySubjectType(args.SubjectType).BySubjectIDs(args.SubjectIDs...).ListPartnerRelations()
 }

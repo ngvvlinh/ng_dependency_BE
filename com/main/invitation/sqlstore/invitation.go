@@ -84,8 +84,8 @@ func (s *InvitationStore) PhoneOrEmail(phone, email string) *InvitationStore {
 	return s
 }
 
-func (s *InvitationStore) Status(status status3.Status) *InvitationStore {
-	s.preds = append(s.preds, s.ft.ByStatus(status))
+func (s *InvitationStore) Status(_status status3.NullStatus) *InvitationStore {
+	s.preds = append(s.preds, s.ft.ByStatusPtr(&_status.Enum))
 	return s
 }
 
