@@ -10,7 +10,6 @@ import (
 	"o.o/backend/pkg/etop/api/shop/connection"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
-	"o.o/backend/pkg/etop/api/shop/export"
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
 	"o.o/backend/pkg/etop/api/shop/notification"
@@ -33,7 +32,7 @@ func NewServers(
 	orderService *order.OrderService,
 	fulfillmentService *fulfillment.FulfillmentService,
 	historyService *history.HistoryService,
-	exportService *export.ExportService,
+	// exportService *export.ExportService,
 	notificationService *notification.NotificationService,
 	authorizeService *authorize.AuthorizeService,
 	shipmentService *shipment.ShipmentService,
@@ -52,7 +51,7 @@ func NewServers(
 		connectionService.Clone,
 		customerGroupService.Clone,
 		customerService.Clone,
-		exportService.Clone,
+		// exportService.Clone,
 		fulfillmentService.Clone,
 		historyService.Clone,
 		miscService.Clone,

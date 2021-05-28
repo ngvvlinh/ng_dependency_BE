@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"o.o/api/etelecom"
+	"o.o/api/main/identity"
 	apishop "o.o/api/top/int/shop"
 	"o.o/api/top/types/etc/status4"
 	identitymodel "o.o/backend/com/main/identity/model"
@@ -21,6 +23,7 @@ import (
 	"o.o/backend/pkg/etop/eventstream"
 	"o.o/backend/pkg/etop/model"
 	"o.o/backend/pkg/etop/sqlstore"
+	telecomstore "o.o/backend/pkg/etop/sqlstore/telecom"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/l"
@@ -34,6 +37,9 @@ type Service struct {
 
 	exportAttemptStore sqlstore.ExportAttemptStoreFactory
 	OrderStore         sqlstore.OrderStoreInterface
+	identityQuery      identity.QueryBus
+	etelecomQuery      etelecom.QueryBus
+	TelecomStore       telecomstore.TelecomStoreInterface
 }
 
 func New(
@@ -43,6 +49,9 @@ func New(
 	bucket storage.Bucket,
 	exportAttemptStore sqlstore.ExportAttemptStoreFactory,
 	OrderStore sqlstore.OrderStoreInterface,
+	identityQ identity.QueryBus,
+	etelecomQ etelecom.QueryBus,
+	telecomStore telecomstore.TelecomStoreInterface,
 ) (*Service, func()) {
 	idempgroup := idemp.NewRedisGroup(rd, "export", 60)
 	if err := cfg.Export.Validate(); err != nil {
@@ -55,6 +64,9 @@ func New(
 		storageBucket:      bucket,
 		exportAttemptStore: exportAttemptStore,
 		OrderStore:         OrderStore,
+		TelecomStore:       telecomStore,
+		identityQuery:      identityQ,
+		etelecomQuery:      etelecomQ,
 	}, idempgroup.Shutdown
 }
 
@@ -80,7 +92,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 		}
 	}()
 
-	if r.ExportType != PathShopOrders && r.ExportType != PathShopFulfillments {
+	if r.ExportType != PathShopOrders && r.ExportType != PathShopFulfillments && r.ExportType != PathShopCallLogs {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "export type is not supported")
 	}
 
@@ -121,6 +133,8 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 		tableNameExport = "orders"
 	case PathShopFulfillments:
 		tableNameExport = "fulfillments"
+	case PathShopCallLogs:
+		tableNameExport = "call_logs"
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing export_type")
 	}
@@ -185,9 +199,8 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 
 		go s.exportAndReportProgress(
 			func() { s.idempgroup.ReleaseKey(key, claim.Token) },
-			exportItem, fileName, exportOpts,
-			query.Result.Total, query.Result.Rows, query.Result.Opts,
-			ExportFulfillments,
+			shop, exportItem, fileName, exportOpts,
+			query.Result.Total, query.Result.Rows, query.Result.Opts, ExportFulfillments,
 		)
 
 	case PathShopOrders:
@@ -215,10 +228,38 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.Claim, shop *i
 
 		go s.exportAndReportProgress(
 			func() { s.idempgroup.ReleaseKey(key, claim.Token) },
-			exportItem, fileName, exportOpts,
+			shop, exportItem, fileName, exportOpts,
 			query.Result.Total, query.Result.Rows, query.Result.Opts,
 			ExportOrders,
 		)
+	case PathShopCallLogs:
+		args := &etelecom.ListCallLogsExportArgs{
+			DateFrom:  from,
+			DateTo:    to,
+			OwnerID:   shop.OwnerID,
+			AccountID: shop.ID,
+		}
+		res, err := s.TelecomStore.GetCallLogsExport(ctx, args)
+		if err != nil {
+			return nil, err
+		}
+		defer func() {
+			// always close the connection when encounting error
+			if _err != nil && res.Rows != nil {
+				_ = res.Rows.Close()
+			}
+		}()
+		if res.Total == 0 {
+			return nil, cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
+		}
+
+		go s.exportAndReportProgress(
+			func() { s.idempgroup.ReleaseKey(key, claim.Token) },
+			shop, exportItem, fileName, exportOpts,
+			res.Total, res.Rows, res.Opts,
+			s.ExportCallLogs,
+		)
+
 	}
 	return resp, nil
 }

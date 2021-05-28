@@ -32,6 +32,32 @@ var enumCallDirectionValue = map[string]int{
 	"ext_out": 21,
 }
 
+var enumCallDirectionMapLabel = map[string]map[string]string{
+	"unknown": {
+		"RefName": "",
+	},
+	"in": {
+		"RefName": "Gọi vào",
+	},
+	"out": {
+		"RefName": "Gọi ra",
+	},
+	"ext": {
+		"RefName": "Gọi nội bộ",
+	},
+	"ext_in": {
+		"RefName": "Gọi vào nội bộ",
+	},
+	"ext_out": {
+		"RefName": "Gọi ra nội bộ",
+	},
+}
+
+func (e CallDirection) GetLabelRefName() string {
+	val := enumCallDirectionName[int(e)]
+	nameVal := enumCallDirectionMapLabel[val]
+	return nameVal["RefName"]
+}
 func ParseCallDirection(s string) (CallDirection, bool) {
 	val, ok := enumCallDirectionValue[s]
 	return CallDirection(val), ok

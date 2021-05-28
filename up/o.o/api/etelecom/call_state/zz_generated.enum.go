@@ -26,6 +26,23 @@ var enumCallStateValue = map[string]int{
 	"not_answered": 2,
 }
 
+var enumCallStateMapLabel = map[string]map[string]string{
+	"unknown": {
+		"RefName": "Không xác định",
+	},
+	"answered": {
+		"RefName": "Thành công",
+	},
+	"not_answered": {
+		"RefName": "Gọi nhỡ",
+	},
+}
+
+func (e CallState) GetLabelRefName() string {
+	val := enumCallStateName[int(e)]
+	nameVal := enumCallStateMapLabel[val]
+	return nameVal["RefName"]
+}
 func ParseCallState(s string) (CallState, bool) {
 	val, ok := enumCallStateValue[s]
 	return CallState(val), ok

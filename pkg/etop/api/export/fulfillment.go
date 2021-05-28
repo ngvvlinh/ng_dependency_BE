@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"o.o/api/top/int/shop"
+	identitymodel "o.o/backend/com/main/identity/model"
 	"o.o/backend/com/main/shipping/modely"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
@@ -17,9 +18,10 @@ import (
 const exportFulfillmentLines = false
 
 func ExportFulfillments(
-	ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
+	ctx context.Context, id string, _ *identitymodel.Shop,
+	exportOpts ExportOption, output io.Writer,
 	result chan<- *shop.ExportStatusItem,
-	total int, rows rowsInterface, opts core.Opts,
+	total int, rows RowsInterface, opts core.Opts,
 ) (_err error) {
 
 	var count, countError, line int

@@ -78,7 +78,6 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
 	"o.o/backend/pkg/common/redis"
-	"o.o/backend/pkg/etop/api/export"
 	"o.o/backend/pkg/etop/api/root"
 	"o.o/backend/pkg/etop/api/root/fabo"
 	"o.o/backend/pkg/etop/api/sadmin"
@@ -92,7 +91,6 @@ import (
 	"o.o/backend/pkg/etop/api/shop/connection"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
-	export2 "o.o/backend/pkg/etop/api/shop/export"
 	"o.o/backend/pkg/etop/api/shop/fulfillment"
 	"o.o/backend/pkg/etop/api/shop/history"
 	"o.o/backend/pkg/etop/api/shop/notification"
@@ -421,21 +419,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		Session:      session,
 		HistoryStore: historyStoreInterface,
 	}
-	eventStream := eventstream.New(ctx)
-	configDirs := cfg.ExportDirs
-	driverConfig := cfg.StorageDriver
-	bucket, err := storage_all.Build(ctx, driverConfig)
-	if err != nil {
-		cleanup()
-		return Output{}, nil, err
-	}
-	exportAttemptStoreFactory := sqlstore.NewExportAttemptStore(mainDB)
-	exportService, cleanup2 := export.New(store, eventStream, configDirs, bucket, exportAttemptStoreFactory, orderStoreInterface)
-	exportExportService := &export2.ExportService{
-		Session:     session,
-		Auth:        authorizer,
-		ExportInner: exportService,
-	}
 	notifierDB := databases.Notifier
 	notificationStore := sqlstore2.NewNotificationStore(notifierDB, accountUserStoreInterface)
 	deviceStore := sqlstore2.NewDeviceStore(notifierDB)
@@ -475,7 +458,7 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		IdentityQuery:      queryBus,
 		AccountshipnowAggr: accountshipnowCommandBus,
 	}
-	shopServers := fabo2.NewServers(store, shopMiscService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, exportExportService, notificationService, authorizeService, shipmentService, settingService, connectionService)
+	shopServers := fabo2.NewServers(store, shopMiscService, accountAccountService, collectionService, customerService, customerGroupService, productService, categoryService, orderService, fulfillmentService, historyService, notificationService, authorizeService, shipmentService, settingService, connectionService)
 	fbPageUtil := fbpage.NewFbPageUtil(store)
 	fbPageQuery := fbpage.NewFbPageQuery(mainDB, fbPageUtil)
 	fbpagingQueryBus := fbpage.FbPageQueryMessageBus(fbPageQuery)
@@ -558,27 +541,32 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	captchaCaptcha := captcha.New(captchaConfig)
 	intHandlers, err := BuildIntHandlers(servers, shopServers, faboServers, sadminServers, captchaCaptcha)
 	if err != nil {
-		cleanup2()
 		cleanup()
 		return Output{}, nil, err
 	}
 	dirConfigs := cfg.UploadDirs
+	driverConfig := cfg.StorageDriver
+	bucket, err := storage_all.Build(ctx, driverConfig)
+	if err != nil {
+		cleanup()
+		return Output{}, nil, err
+	}
 	uploader, err := _uploader.NewUploader(ctx, dirConfigs, bucket)
 	if err != nil {
-		cleanup2()
 		cleanup()
 		return Output{}, nil, err
 	}
 	exportAttemptStore := sqlstore.BuildExportAttemptStore(mainDB)
 	exportAttemptStoreInterface := sqlstore.BindExportAttemptStore(exportAttemptStore)
-	imcsvImport, cleanup3 := imcsv.New(authorizer, locationQueryBus, store, uploader, mainDB, orderStoreInterface, exportAttemptStoreInterface)
+	imcsvImport, cleanup2 := imcsv.New(authorizer, locationQueryBus, store, uploader, mainDB, orderStoreInterface, exportAttemptStoreInterface)
 	categoryStore := &sqlstore.CategoryStore{
 		DB: mainDB,
 	}
 	categoryStoreInterface := sqlstore.BindCategoryStore(categoryStore)
-	import2, cleanup4 := imcsv2.New(store, uploader, mainDB, exportAttemptStoreInterface, categoryStoreInterface, shopStoreInterface)
-	import3, cleanup5 := imcsv3.New(store, uploader, exportAttemptStoreInterface)
+	import2, cleanup3 := imcsv2.New(store, uploader, mainDB, exportAttemptStoreInterface, categoryStoreInterface, shopStoreInterface)
+	import3, cleanup4 := imcsv3.New(store, uploader, exportAttemptStoreInterface)
 	importHandler := server_shop.BuildImportHandler(imcsvImport, import2, import3, session)
+	eventStream := eventstream.New(ctx)
 	eventStreamHandler := server_shop.BuildEventStreamHandler(eventStream, session)
 	downloadHandler := server_shop.BuildDownloadHandler()
 	faboImageHandler := fabo4.BuildFaboImageHandler()
@@ -591,7 +579,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	configWebhookConfig := cfg.Webhook
 	kafkaProducer, err := BuildPgProducer(ctx, cfg)
 	if err != nil {
-		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()
@@ -635,7 +622,6 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 		_fbPagePM:            fbpageProcessManager,
 	}
 	return output, func() {
-		cleanup5()
 		cleanup4()
 		cleanup3()
 		cleanup2()

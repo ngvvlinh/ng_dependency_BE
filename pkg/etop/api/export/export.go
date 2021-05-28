@@ -6,14 +6,16 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math"
 	"path/filepath"
 	"strconv"
 	"time"
 	"unicode/utf8"
 
-	"o.o/api/top/int/shop"
+	apishop "o.o/api/top/int/shop"
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/status4"
+	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/sql/sq/core"
@@ -30,6 +32,7 @@ var ErrAborted = cm.Error(cm.Aborted, "abort", nil)
 
 const PathShopFulfillments = "shop/fulfillments"
 const PathShopOrders = "shop/orders"
+const PathShopCallLogs = "shop/calllogs"
 const BaseRowsErrors = 10
 
 type ConfigDirs struct {
@@ -41,21 +44,23 @@ type ExportOption struct {
 	ExcelMode bool
 }
 
-type rowsInterface interface {
+type RowsInterface interface {
 	Err() error
 	Next() bool
 	Scan(args ...interface{}) error
 	Close() error
 }
 
-type ExportFunction func(ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
-	result chan<- *shop.ExportStatusItem,
-	total int, rows rowsInterface, opts core.Opts) (_err error)
+type ExportFunction func(ctx context.Context, id string, shop *identitymodel.Shop,
+	exportOpts ExportOption, output io.Writer,
+	result chan<- *apishop.ExportStatusItem,
+	total int, rows RowsInterface, opts core.Opts) (_err error)
 
 func (s *Service) exportAndReportProgress(
 	cleanup func(),
+	shop *identitymodel.Shop,
 	exportResult *model.ExportAttempt, bareFilename string, exportOpts ExportOption,
-	total int, rows rowsInterface, opts core.Opts,
+	total int, rows RowsInterface, opts core.Opts,
 	exportFunction ExportFunction) (_err error) {
 
 	exportResult.StartedAt = time.Now()
@@ -149,13 +154,13 @@ func (s *Service) exportAndReportProgress(
 	defer exportCancel()
 
 	// perform export in another goroutine
-	result := make(chan *shop.ExportStatusItem, BaseRowsErrors)
+	result := make(chan *apishop.ExportStatusItem, BaseRowsErrors)
 	go exportFunction(
-		exportCtx, exportID, exportOpts, fileWriter, result,
+		exportCtx, exportID, shop, exportOpts, fileWriter, result,
 		total, rows, opts)
 
 	// send progress to client
-	var statusItem *shop.ExportStatusItem
+	var statusItem *apishop.ExportStatusItem
 	for statusItem = range result {
 		buf := &bytes.Buffer{}
 		if err2 := jsonx.MarshalTo(buf, statusItem); err2 != nil {
@@ -220,6 +225,23 @@ func FormatDate(time time.Time) string {
 		return ""
 	}
 	return fmt.Sprintf("%04d-%02d-%02d", year, month, day)
+}
+
+func FormatDateTime(t time.Time) string {
+	year, month, day := t.Date()
+	hour, min, second := t.Clock()
+	return fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, min, second)
+}
+
+func FormatDuration(t time.Duration) string {
+	// hh:mm:ss
+	_t := t.Seconds()
+	hours := math.Floor(_t / 3600)
+	_t -= hours * 3600
+	minutes := math.Floor(_t / 60)
+	_t -= minutes * 60
+	seconds := _t
+	return fmt.Sprintf("%02d:%02d:%02d", int(hours), int(minutes), int(seconds))
 }
 
 func FirstLine(line *int, v string) string {

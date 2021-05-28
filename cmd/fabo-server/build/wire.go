@@ -46,7 +46,6 @@ import (
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/mq"
-	"o.o/backend/pkg/etop/api/export"
 	apiroot_fabo "o.o/backend/pkg/etop/api/root/fabo"
 	sadmin_fabo "o.o/backend/pkg/etop/api/sadmin/_fabo"
 	shop_min "o.o/backend/pkg/etop/api/shop/_min/fabo"
@@ -80,7 +79,6 @@ func Build(
 			"shipment",
 			"redis",
 			"captcha",
-			"ExportDirs",
 			"UploadDirs",
 			"StorageDriver",
 			"FacebookApp",
@@ -124,7 +122,7 @@ func Build(
 		fabosummary.WireSet,
 		connectioning.WireSet,
 		shipment_fabo.WireSet,
-		export.WireSet,
+		// export.WireSet,
 		middleware.WireSet,
 		sadmin_fabo.WireSet,
 		wire.Bind(new(bus.EventRegistry), new(bus.Bus)),

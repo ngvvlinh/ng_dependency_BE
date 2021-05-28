@@ -92,6 +92,7 @@ import (
 	productimcsv "o.o/backend/pkg/etop/logic/products/imcsv"
 	logicsummary "o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
+	telecomstore "o.o/backend/pkg/etop/sqlstore/telecom"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/jira"
 	saffapi "o.o/backend/pkg/services/affiliate/api"
@@ -208,6 +209,7 @@ func Build(
 		wire.Bind(new(capi.EventBus), new(bus.Bus)),
 		wire.Bind(new(eventstream.Publisher), new(*eventstream.EventStream)),
 		sqlstore.WireSet,
+		telecomstore.WireSet,
 		captcha.WireSet,
 		credit.WireSet,
 		transaction.WireSet,

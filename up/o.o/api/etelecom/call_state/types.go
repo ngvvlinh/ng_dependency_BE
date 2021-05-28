@@ -13,12 +13,15 @@ type NullCallState struct {
 
 const (
 	// +enum=unknown
+	// +enum:RefName:Không xác định
 	Unknown CallState = 0
 
 	// +enum=answered
+	// +enum:RefName:Thành công
 	Answered CallState = 1
 
 	// +enum=not_answered
+	// +enum:RefName:Gọi nhỡ
 	NotAnswered CallState = 2
 )
 

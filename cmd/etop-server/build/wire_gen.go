@@ -34,7 +34,7 @@ import (
 	pm19 "o.o/backend/com/etelecom/pm"
 	"o.o/backend/com/etelecom/pm/portsip_pm"
 	provider2 "o.o/backend/com/etelecom/provider"
-	query25 "o.o/backend/com/etelecom/query"
+	query21 "o.o/backend/com/etelecom/query"
 	"o.o/backend/com/etelecom/usersetting"
 	pm23 "o.o/backend/com/etelecom/usersetting/pm"
 	"o.o/backend/com/eventhandler/notifier"
@@ -60,7 +60,7 @@ import (
 	pm16 "o.o/backend/com/main/connectioning/pm"
 	query15 "o.o/backend/com/main/connectioning/query"
 	aggregate21 "o.o/backend/com/main/contact/aggregate"
-	query23 "o.o/backend/com/main/contact/query"
+	query24 "o.o/backend/com/main/contact/query"
 	"o.o/backend/com/main/credit"
 	"o.o/backend/com/main/identity"
 	"o.o/backend/com/main/identity/pm"
@@ -74,7 +74,7 @@ import (
 	pm21 "o.o/backend/com/main/invoicing/pm"
 	aggregate13 "o.o/backend/com/main/ledgering/aggregate"
 	pm5 "o.o/backend/com/main/ledgering/pm"
-	query21 "o.o/backend/com/main/ledgering/query"
+	query22 "o.o/backend/com/main/ledgering/query"
 	"o.o/backend/com/main/location"
 	aggregate25 "o.o/backend/com/main/moneytx/aggregate"
 	pm6 "o.o/backend/com/main/moneytx/pm"
@@ -122,7 +122,7 @@ import (
 	pm18 "o.o/backend/com/shopping/customering/pm"
 	query2 "o.o/backend/com/shopping/customering/query"
 	aggregate22 "o.o/backend/com/shopping/setting/aggregate"
-	query24 "o.o/backend/com/shopping/setting/query"
+	query25 "o.o/backend/com/shopping/setting/query"
 	"o.o/backend/com/shopping/setting/util"
 	aggregate11 "o.o/backend/com/shopping/suppliering/aggregate"
 	query6 "o.o/backend/com/shopping/suppliering/query"
@@ -140,7 +140,7 @@ import (
 	"o.o/backend/com/supporting/ticket/provider"
 	query3 "o.o/backend/com/supporting/ticket/query"
 	aggregate19 "o.o/backend/com/web/webserver/aggregate"
-	query22 "o.o/backend/com/web/webserver/query"
+	query23 "o.o/backend/com/web/webserver/query"
 	"o.o/backend/pkg/common/apifw/captcha"
 	"o.o/backend/pkg/common/apifw/health"
 	auth2 "o.o/backend/pkg/common/authorization/auth"
@@ -228,6 +228,7 @@ import (
 	imcsv2 "o.o/backend/pkg/etop/logic/products/imcsv"
 	"o.o/backend/pkg/etop/logic/summary"
 	"o.o/backend/pkg/etop/sqlstore"
+	"o.o/backend/pkg/etop/sqlstore/telecom"
 	"o.o/backend/pkg/integration/email"
 	"o.o/backend/pkg/integration/jira/driver"
 	"o.o/backend/pkg/integration/payment/kpay"
@@ -634,7 +635,13 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		return Output{}, nil, err
 	}
 	exportAttemptStoreFactory := sqlstore.NewExportAttemptStore(mainDB)
-	exportService, cleanup2 := export.New(store, eventStream, configDirs, bucket, exportAttemptStoreFactory, orderStoreInterface)
+	queryService6 := query21.NewQueryService(etelecomDB, connectioningQueryBus)
+	etelecomQueryBus := query21.QueryServiceMessageBus(queryService6)
+	telecomStore := &telecom.TelecomStore{
+		TelecomDB: etelecomDB,
+	}
+	telecomStoreInterface := telecom.BindTelecomStore(telecomStore)
+	exportService, cleanup2 := export.New(store, eventStream, configDirs, bucket, exportAttemptStoreFactory, orderStoreInterface, queryBus, etelecomQueryBus, telecomStoreInterface)
 	exportExportService := &export2.ExportService{
 		Session:     session,
 		Auth:        authorizer,
@@ -679,8 +686,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		PaymentAggr:    paymentCommandBus,
 		CreditQuery:    creditQueryBus,
 	}
-	ledgerQuery := query21.NewLedgerQuery(mainDB)
-	ledgeringQueryBus := query21.LedgerQueryMessageBus(ledgerQuery)
+	ledgerQuery := query22.NewLedgerQuery(mainDB)
+	ledgeringQueryBus := query22.LedgerQueryMessageBus(ledgerQuery)
 	receiptAggregate := aggregate10.NewReceiptAggregate(mainDB, busBus, traderingQueryBus, ledgeringQueryBus, orderingQueryBus, customeringQueryBus, carryingQueryBus, supplieringQueryBus, purchaseorderQueryBus)
 	receiptingCommandBus := aggregate10.ReceiptAggregateMessageBus(receiptAggregate)
 	receiptService := &receipt.ReceiptService{
@@ -774,8 +781,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	webServerDB := databases.WebServer
 	webserverAggregate := aggregate19.New(busBus, webServerDB, catalogQueryBus)
 	webserverCommandBus := aggregate19.WebserverAggregateMessageBus(webserverAggregate)
-	webserverQueryService := query22.New(busBus, webServerDB, catalogQueryBus)
-	webserverQueryBus := query22.WebserverQueryServiceMessageBus(webserverQueryService)
+	webserverQueryService := query23.New(busBus, webServerDB, catalogQueryBus)
+	webserverQueryBus := query23.WebserverQueryServiceMessageBus(webserverQueryService)
 	webServerService := &ws.WebServerService{
 		Session:        session,
 		CatalogQuery:   catalogQueryBus,
@@ -798,8 +805,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SubrProductQuery:  subscriptionproductQueryBus,
 		SubrPlanQuery:     subscriptionplanQueryBus,
 	}
-	contactQuery := query23.NewContactQuery(mainDB)
-	contactQueryBus := query23.ContactQueryMessageBus(contactQuery)
+	contactQuery := query24.NewContactQuery(mainDB)
+	contactQueryBus := query24.ContactQueryMessageBus(contactQuery)
 	driver3 := ticket_all.SupportedTicketDriver(busBus, shippingQueryBus, contactQueryBus)
 	ticketManager, err := provider.NewTicketManager(connectionManager, busBus, driver3, connectioningQueryBus)
 	if err != nil {
@@ -832,8 +839,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		CreditAggr: creditCommandBus,
 	}
 	shopSettingUtil := util.NewShopSettingUtil(store)
-	shopSettingQuery := query24.NewShopSettingQuery(mainDB, shopSettingUtil)
-	settingQueryBus := query24.ShopSettingQueryMessageBus(shopSettingQuery)
+	shopSettingQuery := query25.NewShopSettingQuery(mainDB, shopSettingUtil)
+	settingQueryBus := query25.ShopSettingQueryMessageBus(shopSettingQuery)
 	shopSettingAggregate := aggregate22.NewShopSettingAggregate(mainDB, addressCommandBus, shopSettingUtil)
 	settingCommandBus := aggregate22.ShopSettingAggregateMessageBus(shopSettingAggregate)
 	settingService := &setting.SettingService{
@@ -843,8 +850,6 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		AddressQ:     addressQueryBus,
 	}
 	driver4 := _all2.SupportedTelecomDriver(busBus)
-	queryService6 := query25.NewQueryService(etelecomDB, connectioningQueryBus)
-	etelecomQueryBus := query25.QueryServiceMessageBus(queryService6)
 	adminPortsipConfig := cfg.AdminPortsip
 	administratorTelecom := _all2.SupportAdminPortsipDriver(adminPortsipConfig)
 	telecomManager, err := provider2.NewTelecomManager(busBus, connectionManager, driver4, connectioningQueryBus, connectioningCommandBus, queryBus, etelecomQueryBus, administratorTelecom)

@@ -388,3 +388,12 @@ func (args *RemoveHotlineOutOfTenantArgs) Validate() error {
 	}
 	return nil
 }
+
+type ListCallLogsExportArgs struct {
+	DateFrom     time.Time
+	DateTo       time.Time
+	ExtensionIDs []string
+	OwnerID      dot.ID
+	UserID       dot.ID
+	AccountID    dot.ID
+}
