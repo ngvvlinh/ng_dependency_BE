@@ -424,20 +424,25 @@ func (a *EtelecomAggregate) UpdateExternalExtensionInfo(ctx context.Context, arg
 }
 
 func (a *EtelecomAggregate) RemoveUserOfExtension(ctx context.Context, args *etelecom.RemoveUserOfExtensionArgs) (int, error) {
+	queryUser := &identity.GetAccountUserQuery{
+		UserID:    args.UserID,
+		AccountID: args.AccountID,
+	}
+	if err := a.identityQuery.Dispatch(ctx, queryUser); err != nil {
+		return 0, cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
+	}
+
 	query := a.extensionStore(ctx).ID(args.ExtensionID).AccountID(args.AccountID)
 	ext, err := query.GetExtension()
 	if ext == nil || err != nil {
 		return 0, cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy máy nhánh")
 	}
 
-	queryUser := &identity.GetAccountUserQuery{
-		UserID:    args.UserID,
-		AccountID: args.AccountID,
+	if ext.UserID != args.UserID {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Máy nhánh không hợp lệ")
 	}
-	if err = a.identityQuery.Dispatch(ctx, queryUser); err != nil {
-		return 0, cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
-	}
-	update, err := a.extensionStore(ctx).AccountID(args.AccountID).UserID(args.UserID).RemoveUserID()
+
+	update, err := a.extensionStore(ctx).AccountID(args.AccountID).UserID(args.UserID).ID(args.ExtensionID).RemoveUserID()
 	return update, err
 }
 
