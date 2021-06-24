@@ -14,7 +14,10 @@ func (q *QueryService) GetExtension(ctx context.Context, args *etelecom.GetExten
 	if args.ID != 0 {
 		return query.ID(args.ID).GetExtension()
 	}
-	query = query.UserID(args.UserID).AccountID(args.AccountID).OptionalHotlineID(args.HotlineID).OptionalSubscriptionID(args.SubscriptionID)
+	if args.ExtensionNumber != "" {
+		query = query.ExtensionNumber(args.ExtensionNumber)
+	}
+	query = query.OptionalUserID(args.UserID).AccountID(args.AccountID).OptionalHotlineID(args.HotlineID).OptionalSubscriptionID(args.SubscriptionID)
 	return query.GetExtension()
 }
 

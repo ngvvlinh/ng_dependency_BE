@@ -501,6 +501,33 @@
         }
       }
     },
+    "/v1/shop.Etelecom/GetExtensionInfo": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "GetExtensionInfo",
+        "operationId": "shop.Etelecom-GetExtensionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrGetExtensionInfoRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrExtensionInfo"
+            }
+          }
+        }
+      }
+    },
     "/v1/shop.Fulfillment/GetFulfillment": {
       "post": {
         "tags": [
@@ -2757,6 +2784,24 @@
         }
       }
     },
+    "mrExtensionInfo": {
+      "type": "object",
+      "properties": {
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extension_number": {
+          "type": "string"
+        },
+        "extension_password": {
+          "type": "string"
+        },
+        "tenant_domain": {
+          "type": "string"
+        }
+      }
+    },
     "mrFulfillment": {
       "type": "object",
       "properties": {
@@ -2923,6 +2968,14 @@
         "id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "mrGetExtensionInfoRequest": {
+      "type": "object",
+      "properties": {
+        "extension_number": {
+          "type": "string"
         }
       }
     },
@@ -4613,6 +4666,9 @@
     },
     {
       "name": "CustomerGroupRelationship"
+    },
+    {
+      "name": "Etelecom"
     },
     {
       "name": "Fulfillment"

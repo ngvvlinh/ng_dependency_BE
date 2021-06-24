@@ -181,11 +181,12 @@ type ListHotlinesArgs struct {
 }
 
 type GetExtensionArgs struct {
-	ID             dot.ID
-	UserID         dot.ID
-	AccountID      dot.ID
-	HotlineID      dot.ID
-	SubscriptionID dot.ID
+	ID              dot.ID
+	UserID          dot.ID
+	AccountID       dot.ID
+	HotlineID       dot.ID
+	SubscriptionID  dot.ID
+	ExtensionNumber string
 }
 
 type ListExtensionsArgs struct {

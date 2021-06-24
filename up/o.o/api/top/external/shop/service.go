@@ -176,3 +176,8 @@ type VariantService interface {
 
 	DeleteVariant(context.Context, *types.GetVariantRequest) (*cm.Empty, error)
 }
+
+// +apix:path=/shop.Etelecom
+type EtelecomService interface {
+	GetExtensionInfo(context.Context, *types.GetExtensionInfoRequest) (*types.ExtensionInfo, error)
+}

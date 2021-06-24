@@ -716,6 +716,8 @@ var _acl = map[string]*permission.Decl{
 	"ext/shop.Variant/CreateVariant": {Type: Shop, Auth: APIKey},
 	"ext/shop.Variant/UpdateVariant": {Type: Shop, Auth: APIKey},
 
+	"ext/shop.Etelecom/GetExtensionInfo": {Type: Shop, Auth: APIKey},
+
 	//-- vnpost --//
 
 	"ext/vnposts/ping":              {Type: Shop, Auth: APIKey},

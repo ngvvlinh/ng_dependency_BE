@@ -337,11 +337,12 @@ func (h QueryServiceHandler) HandleGetCallLogByExternalID(ctx context.Context, m
 }
 
 type GetExtensionQuery struct {
-	ID             dot.ID
-	UserID         dot.ID
-	AccountID      dot.ID
-	HotlineID      dot.ID
-	SubscriptionID dot.ID
+	ID              dot.ID
+	UserID          dot.ID
+	AccountID       dot.ID
+	HotlineID       dot.ID
+	SubscriptionID  dot.ID
+	ExtensionNumber string
 
 	Result *Extension `json:"-"`
 }
@@ -875,11 +876,12 @@ func (q *GetCallLogByExternalIDQuery) SetGetCallLogByExternalIDArgs(args *GetCal
 func (q *GetExtensionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExtensionArgs) {
 	return ctx,
 		&GetExtensionArgs{
-			ID:             q.ID,
-			UserID:         q.UserID,
-			AccountID:      q.AccountID,
-			HotlineID:      q.HotlineID,
-			SubscriptionID: q.SubscriptionID,
+			ID:              q.ID,
+			UserID:          q.UserID,
+			AccountID:       q.AccountID,
+			HotlineID:       q.HotlineID,
+			SubscriptionID:  q.SubscriptionID,
+			ExtensionNumber: q.ExtensionNumber,
 		}
 }
 
@@ -889,6 +891,7 @@ func (q *GetExtensionQuery) SetGetExtensionArgs(args *GetExtensionArgs) {
 	q.AccountID = args.AccountID
 	q.HotlineID = args.HotlineID
 	q.SubscriptionID = args.SubscriptionID
+	q.ExtensionNumber = args.ExtensionNumber
 }
 
 func (q *GetHotlineQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetHotlineArgs) {

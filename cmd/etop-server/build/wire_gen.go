@@ -1250,7 +1250,11 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		Session:  session,
 		Shipping: shippingShipping,
 	}
-	xshopServers, cleanup5 := xshop.NewServers(store, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService, xshopShipnowService)
+	xshopEtelecomService := &xshop.EtelecomService{
+		Session:       session,
+		EtelecomQuery: etelecomQueryBus,
+	}
+	xshopServers, cleanup5 := xshop.NewServers(store, shippingShipping, xshopMiscService, xshopWebhookService, xshopHistoryService, xshopShippingService, xshopOrderService, xshopFulfillmentService, xshopCustomerService, xshopCustomerAddressService, xshopCustomerGroupService, xshopCustomerGroupRelationshipService, xshopInventoryService, xshopVariantService, xshopProductService, xshopProductCollectionService, xshopProductCollectionRelationshipService, xshopShipnowService, xshopEtelecomService)
 	partnercarrierMiscService := &partnercarrier.MiscService{
 		Session:  session,
 		Shipping: shippingShipping,
