@@ -110,5 +110,5 @@ func (q *InvitationQuery) ListInvitationsAcceptedByEmail(
 }
 
 func (q *InvitationQuery) ListInvitationsNotAcceptedYetByAccountID(ctx context.Context, accountID dot.ID) ([]*invitation.Invitation, error) {
-	return q.store(ctx).AccountID(accountID).Status(status3.Z.Wrap()).ListInvitations()
+	return q.store(ctx).AccountID(accountID).Status(status3.Z.Wrap()).NotExpires().ListInvitations()
 }
