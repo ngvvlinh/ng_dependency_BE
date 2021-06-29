@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/etelecom"
 	"o.o/api/top/types/etc/status3"
+	providertypes "o.o/backend/com/etelecom/provider/types"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/capi/dot"
@@ -95,4 +96,53 @@ func (a *EtelecomAggregate) RemoveHotlineOutOfTenant(ctx context.Context, args *
 		}
 		return a.eventBus.Publish(ctx, event)
 	})
+}
+
+func (a *EtelecomAggregate) ActiveHotlineForTenant(ctx context.Context, args *etelecom.ActiveHotlineForTenantArgs) error {
+	tenant, err := a.tenantStore(ctx).OwnerID(args.OwnerID).ID(args.TenantID).GetTenant()
+	if err != nil {
+		return err
+	}
+	if !tenant.Status.Valid || tenant.Status.Enum != status3.P {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Tenant %v was not activated", tenant.Name)
+	}
+
+	hotline, err := a.hotlineStore(ctx).OwnerID(args.OwnerID).ID(args.HotlineID).GetHotline()
+	if err != nil {
+		return err
+	}
+	if hotline.Status == status3.P {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Hotline was activated.")
+	}
+	if hotline.Hotline == "" {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Missing hotline number")
+	}
+
+	update := &providertypes.AddHotlineToTenantInTrunkProviderRequest{
+		TrunkProviderID: a.telecomManager.AdminPortsip.TrunkProviderDefaultID,
+		TenantID:        tenant.ExternalData.ID,
+		Hotline:         hotline.Hotline,
+	}
+	if err := a.updateTrunkProvider(ctx, update); err != nil {
+		return cm.Errorf(cm.ErrorCode(err), nil, "Error when update trunk provider: %v", err.Error())
+	}
+
+	updateHotlineArgs := &etelecom.UpdateHotlineInfoArgs{
+		ID:               hotline.ID,
+		Status:           status3.P.Wrap(),
+		TenantID:         tenant.ID,
+		ConnectionID:     tenant.ConnectionID,
+		ConnectionMethod: tenant.ConnectionMethod,
+		OwnerID:          args.OwnerID,
+	}
+	return a.UpdateHotlineInfo(ctx, updateHotlineArgs)
+}
+
+func (a *EtelecomAggregate) updateTrunkProvider(ctx context.Context, args *providertypes.AddHotlineToTenantInTrunkProviderRequest) error {
+	portsipAdminDriver, err := a.telecomManager.GetAdministratorPortsipDriver(ctx)
+	if err != nil {
+		return cm.Errorf(cm.ErrorCode(err), err, "Please check Portsip admin account")
+	}
+
+	return portsipAdminDriver.AddHotlineToTenantInTrunkProvider(ctx, args)
 }

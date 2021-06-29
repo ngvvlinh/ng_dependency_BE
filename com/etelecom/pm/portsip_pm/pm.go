@@ -75,9 +75,6 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	//      - Call portsip api: updateTrunkProvider
 	//      - Create outbound rule
 
-	if event.HotlineID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing hotline_id")
-	}
 	queryTenant := &etelecom.GetTenantByIDQuery{
 		ID: event.TenantID,
 	}
@@ -88,19 +85,21 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	if tenant.ExternalData == nil || tenant.ExternalData.ID == "" {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Tenant does not exist in Portsip PBX")
 	}
-
-	queryHotline := &etelecom.GetHotlineQuery{
-		ID: event.HotlineID,
-	}
-	if err := m.etelecomQS.Dispatch(ctx, queryHotline); err != nil {
-		return err
-	}
-	hotline := queryHotline.Result
-	if hotline.Status != status3.Z {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Hotline does not valid")
-	}
-	if hotline.Hotline == "" {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Missing hotline number")
+	var hotline *etelecom.Hotline
+	if event.HotlineID != 0 {
+		queryHotline := &etelecom.GetHotlineQuery{
+			ID: event.HotlineID,
+		}
+		if err := m.etelecomQS.Dispatch(ctx, queryHotline); err != nil {
+			return err
+		}
+		hotline = queryHotline.Result
+		if hotline.Status != status3.Z {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Hotline does not valid")
+		}
+		if hotline.Hotline == "" {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Missing hotline number")
+		}
 	}
 
 	// get auth_key
@@ -141,13 +140,15 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	}
 
 	// step 2: update portsip trunk provider
-	update := &providertypes.AddHotlineToTenantInTrunkProviderRequest{
-		TrunkProviderID: m.telecomManager.AdminPortsip.TrunkProviderDefaultID,
-		TenantID:        tenant.ExternalData.ID,
-		Hotline:         hotline.Hotline,
-	}
-	if err = m.updateTrunkProvider(ctx, update); err != nil {
-		return cm.Errorf(cm.ErrorCode(err), nil, "Error when update trunk provider: %v", err.Error())
+	if event.HotlineID != 0 {
+		update := &providertypes.AddHotlineToTenantInTrunkProviderRequest{
+			TrunkProviderID: m.telecomManager.AdminPortsip.TrunkProviderDefaultID,
+			TenantID:        tenant.ExternalData.ID,
+			Hotline:         hotline.Hotline,
+		}
+		if err = m.updateTrunkProvider(ctx, update); err != nil {
+			return cm.Errorf(cm.ErrorCode(err), nil, "Error when update trunk provider: %v", err.Error())
+		}
 	}
 
 	// step 3: create outbound rule
@@ -170,15 +171,18 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	}
 
 	// step 5: update hotline
-	updateHotline := &etelecom.UpdateHotlineInfoCommand{
-		ID:               hotline.ID,
-		Status:           status3.P.Wrap(),
-		TenantID:         tenant.ID,
-		ConnectionID:     tenant.ConnectionID,
-		ConnectionMethod: tenant.ConnectionMethod,
-		OwnerID:          event.OwnerID,
+	if event.HotlineID != 0 {
+		updateHotline := &etelecom.UpdateHotlineInfoCommand{
+			ID:               hotline.ID,
+			Status:           status3.P.Wrap(),
+			TenantID:         tenant.ID,
+			ConnectionID:     tenant.ConnectionID,
+			ConnectionMethod: tenant.ConnectionMethod,
+			OwnerID:          event.OwnerID,
+		}
+		return m.etelecomAggr.Dispatch(ctx, updateHotline)
 	}
-	return m.etelecomAggr.Dispatch(ctx, updateHotline)
+	return nil
 }
 
 func (m *ProcessManager) updateTrunkProvider(ctx context.Context, args *providertypes.AddHotlineToTenantInTrunkProviderRequest) error {

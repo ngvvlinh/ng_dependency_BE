@@ -23,7 +23,7 @@ type Aggregate interface {
 	UpdateHotlineInfo(context.Context, *UpdateHotlineInfoArgs) error
 	DeleteHotline(ctx context.Context, id dot.ID) error
 	RemoveHotlineOutOfTenant(context.Context, *RemoveHotlineOutOfTenantArgs) error
-
+	ActiveHotlineForTenant(context.Context, *ActiveHotlineForTenantArgs) error
 	CreateExtension(context.Context, *CreateExtensionArgs) (*Extension, error)
 	CreateExtensionBySubscription(context.Context, *CreateExtenstionBySubscriptionArgs) (*Extension, error)
 	ExtendExtension(context.Context, *ExtendExtensionArgs) (*Extension, error)
@@ -389,6 +389,12 @@ func (args *RemoveHotlineOutOfTenantArgs) Validate() error {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing owner ID")
 	}
 	return nil
+}
+
+type ActiveHotlineForTenantArgs struct {
+	HotlineID dot.ID
+	OwnerID   dot.ID
+	TenantID  dot.ID
 }
 
 type ListCallLogsExportArgs struct {

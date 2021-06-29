@@ -48,6 +48,19 @@ func (h AggregateHandler) HandleActivateTenant(ctx context.Context, msg *Activat
 	return err
 }
 
+type ActiveHotlineForTenantCommand struct {
+	HotlineID dot.ID
+	OwnerID   dot.ID
+	TenantID  dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleActiveHotlineForTenant(ctx context.Context, msg *ActiveHotlineForTenantCommand) (err error) {
+	return h.inner.ActiveHotlineForTenant(msg.GetArgs(ctx))
+}
+
 type AssignUserToExtensionCommand struct {
 	AccountID   dot.ID
 	UserID      dot.ID
@@ -477,6 +490,7 @@ func (h QueryServiceHandler) HandleListTenants(ctx context.Context, msg *ListTen
 // implement interfaces
 
 func (q *ActivateTenantCommand) command()                {}
+func (q *ActiveHotlineForTenantCommand) command()        {}
 func (q *AssignUserToExtensionCommand) command()         {}
 func (q *CreateCallLogCommand) command()                 {}
 func (q *CreateExtensionCommand) command()               {}
@@ -528,6 +542,21 @@ func (q *ActivateTenantCommand) SetActivateTenantArgs(args *ActivateTenantArgs) 
 	q.HotlineID = args.HotlineID
 	q.ConnectionID = args.ConnectionID
 	q.ConnectionProvider = args.ConnectionProvider
+}
+
+func (q *ActiveHotlineForTenantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ActiveHotlineForTenantArgs) {
+	return ctx,
+		&ActiveHotlineForTenantArgs{
+			HotlineID: q.HotlineID,
+			OwnerID:   q.OwnerID,
+			TenantID:  q.TenantID,
+		}
+}
+
+func (q *ActiveHotlineForTenantCommand) SetActiveHotlineForTenantArgs(args *ActiveHotlineForTenantArgs) {
+	q.HotlineID = args.HotlineID
+	q.OwnerID = args.OwnerID
+	q.TenantID = args.TenantID
 }
 
 func (q *AssignUserToExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *AssignUserToExtensionArgs) {
@@ -1037,6 +1066,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleActivateTenant)
+	b.AddHandler(h.HandleActiveHotlineForTenant)
 	b.AddHandler(h.HandleAssignUserToExtension)
 	b.AddHandler(h.HandleCreateCallLog)
 	b.AddHandler(h.HandleCreateExtension)

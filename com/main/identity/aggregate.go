@@ -353,6 +353,7 @@ func (a *Aggregate) RegisterSimplify(ctx context.Context, args *identity.Registe
 			Source:                  user_source.Etop,
 			PhoneVerifiedAt:         now,
 			PhoneVerificationSentAt: now,
+			Email:                   args.Email,
 		}
 		user, err := a.CreateUser(ctx, userArgs)
 		if err != nil {
@@ -360,8 +361,12 @@ func (a *Aggregate) RegisterSimplify(ctx context.Context, args *identity.Registe
 		}
 
 		if args.IsCreateDefaultShop {
+			name := normalizePhone.String()
+			if args.CompanyName != "" {
+				name = args.CompanyName
+			}
 			shopArgs := &identity.CreateShopArgs{
-				Name:    normalizePhone.String(),
+				Name:    name,
 				OwnerID: user.ID,
 				Phone:   normalizePhone.String(),
 			}

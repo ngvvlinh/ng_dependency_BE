@@ -343,6 +343,8 @@ type RegisterSimplifyArgs struct {
 	Phone               string
 	Password            string
 	FullName            string
+	Email               string
+	CompanyName         string
 	IsCreateDefaultShop bool
 }
 

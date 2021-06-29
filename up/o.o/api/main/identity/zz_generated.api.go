@@ -147,6 +147,8 @@ type RegisterSimplifyCommand struct {
 	Phone               string
 	Password            string
 	FullName            string
+	Email               string
+	CompanyName         string
 	IsCreateDefaultShop bool
 
 	Result struct {
@@ -796,6 +798,8 @@ func (q *RegisterSimplifyCommand) GetArgs(ctx context.Context) (_ context.Contex
 			Phone:               q.Phone,
 			Password:            q.Password,
 			FullName:            q.FullName,
+			Email:               q.Email,
+			CompanyName:         q.CompanyName,
 			IsCreateDefaultShop: q.IsCreateDefaultShop,
 		}
 }
@@ -804,6 +808,8 @@ func (q *RegisterSimplifyCommand) SetRegisterSimplifyArgs(args *RegisterSimplify
 	q.Phone = args.Phone
 	q.Password = args.Password
 	q.FullName = args.FullName
+	q.Email = args.Email
+	q.CompanyName = args.CompanyName
 	q.IsCreateDefaultShop = args.IsCreateDefaultShop
 }
 

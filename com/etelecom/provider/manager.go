@@ -97,6 +97,7 @@ func (m *TelecomManager) GetTelecomConnection(ctx context.Context, connectionID,
 		getShopConnectionQuery.OwnerID = 0
 		getShopConnectionQuery.IsGlobal = true
 	}
+
 	shopConnection, err := m.connectionManager.GetShopConnection(ctx, getShopConnectionQuery)
 	if err != nil {
 		return nil, nil, err

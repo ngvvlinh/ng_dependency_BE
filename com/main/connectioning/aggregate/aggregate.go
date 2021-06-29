@@ -476,6 +476,7 @@ func (a *ConnectionAggregate) CreateOrUpdateShopConnection(ctx context.Context, 
 		Token:          args.Token,
 		TokenExpiresAt: args.TokenExpiresAt,
 		ExternalData:   args.ExternalData,
+		TelecomData:    args.TelecomData,
 	}
 	return a.CreateShopConnection(ctx, cmd)
 

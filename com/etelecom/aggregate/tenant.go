@@ -166,9 +166,6 @@ func (a *EtelecomAggregate) ActivateTenant(ctx context.Context, args *etelecom.A
 	//    - Update Trunk provider
 	//    - Create outbound rules
 
-	if args.HotlineID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing hotline ID")
-	}
 	if args.TenantID == 0 && args.OwnerID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Please provide at least owner_id or tenant_id")
 	}
