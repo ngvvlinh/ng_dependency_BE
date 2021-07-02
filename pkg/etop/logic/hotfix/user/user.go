@@ -9,8 +9,10 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 
 	"o.o/api/etelecom"
+	"o.o/api/main/authorization"
 	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
+	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
@@ -113,10 +115,19 @@ func (s *UserService) HandleImportUser(c *httpx.Context) error {
 			return nil
 		}
 
+		accUser, err := s.getAccountUser(ctx, owner.ID)
+		if err != nil {
+			return err
+		}
+		var accountID dot.ID
+		if accUser != nil {
+			accountID = accUser.AccountID
+		}
 		// Get and check tenant, if not exist, create tenant
 		createTenantArgs := &etelecom.CreateTenantArgs{
 			OwnerID:      owner.ID,
 			ConnectionID: connectioning.DefaultDirectPortsipConnectionID,
+			AccountID:    accountID,
 		}
 		tenant, err := s.checkAndCreateTenant(ctx, createTenantArgs)
 		if err != nil {
@@ -248,6 +259,24 @@ func (s *UserService) checkAndCreateTenant(ctx context.Context, args *etelecom.C
 		tenant = createTenantCmd.Result
 	default:
 		return nil, err
+	}
+	return
+}
+
+func (s *UserService) getAccountUser(ctx context.Context, userID dot.ID) (accountUser *identity.AccountUser, err error) {
+	accountUsersQuery := &identity.GetAllAccountsByUsersQuery{
+		UserIDs: []dot.ID{userID},
+		Roles:   []string{string(authorization.RoleShopOwner)},
+		Type: account_type.NullAccountType{
+			Enum:  account_type.Shop,
+			Valid: true,
+		},
+	}
+	if err = s.identityQuery.Dispatch(ctx, accountUsersQuery); err != nil {
+		return nil, err
+	}
+	if len(accountUsersQuery.Result) > 0 {
+		accountUser = accountUsersQuery.Result[0]
 	}
 	return
 }

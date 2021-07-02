@@ -110,17 +110,23 @@ type Line struct {
 }
 
 var mapHotlines = make(map[string]*etelecom.Hotline)
-var dateLayouts = []string{"02/01/2006", "02/1/2006", "2/1/2006"}
+var dateLayouts = []string{
+	// Date first, month later
+	"02/01/2006", "02/01/06", "02-01-06",
+	// Month first, date later
+	"01/02/2006", "01/02/06", "01-02-06",
+}
 
 func (s *ExtensionService) parseRow(ctx context.Context, row []string, ownerID, accountID dot.ID) (*Line, error) {
-	extNum, err := strconv.Atoi(row[1])
+	floatExt, err := strconv.ParseFloat(row[1], 32)
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Extension number must be interger")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Can not parse extension number")
 	}
+	extNum := int(floatExt)
 	extNumber := strconv.Itoa(extNum)
 
-	hotlineNumber := row[4]
-	expiresAtStr := row[5]
+	hotlineNumber := row[2]
+	expiresAtStr := row[3]
 
 	var expiresAt time.Time
 	for _, layout := range dateLayouts {
@@ -128,6 +134,7 @@ func (s *ExtensionService) parseRow(ctx context.Context, row []string, ownerID, 
 		if err != nil {
 			continue
 		}
+		break
 	}
 	if expiresAt.IsZero() {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "ExpiresAt does not valid").WithMetap("row", row)
