@@ -1359,7 +1359,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 		SnappyImporter:    snappyImporter,
 	}
 	hotFixMoneyTxService := moneytx.New(mainDB)
-	extensionService := extension.New(etelecomCommandBus, etelecomQueryBus, etelecomDB)
+	extensionService := extension.New(etelecomCommandBus, etelecomQueryBus, etelecomDB, queryBus)
 	userUserService := user.New(etelecomCommandBus, etelecomQueryBus, etelecomDB, mainDB, commandBus, queryBus)
 	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, hotFixMoneyTxService, extensionService, userUserService, session)
 	dirConfigs := cfg.UploadDirs

@@ -364,13 +364,13 @@ type GetHotlineByHotlineNumberArgs struct {
 }
 
 type ImportExtensionsArgs struct {
-	TenantID   dot.ID
-	OwnerID    dot.ID
-	AccountID  dot.ID
-	Extensions []*ImportExtensionInfo
+	ImportExtensions []*ImportExtension
 }
 
-type ImportExtensionInfo struct {
+type ImportExtension struct {
+	TenantID        dot.ID
+	OwnerID         dot.ID
+	AccountID       dot.ID
 	ExtensionNumber string
 	ExpiresAt       time.Time
 	HotlineID       dot.ID

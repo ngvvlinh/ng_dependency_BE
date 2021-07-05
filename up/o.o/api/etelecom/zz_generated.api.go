@@ -239,10 +239,7 @@ func (h AggregateHandler) HandleExtendExtension(ctx context.Context, msg *Extend
 }
 
 type ImportExtensionsCommand struct {
-	TenantID   dot.ID
-	OwnerID    dot.ID
-	AccountID  dot.ID
-	Extensions []*ImportExtensionInfo
+	ImportExtensions []*ImportExtension
 
 	Result struct {
 	} `json:"-"`
@@ -777,18 +774,12 @@ func (q *ExtendExtensionCommand) SetExtendExtensionArgs(args *ExtendExtensionArg
 func (q *ImportExtensionsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ImportExtensionsArgs) {
 	return ctx,
 		&ImportExtensionsArgs{
-			TenantID:   q.TenantID,
-			OwnerID:    q.OwnerID,
-			AccountID:  q.AccountID,
-			Extensions: q.Extensions,
+			ImportExtensions: q.ImportExtensions,
 		}
 }
 
 func (q *ImportExtensionsCommand) SetImportExtensionsArgs(args *ImportExtensionsArgs) {
-	q.TenantID = args.TenantID
-	q.OwnerID = args.OwnerID
-	q.AccountID = args.AccountID
-	q.Extensions = args.Extensions
+	q.ImportExtensions = args.ImportExtensions
 }
 
 func (q *RemoveHotlineOutOfTenantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveHotlineOutOfTenantArgs) {

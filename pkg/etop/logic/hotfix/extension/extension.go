@@ -8,7 +8,12 @@ import (
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+
 	"o.o/api/etelecom"
+	"o.o/api/main/authorization"
+	"o.o/api/main/identity"
+	"o.o/api/top/types/etc/account_type"
+	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/httpx"
@@ -21,13 +26,15 @@ type ExtensionService struct {
 	etelecomAggr etelecom.CommandBus
 	etelecomQS   etelecom.QueryBus
 	dbEtelecom   *cmsql.Database
+	identityQS   identity.QueryBus
 }
 
-func New(etelecomA etelecom.CommandBus, etelecomQ etelecom.QueryBus, dbEtelecom com.EtelecomDB) *ExtensionService {
+func New(etelecomA etelecom.CommandBus, etelecomQ etelecom.QueryBus, dbEtelecom com.EtelecomDB, identityQ identity.QueryBus) *ExtensionService {
 	return &ExtensionService{
 		etelecomAggr: etelecomA,
 		etelecomQS:   etelecomQ,
 		dbEtelecom:   dbEtelecom,
+		identityQS:   identityQ,
 	}
 }
 
@@ -45,14 +52,6 @@ func (s *ExtensionService) HandleImportExtension(c *httpx.Context) error {
 	// continue
 	default:
 		return cm.Errorf(cm.InvalidArgument, nil, "Too many files")
-	}
-	ownerID, err := dot.ParseID(GetFormValue(form.Value["owner_id"]))
-	if err != nil {
-		return cm.Errorf(cm.InvalidArgument, nil, "owner ID does not valid")
-	}
-	accountID, err := dot.ParseID(GetFormValue(form.Value["account_id"]))
-	if err != nil {
-		return cm.Errorf(cm.InvalidArgument, nil, "account ID does not valid")
 	}
 
 	file, err := files[0].Open()
@@ -85,13 +84,12 @@ func (s *ExtensionService) HandleImportExtension(c *httpx.Context) error {
 		if i == 0 {
 			continue
 		}
-		line, _err := s.parseRow(ctx, row, ownerID, accountID)
+		line, _err := s.parseRow(ctx, row)
 		if _err != nil {
 			return _err
 		}
 		lines = append(lines, line)
 	}
-
 	if err = s.createExtensions(ctx, lines); err != nil {
 		return err
 	}
@@ -110,6 +108,7 @@ type Line struct {
 }
 
 var mapHotlines = make(map[string]*etelecom.Hotline)
+var mapAccountUsers = make(map[dot.ID]*identity.AccountUser)
 var dateLayouts = []string{
 	// Date first, month later
 	"02/01/2006", "02/01/06", "02-01-06",
@@ -117,7 +116,7 @@ var dateLayouts = []string{
 	"01/02/2006", "01/02/06", "01-02-06",
 }
 
-func (s *ExtensionService) parseRow(ctx context.Context, row []string, ownerID, accountID dot.ID) (*Line, error) {
+func (s *ExtensionService) parseRow(ctx context.Context, row []string) (*Line, error) {
 	floatExt, err := strconv.ParseFloat(row[1], 32)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Can not parse extension number")
@@ -147,50 +146,91 @@ func (s *ExtensionService) parseRow(ctx context.Context, row []string, ownerID, 
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Hotline number is empty").WithMetap("row", row)
 	}
 
+	var ownerID dot.ID
 	hotline, ok := mapHotlines[hotlineNumber]
 	if !ok {
-		queryHotline := &etelecom.GetHotlineByHotlineNumberQuery{
-			Hotline: hotlineNumber,
-			OwnerID: ownerID,
+		hotline, err = s.getHotlineByHotlineNumber(ctx, hotlineNumber)
+		if err != nil {
+			return nil, err
 		}
-		if err = s.etelecomQS.Dispatch(ctx, queryHotline); err != nil {
-			return nil, cm.Errorf(cm.InvalidArgument, err, "Hotline không hợp lệ").WithMetap("hotline", hotlineNumber).WithMetap("owner_id", ownerID)
+		if hotline.Status != status3.P {
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Hotline was not activated").WithMetap("row", row)
 		}
-		hotline = queryHotline.Result
 		mapHotlines[hotlineNumber] = hotline
 	}
+	ownerID = hotline.OwnerID
+
+	var accountID dot.ID
+	accountUser, ok := mapAccountUsers[ownerID]
+	if !ok {
+		accountUsers, err := s.getAccountUsers(ctx, ownerID)
+		if err != nil {
+			return nil, err
+		}
+		switch len(accountUsers) {
+		case 0:
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "User does not have any account").WithMetap("row", row)
+		case 1:
+			accountUser = accountUsers[0]
+			mapAccountUsers[ownerID] = accountUser
+		default:
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "User has more than 1 accounts").WithMetap("row", row)
+		}
+	}
+	accountID = accountUser.AccountID
 
 	return &Line{
 		HotlineID:       hotline.ID,
 		TenantID:        hotline.TenantID,
-		OwnerID:         ownerID,
+		OwnerID:         hotline.OwnerID,
 		AccountID:       accountID,
 		ExtensionNumber: extNumber,
 		ExpiresAt:       expiresAt,
 	}, nil
 }
 
-func GetFormValue(ss []string) string {
-	if ss == nil {
-		return ""
-	}
-	return ss[0]
-}
-
 func (s *ExtensionService) createExtensions(ctx context.Context, lines []*Line) error {
-	cmd := &etelecom.ImportExtensionsCommand{
-		TenantID:   lines[0].TenantID,
-		OwnerID:    lines[0].OwnerID,
-		AccountID:  lines[0].AccountID,
-		Extensions: []*etelecom.ImportExtensionInfo{},
-	}
+	var importExtensions []*etelecom.ImportExtension
 	for _, line := range lines {
-		cmd.Extensions = append(cmd.Extensions, &etelecom.ImportExtensionInfo{
+		impExtension := &etelecom.ImportExtension{
+			TenantID:        line.TenantID,
+			OwnerID:         line.OwnerID,
+			AccountID:       line.AccountID,
 			ExtensionNumber: line.ExtensionNumber,
 			ExpiresAt:       line.ExpiresAt,
 			HotlineID:       line.HotlineID,
-		})
+		}
+		importExtensions = append(importExtensions, impExtension)
+	}
+	var cmd = &etelecom.ImportExtensionsCommand{
+		ImportExtensions: importExtensions,
 	}
 
 	return s.etelecomAggr.Dispatch(ctx, cmd)
+}
+
+func (s *ExtensionService) getAccountUsers(ctx context.Context, userID dot.ID) ([]*identity.AccountUser, error) {
+	accountUsersQuery := &identity.GetAllAccountsByUsersQuery{
+		UserIDs: []dot.ID{userID},
+		Roles:   []string{string(authorization.RoleShopOwner)},
+		Type: account_type.NullAccountType{
+			Enum:  account_type.Shop,
+			Valid: true,
+		},
+	}
+	if err := s.identityQS.Dispatch(ctx, accountUsersQuery); err != nil {
+		return nil, err
+	}
+	accountUsers := accountUsersQuery.Result
+	return accountUsers, nil
+}
+
+func (s *ExtensionService) getHotlineByHotlineNumber(ctx context.Context, hotlineNumber string) (*etelecom.Hotline, error) {
+	queryHotline := &etelecom.GetHotlineByHotlineNumberQuery{
+		Hotline: hotlineNumber,
+	}
+	if err := s.etelecomQS.Dispatch(ctx, queryHotline); err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Hotline không hợp lệ").WithMetap("hotline", hotlineNumber)
+	}
+	return queryHotline.Result, nil
 }
