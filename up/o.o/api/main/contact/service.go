@@ -31,6 +31,7 @@ type GetContactsArgs struct {
 	ShopID dot.ID
 	IDs    []dot.ID
 	Phone  string
+	Name   string
 
 	Paging meta.Paging
 }

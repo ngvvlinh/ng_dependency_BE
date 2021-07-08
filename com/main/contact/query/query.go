@@ -47,7 +47,9 @@ func (q *ContactQuery) GetContacts(
 	if args.Phone != "" {
 		query = query.FullTextSearchFullPhone(filter.FullTextSearch(args.Phone))
 	}
-
+	if args.Name != "" {
+		query = query.FullTextSearchName(filter.FullTextSearch(args.Name))
+	}
 	contacts, err := query.ListContacts()
 	if err != nil {
 		return nil, err

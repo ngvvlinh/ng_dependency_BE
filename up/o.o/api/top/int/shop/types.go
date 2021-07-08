@@ -3112,6 +3112,7 @@ func (m *GetContactsRequest) String() string { return jsonx.MustMarshalToString(
 type FilterGetContacts struct {
 	IDs   []dot.ID `json:"ids"`
 	Phone string   `json:"phone"`
+	Name  string   `json:"name"`
 }
 
 func (m *FilterGetContacts) String() string { return jsonx.MustMarshalToString(m) }

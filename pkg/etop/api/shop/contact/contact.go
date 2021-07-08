@@ -42,16 +42,18 @@ func (s *ContactService) GetContacts(
 	paging := cmapi.CMPaging(req.Paging)
 	shopID := s.SS.Shop().ID
 	var IDs []dot.ID
-	var phone string
+	var phone, name string
 	if req.Filter != nil {
 		IDs = req.Filter.IDs
 		phone = req.Filter.Phone
+		name = req.Filter.Name
 	}
 
 	getContactsQuery := &contact.GetContactsQuery{
 		ShopID: shopID,
 		IDs:    IDs,
 		Phone:  phone,
+		Name:   name,
 		Paging: *paging,
 	}
 	if err := s.ContactQuery.Dispatch(ctx, getContactsQuery); err != nil {

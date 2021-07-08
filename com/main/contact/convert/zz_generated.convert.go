@@ -103,6 +103,7 @@ func convert_contact_Contact_contactmodel_Contact(arg *contact.Contact, out *con
 	out.ID = arg.ID                   // simple assign
 	out.ShopID = arg.ShopID           // simple assign
 	out.FullName = arg.FullName       // simple assign
+	out.FullNameNorm = ""             // zero value
 	out.Phone = arg.Phone             // simple assign
 	out.PhoneNorm = arg.PhoneNorm     // simple assign
 	out.WLPartnerID = arg.WLPartnerID // simple assign

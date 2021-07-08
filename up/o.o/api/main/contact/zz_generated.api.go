@@ -80,6 +80,7 @@ type GetContactsQuery struct {
 	ShopID dot.ID
 	IDs    []dot.ID
 	Phone  string
+	Name   string
 	Paging meta.Paging
 
 	Result *GetContactsResponse `json:"-"`
@@ -178,6 +179,7 @@ func (q *GetContactsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *G
 			ShopID: q.ShopID,
 			IDs:    q.IDs,
 			Phone:  q.Phone,
+			Name:   q.Name,
 			Paging: q.Paging,
 		}
 }
@@ -186,6 +188,7 @@ func (q *GetContactsQuery) SetGetContactsArgs(args *GetContactsArgs) {
 	q.ShopID = args.ShopID
 	q.IDs = args.IDs
 	q.Phone = args.Phone
+	q.Name = args.Name
 	q.Paging = args.Paging
 }
 

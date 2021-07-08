@@ -82,6 +82,25 @@ func (ft *ContactFilters) ByFullNamePtr(FullName *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ContactFilters) ByFullNameNorm(FullNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "full_name_norm",
+		Value:  FullNameNorm,
+		IsNil:  FullNameNorm == "",
+	}
+}
+
+func (ft *ContactFilters) ByFullNameNormPtr(FullNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "full_name_norm",
+		Value:  FullNameNorm,
+		IsNil:  FullNameNorm == nil,
+		IsZero: FullNameNorm != nil && (*FullNameNorm) == "",
+	}
+}
+
 func (ft *ContactFilters) ByPhone(Phone string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

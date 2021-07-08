@@ -68,7 +68,6 @@ func (a *ContactAggregate) UpdateContact(
 	if err != nil {
 		return nil, err
 	}
-
 	if err := scheme.Convert(args, contact); err != nil {
 		return nil, err
 	}

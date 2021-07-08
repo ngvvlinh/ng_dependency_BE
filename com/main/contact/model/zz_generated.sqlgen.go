@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type Contacts []*Contact
 
 const __sqlContact_Table = "contact"
-const __sqlContact_ListCols = "\"id\",\"shop_id\",\"full_name\",\"phone\",\"phone_norm\",\"wl_partner_id\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlContact_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"phone\" = EXCLUDED.\"phone\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
+const __sqlContact_ListCols = "\"id\",\"shop_id\",\"full_name\",\"full_name_norm\",\"phone\",\"phone_norm\",\"wl_partner_id\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlContact_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"shop_id\" = EXCLUDED.\"shop_id\",\"full_name\" = EXCLUDED.\"full_name\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone\" = EXCLUDED.\"phone\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"wl_partner_id\" = EXCLUDED.\"wl_partner_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\""
 const __sqlContact_Insert = "INSERT INTO \"contact\" (" + __sqlContact_ListCols + ") VALUES"
 const __sqlContact_Select = "SELECT " + __sqlContact_ListCols + " FROM \"contact\""
 const __sqlContact_Select_history = "SELECT " + __sqlContact_ListCols + " FROM history.\"contact\""
@@ -74,6 +74,13 @@ func (m *Contact) Migration(db *cmsql.Database) {
 		},
 		"full_name": {
 			ColumnName:       "full_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"full_name_norm": {
+			ColumnName:       "full_name_norm",
 			ColumnType:       "string",
 			ColumnDBType:     "string",
 			ColumnTag:        "",
@@ -137,6 +144,7 @@ func (m *Contact) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		m.ShopID,
 		core.String(m.FullName),
+		core.String(m.FullNameNorm),
 		core.String(m.Phone),
 		core.String(m.PhoneNorm),
 		m.WLPartnerID,
@@ -151,6 +159,7 @@ func (m *Contact) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		&m.ShopID,
 		(*core.String)(&m.FullName),
+		(*core.String)(&m.FullNameNorm),
 		(*core.String)(&m.Phone),
 		(*core.String)(&m.PhoneNorm),
 		&m.WLPartnerID,
@@ -194,7 +203,7 @@ func (_ *Contacts) SQLSelect(w SQLWriter) error {
 func (m *Contact) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlContact_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(10)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -204,7 +213,7 @@ func (ms Contacts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlContact_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(9)
+		w.WriteMarkers(10)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -258,6 +267,14 @@ func (m *Contact) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.FullName)
+	}
+	if m.FullNameNorm != "" {
+		flag = true
+		w.WriteName("full_name_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.FullNameNorm)
 	}
 	if m.Phone != "" {
 		flag = true
@@ -317,7 +334,7 @@ func (m *Contact) SQLUpdate(w SQLWriter) error {
 func (m *Contact) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlContact_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(10)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -339,43 +356,45 @@ func (m ContactHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ContactHistory) ID() core.Interface          { return core.Interface{m["id"]} }
-func (m ContactHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
-func (m ContactHistory) FullName() core.Interface    { return core.Interface{m["full_name"]} }
-func (m ContactHistory) Phone() core.Interface       { return core.Interface{m["phone"]} }
-func (m ContactHistory) PhoneNorm() core.Interface   { return core.Interface{m["phone_norm"]} }
-func (m ContactHistory) WLPartnerID() core.Interface { return core.Interface{m["wl_partner_id"]} }
-func (m ContactHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
-func (m ContactHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
-func (m ContactHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
+func (m ContactHistory) ID() core.Interface           { return core.Interface{m["id"]} }
+func (m ContactHistory) ShopID() core.Interface       { return core.Interface{m["shop_id"]} }
+func (m ContactHistory) FullName() core.Interface     { return core.Interface{m["full_name"]} }
+func (m ContactHistory) FullNameNorm() core.Interface { return core.Interface{m["full_name_norm"]} }
+func (m ContactHistory) Phone() core.Interface        { return core.Interface{m["phone"]} }
+func (m ContactHistory) PhoneNorm() core.Interface    { return core.Interface{m["phone_norm"]} }
+func (m ContactHistory) WLPartnerID() core.Interface  { return core.Interface{m["wl_partner_id"]} }
+func (m ContactHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
+func (m ContactHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m ContactHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
 
 func (m *ContactHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ContactHistory, 9)
+	res := make(ContactHistory, 10)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["full_name"] = data[2]
-	res["phone"] = data[3]
-	res["phone_norm"] = data[4]
-	res["wl_partner_id"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
-	res["deleted_at"] = data[8]
+	res["full_name_norm"] = data[3]
+	res["phone"] = data[4]
+	res["phone_norm"] = data[5]
+	res["wl_partner_id"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
+	res["deleted_at"] = data[9]
 	*m = res
 	return nil
 }
 
 func (ms *ContactHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ContactHistories, 0, 128)
@@ -387,12 +406,13 @@ func (ms *ContactHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["shop_id"] = data[1]
 		m["full_name"] = data[2]
-		m["phone"] = data[3]
-		m["phone_norm"] = data[4]
-		m["wl_partner_id"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
-		m["deleted_at"] = data[8]
+		m["full_name_norm"] = data[3]
+		m["phone"] = data[4]
+		m["phone_norm"] = data[5]
+		m["wl_partner_id"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
+		m["deleted_at"] = data[9]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

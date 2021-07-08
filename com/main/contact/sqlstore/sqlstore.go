@@ -80,6 +80,12 @@ func (s *ContactStore) FullTextSearchFullPhone(phone filter.FullTextSearch) *Con
 	return s
 }
 
+func (s *ContactStore) FullTextSearchName(name filter.FullTextSearch) *ContactStore {
+	ts := validate.NormalizeFullTextSearchQueryAnd(name)
+	s.preds = append(s.preds, s.ft.Filter(`full_name_norm @@ ?::tsquery`, ts))
+	return s
+}
+
 func (s *ContactStore) Phone(phone string) *ContactStore {
 	s.preds = append(s.preds, s.ft.ByPhone(phone))
 	return s
@@ -153,6 +159,7 @@ func (s *ContactStore) CreateContact(contact *contact.Contact) error {
 	contactDB := new(model.Contact)
 	convert.Convert_contact_Contact_contactmodel_Contact(contact, contactDB)
 	contactDB.WLPartnerID = wl.GetWLPartnerID(s.ctx)
+	contactDB.FullNameNorm = validate.NormalizeSearchCharacter(contact.FullName)
 
 	if _, err := s.query().Insert(contactDB); err != nil {
 		return err
