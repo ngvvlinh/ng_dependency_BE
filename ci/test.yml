@@ -1,0 +1,31 @@
+report-gerrit-changes-running:
+  stage: test
+  image: golang:1.15
+  before_script: []
+  script:
+  - scripts/ci/report-gerrit.sh running
+
+test:
+  image: golang:1.15
+  extends: .go-cache
+  - .go-cache
+  stage: test
+  services:
+  - postgres:12.2-alpine
+  - redis:latest
+  variables:
+    POSTGRES_DB: test
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: "postgres"
+    POSTGRES_HOST_AUTH_METHOD: trust
+  dependencies:
+  - verify:import
+  - verify:lint
+  - verify:generate
+  except: ["tags"]
+  script:
+  - time go run ./scripts/init_testdb/main.go -drop
+  - time scripts/ci/test-all.sh simple
+  - touch artifacts/BUILD_SUCCESS
+  after_script:
+  - scripts/ci/report-gerrit.sh

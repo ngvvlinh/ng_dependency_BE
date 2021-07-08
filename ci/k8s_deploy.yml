@@ -1,0 +1,12 @@
+.kubernetes_deploy:
+  image: registry.gitlab.com/ninjavan/devops/docker-kubectl:v1.0
+  stage: deploy
+  dependencies: []
+  before_script:
+  - if [ ! -d "$HOME/.kube" ] ; then mkdir $HOME/.kube ; fi
+  script:
+  - echo ${K8S_CONFIG} | base64 -d > $HOME/.kube/config
+  - kubectl config set-context --current --namespace=${K8S_NAMESPACE}
+  - echo "Deploy to k8s $K8S_NAMESPACE using image $CI_REGISTRY_IMAGE/$SERVICE_NAME:${CI_PIPELINE_ID}"
+  - kubectl set image deploy/$ENV_PREFIX-$SERVICE_NAME $ENV_PREFIX-$SERVICE_NAME=$CI_REGISTRY_IMAGE/$SERVICE_NAME:${CI_PIPELINE_ID}
+  - kubectl rollout status deploy/$ENV_PREFIX-$SERVICE_NAME

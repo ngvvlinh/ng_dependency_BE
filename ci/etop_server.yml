@@ -1,0 +1,60 @@
+.etop_server:
+  variables:
+    SERVICE_NAME: "etop-server"
+
+package:etop-server:
+  extends:
+  - .etop_server
+  - .package_docker
+  stage: package
+  only:
+    refs:
+    - master
+  except:
+  - "tags"
+
+deploy:etop-server-dev:
+  extends:
+  - .etop_server
+  - .kubernetes_deploy
+  stage: dev
+  variables:
+    ENV_PREFIX: d
+    K8S_NAMESPACE: k8s-dev
+  environment:
+    name: development
+    kubernetes:
+      namespace: "k8s-dev"
+  only:
+    refs:
+    - master
+  dependencies: ["package:etop-server"]
+
+# Production
+package:etop-server-prod:
+  extends:
+  - .etop_server
+  - .package_docker
+  stage: package
+  only:
+    refs:
+    - tags
+
+deploy:etop-server-prod:
+  extends:
+  - .etop_server
+  - .kubernetes_deploy
+  stage: production
+  variables:
+    ENV_PREFIX: p
+    K8S_NAMESPACE: k8s-prod
+  environment:
+    name: production
+    kubernetes:
+      namespace: "k8s-prod"
+  only:
+    refs:
+    - tags
+  dependencies: ["package:etop-server-prod"]
+  when: manual
+

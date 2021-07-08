@@ -1,0 +1,17 @@
+.package_docker:
+  image: docker:stable
+  stage: package
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+    TAG_NAME: $CI_PIPELINE_ID
+  services:
+  - docker:stable-dind
+  script:
+  - |
+    if [[ -n "$CI_REGISTRY_USER" ]]; then
+      echo "Logging to GitLab Container Registry with CI credentials..."
+      echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    fi
+  - docker build -t  $CI_REGISTRY_IMAGE/$SERVICE_NAME:$CI_PIPELINE_ID --build-arg SERVICE_NAME=${SERVICE_NAME} .
+  - docker push $CI_REGISTRY_IMAGE/$SERVICE_NAME:$CI_PIPELINE_ID

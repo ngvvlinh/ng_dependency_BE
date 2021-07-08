@@ -1,80 +1,30 @@
 stages:
-#- verify
+- verify
 - test
+- package
+- deploy
+- dev
+- sandbox
+- staging
+- production
 
-workflow:
-  rules:
-  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    when: never
-  - if: '$CI_COMMIT_BRANCH =~ /^changes\/[0-9]{2}\/[0-9]+\/[0-9]+/'
-    when: always
-  - if: '$CI_COMMIT_BRANCH =~ /^production/'
-    when: always
-  - if: '$CI_COMMIT_BRANCH == "master"'
-    when: never
-  - when: never
+
+.go-cache:
+  variables:
+    GOPATH: $CI_PROJECT_DIR/.go
+  before_script:
+  - mkdir -p .go
+  cache:
+    paths:
+    - .go/pkg/mod/
 
 variables:
-  PROJECT_DIR: /o.o
+  PROJECT_DIR: /go/src/eb2b
   PROJECT_LOG: "*:0"
-  POSTGRES_USER: postgres
-  POSTGRES_DB: test
-  POSTGRES_PASSWORD: postgres
 
 before_script:
 - mkdir -p artifacts
 - mkdir -p /o.o
-- ln -s $PWD /o.o/backend
+- ln -s $PWD /go/src/eb2b/backend
 
-.go-cache:
-  cache:
-    key: "ci:build-2"
-    paths:
-    - .mod
-
-#verify:
-#  stage: verify
-#  tags: [go]
-#  image: olvrng/golang-toolbox
-#  extends: .go-cache
-#  script:
-#    - go version
-#    - time scripts/ci/cache-load.sh
-#    - time scripts/verify-imports.sh
-#    - time scripts/ci/verify-lint.sh
-#    - time scripts/ci/verify-generate.sh
-
-report-gerrit-changes-running:
-  stage: test
-  tags: [go]
-  image: olvrng/alpine-toolbox
-  before_script: []
-  script:
-  - scripts/ci/report-gerrit.sh running
-
-build:
-  stage: test
-  tags: [go]
-  image: olvrng/golang-toolbox
-#  extends: .go-cache
-  services:
-  - postgres:9.6-alpine
-  - redis:alpine
-  script:
-  - go version
-#  - time scripts/ci/cache-load.sh
-  - time scripts/verify-imports.sh
-  - time scripts/ci/verify-lint.sh
-  - time scripts/ci/verify-generate.sh
-  - time go run ./scripts/init_testdb/main.go -drop
-  - echo "Run test all simple"
-  - time scripts/ci/test-all.sh simple
-  - echo "Done test all simple"
-  - touch artifacts/BUILD_SUCCESS
-  #  - time scripts/ci/test-all.sh e2e
-  #  - time scripts/ci/cache-save.sh
-  after_script:
-  - scripts/ci/report-gerrit.sh
-  artifacts:
-    paths:
-    - artifacts/
+include: 'ci/**.yml'
