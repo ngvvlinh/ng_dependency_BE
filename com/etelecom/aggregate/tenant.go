@@ -2,6 +2,7 @@ package aggregate
 
 import (
 	"context"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -89,7 +90,7 @@ func (a *EtelecomAggregate) CreateTenant(ctx context.Context, args *etelecom.Cre
 		tenant.Password = info.Password
 		externalTenantResp, _err := a.telecomManager.CreateTenantPortsip(ctx, tenant)
 		if _err != nil {
-			if cm.ErrorXCode(_err) == cm.PortsipNameOrDomainIncorrect {
+			if cm.ErrorXCode(_err) == cm.PortsipNameOrDomainIncorrect && index < MaxTenantRetry-1 {
 				// Tenant bị trùng tên hoặc domain
 				// Tạo tenant với tên mới
 				continue
@@ -116,12 +117,11 @@ type TenantInfo struct {
 }
 
 func getTenantInfo(user *identity.User, shop *identity.Shop, index int) *TenantInfo {
-	fullname := validate.NormalizeUnaccent(user.FullName)
+	fullname := user.FullName
 	if shop != nil {
-		fullname = validate.NormalizeUnaccent(shop.Name)
+		fullname = shop.Name
 	}
-	fullname = strings.ReplaceAll(fullname, " ", "-")
-
+	fullname = normalizeTenantName(fullname)
 	userID := user.ID.String()
 	idx := userID[len(userID)-4:]
 	name := fullname + "-" + idx
@@ -137,6 +137,14 @@ func getTenantInfo(user *identity.User, shop *identity.Shop, index int) *TenantI
 		Domain:   domain,
 		Password: password,
 	}
+}
+
+func normalizeTenantName(name string) string {
+	nameRegexp := regexp.MustCompile(`[!@#$%^&*()_={}?<>/|~-]`)
+	name = nameRegexp.ReplaceAllString(name, "")
+	name = validate.NormalizeUnaccent(name)
+	name = strings.ReplaceAll(name, " ", "-")
+	return name
 }
 
 type UpdateExtTenantInfoArgs struct {

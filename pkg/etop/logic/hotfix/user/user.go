@@ -108,16 +108,16 @@ func (s *UserService) HandleImportUser(c *httpx.Context) error {
 		}
 		line, _err := s.parseRow(ctx, row)
 		if _err != nil {
-			return _err
+			return cm.Errorf(cm.InvalidArgument, _err, "Can not parse row").WithMetap("row", row)
 		}
 		owner, err := s.checkAndRegisterUser(ctx, line)
 		if err != nil {
-			return nil
+			return cm.Errorf(cm.InvalidArgument, err, "Can not register user").WithMetap("row", row)
 		}
 
 		accUser, err := s.getAccountUser(ctx, owner.ID)
 		if err != nil {
-			return err
+			return cm.Errorf(cm.InvalidArgument, err, "Can not get account user").WithMetap("row", row)
 		}
 		var accountID dot.ID
 		if accUser != nil {
@@ -131,9 +131,8 @@ func (s *UserService) HandleImportUser(c *httpx.Context) error {
 		}
 		tenant, err := s.checkAndCreateTenant(ctx, createTenantArgs)
 		if err != nil {
-			return err
+			return cm.Errorf(cm.InvalidArgument, err, "Can not create tenant").WithMetap("row", row)
 		}
-
 		if tenant.Status.Valid && tenant.Status.Enum != status3.P {
 			cmd := &etelecom.ActivateTenantCommand{
 				OwnerID:      owner.ID,
@@ -141,7 +140,7 @@ func (s *UserService) HandleImportUser(c *httpx.Context) error {
 				ConnectionID: connectioning.DefaultDirectPortsipConnectionID,
 			}
 			if err = s.etelecomAggr.Dispatch(ctx, cmd); err != nil {
-				return err
+				return cm.Errorf(cm.InvalidArgument, err, "Can not active tenant").WithMetap("row", row)
 			}
 		}
 
@@ -153,7 +152,7 @@ func (s *UserService) HandleImportUser(c *httpx.Context) error {
 				TenantID:     tenant.ID,
 			}
 			if err = s.createAndActiveHotline(ctx, args); err != nil {
-				return err
+				return cm.Errorf(cm.InvalidArgument, err, "Can not create and active hotline").WithMetap("row", row)
 			}
 		}
 		success += 1
@@ -291,12 +290,17 @@ func (s *UserService) parseRow(ctx context.Context, row []string) (*Line, error)
 	for _, hotline := range strHotlines {
 		hotlines = append(hotlines, strings.ReplaceAll(hotline, " ", ""))
 	}
+
+	companyName := row[4]
+	if len(companyName) > 70 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Length of company name must be lower than 70")
+	}
 	return &Line{
 		ID:          row[0],
 		Name:        row[1],
 		Email:       row[2],
 		Phone:       phone.String(),
-		CompanyName: row[4],
+		CompanyName: companyName,
 		Hotlines:    hotlines,
 	}, nil
 }
