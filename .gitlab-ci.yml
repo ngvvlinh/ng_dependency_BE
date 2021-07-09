@@ -41,7 +41,7 @@ build:
   stage: build
   cache:
     <<: *global_cache
-    policy: push
+    policy: pull-push
   script:
     - go install ./...
     - time scripts/install-tools.sh
