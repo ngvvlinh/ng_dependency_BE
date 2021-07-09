@@ -18,6 +18,11 @@ cache: &global_cache
   paths: [".cache"]
   policy: pull
 
+.go-cache:
+  before_script:
+    - mkdir -p .cache
+    - export GOPATH="$CI_PROJECT_DIR/.cache" 
+
 # verify:import:
 #   extends: .verify
 #   script:
@@ -39,6 +44,7 @@ cache: &global_cache
 build:
   image: golang:1.15
   stage: build
+  extends: .go-cache
   cache:
     <<: *global_cache
     policy: pull-push
@@ -57,6 +63,7 @@ test:
   cache:
     <<: *global_cache
   stage: test
+  extends: .go-cache
   services:
     - postgres:12.2-alpine
     - redis:latest
@@ -69,10 +76,7 @@ test:
   #   - verify:import
   #   - verify:lint
   #   - verify:generate
-  except: ["tags"]
-  before_script:
-    - mkdir -p .cache
-    - export GOPATH="$CI_PROJECT_DIR/.cache"  
+  except: ["tags"] 
   script:
     - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
