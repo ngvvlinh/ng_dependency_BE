@@ -32,14 +32,9 @@ verify:lint:
   extends: .verify
   script:
     - time scripts/ci/verify-lint.sh
-
+ 
 verify:generate:
-  extends: 
-    - .verify
-    - .go-cache
-  cache:
-    <<: *global_cache
-    policy: pull
+  extends: .verify
   script:
     - time scripts/ci/verify-generate.sh
 
