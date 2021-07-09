@@ -3,20 +3,3 @@
   stage: verify
   except: ["tags"]
   allow_failure: false
-
-verify:import:
-  extends: .verify
-  script:
-  - time scripts/verify-imports.sh
-
-verify:lint:
-  extends: .verify
-  script:
-  - time scripts/ci/verify-lint.sh
-
-verify:generate:
-  extends:
-  - .verify
-  - .go-cache
-  script:
-  - time scripts/ci/verify-generate.sh
