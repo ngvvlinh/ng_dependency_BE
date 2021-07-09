@@ -9,16 +9,13 @@ stages:
 - production
 
 
-variables:
-  PROJECT_DIR: $(echo $CI_PROJECT_DIR | sed "s/$CI_PROJECT_NAME//g" | sed 's:/*$::')
-  PROJECT_LOG: "*:0"
-
 .go-cache:
   cache:
     paths: [".cache"]
   before_script:
     - mkdir -p .cache
     - export GOPATH="$CI_PROJECT_DIR/.cache"
+    - export PROJECT_DIR=$CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
 
 # verify:import:
 #   extends: .verify
