@@ -13,32 +13,34 @@ variables:
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   PROJECT_DIR: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
 
-before_script:
-  - mkdir -p .cache
-  - export GOPATH="$CI_PROJECT_DIR/.cache"  
-
 cache: &global_cache
   key: ${CI_COMMIT_REF_SLUG}
   paths: [".cache"]
   policy: pull
-  
-# verify:import:
-#   extends: .verify
-#   script:
-#     - time scripts/verify-imports.sh
 
-# verify:lint:
-#   extends: .verify
-#   script:
-#     - time scripts/ci/verify-lint.sh
+.go-cache:
+  before_script:
+    - mkdir -p .cache
+    - export GOPATH="$CI_PROJECT_DIR/.cache"  
 
-# verify:generate:
-#   extends: .verify
-#   cache:
-#     <<: *global_cache
-#     policy: pull
-#   script:
-#     - time scripts/ci/verify-generate.sh
+verify:import:
+  extends: .verify
+  script:
+    - time scripts/verify-imports.sh
+
+verify:lint:
+  extends: .verify
+  script:
+    - time scripts/ci/verify-lint.sh
+
+verify:generate:
+  extends: 
+    - .go-cache
+    - .verify
+  cache:
+    <<: *global_cache
+  script:
+    - time scripts/ci/verify-generate.sh
 
 build:
   image: golang:1.15
@@ -50,16 +52,17 @@ build:
     - go install ./...
   only:
     refs:
-      - master
-    # changes:
-    #   - "go.mod"
-    #   - "go.sum"
+      - branches
+    changes:
+      - "go.mod"
+      - "go.sum"
 
 test:
   image: golang:1.15
   cache:
     <<: *global_cache
-    policy: pull
+  extends: 
+    - .go-cache  
   stage: test
   services:
     - postgres:12.2-alpine
@@ -69,10 +72,10 @@ test:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "postgres"
     POSTGRES_HOST_AUTH_METHOD: trust
-  # dependencies: 
-  #   - verify:import
-  #   - verify:lint
-  #   - verify:generate
+  dependencies: 
+    - verify:import
+    - verify:lint
+    - verify:generate
   except: ["tags"]
   script:
     - time go run ./scripts/init_testdb/main.go -drop
