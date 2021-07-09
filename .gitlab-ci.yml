@@ -42,9 +42,9 @@ go-cache:
   only:
     refs:
       - master
-    changes:
-      - "go.mod"
-      - "go.sum"
+    # changes:
+    #   - "go.mod"
+    #   - "go.sum"
 
 test:
   image: golang:1.15
