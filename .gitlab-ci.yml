@@ -50,9 +50,8 @@ test:
   #   - verify:generate
   except: ["tags"]
   script:
-    - echo $CI_PROJECT_DIR
-    - echo $CI_BUILDS_DIR
+    - export
     # - time go run ./scripts/init_testdb/main.go -drop
     # - time scripts/ci/test-all.sh simple
 
-include: 'ci/**.yml'
+# include: 'ci/**.yml'
