@@ -10,7 +10,7 @@ stages:
 
 
 variables:
-  PROJECT_DIR: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
+  PROJECT_DIR: $(echo $CI_PROJECT_DIR | sed "s/$CI_PROJECT_NAME//g" | sed 's:/*$::')
   PROJECT_LOG: "*:0"
 
 .go-cache:
@@ -53,7 +53,8 @@ test:
   #   - verify:generate
   except: ["tags"]
   script:
-    - time go run /scripts/init_testdb/main.go -drop
+    - echo $PROJECT_DIR
+    - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
 
 include: 'ci/**.yml'
