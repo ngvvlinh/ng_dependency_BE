@@ -18,6 +18,7 @@ variables:
   before_script:
     - mkdir -p .cache
     - export GOPATH="$CI_PROJECT_DIR/.cache"
+  policy: pull  
 
 verify:import:
   extends: .verify
