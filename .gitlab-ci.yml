@@ -15,6 +15,7 @@ variables:
 .go-cache:
   cache:
     paths: [".cache"]
+    policy: pull 
   before_script:
     - mkdir -p .cache
     - export GOPATH="$CI_PROJECT_DIR/.cache"
@@ -51,7 +52,6 @@ test:
     - verify:lint
     - verify:generate
   except: ["tags"]
-  policy: pull
   script:
     - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
