@@ -1,6 +1,6 @@
 stages:
 - verify
-- cache
+- build
 - test
 - package
 - deploy
@@ -30,11 +30,15 @@ verify:lint:
 
 verify:generate:
   extends: .verify
+  cache:
+    <<: *global_cache
+    policy: pull
   script:
     - time scripts/ci/verify-generate.sh
 
-go-cache:
-  stage: cache
+build:
+  image: golang:1.15
+  stage: build
   cache:
     <<: *global_cache
     policy: push
