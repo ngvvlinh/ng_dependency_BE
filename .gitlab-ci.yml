@@ -77,4 +77,4 @@ test:
     - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
 
-# include: 'ci/**.yml'
+include: 'ci/**.yml'
