@@ -9,8 +9,8 @@ stages:
 - production
 
 variables:
-  GIT_DEPTH: 10
-  GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAME
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  PROJECT_DIR: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
 
 .go-cache:
   cache:
@@ -52,8 +52,7 @@ test:
   #   - verify:generate
   except: ["tags"]
   script:
-    - export
-    # - time go run ./scripts/init_testdb/main.go -drop
-    # - time scripts/ci/test-all.sh simple
+    - time go run ./scripts/init_testdb/main.go -drop
+    - time scripts/ci/test-all.sh simple
 
 # include: 'ci/**.yml'
