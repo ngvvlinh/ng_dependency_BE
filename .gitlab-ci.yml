@@ -47,9 +47,9 @@ build:
   only:
     refs:
       - master
-    # changes:
-    #   - "go.mod"
-    #   - "go.sum"
+    changes:
+      - "go.mod"
+      - "go.sum"
 
 test:
   image: golang:1.15
@@ -77,4 +77,4 @@ test:
     - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
 
-include: 'ci/**.yml'
+# include: 'ci/**.yml'
