@@ -108,6 +108,15 @@ func (a *Aggregate) UpdateUserPhone(ctx context.Context, userID dot.ID, phone st
 	return err
 }
 
+func (a *Aggregate) UpdateExtensionNumberNorm(ctx context.Context, accountID, userID dot.ID, extensionNumber string) error {
+	if userID == 0 || accountID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
+	}
+	extensionNumberNorm := validate.NormalizeSearchCharacter(extensionNumber)
+	_, err := a.accountUserStore(ctx).ByUserID(userID).ByAccountID(accountID).UpdateExtensionNumberNorm(extensionNumberNorm)
+	return err
+}
+
 func (a *Aggregate) UpdateUserReferenceUserID(ctx context.Context, args *identity.UpdateUserReferenceUserIDArgs) error {
 	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(); err != nil {
 		return err

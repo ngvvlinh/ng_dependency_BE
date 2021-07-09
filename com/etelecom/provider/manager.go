@@ -190,7 +190,7 @@ func (m *TelecomManager) CreateExtension(ctx context.Context, ext *etelecom.Exte
 		ExtensionNumber:   extensionNumber,
 		Profile: &providertypes.ProfileExtension{
 			FirstName: profileName,
-			// vht định danh extension theo email
+			// Portsip định danh extension theo email
 			// nên không thể tạo nhiều extension cho cùng 1 email được
 			// Email:       user.Email,
 			Phone:       profilePhone,

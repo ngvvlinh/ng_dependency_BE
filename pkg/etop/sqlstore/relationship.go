@@ -17,6 +17,7 @@ import (
 	"o.o/backend/pkg/common/sql/cmsql"
 	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/capi/dot"
 )
 
@@ -43,8 +44,9 @@ type AccountUserStoreInterface interface {
 }
 
 type AccountUserStore struct {
-	DB com.MainDB
-	db *cmsql.Database `wire:"-"`
+	DB        com.MainDB
+	db        *cmsql.Database `wire:"-"`
+	UserStore UserStoreInterface
 }
 
 func BindAccountUserStore(s *AccountUserStore) (to AccountUserStoreInterface) {
@@ -185,6 +187,16 @@ func (st *AccountUserStore) GetAccountUserExtendeds(ctx context.Context, query *
 		s = s.Where("au.deleted_at IS NULL")
 	}
 
+	if query.FullNameNorm != "" {
+		s = s.Where("au.full_name_norm @@ ?::tsquery", validate.NormalizeFullTextSearchQueryAnd(query.FullNameNorm))
+	}
+	if query.PhoneNorm != "" {
+		s = s.Where("au.phone_norm @@ ?::tsquery", validate.NormalizeFullTextSearchQueryAnd(query.PhoneNorm))
+	}
+	if query.ExtensionNumberNorm != "" {
+		s = s.Where("au.extension_number_norm @@ ?::tsquery", validate.NormalizeFullTextSearchQueryAnd(query.ExtensionNumberNorm))
+	}
+
 	if len(query.Roles) > 0 {
 		s = s.Where("au.roles && ?", pq.StringArray(query.Roles))
 	}
@@ -222,7 +234,11 @@ func (st *AccountUserStore) CreateAccountUser(ctx context.Context, cmd *identity
 	if accUser.UserID == 0 || accUser.AccountID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
 	}
-
+	getUserQuery := &identitymodelx.GetUserByIDQuery{UserID: accUser.UserID}
+	if err := st.UserStore.GetUserByID(ctx, getUserQuery); err != nil {
+		return err
+	}
+	st.normalizeSearchFields(accUser, getUserQuery.Result)
 	err := st.db.Table("account_user").ShouldInsert(accUser)
 	if err != nil {
 		return err
@@ -303,4 +319,10 @@ func (st *AccountUserStore) DeleteAccountUser(ctx context.Context, cmd *identity
 
 	cmd.Result.Updated = updated
 	return nil
+}
+
+func (s *AccountUserStore) normalizeSearchFields(auDB *identitymodel.AccountUser, user *identitymodel.User) {
+	auDB.Phone = user.Phone
+	auDB.FullNameNorm = validate.NormalizeSearchCharacter(user.FullName)
+	auDB.PhoneNorm = validate.NormalizeSearchCharacter(user.Phone)
 }

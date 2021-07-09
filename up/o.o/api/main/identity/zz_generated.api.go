@@ -211,6 +211,19 @@ func (h AggregateHandler) HandleUpdateAffiliateInfo(ctx context.Context, msg *Up
 	return err
 }
 
+type UpdateExtensionNumberNormCommand struct {
+	AccountID       dot.ID
+	UserID          dot.ID
+	ExtensionNumber string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateExtensionNumberNorm(ctx context.Context, msg *UpdateExtensionNumberNormCommand) (err error) {
+	return h.inner.UpdateExtensionNumberNorm(msg.GetArgs(ctx))
+}
+
 type UpdateShipFromAddressIDCommand struct {
 	ID                dot.ID
 	ShipFromAddressID dot.ID
@@ -609,6 +622,7 @@ func (q *UnblockUserCommand) command()                 {}
 func (q *UpdateAccountUserPermissionCommand) command() {}
 func (q *UpdateAffiliateBankAccountCommand) command()  {}
 func (q *UpdateAffiliateInfoCommand) command()         {}
+func (q *UpdateExtensionNumberNormCommand) command()   {}
 func (q *UpdateShipFromAddressIDCommand) command()     {}
 func (q *UpdateShopInfoCommand) command()              {}
 func (q *UpdateUserEmailCommand) command()             {}
@@ -865,6 +879,13 @@ func (q *UpdateAffiliateInfoCommand) SetUpdateAffiliateInfoArgs(args *UpdateAffi
 	q.Phone = args.Phone
 	q.Email = args.Email
 	q.Name = args.Name
+}
+
+func (q *UpdateExtensionNumberNormCommand) GetArgs(ctx context.Context) (_ context.Context, accountID dot.ID, userID dot.ID, extensionNumber string) {
+	return ctx,
+		q.AccountID,
+		q.UserID,
+		q.ExtensionNumber
 }
 
 func (q *UpdateShipFromAddressIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipFromAddressArgs) {
@@ -1238,6 +1259,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateAccountUserPermission)
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
+	b.AddHandler(h.HandleUpdateExtensionNumberNorm)
 	b.AddHandler(h.HandleUpdateShipFromAddressID)
 	b.AddHandler(h.HandleUpdateShopInfo)
 	b.AddHandler(h.HandleUpdateUserEmail)

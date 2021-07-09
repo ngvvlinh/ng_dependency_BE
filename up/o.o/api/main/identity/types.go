@@ -218,9 +218,13 @@ type AccountUser struct {
 
 	Permission `sq:"inline"`
 
-	FullName  string
-	ShortName string
-	Position  string
+	FullName            string
+	FullNameNorm        string
+	Phone               string
+	PhoneNorm           string
+	ExtensionNumberNorm string
+	ShortName           string
+	Position            string
 
 	InvitationSentAt     time.Time
 	InvitationSentBy     dot.ID

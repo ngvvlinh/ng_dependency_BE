@@ -2326,6 +2326,20 @@
         }
       }
     },
+    "baFilterGetAccountUsersRequest": {
+      "type": "object",
+      "properties": {
+        "extension_number": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "phone": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        }
+      }
+    },
     "baGetAddressResponse": {
       "type": "object",
       "properties": {
@@ -2521,6 +2535,9 @@
     "baGetRelationshipsRequest": {
       "type": "object",
       "properties": {
+        "filter": {
+          "$ref": "#/definitions/baFilterGetAccountUsersRequest"
+        },
         "filters": {
           "type": "array",
           "items": {
@@ -3915,6 +3932,9 @@
         "carrier",
         "etop"
       ]
+    },
+    "kfFullTextSearch": {
+      "type": "string"
     },
     "ktEmpty": {
       "type": "object"

@@ -6,6 +6,7 @@ import (
 	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type GetAccountUserQuery struct {
@@ -24,12 +25,14 @@ type GetAccountUserExtendedQuery struct {
 }
 
 type GetAccountUserExtendedsQuery struct {
-	AccountIDs []dot.ID
-
-	Paging  *cm.Paging
-	Filters []cm.Filter
-	Status  dot.NullInt
-	Roles   []string
+	AccountIDs          []dot.ID
+	FullNameNorm        filter.FullTextSearch
+	PhoneNorm           filter.FullTextSearch
+	ExtensionNumberNorm filter.FullTextSearch
+	Paging              *cm.Paging
+	Filters             []cm.Filter
+	Status              dot.NullInt
+	Roles               []string
 
 	IncludeDeleted bool
 

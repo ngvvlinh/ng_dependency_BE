@@ -285,7 +285,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	partnerStore := sqlstore.BuildPartnerStore(mainDB)
 	partnerStoreInterface := sqlstore.BindPartnerStore(partnerStore)
 	accountUserStore := &sqlstore.AccountUserStore{
-		DB: mainDB,
+		DB:        mainDB,
+		UserStore: userStoreInterface,
 	}
 	accountUserStoreInterface := sqlstore.BindAccountUserStore(accountUserStore)
 	shopStore := &sqlstore.ShopStore{

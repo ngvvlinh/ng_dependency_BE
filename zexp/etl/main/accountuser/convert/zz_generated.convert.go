@@ -85,6 +85,10 @@ func convert_accountusermodel_AccountUser_identitymodel_AccountUser(arg *account
 	out.DeletedAt = time.Time{}                         // zero value
 	out.Permission = identitymodel.Permission{}         // types do not match
 	out.FullName = arg.FullName                         // simple assign
+	out.FullNameNorm = ""                               // zero value
+	out.Phone = ""                                      // zero value
+	out.PhoneNorm = ""                                  // zero value
+	out.ExtensionNumberNorm = ""                        // zero value
 	out.ShortName = arg.ShortName                       // simple assign
 	out.Position = arg.Position                         // simple assign
 	out.InvitationSentAt = arg.InvitationSentAt         // simple assign

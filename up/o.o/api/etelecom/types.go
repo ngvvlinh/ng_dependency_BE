@@ -96,6 +96,19 @@ type ExtensionCreatingEvent struct {
 	UserID    dot.ID
 }
 
+type AssignedExtensionEvent struct {
+	AccountID       dot.ID
+	UserID          dot.ID
+	ExtensionNumber string
+}
+
+type RemovedUserOfExtensionEvent struct {
+	ID        dot.ID
+	OwnerID   dot.ID
+	AccountID dot.ID
+	UserID    dot.ID
+}
+
 type Tenant struct {
 	ID               dot.ID
 	OwnerID          dot.ID

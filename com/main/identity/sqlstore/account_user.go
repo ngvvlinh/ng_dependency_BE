@@ -12,6 +12,7 @@ import (
 	"o.o/backend/pkg/common/sql/sq"
 	"o.o/backend/pkg/common/sql/sq/core"
 	"o.o/backend/pkg/common/sql/sqlstore"
+	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
 )
@@ -121,11 +122,19 @@ func (s *AccountUserStore) ListAccountUsers() ([]*identity.AccountUser, error) {
 }
 
 func (s *AccountUserStore) CreateAccountUser(au *identity.AccountUser) error {
+	if au.UserID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing UserID")
+	}
+	var user = new(identitymodel.User)
+	if err := s.query().Table("user").Where("id = ?", au.UserID).ShouldGet(user); err != nil {
+		return err
+	}
 	sqlstore.MustNoPreds(s.preds)
 	var auDB identitymodel.AccountUser
 	if err := scheme.Convert(au, &auDB); err != nil {
 		return err
 	}
+	s.normalizeSearchFields(&auDB, user)
 	return s.query().ShouldInsert(&auDB)
 }
 
@@ -136,4 +145,17 @@ func (s *AccountUserStore) UpdateAccountUser(au *identity.AccountUser) error {
 		return err
 	}
 	return query.ShouldUpdate(&auDB)
+}
+
+func (s *AccountUserStore) UpdateExtensionNumberNorm(extNumberNorm string) (int, error) {
+	return s.query().Where(s.preds).Table("account_user").UpdateMap(
+		map[string]interface{}{
+			"extension_number_norm": extNumberNorm,
+		})
+}
+
+func (s *AccountUserStore) normalizeSearchFields(auDB *identitymodel.AccountUser, user *identitymodel.User) {
+	auDB.Phone = user.Phone
+	auDB.FullNameNorm = validate.NormalizeSearchCharacter(user.FullName)
+	auDB.PhoneNorm = validate.NormalizeSearchCharacter(user.Phone)
 }

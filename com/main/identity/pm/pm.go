@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"o.o/api/etelecom"
 	"o.o/api/main/address"
 	"o.o/api/main/identity"
 	"o.o/api/main/invitation"
@@ -18,12 +19,11 @@ import (
 )
 
 type ProcessManager struct {
-	identityQuery   identity.QueryBus
-	invitationQuery invitation.QueryBus
-	addressQuery    address.QueryBus
-	addressAggr     address.CommandBus
-	identityAggr    identity.CommandBus
-
+	identityQuery    identity.QueryBus
+	invitationQuery  invitation.QueryBus
+	addressQuery     address.QueryBus
+	addressAggr      address.CommandBus
+	identityAggr     identity.CommandBus
 	AccountUserStore sqlstore.AccountUserStoreInterface
 }
 
@@ -53,6 +53,41 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.AddressCreated)
 	eventBus.AddEventListener(m.DefaultAddressUpdated)
 	eventBus.AddEventListener(m.AccountDeleting)
+	eventBus.AddEventListener(m.ExtensionAssigned)
+	eventBus.AddEventListener(m.UserOfExtensionRemoved)
+}
+
+func (m *ProcessManager) UserOfExtensionRemoved(ctx context.Context, event *etelecom.RemovedUserOfExtensionEvent) error {
+	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
+		UserID:    event.UserID,
+		AccountID: event.AccountID,
+	}
+	if err := m.AccountUserStore.GetAccountUser(ctx, getAccountUserQuery); err != nil {
+		return cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
+	}
+
+	cmd := &identity.UpdateExtensionNumberNormCommand{
+		AccountID:       event.AccountID,
+		UserID:          event.UserID,
+		ExtensionNumber: "",
+	}
+	return m.identityAggr.Dispatch(ctx, cmd)
+}
+
+func (m *ProcessManager) ExtensionAssigned(ctx context.Context, event *etelecom.AssignedExtensionEvent) error {
+	getAccountUserQuery := &identitymodelx.GetAccountUserQuery{
+		UserID:    event.UserID,
+		AccountID: event.AccountID,
+	}
+	if err := m.AccountUserStore.GetAccountUser(ctx, getAccountUserQuery); err != nil {
+		return cm.Errorf(cm.ErrorCode(err), err, "Không tìm thấy nhân viên")
+	}
+	cmd := &identity.UpdateExtensionNumberNormCommand{
+		AccountID:       event.AccountID,
+		UserID:          event.UserID,
+		ExtensionNumber: event.ExtensionNumber,
+	}
+	return m.identityAggr.Dispatch(ctx, cmd)
 }
 
 func (m *ProcessManager) InvitationAccepted(ctx context.Context, event *invitation.InvitationAcceptedEvent) error {

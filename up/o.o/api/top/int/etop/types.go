@@ -13,6 +13,7 @@ import (
 	try_on "o.o/api/top/types/etc/try_on"
 	user_source "o.o/api/top/types/etc/user_source"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 	"o.o/common/jsonx"
 )
 
@@ -182,11 +183,20 @@ type RelationshipsResponse struct {
 func (m *RelationshipsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetRelationshipsRequest struct {
-	Paging  *common.Paging   `json:"paging"`
-	Filters []*common.Filter `json:"filters"`
+	Paging  *common.Paging                `json:"paging"`
+	Filters []*common.Filter              `json:"filters"`
+	Filter  *FilterGetAccountUsersRequest `json:"filter"`
 }
 
 func (m *GetRelationshipsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterGetAccountUsersRequest struct {
+	Name            filter.FullTextSearch `json:"name"`
+	Phone           filter.FullTextSearch `json:"phone"`
+	ExtensionNumber filter.FullTextSearch `json:"extension_number"`
+}
+
+func (m *FilterGetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type RemoveUserRequest struct {
 	UserID dot.ID `json:"user_id"`

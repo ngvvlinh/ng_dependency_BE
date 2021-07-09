@@ -75,12 +75,10 @@ func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.
 		return nil, err
 	}
 	if ext == nil {
-		// create new one
 		var extension etelecom.Extension
 		if err = scheme.Convert(args, &extension); err != nil {
 			return nil, err
 		}
-
 		extension.ID = cm.NewID()
 		extension.TenantID = tenant.ID
 		ext, err = a.extensionStore(ctx).CreateExtension(&extension)
@@ -103,6 +101,17 @@ func (a *EtelecomAggregate) createExtension(ctx context.Context, args *etelecom.
 	}
 	if err = a.UpdateExternalExtensionInfo(ctx, updateExt); err != nil {
 		return nil, err
+	}
+
+	if args.UserID != 0 {
+		extensionAssignedEvent := &etelecom.AssignedExtensionEvent{
+			AccountID:       args.AccountID,
+			UserID:          args.UserID,
+			ExtensionNumber: externalExtensionResp.ExtensionNumber,
+		}
+		if err := a.eventBus.Publish(ctx, extensionAssignedEvent); err != nil {
+			return nil, err
+		}
 	}
 
 	return a.extensionStore(ctx).ID(ext.ID).GetExtension()
@@ -443,7 +452,19 @@ func (a *EtelecomAggregate) RemoveUserOfExtension(ctx context.Context, args *ete
 	}
 
 	update, err := a.extensionStore(ctx).AccountID(args.AccountID).UserID(args.UserID).ID(args.ExtensionID).RemoveUserID()
-	return update, err
+	if err != nil {
+		return 0, err
+	}
+
+	removedUserOfExtensionEvent := &etelecom.RemovedUserOfExtensionEvent{
+		ID:        ext.ID,
+		AccountID: args.AccountID,
+		UserID:    args.UserID,
+	}
+	if err = a.eventBus.Publish(ctx, removedUserOfExtensionEvent); err != nil {
+		return 0, err
+	}
+	return update, nil
 }
 
 func (a *EtelecomAggregate) AssignUserToExtension(ctx context.Context, args *etelecom.AssignUserToExtensionArgs) error {
@@ -479,7 +500,19 @@ func (a *EtelecomAggregate) AssignUserToExtension(ctx context.Context, args *ete
 	update := &etelecom.Extension{
 		UserID: args.UserID,
 	}
-	return query.UpdateExtension(update)
+	if err = query.UpdateExtension(update); err != nil {
+		return err
+	}
+
+	extensionAssignedEvent := &etelecom.AssignedExtensionEvent{
+		AccountID:       args.AccountID,
+		UserID:          args.UserID,
+		ExtensionNumber: ext.ExtensionNumber,
+	}
+	if err := a.eventBus.Publish(ctx, extensionAssignedEvent); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *EtelecomAggregate) ImportExtensions(ctx context.Context, args *etelecom.ImportExtensionsArgs) error {

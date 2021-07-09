@@ -28,6 +28,8 @@ type Aggregate interface {
 
 	UpdateUserPhone(ctx context.Context, userID dot.ID, phone string) error
 
+	UpdateExtensionNumberNorm(ctx context.Context, accountID, userID dot.ID, extensionNumber string) error
+
 	// if phone is not existed
 	// create new user & create a default shop for this user
 	RegisterSimplify(context.Context, *RegisterSimplifyArgs) error

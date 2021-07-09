@@ -3,9 +3,8 @@ package root
 import (
 	"context"
 	"fmt"
-	"o.o/backend/pkg/common/headers"
 	"time"
-	
+
 	"o.o/api/main/authorization"
 	"o.o/api/main/invitation"
 	api "o.o/api/top/int/etop"
@@ -17,6 +16,7 @@ import (
 	"o.o/backend/com/main/invitation/convert"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
+	"o.o/backend/pkg/common/headers"
 	"o.o/backend/pkg/etop/api/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/backend/pkg/etop/sqlstore"
@@ -78,7 +78,7 @@ func (s *AccountRelationshipService) CreateInvitation(ctx context.Context, q *ap
 	for _, role := range q.Roles {
 		roles = append(roles, authorization.Role(role))
 	}
-	
+
 	originURL := ctx.Value(headers.OriginKey{})
 	cmd := &invitation.CreateInvitationCommand{
 		AccountID: s.SS.Shop().ID,
@@ -170,6 +170,12 @@ func (s *AccountRelationshipService) GetRelationships(ctx context.Context, q *ap
 		Filters:        cmapi.ToFilters(q.Filters),
 		IncludeDeleted: true,
 	}
+	if q.Filter != nil {
+		query.FullNameNorm = q.Filter.Name
+		query.PhoneNorm = q.Filter.Phone
+		query.ExtensionNumberNorm = q.Filter.ExtensionNumber
+	}
+
 	if err := s.AccountUserStore.GetAccountUserExtendeds(ctx, query); err != nil {
 		return nil, err
 	}

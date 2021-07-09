@@ -4,7 +4,9 @@
 
 package etelecom
 
+func (e *AssignedExtensionEvent) GetTopic() string         { return "event/etelecom" }
 func (e *CallLogCalcPostageEvent) GetTopic() string        { return "event/etelecom" }
 func (e *ExtensionCreatingEvent) GetTopic() string         { return "event/etelecom" }
 func (e *RemovedHotlineOutOfTenantEvent) GetTopic() string { return "event/etelecom" }
+func (e *RemovedUserOfExtensionEvent) GetTopic() string    { return "event/etelecom" }
 func (e *TenantActivingEvent) GetTopic() string            { return "event/etelecom" }

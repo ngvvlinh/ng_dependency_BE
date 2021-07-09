@@ -886,8 +886,8 @@ func (m *AccountAuthFtShop) SQLScanArgs(opts core.Opts) []interface{} {
 type AccountUsers []*AccountUser
 
 const __sqlAccountUser_Table = "account_user"
-const __sqlAccountUser_ListCols = "\"account_id\",\"user_id\",\"status\",\"response_status\",\"created_at\",\"updated_at\",\"deleted_at\",\"roles\",\"permissions\",\"full_name\",\"short_name\",\"position\",\"invitation_sent_at\",\"invitation_sent_by\",\"invitation_accepted_at\",\"invitation_rejected_at\",\"disabled_at\",\"disabled_by\",\"disable_reason\",\"rid\""
-const __sqlAccountUser_ListColsOnConflict = "\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"status\" = EXCLUDED.\"status\",\"response_status\" = EXCLUDED.\"response_status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\",\"full_name\" = EXCLUDED.\"full_name\",\"short_name\" = EXCLUDED.\"short_name\",\"position\" = EXCLUDED.\"position\",\"invitation_sent_at\" = EXCLUDED.\"invitation_sent_at\",\"invitation_sent_by\" = EXCLUDED.\"invitation_sent_by\",\"invitation_accepted_at\" = EXCLUDED.\"invitation_accepted_at\",\"invitation_rejected_at\" = EXCLUDED.\"invitation_rejected_at\",\"disabled_at\" = EXCLUDED.\"disabled_at\",\"disabled_by\" = EXCLUDED.\"disabled_by\",\"disable_reason\" = EXCLUDED.\"disable_reason\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlAccountUser_ListCols = "\"account_id\",\"user_id\",\"status\",\"response_status\",\"created_at\",\"updated_at\",\"deleted_at\",\"roles\",\"permissions\",\"full_name\",\"full_name_norm\",\"phone\",\"phone_norm\",\"extension_number_norm\",\"short_name\",\"position\",\"invitation_sent_at\",\"invitation_sent_by\",\"invitation_accepted_at\",\"invitation_rejected_at\",\"disabled_at\",\"disabled_by\",\"disable_reason\",\"rid\""
+const __sqlAccountUser_ListColsOnConflict = "\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"status\" = EXCLUDED.\"status\",\"response_status\" = EXCLUDED.\"response_status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\",\"full_name\" = EXCLUDED.\"full_name\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone\" = EXCLUDED.\"phone\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"extension_number_norm\" = EXCLUDED.\"extension_number_norm\",\"short_name\" = EXCLUDED.\"short_name\",\"position\" = EXCLUDED.\"position\",\"invitation_sent_at\" = EXCLUDED.\"invitation_sent_at\",\"invitation_sent_by\" = EXCLUDED.\"invitation_sent_by\",\"invitation_accepted_at\" = EXCLUDED.\"invitation_accepted_at\",\"invitation_rejected_at\" = EXCLUDED.\"invitation_rejected_at\",\"disabled_at\" = EXCLUDED.\"disabled_at\",\"disabled_by\" = EXCLUDED.\"disabled_by\",\"disable_reason\" = EXCLUDED.\"disable_reason\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlAccountUser_Insert = "INSERT INTO \"account_user\" (" + __sqlAccountUser_ListCols + ") VALUES"
 const __sqlAccountUser_Select = "SELECT " + __sqlAccountUser_ListCols + " FROM \"account_user\""
 const __sqlAccountUser_Select_history = "SELECT " + __sqlAccountUser_ListCols + " FROM history.\"account_user\""
@@ -979,6 +979,34 @@ func (m *AccountUser) Migration(db *cmsql.Database) {
 		},
 		"full_name": {
 			ColumnName:       "full_name",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"full_name_norm": {
+			ColumnName:       "full_name_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"phone": {
+			ColumnName:       "phone",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"phone_norm": {
+			ColumnName:       "phone_norm",
+			ColumnType:       "string",
+			ColumnDBType:     "string",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"extension_number_norm": {
+			ColumnName:       "extension_number_norm",
 			ColumnType:       "string",
 			ColumnDBType:     "string",
 			ColumnTag:        "",
@@ -1077,6 +1105,10 @@ func (m *AccountUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Array{m.Permission.Roles, opts},
 		core.Array{m.Permission.Permissions, opts},
 		core.String(m.FullName),
+		core.String(m.FullNameNorm),
+		core.String(m.Phone),
+		core.String(m.PhoneNorm),
+		core.String(m.ExtensionNumberNorm),
 		core.String(m.ShortName),
 		core.String(m.Position),
 		core.Time(m.InvitationSentAt),
@@ -1102,6 +1134,10 @@ func (m *AccountUser) SQLScanArgs(opts core.Opts) []interface{} {
 		core.Array{&m.Permission.Roles, opts},
 		core.Array{&m.Permission.Permissions, opts},
 		(*core.String)(&m.FullName),
+		(*core.String)(&m.FullNameNorm),
+		(*core.String)(&m.Phone),
+		(*core.String)(&m.PhoneNorm),
+		(*core.String)(&m.ExtensionNumberNorm),
 		(*core.String)(&m.ShortName),
 		(*core.String)(&m.Position),
 		(*core.Time)(&m.InvitationSentAt),
@@ -1149,7 +1185,7 @@ func (_ *AccountUsers) SQLSelect(w SQLWriter) error {
 func (m *AccountUser) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1159,7 +1195,7 @@ func (ms AccountUsers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(20)
+		w.WriteMarkers(24)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1270,6 +1306,38 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.FullName)
 	}
+	if m.FullNameNorm != "" {
+		flag = true
+		w.WriteName("full_name_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.FullNameNorm)
+	}
+	if m.Phone != "" {
+		flag = true
+		w.WriteName("phone")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Phone)
+	}
+	if m.PhoneNorm != "" {
+		flag = true
+		w.WriteName("phone_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PhoneNorm)
+	}
+	if m.ExtensionNumberNorm != "" {
+		flag = true
+		w.WriteName("extension_number_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ExtensionNumberNorm)
+	}
 	if m.ShortName != "" {
 		flag = true
 		w.WriteName("short_name")
@@ -1360,7 +1428,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 func (m *AccountUser) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1388,14 +1456,20 @@ func (m AccountUserHistory) Status() core.Interface    { return core.Interface{m
 func (m AccountUserHistory) ResponseStatus() core.Interface {
 	return core.Interface{m["response_status"]}
 }
-func (m AccountUserHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
-func (m AccountUserHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
-func (m AccountUserHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
-func (m AccountUserHistory) Roles() core.Interface       { return core.Interface{m["roles"]} }
-func (m AccountUserHistory) Permissions() core.Interface { return core.Interface{m["permissions"]} }
-func (m AccountUserHistory) FullName() core.Interface    { return core.Interface{m["full_name"]} }
-func (m AccountUserHistory) ShortName() core.Interface   { return core.Interface{m["short_name"]} }
-func (m AccountUserHistory) Position() core.Interface    { return core.Interface{m["position"]} }
+func (m AccountUserHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
+func (m AccountUserHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m AccountUserHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
+func (m AccountUserHistory) Roles() core.Interface        { return core.Interface{m["roles"]} }
+func (m AccountUserHistory) Permissions() core.Interface  { return core.Interface{m["permissions"]} }
+func (m AccountUserHistory) FullName() core.Interface     { return core.Interface{m["full_name"]} }
+func (m AccountUserHistory) FullNameNorm() core.Interface { return core.Interface{m["full_name_norm"]} }
+func (m AccountUserHistory) Phone() core.Interface        { return core.Interface{m["phone"]} }
+func (m AccountUserHistory) PhoneNorm() core.Interface    { return core.Interface{m["phone_norm"]} }
+func (m AccountUserHistory) ExtensionNumberNorm() core.Interface {
+	return core.Interface{m["extension_number_norm"]}
+}
+func (m AccountUserHistory) ShortName() core.Interface { return core.Interface{m["short_name"]} }
+func (m AccountUserHistory) Position() core.Interface  { return core.Interface{m["position"]} }
 func (m AccountUserHistory) InvitationSentAt() core.Interface {
 	return core.Interface{m["invitation_sent_at"]}
 }
@@ -1416,15 +1490,15 @@ func (m AccountUserHistory) DisableReason() core.Interface {
 func (m AccountUserHistory) Rid() core.Interface { return core.Interface{m["rid"]} }
 
 func (m *AccountUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AccountUserHistory, 20)
+	res := make(AccountUserHistory, 24)
 	res["account_id"] = data[0]
 	res["user_id"] = data[1]
 	res["status"] = data[2]
@@ -1435,24 +1509,28 @@ func (m *AccountUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["roles"] = data[7]
 	res["permissions"] = data[8]
 	res["full_name"] = data[9]
-	res["short_name"] = data[10]
-	res["position"] = data[11]
-	res["invitation_sent_at"] = data[12]
-	res["invitation_sent_by"] = data[13]
-	res["invitation_accepted_at"] = data[14]
-	res["invitation_rejected_at"] = data[15]
-	res["disabled_at"] = data[16]
-	res["disabled_by"] = data[17]
-	res["disable_reason"] = data[18]
-	res["rid"] = data[19]
+	res["full_name_norm"] = data[10]
+	res["phone"] = data[11]
+	res["phone_norm"] = data[12]
+	res["extension_number_norm"] = data[13]
+	res["short_name"] = data[14]
+	res["position"] = data[15]
+	res["invitation_sent_at"] = data[16]
+	res["invitation_sent_by"] = data[17]
+	res["invitation_accepted_at"] = data[18]
+	res["invitation_rejected_at"] = data[19]
+	res["disabled_at"] = data[20]
+	res["disabled_by"] = data[21]
+	res["disable_reason"] = data[22]
+	res["rid"] = data[23]
 	*m = res
 	return nil
 }
 
 func (ms *AccountUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AccountUserHistories, 0, 128)
@@ -1471,16 +1549,20 @@ func (ms *AccountUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["roles"] = data[7]
 		m["permissions"] = data[8]
 		m["full_name"] = data[9]
-		m["short_name"] = data[10]
-		m["position"] = data[11]
-		m["invitation_sent_at"] = data[12]
-		m["invitation_sent_by"] = data[13]
-		m["invitation_accepted_at"] = data[14]
-		m["invitation_rejected_at"] = data[15]
-		m["disabled_at"] = data[16]
-		m["disabled_by"] = data[17]
-		m["disable_reason"] = data[18]
-		m["rid"] = data[19]
+		m["full_name_norm"] = data[10]
+		m["phone"] = data[11]
+		m["phone_norm"] = data[12]
+		m["extension_number_norm"] = data[13]
+		m["short_name"] = data[14]
+		m["position"] = data[15]
+		m["invitation_sent_at"] = data[16]
+		m["invitation_sent_by"] = data[17]
+		m["invitation_accepted_at"] = data[18]
+		m["invitation_rejected_at"] = data[19]
+		m["disabled_at"] = data[20]
+		m["disabled_by"] = data[21]
+		m["disable_reason"] = data[22]
+		m["rid"] = data[23]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

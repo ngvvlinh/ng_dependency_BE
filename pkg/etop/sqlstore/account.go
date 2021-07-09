@@ -92,6 +92,9 @@ func (st *AccountStore) CreateShop(ctx context.Context, cmd *identitymodelx.Crea
 			Permission: identitymodel.Permission{
 				Roles: []string{string(authorization.RoleShopOwner)},
 			},
+			Phone:        ownerQuery.Result.Phone,
+			FullNameNorm: validate.NormalizeSearchCharacter(ownerQuery.Result.FullName),
+			PhoneNorm:    validate.NormalizeSearchCharacter(ownerQuery.Result.Phone),
 		}
 		if _, err := s.Insert(account); err != nil {
 			return err

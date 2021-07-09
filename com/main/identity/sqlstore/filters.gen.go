@@ -477,6 +477,82 @@ func (ft *AccountUserFilters) ByFullNamePtr(FullName *string) *sq.ColumnFilterPt
 	}
 }
 
+func (ft *AccountUserFilters) ByFullNameNorm(FullNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "full_name_norm",
+		Value:  FullNameNorm,
+		IsNil:  FullNameNorm == "",
+	}
+}
+
+func (ft *AccountUserFilters) ByFullNameNormPtr(FullNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "full_name_norm",
+		Value:  FullNameNorm,
+		IsNil:  FullNameNorm == nil,
+		IsZero: FullNameNorm != nil && (*FullNameNorm) == "",
+	}
+}
+
+func (ft *AccountUserFilters) ByPhone(Phone string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone",
+		Value:  Phone,
+		IsNil:  Phone == "",
+	}
+}
+
+func (ft *AccountUserFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone",
+		Value:  Phone,
+		IsNil:  Phone == nil,
+		IsZero: Phone != nil && (*Phone) == "",
+	}
+}
+
+func (ft *AccountUserFilters) ByPhoneNorm(PhoneNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == "",
+	}
+}
+
+func (ft *AccountUserFilters) ByPhoneNormPtr(PhoneNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == nil,
+		IsZero: PhoneNorm != nil && (*PhoneNorm) == "",
+	}
+}
+
+func (ft *AccountUserFilters) ByExtensionNumberNorm(ExtensionNumberNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "extension_number_norm",
+		Value:  ExtensionNumberNorm,
+		IsNil:  ExtensionNumberNorm == "",
+	}
+}
+
+func (ft *AccountUserFilters) ByExtensionNumberNormPtr(ExtensionNumberNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "extension_number_norm",
+		Value:  ExtensionNumberNorm,
+		IsNil:  ExtensionNumberNorm == nil,
+		IsZero: ExtensionNumberNorm != nil && (*ExtensionNumberNorm) == "",
+	}
+}
+
 func (ft *AccountUserFilters) ByShortName(ShortName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

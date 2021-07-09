@@ -150,7 +150,8 @@ func Build(ctx context.Context, cfg config.Config, consumer mq.KafkaConsumer) (O
 	partnerStore := sqlstore.BuildPartnerStore(mainDB)
 	partnerStoreInterface := sqlstore.BindPartnerStore(partnerStore)
 	accountUserStore := &sqlstore.AccountUserStore{
-		DB: mainDB,
+		DB:        mainDB,
+		UserStore: userStoreInterface,
 	}
 	accountUserStoreInterface := sqlstore.BindAccountUserStore(accountUserStore)
 	shopStore := &sqlstore.ShopStore{

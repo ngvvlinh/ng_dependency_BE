@@ -493,6 +493,10 @@ func convert_identitymodel_AccountUser_identity_AccountUser(arg *identitymodel.A
 	out.DeletedAt = arg.DeletedAt                       // simple assign
 	out.Permission = identity.Permission{}              // types do not match
 	out.FullName = arg.FullName                         // simple assign
+	out.FullNameNorm = arg.FullNameNorm                 // simple assign
+	out.Phone = arg.Phone                               // simple assign
+	out.PhoneNorm = arg.PhoneNorm                       // simple assign
+	out.ExtensionNumberNorm = arg.ExtensionNumberNorm   // simple assign
 	out.ShortName = arg.ShortName                       // simple assign
 	out.Position = arg.Position                         // simple assign
 	out.InvitationSentAt = arg.InvitationSentAt         // simple assign
@@ -538,6 +542,10 @@ func convert_identity_AccountUser_identitymodel_AccountUser(arg *identity.Accoun
 	out.DeletedAt = arg.DeletedAt                       // simple assign
 	out.Permission = identitymodel.Permission{}         // types do not match
 	out.FullName = arg.FullName                         // simple assign
+	out.FullNameNorm = arg.FullNameNorm                 // simple assign
+	out.Phone = arg.Phone                               // simple assign
+	out.PhoneNorm = arg.PhoneNorm                       // simple assign
+	out.ExtensionNumberNorm = arg.ExtensionNumberNorm   // simple assign
 	out.ShortName = arg.ShortName                       // simple assign
 	out.Position = arg.Position                         // simple assign
 	out.InvitationSentAt = arg.InvitationSentAt         // simple assign
@@ -583,6 +591,10 @@ func apply_identity_CreateAccountUserArgs_identity_AccountUser(arg *identity.Cre
 	out.DeletedAt = time.Time{}                         // zero value
 	out.Permission = arg.Permission                     // simple assign
 	out.FullName = arg.FullName                         // simple assign
+	out.FullNameNorm = ""                               // zero value
+	out.Phone = ""                                      // zero value
+	out.PhoneNorm = ""                                  // zero value
+	out.ExtensionNumberNorm = ""                        // zero value
 	out.ShortName = arg.ShortName                       // simple assign
 	out.Position = arg.Position                         // simple assign
 	out.InvitationSentAt = arg.InvitationSentAt         // simple assign
