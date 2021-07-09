@@ -23,23 +23,23 @@ cache: &global_cache
     - mkdir -p .cache
     - export GOPATH="$CI_PROJECT_DIR/.cache" 
 
-# verify:import:
-#   extends: .verify
-#   script:
-#     - time scripts/verify-imports.sh
+verify:import:
+  extends: .verify
+  script:
+    - time scripts/verify-imports.sh
 
-# verify:lint:
-#   extends: .verify
-#   script:
-#     - time scripts/ci/verify-lint.sh
+verify:lint:
+  extends: .verify
+  script:
+    - time scripts/ci/verify-lint.sh
 
-# verify:generate:
-#   extends: .verify
-#   cache:
-#     <<: *global_cache
-#     policy: pull
-#   script:
-#     - time scripts/ci/verify-generate.sh
+verify:generate:
+  extends: .verify
+  cache:
+    <<: *global_cache
+    policy: pull
+  script:
+    - time scripts/ci/verify-generate.sh
 
 build:
   image: golang:1.15
@@ -54,9 +54,9 @@ build:
   only:
     refs:
       - branches
-    # changes:
-    #   - "go.mod"
-    #   - "go.sum"
+    changes:
+      - "go.mod"
+      - "go.sum"
 
 test:
   image: golang:1.15
@@ -72,10 +72,10 @@ test:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: "postgres"
     POSTGRES_HOST_AUTH_METHOD: trust
-  # dependencies: 
-  #   - verify:import
-  #   - verify:lint
-  #   - verify:generate
+  dependencies: 
+    - verify:import
+    - verify:lint
+    - verify:generate
   except: ["tags"] 
   script:
     - time go run ./scripts/init_testdb/main.go -drop
