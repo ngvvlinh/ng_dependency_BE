@@ -15,7 +15,7 @@ stages:
   before_script:
     - mkdir -p .cache
     - export GOPATH="$CI_PROJECT_DIR/.cache"
-    - export PROJECT_DIR=$CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE/backend
+    - export PROJECT_DIR=$CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
 
 # verify:import:
 #   extends: .verify
@@ -50,7 +50,9 @@ test:
   #   - verify:generate
   except: ["tags"]
   script:
-    - time go run ./scripts/init_testdb/main.go -drop
-    - time scripts/ci/test-all.sh simple
+    - echo $CI_PROJECT_DIR
+    - echo $CI_BUILDS_DIR
+    # - time go run ./scripts/init_testdb/main.go -drop
+    # - time scripts/ci/test-all.sh simple
 
 include: 'ci/**.yml'
