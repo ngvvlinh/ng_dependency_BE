@@ -64,6 +64,8 @@ test:
     - verify:import
     - verify:lint
     - verify:generate
+  needs:
+    - go-cache  
   except: ["tags"]
   before_script:
     - mkdir -p .cache
