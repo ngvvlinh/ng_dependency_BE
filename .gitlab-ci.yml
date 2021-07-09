@@ -18,11 +18,6 @@ cache: &global_cache
   paths: [".cache"]
   policy: pull
 
-.go-cache:
-  before_script:
-    - mkdir -p .cache
-    - export GOPATH="$CI_PROJECT_DIR/.cache"  
-
 verify:import:
   extends: .verify
   script:
@@ -35,10 +30,7 @@ verify:lint:
 
 verify:generate:
   extends: 
-    - .go-cache
     - .verify
-  cache:
-    <<: *global_cache
   script:
     - time scripts/ci/verify-generate.sh
 
@@ -61,8 +53,6 @@ test:
   image: golang:1.15
   cache:
     <<: *global_cache
-  extends: 
-    - .go-cache  
   stage: test
   services:
     - postgres:12.2-alpine
@@ -77,8 +67,12 @@ test:
     - verify:lint
     - verify:generate
   except: ["tags"]
+  before_script:
+    - mkdir -p .cache
+    - export GOPATH="$CI_PROJECT_DIR/.cache"  
   script:
     - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
+  allow_failure: false  
 
 include: 'ci/**.yml'
