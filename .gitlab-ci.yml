@@ -13,28 +13,32 @@ variables:
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   PROJECT_DIR: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
 
+before_script:
+  - mkdir -p .cache
+  - export GOPATH="$CI_PROJECT_DIR/.cache"  
+
 cache: &global_cache
   key: ${CI_COMMIT_REF_SLUG}
   paths: [".cache"]
   policy: pull
+  
+# verify:import:
+#   extends: .verify
+#   script:
+#     - time scripts/verify-imports.sh
 
-verify:import:
-  extends: .verify
-  script:
-    - time scripts/verify-imports.sh
+# verify:lint:
+#   extends: .verify
+#   script:
+#     - time scripts/ci/verify-lint.sh
 
-verify:lint:
-  extends: .verify
-  script:
-    - time scripts/ci/verify-lint.sh
-
-verify:generate:
-  extends: .verify
-  cache:
-    <<: *global_cache
-    policy: pull
-  script:
-    - time scripts/ci/verify-generate.sh
+# verify:generate:
+#   extends: .verify
+#   cache:
+#     <<: *global_cache
+#     policy: pull
+#   script:
+#     - time scripts/ci/verify-generate.sh
 
 build:
   image: golang:1.15
@@ -47,9 +51,9 @@ build:
   only:
     refs:
       - master
-    changes:
-      - "go.mod"
-      - "go.sum"
+    # changes:
+    #   - "go.mod"
+    #   - "go.sum"
 
 test:
   image: golang:1.15
@@ -70,9 +74,6 @@ test:
     - verify:lint
     - verify:generate
   except: ["tags"]
-  before_script:
-    - mkdir -p .cache
-    - export GOPATH="$CI_PROJECT_DIR/.cache"
   script:
     - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
