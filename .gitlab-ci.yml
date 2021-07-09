@@ -44,12 +44,13 @@ build:
     policy: push
   script:
     - go install ./...
+    - time scripts/install-tools.sh
   only:
     refs:
       - branches
-    changes:
-      - "go.mod"
-      - "go.sum"
+    # changes:
+    #   - "go.mod"
+    #   - "go.sum"
 
 test:
   image: golang:1.15
