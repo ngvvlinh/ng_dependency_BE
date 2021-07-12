@@ -3103,8 +3103,8 @@ type GetContactRequest struct {
 func (m *GetContactRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetContactsRequest struct {
-	Paging *common.Paging     `json:"paging"`
-	Filter *FilterGetContacts `json:"filter"`
+	Paging *common.CursorPaging `json:"paging"`
+	Filter *FilterGetContacts   `json:"filter"`
 }
 
 func (m *GetContactsRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -3118,8 +3118,8 @@ type FilterGetContacts struct {
 func (m *FilterGetContacts) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetContactsResponse struct {
-	Contacts []*Contact       `json:"contacts"`
-	Paging   *common.PageInfo `json:"paging"`
+	Contacts []*Contact             `json:"contacts"`
+	Paging   *common.CursorPageInfo `json:"paging"`
 }
 
 func (m *GetContactsResponse) String() string { return jsonx.MustMarshalToString(m) }

@@ -10,9 +10,9 @@ func (ft *ContactFilters) NotDeleted() sq.WriterTo {
 }
 
 var SortContact = map[string]string{
-	"id":         "",
-	"created_at": "",
-	"updated_at": "",
+	"id":         "id",
+	"created_at": "created_at",
+	"updated_at": "updated_at",
 }
 
 var FilterContact = sqlstore.FilterWhitelist{}

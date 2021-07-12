@@ -11158,7 +11158,7 @@
           "$ref": "#/definitions/paFilterGetContacts"
         },
         "paging": {
-          "$ref": "#/definitions/ktPaging"
+          "$ref": "#/definitions/ktCursorPaging"
         }
       }
     },
@@ -11172,7 +11172,7 @@
           }
         },
         "paging": {
-          "$ref": "#/definitions/ktPageInfo"
+          "$ref": "#/definitions/ktCursorPageInfo"
         }
       }
     },

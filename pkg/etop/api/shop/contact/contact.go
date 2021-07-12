@@ -39,7 +39,10 @@ func (s *ContactService) GetContact(
 func (s *ContactService) GetContacts(
 	ctx context.Context, req *api.GetContactsRequest,
 ) (*api.GetContactsResponse, error) {
-	paging := cmapi.CMPaging(req.Paging)
+	paging, err := cmapi.CMCursorPaging(req.Paging)
+	if err != nil {
+		return nil, err
+	}
 	shopID := s.SS.Shop().ID
 	var IDs []dot.ID
 	var phone, name string
@@ -62,7 +65,7 @@ func (s *ContactService) GetContacts(
 
 	return &api.GetContactsResponse{
 		Contacts: convertpball.PbContacts(getContactsQuery.Result.Contacts),
-		Paging:   cmapi.PbPageInfo(paging),
+		Paging:   cmapi.PbCursorPageInfo(paging, &getContactsQuery.Result.Paging),
 	}, nil
 }
 

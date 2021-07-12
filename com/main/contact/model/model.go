@@ -8,7 +8,7 @@ import (
 
 // +sqlgen
 type Contact struct {
-	ID           dot.ID
+	ID           dot.ID `paging:"id"`
 	ShopID       dot.ID
 	FullName     string
 	FullNameNorm string
@@ -16,7 +16,7 @@ type Contact struct {
 	PhoneNorm    string
 	WLPartnerID  dot.ID
 
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
+	CreatedAt time.Time `sq:"create" paging:"created_at"`
+	UpdatedAt time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt time.Time
 }
