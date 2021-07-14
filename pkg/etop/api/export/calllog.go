@@ -151,7 +151,7 @@ func (s *Service) getAllUsers(ctx context.Context, shopID dot.ID) (mapUsers map[
 		return nil, err
 	}
 	userIDs := []dot.ID{}
-	for _, accUser := range query.Result {
+	for _, accUser := range query.Result.AccountUsers {
 		userIDs = append(userIDs, accUser.UserID)
 	}
 

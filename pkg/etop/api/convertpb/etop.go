@@ -11,6 +11,7 @@ import (
 	"o.o/api/main/location"
 	ordertypes "o.o/api/main/ordering/types"
 	etop "o.o/api/top/int/etop"
+	"o.o/api/top/int/shop/types"
 	"o.o/api/top/types/etc/account_type"
 	addresstype "o.o/api/top/types/etc/address_type"
 	"o.o/api/top/types/etc/status3"
@@ -997,6 +998,33 @@ func Convert_core_Shop_To_api_Shop(in *identity.Shop) *etop.Shop {
 		TryOn:                   in.TryOn,
 		MoneyTransactionRrule:   in.MoneyTransactionRRule,
 		IsPriorMoneyTransaction: in.IsPriorMoneyTransaction,
+	}
+	return res
+}
+
+func Convert_core_ExtendedAccountUser_To_api_ExtendedAccountUser(in *identity.AccountUserExtended) *types.AccountUserExtended {
+	if in == nil {
+		return nil
+	}
+	res := &types.AccountUserExtended{
+		UserID:      in.UserID,
+		AccountID:   in.AccountID,
+		Roles:       in.Roles,
+		Permissions: in.Permissions,
+		FullName:    in.FullName,
+		ShortName:   in.ShortName,
+		Email:       in.Email,
+		Phone:       in.Phone,
+		Position:    in.Position,
+		Deleted:     in.Deleted,
+	}
+	return res
+}
+
+func Convert_core_ExtendedAccountUsers_To_api_ExtendedAccountUsers(in []*identity.AccountUserExtended) []*types.AccountUserExtended {
+	res := make([]*types.AccountUserExtended, len(in))
+	for i, m := range in {
+		res[i] = Convert_core_ExtendedAccountUser_To_api_ExtendedAccountUser(m)
 	}
 	return res
 }

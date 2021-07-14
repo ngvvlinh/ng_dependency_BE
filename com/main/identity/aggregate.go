@@ -385,6 +385,40 @@ func (a *Aggregate) RegisterSimplify(ctx context.Context, args *identity.Registe
 	})
 }
 
+func (a *Aggregate) UpdateUserInfo(ctx context.Context, args *identity.UpdateUserInfoArgs) error {
+	if args.FullName == "" {
+		return nil
+	}
+	update := &identity.User{
+		FullName: args.FullName,
+	}
+	if err := a.userStore(ctx).ByID(args.UserID).UpdateUser(update); err != nil {
+		return err
+	}
+
+	event := &identity.UserUpdatedEvent{
+		AccountID: args.AccountID,
+		UserID:    args.UserID,
+		FullName:  args.FullName,
+	}
+	return a.eventBus.Publish(ctx, event)
+
+}
+
+func (a *Aggregate) UpdateUserPassword(ctx context.Context, args *identity.UpdateUserPasswordArgs) error {
+	if args.UserID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "UpdateUserPassword: missing user_id")
+	}
+	if args.Password == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "UpdateUserPassword: missing password")
+	}
+
+	userInternal := &identity.UserInternal{
+		Hashpwd: EncodePassword(args.Password),
+	}
+	return a.userInternalStore(ctx).UserID(args.UserID).UpdateUserInternal(userInternal)
+}
+
 func (a *Aggregate) CreateShop(ctx context.Context, args *identity.CreateShopArgs) (*identity.Shop, error) {
 	var err error
 	args.ID, err = checkShopID(args.ID)
@@ -592,6 +626,28 @@ func (a *Aggregate) UpdateAccountUserPermission(ctx context.Context, args *ident
 	}
 	update := &identity.AccountUser{
 		Permission: args.Permission,
+	}
+	if err := a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).UpdateAccountUser(update); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *Aggregate) UpdateAccountUserInfo(ctx context.Context, args *identity.UpdateAccountUserInfoArgs) error {
+	if args.UserID == 0 || args.AccountID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing require params")
+	}
+	if args.FullName == "" && args.Phone == "" {
+		return nil
+	}
+	fullNameNorm := validate.NormalizeSearchCharacter(args.FullName)
+	phoneNorm := validate.NormalizeSearchCharacter(args.Phone)
+
+	update := &identity.AccountUser{
+		FullName:     args.FullName,
+		Phone:        args.Phone,
+		FullNameNorm: fullNameNorm,
+		PhoneNorm:    phoneNorm,
 	}
 	if err := a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).UpdateAccountUser(update); err != nil {
 		return err

@@ -12,6 +12,7 @@ import (
 	identitytypes "o.o/api/main/identity/types"
 	meta "o.o/api/meta"
 	account_type "o.o/api/top/types/etc/account_type"
+	shop_user_role "o.o/api/top/types/etc/shop_user_role"
 	status3 "o.o/api/top/types/etc/status3"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
@@ -150,6 +151,7 @@ type RegisterSimplifyCommand struct {
 	Email               string
 	CompanyName         string
 	IsCreateDefaultShop bool
+	IsUpdatePassword    bool
 
 	Result struct {
 	} `json:"-"`
@@ -168,6 +170,20 @@ type UnblockUserCommand struct {
 func (h AggregateHandler) HandleUnblockUser(ctx context.Context, msg *UnblockUserCommand) (err error) {
 	msg.Result, err = h.inner.UnblockUser(msg.GetArgs(ctx))
 	return err
+}
+
+type UpdateAccountUserInfoCommand struct {
+	AccountID dot.ID
+	UserID    dot.ID
+	FullName  string
+	Phone     string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateAccountUserInfo(ctx context.Context, msg *UpdateAccountUserInfoCommand) (err error) {
+	return h.inner.UpdateAccountUserInfo(msg.GetArgs(ctx))
 }
 
 type UpdateAccountUserPermissionCommand struct {
@@ -259,6 +275,31 @@ type UpdateUserEmailCommand struct {
 
 func (h AggregateHandler) HandleUpdateUserEmail(ctx context.Context, msg *UpdateUserEmailCommand) (err error) {
 	return h.inner.UpdateUserEmail(msg.GetArgs(ctx))
+}
+
+type UpdateUserInfoCommand struct {
+	AccountID dot.ID
+	UserID    dot.ID
+	FullName  string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateUserInfo(ctx context.Context, msg *UpdateUserInfoCommand) (err error) {
+	return h.inner.UpdateUserInfo(msg.GetArgs(ctx))
+}
+
+type UpdateUserPasswordCommand struct {
+	UserID   dot.ID
+	Password string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateUserPassword(ctx context.Context, msg *UpdateUserPasswordCommand) (err error) {
+	return h.inner.UpdateUserPassword(msg.GetArgs(ctx))
 }
 
 type UpdateUserPhoneCommand struct {
@@ -524,14 +565,36 @@ func (h QueryServiceHandler) HandleGetUsersByIDs(ctx context.Context, msg *GetUs
 }
 
 type ListAccountUsersQuery struct {
-	AccountID dot.ID
-	UserID    dot.ID
+	Paging              meta.Paging
+	AccountID           dot.ID
+	FullNameNorm        filter.FullTextSearch
+	PhoneNorm           filter.FullTextSearch
+	ExtensionNumberNorm filter.FullTextSearch
+	Role                shop_user_role.NullUserRole
+	UserIDs             []dot.ID
 
-	Result []*AccountUser `json:"-"`
+	Result *ListAccountUsersResponse `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleListAccountUsers(ctx context.Context, msg *ListAccountUsersQuery) (err error) {
 	msg.Result, err = h.inner.ListAccountUsers(msg.GetArgs(ctx))
+	return err
+}
+
+type ListExtendedAccountUsersQuery struct {
+	Paging              meta.Paging
+	AccountID           dot.ID
+	FullNameNorm        filter.FullTextSearch
+	PhoneNorm           filter.FullTextSearch
+	ExtensionNumberNorm filter.FullTextSearch
+	Role                shop_user_role.NullUserRole
+	UserIDs             []dot.ID
+
+	Result *ListExtendedAccountUsersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListExtendedAccountUsers(ctx context.Context, msg *ListExtendedAccountUsersQuery) (err error) {
+	msg.Result, err = h.inner.ListExtendedAccountUsers(msg.GetArgs(ctx))
 	return err
 }
 
@@ -619,6 +682,7 @@ func (q *DeleteAccountUsersCommand) command()          {}
 func (q *DeleteAffiliateCommand) command()             {}
 func (q *RegisterSimplifyCommand) command()            {}
 func (q *UnblockUserCommand) command()                 {}
+func (q *UpdateAccountUserInfoCommand) command()       {}
 func (q *UpdateAccountUserPermissionCommand) command() {}
 func (q *UpdateAffiliateBankAccountCommand) command()  {}
 func (q *UpdateAffiliateInfoCommand) command()         {}
@@ -626,6 +690,8 @@ func (q *UpdateExtensionNumberNormCommand) command()   {}
 func (q *UpdateShipFromAddressIDCommand) command()     {}
 func (q *UpdateShopInfoCommand) command()              {}
 func (q *UpdateUserEmailCommand) command()             {}
+func (q *UpdateUserInfoCommand) command()              {}
+func (q *UpdateUserPasswordCommand) command()          {}
 func (q *UpdateUserPhoneCommand) command()             {}
 func (q *UpdateUserRefCommand) command()               {}
 func (q *UpdateUserReferenceSaleIDCommand) command()   {}
@@ -650,6 +716,7 @@ func (q *GetUsersQuery) query()                         {}
 func (q *GetUsersByAccountQuery) query()                {}
 func (q *GetUsersByIDsQuery) query()                    {}
 func (q *ListAccountUsersQuery) query()                 {}
+func (q *ListExtendedAccountUsersQuery) query()         {}
 func (q *ListPartnerRelationsBySubjectIDsQuery) query() {}
 func (q *ListPartnersForWhiteLabelQuery) query()        {}
 func (q *ListShopExtendedsQuery) query()                {}
@@ -815,6 +882,7 @@ func (q *RegisterSimplifyCommand) GetArgs(ctx context.Context) (_ context.Contex
 			Email:               q.Email,
 			CompanyName:         q.CompanyName,
 			IsCreateDefaultShop: q.IsCreateDefaultShop,
+			IsUpdatePassword:    q.IsUpdatePassword,
 		}
 }
 
@@ -825,11 +893,29 @@ func (q *RegisterSimplifyCommand) SetRegisterSimplifyArgs(args *RegisterSimplify
 	q.Email = args.Email
 	q.CompanyName = args.CompanyName
 	q.IsCreateDefaultShop = args.IsCreateDefaultShop
+	q.IsUpdatePassword = args.IsUpdatePassword
 }
 
 func (q *UnblockUserCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
 	return ctx,
 		q.UserID
+}
+
+func (q *UpdateAccountUserInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAccountUserInfoArgs) {
+	return ctx,
+		&UpdateAccountUserInfoArgs{
+			AccountID: q.AccountID,
+			UserID:    q.UserID,
+			FullName:  q.FullName,
+			Phone:     q.Phone,
+		}
+}
+
+func (q *UpdateAccountUserInfoCommand) SetUpdateAccountUserInfoArgs(args *UpdateAccountUserInfoArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
+	q.FullName = args.FullName
+	q.Phone = args.Phone
 }
 
 func (q *UpdateAccountUserPermissionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAccountUserPermissionArgs) {
@@ -920,6 +1006,34 @@ func (q *UpdateUserEmailCommand) GetArgs(ctx context.Context) (_ context.Context
 	return ctx,
 		q.UserID,
 		q.Email
+}
+
+func (q *UpdateUserInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateUserInfoArgs) {
+	return ctx,
+		&UpdateUserInfoArgs{
+			AccountID: q.AccountID,
+			UserID:    q.UserID,
+			FullName:  q.FullName,
+		}
+}
+
+func (q *UpdateUserInfoCommand) SetUpdateUserInfoArgs(args *UpdateUserInfoArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
+	q.FullName = args.FullName
+}
+
+func (q *UpdateUserPasswordCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateUserPasswordArgs) {
+	return ctx,
+		&UpdateUserPasswordArgs{
+			UserID:   q.UserID,
+			Password: q.Password,
+		}
+}
+
+func (q *UpdateUserPasswordCommand) SetUpdateUserPasswordArgs(args *UpdateUserPasswordArgs) {
+	q.UserID = args.UserID
+	q.Password = args.Password
 }
 
 func (q *UpdateUserPhoneCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, phone string) {
@@ -1144,14 +1258,47 @@ func (q *GetUsersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, ID
 func (q *ListAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListAccountUsersArgs) {
 	return ctx,
 		&ListAccountUsersArgs{
-			AccountID: q.AccountID,
-			UserID:    q.UserID,
+			Paging:              q.Paging,
+			AccountID:           q.AccountID,
+			FullNameNorm:        q.FullNameNorm,
+			PhoneNorm:           q.PhoneNorm,
+			ExtensionNumberNorm: q.ExtensionNumberNorm,
+			Role:                q.Role,
+			UserIDs:             q.UserIDs,
 		}
 }
 
 func (q *ListAccountUsersQuery) SetListAccountUsersArgs(args *ListAccountUsersArgs) {
+	q.Paging = args.Paging
 	q.AccountID = args.AccountID
-	q.UserID = args.UserID
+	q.FullNameNorm = args.FullNameNorm
+	q.PhoneNorm = args.PhoneNorm
+	q.ExtensionNumberNorm = args.ExtensionNumberNorm
+	q.Role = args.Role
+	q.UserIDs = args.UserIDs
+}
+
+func (q *ListExtendedAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListExtendedAccountUsersArgs) {
+	return ctx,
+		&ListExtendedAccountUsersArgs{
+			Paging:              q.Paging,
+			AccountID:           q.AccountID,
+			FullNameNorm:        q.FullNameNorm,
+			PhoneNorm:           q.PhoneNorm,
+			ExtensionNumberNorm: q.ExtensionNumberNorm,
+			Role:                q.Role,
+			UserIDs:             q.UserIDs,
+		}
+}
+
+func (q *ListExtendedAccountUsersQuery) SetListExtendedAccountUsersArgs(args *ListExtendedAccountUsersArgs) {
+	q.Paging = args.Paging
+	q.AccountID = args.AccountID
+	q.FullNameNorm = args.FullNameNorm
+	q.PhoneNorm = args.PhoneNorm
+	q.ExtensionNumberNorm = args.ExtensionNumberNorm
+	q.Role = args.Role
+	q.UserIDs = args.UserIDs
 }
 
 func (q *ListPartnerRelationsBySubjectIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListPartnerRelationsBySubjectIDsArgs) {
@@ -1256,6 +1403,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDeleteAffiliate)
 	b.AddHandler(h.HandleRegisterSimplify)
 	b.AddHandler(h.HandleUnblockUser)
+	b.AddHandler(h.HandleUpdateAccountUserInfo)
 	b.AddHandler(h.HandleUpdateAccountUserPermission)
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
@@ -1263,6 +1411,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateShipFromAddressID)
 	b.AddHandler(h.HandleUpdateShopInfo)
 	b.AddHandler(h.HandleUpdateUserEmail)
+	b.AddHandler(h.HandleUpdateUserInfo)
+	b.AddHandler(h.HandleUpdateUserPassword)
 	b.AddHandler(h.HandleUpdateUserPhone)
 	b.AddHandler(h.HandleUpdateUserRef)
 	b.AddHandler(h.HandleUpdateUserReferenceSaleID)
@@ -1301,6 +1451,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUsersByAccount)
 	b.AddHandler(h.HandleGetUsersByIDs)
 	b.AddHandler(h.HandleListAccountUsers)
+	b.AddHandler(h.HandleListExtendedAccountUsers)
 	b.AddHandler(h.HandleListPartnerRelationsBySubjectIDs)
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)
 	b.AddHandler(h.HandleListShopExtendeds)

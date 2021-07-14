@@ -28,6 +28,7 @@ import (
 	"o.o/api/top/types/etc/service_classify"
 	"o.o/api/top/types/etc/shipping"
 	"o.o/api/top/types/etc/shipping_payment_type"
+	"o.o/api/top/types/etc/shop_user_role"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status4"
 	"o.o/api/top/types/etc/status5"
@@ -43,6 +44,7 @@ import (
 	"o.o/capi/dot"
 	"o.o/capi/filter"
 	"o.o/common/jsonx"
+	"o.o/common/xerrors"
 )
 
 type GetTicketCommentsResponse struct {
@@ -3198,3 +3200,74 @@ type CreateIssueResponse struct {
 }
 
 func (m *CreateIssueResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateAccountUserRequest struct {
+	FullName string                    `json:"full_name"`
+	Phone    string                    `json:"phone"`
+	Roles    []shop_user_role.UserRole `json:"roles"`
+	Password string                    `json:"password"`
+}
+
+func (m *CreateAccountUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (r *CreateAccountUserRequest) GetAccountUserRoles() []string {
+	var res = make([]string, 0, len(r.Roles))
+	for _, role := range r.Roles {
+		res = append(res, role.String())
+	}
+	return res
+}
+
+func (r *CreateAccountUserRequest) Validate() error {
+	if r.FullName == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Vui lòng điền họ tên")
+	}
+	if r.Password == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Vui lòng điền password")
+	}
+	if len(r.Roles) == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Vui lòng chọn roles")
+	}
+	return nil
+}
+
+type GetAccountUsersRequest struct {
+	Paging *common.CursorPaging          `json:"paging"`
+	Filter *FilterGetAccountUsersRequest `json:"filter"`
+}
+
+func (m *GetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type FilterGetAccountUsersRequest struct {
+	Name            filter.FullTextSearch       `json:"name"`
+	Phone           filter.FullTextSearch       `json:"phone"`
+	ExtensionNumber filter.FullTextSearch       `json:"extension_number"`
+	Role            shop_user_role.NullUserRole `json:"role"`
+	UserIDs         []dot.ID                    `json:"user_ids"`
+}
+
+func (m *FilterGetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetAccountUsersResponse struct {
+	AccountUsers []*shoptypes.AccountUserExtended `json:"account_users"`
+	Paging       *common.CursorPageInfo           `json:"paging"`
+}
+
+func (m *GetAccountUsersResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateAccountUserRequest struct {
+	UserID   dot.ID                    `json:"user_id"`
+	FullName string                    `json:"full_name"`
+	Roles    []shop_user_role.UserRole `json:"roles"`
+	// Có thể đổi mật khẩu cho nhân viên, nếu nhân viên đó chưa đổi mật khẩu lần nào.
+	// Tức mật khẩu vẫn đang ở dạng khởi tạo khi vừa mới tạo tài khoản.
+	Password string `json:"password"`
+}
+
+func (m *UpdateAccountUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteAccountUserRequest struct {
+	UserID dot.ID `json:"user_id"`
+}
+
+func (m *DeleteAccountUserRequest) String() string { return jsonx.MustMarshalToString(m) }

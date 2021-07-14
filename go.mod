@@ -32,6 +32,7 @@ require (
 	github.com/go-openapi/jsonreference v0.19.4
 	github.com/go-openapi/spec v0.19.9
 	github.com/go-openapi/swag v0.19.9 // indirect
+	github.com/go-playground/assert/v2 v2.0.1
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.0.0-rc1
 	github.com/go-test/deep v1.0.7
 	github.com/google/wire v0.4.1-0.20200530155014-5633f1675aa9

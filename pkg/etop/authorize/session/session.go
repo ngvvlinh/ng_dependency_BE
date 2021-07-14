@@ -228,3 +228,7 @@ func (s *session) verifyToken(
 		return
 	}
 }
+
+func (s *session) GetRoles() []string {
+	return s.Permission().Roles
+}

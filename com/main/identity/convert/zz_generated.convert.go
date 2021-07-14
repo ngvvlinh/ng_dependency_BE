@@ -82,6 +82,24 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_identity_CreateAccountUserArgs_identity_AccountUser(arg.(*identity.CreateAccountUserArgs), out.(*identity.AccountUser))
 		return nil
 	})
+	s.Register((*identitymodel.AccountUserExtended)(nil), (*identity.AccountUserExtended)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_AccountUserExtended_identity_AccountUserExtended(arg.(*identitymodel.AccountUserExtended), out.(*identity.AccountUserExtended))
+		return nil
+	})
+	s.Register(([]*identitymodel.AccountUserExtended)(nil), (*[]*identity.AccountUserExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_AccountUserExtendeds_identity_AccountUserExtendeds(arg.([]*identitymodel.AccountUserExtended))
+		*out.(*[]*identity.AccountUserExtended) = out0
+		return nil
+	})
+	s.Register((*identity.AccountUserExtended)(nil), (*identitymodel.AccountUserExtended)(nil), func(arg, out interface{}) error {
+		Convert_identity_AccountUserExtended_identitymodel_AccountUserExtended(arg.(*identity.AccountUserExtended), out.(*identitymodel.AccountUserExtended))
+		return nil
+	})
+	s.Register(([]*identity.AccountUserExtended)(nil), (*[]*identitymodel.AccountUserExtended)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_AccountUserExtendeds_identitymodel_AccountUserExtendeds(arg.([]*identity.AccountUserExtended))
+		*out.(*[]*identitymodel.AccountUserExtended) = out0
+		return nil
+	})
 	s.Register((*identitymodel.Affiliate)(nil), (*identity.Affiliate)(nil), func(arg, out interface{}) error {
 		Convert_identitymodel_Affiliate_identity_Affiliate(arg.(*identitymodel.Affiliate), out.(*identity.Affiliate))
 		return nil
@@ -533,6 +551,7 @@ func Convert_identity_AccountUser_identitymodel_AccountUser(arg *identity.Accoun
 }
 
 func convert_identity_AccountUser_identitymodel_AccountUser(arg *identity.AccountUser, out *identitymodel.AccountUser) {
+	out.ID = 0                                          // zero value
 	out.AccountID = arg.AccountID                       // simple assign
 	out.UserID = arg.UserID                             // simple assign
 	out.Status = arg.Status                             // simple assign
@@ -605,6 +624,73 @@ func apply_identity_CreateAccountUserArgs_identity_AccountUser(arg *identity.Cre
 	out.DisabledBy = time.Time{}                        // zero value
 	out.DisableReason = ""                              // zero value
 	out.Rid = 0                                         // zero value
+}
+
+//-- convert o.o/api/main/identity.AccountUserExtended --//
+
+func Convert_identitymodel_AccountUserExtended_identity_AccountUserExtended(arg *identitymodel.AccountUserExtended, out *identity.AccountUserExtended) *identity.AccountUserExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.AccountUserExtended{}
+	}
+	convert_identitymodel_AccountUserExtended_identity_AccountUserExtended(arg, out)
+	return out
+}
+
+func convert_identitymodel_AccountUserExtended_identity_AccountUserExtended(arg *identitymodel.AccountUserExtended, out *identity.AccountUserExtended) {
+	out.UserID = 0        // zero value
+	out.AccountID = 0     // zero value
+	out.Roles = nil       // zero value
+	out.Permissions = nil // zero value
+	out.FullName = ""     // zero value
+	out.ShortName = ""    // zero value
+	out.Email = ""        // zero value
+	out.Phone = ""        // zero value
+	out.Position = ""     // zero value
+	out.Deleted = false   // zero value
+}
+
+func Convert_identitymodel_AccountUserExtendeds_identity_AccountUserExtendeds(args []*identitymodel.AccountUserExtended) (outs []*identity.AccountUserExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.AccountUserExtended, len(args))
+	outs = make([]*identity.AccountUserExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_AccountUserExtended_identity_AccountUserExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_AccountUserExtended_identitymodel_AccountUserExtended(arg *identity.AccountUserExtended, out *identitymodel.AccountUserExtended) *identitymodel.AccountUserExtended {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.AccountUserExtended{}
+	}
+	convert_identity_AccountUserExtended_identitymodel_AccountUserExtended(arg, out)
+	return out
+}
+
+func convert_identity_AccountUserExtended_identitymodel_AccountUserExtended(arg *identity.AccountUserExtended, out *identitymodel.AccountUserExtended) {
+	out.AccountUser = nil // zero value
+	out.Account = nil     // zero value
+	out.User = nil        // zero value
+}
+
+func Convert_identity_AccountUserExtendeds_identitymodel_AccountUserExtendeds(args []*identity.AccountUserExtended) (outs []*identitymodel.AccountUserExtended) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.AccountUserExtended, len(args))
+	outs = make([]*identitymodel.AccountUserExtended, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_AccountUserExtended_identitymodel_AccountUserExtended(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert o.o/api/main/identity.Affiliate --//

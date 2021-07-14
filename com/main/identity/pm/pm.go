@@ -55,6 +55,7 @@ func (m *ProcessManager) registerEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.AccountDeleting)
 	eventBus.AddEventListener(m.ExtensionAssigned)
 	eventBus.AddEventListener(m.UserOfExtensionRemoved)
+	eventBus.AddEventListener(m.UserUpdated)
 }
 
 func (m *ProcessManager) UserOfExtensionRemoved(ctx context.Context, event *etelecom.RemovedUserOfExtensionEvent) error {
@@ -253,7 +254,7 @@ func (m *ProcessManager) AccountDeleting(ctx context.Context, event *identity.Ac
 	if err := m.identityQuery.Dispatch(ctx, queryAccountUsers); err != nil {
 		return err
 	}
-	if len(queryAccountUsers.Result) >= 2 {
+	if len(queryAccountUsers.Result.AccountUsers) >= 2 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng gỡ các nhân viên đang có quyền quản trị")
 	}
 
@@ -267,5 +268,18 @@ func (m *ProcessManager) AccountDeleting(ctx context.Context, event *identity.Ac
 		return cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng xóa các lời mời quản trị chưa được chấp nhận")
 	}
 
+	return nil
+}
+
+func (m *ProcessManager) UserUpdated(ctx context.Context, event *identity.UserUpdatedEvent) error {
+	update := &identity.UpdateAccountUserInfoCommand{
+		AccountID: event.AccountID,
+		UserID:    event.UserID,
+		FullName:  event.FullName,
+		Phone:     event.Phone,
+	}
+	if err := m.identityAggr.Dispatch(ctx, update); err != nil {
+		return err
+	}
 	return nil
 }

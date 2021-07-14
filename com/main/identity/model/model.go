@@ -413,14 +413,15 @@ type Permission struct {
 // +convert:type=identity.AccountUser
 // +sqlgen
 type AccountUser struct {
+	ID        dot.ID `paging:"id"`
 	AccountID dot.ID
 	UserID    dot.ID
 
 	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending
 	ResponseStatus status3.Status // 1: accepted,  -1: rejected, 0: pending
 
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
+	CreatedAt time.Time `sq:"create" paging:"created_at"`
+	UpdatedAt time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt time.Time
 
 	Permission `sq:"inline"`

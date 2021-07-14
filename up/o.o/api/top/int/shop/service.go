@@ -64,6 +64,15 @@ type AccountService interface {
 	UpdateExternalAccountAhamoveVerificationImages(context.Context, *UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error)
 }
 
+// +apix:path=/shop.AccountUser
+type AccountUserService interface {
+	// Create user (staff) for shop
+	CreateAccountUser(context.Context, *CreateAccountUserRequest) (*etop.User, error)
+	GetAccountUsers(context.Context, *GetAccountUsersRequest) (*GetAccountUsersResponse, error)
+	UpdateAccountUser(context.Context, *UpdateAccountUserRequest) (*cm.UpdatedResponse, error)
+	DeleteAccountUser(context.Context, *DeleteAccountUserRequest) (*cm.DeletedResponse, error)
+}
+
 // +apix:path=/shop.AccountShipnow
 type AccountShipnowService interface {
 	GetAccountShipnow(context.Context, *GetAccountShipnowRequest) (*ExternalAccountAhamove, error)

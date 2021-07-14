@@ -287,6 +287,114 @@
         }
       }
     },
+    "/api/shop.AccountUser/CreateAccountUser": {
+      "post": {
+        "tags": [
+          "AccountUser"
+        ],
+        "summary": "Create user (staff) for shop",
+        "operationId": "shop.AccountUser-CreateAccountUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateAccountUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/baUser"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.AccountUser/DeleteAccountUser": {
+      "post": {
+        "tags": [
+          "AccountUser"
+        ],
+        "summary": "DeleteAccountUser",
+        "operationId": "shop.AccountUser-DeleteAccountUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paDeleteAccountUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.AccountUser/GetAccountUsers": {
+      "post": {
+        "tags": [
+          "AccountUser"
+        ],
+        "summary": "GetAccountUsers",
+        "operationId": "shop.AccountUser-GetAccountUsers",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetAccountUsersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetAccountUsersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.AccountUser/UpdateAccountUser": {
+      "post": {
+        "tags": [
+          "AccountUser"
+        ],
+        "summary": "UpdateAccountUser",
+        "operationId": "shop.AccountUser-UpdateAccountUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateAccountUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Authorize/AuthorizePartner": {
       "post": {
         "tags": [
@@ -7379,6 +7487,13 @@
         "purchase_refund"
       ]
     },
+    "axStocktakeType": {
+      "type": "string",
+      "enum": [
+        "balance",
+        "discard"
+      ]
+    },
     "baAddress": {
       "type": "object",
       "properties": {
@@ -8226,6 +8341,49 @@
         "cancel"
       ]
     },
+    "flAccountUserExtended": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "phone": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "flGetTicketsByRefTicketIDRequest": {
       "type": "object",
       "properties": {
@@ -8474,11 +8632,17 @@
         "webphone"
       ]
     },
-    "hbStocktakeType": {
+    "hbUserRole": {
       "type": "string",
       "enum": [
-        "balance",
-        "discard"
+        "owner",
+        "staff_management",
+        "telecom_customerservice",
+        "inventory_management",
+        "purchasing_management",
+        "accountant",
+        "analyst",
+        "salesman"
       ]
     },
     "idInventoryVoucherType": {
@@ -9394,6 +9558,26 @@
         }
       }
     },
+    "paCreateAccountUserRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hbUserRole"
+          }
+        }
+      }
+    },
     "paCreateBrandRequest": {
       "type": "object",
       "properties": {
@@ -10094,7 +10278,7 @@
           "type": "integer"
         },
         "type": {
-          "$ref": "#/definitions/hbStocktakeType"
+          "$ref": "#/definitions/axStocktakeType"
         }
       }
     },
@@ -10524,6 +10708,15 @@
         }
       }
     },
+    "paDeleteAccountUserRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "paDeleteBrandResponse": {
       "type": "object",
       "properties": {
@@ -10915,6 +11108,30 @@
         }
       }
     },
+    "paFilterGetAccountUsersRequest": {
+      "type": "object",
+      "properties": {
+        "extension_number": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "phone": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "role": {
+          "$ref": "#/definitions/hbUserRole"
+        },
+        "user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
     "paFilterGetContacts": {
       "type": "object",
       "properties": {
@@ -11053,6 +11270,31 @@
         },
         "identity": {
           "type": "string"
+        }
+      }
+    },
+    "paGetAccountUsersRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/paFilterGetAccountUsersRequest"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "paGetAccountUsersResponse": {
+      "type": "object",
+      "properties": {
+        "account_users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flAccountUserExtended"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
         }
       }
     },
@@ -13942,6 +14184,28 @@
         },
         "type": {
           "type": "string"
+        }
+      }
+    },
+    "paUpdateAccountUserRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "password": {
+          "description": "Có thể đổi mật khẩu cho nhân viên, nếu nhân viên đó chưa đổi mật khẩu lần nào.\nTức mật khẩu vẫn đang ở dạng khởi tạo khi vừa mới tạo tài khoản.\n",
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hbUserRole"
+          }
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -19015,6 +19279,9 @@
     },
     {
       "name": "AccountShipnow"
+    },
+    {
+      "name": "AccountUser"
     },
     {
       "name": "Authorize"

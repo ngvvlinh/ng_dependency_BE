@@ -76,6 +76,7 @@ func Convert_accountusermodel_AccountUser_identitymodel_AccountUser(arg *account
 }
 
 func convert_accountusermodel_AccountUser_identitymodel_AccountUser(arg *accountusermodel.AccountUser, out *identitymodel.AccountUser) {
+	out.ID = 0                                          // zero value
 	out.AccountID = arg.AccountID                       // simple assign
 	out.UserID = arg.UserID                             // simple assign
 	out.Status = arg.Status                             // simple assign

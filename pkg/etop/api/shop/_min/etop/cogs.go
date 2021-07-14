@@ -4,6 +4,7 @@ import (
 	"o.o/backend/pkg/common/redis"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/api/shop/account"
+	"o.o/backend/pkg/etop/api/shop/account_user"
 	"o.o/backend/pkg/etop/api/shop/authorize"
 	"o.o/backend/pkg/etop/api/shop/brand"
 	"o.o/backend/pkg/etop/api/shop/carrier"
@@ -57,6 +58,7 @@ func NewServers(
 	transactionService *transaction.TransactionService,
 	invoiceService *invoice.InvoiceService,
 	jiraService *jira.JiraService,
+	accountUserService *account_user.AccountUserService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -66,6 +68,7 @@ func NewServers(
 
 	servers := httprpc.MustNewServers(
 		accountService.Clone,
+		accountUserService.Clone,
 		authorizeService.Clone,
 		brandService.Clone,
 		carrierService.Clone,

@@ -281,6 +281,12 @@ const (
 	// shop transaction
 	ShopTransactionView permission.ActionType = "shop/transaction:view"
 
+	// shop account user
+	ShopAccountUserCreate permission.ActionType = "shop/account_user:create"
+	ShopAccountUserUpdate permission.ActionType = "shop/account_user:update"
+	ShopAccountUserDelete permission.ActionType = "shop/account_user:delete"
+	ShopAccountUserView   permission.ActionType = "shop/account_user:view"
+
 	// Fabo
 	FbCommentView   permission.ActionType = "facebook/comment:view"
 	FbCommentCreate permission.ActionType = "facebook/comment:create"
@@ -1400,6 +1406,12 @@ var _acl = map[string]*permission.Decl{
 	"shop.Setting/CreateSetting": {Type: Shop},
 	"shop.Setting/UpdateSetting": {Type: Shop},
 	"shop.Setting/GetSetting":    {Type: Shop},
+
+	// Account User
+	"shop.AccountUser/CreateAccountUser": {Type: Shop, Actions: actions(ShopAccountUserCreate)},
+	"shop.AccountUser/UpdateAccountUser": {Type: Shop, Actions: actions(ShopAccountUserUpdate)},
+	"shop.AccountUser/DeleteAccountUser": {Type: Shop, Actions: actions(ShopAccountUserDelete)},
+	"shop.AccountUser/GetAccountUsers":   {Type: Shop, Actions: actions(ShopAccountUserView)},
 
 	// -- Fabo --
 	"fabo.Page/ConnectPages":                                 {Type: Shop, Actions: actions(FbFanpageCreate)},

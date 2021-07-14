@@ -313,15 +313,97 @@ func (q *QueryService) GetAccountUser(ctx context.Context, userID, accountID dot
 	return q.accountUserStore(ctx).ByUserID(userID).ByAccountID(accountID).GetAccountUser()
 }
 
-func (q *QueryService) ListAccountUsers(ctx context.Context, args *identity.ListAccountUsersArgs) ([]*identity.AccountUser, error) {
+func (q *QueryService) ListAccountUsers(ctx context.Context, args *identity.ListAccountUsersArgs) (*identity.ListAccountUsersResponse, error) {
 	query := q.accountUserStore(ctx)
-	if args.UserID != 0 {
-		query = query.ByUserID(args.UserID)
+
+	if len(args.UserIDs) > 0 {
+		query = query.ByUserIDs(args.UserIDs)
 	}
 	if args.AccountID != 0 {
 		query = query.ByAccountID(args.AccountID)
 	}
-	return query.ListAccountUsers()
+	if args.FullNameNorm != "" {
+		query = query.ByFullNameNorm(args.FullNameNorm)
+	}
+	if args.PhoneNorm != "" {
+		query = query.ByPhoneNorm(args.PhoneNorm)
+	}
+	if args.ExtensionNumberNorm != "" {
+		query = query.ByExtensionNumberNorm(args.ExtensionNumberNorm)
+	}
+
+	if args.Role.Valid != false {
+		roles := []string{args.Role.Enum.String()}
+		query = query.ByRoles(roles...)
+	}
+	accountUsers, err := query.WithPaging(args.Paging).ListAccountUsers()
+	if err != nil {
+		return nil, err
+	}
+	return &identity.ListAccountUsersResponse{
+		Paging:       query.GetPaging(),
+		AccountUsers: accountUsers,
+	}, nil
+}
+
+func (q *QueryService) ListExtendedAccountUsers(ctx context.Context, args *identity.ListExtendedAccountUsersArgs) (*identity.ListExtendedAccountUsersResponse, error) {
+	// Get account users
+	res, err := q.ListAccountUsers(ctx, &identity.ListAccountUsersArgs{
+		Paging:              args.Paging,
+		AccountID:           args.AccountID,
+		FullNameNorm:        args.FullNameNorm,
+		PhoneNorm:           args.PhoneNorm,
+		ExtensionNumberNorm: args.ExtensionNumberNorm,
+		Role:                args.Role,
+		UserIDs:             args.UserIDs,
+	})
+	if err != nil {
+		return nil, err
+	}
+	accountUsers := res.AccountUsers
+
+	// Get UserIDs
+	userIDs := make([]dot.ID, 0, len(accountUsers))
+	for _, accUser := range accountUsers {
+		userIDs = append(userIDs, accUser.UserID)
+	}
+
+	// Get users by userIDs and map user
+	users, err := q.GetUsersByIDs(ctx, userIDs)
+	if err != nil {
+		return nil, err
+	}
+	mapUser := map[dot.ID]identity.User{}
+	for _, user := range users {
+		mapUser[user.ID] = *user
+	}
+
+	var extendedAccountUsers []*identity.AccountUserExtended
+	for _, accountUser := range accountUsers {
+		var isDeleted bool
+		if !accountUser.DeletedAt.IsZero() {
+			isDeleted = true
+		}
+		user := mapUser[accountUser.UserID]
+		extendedAccountUser := &identity.AccountUserExtended{
+			UserID:      accountUser.UserID,
+			AccountID:   accountUser.AccountID,
+			Roles:       accountUser.Roles,
+			Permissions: accountUser.Permissions,
+			FullName:    user.FullName,
+			ShortName:   user.ShortName,
+			Email:       user.Email,
+			Phone:       user.Phone,
+			Position:    accountUser.Position,
+			Deleted:     isDeleted,
+		}
+		extendedAccountUsers = append(extendedAccountUsers, extendedAccountUser)
+	}
+
+	return &identity.ListExtendedAccountUsersResponse{
+		Paging:       res.Paging,
+		AccountUsers: extendedAccountUsers,
+	}, nil
 }
 
 func (q *QueryService) ListPartnerRelationsBySubjectIDs(ctx context.Context, args *identity.ListPartnerRelationsBySubjectIDsArgs) ([]*identity.PartnerRelation, error) {

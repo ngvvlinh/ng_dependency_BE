@@ -104,3 +104,18 @@ type GetTicketsByRefTicketIDResponse struct {
 }
 
 func (m *GetTicketsByRefTicketIDResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type AccountUserExtended struct {
+	UserID      dot.ID   `json:"user_id"`
+	AccountID   dot.ID   `json:"account_id"`
+	Roles       []string `json:"roles"`
+	Permissions []string `json:"permissions"`
+	FullName    string   `json:"full_name"`
+	ShortName   string   `json:"short_name"`
+	Email       string   `json:"email"`
+	Phone       string   `json:"phone"`
+	Position    string   `json:"position"`
+	Deleted     bool     `json:"deleted"`
+}
+
+func (m *AccountUserExtended) String() string { return jsonx.MustMarshalToString(m) }

@@ -8,6 +8,7 @@ import (
 	identitytypes "o.o/api/main/identity/types"
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/account_type"
+	"o.o/api/top/types/etc/shop_user_role"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/user_source"
 	"o.o/capi/dot"
@@ -34,6 +35,9 @@ type Aggregate interface {
 	// create new user & create a default shop for this user
 	RegisterSimplify(context.Context, *RegisterSimplifyArgs) error
 
+	UpdateUserInfo(context.Context, *UpdateUserInfoArgs) error
+
+	UpdateUserPassword(context.Context, *UpdateUserPasswordArgs) error
 	// -- Affiliate -- //
 
 	CreateAffiliate(context.Context, *CreateAffiliateArgs) (*Affiliate, error)
@@ -63,9 +67,12 @@ type Aggregate interface {
 
 	// -- Account User -- //
 	CreateAccountUser(context.Context, *CreateAccountUserArgs) (*AccountUser, error)
+
 	DeleteAccountUsers(context.Context, *DeleteAccountUsersArgs) (int, error)
 
 	UpdateAccountUserPermission(context.Context, *UpdateAccountUserPermissionArgs) error
+
+	UpdateAccountUserInfo(context.Context, *UpdateAccountUserInfoArgs) error
 }
 
 type QueryService interface {
@@ -125,7 +132,9 @@ type QueryService interface {
 
 	GetAllAccountsByUsers(context.Context, *GetAllAccountUsersArg) ([]*AccountUser, error)
 
-	ListAccountUsers(context.Context, *ListAccountUsersArgs) ([]*AccountUser, error)
+	ListAccountUsers(context.Context, *ListAccountUsersArgs) (*ListAccountUsersResponse, error)
+
+	ListExtendedAccountUsers(context.Context, *ListExtendedAccountUsersArgs) (*ListExtendedAccountUsersResponse, error)
 
 	ListPartnerRelationsBySubjectIDs(context.Context, *ListPartnerRelationsBySubjectIDsArgs) ([]*PartnerRelation, error)
 }
@@ -348,6 +357,7 @@ type RegisterSimplifyArgs struct {
 	Email               string
 	CompanyName         string
 	IsCreateDefaultShop bool
+	IsUpdatePassword    bool
 }
 
 // +convert:create=AccountUser
@@ -386,6 +396,13 @@ type UpdateAccountUserPermissionArgs struct {
 	Permission
 }
 
+type UpdateAccountUserInfoArgs struct {
+	AccountID dot.ID
+	UserID    dot.ID
+	FullName  string
+	Phone     string
+}
+
 type DeleteAccountArgs struct {
 	AccountID dot.ID
 	// OwnerID: chủ tài khoản
@@ -394,11 +411,48 @@ type DeleteAccountArgs struct {
 }
 
 type ListAccountUsersArgs struct {
-	AccountID dot.ID
-	UserID    dot.ID
+	Paging              meta.Paging
+	AccountID           dot.ID
+	FullNameNorm        filter.FullTextSearch
+	PhoneNorm           filter.FullTextSearch
+	ExtensionNumberNorm filter.FullTextSearch
+	Role                shop_user_role.NullUserRole
+	UserIDs             []dot.ID
+}
+
+type ListAccountUsersResponse struct {
+	Paging       meta.PageInfo
+	AccountUsers []*AccountUser
 }
 
 type DeleteAccountUsersArgs struct {
 	AccountID dot.ID
 	UserID    dot.ID
+}
+
+type ListExtendedAccountUsersArgs struct {
+	Paging              meta.Paging
+	AccountID           dot.ID
+	FullNameNorm        filter.FullTextSearch
+	PhoneNorm           filter.FullTextSearch
+	ExtensionNumberNorm filter.FullTextSearch
+	Role                shop_user_role.NullUserRole
+	UserIDs             []dot.ID
+}
+
+type ListExtendedAccountUsersResponse struct {
+	Paging       meta.PageInfo
+	AccountUsers []*AccountUserExtended
+}
+
+type UpdateUserInfoArgs struct {
+	AccountID dot.ID
+	UserID    dot.ID
+	FullName  string
+}
+
+type UpdateUserPasswordArgs struct {
+	UserID dot.ID
+
+	Password string
 }

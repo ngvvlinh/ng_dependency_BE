@@ -50,3 +50,9 @@ var SortUser = map[string]string{
 	"created_at": "",
 	"updated_at": "",
 }
+
+var SortAccountUser = map[string]string{
+	"id":         "id",
+	"created_at": "created_at",
+	"updated_at": "updated_at",
+}

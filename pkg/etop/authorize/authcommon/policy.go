@@ -178,6 +178,11 @@ const shopPolicy = `#connection
 	# jira
 	p, shop/jira:view, admin, owner, staff_management, salesman
 	p, shop/jira:create, admin, owner, staff_management, salesman
+	# account_user
+    p, shop/account_user:create, admin, owner, staff_management
+	p, shop/account_user:update, admin, owner, staff_management
+	p, shop/account_user:delete, admin, owner, staff_management
+	p, shop/account_user:view, admin, owner, staff_management, telecom_customerservice, inventory_management, purchasing_management, accountant
 `
 
 const adminPolicy = `

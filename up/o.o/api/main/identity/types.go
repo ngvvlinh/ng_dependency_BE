@@ -9,6 +9,7 @@ import (
 	"o.o/api/meta"
 	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/ghn_note_code"
+	"o.o/api/top/types/etc/shop_user_role"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/try_on"
 	"o.o/api/top/types/etc/user_source"
@@ -31,6 +32,18 @@ const (
 type Permission struct {
 	Roles       []string
 	Permissions []string
+}
+
+func (p Permission) GetShopUserRoles() []shop_user_role.UserRole {
+	var res = make([]shop_user_role.UserRole, 0, len(p.Roles))
+	for _, role := range p.Roles {
+		r, ok := shop_user_role.ParseUserRole(role)
+		if !ok {
+			continue
+		}
+		res = append(res, r)
+	}
+	return res
 }
 
 type Shop struct {
@@ -173,6 +186,13 @@ type AccountDeletingEvent struct {
 	AccountType account_type.AccountType
 }
 
+type UserUpdatedEvent struct {
+	AccountID dot.ID
+	UserID    dot.ID
+	FullName  string
+	Phone     string
+}
+
 type UserInvitation struct {
 	Token      string
 	AutoAccept bool
@@ -263,4 +283,17 @@ type PartnerRelation struct {
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time
+}
+
+type AccountUserExtended struct {
+	UserID      dot.ID
+	AccountID   dot.ID
+	Roles       []string
+	Permissions []string
+	FullName    string
+	ShortName   string
+	Email       string
+	Phone       string
+	Position    string
+	Deleted     bool
 }

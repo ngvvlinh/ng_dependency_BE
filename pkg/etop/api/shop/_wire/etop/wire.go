@@ -6,6 +6,7 @@ import (
 	"github.com/google/wire"
 	"o.o/backend/pkg/etop/api/shop"
 	"o.o/backend/pkg/etop/api/shop/account"
+	"o.o/backend/pkg/etop/api/shop/account_user"
 	"o.o/backend/pkg/etop/api/shop/accountshipnow"
 	"o.o/backend/pkg/etop/api/shop/authorize"
 	"o.o/backend/pkg/etop/api/shop/brand"
@@ -51,6 +52,7 @@ import (
 
 var WireSet = wire.NewSet(
 	wire.Struct(new(account.AccountService), "*"),
+	wire.Struct(new(account_user.AccountUserService), "*"),
 	wire.Struct(new(authorize.AuthorizeService), "*"),
 	wire.Struct(new(brand.BrandService), "*"),
 	wire.Struct(new(carrier.CarrierService), "*"),

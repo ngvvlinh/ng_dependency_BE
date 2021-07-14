@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"o.o/api/main/identity"
+	"o.o/api/meta"
 	"o.o/backend/com/main/identity/convert"
 	identitymodel "o.o/backend/com/main/identity/model"
 	cm "o.o/backend/pkg/common"
@@ -15,6 +16,7 @@ import (
 	"o.o/backend/pkg/common/validate"
 	"o.o/backend/pkg/etop/model"
 	"o.o/capi/dot"
+	"o.o/capi/filter"
 )
 
 type AccountUserStoreFactory func(context.Context) *AccountUserStore
@@ -32,6 +34,7 @@ type AccountUserStore struct {
 	query cmsql.QueryFactory
 	preds []interface{}
 	ft    AccountUserFilters
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
@@ -53,6 +56,26 @@ func (s *AccountUserStore) ByUserID(id dot.ID) *AccountUserStore {
 
 func (s *AccountUserStore) ByRoles(roles ...string) *AccountUserStore {
 	s.preds = append(s.preds, sq.NewExpr("roles @> ?", core.Array{V: roles}))
+	return s
+}
+
+func (s *AccountUserStore) ByFullNameNorm(name filter.FullTextSearch) *AccountUserStore {
+	s.preds = append(s.preds, s.ft.Filter(`full_name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
+	return s
+}
+
+func (s *AccountUserStore) ByPhoneNorm(phone filter.FullTextSearch) *AccountUserStore {
+	s.preds = append(s.preds, s.ft.Filter(`phone_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(phone)))
+	return s
+}
+
+func (s *AccountUserStore) ByExtensionNumberNorm(extensionNumber filter.FullTextSearch) *AccountUserStore {
+	s.preds = append(s.preds, s.ft.Filter(`extension_number_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(extensionNumber)))
+	return s
+}
+
+func (s *AccountUserStore) WithPaging(paging meta.Paging) *AccountUserStore {
+	s.Paging.WithPaging(paging)
 	return s
 }
 
@@ -106,19 +129,26 @@ func (s *AccountUserStore) SoftDeleteAccountUsers() (int, error) {
 
 func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, error) {
 	query := s.query().Where(s.preds)
-
-	var accountUser identitymodel.AccountUsers
-	err := query.Find(&accountUser)
-	return accountUser, err
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
+	var err error
+	query, err = sqlstore.LimitSort(query, &s.Paging, SortAccountUser)
+	if err != nil {
+		return nil, err
+	}
+	var accountUsers identitymodel.AccountUsers
+	err = query.Find(&accountUsers)
+	s.Paging.Apply(accountUsers)
+	return accountUsers, err
 }
 
 func (s *AccountUserStore) ListAccountUsers() ([]*identity.AccountUser, error) {
-	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-
-	var accountUser identitymodel.AccountUsers
-	err := query.Find(&accountUser)
-	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(accountUser), err
+	accountUsersDB, err := s.ListAccountUserDBs()
+	if err != nil {
+		return nil, err
+	}
+	return convert.Convert_identitymodel_AccountUsers_identity_AccountUsers(accountUsersDB), err
 }
 
 func (s *AccountUserStore) CreateAccountUser(au *identity.AccountUser) error {
@@ -134,6 +164,7 @@ func (s *AccountUserStore) CreateAccountUser(au *identity.AccountUser) error {
 	if err := scheme.Convert(au, &auDB); err != nil {
 		return err
 	}
+	auDB.ID = cm.NewID()
 	s.normalizeSearchFields(&auDB, user)
 	return s.query().ShouldInsert(&auDB)
 }
