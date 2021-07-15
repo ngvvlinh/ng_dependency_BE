@@ -1,11 +1,11 @@
-.etop_server:
+.etop_event_handler:
   variables:
-    SERVICE_NAME: "etop-server"
+    SERVICE_NAME: "etop-event-handler"
 
-package:etop_server:
+package:etop_event_handler:
   extends:
-  - .go-cache 
-  - .etop_server
+  - .go-cache
+  - .etop_event_handler
   - .package_docker
   stage: package
   only:
@@ -14,9 +14,9 @@ package:etop_server:
   except:
   - "tags"
 
-deploy:etop_server-dev:
+deploy:etop_event_handler_dev:
   extends:
-  - .etop_server
+  - .etop_event_handler
   - .kubernetes_deploy
   stage: dev
   variables:
@@ -29,13 +29,14 @@ deploy:etop_server-dev:
   only:
     refs:
     - master
-  dependencies: ["package:etop_server"]
+  dependencies: ["package:etop_event_handler"]
+  when: manual
 
 # Sandbox
-package:etop_server_sandbox:
+package:etop_event_handler_sandbox:
   extends:
   - .go-cache
-  - .etop_server
+  - .etop_event_handler
   - .package_docker
   stage: package
   only:
@@ -43,9 +44,9 @@ package:etop_server_sandbox:
     - tags
     - master
 
-deploy:etop_server_sandbox:
+deploy:etop_event_handler_sandbox:
   extends:
-  - .etop_server
+  - .etop_event_handler
   - .kubernetes_deploy
   stage: sandbox
   variables:
@@ -59,23 +60,23 @@ deploy:etop_server_sandbox:
     refs:
     - tags
     - master
-  dependencies: ["package:etop_server_sandbox"]
+  dependencies: ["package:etop_event_handler_sandbox"]
   when: manual
 
 # Production
-package:etop-server-prod:
+package:etop-event-handler-prod:
   extends:
   - .go-cache
-  - .etop_server
+  - .etop_event_handler
   - .package_docker
   stage: package
   only:
     refs:
     - tags
 
-deploy:etop-server-prod:
+deploy:etop-event-handler-prod:
   extends:
-  - .etop_server
+  - .etop_event_handler
   - .kubernetes_deploy
   stage: production
   variables:
@@ -88,6 +89,7 @@ deploy:etop-server-prod:
   only:
     refs:
     - tags
-  dependencies: ["package:etop-server-prod"]
+  dependencies: ["package:etop-event-handler-prod"]
   when: manual
+
 

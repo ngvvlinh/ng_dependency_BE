@@ -14,7 +14,7 @@ variables:
   PROJECT_DIR: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
 
 # cache: &global_cache
-#   key: ${CI_COMMIT_REF_SLUG}
+#   key: ${CI_PROJECT_TITLE}
 #   paths: [".cache"]
 #   policy: pull
 
@@ -23,7 +23,7 @@ variables:
     - mkdir -p .cache
     - export GOPATH="$CI_PROJECT_DIR/.cache" 
   cache:
-    key: ${CI_COMMIT_REF_SLUG}
+    key: ${CI_PROJECT_TITLE}
     paths:
       - .cache
 
