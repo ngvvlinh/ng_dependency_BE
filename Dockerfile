@@ -4,7 +4,9 @@ ARG SERVICE_NAME
 ENV PROJECT_DIR=/go/src/eb2b
 WORKDIR /go/src/eb2b/backend
 
-RUN go get -u github.com/go-bindata/go-bindata/... \
+
+# RUN go get -u github.com/go-bindata/go-bindata/... \
+RUN apk add go-bindata \
     && mkdir -p /build && mkdir -p /build/bin
 COPY . .
 
@@ -20,8 +22,6 @@ RUN sh ./scripts/generate-release.sh \
       ./cmd/${SERVICE_NAME}
 
 FROM registry.gitlab.com/ninjavan/devops/golang:alpine
-
-ENV NJV_DIR=/go/src/njv
 
 COPY --from=builder /build/com  /go/src/eb2b/backend/com
 COPY --from=builder /build/bin/* /usr/bin/

@@ -13,15 +13,19 @@ variables:
   GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   PROJECT_DIR: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
 
-cache: &global_cache
-  key: ${CI_COMMIT_REF_SLUG}
-  paths: [".cache"]
-  policy: pull
+# cache: &global_cache
+#   key: ${CI_COMMIT_REF_SLUG}
+#   paths: [".cache"]
+#   policy: pull
 
 .go-cache:
   before_script:
     - mkdir -p .cache
     - export GOPATH="$CI_PROJECT_DIR/.cache" 
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cache
 
 verify:import:
   extends: .verify
@@ -42,23 +46,18 @@ build:
   image: golang:1.15
   stage: build
   extends: .go-cache
-  cache:
-    <<: *global_cache
-    policy: pull-push
   script:
     - go install ./...
     - time scripts/install-tools.sh
   only:
     refs:
       - branches
-    changes:
-      - "go.mod"
-      - "go.sum"
+    # changes:
+    #   - "go.mod"
+    #   - "go.sum"
 
 test:
   image: golang:1.15
-  cache:
-    <<: *global_cache
   stage: test
   extends: .go-cache
   services:

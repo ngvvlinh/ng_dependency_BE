@@ -4,6 +4,7 @@
 
 package:etop-server:
   extends:
+  - .go-cache 
   - .etop_server
   - .package_docker
   stage: package
