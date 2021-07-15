@@ -1,13 +1,11 @@
-FROM registry.gitlab.com/ninjavan/devops/golang:go-alpine as builder
+FROM registry.gitlab.com/eb2b.vn/devops/golang:go-alpine as builder
 
 ARG SERVICE_NAME
 ENV PROJECT_DIR=/go/src/eb2b
 WORKDIR /go/src/eb2b/backend
 
 
-# RUN go get -u github.com/go-bindata/go-bindata/... \
-RUN apk add go-bindata \
-    && mkdir -p /build && mkdir -p /build/bin
+RUN mkdir -p /build && mkdir -p /build/bin
 COPY . .
 
 ## Copy assets & templates
@@ -21,7 +19,7 @@ RUN sh ./scripts/generate-release.sh \
       -tags release \
       ./cmd/${SERVICE_NAME}
 
-FROM registry.gitlab.com/ninjavan/devops/golang:alpine
+FROM registry.gitlab.com/eb2b.vn/devops/golang:alpine
 
 COPY --from=builder /build/com  /go/src/eb2b/backend/com
 COPY --from=builder /build/bin/* /usr/bin/
