@@ -20,6 +20,7 @@ import (
 
 type Aggregate interface {
 	// -- User -- //
+	CreateUser(context.Context, *CreateUserArgs) (*User, error)
 
 	UpdateUserReferenceUserID(context.Context, *UpdateUserReferenceUserIDArgs) error
 
@@ -83,6 +84,8 @@ type QueryService interface {
 	// -- Shop -- //
 
 	GetShopByID(ctx context.Context, ID dot.ID) (*Shop, error)
+
+	GetShopByCode(ctx context.Context, Code string) (*Shop, error)
 
 	ListShopsByIDs(context.Context, *ListShopsByIDsArgs) ([]*Shop, error)
 
@@ -332,6 +335,8 @@ type CreateUserArgs struct {
 	RefAff                  string
 	PhoneVerifiedAt         time.Time
 	PhoneVerificationSentAt time.Time
+	EmailVerificationSentAt time.Time
+	EmailVerifiedAt         time.Time
 }
 
 type ListUsersByIDsAndNameNormArgs struct {

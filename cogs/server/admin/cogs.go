@@ -4,6 +4,7 @@ import (
 	"o.o/backend/pkg/common/apifw/httpx"
 	"o.o/backend/pkg/etop/authorize/permission"
 	"o.o/backend/pkg/etop/authorize/session"
+	hotfixaccountuser "o.o/backend/pkg/etop/logic/hotfix/accountuser"
 	hotfixextension "o.o/backend/pkg/etop/logic/hotfix/extension"
 	hotfixmoneytx "o.o/backend/pkg/etop/logic/hotfix/moneytx"
 	hotfixuser "o.o/backend/pkg/etop/logic/hotfix/user"
@@ -23,6 +24,7 @@ func BuildImportHandlers(
 	hotfixMoneyTx *hotfixmoneytx.HotFixMoneyTxService,
 	hotfixExtension *hotfixextension.ExtensionService,
 	hotfixUser *hotfixuser.UserService,
+	hotfixAccountUser *hotfixaccountuser.AccountUserService,
 	ss session.Session,
 ) ImportServer {
 	rt := httpx.New()
@@ -43,5 +45,6 @@ func BuildImportHandlers(
 	rt.POST("/api/admin.Import/Extensions", hotfixExtension.HandleImportExtension)
 	// import, create user, shop. Create, active hotline, tenant
 	rt.POST("/api/admin.Import/Users", hotfixUser.HandleImportUser)
+	rt.POST("/api/admin.Import/AccountUsers", hotfixAccountUser.HandleImportAccountUser)
 	return httpx.MakeServer("/api/admin.Import/", rt)
 }

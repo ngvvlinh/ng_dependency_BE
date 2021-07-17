@@ -214,6 +214,7 @@ import (
 	"o.o/backend/pkg/etop/authorize/tokens"
 	"o.o/backend/pkg/etop/eventstream"
 	imcsv3 "o.o/backend/pkg/etop/logic/fulfillments/imcsv"
+	"o.o/backend/pkg/etop/logic/hotfix/accountuser"
 	"o.o/backend/pkg/etop/logic/hotfix/extension"
 	"o.o/backend/pkg/etop/logic/hotfix/moneytx"
 	"o.o/backend/pkg/etop/logic/hotfix/user"
@@ -1368,7 +1369,8 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	hotFixMoneyTxService := moneytx.New(mainDB)
 	extensionService := extension.New(etelecomCommandBus, etelecomQueryBus, etelecomDB, queryBus)
 	userUserService := user.New(etelecomCommandBus, etelecomQueryBus, etelecomDB, mainDB, commandBus, queryBus)
-	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, hotFixMoneyTxService, extensionService, userUserService, session)
+	accountuserAccountUserService := accountuser.New(mainDB, commandBus, queryBus)
+	importServer := server_admin.BuildImportHandlers(ghnimportImport, ghtkimportImport, vtpostimportImport, handlersImportService, hotFixMoneyTxService, extensionService, userUserService, accountuserAccountUserService, session)
 	dirConfigs := cfg.UploadDirs
 	uploader, err := _uploader.NewUploader(ctx, dirConfigs, bucket)
 	if err != nil {

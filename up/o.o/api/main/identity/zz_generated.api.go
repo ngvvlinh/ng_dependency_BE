@@ -14,6 +14,7 @@ import (
 	account_type "o.o/api/top/types/etc/account_type"
 	shop_user_role "o.o/api/top/types/etc/shop_user_role"
 	status3 "o.o/api/top/types/etc/status3"
+	user_source "o.o/api/top/types/etc/user_source"
 	capi "o.o/capi"
 	dot "o.o/capi/dot"
 	filter "o.o/capi/filter"
@@ -105,6 +106,33 @@ type CreateShopCommand struct {
 
 func (h AggregateHandler) HandleCreateShop(ctx context.Context, msg *CreateShopCommand) (err error) {
 	msg.Result, err = h.inner.CreateShop(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateUserCommand struct {
+	UserID                  dot.ID
+	FullName                string
+	ShortName               string
+	Email                   string
+	Phone                   string
+	Password                string
+	Status                  status3.Status
+	AgreeTOS                bool
+	AgreeEmailInfo          bool
+	IsTest                  bool
+	Source                  user_source.UserSource
+	RefSale                 string
+	RefAff                  string
+	PhoneVerifiedAt         time.Time
+	PhoneVerificationSentAt time.Time
+	EmailVerificationSentAt time.Time
+	EmailVerifiedAt         time.Time
+
+	Result *User `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateUser(ctx context.Context, msg *CreateUserCommand) (err error) {
+	msg.Result, err = h.inner.CreateUser(msg.GetArgs(ctx))
 	return err
 }
 
@@ -443,6 +471,17 @@ func (h QueryServiceHandler) HandleGetPartnerByID(ctx context.Context, msg *GetP
 	return err
 }
 
+type GetShopByCodeQuery struct {
+	Code string
+
+	Result *Shop `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopByCode(ctx context.Context, msg *GetShopByCodeQuery) (err error) {
+	msg.Result, err = h.inner.GetShopByCode(msg.GetArgs(ctx))
+	return err
+}
+
 type GetShopByIDQuery struct {
 	ID dot.ID
 
@@ -677,6 +716,7 @@ func (q *BlockUserCommand) command()                   {}
 func (q *CreateAccountUserCommand) command()           {}
 func (q *CreateAffiliateCommand) command()             {}
 func (q *CreateShopCommand) command()                  {}
+func (q *CreateUserCommand) command()                  {}
 func (q *DeleteAccountCommand) command()               {}
 func (q *DeleteAccountUsersCommand) command()          {}
 func (q *DeleteAffiliateCommand) command()             {}
@@ -705,6 +745,7 @@ func (q *GetAffiliatesByIDsQuery) query()               {}
 func (q *GetAffiliatesByOwnerIDQuery) query()           {}
 func (q *GetAllAccountsByUsersQuery) query()            {}
 func (q *GetPartnerByIDQuery) query()                   {}
+func (q *GetShopByCodeQuery) query()                    {}
 func (q *GetShopByIDQuery) query()                      {}
 func (q *GetUserByEmailQuery) query()                   {}
 func (q *GetUserByIDQuery) query()                      {}
@@ -832,6 +873,49 @@ func (q *CreateShopCommand) SetCreateShopArgs(args *CreateShopArgs) {
 	q.MoneyTransactionRRule = args.MoneyTransactionRRule
 	q.SurveyInfo = args.SurveyInfo
 	q.ShippingServicePickStrategy = args.ShippingServicePickStrategy
+}
+
+func (q *CreateUserCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateUserArgs) {
+	return ctx,
+		&CreateUserArgs{
+			UserID:                  q.UserID,
+			FullName:                q.FullName,
+			ShortName:               q.ShortName,
+			Email:                   q.Email,
+			Phone:                   q.Phone,
+			Password:                q.Password,
+			Status:                  q.Status,
+			AgreeTOS:                q.AgreeTOS,
+			AgreeEmailInfo:          q.AgreeEmailInfo,
+			IsTest:                  q.IsTest,
+			Source:                  q.Source,
+			RefSale:                 q.RefSale,
+			RefAff:                  q.RefAff,
+			PhoneVerifiedAt:         q.PhoneVerifiedAt,
+			PhoneVerificationSentAt: q.PhoneVerificationSentAt,
+			EmailVerificationSentAt: q.EmailVerificationSentAt,
+			EmailVerifiedAt:         q.EmailVerifiedAt,
+		}
+}
+
+func (q *CreateUserCommand) SetCreateUserArgs(args *CreateUserArgs) {
+	q.UserID = args.UserID
+	q.FullName = args.FullName
+	q.ShortName = args.ShortName
+	q.Email = args.Email
+	q.Phone = args.Phone
+	q.Password = args.Password
+	q.Status = args.Status
+	q.AgreeTOS = args.AgreeTOS
+	q.AgreeEmailInfo = args.AgreeEmailInfo
+	q.IsTest = args.IsTest
+	q.Source = args.Source
+	q.RefSale = args.RefSale
+	q.RefAff = args.RefAff
+	q.PhoneVerifiedAt = args.PhoneVerifiedAt
+	q.PhoneVerificationSentAt = args.PhoneVerificationSentAt
+	q.EmailVerificationSentAt = args.EmailVerificationSentAt
+	q.EmailVerifiedAt = args.EmailVerifiedAt
 }
 
 func (q *DeleteAccountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteAccountArgs) {
@@ -1153,6 +1237,11 @@ func (q *GetPartnerByIDQuery) SetGetPartnerByIDArgs(args *GetPartnerByIDArgs) {
 	q.ID = args.ID
 }
 
+func (q *GetShopByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, Code string) {
+	return ctx,
+		q.Code
+}
+
 func (q *GetShopByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
@@ -1398,6 +1487,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateAccountUser)
 	b.AddHandler(h.HandleCreateAffiliate)
 	b.AddHandler(h.HandleCreateShop)
+	b.AddHandler(h.HandleCreateUser)
 	b.AddHandler(h.HandleDeleteAccount)
 	b.AddHandler(h.HandleDeleteAccountUsers)
 	b.AddHandler(h.HandleDeleteAffiliate)
@@ -1440,6 +1530,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetAffiliatesByOwnerID)
 	b.AddHandler(h.HandleGetAllAccountsByUsers)
 	b.AddHandler(h.HandleGetPartnerByID)
+	b.AddHandler(h.HandleGetShopByCode)
 	b.AddHandler(h.HandleGetShopByID)
 	b.AddHandler(h.HandleGetUserByEmail)
 	b.AddHandler(h.HandleGetUserByID)

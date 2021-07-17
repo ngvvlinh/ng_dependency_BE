@@ -52,6 +52,10 @@ func (q *QueryService) GetShopByID(ctx context.Context, id dot.ID) (*identity.Sh
 	return q.shopStore(ctx).ByID(id).GetShop()
 }
 
+func (q *QueryService) GetShopByCode(ctx context.Context, code string) (*identity.Shop, error) {
+	return q.shopStore(ctx).ByCode(code).GetShop()
+}
+
 func (q *QueryService) ListShopsByIDs(ctx context.Context, args *identity.ListShopsByIDsArgs) ([]*identity.Shop, error) {
 	query := q.shopStore(ctx).ByIDs(args.IDs...)
 	if args.IncludeWLPartnerShop {

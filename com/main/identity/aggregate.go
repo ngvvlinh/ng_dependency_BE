@@ -550,6 +550,8 @@ func (a *Aggregate) CreateUser(ctx context.Context, args *identity.CreateUserArg
 		Source:                  args.Source,
 		PhoneVerificationSentAt: args.PhoneVerificationSentAt,
 		PhoneVerifiedAt:         args.PhoneVerifiedAt,
+		EmailVerificationSentAt: args.EmailVerificationSentAt,
+		EmailVerifiedAt:         args.EmailVerifiedAt,
 	}
 	if args.AgreeEmailInfo {
 		user.AgreedEmailInfoAt = now

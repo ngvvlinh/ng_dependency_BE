@@ -76,6 +76,11 @@ func (s *ShopStore) ByID(id dot.ID) *ShopStore {
 	return s
 }
 
+func (s *ShopStore) ByCode(code string) *ShopStore {
+	s.preds = append(s.preds, s.shopFt.ByCode(code))
+	return s
+}
+
 func (s *ShopStore) ByIDs(ids ...dot.ID) *ShopStore {
 	s.preds = append(s.preds, sq.In("id", ids))
 	return s
