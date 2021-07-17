@@ -20,6 +20,7 @@ require (
 	github.com/Shopify/sarama v1.26.4
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
+	github.com/aws/aws-sdk-go v1.40.1
 	github.com/axw/gocov v1.0.0
 	github.com/casbin/casbin v1.9.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -60,7 +61,7 @@ require (
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/mod v0.3.0 // indirect
-	golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d
+	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
 	golang.org/x/text v0.3.6

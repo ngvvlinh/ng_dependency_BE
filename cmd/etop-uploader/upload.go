@@ -71,7 +71,6 @@ func UploadHandler(c *httpx.Context) error {
 		filePath := filepath.Join(dirPath, genName)
 
 		if !func() bool {
-
 			// NOTE(vu): we use context.Background() here, instead of
 			// c.Context(), to make the uploading task independent to the
 			// incoming http request
