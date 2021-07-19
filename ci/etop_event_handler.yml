@@ -13,6 +13,7 @@ package:etop_event_handler:
     - master
   except:
   - "tags"
+  when: manual
 
 deploy:etop_event_handler_dev:
   extends:

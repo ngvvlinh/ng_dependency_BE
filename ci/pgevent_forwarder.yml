@@ -13,6 +13,7 @@ package:pgevent_forwarder:
     - master
   except:
   - "tags"
+  when: manual
 
 deploy:pgevent_forwarder_dev:
   extends:

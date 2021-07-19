@@ -13,6 +13,7 @@ package:telecom_sync_service:
     - master
   except:
   - "tags"
+  when: manual
 
 deploy:telecom_sync_service_dev:
   extends:
