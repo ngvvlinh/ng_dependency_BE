@@ -13,6 +13,7 @@ package:etop_uploader:
     - master
   except:
   - "tags"
+  when: manual
 
 deploy:etop_uploader_dev:
   extends:
@@ -33,17 +34,6 @@ deploy:etop_uploader_dev:
   when: manual
 
 # Sandbox
-package:etop_uploader_sandbox:
-  extends:
-  - .go-cache
-  - .etop_uploader
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-    - master
-
 deploy:etop_uploader_sandbox:
   extends:
   - .etop_uploader
@@ -59,21 +49,10 @@ deploy:etop_uploader_sandbox:
   only:
     refs:
     - tags
-    - master
-  dependencies: ["package:etop_uploader_sandbox"]
+  dependencies: ["deploy:etop_uploader_dev"]
   when: manual
 
 # Production
-package:etop_uploader_prod:
-  extends:
-  - .go-cache
-  - .etop_uploader
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-
 deploy:etop_uploader_prod:
   extends:
   - .etop_uploader
@@ -89,7 +68,7 @@ deploy:etop_uploader_prod:
   only:
     refs:
     - tags
-  dependencies: ["package:etop_uploader_prod"]
+  dependencies: ["deploy:etop_uploader_dev"]
   when: manual
 
 

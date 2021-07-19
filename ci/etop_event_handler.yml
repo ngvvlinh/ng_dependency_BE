@@ -33,17 +33,6 @@ deploy:etop_event_handler_dev:
   when: manual
 
 # Sandbox
-package:etop_event_handler_sandbox:
-  extends:
-  - .go-cache
-  - .etop_event_handler
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-    - master
-
 deploy:etop_event_handler_sandbox:
   extends:
   - .etop_event_handler
@@ -59,21 +48,10 @@ deploy:etop_event_handler_sandbox:
   only:
     refs:
     - tags
-    - master
-  dependencies: ["package:etop_event_handler_sandbox"]
+  dependencies: ["deploy:etop_event_handler_dev"]
   when: manual
 
 # Production
-package:etop-event-handler-prod:
-  extends:
-  - .go-cache
-  - .etop_event_handler
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-
 deploy:etop-event-handler-prod:
   extends:
   - .etop_event_handler
@@ -89,7 +67,7 @@ deploy:etop-event-handler-prod:
   only:
     refs:
     - tags
-  dependencies: ["package:etop-event-handler-prod"]
+  dependencies: ["deploy:etop_event_handler_dev"]
   when: manual
 
 

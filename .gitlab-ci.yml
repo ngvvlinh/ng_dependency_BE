@@ -5,6 +5,7 @@ stages:
 - package
 - deploy
 - dev
+- release
 - sandbox
 - staging
 - production
@@ -77,4 +78,21 @@ test:
     - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
  
+create:releasetag:
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  stage: release
+  cache: {}
+  dependencies: []
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+  release:
+     name: 'Release $CI_COMMIT_SHA'
+     description: 'Created using the release-cli for pipeline $CI_PIPELINE_ID'
+     tag_name: '$CI_PIPELINE_ID'
+     ref: '$CI_COMMIT_SHA'
+  script:
+    - echo 'running release_job'
+  when: manual
+
 include: 'ci/**.yml'

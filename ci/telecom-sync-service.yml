@@ -33,17 +33,6 @@ deploy:telecom_sync_service_dev:
   when: manual
 
 # Sandbox
-package:telecom_sync_service_sandbox:
-  extends:
-  - .go-cache
-  - .telecom_sync_service
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-    - master
-
 deploy:telecom_sync_service_sandbox:
   extends:
   - .telecom_sync_service
@@ -59,21 +48,10 @@ deploy:telecom_sync_service_sandbox:
   only:
     refs:
     - tags
-    - master
-  dependencies: ["package:telecom_sync_service_sandbox"]
+  dependencies: ["deploy:telecom_sync_service_dev"]
   when: manual
 
 # Production
-package:telecom_sync_service_prod:
-  extends:
-  - .go-cache
-  - .telecom_sync_service
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-
 deploy:telecom_sync_service_prod:
   extends:
   - .event_forwarder
@@ -89,7 +67,7 @@ deploy:telecom_sync_service_prod:
   only:
     refs:
     - tags
-  dependencies: ["package:event_forwarder_prod"]
+  dependencies: ["deploy:telecom_sync_service_dev"]
   when: manual
 
 

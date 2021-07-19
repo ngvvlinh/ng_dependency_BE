@@ -1,11 +1,11 @@
-.event_forwarder:
+.pgevent_forwarder:
   variables:
-    SERVICE_NAME: "event-forwarder"
+    SERVICE_NAME: "pgevent-forwarder"
 
-package:event_forwarder:
+package:pgevent_forwarder:
   extends:
   - .go-cache 
-  - .event_forwarder
+  - .pgevent_forwarder
   - .package_docker
   stage: package
   only:
@@ -14,9 +14,9 @@ package:event_forwarder:
   except:
   - "tags"
 
-deploy:event_forwarder_dev:
+deploy:pgevent_forwarder_dev:
   extends:
-  - .event_forwarder
+  - .pgevent_forwarder
   - .kubernetes_deploy
   stage: dev
   variables:
@@ -29,24 +29,13 @@ deploy:event_forwarder_dev:
   only:
     refs:
     - master
-  dependencies: ["package:event_forwarder"]
+  dependencies: ["package:pgevent_forwarder"]
   when: manual
 
 # Sandbox
-package:event_forwarder_sandbox:
+deploy:pgevent_forwarder_sandbox:
   extends:
-  - .go-cache
-  - .event_forwarder
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-    - master
-
-deploy:event_forwarder_sandbox:
-  extends:
-  - .event_forwarder
+  - .pgevent_forwarder
   - .kubernetes_deploy
   stage: sandbox
   variables:
@@ -59,24 +48,13 @@ deploy:event_forwarder_sandbox:
   only:
     refs:
     - tags
-    - master
-  dependencies: ["package:event_forwarder_sandbox"]
+  dependencies: ["deploy:pgevent_forwarder_dev"]
   when: manual
 
 # Production
-package:event_forwarder_prod:
+deploy:pgevent_forwarder_prod:
   extends:
-  - .go-cache
-  - .event_forwarder
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-
-deploy:event_forwarder_prod:
-  extends:
-  - .event_forwarder
+  - .pgevent_forwarder
   - .kubernetes_deploy
   stage: production
   variables:
@@ -89,7 +67,7 @@ deploy:event_forwarder_prod:
   only:
     refs:
     - tags
-  dependencies: ["package:event_forwarder_prod"]
+  dependencies: ["deploy:pgevent_forwarder_dev"]
   when: manual
 
 

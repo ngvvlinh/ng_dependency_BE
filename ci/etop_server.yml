@@ -31,18 +31,6 @@ deploy:etop_server-dev:
     - master
   dependencies: ["package:etop_server"]
 
-# Sandbox
-package:etop_server_sandbox:
-  extends:
-  - .go-cache
-  - .etop_server
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-    - master
-
 deploy:etop_server_sandbox:
   extends:
   - .etop_server
@@ -58,21 +46,10 @@ deploy:etop_server_sandbox:
   only:
     refs:
     - tags
-    - master
-  dependencies: ["package:etop_server_sandbox"]
+  dependencies: ["deploy:etop_server-dev"]
   when: manual
 
 # Production
-package:etop-server-prod:
-  extends:
-  - .go-cache
-  - .etop_server
-  - .package_docker
-  stage: package
-  only:
-    refs:
-    - tags
-
 deploy:etop-server-prod:
   extends:
   - .etop_server
@@ -88,6 +65,6 @@ deploy:etop-server-prod:
   only:
     refs:
     - tags
-  dependencies: ["package:etop-server-prod"]
+  dependencies: ["deploy:etop_server-dev"]
   when: manual
 
