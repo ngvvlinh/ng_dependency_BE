@@ -13,5 +13,8 @@
       echo "Logging to GitLab Container Registry with CI credentials..."
       echo $CI_REGISTRY_PASSWORD | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
     fi
-  - docker build -t  $CI_REGISTRY_IMAGE/$SERVICE_NAME:$CI_PIPELINE_ID --build-arg SERVICE_NAME=${SERVICE_NAME} .
+  - docker build -t $CI_REGISTRY_IMAGE/$SERVICE_NAME:$CI_PIPELINE_ID --build-arg SERVICE_NAME=${SERVICE_NAME} .
   - docker push $CI_REGISTRY_IMAGE/$SERVICE_NAME:$CI_PIPELINE_ID
+  # make sure tag latest is the latest version
+  - docker tag $CI_REGISTRY_IMAGE/$SERVICE_NAME:$CI_PIPELINE_ID $CI_REGISTRY_IMAGE/$SERVICE_NAME:latest
+  - docker push $CI_REGISTRY_IMAGE/$SERVICE_NAME:latest
