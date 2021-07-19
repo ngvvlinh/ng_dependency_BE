@@ -54,7 +54,7 @@ deploy:telecom_sync_service_sandbox:
 # Production
 deploy:telecom_sync_service_prod:
   extends:
-  - .event_forwarder
+  - .telecom_sync_service
   - .kubernetes_deploy
   stage: production
   variables:
