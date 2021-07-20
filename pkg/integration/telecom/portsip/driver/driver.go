@@ -161,7 +161,10 @@ func (d *PortsipDriver) GetCallLogs(ctx context.Context, req *telecomtypes.GetCa
 			HotlineNumber: hotlineNumber.String(),
 			SessionID:     callLog.SessionID.String(),
 		}
-		callLogRes.AudioURLs = append(callLogRes.AudioURLs, callLog.RecordingFileURL.String())
+		fileRecording := callLog.RecordingFileURL.String()
+		if fileRecording != "" {
+			callLogRes.AudioURLs = append(callLogRes.AudioURLs, fileRecording)
+		}
 		res.CallLogs = append(res.CallLogs, callLogRes)
 	}
 
