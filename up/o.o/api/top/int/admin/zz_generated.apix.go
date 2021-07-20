@@ -491,6 +491,7 @@ func NewEtelecomServiceServer(builder func() EtelecomService, hooks ...httprpc.H
 const EtelecomServicePathPrefix = "/admin.Etelecom/"
 
 const Path_Etelecom_ActivateTenant = "/admin.Etelecom/ActivateTenant"
+const Path_Etelecom_AddHotlineToTenant = "/admin.Etelecom/AddHotlineToTenant"
 const Path_Etelecom_CreateHotline = "/admin.Etelecom/CreateHotline"
 const Path_Etelecom_CreateTenant = "/admin.Etelecom/CreateTenant"
 const Path_Etelecom_DeleteHotline = "/admin.Etelecom/DeleteHotline"
@@ -544,6 +545,19 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.ActivateTenant(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Etelecom/AddHotlineToTenant":
+		msg := &etelecomtypes.AddHotlineToTenantRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.AddHotlineToTenant(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

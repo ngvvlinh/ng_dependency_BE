@@ -528,6 +528,33 @@
         }
       }
     },
+    "/api/admin.Etelecom/AddHotlineToTenant": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "AddHotlineToTenant",
+        "operationId": "admin.Etelecom-AddHotlineToTenant",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/riAddHotlineToTenantRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Etelecom/CreateHotline": {
       "post": {
         "tags": [
@@ -8014,6 +8041,19 @@
           "format": "int64"
         },
         "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tenant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "riAddHotlineToTenantRequest": {
+      "type": "object",
+      "properties": {
+        "hotline_id": {
           "type": "string",
           "format": "int64"
         },

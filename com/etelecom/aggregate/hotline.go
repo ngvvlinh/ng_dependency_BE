@@ -99,7 +99,7 @@ func (a *EtelecomAggregate) RemoveHotlineOutOfTenant(ctx context.Context, args *
 }
 
 func (a *EtelecomAggregate) ActiveHotlineForTenant(ctx context.Context, args *etelecom.ActiveHotlineForTenantArgs) error {
-	tenant, err := a.tenantStore(ctx).OwnerID(args.OwnerID).ID(args.TenantID).GetTenant()
+	tenant, err := a.tenantStore(ctx).OptionalOwnerID(args.OwnerID).ID(args.TenantID).GetTenant()
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func (a *EtelecomAggregate) ActiveHotlineForTenant(ctx context.Context, args *et
 		return cm.Errorf(cm.FailedPrecondition, nil, "Tenant %v was not activated", tenant.Name)
 	}
 
-	hotline, err := a.hotlineStore(ctx).OwnerID(args.OwnerID).ID(args.HotlineID).GetHotline()
+	hotline, err := a.hotlineStore(ctx).OptionalOwnerID(args.OwnerID).ID(args.HotlineID).GetHotline()
 	if err != nil {
 		return err
 	}
