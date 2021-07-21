@@ -190,6 +190,11 @@ func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetC
 		query.UserID = r.Filter.UserID
 	}
 
+	roles := s.SS.GetRoles()
+	if !cm.StringsContain(roles, authorization.RoleStaffManagement.String()) && !cm.StringsContain(roles, authorization.RoleShopOwner.String()) {
+		query.UserID = s.SS.User().ID
+	}
+
 	if err = s.EtelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
