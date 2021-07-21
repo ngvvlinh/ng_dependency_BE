@@ -1,6 +1,9 @@
 package client
 
-import "o.o/backend/pkg/common/apifw/httpreq"
+import (
+	"o.o/api/etelecom/call_state"
+	"o.o/backend/pkg/common/apifw/httpreq"
+)
 
 type (
 	Bool              = httpreq.Bool
@@ -11,6 +14,26 @@ type (
 	PortsipCallStatus string
 	PortsipErrorCode  string
 )
+
+const (
+	PortsipCallStatusAnswered   PortsipCallStatus = "ANSWERED"
+	PortsipCallStatusNoAnswered PortsipCallStatus = "NOANSWER"
+	PortsipCallStatusFail       PortsipCallStatus = "FAIL"
+	PortsipCallStatusNone       PortsipCallStatus = "NONE"
+)
+
+func (s PortsipCallStatus) ToCallState() call_state.CallState {
+	switch s {
+	case PortsipCallStatusAnswered:
+		return call_state.Answered
+	case PortsipCallStatusNoAnswered:
+		return call_state.NotAnswered
+	case PortsipCallStatusNone, PortsipCallStatusFail:
+		return call_state.NotAnswered
+	default:
+		return call_state.Unknown
+	}
+}
 
 type GetCallLogsRequest struct {
 	ScrollID  string `url:"scroll_id,omitempty"`

@@ -115,8 +115,9 @@ func (m *TelecomManager) generateToken(ctx context.Context, shopConnection *conn
 		return nil
 	}
 	now := time.Now()
+
 	// 5p trước khi hết hạn
-	expiresAt.Add(-FiveMinutes)
+	expiresAt = expiresAt.Add(-FiveMinutes)
 	if expiresAt.After(now) {
 		return nil
 	}
@@ -326,7 +327,7 @@ func (m *TelecomManager) GetAdministratorPortsipDriver(ctx context.Context) (pro
 	expiresAt := m.AdminPortsip.TokenExpiresAt
 	now := time.Now()
 	// 5p trước khi hết hạn
-	expiresAt.Add(-FiveMinutes)
+	expiresAt = expiresAt.Add(-FiveMinutes)
 	if expiresAt.After(now) {
 		return m.AdminPortsip.Driver, nil
 	}
