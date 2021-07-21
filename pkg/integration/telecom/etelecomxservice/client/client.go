@@ -99,8 +99,8 @@ func (c *Client) sendRequest(ctx context.Context, args sendRequestArgs) error {
 	switch args.Method {
 	case httpreq.MethodGet:
 		queryString := url.Values{}
-		if req != nil {
-			if err = encoder.Encode(req, queryString); err != nil {
+		if args.Req != nil {
+			if err = encoder.Encode(args.Req, queryString); err != nil {
 				return cm.Errorf(cm.Internal, err, "")
 			}
 		}

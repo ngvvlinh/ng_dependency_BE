@@ -23,6 +23,7 @@ import (
 	"o.o/backend/pkg/common/apifw/scheduler"
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/sql/cmsql"
+	etelecomxservicedriver "o.o/backend/pkg/integration/telecom/etelecomxservice/driver"
 	"o.o/capi/dot"
 	"o.o/common/l"
 	"o.o/common/xerrors"
@@ -169,14 +170,15 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 		}
 	}()
 
-	telecomDriver, err := s.telecomManager.GetTelecomDriver(ctx, connectionID, ownerID)
-	if err != nil {
-		return cm.Errorf(cm.Internal, err, "Get driver error: %v", err.Error())
+	shopConn := taskArguments.shopConnection
+	if shopConn.TelecomData == nil || shopConn.TelecomData.TenantToken == "" {
+		return nil
 	}
+	etelecomXServiceDriver := etelecomxservicedriver.New(shopConn.TelecomData.TenantToken)
 
 	var (
 		scrollID        string
-		getCallLogsResp *providertypes.GetCallLogsResponse
+		getCallLogsResp *etelecomxservicedriver.GetCallLogsResponse
 	)
 	now := time.Now()
 	hotlines, err := s.getHotlines(ctx, connectionID, ownerID)
@@ -193,13 +195,13 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 
 	var lastCallLogAt time.Time
 	for true {
-		getCallLogsReq := &providertypes.GetCallLogsRequest{
+		getCallLogsReq := &etelecomxservicedriver.GetCallLogsRequest{
+			ScrollID:  scrollID,
 			StartedAt: lastSyncAt,
 			EndedAt:   now,
-			ScrollID:  scrollID,
 		}
 
-		getCallLogsResp, err = telecomDriver.GetCallLogs(ctx, getCallLogsReq)
+		getCallLogsResp, err = etelecomXServiceDriver.GetCallLogs(ctx, getCallLogsReq)
 		if err != nil {
 			return err
 		}
@@ -216,7 +218,6 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 			if lastSyncAt.After(callLogResp.StartedAt) {
 				break
 			}
-
 			_callsInfo := s.getCallInfo(ctx, hotlines, tenant.ID, callLogResp)
 			for _, info := range _callsInfo {
 				if info.HotlineID == 0 {
@@ -348,7 +349,7 @@ type callInfo struct {
 	SessionID   string
 }
 
-func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etelecom.Hotline, tenantID dot.ID, callLog *providertypes.CallLog) (res []*callInfo) {
+func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etelecom.Hotline, tenantID dot.ID, callLog *etelecomxservicedriver.CallLog) (res []*callInfo) {
 	_callInfo := &callInfo{
 		Callee:    callLog.Callee,
 		Caller:    callLog.Caller,
@@ -374,7 +375,7 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 		_callInfo.Direction = call_direction.In
 		extensionNumbersAnswered := []string{}
 		extensionNumbersNotAnswered := []string{}
-		targetsMap := make(map[string]*providertypes.CallTarget)
+		targetsMap := make(map[string]*etelecomxservicedriver.CallTarget)
 		for _, target := range callLog.CallTargets {
 			targetsMap[target.TargetNumber] = target
 			if target.CallState == call_state.Answered {

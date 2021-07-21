@@ -19,7 +19,6 @@ type TelecomDriver interface {
 	Ping(ctx context.Context) error
 	GenerateToken(ctx context.Context) (*GenerateTokenResponse, error)
 	CreateExtension(ctx context.Context, req *CreateExtensionRequest) (*CreateExtensionResponse, error)
-	GetCallLogs(ctx context.Context, req *GetCallLogsRequest) (*GetCallLogsResponse, error)
 
 	CreateOutboundRule(context.Context, *CreateOutboundRuleRequest) error
 }

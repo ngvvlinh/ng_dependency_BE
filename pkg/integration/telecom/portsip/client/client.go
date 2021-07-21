@@ -22,12 +22,10 @@ import (
 var ll = l.New()
 
 type Client struct {
-	baseUrl     string
-	token       string
-	username    string
-	password    string
-	tenantHost  string
-	tenantToken string
+	baseUrl  string
+	token    string
+	username string
+	password string
 
 	rclient *httpreq.Resty
 }
@@ -58,32 +56,19 @@ func New(cfg PortsipAccountCfg) *Client {
 	}
 	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
-		token:       cfg.Token,
-		username:    cfg.Username,
-		password:    cfg.Password,
-		tenantHost:  cfg.TenantHost,
-		tenantToken: cfg.TenantToken,
-		rclient:     httpreq.NewResty(rcfg),
+		token:    cfg.Token,
+		username: cfg.Username,
+		password: cfg.Password,
+		rclient:  httpreq.NewResty(rcfg),
 	}
 
 	switch cmenv.Env() {
 	case cmenv.EnvDev:
 		c.baseUrl = "https://sip.etelecom.vn:8900/api"
-		if c.tenantHost == "" {
-			c.tenantHost = "https://api-dev.etelecom.vn"
-		}
 	case cmenv.EnvSandbox, cmenv.EnvStag:
 		c.baseUrl = "https://sip.etelecom.vn:8900/api"
-		if c.tenantHost == "" {
-			c.tenantHost = "https://api-sandbox.etelecom.vn"
-		}
 	case cmenv.EnvProd:
 		c.baseUrl = "https://sip.etelecom.vn:8900/api"
-		if c.tenantHost == "" {
-			// TODO: use etelecom external service instead
-			// Remove tenant host, tenant token
-			c.tenantHost = "https://api.etelecom.vn"
-		}
 	default:
 		ll.Fatal("Portsip: Invalid env")
 	}
@@ -195,22 +180,6 @@ func (c *Client) GetExtensionGroups(ctx context.Context, req *CommonListRequest)
 		resp:  &resp,
 	})
 	return &resp, err
-}
-
-func (c *Client) GetCallLogs(ctx context.Context, req *GetCallLogsRequest) (*GetCallLogsResponse, error) {
-	var resp GetCallLogsResponse
-
-	err := c.sendGetRequest(ctx, sendRequestArgs{
-		url:   URL(c.tenantHost, "/portsip-pbx/v1/cdr"),
-		token: c.tenantToken,
-		req:   req,
-		resp:  &resp,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &resp, nil
 }
 
 func (c *Client) sendPostRequest(ctx context.Context, args sendRequestArgs) error {

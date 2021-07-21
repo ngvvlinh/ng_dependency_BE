@@ -17,7 +17,7 @@ import (
 	"o.o/backend/pkg/common/bus"
 	"o.o/backend/pkg/common/cmenv"
 	"o.o/backend/pkg/etop/sqlstore"
-	etelecomxserviceclient "o.o/backend/pkg/integration/telecom/etelecom_xservice/client"
+	etelecomxserviceclient "o.o/backend/pkg/integration/telecom/etelecomxservice/client"
 	"o.o/capi/dot"
 	"o.o/common/l"
 )
