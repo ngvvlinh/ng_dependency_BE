@@ -1007,10 +1007,6 @@ func (s *UserService) ChangePasswordUsingToken(ctx context.Context, r *api.Chang
 }
 
 func (s *UserService) changePasswordUsingToken(ctx context.Context, r *api.ChangePasswordUsingTokenRequest) (*pbcm.Empty, error) {
-	return s.changePasswordUsingTokenForEmail(ctx, r)
-}
-
-func (s *UserService) changePasswordUsingTokenForEmail(ctx context.Context, r *api.ChangePasswordUsingTokenRequest) (*pbcm.Empty, error) {
 	if r.ResetPasswordToken == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Missing reset_password_token", nil)
 	}
@@ -1019,8 +1015,7 @@ func (s *UserService) changePasswordUsingTokenForEmail(ctx context.Context, r *a
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể khôi phục mật khẩu (token không hợp lệ). Vui lòng thử lại hoặc liên hệ %v.", wl.X(ctx).CSEmail)
 	}
-
-	if err := s.changePassword("", v["email"], tok.UserID, ctx, r.NewPassword, r.ConfirmPassword); err != nil {
+	if err := s.changePassword(v["phone"], v["email"], tok.UserID, ctx, r.NewPassword, r.ConfirmPassword); err != nil {
 		return nil, err
 	}
 	s.AuthStore.Revoke(auth.UsageResetPassword, r.ResetPasswordToken)
@@ -1029,10 +1024,13 @@ func (s *UserService) changePasswordUsingTokenForEmail(ctx context.Context, r *a
 }
 
 func (s *UserService) changePassword(phone string, email string, tokUserID dot.ID, ctx context.Context, newPassword string, confirmPassword string) error {
-	query := &identitymodelx.GetUserByEmailOrPhoneQuery{
-		Phone: phone,
-		Email: email,
+	query := &identitymodelx.GetUserByEmailOrPhoneQuery{}
+	if phone != "" {
+		query.Phone = phone
+	} else {
+		query.Email = email
 	}
+
 	if err := s.UserStoreIface.GetUserByEmailOrPhone(ctx, query); err != nil {
 		return err
 	}
@@ -1767,6 +1765,7 @@ func (s *UserService) verifyPhoneResetPasswordUsingToken(ctx context.Context, r 
 		UserID:   user.ID,
 		Value: map[string]string{
 			"email": user.Email,
+			"phone": user.Phone,
 		},
 	}
 	if _, err := s.AuthStore.GenerateWithValue(recaptchaToken, 1*60*60); err != nil {
