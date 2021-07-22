@@ -233,6 +233,7 @@ type EtelecomService interface {
 	GetTenants(context.Context, *etelecomtypes.GetTenantsRequest) (*etelecomtypes.GetTenantsResponse, error)
 	CreateTenant(context.Context, *etelecomtypes.AdminCreateTenantRequest) (*etelecomtypes.Tenant, error)
 	ActivateTenant(context.Context, *etelecomtypes.ActivateTenantRequest) (*cm.UpdatedResponse, error)
+	AddHotlineToTenant(context.Context, *etelecomtypes.AddHotlineToTenantRequest) (*cm.UpdatedResponse, error)
 	RemoveHotlineOutOfTenant(context.Context, *etelecomtypes.RemoveHotlineOutOfTenantRequest) (*cm.RemovedResponse, error)
 }
 

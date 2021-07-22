@@ -182,3 +182,17 @@ func (s *EtelecomService) RemoveHotlineOutOfTenant(ctx context.Context, r *etele
 	}
 	return &pbcm.RemovedResponse{Removed: 1}, nil
 }
+
+func (s *EtelecomService) AddHotlineToTenant(ctx context.Context, r *etelecomtypes.AddHotlineToTenantRequest) (*pbcm.UpdatedResponse, error) {
+	if err := r.Validate(); err != nil {
+		return nil, err
+	}
+	cmd := &etelecom.ActiveHotlineForTenantCommand{
+		HotlineID: r.HotlineID,
+		TenantID:  r.TenantID,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}

@@ -14,6 +14,7 @@ import (
 	"o.o/api/top/types/etc/status5"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
+	"o.o/common/xerrors"
 )
 
 type Hotline struct {
@@ -266,6 +267,23 @@ type RemoveHotlineOutOfTenantRequest struct {
 }
 
 func (m *RemoveHotlineOutOfTenantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type AddHotlineToTenantRequest struct {
+	HotlineID dot.ID `json:"hotline_id"`
+	TenantID  dot.ID `json:"tenant_id"`
+}
+
+func (m *AddHotlineToTenantRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (r *AddHotlineToTenantRequest) Validate() error {
+	if r.HotlineID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing hotline_id")
+	}
+	if r.TenantID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing tenant_id")
+	}
+	return nil
+}
 
 type AdminCreateTenantRequest struct {
 	OwnerID   dot.ID `json:"owner_id"`

@@ -909,6 +909,7 @@ var _acl = map[string]*permission.Decl{
 	"admin.Etelecom/GetTenants":               {Type: EtopAdmin, Actions: actions(AdminTenantView)},
 	"admin.Etelecom/CreateTenant":             {Type: EtopAdmin, Actions: actions(AdminTenantCreate)},
 	"admin.Etelecom/ActivateTenant":           {Type: EtopAdmin, Actions: actions(AdminTenantUpdate)},
+	"admin.Etelecom/AddHotlineToTenant":       {Type: EtopAdmin, Actions: actions(AdminTenantUpdate)},
 	"admin.Etelecom/RemoveHotlineOutOfTenant": {Type: EtopAdmin, Actions: actions(AdminTenantUpdate)},
 
 	"admin.Transaction/GetTransactions": {Type: EtopAdmin, Actions: actions(AdminTransactionView)},
