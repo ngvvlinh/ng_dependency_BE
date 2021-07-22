@@ -98,6 +98,7 @@ func (s *AccountUserService) GetAccountUsers(ctx context.Context, r *api.GetAcco
 		listExtendedAccountUsersQuery.ExtensionNumberNorm = r.Filter.ExtensionNumber
 		listExtendedAccountUsersQuery.Role = r.Filter.Role
 		listExtendedAccountUsersQuery.UserIDs = r.Filter.UserIDs
+		listExtendedAccountUsersQuery.HasExtension = r.Filter.HasExtension
 	}
 	if err = s.IdentityQuery.Dispatch(ctx, listExtendedAccountUsersQuery); err != nil {
 		return nil, err

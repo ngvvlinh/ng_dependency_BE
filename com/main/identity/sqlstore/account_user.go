@@ -74,6 +74,15 @@ func (s *AccountUserStore) ByExtensionNumberNorm(extensionNumber filter.FullText
 	return s
 }
 
+func (s *AccountUserStore) HasExtension(hasExtension bool) *AccountUserStore {
+	if hasExtension {
+		s.preds = append(s.preds, sq.NewExpr("extension_number_norm IS NOT NULL"))
+	} else {
+		s.preds = append(s.preds, sq.NewExpr("extension_number_norm IS NULL"))
+	}
+	return s
+}
+
 func (s *AccountUserStore) WithPaging(paging meta.Paging) *AccountUserStore {
 	s.Paging.WithPaging(paging)
 	return s
