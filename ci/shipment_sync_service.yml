@@ -1,11 +1,11 @@
-.etop_server:
+.shipment_sync_service:
   variables:
-    SERVICE_NAME: "etop-server"
+    SERVICE_NAME: "shipment-sync-service"
 
-package:etop_server:
+package:shipment_sync_service:
   extends:
   - .go-cache 
-  - .etop_server
+  - .shipment_sync_service
   - .package_docker
   stage: package
   only:
@@ -13,10 +13,11 @@ package:etop_server:
     - master
   except:
   - "tags"
+  when: manual
 
-deploy:etop_server-dev:
+deploy:shipment_sync_service_dev:
   extends:
-  - .etop_server
+  - .shipment_sync_service
   - .kubernetes_deploy
   stage: dev
   variables:
@@ -29,12 +30,13 @@ deploy:etop_server-dev:
   only:
     refs:
     - master
-  dependencies: ["package:etop_server"]
+  dependencies: ["package:shipment_sync_service"]
+  when: manual
 
 # Sandbox
-deploy:etop_server_sandbox:
+deploy:shipment_sync_service_sandbox:
   extends:
-  - .etop_server
+  - .shipment_sync_service
   - .kubernetes_deploy
   stage: sandbox
   variables:
@@ -47,13 +49,13 @@ deploy:etop_server_sandbox:
   only:
     refs:
     - tags
-  dependencies: ["deploy:etop_server-dev"]
+  dependencies: ["deploy:shipment_sync_service_dev"]
   when: manual
 
 # Staging
-deploy:etop_server_staging:
+deploy:shipment_sync_service_staging:
   extends:
-  - .etop_server
+  - .shipment_sync_service
   - .kubernetes_deploy
   stage: staging
   variables:
@@ -66,13 +68,13 @@ deploy:etop_server_staging:
   only:
     refs:
     - tags
-  dependencies: ["deploy:etop_server-dev"]
+  dependencies: ["deploy:shipment_sync_service_dev"]
   when: manual
 
 # Production
-deploy:etop-server-prod:
+deploy:shipment_sync_service_prod:
   extends:
-  - .etop_server
+  - .shipment_sync_service
   - .kubernetes_deploy
   stage: production
   variables:
@@ -85,6 +87,10 @@ deploy:etop-server-prod:
   only:
     refs:
     - tags
-  dependencies: ["deploy:etop_server-dev"]
+  dependencies: ["deploy:shipment_sync_service_dev"]
   when: manual
+
+
+
+
 

@@ -52,6 +52,25 @@ deploy:telecom_sync_service_sandbox:
   dependencies: ["deploy:telecom_sync_service_dev"]
   when: manual
 
+# Staging
+deploy:telecom_sync_service_staging:
+  extends:
+  - .telecom_sync_service
+  - .kubernetes_deploy
+  stage: staging
+  variables:
+    ENV_PREFIX: g
+    K8S_NAMESPACE: k8s-staging
+  environment:
+    name: staging
+    kubernetes:
+      namespace: "k8s-staging"
+  only:
+    refs:
+    - tags
+  dependencies: ["deploy:telecom_sync_service_dev"]
+  when: manual
+
 # Production
 deploy:telecom_sync_service_prod:
   extends:

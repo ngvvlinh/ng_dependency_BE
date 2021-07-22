@@ -52,6 +52,25 @@ deploy:pgevent_forwarder_sandbox:
   dependencies: ["deploy:pgevent_forwarder_dev"]
   when: manual
 
+# Staging
+deploy:pgevent_forwarder_staging:
+  extends:
+  - .pgevent_forwarder
+  - .kubernetes_deploy
+  stage: staging
+  variables:
+    ENV_PREFIX: g
+    K8S_NAMESPACE: k8s-staging
+  environment:
+    name: staging
+    kubernetes:
+      namespace: "k8s-staging"
+  only:
+    refs:
+    - tags
+  dependencies: ["deploy:pgevent_forwarder_dev"]
+  when: manual
+
 # Production
 deploy:pgevent_forwarder_prod:
   extends:

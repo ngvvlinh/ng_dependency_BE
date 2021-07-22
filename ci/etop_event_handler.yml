@@ -52,6 +52,25 @@ deploy:etop_event_handler_sandbox:
   dependencies: ["deploy:etop_event_handler_dev"]
   when: manual
 
+# Staging
+deploy:etop_event_handler_staging:
+  extends:
+  - .etop_event_handler
+  - .kubernetes_deploy
+  stage: staging
+  variables:
+    ENV_PREFIX: g
+    K8S_NAMESPACE: k8s-staging
+  environment:
+    name: staging
+    kubernetes:
+      namespace: "k8s-staging"
+  only:
+    refs:
+    - tags
+  dependencies: ["deploy:etop_event_handler_dev"]
+  when: manual
+
 # Production
 deploy:etop-event-handler-prod:
   extends:
