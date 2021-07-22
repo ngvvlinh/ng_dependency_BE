@@ -30,13 +30,13 @@ type AccountUserService struct {
 }
 
 var mapRole = map[string]authorization.Role{
-	"staff_management":         authorization.RoleStaffManagement,
-	"analyst":                  authorization.RoleAnalyst,
-	"accountant":               authorization.RoleAccountant,
-	"salesman":                 authorization.RoleSalesMan,
-	"inventory_management":     authorization.RoleInventoryManagement,
-	"purchasing_management":    authorization.RolePurchasingManagement,
-	"telecom_customer_service": authorization.RoleTelecomCustomerService,
+	"inventory_management":    authorization.RoleInventoryManagement,
+	"salesman":                authorization.RoleSalesMan,
+	"analyst":                 authorization.RoleAnalyst,
+	"accountant":              authorization.RoleAccountant,
+	"purchasing_management":   authorization.RolePurchasingManagement,
+	"staff_management":        authorization.RoleStaffManagement,
+	"telecom_customerservice": authorization.RoleTelecomCustomerService,
 }
 
 type Line struct {
@@ -44,7 +44,7 @@ type Line struct {
 	Name       string
 	Phone      string
 	Email      string
-	Role       authorization.Role
+	Roles      []string
 	ShopCode   string
 	OwnerPhone string
 	AccountID  dot.ID
@@ -169,17 +169,22 @@ func (s *AccountUserService) parseRow(ctx context.Context, row []string) (*Line,
 		shopCode = strings.TrimSpace(row[6])
 	}
 
-	if _, ok = mapRole[row[4]]; !ok {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Role does not valid").WithMetap("row", row)
+	strRoles := strings.Split(row[4], ",")
+	var roles = []string{}
+	for _, role := range strRoles {
+		role = strings.ReplaceAll(role, " ", "")
+		if _, ok = mapRole[role]; !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Roles does not valid").WithMetap("row", row)
+		}
+		roles = append(roles, role)
 	}
-	role := mapRole[row[4]]
 
 	return &Line{
 		ID:         row[0],
 		Name:       row[1],
 		Phone:      phone.String(),
 		Email:      email.String(),
-		Role:       role,
+		Roles:      roles,
 		ShopCode:   shopCode,
 		OwnerPhone: ownerPhone.String(),
 	}, nil
@@ -289,8 +294,9 @@ func (s *AccountUserService) createAccountUser(ctx context.Context, args *Line) 
 			UserID:    args.UserID,
 			Status:    status3.P,
 			Permission: identity.Permission{
-				Roles: []string{string(args.Role)},
+				Roles: args.Roles,
 			},
+
 			FullName: args.Name,
 		}
 		if err = s.identityAggr.Dispatch(ctx, cmd); err != nil {
