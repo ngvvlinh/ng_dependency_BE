@@ -11114,6 +11114,9 @@
         "extension_number": {
           "$ref": "#/definitions/kfFullTextSearch"
         },
+        "has_extension": {
+          "type": "boolean"
+        },
         "name": {
           "$ref": "#/definitions/kfFullTextSearch"
         },

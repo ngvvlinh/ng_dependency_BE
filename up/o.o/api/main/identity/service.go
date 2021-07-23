@@ -423,6 +423,7 @@ type ListAccountUsersArgs struct {
 	ExtensionNumberNorm filter.FullTextSearch
 	Role                shop_user_role.NullUserRole
 	UserIDs             []dot.ID
+	HasExtension        dot.NullBool
 }
 
 type ListAccountUsersResponse struct {
@@ -443,6 +444,7 @@ type ListExtendedAccountUsersArgs struct {
 	ExtensionNumberNorm filter.FullTextSearch
 	Role                shop_user_role.NullUserRole
 	UserIDs             []dot.ID
+	HasExtension        dot.NullBool
 }
 
 type ListExtendedAccountUsersResponse struct {

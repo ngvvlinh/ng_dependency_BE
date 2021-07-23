@@ -3244,6 +3244,7 @@ type FilterGetAccountUsersRequest struct {
 	ExtensionNumber filter.FullTextSearch       `json:"extension_number"`
 	Role            shop_user_role.NullUserRole `json:"role"`
 	UserIDs         []dot.ID                    `json:"user_ids"`
+	HasExtension    dot.NullBool                `json:"has_extension"`
 }
 
 func (m *FilterGetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
