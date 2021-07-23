@@ -10,29 +10,32 @@ type NullUserRole struct {
 }
 
 const (
+	// +enum=unknown
+	Unknown UserRole = 0
+
 	// +enum=owner
-	Owner UserRole = 0
+	Owner UserRole = 1
 
 	// +enum=staff_management
-	StaffManagement UserRole = 1
+	StaffManagement UserRole = 2
 
 	// +enum=telecom_customerservice
-	TelecomCustomerService UserRole = 2
+	TelecomCustomerService UserRole = 3
 
 	// +enum=inventory_management
-	InventoryManagement UserRole = 3
+	InventoryManagement UserRole = 4
 
 	// +enum=purchasing_management
-	PurchasingManagement UserRole = 4
+	PurchasingManagement UserRole = 5
 
 	// +enum=accountant
-	Accountant UserRole = 5
+	Accountant UserRole = 6
 
 	// +enum=analyst
-	Analyst UserRole = 6
+	Analyst UserRole = 7
 
 	// +enum=salesman
-	SalesMan UserRole = 7
+	SalesMan UserRole = 8
 )
 
 func ContainsUserRoles(roles []UserRole, role UserRole) bool {

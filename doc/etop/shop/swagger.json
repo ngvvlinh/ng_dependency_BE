@@ -8635,6 +8635,7 @@
     "hbUserRole": {
       "type": "string",
       "enum": [
+        "unknown",
         "owner",
         "staff_management",
         "telecom_customerservice",
@@ -11123,8 +11124,11 @@
         "phone": {
           "$ref": "#/definitions/kfFullTextSearch"
         },
-        "role": {
-          "$ref": "#/definitions/hbUserRole"
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hbUserRole"
+          }
         },
         "user_ids": {
           "type": "array",

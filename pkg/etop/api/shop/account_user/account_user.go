@@ -96,7 +96,7 @@ func (s *AccountUserService) GetAccountUsers(ctx context.Context, r *api.GetAcco
 		listExtendedAccountUsersQuery.FullNameNorm = r.Filter.Name
 		listExtendedAccountUsersQuery.PhoneNorm = r.Filter.Phone
 		listExtendedAccountUsersQuery.ExtensionNumberNorm = r.Filter.ExtensionNumber
-		listExtendedAccountUsersQuery.Role = r.Filter.Role
+		listExtendedAccountUsersQuery.Roles = r.Filter.Roles
 		listExtendedAccountUsersQuery.UserIDs = r.Filter.UserIDs
 		listExtendedAccountUsersQuery.HasExtension = r.Filter.HasExtension
 	}
@@ -261,10 +261,11 @@ func hasPermision(currentUserRoles []string, roles []shop_user_role.UserRole) bo
 	// user_role number càng nhỏ => quyền càng lớn (trừ số 0)
 	for _, crole := range currentUserRoles {
 		_crole, ok := shop_user_role.ParseUserRole(crole)
-		if !ok {
+		if !ok || _crole == shop_user_role.Unknown {
 			continue
 		}
-		if currentRole == 0 {
+
+		if currentRole == shop_user_role.Unknown {
 			currentRole = _crole
 			continue
 		}
@@ -273,7 +274,7 @@ func hasPermision(currentUserRoles []string, roles []shop_user_role.UserRole) bo
 		}
 	}
 
-	if currentRole == 0 {
+	if currentRole == shop_user_role.Unknown {
 		return false
 	}
 	for _, role := range roles {

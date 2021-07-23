@@ -3239,12 +3239,12 @@ type GetAccountUsersRequest struct {
 func (m *GetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type FilterGetAccountUsersRequest struct {
-	Name            filter.FullTextSearch       `json:"name"`
-	Phone           filter.FullTextSearch       `json:"phone"`
-	ExtensionNumber filter.FullTextSearch       `json:"extension_number"`
-	Role            shop_user_role.NullUserRole `json:"role"`
-	UserIDs         []dot.ID                    `json:"user_ids"`
-	HasExtension    dot.NullBool                `json:"has_extension"`
+	Name            filter.FullTextSearch     `json:"name"`
+	Phone           filter.FullTextSearch     `json:"phone"`
+	ExtensionNumber filter.FullTextSearch     `json:"extension_number"`
+	Roles           []shop_user_role.UserRole `json:"roles"`
+	UserIDs         []dot.ID                  `json:"user_ids"`
+	HasExtension    dot.NullBool              `json:"has_extension"`
 }
 
 func (m *FilterGetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }

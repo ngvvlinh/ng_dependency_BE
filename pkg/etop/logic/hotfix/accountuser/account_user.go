@@ -201,9 +201,8 @@ func (s *AccountUserService) getAccountUser(ctx context.Context, phone, shopCode
 
 	var accountUser *identity.AccountUser
 	getAccountUsersQuery := &identity.ListAccountUsersQuery{
-		Role: shop_user_role.NullUserRole{
-			Enum:  shop_user_role.Owner,
-			Valid: true,
+		Roles: []shop_user_role.UserRole{
+			shop_user_role.Owner,
 		},
 		UserIDs: []dot.ID{owner.ID},
 	}

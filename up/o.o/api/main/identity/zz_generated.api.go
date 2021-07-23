@@ -609,7 +609,7 @@ type ListAccountUsersQuery struct {
 	FullNameNorm        filter.FullTextSearch
 	PhoneNorm           filter.FullTextSearch
 	ExtensionNumberNorm filter.FullTextSearch
-	Role                shop_user_role.NullUserRole
+	Roles               []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
 
@@ -627,7 +627,7 @@ type ListExtendedAccountUsersQuery struct {
 	FullNameNorm        filter.FullTextSearch
 	PhoneNorm           filter.FullTextSearch
 	ExtensionNumberNorm filter.FullTextSearch
-	Role                shop_user_role.NullUserRole
+	Roles               []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
 
@@ -1354,7 +1354,7 @@ func (q *ListAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context,
 			FullNameNorm:        q.FullNameNorm,
 			PhoneNorm:           q.PhoneNorm,
 			ExtensionNumberNorm: q.ExtensionNumberNorm,
-			Role:                q.Role,
+			Roles:               q.Roles,
 			UserIDs:             q.UserIDs,
 			HasExtension:        q.HasExtension,
 		}
@@ -1366,7 +1366,7 @@ func (q *ListAccountUsersQuery) SetListAccountUsersArgs(args *ListAccountUsersAr
 	q.FullNameNorm = args.FullNameNorm
 	q.PhoneNorm = args.PhoneNorm
 	q.ExtensionNumberNorm = args.ExtensionNumberNorm
-	q.Role = args.Role
+	q.Roles = args.Roles
 	q.UserIDs = args.UserIDs
 	q.HasExtension = args.HasExtension
 }
@@ -1379,7 +1379,7 @@ func (q *ListExtendedAccountUsersQuery) GetArgs(ctx context.Context) (_ context.
 			FullNameNorm:        q.FullNameNorm,
 			PhoneNorm:           q.PhoneNorm,
 			ExtensionNumberNorm: q.ExtensionNumberNorm,
-			Role:                q.Role,
+			Roles:               q.Roles,
 			UserIDs:             q.UserIDs,
 			HasExtension:        q.HasExtension,
 		}
@@ -1391,7 +1391,7 @@ func (q *ListExtendedAccountUsersQuery) SetListExtendedAccountUsersArgs(args *Li
 	q.FullNameNorm = args.FullNameNorm
 	q.PhoneNorm = args.PhoneNorm
 	q.ExtensionNumberNorm = args.ExtensionNumberNorm
-	q.Role = args.Role
+	q.Roles = args.Roles
 	q.UserIDs = args.UserIDs
 	q.HasExtension = args.HasExtension
 }
