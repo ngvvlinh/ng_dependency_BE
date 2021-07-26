@@ -138,6 +138,7 @@ func (s *AccountUserStore) SoftDeleteAccountUsers() (int, error) {
 
 func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, error) {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	if len(s.Paging.Sort) == 0 {
 		s.Paging.Sort = []string{"-created_at"}
 	}
