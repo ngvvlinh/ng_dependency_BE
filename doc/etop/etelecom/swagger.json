@@ -992,6 +992,12 @@
     "riGetExtensionsFilter": {
       "type": "object",
       "properties": {
+        "extension_numbers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "hotline_id": {
           "type": "string",
           "format": "int64"
