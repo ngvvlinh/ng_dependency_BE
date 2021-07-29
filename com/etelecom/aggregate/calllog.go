@@ -106,6 +106,7 @@ func (a *EtelecomAggregate) CreateOrUpdateCallLogFromCDR(
 		}
 		callLog.AccountID = extension.AccountID
 		callLog.UserID = extension.UserID
+		callLog.HotlineID = extension.HotlineID
 	}
 
 	oldCallLog, err := a.callLogStore(ctx).ExternalSessionID(args.ExternalSessionID).GetCallLog()

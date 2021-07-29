@@ -121,9 +121,6 @@ func (args *CreateOrUpdateCallLogFromCDRArgs) Validate() error {
 	if args.ConnectionID == 0 {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing connection ID")
 	}
-	if args.HotlineID == 0 {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing hotline ID")
-	}
 	if args.ExternalSessionID == "" {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing external session ID")
 	}

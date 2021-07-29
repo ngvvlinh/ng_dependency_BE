@@ -181,13 +181,6 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 		getCallLogsResp *etelecomxservicedriver.GetCallLogsResponse
 	)
 	now := time.Now()
-	hotlines, err := s.getHotlines(ctx, connectionID, ownerID)
-	if err != nil {
-		return err
-	}
-	if len(hotlines) == 0 {
-		return cm.Errorf(cm.Internal, err, "Can not find any hotline from this connection: connection_id = %v, owner_id = %v", connectionID, ownerID)
-	}
 	tenant, err := s.getTenant(ctx, connectionID, ownerID)
 	if err != nil {
 		return err
@@ -200,7 +193,6 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 			StartedAt: lastSyncAt,
 			EndedAt:   now,
 		}
-
 		getCallLogsResp, err = etelecomXServiceDriver.GetCallLogs(ctx, getCallLogsReq)
 		if err != nil {
 			return err
@@ -218,11 +210,8 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 			if lastSyncAt.After(callLogResp.StartedAt) {
 				break
 			}
-			_callsInfo := s.getCallInfo(ctx, hotlines, tenant.ID, callLogResp)
+			_callsInfo := s.getCallInfo(ctx, tenant.ID, callLogResp)
 			for _, info := range _callsInfo {
-				if info.HotlineID == 0 {
-					continue
-				}
 				cmdCreate := &etelecom.CreateOrUpdateCallLogFromCDRCommand{
 					ExternalID:         callLogResp.CallID,
 					StartedAt:          callLogResp.StartedAt,
@@ -239,7 +228,6 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 					Direction:          info.Direction,
 					CallState:          info.CallState,
 					ExtensionID:        info.ExtensionID,
-					HotlineID:          info.HotlineID,
 				}
 
 				if _err := s.telecomAggr.Dispatch(ctx, cmdCreate); _err != nil {
@@ -349,20 +337,14 @@ type callInfo struct {
 	SessionID   string
 }
 
-func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etelecom.Hotline, tenantID dot.ID, callLog *etelecomxservicedriver.CallLog) (res []*callInfo) {
+func (s *PortsipSync) getCallInfo(ctx context.Context, tenantID dot.ID, callLog *etelecomxservicedriver.CallLog) (res []*callInfo) {
 	_callInfo := &callInfo{
 		Callee:    callLog.Callee,
 		Caller:    callLog.Caller,
 		CallState: callLog.CallState,
 		SessionID: callLog.SessionID,
 	}
-	if len(hotlines) == 0 {
-		return nil
-	}
 
-	if hotline, ok := hotlines[callLog.HotlineNumber]; ok {
-		_callInfo.HotlineID = hotline.ID
-	}
 	res = append(res, _callInfo)
 
 	switch callLog.Direction {
@@ -401,7 +383,6 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 		_callInfo.Callee = target.TargetNumber
 		_callInfo.CallState = target.CallState
 		_callInfo.ExtensionID = ext.ID
-		_callInfo.HotlineID = ext.HotlineID
 		return res
 
 	case call_direction.Out.String():
@@ -412,33 +393,30 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, hotlines map[string]*etel
 			return
 		}
 		_callInfo.ExtensionID = ext.ID
-		_callInfo.HotlineID = ext.HotlineID
 		return
 
 	case call_direction.Ext.String():
 		// tách làm 2 call log: gọi vào và gọi ra
-		// gọi vào
-		extensionCallerNumbers := []string{callLog.Caller}
-		extCaller, err := s.findExtension(ctx, extensionCallerNumbers, tenantID)
-		if err != nil {
-			return
-		}
-		var result = []*callInfo{}
-		callInfoIn := *_callInfo
-		callInfoIn.Direction = call_direction.In
-		callInfoIn.ExtensionID = extCaller.ID
-		callInfoIn.HotlineID = extCaller.HotlineID
-
-		// gọi ra
+		// gọi vào (in): dựa vào callee
 		extensionCalleeNumbers := []string{callLog.Callee}
 		extCallee, err := s.findExtension(ctx, extensionCalleeNumbers, tenantID)
 		if err != nil {
 			return
 		}
+		var result = []*callInfo{}
+		callInfoIn := *_callInfo
+		callInfoIn.Direction = call_direction.ExtIn
+		callInfoIn.ExtensionID = extCallee.ID
+
+		// gọi ra (out): dựa vào caller
+		extensionCallerNumbers := []string{callLog.Caller}
+		extCaller, err := s.findExtension(ctx, extensionCallerNumbers, tenantID)
+		if err != nil {
+			return
+		}
 		callInfoOut := *_callInfo
-		callInfoOut.Direction = call_direction.Out
-		callInfoOut.ExtensionID = extCallee.ID
-		callInfoOut.HotlineID = extCallee.HotlineID
+		callInfoOut.Direction = call_direction.ExtOut
+		callInfoOut.ExtensionID = extCaller.ID
 		callInfoOut.SessionID += "-" + call_direction.Out.String()
 
 		result = append(result, &callInfoIn, &callInfoOut)
@@ -462,22 +440,6 @@ func (s *PortsipSync) findExtension(ctx context.Context, extNumbers []string, te
 		return nil, cm.Errorf(cm.NotFound, nil, "Extension not found: %v", extNumbers)
 	}
 	return extensions[0], nil
-}
-
-func (s *PortsipSync) getHotlines(ctx context.Context, connectionID, ownerID dot.ID) (map[string]*etelecom.Hotline, error) {
-	query := &etelecom.ListHotlinesQuery{
-		OwnerID:      ownerID,
-		ConnectionID: connectionID,
-	}
-	if err := s.telecomQuery.Dispatch(ctx, query); err != nil {
-		return nil, err
-	}
-
-	var hotlines = map[string]*etelecom.Hotline{}
-	for _, hotline := range query.Result {
-		hotlines[hotline.Hotline] = hotline
-	}
-	return hotlines, nil
 }
 
 func (s *PortsipSync) getTenant(ctx context.Context, connID, ownerID dot.ID) (*etelecom.Tenant, error) {
