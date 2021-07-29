@@ -133,7 +133,7 @@ func (a *EtelecomAggregate) ActiveHotlineForTenant(ctx context.Context, args *et
 		TenantID:         tenant.ID,
 		ConnectionID:     tenant.ConnectionID,
 		ConnectionMethod: tenant.ConnectionMethod,
-		OwnerID:          args.OwnerID,
+		OwnerID:          tenant.OwnerID,
 	}
 	return a.UpdateHotlineInfo(ctx, updateHotlineArgs)
 }
