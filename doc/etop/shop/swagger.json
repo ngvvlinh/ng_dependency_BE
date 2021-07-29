@@ -11225,12 +11225,23 @@
           "type": "string",
           "format": "int64"
         },
+        "assigned_user_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
         "closed_by": {
           "type": "string",
           "format": "int64"
         },
         "code": {
           "type": "string"
+        },
+        "confirmed_by": {
+          "type": "string",
+          "format": "int64"
         },
         "created_by": {
           "type": "string",

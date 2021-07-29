@@ -34,11 +34,13 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 		filter.Title = request.Filter.Title
 		filter.LabelIDs = request.Filter.LabelIDs
 		filter.CreatedBy = request.Filter.CreatedBy
+		filter.ConfirmedBy = request.Filter.ConfirmedBy
 		filter.Code = request.Filter.Code
 		filter.RefID = request.Filter.RefID
 		filter.RefType = request.Filter.RefType
 		filter.State = request.Filter.State
 		filter.RefCode = request.Filter.RefCode
+		filter.AssignedUserIDs = request.Filter.AssignedUserIDs
 		if len(request.Filter.Types) != 0 {
 			filter.Types = request.Filter.Types
 		} else {

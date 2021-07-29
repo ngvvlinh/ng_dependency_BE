@@ -78,6 +78,9 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 		if args.Filter.CreatedBy != 0 {
 			query = query.CreatedBy(args.Filter.CreatedBy)
 		}
+		if args.Filter.ConfirmedBy != 0 {
+			query = query.ConfirmedBy(args.Filter.ConfirmedBy)
+		}
 		if args.Filter.IDs != nil {
 			query = query.IDs(args.Filter.IDs...)
 		}

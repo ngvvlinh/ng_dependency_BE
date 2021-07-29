@@ -109,18 +109,20 @@ type DeleteTicketCommentResponse struct {
 func (m *DeleteTicketCommentResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type FilterShopGetTicket struct {
-	IDs       []dot.ID                      `json:"ids"`
-	CreatedBy dot.ID                        `json:"created_by"`
-	ClosedBy  dot.ID                        `json:"closed_by"`
-	AccountID dot.ID                        `json:"account_id"`
-	LabelIDs  []dot.ID                      `json:"label_ids"`
-	RefID     dot.ID                        `json:"ref_id"`
-	RefType   ticket_ref_type.TicketRefType `json:"ref_type"`
-	RefCode   string                        `json:"ref_code"`
-	State     ticket_state.TicketState      `json:"state"`
-	Title     filter.FullTextSearch         `json:"title"`
-	Code      string                        `json:"code"`
-	Types     []ticket_type.TicketType      `json:"types"`
+	IDs             []dot.ID                      `json:"ids"`
+	CreatedBy       dot.ID                        `json:"created_by"`
+	ConfirmedBy     dot.ID                        `json:"confirmed_by"`
+	ClosedBy        dot.ID                        `json:"closed_by"`
+	AccountID       dot.ID                        `json:"account_id"`
+	LabelIDs        []dot.ID                      `json:"label_ids"`
+	AssignedUserIDs []dot.ID                      `json:"assigned_user_ids"`
+	RefID           dot.ID                        `json:"ref_id"`
+	RefType         ticket_ref_type.TicketRefType `json:"ref_type"`
+	RefCode         string                        `json:"ref_code"`
+	State           ticket_state.TicketState      `json:"state"`
+	Title           filter.FullTextSearch         `json:"title"`
+	Code            string                        `json:"code"`
+	Types           []ticket_type.TicketType      `json:"types"`
 }
 
 func (m *FilterShopGetTicket) String() string { return jsonx.MustMarshalToString(m) }

@@ -171,6 +171,7 @@ type ListTicketsResponse struct {
 type FilterGetTicket struct {
 	IDs             []dot.ID
 	CreatedBy       dot.ID
+	ConfirmedBy     dot.ID
 	ClosedBy        dot.ID
 	AccountID       dot.ID
 	LabelIDs        []dot.ID
