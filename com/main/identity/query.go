@@ -340,6 +340,14 @@ func (q *QueryService) ListAccountUsers(ctx context.Context, args *identity.List
 		query = query.HasExtension(IsAssignedToExtension)
 	}
 
+	if len(args.ExactRoles) > 0 {
+		var roles []string
+		for _, role := range args.ExactRoles {
+			roles = append(roles, role.String())
+		}
+		query = query.ByExactRoles(roles...)
+	}
+
 	if len(args.Roles) > 0 {
 		var roles []string
 		for _, role := range args.Roles {
@@ -367,6 +375,7 @@ func (q *QueryService) ListExtendedAccountUsers(ctx context.Context, args *ident
 		PhoneNorm:           args.PhoneNorm,
 		ExtensionNumberNorm: args.ExtensionNumberNorm,
 		Roles:               args.Roles,
+		ExactRoles:          args.ExactRoles,
 		UserIDs:             args.UserIDs,
 		HasExtension:        args.HasExtension,
 	})

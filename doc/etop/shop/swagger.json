@@ -11112,6 +11112,12 @@
     "paFilterGetAccountUsersRequest": {
       "type": "object",
       "properties": {
+        "exact_roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hbUserRole"
+          }
+        },
         "extension_number": {
           "$ref": "#/definitions/kfFullTextSearch"
         },

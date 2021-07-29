@@ -610,6 +610,7 @@ type ListAccountUsersQuery struct {
 	PhoneNorm           filter.FullTextSearch
 	ExtensionNumberNorm filter.FullTextSearch
 	Roles               []shop_user_role.UserRole
+	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
 
@@ -628,6 +629,7 @@ type ListExtendedAccountUsersQuery struct {
 	PhoneNorm           filter.FullTextSearch
 	ExtensionNumberNorm filter.FullTextSearch
 	Roles               []shop_user_role.UserRole
+	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
 
@@ -1355,6 +1357,7 @@ func (q *ListAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context,
 			PhoneNorm:           q.PhoneNorm,
 			ExtensionNumberNorm: q.ExtensionNumberNorm,
 			Roles:               q.Roles,
+			ExactRoles:          q.ExactRoles,
 			UserIDs:             q.UserIDs,
 			HasExtension:        q.HasExtension,
 		}
@@ -1367,6 +1370,7 @@ func (q *ListAccountUsersQuery) SetListAccountUsersArgs(args *ListAccountUsersAr
 	q.PhoneNorm = args.PhoneNorm
 	q.ExtensionNumberNorm = args.ExtensionNumberNorm
 	q.Roles = args.Roles
+	q.ExactRoles = args.ExactRoles
 	q.UserIDs = args.UserIDs
 	q.HasExtension = args.HasExtension
 }
@@ -1380,6 +1384,7 @@ func (q *ListExtendedAccountUsersQuery) GetArgs(ctx context.Context) (_ context.
 			PhoneNorm:           q.PhoneNorm,
 			ExtensionNumberNorm: q.ExtensionNumberNorm,
 			Roles:               q.Roles,
+			ExactRoles:          q.ExactRoles,
 			UserIDs:             q.UserIDs,
 			HasExtension:        q.HasExtension,
 		}
@@ -1392,6 +1397,7 @@ func (q *ListExtendedAccountUsersQuery) SetListExtendedAccountUsersArgs(args *Li
 	q.PhoneNorm = args.PhoneNorm
 	q.ExtensionNumberNorm = args.ExtensionNumberNorm
 	q.Roles = args.Roles
+	q.ExactRoles = args.ExactRoles
 	q.UserIDs = args.UserIDs
 	q.HasExtension = args.HasExtension
 }

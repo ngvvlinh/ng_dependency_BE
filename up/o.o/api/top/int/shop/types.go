@@ -3243,6 +3243,7 @@ type FilterGetAccountUsersRequest struct {
 	Phone           filter.FullTextSearch     `json:"phone"`
 	ExtensionNumber filter.FullTextSearch     `json:"extension_number"`
 	Roles           []shop_user_role.UserRole `json:"roles"`
+	ExactRoles      []shop_user_role.UserRole `json:"exact_roles"`
 	UserIDs         []dot.ID                  `json:"user_ids"`
 	HasExtension    dot.NullBool              `json:"has_extension"`
 }

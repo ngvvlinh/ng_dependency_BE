@@ -59,6 +59,12 @@ func (s *AccountUserStore) ByRoles(roles ...string) *AccountUserStore {
 	return s
 }
 
+func (s *AccountUserStore) ByExactRoles(roles ...string) *AccountUserStore {
+	arrRoles := core.Array{V: roles}
+	s.preds = append(s.preds, sq.NewExpr("roles @> ? AND ? @> roles", arrRoles, arrRoles))
+	return s
+}
+
 func (s *AccountUserStore) ByFullNameNorm(name filter.FullTextSearch) *AccountUserStore {
 	s.preds = append(s.preds, s.ft.Filter(`full_name_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(name)))
 	return s

@@ -97,6 +97,7 @@ func (s *AccountUserService) GetAccountUsers(ctx context.Context, r *api.GetAcco
 		listExtendedAccountUsersQuery.PhoneNorm = r.Filter.Phone
 		listExtendedAccountUsersQuery.ExtensionNumberNorm = r.Filter.ExtensionNumber
 		listExtendedAccountUsersQuery.Roles = r.Filter.Roles
+		listExtendedAccountUsersQuery.ExactRoles = r.Filter.ExactRoles
 		listExtendedAccountUsersQuery.UserIDs = r.Filter.UserIDs
 		listExtendedAccountUsersQuery.HasExtension = r.Filter.HasExtension
 	}

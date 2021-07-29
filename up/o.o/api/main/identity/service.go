@@ -422,6 +422,7 @@ type ListAccountUsersArgs struct {
 	PhoneNorm           filter.FullTextSearch
 	ExtensionNumberNorm filter.FullTextSearch
 	Roles               []shop_user_role.UserRole
+	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
 }
@@ -443,6 +444,7 @@ type ListExtendedAccountUsersArgs struct {
 	PhoneNorm           filter.FullTextSearch
 	ExtensionNumberNorm filter.FullTextSearch
 	Roles               []shop_user_role.UserRole
+	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
 }
