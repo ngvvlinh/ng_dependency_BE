@@ -5,12 +5,14 @@ import (
 	"fmt"
 
 	smslog "o.o/api/etc/logging/smslog"
+	"o.o/api/top/types/etc/sms_provider"
 	"o.o/api/top/types/etc/status3"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/whitelabel/wl"
 	"o.o/backend/pkg/common/cmenv"
 	cc "o.o/backend/pkg/common/config"
 	"o.o/backend/pkg/common/validate"
+	"o.o/backend/pkg/integration/sms/incom"
 	"o.o/backend/pkg/integration/sms/vietguys"
 	"o.o/common/l"
 )
@@ -31,6 +33,7 @@ type Config struct {
 	Mock     bool            `yaml:"mock"`
 	Vietguys vietguys.Config `yaml:"vietguys"`
 	Telegram bool            `yaml:"telegram"`
+	Incom    incom.Config    `yaml:"incom"`
 }
 
 func (c *Config) MustLoadEnv(prefix ...string) {
@@ -44,6 +47,9 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 		p + "_VIETGUYS_USERNAME":   &c.Vietguys.Username,
 		p + "_VIETGUYS_API_KEY":    &c.Vietguys.APIKey,
 		p + "_VIETGUYS_BRAND_NAME": &c.Vietguys.BrandName,
+		p + "_INCOM_API_KEY":       &c.Incom.APIKey,
+		p + "_INCOM_SECRET_KEY":    &c.Incom.SecretKey,
+		p + "_INCOM_BRAND_NAME":    &c.Incom.BrandName,
 	}.MustLoad()
 }
 
@@ -85,7 +91,7 @@ func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) (_err error) {
 			Content:    cmd.Content,
 			Phone:      cmd.Phone,
 			Status:     status3.P,
-			Provider:   "Vietguys",
+			Provider:   sms_provider.Incom.String(),
 			ExternalID: resp,
 		}
 		if err != nil {

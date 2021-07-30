@@ -98,27 +98,27 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 Đội ngũ {{.WlName}}
 `))
 
-var SmsVerificationTpl = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsVerificationTpl = `EB2B - Nhập mã %v để xác nhận thông tin tài khoản của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var SmsRegisterSimplifyTpl = `Nhập mã %v để truy cập vào ứng dụng eTop.vn của bạn. Mã có hiệu lực trong 5 phút. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsRegisterSimplifyTpl = `EB2B - Nhập mã %v để truy cập vào ứng dụng của bạn. Mã có hiệu lực trong 5 phút. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var SmsResetPasswordTpl = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsResetPasswordTpl = `EB2B - Nhập mã %v để khôi phục mật khẩu tài khoản của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var SmsChangeEmailTpl = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsChangeEmailTpl = `EB2B - Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var SmsChangeEmailTplRepeat = `Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsChangeEmailTplRepeat = `EB2B - Nhập mã %v để thay đổi thông tin email tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var SmsChangePhoneTpl = `Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsChangePhoneTpl = `EB2B - Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var SmsChangePhoneTplRepeat = `Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsChangePhoneTplRepeat = `EB2B - Nhập mã %v để thay đổi số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var SmsChangePhoneTplConfirm = `Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
+var SmsChangePhoneTplConfirm = `EB2B - Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai.`
 
-var SmsChangePhoneTplConfirmRepeat = `Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsChangePhoneTplConfirmRepeat = `EB2B - Nhập mã %v để xác nhận số điện thoại tài khoản %v của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var SmsVerificationTplRepeat = `Nhập mã %v để xác nhận thông tin tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsVerificationTplRepeat = `EB2B - Nhập mã %v để xác nhận thông tin tài khoản của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
-var SmsResetPasswordTplRepeat = `Nhập mã %v để khôi phục mật khẩu tài khoản eTop của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
+var SmsResetPasswordTplRepeat = `EB2B - Nhập mã %v để khôi phục mật khẩu tài khoản của bạn. Mã có hiệu lực trong 1 giờ. Vui lòng không chia sẻ cho bất kỳ ai. (gửi lần %v)`
 
 var RequestLoginEmailTpl = template.Must(template.New("request-login-email").Parse(`
 {{.Hello}},<br><br>
