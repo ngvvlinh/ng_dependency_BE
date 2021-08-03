@@ -1252,10 +1252,10 @@ func (m *Hotline) Migration(db *cmsql.Database) {
 		},
 		"network": {
 			ColumnName:       "network",
-			ColumnType:       "string",
-			ColumnDBType:     "string",
+			ColumnType:       "mobile_network.MobileNetwork",
+			ColumnDBType:     "enum",
 			ColumnTag:        "",
-			ColumnEnumValues: []string{},
+			ColumnEnumValues: []string{"unknown", "mobifone", "vinaphone", "viettel", "other"},
 		},
 		"connection_id": {
 			ColumnName:       "connection_id",
@@ -1337,7 +1337,7 @@ func (m *Hotline) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.OwnerID,
 		core.String(m.Name),
 		core.String(m.Hotline),
-		core.String(m.Network),
+		m.Network,
 		m.ConnectionID,
 		m.ConnectionMethod,
 		core.Now(m.CreatedAt, now, create),
@@ -1356,7 +1356,7 @@ func (m *Hotline) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.OwnerID,
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Hotline),
-		(*core.String)(&m.Network),
+		&m.Network,
 		&m.ConnectionID,
 		&m.ConnectionMethod,
 		(*core.Time)(&m.CreatedAt),
@@ -1476,7 +1476,7 @@ func (m *Hotline) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Hotline)
 	}
-	if m.Network != "" {
+	if m.Network != 0 {
 		flag = true
 		w.WriteName("network")
 		w.WriteByte('=')

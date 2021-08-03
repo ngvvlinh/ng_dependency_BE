@@ -6,7 +6,7 @@ import (
 )
 
 var MobileNetworkList = map[mobile_network.MobileNetwork][]string{
-	mobile_network.Mobiphone: {
+	mobile_network.MobiFone: {
 		"089", "090", "093", "070", "079", "077",
 		"076", "078",
 	},

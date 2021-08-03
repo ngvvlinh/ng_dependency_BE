@@ -8416,7 +8416,7 @@
       "type": "string",
       "enum": [
         "unknown",
-        "mobiphone",
+        "mobifone",
         "vinaphone",
         "viettel",
         "other"

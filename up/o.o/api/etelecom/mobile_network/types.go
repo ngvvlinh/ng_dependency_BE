@@ -13,8 +13,8 @@ const (
 	// +enum=unknown
 	Unknown MobileNetwork = 0
 
-	// +enum=mobiphone
-	Mobiphone MobileNetwork = 1
+	// +enum=mobifone
+	MobiFone MobileNetwork = 1
 
 	// +enum=vinaphone
 	Vinaphone MobileNetwork = 2

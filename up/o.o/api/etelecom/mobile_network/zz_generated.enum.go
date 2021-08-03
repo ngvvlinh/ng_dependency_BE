@@ -16,7 +16,7 @@ var __jsonNull = []byte("null")
 
 var enumMobileNetworkName = map[int]string{
 	0: "unknown",
-	1: "mobiphone",
+	1: "mobifone",
 	2: "vinaphone",
 	3: "viettel",
 	4: "other",
@@ -24,7 +24,7 @@ var enumMobileNetworkName = map[int]string{
 
 var enumMobileNetworkValue = map[string]int{
 	"unknown":   0,
-	"mobiphone": 1,
+	"mobifone":  1,
 	"vinaphone": 2,
 	"viettel":   3,
 	"other":     4,

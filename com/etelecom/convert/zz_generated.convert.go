@@ -469,7 +469,7 @@ func convert_etelecommodel_Hotline_etelecom_Hotline(arg *etelecommodel.Hotline, 
 	out.OwnerID = arg.OwnerID                   // simple assign
 	out.Name = arg.Name                         // simple assign
 	out.Hotline = arg.Hotline                   // simple assign
-	out.Network = 0                             // types do not match
+	out.Network = arg.Network                   // simple assign
 	out.ConnectionID = arg.ConnectionID         // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod // simple assign
 	out.CreatedAt = arg.CreatedAt               // simple assign
@@ -509,7 +509,7 @@ func convert_etelecom_Hotline_etelecommodel_Hotline(arg *etelecom.Hotline, out *
 	out.OwnerID = arg.OwnerID                   // simple assign
 	out.Name = arg.Name                         // simple assign
 	out.Hotline = arg.Hotline                   // simple assign
-	out.Network = ""                            // types do not match
+	out.Network = arg.Network                   // simple assign
 	out.ConnectionID = arg.ConnectionID         // simple assign
 	out.ConnectionMethod = arg.ConnectionMethod // simple assign
 	out.CreatedAt = arg.CreatedAt               // simple assign

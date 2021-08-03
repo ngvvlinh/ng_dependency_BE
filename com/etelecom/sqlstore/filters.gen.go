@@ -9,6 +9,7 @@ import (
 
 	call_direction "o.o/api/etelecom/call_direction"
 	call_state "o.o/api/etelecom/call_state"
+	mobile_network "o.o/api/etelecom/mobile_network"
 	connection_type "o.o/api/top/types/etc/connection_type"
 	status3 "o.o/api/top/types/etc/status3"
 	status5 "o.o/api/top/types/etc/status5"
@@ -818,22 +819,22 @@ func (ft *HotlineFilters) ByHotlinePtr(Hotline *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *HotlineFilters) ByNetwork(Network string) *sq.ColumnFilter {
+func (ft *HotlineFilters) ByNetwork(Network mobile_network.MobileNetwork) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "network",
 		Value:  Network,
-		IsNil:  Network == "",
+		IsNil:  Network == 0,
 	}
 }
 
-func (ft *HotlineFilters) ByNetworkPtr(Network *string) *sq.ColumnFilterPtr {
+func (ft *HotlineFilters) ByNetworkPtr(Network *mobile_network.MobileNetwork) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "network",
 		Value:  Network,
 		IsNil:  Network == nil,
-		IsZero: Network != nil && (*Network) == "",
+		IsZero: Network != nil && (*Network) == 0,
 	}
 }
 

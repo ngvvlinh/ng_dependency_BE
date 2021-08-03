@@ -5,6 +5,7 @@ import (
 
 	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/call_state"
+	"o.o/api/etelecom/mobile_network"
 	"o.o/api/top/types/etc/connection_type"
 	"o.o/api/top/types/etc/status3"
 	"o.o/api/top/types/etc/status5"
@@ -18,7 +19,7 @@ type Hotline struct {
 	OwnerID          dot.ID
 	Name             string
 	Hotline          string
-	Network          string
+	Network          mobile_network.MobileNetwork
 	ConnectionID     dot.ID
 	ConnectionMethod connection_type.ConnectionMethod
 	CreatedAt        time.Time `sq:"create"`

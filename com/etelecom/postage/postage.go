@@ -16,7 +16,7 @@ type PriceList struct {
 var PriceListCall = []PriceList{
 	{
 		Direction:    call_direction.Out,
-		Network:      mobile_network.Mobiphone,
+		Network:      mobile_network.MobiFone,
 		FeePerSecond: 7.5,
 	},
 	{
