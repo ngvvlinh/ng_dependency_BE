@@ -462,8 +462,9 @@ type ListHotlinesQuery struct {
 	OwnerID      dot.ID
 	TenantID     dot.ID
 	ConnectionID dot.ID
+	Paging       meta.Paging
 
-	Result []*Hotline `json:"-"`
+	Result *ListHotlinesReponse `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleListHotlines(ctx context.Context, msg *ListHotlinesQuery) (err error) {
@@ -1020,6 +1021,7 @@ func (q *ListHotlinesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 			OwnerID:      q.OwnerID,
 			TenantID:     q.TenantID,
 			ConnectionID: q.ConnectionID,
+			Paging:       q.Paging,
 		}
 }
 
@@ -1027,6 +1029,7 @@ func (q *ListHotlinesQuery) SetListHotlinesArgs(args *ListHotlinesArgs) {
 	q.OwnerID = args.OwnerID
 	q.TenantID = args.TenantID
 	q.ConnectionID = args.ConnectionID
+	q.Paging = args.Paging
 }
 
 func (q *ListTenantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListTenantsArgs) {

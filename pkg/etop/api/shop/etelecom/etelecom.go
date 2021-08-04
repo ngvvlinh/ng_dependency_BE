@@ -153,24 +153,23 @@ func (s *EtelecomService) ExtendExtension(ctx context.Context, r *etelecomtypes.
 	return &res, nil
 }
 
-func (s *EtelecomService) GetHotlines(ctx context.Context, _ *pbcm.Empty) (*etelecomtypes.GetHotLinesResponse, error) {
-	// list all hotline builtin
-	queryBuiltinHotlines := &etelecom.ListBuiltinHotlinesQuery{}
-	if err := s.EtelecomQuery.Dispatch(ctx, queryBuiltinHotlines); err != nil {
+func (s *EtelecomService) GetHotlines(ctx context.Context, r *etelecomtypes.GetHotLinesRequest) (*etelecomtypes.GetHotLinesResponse, error) {
+	paging, err := cmapi.CMCursorPaging(r.Paging)
+	if err != nil {
 		return nil, err
 	}
-	builtinHotlines := queryBuiltinHotlines.Result
-
 	query := &etelecom.ListHotlinesQuery{
 		OwnerID: s.SS.Shop().OwnerID,
+		Paging:  *paging,
 	}
 	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	hotlines := append(builtinHotlines, query.Result...)
-
-	res := Convert_etelecom_Hotlines_etelecomtypes_Hotlines(hotlines)
-	return &etelecomtypes.GetHotLinesResponse{Hotlines: res}, nil
+	res := Convert_etelecom_Hotlines_etelecomtypes_Hotlines(query.Result.Hotlines)
+	return &etelecomtypes.GetHotLinesResponse{
+		Hotlines: res,
+		Paging:   cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
+	}, nil
 }
 
 func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetCallLogsRequest) (*etelecomtypes.GetCallLogsResponse, error) {

@@ -47,7 +47,7 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetHotline(context.Context, *GetHotlineArgs) (*Hotline, error)
-	ListHotlines(context.Context, *ListHotlinesArgs) ([]*Hotline, error)
+	ListHotlines(context.Context, *ListHotlinesArgs) (*ListHotlinesReponse, error)
 	ListBuiltinHotlines(context.Context, *cm.Empty) ([]*Hotline, error)
 	GetHotlineByHotlineNumber(context.Context, *GetHotlineByHotlineNumberArgs) (*Hotline, error)
 
@@ -175,6 +175,12 @@ type ListHotlinesArgs struct {
 	OwnerID      dot.ID
 	TenantID     dot.ID
 	ConnectionID dot.ID
+	Paging       meta.Paging
+}
+
+type ListHotlinesReponse struct {
+	Hotlines []*Hotline
+	Paging   meta.PageInfo
 }
 
 type GetExtensionArgs struct {

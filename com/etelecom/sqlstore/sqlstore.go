@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"o.o/api/etelecom"
+	"o.o/api/meta"
 	"o.o/api/top/types/etc/status3"
 	"o.o/backend/com/etelecom/convert"
 	"o.o/backend/com/etelecom/model"
@@ -20,6 +21,7 @@ type HotlineStore struct {
 	ft    HotlineFilters
 	query func() cmsql.QueryInterface
 	preds []interface{}
+	sqlstore.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
@@ -36,6 +38,12 @@ func NewHotlineStore(db *cmsql.Database) HotlineStoreFactory {
 			},
 		}
 	}
+}
+
+func (s *HotlineStore) WithPaging(
+	paging meta.Paging) *HotlineStore {
+	s.Paging.WithPaging(paging)
+	return s
 }
 
 func (s *HotlineStore) ID(id dot.ID) *HotlineStore {
@@ -110,9 +118,16 @@ func (s *HotlineStore) GetHotline() (*etelecom.Hotline, error) {
 
 func (s *HotlineStore) ListHotlinesDB() (res []*model.Hotline, err error) {
 	query := s.query().Where(s.preds)
-	query = query.OrderBy("created_at DESC")
+	if len(s.Paging.Sort) == 0 {
+		s.Paging.Sort = []string{"-created_at"}
+	}
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query, err = sqlstore.LimitSort(query, &s.Paging, SortCallLog)
+	if err != nil {
+		return nil, err
+	}
 	err = query.Find((*model.Hotlines)(&res))
+	s.Paging.Apply(res)
 	return
 }
 

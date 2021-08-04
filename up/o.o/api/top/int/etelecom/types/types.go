@@ -35,7 +35,8 @@ type Hotline struct {
 func (m *Hotline) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetHotLinesResponse struct {
-	Hotlines []*Hotline `json:"hotlines"`
+	Hotlines []*Hotline             `json:"hotlines"`
+	Paging   *common.CursorPageInfo `json:"paging"`
 }
 
 func (m *GetHotLinesResponse) String() string { return jsonx.MustMarshalToString(m) }
@@ -189,8 +190,8 @@ type UpdateHotlineRequest struct {
 func (m *UpdateHotlineRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetHotLinesRequest struct {
-	// Paging *common.CursorPaging `json:"paging"`
-	Filter *HotlinesFilter `json:"filter"`
+	Paging *common.CursorPaging `json:"paging"`
+	Filter *HotlinesFilter      `json:"filter"`
 }
 
 func (m *GetHotLinesRequest) String() string { return jsonx.MustMarshalToString(m) }

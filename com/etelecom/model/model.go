@@ -14,7 +14,7 @@ import (
 
 // +sqlgen
 type Hotline struct {
-	ID dot.ID
+	ID dot.ID `paging:"id"`
 	// OwnerID - userID chủ tài khoản
 	OwnerID          dot.ID
 	Name             string
@@ -22,8 +22,8 @@ type Hotline struct {
 	Network          mobile_network.MobileNetwork
 	ConnectionID     dot.ID
 	ConnectionMethod connection_type.ConnectionMethod
-	CreatedAt        time.Time `sq:"create"`
-	UpdatedAt        time.Time `sq:"update"`
+	CreatedAt        time.Time `sq:"create" paging:"created_at"`
+	UpdatedAt        time.Time `sq:"update" paging:"updated_at"`
 	DeletedAt        time.Time
 	Status           status3.Status
 	Description      string

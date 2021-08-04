@@ -50,8 +50,16 @@ func (q *QueryService) GetHotlineByHotlineNumber(ctx context.Context, args *etel
 	return q.hotlineStore(ctx).OptionalOwnerID(args.OwnerID).HotlineNumber(args.Hotline).GetHotline()
 }
 
-func (q *QueryService) ListHotlines(ctx context.Context, args *etelecom.ListHotlinesArgs) ([]*etelecom.Hotline, error) {
-	return q.hotlineStore(ctx).OptionalOwnerID(args.OwnerID).OptionalConnectionID(args.ConnectionID).OptionalTenantID(args.TenantID).ListHotlines()
+func (q *QueryService) ListHotlines(ctx context.Context, args *etelecom.ListHotlinesArgs) (*etelecom.ListHotlinesReponse, error) {
+	query := q.hotlineStore(ctx).WithPaging(args.Paging)
+	hotlines, err := query.OptionalOwnerID(args.OwnerID).OptionalConnectionID(args.ConnectionID).OptionalTenantID(args.TenantID).ListHotlines()
+	if err != nil {
+		return nil, err
+	}
+	return &etelecom.ListHotlinesReponse{
+		Hotlines: hotlines,
+		Paging:   query.GetPaging(),
+	}, nil
 }
 
 func (q *QueryService) ListBuiltinHotlines(ctx context.Context, _ *cm.Empty) (res []*etelecom.Hotline, _ error) {

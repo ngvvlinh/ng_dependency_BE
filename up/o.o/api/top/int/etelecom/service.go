@@ -17,7 +17,7 @@ type EtelecomService interface {
 	CreateExtensionBySubscription(context.Context, *types.CreateExtensionBySubscriptionRequest) (*types.Extension, error)
 	ExtendExtension(context.Context, *types.ExtendExtensionRequest) (*types.Extension, error)
 
-	GetHotlines(context.Context, *cm.Empty) (*types.GetHotLinesResponse, error)
+	GetHotlines(context.Context, *types.GetHotLinesRequest) (*types.GetHotLinesResponse, error)
 	GetCallLogs(context.Context, *types.GetCallLogsRequest) (*types.GetCallLogsResponse, error)
 	CreateCallLog(context.Context, *CreateCallLogRequest) (*types.CallLog, error)
 

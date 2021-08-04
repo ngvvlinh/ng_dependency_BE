@@ -8130,14 +8130,10 @@
       "type": "object",
       "properties": {
         "filter": {
-          "allOf": [
-            {
-              "description": "Paging *common.CursorPaging `json:\"paging\"`\n"
-            },
-            {
-              "$ref": "#/definitions/riHotlinesFilter"
-            }
-          ]
+          "$ref": "#/definitions/riHotlinesFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
         }
       }
     },
@@ -8149,6 +8145,9 @@
           "items": {
             "$ref": "#/definitions/riHotline"
           }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
         }
       }
     },

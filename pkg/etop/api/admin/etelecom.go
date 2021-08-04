@@ -73,7 +73,13 @@ func (s *EtelecomService) DeleteHotline(ctx context.Context, r *pbcm.IDRequest) 
 }
 
 func (s *EtelecomService) GetHotlines(ctx context.Context, r *etelecomtypes.GetHotLinesRequest) (*etelecomtypes.GetHotLinesResponse, error) {
-	query := &etelecom.ListHotlinesQuery{}
+	paging, err := cmapi.CMCursorPaging(r.Paging)
+	if err != nil {
+		return nil, err
+	}
+	query := &etelecom.ListHotlinesQuery{
+		Paging: *paging,
+	}
 	if r.Filter != nil {
 		query.OwnerID = r.Filter.OwnerID
 		query.TenantID = r.Filter.TenantID
@@ -81,9 +87,10 @@ func (s *EtelecomService) GetHotlines(ctx context.Context, r *etelecomtypes.GetH
 	if err := s.EtelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	res := shopetelecom.Convert_etelecom_Hotlines_etelecomtypes_Hotlines(query.Result)
+	res := shopetelecom.Convert_etelecom_Hotlines_etelecomtypes_Hotlines(query.Result.Hotlines)
 	return &etelecomtypes.GetHotLinesResponse{
 		Hotlines: res,
+		Paging:   cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
 	}, nil
 }
 

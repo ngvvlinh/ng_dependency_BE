@@ -298,7 +298,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ktEmpty"
+              "$ref": "#/definitions/riGetHotLinesRequest"
             }
           }
         ],
@@ -1023,6 +1023,17 @@
         }
       }
     },
+    "riGetHotLinesRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/riHotlinesFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
     "riGetHotLinesResponse": {
       "type": "object",
       "properties": {
@@ -1031,6 +1042,9 @@
           "items": {
             "$ref": "#/definitions/riHotline"
           }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
         }
       }
     },
@@ -1077,6 +1091,19 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "riHotlinesFilter": {
+      "type": "object",
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tenant_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

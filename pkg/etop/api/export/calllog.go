@@ -136,7 +136,7 @@ func (s *Service) getAllHotlines(ctx context.Context, ownerID dot.ID) (map[dot.I
 	if err := s.etelecomQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	for _, hotline := range query.Result {
+	for _, hotline := range query.Result.Hotlines {
 		res[hotline.ID] = hotline
 	}
 	return res, nil

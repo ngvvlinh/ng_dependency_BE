@@ -249,7 +249,7 @@ func (m *TelecomManager) getHotLine(ctx context.Context, args getHotlineArgs) (r
 	if err = m.etelecomQS.Dispatch(ctx, hotlineQuery); err != nil {
 		return nil, err
 	}
-	hotlines := hotlineQuery.Result
+	hotlines := hotlineQuery.Result.Hotlines
 	if len(hotlines) == 0 {
 		return nil, cm.Errorf(cm.Internal, nil, "Vui lòng đăng ký hotline")
 	}
