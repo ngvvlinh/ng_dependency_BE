@@ -2974,7 +2974,13 @@
     "mrGetExtensionInfoRequest": {
       "type": "object",
       "properties": {
+        "email": {
+          "type": "string"
+        },
         "extension_number": {
+          "type": "string"
+        },
+        "phone": {
           "type": "string"
         }
       }

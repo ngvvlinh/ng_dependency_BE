@@ -9,13 +9,15 @@ import (
 
 type GetExtensionInfoRequest struct {
 	ExtensionNumber string `json:"extension_number"`
+	Email           string `json:"email"`
+	Phone           string `json:"phone"`
 }
 
 func (m *GetExtensionInfoRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 func (r *GetExtensionInfoRequest) Validate() error {
-	if r.ExtensionNumber == "" {
-		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing extension number")
+	if r.ExtensionNumber == "" && r.Email == "" && r.Phone == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing required params")
 	}
 	return nil
 }
