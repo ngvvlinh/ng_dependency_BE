@@ -232,18 +232,18 @@ type UpdateTicketInfoCommand struct {
 	ID          dot.ID
 	Code        string
 	AccountID   dot.ID
-	Labels      []int8
+	Labels      []dot.ID
 	RefTicketID dot.ID
-	Title       dot.NullString
-	Description dot.NullString
+	Title       string
+	Description string
 	Note        dot.NullString
-	RefID       dot.NullID
-	RefType     ticket_ref_type.NullTicketRefType
+	RefID       dot.ID
+	RefType     ticket_ref_type.TicketRefType
 	Source      ticket_source.NullTicketSource
 	Status      status4.Status
 	State       string
 
-	Result *Ticket `json:"-"`
+	Result *common.UpdatedResponse `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateTicketInfo(ctx context.Context, msg *UpdateTicketInfoCommand) (err error) {

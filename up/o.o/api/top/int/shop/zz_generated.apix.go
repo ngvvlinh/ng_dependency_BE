@@ -5427,6 +5427,7 @@ const Path_Ticket_GetTickets = "/shop.Ticket/GetTickets"
 const Path_Ticket_GetTicketsByRefTicketID = "/shop.Ticket/GetTicketsByRefTicketID"
 const Path_Ticket_ReopenTicket = "/shop.Ticket/ReopenTicket"
 const Path_Ticket_UnassignTicket = "/shop.Ticket/UnassignTicket"
+const Path_Ticket_UpdateTicket = "/shop.Ticket/UpdateTicket"
 const Path_Ticket_UpdateTicketComment = "/shop.Ticket/UpdateTicketComment"
 const Path_Ticket_UpdateTicketLabel = "/shop.Ticket/UpdateTicketLabel"
 const Path_Ticket_UpdateTicketRefTicketID = "/shop.Ticket/UpdateTicketRefTicketID"
@@ -5656,6 +5657,19 @@ func (s *TicketServiceServer) parseRoute(path string, hooks httprpc.Hooks, info 
 				return
 			}
 			resp, err = inner.UnassignTicket(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Ticket/UpdateTicket":
+		msg := &UpdateTicketRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateTicket(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

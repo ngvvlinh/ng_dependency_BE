@@ -207,9 +207,30 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 	return a.TicketStore(ctx).ID(ticketCore.ID).GetTicket()
 }
 
-func (a *TicketAggregate) UpdateTicketInfo(ctx context.Context, args *ticket.UpdateTicketInfoArgs) (*ticket.Ticket, error) {
-	//TODO maybe not use
-	panic("implement me")
+func (a *TicketAggregate) UpdateTicketInfo(ctx context.Context, args *ticket.UpdateTicketInfoArgs) (*pbcm.UpdatedResponse, error) {
+	if args.ID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin ticket ID")
+	}
+	ticketCore, err := a.TicketStore(ctx).ID(args.ID).GetTicket()
+	if err != nil {
+		return nil, err
+	}
+	if ticketCore.Status != status5.Z && ticketCore.Status != status5.S {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Ticket đã đóng")
+	}
+
+	ticket := &ticket.Ticket{
+		Title:       args.Title,
+		Description: args.Description,
+		RefType:     args.RefType,
+		RefID:       args.RefID,
+		LabelIDs:    args.Labels,
+		Code:        args.Code,
+	}
+	if err := a.TicketStore(ctx).ID(args.ID).OptionalAccountID(args.AccountID).UpdateTicket(ticket); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
 }
 
 func (a *TicketAggregate) ConfirmTicket(ctx context.Context, args *ticket.ConfirmTicketArgs) (*ticket.Ticket, error) {

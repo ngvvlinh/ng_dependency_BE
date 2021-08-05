@@ -134,6 +134,46 @@ func (s *TicketService) GetTicketsByRefTicketID(ctx context.Context, r *shoptype
 	}, nil
 }
 
+func (s *TicketService) UpdateTicket(ctx context.Context, request *api.UpdateTicketRequest) (*pbcm.UpdatedResponse, error) {
+	if err := request.Validate(); err != nil {
+		return nil, err
+	}
+	user := s.SS.User()
+
+	getTicketQuery := &ticket.GetTicketByIDQuery{
+		ID:        request.ID,
+		AccountID: s.SS.Shop().ID,
+	}
+	err := s.TicketQuery.Dispatch(ctx, getTicketQuery)
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		ticket := getTicketQuery.Result
+		// Nếu không phải là leader(role CS), chỉ được phép update ticket do mình tạo ra
+		if (!isLeader(s.SS.GetRoles()) && ticket.CreatedBy != user.ID) ||
+			ticket.Type == ticket_type.System {
+			return nil, cm.ErrPermissionDenied
+		}
+	default:
+		return nil, cm.Errorf(cm.InvalidArgument, err, "ticket %v not found", request.ID)
+	}
+
+	cmd := &ticket.UpdateTicketInfoCommand{
+		ID:          request.ID,
+		AccountID:   s.SS.Shop().ID,
+		Labels:      request.LabelIDs,
+		Title:       request.Title,
+		Description: request.Description,
+		RefID:       request.RefID,
+		RefType:     request.RefType,
+	}
+
+	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	return cmd.Result, nil
+}
+
 func (s *TicketService) AssignTicket(ctx context.Context, req *api.AssignTicketRequest) (*shoptypes.Ticket, error) {
 	user := s.SS.User()
 	getTicketQuery := &ticket.GetTicketByIDQuery{

@@ -203,6 +203,24 @@ type CreateTicketRequest struct {
 
 func (m *CreateTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
 
+type UpdateTicketRequest struct {
+	ID          dot.ID                        `json:"id"`
+	LabelIDs    []dot.ID                      `json:"label_ids"`
+	Title       string                        `json:"title"`
+	Description string                        `json:"description"`
+	RefID       dot.ID                        `json:"ref_id"`
+	RefType     ticket_ref_type.TicketRefType `json:"ref_type"`
+}
+
+func (m *UpdateTicketRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *UpdateTicketRequest) Validate() error {
+	if m.ID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing ID")
+	}
+	return nil
+}
+
 type UpdateTicketRefTicketIDRequest struct {
 	ID dot.ID `json:"id"`
 	// Truyền lên 0 để xóa ref_ticket_id

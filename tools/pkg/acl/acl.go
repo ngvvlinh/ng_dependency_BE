@@ -1171,6 +1171,7 @@ var _acl = map[string]*permission.Decl{
 	// -- ticket -- //
 
 	"shop.Ticket/CreateTicket":            {Type: Shop, Actions: actions(ShopTicketCreate)},
+	"shop.Ticket/UpdateTicket":            {Type: Shop, Actions: actions(ShopTicketUpdate)},
 	"shop.Ticket/GetTickets":              {Type: Shop, Actions: actions(ShopTicketView)},
 	"shop.Ticket/GetTicketsByRefTicketID": {Type: Shop, Actions: actions(ShopTicketView)},
 	"shop.Ticket/GetTicket":               {Type: Shop, Actions: actions(ShopTicketView)},

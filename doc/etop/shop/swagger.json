@@ -6668,6 +6668,33 @@
         }
       }
     },
+    "/api/shop.Ticket/UpdateTicket": {
+      "post": {
+        "tags": [
+          "Ticket"
+        ],
+        "summary": "UpdateTicket",
+        "operationId": "shop.Ticket-UpdateTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Ticket/UpdateTicketComment": {
       "post": {
         "tags": [
@@ -15152,6 +15179,35 @@
           "description": "Truyền lên 0 để xóa ref_ticket_id\n",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "paUpdateTicketRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "label_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "$ref": "#/definitions/ovTicketRefType"
+        },
+        "title": {
+          "type": "string"
         }
       }
     },

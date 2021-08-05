@@ -306,36 +306,36 @@ func Apply_ticket_UpdateTicketInfoArgs_ticket_Ticket(arg *ticket.UpdateTicketInf
 }
 
 func apply_ticket_UpdateTicketInfoArgs_ticket_Ticket(arg *ticket.UpdateTicketInfoArgs, out *ticket.Ticket) {
-	out.ExternalShippingCode = out.ExternalShippingCode      // no change
-	out.ExternalID = out.ExternalID                          // no change
-	out.ID = arg.ID                                          // simple assign
-	out.Code = arg.Code                                      // simple assign
-	out.AssignedUserIDs = out.AssignedUserIDs                // no change
-	out.AccountID = arg.AccountID                            // simple assign
-	out.LabelIDs = out.LabelIDs                              // no change
-	out.RefTicketID = out.RefTicketID                        // types do not match
-	out.Title = arg.Title.Apply(out.Title)                   // apply change
-	out.Description = arg.Description.Apply(out.Description) // apply change
-	out.Note = arg.Note.Apply(out.Note)                      // apply change
-	out.AdminNote = out.AdminNote                            // no change
-	out.RefID = arg.RefID.Apply(out.RefID)                   // apply change
-	out.RefType = arg.RefType.Apply(out.RefType)             // apply change
-	out.RefCode = out.RefCode                                // no change
-	out.Source = arg.Source.Apply(out.Source)                // apply change
-	out.State = out.State                                    // types do not match
-	out.Status = status5.Status(arg.Status)                  // simple conversion
-	out.CreatedBy = out.CreatedBy                            // no change
-	out.CreatedSource = out.CreatedSource                    // no change
-	out.CreatedName = out.CreatedName                        // no change
-	out.UpdatedBy = out.UpdatedBy                            // no change
-	out.ConfirmedBy = out.ConfirmedBy                        // no change
-	out.ClosedBy = out.ClosedBy                              // no change
-	out.CreatedAt = out.CreatedAt                            // no change
-	out.UpdatedAt = out.UpdatedAt                            // no change
-	out.ConfirmedAt = out.ConfirmedAt                        // no change
-	out.ClosedAt = out.ClosedAt                              // no change
-	out.ConnectionID = out.ConnectionID                      // no change
-	out.Type = out.Type                                      // no change
+	out.ExternalShippingCode = out.ExternalShippingCode // no change
+	out.ExternalID = out.ExternalID                     // no change
+	out.ID = arg.ID                                     // simple assign
+	out.Code = arg.Code                                 // simple assign
+	out.AssignedUserIDs = out.AssignedUserIDs           // no change
+	out.AccountID = arg.AccountID                       // simple assign
+	out.LabelIDs = out.LabelIDs                         // no change
+	out.RefTicketID = out.RefTicketID                   // types do not match
+	out.Title = arg.Title                               // simple assign
+	out.Description = arg.Description                   // simple assign
+	out.Note = arg.Note.Apply(out.Note)                 // apply change
+	out.AdminNote = out.AdminNote                       // no change
+	out.RefID = arg.RefID                               // simple assign
+	out.RefType = arg.RefType                           // simple assign
+	out.RefCode = out.RefCode                           // no change
+	out.Source = arg.Source.Apply(out.Source)           // apply change
+	out.State = out.State                               // types do not match
+	out.Status = status5.Status(arg.Status)             // simple conversion
+	out.CreatedBy = out.CreatedBy                       // no change
+	out.CreatedSource = out.CreatedSource               // no change
+	out.CreatedName = out.CreatedName                   // no change
+	out.UpdatedBy = out.UpdatedBy                       // no change
+	out.ConfirmedBy = out.ConfirmedBy                   // no change
+	out.ClosedBy = out.ClosedBy                         // no change
+	out.CreatedAt = out.CreatedAt                       // no change
+	out.UpdatedAt = out.UpdatedAt                       // no change
+	out.ConfirmedAt = out.ConfirmedAt                   // no change
+	out.ClosedAt = out.ClosedAt                         // no change
+	out.ConnectionID = out.ConnectionID                 // no change
+	out.Type = out.Type                                 // no change
 }
 
 //-- convert o.o/api/supporting/ticket.TicketComment --//

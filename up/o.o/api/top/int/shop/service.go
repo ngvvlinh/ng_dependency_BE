@@ -465,6 +465,7 @@ type SubscriptionService interface {
 // +apix:path=/shop.Ticket
 type TicketService interface {
 	CreateTicket(context.Context, *CreateTicketRequest) (*shoptypes.Ticket, error)
+	UpdateTicket(context.Context, *UpdateTicketRequest) (*cm.UpdatedResponse, error)
 	GetTickets(context.Context, *GetTicketsRequest) (*GetTicketsResponse, error)
 	GetTicket(context.Context, *GetTicketRequest) (*shoptypes.Ticket, error)
 	GetTicketsByRefTicketID(context.Context, *shoptypes.GetTicketsByRefTicketIDRequest) (*shoptypes.GetTicketsByRefTicketIDResponse, error)

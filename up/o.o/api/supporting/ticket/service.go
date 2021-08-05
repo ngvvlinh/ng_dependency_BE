@@ -22,7 +22,7 @@ import (
 type Aggregate interface {
 	// ticket
 	CreateTicket(context.Context, *CreateTicketArgs) (*Ticket, error)
-	UpdateTicketInfo(context.Context, *UpdateTicketInfoArgs) (*Ticket, error)
+	UpdateTicketInfo(context.Context, *UpdateTicketInfoArgs) (*cm.UpdatedResponse, error)
 	ConfirmTicket(context.Context, *ConfirmTicketArgs) (*Ticket, error)
 	CloseTicket(context.Context, *CloseTicketArgs) (*Ticket, error)
 	ReopenTicket(context.Context, *ReopenTicketArgs) (*Ticket, error)
@@ -274,15 +274,15 @@ type UpdateTicketInfoArgs struct {
 	ID          dot.ID
 	Code        string
 	AccountID   dot.ID
-	Labels      []int8
+	Labels      []dot.ID
 	RefTicketID dot.ID
 
-	Title       dot.NullString
-	Description dot.NullString
+	Title       string
+	Description string
 	Note        dot.NullString
 
-	RefID   dot.NullID
-	RefType ticket_ref_type.NullTicketRefType
+	RefID   dot.ID
+	RefType ticket_ref_type.TicketRefType
 	Source  ticket_source.NullTicketSource
 
 	// new, accepted, processing, closed
