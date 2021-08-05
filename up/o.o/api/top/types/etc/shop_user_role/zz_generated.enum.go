@@ -15,27 +15,31 @@ import (
 var __jsonNull = []byte("null")
 
 var enumUserRoleName = map[int]string{
-	0: "unknown",
-	1: "owner",
-	2: "staff_management",
-	3: "telecom_customerservice",
-	4: "inventory_management",
-	5: "purchasing_management",
-	6: "accountant",
-	7: "analyst",
-	8: "salesman",
+	0:  "unknown",
+	1:  "owner",
+	2:  "staff_management",
+	3:  "telecom_customerservice",
+	4:  "inventory_management",
+	5:  "purchasing_management",
+	6:  "accountant",
+	7:  "analyst",
+	8:  "salesman",
+	9:  "telecom_customerservice_management",
+	10: "m_admin",
 }
 
 var enumUserRoleValue = map[string]int{
-	"unknown":                 0,
-	"owner":                   1,
-	"staff_management":        2,
-	"telecom_customerservice": 3,
-	"inventory_management":    4,
-	"purchasing_management":   5,
-	"accountant":              6,
-	"analyst":                 7,
-	"salesman":                8,
+	"unknown":                            0,
+	"owner":                              1,
+	"staff_management":                   2,
+	"telecom_customerservice":            3,
+	"inventory_management":               4,
+	"purchasing_management":              5,
+	"accountant":                         6,
+	"analyst":                            7,
+	"salesman":                           8,
+	"telecom_customerservice_management": 9,
+	"m_admin":                            10,
 }
 
 func ParseUserRole(s string) (UserRole, bool) {

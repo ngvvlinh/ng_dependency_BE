@@ -36,6 +36,12 @@ const (
 
 	// +enum=salesman
 	SalesMan UserRole = 8
+
+	// +enum=telecom_customerservice_management
+	CustomserServiceManagament UserRole = 9
+
+	// +enum=m_admin
+	MerchantAdmin UserRole = 10
 )
 
 func ContainsUserRoles(roles []UserRole, role UserRole) bool {

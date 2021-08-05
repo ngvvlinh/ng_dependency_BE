@@ -8643,7 +8643,9 @@
         "purchasing_management",
         "accountant",
         "analyst",
-        "salesman"
+        "salesman",
+        "telecom_customerservice_management",
+        "m_admin"
       ]
     },
     "idInventoryVoucherType": {

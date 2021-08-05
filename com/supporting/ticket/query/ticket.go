@@ -41,13 +41,17 @@ func TicketQueryMessageBus(q *TicketQuery) ticket.QueryBus {
 }
 
 func (q *TicketQuery) GetTicketByID(ctx context.Context, args *ticket.GetTicketByIDArgs) (*ticket.Ticket, error) {
+	query := q.TicketStore(ctx)
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
 	if args.AccountID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing AccountID")
 	}
-	ticketCore, err := q.TicketStore(ctx).ID(args.ID).AccountID(args.AccountID).GetTicket()
+	if args.CreatedBy != 0 || len(args.AssignedUserIDs) > 0 {
+		query = query.AssignedUserIDsOrCreatedBy(args.CreatedBy, args.AssignedUserIDs)
+	}
+	ticketCore, err := query.ID(args.ID).AccountID(args.AccountID).GetTicket()
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +100,8 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 		if args.Filter.RefID != 0 {
 			query = query.RefID(args.Filter.RefID)
 		}
-		if args.Filter.AssignedUserIDs != nil && len(args.Filter.AssignedUserIDs) > 0 {
-			query = query.AssignedUserIDs(args.Filter.AssignedUserIDs)
+		if len(args.Filter.AssignedUserIDs) > 0 || args.Filter.CreatedBy != 0 {
+			query = query.AssignedUserIDsOrCreatedBy(args.Filter.CreatedBy, args.Filter.AssignedUserIDs)
 		}
 		ll.Info("args.Filter.State", l.Object("args.Filter.State", args.Filter.State))
 
@@ -123,8 +127,12 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 }
 
 func (q *TicketQuery) ListTicketsByRefTicketID(ctx context.Context, args *ticket.ListTicketsByRefTicketIDArgs) ([]*ticket.Ticket, error) {
+	query := q.TicketStore(ctx)
 	if args.RefTicketID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin ref ticket ID")
 	}
-	return q.TicketStore(ctx).RefTicketID(args.RefTicketID).OptionalAccountID(args.AccountID).ListTickets()
+	if len(args.AssignedUserIDs) > 0 || args.CreatedBy != 0 {
+		query = query.AssignedUserIDsOrCreatedBy(args.CreatedBy, args.AssignedUserIDs)
+	}
+	return query.RefTicketID(args.RefTicketID).OptionalAccountID(args.AccountID).ListTickets()
 }

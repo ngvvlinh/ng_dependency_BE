@@ -3,6 +3,7 @@ package ticket
 import (
 	"context"
 
+	"o.o/api/main/authorization"
 	"o.o/api/supporting/ticket"
 	api "o.o/api/top/int/shop"
 	shoptypes "o.o/api/top/int/shop/types"
@@ -13,6 +14,7 @@ import (
 	"o.o/backend/pkg/common/apifw/cmapi"
 	convertpball "o.o/backend/pkg/etop/api/convertpb/_all"
 	"o.o/backend/pkg/etop/authorize/session"
+	"o.o/capi/dot"
 )
 
 type TicketService struct {
@@ -26,6 +28,7 @@ func (s *TicketService) Clone() api.TicketService { res := *s; return &res }
 
 func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsRequest) (*api.GetTicketsResponse, error) {
 	shopID := s.SS.Shop().ID
+	user := s.SS.User()
 	var filter = &ticket.FilterGetTicket{
 		AccountID: shopID,
 	}
@@ -47,6 +50,10 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 			filter.Types = []ticket_type.TicketType{ticket_type.System}
 		}
 	}
+	if !isLeader(s.SS.GetRoles()) {
+		filter.CreatedBy = user.ID
+		filter.AssignedUserIDs = []dot.ID{user.ID}
+	}
 	filter.AccountID = s.SS.Shop().ID
 	query := &ticket.ListTicketsQuery{
 		Filter: filter,
@@ -64,9 +71,14 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 }
 
 func (s *TicketService) GetTicket(ctx context.Context, request *api.GetTicketRequest) (*shoptypes.Ticket, error) {
+	user := s.SS.User()
 	query := &ticket.GetTicketByIDQuery{
 		ID:        request.ID,
 		AccountID: s.SS.Shop().ID,
+	}
+	if !isLeader(s.SS.GetRoles()) {
+		query.CreatedBy = user.ID
+		query.AssignedUserIDs = []dot.ID{user.ID}
 	}
 	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -105,9 +117,14 @@ func (s *TicketService) CreateTicket(ctx context.Context, request *api.CreateTic
 }
 
 func (s *TicketService) GetTicketsByRefTicketID(ctx context.Context, r *shoptypes.GetTicketsByRefTicketIDRequest) (*shoptypes.GetTicketsByRefTicketIDResponse, error) {
+	user := s.SS.User()
 	query := &ticket.ListTicketsByRefTicketIDQuery{
 		AccountID:   s.SS.Shop().ID,
 		RefTicketID: r.RefTicketID,
+	}
+	if !isLeader(s.SS.GetRoles()) {
+		query.CreatedBy = user.ID
+		query.AssignedUserIDs = []dot.ID{user.ID}
 	}
 	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
@@ -118,21 +135,30 @@ func (s *TicketService) GetTicketsByRefTicketID(ctx context.Context, r *shoptype
 }
 
 func (s *TicketService) AssignTicket(ctx context.Context, req *api.AssignTicketRequest) (*shoptypes.Ticket, error) {
+	user := s.SS.User()
 	getTicketQuery := &ticket.GetTicketByIDQuery{
 		ID:        req.TicketID,
 		AccountID: s.SS.Shop().ID,
 	}
-	if err := s.TicketQuery.Dispatch(ctx, getTicketQuery); err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "ticket %v not found", req.TicketID)
-	}
-
-	if getTicketQuery.Result.Type == ticket_type.System {
+	err := s.TicketQuery.Dispatch(ctx, getTicketQuery)
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		ticket := getTicketQuery.Result
+		// Nếu không phải leader, người dùng chỉ được tự assign chính mình vào ticket do mình tạo và ticket chưa được phân công
+		if len(ticket.AssignedUserIDs) > 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Ticket was assigned")
+		}
+		if (!isLeader(s.SS.GetRoles()) && (ticket.CreatedBy != user.ID || !cm.IDsContain(req.AssignedUserIDs, user.ID))) ||
+			ticket.Type == ticket_type.System {
+			return nil, cm.ErrPermissionDenied
+		}
+	default:
 		return nil, cm.Error(cm.PermissionDenied, "", nil)
 	}
 
 	cmd := &ticket.AssignTicketCommand{
 		ID:              req.TicketID,
-		UpdatedBy:       s.SS.User().ID,
+		UpdatedBy:       user.ID,
 		AssignedUserIDs: req.AssignedUserIDs,
 	}
 	if err := s.TicketAggr.Dispatch(ctx, cmd); err != nil {
@@ -167,16 +193,22 @@ func (s *TicketService) UnassignTicket(ctx context.Context, req *api.AssignTicke
 }
 
 func (s *TicketService) ConfirmTicket(ctx context.Context, req *api.ConfirmTicketRequest) (*shoptypes.Ticket, error) {
+	user := s.SS.User()
 	getTicketQuery := &ticket.GetTicketByIDQuery{
 		ID:        req.TicketID,
 		AccountID: s.SS.Shop().ID,
 	}
-	if err := s.TicketQuery.Dispatch(ctx, getTicketQuery); err != nil {
+	err := s.TicketQuery.Dispatch(ctx, getTicketQuery)
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		ticket := getTicketQuery.Result
+		// Nếu không phải là leader (role CS), chỉ được phép confirm ticket được phân công
+		if (!isLeader(s.SS.GetRoles()) && !cm.IDsContain(ticket.AssignedUserIDs, user.ID)) ||
+			ticket.Type == ticket_type.System {
+			return nil, cm.ErrPermissionDenied
+		}
+	default:
 		return nil, cm.Errorf(cm.InvalidArgument, err, "ticket %v not found", req.TicketID)
-	}
-
-	if getTicketQuery.Result.Type == ticket_type.System {
-		return nil, cm.Error(cm.PermissionDenied, "", nil)
 	}
 
 	cmd := &ticket.ConfirmTicketCommand{
@@ -224,7 +256,6 @@ func (s *TicketService) ReopenTicket(ctx context.Context, req *api.ReopenTicketR
 	if err := s.TicketQuery.Dispatch(ctx, getTicketQuery); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "ticket %v not found", req.TicketID)
 	}
-
 	if getTicketQuery.Result.Type == ticket_type.System {
 		return nil, cm.Error(cm.PermissionDenied, "", nil)
 	}
@@ -241,16 +272,22 @@ func (s *TicketService) ReopenTicket(ctx context.Context, req *api.ReopenTicketR
 }
 
 func (s *TicketService) UpdateTicketRefTicketID(ctx context.Context, req *api.UpdateTicketRefTicketIDRequest) (*pbcm.UpdatedResponse, error) {
+	user := s.SS.User()
 	getTicketQuery := &ticket.GetTicketByIDQuery{
 		ID:        req.ID,
 		AccountID: s.SS.Shop().ID,
 	}
-	if err := s.TicketQuery.Dispatch(ctx, getTicketQuery); err != nil {
+	err := s.TicketQuery.Dispatch(ctx, getTicketQuery)
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		ticket := getTicketQuery.Result
+		// Nếu không phải là leader(role CS), chỉ được phép update ticket do mình tạo ra
+		if (!isLeader(s.SS.GetRoles()) && ticket.CreatedBy != user.ID) ||
+			ticket.Type == ticket_type.System {
+			return nil, cm.ErrPermissionDenied
+		}
+	default:
 		return nil, cm.Errorf(cm.InvalidArgument, err, "ticket %v not found", req.ID)
-	}
-
-	if getTicketQuery.Result.Type == ticket_type.System {
-		return nil, cm.Error(cm.PermissionDenied, "", nil)
 	}
 
 	cmd := &ticket.UpdateTicketRefTicketIDCommand{
@@ -348,6 +385,9 @@ func (s *TicketService) GetTicketComments(ctx context.Context, req *api.GetTicke
 }
 
 func (s *TicketService) CreateTicketLabel(ctx context.Context, req *api.CreateTicketLabelRequest) (*shoptypes.TicketLabel, error) {
+	if !isLeader(s.SS.GetRoles()) {
+		return nil, cm.ErrPermissionDenied
+	}
 	cmd := &ticket.CreateTicketLabelCommand{
 		ShopID:   s.SS.Shop().ID,
 		Type:     ticket_type.Internal,
@@ -364,6 +404,9 @@ func (s *TicketService) CreateTicketLabel(ctx context.Context, req *api.CreateTi
 }
 
 func (s *TicketService) UpdateTicketLabel(ctx context.Context, req *api.UpdateTicketLabelRequest) (*shoptypes.TicketLabel, error) {
+	if !isLeader(s.SS.GetRoles()) {
+		return nil, cm.ErrPermissionDenied
+	}
 	cmd := &ticket.UpdateTicketLabelCommand{
 		ID:       req.ID,
 		ShopID:   s.SS.Shop().ID,
@@ -381,6 +424,9 @@ func (s *TicketService) UpdateTicketLabel(ctx context.Context, req *api.UpdateTi
 }
 
 func (s *TicketService) DeleteTicketLabel(ctx context.Context, req *api.DeleteTicketLabelRequest) (*api.DeleteTicketLabelResponse, error) {
+	if !isLeader(s.SS.GetRoles()) {
+		return nil, cm.ErrPermissionDenied
+	}
 	cmd := &ticket.DeleteTicketLabelCommand{
 		ID:          req.ID,
 		ShopID:      s.SS.Shop().ID,
@@ -412,4 +458,15 @@ func (s *TicketService) GetTicketLabels(ctx context.Context, req *api.GetTicketL
 	return &api.GetTicketLabelsResponse{
 		TicketLabels: convertpball.Convert_core_TicketLabels_to_api_TicketLabels(query.Result.TicketLabels),
 	}, nil
+}
+
+func isLeader(roles []string) bool {
+	isLeader := false
+	for _, role := range roles {
+		if role == string(authorization.RoleShopAdmin) || role == string(authorization.RoleShopOwner) || role == string(authorization.RoleTelecomCustomerServiceManagement) {
+			isLeader = true
+			break
+		}
+	}
+	return isLeader
 }

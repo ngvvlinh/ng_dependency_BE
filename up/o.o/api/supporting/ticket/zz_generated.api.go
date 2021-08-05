@@ -304,8 +304,10 @@ func (h QueryServiceHandler) HandleGetTicketByExternalID(ctx context.Context, ms
 }
 
 type GetTicketByIDQuery struct {
-	ID        dot.ID
-	AccountID dot.ID
+	ID              dot.ID
+	AccountID       dot.ID
+	AssignedUserIDs []dot.ID
+	CreatedBy       dot.ID
 
 	Result *Ticket `json:"-"`
 }
@@ -376,8 +378,10 @@ func (h QueryServiceHandler) HandleListTickets(ctx context.Context, msg *ListTic
 }
 
 type ListTicketsByRefTicketIDQuery struct {
-	AccountID   dot.ID
-	RefTicketID dot.ID
+	AccountID       dot.ID
+	RefTicketID     dot.ID
+	AssignedUserIDs []dot.ID
+	CreatedBy       dot.ID
 
 	Result []*Ticket `json:"-"`
 }
@@ -765,14 +769,18 @@ func (q *GetTicketByExternalIDQuery) SetGetTicketByExternalIDArgs(args *GetTicke
 func (q *GetTicketByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTicketByIDArgs) {
 	return ctx,
 		&GetTicketByIDArgs{
-			ID:        q.ID,
-			AccountID: q.AccountID,
+			ID:              q.ID,
+			AccountID:       q.AccountID,
+			AssignedUserIDs: q.AssignedUserIDs,
+			CreatedBy:       q.CreatedBy,
 		}
 }
 
 func (q *GetTicketByIDQuery) SetGetTicketByIDArgs(args *GetTicketByIDArgs) {
 	q.ID = args.ID
 	q.AccountID = args.AccountID
+	q.AssignedUserIDs = args.AssignedUserIDs
+	q.CreatedBy = args.CreatedBy
 }
 
 func (q *GetTicketCommentByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTicketCommentByIDArgs) {
@@ -843,14 +851,18 @@ func (q *ListTicketsQuery) SetGetTicketsArgs(args *GetTicketsArgs) {
 func (q *ListTicketsByRefTicketIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListTicketsByRefTicketIDArgs) {
 	return ctx,
 		&ListTicketsByRefTicketIDArgs{
-			AccountID:   q.AccountID,
-			RefTicketID: q.RefTicketID,
+			AccountID:       q.AccountID,
+			RefTicketID:     q.RefTicketID,
+			AssignedUserIDs: q.AssignedUserIDs,
+			CreatedBy:       q.CreatedBy,
 		}
 }
 
 func (q *ListTicketsByRefTicketIDQuery) SetListTicketsByRefTicketIDArgs(args *ListTicketsByRefTicketIDArgs) {
 	q.AccountID = args.AccountID
 	q.RefTicketID = args.RefTicketID
+	q.AssignedUserIDs = args.AssignedUserIDs
+	q.CreatedBy = args.CreatedBy
 }
 
 // implement dispatching

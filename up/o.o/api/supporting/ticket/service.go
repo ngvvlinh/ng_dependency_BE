@@ -145,8 +145,10 @@ type GetTicketCommentsResponse struct {
 }
 
 type GetTicketByIDArgs struct {
-	ID        dot.ID
-	AccountID dot.ID
+	ID              dot.ID
+	AccountID       dot.ID
+	AssignedUserIDs []dot.ID
+	CreatedBy       dot.ID
 }
 
 type GetTicketByExternalIDArgs struct {
@@ -159,8 +161,10 @@ type GetTicketsArgs struct {
 }
 
 type ListTicketsByRefTicketIDArgs struct {
-	AccountID   dot.ID
-	RefTicketID dot.ID
+	AccountID       dot.ID
+	RefTicketID     dot.ID
+	AssignedUserIDs []dot.ID
+	CreatedBy       dot.ID
 }
 
 type ListTicketsResponse struct {

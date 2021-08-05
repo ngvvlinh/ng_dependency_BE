@@ -151,6 +151,23 @@ func (s *TicketStore) AssignedUserIDs(userIDs []dot.ID) *TicketStore {
 	return s
 }
 
+func (s *TicketStore) AssignedUserIDsOrCreatedBy(createdByID dot.ID, assignedUserIDs []dot.ID) *TicketStore {
+	if createdByID != 0 && len(assignedUserIDs) > 0 {
+		s.preds = append(s.preds, sq.Or{
+			s.ft.ByCreatedBy(createdByID),
+			sq.NewExpr("assigned_user_ids @> ?", core.Array{V: assignedUserIDs}),
+		})
+	} else {
+		if len(assignedUserIDs) > 0 {
+			s = s.AssignedUserIDs(assignedUserIDs)
+		}
+		if createdByID != 0 {
+			s = s.CreatedBy(createdByID)
+		}
+	}
+	return s
+}
+
 func (s *TicketStore) GetTicketDB() (*model.Ticket, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
@@ -202,6 +219,12 @@ func (s *TicketStore) ListTickets() ([]*ticket.Ticket, error) {
 	}
 	tickets := convert.Convert_ticketmodel_Tickets_ticket_Tickets(ticketsDB)
 	return tickets, nil
+}
+
+func (s *TicketStore) UpdateTicket(args *ticket.Ticket) error {
+	var ticketDB = model.Ticket{}
+	convert.Convert_ticket_Ticket_ticketmodel_Ticket(args, &ticketDB)
+	return s.UpdateTicketDB(&ticketDB)
 }
 
 func (s *TicketStore) UpdateTicketDB(args *model.Ticket) error {

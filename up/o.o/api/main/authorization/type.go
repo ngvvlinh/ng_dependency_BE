@@ -23,6 +23,7 @@ const (
 	RoleAdminCustomerServiceLead Role = "ad_customerservice_lead"
 	RoleAdminVoip                Role = "ad_voip"
 
+	RoleShopAdmin            Role = "m_admin"
 	RoleInventoryManagement  Role = "inventory_management"
 	RoleSalesMan             Role = "salesman"
 	RoleShopOwner            Role = "owner"
@@ -31,10 +32,11 @@ const (
 	RolePurchasingManagement Role = "purchasing_management"
 	RoleStaffManagement      Role = "staff_management"
 
-	RoleTelecomCustomerService Role = "telecom_customerservice"
+	RoleTelecomCustomerService           Role = "telecom_customerservice"
+	RoleTelecomCustomerServiceManagement Role = "telecom_customerservice_management"
 )
 
-var Roles = [15]Role{
+var Roles = [17]Role{
 	RoleAdmin,
 	RoleAdminSaleLead,
 	RoleAdminSale,
@@ -50,24 +52,28 @@ var Roles = [15]Role{
 	RolePurchasingManagement,
 	RoleStaffManagement,
 	RoleTelecomCustomerService,
+	RoleTelecomCustomerServiceManagement,
+	RoleShopAdmin,
 }
 
 var roleLabels = map[Role]string{
-	RoleAdmin:                    "Quản trị viên",
-	RoleAdminSaleLead:            "Trưởng Sale",
-	RoleAdminSale:                "Sale",
-	RoleAdminAccountant:          "Kế Toán",
-	RoleAdminCustomerService:     "Chăm Sóc Khách Hàng",
-	RoleAdminCustomerServiceLead: "Chăm Sóc Khách Hàng - Trưởng",
-	RoleAdminVoip:                "Voip",
-	RoleShopOwner:                "Chủ sở hữu",
-	RoleStaffManagement:          "Quản lý nhân viên",
-	RoleAnalyst:                  "Phân tích",
-	RoleAccountant:               "Kế toán",
-	RoleSalesMan:                 "Bán hàng",
-	RoleInventoryManagement:      "Quản lý kho",
-	RolePurchasingManagement:     "Thu mua",
-	RoleTelecomCustomerService:   "Chăm sóc khách hàng",
+	RoleAdmin:                            "Quản trị viên",
+	RoleAdminSaleLead:                    "Trưởng Sale",
+	RoleAdminSale:                        "Sale",
+	RoleAdminAccountant:                  "Kế Toán",
+	RoleAdminCustomerService:             "Chăm Sóc Khách Hàng",
+	RoleAdminCustomerServiceLead:         "Chăm Sóc Khách Hàng - Trưởng",
+	RoleAdminVoip:                        "Voip",
+	RoleShopOwner:                        "Chủ sở hữu",
+	RoleStaffManagement:                  "Quản lý nhân viên",
+	RoleAnalyst:                          "Phân tích",
+	RoleAccountant:                       "Kế toán",
+	RoleSalesMan:                         "Bán hàng",
+	RoleInventoryManagement:              "Quản lý kho",
+	RolePurchasingManagement:             "Thu mua",
+	RoleTelecomCustomerService:           "Chăm sóc khách hàng",
+	RoleTelecomCustomerServiceManagement: "Chăm sóc khách hàng - Trưởng",
+	RoleShopAdmin:                        "Quản trị cửa hàng",
 }
 
 func ParseRoleLabels(roles []Role) (result []string) {
