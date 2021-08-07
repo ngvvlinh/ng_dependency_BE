@@ -50,6 +50,7 @@ const Path_Etelecom_CreateExtension = "/shop.Etelecom/CreateExtension"
 const Path_Etelecom_CreateExtensionBySubscription = "/shop.Etelecom/CreateExtensionBySubscription"
 const Path_Etelecom_CreateTenant = "/shop.Etelecom/CreateTenant"
 const Path_Etelecom_CreateUserAndAssignExtension = "/shop.Etelecom/CreateUserAndAssignExtension"
+const Path_Etelecom_DestroyCallSession = "/shop.Etelecom/DestroyCallSession"
 const Path_Etelecom_ExtendExtension = "/shop.Etelecom/ExtendExtension"
 const Path_Etelecom_GetCallLogs = "/shop.Etelecom/GetCallLogs"
 const Path_Etelecom_GetExtensions = "/shop.Etelecom/GetExtensions"
@@ -166,6 +167,19 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.CreateUserAndAssignExtension(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Etelecom/DestroyCallSession":
+		msg := &DestroyCallSessionRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DestroyCallSession(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

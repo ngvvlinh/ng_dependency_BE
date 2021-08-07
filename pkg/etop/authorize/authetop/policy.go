@@ -25,6 +25,7 @@ const Policy auth.Policy = authcommon.CommonPolicy + `
 	p, shop/calllog:create, admin, owner, staff_management, telecom_customerservice
 	p, shop/tenant:create, admin, owner, staff_management, telecom_customerservice
 	p, shop/tenant:view, admin, owner, staff_management, telecom_customerservice
+	p, shop/call_session:delete, admin, owner, analyst, salesman, accountant, purchasing_management, inventory_management, staff_management, telecom_customerservice
 	p, admin/hotline:create, admin, ad_voip
 	p, admin/hotline:update, admin, ad_voip
 	p, admin/hotline:view, admin, ad_voip

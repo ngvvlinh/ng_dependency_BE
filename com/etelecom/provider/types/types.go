@@ -21,6 +21,8 @@ type TelecomDriver interface {
 	CreateExtension(ctx context.Context, req *CreateExtensionRequest) (*CreateExtensionResponse, error)
 
 	CreateOutboundRule(context.Context, *CreateOutboundRuleRequest) error
+
+	DestroyCallSession(ctx context.Context, request *DestroyCallSessionRequest) error
 }
 
 type TelecomSync interface {
@@ -132,6 +134,9 @@ type CreateOutboundRuleRequest struct {
 	TrunkProviderID string
 }
 
+type DestroyCallSessionRequest struct {
+	SessionID int
+}
 type AddHotlineToTenantInTrunkProviderRequest struct {
 	// trunk provider: aarenat provider id in portsip
 	TrunkProviderID string

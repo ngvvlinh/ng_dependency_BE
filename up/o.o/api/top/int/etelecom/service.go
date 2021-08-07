@@ -30,6 +30,7 @@ type EtelecomService interface {
 
 	RemoveUserOfExtension(context.Context, *RemoveUserOfExtensionRequest) (*cm.UpdatedResponse, error)
 	AssignUserToExtension(context.Context, *AssignUserToExtensionRequest) (*cm.UpdatedResponse, error)
+	DestroyCallSession(context.Context, *DestroyCallSessionRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/etelecom.User

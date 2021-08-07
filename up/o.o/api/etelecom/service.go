@@ -43,6 +43,8 @@ type Aggregate interface {
 	DeleteTenant(ctx context.Context, id dot.ID) error
 	// active tenant and assign hotline to tenant
 	ActivateTenant(context.Context, *ActivateTenantArgs) (*Tenant, error)
+
+	DestroyCallSession(context.Context, *DestroyCallSessionArgs) error
 }
 
 type QueryService interface {
@@ -331,6 +333,21 @@ type ActivateTenantArgs struct {
 	HotlineID          dot.ID
 	ConnectionID       dot.ID
 	ConnectionProvider connection_type.ConnectionProvider
+}
+
+type DestroyCallSessionArgs struct {
+	ExternalSessionID string
+	OwnerID           dot.ID
+}
+
+func (r *DestroyCallSessionArgs) Validate() error {
+	if r.ExternalSessionID == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing external session ID")
+	}
+	if r.OwnerID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing owner ID")
+	}
+	return nil
 }
 
 type ListTenantsArgs struct {

@@ -241,6 +241,8 @@ const (
 	ShopTenantCreate    permission.ActionType = "shop/tenant:create"
 	ShopTenantView      permission.ActionType = "shop/tenant:view"
 
+	ShopCallSessionDelete permission.ActionType = "shop/call_session:delete"
+
 	// shop invoice
 	ShopInvoiceView permission.ActionType = "shop/invoice:view"
 
@@ -1399,6 +1401,8 @@ var _acl = map[string]*permission.Decl{
 	"shop.Etelecom/GetTenant":    {Type: Shop, Actions: actions(ShopTenantView)},
 
 	"shop.Etelecom/SummaryEtelecom": {Type: Shop, Actions: actions(ShopDashboardView)},
+
+	"shop.Etelecom/DestroyCallSession": {Type: Shop, Actions: actions(ShopCallSessionDelete)},
 
 	// Etelecom User Setting
 	"etelecom.User/GetUserSetting": {Type: Shop, Actions: actions(ShopEtelecomUserSettingView)},

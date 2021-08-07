@@ -297,3 +297,7 @@ type CommonListRequest struct {
 	Pagination int `json:"pagination"`
 	Pagesize   int `json:"pagesize,omitempty"`
 }
+
+type DestroyCallSessionRequest struct {
+	SessionID int `json:"session_id"`
+}

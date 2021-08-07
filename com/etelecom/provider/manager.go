@@ -121,7 +121,6 @@ func (m *TelecomManager) generateToken(ctx context.Context, shopConnection *conn
 	if expiresAt.After(now) {
 		return nil
 	}
-
 	// re-generate token
 	generateTokenResp, err := telecomDriver.GenerateToken(ctx)
 	if err != nil {
@@ -338,4 +337,30 @@ func (m *TelecomManager) GetAdministratorPortsipDriver(ctx context.Context) (pro
 	}
 	m.AdminPortsip.TokenExpiresAt = genTokenResp.ExpiresAt
 	return m.AdminPortsip.Driver, nil
+}
+
+func (m *TelecomManager) DestroyCallSession(ctx context.Context, args *DestroyCallSessionRequest) error {
+	if args.TenantID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing tenant ID")
+	}
+	if args.SessionID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing sessionID")
+	}
+
+	tenantQuery := &etelecom.GetTenantByIDQuery{
+		ID: args.TenantID,
+	}
+	if err := m.etelecomQS.Dispatch(ctx, tenantQuery); err != nil {
+		return err
+	}
+	tenant := tenantQuery.Result
+
+	driver, err := m.GetTelecomDriver(ctx, tenant.ConnectionID, tenant.OwnerID)
+	if err != nil {
+		return err
+	}
+	cmd := &providertypes.DestroyCallSessionRequest{
+		SessionID: args.SessionID,
+	}
+	return driver.DestroyCallSession(ctx, cmd)
 }

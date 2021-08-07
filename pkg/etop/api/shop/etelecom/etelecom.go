@@ -377,3 +377,17 @@ func (s *EtelecomService) GetTenant(ctx context.Context, r *etelecomapi.GetTenan
 	res := Convert_etelecom_Tenant_etelecomtypes_Tenant(query.Result, nil)
 	return res, nil
 }
+
+func (s *EtelecomService) DestroyCallSession(ctx context.Context, r *etelecomapi.DestroyCallSessionRequest) (*pbcm.UpdatedResponse, error) {
+	if err := r.Validate(); err != nil {
+		return nil, err
+	}
+	cmd := &etelecom.DestroyCallSessionCommand{
+		ExternalSessionID: r.ExternalSessionID,
+		OwnerID:           s.SS.Shop().OwnerID,
+	}
+	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
+	return &pbcm.UpdatedResponse{Updated: 1}, nil
+}

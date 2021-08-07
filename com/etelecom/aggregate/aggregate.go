@@ -40,6 +40,7 @@ type EtelecomAggregate struct {
 	subrQuery       subscription.QueryBus
 	subrAggr        subscription.CommandBus
 	invoiceAggr     invoicing.CommandBus
+	telecomQuery    etelecom.QueryBus
 }
 
 func NewEtelecomAggregate(
@@ -52,6 +53,7 @@ func NewEtelecomAggregate(
 	subrQ subscription.QueryBus,
 	subrA subscription.CommandBus,
 	invoiceA invoicing.CommandBus,
+	telecomQ etelecom.QueryBus,
 ) *EtelecomAggregate {
 	return &EtelecomAggregate{
 		// use dbMain for transaction
@@ -70,6 +72,7 @@ func NewEtelecomAggregate(
 		subrAggr:        subrA,
 		invoiceAggr:     invoiceA,
 		subrPlanQuery:   subrPlanQ,
+		telecomQuery:    telecomQ,
 	}
 }
 

@@ -864,7 +864,7 @@ func Build(ctx context.Context, cfg config.Config, partnerAuthURL partner.AuthUR
 	}
 	invoiceAggregate := invoicing.NewInvoiceAggregate(mainDB, busBus, paymentCommandBus, subscriptionQueryBus, subscriptionplanQueryBus)
 	invoicingCommandBus := invoicing.InvoiceAggregateMessageBus(invoiceAggregate)
-	etelecomAggregate := aggregate23.NewEtelecomAggregate(mainDB, etelecomDB, busBus, contactQueryBus, telecomManager, connectioningQueryBus, queryBus, subscriptionplanQueryBus, subscriptionQueryBus, subscriptionCommandBus, invoicingCommandBus)
+	etelecomAggregate := aggregate23.NewEtelecomAggregate(mainDB, etelecomDB, busBus, contactQueryBus, telecomManager, connectioningQueryBus, queryBus, subscriptionplanQueryBus, subscriptionQueryBus, subscriptionCommandBus, invoicingCommandBus, etelecomQueryBus)
 	etelecomCommandBus := aggregate23.AggregateMessageBus(etelecomAggregate)
 	summaryQuery := query26.NewSummaryQuery(etelecomDB, store)
 	queryBus2 := query26.SummaryQueryMessageBus(summaryQuery)

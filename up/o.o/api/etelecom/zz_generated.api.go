@@ -222,6 +222,18 @@ func (h AggregateHandler) HandleDeleteTenant(ctx context.Context, msg *DeleteTen
 	return h.inner.DeleteTenant(msg.GetArgs(ctx))
 }
 
+type DestroyCallSessionCommand struct {
+	ExternalSessionID string
+	OwnerID           dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleDestroyCallSession(ctx context.Context, msg *DestroyCallSessionCommand) (err error) {
+	return h.inner.DestroyCallSession(msg.GetArgs(ctx))
+}
+
 type ExtendExtensionCommand struct {
 	ExtensionID        dot.ID
 	UserID             dot.ID
@@ -499,6 +511,7 @@ func (q *CreateTenantCommand) command()                  {}
 func (q *DeleteExtensionCommand) command()               {}
 func (q *DeleteHotlineCommand) command()                 {}
 func (q *DeleteTenantCommand) command()                  {}
+func (q *DestroyCallSessionCommand) command()            {}
 func (q *ExtendExtensionCommand) command()               {}
 func (q *ImportExtensionsCommand) command()              {}
 func (q *RemoveHotlineOutOfTenantCommand) command()      {}
@@ -749,6 +762,19 @@ func (q *DeleteHotlineCommand) GetArgs(ctx context.Context) (_ context.Context, 
 func (q *DeleteTenantCommand) GetArgs(ctx context.Context) (_ context.Context, id dot.ID) {
 	return ctx,
 		q.Id
+}
+
+func (q *DestroyCallSessionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DestroyCallSessionArgs) {
+	return ctx,
+		&DestroyCallSessionArgs{
+			ExternalSessionID: q.ExternalSessionID,
+			OwnerID:           q.OwnerID,
+		}
+}
+
+func (q *DestroyCallSessionCommand) SetDestroyCallSessionArgs(args *DestroyCallSessionArgs) {
+	q.ExternalSessionID = args.ExternalSessionID
+	q.OwnerID = args.OwnerID
 }
 
 func (q *ExtendExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ExtendExtensionArgs) {
@@ -1071,6 +1097,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDeleteExtension)
 	b.AddHandler(h.HandleDeleteHotline)
 	b.AddHandler(h.HandleDeleteTenant)
+	b.AddHandler(h.HandleDestroyCallSession)
 	b.AddHandler(h.HandleExtendExtension)
 	b.AddHandler(h.HandleImportExtensions)
 	b.AddHandler(h.HandleRemoveHotlineOutOfTenant)

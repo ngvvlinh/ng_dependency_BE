@@ -204,6 +204,33 @@
         }
       }
     },
+    "/api/shop.Etelecom/DestroyCallSession": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "DestroyCallSession",
+        "operationId": "shop.Etelecom-DestroyCallSession",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/btDestroyCallSessionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.Etelecom/ExtendExtension": {
       "post": {
         "tags": [
@@ -486,6 +513,14 @@
           "type": "string"
         },
         "phone": {
+          "type": "string"
+        }
+      }
+    },
+    "btDestroyCallSessionRequest": {
+      "type": "object",
+      "properties": {
+        "external_session_id": {
           "type": "string"
         }
       }

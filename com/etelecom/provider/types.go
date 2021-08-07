@@ -21,3 +21,8 @@ type CreateOutboundRuleRequest struct {
 	OwnerID         dot.ID
 	ConnectionID    dot.ID
 }
+
+type DestroyCallSessionRequest struct {
+	SessionID int
+	TenantID  dot.ID
+}

@@ -79,7 +79,7 @@ func Build(ctx context.Context, cfg config.Config) (Output, func(), error) {
 	paymentCommandBus := aggregate2.AggregateMessageBus(aggregateAggregate)
 	invoiceAggregate := invoicing.NewInvoiceAggregate(mainDB, busBus, paymentCommandBus, subscriptionQueryBus, subscriptionplanQueryBus)
 	invoicingCommandBus := invoicing.InvoiceAggregateMessageBus(invoiceAggregate)
-	etelecomAggregate := aggregate3.NewEtelecomAggregate(mainDB, etelecomDB, busBus, contactQueryBus, telecomManager, queryBus, identityQueryBus, subscriptionplanQueryBus, subscriptionQueryBus, subscriptionCommandBus, invoicingCommandBus)
+	etelecomAggregate := aggregate3.NewEtelecomAggregate(mainDB, etelecomDB, busBus, contactQueryBus, telecomManager, queryBus, identityQueryBus, subscriptionplanQueryBus, subscriptionQueryBus, subscriptionCommandBus, invoicingCommandBus, etelecomQueryBus)
 	etelecomCommandBus := aggregate3.AggregateMessageBus(etelecomAggregate)
 	v2 := BuildSyncs(ctx, mainDB, telecomManager, etelecomQueryBus, etelecomCommandBus, commandBus)
 	processManager := pm.New(busBus, commandBus, queryBus)

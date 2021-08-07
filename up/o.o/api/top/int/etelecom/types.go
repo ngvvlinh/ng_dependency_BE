@@ -9,6 +9,7 @@ import (
 	"o.o/api/top/types/etc/charge_type"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
+	"o.o/common/xerrors"
 )
 
 type SummaryEtelecomRequest struct {
@@ -93,4 +94,19 @@ type AssignUserToExtensionRequest struct {
 
 func (r *AssignUserToExtensionRequest) String() string {
 	return jsonx.MustMarshalToString(r)
+}
+
+type DestroyCallSessionRequest struct {
+	ExternalSessionID string `json:"external_session_id"`
+}
+
+func (r *DestroyCallSessionRequest) String() string {
+	return jsonx.MustMarshalToString(r)
+}
+
+func (r *DestroyCallSessionRequest) Validate() error {
+	if r.ExternalSessionID == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing external_session_id")
+	}
+	return nil
 }

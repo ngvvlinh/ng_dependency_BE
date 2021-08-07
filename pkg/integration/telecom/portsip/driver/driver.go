@@ -180,3 +180,13 @@ func (d *PortsipDriver) CreateOutboundRule(ctx context.Context, args *telecomtyp
 	}
 	return nil
 }
+
+func (d *PortsipDriver) DestroyCallSession(ctx context.Context, req *telecomtypes.DestroyCallSessionRequest) error {
+	if req.SessionID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Session ID cannot be empty")
+	}
+	destroyCallSessionArgs := &portsipclient.DestroyCallSessionRequest{
+		SessionID: req.SessionID,
+	}
+	return d.client.DestroyCallSesssion(ctx, destroyCallSessionArgs)
+}

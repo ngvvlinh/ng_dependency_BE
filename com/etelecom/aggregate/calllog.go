@@ -2,12 +2,15 @@ package aggregate
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"o.o/api/etelecom"
 	"o.o/api/etelecom/call_direction"
 	"o.o/api/etelecom/call_state"
+	"o.o/api/main/connectioning"
 	contacting "o.o/api/main/contact"
+	"o.o/backend/com/etelecom/provider"
 	cm "o.o/backend/pkg/common"
 	"o.o/capi/dot"
 	"o.o/common/l"
@@ -168,4 +171,27 @@ func (a *EtelecomAggregate) UpdateCallLogPostage(ctx context.Context, args *etel
 		Postage:         args.Postage,
 	}
 	return a.callLogStore(ctx).ID(args.ID).UpdateCallLog(update)
+}
+
+func (a *EtelecomAggregate) DestroyCallSession(ctx context.Context, args *etelecom.DestroyCallSessionArgs) error {
+	if err := args.Validate(); err != nil {
+		return err
+	}
+	query := &etelecom.GetTenantByConnectionQuery{
+		OwnerID:      args.OwnerID,
+		ConnectionID: connectioning.DefaultDirectPortsipConnectionID,
+	}
+	if err := a.telecomQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	extSessionID, err := strconv.Atoi(args.ExternalSessionID)
+	if err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "ExternalSessionID does not valid")
+	}
+	destroyCallSessionRequest := &provider.DestroyCallSessionRequest{
+		SessionID: extSessionID,
+		TenantID:  query.Result.ID,
+	}
+	return a.telecomManager.DestroyCallSession(ctx, destroyCallSessionRequest)
 }

@@ -64,7 +64,7 @@ func New(cfg PortsipAccountCfg) *Client {
 
 	switch cmenv.Env() {
 	case cmenv.EnvDev:
-		c.baseUrl = "https://sip.etelecom.vn:8900/api"
+		c.baseUrl = "https://portsip.vht.com.vn:8900/api"
 	case cmenv.EnvSandbox, cmenv.EnvStag:
 		c.baseUrl = "https://sip.etelecom.vn:8900/api"
 	case cmenv.EnvProd:
@@ -180,6 +180,16 @@ func (c *Client) GetExtensionGroups(ctx context.Context, req *CommonListRequest)
 		resp:  &resp,
 	})
 	return &resp, err
+}
+
+func (c *Client) DestroyCallSesssion(ctx context.Context, req *DestroyCallSessionRequest) error {
+	err := c.sendPostRequest(ctx, sendRequestArgs{
+		url:   URL(c.baseUrl, "/call_sessions/destroy"),
+		token: c.token,
+		req:   req,
+		resp:  nil,
+	})
+	return err
 }
 
 func (c *Client) sendPostRequest(ctx context.Context, args sendRequestArgs) error {
