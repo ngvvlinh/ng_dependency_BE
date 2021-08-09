@@ -2,8 +2,11 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"o.o/api/etelecom"
+	"o.o/api/etelecom/call_direction"
+	"o.o/api/etelecom/call_state"
 	"o.o/api/meta"
 	"o.o/backend/com/etelecom/model"
 	"o.o/backend/pkg/common/sql/cmsql"
@@ -80,6 +83,27 @@ func (s *CallLogStore) CallerOrCallee(num string) *CallLogStore {
 		s.ft.ByCallee(num),
 		s.ft.ByCaller(num),
 	})
+	return s
+}
+
+func (s *CallLogStore) CallState(state call_state.CallState) *CallLogStore {
+	s.preds = append(s.preds, s.ft.ByCallState(state))
+	return s
+}
+
+func (s *CallLogStore) BetweenDateFromAndDateTo(dateFrom time.Time, dateTo time.Time) *CallLogStore {
+	s.preds = append(s.preds, sq.NewExpr("created_at BETWEEN ? AND ?", dateFrom, dateTo))
+	return s
+}
+
+func (s *CallLogStore) Direction(direction call_direction.CallDirection) *CallLogStore {
+	switch direction {
+	case call_direction.ExtOut, call_direction.ExtIn, call_direction.Ext:
+		extDirections := []call_direction.CallDirection{call_direction.ExtOut, call_direction.ExtIn, call_direction.Ext}
+		s.preds = append(s.preds, sq.In("direction", extDirections))
+	default:
+		s.preds = append(s.preds, sq.NewExpr("direction = ?", direction))
+	}
 	return s
 }
 

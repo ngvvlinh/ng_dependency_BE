@@ -188,6 +188,10 @@ func (s *EtelecomService) GetCallLogs(ctx context.Context, r *etelecomtypes.GetC
 		query.HotlineIDs = r.Filter.HotlineIDs
 		query.ExtensionIDs = r.Filter.ExtensionIDs
 		query.UserID = r.Filter.UserID
+		query.CallState = r.Filter.CallState
+		query.DateFrom = r.Filter.DateFrom
+		query.DateTo = r.Filter.DateTo
+		query.Direction = r.Filter.Direction
 	}
 
 	roles := s.SS.GetRoles()

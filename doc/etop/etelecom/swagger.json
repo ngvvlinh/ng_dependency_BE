@@ -836,6 +836,20 @@
           "description": "Caller or callee\n",
           "type": "string"
         },
+        "call_state": {
+          "$ref": "#/definitions/jwCallState"
+        },
+        "date_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "date_to": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "direction": {
+          "$ref": "#/definitions/jfCallDirection"
+        },
         "extension_ids": {
           "type": "array",
           "items": {

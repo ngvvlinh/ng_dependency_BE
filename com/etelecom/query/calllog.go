@@ -21,6 +21,12 @@ func (q *QueryService) ListCallLogs(ctx context.Context, args *etelecom.ListCall
 	if args.AccountID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing account_id")
 	}
+	if args.DateTo.Before(args.DateFrom) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "date_to must be after date_from")
+	}
+	if args.DateFrom.IsZero() != args.DateTo.IsZero() {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "must provide both DateFrom and DateTo")
+	}
 	query := q.callLogStore(ctx).WithPaging(args.Paging)
 	if args.OwnerID != 0 {
 		query = query.AccountIDOrOwnerID(args.AccountID, args.OwnerID)
@@ -39,6 +45,16 @@ func (q *QueryService) ListCallLogs(ctx context.Context, args *etelecom.ListCall
 	if args.CallerOrCallee != "" {
 		query = query.CallerOrCallee(args.CallerOrCallee)
 	}
+	if args.CallState != 0 {
+		query = query.CallState(args.CallState)
+	}
+	if !args.DateFrom.IsZero() {
+		query = query.BetweenDateFromAndDateTo(args.DateFrom, args.DateTo)
+	}
+	if args.Direction != 0 {
+		query = query.Direction(args.Direction)
+	}
+
 	res, err := query.ListCallLogs()
 	if err != nil {
 		return nil, err

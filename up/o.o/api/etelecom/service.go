@@ -222,6 +222,10 @@ type ListCallLogsArgs struct {
 	OwnerID        dot.ID
 	AccountID      dot.ID
 	CallerOrCallee string
+	CallState      call_state.CallState
+	DateFrom       time.Time
+	DateTo         time.Time
+	Direction      call_direction.CallDirection
 	Paging         meta.Paging
 }
 

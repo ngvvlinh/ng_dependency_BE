@@ -157,7 +157,11 @@ type CallLogsFilter struct {
 	ExtensionIDs []dot.ID `json:"extension_ids"`
 	UserID       dot.ID   `json:"user_id"`
 	// Caller or callee
-	CallNumber string `json:"call_number"`
+	CallNumber string                       `json:"call_number"`
+	CallState  call_state.CallState         `json:"call_state"`
+	DateFrom   time.Time                    `json:"date_from"`
+	DateTo     time.Time                    `json:"date_to"`
+	Direction  call_direction.CallDirection `json:"direction"`
 }
 
 type GetCallLogsResponse struct {

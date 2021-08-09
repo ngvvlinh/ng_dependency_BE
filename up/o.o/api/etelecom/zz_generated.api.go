@@ -446,6 +446,10 @@ type ListCallLogsQuery struct {
 	OwnerID        dot.ID
 	AccountID      dot.ID
 	CallerOrCallee string
+	CallState      call_state.CallState
+	DateFrom       time.Time
+	DateTo         time.Time
+	Direction      call_direction.CallDirection
 	Paging         meta.Paging
 
 	Result *ListCallLogsResponse `json:"-"`
@@ -1010,6 +1014,10 @@ func (q *ListCallLogsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 			OwnerID:        q.OwnerID,
 			AccountID:      q.AccountID,
 			CallerOrCallee: q.CallerOrCallee,
+			CallState:      q.CallState,
+			DateFrom:       q.DateFrom,
+			DateTo:         q.DateTo,
+			Direction:      q.Direction,
 			Paging:         q.Paging,
 		}
 }
@@ -1021,6 +1029,10 @@ func (q *ListCallLogsQuery) SetListCallLogsArgs(args *ListCallLogsArgs) {
 	q.OwnerID = args.OwnerID
 	q.AccountID = args.AccountID
 	q.CallerOrCallee = args.CallerOrCallee
+	q.CallState = args.CallState
+	q.DateFrom = args.DateFrom
+	q.DateTo = args.DateTo
+	q.Direction = args.Direction
 	q.Paging = args.Paging
 }
 
