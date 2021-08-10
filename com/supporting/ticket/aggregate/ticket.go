@@ -135,63 +135,18 @@ func (a *TicketAggregate) CreateTicket(ctx context.Context, args *ticket.CreateT
 	}
 
 	// check reference code
-	var refCode = ""
-	var connectionID dot.ID
 	if args.RefID != 0 {
-		switch args.RefType {
-		case ticket_ref_type.FFM:
-			getFfmQuery := &shipping.GetFulfillmentByIDOrShippingCodeQuery{
-				ID: args.RefID,
-			}
-			if err := a.ShippingQuery.Dispatch(ctx, getFfmQuery); err != nil {
-				if cm.ErrorCode(err) == cm.NotFound {
-					return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy đơn giao hàng")
-				}
-				return nil, err
-			}
-			refCode = getFfmQuery.Result.ShippingCode
-			connectionID = getFfmQuery.Result.ConnectionID
-		case ticket_ref_type.MoneyTransaction:
-			// type system
-			getMoneyTxQuery := &moneytx.GetMoneyTxShippingByIDQuery{
-				MoneyTxShippingID: args.RefID,
-				ShopID:            args.AccountID,
-			}
-			if err := a.MoneyTxQuery.Dispatch(ctx, getMoneyTxQuery); err != nil {
-				if cm.ErrorCode(err) == cm.NotFound {
-					return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy phiên chuyển tiền")
-				}
-				return nil, err
-			}
-			refCode = getMoneyTxQuery.Result.Code
-		case ticket_ref_type.OrderTrading:
-			// type system
-			getOrderQuery := &ordering.GetOrderByIDQuery{
-				ID: args.RefID,
-			}
-			err := a.OrderQuery.Dispatch(ctx, getOrderQuery)
-			if err != nil {
-				if cm.ErrorCode(err) == cm.NotFound {
-					return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy đơn hàng")
-				}
-				return nil, err
-			}
-			refCode = getOrderQuery.Result.Code
-		case ticket_ref_type.Contact:
-			getContactQuery := &contact.GetContactByIDQuery{
-				ID:     args.RefID,
-				ShopID: args.AccountID,
-			}
-			if err := a.ContactQuery.Dispatch(ctx, getContactQuery); err != nil {
-				if cm.ErrorCode(err) == cm.NotFound {
-					return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy liên lạc")
-				}
-				return nil, err
-			}
-
-		default:
-			//no-op(other)
+		getReferenceItemArgs := &ticket.GetReferenceItemArgs{
+			RefID:     args.RefID,
+			RefType:   args.RefType,
+			AccountID: args.AccountID,
 		}
+		res, err := a.checkRefItem(ctx, getReferenceItemArgs)
+		if err != nil {
+			return nil, err
+		}
+		refCode := res.RefCode
+		connectionID := res.ConnectionID
 
 		// check ref_code
 		if args.RefCode != "" && args.RefCode != refCode {
@@ -218,14 +173,23 @@ func (a *TicketAggregate) UpdateTicketInfo(ctx context.Context, args *ticket.Upd
 	if ticketCore.Status != status5.Z && ticketCore.Status != status5.S {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Ticket đã đóng")
 	}
-
+	if args.RefID != 0 {
+		getReferenceItemArgs := &ticket.GetReferenceItemArgs{
+			RefID:     args.RefID,
+			RefType:   args.RefType,
+			AccountID: args.AccountID,
+		}
+		_, err = a.checkRefItem(ctx, getReferenceItemArgs)
+		if err != nil {
+			return nil, err
+		}
+	}
 	ticket := &ticket.Ticket{
 		Title:       args.Title,
 		Description: args.Description,
 		RefType:     args.RefType,
 		RefID:       args.RefID,
 		LabelIDs:    args.Labels,
-		Code:        args.Code,
 	}
 	if err := a.TicketStore(ctx).ID(args.ID).OptionalAccountID(args.AccountID).UpdateTicket(ticket); err != nil {
 		return nil, err
@@ -521,4 +485,67 @@ func (a *TicketAggregate) UpdateTicketRefTicketID(ctx context.Context, args *tic
 
 func generateTicketLabelKey(ctx context.Context, shopID dot.ID) string {
 	return fmt.Sprintf("ticket_labels:%s:wl%s:sh%s", ticketLabelsVersion, wl.GetWLPartnerID(ctx), shopID.String())
+}
+
+func (a *TicketAggregate) checkRefItem(ctx context.Context, args *ticket.GetReferenceItemArgs) (*ticket.GetReferenceItemResponse, error) {
+	var refCode = ""
+	var connectionID dot.ID
+	switch args.RefType {
+	case ticket_ref_type.FFM:
+		getFfmQuery := &shipping.GetFulfillmentByIDOrShippingCodeQuery{
+			ID: args.RefID,
+		}
+		if err := a.ShippingQuery.Dispatch(ctx, getFfmQuery); err != nil {
+			if cm.ErrorCode(err) == cm.NotFound {
+				return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy đơn giao hàng")
+			}
+			return nil, err
+		}
+		refCode = getFfmQuery.Result.ShippingCode
+		connectionID = getFfmQuery.Result.ConnectionID
+	case ticket_ref_type.MoneyTransaction:
+		// type system
+		getMoneyTxQuery := &moneytx.GetMoneyTxShippingByIDQuery{
+			MoneyTxShippingID: args.RefID,
+			ShopID:            args.AccountID,
+		}
+		if err := a.MoneyTxQuery.Dispatch(ctx, getMoneyTxQuery); err != nil {
+			if cm.ErrorCode(err) == cm.NotFound {
+				return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy phiên chuyển tiền")
+			}
+			return nil, err
+		}
+		refCode = getMoneyTxQuery.Result.Code
+	case ticket_ref_type.OrderTrading:
+		// type system
+		getOrderQuery := &ordering.GetOrderByIDQuery{
+			ID: args.RefID,
+		}
+		err := a.OrderQuery.Dispatch(ctx, getOrderQuery)
+		if err != nil {
+			if cm.ErrorCode(err) == cm.NotFound {
+				return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy đơn hàng")
+			}
+			return nil, err
+		}
+		refCode = getOrderQuery.Result.Code
+	case ticket_ref_type.Contact:
+		getContactQuery := &contact.GetContactByIDQuery{
+			ID:     args.RefID,
+			ShopID: args.AccountID,
+		}
+		if err := a.ContactQuery.Dispatch(ctx, getContactQuery); err != nil {
+			if cm.ErrorCode(err) == cm.NotFound {
+				return nil, cm.Errorf(cm.NotFound, err, "Không tìm thấy liên lạc")
+			}
+			return nil, err
+		}
+
+	default:
+		//no-op(other)
+	}
+	return &ticket.GetReferenceItemResponse{
+		ConnectionID: connectionID,
+		RefCode:      refCode,
+	}, nil
 }

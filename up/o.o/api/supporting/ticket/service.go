@@ -354,3 +354,14 @@ func (m *UpdateTicketLabelExternalArgs) Validate() error {
 func EditErrorMsg(str string) error {
 	return xerrors.Errorf(xerrors.InvalidArgument, nil, "Vui lòng nhập thông tin bắt buộc, thiếu %v", str)
 }
+
+type GetReferenceItemArgs struct {
+	RefID     dot.ID
+	RefType   ticket_ref_type.TicketRefType
+	AccountID dot.ID
+}
+
+type GetReferenceItemResponse struct {
+	ConnectionID dot.ID
+	RefCode      string
+}
