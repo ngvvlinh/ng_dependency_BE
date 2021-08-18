@@ -91,7 +91,7 @@ const shopPolicy = `#connection
 	p, shop/shipnow:confirm, admin, owner, salesman, m_admin
 	# shop
 	p, shop/balance:view, admin, owner, accountant, m_admin
-	p, shop/account:delete, owner, m_admin
+	p, shop/account:delete, owner
 	p, shop/user/balance:view, owner, accountant, staff_management, telecom_customerservice, telecom_customerservice_management, m_admin
 	# staff
 	p, relationship/invitation:create, admin, owner, staff_management, m_admin
