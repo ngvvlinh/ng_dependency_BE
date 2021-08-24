@@ -81,7 +81,7 @@ func NewWithPool(address string) Store {
 	redisPool := &redis.Pool{
 		MaxIdle:     50,
 		MaxActive:   0,
-		IdleTimeout: 240 * time.Second,
+		IdleTimeout: 60 * time.Second,
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.DialURL(address)
 			if err != nil {
@@ -96,7 +96,7 @@ func NewWithPool(address string) Store {
 			}
 			_, err := c.Do("PING")
 			if err != nil {
-				ll.Fatal("err", l.Error(err))
+				return err
 			}
 			return nil
 		},
