@@ -15,6 +15,60 @@
     "version": "v1"
   },
   "paths": {
+    "/v1/shop.Contact/CreateContact": {
+      "post": {
+        "tags": [
+          "Contact"
+        ],
+        "summary": "CreateContact",
+        "operationId": "shop.Contact-CreateContact",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrCreateContactRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrContact"
+            }
+          }
+        }
+      }
+    },
+    "/v1/shop.Contact/ListContacts": {
+      "post": {
+        "tags": [
+          "Contact"
+        ],
+        "summary": "ListContacts",
+        "operationId": "shop.Contact-ListContacts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListContactsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrContactsResponse"
+            }
+          }
+        }
+      }
+    },
     "/v1/shop.Customer/CreateCustomer": {
       "post": {
         "tags": [
@@ -2080,6 +2134,47 @@
         }
       }
     },
+    "mrContact": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "mrContactsResponse": {
+      "type": "object",
+      "properties": {
+        "contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrContact"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
+        }
+      }
+    },
     "mrCoordinates": {
       "type": "object",
       "properties": {
@@ -2166,6 +2261,17 @@
           "type": "string"
         },
         "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "mrCreateContactRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
           "type": "string"
         }
       }
@@ -2802,6 +2908,24 @@
         }
       }
     },
+    "mrFilterGetContacts": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        }
+      }
+    },
     "mrFulfillment": {
       "type": "object",
       "properties": {
@@ -3191,6 +3315,20 @@
       "properties": {
         "filter": {
           "$ref": "#/definitions/mrListCollectionsFilter"
+        },
+        "include_deleted": {
+          "type": "boolean"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "mrListContactsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrFilterGetContacts"
         },
         "include_deleted": {
           "type": "boolean"
@@ -4661,6 +4799,9 @@
     }
   },
   "tags": [
+    {
+      "name": "Contact"
+    },
     {
       "name": "Customer"
     },

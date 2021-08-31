@@ -33,6 +33,7 @@ func NewServers(
 	productCollectionRelationshipService *ProductCollectionRelationshipService,
 	shipnowService *ShipnowService,
 	etelecomService *EtelecomService,
+	contactService *ContactService,
 ) (Servers, func()) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempShopAPI, 0)
 	servers := httprpc.MustNewServers(
@@ -53,6 +54,7 @@ func NewServers(
 		productCollectionRelationshipService.Clone,
 		shipnowService.Clone,
 		etelecomService.Clone,
+		contactService.Clone,
 	)
 	return servers, idempgroup.Shutdown
 }

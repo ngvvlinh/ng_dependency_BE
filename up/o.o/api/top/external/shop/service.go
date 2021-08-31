@@ -181,3 +181,9 @@ type VariantService interface {
 type EtelecomService interface {
 	GetExtensionInfo(context.Context, *types.GetExtensionInfoRequest) (*types.ExtensionInfo, error)
 }
+
+// +apix:path=/shop.Contact
+type ContactService interface {
+	ListContacts(context.Context, *types.ListContactsRequest) (*types.ContactsResponse, error)
+	CreateContact(context.Context, *types.CreateContactRequest) (*types.Contact, error)
+}

@@ -726,6 +726,9 @@ var _acl = map[string]*permission.Decl{
 
 	"ext/shop.Etelecom/GetExtensionInfo": {Type: Shop, Auth: APIKey},
 
+	"ext/shop.Contact/ListContacts":  {Type: Shop, Auth: APIKey},
+	"ext/shop.Contact/CreateContact": {Type: Shop, Auth: APIKey},
+
 	//-- vnpost --//
 
 	"ext/vnposts/ping":              {Type: Shop, Auth: APIKey},
