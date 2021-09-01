@@ -23,6 +23,7 @@ type MiscService interface {
 type AccountService interface {
 	CreatePartner(context.Context, *CreatePartnerRequest) (*etop.Partner, error)
 	GenerateAPIKey(context.Context, *GenerateAPIKeyRequest) (*GenerateAPIKeyResponse, error)
+	GetAPIKey(context.Context, *GetAPIKeyRequest) (*GetAPIKeyResponse, error)
 	CreateAdminUser(context.Context, *CreateAdminUserRequest) (*CreateAdminUserResponse, error)
 	UpdateAdminUser(context.Context, *UpdateAdminUserRequest) (*UpdateAdminUserResponse, error)
 	GetAdminUsers(context.Context, *GetAdminUsersRequest) (*GetAdminUserResponse, error)

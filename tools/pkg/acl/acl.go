@@ -757,6 +757,7 @@ var _acl = map[string]*permission.Decl{
 
 	"admin.Account/CreatePartner":   {Type: EtopAdmin, Actions: actions(AdminPartnerCreate)},
 	"admin.Account/GenerateAPIKey":  {Type: EtopAdmin},
+	"admin.Account/GetAPIKey":       {Type: EtopAdmin},
 	"admin.Account/CreateAdminUser": {Type: EtopAdmin, Actions: actions(AdminAdminUserCreate)},
 	"admin.Account/UpdateAdminUser": {Type: EtopAdmin, Actions: actions(AdminAdminUserUpdate)},
 	"admin.Account/GetAdminUsers":   {Type: EtopAdmin, Actions: actions(AdminAdminUserView)},

@@ -123,6 +123,33 @@
         }
       }
     },
+    "/api/admin.Account/GetAPIKey": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "GetAPIKey",
+        "operationId": "admin.Account-GetAPIKey",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xuGetAPIKeyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xuGetAPIKeyResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/admin.Account/GetAdminUsers": {
       "post": {
         "tags": [
@@ -9381,6 +9408,23 @@
           "type": "string",
           "format": "int64"
         },
+        "api_key": {
+          "type": "string"
+        }
+      }
+    },
+    "xuGetAPIKeyRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "xuGetAPIKeyResponse": {
+      "type": "object",
+      "properties": {
         "api_key": {
           "type": "string"
         }

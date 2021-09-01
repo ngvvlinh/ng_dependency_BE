@@ -120,6 +120,16 @@ func (s *AccountService) CreateAdminUser(ctx context.Context, q *admin.CreateAdm
 	}, nil
 }
 
+func (s *AccountService) GetAPIKey(ctx context.Context, q *admin.GetAPIKeyRequest) (*admin.GetAPIKeyResponse, error) {
+	accountAuth, err := s.AccountAuthStore(ctx).AccountID(q.AccountID).Get()
+	if err != nil {
+		return nil, err
+	}
+	return &admin.GetAPIKeyResponse{
+		ApiKey: accountAuth.AuthKey,
+	}, nil
+}
+
 func (s *AccountService) UpdateAdminUser(ctx context.Context, q *admin.UpdateAdminUserRequest) (*admin.UpdateAdminUserResponse, error) {
 	for _, role := range q.Roles {
 		if !authorization.IsContainsRole(authorization.InternalRoles, authorization.Role(role)) {

@@ -80,6 +80,7 @@ const Path_Account_CreateAdminUser = "/admin.Account/CreateAdminUser"
 const Path_Account_CreatePartner = "/admin.Account/CreatePartner"
 const Path_Account_DeleteAdminUser = "/admin.Account/DeleteAdminUser"
 const Path_Account_GenerateAPIKey = "/admin.Account/GenerateAPIKey"
+const Path_Account_GetAPIKey = "/admin.Account/GetAPIKey"
 const Path_Account_GetAdminUsers = "/admin.Account/GetAdminUsers"
 const Path_Account_UpdateAdminUser = "/admin.Account/UpdateAdminUser"
 
@@ -165,6 +166,19 @@ func (s *AccountServiceServer) parseRoute(path string, hooks httprpc.Hooks, info
 				return
 			}
 			resp, err = inner.GenerateAPIKey(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/admin.Account/GetAPIKey":
+		msg := &GetAPIKeyRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetAPIKey(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

@@ -1173,3 +1173,15 @@ type SplitMoneyTxShippingExternalRequest struct {
 func (d *SplitMoneyTxShippingExternalRequest) String() string {
 	return jsonx.MustMarshalToString(d)
 }
+
+type GetAPIKeyRequest struct {
+	AccountID dot.ID `json:"account_id"`
+}
+
+func (m *GetAPIKeyRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetAPIKeyResponse struct {
+	ApiKey string `json:"api_key"`
+}
+
+func (m *GetAPIKeyResponse) String() string { return jsonx.MustMarshalToString(m) }
