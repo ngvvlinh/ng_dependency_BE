@@ -218,7 +218,8 @@ func Connect(c ConfigPostgres) (*Database, error) {
 	}
 	db.DB().SetMaxOpenConns(c.MaxOpenConns)
 	db.DB().SetMaxIdleConns(c.MaxIdleConns)
-
+	db.DB().SetConnMaxLifetime(5 * time.Minute)
+	
 	mu.Lock()
 	database := &Database{id: id, db: *db, dlog: *dlog}
 	dbPool[identifier] = database
