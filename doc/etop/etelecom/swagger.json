@@ -484,6 +484,9 @@
           "description": "Create call log unique by external_session_id.\nIf external_session_id is existed:\n   - If old call log had state `answered` =\u003e do not update\n   - Else update call log\n",
           "type": "string"
         },
+        "note": {
+          "type": "string"
+        },
         "started_at": {
           "type": "string",
           "format": "date-time"
@@ -807,6 +810,9 @@
         "id": {
           "type": "string",
           "format": "int64"
+        },
+        "note": {
+          "type": "string"
         },
         "owner_id": {
           "type": "string",

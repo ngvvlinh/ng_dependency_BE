@@ -86,6 +86,7 @@ type CreateCallLogCommand struct {
 	CallState         call_state.CallState
 	StartedAt         time.Time
 	EndedAt           time.Time
+	Note              string
 
 	Result *CallLog `json:"-"`
 }
@@ -603,6 +604,7 @@ func (q *CreateCallLogCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			CallState:         q.CallState,
 			StartedAt:         q.StartedAt,
 			EndedAt:           q.EndedAt,
+			Note:              q.Note,
 		}
 }
 
@@ -618,6 +620,7 @@ func (q *CreateCallLogCommand) SetCreateCallLogArgs(args *CreateCallLogArgs) {
 	q.CallState = args.CallState
 	q.StartedAt = args.StartedAt
 	q.EndedAt = args.EndedAt
+	q.Note = args.Note
 }
 
 func (q *CreateExtensionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateExtensionArgs) {

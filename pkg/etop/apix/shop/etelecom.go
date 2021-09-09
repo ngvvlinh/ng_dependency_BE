@@ -7,6 +7,7 @@ import (
 	"o.o/api/main/identity"
 	api "o.o/api/top/external/shop"
 	externaltypes "o.o/api/top/external/types"
+	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/etop/apix/convertpb"
 	"o.o/backend/pkg/etop/authorize/session"
 	"o.o/capi/dot"
@@ -19,6 +20,32 @@ type EtelecomService struct {
 }
 
 func (s *EtelecomService) Clone() api.EtelecomService { res := *s; return &res }
+
+func (s *EtelecomService) ListCallLogs(ctx context.Context, r *externaltypes.ListCallLogsRequest) (*externaltypes.CallLogsResponse, error) {
+	paging, err := cmapi.CMCursorPaging(r.Paging)
+	if err != nil {
+		return nil, err
+	}
+	query := &etelecom.ListCallLogsQuery{
+		AccountID: s.SS.Shop().ID,
+		Paging:    *paging,
+		OwnerID:   s.SS.Shop().OwnerID,
+	}
+	if r.Filter != nil {
+		query.CallerOrCallee = r.Filter.CallNumber
+		query.HotlineIDs = r.Filter.HotlineIDs
+		query.ExtensionIDs = r.Filter.ExtensionIDs
+		query.UserID = r.Filter.UserID
+	}
+	if err = s.EtelecomQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	res := convertpb.Convert_core_Calllogs_To_api_ShopCalllogs(query.Result.CallLogs)
+	return &externaltypes.CallLogsResponse{
+		CallLogs: res,
+		Paging:   cmapi.PbCursorPageInfo(paging, &query.Result.Paging),
+	}, nil
+}
 
 func (s *EtelecomService) GetExtensionInfo(ctx context.Context, r *externaltypes.GetExtensionInfoRequest) (*externaltypes.ExtensionInfo, error) {
 	if err := r.Validate(); err != nil {

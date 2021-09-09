@@ -44,6 +44,7 @@ func (a *EtelecomAggregate) CreateCallLog(ctx context.Context, args *etelecom.Cr
 		EndedAt:           args.EndedAt,
 		UserID:            extension.UserID,
 		OwnerID:           args.OwnerID,
+		Note:              args.Note,
 	}
 	if callLog.StartedAt.IsZero() {
 		// workaround

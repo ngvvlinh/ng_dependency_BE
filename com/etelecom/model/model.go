@@ -86,6 +86,7 @@ type CallLog struct {
 	DurationPostage    int
 	Postage            int
 	ExternalSessionID  string
+	Note               string
 
 	// depends on connectionID to get extension
 	// accountID get from extension (above)

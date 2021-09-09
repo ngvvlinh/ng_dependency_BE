@@ -79,6 +79,7 @@ type CallLog struct {
 	DurationPostage   int
 	Postage           int
 	ExternalSessionID string
+	Note              string
 }
 
 type CallLogCalcPostageEvent struct {

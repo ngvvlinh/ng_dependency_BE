@@ -222,6 +222,7 @@ func (s *EtelecomService) CreateCallLog(ctx context.Context, r *etelecomapi.Crea
 		CallState:         r.CallState,
 		StartedAt:         r.StartedAt,
 		EndedAt:           r.EndedAt,
+		Note:              r.Note,
 	}
 	if err := s.EtelecomAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err

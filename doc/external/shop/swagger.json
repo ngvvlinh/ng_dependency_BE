@@ -582,6 +582,33 @@
         }
       }
     },
+    "/v1/shop.Etelecom/ListCallLogs": {
+      "post": {
+        "tags": [
+          "Etelecom"
+        ],
+        "summary": "ListCallLogs",
+        "operationId": "shop.Etelecom-ListCallLogs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/mrListCallLogsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/mrCallLogsResponse"
+            }
+          }
+        }
+      }
+    },
     "/v1/shop.Fulfillment/GetFulfillment": {
       "post": {
         "tags": [
@@ -1831,6 +1858,17 @@
         }
       }
     },
+    "jfCallDirection": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "in",
+        "out",
+        "ext",
+        "ext_in",
+        "ext_out"
+      ]
+    },
     "jjAccountType": {
       "type": "string",
       "enum": [
@@ -1840,6 +1878,14 @@
         "affiliate",
         "carrier",
         "etop"
+      ]
+    },
+    "jwCallState": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "answered",
+        "not_answered"
       ]
     },
     "kfIDs": {
@@ -1978,6 +2024,47 @@
         "group_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "mrCallLogFilter": {
+      "type": "object",
+      "properties": {
+        "call_number": {
+          "description": "Caller or callee\n",
+          "type": "string"
+        },
+        "extension_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "hotline_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "mrCallLogsResponse": {
+      "type": "object",
+      "properties": {
+        "call_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mrShopCallLog"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
         }
       }
     },
@@ -3302,6 +3389,17 @@
         }
       }
     },
+    "mrListCallLogsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/mrCallLogFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
     "mrListCollectionsFilter": {
       "type": "object",
       "properties": {
@@ -4251,6 +4349,73 @@
         "name": {
           "description": "**Deprecated:** use carrier info instead\n",
           "type": "string"
+        }
+      }
+    },
+    "mrShopCallLog": {
+      "type": "object",
+      "properties": {
+        "call_state": {
+          "$ref": "#/definitions/jwCallState"
+        },
+        "call_status": {
+          "$ref": "#/definitions/bnStatus"
+        },
+        "callee": {
+          "type": "string"
+        },
+        "caller": {
+          "type": "string"
+        },
+        "contact_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "direction": {
+          "$ref": "#/definitions/jfCallDirection"
+        },
+        "duration": {
+          "type": "integer"
+        },
+        "ended_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extension_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_session_id": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "recording_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

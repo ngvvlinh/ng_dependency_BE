@@ -139,8 +139,9 @@ type CallLog struct {
 	CallState          call_state.CallState         `json:"call_state"`
 	CallStatus         status5.Status               `json:"call_status"`
 	// Đơn vị: phút
-	DurationPostage int `json:"duration_postage"`
-	Postage         int `json:"postage"`
+	DurationPostage int    `json:"duration_postage"`
+	Postage         int    `json:"postage"`
+	Note            string `json:"note"`
 }
 
 func (m *CallLog) String() string { return jsonx.MustMarshalToString(m) }

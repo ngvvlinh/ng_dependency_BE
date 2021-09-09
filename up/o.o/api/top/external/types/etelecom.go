@@ -3,6 +3,11 @@ package types
 import (
 	"time"
 
+	"o.o/api/etelecom/call_direction"
+	"o.o/api/etelecom/call_state"
+	"o.o/api/top/types/common"
+	"o.o/api/top/types/etc/status5"
+	"o.o/capi/dot"
 	"o.o/common/jsonx"
 	"o.o/common/xerrors"
 )
@@ -30,3 +35,47 @@ type ExtensionInfo struct {
 }
 
 func (m *ExtensionInfo) String() string { return jsonx.MustMarshalToString(m) }
+
+type ListCallLogsRequest struct {
+	Filter *CallLogFilter       `json:"filter"`
+	Paging *common.CursorPaging `json:"paging"`
+}
+
+func (m *ListCallLogsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CallLogsResponse struct {
+	CallLogs []*ShopCallLog         `json:"call_logs"`
+	Paging   *common.CursorPageInfo `json:"paging"`
+}
+
+func (m *CallLogsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type ShopCallLog struct {
+	ID                dot.ID                       `json:"id"`
+	ExternalSessionID string                       `json:"external_session_id"`
+	UserID            dot.ID                       `json:"user_id"`
+	StartedAt         time.Time                    `json:"started_at"`
+	EndedAt           time.Time                    `json:"ended_at"`
+	Duration          int                          `json:"duration"`
+	Caller            string                       `json:"caller"`
+	Callee            string                       `json:"callee"`
+	RecordingURLs     []string                     `json:"recording_urls"`
+	Direction         call_direction.CallDirection `json:"direction"`
+	ExtensionID       dot.ID                       `json:"extension_id"`
+	ContactID         dot.ID                       `json:"contact_id"`
+	CreatedAt         time.Time                    `json:"created_at"`
+	UpdatedAt         time.Time                    `json:"updated_at"`
+	CallState         call_state.CallState         `json:"call_state"`
+	CallStatus        status5.Status               `json:"call_status"`
+	Note              string                       `json:"note"`
+}
+
+func (m *ShopCallLog) String() string { return jsonx.MustMarshalToString(m) }
+
+type CallLogFilter struct {
+	HotlineIDs   []dot.ID `json:"hotline_ids"`
+	ExtensionIDs []dot.ID `json:"extension_ids"`
+	UserID       dot.ID   `json:"user_id"`
+	// Caller or callee
+	CallNumber string `json:"call_number"`
+}

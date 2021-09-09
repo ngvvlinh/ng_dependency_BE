@@ -141,6 +141,7 @@ type CreateCallLogArgs struct {
 	CallState         call_state.CallState
 	StartedAt         time.Time
 	EndedAt           time.Time
+	Note              string
 }
 
 func (args *CreateCallLogArgs) Validate() error {

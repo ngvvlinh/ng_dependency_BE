@@ -468,6 +468,25 @@ func (ft *CallLogFilters) ByExternalSessionIDPtr(ExternalSessionID *string) *sq.
 	}
 }
 
+func (ft *CallLogFilters) ByNote(Note string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "note",
+		Value:  Note,
+		IsNil:  Note == "",
+	}
+}
+
+func (ft *CallLogFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "note",
+		Value:  Note,
+		IsNil:  Note == nil,
+		IsZero: Note != nil && (*Note) == "",
+	}
+}
+
 type ExtensionFilters struct{ prefix string }
 
 func NewExtensionFilters(prefix string) ExtensionFilters {

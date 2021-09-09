@@ -627,6 +627,7 @@ func NewEtelecomServiceServer(builder func() EtelecomService, hooks ...httprpc.H
 const EtelecomServicePathPrefix = "/shop.Etelecom/"
 
 const Path_Etelecom_GetExtensionInfo = "/shop.Etelecom/GetExtensionInfo"
+const Path_Etelecom_ListCallLogs = "/shop.Etelecom/ListCallLogs"
 
 func (s *EtelecomServiceServer) PathPrefix() string {
 	return EtelecomServicePathPrefix
@@ -671,6 +672,19 @@ func (s *EtelecomServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.GetExtensionInfo(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Etelecom/ListCallLogs":
+		msg := &externaltypes.ListCallLogsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.ListCallLogs(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

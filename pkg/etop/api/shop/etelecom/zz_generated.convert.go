@@ -164,6 +164,7 @@ func convert_etelecom_CallLog_etelecomtypes_CallLog(arg *etelecom.CallLog, out *
 	out.CallStatus = arg.CallStatus                 // simple assign
 	out.DurationPostage = arg.DurationPostage       // simple assign
 	out.Postage = arg.Postage                       // simple assign
+	out.Note = arg.Note                             // simple assign
 }
 
 func Convert_etelecom_CallLogs_etelecomtypes_CallLogs(args []*etelecom.CallLog) (outs []*etelecomtypes.CallLog) {
@@ -214,6 +215,7 @@ func convert_etelecomtypes_CallLog_etelecom_CallLog(arg *etelecomtypes.CallLog, 
 	out.DurationPostage = arg.DurationPostage       // simple assign
 	out.Postage = arg.Postage                       // simple assign
 	out.ExternalSessionID = ""                      // zero value
+	out.Note = arg.Note                             // simple assign
 }
 
 func Convert_etelecomtypes_CallLogs_etelecom_CallLogs(args []*etelecomtypes.CallLog) (outs []*etelecom.CallLog) {
@@ -263,6 +265,7 @@ func apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecomtypes_CallLog(arg *
 	out.CallStatus = 0                              // zero value
 	out.DurationPostage = 0                         // zero value
 	out.Postage = 0                                 // zero value
+	out.Note = ""                                   // zero value
 }
 
 //-- convert o.o/api/top/int/etelecom/types.Extension --//

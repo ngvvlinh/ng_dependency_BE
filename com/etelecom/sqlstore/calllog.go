@@ -192,3 +192,8 @@ func (s *CallLogStore) UpdateCallLog(callLog *etelecom.CallLog) error {
 	query := s.query().Where(s.preds)
 	return query.ShouldUpdate(&callLogDB)
 }
+
+func (s *CallLogStore) IncludeDeleted() *CallLogStore {
+	s.includeDeleted = true
+	return s
+}

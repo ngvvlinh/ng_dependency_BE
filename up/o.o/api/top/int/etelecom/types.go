@@ -48,6 +48,7 @@ type CreateCallLogRequest struct {
 	CallState         call_state.CallState         `json:"call_state"`
 	StartedAt         time.Time                    `json:"started_at"`
 	EndedAt           time.Time                    `json:"ended_at"`
+	Note              string                       `json:"note"`
 }
 
 func (r *CreateCallLogRequest) String() string {

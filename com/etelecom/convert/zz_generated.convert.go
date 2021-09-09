@@ -183,6 +183,7 @@ func convert_etelecommodel_CallLog_etelecom_CallLog(arg *etelecommodel.CallLog, 
 	out.DurationPostage = arg.DurationPostage       // simple assign
 	out.Postage = arg.Postage                       // simple assign
 	out.ExternalSessionID = arg.ExternalSessionID   // simple assign
+	out.Note = arg.Note                             // simple assign
 }
 
 func Convert_etelecommodel_CallLogs_etelecom_CallLogs(args []*etelecommodel.CallLog) (outs []*etelecom.CallLog) {
@@ -233,6 +234,7 @@ func convert_etelecom_CallLog_etelecommodel_CallLog(arg *etelecom.CallLog, out *
 	out.DurationPostage = arg.DurationPostage       // simple assign
 	out.Postage = arg.Postage                       // simple assign
 	out.ExternalSessionID = arg.ExternalSessionID   // simple assign
+	out.Note = arg.Note                             // simple assign
 }
 
 func Convert_etelecom_CallLogs_etelecommodel_CallLogs(args []*etelecom.CallLog) (outs []*etelecommodel.CallLog) {
@@ -283,6 +285,7 @@ func apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecom_CallLog(arg *etele
 	out.DurationPostage = 0                         // zero value
 	out.Postage = 0                                 // zero value
 	out.ExternalSessionID = arg.ExternalSessionID   // simple assign
+	out.Note = ""                                   // zero value
 }
 
 //-- convert o.o/api/etelecom.Extension --//

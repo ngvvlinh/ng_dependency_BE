@@ -180,6 +180,7 @@ type VariantService interface {
 // +apix:path=/shop.Etelecom
 type EtelecomService interface {
 	GetExtensionInfo(context.Context, *types.GetExtensionInfoRequest) (*types.ExtensionInfo, error)
+	ListCallLogs(context.Context, *types.ListCallLogsRequest) (*types.CallLogsResponse, error)
 }
 
 // +apix:path=/shop.Contact
