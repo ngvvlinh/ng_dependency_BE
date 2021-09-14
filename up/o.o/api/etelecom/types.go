@@ -80,6 +80,7 @@ type CallLog struct {
 	Postage           int
 	ExternalSessionID string
 	Note              string
+	CallTargets       []*CallTarget
 }
 
 type CallLogCalcPostageEvent struct {

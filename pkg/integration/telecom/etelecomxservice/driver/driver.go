@@ -83,7 +83,14 @@ func getCallTargets(session *etelecomxserviceclient.SessionCallLog) (res []*Call
 				TalkDuration: target.TalkDuration.Int(),
 				CallState:    callState,
 				AnsweredTime: target.AnsweredTime.ToTime(),
+				AddTime:      target.AddTime.ToTime(),
+				EndReason:    target.EndReason.String(),
 				EndedTime:    target.EndedTime.ToTime(),
+				FailCode:     target.FailCode.Int(),
+				RingDuration: target.RingDuration.Int(),
+				RingTime:     target.RingTime.ToTime(),
+				Status:       callState.String(),
+				TrunkName:    target.TrunkName.String(),
 			}
 		}
 	}

@@ -111,6 +111,7 @@ type CreateOrUpdateCallLogFromCDRArgs struct {
 	OwnerID      dot.ID
 	UserID       dot.ID
 	ConnectionID dot.ID
+	CallTargets  []*CallTarget
 }
 
 func (args *CreateOrUpdateCallLogFromCDRArgs) Validate() error {
@@ -127,6 +128,19 @@ func (args *CreateOrUpdateCallLogFromCDRArgs) Validate() error {
 		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing external session ID")
 	}
 	return nil
+}
+
+type CallTarget struct {
+	AddTime      time.Time
+	AnsweredTime time.Time
+	EndReason    string
+	EndedTime    time.Time
+	FailCode     int
+	RingDuration int
+	RingTime     time.Time
+	Status       string
+	TargetNumber string
+	TrunkName    string
 }
 
 type CreateCallLogArgs struct {

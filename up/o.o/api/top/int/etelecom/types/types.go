@@ -139,12 +139,28 @@ type CallLog struct {
 	CallState          call_state.CallState         `json:"call_state"`
 	CallStatus         status5.Status               `json:"call_status"`
 	// Đơn vị: phút
-	DurationPostage int    `json:"duration_postage"`
-	Postage         int    `json:"postage"`
-	Note            string `json:"note"`
+	DurationPostage int           `json:"duration_postage"`
+	Postage         int           `json:"postage"`
+	Note            string        `json:"note"`
+	CallTargets     []*CallTarget `json:"call_targets"`
 }
 
 func (m *CallLog) String() string { return jsonx.MustMarshalToString(m) }
+
+type CallTarget struct {
+	AddTime      time.Time `json:"add_time"`
+	AnsweredTime time.Time `json:"answered_time"`
+	EndReason    string    `json:"end_reason"`
+	EndedTime    time.Time `json:"ended_time"`
+	FailCode     int       `json:"fail_code"`
+	RingDuration int       `json:"ring_duration"`
+	RingTime     time.Time `json:"ring_time"`
+	Status       string    `json:"status"`
+	TargetNumber string    `json:"target_number"`
+	TrunkName    string    `json:"trunk_name"`
+}
+
+func (m *CallTarget) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetCallLogsRequest struct {
 	Paging *common.CursorPaging `json:"paging"`

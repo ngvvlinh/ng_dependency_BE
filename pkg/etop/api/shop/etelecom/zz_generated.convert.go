@@ -45,6 +45,24 @@ func registerConversions(s *conversion.Scheme) {
 		Apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecomtypes_CallLog(arg.(*etelecom.CreateOrUpdateCallLogFromCDRArgs), out.(*etelecomtypes.CallLog))
 		return nil
 	})
+	s.Register((*etelecom.CallTarget)(nil), (*etelecomtypes.CallTarget)(nil), func(arg, out interface{}) error {
+		Convert_etelecom_CallTarget_etelecomtypes_CallTarget(arg.(*etelecom.CallTarget), out.(*etelecomtypes.CallTarget))
+		return nil
+	})
+	s.Register(([]*etelecom.CallTarget)(nil), (*[]*etelecomtypes.CallTarget)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecom_CallTargets_etelecomtypes_CallTargets(arg.([]*etelecom.CallTarget))
+		*out.(*[]*etelecomtypes.CallTarget) = out0
+		return nil
+	})
+	s.Register((*etelecomtypes.CallTarget)(nil), (*etelecom.CallTarget)(nil), func(arg, out interface{}) error {
+		Convert_etelecomtypes_CallTarget_etelecom_CallTarget(arg.(*etelecomtypes.CallTarget), out.(*etelecom.CallTarget))
+		return nil
+	})
+	s.Register(([]*etelecomtypes.CallTarget)(nil), (*[]*etelecom.CallTarget)(nil), func(arg, out interface{}) error {
+		out0 := Convert_etelecomtypes_CallTargets_etelecom_CallTargets(arg.([]*etelecomtypes.CallTarget))
+		*out.(*[]*etelecom.CallTarget) = out0
+		return nil
+	})
 	s.Register((*etelecom.CreateExtensionArgs)(nil), (*etelecomtypes.Extension)(nil), func(arg, out interface{}) error {
 		Apply_etelecom_CreateExtensionArgs_etelecomtypes_Extension(arg.(*etelecom.CreateExtensionArgs), out.(*etelecomtypes.Extension))
 		return nil
@@ -165,6 +183,7 @@ func convert_etelecom_CallLog_etelecomtypes_CallLog(arg *etelecom.CallLog, out *
 	out.DurationPostage = arg.DurationPostage       // simple assign
 	out.Postage = arg.Postage                       // simple assign
 	out.Note = arg.Note                             // simple assign
+	out.CallTargets = Convert_etelecom_CallTargets_etelecomtypes_CallTargets(arg.CallTargets)
 }
 
 func Convert_etelecom_CallLogs_etelecomtypes_CallLogs(args []*etelecom.CallLog) (outs []*etelecomtypes.CallLog) {
@@ -216,6 +235,7 @@ func convert_etelecomtypes_CallLog_etelecom_CallLog(arg *etelecomtypes.CallLog, 
 	out.Postage = arg.Postage                       // simple assign
 	out.ExternalSessionID = ""                      // zero value
 	out.Note = arg.Note                             // simple assign
+	out.CallTargets = Convert_etelecomtypes_CallTargets_etelecom_CallTargets(arg.CallTargets)
 }
 
 func Convert_etelecomtypes_CallLogs_etelecom_CallLogs(args []*etelecomtypes.CallLog) (outs []*etelecom.CallLog) {
@@ -266,6 +286,81 @@ func apply_etelecom_CreateOrUpdateCallLogFromCDRArgs_etelecomtypes_CallLog(arg *
 	out.DurationPostage = 0                         // zero value
 	out.Postage = 0                                 // zero value
 	out.Note = ""                                   // zero value
+	out.CallTargets = Convert_etelecom_CallTargets_etelecomtypes_CallTargets(arg.CallTargets)
+}
+
+//-- convert o.o/api/top/int/etelecom/types.CallTarget --//
+
+func Convert_etelecom_CallTarget_etelecomtypes_CallTarget(arg *etelecom.CallTarget, out *etelecomtypes.CallTarget) *etelecomtypes.CallTarget {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecomtypes.CallTarget{}
+	}
+	convert_etelecom_CallTarget_etelecomtypes_CallTarget(arg, out)
+	return out
+}
+
+func convert_etelecom_CallTarget_etelecomtypes_CallTarget(arg *etelecom.CallTarget, out *etelecomtypes.CallTarget) {
+	out.AddTime = arg.AddTime           // simple assign
+	out.AnsweredTime = arg.AnsweredTime // simple assign
+	out.EndReason = arg.EndReason       // simple assign
+	out.EndedTime = arg.EndedTime       // simple assign
+	out.FailCode = arg.FailCode         // simple assign
+	out.RingDuration = arg.RingDuration // simple assign
+	out.RingTime = arg.RingTime         // simple assign
+	out.Status = arg.Status             // simple assign
+	out.TargetNumber = arg.TargetNumber // simple assign
+	out.TrunkName = arg.TrunkName       // simple assign
+}
+
+func Convert_etelecom_CallTargets_etelecomtypes_CallTargets(args []*etelecom.CallTarget) (outs []*etelecomtypes.CallTarget) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecomtypes.CallTarget, len(args))
+	outs = make([]*etelecomtypes.CallTarget, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecom_CallTarget_etelecomtypes_CallTarget(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_etelecomtypes_CallTarget_etelecom_CallTarget(arg *etelecomtypes.CallTarget, out *etelecom.CallTarget) *etelecom.CallTarget {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &etelecom.CallTarget{}
+	}
+	convert_etelecomtypes_CallTarget_etelecom_CallTarget(arg, out)
+	return out
+}
+
+func convert_etelecomtypes_CallTarget_etelecom_CallTarget(arg *etelecomtypes.CallTarget, out *etelecom.CallTarget) {
+	out.AddTime = arg.AddTime           // simple assign
+	out.AnsweredTime = arg.AnsweredTime // simple assign
+	out.EndReason = arg.EndReason       // simple assign
+	out.EndedTime = arg.EndedTime       // simple assign
+	out.FailCode = arg.FailCode         // simple assign
+	out.RingDuration = arg.RingDuration // simple assign
+	out.RingTime = arg.RingTime         // simple assign
+	out.Status = arg.Status             // simple assign
+	out.TargetNumber = arg.TargetNumber // simple assign
+	out.TrunkName = arg.TrunkName       // simple assign
+}
+
+func Convert_etelecomtypes_CallTargets_etelecom_CallTargets(args []*etelecomtypes.CallTarget) (outs []*etelecom.CallTarget) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]etelecom.CallTarget, len(args))
+	outs = make([]*etelecom.CallTarget, len(args))
+	for i := range tmps {
+		outs[i] = Convert_etelecomtypes_CallTarget_etelecom_CallTarget(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert o.o/api/top/int/etelecom/types.Extension --//

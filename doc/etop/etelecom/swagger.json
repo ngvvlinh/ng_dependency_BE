@@ -762,6 +762,12 @@
         "call_status": {
           "$ref": "#/definitions/bnStatus"
         },
+        "call_targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/riCallTarget"
+          }
+        },
         "callee": {
           "type": "string"
         },
@@ -873,6 +879,45 @@
         "user_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "riCallTarget": {
+      "type": "object",
+      "properties": {
+        "add_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "answered_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end_reason": {
+          "type": "string"
+        },
+        "ended_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "fail_code": {
+          "type": "integer"
+        },
+        "ring_duration": {
+          "type": "integer"
+        },
+        "ring_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "target_number": {
+          "type": "string"
+        },
+        "trunk_name": {
+          "type": "string"
         }
       }
     },

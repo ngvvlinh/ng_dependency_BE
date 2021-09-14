@@ -30,8 +30,8 @@ type SQLWriter = core.SQLWriter
 type CallLogs []*CallLog
 
 const __sqlCallLog_Table = "call_log"
-const __sqlCallLog_ListCols = "\"id\",\"external_id\",\"account_id\",\"owner_id\",\"user_id\",\"started_at\",\"ended_at\",\"duration\",\"caller\",\"callee\",\"audio_urls\",\"external_direction\",\"direction\",\"extension_id\",\"hotline_id\",\"external_call_status\",\"contact_id\",\"created_at\",\"updated_at\",\"call_state\",\"call_status\",\"duration_postage\",\"postage\",\"external_session_id\",\"note\""
-const __sqlCallLog_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_id\" = EXCLUDED.\"external_id\",\"account_id\" = EXCLUDED.\"account_id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"user_id\" = EXCLUDED.\"user_id\",\"started_at\" = EXCLUDED.\"started_at\",\"ended_at\" = EXCLUDED.\"ended_at\",\"duration\" = EXCLUDED.\"duration\",\"caller\" = EXCLUDED.\"caller\",\"callee\" = EXCLUDED.\"callee\",\"audio_urls\" = EXCLUDED.\"audio_urls\",\"external_direction\" = EXCLUDED.\"external_direction\",\"direction\" = EXCLUDED.\"direction\",\"extension_id\" = EXCLUDED.\"extension_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"external_call_status\" = EXCLUDED.\"external_call_status\",\"contact_id\" = EXCLUDED.\"contact_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"call_state\" = EXCLUDED.\"call_state\",\"call_status\" = EXCLUDED.\"call_status\",\"duration_postage\" = EXCLUDED.\"duration_postage\",\"postage\" = EXCLUDED.\"postage\",\"external_session_id\" = EXCLUDED.\"external_session_id\",\"note\" = EXCLUDED.\"note\""
+const __sqlCallLog_ListCols = "\"id\",\"external_id\",\"account_id\",\"owner_id\",\"user_id\",\"started_at\",\"ended_at\",\"duration\",\"caller\",\"callee\",\"audio_urls\",\"external_direction\",\"direction\",\"extension_id\",\"hotline_id\",\"external_call_status\",\"contact_id\",\"created_at\",\"updated_at\",\"call_state\",\"call_status\",\"duration_postage\",\"postage\",\"external_session_id\",\"note\",\"call_targets\""
+const __sqlCallLog_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"external_id\" = EXCLUDED.\"external_id\",\"account_id\" = EXCLUDED.\"account_id\",\"owner_id\" = EXCLUDED.\"owner_id\",\"user_id\" = EXCLUDED.\"user_id\",\"started_at\" = EXCLUDED.\"started_at\",\"ended_at\" = EXCLUDED.\"ended_at\",\"duration\" = EXCLUDED.\"duration\",\"caller\" = EXCLUDED.\"caller\",\"callee\" = EXCLUDED.\"callee\",\"audio_urls\" = EXCLUDED.\"audio_urls\",\"external_direction\" = EXCLUDED.\"external_direction\",\"direction\" = EXCLUDED.\"direction\",\"extension_id\" = EXCLUDED.\"extension_id\",\"hotline_id\" = EXCLUDED.\"hotline_id\",\"external_call_status\" = EXCLUDED.\"external_call_status\",\"contact_id\" = EXCLUDED.\"contact_id\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"call_state\" = EXCLUDED.\"call_state\",\"call_status\" = EXCLUDED.\"call_status\",\"duration_postage\" = EXCLUDED.\"duration_postage\",\"postage\" = EXCLUDED.\"postage\",\"external_session_id\" = EXCLUDED.\"external_session_id\",\"note\" = EXCLUDED.\"note\",\"call_targets\" = EXCLUDED.\"call_targets\""
 const __sqlCallLog_Insert = "INSERT INTO \"call_log\" (" + __sqlCallLog_ListCols + ") VALUES"
 const __sqlCallLog_Select = "SELECT " + __sqlCallLog_ListCols + " FROM \"call_log\""
 const __sqlCallLog_Select_history = "SELECT " + __sqlCallLog_ListCols + " FROM history.\"call_log\""
@@ -233,6 +233,13 @@ func (m *CallLog) Migration(db *cmsql.Database) {
 			ColumnTag:        "",
 			ColumnEnumValues: []string{},
 		},
+		"call_targets": {
+			ColumnName:       "call_targets",
+			ColumnType:       "[]*CallTarget",
+			ColumnDBType:     "[]*struct",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
 	}
 	if err := migration.Compare(db, "call_log", mModelColumnNameAndType, mDBColumnNameAndType); err != nil {
 		db.RecordError(err)
@@ -271,6 +278,7 @@ func (m *CallLog) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.Postage),
 		core.String(m.ExternalSessionID),
 		core.String(m.Note),
+		core.JSON{m.CallTargets},
 	}
 }
 
@@ -301,6 +309,7 @@ func (m *CallLog) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.Postage),
 		(*core.String)(&m.ExternalSessionID),
 		(*core.String)(&m.Note),
+		core.JSON{&m.CallTargets},
 	}
 }
 
@@ -338,7 +347,7 @@ func (_ *CallLogs) SQLSelect(w SQLWriter) error {
 func (m *CallLog) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlCallLog_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -348,7 +357,7 @@ func (ms CallLogs) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlCallLog_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(26)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -579,6 +588,14 @@ func (m *CallLog) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Note)
 	}
+	if m.CallTargets != nil {
+		flag = true
+		w.WriteName("call_targets")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.CallTargets})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -589,7 +606,7 @@ func (m *CallLog) SQLUpdate(w SQLWriter) error {
 func (m *CallLog) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlCallLog_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -643,18 +660,19 @@ func (m CallLogHistory) Postage() core.Interface { return core.Interface{m["post
 func (m CallLogHistory) ExternalSessionID() core.Interface {
 	return core.Interface{m["external_session_id"]}
 }
-func (m CallLogHistory) Note() core.Interface { return core.Interface{m["note"]} }
+func (m CallLogHistory) Note() core.Interface        { return core.Interface{m["note"]} }
+func (m CallLogHistory) CallTargets() core.Interface { return core.Interface{m["call_targets"]} }
 
 func (m *CallLogHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(CallLogHistory, 25)
+	res := make(CallLogHistory, 26)
 	res["id"] = data[0]
 	res["external_id"] = data[1]
 	res["account_id"] = data[2]
@@ -680,14 +698,15 @@ func (m *CallLogHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["postage"] = data[22]
 	res["external_session_id"] = data[23]
 	res["note"] = data[24]
+	res["call_targets"] = data[25]
 	*m = res
 	return nil
 }
 
 func (ms *CallLogHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	res := make(CallLogHistories, 0, 128)
@@ -721,6 +740,7 @@ func (ms *CallLogHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["postage"] = data[22]
 		m["external_session_id"] = data[23]
 		m["note"] = data[24]
+		m["call_targets"] = data[25]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

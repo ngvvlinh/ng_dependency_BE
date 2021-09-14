@@ -87,10 +87,23 @@ type CallLog struct {
 	Postage            int
 	ExternalSessionID  string
 	Note               string
-
+	CallTargets        []*CallTarget
 	// depends on connectionID to get extension
 	// accountID get from extension (above)
 	// get contactID from caller/callee + accountID
+}
+
+type CallTarget struct {
+	AddTime      time.Time `json:"add_time"`
+	AnsweredTime time.Time `json:"answered_time"`
+	EndReason    string    `json:"end_reason"`
+	EndedTime    time.Time `json:"ended_time"`
+	FailCode     int       `json:"fail_code"`
+	RingDuration int       `json:"ring_duration"`
+	RingTime     time.Time `json:"ring_time"`
+	Status       string    `json:"status"`
+	TargetNumber string    `json:"target_number"`
+	TrunkName    string    `json:"trunk_name"`
 }
 
 // +sqlgen

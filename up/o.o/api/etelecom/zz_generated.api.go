@@ -168,6 +168,7 @@ type CreateOrUpdateCallLogFromCDRCommand struct {
 	OwnerID            dot.ID
 	UserID             dot.ID
 	ConnectionID       dot.ID
+	CallTargets        []*CallTarget
 
 	Result *CallLog `json:"-"`
 }
@@ -718,6 +719,7 @@ func (q *CreateOrUpdateCallLogFromCDRCommand) GetArgs(ctx context.Context) (_ co
 			OwnerID:            q.OwnerID,
 			UserID:             q.UserID,
 			ConnectionID:       q.ConnectionID,
+			CallTargets:        q.CallTargets,
 		}
 }
 
@@ -739,6 +741,7 @@ func (q *CreateOrUpdateCallLogFromCDRCommand) SetCreateOrUpdateCallLogFromCDRArg
 	q.OwnerID = args.OwnerID
 	q.UserID = args.UserID
 	q.ConnectionID = args.ConnectionID
+	q.CallTargets = args.CallTargets
 }
 
 func (q *CreateTenantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateTenantArgs) {

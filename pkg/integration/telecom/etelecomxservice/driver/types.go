@@ -39,4 +39,11 @@ type CallTarget struct {
 	CallState    call_state.CallState
 	AnsweredTime time.Time
 	EndedTime    time.Time
+	AddTime      time.Time
+	EndReason    string
+	FailCode     int
+	RingDuration int
+	RingTime     time.Time
+	Status       string
+	TrunkName    string
 }

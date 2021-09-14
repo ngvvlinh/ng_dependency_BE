@@ -228,6 +228,7 @@ func (s *PortsipSync) crawlCallLogs(id interface{}, p scheduler.Planner) (err er
 					Direction:          info.Direction,
 					CallState:          info.CallState,
 					ExtensionID:        info.ExtensionID,
+					CallTargets:        info.CallTargets,
 				}
 
 				if _err := s.telecomAggr.Dispatch(ctx, cmdCreate); _err != nil {
@@ -335,6 +336,7 @@ type callInfo struct {
 	HotlineID   dot.ID
 	Direction   call_direction.CallDirection
 	SessionID   string
+	CallTargets []*etelecom.CallTarget
 }
 
 func (s *PortsipSync) getCallInfo(ctx context.Context, tenantID dot.ID, callLog *etelecomxservicedriver.CallLog) (res []*callInfo) {
@@ -346,6 +348,24 @@ func (s *PortsipSync) getCallInfo(ctx context.Context, tenantID dot.ID, callLog 
 	}
 
 	res = append(res, _callInfo)
+
+	callTargets := make([]*etelecom.CallTarget, 0, len(callLog.CallTargets))
+	for _, callTarget := range callLog.CallTargets {
+		_callTarget := &etelecom.CallTarget{
+			AddTime:      callTarget.AddTime,
+			AnsweredTime: callTarget.AnsweredTime,
+			EndReason:    callTarget.EndReason,
+			EndedTime:    callTarget.EndedTime,
+			FailCode:     callTarget.FailCode,
+			RingDuration: callTarget.RingDuration,
+			RingTime:     callTarget.RingTime,
+			Status:       callTarget.Status,
+			TargetNumber: callTarget.TargetNumber,
+			TrunkName:    callTarget.TrunkName,
+		}
+		callTargets = append(callTargets, _callTarget)
+	}
+	_callInfo.CallTargets = callTargets
 
 	switch callLog.Direction {
 	case call_direction.In.String():

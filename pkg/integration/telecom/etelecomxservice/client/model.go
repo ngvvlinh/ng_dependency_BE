@@ -84,7 +84,7 @@ type CallTarget struct {
 	EndedTime    Time              `json:"ended_time"`
 	FailCode     Int               `json:"fail_code"`
 	RingDuration Int               `json:"ring_duration"`
-	RingTime     Int               `json:"ring_time"`
+	RingTime     Time              `json:"ring_time"`
 	Status       PortsipCallStatus `json:"status"`
 	TalkDuration Int               `json:"talk_duration"`
 	TargetNumber String            `json:"target_number"` // số callee
