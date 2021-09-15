@@ -68,6 +68,7 @@ type ShopCallLog struct {
 	CallState         call_state.CallState         `json:"call_state"`
 	CallStatus        status5.Status               `json:"call_status"`
 	Note              string                       `json:"note"`
+	CallTargets       []*CallTarget                `json:"call_targets"`
 }
 
 func (m *ShopCallLog) String() string { return jsonx.MustMarshalToString(m) }
@@ -78,4 +79,17 @@ type CallLogFilter struct {
 	UserID       dot.ID   `json:"user_id"`
 	// Caller or callee
 	CallNumber string `json:"call_number"`
+}
+
+type CallTarget struct {
+	AddTime      time.Time `json:"add_time"`
+	AnsweredTime time.Time `json:"answered_time"`
+	EndReason    string    `json:"end_reason"`
+	EndedTime    time.Time `json:"ended_time"`
+	FailCode     int       `json:"fail_code"`
+	RingDuration int       `json:"ring_duration"`
+	RingTime     time.Time `json:"ring_time"`
+	Status       string    `json:"status"`
+	TargetNumber string    `json:"target_number"`
+	TrunkName    string    `json:"trunk_name"`
 }

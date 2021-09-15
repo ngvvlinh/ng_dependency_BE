@@ -40,6 +40,7 @@ func Convert_core_Calllog_To_api_ShopCalllog(in *etelecom.CallLog) *externaltype
 		CallState:         in.CallState,
 		CallStatus:        in.CallStatus,
 		Note:              in.Note,
+		CallTargets:       Convert_core_CallTargets_To_api_ShopCallTargets(in.CallTargets),
 	}
 	return out
 }
@@ -51,6 +52,36 @@ func Convert_core_Calllogs_To_api_ShopCalllogs(in []*etelecom.CallLog) []*extern
 	outs := make([]*externaltypes.ShopCallLog, len(in))
 	for i, v := range in {
 		outs[i] = Convert_core_Calllog_To_api_ShopCalllog(v)
+	}
+	return outs
+}
+
+func Convert_core_CallTarget_To_api_ShopCallTarget(in *etelecom.CallTarget) *externaltypes.CallTarget {
+	if in == nil {
+		return nil
+	}
+	out := &externaltypes.CallTarget{
+		AddTime:      in.AddTime,
+		AnsweredTime: in.AnsweredTime,
+		EndReason:    in.EndReason,
+		EndedTime:    in.EndedTime,
+		FailCode:     in.FailCode,
+		RingDuration: in.RingDuration,
+		RingTime:     in.RingTime,
+		Status:       in.Status,
+		TargetNumber: in.TargetNumber,
+		TrunkName:    in.TrunkName,
+	}
+	return out
+}
+
+func Convert_core_CallTargets_To_api_ShopCallTargets(in []*etelecom.CallTarget) []*externaltypes.CallTarget {
+	if in == nil {
+		return nil
+	}
+	outs := make([]*externaltypes.CallTarget, len(in))
+	for i, v := range in {
+		outs[i] = Convert_core_CallTarget_To_api_ShopCallTarget(v)
 	}
 	return outs
 }
