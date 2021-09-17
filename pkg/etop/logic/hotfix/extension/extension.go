@@ -5,14 +5,13 @@ import (
 	"context"
 	"io/ioutil"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 
 	"o.o/api/etelecom"
-	"o.o/api/main/authorization"
 	"o.o/api/main/identity"
-	"o.o/api/top/types/etc/account_type"
 	"o.o/api/top/types/etc/status3"
 	com "o.o/backend/com/main"
 	cm "o.o/backend/pkg/common"
@@ -146,7 +145,6 @@ func (s *ExtensionService) parseRow(ctx context.Context, row []string) (*Line, e
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Hotline number is empty").WithMetap("row", row)
 	}
 
-	var ownerID dot.ID
 	hotline, ok := mapHotlines[hotlineNumber]
 	if !ok {
 		hotline, err = s.getHotlineByHotlineNumber(ctx, hotlineNumber)
@@ -158,32 +156,28 @@ func (s *ExtensionService) parseRow(ctx context.Context, row []string) (*Line, e
 		}
 		mapHotlines[hotlineNumber] = hotline
 	}
-	ownerID = hotline.OwnerID
 
-	var accountID dot.ID
-	accountUser, ok := mapAccountUsers[ownerID]
-	if !ok {
-		accountUsers, err := s.getAccountUsers(ctx, ownerID)
-		if err != nil {
-			return nil, err
-		}
-		switch len(accountUsers) {
-		case 0:
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "User does not have any account").WithMetap("row", row)
-		case 1:
-			accountUser = accountUsers[0]
-			mapAccountUsers[ownerID] = accountUser
-		default:
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "User has more than 1 accounts").WithMetap("row", row)
-		}
+	var shopCode string
+	if row[4] != "" {
+		shopCode = strings.TrimSpace(row[4])
 	}
-	accountID = accountUser.AccountID
+	if shopCode == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop code")
+	}
+
+	getShopQuery := &identity.GetShopByCodeQuery{
+		Code: shopCode,
+	}
+	if err = s.identityQS.Dispatch(ctx, getShopQuery); err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Can not get shop by shop code")
+	}
+	shop := getShopQuery.Result
 
 	return &Line{
 		HotlineID:       hotline.ID,
 		TenantID:        hotline.TenantID,
 		OwnerID:         hotline.OwnerID,
-		AccountID:       accountID,
+		AccountID:       shop.ID,
 		ExtensionNumber: extNumber,
 		ExpiresAt:       expiresAt,
 	}, nil
@@ -207,22 +201,6 @@ func (s *ExtensionService) createExtensions(ctx context.Context, lines []*Line) 
 	}
 
 	return s.etelecomAggr.Dispatch(ctx, cmd)
-}
-
-func (s *ExtensionService) getAccountUsers(ctx context.Context, userID dot.ID) ([]*identity.AccountUser, error) {
-	accountUsersQuery := &identity.GetAllAccountsByUsersQuery{
-		UserIDs: []dot.ID{userID},
-		Roles:   []string{string(authorization.RoleShopOwner)},
-		Type: account_type.NullAccountType{
-			Enum:  account_type.Shop,
-			Valid: true,
-		},
-	}
-	if err := s.identityQS.Dispatch(ctx, accountUsersQuery); err != nil {
-		return nil, err
-	}
-	accountUsers := accountUsersQuery.Result
-	return accountUsers, nil
 }
 
 func (s *ExtensionService) getHotlineByHotlineNumber(ctx context.Context, hotlineNumber string) (*etelecom.Hotline, error) {
