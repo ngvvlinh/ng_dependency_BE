@@ -64,7 +64,7 @@ func New(cfg PortsipAccountCfg) *Client {
 
 	switch cmenv.Env() {
 	case cmenv.EnvDev:
-		c.baseUrl = "https://portsip.vht.com.vn:8900/api"
+		c.baseUrl = "https://sip.d.etelecom.vn:8900/api"
 	case cmenv.EnvSandbox, cmenv.EnvStag:
 		c.baseUrl = "https://sip.etelecom.vn:8900/api"
 	case cmenv.EnvProd:
