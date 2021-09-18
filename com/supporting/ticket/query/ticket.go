@@ -79,9 +79,6 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 		if args.Filter.AccountID != 0 {
 			query = query.AccountID(args.Filter.AccountID)
 		}
-		if args.Filter.CreatedBy != 0 {
-			query = query.CreatedBy(args.Filter.CreatedBy)
-		}
 		if args.Filter.ConfirmedBy != 0 {
 			query = query.ConfirmedBy(args.Filter.ConfirmedBy)
 		}
@@ -100,11 +97,7 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 		if args.Filter.RefID != 0 {
 			query = query.RefID(args.Filter.RefID)
 		}
-		if len(args.Filter.AssignedUserIDs) > 0 || args.Filter.CreatedBy != 0 {
-			query = query.AssignedUserIDsOrCreatedBy(args.Filter.CreatedBy, args.Filter.AssignedUserIDs)
-		}
 		ll.Info("args.Filter.State", l.Object("args.Filter.State", args.Filter.State))
-
 		if args.Filter.State != 0 {
 			query = query.State(args.Filter.State)
 		}
@@ -114,6 +107,32 @@ func (q *TicketQuery) ListTickets(ctx context.Context, args *ticket.GetTicketsAr
 		if len(args.Filter.Types) != 0 {
 			query = query.Types(args.Filter.Types)
 		}
+
+		if args.IsLeader {
+			// Nếu là chủ shop
+			if len(args.Filter.AssignedUserIDs) > 0 {
+				query = query.AssignedUserIDs(args.Filter.AssignedUserIDs)
+			}
+			if args.Filter.CreatedBy != 0 {
+				query = query.CreatedBy(args.Filter.CreatedBy)
+			}
+		} else {
+			// Nếu là nhân viên:
+			//	+ Không filter theo field assigned_user_ids:
+			//		* Ticket: created_by OR assigned_user_ids
+			//  + Có filter theo field assigned_user_ids:
+			//		* Ticket: created_by AND assigned_user_ids
+			if !args.HasFilter {
+				if len(args.Filter.AssignedUserIDs) > 0 || args.Filter.CreatedBy != 0 {
+					query = query.AssignedUserIDsOrCreatedBy(args.Filter.CreatedBy, args.Filter.AssignedUserIDs)
+				}
+			} else {
+				if len(args.Filter.AssignedUserIDs) > 0 || args.Filter.CreatedBy != 0 {
+					query = query.AssignedUserIDsAndCreatedBy(args.Filter.CreatedBy, args.Filter.AssignedUserIDs)
+				}
+			}
+		}
+
 	}
 	tickets, err := query.WithPaging(args.Paging).ListTickets()
 	if err != nil {

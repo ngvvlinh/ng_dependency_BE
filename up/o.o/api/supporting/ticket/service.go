@@ -156,8 +156,10 @@ type GetTicketByExternalIDArgs struct {
 }
 
 type GetTicketsArgs struct {
-	Filter *FilterGetTicket
-	Paging meta.Paging
+	Filter    *FilterGetTicket
+	Paging    meta.Paging
+	IsLeader  bool
+	HasFilter bool
 }
 
 type ListTicketsByRefTicketIDArgs struct {

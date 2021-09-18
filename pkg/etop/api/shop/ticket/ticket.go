@@ -32,6 +32,7 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 	var filter = &ticket.FilterGetTicket{
 		AccountID: shopID,
 	}
+	query := &ticket.ListTicketsQuery{}
 	paging := cmapi.CMPaging(request.Paging)
 	if request.Filter != nil {
 		filter.Title = request.Filter.Title
@@ -53,12 +54,18 @@ func (s *TicketService) GetTickets(ctx context.Context, request *api.GetTicketsR
 	if !isLeader(s.SS.GetRoles()) {
 		filter.CreatedBy = user.ID
 		filter.AssignedUserIDs = []dot.ID{user.ID}
+		if request.Filter != nil && len(request.Filter.AssignedUserIDs) > 0 {
+			filter.AssignedUserIDs = request.Filter.AssignedUserIDs
+			query.HasFilter = true
+		}
+
 	}
 	filter.AccountID = s.SS.Shop().ID
-	query := &ticket.ListTicketsQuery{
-		Filter: filter,
-		Paging: *paging,
-	}
+
+	query.Filter = filter
+	query.Paging = *paging
+	query.IsLeader = isLeader(s.SS.GetRoles())
+
 	if err := s.TicketQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}

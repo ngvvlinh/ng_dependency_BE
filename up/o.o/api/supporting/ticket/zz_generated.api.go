@@ -366,8 +366,10 @@ func (h QueryServiceHandler) HandleListTicketLabels(ctx context.Context, msg *Li
 }
 
 type ListTicketsQuery struct {
-	Filter *FilterGetTicket
-	Paging meta.Paging
+	Filter    *FilterGetTicket
+	Paging    meta.Paging
+	IsLeader  bool
+	HasFilter bool
 
 	Result *ListTicketsResponse `json:"-"`
 }
@@ -838,14 +840,18 @@ func (q *ListTicketLabelsQuery) SetGetTicketLabelsArgs(args *GetTicketLabelsArgs
 func (q *ListTicketsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTicketsArgs) {
 	return ctx,
 		&GetTicketsArgs{
-			Filter: q.Filter,
-			Paging: q.Paging,
+			Filter:    q.Filter,
+			Paging:    q.Paging,
+			IsLeader:  q.IsLeader,
+			HasFilter: q.HasFilter,
 		}
 }
 
 func (q *ListTicketsQuery) SetGetTicketsArgs(args *GetTicketsArgs) {
 	q.Filter = args.Filter
 	q.Paging = args.Paging
+	q.IsLeader = args.IsLeader
+	q.HasFilter = args.HasFilter
 }
 
 func (q *ListTicketsByRefTicketIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListTicketsByRefTicketIDArgs) {

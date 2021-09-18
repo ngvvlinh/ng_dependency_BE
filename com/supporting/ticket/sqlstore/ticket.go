@@ -152,19 +152,18 @@ func (s *TicketStore) AssignedUserIDs(userIDs []dot.ID) *TicketStore {
 }
 
 func (s *TicketStore) AssignedUserIDsOrCreatedBy(createdByID dot.ID, assignedUserIDs []dot.ID) *TicketStore {
-	if createdByID != 0 && len(assignedUserIDs) > 0 {
-		s.preds = append(s.preds, sq.Or{
-			s.ft.ByCreatedBy(createdByID),
-			sq.NewExpr("assigned_user_ids @> ?", core.Array{V: assignedUserIDs}),
-		})
-	} else {
-		if len(assignedUserIDs) > 0 {
-			s = s.AssignedUserIDs(assignedUserIDs)
-		}
-		if createdByID != 0 {
-			s = s.CreatedBy(createdByID)
-		}
-	}
+	s.preds = append(s.preds, sq.Or{
+		s.ft.ByCreatedBy(createdByID),
+		sq.NewExpr("assigned_user_ids @> ?", core.Array{V: assignedUserIDs}),
+	})
+	return s
+}
+
+func (s *TicketStore) AssignedUserIDsAndCreatedBy(createdByID dot.ID, assignedUserIDs []dot.ID) *TicketStore {
+	s.preds = append(s.preds, sq.And{
+		s.ft.ByCreatedBy(createdByID),
+		sq.NewExpr("assigned_user_ids @> ?", core.Array{V: assignedUserIDs}),
+	})
 	return s
 }
 
