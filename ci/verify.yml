@@ -1,5 +1,7 @@
 .verify:
-  image: golang:1.15
+  image: golang:1.16.8
   stage: verify
   except: ["tags"]
   allow_failure: false
+  before_script:
+    - export PROJECT_DIR=$(echo $CI_PROJECT_DIR | sed "s/$CI_PROJECT_NAME//g" | sed 's:/*$::')

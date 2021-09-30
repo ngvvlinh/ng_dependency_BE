@@ -1,32 +1,13 @@
 stages:
 - verify
-- build
 - test
 - package
 - deploy
 - dev
-- release
-- sandbox
 - staging
+- sandbox
 - production
-
-variables:
-  GIT_CLONE_PATH: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  PROJECT_DIR: $CI_BUILDS_DIR/$CI_PROJECT_NAMESPACE
-
-# cache: &global_cache
-#   key: ${CI_PROJECT_TITLE}
-#   paths: [".cache"]
-#   policy: pull
-
-.go-cache:
-  before_script:
-    - mkdir -p .cache
-    - export GOPATH="$CI_PROJECT_DIR/.cache" 
-  cache:
-    key: ${CI_PROJECT_TITLE}
-    paths:
-      - .cache
+- release
 
 verify:import:
   extends: .verify
@@ -43,27 +24,14 @@ verify:generate:
   script:
     - time scripts/ci/verify-generate.sh
 
-build:
-  image: golang:1.15
-  stage: build
-  extends: .go-cache
-  script:
-    - go install ./...
-    - time scripts/install-tools.sh
-  only:
-    refs:
-      - branches
-    changes:
-      - "go.mod"
-      - "go.sum"
-
 test:
-  image: golang:1.15
+  image: golang:1.16.8
+  cache:
+    paths: [".cache"]
   stage: test
-  extends: .go-cache
   services:
-    - postgres:12.2-alpine
-    - redis:latest
+    - postgres:13-alpine
+    - redis:6.2.4
   variables:
     POSTGRES_DB: test
     POSTGRES_USER: postgres
@@ -73,11 +41,15 @@ test:
     - verify:import
     - verify:lint
     - verify:generate
-  except: ["tags"] 
+  except: ["tags"]
+  before_script:
+    - mkdir -p .cache
+    - export GOPATH="$CI_PROJECT_DIR/.cache"
+    - export PROJECT_DIR=$(echo $CI_PROJECT_DIR | sed "s/$CI_PROJECT_NAME//g" | sed 's:/*$::')
   script:
     - time go run ./scripts/init_testdb/main.go -drop
     - time scripts/ci/test-all.sh simple
- 
+
 create:releasetag:
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   stage: release
