@@ -39,7 +39,7 @@ verify:generate:
     - time scripts/ci/verify-generate.sh
 
 build:
-  image: golang:1.15
+  image: golang:1.16.8
   stage: build
   extends: .go-cache
   script:
