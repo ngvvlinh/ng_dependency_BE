@@ -178,6 +178,11 @@ type FbExternalPost struct {
 	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus
 }
 
+type FbExternalPostExtended struct {
+	ID            dot.ID
+	TotalComments int
+}
+
 type FbCustomerConversation struct {
 	ID                         dot.ID
 	ExternalPageID             string
