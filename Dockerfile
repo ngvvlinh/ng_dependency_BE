@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/eb2b.vn/devops/golang:go-alpine as builder
+FROM eb2b/golang:1.16.8-alpine as builder
 
 ARG SERVICE_NAME
 ENV PROJECT_DIR=/go/src/eb2b
@@ -19,7 +19,7 @@ RUN sh ./scripts/generate-release.sh \
       -tags release \
       ./cmd/${SERVICE_NAME}
 
-FROM registry.gitlab.com/eb2b.vn/devops/golang:alpine
+FROM eb2b/golang:alpine
 
 COPY --from=builder /build/com  /go/src/eb2b/backend/com
 COPY --from=builder /build/bin/* /usr/bin/

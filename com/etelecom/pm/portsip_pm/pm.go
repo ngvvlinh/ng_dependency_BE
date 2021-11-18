@@ -2,9 +2,8 @@ package portsip_pm
 
 import (
 	"context"
-	"time"
-
 	"o.o/api/etelecom"
+	"o.o/api/main/authorization"
 	"o.o/api/main/connectioning"
 	"o.o/api/main/identity"
 	"o.o/api/top/types/etc/account_type"
@@ -20,6 +19,7 @@ import (
 	etelecomxserviceclient "o.o/backend/pkg/integration/telecom/etelecomxservice/client"
 	"o.o/capi/dot"
 	"o.o/common/l"
+	"time"
 )
 
 var (
@@ -108,6 +108,7 @@ func (m *ProcessManager) TenantActivating(ctx context.Context, event *etelecom.T
 	queryAccountUser := &identity.GetAllAccountsByUsersQuery{
 		UserIDs: []dot.ID{event.OwnerID},
 		Type:    account_type.Shop.Wrap(),
+		Roles:   []string{authorization.RoleShopOwner.String()},
 	}
 	if err := m.identityQS.Dispatch(ctx, queryAccountUser); err != nil {
 		return err

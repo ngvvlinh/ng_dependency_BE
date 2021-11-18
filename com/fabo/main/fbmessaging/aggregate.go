@@ -765,5 +765,9 @@ func (a *FbExternalMessagingAggregate) UpdateIsPrivateRepliedComment(
 func (a *FbExternalMessagingAggregate) UpdateFbExternalPostTotalComments(
 	ctx context.Context, externalID string,
 ) error {
-	return a.fbExternalPostStore(ctx).UpdateTotalComments(externalID)
+	// không gọi api update post liên tục khi có comment mới
+	// do mỗi lần update post sẽ đẩy vào kafka
+	// => đẩy vào 1 partition duy nhất, trường hợp livestream nhiều comment sẽ gây ra consumer lag
+	return nil
+	// return a.fbExternalPostStore(ctx).UpdateTotalComments(externalID)
 }

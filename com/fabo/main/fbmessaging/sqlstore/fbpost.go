@@ -171,17 +171,17 @@ func (s *FbExternalPostStore) UpdateFbExternalPost(fbExternalPost *fbmessaging.F
 	return s.query().Where(s.preds).ShouldUpdate(fbExternalPostDB)
 }
 
-func (s *FbExternalPostStore) UpdateTotalComments(externalID string) error {
-	sql := `UPDATE fb_external_post 
-SET total_comments = (
-	SELECT count(external_id)
-	FROM fb_external_comment
-	WHERE external_post_id = ?
-)
-WHERE external_id = ?`
-	_, err := s.query().SQL(sql, externalID, externalID).Exec()
-	return err
-}
+// func (s *FbExternalPostStore) UpdateTotalComments(externalID string) error {
+// 	sql := `UPDATE fb_external_post
+// SET total_comments = (
+// 	SELECT count(external_id)
+// 	FROM fb_external_comment
+// 	WHERE external_post_id = ?
+// )
+// WHERE external_id = ?`
+// 	_, err := s.query().SQL(sql, externalID, externalID).Exec()
+// 	return err
+// }
 
 func (s *FbExternalPostStore) GetFbExternalPostDB() (*model.FbExternalPost, error) {
 	query := s.query().Where(s.preds)
@@ -225,7 +225,42 @@ func (s *FbExternalPostStore) ListFbExternalPostsDB() ([]*model.FbExternalPost, 
 		return nil, err
 	}
 	s.Paging.Apply(fbExternalPosts)
+
+	// calc total comment
+	externalPostIDs := []string{}
+	for _, post := range fbExternalPosts {
+		externalPostIDs = append(externalPostIDs, post.ExternalID)
+	}
+	postExtendeds, err := s.CalcTotalComments(externalPostIDs)
+	if err != nil {
+		return nil, err
+	}
+	if postExtendeds != nil {
+		for _, post := range fbExternalPosts {
+			if postTotalComment, ok := postExtendeds[post.ExternalID]; ok {
+				post.TotalComments = postTotalComment
+			}
+		}
+	}
+
 	return fbExternalPosts, nil
+}
+
+func (s *FbExternalPostStore) CalcTotalComments(externalPostIDs []string) (map[string]int, error) {
+	if len(externalPostIDs) == 0 {
+		return nil, nil
+	}
+	var posts model.FbExternalPostFtTotalComments
+	var res = make(map[string]int)
+	query := s.query().From("fb_external_comment").In("external_post_id", externalPostIDs).GroupBy("external_post_id")
+
+	if err := query.Find(&posts); err != nil {
+		return nil, err
+	}
+	for _, post := range posts {
+		res[post.ExternalPostID] = post.Count
+	}
+	return res, nil
 }
 
 func (s *FbExternalPostStore) ListFbExternalPosts() (result []*fbmessaging.FbExternalPost, err error) {

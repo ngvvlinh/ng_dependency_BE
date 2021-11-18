@@ -109,7 +109,7 @@ func (msg *WebhookMessages) GetKey() string {
 			return key
 		}
 
-		return separator + changeValue.From.ID
+		return key + separator + changeValue.From.ID + separator + changeValue.CommentID
 	default:
 		return ""
 	}

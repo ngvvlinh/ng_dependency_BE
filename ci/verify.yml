@@ -1,5 +1,5 @@
 .verify:
-  image: golang:1.15
+  image: golang:1.16.8
   stage: verify
   except: ["tags"]
   allow_failure: false

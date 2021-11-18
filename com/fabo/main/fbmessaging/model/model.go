@@ -186,6 +186,12 @@ type FbExternalPost struct {
 	LiveVideoStatus         fb_live_video_status.FbLiveVideoStatus
 }
 
+// +sqlsel
+type FbExternalPostFtTotalComment struct {
+	ExternalPostID string `sel:"external_post_id"`
+	Count          int    `sel:"count(id)"`
+}
+
 type Attachment struct {
 	MediaType      string           `json:"media_type"`
 	Type           string           `json:"type"`
