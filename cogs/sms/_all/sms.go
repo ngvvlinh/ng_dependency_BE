@@ -27,7 +27,7 @@ func SupportedSMSDrivers(wlCfg cc.WhiteLabel, cfg sms.Config) []sms.DriverConfig
 		mainDriver = mock.GetMock()
 	} else if cfg.Telegram {
 		mainDriver = telegramsms.GetTelegram()
-	} else if &cfg.Incom != nil {
+	} else if &cfg.Incom != nil && cfg.Incom.APIKey != "" {
 		mainDriver = incom.New(cfg.Incom)
 	} else {
 		mainDriver = vietguys.New(cfg.Vietguys)
