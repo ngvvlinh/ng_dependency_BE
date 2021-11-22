@@ -340,6 +340,10 @@ func (q *QueryService) ListAccountUsers(ctx context.Context, args *identity.List
 		query = query.HasExtension(IsAssignedToExtension)
 	}
 
+	if args.HasDepartment.Valid {
+		query = query.HasDepartment(args.HasDepartment.Bool)
+	}
+
 	if len(args.ExactRoles) > 0 {
 		var roles []string
 		for _, role := range args.ExactRoles {
@@ -354,6 +358,10 @@ func (q *QueryService) ListAccountUsers(ctx context.Context, args *identity.List
 			roles = append(roles, role.String())
 		}
 		query = query.ByRoles(roles...)
+	}
+
+	if args.DepartmentID != 0 {
+		query = query.ByDepartmentID(args.DepartmentID)
 	}
 
 	accountUsers, err := query.WithPaging(args.Paging).ListAccountUsers()
@@ -378,6 +386,8 @@ func (q *QueryService) ListExtendedAccountUsers(ctx context.Context, args *ident
 		ExactRoles:          args.ExactRoles,
 		UserIDs:             args.UserIDs,
 		HasExtension:        args.HasExtension,
+		HasDepartment:       args.HasDepartment,
+		DepartmentID:        args.DepartmentID,
 	})
 	if err != nil {
 		return nil, err

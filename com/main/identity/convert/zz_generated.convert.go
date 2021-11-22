@@ -522,6 +522,7 @@ func Convert_identitymodel_AccountUser_identity_AccountUser(arg *identitymodel.A
 func convert_identitymodel_AccountUser_identity_AccountUser(arg *identitymodel.AccountUser, out *identity.AccountUser) {
 	out.AccountID = arg.AccountID                       // simple assign
 	out.UserID = arg.UserID                             // simple assign
+	out.DepartmentID = arg.DepartmentID                 // simple assign
 	out.Status = arg.Status                             // simple assign
 	out.ResponseStatus = arg.ResponseStatus             // simple assign
 	out.CreatedAt = arg.CreatedAt                       // simple assign
@@ -572,7 +573,7 @@ func convert_identity_AccountUser_identitymodel_AccountUser(arg *identity.Accoun
 	out.ID = 0                                          // zero value
 	out.AccountID = arg.AccountID                       // simple assign
 	out.UserID = arg.UserID                             // simple assign
-	out.DepartmentID = 0                                // zero value
+	out.DepartmentID = arg.DepartmentID                 // simple assign
 	out.Status = arg.Status                             // simple assign
 	out.ResponseStatus = arg.ResponseStatus             // simple assign
 	out.CreatedAt = arg.CreatedAt                       // simple assign
@@ -622,6 +623,7 @@ func Apply_identity_CreateAccountUserArgs_identity_AccountUser(arg *identity.Cre
 func apply_identity_CreateAccountUserArgs_identity_AccountUser(arg *identity.CreateAccountUserArgs, out *identity.AccountUser) {
 	out.AccountID = arg.AccountID                       // simple assign
 	out.UserID = arg.UserID                             // simple assign
+	out.DepartmentID = arg.DepartmentID                 // simple assign
 	out.Status = arg.Status                             // simple assign
 	out.ResponseStatus = 0                              // zero value
 	out.CreatedAt = time.Time{}                         // zero value

@@ -95,6 +95,15 @@ func (s *AccountUserStore) HasExtension(hasExtension bool) *AccountUserStore {
 	return s
 }
 
+func (s *AccountUserStore) HasDepartment(hasDepartment bool) *AccountUserStore {
+	if hasDepartment {
+		s.preds = append(s.preds, sq.NewExpr("department_id IS NOT NULL"))
+	} else {
+		s.preds = append(s.preds, sq.NewExpr("department_id IS NULL"))
+	}
+	return s
+}
+
 func (s *AccountUserStore) WithPaging(paging meta.Paging) *AccountUserStore {
 	s.Paging.WithPaging(paging)
 	return s

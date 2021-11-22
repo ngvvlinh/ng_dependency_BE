@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"o.o/api/main/department"
 	"strings"
 	"time"
 
@@ -62,6 +63,7 @@ type Aggregate struct {
 	accountStore      identitystore.AccountStoreFactory
 	accountUserStore  identitystore.AccountUserStoreFactory
 	userRefSaffStore  identitystore.UserRefSaffStoreFactory
+	departmentQuery   department.QueryBus
 	eventBus          capi.EventBus
 }
 
@@ -612,6 +614,15 @@ func (a *Aggregate) CreateAccountUser(ctx context.Context, args *identity.Create
 	if err := args.Validate(); err != nil {
 		return nil, err
 	}
+	if args.DepartmentID != 0 {
+		departmentQuery := &department.GetDepartmentByIDQuery{
+			ID:        args.DepartmentID,
+			AccountID: args.AccountID,
+		}
+		if err := a.departmentQuery.Dispatch(ctx, departmentQuery); err != nil {
+			return nil, err
+		}
+	}
 	var accountUser identity.AccountUser
 	if err := scheme.Convert(args, &accountUser); err != nil {
 		return nil, err
@@ -718,6 +729,28 @@ func (a *Aggregate) DeleteAccountUsers(ctx context.Context, args *identity.Delet
 		return 0, cm.Errorf(cm.InvalidArgument, nil, "Please provide either user_id or account_id")
 	}
 	return query.SoftDeleteAccountUsers()
+}
+
+func (a *Aggregate) UpdateDepartmentID(ctx context.Context, args *identity.UpdateDepartmentIDArgs) error {
+	ac, err := a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).GetAccountUser()
+	if err != nil {
+		return err
+	}
+	if ac.DepartmentID == args.DepartmentID {
+		return nil
+	}
+
+	departmentQuery := &department.GetDepartmentByIDQuery{
+		ID:        args.DepartmentID,
+		AccountID: args.AccountID,
+	}
+	if err = a.departmentQuery.Dispatch(ctx, departmentQuery); err != nil {
+		return err
+	}
+	update := &identity.AccountUser{
+		DepartmentID: args.DepartmentID,
+	}
+	return a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).UpdateAccountUser(update)
 }
 
 func (a *Aggregate) RemoveUserOutOfDepartment(ctx context.Context, args *identity.RemoveUserOutOfDepartmentArgs) error {

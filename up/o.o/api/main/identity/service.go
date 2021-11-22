@@ -75,6 +75,8 @@ type Aggregate interface {
 
 	UpdateAccountUserInfo(context.Context, *UpdateAccountUserInfoArgs) error
 
+	UpdateDepartmentID(context.Context, *UpdateDepartmentIDArgs) error
+
 	RemoveUserOutOfDepartment(context.Context, *RemoveUserOutOfDepartmentArgs) error
 }
 
@@ -373,6 +375,7 @@ type RegisterSimplifyArgs struct {
 type CreateAccountUserArgs struct {
 	AccountID dot.ID
 	UserID    dot.ID
+	DepartmentID dot.ID
 
 	Status status3.Status // 1: activated, -1: rejected/disabled, 0: pending
 	Permission
@@ -429,6 +432,7 @@ type ListAccountUsersArgs struct {
 	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
+	HasDepartment       dot.NullBool
 	DepartmentID        dot.ID
 }
 
@@ -452,6 +456,8 @@ type ListExtendedAccountUsersArgs struct {
 	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
+	HasDepartment       dot.NullBool
+	DepartmentID        dot.ID
 }
 
 type ListExtendedAccountUsersResponse struct {
@@ -469,6 +475,12 @@ type UpdateUserPasswordArgs struct {
 	UserID dot.ID
 
 	Password string
+}
+
+type UpdateDepartmentIDArgs struct {
+	AccountID    dot.ID
+	UserID       dot.ID
+	DepartmentID dot.ID
 }
 
 type RemoveUserOutOfDepartmentArgs struct {

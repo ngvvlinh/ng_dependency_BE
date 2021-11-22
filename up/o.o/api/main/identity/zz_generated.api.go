@@ -49,6 +49,7 @@ func (h AggregateHandler) HandleBlockUser(ctx context.Context, msg *BlockUserCom
 type CreateAccountUserCommand struct {
 	AccountID            dot.ID
 	UserID               dot.ID
+	DepartmentID         dot.ID
 	Status               status3.Status
 	Permission           Permission
 	FullName             string
@@ -266,6 +267,19 @@ type UpdateAffiliateInfoCommand struct {
 func (h AggregateHandler) HandleUpdateAffiliateInfo(ctx context.Context, msg *UpdateAffiliateInfoCommand) (err error) {
 	msg.Result, err = h.inner.UpdateAffiliateInfo(msg.GetArgs(ctx))
 	return err
+}
+
+type UpdateDepartmentIDCommand struct {
+	AccountID    dot.ID
+	UserID       dot.ID
+	DepartmentID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateDepartmentID(ctx context.Context, msg *UpdateDepartmentIDCommand) (err error) {
+	return h.inner.UpdateDepartmentID(msg.GetArgs(ctx))
 }
 
 type UpdateExtensionNumberNormCommand struct {
@@ -626,6 +640,7 @@ type ListAccountUsersQuery struct {
 	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
+	HasDepartment       dot.NullBool
 	DepartmentID        dot.ID
 
 	Result *ListAccountUsersResponse `json:"-"`
@@ -657,6 +672,8 @@ type ListExtendedAccountUsersQuery struct {
 	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
+	HasDepartment       dot.NullBool
+	DepartmentID        dot.ID
 
 	Result *ListExtendedAccountUsersResponse `json:"-"`
 }
@@ -756,6 +773,7 @@ func (q *UpdateAccountUserInfoCommand) command()       {}
 func (q *UpdateAccountUserPermissionCommand) command() {}
 func (q *UpdateAffiliateBankAccountCommand) command()  {}
 func (q *UpdateAffiliateInfoCommand) command()         {}
+func (q *UpdateDepartmentIDCommand) command()          {}
 func (q *UpdateExtensionNumberNormCommand) command()   {}
 func (q *UpdateShipFromAddressIDCommand) command()     {}
 func (q *UpdateShopInfoCommand) command()              {}
@@ -818,6 +836,7 @@ func (q *CreateAccountUserCommand) GetArgs(ctx context.Context) (_ context.Conte
 		&CreateAccountUserArgs{
 			AccountID:            q.AccountID,
 			UserID:               q.UserID,
+			DepartmentID:         q.DepartmentID,
 			Status:               q.Status,
 			Permission:           q.Permission,
 			FullName:             q.FullName,
@@ -832,6 +851,7 @@ func (q *CreateAccountUserCommand) GetArgs(ctx context.Context) (_ context.Conte
 func (q *CreateAccountUserCommand) SetCreateAccountUserArgs(args *CreateAccountUserArgs) {
 	q.AccountID = args.AccountID
 	q.UserID = args.UserID
+	q.DepartmentID = args.DepartmentID
 	q.Status = args.Status
 	q.Permission = args.Permission
 	q.FullName = args.FullName
@@ -1095,6 +1115,21 @@ func (q *UpdateAffiliateInfoCommand) SetUpdateAffiliateInfoArgs(args *UpdateAffi
 	q.Phone = args.Phone
 	q.Email = args.Email
 	q.Name = args.Name
+}
+
+func (q *UpdateDepartmentIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateDepartmentIDArgs) {
+	return ctx,
+		&UpdateDepartmentIDArgs{
+			AccountID:    q.AccountID,
+			UserID:       q.UserID,
+			DepartmentID: q.DepartmentID,
+		}
+}
+
+func (q *UpdateDepartmentIDCommand) SetUpdateDepartmentIDArgs(args *UpdateDepartmentIDArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
+	q.DepartmentID = args.DepartmentID
 }
 
 func (q *UpdateExtensionNumberNormCommand) GetArgs(ctx context.Context) (_ context.Context, accountID dot.ID, userID dot.ID, extensionNumber string) {
@@ -1402,6 +1437,7 @@ func (q *ListAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context,
 			ExactRoles:          q.ExactRoles,
 			UserIDs:             q.UserIDs,
 			HasExtension:        q.HasExtension,
+			HasDepartment:       q.HasDepartment,
 			DepartmentID:        q.DepartmentID,
 		}
 }
@@ -1416,6 +1452,7 @@ func (q *ListAccountUsersQuery) SetListAccountUsersArgs(args *ListAccountUsersAr
 	q.ExactRoles = args.ExactRoles
 	q.UserIDs = args.UserIDs
 	q.HasExtension = args.HasExtension
+	q.HasDepartment = args.HasDepartment
 	q.DepartmentID = args.DepartmentID
 }
 
@@ -1436,6 +1473,8 @@ func (q *ListExtendedAccountUsersQuery) GetArgs(ctx context.Context) (_ context.
 			ExactRoles:          q.ExactRoles,
 			UserIDs:             q.UserIDs,
 			HasExtension:        q.HasExtension,
+			HasDepartment:       q.HasDepartment,
+			DepartmentID:        q.DepartmentID,
 		}
 }
 
@@ -1449,6 +1488,8 @@ func (q *ListExtendedAccountUsersQuery) SetListExtendedAccountUsersArgs(args *Li
 	q.ExactRoles = args.ExactRoles
 	q.UserIDs = args.UserIDs
 	q.HasExtension = args.HasExtension
+	q.HasDepartment = args.HasDepartment
+	q.DepartmentID = args.DepartmentID
 }
 
 func (q *ListPartnerRelationsBySubjectIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListPartnerRelationsBySubjectIDsArgs) {
@@ -1559,6 +1600,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateAccountUserPermission)
 	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
 	b.AddHandler(h.HandleUpdateAffiliateInfo)
+	b.AddHandler(h.HandleUpdateDepartmentID)
 	b.AddHandler(h.HandleUpdateExtensionNumberNorm)
 	b.AddHandler(h.HandleUpdateShipFromAddressID)
 	b.AddHandler(h.HandleUpdateShopInfo)

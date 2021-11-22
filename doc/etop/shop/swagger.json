@@ -9784,6 +9784,10 @@
     "paCreateAccountUserRequest": {
       "type": "object",
       "properties": {
+        "department_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "full_name": {
           "type": "string"
         },
@@ -11348,6 +11352,10 @@
     "paFilterGetAccountUsersRequest": {
       "type": "object",
       "properties": {
+        "department_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "exact_roles": {
           "type": "array",
           "items": {
@@ -11356,6 +11364,9 @@
         },
         "extension_number": {
           "$ref": "#/definitions/kfFullTextSearch"
+        },
+        "has_department": {
+          "type": "boolean"
         },
         "has_extension": {
           "type": "boolean"
@@ -14496,6 +14507,10 @@
     "paUpdateAccountUserRequest": {
       "type": "object",
       "properties": {
+        "department_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "full_name": {
           "type": "string"
         },

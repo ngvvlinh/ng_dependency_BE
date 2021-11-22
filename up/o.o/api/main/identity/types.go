@@ -1,6 +1,7 @@
 package identity
 
 import (
+	"o.o/api/top/types/etc/user_role"
 	"strings"
 	"time"
 
@@ -32,6 +33,18 @@ const (
 type Permission struct {
 	Roles       []string
 	Permissions []string
+}
+
+func (p Permission) GetUserRoles() []user_role.UserRole {
+	var res = make([]user_role.UserRole, 0, len(p.Roles))
+	for _, role := range p.Roles {
+		r, ok := user_role.ParseUserRole(role)
+		if !ok {
+			continue
+		}
+		res = append(res, r)
+	}
+	return res
 }
 
 func (p Permission) GetShopUserRoles() []shop_user_role.UserRole {
@@ -228,6 +241,7 @@ type ShopExtended struct {
 type AccountUser struct {
 	AccountID dot.ID
 	UserID    dot.ID
+	DepartmentID dot.ID
 
 	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending
 	ResponseStatus status3.Status // 1: accepted,  -1: rejected, 0: pending

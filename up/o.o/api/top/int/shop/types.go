@@ -3226,6 +3226,7 @@ type CreateAccountUserRequest struct {
 	Phone    string                    `json:"phone"`
 	Roles    []shop_user_role.UserRole `json:"roles"`
 	Password string                    `json:"password"`
+	DepartmentID dot.ID               `json:"department_id"`
 }
 
 func (m *CreateAccountUserRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -3266,6 +3267,8 @@ type FilterGetAccountUsersRequest struct {
 	ExactRoles      []shop_user_role.UserRole `json:"exact_roles"`
 	UserIDs         []dot.ID                  `json:"user_ids"`
 	HasExtension    dot.NullBool              `json:"has_extension"`
+	HasDepartment   dot.NullBool          `json:"has_department"`
+	DepartmentID    dot.ID                `json:"department_id"`
 }
 
 func (m *FilterGetAccountUsersRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -3284,6 +3287,7 @@ type UpdateAccountUserRequest struct {
 	// Có thể đổi mật khẩu cho nhân viên, nếu nhân viên đó chưa đổi mật khẩu lần nào.
 	// Tức mật khẩu vẫn đang ở dạng khởi tạo khi vừa mới tạo tài khoản.
 	Password string `json:"password"`
+	DepartmentID dot.ID `json:"department_id"`
 }
 
 func (m *UpdateAccountUserRequest) String() string { return jsonx.MustMarshalToString(m) }
@@ -3343,3 +3347,13 @@ type RemoveUserOutOfDepartmentRequest struct {
 }
 
 func (m *RemoveUserOutOfDepartmentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *RemoveUserOutOfDepartmentRequest) Validate() error {
+	if m.UserID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "missing user id")
+	}
+	if m.DepartmentID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "missing department id")
+	}
+	return nil
+}

@@ -10,6 +10,7 @@ import (
 	pbcm "o.o/api/top/types/common"
 	"o.o/api/top/types/etc/shop_user_role"
 	"o.o/api/top/types/etc/status3"
+	"o.o/api/top/types/etc/user_role"
 	cm "o.o/backend/pkg/common"
 	"o.o/backend/pkg/common/apifw/cmapi"
 	"o.o/backend/pkg/common/validate"
@@ -65,7 +66,7 @@ func (s *AccountUserService) CreateAccountUser(ctx context.Context, r *api.Creat
 	}
 	userID := query.Result.ID
 
-	if err := s.createAccountUser(ctx, userID, r.GetAccountUserRoles()); err != nil {
+	if err := s.createAccountUser(ctx, userID, r.DepartmentID,r.GetAccountUserRoles()); err != nil {
 		return nil, err
 	}
 
@@ -101,6 +102,8 @@ func (s *AccountUserService) GetAccountUsers(ctx context.Context, r *api.GetAcco
 		listExtendedAccountUsersQuery.ExactRoles = r.Filter.ExactRoles
 		listExtendedAccountUsersQuery.UserIDs = r.Filter.UserIDs
 		listExtendedAccountUsersQuery.HasExtension = r.Filter.HasExtension
+		listExtendedAccountUsersQuery.HasDepartment = r.Filter.HasDepartment
+		listExtendedAccountUsersQuery.DepartmentID = r.Filter.DepartmentID
 	}
 	if err = s.IdentityQuery.Dispatch(ctx, listExtendedAccountUsersQuery); err != nil {
 		return nil, err
@@ -114,7 +117,7 @@ func (s *AccountUserService) GetAccountUsers(ctx context.Context, r *api.GetAcco
 	return result, nil
 }
 
-func (s *AccountUserService) createAccountUser(ctx context.Context, userID dot.ID, roles []string) error {
+func (s *AccountUserService) createAccountUser(ctx context.Context, userID dot.ID, departmentID dot.ID,roles []string) error {
 	accountID := s.SS.Shop().ID
 	query := &identity.GetAccountUserQuery{
 		UserID:    userID,
@@ -131,6 +134,7 @@ func (s *AccountUserService) createAccountUser(ctx context.Context, userID dot.I
 			Permission: identity.Permission{
 				Roles: roles,
 			},
+			DepartmentID: departmentID,
 		}
 		return s.IdentityAggr.Dispatch(ctx, cmd)
 
@@ -191,6 +195,21 @@ func (s *AccountUserService) UpdateAccountUser(ctx context.Context, r *api.Updat
 		}
 		updated++
 	}
+	if r.DepartmentID != 0 {
+		userRoles := accountUser.Permission.GetUserRoles()
+		if !hasUpdateDepartmentPermission(s.SS.GetRoles(), userRoles, s.SS.User().ID, r.UserID) {
+			return nil, cm.ErrPermissionDenied
+		}
+		updateDepartment := &identity.UpdateDepartmentIDCommand{
+			AccountID:    s.SS.Shop().ID,
+			UserID:       r.UserID,
+			DepartmentID: r.DepartmentID,
+		}
+		if err := s.IdentityAggr.Dispatch(ctx, updateDepartment); err != nil {
+			return nil, err
+		}
+		updated++
+	}
 
 	// update other info
 	if r.FullName != "" {
@@ -240,31 +259,31 @@ func (s *AccountUserService) DeleteAccountUser(ctx context.Context, r *api.Delet
 	return &pbcm.DeletedResponse{Deleted: 1}, nil
 }
 
-func (s *AccountUserService) RemoveUserOutOfDepartment(ctx context.Context, request *api.RemoveUserOutOfDepartmentRequest) (*pbcm.DeletedResponse, error) {
-	//if err := r.Validate(); err != nil {
-	//	return nil, err
-	//}
-	//query := &identity.GetAccountUserQuery{
-	//	UserID:    r.UserID,
-	//	AccountID: s.SS.Shop().ID,
-	//}
-	//if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
-	//	return nil, err
-	//}
-	//accountUser := query.Result
-	//roles := accountUser.Permission.GetUserRoles()
-	//
-	//if !hasUpdateDepartmentPermission(s.SS.GetRoles(), roles, s.SS.User().ID, r.UserID) {
-	//	return nil, cm.ErrPermissionDenied
-	//}
-	//cmd := &identity.RemoveUserOutOfDepartmentCommand{
-	//	AccountID:    s.SS.Shop().ID,
-	//	UserID:       r.UserID,
-	//	DepartmentID: r.DepartmentID,
-	//}
-	//if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
-	//	return nil, err
-	//}
+func (s *AccountUserService) RemoveUserOutOfDepartment(ctx context.Context, r *api.RemoveUserOutOfDepartmentRequest) (*pbcm.DeletedResponse, error) {
+	if err := r.Validate(); err != nil {
+		return nil, err
+	}
+	query := &identity.GetAccountUserQuery{
+		UserID:    r.UserID,
+		AccountID: s.SS.Shop().ID,
+	}
+	if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	accountUser := query.Result
+	roles := accountUser.Permission.GetUserRoles()
+
+	if !hasUpdateDepartmentPermission(s.SS.GetRoles(), roles, s.SS.User().ID, r.UserID) {
+		return nil, cm.ErrPermissionDenied
+	}
+	cmd := &identity.RemoveUserOutOfDepartmentCommand{
+		AccountID:    s.SS.Shop().ID,
+		UserID:       r.UserID,
+		DepartmentID: r.DepartmentID,
+	}
+	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
+	}
 	return &pbcm.DeletedResponse{Deleted: 1}, nil
 }
 
@@ -312,5 +331,18 @@ func hasPermision(currentUserRoles []string, roles []shop_user_role.UserRole) bo
 			return false
 		}
 	}
+	return true
+}
+
+func hasUpdateDepartmentPermission(currentUserRoles []string, roles []user_role.UserRole, currentUserID, userID dot.ID) bool {
+	// Không được assign admin khác vào phòng ban
+	if user_role.ContainsUserRoles(roles, user_role.MerchantSupperAdmin) || user_role.ContainsUserRoles(roles, user_role.MerchantAdmin) {
+		// Có thể tự assign(admin) mình vào phòng ban
+		if currentUserID == userID {
+			return true
+		}
+		return false
+	}
+
 	return true
 }
