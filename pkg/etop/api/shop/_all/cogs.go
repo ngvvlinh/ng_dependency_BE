@@ -16,6 +16,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/credit"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
+	"o.o/backend/pkg/etop/api/shop/department"
 	"o.o/backend/pkg/etop/api/shop/etelecom"
 	"o.o/backend/pkg/etop/api/shop/etelecom/etelecomuser"
 	"o.o/backend/pkg/etop/api/shop/export"
@@ -95,6 +96,7 @@ func NewServers(
 	invoiceService *invoice.InvoiceService,
 	jiraService *jira.JiraService,
 	accountUserService *account_user.AccountUserService,
+	departmentService *department.DepartmentService,
 ) shop.Servers {
 
 	shop.InitIdemp(rd)
@@ -147,6 +149,7 @@ func NewServers(
 		transactionService.Clone,
 		invoiceService.Clone,
 		jiraService.Clone,
+		departmentService.Clone,
 	)
 	return servers
 }

@@ -9,6 +9,7 @@ import (
 	"o.o/api/top/types/etc/ticket/ticket_type"
 	"o.o/capi/dot"
 	"o.o/common/jsonx"
+	"time"
 )
 
 type TicketComment struct {
@@ -119,3 +120,15 @@ type AccountUserExtended struct {
 }
 
 func (m *AccountUserExtended) String() string { return jsonx.MustMarshalToString(m) }
+
+type Department struct {
+	ID           dot.ID    `json:"id"`
+	AccountID    dot.ID    `json:"account_id"`
+	Name         string    `json:"name"`
+	TotalMembers int64     `json:"total_members"`
+	Description  string    `json:"description"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+func (m *Department) String() string { return jsonx.MustMarshalToString(m) }

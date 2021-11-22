@@ -4,12 +4,14 @@ import (
 	"context"
 	"net/url"
 
+	"o.o/api/main/department"
 	"o.o/api/main/location"
 	"o.o/api/main/transaction"
 	"o.o/api/shopping/addressing"
 	"o.o/api/shopping/customering"
 	"o.o/api/summary"
 	apishop "o.o/api/top/int/shop"
+	shoptypes "o.o/api/top/int/shop/types"
 	"o.o/api/top/int/types"
 	identitymodel "o.o/backend/com/main/identity/model"
 	"o.o/backend/pkg/common/apifw/cmapi"
@@ -276,6 +278,32 @@ func Convert_core_Transactions_To_api_Transactions(in []*transaction.Transaction
 	res := make([]*types.Transaction, len(in))
 	for i, tran := range in {
 		res[i] = Convert_core_Transaction_To_api_Transaction(tran)
+	}
+	return res
+}
+
+func Convert_core_Department_To_api_Department(in *department.Department) *shoptypes.Department {
+	if in == nil {
+		return nil
+	}
+	return &shoptypes.Department{
+		ID:           in.ID,
+		AccountID:    in.AccountID,
+		Name:         in.Name,
+		Description:  in.Description,
+		TotalMembers: in.Count,
+		CreatedAt:    in.CreatedAt,
+		UpdatedAt:    in.UpdatedAt,
+	}
+}
+
+func Convert_core_Departments_To_api_Departments(in []*department.Department) []*shoptypes.Department {
+	if in == nil {
+		return nil
+	}
+	res := make([]*shoptypes.Department, len(in))
+	for i, department := range in {
+		res[i] = Convert_core_Department_To_api_Department(department)
 	}
 	return res
 }

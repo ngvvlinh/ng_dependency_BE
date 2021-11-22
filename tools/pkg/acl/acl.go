@@ -289,6 +289,12 @@ const (
 	ShopAccountUserDelete permission.ActionType = "shop/account_user:delete"
 	ShopAccountUserView   permission.ActionType = "shop/account_user:view"
 
+	// shop department
+	ShopDepartmentCreate permission.ActionType = "shop/department:create"
+	ShopDepartmentUpdate permission.ActionType = "shop/department:update"
+	ShopDepartmentDelete permission.ActionType = "shop/department:delete"
+	ShopDepartmentView   permission.ActionType = "shop/department:view"
+
 	// Fabo
 	FbCommentView   permission.ActionType = "facebook/comment:view"
 	FbCommentCreate permission.ActionType = "facebook/comment:create"
@@ -1423,6 +1429,14 @@ var _acl = map[string]*permission.Decl{
 	"shop.AccountUser/UpdateAccountUser": {Type: Shop, Actions: actions(ShopAccountUserUpdate)},
 	"shop.AccountUser/DeleteAccountUser": {Type: Shop, Actions: actions(ShopAccountUserDelete)},
 	"shop.AccountUser/GetAccountUsers":   {Type: Shop, Actions: actions(ShopAccountUserView)},
+	"shop.AccountUser/RemoveUserOutOfDepartment": {Type: Shop, Actions: actions(ShopAccountUserUpdate)},
+
+	// Department
+	"shop.Department/CreateDepartment": {Type: Shop, Actions: actions(ShopDepartmentCreate)},
+	"shop.Department/UpdateDepartment": {Type: Shop, Actions: actions(ShopDepartmentUpdate)},
+	"shop.Department/DeleteDepartment": {Type: Shop, Actions: actions(ShopDepartmentDelete)},
+	"shop.Department/GetDepartments":   {Type: Shop, Actions: actions(ShopDepartmentView)},
+	"shop.Department/GetDepartment":    {Type: Shop, Actions: actions(ShopDepartmentView)},
 
 	// -- Fabo --
 	"fabo.Page/ConnectPages":                                 {Type: Shop, Actions: actions(FbFanpageCreate)},

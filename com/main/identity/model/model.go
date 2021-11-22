@@ -416,6 +416,7 @@ type AccountUser struct {
 	ID        dot.ID `paging:"id"`
 	AccountID dot.ID
 	UserID    dot.ID
+	DepartmentID dot.ID
 
 	Status         status3.Status // 1: activated, -1: rejected/disabled, 0: pending
 	ResponseStatus status3.Status // 1: accepted,  -1: rejected, 0: pending
@@ -496,4 +497,11 @@ type UserRefSaff struct {
 	UserID  dot.ID
 	RefAff  string
 	RefSale string
+}
+
+// +sqlsel
+// +convert:type=identity.AccountUserWithGroupByDepartment
+type AccountUserWithGroupByDepartment struct {
+	DepartmentID dot.ID `sel:"department_id"`
+	Count        int64  `sel:"count(id)"`
 }

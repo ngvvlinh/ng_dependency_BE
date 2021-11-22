@@ -297,3 +297,8 @@ type AccountUserExtended struct {
 	Position    string
 	Deleted     bool
 }
+
+type AccountUserWithGroupByDepartment struct {
+	DepartmentID dot.ID
+	Count        int64
+}

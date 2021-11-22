@@ -3293,3 +3293,53 @@ type DeleteAccountUserRequest struct {
 }
 
 func (m *DeleteAccountUserRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateDepartmentRequest struct {
+	// @required
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func (m *CreateDepartmentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+func (m *CreateDepartmentRequest) Validate() error {
+	if m.Name == "" {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "missing name")
+	}
+	return nil
+}
+
+type GetDepartmentsRequest struct {
+	Filter *GetDepartmentsFilter `json:"filter"`
+	Paging *common.CursorPaging  `json:"paging"`
+}
+
+func (m *GetDepartmentsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetDepartmentsFilter struct {
+	Name filter.FullTextSearch `json:"name"`
+}
+
+func (m *GetDepartmentsFilter) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetDepartmentsResponse struct {
+	Departments []*shoptypes.Department `json:"departments"`
+	Paging      *common.CursorPageInfo  `json:"paging"`
+}
+
+func (m *GetDepartmentsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateDepartmentRequest struct {
+	ID          dot.ID `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+func (m *UpdateDepartmentRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type RemoveUserOutOfDepartmentRequest struct {
+	UserID       dot.ID `json:"user_id"`
+	DepartmentID dot.ID `json:"department_id"`
+}
+
+func (m *RemoveUserOutOfDepartmentRequest) String() string { return jsonx.MustMarshalToString(m) }

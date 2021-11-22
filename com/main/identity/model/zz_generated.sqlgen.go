@@ -886,8 +886,8 @@ func (m *AccountAuthFtShop) SQLScanArgs(opts core.Opts) []interface{} {
 type AccountUsers []*AccountUser
 
 const __sqlAccountUser_Table = "account_user"
-const __sqlAccountUser_ListCols = "\"id\",\"account_id\",\"user_id\",\"status\",\"response_status\",\"created_at\",\"updated_at\",\"deleted_at\",\"roles\",\"permissions\",\"full_name\",\"full_name_norm\",\"phone\",\"phone_norm\",\"extension_number_norm\",\"short_name\",\"position\",\"invitation_sent_at\",\"invitation_sent_by\",\"invitation_accepted_at\",\"invitation_rejected_at\",\"disabled_at\",\"disabled_by\",\"disable_reason\",\"rid\""
-const __sqlAccountUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"status\" = EXCLUDED.\"status\",\"response_status\" = EXCLUDED.\"response_status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\",\"full_name\" = EXCLUDED.\"full_name\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone\" = EXCLUDED.\"phone\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"extension_number_norm\" = EXCLUDED.\"extension_number_norm\",\"short_name\" = EXCLUDED.\"short_name\",\"position\" = EXCLUDED.\"position\",\"invitation_sent_at\" = EXCLUDED.\"invitation_sent_at\",\"invitation_sent_by\" = EXCLUDED.\"invitation_sent_by\",\"invitation_accepted_at\" = EXCLUDED.\"invitation_accepted_at\",\"invitation_rejected_at\" = EXCLUDED.\"invitation_rejected_at\",\"disabled_at\" = EXCLUDED.\"disabled_at\",\"disabled_by\" = EXCLUDED.\"disabled_by\",\"disable_reason\" = EXCLUDED.\"disable_reason\",\"rid\" = EXCLUDED.\"rid\""
+const __sqlAccountUser_ListCols = "\"id\",\"account_id\",\"user_id\",\"department_id\",\"status\",\"response_status\",\"created_at\",\"updated_at\",\"deleted_at\",\"roles\",\"permissions\",\"full_name\",\"full_name_norm\",\"phone\",\"phone_norm\",\"extension_number_norm\",\"short_name\",\"position\",\"invitation_sent_at\",\"invitation_sent_by\",\"invitation_accepted_at\",\"invitation_rejected_at\",\"disabled_at\",\"disabled_by\",\"disable_reason\",\"rid\""
+const __sqlAccountUser_ListColsOnConflict = "\"id\" = EXCLUDED.\"id\",\"account_id\" = EXCLUDED.\"account_id\",\"user_id\" = EXCLUDED.\"user_id\",\"department_id\" = EXCLUDED.\"department_id\",\"status\" = EXCLUDED.\"status\",\"response_status\" = EXCLUDED.\"response_status\",\"created_at\" = EXCLUDED.\"created_at\",\"updated_at\" = EXCLUDED.\"updated_at\",\"deleted_at\" = EXCLUDED.\"deleted_at\",\"roles\" = EXCLUDED.\"roles\",\"permissions\" = EXCLUDED.\"permissions\",\"full_name\" = EXCLUDED.\"full_name\",\"full_name_norm\" = EXCLUDED.\"full_name_norm\",\"phone\" = EXCLUDED.\"phone\",\"phone_norm\" = EXCLUDED.\"phone_norm\",\"extension_number_norm\" = EXCLUDED.\"extension_number_norm\",\"short_name\" = EXCLUDED.\"short_name\",\"position\" = EXCLUDED.\"position\",\"invitation_sent_at\" = EXCLUDED.\"invitation_sent_at\",\"invitation_sent_by\" = EXCLUDED.\"invitation_sent_by\",\"invitation_accepted_at\" = EXCLUDED.\"invitation_accepted_at\",\"invitation_rejected_at\" = EXCLUDED.\"invitation_rejected_at\",\"disabled_at\" = EXCLUDED.\"disabled_at\",\"disabled_by\" = EXCLUDED.\"disabled_by\",\"disable_reason\" = EXCLUDED.\"disable_reason\",\"rid\" = EXCLUDED.\"rid\""
 const __sqlAccountUser_Insert = "INSERT INTO \"account_user\" (" + __sqlAccountUser_ListCols + ") VALUES"
 const __sqlAccountUser_Select = "SELECT " + __sqlAccountUser_ListCols + " FROM \"account_user\""
 const __sqlAccountUser_Select_history = "SELECT " + __sqlAccountUser_ListCols + " FROM history.\"account_user\""
@@ -930,6 +930,13 @@ func (m *AccountUser) Migration(db *cmsql.Database) {
 		},
 		"user_id": {
 			ColumnName:       "user_id",
+			ColumnType:       "dot.ID",
+			ColumnDBType:     "int64",
+			ColumnTag:        "",
+			ColumnEnumValues: []string{},
+		},
+		"department_id": {
+			ColumnName:       "department_id",
 			ColumnType:       "dot.ID",
 			ColumnDBType:     "int64",
 			ColumnTag:        "",
@@ -1105,6 +1112,7 @@ func (m *AccountUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 		m.ID,
 		m.AccountID,
 		m.UserID,
+		m.DepartmentID,
 		m.Status,
 		m.ResponseStatus,
 		core.Now(m.CreatedAt, now, create),
@@ -1135,6 +1143,7 @@ func (m *AccountUser) SQLScanArgs(opts core.Opts) []interface{} {
 		&m.ID,
 		&m.AccountID,
 		&m.UserID,
+		&m.DepartmentID,
 		&m.Status,
 		&m.ResponseStatus,
 		(*core.Time)(&m.CreatedAt),
@@ -1194,7 +1203,7 @@ func (_ *AccountUsers) SQLSelect(w SQLWriter) error {
 func (m *AccountUser) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1204,7 +1213,7 @@ func (ms AccountUsers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(26)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1258,6 +1267,14 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.UserID)
+	}
+	if m.DepartmentID != 0 {
+		flag = true
+		w.WriteName("department_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DepartmentID)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -1445,7 +1462,7 @@ func (m *AccountUser) SQLUpdate(w SQLWriter) error {
 func (m *AccountUser) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAccountUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1467,10 +1484,11 @@ func (m AccountUserHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m AccountUserHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m AccountUserHistory) AccountID() core.Interface { return core.Interface{m["account_id"]} }
-func (m AccountUserHistory) UserID() core.Interface    { return core.Interface{m["user_id"]} }
-func (m AccountUserHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m AccountUserHistory) ID() core.Interface           { return core.Interface{m["id"]} }
+func (m AccountUserHistory) AccountID() core.Interface    { return core.Interface{m["account_id"]} }
+func (m AccountUserHistory) UserID() core.Interface       { return core.Interface{m["user_id"]} }
+func (m AccountUserHistory) DepartmentID() core.Interface { return core.Interface{m["department_id"]} }
+func (m AccountUserHistory) Status() core.Interface       { return core.Interface{m["status"]} }
 func (m AccountUserHistory) ResponseStatus() core.Interface {
 	return core.Interface{m["response_status"]}
 }
@@ -1508,48 +1526,49 @@ func (m AccountUserHistory) DisableReason() core.Interface {
 func (m AccountUserHistory) Rid() core.Interface { return core.Interface{m["rid"]} }
 
 func (m *AccountUserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AccountUserHistory, 25)
+	res := make(AccountUserHistory, 26)
 	res["id"] = data[0]
 	res["account_id"] = data[1]
 	res["user_id"] = data[2]
-	res["status"] = data[3]
-	res["response_status"] = data[4]
-	res["created_at"] = data[5]
-	res["updated_at"] = data[6]
-	res["deleted_at"] = data[7]
-	res["roles"] = data[8]
-	res["permissions"] = data[9]
-	res["full_name"] = data[10]
-	res["full_name_norm"] = data[11]
-	res["phone"] = data[12]
-	res["phone_norm"] = data[13]
-	res["extension_number_norm"] = data[14]
-	res["short_name"] = data[15]
-	res["position"] = data[16]
-	res["invitation_sent_at"] = data[17]
-	res["invitation_sent_by"] = data[18]
-	res["invitation_accepted_at"] = data[19]
-	res["invitation_rejected_at"] = data[20]
-	res["disabled_at"] = data[21]
-	res["disabled_by"] = data[22]
-	res["disable_reason"] = data[23]
-	res["rid"] = data[24]
+	res["department_id"] = data[3]
+	res["status"] = data[4]
+	res["response_status"] = data[5]
+	res["created_at"] = data[6]
+	res["updated_at"] = data[7]
+	res["deleted_at"] = data[8]
+	res["roles"] = data[9]
+	res["permissions"] = data[10]
+	res["full_name"] = data[11]
+	res["full_name_norm"] = data[12]
+	res["phone"] = data[13]
+	res["phone_norm"] = data[14]
+	res["extension_number_norm"] = data[15]
+	res["short_name"] = data[16]
+	res["position"] = data[17]
+	res["invitation_sent_at"] = data[18]
+	res["invitation_sent_by"] = data[19]
+	res["invitation_accepted_at"] = data[20]
+	res["invitation_rejected_at"] = data[21]
+	res["disabled_at"] = data[22]
+	res["disabled_by"] = data[23]
+	res["disable_reason"] = data[24]
+	res["rid"] = data[25]
 	*m = res
 	return nil
 }
 
 func (ms *AccountUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AccountUserHistories, 0, 128)
@@ -1561,28 +1580,29 @@ func (ms *AccountUserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["account_id"] = data[1]
 		m["user_id"] = data[2]
-		m["status"] = data[3]
-		m["response_status"] = data[4]
-		m["created_at"] = data[5]
-		m["updated_at"] = data[6]
-		m["deleted_at"] = data[7]
-		m["roles"] = data[8]
-		m["permissions"] = data[9]
-		m["full_name"] = data[10]
-		m["full_name_norm"] = data[11]
-		m["phone"] = data[12]
-		m["phone_norm"] = data[13]
-		m["extension_number_norm"] = data[14]
-		m["short_name"] = data[15]
-		m["position"] = data[16]
-		m["invitation_sent_at"] = data[17]
-		m["invitation_sent_by"] = data[18]
-		m["invitation_accepted_at"] = data[19]
-		m["invitation_rejected_at"] = data[20]
-		m["disabled_at"] = data[21]
-		m["disabled_by"] = data[22]
-		m["disable_reason"] = data[23]
-		m["rid"] = data[24]
+		m["department_id"] = data[3]
+		m["status"] = data[4]
+		m["response_status"] = data[5]
+		m["created_at"] = data[6]
+		m["updated_at"] = data[7]
+		m["deleted_at"] = data[8]
+		m["roles"] = data[9]
+		m["permissions"] = data[10]
+		m["full_name"] = data[11]
+		m["full_name_norm"] = data[12]
+		m["phone"] = data[13]
+		m["phone_norm"] = data[14]
+		m["extension_number_norm"] = data[15]
+		m["short_name"] = data[16]
+		m["position"] = data[17]
+		m["invitation_sent_at"] = data[18]
+		m["invitation_sent_by"] = data[19]
+		m["invitation_accepted_at"] = data[20]
+		m["invitation_rejected_at"] = data[21]
+		m["disabled_at"] = data[22]
+		m["disabled_by"] = data[23]
+		m["disable_reason"] = data[24]
+		m["rid"] = data[25]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

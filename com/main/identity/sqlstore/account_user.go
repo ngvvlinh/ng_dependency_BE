@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"o.o/api/main/identity"
@@ -77,6 +78,11 @@ func (s *AccountUserStore) ByPhoneNorm(phone filter.FullTextSearch) *AccountUser
 
 func (s *AccountUserStore) ByExtensionNumberNorm(extensionNumber filter.FullTextSearch) *AccountUserStore {
 	s.preds = append(s.preds, s.ft.Filter(`extension_number_norm @@ ?::tsquery`, validate.NormalizeFullTextSearchQueryAnd(extensionNumber)))
+	return s
+}
+
+func (s *AccountUserStore) ByDepartmentID(id dot.ID) *AccountUserStore {
+	s.preds = append(s.preds, s.ft.ByDepartmentID(id))
 	return s
 }
 
@@ -159,6 +165,17 @@ func (s *AccountUserStore) ListAccountUserDBs() ([]*identitymodel.AccountUser, e
 	return accountUsers, err
 }
 
+func (s *AccountUserStore) ListAccountUsersWithGroupByDepartment(id dot.ID) ([]*identitymodel.AccountUserWithGroupByDepartment, error) {
+	var accounts identitymodel.AccountUserWithGroupByDepartments
+	var sql = fmt.Sprintf(`from account_user where account_id = %v and department_id is not null and status = 1 group by department_id`, id)
+	qAccountUser := s.query().SQL(sql)
+	if err := qAccountUser.Find(&accounts); err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
+}
+
 func (s *AccountUserStore) ListAccountUsers() ([]*identity.AccountUser, error) {
 	accountUsersDB, err := s.ListAccountUserDBs()
 	if err != nil {
@@ -198,6 +215,13 @@ func (s *AccountUserStore) UpdateExtensionNumberNorm(extNumberNorm string) (int,
 	return s.query().Where(s.preds).Table("account_user").UpdateMap(
 		map[string]interface{}{
 			"extension_number_norm": extNumberNorm,
+		})
+}
+
+func (s *AccountUserStore) RemoveDepartmentID() (int, error) {
+	return s.query().Where(s.preds).Table("account_user").UpdateMap(
+		map[string]interface{}{
+			"department_id": nil,
 		})
 }
 

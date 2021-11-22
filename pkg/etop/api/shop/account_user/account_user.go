@@ -25,6 +25,7 @@ type AccountUserService struct {
 	IdentityQuery identity.QueryBus
 }
 
+
 func (s *AccountUserService) Clone() api.AccountUserService {
 	res := *s
 	return &res
@@ -236,6 +237,34 @@ func (s *AccountUserService) DeleteAccountUser(ctx context.Context, r *api.Delet
 	if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
+	return &pbcm.DeletedResponse{Deleted: 1}, nil
+}
+
+func (s *AccountUserService) RemoveUserOutOfDepartment(ctx context.Context, request *api.RemoveUserOutOfDepartmentRequest) (*pbcm.DeletedResponse, error) {
+	//if err := r.Validate(); err != nil {
+	//	return nil, err
+	//}
+	//query := &identity.GetAccountUserQuery{
+	//	UserID:    r.UserID,
+	//	AccountID: s.SS.Shop().ID,
+	//}
+	//if err := s.IdentityQuery.Dispatch(ctx, query); err != nil {
+	//	return nil, err
+	//}
+	//accountUser := query.Result
+	//roles := accountUser.Permission.GetUserRoles()
+	//
+	//if !hasUpdateDepartmentPermission(s.SS.GetRoles(), roles, s.SS.User().ID, r.UserID) {
+	//	return nil, cm.ErrPermissionDenied
+	//}
+	//cmd := &identity.RemoveUserOutOfDepartmentCommand{
+	//	AccountID:    s.SS.Shop().ID,
+	//	UserID:       r.UserID,
+	//	DepartmentID: r.DepartmentID,
+	//}
+	//if err := s.IdentityAggr.Dispatch(ctx, cmd); err != nil {
+	//	return nil, err
+	//}
 	return &pbcm.DeletedResponse{Deleted: 1}, nil
 }
 

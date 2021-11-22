@@ -368,6 +368,33 @@
         }
       }
     },
+    "/api/shop.AccountUser/RemoveUserOutOfDepartment": {
+      "post": {
+        "tags": [
+          "AccountUser"
+        ],
+        "summary": "RemoveUserOutOfDepartment",
+        "operationId": "shop.AccountUser-RemoveUserOutOfDepartment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paRemoveUserOutOfDepartmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
     "/api/shop.AccountUser/UpdateAccountUser": {
       "post": {
         "tags": [
@@ -1957,6 +1984,141 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/paCustomerGroup"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Department/CreateDepartment": {
+      "post": {
+        "tags": [
+          "Department"
+        ],
+        "summary": "CreateDepartment",
+        "operationId": "shop.Department-CreateDepartment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paCreateDepartmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flDepartment"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Department/DeleteDepartment": {
+      "post": {
+        "tags": [
+          "Department"
+        ],
+        "summary": "DeleteDepartment",
+        "operationId": "shop.Department-DeleteDepartment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Department/GetDepartment": {
+      "post": {
+        "tags": [
+          "Department"
+        ],
+        "summary": "GetDepartment",
+        "operationId": "shop.Department-GetDepartment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ktIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/flDepartment"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Department/GetDepartments": {
+      "post": {
+        "tags": [
+          "Department"
+        ],
+        "summary": "GetDepartments",
+        "operationId": "shop.Department-GetDepartments",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paGetDepartmentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/paGetDepartmentsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/shop.Department/UpdateDepartment": {
+      "post": {
+        "tags": [
+          "Department"
+        ],
+        "summary": "UpdateDepartment",
+        "operationId": "shop.Department-UpdateDepartment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/paUpdateDepartmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ktUpdatedResponse"
             }
           }
         }
@@ -8411,6 +8573,37 @@
         }
       }
     },
+    "flDepartment": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "total_members": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "flGetTicketsByRefTicketIDRequest": {
       "type": "object",
       "properties": {
@@ -9785,6 +9978,20 @@
               "$ref": "#/definitions/ljCustomerType"
             }
           ]
+        }
+      }
+    },
+    "paCreateDepartmentRequest": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -11525,6 +11732,39 @@
         },
         "paging": {
           "$ref": "#/definitions/ktPaging"
+        }
+      }
+    },
+    "paGetDepartmentsFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/kfFullTextSearch"
+        }
+      }
+    },
+    "paGetDepartmentsRequest": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "$ref": "#/definitions/paGetDepartmentsFilter"
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPaging"
+        }
+      }
+    },
+    "paGetDepartmentsResponse": {
+      "type": "object",
+      "properties": {
+        "departments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/flDepartment"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/ktCursorPageInfo"
         }
       }
     },
@@ -13383,6 +13623,19 @@
         }
       }
     },
+    "paRemoveUserOutOfDepartmentRequest": {
+      "type": "object",
+      "properties": {
+        "department_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "paRemoveVariantsRequest": {
       "type": "object",
       "properties": {
@@ -14439,6 +14692,21 @@
               "$ref": "#/definitions/ljCustomerType"
             }
           ]
+        }
+      }
+    },
+    "paUpdateDepartmentRequest": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -19394,6 +19662,9 @@
     },
     {
       "name": "CustomerGroup"
+    },
+    {
+      "name": "Department"
     },
     {
       "name": "Export"

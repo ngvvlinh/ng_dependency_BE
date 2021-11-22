@@ -100,6 +100,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*identitymodel.AccountUserExtended) = out0
 		return nil
 	})
+	s.Register((*identitymodel.AccountUserWithGroupByDepartment)(nil), (*identity.AccountUserWithGroupByDepartment)(nil), func(arg, out interface{}) error {
+		Convert_identitymodel_AccountUserWithGroupByDepartment_identity_AccountUserWithGroupByDepartment(arg.(*identitymodel.AccountUserWithGroupByDepartment), out.(*identity.AccountUserWithGroupByDepartment))
+		return nil
+	})
+	s.Register(([]*identitymodel.AccountUserWithGroupByDepartment)(nil), (*[]*identity.AccountUserWithGroupByDepartment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identitymodel_AccountUserWithGroupByDepartments_identity_AccountUserWithGroupByDepartments(arg.([]*identitymodel.AccountUserWithGroupByDepartment))
+		*out.(*[]*identity.AccountUserWithGroupByDepartment) = out0
+		return nil
+	})
+	s.Register((*identity.AccountUserWithGroupByDepartment)(nil), (*identitymodel.AccountUserWithGroupByDepartment)(nil), func(arg, out interface{}) error {
+		Convert_identity_AccountUserWithGroupByDepartment_identitymodel_AccountUserWithGroupByDepartment(arg.(*identity.AccountUserWithGroupByDepartment), out.(*identitymodel.AccountUserWithGroupByDepartment))
+		return nil
+	})
+	s.Register(([]*identity.AccountUserWithGroupByDepartment)(nil), (*[]*identitymodel.AccountUserWithGroupByDepartment)(nil), func(arg, out interface{}) error {
+		out0 := Convert_identity_AccountUserWithGroupByDepartments_identitymodel_AccountUserWithGroupByDepartments(arg.([]*identity.AccountUserWithGroupByDepartment))
+		*out.(*[]*identitymodel.AccountUserWithGroupByDepartment) = out0
+		return nil
+	})
 	s.Register((*identitymodel.Affiliate)(nil), (*identity.Affiliate)(nil), func(arg, out interface{}) error {
 		Convert_identitymodel_Affiliate_identity_Affiliate(arg.(*identitymodel.Affiliate), out.(*identity.Affiliate))
 		return nil
@@ -554,6 +572,7 @@ func convert_identity_AccountUser_identitymodel_AccountUser(arg *identity.Accoun
 	out.ID = 0                                          // zero value
 	out.AccountID = arg.AccountID                       // simple assign
 	out.UserID = arg.UserID                             // simple assign
+	out.DepartmentID = 0                                // zero value
 	out.Status = arg.Status                             // simple assign
 	out.ResponseStatus = arg.ResponseStatus             // simple assign
 	out.CreatedAt = arg.CreatedAt                       // simple assign
@@ -689,6 +708,64 @@ func Convert_identity_AccountUserExtendeds_identitymodel_AccountUserExtendeds(ar
 	outs = make([]*identitymodel.AccountUserExtended, len(args))
 	for i := range tmps {
 		outs[i] = Convert_identity_AccountUserExtended_identitymodel_AccountUserExtended(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert o.o/api/main/identity.AccountUserWithGroupByDepartment --//
+
+func Convert_identitymodel_AccountUserWithGroupByDepartment_identity_AccountUserWithGroupByDepartment(arg *identitymodel.AccountUserWithGroupByDepartment, out *identity.AccountUserWithGroupByDepartment) *identity.AccountUserWithGroupByDepartment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identity.AccountUserWithGroupByDepartment{}
+	}
+	convert_identitymodel_AccountUserWithGroupByDepartment_identity_AccountUserWithGroupByDepartment(arg, out)
+	return out
+}
+
+func convert_identitymodel_AccountUserWithGroupByDepartment_identity_AccountUserWithGroupByDepartment(arg *identitymodel.AccountUserWithGroupByDepartment, out *identity.AccountUserWithGroupByDepartment) {
+	out.DepartmentID = arg.DepartmentID // simple assign
+	out.Count = arg.Count               // simple assign
+}
+
+func Convert_identitymodel_AccountUserWithGroupByDepartments_identity_AccountUserWithGroupByDepartments(args []*identitymodel.AccountUserWithGroupByDepartment) (outs []*identity.AccountUserWithGroupByDepartment) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identity.AccountUserWithGroupByDepartment, len(args))
+	outs = make([]*identity.AccountUserWithGroupByDepartment, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identitymodel_AccountUserWithGroupByDepartment_identity_AccountUserWithGroupByDepartment(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_identity_AccountUserWithGroupByDepartment_identitymodel_AccountUserWithGroupByDepartment(arg *identity.AccountUserWithGroupByDepartment, out *identitymodel.AccountUserWithGroupByDepartment) *identitymodel.AccountUserWithGroupByDepartment {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &identitymodel.AccountUserWithGroupByDepartment{}
+	}
+	convert_identity_AccountUserWithGroupByDepartment_identitymodel_AccountUserWithGroupByDepartment(arg, out)
+	return out
+}
+
+func convert_identity_AccountUserWithGroupByDepartment_identitymodel_AccountUserWithGroupByDepartment(arg *identity.AccountUserWithGroupByDepartment, out *identitymodel.AccountUserWithGroupByDepartment) {
+	out.DepartmentID = arg.DepartmentID // simple assign
+	out.Count = arg.Count               // simple assign
+}
+
+func Convert_identity_AccountUserWithGroupByDepartments_identitymodel_AccountUserWithGroupByDepartments(args []*identity.AccountUserWithGroupByDepartment) (outs []*identitymodel.AccountUserWithGroupByDepartment) {
+	if args == nil {
+		return nil
+	}
+	tmps := make([]identitymodel.AccountUserWithGroupByDepartment, len(args))
+	outs = make([]*identitymodel.AccountUserWithGroupByDepartment, len(args))
+	for i := range tmps {
+		outs[i] = Convert_identity_AccountUserWithGroupByDepartment_identitymodel_AccountUserWithGroupByDepartment(args[i], &tmps[i])
 	}
 	return outs
 }

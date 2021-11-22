@@ -18,6 +18,7 @@ import (
 	"o.o/backend/pkg/etop/api/shop/credit"
 	"o.o/backend/pkg/etop/api/shop/customer"
 	"o.o/backend/pkg/etop/api/shop/customergroup"
+	"o.o/backend/pkg/etop/api/shop/department"
 	"o.o/backend/pkg/etop/api/shop/etelecom"
 	"o.o/backend/pkg/etop/api/shop/etelecom/etelecomuser"
 	"o.o/backend/pkg/etop/api/shop/export"
@@ -95,4 +96,5 @@ var WireSet = wire.NewSet(
 	wire.Struct(new(transaction.TransactionService), "*"),
 	wire.Struct(new(invoice.InvoiceService), "*"),
 	wire.Struct(new(jira.JiraService), "*"),
+	wire.Struct(new(department.DepartmentService), "*"),
 )

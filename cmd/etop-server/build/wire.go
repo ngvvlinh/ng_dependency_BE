@@ -36,6 +36,7 @@ import (
 	"o.o/backend/com/main/contact"
 	credit "o.o/backend/com/main/credit"
 	"o.o/backend/com/main/identity"
+	"o.o/backend/com/main/department"
 	"o.o/backend/com/main/inventory"
 	"o.o/backend/com/main/invoicing"
 	"o.o/backend/com/main/ledgering"
@@ -215,6 +216,7 @@ func Build(
 		transaction.WireSet,
 		ticket.WireSet,
 		contact.WireSet,
+		department.WireSet,
 
 		admin_all.WireSet,
 		shop_all.WireSet,

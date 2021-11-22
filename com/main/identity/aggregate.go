@@ -719,3 +719,12 @@ func (a *Aggregate) DeleteAccountUsers(ctx context.Context, args *identity.Delet
 	}
 	return query.SoftDeleteAccountUsers()
 }
+
+func (a *Aggregate) RemoveUserOutOfDepartment(ctx context.Context, args *identity.RemoveUserOutOfDepartmentArgs) error {
+	_, err := a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).ByDepartmentID(args.DepartmentID).GetAccountUser()
+	if err != nil {
+		return err
+	}
+	_, err = a.accountUserStore(ctx).ByUserID(args.UserID).ByAccountID(args.AccountID).ByDepartmentID(args.DepartmentID).RemoveDepartmentID()
+	return err
+}

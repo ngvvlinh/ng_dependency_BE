@@ -189,6 +189,19 @@ func (h AggregateHandler) HandleRegisterSimplify(ctx context.Context, msg *Regis
 	return h.inner.RegisterSimplify(msg.GetArgs(ctx))
 }
 
+type RemoveUserOutOfDepartmentCommand struct {
+	AccountID    dot.ID
+	UserID       dot.ID
+	DepartmentID dot.ID
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveUserOutOfDepartment(ctx context.Context, msg *RemoveUserOutOfDepartmentCommand) (err error) {
+	return h.inner.RemoveUserOutOfDepartment(msg.GetArgs(ctx))
+}
+
 type UnblockUserCommand struct {
 	UserID dot.ID
 
@@ -613,12 +626,24 @@ type ListAccountUsersQuery struct {
 	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
+	DepartmentID        dot.ID
 
 	Result *ListAccountUsersResponse `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleListAccountUsers(ctx context.Context, msg *ListAccountUsersQuery) (err error) {
 	msg.Result, err = h.inner.ListAccountUsers(msg.GetArgs(ctx))
+	return err
+}
+
+type ListAccountUsersByDepartmentIDsQuery struct {
+	AccountID dot.ID
+
+	Result []*AccountUserWithGroupByDepartment `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListAccountUsersByDepartmentIDs(ctx context.Context, msg *ListAccountUsersByDepartmentIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListAccountUsersByDepartmentIDs(msg.GetArgs(ctx))
 	return err
 }
 
@@ -725,6 +750,7 @@ func (q *DeleteAccountCommand) command()               {}
 func (q *DeleteAccountUsersCommand) command()          {}
 func (q *DeleteAffiliateCommand) command()             {}
 func (q *RegisterSimplifyCommand) command()            {}
+func (q *RemoveUserOutOfDepartmentCommand) command()   {}
 func (q *UnblockUserCommand) command()                 {}
 func (q *UpdateAccountUserInfoCommand) command()       {}
 func (q *UpdateAccountUserPermissionCommand) command() {}
@@ -761,6 +787,7 @@ func (q *GetUsersQuery) query()                         {}
 func (q *GetUsersByAccountQuery) query()                {}
 func (q *GetUsersByIDsQuery) query()                    {}
 func (q *ListAccountUsersQuery) query()                 {}
+func (q *ListAccountUsersByDepartmentIDsQuery) query()  {}
 func (q *ListExtendedAccountUsersQuery) query()         {}
 func (q *ListPartnerRelationsBySubjectIDsQuery) query() {}
 func (q *ListPartnersForWhiteLabelQuery) query()        {}
@@ -982,6 +1009,21 @@ func (q *RegisterSimplifyCommand) SetRegisterSimplifyArgs(args *RegisterSimplify
 	q.CompanyName = args.CompanyName
 	q.IsCreateDefaultShop = args.IsCreateDefaultShop
 	q.IsUpdatePassword = args.IsUpdatePassword
+}
+
+func (q *RemoveUserOutOfDepartmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveUserOutOfDepartmentArgs) {
+	return ctx,
+		&RemoveUserOutOfDepartmentArgs{
+			AccountID:    q.AccountID,
+			UserID:       q.UserID,
+			DepartmentID: q.DepartmentID,
+		}
+}
+
+func (q *RemoveUserOutOfDepartmentCommand) SetRemoveUserOutOfDepartmentArgs(args *RemoveUserOutOfDepartmentArgs) {
+	q.AccountID = args.AccountID
+	q.UserID = args.UserID
+	q.DepartmentID = args.DepartmentID
 }
 
 func (q *UnblockUserCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID) {
@@ -1360,6 +1402,7 @@ func (q *ListAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context,
 			ExactRoles:          q.ExactRoles,
 			UserIDs:             q.UserIDs,
 			HasExtension:        q.HasExtension,
+			DepartmentID:        q.DepartmentID,
 		}
 }
 
@@ -1373,6 +1416,12 @@ func (q *ListAccountUsersQuery) SetListAccountUsersArgs(args *ListAccountUsersAr
 	q.ExactRoles = args.ExactRoles
 	q.UserIDs = args.UserIDs
 	q.HasExtension = args.HasExtension
+	q.DepartmentID = args.DepartmentID
+}
+
+func (q *ListAccountUsersByDepartmentIDsQuery) GetArgs(ctx context.Context) (_ context.Context, AccountID dot.ID) {
+	return ctx,
+		q.AccountID
 }
 
 func (q *ListExtendedAccountUsersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListExtendedAccountUsersArgs) {
@@ -1504,6 +1553,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDeleteAccountUsers)
 	b.AddHandler(h.HandleDeleteAffiliate)
 	b.AddHandler(h.HandleRegisterSimplify)
+	b.AddHandler(h.HandleRemoveUserOutOfDepartment)
 	b.AddHandler(h.HandleUnblockUser)
 	b.AddHandler(h.HandleUpdateAccountUserInfo)
 	b.AddHandler(h.HandleUpdateAccountUserPermission)
@@ -1554,6 +1604,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetUsersByAccount)
 	b.AddHandler(h.HandleGetUsersByIDs)
 	b.AddHandler(h.HandleListAccountUsers)
+	b.AddHandler(h.HandleListAccountUsersByDepartmentIDs)
 	b.AddHandler(h.HandleListExtendedAccountUsers)
 	b.AddHandler(h.HandleListPartnerRelationsBySubjectIDs)
 	b.AddHandler(h.HandleListPartnersForWhiteLabel)

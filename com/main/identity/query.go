@@ -431,3 +431,11 @@ func (q *QueryService) ListExtendedAccountUsers(ctx context.Context, args *ident
 func (q *QueryService) ListPartnerRelationsBySubjectIDs(ctx context.Context, args *identity.ListPartnerRelationsBySubjectIDsArgs) ([]*identity.PartnerRelation, error) {
 	return q.partnerRelationStore(ctx).BySubjectType(args.SubjectType).BySubjectIDs(args.SubjectIDs...).ListPartnerRelations()
 }
+
+func (q *QueryService) ListAccountUsersByDepartmentIDs(ctx context.Context, ID dot.ID) ([]*identity.AccountUserWithGroupByDepartment, error) {
+	accounts, err := q.accountUserStore(ctx).ByAccountID(ID).ListAccountUsersWithGroupByDepartment(ID)
+	if err != nil {
+		return nil, err
+	}
+	return convert.Convert_identitymodel_AccountUserWithGroupByDepartments_identity_AccountUserWithGroupByDepartments(accounts), nil
+}

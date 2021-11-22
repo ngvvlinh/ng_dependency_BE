@@ -71,6 +71,7 @@ type AccountUserService interface {
 	GetAccountUsers(context.Context, *GetAccountUsersRequest) (*GetAccountUsersResponse, error)
 	UpdateAccountUser(context.Context, *UpdateAccountUserRequest) (*cm.UpdatedResponse, error)
 	DeleteAccountUser(context.Context, *DeleteAccountUserRequest) (*cm.DeletedResponse, error)
+	RemoveUserOutOfDepartment(context.Context, *RemoveUserOutOfDepartmentRequest) (*cm.DeletedResponse, error)
 }
 
 // +apix:path=/shop.AccountShipnow
@@ -521,4 +522,13 @@ type InvoiceService interface {
 type JiraService interface {
 	GetJiraCustomFields(context.Context, *cm.Empty) (*GetCustomFieldsResponse, error)
 	CreateJiraIssue(context.Context, *CreateJiraIssueRequest) (*cm.Empty, error)
+}
+
+// +apix:path=/shop.Department
+type DepartmentService interface {
+	CreateDepartment(context.Context, *CreateDepartmentRequest) (*shoptypes.Department, error)
+	GetDepartments(context.Context, *GetDepartmentsRequest) (*GetDepartmentsResponse, error)
+	GetDepartment(context.Context, *cm.IDRequest) (*shoptypes.Department, error)
+	DeleteDepartment(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+	UpdateDepartment(context.Context, *UpdateDepartmentRequest) (*cm.UpdatedResponse, error)
 }

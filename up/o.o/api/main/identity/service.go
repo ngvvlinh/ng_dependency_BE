@@ -74,6 +74,8 @@ type Aggregate interface {
 	UpdateAccountUserPermission(context.Context, *UpdateAccountUserPermissionArgs) error
 
 	UpdateAccountUserInfo(context.Context, *UpdateAccountUserInfoArgs) error
+
+	RemoveUserOutOfDepartment(context.Context, *RemoveUserOutOfDepartmentArgs) error
 }
 
 type QueryService interface {
@@ -140,6 +142,8 @@ type QueryService interface {
 	ListExtendedAccountUsers(context.Context, *ListExtendedAccountUsersArgs) (*ListExtendedAccountUsersResponse, error)
 
 	ListPartnerRelationsBySubjectIDs(context.Context, *ListPartnerRelationsBySubjectIDsArgs) ([]*PartnerRelation, error)
+
+	ListAccountUsersByDepartmentIDs(ctx context.Context, AccountID dot.ID) ([]*AccountUserWithGroupByDepartment, error)
 }
 
 type Account struct {
@@ -425,6 +429,7 @@ type ListAccountUsersArgs struct {
 	ExactRoles          []shop_user_role.UserRole
 	UserIDs             []dot.ID
 	HasExtension        dot.NullBool
+	DepartmentID        dot.ID
 }
 
 type ListAccountUsersResponse struct {
@@ -464,4 +469,23 @@ type UpdateUserPasswordArgs struct {
 	UserID dot.ID
 
 	Password string
+}
+
+type RemoveUserOutOfDepartmentArgs struct {
+	AccountID    dot.ID
+	UserID       dot.ID
+	DepartmentID dot.ID
+}
+
+func (a *RemoveUserOutOfDepartmentArgs) Validate() error {
+	if a.AccountID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing account ID")
+	}
+	if a.UserID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing user ID")
+	}
+	if a.DepartmentID == 0 {
+		return xerrors.Errorf(xerrors.InvalidArgument, nil, "Missing department ID")
+	}
+	return nil
 }

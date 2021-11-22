@@ -49,6 +49,8 @@ func NewServer(builder interface{}, hooks ...httprpc.HooksBuilder) (httprpc.Serv
 		return NewCustomerGroupServiceServer(builder, hooks...), true
 	case func() CustomerService:
 		return NewCustomerServiceServer(builder, hooks...), true
+	case func() DepartmentService:
+		return NewDepartmentServiceServer(builder, hooks...), true
 	case func() ExportService:
 		return NewExportServiceServer(builder, hooks...), true
 	case func() FulfillmentService:
@@ -377,6 +379,7 @@ const AccountUserServicePathPrefix = "/shop.AccountUser/"
 const Path_AccountUser_CreateAccountUser = "/shop.AccountUser/CreateAccountUser"
 const Path_AccountUser_DeleteAccountUser = "/shop.AccountUser/DeleteAccountUser"
 const Path_AccountUser_GetAccountUsers = "/shop.AccountUser/GetAccountUsers"
+const Path_AccountUser_RemoveUserOutOfDepartment = "/shop.AccountUser/RemoveUserOutOfDepartment"
 const Path_AccountUser_UpdateAccountUser = "/shop.AccountUser/UpdateAccountUser"
 
 func (s *AccountUserServiceServer) PathPrefix() string {
@@ -448,6 +451,19 @@ func (s *AccountUserServiceServer) parseRoute(path string, hooks httprpc.Hooks, 
 				return
 			}
 			resp, err = inner.GetAccountUsers(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.AccountUser/RemoveUserOutOfDepartment":
+		msg := &RemoveUserOutOfDepartmentRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.RemoveUserOutOfDepartment(newCtx, msg)
 			return
 		}
 		return msg, fn, nil
@@ -1813,6 +1829,130 @@ func (s *CustomerServiceServer) parseRoute(path string, hooks httprpc.Hooks, inf
 				return
 			}
 			resp, err = inner.UpdateCustomerAddress(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type DepartmentServiceServer struct {
+	hooks   httprpc.HooksBuilder
+	builder func() DepartmentService
+}
+
+func NewDepartmentServiceServer(builder func() DepartmentService, hooks ...httprpc.HooksBuilder) httprpc.Server {
+	return &DepartmentServiceServer{
+		hooks:   httprpc.ChainHooks(hooks...),
+		builder: builder,
+	}
+}
+
+const DepartmentServicePathPrefix = "/shop.Department/"
+
+const Path_Department_CreateDepartment = "/shop.Department/CreateDepartment"
+const Path_Department_DeleteDepartment = "/shop.Department/DeleteDepartment"
+const Path_Department_GetDepartment = "/shop.Department/GetDepartment"
+const Path_Department_GetDepartments = "/shop.Department/GetDepartments"
+const Path_Department_UpdateDepartment = "/shop.Department/UpdateDepartment"
+
+func (s *DepartmentServiceServer) PathPrefix() string {
+	return DepartmentServicePathPrefix
+}
+
+func (s *DepartmentServiceServer) WithHooks(hooks httprpc.HooksBuilder) httprpc.Server {
+	result := *s
+	result.hooks = httprpc.ChainHooks(s.hooks, hooks)
+	return &result
+}
+
+func (s *DepartmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	hooks := httprpc.WrapHooks(s.hooks)
+	ctx, info := req.Context(), &httprpc.HookInfo{Route: req.URL.Path, HTTPRequest: req}
+	ctx, err := hooks.RequestReceived(ctx, *info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path, hooks, info)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, hooks, *info, err)
+		return
+	}
+	serve(ctx, resp, req, hooks, info, reqMsg, exec)
+}
+
+func (s *DepartmentServiceServer) parseRoute(path string, hooks httprpc.Hooks, info *httprpc.HookInfo) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Department/CreateDepartment":
+		msg := &CreateDepartmentRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.CreateDepartment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Department/DeleteDepartment":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.DeleteDepartment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Department/GetDepartment":
+		msg := &common.IDRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetDepartment(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Department/GetDepartments":
+		msg := &GetDepartmentsRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.GetDepartments(newCtx, msg)
+			return
+		}
+		return msg, fn, nil
+	case "/shop.Department/UpdateDepartment":
+		msg := &UpdateDepartmentRequest{}
+		fn := func(ctx context.Context) (newCtx context.Context, resp capi.Message, err error) {
+			inner := s.builder()
+			info.Request, info.Inner = msg, inner
+			newCtx, err = hooks.RequestRouted(ctx, *info)
+			if err != nil {
+				return
+			}
+			resp, err = inner.UpdateDepartment(newCtx, msg)
 			return
 		}
 		return msg, fn, nil

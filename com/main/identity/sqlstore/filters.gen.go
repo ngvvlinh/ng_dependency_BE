@@ -382,6 +382,25 @@ func (ft *AccountUserFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *AccountUserFilters) ByDepartmentID(DepartmentID dot.ID) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "department_id",
+		Value:  DepartmentID,
+		IsNil:  DepartmentID == 0,
+	}
+}
+
+func (ft *AccountUserFilters) ByDepartmentIDPtr(DepartmentID *dot.ID) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "department_id",
+		Value:  DepartmentID,
+		IsNil:  DepartmentID == nil,
+		IsZero: DepartmentID != nil && (*DepartmentID) == 0,
+	}
+}
+
 func (ft *AccountUserFilters) ByStatus(Status status3.Status) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
