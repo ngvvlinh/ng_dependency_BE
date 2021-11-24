@@ -663,6 +663,7 @@ func Convert_identitymodel_AccountUserExtended_identity_AccountUserExtended(arg 
 func convert_identitymodel_AccountUserExtended_identity_AccountUserExtended(arg *identitymodel.AccountUserExtended, out *identity.AccountUserExtended) {
 	out.UserID = 0        // zero value
 	out.AccountID = 0     // zero value
+	out.DepartmentID = 0  // zero value
 	out.Roles = nil       // zero value
 	out.Permissions = nil // zero value
 	out.FullName = ""     // zero value

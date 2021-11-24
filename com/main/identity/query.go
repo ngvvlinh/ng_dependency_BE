@@ -420,6 +420,7 @@ func (q *QueryService) ListExtendedAccountUsers(ctx context.Context, args *ident
 		extendedAccountUser := &identity.AccountUserExtended{
 			UserID:      accountUser.UserID,
 			AccountID:   accountUser.AccountID,
+			DepartmentID: accountUser.DepartmentID,
 			Roles:       accountUser.Roles,
 			Permissions: accountUser.Permissions,
 			FullName:    user.FullName,

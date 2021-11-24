@@ -8540,6 +8540,10 @@
         "deleted": {
           "type": "boolean"
         },
+        "department_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "email": {
           "type": "string"
         },

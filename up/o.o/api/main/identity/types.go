@@ -302,6 +302,7 @@ type PartnerRelation struct {
 type AccountUserExtended struct {
 	UserID      dot.ID
 	AccountID   dot.ID
+	DepartmentID dot.ID
 	Roles       []string
 	Permissions []string
 	FullName    string

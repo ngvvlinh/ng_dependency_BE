@@ -1009,6 +1009,7 @@ func Convert_core_ExtendedAccountUser_To_api_ExtendedAccountUser(in *identity.Ac
 	res := &types.AccountUserExtended{
 		UserID:      in.UserID,
 		AccountID:   in.AccountID,
+		DepartmentID: in.DepartmentID,
 		Roles:       in.Roles,
 		Permissions: in.Permissions,
 		FullName:    in.FullName,

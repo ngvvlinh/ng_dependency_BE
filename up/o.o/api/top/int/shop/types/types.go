@@ -109,6 +109,7 @@ func (m *GetTicketsByRefTicketIDResponse) String() string { return jsonx.MustMar
 type AccountUserExtended struct {
 	UserID      dot.ID   `json:"user_id"`
 	AccountID   dot.ID   `json:"account_id"`
+	DepartmentID dot.ID   `json:"department_id"`
 	Roles       []string `json:"roles"`
 	Permissions []string `json:"permissions"`
 	FullName    string   `json:"full_name"`
